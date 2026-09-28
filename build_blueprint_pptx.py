@@ -4,8 +4,9 @@ CostVision — Implementation Blueprint presentation (secure deployment + CAPEE
 integration) for senior management. Light professional theme, logo top-left on
 every slide, native shapes/diagrams, speaker notes per slide.
 
-Content is grounded in docs/CostVision-Secure-Deployment-CAPEE-Integration.md,
-which itself is grounded in a line-by-line audit of the codebase.
+Content is grounded in docs/CostVision-Secure-Deployment-CAPEE-Integration.md
+and, for every statement about what the tool does today, docs/decks/tool-facts.md
+(checked against the code, Sept 2026). Plans are labelled as plans.
 
 Regenerate:  python3 build_blueprint_pptx.py
 Output:      CostVision-Implementation-Blueprint.pptx
@@ -140,7 +141,7 @@ def logo(slide, x=Inches(0.35), y=Inches(0.22), scale=1.0, on_dark=False):
     text(slide, x + Inches(0.52 * s), y - Inches(0.03 * s), Inches(2.6), Inches(0.32),
          [[('CostVision', 18 * s, ON_DARK if on_dark else BLUE, True)]])
     text(slide, x + Inches(0.52 * s), y + Inches(0.24 * s), Inches(2.8), Inches(0.22),
-         [[('AI  COST  INTELLIGENCE', 7.5 * s, HERO_DIM if on_dark else MUTED, False)]])
+         [[('SHOULD-COST  INTELLIGENCE', 7.5 * s, HERO_DIM if on_dark else MUTED, False)]])
 
 def notes(slide, txt):
     slide.notes_slide.notes_text_frame.text = txt
@@ -199,36 +200,38 @@ logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25, on_dark=True)
 text(s, Inches(0.9), Inches(2.15), Inches(11.8), Inches(1.0),
      [[('CostVision Implementation Blueprint', 36, ON_DARK, True)]], font=TITLE_FONT)
 text(s, Inches(0.9), Inches(3.1), Inches(11.4), Inches(0.9),
-     [[('Secure deployment inside our network — integrated into CAPEE, our existing should-cost software.', 19, HERO_SUB, False)],
-      [('All CAD models, drawings and images stay inside the company. Verified in the code.', 19, HERO_SUB, False)]])
-for i, (t, c) in enumerate([('100% CAD stays internal', GREEN), ('AI controls BUILT & tested', BLUE), ('~3–5 weeks remaining', VIOLET), ('6-phase rollout', CYAN)]):
+     [[('How we run CostVision safely inside the company, and how it could plug into CAPEE.', 19, HERO_SUB, False)],
+      [('CAD files stay on the machine that measures them. The JLR build runs with AI switched off.', 19, HERO_SUB, False)]])
+for i, (t, c) in enumerate([('CAD stays in-house', GREEN), ('AI off in JLR build', BLUE), ('Runs on a laptop', VIOLET), ('6-phase plan', CYAN)]):
     x = Inches(0.9 + i * 2.95)
     chip = box(s, x, Inches(4.55), Inches(2.7), Inches(0.52), fill=ON_DARK, round_=True, radius=0.5)
     tf = chip.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
     r = p.add_run(); r.text = t; r.font.size = Pt(12.5); r.font.bold = True; r.font.color.rgb = c; r.font.name = 'Calibri'
 text(s, Inches(0.9), Inches(6.5), Inches(11), Inches(0.4),
-     [[('Management briefing  ·  July 2026  ·  Grounded in a line-by-line audit of the platform code', 12, HERO_DIM, False)]])
+     [[('Management briefing  ·  September 2026  ·  Checked against the code, app version V4.2', 12, HERO_DIM, False)]])
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=BLUE)
-notes(s, "Welcome. This session is the implementation blueprint for CostVision: how we deploy it securely so that "
-         "no CAD data ever leaves our network, and how we integrate it with our existing CAPEE costing tool. "
-         "Everything in this deck comes from an actual audit of the platform's code — not vendor promises. "
-         "One important update since the written plan: the two security controls at the heart of this blueprint — "
-         "private AI routing and the air-gapped switch — have now been BUILT into the platform and tested live. "
-         "By the end I'll ask for one decision: approval to start Phase 1 and 2.")
+notes(s, "Thanks for making the time. This is the implementation blueprint for CostVision. It covers two things. "
+         "First, how we run the tool safely inside the company, so CAD data never leaves our hands. Second, how it "
+         "could plug into CAPEE, the should-cost software our teams already use. "
+         "I want to be clear about where we are. The tool is built. The version JLR has runs on a single laptop, "
+         "with no installer, no admin rights and no internet. The AI features are switched off in that build, "
+         "because we don't have AI approval yet. The code is still there, and one setting can turn it back on later. "
+         "Everything on these slides was checked against the code this month. Where something is a plan and not a "
+         "thing that exists, I'll say so. At the end I'll ask for one decision: approval to start phases one and two.")
 
 # ═══════════════ 2 — THE DECISION ═══════════════
 s = header('The decision we are asking for today', 'Purpose of this meeting')
 box(s, Inches(0.45), Inches(2.1), Inches(12.45), Inches(1.5), fill=PANEL2, round_=True, radius=0.08)
 text(s, Inches(0.8), Inches(2.35), Inches(11.8), Inches(1.1),
      [[('Approve Phases 1–2: ', 17, BLUE, True),
-       ('the IT-Security assessment and the architecture design for deploying CostVision inside our network '
-        'and connecting it to CAPEE.  (~5–7 weeks, existing teams, no licence spend.)', 17, BODY, False)]],
+       ('the IT-Security assessment and the architecture design for running CostVision on our network '
+        'and connecting it to CAPEE.  (Our estimate: 5–7 weeks, existing teams, no licence spend.)', 17, BODY, False)]],
      line_spacing=1.2)
 pts = [
-    ('Why now', 'The tool is built, tested (1,777 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
-    ('Why it is safe', 'CAD processing already runs fully inside the server. The private AI routing and the air-gapped switch are now BUILT and tested live.', GREEN),
-    ('Why CAPEE wins', 'CAPEE is our existing should-cost software; CostVision plugs into it to upgrade its engine with AI, physics and memory. No rip-and-replace.', VIOLET),
+    ('Why now', 'The tool is built and has 2,438 automated tests. What is left is deployment work, not building the tool.', BLUE),
+    ('Why it is safe', 'CAD is measured on the same machine. The JLR build has AI switched off. A laptop build needs no internet.', GREEN),
+    ('Why CAPEE', 'CAPEE stays the tool teams use. The plan is for CostVision to work behind it as the costing engine. Nothing is ripped out.', VIOLET),
 ]
 for i, (t, d, c) in enumerate(pts):
     x = Inches(0.45 + i * 4.25)
@@ -236,21 +239,23 @@ for i, (t, d, c) in enumerate(pts):
     box(s, x, Inches(4.0), Inches(4.0), Inches(0.09), fill=c)
     text(s, x + Inches(0.25), Inches(4.25), Inches(3.55), Inches(0.4), [[(t, 15.5, c, True)]])
     text(s, x + Inches(0.25), Inches(4.75), Inches(3.55), Inches(1.55), [[(d, 12, BODY, False)]], line_spacing=1.18)
-notes(s, "One clear ask: approve the first two phases — the security assessment and the architecture design. "
-         "That's five to seven weeks with existing teams and no new licence spend. Why now? Because the tool itself is "
-         "finished and proven; what remains is deployment. Why is it safe? Because CAD processing already happens "
-         "entirely inside the server — we verified this in the code — and the two security controls this plan called "
-         "for, private AI routing and the air-gapped switch, are now built into the platform and tested live. "
-         "And why does CAPEE win? Because we are not replacing CAPEE — it stays the should-cost software our teams "
-         "already use; CostVision integrates into it and upgrades its engine with AI, physics and a memory.")
+notes(s, "I have one ask today: approve the first two phases. That's the security assessment and the architecture "
+         "design. My estimate is five to seven weeks with our existing teams, and no licence spend. "
+         "Why now? The tool itself is built. It has two thousand four hundred and thirty-eight automated tests. What "
+         "is left is deployment work, not building the tool. "
+         "Why is it safe? The CAD file is measured on the same machine that runs the tool. Nothing is sent out. In "
+         "the JLR build the AI is switched off, and the laptop version needs no internet at all. "
+         "And why CAPEE? Because we are not replacing it. CAPEE stays the tool our teams open every day. The plan is "
+         "for CostVision to sit behind it as the costing engine. To be clear, that connection is a plan. It is not "
+         "built yet, and phase two is where we design it properly.")
 
 # ═══════════════ 3 — WHAT COSTVISION IS ═══════════════
 s = header('What CostVision is — a quick recap', 'Background')
 caps = [
-    ('18 cost engines', 'Machining, casting, injection, PCB, software and more — physics-based, every figure traceable', BLUE),
-    ('CAD-to-Cost', 'Reads STEP/IGES models with a real geometry engine and auto-fills the costing', CYAN),
-    ('Photo-to-BOM', 'Costs a PCB from photographs — detects components and builds the bill of materials', VIOLET),
-    ('Agentic AI (upgraded 2026)', 'Learns from every quote; conformal confidence with a guarantee, a causal negotiation coach, outcome-weighted findings and what-if scenarios — all glass-box', GREEN),
+    ('19 manufacturing processes', 'Machining, casting, forging, moulding, sheet metal, PCB, harness and more. Every number traces to a rate.', BLUE),
+    ('CAD to Cost, on rules', 'Measures STEP, IGES or STL files. Rules turn the measurements into inputs. It asks you when it cannot tell.', CYAN),
+    ('20 regions, 8 cost buckets', 'Material, process, labour, tooling, packaging, logistics, overhead, margin. Rate library dated 16 June 2026.', VIOLET),
+    ('Learns from actuals', 'Log a real quote or PO price. After 3 actuals for a commodity, the uncertainty band is corrected by real data.', GREEN),
 ]
 for i, (t, d, c) in enumerate(caps):
     x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.05 + (i // 2) * 1.62)
@@ -260,21 +265,27 @@ for i, (t, d, c) in enumerate(caps):
     text(s, x + Inches(0.28), y + Inches(0.58), Inches(5.6), Inches(0.75), [[(d, 11.5, BODY, False)]], line_spacing=1.12)
 box(s, Inches(0.45), Inches(5.55), Inches(12.45), Inches(1.3), fill=GREENBG, round_=True, radius=0.08)
 text(s, Inches(0.8), Inches(5.75), Inches(11.8), Inches(0.95),
-     [[('Proven, not promised:  ', 13.5, GREEN, True),
-       ('estimating error cut from 10.9% to 0.3% after learning from 3 real quotes  ·  £512k/yr of pricing issues '
-        'found autonomously in the live demo  ·  1,777 automated tests protect it all.', 13.5, BODY, False)]],
+     [[('What is proven:  ', 13.5, GREEN, True),
+       ('matches a hand calculation to under 0.01%  ·  6 real parts pinned in a baseline  ·  2,438 tests.  '
+        'Not yet done: a comparison with a price JLR actually paid.', 13.5, BODY, False)]],
      line_spacing=1.2)
-notes(s, "Thirty seconds of background for anyone new. CostVision costs parts bottom-up with physics across 18 "
-         "manufacturing processes. It reads CAD files directly, it can cost a circuit board from photographs, and — "
-         "the newest layer — it learns: from every analysis and every real supplier quote, getting measurably more "
-         "accurate and even raising savings findings on its own. The green bar shows verified results from live runs, "
-         "including half a million pounds a year of findings surfaced autonomously in our demonstration.")
+notes(s, "A quick recap for anyone new. CostVision works out what a part should cost. It covers nineteen "
+         "manufacturing processes and twenty regions, and it splits every cost into eight buckets. Every number "
+         "is plain arithmetic you can trace back to a rate. "
+         "You can upload a CAD file. The tool measures it, rules turn the measurements into cost inputs, and where "
+         "the geometry can't decide something, like the process route, it asks the engineer. "
+         "It also learns. If you log a real quote or PO price, then after three of them for a commodity, the "
+         "uncertainty band is corrected by real data. "
+         "The green bar is what is proven today. The arithmetic matches a hand calculation to under a hundredth of a "
+         "percent. Six real production parts are pinned in a regression baseline. And there are 2,438 automated "
+         "tests. What we have not done yet is compare an estimate with a price JLR actually paid. I'd rather say "
+         "that now than have someone find it later.")
 
 # ═══════════════ 3A — AGENTIC vs AUTONOMOUS AGENTIC (EXAMPLES) ═══════════════
-s = header('Agentic vs autonomous agentic — with examples', 'The concept · explained')
+s = header('Two layers — rules always on, AI optional', 'The concept · explained')
 text(s, Inches(0.45), Inches(1.78), Inches(12.4), Inches(0.4),
-     [[('Two levels. On the left it acts because you asked. On the right it acts on its own, '
-        'within limits you set.', 12.5, BODY, False, True)]],
+     [[('Left: what runs in the JLR build today, with no AI. Right: the optional AI mode, '
+        'switched off at JLR.', 12.5, BODY, False, True)]],
      line_spacing=1.05)
 
 def _agent_panel(x, accent, fillc, head, tag, examples):
@@ -292,49 +303,45 @@ def _agent_panel(x, accent, fillc, head, tag, examples):
              anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.0)
         ry += rh + Inches(0.06)
 
-_agent_panel(Inches(0.45), BLUE, PANEL, 'Agentic AI',
-    'Assisted — you trigger it and stay in the loop; a human approves',
-    [('AI Agent', 'Describe a part in plain English; it builds the cost model.'),
-     ('CAD / photo → cost', 'Upload a file; it measures the part and picks the process.'),
-     ('Negotiation coach', 'Open a part; it drafts your counter-argument and target.'),
-     ('Rate-data assistant', 'Ask a costing question; it answers from your own rates.')])
-_agent_panel(Inches(6.8), VIOLET, PANEL2, 'Autonomous Agentic AI',
-    'Self-directed — runs unattended on a schedule, within limits you set',
-    [('Savings monitor', 'Compares what we pay with should-cost — £0.5M/yr found unattended.'),
-     ('Self-audit', 'Re-checks every estimate and corrects it. Nobody asks it to.'),
-     ('Calibration & drift', 'Learns from logged quotes and watches for drift.'),
-     ('Outcome-weighted ranking', 'Learns which findings actually convert, and re-ranks them.')])
+_agent_panel(Inches(0.45), BLUE, PANEL, 'Rules and arithmetic',
+    'Always on — this is the JLR build today',
+    [('CAD to Cost', 'Measures the file. Asks you what geometry cannot decide.'),
+     ('Self-audit', 'Flags a wrong machine size, wrong volume, odd cycle times.'),
+     ('Learning from actuals', 'After 3 logged prices, the band uses real data.'),
+     ('Negotiation', 'Compares a supplier quote with should-cost, bucket by bucket.')])
+_agent_panel(Inches(6.8), VIOLET, PANEL2, 'Optional AI mode',
+    'Switched off at JLR — code kept, one setting turns it on',
+    [('PCB photo to BOM', 'Reads a board photo and lists the parts.'),
+     ('Describe a part', 'Type a description; it suggests the inputs.'),
+     ('AI assistant and agent', 'Answers costing questions from your own rates.'),
+     ('Rate-limited', 'When on, every AI route is limited per user.')])
 
 box(s, Inches(0.45), Inches(6.5), Inches(12.43), Inches(0.68), fill=DARK, round_=True, radius=0.08)
 text(s, Inches(0.78), Inches(6.5), Inches(11.9), Inches(0.68),
-     [[('The common thread:  ', 11.5, ON_DARK, True),
-       ('you set the boundaries, and every action stays auditable. Autonomy never means the AI sets a price in secret.',
+     [[('The rule in both columns:  ', 11.5, ON_DARK, True),
+       ('AI never sets a price, even when it is on. Every £ is arithmetic you can trace to a rate.',
         11.5, RGBColor(0xE8, 0xEE, 0xFF), False)]],
      anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.0)
-notes(s, "Slow down here if the room is new to the word 'agentic', because there are really two levels and people run "
-         "them together. On the LEFT is agentic AI in the everyday sense: the AI takes actions and uses tools, but you "
-         "started the task and you stay in the loop. You describe a part and it builds the cost model; you upload a CAD "
-         "file and it reads the geometry and picks the process; you open a part and it drafts the negotiation argument; "
-         "you ask a question and it answers from our own rate data, with citations. Useful — but it's waiting for you to "
-         "ask. On the RIGHT is the step that surprises people: autonomous agentic AI, where nobody is at the keyboard. A "
-         "monitor runs on our server on a schedule, compares what we pay against what things should cost, and opens "
-         "findings on its own — that's the half a million pounds a year it surfaced unattended in the demo. The "
-         "self-audit re-checks every estimate for known mistakes and corrects them without being asked. The calibration "
-         "keeps learning from logged quotes and watches for drift. The agent even re-prioritises its own queue toward "
-         "the findings that actually convert to cash. The line at the bottom is the one I'd underline: the difference "
-         "between the two columns is only who starts the action — in BOTH, the human sets the boundaries and every "
-         "action stays glass-box and auditable. For a deployment audience that matters twice over: autonomy here never "
-         "means the AI quietly sets a price, and nothing it does happens off the record.")
+notes(s, "I want to slow down here, because people often mix these two layers up. "
+         "On the left is what runs in the JLR build today. It's all rules and arithmetic, with no AI. The tool "
+         "measures a CAD file and asks the engineer anything the geometry can't settle. A self-audit flags common "
+         "mistakes, like the wrong machine size or tooling spread over the wrong volume. Logged prices tighten the "
+         "uncertainty band. And the negotiation view compares a supplier quote with the should-cost, bucket by bucket. "
+         "On the right is the optional AI mode. Reading a PCB photo, describing a part in words, the assistant and "
+         "the agent. At JLR all of that is switched off and hidden. The code is still in the product, so a setting "
+         "can turn it on later without a rebuild. If it is turned on, each user is rate-limited. "
+         "The line at the bottom holds in both columns. AI never sets a price. At most it reads or classifies. "
+         "The money is always arithmetic.")
 
 # ═══════════════ 3B — LATEST AGENTIC INTELLIGENCE (2026) ═══════════════
-s = header('Latest intelligence — six upgrades that widen the moat', 'Background · new in 2026')
+s = header('What sits on top of the cost engine', 'Background · checks and learning')
 rows = [
-    ('Self-audit & guardrails', 'A deterministic layer re-checks every estimate for known errors and applies bounded corrections — proven on five real automotive CAD parts (a fuel tank fell from £217 to £25). Geometry stays ground truth; the AI never overrules it.', INDIGO),
-    ('Learns from your quotes', 'Bulk-import logged actuals; the engine builds per-segment calibration and watches for drift, so the number tightens as your own history grows — and status rides on every estimate.', GREEN),
-    ('Negotiation coach', 'Names the cost driver and writes the counter: "a quote of £95 implies aluminium +14% above spot — hold at £86.34."', BLUE),
-    ('Outcome-weighted findings', 'The agent learns which findings convert and ranks by money it can really recover — a £100k gap that closes beats a £200k gap that never does.', VIOLET),
-    ('What-if engine', 'Drag a commodity ±20% and the price recomputes live; run it across the whole portfolio ("if steel +10%, 7 parts go underwater").', CYAN),
-    ('Glass-box by design', 'Every learned or derived number stays auditable — no black-box weight ever touches the price. The competitor edge is the opposite.', AMBER),
+    ('Self-audit', 'Runs on every result. Flags a wrong machine size, tooling spread over the wrong volume, a material-only costing, odd cycle times.', INDIGO),
+    ('Learns from actuals', 'Log a real quote or PO price. After 3 actuals for a commodity, the band is corrected by real data.', GREEN),
+    ('Negotiation', 'Compares a supplier quote with the should-cost, bucket by bucket, so you can see where the gap is.', BLUE),
+    ('Uncertainty band', 'Every result shows a P10–P90 range from a Monte Carlo run over every cost driver.', VIOLET),
+    ('Geometry is the truth', 'The measured part wins. Where it cannot decide, the tool asks the engineer instead of guessing.', CYAN),
+    ('Traceable exports', 'Excel (6 sheets, with a traceability sheet), PDF and a negotiation pack. All match the screen to the penny.', AMBER),
 ]
 for i, (t, d, c) in enumerate(rows):
     y = Inches(2.0 + i * 0.82)
@@ -342,28 +349,26 @@ for i, (t, d, c) in enumerate(rows):
     box(s, Inches(0.45), y, Inches(0.09), Inches(0.74), fill=c)
     text(s, Inches(0.78), y + Inches(0.10), Inches(3.5), Inches(0.55), [[(t, 12.5, c, True)]])
     text(s, Inches(4.3), y + Inches(0.09), Inches(8.4), Inches(0.6), [[(d, 11, BODY, False)]], line_spacing=1.08)
-notes(s, "One slide on what's newest, because it directly strengthens the security-and-defensibility case this deck "
-         "makes. Six upgrades shipped in 2026, all built and tested. The one I'd start with is the self-audit: a "
-         "deterministic layer that re-checks every single estimate against a list of mistakes we've actually seen, and "
-         "corrects them within bounds — and I can prove it, because we ran it on five real automotive CAD parts and it "
-         "caught every one, a fuel tank alone falling from two hundred and seventeen pounds to twenty-five. The tool now "
-         "also learns from your own logged quotes, building per-segment calibration and watching for drift, so it gets "
-         "tighter on your parts over time. Alongside those, the machine-sizing that used to be hard-coded is now "
-         "universal across commodities. The negotiation coach names the commodity driving a cost and writes the buyer's "
-         "counter-argument; the autonomous agent prioritises the savings we can really recover; and the what-if engine "
-         "answers 'if a commodity moves, what happens' as a defensible conditional. Underneath all of it, everything "
-         "stays glass-box — every learned number is auditable, nothing is a black box — and the whole thing, CAD engine "
-         "included, ships in a container whose build is verified in our CI pipeline. That is exactly the combination — "
-         "checked, learned-from-data, and auditable — that makes these numbers safe to deploy and defend.")
+notes(s, "This slide is about the checks and the learning that sit on top of the cost engine. None of it needs AI. "
+         "The self-audit runs on every single result. It flags the mistakes we have actually seen, like a part on "
+         "the wrong size of machine, or tooling spread over the wrong volume. It flags them. It doesn't quietly fix "
+         "them behind your back. "
+         "The learning is simple. You log a real quote or a PO price. Once there are three for a commodity, the "
+         "uncertainty band is corrected by real data instead of assumptions. "
+         "Negotiation puts a supplier quote next to the should-cost, bucket by bucket. The band on every result is a "
+         "P10 to P90 range from a Monte Carlo run. "
+         "Then two principles. The measured geometry wins, and when it can't decide, the tool asks. And every export "
+         "matches the screen to the penny, with a traceability sheet in the Excel file. That is what makes a number "
+         "defensible in a supplier meeting.")
 
 # ═══════════════ 4 — TECH STACK IN PLAIN WORDS ═══════════════
 s = header('What the tool is made of — in plain words', 'Technology, simply explained')
 stack = [
-    ('Frontend', 'What users see', 'The web application in the browser — forms, dashboards, reports. Nothing is installed on laptops; it is served from our own server.', BLUE),
-    ('Backend', 'The engine room', 'The server application that does the work: runs the 18 cost engines, the AI logic and all calculations. Runs on a standard company virtual machine.', INDIGO),
-    ('Database', 'The memory', 'Where rate libraries, saved costings and the AI knowledge base live. Standard corporate database (PostgreSQL), encrypted, backed up by IT.', VIOLET),
-    ('CAD engine', 'The 3D model reader', 'Specialist geometry software (OCCT — the same core used by CAD vendors) that measures the 3D model: volume, weight, walls, holes. Runs INSIDE the backend.', CYAN),
-    ('AI layer', 'The language brain', 'The AI model used for vision and language tasks. NOW BUILT: one switchboard controls every AI call — route it to a private endpoint, or turn it fully OFF (air-gapped).', GREEN),
+    ('Frontend', 'What users see', 'Forms, results and reports in the browser. On the laptop build the browser talks only to the laptop itself (127.0.0.1).', BLUE),
+    ('Backend', 'The engine room', 'The server program that does the work: the cost engines for 19 processes, sign-in, exports. Same code on a laptop or a server.', INDIGO),
+    ('Database', 'The memory', 'Today: a local database file holding rates, saved scenarios and logged actuals. Plan: move to the corporate database for a shared server.', VIOLET),
+    ('CAD engine', 'The 3D model reader', 'OpenCASCADE geometry software. Measures volume, weight, size, walls, holes and features. Runs inside the backend.', CYAN),
+    ('AI layer', 'Optional, off at JLR', 'Every AI call goes through one control point. It can be switched off (as at JLR) or pointed at a private endpoint.', GREEN),
 ]
 for i, (t, tag, d, c) in enumerate(stack):
     y = Inches(2.05 + i * 0.95)
@@ -372,14 +377,18 @@ for i, (t, tag, d, c) in enumerate(stack):
     text(s, Inches(0.75), y + Inches(0.10), Inches(2.0), Inches(0.4), [[(t, 15, c, True)]])
     text(s, Inches(0.75), y + Inches(0.47), Inches(2.0), Inches(0.3), [[(tag, 10, MUTED, False, True)]])
     text(s, Inches(2.95), y + Inches(0.12), Inches(9.7), Inches(0.65), [[(d, 11.5, BODY, False)]], line_spacing=1.1)
-notes(s, "Before the architecture, the five building blocks in plain words. The FRONTEND is simply what users see in "
-         "their browser — nothing installs on laptops. The BACKEND is the engine room on our server, where all "
-         "calculations happen. The DATABASE is the memory — a standard corporate database our IT already knows how to "
-         "run and back up. The GEOMETRY ENGINE is the specialist CAD reader — and note, it runs inside our backend, "
-         "not in any cloud. The AI LAYER is the only piece that talks to an external service — and the control for "
-         "that is now BUILT into the platform: a single switchboard that every AI call must pass through. Point it at "
-         "a private endpoint with one setting, or flip the air-gapped switch and it makes no external calls at all. "
-         "We tested all three modes live and the server announces its mode at start-up for audit.")
+notes(s, "Before the architecture, here are the five building blocks in plain words. "
+         "The frontend is what you see in the browser. On the laptop build, the browser only talks to the laptop "
+         "itself. The backend is the engine room. It runs the cost engines, the sign-in and the exports, and it is "
+         "the same code on a laptop or a server. "
+         "The database today is a local file. It holds the rates, each user's saved scenarios and any logged "
+         "actuals. For a shared server, the plan is to move that to the corporate database IT already runs. That "
+         "move is not done yet. "
+         "The CAD engine is OpenCASCADE, the geometry software that measures the model. It runs inside the backend, "
+         "not in anyone's cloud. "
+         "And the AI layer. Every AI call has to pass through one control point in the code. At JLR it is switched "
+         "off. If we ever get approval, the same control point can send calls to a private endpoint instead of the "
+         "public one.")
 
 # ═══════════════ 5 — THE REQUIREMENT & KEY FINDING ═══════════════
 s = header('The security requirement — and the key finding', 'Security')
@@ -391,36 +400,38 @@ text(s, Inches(0.8), Inches(2.25), Inches(11.8), Inches(0.8),
 box(s, Inches(0.45), Inches(3.5), Inches(12.45), Inches(2.0), fill=GREENBG, round_=True, radius=0.08)
 text(s, Inches(0.8), Inches(3.72), Inches(11.8), Inches(1.6),
      [[('The key finding from the code audit:  ', 15, GREEN, True),
-       ('CAD files already never leave the server.', 15, DARK, True)],
-      [('The geometry engine runs inside our backend and processes CAD models in memory — files are not even '
-        'written to disk, let alone sent anywhere. The only outbound flows are the AI layer (photos and derived '
-        'summaries) and two optional public feeds. The controls that close this gap are now BUILT: private AI '
-        'routing and a provable air-gapped switch, tested live in all three modes.', 13, BODY, False)]],
+       ('CAD files never leave the machine that runs the tool.', 15, DARK, True)],
+      [('The upload is held in memory, written to a local temp file while it is measured, then deleted. '
+        'Nothing is sent anywhere. The only possible outbound flows are the AI layer and two optional '
+        'public feeds, and the JLR build switches all of them off with one setting.', 13, BODY, False)]],
      space_after=8, line_spacing=1.2)
 text(s, Inches(0.45), Inches(5.85), Inches(12.4), Inches(0.9),
      [[('Why you can trust this: ', 12.5, DARK, True),
-       ('this is not a vendor claim — we audited every outbound network call in the platform\'s source code, '
-        'line by line, and listed each one. The full inventory is in the written plan.', 12.5, BODY, False)]],
+       ('we went through every outbound network call in the source code and listed each one. '
+        'The list is in the written plan. Automated tests check the AI-off setting.', 12.5, BODY, False)]],
      line_spacing=1.2)
-notes(s, "The requirement is absolute: CAD data must never leave our network. Here is the finding that makes this "
-         "project straightforward: it already doesn't. We audited every outbound connection in the source code. "
-         "CAD models are processed in memory, inside our server, by the local geometry engine — they are not even "
-         "saved to disk. The only traffic that leaves today is the AI layer — photographs and derived summaries — "
-         "plus two optional public feeds. And here is the update since the written plan: the controls that close "
-         "this gap are already built. Every AI call now goes through one switchboard that can be pointed at a "
-         "private endpoint or switched off entirely, and we tested all three modes live. So the job is not a "
-         "redesign — the software side is done; what remains is infrastructure.")
+notes(s, "The requirement from IT Security is simple and absolute. No CAD files, drawings or images leave the "
+         "company network. "
+         "Here's what we found in the code. When you upload a CAD file, it is held in memory, written to a temp "
+         "file on the same machine while the geometry engine measures it, and then deleted. It is never sent "
+         "anywhere. I want to be precise about that temp file, because an earlier version of this deck said the "
+         "file never touches disk, and that wasn't quite right. "
+         "The only things that could ever go out are the AI layer and two optional public feeds, part pricing and "
+         "news. In the JLR build, one setting switches all three off. The tool then says AI is switched off rather "
+         "than asking for a key. "
+         "We listed every outbound call in the source code, and there are automated tests for the AI-off setting. "
+         "So the software side is in place. What's left is infrastructure and sign-off.")
 
 # ═══════════════ 6 — DATA-FLOW MAP ═══════════════
 s = header('Where data flows today — verified in the code', 'Data-flow map')
 box(s, Inches(0.45), Inches(2.0), Inches(7.5), Inches(4.7), fill=GREENBG, round_=True, radius=0.05)
 text(s, Inches(0.75), Inches(2.2), Inches(6.9), Inches(0.4),
-     [[('STAYS INSIDE — already ✓', 14, GREEN, True)]])
+     [[('STAYS INSIDE', 14, GREEN, True)]])
 inside = [
-    ('CAD / geometry processing', 'OCCT engine runs in the backend; files processed in memory, never stored'),
-    ('All 18 cost engines', 'Physics + maths, fully local'),
-    ('Knowledge base & learning loop', 'Similarity, calibration, autonomous findings — local database'),
-    ('BOM file parsing, exports, reports', 'Local parsers, local PDF/Excel generation'),
+    ('CAD / geometry measuring', 'OpenCASCADE in the backend; temp file deleted after measuring'),
+    ('Cost engines for 19 processes', 'Plain arithmetic on the rate library, fully local'),
+    ('Learning from actuals', 'Logged prices, similar parts, calibration — local database'),
+    ('BOM files, exports, reports', 'Local parsers; Excel and PDF made on the machine'),
 ]
 for i, (a, b) in enumerate(inside):
     y = Inches(2.7 + i * 0.95)
@@ -429,33 +440,37 @@ for i, (a, b) in enumerate(inside):
          [[(a, 12.5, DARK, True)], [(b, 10.5, BODY, False)]], space_after=2, line_spacing=1.05)
 box(s, Inches(8.3), Inches(2.0), Inches(4.6), Inches(4.7), fill=AMBERBG, round_=True, radius=0.05)
 text(s, Inches(8.6), Inches(2.2), Inches(4.0), Inches(0.4),
-     [[('LEAVES TODAY — controlled ✓', 14, AMBER, True)]])
+     [[('COULD LEAVE — all off at JLR', 14, AMBER, True)]])
 outside = [
-    ('AI layer calls', 'Photos + CAD-derived summaries. Private routing BUILT — one setting points every call at our endpoint', AMBER),
-    ('Live part pricing (optional, OFF by default)', 'Part-number text only — silenced by the air-gap switch', MUTED),
-    ('News ticker feeds', 'Public news, no company data — silenced by the air-gap switch', MUTED),
+    ('AI calls (optional mode)', 'Photos and measured summaries. Off at JLR. If turned on, can go to a private endpoint', AMBER),
+    ('Live part pricing (optional)', 'Part-number text only. Off by default, and off with AI off', MUTED),
+    ('News feed', 'Public news, no company data. Needs internet; off with AI off', MUTED),
 ]
 for i, (a, b, c) in enumerate(outside):
     y = Inches(2.7 + i * 1.28)
     box(s, Inches(8.6), y, Inches(0.09), Inches(1.1), fill=c)
     text(s, Inches(8.85), y, Inches(3.9), Inches(1.25),
          [[(a, 12, DARK, True)], [(b, 10.5, BODY, False)]], space_after=2, line_spacing=1.05)
-notes(s, "The whole security story on one slide. Green, left: what already stays inside — CAD processing, all cost "
-         "engines, the learning loop, reports. That is the overwhelming majority of the platform. Amber, right: the "
-         "three flows that go out — and all three are now under our control in the shipped code. The AI layer is the "
-         "one that matters — photos and derived summaries — and its private routing is built: one setting points "
-         "every call at our own endpoint. The other two are optional conveniences, and the new air-gapped switch "
-         "silences them along with everything else, which we verified live.")
+notes(s, "This is the whole security story on one slide. "
+         "On the left, in green, is what stays inside. That's the geometry measuring, the cost engines, the "
+         "learning from actuals, and the Excel and PDF exports. That is nearly all of the tool. "
+         "On the right, in amber, are the only three flows that could ever leave. The first is the AI layer, which "
+         "would send photos or measured summaries. The second is live part pricing, which sends part numbers only. "
+         "The third is the news feed, which pulls public news and sends no company data. "
+         "In the JLR build, all three are off. One setting does that. The AI screens are hidden, and news simply "
+         "doesn't load without internet. "
+         "If AI is approved one day, the code can send those calls to a private endpoint of our choosing rather than "
+         "the public internet. That's a future option, not how it runs today.")
 
 # ═══════════════ 7 — DEPLOYMENT OPTIONS ═══════════════
 s = header('Deployment options — our recommendation', 'Decision')
 cols = [
-    ('OPTION A', 'Fully air-gapped', 'Everything on our VMs. AI features off via the built-in AIR-GAPPED switch (already implemented and tested). Deterministic engines fully working.',
-     'Zero external connections — provable today, switch is built', 'Reduced AI capability', PANEL, MUTED),
-    ('OPTION B  ★ RECOMMENDED', 'Private AI, on-prem core', 'Platform on our VMs. AI calls go to Claude running in OUR OWN cloud tenancy over a private link — no public internet, no data retention.',
-     'Full capability + data control — routing already BUILT (one setting)', 'Requires cloud tenancy sign-off', PANEL2, BLUE),
-    ('OPTION C', 'Public AI API', 'Platform on-prem but AI calls to the public API.',
-     'Simplest', 'Fails our requirement — photos would traverse a public API', PANEL, RED),
+    ('OPTION A  ·  TODAY', 'AI off (air-gapped)', 'What JLR runs now. Laptop package or our own server, AI switched off. All costing, CAD measuring and learning work.',
+     'No external connections; nothing to approve for AI', 'No PCB photo, no describe-a-part, no assistant', PANEL2, BLUE),
+    ('OPTION B  ·  FUTURE', 'Private AI, core in-house', 'Tool on our machines. AI calls go to a model in our own cloud account over a private link. Needs AI approval first.',
+     'Adds the AI screens back; routing setting already in the code', 'Needs AI approval and cloud sign-off', PANEL, VIOLET),
+    ('OPTION C', 'Public AI API', 'Tool in-house, but AI calls go to the public API.',
+     'Simplest', 'Fails our requirement — photos would cross a public API', PANEL, RED),
 ]
 for i, (tag, t, d, pro, con, fill, c) in enumerate(cols):
     x = Inches(0.45 + i * 4.25)
@@ -469,63 +484,68 @@ for i, (tag, t, d, pro, con, fill, c) in enumerate(cols):
     text(s, x + Inches(0.25), Inches(5.7), Inches(3.55), Inches(0.75),
          [[('– ', 12, RED, True), (con, 11, BODY, False)]], line_spacing=1.1)
 text(s, Inches(0.45), Inches(6.75), Inches(12.4), Inches(0.5),
-     [[('Recommendation: Option B — the software for BOTH A and B is already built; what remains is infrastructure sign-off.', 13, DARK, True)]])
-notes(s, "Three ways to deploy. Option A: fully air-gapped — everything on our machines, zero external connections, "
-         "and the switch that enforces it is already implemented and tested; but the vision AI features are reduced. "
-         "Option C is the public API — I include it only to reject it, because photos would traverse a public "
-         "endpoint. Option B is our recommendation: the platform runs on-premise, and the AI model runs in OUR OWN "
-         "cloud tenancy, reached over a private link with a no-data-retention configuration. The routing for this is "
-         "also already built — a single setting points every AI call at our endpoint; we demonstrated it live. "
-         "So the software work for both A and B is done; the remaining effort is infrastructure and sign-off. "
-         "And note — the two options combine: the most sensitive programmes can run air-gapped while the rest use B.")
+     [[('Recommendation: stay on Option A. Consider B only once AI is approved. The code supports both.', 13, DARK, True)]])
+notes(s, "There are three ways to run this. "
+         "Option A is what JLR runs today. The tool sits on a laptop or on our own server, with AI switched off. "
+         "All the costing, the CAD measuring and the learning work. What you lose are the AI screens: the PCB "
+         "photo reader, describing a part in words, and the assistant. "
+         "Option B is a future option. The tool stays on our machines, and the AI calls go to a model in our own "
+         "cloud account over a private link. The setting for that routing is already in the code. But it needs AI "
+         "approval first, and a cloud sign-off, and we have neither today. "
+         "Option C is the public AI service. I include it only to rule it out, because photos would cross the "
+         "public internet. "
+         "So my recommendation is to stay on A. If AI is approved later, we look at B. And the two can mix, with "
+         "sensitive programmes staying on A.")
 
 # ═══════════════ 8 — TARGET ARCHITECTURE ═══════════════
-s = header('Target architecture — everything inside our walls', 'Architecture')
+s = header('Target architecture for a shared server — the plan', 'Architecture · plan')
 box(s, Inches(0.45), Inches(1.95), Inches(9.2), Inches(4.95), fill=PANEL, round_=True, radius=0.04)
-text(s, Inches(0.7), Inches(2.05), Inches(8.5), Inches(0.3), [[('COMPANY INTERNAL NETWORK', 11, MUTED, True)]])
-flow_box(s, Inches(0.85), Inches(2.45), Inches(4.0), Inches(0.75), 'Engineers (browser)  +  CAPEE', 'single sign-on (Azure AD)', BLUE, fill=PANEL)
+text(s, Inches(0.7), Inches(2.05), Inches(8.5), Inches(0.3), [[('COMPANY INTERNAL NETWORK  ·  PLANNED', 11, MUTED, True)]])
+flow_box(s, Inches(0.85), Inches(2.45), Inches(4.0), Inches(0.75), 'Engineers (browser)  +  CAPEE', 'company single sign-on (planned)', BLUE, fill=PANEL)
 flow_box(s, Inches(5.15), Inches(2.45), Inches(4.2), Inches(0.75), 'Corporate API Gateway', 'authentication · rate limits · audit logs', INDIGO, fill=PANEL)
 down_arrow(s, Inches(2.7), Inches(3.28))
 down_arrow(s, Inches(7.1), Inches(3.28))
 flow_box(s, Inches(0.85), Inches(3.68), Inches(8.5), Inches(1.05), 'CostVision server (frontend + backend on our VM)',
-         'geometry engine (CAD, in-memory) · 18 cost engines · learning loop · report generation', VIOLET, fill=PANEL)
+         'Docker image with the CAD kernel · 19 processes · learning from actuals · exports', VIOLET, fill=PANEL)
 down_arrow(s, Inches(2.7), Inches(4.82))
 down_arrow(s, Inches(7.1), Inches(4.82))
-flow_box(s, Inches(0.85), Inches(5.22), Inches(4.0), Inches(0.85), 'Corporate database (PostgreSQL)', 'rates · knowledge base · encrypted at rest', CYAN, fill=PANEL)
-flow_box(s, Inches(5.15), Inches(5.22), Inches(4.2), Inches(0.85), 'Internal AI gateway', 'ONLY allowed exit · inspected · logged', AMBER, fill=PANEL)
+flow_box(s, Inches(0.85), Inches(5.22), Inches(4.0), Inches(0.85), 'Corporate database', 'rates · scenarios · actuals · encrypted', CYAN, fill=PANEL)
+flow_box(s, Inches(5.15), Inches(5.22), Inches(4.2), Inches(0.85), 'Internal AI gateway (only if approved)', 'the only allowed exit · logged', AMBER, fill=PANEL)
 box(s, Inches(10.0), Inches(4.9), Inches(2.9), Inches(2.0), fill=PANEL2, round_=True, radius=0.08)
 text(s, Inches(10.2), Inches(5.05), Inches(2.5), Inches(1.8),
-     [[('Our cloud tenancy', 12.5, BLUE, True)],
-      [('Claude on AWS Bedrock / Google Vertex', 10.5, BODY, False)],
-      [('private link · no public internet · zero data retention', 10, MUTED, False)]],
+     [[('Our cloud account (future)', 12.5, BLUE, True)],
+      [('AI model, only after AI approval', 10.5, BODY, False)],
+      [('private link · no public internet · no data kept', 10, MUTED, False)]],
      space_after=4, line_spacing=1.1)
 arr = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(9.42), Inches(5.5), Inches(0.55), Inches(0.3))
 arr.fill.solid(); arr.fill.fore_color.rgb = AMBER; arr.line.fill.background(); arr.shadow.inherit = False
 text(s, Inches(10.0), Inches(2.45), Inches(2.9), Inches(2.2),
-     [[('Zero-trust rules', 12.5, DARK, True)],
-      [('• Every request authenticated (Azure AD)', 10.5, BODY, False)],
-      [('• Deny-all egress except the AI gateway', 10.5, BODY, False)],
-      [('• Role-based access (engineer / lead / admin / CAPEE service)', 10.5, BODY, False)],
-      [('• CAD pulled from PLM vault, never stored', 10.5, BODY, False)]],
+     [[('Access rules', 12.5, DARK, True)],
+      [('• Today: sign-in on everything that holds data', 10.5, BODY, False)],
+      [('• Today: sessions can be ended everywhere', 10.5, BODY, False)],
+      [('• Plan: company single sign-on and roles', 10.5, BODY, False)],
+      [('• Plan: block all other outbound traffic', 10.5, BODY, False)]],
      space_after=4, line_spacing=1.1)
-notes(s, "The target architecture. Everything in the grey box is inside our network: engineers and CAPEE come through "
-         "the corporate gateway with single sign-on; the CostVision server — frontend and backend — runs on our "
-         "virtual machine, with the CAD geometry engine inside it; the database is our standard encrypted PostgreSQL. "
-         "The only permitted exit is the internal AI gateway at the bottom — one door, inspected and logged — which "
-         "connects over a private link to the AI model running in our own cloud tenancy with zero data retention. "
-         "On the right, the zero-trust rules: authenticate everything, deny all other egress, role-based access, and "
-         "CAD comes from the PLM vault and is never stored. If presenting live, a simple Fade animation on each layer "
-         "of this diagram works well.")
+notes(s, "This is the target for a shared server, and I want to stress it is a plan. Today JLR runs the laptop "
+         "package. "
+         "Everything in the grey box sits inside our network. Engineers, and later CAPEE, come in through the "
+         "corporate gateway. The CostVision server runs from the Docker image, which already exists and includes "
+         "the CAD kernel. The data would live in the corporate database. That move is still to do. "
+         "The AI gateway at the bottom only matters if AI is ever approved. It would be the one door out, and it "
+         "would be logged. Until then there is no door at all. "
+         "On the right, the access rules. Two exist today. You must sign in to anything that holds data, and a "
+         "password reset or sign out everywhere ends every old session. Two are plans: company single sign-on "
+         "with roles, and a firewall that blocks everything else.")
 
 # ═══════════════ 9 — CAD PROTECTION ═══════════════
 s = header('How CAD data is protected', 'CAD data protection')
 rows = [
-    ('CAD model opened & measured', 'Inside our backend (OCCT engine)', 'Already local — verified'),
-    ('Feature detection (holes, threads, walls)', 'Inside our backend', 'Already local — verified'),
-    ('BOM extraction from files', 'Inside our backend (local parsers)', 'Already local — verified'),
-    ('Cost calculation & learning', 'Inside our backend + our database', 'Already local — verified'),
-    ('Photo analysis & AI narrative', 'Private AI endpoint (Option B)', 'Routing BUILT — set one value'),
-    ('CAD file storage', 'Nowhere — processed in memory only', 'Files never written to disk'),
+    ('CAD model opened and measured', 'Inside the backend (OpenCASCADE)', 'Local — checked in code'),
+    ('Feature detection (holes, walls)', 'Inside the backend', 'Local — checked in code'),
+    ('BOM files read', 'Inside the backend (local parsers)', 'Local — checked in code'),
+    ('Cost calculation and learning', 'Backend and local database', 'Local — checked in code'),
+    ('Photo reading (AI mode)', 'Off in the JLR build', 'Off — screens hidden'),
+    ('CAD file storage', 'Temp file while measured', 'Deleted after measuring'),
 ]
 for i, (a, b, c) in enumerate(rows):
     y = Inches(2.1 + i * 0.73)
@@ -533,81 +553,86 @@ for i, (a, b, c) in enumerate(rows):
     box(s, Inches(0.45), y, Inches(12.45), Inches(0.62), fill=bgc, round_=True, radius=0.14)
     text(s, Inches(0.8), y + Inches(0.12), Inches(4.9), Inches(0.4), [[(a, 12.5, DARK, True)]])
     text(s, Inches(5.8), y + Inches(0.12), Inches(3.8), Inches(0.4), [[(b, 12, BODY, False)]])
-    good = 'change' not in c and 'never' not in c
-    col = GREEN if 'verified' in c or 'never' in c else AMBER
-    text(s, Inches(9.7), y + Inches(0.12), Inches(3.0), Inches(0.4), [[(('✓  ' if col == GREEN else '→  ') + c, 11.5, col, True)]])
+    col = GREEN if 'checked' in c or 'Deleted' in c else AMBER
+    text(s, Inches(9.7), y + Inches(0.12), Inches(3.0), Inches(0.4), [[(c, 11.5, col, True)]])
 text(s, Inches(0.45), Inches(6.6), Inches(12.4), Inches(0.6),
-     [[('Plus: logs never contain CAD payloads; metadata goes to the corporate SIEM; and the "air-gapped" switch is '
-        'now BUILT & tested — security can PROVE zero egress in a witnessed firewall test.', 12, MUTED, False, True)]], line_spacing=1.15)
-notes(s, "Function by function: where does CAD data actually go? Opening and measuring the model, detecting features, "
-         "extracting BOMs, calculating cost — all of it already happens inside our backend, verified in code. "
-         "The single amber row is photo analysis and AI narrative — and the routing for it is now built: one "
-         "configuration value points it at the private endpoint. And note the last row — CostVision never stores CAD "
-         "files at all; they are processed in memory and released. Finally, the air-gapped switch is no longer a "
-         "promise — it is built and tested, so security can prove zero egress in a witnessed firewall test rather "
-         "than take our word for it.")
+     [[('Plus: the AI-off setting is covered by automated tests, and security can check it for themselves '
+        'in a witnessed firewall test. Sending logs to the corporate SIEM is a plan.', 12, MUTED, False, True)]], line_spacing=1.15)
+notes(s, "Let's go function by function and ask where the CAD data actually goes. "
+         "Opening and measuring the model, finding holes and walls, reading BOM files, working out the cost and "
+         "learning from actuals. All of it happens inside the backend, on the same machine. We checked that in the "
+         "code. "
+         "The amber row is photo reading. That's an AI feature, and in the JLR build it is off and its screen is "
+         "hidden. "
+         "The last row is worth a word. The CAD file is not kept. While it is being measured it sits in a temp file "
+         "on the same machine, and then it is deleted. "
+         "Finally, security doesn't have to take my word for any of this. The AI-off setting has automated tests. "
+         "They can also run their own witnessed firewall test and watch for traffic. Sending our logs to the "
+         "corporate monitoring system is something we'd set up as part of the plan.")
 
 # ═══════════════ 10 — CAPEE INTEGRATION ═══════════════
-s = header('CostVision inside CAPEE — should-cost, upgraded', 'Integration')
+s = header('CostVision behind CAPEE — how it could connect', 'Integration · plan')
 box(s, Inches(0.45), Inches(2.0), Inches(5.6), Inches(2.1), fill=PANEL, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(2.2), Inches(5.0), Inches(1.8),
      [[('CAPEE  (existing should-cost software)', 15, DARK, True)],
       [('• Should-cost workflow, approvals, reporting', 12, BODY, False)],
       [('• System of record — unchanged for users', 12, BODY, False)],
-      [('• Its costing engine now powered by CostVision', 12, BODY, False)]],
+      [('• Plan: calls CostVision for the costing', 12, BODY, False)]],
      space_after=5, line_spacing=1.12)
 box(s, Inches(7.3), Inches(2.0), Inches(5.6), Inches(2.1), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(7.6), Inches(2.2), Inches(5.0), Inches(1.8),
      [[('CostVision  (the engine it plugs in)', 15, BLUE, True)],
-      [('• 18 physics cost engines + CAD reading', 12, BODY, False)],
-      [('• AI memory: similar parts, self-calibration', 12, BODY, False)],
-      [('• Autonomous findings for sourcing', 12, BODY, False)]],
+      [('• 19 processes, CAD measured on rules', 12, BODY, False)],
+      [('• Similar parts, learning from actuals', 12, BODY, False)],
+      [('• Quote vs should-cost, bucket by bucket', 12, BODY, False)]],
      space_after=5, line_spacing=1.12)
 a1 = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(6.15), Inches(2.45), Inches(1.05), Inches(0.4))
 a1.fill.solid(); a1.fill.fore_color.rgb = BLUE; a1.line.fill.background(); a1.shadow.inherit = False
 a2 = s.shapes.add_shape(MSO_SHAPE.LEFT_ARROW, Inches(6.15), Inches(3.15), Inches(1.05), Inches(0.4))
 a2.fill.solid(); a2.fill.fore_color.rgb = GREEN; a2.line.fill.background(); a2.shadow.inherit = False
 text(s, Inches(5.95), Inches(2.1), Inches(1.5), Inches(0.3), [[('requests', 9.5, BLUE, True)]], align=PP_ALIGN.CENTER)
-text(s, Inches(5.95), Inches(3.6), Inches(1.5), Inches(0.3), [[('AI answers', 9.5, GREEN, True)]], align=PP_ALIGN.CENTER)
+text(s, Inches(5.95), Inches(3.6), Inches(1.5), Inches(0.3), [[('costs back', 9.5, GREEN, True)]], align=PP_ALIGN.CENTER)
 box(s, Inches(0.45), Inches(4.5), Inches(12.45), Inches(2.3), fill=PANEL, round_=True, radius=0.05)
-text(s, Inches(0.75), Inches(4.7), Inches(11.9), Inches(0.35), [[('What flows over the connection (internal APIs that already exist)', 13.5, DARK, True)]])
+text(s, Inches(0.75), Inches(4.7), Inches(11.9), Inches(0.35), [[('What would flow over the connection (not built yet)', 13.5, DARK, True)]])
 flows = [
     ('Cost a part →', 'full should-cost with breakdown'),
-    ('CAD file →', 'geometry + auto-filled inputs'),
-    ('New part →', 'similar past parts + suggestions'),
-    ('PO price →', 'feeds the learning loop automatically'),
-    ('Dashboard ←', 'autonomous findings (£/yr)'),
+    ('CAD file →', 'measured geometry + inputs'),
+    ('New part →', 'similar past parts'),
+    ('PO price →', 'logged as an actual'),
+    ('Quote ←', 'gap to should-cost, by bucket'),
     ('One shared →', 'rate library & knowledge database'),
 ]
 for i, (a, b) in enumerate(flows):
     x = Inches(0.75 + (i % 3) * 4.1); y = Inches(5.2 + (i // 3) * 0.75)
     text(s, x, y, Inches(3.9), Inches(0.7),
          [[(a + ' ', 12, BLUE, True), (b, 11.5, BODY, False)]], line_spacing=1.1)
-notes(s, "The integration philosophy in one line: CostVision integrates INTO CAPEE, the should-cost software our teams "
-         "already use — it doesn't sit beside it. CAPEE keeps the workflow, the approvals and the reporting; what "
-         "changes is that its costing engine is now powered by CostVision underneath, called over internal APIs that "
-         "already exist. So users open CAPEE exactly as they do today and simply get better should-cost numbers. "
-         "The six flows that matter: CAPEE sends a part, gets a full should-cost back. It sends a CAD file, gets "
-         "auto-filled inputs. It asks about a new part, gets similar history and suggestions. And the best one: "
-         "every PO price CAPEE already captures feeds the learning loop automatically — CAPEE's own data makes the "
-         "engine smarter without anyone lifting a finger. One shared rate library and knowledge database means one "
-         "version of the truth across both.")
+notes(s, "Here's the idea for CAPEE in one line. CostVision works behind CAPEE, not beside it. I want to be clear "
+         "this is a plan. The connection is not built yet. "
+         "CAPEE keeps what it does today: the workflow, the approvals and the reporting. Users keep opening CAPEE. "
+         "The change is that CAPEE would ask CostVision for the cost and get the breakdown back. "
+         "The six flows at the bottom are what we'd design in phase two. CAPEE sends a part and gets a should-cost. "
+         "It sends a CAD file and gets the measured geometry and inputs back. It asks about a new part and gets "
+         "similar past parts. "
+         "The one I like most is PO prices. CAPEE already captures them. Each one could be logged as an actual, and "
+         "after three for a commodity the tool's band is corrected by real data. That's also how we'd finally "
+         "compare our estimates with prices JLR really paid. And one shared rate library keeps both tools on the "
+         "same numbers.")
 
 # ═══════════════ 11 — WHAT EACH SIDE NEEDS ═══════════════
 s = header('What each side needs to change', 'Scope of work')
 box(s, Inches(0.45), Inches(2.05), Inches(6.0), Inches(4.55), fill=PANEL2, round_=True, radius=0.05)
 text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('CostVision — 6 items (2 DONE)', 15, BLUE, True)]])
 cv = [
-    ('Private AI routing', 'DONE — one setting routes every AI call to our endpoint', True),
-    ('"Air-gapped" switch', 'DONE — provably disables all external calls; tested live', True),
-    ('Azure AD sign-on', 'replace local logins with company SSO', False),
-    ('PostgreSQL', 'move from file database to the corporate DB estate', False),
-    ('Cost API wrapper', 'one clean endpoint per commodity for CAPEE', False),
-    ('Audit hardening', 'admin audit table + logs to SIEM', False),
+    ('Private AI routing', 'DONE — one setting sends AI calls to our endpoint', True),
+    ('AI-off switch', 'DONE — used in the JLR build; has tests', True),
+    ('Company sign-on', 'swap local logins for company SSO', False),
+    ('Corporate database', 'move from the local file database', False),
+    ('Cost API for CAPEE', 'one clean endpoint per commodity', False),
+    ('Audit hardening', 'admin audit table, logs to SIEM', False),
 ]
 for i, (a, b, done) in enumerate(cv):
     y = Inches(2.75 + i * 0.63)
-    mark = '✓ ' if done else f'{i+1}. '
+    mark = f'{i+1}. '
     tc = GREEN if done else DARK
     dc = GREEN if done else BODY
     text(s, Inches(0.75), y, Inches(5.5), Inches(0.6),
@@ -615,9 +640,9 @@ for i, (a, b, done) in enumerate(cv):
 box(s, Inches(6.85), Inches(2.05), Inches(6.05), Inches(4.55), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(7.15), Inches(2.25), Inches(5.4), Inches(0.4), [[('CAPEE — small, additive changes', 15, VIOLET, True)]])
 cap = [
-    ('Backend', 'HTTP client to call CostVision + token handling; hook PO prices into the learning API', 'Small'),
-    ('User interface', 'an "AI insights" panel on the costing screen; a CAD-upload button; a findings widget', 'Medium'),
-    ('Data', 'adopt the shared rate library; one-off import of historical quotes to seed the memory', 'Small–Medium'),
+    ('Backend', 'a client to call CostVision, with sign-in tokens; send PO prices in as actuals', 'Small'),
+    ('User interface', 'a should-cost panel on the costing screen; a CAD upload button', 'Medium'),
+    ('Data', 'use the shared rate library; a one-off import of past quotes as actuals', 'Small–Medium'),
 ]
 for i, (a, b, sz) in enumerate(cap):
     y = Inches(2.8 + i * 1.25)
@@ -625,22 +650,26 @@ for i, (a, b, sz) in enumerate(cap):
          [[(a + '  ', 13, DARK, True), ('· ' + sz, 11, VIOLET, True)],
           [(b, 11.5, BODY, False)]], space_after=3, line_spacing=1.12)
 text(s, Inches(0.45), Inches(6.8), Inches(12.4), Inches(0.45),
-     [[('Items 1–2 are built & tested. Remaining critical path: ~3–5 engineering weeks. No architectural surgery on either side.', 13.5, DARK, True)]])
-notes(s, "The scope of work, honestly sized. CostVision needed six bounded changes — and the first two, private AI "
-         "routing and the air-gap switch, are already done: built, covered by automated tests, and demonstrated live "
-         "in all three deployment modes. What remains on the CostVision side is company single sign-on, the corporate "
-         "database, a clean API wrapper for CAPEE, and audit hardening. CAPEE's changes are additive, not invasive: "
-         "a client in the backend, an AI-insights panel in the UI, and adopting the shared rate library — plus a "
-         "one-off import of historical quotes so the memory starts smart. Remaining critical path: roughly three to "
-         "five engineering weeks. Nothing here is architectural surgery.")
+     [[('Items 1–2 are built. Our estimate for the rest: 3–5 engineering weeks. No major rework on either side.', 13.5, DARK, True)]])
+notes(s, "Here is the scope of work, sized as honestly as I can. "
+         "On the CostVision side there are six items. Two are done. The private AI routing setting is in the code. "
+         "The AI-off switch is in the code, it has tests, and it's what the JLR build runs with today. "
+         "Four are still to do. We need company single sign-on in place of local logins, and a move from the local "
+         "database file to the corporate database. We need a clean API for CAPEE to call, and some audit "
+         "hardening. "
+         "On the CAPEE side the changes add things. They don't rip anything out. CAPEE needs a client to call "
+         "CostVision, a should-cost panel on the costing screen, and to use the shared rate library. There's also "
+         "a one-off import of past quotes so the learning has something to start from. "
+         "My estimate for the remaining work is three to five engineering weeks. That's an estimate, not a promise, "
+         "and phase two is where we firm it up.")
 
 # ═══════════════ 12 — SECURITY & COMPLIANCE ═══════════════
 s = header('Security & compliance — how we tick the boxes', 'Compliance')
 comp = [
-    ('Encryption', 'TLS everywhere in transit; encrypted database at rest; CAD never stored at all', GREEN),
-    ('Access control', 'Azure AD single sign-on; roles mapped to AD groups; CAPEE uses a least-privilege service account', BLUE),
-    ('Data-loss prevention', 'One AI exit door, inspected and logged; firewall denies everything else; witnessed air-gap test (switch built)', AMBER),
-    ('Audit trails', 'Every rate change, knowledge write and admin action attributable to a user; logs to corporate SIEM', VIOLET),
+    ('Data handling', 'Today: CAD deleted after measuring; laptop build listens on 127.0.0.1 only. Plan: TLS and an encrypted database on a server.', GREEN),
+    ('Access control', 'Today: sign-in on everything; users see only their own scenarios; old sessions end on reset. Plan: company SSO.', BLUE),
+    ('Data-loss prevention', 'Today: AI and feeds off in the JLR build. Plan: a firewall that blocks all other outbound traffic.', AMBER),
+    ('Audit and access', 'Today: rate changes are logged with the user. Every page passes WCAG 2.1 AA (automated check).', VIOLET),
 ]
 for i, (t, d, c) in enumerate(comp):
     x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.05 + (i // 2) * 1.55)
@@ -651,20 +680,23 @@ for i, (t, d, c) in enumerate(comp):
 box(s, Inches(0.45), Inches(5.35), Inches(12.45), Inches(1.35), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(5.55), Inches(11.9), Inches(1.05),
      [[('Standards mapping:  ', 13, DARK, True),
-       ('ISO 27001 — covered by the controls above, add to ISMS scope  ·  SOC 2 — inherited from the cloud tenancy '
-        '(Bedrock/Vertex are certified)  ·  GDPR — minimal personal data, zero-retention AI, EU region  ·  '
-        'ISO/SAE 21434 — engineering IT tool, out of vehicle scope; supply-chain review (SBOM) in CI.', 12, BODY, False)]],
+       ('to be confirmed with IT Security in Phase 1.  ISO 27001 — add the tool to our ISMS scope  ·  '
+        'GDPR — the tool holds little personal data (sign-in details)  ·  ISO/SAE 21434 — an engineering IT '
+        'tool, outside the vehicle scope.', 12, BODY, False)]],
      line_spacing=1.25)
-notes(s, "For the compliance-minded: encryption everywhere, and the strongest control of all for CAD — it is never "
-         "stored. Access is company single sign-on with role mapping. Data-loss prevention comes down to one "
-         "inspected exit door and a firewall that denies everything else — and security can witness the air-gap test "
-         "themselves. Full audit trails to our SIEM. On standards: ISO 27001 is covered by these controls; SOC 2 is "
-         "inherited from the certified cloud services; GDPR exposure is minimal with zero-retention AI in the EU "
-         "region; and for automotive cyber, this is an engineering IT tool outside the vehicle scope, with "
-         "supply-chain checks built into the build pipeline.")
+notes(s, "For the compliance-minded, I've split each box into what exists today and what is a plan. "
+         "Data handling. Today the CAD file is deleted after it's measured, and the laptop build only listens on "
+         "the laptop itself. For a server we'd add encrypted connections and an encrypted database. "
+         "Access. Today you must sign in to anything that holds data. Users only see their own saved scenarios, and "
+         "a password reset or sign out everywhere ends every old session. Company single sign-on is the plan. "
+         "Data loss. Today AI and the feeds are off in the JLR build. The firewall rule is for IT to add. "
+         "Audit. Rate changes are logged against the user. And every page passes an automated WCAG 2.1 AA "
+         "accessibility check. "
+         "On standards, I'm not going to claim a certification we don't have. The mapping at the bottom is a "
+         "starting point, and phase one is where IT Security confirms it.")
 
 # ═══════════════ 13 — ROLLOUT TIMELINE ═══════════════
-s = header('Rollout — six phases, value from week eight', 'Plan')
+s = header('Rollout — six phases, first value around week eight', 'Plan')
 phases = [
     ('1', 'Security assessment', '2–3 wks', BLUE),
     ('2', 'Architecture design', '3–4 wks', INDIGO),
@@ -687,9 +719,9 @@ for i, (n, t, d, c) in enumerate(phases):
     p2 = tf.add_paragraph(); r2 = p2.add_run(); r2.text = d
     r2.font.size = Pt(9.5); r2.font.color.rgb = RGBColor(0xE8, 0xEE, 0xFF); r2.font.name = 'Calibri'
 gates = [
-    ('Phase 3 exit gate', 'Security-witnessed test: firewall blocks all egress, full test suite passes, zero unexpected traffic.'),
-    ('Phase 4 exit gate', 'A cost engineer completes a real costing from inside CAPEE with AI insights; accuracy dashboard live.'),
-    ('First value', 'Week ~8: pilot users get similar-part suggestions; sourcing sees the first autonomous findings.'),
+    ('Phase 3 exit gate', 'Security watches the test: firewall blocks all outbound traffic, the full test suite passes, no unexpected traffic.'),
+    ('Phase 4 exit gate', 'A cost engineer does a real costing from inside CAPEE. First estimates compared with prices JLR paid.'),
+    ('First value', 'Around week 8: pilot users cost real parts and check supplier quotes bucket by bucket.'),
 ]
 for i, (a, b) in enumerate(gates):
     y = Inches(3.9 + i * 0.95)
@@ -699,21 +731,25 @@ for i, (a, b) in enumerate(gates):
     text(s, Inches(3.5), y + Inches(0.1), Inches(9.2), Inches(0.65), [[(b, 11.5, BODY, False)]], line_spacing=1.1)
 text(s, Inches(0.45), Inches(6.82), Inches(12.4), Inches(0.5),
      [[('After go-live we track: ', 11.5, DARK, True),
-       ('accuracy vs PO prices · costings via CAPEE · £ findings actioned · adoption.   Approval today → pilot value by ~September 2026.', 11.5, BODY, False)]])
-notes(s, "Six phases. The first two — assessment and design — are what we're asking approval for today. Phase three "
-         "is a sealed pilot with dummy CAD data, and its exit gate is a security-witnessed test: firewall blocking "
-         "everything, full test suite passing, zero unexpected traffic. Phase four connects CAPEE, with a real "
-         "costing done end-to-end by a cost engineer as the gate. Rollout and then steady-state governance follow. "
-         "First tangible value lands around week eight, when pilot users start getting similar-part suggestions "
-         "and sourcing sees the first autonomous findings.")
+       ('estimate vs PO price · costings via CAPEE · quote gaps acted on · adoption.   All timings are estimates from approval.', 11.5, BODY, False)]])
+notes(s, "Six phases. The first two, the assessment and the design, are what I'm asking you to approve today. "
+         "Phase three is a sealed pilot with dummy CAD. Its exit gate is a test that security watches. The "
+         "firewall blocks all outbound traffic, the full test suite passes, and there's no unexpected traffic. "
+         "Phase four connects CAPEE. Its gate is a cost engineer doing a real costing from inside CAPEE. It's also "
+         "where we first compare our estimates with prices JLR actually paid, which is the test that matters most "
+         "and one we haven't done yet. "
+         "Rollout and ongoing governance follow. "
+         "I expect first value around week eight, when pilot users start costing real parts and checking supplier "
+         "quotes bucket by bucket. Every timing on this slide is an estimate from the day of approval, and I'll "
+         "update it after phase two.")
 
 # ═══════════════ 14 — RISKS ═══════════════
 s = header('Risks — and how we manage them', 'Honest view')
 risks = [
-    ('Cloud tenancy not approved', 'Medium', 'Fall back to Option A (air-gapped) — deterministic engines keep full value today; add a self-hosted vision model later if needed.', AMBER),
-    ('Learning depends on logged quotes', 'Medium', 'The CAPEE PO-price hook automates it — quotes flow in without anyone changing habits. Plus a one-off historical import to start smart.', BLUE),
-    ('Single-team knowledge of the platform', 'Low–Med', '1,777 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
-    ('Adoption ("another tool")', 'Low', 'Users stay in CAPEE — CostVision works behind the scenes. Nothing new to learn except better answers appearing.', GREEN),
+    ('AI is never approved', 'Medium', 'We are already on Option A. The JLR build runs with AI off; costing, CAD measuring and learning all work without it.', AMBER),
+    ('Not yet checked against JLR prices', 'Medium', 'No estimate has been compared with a price JLR paid. Phase 4 does that. Log actuals; after 3, the band uses real data.', BLUE),
+    ('Knowledge sits with one team', 'Low–Med', '2,438 automated tests, 6 real parts pinned in a baseline, written docs, and a CAPEE-side maintainer trained in Phase 4.', VIOLET),
+    ('Adoption ("another tool")', 'Low', 'The plan keeps users in CAPEE, with CostVision behind it. Little new to learn.', GREEN),
 ]
 for i, (t, sev, m, c) in enumerate(risks):
     y = Inches(2.05 + i * 1.18)
@@ -723,20 +759,24 @@ for i, (t, sev, m, c) in enumerate(risks):
     text(s, Inches(0.75), y + Inches(0.55), Inches(2.0), Inches(0.35), [[('Likelihood: ' + sev, 10.5, c, True)]])
     text(s, Inches(5.3), y + Inches(0.12), Inches(7.4), Inches(0.85),
          [[('Mitigation:  ', 11.5, DARK, True), (m, 11.5, BODY, False)]], line_spacing=1.12)
-notes(s, "The honest risk view. If the cloud tenancy isn't approved, we don't stall — we fall back to the fully "
-         "air-gapped option, which still delivers the deterministic engines and the learning loop. The learning "
-         "depends on real quotes being logged — but the CAPEE hook automates that, and a historical import means we "
-         "don't start from zero. Platform knowledge is protected by the test suite, documentation and a trained "
-         "CAPEE-side maintainer. And adoption risk is low precisely because users stay in CAPEE — for them, the "
-         "change is simply that better answers start appearing.")
+notes(s, "Here's my honest view of the risks. "
+         "First, AI may never be approved. The impact is low, because we're already living with that. The JLR "
+         "build runs with AI off, and the costing, the CAD measuring and the learning all work without it. "
+         "Second, and this is the one I'd watch, we haven't yet compared an estimate with a price JLR actually "
+         "paid. The arithmetic is checked against a hand calculation, and six real parts are pinned, but that "
+         "only proves the tool is consistent. It doesn't prove it's right. Phase four fixes that, and logging "
+         "actuals makes it ongoing. "
+         "Third, the knowledge sits with one team. The tests, the real-parts baseline and the written docs help, "
+         "and we'd train a maintainer on the CAPEE side. "
+         "Fourth, adoption. If people stay in CAPEE, there's very little new to learn.")
 
 # ═══════════════ 15 — VERDICT & ASK ═══════════════
 s = header('Feasibility verdict — and the ask', 'Decision')
 verdicts = [
-    ('Secure deployment, CAD fully internal', 'FEASIBLE — CAD never leaves; AI routing + air-gap switch already BUILT', GREEN),
-    ('Integration into CAPEE', 'FEASIBLE — API-first; plugs into CAPEE as its should-cost engine, no rip-and-replace', GREEN),
-    ('Changes required', 'Head start delivered: 2 of 6 items built — ~3–5 engineering weeks remain', BLUE),
-    ('Long-term governance', 'Rate-library board · monthly findings review · quarterly access & egress audit', VIOLET),
+    ('Secure deployment, CAD in-house', 'FEASIBLE — CAD stays on the machine; AI off at JLR', GREEN),
+    ('Connecting to CAPEE', 'FEASIBLE — a plan: CAPEE calls CostVision for the cost', GREEN),
+    ('Changes required', '2 of 6 items built — our estimate: 3–5 weeks remain', BLUE),
+    ('Long-term governance', 'Rate-library owner · monthly review · quarterly access audit', VIOLET),
 ]
 for i, (a, b, c) in enumerate(verdicts):
     y = Inches(2.05 + i * 0.82)
@@ -746,27 +786,30 @@ for i, (a, b, c) in enumerate(verdicts):
 box(s, Inches(0.45), Inches(5.6), Inches(12.45), Inches(1.25), fill=PANEL2, round_=True, radius=0.07)
 text(s, Inches(0.8), Inches(5.8), Inches(11.8), Inches(0.9),
      [[('The ask today:  ', 16, BLUE, True),
-       ('approve Phase 1 (IT-Security assessment) and Phase 2 (architecture design) — 5–7 weeks, existing teams. '
-        'The full written plan and security checklist are ready for the security review.', 14, BODY, False)]],
+       ('approve Phase 1 (IT-Security assessment) and Phase 2 (architecture design). Our estimate is 5–7 weeks '
+        'with existing teams. The written plan and security checklist are ready.', 14, BODY, False)]],
      line_spacing=1.2)
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
-notes(s, "To summarise: secure deployment with CAD fully internal is feasible — in fact, the platform was built that "
-         "way, and the two controls that complete it — private AI routing and the air-gapped switch — are already "
-         "built, tested and demonstrated live. Integrating into CAPEE is feasible and high-value: CostVision plugs in "
-         "as the should-cost engine while CAPEE stays the tool teams work in. The remaining changes are bounded — "
-         "roughly three to five weeks, not months — and "
-         "governance is defined. The ask today is simple: approve Phases 1 and 2, the security assessment and the "
-         "architecture design. The full written plan, including the security checklist, is ready to hand to the "
-         "IT-Security team. Thank you — questions welcome.")
+notes(s, "Let me pull it together. "
+         "Running the tool securely, with CAD kept in-house, is feasible. The CAD file stays on the machine that "
+         "measures it, and the JLR build already runs with AI switched off. "
+         "Connecting to CAPEE is feasible too. But it's a plan, not something built, and phase two designs it. "
+         "Two of the six changes are done. My estimate for the rest is three to five weeks. "
+         "Governance is simple. Someone owns the rate library, there's a monthly review, and a quarterly check of "
+         "who has access. "
+         "So the ask today is to approve phases one and two, the security assessment and the architecture design. "
+         "The written plan and the security checklist are ready to hand to IT Security. "
+         "One thing I'll repeat, because it matters. We have not yet compared an estimate with a price JLR paid. "
+         "That's the first proof I want from the pilot. Thank you, and I'm happy to take questions.")
 
 # ═══════════════ 16 — BACKUP: MARKET LANDSCAPE ═══════════════
 s = header('Has anyone done this? Yes — the market is real', 'Backup · Market landscape')
 market = [
-    ('aPriori', 'Market leader (US)', 'CAD-to-cost with physics-based models and regional cost databases. Used by Fortune-500 OEMs and Tier-1 suppliers — companies our size already pay for this category.', BLUE, 'apriori.com'),
-    ('Siemens PCM', 'PLM giant (Teamcenter)', 'Bottom-up should-costing with process models and supplier collaboration, embedded in the Siemens PLM suite.', INDIGO, 'siemens.com/teamcenter'),
-    ('Tset', 'AI challenger (Austria, 2018)', 'Automotive-focused costing from 3D models and BOMs, 50+ calculation modules plus CO2. Being acquired by A2MAC1 (June 2026) to build "AI-enabled costing intelligence".', VIOLET, 'tset.com · globenewswire.com (18 Jun 2026)'),
-    ('Boothroyd DFMA', 'The classic (Dewhurst)', 'Design-for-manufacture and concurrent costing — the methodology textbooks are built on, used for decades.', CYAN, 'dfma.com'),
-    ('New AI entrants', 'Start-ups', 'Razorlabs Cost Advisor, Emithran and others: AI quotes from CAD files, calibrated on live machining data.', MUTED, 'emithran.com'),
+    ('aPriori', 'Established vendor (US)', 'CAD-to-cost with process models and regional cost data. Sold to large OEMs and Tier-1 suppliers, per its website.', BLUE, 'apriori.com'),
+    ('Siemens PCM', 'Part of Teamcenter', 'Bottom-up should-costing with process models, inside the Siemens PLM suite.', INDIGO, 'siemens.com/teamcenter'),
+    ('Tset', 'Automotive costing (Austria)', 'Costing from 3D models and BOMs, with CO2. A June 2026 press release announced its purchase by A2MAC1.', VIOLET, 'tset.com · globenewswire.com (18 Jun 2026)'),
+    ('Boothroyd DFMA', 'The classic (Dewhurst)', 'Design for manufacture and early costing. The method many textbooks use, in use for decades.', CYAN, 'dfma.com'),
+    ('Newer entrants', 'Start-ups', 'Several start-ups, such as Emithran, offer quotes from CAD files.', MUTED, 'emithran.com'),
 ]
 for i, (t, tag, d, c, src) in enumerate(market):
     y = Inches(1.98 + i * 0.87)
@@ -779,25 +822,26 @@ for i, (t, tag, d, c, src) in enumerate(market):
 box(s, Inches(0.45), Inches(6.45), Inches(12.45), Inches(0.75), fill=PANEL2, round_=True, radius=0.1)
 text(s, Inches(0.75), Inches(6.58), Inches(11.9), Inches(0.55),
      [[('Takeaway: ', 12, BLUE, True),
-       ('the should-cost category is proven — large OEMs already pay for it. The question is not IF it works, '
-        'but why OURS fits us better: security, learning on our own data, and CAPEE integration (next slide).', 12, BODY, False)]],
+       ('should-cost software is an established category. The real question is why ours fits us: it runs '
+        'in-house, it learns from our own prices, and it can sit behind CAPEE (next slide).', 12, BODY, False)]],
      line_spacing=1.12)
-notes(s, "Backup slide, for the question 'has anyone done this before — are we the only ones?' The answer is "
-         "reassuring in both directions. No, we are not inventing an unproven category: should-cost software is an "
-         "established market. aPriori is the leader — CAD-to-cost with physics models, sold to exactly our kind of "
-         "company. Siemens ships it inside the PLM suite. Tset is the automotive AI challenger — and notably A2MAC1 "
-         "agreed to acquire them in June 2026 specifically to build AI-enabled costing intelligence, which tells you "
-         "the whole market believes in the direction we've already built. Boothroyd Dewhurst is the classic "
-         "methodology, and a wave of AI start-ups is doing CAD-to-quote. So the category is validated by the market. "
-         "The real question is why our own tool rather than buying one — and that's the next slide.")
+notes(s, "This is a backup slide for when someone asks whether anyone else does this. The short answer is yes. "
+         "Should-cost software is an established category. aPriori sells CAD-to-cost with process models to large "
+         "manufacturers. Siemens has a costing product inside Teamcenter. Tset focuses on automotive costing, and a "
+         "press release in June said A2MAC1 was buying it. Boothroyd Dewhurst is the classic method, and there are "
+         "newer start-ups quoting from CAD files. "
+         "Everything on this slide comes from those companies' own websites and press releases. I haven't tested "
+         "any of their products, and I'm not claiming ours is better than theirs. "
+         "So we are not inventing a new idea. The fair question is why we'd use our own tool instead of buying "
+         "one. That's the next slide.")
 
 # ═══════════════ 17 — BACKUP: WHERE COSTVISION STANDS APART ═══════════════
 s = header('Why ours — what no vendor offers today', 'Backup · Differentiation')
 diffs = [
-    ('Costs a board from a photograph', 'No mainstream costing suite does this. Design tools build a BOM during design; none of them price one from a picture.', GREEN),
-    ('Learns from our own prices', 'Error fell from 10.9% to 0.3% after three real quotes. The incumbents are still marketing toward this.', GREEN),
-    ('Runs inside our walls', 'Commercial tools are cloud — our CAD would live in their cloud. This one is on-premise, with the controls already built.', GREEN),
-    ('One platform, no module licences', '19 commodities, software costing, carbon and RFQ in one product. Vendors sell that breadth as separate licences.', GREEN),
+    ('Runs on a locked-down laptop', 'A folder you copy and double-click. No installer, no admin rights, no internet, no AI. CAD never leaves the machine.', GREEN),
+    ('Learns from our own prices', 'Log a quote or PO price. After 3 actuals for a commodity, the band is corrected by our own data.', GREEN),
+    ('Every number traces to a rate', 'Plain arithmetic on our rate library. Excel export has a traceability sheet and matches the screen to the penny.', GREEN),
+    ('One tool, no module licences', '19 manufacturing processes, 20 regions, plus an assembly roll-up and a software cost model, in one product.', GREEN),
 ]
 for i, (t, d, c) in enumerate(diffs):
     x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.0 + (i // 2) * 1.62)
@@ -808,72 +852,71 @@ for i, (t, d, c) in enumerate(diffs):
 box(s, Inches(0.45), Inches(5.4), Inches(12.45), Inches(1.0), fill=AMBERBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(5.53), Inches(11.9), Inches(0.8),
      [[('Honest caveat: ', 12, AMBER, True),
-       ('vendors like aPriori have decades of curated cost data behind their numbers. Our answer is the learning '
-        'loop — every quote we log builds a history no vendor can sell us, and our rates stay confidential.', 11.5, BODY, False)]],
+       ('established vendors have years of curated cost data. We have not yet compared our estimates with '
+        'prices JLR paid. Our answer is to log actuals, so our own history builds up over time.', 11.5, BODY, False)]],
      line_spacing=1.15)
 text(s, Inches(0.45), Inches(6.55), Inches(12.4), Inches(0.35),
-     [[('Positioning: not "better than aPriori" — a secure, in-house engine behind CAPEE that gets smarter on our own data.', 12, DARK, True)]])
+     [[('Positioning: not "better than aPriori" — a secure, in-house engine behind CAPEE that learns from our own prices.', 12, DARK, True)]])
 text(s, Inches(0.45), Inches(6.95), Inches(12.4), Inches(0.25),
-     [[('Sources: apriori.com · siemens.com/teamcenter · tset.com · globenewswire.com (A2MAC1-Tset, 18 Jun 2026) · dfma.com · emithran.com · flux.ai · circuitmind.io', 8.5, MUTED, False, True)]])
-notes(s, "The second half of the backup answer: given the market exists, why build our own? Four things no vendor "
-         "offers today. One — photo-to-cost for PCBs: photograph a supplier's or competitor's board and get a costed "
-         "bill of materials; design tools generate BOMs during design, but no costing suite does this from photos. "
-         "Two — the self-learning loop: CostVision calibrates on our own purchase-order prices, cutting error from "
-         "about eleven percent to under one percent in testing after just three quotes, and raises findings on its "
-         "own; the incumbents are only now marketing toward AI-enabled costing. Three — deployment: the commercial "
-         "tools are cloud SaaS, meaning our CAD and our rates would sit in a vendor's cloud; CostVision runs inside "
-         "our network with the private-AI and air-gap controls already built. Four — breadth without per-module "
-         "licences. And the honest caveat management should hear: aPriori's strength is decades of curated cost "
-         "data. Our counter is that every quote CAPEE logs makes CostVision smarter on OUR parts, OUR suppliers, "
-         "OUR regions — data no vendor has. The positioning is not 'better than aPriori'; it is an internal, "
-         "secure, self-learning engine behind CAPEE.")
+     [[('Vendor sources: apriori.com · siemens.com/teamcenter · tset.com · globenewswire.com (A2MAC1-Tset, 18 Jun 2026) · dfma.com · emithran.com', 8.5, MUTED, False, True)]])
+notes(s, "So if the market exists, why use our own? I'd give four reasons. "
+         "One, it runs on a locked-down laptop. It's a folder you copy and double-click, with no installer, no "
+         "admin rights, no internet and no AI. The CAD never leaves the machine. "
+         "Two, it learns from our own prices. Log a quote or a PO price, and after three for a commodity, the band "
+         "is corrected by our data rather than someone else's. "
+         "Three, every number traces to a rate. The Excel export has a traceability sheet and matches the screen "
+         "to the penny, which is what you want in a supplier meeting. "
+         "Four, the breadth. Nineteen processes and twenty regions in one product, with no separate module "
+         "licences. "
+         "And the honest caveat. The big vendors have years of curated cost data, and we haven't yet compared our "
+         "estimates with prices JLR paid. So I'm not saying we're better than aPriori. I'm saying we have a secure, "
+         "in-house engine that can learn from our own prices.")
 
 # ═══════════════ 18 — BACKUP: COMPANY RATE DATA UPLOAD (PROOF) ═══════════════
-s = header('Your rates, not vendor rates — already built', 'Backup · Company cost database')
+s = header('Our rates, not vendor rates — already built', 'Backup · Company cost database')
 pic = s.shapes.add_picture('docs/rate-library-upload-proof.png', Inches(0.45), Inches(2.0), width=Inches(6.9))
 pic.line.color.rgb = LINE; pic.line.width = Pt(1)
 text(s, Inches(0.45), Inches(6.72), Inches(6.9), Inches(0.5),
-     [[('Live screenshot (July 2026): Rate Library screen after a company workbook upload — badge shows '
+     [[('Screenshot (July 2026): the Rate Library screen after a company workbook upload. The badge reads '
         '"Company rates active".', 9.5, MUTED, False, True)]], line_spacing=1.1)
 text(s, Inches(7.6), Inches(2.0), Inches(5.3), Inches(2.4),
      [[('How admins load company data', 14, BLUE, True)],
-      [('1.  Download the Excel template — six sheets: Materials · Machines · Labour · Energy · FX · Overhead.', 11.5, BODY, False)],
-      [('2.  Fill in our rates and upload — every row is validated; the file becomes the active library instantly.', 11.5, BODY, False)],
-      [('3.  Fine-tune any single cell in the tables — each change is logged with the user\'s name and a timestamp.', 11.5, BODY, False)]],
+      [('1.  Download the Excel template: materials, machines, labour, energy, FX, overhead.', 11.5, BODY, False)],
+      [('2.  Fill in our rates and upload. Every row is checked, then the file becomes the active library.', 11.5, BODY, False)],
+      [('3.  Change any single rate on screen. Each change is logged against the user.', 11.5, BODY, False)]],
      space_after=7, line_spacing=1.15)
 box(s, Inches(7.6), Inches(4.35), Inches(5.3), Inches(1.15), fill=GREENBG, round_=True, radius=0.1)
 text(s, Inches(7.85), Inches(4.5), Inches(4.85), Inches(0.9),
-     [[('Proven live today:  ', 11.5, GREEN, True),
-       ('a full workbook uploaded and accepted — 328 materials, 171 machines, 42 labour, 11 energy, 9 FX and '
-        '23 overhead rows — then activated.', 11, BODY, False)]], line_spacing=1.15)
+     [[('Built-in library:  ', 11.5, GREEN, True),
+       ('version 2.1.0, dated 16 June 2026 — 328 materials, 178 machines, 42 labour grades. '
+        'Editable and versioned.', 11, BODY, False)]], line_spacing=1.15)
 text(s, Inches(7.6), Inches(5.7), Inches(5.3), Inches(1.4),
      [[('Also built in:', 12, DARK, True)],
-      [('• 20 country rate sets, 8 labour categories each', 11, BODY, False)],
-      [('• PCB country cost table — admin-editable', 11, BODY, False)],
-      [('• Separate rate library for software costing', 11, BODY, False)],
-      [('• One click back to built-in defaults, full audit trail', 11, BODY, False)]],
+      [('• 20 regions, 8 labour categories each', 11, BODY, False)],
+      [('• JLR Rate Converter workbook, no macros', 11, BODY, False)],
+      [('• PCB country cost table, admin-editable', 11, BODY, False)],
+      [('• Switch back to built-in rates at any time', 11, BODY, False)]],
      space_after=3, line_spacing=1.12)
-notes(s, "This backup slide answers 'whose numbers are these?' The answer: ours, whenever we want them to be. "
-         "What you see is a live screenshot of the tool, not a mock-up. An administrator downloads an Excel "
-         "template with six sheets — materials, machines, labour, energy, exchange rates and overheads — fills in "
-         "our company rates, and uploads it. The file is validated row by row and becomes the active rate library "
-         "instantly; the green badge confirms company rates are in force. After that, any single cell can be "
-         "fine-tuned in the on-screen tables, and every change is recorded with the user's name and a timestamp — "
-         "a full audit trail. We proved this live: a complete workbook with over five hundred rows across the six "
-         "sheets uploaded, validated and activated. On top of that, the tool ships twenty country rate sets with "
-         "eight labour categories each, the PCB country cost table is editable the same way, and the software-"
-         "costing engine has its own separate library. And if anything goes wrong, one click returns to the "
-         "built-in defaults. So management should hear this clearly: the tool calculates on OUR labour, material, "
-         "machine and energy rates, by country — vendor tools can't offer that level of transparency and control.")
+notes(s, "This backup slide answers the question, whose numbers are these? The answer is ours, whenever we want. "
+         "The screenshot is the real rate library screen from July, after a company workbook was uploaded. "
+         "An administrator downloads an Excel template, fills in our rates for materials, machines, labour, energy, "
+         "exchange rates and overheads, and uploads it. Every row is checked, and then it becomes the active "
+         "library. After that you can change any single rate on screen, and each change is logged against the "
+         "person who made it. "
+         "If you don't upload anything, the tool uses its built-in library. That's version 2.1.0, dated sixteenth "
+         "of June 2026, with 328 materials, 178 machines and 42 labour grades. "
+         "There are twenty regions with eight labour categories each. There's also a JLR Rate Converter workbook "
+         "that turns JLR's own rate card into the tool's format with no macros. And you can switch back to the "
+         "built-in rates at any time.")
 
 # ═══════════════ 19 — BACKUP: BUSINESS CASE ═══════════════
-s = header('What it costs vs what it returns', 'Backup · Business case')
+s = header('What it costs, and what it could return', 'Backup · Business case')
 box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(3.5), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(0.75), Inches(2.18), Inches(5.4), Inches(0.4), [[('What it costs', 15, DARK, True)]])
 costs = [
-    ('Engineering', '~3–5 weeks remaining on CostVision + small additive CAPEE changes — existing teams'),
-    ('Infrastructure', 'one VM + corporate PostgreSQL — standard IT estate our teams already run'),
-    ('AI usage', 'pay-per-use in our own cloud tenancy — no per-seat fees, off in air-gap mode'),
+    ('Engineering', 'our estimate: 3–5 weeks on CostVision, plus small CAPEE changes, existing teams'),
+    ('Infrastructure', 'laptop package today; for a server, one VM and the corporate database'),
+    ('AI usage', '£0 today — AI is off at JLR. Only a cost if AI is ever approved'),
     ('Licence spend', '£0 — built in-house, nothing to buy or renew'),
 ]
 for i, (a, b) in enumerate(costs):
@@ -881,12 +924,12 @@ for i, (a, b) in enumerate(costs):
     text(s, Inches(0.75), y, Inches(5.5), Inches(0.7),
          [[(a + ' — ', 12, DARK, True), (b, 11, BODY, False)]], line_spacing=1.1)
 box(s, Inches(6.85), Inches(2.0), Inches(6.05), Inches(3.5), fill=GREENBG, round_=True, radius=0.05)
-text(s, Inches(7.15), Inches(2.18), Inches(5.4), Inches(0.4), [[('What it returns', 15, GREEN, True)]])
+text(s, Inches(7.15), Inches(2.18), Inches(5.4), Inches(0.4), [[('What it could return', 15, GREEN, True)]])
 gains = [
-    ('Savings found', '£512k/yr of pricing issues surfaced autonomously in the live demo (indicative)'),
-    ('Licence avoided', 'commercial should-cost suites run six figures per year, recurring'),
-    ('Speed', 'first defensible should-cost in minutes, not days — every quote challengeable'),
-    ('Leverage', 'bottom-up numbers on OUR rates that suppliers cannot wave away'),
+    ('Quote checks', 'a supplier quote set against the should-cost, bucket by bucket'),
+    ('Licence avoided', 'no annual fee for a commercial should-cost suite'),
+    ('Consistency', 'the same rates and rules for every engineer, every part'),
+    ('Leverage', 'bottom-up numbers on our own rates, traceable line by line'),
 ]
 for i, (a, b) in enumerate(gains):
     y = Inches(2.66 + i * 0.72)
@@ -896,53 +939,48 @@ ip = box(s, Inches(0.45), Inches(5.68), Inches(12.45), Inches(0.62), fill=GREENB
 box(s, Inches(0.45), Inches(5.68), Inches(0.09), Inches(0.62), fill=GREEN)
 text(s, Inches(0.8), Inches(5.83), Inches(11.9), Inches(0.4),
      [[('OUR IP:  ', 13.5, GREEN, True),
-       ('built in-house — the code, the rate library and the knowledge base are entirely our intellectual property. '
-        'No vendor owns any part of it.', 13.5, DARK, True)]])
+       ('built in-house — the code and the rate library are ours. No vendor owns any part of it.', 13.5, DARK, True)]])
 box(s, Inches(0.45), Inches(6.44), Inches(12.45), Inches(0.85), fill=AMBERBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(6.55), Inches(11.9), Inches(0.65),
      [[('Honest numbers: ', 12, AMBER, True),
-       ('the £512k/yr figure comes from demonstration data — we treat it as indicative and validate it against real '
-        'programmes during the Phase 3–4 pilot before claiming it in any business case.', 11.5, BODY, False)]],
+       ('we are not claiming a savings figure yet. No estimate has been compared with a price JLR paid. '
+        'The pilot measures that first, then we build the business case on real results.', 11.5, BODY, False)]],
      line_spacing=1.15)
-notes(s, "The business case in one view. Costs, left: three to five engineering weeks remaining plus small additive "
-         "changes in CAPEE, all with existing teams; infrastructure is one virtual machine and our standard "
-         "corporate database; AI usage is pay-per-use in our own tenancy with no per-seat fees; and licence spend "
-         "is zero — this was built in-house, so the code, the rate library and the knowledge base are our "
-         "intellectual property. Returns, right: the autonomous agent surfaced half a million pounds a year of "
-         "pricing findings in the demonstration; a commercial should-cost suite would cost six figures every year, "
-         "recurring; quotes get a defensible counter-number in minutes; and negotiations start from bottom-up "
-         "figures built on our own rates. And the amber bar is deliberate honesty: the savings figure is from demo "
-         "data — we validate it in the pilot before it goes into any business case. That candour is what makes the "
-         "rest of this slide believable.")
+notes(s, "Here's the business case, and I'll keep it honest. "
+         "On the cost side, my estimate is three to five weeks of engineering on CostVision, plus some small "
+         "changes in CAPEE, all with existing teams. Today it runs on a laptop. For a shared server we'd need one "
+         "virtual machine and the corporate database. AI costs nothing today, because it's off. And there's no "
+         "licence spend, because we built it, so the code and the rate library are ours. "
+         "On the return side, I've written 'could return' on purpose. We'd be able to check every supplier quote "
+         "bucket by bucket. There's no annual fee for a commercial suite. Every engineer uses the same rates and "
+         "rules. And the numbers are built on our own rates, so they can be traced. "
+         "What I'm not doing is putting a savings number on this slide. We haven't compared an estimate with a "
+         "price JLR paid yet. The pilot measures that first, and the business case gets built on real results.")
 
 # ═══════════════ 20 — BACKUP: EVIDENCE PACK ═══════════════
-s = header('Does it actually work? The measured results', 'Backup · Evidence')
+s = header('Does it work? What is proven, and what is not', 'Backup · Evidence')
 cd = CategoryChartData()
-cd.categories = ['Machining error %', 'Casting error %', 'Uncertainty band ±%']
-cd.add_series('Before learning', (10.9, 8.7, 20.4))
-cd.add_series('After 3 real quotes', (0.3, 0.6, 2.8))
+cd.categories = ['Materials', 'Machines', 'Labour grades', 'Regions', 'Processes']
+cd.add_series('Built-in rate library 2.1.0 (16 June 2026) and coverage', (328, 178, 42, 20, 19))
 gf = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.45), Inches(2.0), Inches(7.3), Inches(4.4), cd)
 ch = gf.chart
-ch.has_legend = True
-ch.legend.position = XL_LEGEND_POSITION.BOTTOM
-ch.legend.include_in_layout = False
-ch.legend.font.size = Pt(10)
+ch.has_title = False
+ch.has_legend = False
 plot = ch.plots[0]
 plot.has_data_labels = True
 plot.data_labels.font.size = Pt(9.5)
 plot.data_labels.font.bold = True
 ch.category_axis.tick_labels.font.size = Pt(9.5)
 ch.value_axis.tick_labels.font.size = Pt(9)
-ch.series[0].format.fill.solid(); ch.series[0].format.fill.fore_color.rgb = MUTED
-ch.series[1].format.fill.solid(); ch.series[1].format.fill.fore_color.rgb = GREEN
+ch.series[0].format.fill.solid(); ch.series[0].format.fill.fore_color.rgb = BLUE
 text(s, Inches(0.45), Inches(6.5), Inches(7.3), Inches(0.6),
-     [[('Live test runs, July 2026 — after the engine learned from just 3 real supplier quotes per commodity.', 10, MUTED, False, True)]],
+     [[('Built-in rate library 2.1.0 (16 June 2026): materials, machines and labour grades, plus the regions and processes covered.', 10, MUTED, False, True)]],
      line_spacing=1.1)
 stats = [
-    ('99%', 'part-match accuracy — the AI memory finds the right similar past part', BLUE),
-    ('1,777', 'automated tests protect every engine and feature on each change', VIOLET),
-    ('3 quotes', 'is all the calibration needs before accuracy lands under 1%', GREEN),
-    ('£512k/yr', 'findings raised by the autonomous agent in the live demo', CYAN),
+    ('<0.01%', 'gap to a hand calculation on the reference machined bracket (£23.27)', BLUE),
+    ('6 parts', 'real production parts pinned in a baseline; a change that moves one fails the build', VIOLET),
+    ('2,438', 'automated tests, plus browser tests of every commodity, exports and accessibility', GREEN),
+    ('Not yet', 'compared with a price JLR actually paid. Measured as actuals are logged', AMBER),
 ]
 for i, (n, d, c) in enumerate(stats):
     y = Inches(2.0 + i * 1.23)
@@ -950,31 +988,33 @@ for i, (n, d, c) in enumerate(stats):
     box(s, Inches(8.1), y, Inches(0.09), Inches(1.08), fill=c)
     text(s, Inches(8.4), y + Inches(0.12), Inches(1.7), Inches(0.5), [[(n, 19, c, True)]])
     text(s, Inches(10.05), y + Inches(0.14), Inches(2.75), Inches(0.85), [[(d, 10, BODY, False)]], line_spacing=1.1)
-notes(s, "The evidence slide, for when someone asks 'does it actually work?' The chart shows measured accuracy from "
-         "live test runs. Grey bars are the engine before learning: machining estimates were off by about eleven "
-         "percent, casting by about nine, and the honest uncertainty band was around plus-or-minus twenty percent. "
-         "Green bars are after the engine learned from just three real supplier quotes per commodity: errors drop "
-         "below one percent and the band tightens to under three. That is the self-learning loop working — and it "
-         "is why CAPEE's PO prices matter so much, because they are exactly the fuel this loop runs on. On the "
-         "right: the part-matching memory finds the right historical part ninety-nine percent of the time; "
-         "one thousand seven hundred and seventy-seven automated tests protect the platform on every change; and the autonomous "
-         "agent found half a million pounds a year of pricing issues in the demo without anyone asking it to.")
+notes(s, "This is the evidence slide, for when someone asks whether it actually works. I want to answer it "
+         "carefully. "
+         "The chart shows what the numbers rest on. The built-in rate library has 328 materials, 178 machines and "
+         "42 labour grades. The tool covers twenty regions and nineteen processes. "
+         "On the right is what's proven. The engine's arithmetic matches a hand calculation to under a hundredth of "
+         "a percent on our reference machined bracket, which costs £23.27. Six real production parts are pinned in "
+         "a baseline, so if a change moves any of them, the build fails. There are 2,438 automated tests, plus "
+         "browser tests that cost every commodity, export Excel and PDF, and check accessibility. "
+         "The last box is the honest one. None of this shows the tool is right about real prices. It shows the "
+         "tool is consistent and does what it says. We haven't compared an estimate with a price JLR paid. That "
+         "gets measured as actuals are logged, and I won't quote an accuracy figure until it has been.")
 
 # ═══════════════ 21 — BACKUP: LIKELY QUESTIONS ═══════════════
 s = header('Built since this plan was written', 'Backup · What changed')
 add = [
-    ('The tool now reads the part, not the price', GREEN,
-     'Your engineers said the old design advice was too generic. It now opens the 3D model and measures every '
-     'face — 19 rules, each citing a published standard, and it shows you the exact faces at fault.'),
-    ('Gear cutting is its own commodity', BLUE,
-     'Asked for by cost engineering and the plant. Gears no longer go through the milling model — the tool picks '
-     'the process from the geometry and works the cycle out from the gear itself.'),
-    ('Landed cost, duty and customs', VIOLET,
-     'Duty, carbon border levy, rules of origin and incoterms. The should-cost now lands at your door, not at the '
-     'supplier gate.'),
+    ('CAD to Cost runs on rules, and asks when it cannot tell', GREEN,
+     'No AI needed. 13 commodities can be costed from CAD. Where geometry cannot decide the route, the material '
+     'or a hole count on an STL, the tool asks the engineer.'),
+    ('Gear cutting is its own process', BLUE,
+     'Asked for by cost engineering and the plant. Gears no longer go through the milling model. The cycle is '
+     'worked out from the gear itself.'),
+    ('A Windows package for locked-down laptops', VIOLET,
+     'A folder you copy and double-click. No installer, no admin rights, no internet. It includes the geometry '
+     'kernel and runs with AI off.'),
     ('Long-term agreements priced correctly', CYAN,
-     'Annual volume and programme lifetime are separate inputs now, so a five-year award is not priced as if it '
-     'were all bought in year one.'),
+     'Tooling is spread over annual volume × programme life, so a five-year award is not priced as if it were all '
+     'bought in year one.'),
 ]
 for i, (t, c, d) in enumerate(add):
     y = Inches(1.95 + i * 1.22)
@@ -986,25 +1026,21 @@ for i, (t, c, d) in enumerate(add):
 box(s, Inches(0.45), Inches(6.85), Inches(12.45), Inches(0.42), fill=AMBERBG, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(6.85), Inches(11.9), Inches(0.42),
      [[('Straight about the gap: ', 10.5, AMBER, True),
-       ('the gear model runs on representative shop figures until the plant supplies its own, and no gear has yet '
-        'been checked against a known actual. Every gear estimate says so.', 10.5, BODY, False)]],
+       ('the gear model uses representative shop figures until the plant supplies its own. '
+        'No gear has been checked against a known cost yet.', 10.5, BODY, False)]],
      anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.1)
-notes(s, "This slide is here because the plan you approved is a few months old now, and four things have been built "
-         "since that are worth knowing about. "
-         "First, and the one your engineers pushed hardest for: the design-for-manufacture advice used to look at the "
-         "finished cost and guess backwards. They told me that was too generic, and they were right. It now opens the "
-         "3D model and measures every face on the part. Nineteen rules, every one citing a published standard rather "
-         "than my opinion, and when it flags something it shows you exactly which faces on the model are the problem. "
-         "Second, gears. Cost engineering and the plant asked for this directly. Gears used to go through the tool as "
-         "ordinary milled parts, which cannot see a tooth. Now the tool picks the manufacturing process from the "
-         "geometry itself and works the cycle time out from the machine kinematics. "
-         "Third, landed cost. A should-cost now includes duty, carbon border tax and origin rules, so the number is "
-         "what the part costs at our door rather than at the supplier's gate. "
-         "Fourth, long-term agreements are now priced properly — the annual quantity and the programme lifetime are "
-         "separate, which they always should have been. "
-         "And the amber bar is me being straight. The gear model is structurally right but it is running on "
-         "representative shop figures, not yours, and we have not yet checked a gear against a cost we know. The tool "
-         "says so itself on every estimate. Give me your machine list and two costed gears and that gap closes.")
+notes(s, "The written plan is a few months old, so here are four things built since then. "
+         "First, CAD to Cost now runs on rules alone. No AI is needed. Thirteen commodities can be costed from a "
+         "CAD file. When the geometry can't decide something, like the process route, the material, or the hole "
+         "count on an STL file, the tool asks the engineer instead of guessing. "
+         "Second, gears. Cost engineering and the plant asked for this. Gears used to go through the milling "
+         "model, which can't see a tooth. Now gear cutting is its own process, and the cycle is worked out from "
+         "the gear itself. "
+         "Third, the Windows package. It's a folder you copy to a locked-down laptop and double-click. There's no "
+         "installer, no admin rights and no internet, and it runs with AI off. "
+         "Fourth, tooling is now spread over annual volume times programme life. "
+         "And the amber bar is me being straight. The gear model runs on representative shop figures, and we "
+         "haven't checked a gear against a known cost yet.")
 
 # ═══════════════ 21b — BACKUP: LIKELY QUESTIONS ═══════════════
 s = header('What we need from the plant to make this quotable', 'Backup · The ask')
@@ -1017,7 +1053,7 @@ text(s, Inches(0.45), Inches(1.9), Inches(12.45), Inches(0.5),
 asks = [
     ('1', 'The gear machine list', 'Highest impact',
      'Machine class, £/hr, and the capacity limits — biggest module, largest diameter, widest face. '
-     'The tool currently picks from 14 representative machine classes; yours replace them outright.', GREEN),
+     'Today the tool picks from a set of representative machine classes; yours replace them.', GREEN),
     ('2', 'Feeds, speeds and tool life', 'Second',
      'Cutting speed and axial feed by material and module band, hob and cutter price, and parts between '
      'regrinds. These drive the cycle time, and the cycle time drives the cost.', BLUE),
@@ -1045,62 +1081,58 @@ text(s, Inches(0.75), Inches(6.68), Inches(11.9), Inches(0.5),
        ('roughly half a day to export the machine list and the feeds table, plus two costings you have '
         'already done. Nothing new has to be measured.', 11, BODY, False)]],
      anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.1)
-notes(s, "This slide is aimed squarely at you" + chr(44) + " and it is short on purpose. "
-         "The gear model is built. The arithmetic behind the cycle times is the gear-train maths, and you can "
-         "check it line by line — the tool prints the sum. What it does not have is your shop. Right now it is "
-         "running on representative feeds and speeds and a representative machine list, and it says so on every "
-         "single estimate it produces. I would rather it under-claim than have it quietly pretend. "
-         "So there are three things I need, and they are in order of how much each one moves the number. "
-         "First, your gear machine list — the classes, the hourly rates, and the capacity limits. That is the "
-         "single biggest one, because right now the tool is choosing between fourteen machine classes I have "
-         "described rather than fourteen machines you actually own. "
-         "Second, the feeds and speeds by material and module, plus what a hob costs and how many parts it cuts "
+notes(s, "This slide is aimed squarely at the plant, and it's short on purpose. "
+         "The gear model is built, and you can check its arithmetic line by line. What it doesn't have is your "
+         "shop. Right now it runs on representative feeds, speeds and machines, and the estimate says so. I'd "
+         "rather it under-claimed than quietly pretended. "
+         "So I need three things, in order of how much each one moves the number. "
+         "First, your gear machine list. That means the classes, the hourly rates and the size limits. Today the "
+         "tool picks from machine classes I described, not machines you own. "
+         "Second, feeds and speeds by material and module, and what a hob costs and how many parts it cuts "
          "between regrinds. Those drive the cycle time, and the cycle time drives the cost. "
-         "Third, and this is the one that turns it from a model into a proven model — two gears where you already "
-         "know the real cost. Ideally one that is just hobbed and one that is hardened and ground, because those "
-         "are the two ends of the range. Until we do that comparison, everything I have shown you is internally "
-         "consistent but unproven. "
-         "The effort is about half a day of exports plus two costings you have already done. Nothing new has to "
-         "be measured, and nothing has to be created for me.")
+         "Third, two gears where you already know the real cost. Ideally one just hobbed and one hardened and "
+         "ground. Until we make that comparison, the model is consistent but unproven. "
+         "It's about half a day of exports on your side.")
 
 # ═══════════════ BACKUP: LIKELY QUESTIONS ═══════════════
 s = header('Questions you may be asking', 'Backup · Straight answers')
 qa = [
-    ('Why not just buy aPriori?', 'A SaaS suite means our CAD and rates live in a vendor cloud, it cannot learn from our '
-     'quote history, and it costs six figures every year. CostVision is on-prem, self-learning, and our IP.'),
-    ('Is our data training a public AI?', 'No. AI calls run zero-retention in our own cloud tenancy (Option B) — and in '
-     'air-gapped mode there are provably no external calls at all. Nothing is ever used to train public models.'),
-    ('What if the key developer leaves?', '1,777 automated tests define how everything must behave, the architecture is '
-     'documented in writing, and Phase 4 trains a named CAPEE-side maintainer.'),
-    ('What does it cost to run?', 'One VM, a standard corporate database, and pay-per-use AI in our tenancy. '
-     'No licences, no per-seat fees.'),
-    ('How do we know the numbers are right?', 'Physics-based cost build-ups on OUR uploaded rates, calibrated against OUR '
-     'real PO prices — and the accuracy dashboard tracks the error openly, part by part.'),
+    ('Why not just buy aPriori?', 'A bought suite carries an annual licence and may keep our CAD in a vendor '
+     'cloud. CostVision runs in-house, learns from our own prices, and is ours.'),
+    ('Is our data training a public AI?', 'No. The JLR build has AI switched off, so no AI calls are made at all. '
+     'The tool says "AI is switched off in this installation".'),
+    ('What if the key developer leaves?', '2,438 automated tests and 6 pinned real parts define how it must behave. '
+     'The design is written down, and Phase 4 trains a CAPEE-side maintainer.'),
+    ('What does it cost to run?', 'Today: a laptop, no internet, no AI. For a server: one VM and the corporate '
+     'database. No licences, no per-seat fees.'),
+    ('How do we know the numbers are right?', 'Every £ traces to a rate. It matches a hand calculation to under 0.01%. '
+     'We have not yet compared it with a price JLR paid; that is measured as actuals are logged.'),
 ]
 for i, (q, a) in enumerate(qa):
     y = Inches(2.0 + i * 0.98)
     box(s, Inches(0.45), y, Inches(12.45), Inches(0.86), fill=(PANEL if i % 2 == 0 else BG), round_=True, radius=0.1)
     text(s, Inches(0.8), y + Inches(0.1), Inches(3.9), Inches(0.7), [[(q, 12.5, BLUE, True)]], line_spacing=1.08)
     text(s, Inches(4.9), y + Inches(0.1), Inches(7.8), Inches(0.7), [[(a, 11, BODY, False)]], line_spacing=1.1)
-notes(s, "Backup for the question-and-answer session — the five questions most likely to come up, with straight "
-         "answers. Why not buy aPriori? Because a vendor SaaS puts our CAD and our rates in their cloud, can't learn "
-         "from our quote history, and bills six figures a year forever — while CostVision is on-premise, "
-         "self-learning and our own intellectual property. Is our data training a public AI? No — zero retention in "
-         "our own tenancy, and the air-gapped switch makes 'no external calls' provable rather than promised. "
-         "Key-person risk? Seven hundred ninety-three automated tests, written architecture docs, and a trained "
-         "second maintainer from Phase 4. Running cost? A virtual machine, a standard database, pay-per-use AI — "
-         "no licences. And how do we trust the numbers? Physics build-ups on our own rates, calibrated against our "
-         "own purchase orders, with the error tracked openly on the accuracy dashboard.")
+notes(s, "This is a backup for questions. Here are the five I expect, with straight answers. "
+         "Why not just buy aPriori? A bought suite has an annual licence and may keep our CAD in a vendor's cloud. "
+         "Ours runs in-house, learns from our own prices, and belongs to us. "
+         "Is our data training a public AI? No. In the JLR build AI is switched off, so no AI calls happen at all. "
+         "The tool tells you that on screen. "
+         "What if the key developer leaves? There are 2,438 tests and six pinned real parts that define how it "
+         "must behave. The design is written down, and phase four trains a maintainer on the CAPEE side. "
+         "What does it cost to run? Today, a laptop. For a server, one virtual machine and the corporate database. "
+         "And how do we know the numbers are right? Every pound traces to a rate, and the arithmetic matches a "
+         "hand calculation. But we haven't compared it with a price JLR paid yet, and I'd rather say so.")
 
 # ═══════════════ 22 — BACKUP: PHOTO-TO-BOM WORKFLOW ═══════════════
-s = header('Photo to costed BOM — how it works, step by step', 'Backup · Feature deep-dive')
+s = header('PCB photo to costed BOM — step by step', 'Backup · Optional AI mode · off at JLR')
 pcb_steps = [
-    ('1 · Upload photos', 'Up to 5 photos of the board (+ an optional BOM or pick-and-place file). Photos are auto-downsized in the browser; nothing is stored.', BLUE),
-    ('2 · Board classification', 'AI identifies what the board is — domain (automotive, industrial, consumer) and safety level (ASIL) — so the right cost assumptions apply.', INDIGO),
-    ('3 · OCR text pass', 'Every printed marking is read: chip part numbers, connector types, silkscreen references — hard evidence, not guesswork.', VIOLET),
-    ('4 · Full vision BOM extraction', 'The AI locates and identifies every visible component — type, package, value, manufacturer part number (~20 seconds).', CYAN),
-    ('5 · Deterministic clean-up & costing', 'Code (not AI) normalises types, parses values, scores per-line confidence, grounds prices against the distributor catalogue, then adds board fabrication + SMT assembly + test on country rates.', GREEN),
-    ('6 · Same photos, same answer', 'The result is cached by a digital fingerprint (SHA-256) — re-running identical photos returns the identical BOM. Export PDF/Excel, save to library, feed the learning loop.', AMBER),
+    ('1 · Upload photos', 'Up to 5 photos of the board, plus an optional BOM or pick-and-place file. Only when AI mode is on.', BLUE),
+    ('2 · Board type (AI)', 'The AI classifies the board, for example automotive or consumer, so the right cost assumptions apply.', INDIGO),
+    ('3 · Read the markings (AI)', 'Printed part numbers and references on the chips are read from the photo.', VIOLET),
+    ('4 · List the parts (AI)', 'The AI lists each visible part: type, package, value and part number where it can.', CYAN),
+    ('5 · Rules clean up and cost it', 'Plain code, not AI, checks each line, caps prices against a catalogue, and adds assembly and test. Board fab is a bought-in price.', GREEN),
+    ('6 · Same photos, same answer', 'The result is stored against a fingerprint of the photos, so the same photos give the same BOM.', AMBER),
 ]
 y = Inches(1.95)
 for i, (t, d, c) in enumerate(pcb_steps):
@@ -1109,40 +1141,40 @@ for i, (t, d, c) in enumerate(pcb_steps):
     if i < len(pcb_steps) - 1:
         down_arrow(s, Inches(6.5), y + Inches(0.015), h=Inches(0.15))
         y += Inches(0.18)
-notes(s, "The photo-to-BOM workflow in six steps. An engineer photographs a circuit board — up to five photos, and "
-         "optionally a BOM or pick-and-place file if one exists. Step two: the AI first classifies what kind of "
-         "board it is, including automotive safety level, so the right cost assumptions apply. Step three is an OCR "
-         "pass — it literally reads the part numbers printed on the chips, which anchors the analysis in hard "
-         "evidence. Step four is the full vision extraction: every visible component located, typed and identified, "
-         "in about twenty seconds. Step five matters for trust: ordinary deterministic code — not AI — cleans the "
-         "list, scores confidence line by line, grounds prices against a distributor catalogue, and then builds the "
-         "full cost: bare board fabrication, component purchase, SMT assembly time and test, on our country rates. "
-         "And step six: the result is fingerprinted and cached, so the same photos always give the same answer — "
-         "an auditable property no ad-hoc AI chat can offer.")
+notes(s, "This slide and the next are about the PCB photo feature. I need to say up front that it's part of the "
+         "optional AI mode, and in the JLR build it's switched off and hidden. I'm including it so you know what "
+         "the code can do if AI is ever approved. "
+         "An engineer uploads up to five photos of a board. The AI works out what kind of board it is, reads the "
+         "printed markings, and lists the parts it can see. "
+         "Step five is the important one for trust. From there it's plain code, not AI. It checks each line, caps "
+         "prices against a catalogue, and adds the assembly and test cost. The bare board is priced as a bought-in "
+         "price from fabricators' price tables, so no extra overhead or margin goes on top. "
+         "And step six. The same photos give the same answer, because the result is stored against a fingerprint "
+         "of the photos. The AI reads. It never sets the price.")
 
 # ═══════════════ 23 — BACKUP: PHOTO-TO-BOM TECH / ACCURACY / TIME ═══════════════
-s = header('Photo to costed BOM — technology, accuracy, speed', 'Backup · Feature deep-dive')
+s = header('PCB photo to BOM — how it works, checks, status', 'Backup · Optional AI mode · off at JLR')
 cols3 = [
-    ('Technology', BLUE, [
-        'Claude vision model — via our controlled endpoint (Option B) ',
-        '5-stage pipeline: classify → OCR → extract → cost → cache',
-        'Deterministic TypeScript post-processor for types, values, MPNs',
-        'SHA-256 result cache — repeatable, auditable output',
-        'Optional live pricing (Nexar/RS/Farnell) — part numbers only, opt-in',
+    ('How it works', BLUE, [
+        'An AI vision model reads the photos',
+        'Steps: classify, read, list, cost, store',
+        'Plain code tidies types, values, part numbers',
+        'Same photos give the same answer',
+        'Live part pricing is optional: part numbers only',
     ]),
-    ('Why it is accurate', GREEN, [
-        'OCR evidence + vision cross-check — read, not guessed',
-        'Code normalises every line; implausible part numbers rejected',
-        'Per-line confidence score — low lines flagged for engineer review',
-        'Prices grounded against the distributor catalogue, shown as ranges',
-        'Learning loop calibrates against real quotes over time',
+    ('Checks', GREEN, [
+        'Markings are read, then cross-checked',
+        'Code rejects part numbers that make no sense',
+        'Each line has a confidence score',
+        'Prices are capped against a catalogue',
+        'Board fab is a bought-in price, no margin on top',
     ]),
-    ('Speed', VIOLET, [
-        'Main AI pass: ~20 seconds',
-        'Full costed BOM: typically under a minute',
-        'Repeat of the same board: instant (cache)',
-        'Manual alternative: hours to days per board',
-        'Works from photos alone — no CAD, no drawings needed',
+    ('Status at JLR', VIOLET, [
+        'Switched off; the screen is hidden',
+        'Code kept; one setting turns it on',
+        'When on, rate-limited per user',
+        'AI reads only; it never sets a price',
+        'PCB fab and PCBA forms still cost boards',
     ]),
 ]
 _COL4_H = _col_panel_h(cols3)
@@ -1156,29 +1188,29 @@ for i, (t, c, items) in enumerate(cols3):
 box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=AMBERBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
      [[('Honest limits: ', 12, AMBER, True),
-       ('a vision BOM is a strong first pass, not gospel — hidden or underside parts need extra photos, and '
-        'low-confidence lines are deliberately flagged for a human check rather than silently guessed.', 11.5, BODY, False)]],
+       ('a photo BOM is a first pass, not the final answer. Hidden or underside parts need more photos, and '
+        'low-confidence lines are flagged for a human check.', 11.5, BODY, False)]],
      line_spacing=1.15)
-notes(s, "The same feature from three angles. Technology: the vision model runs through our controlled endpoint, "
-         "inside a five-stage pipeline, and everything after the AI step is plain deterministic code — including a "
-         "fingerprint cache that makes results repeatable and auditable. Live distributor pricing is opt-in and "
-         "sends only part-number text, never images. Accuracy: the OCR pass means part numbers are read off the "
-         "chips, not guessed; the post-processor rejects implausible part numbers; every line carries a confidence "
-         "score and low ones are flagged for review; and prices are grounded against a catalogue and shown as "
-         "ranges, not false precision. Speed: the heavy AI pass is about twenty seconds, a full costed BOM lands in "
-         "under a minute, and repeating the same board is instant. The honest limit to state up front: it can only "
-         "see what is photographed — underside components need an underside photo — and where it is unsure it says "
-         "so and asks for a human check. That is by design.")
+notes(s, "Here's the same PCB feature from three angles. Again, this is the optional AI mode, and it is off at JLR. "
+         "How it works. An AI vision model reads the photos. After that, plain code tidies the types, values and "
+         "part numbers. The same photos always give the same answer. Live part pricing is optional, and it only "
+         "sends part numbers, never images. "
+         "The checks. Markings are read and then cross-checked. Code throws out part numbers that make no sense. "
+         "Every line gets a confidence score, and prices are capped against a catalogue. "
+         "The status at JLR is the column I'd point to. It's switched off and hidden. The code is kept, and one "
+         "setting turns it on. If it's on, each user is rate-limited. And even with AI off, the PCB fab and PCBA "
+         "forms still cost a board from inputs you type. "
+         "The honest limit is that it only sees what's in the photo, so hidden parts need more photos.")
 
 # ═══════════════ 24 — BACKUP: CAD-TO-COST WORKFLOW ═══════════════
 s = header('CAD file to cost — how it works, step by step', 'Backup · Feature deep-dive')
 cad_steps = [
-    ('1 · Upload a CAD model', 'STEP, IGES or STL from any CAD system — as the standalone CAD-to-Cost flow or inside any of the 13 commodity calculators.', BLUE),
-    ('2 · Opened in memory, inside our server', 'The OCCT geometry kernel (the same engine class commercial CAD tools are built on) reads the model in memory. The file is never written to disk and never leaves the server.', INDIGO),
-    ('3 · The model is measured', 'Exact volume, surface area, bounding box, mean wall thickness, hole count, free-form faces — measured from the geometry, not typed in from a drawing.', VIOLET),
-    ('4 · Inputs auto-filled', 'Mass from volume × material density, stock/billet size, and suggested process parameters for the chosen commodity — the engineer reviews and adjusts.', CYAN),
-    ('5 · Physics engines cost it', 'Material, cycle or machining time, labour, tooling amortisation, energy and overheads — computed bottom-up on OUR uploaded rates for the chosen country.', GREEN),
-    ('6 · Defensible result', 'Full cost breakdown + DFM warnings (thin walls, tonnage limits) + an honest uncertainty band — and the learning loop tightens it as real quotes arrive.', AMBER),
+    ('1 · Upload a CAD model', 'STEP, IGES or STL. 13 commodities can be costed from CAD. A DXF flat pattern can go with a sheet-metal STEP.', BLUE),
+    ('2 · Opened on the same machine', 'The OpenCASCADE geometry engine reads the file from a local temp file, then it is deleted. It never leaves the machine.', INDIGO),
+    ('3 · The model is measured', 'Volume, weight, size, wall thickness, holes and features, measured from the geometry, not typed from a drawing.', VIOLET),
+    ('4 · Rules fill the inputs, and it asks', 'Rules turn the measurements into cost inputs. Where geometry cannot decide (route, material), it asks you.', CYAN),
+    ('5 · The engine costs it', 'Material, process, labour, tooling, packaging, logistics, overhead and margin, on our rates for the chosen region.', GREEN),
+    ('6 · A result you can defend', 'The 8-bucket breakdown, a self-audit, design warnings and a P10–P90 band. Logged actuals tighten the band.', AMBER),
 ]
 y = Inches(1.95)
 for i, (t, d, c) in enumerate(cad_steps):
@@ -1187,38 +1219,39 @@ for i, (t, d, c) in enumerate(cad_steps):
     if i < len(cad_steps) - 1:
         down_arrow(s, Inches(6.5), y + Inches(0.015), h=Inches(0.15))
         y += Inches(0.18)
-notes(s, "The CAD-to-cost workflow. An engineer uploads a STEP, IGES or STL model — either in the dedicated "
-         "CAD-to-Cost flow or directly inside any of thirteen commodity calculators. Step two is the security "
-         "headline: the geometry engine opens the model in memory, inside our own server — the file is never "
-         "written to disk and never leaves the network. Step three, the engine measures the part: exact volume, "
-         "surface area, wall thickness, holes — numbers measured from the actual geometry rather than read off a "
-         "drawing by eye. Step four, those measurements auto-fill the costing inputs — mass, stock size, suggested "
-         "process parameters — which the engineer reviews rather than types. Step five, the physics engines build "
-         "the cost bottom-up on our own rates. And step six, the output is a defensible breakdown with "
-         "manufacturability warnings and an honest uncertainty band that tightens as the learning loop absorbs "
-         "real quotes.")
+notes(s, "Here's CAD to Cost step by step. This one runs with AI off, so it's exactly what JLR has. "
+         "You upload a STEP, IGES or STL file. Thirteen commodities can be costed this way. For sheet metal you "
+         "can add a DXF flat pattern, and the measured blank is used instead of the bounding box. "
+         "The geometry engine opens the file on the same machine. It sits in a temp file while it's measured, "
+         "and then it's deleted. "
+         "The engine measures volume, weight, size, walls, holes and features. Rules then turn those measurements "
+         "into cost inputs. Where the geometry can't decide something, like the process route or the material "
+         "family, the tool asks you rather than guessing. "
+         "Then the cost engine does the arithmetic across the eight buckets, on our rates, for the region you "
+         "pick. You get the breakdown, a self-audit, design warnings and an uncertainty band. Logging real prices "
+         "tightens that band over time.")
 
 # ═══════════════ 25 — BACKUP: CAD-TO-COST TECH / ACCURACY / TIME ═══════════════
-s = header('CAD file to cost — technology, accuracy, speed', 'Backup · Feature deep-dive')
+s = header('CAD file to cost — how it works, checks, effort', 'Backup · Feature deep-dive')
 cols4 = [
-    ('Technology', BLUE, [
-        'The same geometry kernel commercial CAD tools are built on',
-        '18 physics cost engines do the actual costing',
-        'The AI never receives the CAD file — only the measurements',
-        'Our own rate library, across 20 countries',
+    ('How it works', BLUE, [
+        'OpenCASCADE measures the geometry',
+        'Rules, not AI, turn it into inputs',
+        'Cost engines for 19 processes',
+        'Our own rate library, 20 regions',
     ]),
-    ('Why it is accurate', GREEN, [
-        'Measured, not estimated — real volume, real mass',
-        'Every figure traceable line by line',
-        'Checks wall thickness, tonnage and press force',
-        'An honest uncertainty band on every result',
-        'Three real quotes took the error from 10.9% to 0.3%',
+    ('Checks', GREEN, [
+        'Measured volume and weight',
+        'Every figure traces to a rate',
+        'Hand calc matched to under 0.01%',
+        '6 real parts pinned in a baseline',
+        'Self-audit and a P10–P90 band',
     ]),
-    ('Speed', VIOLET, [
-        'Geometry measured in seconds',
-        'A first price in a few minutes, mostly review time',
-        'By hand: hours of take-off per part',
-        'The same flow in 13 commodities — one skill to learn',
+    ('Engineer effort', VIOLET, [
+        'Measuring is automatic',
+        'You answer what geometry cannot',
+        'A machined STL needs a typed cycle time',
+        'Same flow for all 13 CAD commodities',
     ]),
 ]
 _COL4_H = _col_panel_h(cols4)
@@ -1232,38 +1265,39 @@ for i, (t, c, items) in enumerate(cols4):
 box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=GREENBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
      [[('Security, restated: ', 12, GREEN, True),
-       ('the CAD file is processed in memory inside our backend and is never stored or transmitted. Only a short '
-        'numeric geometry summary reaches the AI layer — and in air-gapped mode, nothing leaves at all.', 11.5, BODY, True)]],
+       ('the CAD file is measured on the same machine and deleted afterwards. It is never sent anywhere. '
+        'In the JLR build, AI is off, so no geometry summary goes out either.', 11.5, BODY, True)]],
      line_spacing=1.15)
-notes(s, "CAD-to-cost from the same three angles. Technology: the geometry work is done by OCCT — Open CASCADE, "
-         "the same engineering kernel class that commercial CAD packages build on — running inside our backend, "
-         "with a pure-TypeScript fast path for STL files. The costing itself is done by our eighteen deterministic "
-         "physics engines. The AI's only job is translating the measured geometry into sensible process inputs — "
-         "and it never receives the CAD file, only a short numeric summary. Accuracy: the inputs are measured, not "
-         "estimated — exact volume gives exact mass; every cost line is traceable; manufacturability checks catch "
-         "physically impossible set-ups; the uncertainty band is shown honestly; and calibration against just "
-         "three real quotes took machining error from eleven percent to a third of a percent. Speed: seconds to "
-         "measure, instant to cost, minutes to a defensible first price — against hours of manual take-off. And "
-         "the green bar restates the point that matters most in this room: the CAD never leaves our walls, full "
-         "stop.")
+notes(s, "Same feature, three angles. "
+         "How it works. OpenCASCADE, a proper geometry engine, measures the model. Rules, not AI, turn those "
+         "measurements into inputs. The cost engines for nineteen processes do the arithmetic, on our rate "
+         "library, across twenty regions. "
+         "The checks. Volume and weight are measured, not guessed. Every figure traces to a rate. The arithmetic "
+         "matches a hand calculation to under a hundredth of a percent, and six real parts are pinned so nothing "
+         "moves by accident. Every result gets a self-audit and a P10 to P90 band. "
+         "Engineer effort. The measuring is automatic. You answer the questions the geometry can't settle. One "
+         "honest catch: an STL file has no feature table, so a machined STL needs you to type a cycle time before "
+         "it will cost. "
+         "And the green bar again. The file is measured on the same machine and deleted. At JLR, nothing goes out "
+         "at all.")
 
 # ════════════════════ Auto-capture → Cost engine ════════════════════
-slide = header("What's Auto-Captured — Fed to the Cost Engine", 'CAD-to-Cost · zero manual entry')
+slide = header("What the tool measures — and where it goes", 'CAD-to-Cost · measured, then checked by you')
 _rows = [
-    ('Volume — exact (OCCT kernel)', 'Material mass · stock size'),
-    ('Weight = volume × density', 'Raw-material £ (Al/steel/iron/Cu/Ti)'),
+    ('Volume (OpenCASCADE)', 'Material mass · stock size'),
+    ('Weight = volume × density', 'Raw-material £'),
     ('Bounding box / envelope', 'Machine sizing · stock · setups'),
-    ('Body / component count', 'Assembly cost · BOM line count'),
-    ('Hole & boss table — Ø, depth, count', 'Drill / bore / tap operations'),
-    ('Wall thickness — min/mean/heatmap', 'Mould & cast feasibility · cooling'),
-    ('Draft & undercut analysis', 'Tooling complexity — slides'),
-    ('Face-type areas (planar/cyl)', 'Machining area · paint area'),
-    ('CNC cycle-time & setup estimate', 'Process-time baseline'),
+    ('Body count', 'Assembly cost · BOM line count'),
+    ('Hole and boss table (STEP, IGES)', 'Drill / bore / tap operations'),
+    ('Wall thickness', 'Route choice · mould and cast checks'),
+    ('Draft and undercuts', 'Tooling complexity'),
+    ('Face-type areas', 'Machining area · paint area'),
+    ('CNC cycle estimate (STEP, IGES)', 'Process-time baseline'),
 ]
 _lx, _lw, _cxo = Inches(0.45), Inches(7.35), Inches(4.15)
 _y = Inches(1.72)
 box(slide, _lx, _y, _lw, Inches(0.4), fill=PANEL2, line=LINE, round_=True, radius=0.08)
-text(slide, _lx + Inches(0.15), _y + Inches(0.06), Inches(3.95), Inches(0.3), [[('Auto-captured from geometry (no typing)', 9.5, DARK, True)]])
+text(slide, _lx + Inches(0.15), _y + Inches(0.06), Inches(3.95), Inches(0.3), [[('Measured from the geometry', 9.5, DARK, True)]])
 text(slide, _lx + _cxo + Inches(0.1), _y + Inches(0.06), _lw - Inches(4.25), Inches(0.3), [[('→ Feeds this cost driver', 9.5, BLUE, True)]])
 _y += Inches(0.46)
 for _a, _b in _rows:
@@ -1274,29 +1308,34 @@ for _a, _b in _rows:
 _rx, _rw = Inches(8.05), Inches(4.85)
 box(slide, _rx, Inches(1.72), _rw, Inches(2.75), fill=PANEL, round_=True, radius=0.05)
 box(slide, _rx, Inches(1.72), Inches(0.07), Inches(2.75), fill=BLUE)
-text(slide, _rx + Inches(0.2), Inches(1.84), _rw - Inches(0.32), Inches(0.3), [[('⚙  Worked example — Spur Gear (m3 · z38)', 11, DARK, True)]])
+text(slide, _rx + Inches(0.2), Inches(1.84), _rw - Inches(0.32), Inches(0.3), [[('What the tool asks you', 11, DARK, True)]])
 text(slide, _rx + Inches(0.2), Inches(2.22), _rw - Inches(0.32), Inches(2.1), [
-    [('20MnCr5 case-hardening steel — captured automatically:', 9.5, BODY, False)],
-    [('   Volume 264.9 cm³  ·  Weight 2.08 kg', 9.5, DARK, True)],
-    [('   Envelope 120 × 120 × 30 mm  ·  1 body', 9.5, BODY, False)],
-    [('→ Should-cost, India ex-works (GBP):', 9.5, GREEN, True)],
-    [('   Material £3.36 · Process £11.40 · Labour £1.36', 9.5, BODY, False)],
-    [('   Overhead £1.95 · Margin £1.83  + heat-treat £1.77', 9.5, BODY, False)],
-    [('   =  £21.90 / part  (≈ ₹2,398)  ·  £10.53 / kg', 10, DARK, True)],
+    [('Where geometry cannot decide, it asks:', 9.5, BODY, False)],
+    [('   Process route, e.g. cast, forge or machine', 9.5, DARK, True)],
+    [('   Material family', 9.5, DARK, True)],
+    [('   Hole count or cycle time on an STL', 9.5, DARK, True)],
+    [('Walls over ~6 mm are offered casting, forging,', 9.5, BODY, False)],
+    [('cast + machine or machining — never sheet metal', 9.5, BODY, False)],
+    [('or moulding.', 9.5, BODY, False)],
 ], line_spacing=1.05)
 box(slide, _rx, Inches(4.6), _rw, Inches(1.75), fill=PANEL2, line=GREEN, round_=True, radius=0.05)
 box(slide, _rx, Inches(4.6), Inches(0.07), Inches(1.75), fill=GREEN)
-text(slide, _rx + Inches(0.2), Inches(4.72), _rw - Inches(0.32), Inches(0.3), [[('\U0001F512  The golden rule', 11, GREEN, True)]])
+text(slide, _rx + Inches(0.2), Inches(4.72), _rw - Inches(0.32), Inches(0.3), [[('The golden rule', 11, GREEN, True)]])
 text(slide, _rx + Inches(0.2), Inches(5.08), _rw - Inches(0.32), Inches(1.2),
-     [[('AI never sets a price. It only classifies material & process; every £ is deterministic arithmetic on the measured geometry, bounded and traceable to the rate library — which is what makes the output defensible.', 9.5, BODY, False)]], line_spacing=1.05)
+     [[('AI never sets a price, even when it is on. At JLR it is off: rules turn the measurements into inputs, and every £ is arithmetic you can trace to the rate library.', 9.5, BODY, False)]], line_spacing=1.05)
 notes(slide,
-      "This is the slide that answers the question directly: what does the tool pull off the model on its own, and "
-      "where does each thing go. Left, every item is measured with nothing typed; right, the cost driver it feeds. "
-      "Volume and weight from the kernel make material exact; the envelope sizes machine and stock; body count is "
-      "assembly and BOM scope; holes become drilling; wall thickness decides mould and cast feasibility; draft "
-      "flags undercuts that need slides; face areas drive machining and paint. On the right, the real gear — two "
-      "kilos of gear steel, about twenty-two pounds ex-works from India, in sterling. And the guardrail: the AI "
-      "never sets the price. It classifies; the engine does deterministic maths on the geometry, every rate traceable.")
+      "This slide answers a simple question. What does the tool take off the model by itself, and where does "
+      "each thing go? "
+      "On the left is what it measures, and next to each is the cost driver it feeds. Volume and weight set the "
+      "material cost. The envelope sizes the machine and the stock. Holes become drilling and tapping. Wall "
+      "thickness helps choose the route. Draft and undercuts show tooling complexity, and face areas drive "
+      "machining and paint area. The hole table and the CNC cycle estimate need a STEP or IGES file. An STL has "
+      "no feature table. "
+      "On the right is what it asks you. The geometry can't always tell the process route or the material "
+      "family, so the tool asks instead of guessing. And a thick-walled part is only offered casting, forging or "
+      "machining routes. "
+      "At the bottom is the golden rule. AI never sets a price. At JLR it's off anyway. Rules and arithmetic do "
+      "all of it, and every pound traces to a rate.")
 
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
