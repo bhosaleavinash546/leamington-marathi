@@ -11081,7 +11081,28 @@ const CAD_INLINE_COMMODITIES = new Set<CommodityType>([
   'injection_moulding', 'blow_moulding', 'extrusion', 'thermoforming', 'rotational_moulding', 'rubber', 'composites',
 ]);
 
-function inlineCADPanelHTML(): string {
+/**
+ * What this quick-fill covers on the three forms where it fills only part of
+ * the form (L7). The panel promised "real weight, size & inputs" on all of them
+ * alike. Counted from applyCADToForm against the rendered forms; the routes
+ * checked through /api/cad/analyze on a real STEP part — sheet-metal fab costs
+ * from the model outright, composites after one laminate question, extrusion
+ * has no rules yet. (The review had all three as not costable from CAD.)
+ */
+const CAD_PARTIAL_FILL: Partial<Record<CommodityType, string>> = {
+  sheet_metal_fab: 'This quick-fill sets 6 of the form\'s 55 fields: material, part weight, bend count, blank cycle '
+    + 'time, tolerance and tooling cost. Cutting, welding and finishing stay at their defaults. For a costing built '
+    + 'entirely from the model, use CAD-to-Cost, which measures the blank and asks what it cannot measure.',
+  extrusion: 'This quick-fill sets 4 of the form\'s 29 fields: material, profile kg/m, wall thickness and part length. '
+    + 'Press, die and line settings stay at their defaults. CAD-to-Cost has no extrusion rules yet, so this form is '
+    + 'the way to cost one.',
+  composites: 'This quick-fill sets 10 of the form\'s 25 fields: process, part weight, area, plies, fibre fraction, '
+    + 'cure time, waste, mould cost, tool life and amortisation. Cure time and mould cost are estimates from the shape '
+    + '— check them. CAD-to-Cost can also cost a composite part from the model once you name the laminate.',
+};
+
+function inlineCADPanelHTML(commodity?: CommodityType): string {
+  const partial = commodity ? CAD_PARTIAL_FILL[commodity] : undefined;
   return `
     <details class="cad-inline-panel" style="margin:0 0 10px;border:1px dashed var(--border-strong);border-radius:8px;background:var(--surface-elevated)">
       <summary style="cursor:pointer;padding:8px 12px;font-size:0.8rem;font-weight:600;color:var(--accent);user-select:none">📐 Upload CAD to auto-fill this form <span style="font-weight:400;color:var(--text-secondary)">— STEP / IGES → real weight, size &amp; inputs</span></summary>
@@ -11090,7 +11111,8 @@ function inlineCADPanelHTML(): string {
           <input type="file" id="cad-inline-input" accept=".step,.stp,.iges,.igs,.stl" style="font-size:0.72rem"/>
           <button class="btn btn-secondary btn-sm" id="cad-inline-btn" disabled style="font-size:0.72rem">Analyze &amp; Fill</button>
         </div>
-        <div id="cad-inline-status" style="margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45">Solid formats (STEP/IGES) give true volume &amp; weight; STL/OBJ meshes are approximate.</div>
+        ${partial ? `<div class="cad-inline-scope" style="margin-top:6px;font-size:0.72rem;color:var(--text-primary);line-height:1.45;border-left:3px solid var(--warning);padding-left:8px">${partial}</div>` : ''}
+        <div id="cad-inline-status" style="margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45">Solid formats (STEP/IGES) give true volume &amp; weight; STL meshes are approximate.</div>
         <div id="cad-inline-viewer-host" style="display:none;margin-top:8px"></div>
       </div>
     </details>`;
@@ -12636,7 +12658,7 @@ function switchCommodity(type: CommodityType): void {
   // Inline CAD-to-fill uploader on geometry-relevant commodity forms (reuses the
   // CAD-to-Cost OCCT pipeline + applyCADToForm mapping). Injected on top.
   if (CAD_INLINE_COMMODITIES.has(type)) {
-    area.insertAdjacentHTML('afterbegin', inlineCADPanelHTML());
+    area.insertAdjacentHTML('afterbegin', inlineCADPanelHTML(type));
     wireInlineCAD(type);
   }
 
