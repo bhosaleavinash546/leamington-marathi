@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
+import { aiLimit } from '../middleware/ai-limit.js';
 import { analyzeRfq, type RfqLineItem } from '../../src/engine/rfq.js';
 
 const router = Router();
@@ -10,7 +11,7 @@ const DECOMPOSE_SYSTEM = `You are a strategic-sourcing cost engineer. Extract th
 Infer the commodity from the material/description. Return ONLY the JSON array, nothing else.`;
 
 /** POST /api/rfq/analyze — analyse RFQ line items (or decompose raw text first). */
-router.post('/analyze', async (req: Request, res: Response): Promise<void> => {
+router.post('/analyze', aiLimit('rfq'), async (req: Request, res: Response): Promise<void> => {
   const { lines, text, apiKey } = req.body as { lines?: RfqLineItem[]; text?: string; apiKey?: string };
 
   try {

@@ -5,6 +5,7 @@ import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { createAnthropic, isAirGapped, aiDisabledBody, AI_DISABLED_MESSAGE } from '../utils/ai-client.js';
+import { aiLimit } from '../middleware/ai-limit.js';
 import {
   computeAllCountryCosts,
   computePCBCountryCost,
@@ -1011,7 +1012,7 @@ ${raw}`;
 }
 
 // POST /api/pcb/analyze-image
-router.post('/analyze-image', upload.fields([
+router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
   { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },   // up to 8 images: top, bottom, + 6 close-ups
   { name: 'bomFile', maxCount: 1 },
 ]), async (req, res): Promise<void> => {
@@ -1584,7 +1585,7 @@ function buildCorrectionContext(
 }
 
 // POST /api/pcb/reanalyze — skip Stages 1 & 2, run Stage 3+4 with corrected values
-router.post('/reanalyze', upload.fields([
+router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
   { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },
 ]), async (req, res): Promise<void> => {
   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
@@ -2004,7 +2005,7 @@ router.post('/scenario', (req, res): void => {
 
 // POST /api/pcb/analyze-image-stream — SSE streaming variant of analyze-image
 // Emits progress events after each stage so the UI can show live stage updates.
-router.post('/analyze-image-stream', upload.fields([
+router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },
   { name: 'bomFile', maxCount: 1 },
 ]), async (req, res): Promise<void> => {

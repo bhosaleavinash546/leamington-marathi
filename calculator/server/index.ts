@@ -34,6 +34,7 @@ import bomRouter from './routes/bom.js';
 import rfqRouter from './routes/rfq.js';
 import { aiEndpointDescription, isAirGapped } from './utils/ai-client.js';
 import { JWT_SECRET_CONFIGURED, requireAuth } from './middleware/auth-middleware.js';
+import { aiLimit } from './middleware/ai-limit.js';
 import knowledgeRouter from './routes/knowledge.js';
 import shareRouter from './routes/share.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
@@ -102,9 +103,9 @@ app.use('/api/pcb', requireAuth, pcbRouter);
 app.use('/api/projects', projectsRouter);               // router-wide guard inside
 app.use('/api/rate-library', rateLibraryRouter);        // router-wide guard inside, admin below
 app.use('/api/telemetry', telemetryRouter);             // POST /error public, GET /recent guarded inside
-app.use('/api/aichat', requireAuth, aichatRouter);
+app.use('/api/aichat', requireAuth, aiLimit('chat'), aichatRouter);
 app.use('/api/sync', requireAuth, syncRouter);
-app.use('/api/agent', requireAuth, agentRouter);
+app.use('/api/agent', requireAuth, aiLimit('agent'), agentRouter);
 app.use('/api/dfm', requireAuth, dfmRouter);
 app.use('/api/news', requireAuth, newsRouter);
 app.use('/api/commodities', requireAuth, commoditiesRouter);

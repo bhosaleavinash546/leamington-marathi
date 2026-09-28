@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth-middleware.js';
+import { aiLimit } from '../middleware/ai-limit.js';
 import type { Request, Response } from 'express';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { queueDFMJob, getDFMJob, requeueOrphans } from '../utils/dfm-job-runner.js';
@@ -8,7 +9,7 @@ import type { CommodityType } from '../../src/engine/types.js';
 
 const router = Router();
 
-router.post('/analyze', async (req: Request, res: Response) => {
+router.post('/analyze', aiLimit('dfm'), async (req: Request, res: Response) => {
   // The rule-based DFM result is computed in the browser; only this commentary needs AI.
   if (isAirGapped()) { res.status(503).json(aiDisabledBody('Expert DFM commentary')); return; }
   try {
