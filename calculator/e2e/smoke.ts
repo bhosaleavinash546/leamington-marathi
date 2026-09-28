@@ -162,6 +162,16 @@ async function main(): Promise<void> {
     }
     log('result scrolled into view after Calculate');
 
+    // A result belongs to its commodity. Switching used to leave machining's cost
+    // on screen under the next commodity's heading.
+    await page.click('#new-costing-btn', { timeout: 15_000 });
+    await page.click('.cpicker-tile[data-commodity="casting"]', { timeout: 15_000 });
+    await page.waitForSelector('#results-empty', { timeout: 5_000 });
+    if (await page.locator('#cv-result-hero').isVisible()) {
+      throw new Error('Machining result still on screen after switching to casting');
+    }
+    log('switching commodity clears the previous result');
+
     // 7. PCB image results must show AI-read text as text. A board photo whose
     // silkscreen or chip marking reads as markup used to reach innerHTML
     // unescaped — the BOM description, part number, insights, DFM lines. The

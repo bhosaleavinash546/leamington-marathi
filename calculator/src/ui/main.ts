@@ -12147,9 +12147,16 @@ function switchCommodity(type: CommodityType): void {
     t.classList.toggle('active', t.dataset.commodity === type);
   });
 
+  // A result belongs to the commodity that produced it. Switching used to leave
+  // the last one on screen — machining's £10.79 under an "Assemblies" heading.
+  clearResults();
+
   // Reset calc button label for non-assembly modes
   const calcBtn = el('calc-btn');
   if (type !== 'assembly') calcBtn.textContent = 'Calculate';
+  // Bound here, not only by the commodity-tab click: the picker never set it, so
+  // Assembly's Calculate ran compute(), which refuses assembly.
+  calcBtn.onclick = type === 'assembly' ? computeAssembly : compute;
 
   // Restore the default-visible controls before the per-commodity switch below
   // re-hides them. The AI Agent and Automotive Software panels set these to
@@ -12595,6 +12602,17 @@ function switchCommodity(type: CommodityType): void {
       el('universal-costs').style.display = 'none';
       el('calc-btn').style.display = 'none';
       initSWPanel(area);
+      break;
+
+    // There was no case here: choosing Assemblies from the picker left the
+    // previous commodity's form under an "Assemblies" heading. Only the demo
+    // loader built this form.
+    case 'assembly':
+      area.innerHTML = renderAssemblyForm();
+      el('add-asm-line-btn')?.addEventListener('click', () => addAsmLine());
+      addAsmLine();
+      renderSavedAssemblies();
+      calcBtn.textContent = 'Calculate Assembly';
       break;
   }
 
@@ -14887,6 +14905,41 @@ function compute(): void {
 }
 
 // ─── Results area ─────────────────────────────────────────────────────────────
+
+/** The results panel's "nothing yet" state. `message` replaces the default
+ *  prompt, e.g. to say what an assembly needs before it can calculate. */
+function renderEmptyResults(title = 'No costing yet', message = 'Fill in the inputs on the left and hit <strong>Calculate</strong> to get a full 8-bucket should-cost with a confidence band and DFM guidance.'): void {
+  el('results-breakdown').innerHTML = `
+      <div class="cv-empty" id="results-empty">
+        <div class="cv-empty-icon"><svg class="ic"><use href="#i-gauge"/></svg></div>
+        <div class="cv-empty-title">${title}</div>
+        <div class="cv-empty-sub">${message}</div>
+        <button class="btn btn-secondary btn-sm" id="results-empty-example"><svg class="ic ic-xs"><use href="#i-play"/></svg> Load an example</button>
+      </div>`;
+  document.getElementById('results-empty-example')?.addEventListener('click', loadExample);
+}
+
+/** Forget the last result and put the panel back to its empty state. A result
+ *  belongs to the commodity that produced it; nothing may show it under another. */
+function clearResults(): void {
+  lastResult = null;
+  lastInput = null;
+  _lastBandInfo = null;
+  const hero = document.getElementById('cv-result-hero');
+  if (hero) { hero.style.display = 'none'; hero.innerHTML = ''; }
+  const tabs = document.getElementById('results-tabs');
+  if (tabs) tabs.style.display = 'none';
+  for (const id of ['results-detail', 'results-insights', 'results-sensitivity', 'results-scenarios', 'results-dfm', 'results-upload']) {
+    const p = document.getElementById(id);
+    if (p) { p.style.display = 'none'; p.innerHTML = ''; }
+  }
+  const breakdown = document.getElementById('results-breakdown');
+  if (breakdown) { breakdown.style.display = ''; renderEmptyResults(); }
+  for (const id of ['validation-errors', 'validation-warnings']) {
+    const b = document.getElementById(id);
+    if (b) b.style.display = 'none';
+  }
+}
 
 function showResultsArea(): void {
   const resultsEl = el('results-tabs');
@@ -19361,7 +19414,17 @@ function collectAssemblyLines(): AssemblyLine[] {
 
 function computeAssembly(): void {
   const lines = collectAssemblyLines();
-  if (lines.length === 0) { alert('Add at least one part to the BOM.'); return; }
+  // An assembly rolls up parts that already have a cost. Say so in the panel
+  // instead of an alert() (which a blocked or headless dialog turns into
+  // "Calculate did nothing"), and do not print a £0.00 total for empty lines.
+  if (!lines.some(l => l.qty > 0 && l.unitCostGBP > 0)) {
+    clearResults();
+    renderEmptyResults('Nothing to roll up yet',
+      'An assembly adds up parts that already have a cost. For each part, enter a <strong>quantity</strong> and a '
+      + '<strong>unit cost</strong> — from a supplier price, or from costing that part under its own commodity first — '
+      + 'then press <strong>Calculate Assembly</strong>.');
+    return;
+  }
   const name = (el<HTMLInputElement>('asm-name'))?.value?.trim() || 'Assembly';
   const assembly: Assembly = newAssembly(name);
   assembly.lines = lines;
@@ -19375,7 +19438,7 @@ function computeAssembly(): void {
       <div class="summary-card total-card">
         <div class="card-label">Assembly Total</div>
         <div class="card-value">${fmt(rollup.total)}</div>
-        <div class="card-sub">${rollup.assembly.name}</div>
+        <div class="card-sub">${escHtml(rollup.assembly.name)}</div>
       </div>
       <div class="summary-card">
         <div class="card-label">Parts Cost</div>
@@ -19399,7 +19462,7 @@ function computeAssembly(): void {
         <thead><tr><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Unit Wt (kg)</th><th>Ext Cost</th><th>Ext Wt (kg)</th></tr></thead>
         <tbody>
           ${rollup.lineSubtotals.map(ls => `<tr>
-            <td>${ls.line.description || '—'}</td>
+            <td>${escHtml(ls.line.description || '—')}</td>
             <td style="text-align:right">${ls.line.qty}</td>
             <td>${fmt(ls.line.unitCostGBP)}</td>
             <td style="text-align:right">${ls.line.unitWeightKg.toFixed(3)}</td>
