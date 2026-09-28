@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeUniversalStack, validateStackInput } from '../src/engine/core.js';
+import { computeUniversalStack, validateStackInput, overheadBaseOf, overheadRateOf } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 
@@ -140,5 +140,28 @@ describe('computeUniversalStack', () => {
   it('throws for unknown material', () => {
     const bad = { ...VALID_INPUT, rawMaterial: { ...VALID_INPUT.rawMaterial, materialId: 'mat-nope' } };
     expect(() => computeUniversalStack(bad, DEFAULT_RATE_LIBRARY)).toThrow();
+  });
+});
+
+// M9: overhead was shown beside factory cost, which includes packaging and
+// logistics, so 12% of the real base read as ~10.7% and looked like an error.
+describe('the overhead base is reported, not left to be inferred', () => {
+  const r = computeUniversalStack(VALID_INPUT, DEFAULT_RATE_LIBRARY);
+  const b = r.breakdown;
+
+  it('is material + process + labour + tooling, and excludes packaging and logistics', () => {
+    expect(r.overheadBase).toBeCloseTo(b.rawMaterial + b.process + b.labour + b.tooling, 10);
+    expect(r.factoryCost - r.overheadBase!).toBeCloseTo(b.packaging + b.logistics, 10);
+  });
+
+  it('gives back the input rate exactly — which factory cost does not', () => {
+    expect(overheadRateOf(r)).toBeCloseTo(VALID_INPUT.overheadPct, 10);
+    expect(b.overhead / r.factoryCost).not.toBeCloseTo(VALID_INPUT.overheadPct, 3);
+  });
+
+  it('is recovered for a result saved before the field existed', () => {
+    const old = { breakdown: b };   // no overheadBase
+    expect(overheadBaseOf(old)).toBeCloseTo(r.overheadBase!, 10);
+    expect(overheadRateOf(old)).toBeCloseTo(0.12, 10);
   });
 });

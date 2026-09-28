@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
-import { breakdownPercentages } from '../engine/core.js';
+import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { generateInsights, totalPotentialSaving, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
@@ -719,7 +719,10 @@ export function renderShouldCostSections(
     ['5.  Packaging',            result.breakdown.packaging,   pcts.packaging,                            ''],
     ['6.  Logistics',            result.breakdown.logistics,   pcts.logistics,                            ''],
     ['    Factory Cost',         result.factoryCost,           (result.factoryCost / result.total) * 100, 'sub'],
-    ['7.  Overhead (SG&A)',      result.breakdown.overhead,    pcts.overhead,                             ''],
+    // What overhead is a percentage of. Beside factory cost alone the rate
+    // looked wrong: factory cost adds packaging and logistics, the base doesn't.
+    ['      Overhead base (mat + proc + lab + tooling)', overheadBaseOf(result), 0,                 'base'],
+    [`7.  Overhead (SG&A) — ${(overheadRateOf(result) * 100).toFixed(1)}% of base`, result.breakdown.overhead, pcts.overhead, ''],
     ['    Subtotal',             result.subtotal,              (result.subtotal  / result.total) * 100,   'sub'],
     ['8.  Supplier Margin',      result.breakdown.margin,      pcts.margin,                               ''],
     ['TOTAL SHOULD-COST',        result.total,                 100,                                       'total'],
@@ -729,7 +732,7 @@ export function renderShouldCostSections(
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     head: [['Cost Bucket', `Amount (${currency})`, '% of Total', 'Cost Mix Bar']],
-    body: buckets.map(([lbl, val, p]) => [lbl, c(val), pct(p), '']),
+    body: buckets.map(([lbl, val, p, kind]) => [lbl, c(val), kind === 'base' ? '' : pct(p), '']),
     theme: 'plain',
     headStyles: { ...TH.headStyles },
     bodyStyles: { ...TH.bodyStyles },
@@ -752,6 +755,10 @@ export function renderShouldCostSections(
         d.cell.styles.fontStyle = 'bold';
         d.cell.styles.fillColor = HDR;
         d.cell.styles.textColor = NAVY;
+      } else if (rt === 'base') {
+        d.cell.styles.fontStyle = 'italic';
+        d.cell.styles.fontSize = 7;
+        d.cell.styles.textColor = SLATE;
       }
     },
     didDrawCell: (d) => {

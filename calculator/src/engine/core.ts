@@ -97,6 +97,21 @@ export function validateStackInput(
   return { valid: errors.length === 0, errors, warnings };
 }
 
+/** The base overhead is a percentage of: material + process + labour + tooling.
+ *  Every display of overhead shows this beside it — shown next to factory cost
+ *  (which adds packaging and logistics) the rate looked wrong when it wasn't. */
+export function overheadBaseOf(r: Pick<PartCostResult, 'breakdown' | 'overheadBase'>): number {
+  if (r.overheadBase != null) return r.overheadBase;
+  const b = r.breakdown;
+  return b.rawMaterial + b.process + b.labour + b.tooling;
+}
+
+/** Overhead as a fraction of its own base (0 when the base is 0). */
+export function overheadRateOf(r: Pick<PartCostResult, 'breakdown' | 'overheadBase'>): number {
+  const base = overheadBaseOf(r);
+  return base > 0 ? r.breakdown.overhead / base : 0;
+}
+
 export function computeUniversalStack(
   input: UniversalStackInput,
   library: RateLibrary
@@ -279,6 +294,7 @@ export function computeUniversalStack(
     breakdown,
     operationDetails,
     factoryCost,
+    overheadBase: factoryCostBase,
     subtotal,
     total,
     traceability,

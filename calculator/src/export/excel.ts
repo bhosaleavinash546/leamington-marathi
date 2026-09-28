@@ -1,6 +1,6 @@
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
-import { breakdownPercentages } from '../engine/core.js';
+import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, type SheetSpec } from './xlsx-util.js';
 
@@ -44,7 +44,9 @@ export async function exportToExcelBlob(
     ['5. Packaging', c(result.breakdown.packaging), pct(pcts.packaging), ''],
     ['6. Logistics', c(result.breakdown.logistics), pct(pcts.logistics), ''],
     ['── Factory Cost', c(result.factoryCost), pct((result.factoryCost / result.total) * 100), ''],
-    ['7. Overhead (SG&A)', c(result.breakdown.overhead), pct(pcts.overhead), '█'.repeat(Math.round(pcts.overhead / 2))],
+    // What overhead is a percentage of — factory cost adds packaging and logistics, this doesn't.
+    ['   Overhead base (material + process + labour + tooling)', c(overheadBaseOf(result)), '', ''],
+    [`7. Overhead (SG&A) — ${pct(overheadRateOf(result) * 100)} of base`, c(result.breakdown.overhead), pct(pcts.overhead), '█'.repeat(Math.round(pcts.overhead / 2))],
     ['── Subtotal', c(result.subtotal), pct((result.subtotal / result.total) * 100), ''],
     ['8. Supplier Margin', c(result.breakdown.margin), pct(pcts.margin), '█'.repeat(Math.round(pcts.margin / 2))],
     ['TOTAL SHOULD COST', c(result.total), '100.0%', ''],
@@ -53,7 +55,7 @@ export async function exportToExcelBlob(
     sum.push(['NRE / Tooling (one-time, not in unit cost)', c(result.toolingNRE), '', '']);
   }
   sum.push([], ['── COMMERCIAL PARAMETERS ──']);
-  sum.push(['Overhead Rate', pct(input.overheadPct * 100)]);
+  sum.push(['Overhead Rate', `${pct(input.overheadPct * 100)} of material + process + labour + tooling`]);
   sum.push(['Supplier Margin Rate', pct(input.marginPct * 100)]);
   sum.push(['Packaging per Part', c(input.packagingPerPart)]);
   sum.push(['Logistics per Part', c(input.logisticsPerPart)]);

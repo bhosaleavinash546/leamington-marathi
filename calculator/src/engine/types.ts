@@ -286,6 +286,10 @@ export interface PartCostResult {
   breakdown: Breakdown8Bucket;
   operationDetails: OperationResult[];
   factoryCost: number;
+  /** What overhead is a percentage OF: material + process + labour + tooling.
+   *  Not factoryCost, which adds packaging and logistics. Optional only because
+   *  results saved before it existed lack it — read it through overheadBaseOf(). */
+  overheadBase?: number;
   subtotal: number;
   total: number;
   toolingNRE?: number;

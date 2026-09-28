@@ -5,7 +5,7 @@ import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
 import './styles/calculator.css';
 import {
-  computeUniversalStack, validateStackInput, breakdownPercentages,
+  computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
 } from '../engine/index.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
@@ -15997,8 +15997,11 @@ function renderBreakdown(result: PartCostResult): void {
               <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (b.pct / maxPct) * 160)}px"></div></div></td>
             </tr>`).join('')}
             <tr class="subtotal-row"><td>Factory Cost</td><td>${fmt(result.factoryCost)}</td><td>${fmtPct((result.factoryCost / result.total) * 100)}</td><td></td></tr>
+            <tr class="overhead-base-row" title="Overhead is a percentage of this, not of factory cost: packaging and logistics are left out.">
+              <td style="color:var(--text-muted);font-size:0.9em;padding-left:18px">Overhead base (material + process + labour + tooling)</td><td style="color:var(--text-muted)">${fmt(overheadBaseOf(result))}</td><td></td><td></td>
+            </tr>
             <tr>
-              <td>7. Overhead (SG&amp;A)</td><td>${fmt(result.breakdown.overhead)}</td><td>${fmtPct(pcts.overhead)}</td>
+              <td>7. Overhead (SG&amp;A) — ${fmtPct(overheadRateOf(result) * 100)} of base</td><td>${fmt(result.breakdown.overhead)}</td><td>${fmtPct(pcts.overhead)}</td>
               <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.overhead / maxPct) * 160)}px;opacity:0.4"></div></div></td>
             </tr>
             <tr class="subtotal-row"><td>Subtotal</td><td>${fmt(result.subtotal)}</td><td>${fmtPct((result.subtotal / result.total) * 100)}</td><td></td></tr>
@@ -16340,7 +16343,7 @@ function renderDetail(result: PartCostResult, input: UniversalStackInput): void 
         <tr><td>Packaging</td><td></td><td class="num">${cf(input.packagingPerPart)}</td><td>Per-part fixed cost</td></tr>
         <tr><td>Logistics</td><td></td><td class="num">${cf(input.logisticsPerPart)}</td><td>Per-part fixed cost</td></tr>
         <tr class="subtotal-row"><td><strong>Factory Cost</strong></td><td></td><td class="num"><strong>${cf(result.factoryCost)}</strong></td><td>Sum of buckets 1–6</td></tr>
-        <tr><td>Overhead (SG&amp;A)</td><td class="num">${pct(input.overheadPct * 100)}</td><td class="num">${cf(result.breakdown.overhead)}</td><td>Applied to factory cost</td></tr>
+        <tr><td>Overhead (SG&amp;A)</td><td class="num">${pct(input.overheadPct * 100)}</td><td class="num">${cf(result.breakdown.overhead)}</td><td>Of ${cf(overheadBaseOf(result))}: material + process + labour + tooling (not packaging or logistics)</td></tr>
         <tr class="subtotal-row"><td><strong>Subtotal</strong></td><td></td><td class="num"><strong>${cf(result.subtotal)}</strong></td><td>Factory cost + overhead</td></tr>
         <tr><td>Supplier Margin</td><td class="num">${pct(input.marginPct * 100)}</td><td class="num">${cf(result.breakdown.margin)}</td><td>Applied to subtotal</td></tr>
         <tr class="total-row"><td><strong>TOTAL SHOULD COST</strong></td><td></td><td class="num"><strong>${cf(result.total)}</strong></td><td></td></tr>
@@ -20611,7 +20614,9 @@ const BUCKET_TRACE_META: Record<string, { formula: string; match: RegExp }> = {
   'Tooling': { formula: 'Tool cost ÷ (annual volume × amortisation years × parts per vehicle). Most volume-sensitive line in the model.', match: /tool|mould|die|fixture|amort/i },
   'Packaging': { formula: 'Returnable dunnage trip cost or one-way pack cost per part.', match: /pack/i },
   'Logistics': { formula: 'Freight per part based on region lane and part size/weight class.', match: /logistic|freight|transport|duty/i },
-  'Overhead': { formula: 'Factory overhead % applied on conversion cost (process + labour) — never on material.', match: /overhead|indirect/i },
+  // This used to say "on conversion cost (process + labour) — never on material",
+  // which is not what the engine does (core.ts applies it to the wider base).
+  'Overhead': { formula: 'Overhead % × (material + process + labour + tooling). Packaging and logistics are not in the base.', match: /overhead|indirect/i },
   'Margin': { formula: 'SG&A % on manufacturing cost, then profit % on the subtotal — the supplier commercial stack.', match: /margin|profit|sga|s&ga/i },
 };
 
