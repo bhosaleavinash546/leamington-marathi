@@ -77,7 +77,7 @@ async function renderSWRateAdmin(): Promise<void> {
     </div><div id="swra-msg" style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px"></div>`
     : `<div style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px">SW rates are set by an administrator.</div>`;
   host.innerHTML = `<div style="border:1px solid var(--sw-border);border-radius:8px;padding:10px 12px;background:var(--sw-surface)">
-      <span style="font-weight:700;font-size:0.78rem;color:var(--sw-text-primary)">🏭 Company SW Rates</span> ${badge}
+      <span style="font-weight:700;font-size:0.78rem;color:var(--sw-text-primary)">Company SW Rates</span> ${badge}
       ${st.hasCompany ? '' : '<span style="font-size:0.68rem;color:var(--sw-text-muted)"> · none uploaded</span>'}${admin}</div>`;
 
   if (!st.isAdmin) return;
@@ -193,13 +193,13 @@ function asilBadge(asil: ASILLevel): string {
 // ─── Category metadata ────────────────────────────────────────────────────────
 
 const CAT_META: Record<string, { label: string; icon: string; color: string }> = {
-  A: { label: 'EV Powertrain & Battery',    icon: '⚡', color: '#22c55e' },
-  B: { label: 'ADAS L2/L2+',               icon: '🎯', color: '#3b82f6' },
-  C: { label: 'Infotainment & UX',          icon: '🎨', color: '#8b5cf6' },
-  D: { label: 'Vehicle Domain Controllers', icon: '🔧', color: '#f59e0b' },
-  E: { label: 'Middleware & Platform',      icon: '⚙️', color: '#06b6d4' },
-  F: { label: 'Cybersecurity (ISO 21434)',  icon: '🔒', color: '#ef4444' },
-  G: { label: 'OTA & Cloud Backend',        icon: '☁️', color: '#a78bfa' },
+  A: { label: 'EV Powertrain & Battery',    icon: '<svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg>', color: '#22c55e' },
+  B: { label: 'ADAS L2/L2+',               icon: '<svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>', color: '#3b82f6' },
+  C: { label: 'Infotainment & UX',          icon: '<svg class="ic" aria-hidden="true"><use href="#i-palette"/></svg>', color: '#8b5cf6' },
+  D: { label: 'Vehicle Domain Controllers', icon: '<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', color: '#f59e0b' },
+  E: { label: 'Middleware & Platform',      icon: '⚙', color: '#06b6d4' },
+  F: { label: 'Cybersecurity (ISO 21434)',  icon: '<svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>', color: '#ef4444' },
+  G: { label: 'OTA & Cloud Backend',        icon: '<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', color: '#a78bfa' },
 };
 
 // ─── Render panel HTML ────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ function renderRateLibraryHTML(): string {
   return `
   <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
     <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;list-style:none">
-      <span>📚 Rate Library &amp; Provenance</span>
+      <span>Rate Library &amp; Provenance</span>
       <span style="font-size:0.68rem;font-weight:600;color:#fff;background:#2563eb;border-radius:4px;padding:1px 7px">v${esc(lib.version)}</span>
       <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">reviewed ${esc(lib.lastReviewed)} · every rate sourced &amp; overridable</span>
     </summary>
@@ -268,7 +268,7 @@ function renderValidationHTML(): string {
   return `
   <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
     <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none">
-      <span>🔬 Model Validation</span>
+      <span>Model Validation</span>
       <span style="font-size:0.68rem;font-weight:700;color:#fff;background:${rep.mapeTotal < 25 ? '#059669' : '#d97706'};border-radius:4px;padding:1px 7px">Total MAPE ${rep.mapeTotal.toFixed(0)}%</span>
       <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">${rep.withinBandCount}/${rep.caseCount} within ±${rep.band}% vs published programmes</span>
     </summary>
@@ -298,9 +298,9 @@ function renderSavedConfigsHTML(): string {
   return `
   <div class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:14px 18px;margin-bottom:14px">
     <div style="font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-      <span>💾 Saved Configurations</span>
+      <span>Saved Configurations</span>
       <div style="display:flex;gap:6px">
-        <button id="sw-compare-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer" title="Compute and compare all saved configurations side by side">⚖ Compare All</button>
+        <button id="sw-compare-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer" title="Compute and compare all saved configurations side by side">Compare All</button>
         <button id="sw-save-config-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">+ Save Current</button>
       </div>
     </div>
@@ -598,7 +598,7 @@ function renderSWPanelHTML(): string {
       // Rec 8: ASIL downgrade warning — always render the span so the live
       // change handler can toggle it; hide it when not currently downgraded.
       const isDowngrade = ASIL_RANK[inp.asil] < ASIL_RANK[def.defaultAsil];
-      const asilWarn = `<span class="sw-asil-warn" style="${isDowngrade ? '' : 'display:none'}" title="⚠️ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠️</span>`;
+      const asilWarn = `<span class="sw-asil-warn" style="${isDowngrade ? '' : 'display:none'}" title="⚠ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠</span>`;
       return `
       <tr class="sw-module-row" data-module-id="${def.id}">
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
@@ -662,7 +662,7 @@ function renderSWPanelHTML(): string {
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(59,130,246,0.18) 0%,transparent 70%);pointer-events:none"></div>
     <div style="position:relative">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-        <span style="font-size:2rem">🚗</span>
+        <span style="font-size:2rem"></span>
         <div>
           <h2 style="margin:0;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:-0.3px">Automotive Software Should-Cost</h2>
           <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px">Premium Luxury SUV — Full SW Stack · ${SW_MODULES.length} Modules · 7 Categories · ISO 26262 / ISO 21434</div>
@@ -679,8 +679,8 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Mode toggle: Guided wizard (default) vs Advanced panel ── -->
   <div class="sw-mode-toggle">
-    <button class="sw-mode-btn ${_swMode === 'guided' ? 'sw-mode-active' : ''}" data-mode="guided">🧭 Guided</button>
-    <button class="sw-mode-btn ${_swMode === 'advanced' ? 'sw-mode-active' : ''}" data-mode="advanced">⚙️ Advanced</button>
+    <button class="sw-mode-btn ${_swMode === 'guided' ? 'sw-mode-active' : ''}" data-mode="guided">Guided</button>
+    <button class="sw-mode-btn ${_swMode === 'advanced' ? 'sw-mode-active' : ''}" data-mode="advanced">⚙ Advanced</button>
   </div>
 
   <!-- ── Guided wizard body ───────────────────────────────────── -->
@@ -697,7 +697,7 @@ function renderSWPanelHTML(): string {
   <!-- ── Global Programme Config ──────────────────────────────── -->
   <div class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:18px 20px;margin-bottom:18px">
     <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:14px;display:flex;align-items:center;gap:6px">
-      <span>⚙️</span> Programme Configuration
+      <span>⚙</span> Programme Configuration
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
       <div class="sw-field-group">
@@ -750,26 +750,26 @@ function renderSWPanelHTML(): string {
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Quick Set:</span>
-    <button class="sw-preset-btn" data-preset="aggressive">🚀 Aggressive (Low ASIL, High Reuse)</button>
-    <button class="sw-preset-btn" data-preset="baseline">📊 Industry Baseline</button>
-    <button class="sw-preset-btn" data-preset="premium">👑 Premium OEM (High ASIL, Fresh)</button>
-    <button class="sw-preset-btn" data-preset="offshored">🌏 Offshored (India Team)</button>
+    <button class="sw-preset-btn" data-preset="aggressive">Aggressive (Low ASIL, High Reuse)</button>
+    <button class="sw-preset-btn" data-preset="baseline">Industry Baseline</button>
+    <button class="sw-preset-btn" data-preset="premium">Premium OEM (High ASIL, Fresh)</button>
+    <button class="sw-preset-btn" data-preset="offshored">Offshored (India Team)</button>
   </div>
 
   <!-- ── Vehicle programme demos ────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
-    <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">📊 Powertrain Cost Study</button>
-    <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">🟢 L460 Competitive Benchmark</button>
-    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for all 49 modules" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">🔬 L460 Deep-Dive (all 49)</button>
-    <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">📊 All-Models Comparison</button>
+    <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">Powertrain Cost Study</button>
+    <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">L460 Competitive Benchmark</button>
+    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for all 49 modules" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive (all 49)</button>
+    <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
   </div>
   ${(() => {
     const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
     if (!active?.reportUrl) return '';
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;padding:10px 14px;border-radius:8px;border:1px solid rgba(29,78,216,0.30);background:linear-gradient(135deg,rgba(37,99,235,0.10),rgba(37,99,235,0.04))">
-      <span style="font-size:1.05rem">📄</span>
+      <span style="font-size:1.05rem"></span>
       <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown available for ${esc(active.label)} — every parameter, all ${SW_MODULES.length} modules.</span>
       <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" style="display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;padding:7px 15px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:7px;cursor:pointer;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,0.30);transition:transform 0.15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
         View full report →
@@ -779,7 +779,7 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Module Configuration ─────────────────────────────────── -->
   <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
-    <span style="display:flex;align-items:center;gap:6px"><span>📋</span> Module Configuration (${SW_MODULES.length} modules)</span>
+    <span style="display:flex;align-items:center;gap:6px"><span></span> Module Configuration (${SW_MODULES.length} modules)</span>
     <div style="display:flex;gap:8px">
       <button id="sw-select-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">Select All</button>
       <button id="sw-deselect-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">Deselect All</button>
@@ -791,7 +791,7 @@ function renderSWPanelHTML(): string {
   <!-- ── Calculate button ─────────────────────────────────────── -->
   <div style="margin:20px 0;text-align:center">
     <button id="sw-calc-btn" style="background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border:none;border-radius:10px;padding:14px 48px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;box-shadow:0 4px 14px rgba(37,99,235,0.35);transition:all 0.2s">
-      ⚡ Calculate Software Should-Cost
+      Calculate Software Should-Cost
     </button>
   </div>
 
@@ -829,10 +829,10 @@ function renderSWPanelHTML(): string {
 
     <!-- AI Analysis (Rec 5) -->
     <div class="sw-results-section" id="sw-ai-analysis">
-      <div class="sw-section-title"><span>🤖</span> AI Analysis</div>
+      <div class="sw-section-title"><span></span> AI Analysis</div>
       <div style="text-align:center;padding:12px 0">
         <button id="sw-ai-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:0.85rem;font-weight:600;cursor:pointer">
-          ✨ Generate AI Narrative Insights
+          Generate AI Narrative Insights
         </button>
         <div style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px">Uses AI to provide executive summary and cost reduction opportunities</div>
       </div>
@@ -845,10 +845,10 @@ function renderSWPanelHTML(): string {
     <!-- Export -->
     <div style="text-align:center;margin:20px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
       <button id="sw-excel-btn" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:11px 28px;font-size:0.88rem;font-weight:600;cursor:pointer">
-        📊 Export Excel (6 sheets)
+        Export Excel (6 sheets)
       </button>
       <button id="sw-pdf-btn" style="background:#0f172a;color:#fff;border:none;border-radius:8px;padding:11px 28px;font-size:0.88rem;font-weight:600;cursor:pointer">
-        📄 Export PDF Report
+        Export PDF Report
       </button>
     </div>
   </div>
@@ -1270,7 +1270,7 @@ const MHEV_DISABLED = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'fast_charge
 
 export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
-    id: 'rr_l460', label: '🇬🇧 Range Rover L460 (PHEV)',
+    id: 'rr_l460', label: 'Range Rover L460 (PHEV)',
     desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
     region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/l460-software-cost-breakdown.html',  // relative to import.meta.env.BASE_URL
@@ -1284,7 +1284,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'bmw_x7', label: '🇩🇪 BMW X7 (48V MHEV)',
+    id: 'bmw_x7', label: 'BMW X7 (48V MHEV)',
     desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/bmw-x7-software-cost-breakdown.html',
@@ -1294,7 +1294,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'audi_q8', label: '🇩🇪 Audi Q8 (48V MHEV)',
+    id: 'audi_q8', label: 'Audi Q8 (48V MHEV)',
     desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/audi-q8-software-cost-breakdown.html',
@@ -1303,7 +1303,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     disabledModules: MHEV_DISABLED,
   },
   {
-    id: 'merc_gls', label: '🇩🇪 Mercedes GLS 450 (48V MHEV)',
+    id: 'merc_gls', label: 'Mercedes GLS 450 (48V MHEV)',
     desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
     region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/mercedes-gls-software-cost-breakdown.html',
@@ -1317,7 +1317,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne', label: '🇩🇪 Porsche Cayenne Electric (2026)',
+    id: 'porsche_cayenne', label: 'Porsche Cayenne Electric (2026)',
     desc: 'E4 platform (PPE, 800V), full BEV, Porsche Driver Experience HMI. Shares PPE middleware with Macan EV / Audi Q6 e-tron (Platform reuse there); bespoke Porsche 4D chassis, Active Ride, 800V high-power charging and Burmester audio at Very-High complexity. Full EV powertrain stack retained.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-software-cost-breakdown.html',
@@ -1333,7 +1333,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_phev', label: '🇩🇪 Porsche Cayenne E-Hybrid (PHEV)',
+    id: 'porsche_cayenne_phev', label: 'Porsche Cayenne E-Hybrid (PHEV)',
     desc: 'MLB Evo · PCM · E-Hybrid plug-in powertrain. Same Porsche performance software as the BEV, but the plug-in-hybrid powertrain is retained at reduced scope (smaller pack, lower charging power) — BMS / SOC / drive-unit at High rather than Very-High.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-phev-software-cost-breakdown.html',
@@ -1345,7 +1345,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_mhev', label: '🇩🇪 Porsche Cayenne (48V MHEV)',
+    id: 'porsche_cayenne_mhev', label: 'Porsche Cayenne (48V MHEV)',
     desc: 'MLB Evo · PCM · 48V mild-hybrid powertrain. High-voltage battery / charge / drive modules are not applicable and disabled; 48V regen and battery-thermal retained. Porsche performance software at Very-High complexity.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-mhev-software-cost-breakdown.html',
@@ -1356,7 +1356,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_ice', label: '🇩🇪 Porsche Cayenne V8 (ICE)',
+    id: 'porsche_cayenne_ice', label: 'Porsche Cayenne V8 (ICE)',
     desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. No electrified-powertrain software — all nine EV powertrain / battery modules are out of scope. Porsche performance, chassis and infotainment software otherwise identical.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
@@ -1377,10 +1377,10 @@ type Sig = Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'r
 interface StudyCar { id: string; slug: string; flag: string; name: string; region: SWRegion; devSource: DevSource; volume: number; life: number; overhead: number; senior: number; reuse: SWReuse; sig: Sig; skip: string; }
 interface StudyDT { key: string; code: string; dis: string[]; ov: Sig; note: string; }
 const STUDY_CARS: StudyCar[] = [
-  { id: 'l460', slug: 'range-rover-l460', flag: '🇬🇧', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
-  { id: 'bmw_x7', slug: 'bmw-x7', flag: '🇩🇪', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
-  { id: 'audi_q8', slug: 'audi-q8', flag: '🇩🇪', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
-  { id: 'merc_gls', slug: 'mercedes-gls', flag: '🇩🇪', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
+  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
+  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
 ];
 const STUDY_DTS: StudyDT[] = [
   { key: 'ice', code: 'ICE', dis: _ICE_OFF, ov: {}, note: 'combustion — no EV powertrain software' },
@@ -1500,7 +1500,7 @@ function renderResults(result: SWProgramResult): void {
     const span = mc.p90 - mc.p10;
     const pct90vs10 = mc.p10 > 0 ? (mc.p90 / mc.p10 - 1) * 100 : 0;
     mcEl.innerHTML = `
-      <div class="sw-section-title"><span>🎲</span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
+      <div class="sw-section-title"><span></span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
       <div class="sw-grid sw-grid-4" style="margin-bottom:16px">
         ${[
           { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `£${fmt(mc.p10PerVehicle,0)}/veh`, color: '#059669' },
@@ -1540,7 +1540,7 @@ function renderResults(result: SWProgramResult): void {
     </tr>`).join('');
 
     phaseEl.innerHTML = `
-      <div class="sw-section-title"><span>📅</span> Programme Milestone Phases (NRE: ${fmtM(nreTotal)})</div>
+      <div class="sw-section-title"><span></span> Programme Milestone Phases (NRE: ${fmtM(nreTotal)})</div>
       <div class="sw-phase-bar">${barSegs}</div>
       <table class="sw-data-table" style="margin-top:10px">
         <thead><tr><th>Phase</th><th>Timeline</th><th class="sw-num">NRE Share</th><th class="sw-num">Budget</th></tr></thead>
@@ -1570,7 +1570,7 @@ function renderResults(result: SWProgramResult): void {
 
   const catEl = document.getElementById('sw-cat-breakdown');
   if (catEl) catEl.innerHTML = `
-    <div class="sw-section-title"><span>📊</span> Cost by Software Category</div>
+    <div class="sw-section-title"><span></span> Cost by Software Category</div>
     <table class="sw-data-table">
       <thead><tr><th>Category</th><th class="sw-num">Modules</th><th class="sw-num">Total Cost</th><th class="sw-num">Share</th><th style="width:140px">Distribution</th><th>Largest Module</th></tr></thead>
       <tbody>${catRows}</tbody>
@@ -1578,15 +1578,15 @@ function renderResults(result: SWProgramResult): void {
 
   // Cost composition (Rec 7: includes Calibration)
   const comp: [string, string, number][] = [
-    ['💻', 'Development (Engineering)', s.totalDevelopment],
-    ['🧪', 'Testing & Validation',      s.totalTesting],
-    ['🔗', 'Integration & V&V',         s.totalIntegration],
-    ['🛠️', 'Toolchain (dev tools)',      s.totalToolchain],
-    ['📐', 'Calibration & Tuning',       s.totalCalibration],
-    ['🔒', 'Cybersecurity (pentest/TARA)', s.totalCybersecurity],
-    ['🔧', 'Maintenance (lifecycle)',    s.totalMaintenance],
-    ['☁️', 'Cloud & Infra (lifecycle)',   s.totalCloud],
-    ['📜', 'IP Licensing (lifecycle)',    s.totalLicensing],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-monitor"/></svg>', 'Development (Engineering)', s.totalDevelopment],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg>', 'Testing & Validation',      s.totalTesting],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-link"/></svg>', 'Integration & V&V',         s.totalIntegration],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', 'Toolchain (dev tools)',      s.totalToolchain],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-ruler"/></svg>', 'Calibration & Tuning',       s.totalCalibration],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>', 'Cybersecurity (pentest/TARA)', s.totalCybersecurity],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', 'Maintenance (lifecycle)',    s.totalMaintenance],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', 'Cloud & Infra (lifecycle)',   s.totalCloud],
+    ['<svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>', 'IP Licensing (lifecycle)',    s.totalLicensing],
   ];
   const compRows = comp.map(([icon, label, val]) => {
     const pct = s.grandTotal > 0 ? val / s.grandTotal * 100 : 0;
@@ -1600,7 +1600,7 @@ function renderResults(result: SWProgramResult): void {
 
   const compEl = document.getElementById('sw-cost-composition');
   if (compEl) compEl.innerHTML = `
-    <div class="sw-section-title"><span>💰</span> Cost Composition (10 Dimensions)</div>
+    <div class="sw-section-title"><span></span> Cost Composition (10 Dimensions)</div>
     <table class="sw-data-table">
       <thead><tr><th>Cost Bucket</th><th class="sw-num">Value</th><th class="sw-num">Share</th><th>Distribution</th></tr></thead>
       <tbody>${compRows}
@@ -1620,7 +1620,7 @@ function renderResults(result: SWProgramResult): void {
     const def  = SW_MODULES.find(d => d.id === m.moduleId);
     const isDowngrade = def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
     const asilCell = isDowngrade
-      ? `${asilBadge(m.asilUsed)} <span style="color:#d97706;font-size:0.7rem" title="Below default ${def?.defaultAsil ?? ''}">⚠️ −${ASIL_RANK[def!.defaultAsil] - ASIL_RANK[m.asilUsed]} lvl</span>`
+      ? `${asilBadge(m.asilUsed)} <span style="color:#d97706;font-size:0.7rem" title="Below default ${def?.defaultAsil ?? ''}">⚠ −${ASIL_RANK[def!.defaultAsil] - ASIL_RANK[m.asilUsed]} lvl</span>`
       : asilBadge(m.asilUsed);
     return `<tr class="${i < 5 ? 'sw-highlight' : ''}">
       <td>${i + 1}</td>
@@ -1644,12 +1644,12 @@ function renderResults(result: SWProgramResult): void {
     return def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
   }).length;
   const downgradeWarning = downgradeCount > 0
-    ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:#92400e">⚠️ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
+    ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:#92400e">⚠ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
     : '';
 
   const modTableEl = document.getElementById('sw-module-table');
   if (modTableEl) modTableEl.innerHTML = `
-    <div class="sw-section-title"><span>📋</span> Module Cost Detail — All ${result.modules.length} Active Modules</div>
+    <div class="sw-section-title"><span></span> Module Cost Detail — All ${result.modules.length} Active Modules</div>
     ${downgradeWarning}
     <div style="overflow-x:auto">
     <table class="sw-data-table">
@@ -1682,7 +1682,7 @@ function renderResults(result: SWProgramResult): void {
 
   const sensEl = document.getElementById('sw-sensitivity');
   if (sensEl) sensEl.innerHTML = `
-    <div class="sw-section-title"><span>📈</span> Sensitivity Analysis</div>
+    <div class="sw-section-title"><span></span> Sensitivity Analysis</div>
     <table class="sw-data-table">
       <thead><tr><th>Parameter</th><th class="sw-num">Low Scenario</th><th class="sw-num">Base Case</th><th class="sw-num">High Scenario</th><th class="sw-num">Range</th></tr></thead>
       <tbody>${sensRows}</tbody>
@@ -1708,7 +1708,7 @@ function renderResults(result: SWProgramResult): void {
 
   const bmEl = document.getElementById('sw-benchmarks');
   if (bmEl) bmEl.innerHTML = `
-    <div class="sw-section-title"><span>🏆</span> Benchmark Comparison — Premium EV Programme SW Investment</div>
+    <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment</div>
     <table class="sw-data-table">
       <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
       <tbody>${bmRows}</tbody>
@@ -1742,7 +1742,7 @@ function renderResults(result: SWProgramResult): void {
 
   const decompEl = document.getElementById('sw-source-decomp');
   if (decompEl) decompEl.innerHTML = `
-    <div class="sw-section-title"><span>🏢</span> Development Source Decomposition (OEM / Tier-1 / Startup)</div>
+    <div class="sw-section-title"><span></span> Development Source Decomposition (OEM / Tier-1 / Startup)</div>
     <table class="sw-data-table">
       <thead><tr><th>Dev Source</th><th class="sw-num">Estimated Cost</th><th class="sw-num">Rate Mult.</th><th>Risk Profile</th><th>IP Ownership</th><th>Warranty Exposure</th></tr></thead>
       <tbody>${decompRows}</tbody>
@@ -1757,7 +1757,7 @@ function renderResults(result: SWProgramResult): void {
     const sorted = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
     if (sorted.length > 0) {
       const top = sorted[0];
-      insights.push({ icon: '📊', level: 'info',
+      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>', level: 'info',
         title: `Top cost driver: ${top.moduleName}`,
         body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} dominates programme cost. Evaluate build-vs-buy: licensed platform IP could reduce this by 30–50%.`,
       });
@@ -1765,7 +1765,7 @@ function renderResults(result: SWProgramResult): void {
 
     const asilDReuseHeavy = result.modules.filter(m => m.asilUsed === 'D' && (m.reuseUsed === 'Heavy' || m.reuseUsed === 'Platform'));
     if (asilDReuseHeavy.length > 0) {
-      insights.push({ icon: '⚠️', level: 'warn',
+      insights.push({ icon: '⚠', level: 'warn',
         title: `ASIL-D with Heavy/Platform reuse — verify safety case`,
         body: `${asilDReuseHeavy.map(m => m.moduleName).join(', ')} are ASIL-D with ${asilDReuseHeavy[0].reuseUsed} reuse. ISO 26262 requires formal safety case for SEooC elements. Factor in additional safety analysis cost.`,
       });
@@ -1774,12 +1774,12 @@ function renderResults(result: SWProgramResult): void {
     const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;
     const lifecyclePct = s.grandTotal > 0 ? lifecycleTotal / s.grandTotal * 100 : 0;
     if (lifecyclePct > 45) {
-      insights.push({ icon: '☁️', level: 'warn',
+      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', level: 'warn',
         title: `High lifecycle cost (${fmt(lifecyclePct,0)}% of total)`,
         body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). Cloud infrastructure for AI retraining is the main driver. Hybrid cloud/on-premise architecture could reduce by 25–35%.`,
       });
     } else {
-      insights.push({ icon: '✅', level: 'ok',
+      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-check-circle"/></svg>', level: 'ok',
         title: `NRE/lifecycle split is healthy (${fmt(100-lifecyclePct,0)}% NRE)`,
         body: `Development NRE accounts for ${fmt(100-lifecyclePct,0)}% of total. Typical for an OEM insourcing most development.`,
       });
@@ -1790,7 +1790,7 @@ function renderResults(result: SWProgramResult): void {
     const thisM = s.grandTotal / 1_000_000;
     if (medianBm > 0) {
       const diffPct = (thisM - medianBm) / medianBm * 100;
-      insights.push({ icon: diffPct > 30 ? '🔴' : diffPct > 10 ? '🟡' : '🟢', level: diffPct > 30 ? 'warn' : 'ok',
+      insights.push({ icon: diffPct > 30 ? '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>' : diffPct > 10 ? '<svg class="ic" aria-hidden="true" style="color:#eab308"><use href="#i-dot"/></svg>' : '<svg class="ic" aria-hidden="true" style="color:#22c55e"><use href="#i-dot"/></svg>', level: diffPct > 30 ? 'warn' : 'ok',
         title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
         body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. India offshoring could reduce by ${fmt(s.grandTotal > 0 ? Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / s.grandTotal * 100 : 0, 0)}% vs current region.`
               : `Programme cost is within normal range vs peers. Monitor cloud costs as fleet scales.`,
@@ -1799,7 +1799,7 @@ function renderResults(result: SWProgramResult): void {
 
     const hasCyberMod = result.modules.some(m => m.category === 'F');
     if (!hasCyberMod) {
-      insights.push({ icon: '🔴', level: 'warn',
+      insights.push({ icon: '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>', level: 'warn',
         title: 'No Cybersecurity (ISO 21434) modules enabled',
         body: 'UN-ECE R155 mandates CSMS for all connected vehicles from July 2024. Category F modules are required for regulatory compliance.',
       });
@@ -1809,7 +1809,7 @@ function renderResults(result: SWProgramResult): void {
       const indiaTotal = result.sensitivity.find(r => r.parameter.includes('Region'))?.low;
       if (indiaTotal && indiaTotal > 0) {
         const saving = s.grandTotal - indiaTotal;
-        insights.push({ icon: '💡', level: 'info',
+        insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>', level: 'info',
           title: `Offshoring to India could save ${fmtM(saving)}`,
           body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. Factor in coordination overhead (+15%), knowledge transfer, and time zone risk.`,
         });
@@ -1817,7 +1817,7 @@ function renderResults(result: SWProgramResult): void {
     }
 
     const avgTeamFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
-    insights.push({ icon: '👥', level: 'info',
+    insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>', level: 'info',
       title: `Average team: ${fmt(avgTeamFTE, 0)} FTE across ${result.inputs.programLifeYears}-year programme`,
       body: `${fmt(s.totalPersonMonths, 0)} total person-months implies ~${fmt(avgTeamFTE,0)} FTE sustained. Peak headcount during integration phases is typically 1.4–1.7× this average.`,
     });
@@ -1827,7 +1827,7 @@ function renderResults(result: SWProgramResult): void {
     const levelBorder:Record<string, string> = { info: '#bfdbfe', warn: '#fed7aa', ok: '#bbf7d0' };
 
     insightsEl.innerHTML = `
-      <div class="sw-section-title"><span>🧠</span> Engineering Insights</div>
+      <div class="sw-section-title"><span></span> Engineering Insights</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${insights.map(ins => `
         <div style="background:${levelBg[ins.level]};border:1px solid ${levelBorder[ins.level]};border-radius:8px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start">
@@ -1861,9 +1861,9 @@ function generateAIInsights(result: SWProgramResult): void {
   if (!contentEl || !btnEl) return;
 
   btnEl.disabled = true;
-  btnEl.textContent = '⏳ Generating analysis…';
+  btnEl.textContent = 'Generating analysis…';
   contentEl.style.display = '';
-  contentEl.innerHTML = `<div style="text-align:center;padding:16px;color:var(--sw-text-muted)">🤖 Analysing programme cost data with AI…</div>`;
+  contentEl.innerHTML = `<div style="text-align:center;padding:16px;color:var(--sw-text-muted)">Analysing programme cost data with AI…</div>`;
 
   const s = result.summary;
   const top3 = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).slice(0,3);
@@ -1914,7 +1914,7 @@ Keep response concise and actionable (under 250 words).`;
 
   // Rec 9: serve identical configurations from cache — instant, no API re-bill.
   const cachedReply = _aiCache.get(prompt);
-  if (cachedReply) { render(cachedReply, true); btnEl.disabled = false; btnEl.textContent = '✨ AI Analysis'; return; }
+  if (cachedReply) { render(cachedReply, true); btnEl.disabled = false; btnEl.textContent = 'AI Analysis'; return; }
 
   // Abort the request if the endpoint hangs so the button can't stick on "Generating…".
   const ctrl = new AbortController();
@@ -1935,9 +1935,9 @@ Keep response concise and actionable (under 250 words).`;
   })
   .catch(err => {
     const msg = ctrl.signal.aborted ? 'request timed out after 30s' : String(err);
-    contentEl.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:0.8rem;color:#dc2626">⚠️ AI analysis unavailable: ${esc(msg)}. Engineering Insights above are still available.</div>`;
+    contentEl.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:0.8rem;color:#dc2626">⚠ AI analysis unavailable: ${esc(msg)}. Engineering Insights above are still available.</div>`;
     btnEl.disabled = false;
-    btnEl.textContent = '✨ Retry AI Analysis';
+    btnEl.textContent = 'Retry AI Analysis';
   })
   .finally(() => clearTimeout(timeout));
 }
@@ -2339,7 +2339,7 @@ function compareConfigs(): void {
   }).join('');
 
   out.innerHTML = `
-    <div style="font-size:0.78rem;font-weight:700;color:var(--sw-text-primary);margin-bottom:8px">⚖ Scenario Comparison <span style="font-weight:400;color:var(--sw-text-muted)">(✓ = lowest total)</span></div>
+    <div style="font-size:0.78rem;font-weight:700;color:var(--sw-text-primary);margin-bottom:8px">Scenario Comparison <span style="font-weight:400;color:var(--sw-text-muted)">(✓ = lowest total)</span></div>
     <div style="overflow-x:auto">
       <table class="sw-data-table" style="font-size:0.78rem">
         <thead><tr>${head}</tr></thead>
@@ -2382,7 +2382,7 @@ function showSWError(msg: string): void {
     const calcBtn = document.getElementById('sw-calc-btn');
     calcBtn?.parentElement?.insertBefore(errEl, calcBtn);
   }
-  errEl.innerHTML = `<span>⚠️</span> ${esc(msg)}`;
+  errEl.innerHTML = `<span>⚠</span> ${esc(msg)}`;
   errEl.style.display = 'flex';
   setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
 }
@@ -2409,7 +2409,7 @@ export function wireSWPanel(): void {
       }
 
       const origText = calcBtn.textContent ?? '';
-      calcBtn.textContent = '⏳ Calculating…';
+      calcBtn.textContent = 'Calculating…';
       (calcBtn as HTMLButtonElement).disabled = true;
 
       setTimeout(() => {

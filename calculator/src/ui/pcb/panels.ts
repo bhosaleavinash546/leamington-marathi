@@ -32,7 +32,7 @@ export function buildCostDriverChart(r: PCBImageAnalysis): string {
     </div>`;
   }).join('');
   return `<div class="pcb-analysis-section">
-    <div class="pcb-analysis-section-title">📊 Cost Driver Breakdown</div>
+    <div class="pcb-analysis-section-title">Cost Driver Breakdown</div>
     <div style="padding:8px 4px">${bars}</div>
   </div>`;
 }
@@ -88,7 +88,7 @@ export function buildSanityWarningsBanner(r: PCBImageAnalysis): string {
   const warns = r._sanityWarnings;
   if (!warns || warns.length === 0) return '';
   const items = warns.map(w => `<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px">
-    <span style="font-size:0.75rem">${w.severity === 'error' ? '🔴' : '🟡'}</span>
+    <span style="font-size:0.75rem">${w.severity === 'error' ? '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>' : '<svg class="ic" aria-hidden="true" style="color:#eab308"><use href="#i-dot"/></svg>'}</span>
     <span style="font-size:0.68rem;color:var(--text-secondary)">${w.message}</span>
   </div>`).join('');
   return `<div style="margin-top:8px;padding:10px 12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px">
@@ -334,7 +334,7 @@ export function buildBenchmarkComparison(r: PCBImageAnalysis): string {
     </tr>`;
   }).join('');
   return `<div class="pcb-analysis-section">
-    <div class="pcb-analysis-section-title">📐 Benchmark Comparison</div>
+    <div class="pcb-analysis-section-title">Benchmark Comparison</div>
     <div style="font-size:0.65rem;color:var(--text-muted);margin:4px 4px 6px">This board: £${costPerCm2.toFixed(2)}/cm² · £${costPerPlacement.toFixed(2)}/placement · vs industry benchmarks for ${domain.replace(/_/g,' ')}</div>
     <table style="width:100%;border-collapse:collapse;font-size:0.68rem">
       <thead><tr style="border-bottom:1px solid var(--border)">
@@ -373,7 +373,7 @@ export function buildRevisionComparison(r: PCBImageAnalysis): string {
   }
   return `<div class="pcb-analysis-section">
     <div class="pcb-analysis-section-title" style="display:flex;align-items:center;justify-content:space-between">
-      <span>🔄 vs Previous Analysis</span>
+      <span>vs Previous Analysis</span>
       <button class="btn btn-secondary btn-sm" id="pcb-clear-revision-btn" style="font-size:0.60rem;padding:1px 6px">Clear</button>
     </div>
     <div style="display:flex;gap:12px;padding:8px 4px;font-size:0.70rem">
@@ -412,7 +412,7 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
         </div>
         <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)}</div>
       </div>
-      ${sel.panelInfo ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">📐 Panelisation: <strong style="color:var(--text-secondary)">${sel.panelInfo.boardsPerPanel}-up</strong> on ${sel.panelInfo.panelW}×${sel.panelInfo.panelH}mm panel · utilisation <strong style="color:var(--text-secondary)">${Math.round(sel.panelInfo.utilisation * 100)}%</strong> (waste amortised into PCB base cost)</div>` : ''}
+      ${sel.panelInfo ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Panelisation: <strong style="color:var(--text-secondary)">${sel.panelInfo.boardsPerPanel}-up</strong> on ${sel.panelInfo.panelW}×${sel.panelInfo.panelH}mm panel · utilisation <strong style="color:var(--text-secondary)">${Math.round(sel.panelInfo.utilisation * 100)}%</strong> (waste amortised into PCB base cost)</div>` : ''}
       ${pcbNREEnabled && PCB_COUNTRY_META[selectedCountryId]?.nre ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Automotive NRE (one-time/programme): PPAP £${PCB_COUNTRY_META[selectedCountryId].nre.ppapGBP.toLocaleString()} + FMEA £${PCB_COUNTRY_META[selectedCountryId].nre.fmeaGBP.toLocaleString()} + DVP&amp;R £${PCB_COUNTRY_META[selectedCountryId].nre.dvprGBP.toLocaleString()} + FAI £${PCB_COUNTRY_META[selectedCountryId].nre.firstArticleGBP.toLocaleString()} + IATF £${PCB_COUNTRY_META[selectedCountryId].nre.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${PCB_COUNTRY_META[selectedCountryId].nre.totalGBP.toLocaleString()}</strong></div>` : ''}
       <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">Best for: ${escHtml(sel.bestFor)}</div>
     </div>` : '';
@@ -464,7 +464,7 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
   return comparison.length === 0 ? selectedCard : `
     ${selectedCard}
     <div class="pcb-analysis-section">
-      <div class="pcb-analysis-section-title">🌍 Global Manufacturing Cost Comparison (${comparison.length} countries · 2026 data)</div>
+      <div class="pcb-analysis-section-title">Global Manufacturing Cost Comparison (${comparison.length} countries · 2026 data)</div>
       <div style="overflow-x:auto">
         <table class="pcb-bom-table" style="font-size:0.72rem;white-space:nowrap">
           <thead>
@@ -520,7 +520,7 @@ export function buildVolumeCurveSection(r: PCBImageAnalysis): string {
 
   return `
     <div class="pcb-analysis-section">
-      <div class="pcb-analysis-section-title">📈 Volume Sensitivity — Cost per Board vs Order Quantity</div>
+      <div class="pcb-analysis-section-title">Volume Sensitivity — Cost per Board vs Order Quantity</div>
       <div style="position:relative;height:240px;background:var(--card-bg);border-radius:6px;padding:8px">
         <canvas id="pcb-volume-chart"></canvas>
       </div>

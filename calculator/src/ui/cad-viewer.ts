@@ -1802,7 +1802,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     } else if (mode === 'draft') {
       legendEl.innerHTML = (['undercut', 'zero', 'ok', 'neutral'] as DraftClass[]).map(k =>
         `<span><i style="background:${rgbCss(DRAFT_COLORS[k])}"></i>${DRAFT_LABEL[k]}</span>`).join('') +
-        `<span style="opacity:.75">Pull axis: ${draftAxis.toUpperCase()} — click 📐 to cycle</span>`;
+        `<span style="opacity:.75">Pull axis: ${draftAxis.toUpperCase()} — click to cycle</span>`;
     } else if (mode === 'thickness' && thicknessRange) {
       const { min, max } = thicknessRange, mid = (min + max) / 2;
       legendEl.innerHTML = `<span style="opacity:.75">Wall thickness</span>` +

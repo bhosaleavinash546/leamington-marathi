@@ -820,7 +820,7 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
     panel.innerHTML = `
       <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #0ea5e9;border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">🧠 AI memory — similar past parts</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">AI memory — similar past parts</div>
           <div style="font-size:0.7rem;color:var(--text-muted)">Knowledge base: ${stats.total} analyses · ${stats.withActuals} with actuals</div>
         </div>
         ${matchRows ? `<div style="margin-top:6px">${matchRows}</div>` : ''}
@@ -1014,7 +1014,7 @@ function showWorkflowPanel(commodity: string): void {
     // Reuse the picker tile's line-art SVG so the whole flow shares one icon system
     const tileIcon = document.querySelector(`#commodity-picker-view .cpicker-tile[data-commodity="${commodity}"] .cpicker-tile-icon`);
     if (tileIcon) iconEl.innerHTML = tileIcon.innerHTML;
-    else iconEl.textContent = meta.icon;
+    else iconEl.innerHTML = meta.icon;   // a static sprite icon from CPICKER_META, not user text
   }
   if (nameEl) nameEl.textContent = meta.name;
 
@@ -1159,7 +1159,7 @@ function renderCommCards(): void {
     const wkPct = '~' + (c.changeWeek >= 0 ? '+' : '') + c.changeWeek.toFixed(2) + '%';
     const arrow = up ? '▲' : '▼';
     const clr = up ? '#22c55e' : '#ef4444';
-    const fDir = c.forecastDirection === 'up' ? '📈' : c.forecastDirection === 'down' ? '📉' : '➡️';
+    const fDir = c.forecastDirection === 'up' ? '<svg class="ic" aria-hidden="true"><use href="#i-trend-up"/></svg>' : c.forecastDirection === 'down' ? '<svg class="ic" aria-hidden="true"><use href="#i-trend-dn"/></svg>' : '';
     return `<div class="comm-card" data-id="${_commEsc(c.id)}">
   <div class="comm-card-header">
     <span class="comm-card-cat">${_commEsc(c.category)}</span>
@@ -1176,7 +1176,7 @@ function renderCommCards(): void {
       ${c.forecast30 != null ? `<div style="font-size:0.68rem;margin-top:3px">${fDir} 30d: ${commFmt(c.forecast30, c.unit)}</div>` : ''}
     </div>
   </div>
-  <div class="comm-card-impact" title="Should-cost sensitivity">⚙️ ${Math.round(c.impactCoeff * 100)}% cost sensitivity</div>
+  <div class="comm-card-impact" title="Should-cost sensitivity">⚙ ${Math.round(c.impactCoeff * 100)}% cost sensitivity</div>
 </div>`;
   }).join('');
 
@@ -2204,7 +2204,7 @@ function renderDashboard(): void {
       daiEl.innerHTML = `<span class="dai-icon"><svg class="ic"><use href="#i-bulb"/></svg></span><span>${highCostCount} part${highCostCount>1?'s':''} exceed ${_currFmt(100)} — prioritise these for detailed supplier negotiation.</span>`;
     } else {
       daiEl.className = 'dash-ai-item dash-ai-item--opt';
-      daiEl.innerHTML = `<span class="dai-icon">✅</span><span>All costed parts are below ${_currFmt(100)}. Consider checking wiring harness and PCB assemblies next.</span>`;
+      daiEl.innerHTML = `<span class="dai-icon"></span><span>All costed parts are below ${_currFmt(100)}. Consider checking wiring harness and PCB assemblies next.</span>`;
     }
   }
 
@@ -2846,7 +2846,7 @@ function renderAgentForm(): string {
       <div id="agent-messages"
         style="height:320px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:#f8f9fa;border-radius:8px;border:1px solid #e8e8e8">
         <div style="text-align:center;padding:20px 10px;color:#888;font-size:0.80rem">
-          <div style="font-size:1.4rem;margin-bottom:8px">🤖</div>
+          <div style="font-size:1.4rem;margin-bottom:8px"></div>
           <div style="font-weight:600;color:#1565c0;margin-bottom:6px">Unified Should-Cost AI Agent</div>
           <div style="line-height:1.5">Describe your part — material, dimensions, features, volume, region — and I'll orchestrate the full should-cost model. Attach a photo for better accuracy.</div>
           <div style="margin-top:8px;font-size:0.72rem;color:#aaa">Supports: Machining · Sheet Metal · Castings · Injection Moulding · Forgings · PCB · and more</div>
@@ -2901,7 +2901,7 @@ async function sendAgentMessage(): Promise<void> {
   agentPending = true;
   el('agent-send-btn')?.setAttribute('disabled', '');
   const agentStatusEl = document.getElementById('agent-status');
-  if (agentStatusEl) agentStatusEl.textContent = '⏳ Thinking…';
+  if (agentStatusEl) agentStatusEl.textContent = 'Thinking…';
 
   // Render user bubble
   _appendAgentBubble('user', msg);
@@ -2965,7 +2965,7 @@ async function sendAgentMessage(): Promise<void> {
         : '';
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    _appendAgentBubble('assistant', `❌ Error: ${msg}`);
+    _appendAgentBubble('assistant', `Error: ${msg}`);
     const statusEl = document.getElementById('agent-status');
     if (statusEl) statusEl.textContent = '';
   } finally {
@@ -3040,7 +3040,7 @@ async function sendAgentInterpretation(): Promise<void> {
   if (!agentLastResult) return;
   agentPending = true;
   const agentStatusEl = document.getElementById('agent-status');
-  if (agentStatusEl) agentStatusEl.textContent = '⏳ Interpreting cost results…';
+  if (agentStatusEl) agentStatusEl.textContent = 'Interpreting cost results…';
   const apiKey = (el<HTMLInputElement>('agent-api-key')?.value ?? '').trim();
 
   const interpretMsg = 'The cost calculation is complete. Please interpret the results, identify the top cost drivers, and provide your top 3 DFM recommendations.';
@@ -3567,7 +3567,7 @@ function wireSheetMetalBlankingChange(): void {
 function renderSheetMetalFabAdvisor(): string {
   return `
     <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-bottom:6px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚡ Process Advisor — Laser vs Punch vs Stamp</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">Process Advisor — Laser vs Punch vs Stamp</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Annual Volume</label><input type="number" id="smf-adv-vol" step="100" min="1" value="5000"/></div>
@@ -3756,7 +3756,7 @@ function wireSheetMetalFabAdvisor(): void {
 function renderInjectionForm(): string {
   return `
     <details style="background:#f3f8ff;border:1px solid #b9d4ff;border-radius:6px;padding:6px 8px;margin-bottom:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#1451a3">🔬 Moulding DFM Advisor — wall / sink / draft / weld-line / flow check</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#1451a3">Moulding DFM Advisor — wall / sink / draft / weld-line / flow check</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Resin Behaviour</label><select id="imm-adv-resin"><option value="amorphous">Amorphous (ABS/PC/PS)</option><option value="semi_crystalline" selected>Semi-crystalline (PP/PE/PA/POM)</option><option value="filled">Glass/Mineral Filled</option></select></div>
@@ -3985,7 +3985,7 @@ function renderBlowMouldingForm(): string {
       <div class="field-group"><label>Deflash Cycle (s, 0=none) <span title="Time per part for automated deflash. Typical 6–15s for EBM parts with pinch-off flash.">ℹ</span></label><input type="number" id="bm-deflash-ct" step="1" min="0" value="0"/></div>
     </div>
     <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">🔍 Blow DFM check — BUR / wall / corners / weld line</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Blow DFM check — BUR / wall / corners / weld line</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Blow-Up Ratio</label><input type="number" id="bm-dfm-bur" step="0.1" min="0" value="2.5"/></div>
@@ -4232,7 +4232,7 @@ function renderRotationalMouldingForm(): string {
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="rm-amort" step="1000" min="1" value="5000"/></div>
     </div>
     <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">🔍 Roto DFM check — wall / radii / draft / warpage / venting</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Roto DFM check — wall / radii / draft / warpage / venting</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Min Internal R (mm)</label><input type="number" id="rm-dfm-radius" step="1" min="0" value="12"/></div>
@@ -4473,7 +4473,7 @@ function renderRubberForm(): string {
     <div class="field-group"><label title="Visual + dimensional / leak-test cost per part £ (seals, hoses).">Inspection (£/part)</label><input type="number" id="rub-inspect" step="0.01" min="0" value="0"/></div>
   </div>
   <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
-    <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">🔍 Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
+    <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
     <div style="margin-top:6px">
       <div class="field-row">
         <div class="field-group"><label>Min Wall (mm)</label><input type="number" id="rub-dfm-minwall" step="0.5" min="0" value="2"/></div>
@@ -5707,14 +5707,14 @@ function renderCADAnalysisForm(): string {
 
     <!-- File upload -->
     <div id="cad-drop-zone" class="cad-upload-zone">
-      <div class="cad-upload-icon">📐</div>
+      <div class="cad-upload-icon"></div>
       <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">Drop your CAD file here, or click to browse</div>
       <label class="btn btn-primary btn-sm" for="cad-file-input" style="cursor:pointer">Browse Files</label>
       <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges,.stl" style="display:none"/>
       <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges) &nbsp;·&nbsp; STL (.stl)</div>
     </div>
     <div id="cad-file-info" class="cad-file-info" style="display:none">
-      <span class="file-icon">📄</span>
+      <span class="file-icon"></span>
       <div class="file-details">
         <div id="cad-fname" style="font-weight:600"></div>
         <div id="cad-fsize" style="color:var(--text-muted);font-size:0.72rem"></div>
@@ -5760,7 +5760,7 @@ function renderCADAnalysisForm(): string {
                style="font-size:0.8rem" title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
         <label style="font-size:0.72rem;display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 4.8 instead of Sonnet 5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
           <input type="checkbox" id="cad-deep-analysis" style="margin:0"/>
-          <span>🔬 Deep analysis — Claude Opus 4.8 (complex parts, slower)</span>
+          <span>Deep analysis — Claude Opus 4.8 (complex parts, slower)</span>
         </label>
       </div>
       <div class="field-group">
@@ -5813,7 +5813,7 @@ function renderCADAnalysisForm(): string {
         Part photo <span style="font-weight:400;color:var(--text-muted)">(optional — phone photo helps AI identify material &amp; surface finish)</span>
       </div>
       <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <label class="btn btn-secondary btn-sm" for="cad-photo-input" style="cursor:pointer">📷 Add Photo</label>
+        <label class="btn btn-secondary btn-sm" for="cad-photo-input" style="cursor:pointer">Add Photo</label>
         <input type="file" id="cad-photo-input" accept="image/jpeg,image/png,image/webp" style="display:none"/>
         <span id="cad-photo-info" style="font-size:0.72rem;color:var(--text-muted)">No photo selected</span>
         <button class="btn btn-secondary btn-sm" id="cad-photo-clear" style="display:none;padding:1px 8px">✕ Remove</button>
@@ -5822,7 +5822,7 @@ function renderCADAnalysisForm(): string {
         Engineering drawing <span style="font-weight:400;color:var(--text-muted)">(optional PDF — tolerances, GD&amp;T &amp; finishes drive cost more than shape)</span>
       </div>
       <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <label class="btn btn-secondary btn-sm" for="cad-drawing-input" style="cursor:pointer">📎 Attach Drawing PDF</label>
+        <label class="btn btn-secondary btn-sm" for="cad-drawing-input" style="cursor:pointer">Attach Drawing PDF</label>
         <input type="file" id="cad-drawing-input" accept="application/pdf,.pdf" style="display:none"/>
         <span id="cad-drawing-info" style="font-size:0.72rem;color:var(--text-muted)">No drawing attached</span>
         <button class="btn btn-secondary btn-sm" id="cad-drawing-clear" style="display:none;padding:1px 8px">✕ Remove</button>
@@ -5831,7 +5831,7 @@ function renderCADAnalysisForm(): string {
 
     <div class="cad-btn-row" style="margin-top:10px">
       <button class="btn btn-secondary" id="cad-analyze-btn" disabled>Analyze Only</button>
-      <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>Analyze &amp; Calculate ⚡</button>
+      <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>Analyze &amp; Calculate </button>
     </div>
     <div id="cad-progress-wrap" class="cad-progress-wrap" style="display:none">
       <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
@@ -6018,7 +6018,7 @@ function wireCADEvents(): void {
     const f = drawingInput.files?.[0] ?? null;
     if (f && f.size > 30 * 1024 * 1024) { showToast('Drawing PDF is over 30 MB — attach a smaller export.', 'warning'); drawingInput.value = ''; return; }
     cadDrawingFile = f;
-    if (drawingInfo) drawingInfo.textContent = f ? `📎 ${f.name} (${(f.size / 1024).toFixed(0)} KB)` : 'No drawing attached';
+    if (drawingInfo) drawingInfo.textContent = f ? `${f.name} (${(f.size / 1024).toFixed(0)} KB)` : 'No drawing attached';
     if (drawingClear) drawingClear.style.display = f ? '' : 'none';
   });
   drawingClear?.addEventListener('click', () => {
@@ -6369,7 +6369,7 @@ function buildFeatureCostCard(): string {
   return `
     <div style="margin-bottom:12px;border:1px solid var(--border);border-left:4px solid #0891b2;border-radius:8px;padding:10px 12px;background:var(--surface-elevated)">
       <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-        <div class="panel-title" style="margin:0">🧩 Feature-based cost breakdown <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(from CAD geometry)</span></div>
+        <div class="panel-title" style="margin:0">Feature-based cost breakdown <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(from CAD geometry)</span></div>
         <div style="font-size:0.95rem;font-weight:700;color:#0891b2">${_currFmt(fc.machiningCostGBP)} <span style="font-size:0.72rem;color:var(--text-muted)">· ${fc.totalCycleMin} min</span></div>
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:0.76rem;margin-top:8px">
@@ -6533,7 +6533,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   // so they ride into the report alongside the AI/geometry data.
   const viewerMeasuresPanel = cadViewerMeasurements.length ? `
     <div class="cad-section" style="margin-top:10px">
-      <div class="cad-section-title" style="font-size:0.78rem;font-weight:700">📐 Viewer Measurements <span style="font-weight:400;color:var(--text-muted)">(user-verified in 3D)</span></div>
+      <div class="cad-section-title" style="font-size:0.78rem;font-weight:700">Viewer Measurements <span style="font-weight:400;color:var(--text-muted)">(user-verified in 3D)</span></div>
       <ul style="margin:6px 0 0;padding-left:18px;font-size:0.78rem;line-height:1.7;font-variant-numeric:tabular-nums">
         ${cadViewerMeasurements.map(m => `<li>${escHtml(m.label)}</li>`).join('')}
       </ul>
@@ -6560,7 +6560,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
           ${cadFromCache ? '&nbsp;<span title="This exact file + photo + settings was analysed before — the identical result is returned, so the analysis is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.62rem;padding:1px 6px;border-radius:10px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
           &nbsp;
           <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
-          ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">⚡ ${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
+          ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
         </div>
       </div>
     </div>
@@ -6755,7 +6755,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         → Apply: ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)}
       </button>
       <button class="btn btn-secondary btn-sm" id="cad-apply-calc-btn" data-commodity="${escHtml(recommendedCommodity)}">
-        Apply &amp; Calculate ⚡
+        Apply &amp; Calculate 
       </button>
       <button class="btn btn-secondary btn-sm" id="cad-export-pdf-btn" style="margin-left:auto;display:flex;align-items:center;gap:4px">
         <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg>
@@ -6782,7 +6782,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
             <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px;line-height:1.4">${escHtml(p.reasoning)}</div>
             <div style="display:flex;gap:4px">
               <button class="btn btn-secondary btn-sm cad-apply-alt-btn" data-commodity="${escHtml(ct)}" style="font-size:0.72rem">Apply</button>
-              <button class="btn btn-secondary btn-sm cad-apply-alt-calc-btn" data-commodity="${escHtml(ct)}" style="font-size:0.72rem">Apply &amp; Calc ⚡</button>
+              <button class="btn btn-secondary btn-sm cad-apply-alt-calc-btn" data-commodity="${escHtml(ct)}" style="font-size:0.72rem">Apply &amp; Calc </button>
             </div>
           </div>`;
         }).join('')}
@@ -6803,13 +6803,13 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
           </select>
         </div>
         <div class="field-group">
-          <label style="font-size:0.72rem">Material grade ${_cadMaterialLocked ? '📌' : ''}(override &amp; recalc)</label>
+          <label style="font-size:0.72rem">Material grade ${_cadMaterialLocked ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : ''}(override &amp; recalc)</label>
           <select id="cad-reanalyze-material" style="font-size:0.8rem">
             ${_buildCadMaterialOptions(recommendedCommodity)}
           </select>
         </div>
         <div class="field-group">
-          <label style="font-size:0.72rem">Process route ${_cadProcessLocked ? '📌' : ''}(if you know it)</label>
+          <label style="font-size:0.72rem">Process route ${_cadProcessLocked ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : ''}(if you know it)</label>
           <select id="cad-reanalyze-process" style="font-size:0.8rem">
             ${_buildCadProcessOptions()}
           </select>
@@ -6818,10 +6818,10 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       <div id="cad-override-warn" style="display:none;margin-bottom:6px;font-size:0.72rem;color:var(--amber, #b45309);line-height:1.4"></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" id="cad-reanalyze-btn">↺ Re-analyse (no re-upload)</button>
-        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Pin &amp; Recalculate ⚡</button>
+        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Pin &amp; Recalculate </button>
         ${(_cadMaterialLocked || _cadProcessLocked) ? '<button class="btn btn-ghost btn-sm" id="cad-clear-pins-btn">Clear pins</button>' : ''}
       </div>
-      <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Pinned grade/process 📌 survive AI re-analysis — the AI classifies, you decide.</div>
+      <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Pinned grade/process survive AI re-analysis — the AI classifies, you decide.</div>
       <div id="cad-reanalyze-status" style="display:none;margin-top:6px;font-size:0.75rem;color:var(--text-muted)">Running AI analysis…</div>
     </div>` : ''}
 
@@ -7028,7 +7028,7 @@ function buildInlineDemoSection(commodity: string): string {
       Export Full Report PDF
     </button>
   </div>`;
-  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">⚡ Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— click any card to load instantly</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
+  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— click any card to load instantly</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
 }
 
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────
@@ -7124,22 +7124,22 @@ const PCB_DEMO_ECU: PCBImageAnalysis = {
     gb: demoVolumeCurve(106.74, 25.58, 32.66, 0.00, 48.50),
   },
   _selectedCountry: 'cn',
-  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳', 3.37,5.50,1.13,48.50, 3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4', { pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33 }),
+  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','', 3.37,5.50,1.13,48.50, 3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4', { pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33 }),
   _countryComparison: [
-    makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',3.37,5.50,1.13,48.50,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33}),
-    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','🇻🇳',4.31,4.79,1.41,48.50,3,0.80,['ISO9001','UL','RoHS'],'Labour-intensive assembly, high-volume low-complexity PCBA',{pcbBase:0.22,pcbLayers:0.54,pcbSurface:0.17,pcbVias:2.81,pcbHDI:0.25,pcbSetup:0.00,smtAssembly:0.88,thAssembly:0.18,aoi:3.77,logistics:0.95,importDuty:0.46}),
-    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','🇮🇳',5.13,6.26,1.58,48.50,4,0.78,['ISO9001','UL','RoHS'],'Growing capacity, English-speaking, government PLI incentives',{pcbBase:0.26,pcbLayers:0.64,pcbSurface:0.19,pcbVias:3.30,pcbHDI:0.30,pcbSetup:0.00,smtAssembly:1.44,thAssembly:0.24,aoi:4.62,logistics:1.07,importDuty:0.51}),
-    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','🇹🇭',5.55,7.14,1.66,48.50,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Japanese-standard quality at low-mid cost; strong automotive supply chain',{pcbBase:0.28,pcbLayers:0.69,pcbSurface:0.21,pcbVias:3.56,pcbHDI:0.33,pcbSetup:0.00,smtAssembly:1.65,thAssembly:0.27,aoi:5.26,logistics:1.13,importDuty:0.54}),
-    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','🇲🇾',5.12,7.58,1.63,48.50,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Strong EMS ecosystem (Intel, Western Digital heritage), good EE talent',{pcbBase:0.26,pcbLayers:0.64,pcbSurface:0.19,pcbVias:3.22,pcbHDI:0.29,pcbSetup:0.00,smtAssembly:1.76,thAssembly:0.27,aoi:5.59,logistics:1.10,importDuty:0.53}),
-    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','🇹🇼',9.07,11.30,1.76,48.50,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'Premium HDI, IC substrate, RF boards; world-class Tier-1 fabs',{pcbBase:0.46,pcbLayers:1.13,pcbSurface:0.34,pcbVias:5.42,pcbHDI:0.51,pcbSetup:0.00,smtAssembly:2.62,thAssembly:0.41,aoi:8.32,logistics:1.27,importDuty:0.49}),
-    makeDemoCountry('kr','South Korea (Suwon / Incheon)','🇰🇷',11.05,12.94,1.06,48.50,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung/LG supply chain integration, automotive-grade memory and PMIC',{pcbBase:0.56,pcbLayers:1.38,pcbSurface:0.41,pcbVias:6.52,pcbHDI:0.61,pcbSetup:0.00,smtAssembly:3.00,thAssembly:0.44,aoi:9.54,logistics:0.73,importDuty:0.33}),
-    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','🇲🇽',8.16,8.65,1.83,48.50,3,0.84,['ISO9001','IATF16949','UL'],'USMCA duty-free for US OEM; growing automotive nearshore hub',{pcbBase:0.41,pcbLayers:1.02,pcbSurface:0.30,pcbVias:5.01,pcbHDI:0.47,pcbSetup:0.00,smtAssembly:2.00,thAssembly:0.32,aoi:6.37,logistics:1.24,importDuty:0.59}),
-    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','🇨🇿',11.07,11.77,0.30,48.50,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU-based automotive PCBA (VW, BMW supply chain), zero UK import duty',{pcbBase:0.56,pcbLayers:1.38,pcbSurface:0.41,pcbVias:6.61,pcbHDI:0.62,pcbSetup:0.00,smtAssembly:2.73,thAssembly:0.40,aoi:8.68,logistics:0.30,importDuty:0.00}),
-    makeDemoCountry('pl','Poland (Wrocław / Kraków)','🇵🇱',10.13,10.80,0.28,48.50,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore, strong automotive sector (Stellantis, VW)',{pcbBase:0.51,pcbLayers:1.26,pcbSurface:0.37,pcbVias:6.09,pcbHDI:0.57,pcbSetup:0.00,smtAssembly:2.50,thAssembly:0.37,aoi:7.97,logistics:0.28,importDuty:0.00}),
-    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','🇩🇪',21.51,28.39,0.19,48.50,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Automotive OEM, aerospace ECSS, highest quality, shortest EU prototype lead time',{pcbBase:1.09,pcbLayers:2.70,pcbSurface:0.79,pcbVias:11.99,pcbHDI:1.12,pcbSetup:0.00,smtAssembly:6.58,thAssembly:0.70,aoi:21.15,logistics:0.19,importDuty:0.00}),
-    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','🇬🇧',25.58,32.66,0.00,48.50,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Domestic prototyping, defence/Def Stan, fastest turnaround, zero import risk',{pcbBase:1.29,pcbLayers:3.20,pcbSurface:0.93,pcbVias:14.09,pcbHDI:1.32,pcbSetup:0.00,smtAssembly:7.57,thAssembly:0.80,aoi:25.20,logistics:0.00,importDuty:0.00}),
-    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','🇺🇸',20.14,30.43,2.68,48.50,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'Defense/ITAR-sensitive programs, DO-254 airborne electronics, US-content mandates',{pcbBase:1.02,pcbLayers:2.52,pcbSurface:0.74,pcbVias:11.41,pcbHDI:1.07,pcbSetup:0.00,smtAssembly:7.06,thAssembly:0.72,aoi:22.69,logistics:1.63,importDuty:1.05}),
-    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','🇯🇵',35.88,34.82,1.13,48.50,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Ultra-fine pitch (<35µm), any-layer HDI IC substrate, highest reliability',{pcbBase:1.82,pcbLayers:4.49,pcbSurface:1.30,pcbVias:20.72,pcbHDI:1.93,pcbSetup:0.00,smtAssembly:8.08,thAssembly:0.84,aoi:26.06,logistics:0.81,importDuty:0.32}),
+    makeDemoCountry('cn','China (Shenzhen / Suzhou)','',3.37,5.50,1.13,48.50,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33}),
+    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','',4.31,4.79,1.41,48.50,3,0.80,['ISO9001','UL','RoHS'],'Labour-intensive assembly, high-volume low-complexity PCBA',{pcbBase:0.22,pcbLayers:0.54,pcbSurface:0.17,pcbVias:2.81,pcbHDI:0.25,pcbSetup:0.00,smtAssembly:0.88,thAssembly:0.18,aoi:3.77,logistics:0.95,importDuty:0.46}),
+    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','',5.13,6.26,1.58,48.50,4,0.78,['ISO9001','UL','RoHS'],'Growing capacity, English-speaking, government PLI incentives',{pcbBase:0.26,pcbLayers:0.64,pcbSurface:0.19,pcbVias:3.30,pcbHDI:0.30,pcbSetup:0.00,smtAssembly:1.44,thAssembly:0.24,aoi:4.62,logistics:1.07,importDuty:0.51}),
+    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','',5.55,7.14,1.66,48.50,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Japanese-standard quality at low-mid cost; strong automotive supply chain',{pcbBase:0.28,pcbLayers:0.69,pcbSurface:0.21,pcbVias:3.56,pcbHDI:0.33,pcbSetup:0.00,smtAssembly:1.65,thAssembly:0.27,aoi:5.26,logistics:1.13,importDuty:0.54}),
+    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','',5.12,7.58,1.63,48.50,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Strong EMS ecosystem (Intel, Western Digital heritage), good EE talent',{pcbBase:0.26,pcbLayers:0.64,pcbSurface:0.19,pcbVias:3.22,pcbHDI:0.29,pcbSetup:0.00,smtAssembly:1.76,thAssembly:0.27,aoi:5.59,logistics:1.10,importDuty:0.53}),
+    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','',9.07,11.30,1.76,48.50,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'Premium HDI, IC substrate, RF boards; world-class Tier-1 fabs',{pcbBase:0.46,pcbLayers:1.13,pcbSurface:0.34,pcbVias:5.42,pcbHDI:0.51,pcbSetup:0.00,smtAssembly:2.62,thAssembly:0.41,aoi:8.32,logistics:1.27,importDuty:0.49}),
+    makeDemoCountry('kr','South Korea (Suwon / Incheon)','',11.05,12.94,1.06,48.50,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung/LG supply chain integration, automotive-grade memory and PMIC',{pcbBase:0.56,pcbLayers:1.38,pcbSurface:0.41,pcbVias:6.52,pcbHDI:0.61,pcbSetup:0.00,smtAssembly:3.00,thAssembly:0.44,aoi:9.54,logistics:0.73,importDuty:0.33}),
+    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','',8.16,8.65,1.83,48.50,3,0.84,['ISO9001','IATF16949','UL'],'USMCA duty-free for US OEM; growing automotive nearshore hub',{pcbBase:0.41,pcbLayers:1.02,pcbSurface:0.30,pcbVias:5.01,pcbHDI:0.47,pcbSetup:0.00,smtAssembly:2.00,thAssembly:0.32,aoi:6.37,logistics:1.24,importDuty:0.59}),
+    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','',11.07,11.77,0.30,48.50,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU-based automotive PCBA (VW, BMW supply chain), zero UK import duty',{pcbBase:0.56,pcbLayers:1.38,pcbSurface:0.41,pcbVias:6.61,pcbHDI:0.62,pcbSetup:0.00,smtAssembly:2.73,thAssembly:0.40,aoi:8.68,logistics:0.30,importDuty:0.00}),
+    makeDemoCountry('pl','Poland (Wrocław / Kraków)','',10.13,10.80,0.28,48.50,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore, strong automotive sector (Stellantis, VW)',{pcbBase:0.51,pcbLayers:1.26,pcbSurface:0.37,pcbVias:6.09,pcbHDI:0.57,pcbSetup:0.00,smtAssembly:2.50,thAssembly:0.37,aoi:7.97,logistics:0.28,importDuty:0.00}),
+    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','',21.51,28.39,0.19,48.50,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Automotive OEM, aerospace ECSS, highest quality, shortest EU prototype lead time',{pcbBase:1.09,pcbLayers:2.70,pcbSurface:0.79,pcbVias:11.99,pcbHDI:1.12,pcbSetup:0.00,smtAssembly:6.58,thAssembly:0.70,aoi:21.15,logistics:0.19,importDuty:0.00}),
+    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','',25.58,32.66,0.00,48.50,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Domestic prototyping, defence/Def Stan, fastest turnaround, zero import risk',{pcbBase:1.29,pcbLayers:3.20,pcbSurface:0.93,pcbVias:14.09,pcbHDI:1.32,pcbSetup:0.00,smtAssembly:7.57,thAssembly:0.80,aoi:25.20,logistics:0.00,importDuty:0.00}),
+    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','',20.14,30.43,2.68,48.50,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'Defense/ITAR-sensitive programs, DO-254 airborne electronics, US-content mandates',{pcbBase:1.02,pcbLayers:2.52,pcbSurface:0.74,pcbVias:11.41,pcbHDI:1.07,pcbSetup:0.00,smtAssembly:7.06,thAssembly:0.72,aoi:22.69,logistics:1.63,importDuty:1.05}),
+    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','',35.88,34.82,1.13,48.50,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Ultra-fine pitch (<35µm), any-layer HDI IC substrate, highest reliability',{pcbBase:1.82,pcbLayers:4.49,pcbSurface:1.30,pcbVias:20.72,pcbHDI:1.93,pcbSetup:0.00,smtAssembly:8.08,thAssembly:0.84,aoi:26.06,logistics:0.81,importDuty:0.32}),
   ],
 };
 
@@ -7211,22 +7211,22 @@ const PCB_DEMO_ADAS: PCBImageAnalysis = {
     gb: demoVolumeCurve(122.13, 31.36, 28.47, 0.00, 62.30),
   },
   _selectedCountry: 'cn',
-  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
+  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
   _countryComparison: [
-    makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
-    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','🇻🇳',6.74,4.31,1.12,62.30,3,0.80,['ISO9001','UL','RoHS'],'Labour-intensive assembly, high-volume low-complexity PCBA',{pcbBase:0.09,pcbLayers:0.34,pcbSurface:0.10,pcbVias:5.75,pcbHDI:0.32,pcbSetup:0.01,smtAssembly:0.63,thAssembly:0.08,aoi:3.64,logistics:0.72,importDuty:0.40}),
-    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','🇮🇳',7.77,5.56,1.28,62.30,4,0.78,['ISO9001','UL','RoHS'],'Growing capacity, English-speaking, government PLI incentives',{pcbBase:0.10,pcbLayers:0.40,pcbSurface:0.11,pcbVias:6.61,pcbHDI:0.37,pcbSetup:0.01,smtAssembly:0.97,thAssembly:0.09,aoi:4.54,logistics:0.82,importDuty:0.46}),
-    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','🇹🇭',8.33,6.28,1.35,62.30,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Japanese-standard quality at low-mid cost; strong automotive supply chain',{pcbBase:0.11,pcbLayers:0.43,pcbSurface:0.12,pcbVias:7.07,pcbHDI:0.39,pcbSetup:0.01,smtAssembly:1.11,thAssembly:0.09,aoi:5.12,logistics:0.87,importDuty:0.48}),
-    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','🇲🇾',7.78,6.70,1.33,62.30,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Strong EMS ecosystem (Intel, Western Digital heritage), good EE talent',{pcbBase:0.10,pcbLayers:0.40,pcbSurface:0.11,pcbVias:6.64,pcbHDI:0.37,pcbSetup:0.01,smtAssembly:1.18,thAssembly:0.09,aoi:5.47,logistics:0.85,importDuty:0.48}),
-    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','🇹🇼',11.90,9.82,1.38,62.30,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'Premium HDI, IC substrate, RF boards; world-class Tier-1 fabs',{pcbBase:0.18,pcbLayers:0.71,pcbSurface:0.20,pcbVias:9.72,pcbHDI:0.54,pcbSetup:0.01,smtAssembly:1.73,thAssembly:0.13,aoi:8.00,logistics:0.98,importDuty:0.40}),
-    makeDemoCountry('kr','South Korea (Suwon / Incheon)','🇰🇷',14.20,11.19,0.60,62.30,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung/LG supply chain integration, automotive-grade memory and PMIC',{pcbBase:0.22,pcbLayers:0.86,pcbSurface:0.24,pcbVias:11.58,pcbHDI:0.65,pcbSetup:0.01,smtAssembly:1.98,thAssembly:0.14,aoi:9.12,logistics:0.39,importDuty:0.21}),
-    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','🇲🇽',10.77,7.57,1.37,62.30,3,0.84,['ISO9001','IATF16949','UL'],'USMCA duty-free for US OEM; growing automotive nearshore hub',{pcbBase:0.16,pcbLayers:0.64,pcbSurface:0.18,pcbVias:8.77,pcbHDI:0.49,pcbSetup:0.01,smtAssembly:1.34,thAssembly:0.11,aoi:6.16,logistics:0.88,importDuty:0.49}),
-    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','🇨🇿',14.21,10.24,0.17,62.30,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU-based automotive PCBA (VW, BMW supply chain), zero UK import duty',{pcbBase:0.22,pcbLayers:0.86,pcbSurface:0.24,pcbVias:11.71,pcbHDI:0.65,pcbSetup:0.01,smtAssembly:1.81,thAssembly:0.13,aoi:8.34,logistics:0.17,importDuty:0.00}),
-    makeDemoCountry('pl','Poland (Wrocław / Kraków)','🇵🇱',13.10,9.42,0.16,62.30,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore, strong automotive sector (Stellantis, VW)',{pcbBase:0.20,pcbLayers:0.79,pcbSurface:0.22,pcbVias:10.79,pcbHDI:0.60,pcbSetup:0.01,smtAssembly:1.66,thAssembly:0.12,aoi:7.68,logistics:0.16,importDuty:0.00}),
-    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','🇩🇪',27.43,24.76,0.11,62.30,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Automotive OEM, aerospace ECSS, highest quality, shortest EU prototype lead time',{pcbBase:0.43,pcbLayers:1.69,pcbSurface:0.47,pcbVias:22.50,pcbHDI:1.25,pcbSetup:0.01,smtAssembly:4.37,thAssembly:0.24,aoi:20.19,logistics:0.11,importDuty:0.00}),
-    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','🇬🇧',31.36,28.47,0.00,62.30,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Domestic prototyping, defence/Def Stan, fastest turnaround, zero import risk',{pcbBase:0.49,pcbLayers:1.94,pcbSurface:0.54,pcbVias:26.11,pcbHDI:1.45,pcbSetup:0.01,smtAssembly:4.97,thAssembly:0.27,aoi:23.22,logistics:0.00,importDuty:0.00}),
-    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','🇺🇸',26.12,26.56,2.41,62.30,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'Defense/ITAR-sensitive programs, DO-254 airborne electronics, US-content mandates',{pcbBase:0.38,pcbLayers:1.51,pcbSurface:0.42,pcbVias:21.32,pcbHDI:1.19,pcbSetup:0.01,smtAssembly:4.64,thAssembly:0.22,aoi:21.74,logistics:1.47,importDuty:0.94}),
-    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','🇯🇵',43.32,30.38,0.65,62.30,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Ultra-fine pitch (<35µm), any-layer HDI IC substrate, highest reliability',{pcbBase:0.72,pcbLayers:2.82,pcbSurface:0.78,pcbVias:36.99,pcbHDI:2.06,pcbSetup:0.01,smtAssembly:5.34,thAssembly:0.29,aoi:24.79,logistics:0.46,importDuty:0.19}),
+    makeDemoCountry('cn','China (Shenzhen / Suzhou)','',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
+    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','',6.74,4.31,1.12,62.30,3,0.80,['ISO9001','UL','RoHS'],'Labour-intensive assembly, high-volume low-complexity PCBA',{pcbBase:0.09,pcbLayers:0.34,pcbSurface:0.10,pcbVias:5.75,pcbHDI:0.32,pcbSetup:0.01,smtAssembly:0.63,thAssembly:0.08,aoi:3.64,logistics:0.72,importDuty:0.40}),
+    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','',7.77,5.56,1.28,62.30,4,0.78,['ISO9001','UL','RoHS'],'Growing capacity, English-speaking, government PLI incentives',{pcbBase:0.10,pcbLayers:0.40,pcbSurface:0.11,pcbVias:6.61,pcbHDI:0.37,pcbSetup:0.01,smtAssembly:0.97,thAssembly:0.09,aoi:4.54,logistics:0.82,importDuty:0.46}),
+    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','',8.33,6.28,1.35,62.30,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Japanese-standard quality at low-mid cost; strong automotive supply chain',{pcbBase:0.11,pcbLayers:0.43,pcbSurface:0.12,pcbVias:7.07,pcbHDI:0.39,pcbSetup:0.01,smtAssembly:1.11,thAssembly:0.09,aoi:5.12,logistics:0.87,importDuty:0.48}),
+    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','',7.78,6.70,1.33,62.30,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Strong EMS ecosystem (Intel, Western Digital heritage), good EE talent',{pcbBase:0.10,pcbLayers:0.40,pcbSurface:0.11,pcbVias:6.64,pcbHDI:0.37,pcbSetup:0.01,smtAssembly:1.18,thAssembly:0.09,aoi:5.47,logistics:0.85,importDuty:0.48}),
+    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','',11.90,9.82,1.38,62.30,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'Premium HDI, IC substrate, RF boards; world-class Tier-1 fabs',{pcbBase:0.18,pcbLayers:0.71,pcbSurface:0.20,pcbVias:9.72,pcbHDI:0.54,pcbSetup:0.01,smtAssembly:1.73,thAssembly:0.13,aoi:8.00,logistics:0.98,importDuty:0.40}),
+    makeDemoCountry('kr','South Korea (Suwon / Incheon)','',14.20,11.19,0.60,62.30,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung/LG supply chain integration, automotive-grade memory and PMIC',{pcbBase:0.22,pcbLayers:0.86,pcbSurface:0.24,pcbVias:11.58,pcbHDI:0.65,pcbSetup:0.01,smtAssembly:1.98,thAssembly:0.14,aoi:9.12,logistics:0.39,importDuty:0.21}),
+    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','',10.77,7.57,1.37,62.30,3,0.84,['ISO9001','IATF16949','UL'],'USMCA duty-free for US OEM; growing automotive nearshore hub',{pcbBase:0.16,pcbLayers:0.64,pcbSurface:0.18,pcbVias:8.77,pcbHDI:0.49,pcbSetup:0.01,smtAssembly:1.34,thAssembly:0.11,aoi:6.16,logistics:0.88,importDuty:0.49}),
+    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','',14.21,10.24,0.17,62.30,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU-based automotive PCBA (VW, BMW supply chain), zero UK import duty',{pcbBase:0.22,pcbLayers:0.86,pcbSurface:0.24,pcbVias:11.71,pcbHDI:0.65,pcbSetup:0.01,smtAssembly:1.81,thAssembly:0.13,aoi:8.34,logistics:0.17,importDuty:0.00}),
+    makeDemoCountry('pl','Poland (Wrocław / Kraków)','',13.10,9.42,0.16,62.30,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore, strong automotive sector (Stellantis, VW)',{pcbBase:0.20,pcbLayers:0.79,pcbSurface:0.22,pcbVias:10.79,pcbHDI:0.60,pcbSetup:0.01,smtAssembly:1.66,thAssembly:0.12,aoi:7.68,logistics:0.16,importDuty:0.00}),
+    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','',27.43,24.76,0.11,62.30,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Automotive OEM, aerospace ECSS, highest quality, shortest EU prototype lead time',{pcbBase:0.43,pcbLayers:1.69,pcbSurface:0.47,pcbVias:22.50,pcbHDI:1.25,pcbSetup:0.01,smtAssembly:4.37,thAssembly:0.24,aoi:20.19,logistics:0.11,importDuty:0.00}),
+    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','',31.36,28.47,0.00,62.30,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Domestic prototyping, defence/Def Stan, fastest turnaround, zero import risk',{pcbBase:0.49,pcbLayers:1.94,pcbSurface:0.54,pcbVias:26.11,pcbHDI:1.45,pcbSetup:0.01,smtAssembly:4.97,thAssembly:0.27,aoi:23.22,logistics:0.00,importDuty:0.00}),
+    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','',26.12,26.56,2.41,62.30,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'Defense/ITAR-sensitive programs, DO-254 airborne electronics, US-content mandates',{pcbBase:0.38,pcbLayers:1.51,pcbSurface:0.42,pcbVias:21.32,pcbHDI:1.19,pcbSetup:0.01,smtAssembly:4.64,thAssembly:0.22,aoi:21.74,logistics:1.47,importDuty:0.94}),
+    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','',43.32,30.38,0.65,62.30,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Ultra-fine pitch (<35µm), any-layer HDI IC substrate, highest reliability',{pcbBase:0.72,pcbLayers:2.82,pcbSurface:0.78,pcbVias:36.99,pcbHDI:2.06,pcbSetup:0.01,smtAssembly:5.34,thAssembly:0.29,aoi:24.79,logistics:0.46,importDuty:0.19}),
   ],
 };
 
@@ -7302,22 +7302,22 @@ const PCB_DEMO_BOSCH_RADAR: PCBImageAnalysis = {
     gb: demoVolumeCurve(144.44, 45.00, 20.00, 0.00, 79.44),
   },
   _selectedCountry: 'cn',
-  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',22.00,4.50,1.50,79.44,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised; Rogers 4350B capable fabs: Suntak, Kingboard',{pcbBase:1.20,pcbLayers:3.60,pcbSurface:14.50,pcbVias:1.50,pcbHDI:0.80,pcbSetup:0.40,smtAssembly:3.20,thAssembly:0.55,aoi:0.75,logistics:1.00,importDuty:0.50}),
+  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','',22.00,4.50,1.50,79.44,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised; Rogers 4350B capable fabs: Suntak, Kingboard',{pcbBase:1.20,pcbLayers:3.60,pcbSurface:14.50,pcbVias:1.50,pcbHDI:0.80,pcbSetup:0.40,smtAssembly:3.20,thAssembly:0.55,aoi:0.75,logistics:1.00,importDuty:0.50}),
   _countryComparison: [
-    makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',22.00,4.50,1.50,79.44,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume; Rogers 4350B capable fabs (Suntak, Kingboard)',{pcbBase:1.20,pcbLayers:3.60,pcbSurface:14.50,pcbVias:1.50,pcbHDI:0.80,pcbSetup:0.40,smtAssembly:3.20,thAssembly:0.55,aoi:0.75,logistics:1.00,importDuty:0.50}),
-    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','🇻🇳',24.50,4.30,1.80,79.44,3,0.80,['ISO9001','UL','RoHS'],'Emerging RF PCBA; limited Rogers 4350B supplier base',{pcbBase:1.35,pcbLayers:4.00,pcbSurface:16.20,pcbVias:1.65,pcbHDI:0.90,pcbSetup:0.40,smtAssembly:3.00,thAssembly:0.50,aoi:0.80,logistics:1.20,importDuty:0.60}),
-    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','🇮🇳',26.00,5.80,2.10,79.44,4,0.78,['ISO9001','UL','RoHS'],'ISRO space heritage; some RF PCBA capability in Bengaluru',{pcbBase:1.50,pcbLayers:4.40,pcbSurface:17.10,pcbVias:1.75,pcbHDI:0.95,pcbSetup:0.30,smtAssembly:4.20,thAssembly:0.60,aoi:1.00,logistics:1.40,importDuty:0.70}),
-    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','🇹🇭',26.50,6.20,2.20,79.44,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Automotive bias; Rogers fab capability limited to Bangkok tier',{pcbBase:1.60,pcbLayers:4.55,pcbSurface:17.30,pcbVias:1.80,pcbHDI:1.00,pcbSetup:0.25,smtAssembly:4.50,thAssembly:0.65,aoi:1.05,logistics:1.50,importDuty:0.70}),
-    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','🇲🇾',25.00,6.50,2.10,79.44,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Keysight/Motorola heritage; strong RF/microwave process capability',{pcbBase:1.45,pcbLayers:4.25,pcbSurface:16.50,pcbVias:1.70,pcbHDI:0.90,pcbSetup:0.20,smtAssembly:4.70,thAssembly:0.68,aoi:1.12,logistics:1.40,importDuty:0.70}),
-    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','🇹🇼',33.00,9.80,2.30,79.44,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'World-class RF; TTM, Tripod, Unitech all Rogers 4350B certified',{pcbBase:2.00,pcbLayers:6.10,pcbSurface:21.50,pcbVias:2.20,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:7.10,thAssembly:0.80,aoi:1.90,logistics:1.60,importDuty:0.70}),
-    makeDemoCountry('kr','South Korea (Suwon / Incheon)','🇰🇷',37.00,11.50,1.50,79.44,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung EM/LG Innotek RF PCB; strong mmWave capability',{pcbBase:2.30,pcbLayers:7.00,pcbSurface:24.00,pcbVias:2.50,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:8.30,thAssembly:0.90,aoi:2.30,logistics:1.00,importDuty:0.50}),
-    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','🇲🇽',30.00,7.80,2.50,79.44,3,0.84,['ISO9001','IATF16949','UL'],'Jabil/Foxconn sites with Rogers capability; USMCA duty-free for US programs',{pcbBase:1.80,pcbLayers:5.40,pcbSurface:19.50,pcbVias:2.05,pcbHDI:1.10,pcbSetup:0.15,smtAssembly:5.65,thAssembly:0.70,aoi:1.45,logistics:1.70,importDuty:0.80}),
-    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','🇨🇿',38.00,10.50,0.40,79.44,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU automotive (Bosch/Continental Tier-1 supply chain); EU import duty zero',{pcbBase:2.40,pcbLayers:7.20,pcbSurface:24.80,pcbVias:2.60,pcbHDI:1.00,pcbSetup:0.00,smtAssembly:7.60,thAssembly:0.84,aoi:2.06,logistics:0.40,importDuty:0.00}),
-    makeDemoCountry('pl','Poland (Wrocław / Kraków)','🇵🇱',35.00,9.80,0.38,79.44,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore; Wurth Elektronik / Eltek Rogers capability',{pcbBase:2.15,pcbLayers:6.55,pcbSurface:22.70,pcbVias:2.40,pcbHDI:1.00,pcbSetup:0.20,smtAssembly:7.10,thAssembly:0.78,aoi:1.92,logistics:0.38,importDuty:0.00}),
-    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','🇩🇪',65.00,26.00,0.25,79.44,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Bosch/Continental home-base; AT&S Rogers capability; fastest automotive NPI',{pcbBase:4.20,pcbLayers:13.00,pcbSurface:44.00,pcbVias:2.30,pcbHDI:1.50,pcbSetup:0.00,smtAssembly:18.85,thAssembly:1.58,aoi:5.57,logistics:0.25,importDuty:0.00}),
-    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','🇬🇧',45.00,20.00,0.00,79.44,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Proteus/Chemring Rogers boards; UK domestic with zero import risk and Def Stan support',{pcbBase:2.90,pcbLayers:8.80,pcbSurface:30.20,pcbVias:1.90,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:14.50,thAssembly:1.20,aoi:4.30,logistics:0.00,importDuty:0.00}),
-    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','🇺🇸',62.00,28.00,3.50,79.44,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'TTM Rogers mmWave; Sanmina RF; ITAR-controlled variants of radar electronics',{pcbBase:4.00,pcbLayers:12.20,pcbSurface:42.10,pcbVias:2.20,pcbHDI:1.50,pcbSetup:0.00,smtAssembly:20.25,thAssembly:1.68,aoi:6.07,logistics:2.15,importDuty:1.35}),
-    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','🇯🇵',95.00,32.00,1.60,79.44,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Meiko/Toppan Rogers ultra-precision; Denso/Toyota heritage; world-leading antenna tolerance',{pcbBase:6.20,pcbLayers:19.10,pcbSurface:65.50,pcbVias:3.00,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:23.15,thAssembly:1.93,aoi:6.92,logistics:1.00,importDuty:0.60}),
+    makeDemoCountry('cn','China (Shenzhen / Suzhou)','',22.00,4.50,1.50,79.44,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume; Rogers 4350B capable fabs (Suntak, Kingboard)',{pcbBase:1.20,pcbLayers:3.60,pcbSurface:14.50,pcbVias:1.50,pcbHDI:0.80,pcbSetup:0.40,smtAssembly:3.20,thAssembly:0.55,aoi:0.75,logistics:1.00,importDuty:0.50}),
+    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','',24.50,4.30,1.80,79.44,3,0.80,['ISO9001','UL','RoHS'],'Emerging RF PCBA; limited Rogers 4350B supplier base',{pcbBase:1.35,pcbLayers:4.00,pcbSurface:16.20,pcbVias:1.65,pcbHDI:0.90,pcbSetup:0.40,smtAssembly:3.00,thAssembly:0.50,aoi:0.80,logistics:1.20,importDuty:0.60}),
+    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','',26.00,5.80,2.10,79.44,4,0.78,['ISO9001','UL','RoHS'],'ISRO space heritage; some RF PCBA capability in Bengaluru',{pcbBase:1.50,pcbLayers:4.40,pcbSurface:17.10,pcbVias:1.75,pcbHDI:0.95,pcbSetup:0.30,smtAssembly:4.20,thAssembly:0.60,aoi:1.00,logistics:1.40,importDuty:0.70}),
+    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','',26.50,6.20,2.20,79.44,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Automotive bias; Rogers fab capability limited to Bangkok tier',{pcbBase:1.60,pcbLayers:4.55,pcbSurface:17.30,pcbVias:1.80,pcbHDI:1.00,pcbSetup:0.25,smtAssembly:4.50,thAssembly:0.65,aoi:1.05,logistics:1.50,importDuty:0.70}),
+    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','',25.00,6.50,2.10,79.44,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Keysight/Motorola heritage; strong RF/microwave process capability',{pcbBase:1.45,pcbLayers:4.25,pcbSurface:16.50,pcbVias:1.70,pcbHDI:0.90,pcbSetup:0.20,smtAssembly:4.70,thAssembly:0.68,aoi:1.12,logistics:1.40,importDuty:0.70}),
+    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','',33.00,9.80,2.30,79.44,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'World-class RF; TTM, Tripod, Unitech all Rogers 4350B certified',{pcbBase:2.00,pcbLayers:6.10,pcbSurface:21.50,pcbVias:2.20,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:7.10,thAssembly:0.80,aoi:1.90,logistics:1.60,importDuty:0.70}),
+    makeDemoCountry('kr','South Korea (Suwon / Incheon)','',37.00,11.50,1.50,79.44,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung EM/LG Innotek RF PCB; strong mmWave capability',{pcbBase:2.30,pcbLayers:7.00,pcbSurface:24.00,pcbVias:2.50,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:8.30,thAssembly:0.90,aoi:2.30,logistics:1.00,importDuty:0.50}),
+    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','',30.00,7.80,2.50,79.44,3,0.84,['ISO9001','IATF16949','UL'],'Jabil/Foxconn sites with Rogers capability; USMCA duty-free for US programs',{pcbBase:1.80,pcbLayers:5.40,pcbSurface:19.50,pcbVias:2.05,pcbHDI:1.10,pcbSetup:0.15,smtAssembly:5.65,thAssembly:0.70,aoi:1.45,logistics:1.70,importDuty:0.80}),
+    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','',38.00,10.50,0.40,79.44,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU automotive (Bosch/Continental Tier-1 supply chain); EU import duty zero',{pcbBase:2.40,pcbLayers:7.20,pcbSurface:24.80,pcbVias:2.60,pcbHDI:1.00,pcbSetup:0.00,smtAssembly:7.60,thAssembly:0.84,aoi:2.06,logistics:0.40,importDuty:0.00}),
+    makeDemoCountry('pl','Poland (Wrocław / Kraków)','',35.00,9.80,0.38,79.44,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore; Wurth Elektronik / Eltek Rogers capability',{pcbBase:2.15,pcbLayers:6.55,pcbSurface:22.70,pcbVias:2.40,pcbHDI:1.00,pcbSetup:0.20,smtAssembly:7.10,thAssembly:0.78,aoi:1.92,logistics:0.38,importDuty:0.00}),
+    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','',65.00,26.00,0.25,79.44,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Bosch/Continental home-base; AT&S Rogers capability; fastest automotive NPI',{pcbBase:4.20,pcbLayers:13.00,pcbSurface:44.00,pcbVias:2.30,pcbHDI:1.50,pcbSetup:0.00,smtAssembly:18.85,thAssembly:1.58,aoi:5.57,logistics:0.25,importDuty:0.00}),
+    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','',45.00,20.00,0.00,79.44,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Proteus/Chemring Rogers boards; UK domestic with zero import risk and Def Stan support',{pcbBase:2.90,pcbLayers:8.80,pcbSurface:30.20,pcbVias:1.90,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:14.50,thAssembly:1.20,aoi:4.30,logistics:0.00,importDuty:0.00}),
+    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','',62.00,28.00,3.50,79.44,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'TTM Rogers mmWave; Sanmina RF; ITAR-controlled variants of radar electronics',{pcbBase:4.00,pcbLayers:12.20,pcbSurface:42.10,pcbVias:2.20,pcbHDI:1.50,pcbSetup:0.00,smtAssembly:20.25,thAssembly:1.68,aoi:6.07,logistics:2.15,importDuty:1.35}),
+    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','',95.00,32.00,1.60,79.44,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Meiko/Toppan Rogers ultra-precision; Denso/Toyota heritage; world-leading antenna tolerance',{pcbBase:6.20,pcbLayers:19.10,pcbSurface:65.50,pcbVias:3.00,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:23.15,thAssembly:1.93,aoi:6.92,logistics:1.00,importDuty:0.60}),
   ],
 };
 
@@ -7329,7 +7329,7 @@ function buildPCBDemoSection(): string {
     <div style="margin-top:16px">
       <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;display:flex;align-items:center;gap:8px">
         <span style="flex:1;height:1px;background:var(--border)"></span>
-        <span>🚗 Demo: Real Automotive PCB Examples</span>
+        <span>Demo: Real Automotive PCB Examples</span>
         <span style="flex:1;height:1px;background:var(--border)"></span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
@@ -7337,7 +7337,7 @@ function buildPCBDemoSection(): string {
              onmouseenter="this.style.background='rgba(79,142,247,0.09)'" onmouseleave="this.style.background='rgba(79,142,247,0.04)'"
              onclick="window.__loadPCBDemo('ecu')">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <span style="font-size:1.1rem">🔧</span>
+            <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">Automotive ECU</span>
             <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
           </div>
@@ -7356,7 +7356,7 @@ function buildPCBDemoSection(): string {
              onmouseenter="this.style.background='rgba(139,92,246,0.09)'" onmouseleave="this.style.background='rgba(139,92,246,0.04)'"
              onclick="window.__loadPCBDemo('adas')">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <span style="font-size:1.1rem">📷</span>
+            <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">ADAS Camera PCB</span>
             <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
           </div>
@@ -7375,7 +7375,7 @@ function buildPCBDemoSection(): string {
              onmouseenter="this.style.background='rgba(239,68,68,0.09)'" onmouseleave="this.style.background='rgba(239,68,68,0.04)'"
              onclick="window.__loadPCBDemo('bosch_radar')">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <span style="font-size:1.1rem">📡</span>
+            <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">77 GHz Radar ECU</span>
             <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
           </div>
@@ -7403,7 +7403,7 @@ function buildPCBImageUploadZone(): string {
     <div class="pcb-img-zone ai-only" id="pcb-img-zone">
       <input type="file" id="pcb-img-input" accept="image/jpeg,image/png,image/webp" style="display:none"/>
       <div class="pcb-img-zone-content" id="pcb-img-zone-content">
-        <div style="font-size:1.4rem;margin-bottom:4px">🔬</div>
+        <div style="font-size:1.4rem;margin-bottom:4px"></div>
         <div style="font-size:0.78rem;font-weight:600;color:var(--text-secondary)">PCB Image-to-BOM Analysis</div>
         <div style="font-size:0.68rem;color:var(--text-secondary);margin-top:2px;line-height:1.45">Upload a PCB photo or silkscreen image — 4-stage AI pipeline detects components, builds BOM &amp; computes should-cost across 14 manufacturing countries</div>
 
@@ -7412,30 +7412,30 @@ function buildPCBImageUploadZone(): string {
           <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);white-space:nowrap">Manufacturing Country:</label>
           <select id="pcb-mfg-country" style="font-size:0.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
             <optgroup label="Asia — Low Cost">
-              <option value="cn" selected>🇨🇳 China (Shenzhen) — Default</option>
-              <option value="vn">🇻🇳 Vietnam (Ho Chi Minh City)</option>
-              <option value="in">🇮🇳 India (Pune / Bengaluru)</option>
+              <option value="cn" selected>China (Shenzhen) — Default</option>
+              <option value="vn">Vietnam (Ho Chi Minh City)</option>
+              <option value="in">India (Pune / Bengaluru)</option>
             </optgroup>
             <optgroup label="Asia — Mid Tier">
-              <option value="th">🇹🇭 Thailand (Bangkok)</option>
-              <option value="my">🇲🇾 Malaysia (Penang)</option>
-              <option value="tw">🇹🇼 Taiwan (Taoyuan / Hsinchu)</option>
-              <option value="kr">🇰🇷 South Korea (Suwon)</option>
+              <option value="th">Thailand (Bangkok)</option>
+              <option value="my">Malaysia (Penang)</option>
+              <option value="tw">Taiwan (Taoyuan / Hsinchu)</option>
+              <option value="kr">South Korea (Suwon)</option>
             </optgroup>
             <optgroup label="Americas">
-              <option value="mx">🇲🇽 Mexico (Juárez / Monterrey)</option>
-              <option value="us">🇺🇸 USA (San Jose / Austin) — ITAR</option>
+              <option value="mx">Mexico (Juárez / Monterrey)</option>
+              <option value="us">USA (San Jose / Austin) — ITAR</option>
             </optgroup>
             <optgroup label="Europe — Low Cost">
-              <option value="cz">🇨🇿 Czech Republic (Brno)</option>
-              <option value="pl">🇵🇱 Poland (Wrocław)</option>
+              <option value="cz">Czech Republic (Brno)</option>
+              <option value="pl">Poland (Wrocław)</option>
             </optgroup>
             <optgroup label="Europe / Premium">
-              <option value="de">🇩🇪 Germany (München)</option>
-              <option value="gb">🇬🇧 UK (Birmingham) — Domestic</option>
+              <option value="de">Germany (München)</option>
+              <option value="gb">UK (Birmingham) — Domestic</option>
             </optgroup>
             <optgroup label="Asia — Premium">
-              <option value="jp">🇯🇵 Japan (Nagano) — Ultra-precision</option>
+              <option value="jp">Japan (Nagano) — Ultra-precision</option>
             </optgroup>
           </select>
           <input type="number" id="pcb-order-qty" value="100" min="1" step="50"
@@ -7450,7 +7450,7 @@ function buildPCBImageUploadZone(): string {
             Upload up to 8 photos — top &amp; bottom sides + up to 6 IC close-ups for best accuracy
           </div>
           <div style="font-size:0.63rem;color:var(--text-muted);margin-bottom:6px;text-align:center">
-            📸 Fill the frame, avoid glare — accuracy depends on IC part markings being readable
+            Fill the frame, avoid glare — accuracy depends on IC part markings being readable
           </div>
           <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
             ${PCB_SLOT_LABELS.map((base, idx) => { const label = idx === 0 ? `${base} ★` : base; return `
@@ -7459,7 +7459,7 @@ function buildPCBImageUploadZone(): string {
                    title="Click to choose ${label.replace(' ★', '')} image">
                 <input type="file" id="pcb-img-input-${idx}" accept="image/jpeg,image/png,image/webp" style="display:none"/>
                 <div id="pcb-img-slot-empty-${idx}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px">
-                  <span style="font-size:1.3rem">${idx === 0 ? '📷' : idx === 1 ? '🔄' : '🔍'}</span>
+                  <span style="font-size:1.3rem">${idx === 0 ? '<svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg>' : idx === 1 ? '<svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>'}</span>
                   <span style="font-size:0.60rem;color:var(--text-muted);text-align:center;line-height:1.3">${label}</span>
                 </div>
                 <div id="pcb-img-slot-filled-${idx}" style="display:none;width:100%;height:100%;position:relative">
@@ -7481,11 +7481,11 @@ function buildPCBImageUploadZone(): string {
 
         <!-- BOM/netlist file upload — attaching a BOM file significantly improves cost accuracy -->
         <div style="margin-top:10px;padding:10px 12px;background:rgba(230,81,0,0.06);border:1px dashed rgba(230,81,0,0.35);border-radius:8px">
-          <div style="font-size:0.72rem;font-weight:600;color:var(--accent);margin-bottom:4px">📋 Attach BOM File — Recommended for better cost accuracy</div>
+          <div style="font-size:0.72rem;font-weight:600;color:var(--accent);margin-bottom:4px">Attach BOM File — Recommended for better cost accuracy</div>
           <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">Uploading your BOM (.csv / .xml / .txt) locks in real part numbers and quantities, removing AI guesswork on component pricing. Without a BOM, AI extracts from the image only.</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <input type="file" id="pcb-bom-input" accept=".csv,.xml,.txt" style="display:none"/>
-            <button class="btn btn-primary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.68rem;padding:4px 12px">📋 Attach BOM File</button>
+            <button class="btn btn-primary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.68rem;padding:4px 12px">Attach BOM File</button>
             <span id="pcb-bom-filename" style="font-size:0.66rem;color:var(--text-secondary);font-style:italic">No file selected — AI will infer BOM from image</span>
           </div>
         </div>
@@ -7502,13 +7502,13 @@ function buildPCBImageUploadZone(): string {
         <div style="margin-top:6px;display:flex;justify-content:center">
           <label style="font-size:0.70rem;display:flex;align-items:center;gap:6px;cursor:pointer" title="Runs the vision extraction on Claude Opus 4.8 instead of Sonnet — deeper reasoning on ambiguous components and complex boards. Roughly 2x AI cost and slower; best for high-value or HDI/RF boards.">
             <input type="checkbox" id="pcb-deep-analysis" style="margin:0"/>
-            <span>🔬 Deep analysis — Claude Opus 4.8 (higher accuracy on complex boards, slower)</span>
+            <span>Deep analysis — Claude Opus 4.8 (higher accuracy on complex boards, slower)</span>
           </label>
         </div>
 
         <!-- Live Pricing (optional, collapsible) -->
         <details style="margin-top:8px;text-align:left">
-          <summary style="font-size:0.68rem;color:var(--text-secondary);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
+          <summary style="font-size:0.68rem;color:var(--text-secondary);cursor:pointer;user-select:none">Live Component Pricing (optional)</summary>
           <div style="margin-top:6px;padding:8px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:6px;font-size:0.70rem">
             <div style="color:var(--text-secondary);margin-bottom:6px;line-height:1.45">Fetch real-time distributor prices for the BOM's identified part numbers. <strong>Available after you analyse a board.</strong> Requires an API key/token from your chosen provider (Octopart/Nexar uses an OAuth access token).</div>
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
@@ -7634,7 +7634,7 @@ function wirePCBImageZone(): void {
     const bf = bomInput?.files?.[0] ?? null;
     pcbBOMFile = bf;
     if (bomLabel) bomLabel.textContent = bf
-      ? `📋 ${bf.name} (${(bf.size / 1024).toFixed(0)} KB) — used as ground truth`
+      ? `${bf.name} (${(bf.size / 1024).toFixed(0)} KB) — used as ground truth`
       : 'No file — AI will extract BOM from image';
   });
 
@@ -8157,7 +8157,7 @@ async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
     if (statusEl) statusEl.textContent = '⚠ Please enter an API key first.';
     return;
   }
-  if (fetchBtn) { fetchBtn.disabled = true; fetchBtn.textContent = '⏳ Fetching…'; }
+  if (fetchBtn) { fetchBtn.disabled = true; fetchBtn.textContent = 'Fetching…'; }
   if (statusEl) statusEl.textContent = `Querying ${provider} for ${icMarkings.length} parts…`;
 
   try {
@@ -8265,7 +8265,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   const { correctedSpec, correctedAssembly, correctedBOM } = collectPCBEditsFromDOM();
 
   const reanalyzeBtn = el<HTMLButtonElement>('pcb-reanalyze-btn');
-  if (reanalyzeBtn) { reanalyzeBtn.disabled = true; reanalyzeBtn.textContent = '⏳ Re-analyzing…'; }
+  if (reanalyzeBtn) { reanalyzeBtn.disabled = true; reanalyzeBtn.textContent = 'Re-analyzing…'; }
   pcbImageLoading = true;
 
   const apiKey = (document.querySelector<HTMLInputElement>('#api-key-input'))?.value?.trim()
@@ -8374,7 +8374,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     showToast(`Re-analysis failed: ${msg.slice(0, 100)}`, 'error');
-    if (reanalyzeBtn) { reanalyzeBtn.disabled = false; reanalyzeBtn.textContent = '♻ Re-analyze with Corrections'; }
+    if (reanalyzeBtn) { reanalyzeBtn.disabled = false; reanalyzeBtn.textContent = 'Re-analyze with Corrections'; }
   } finally {
     pcbImageLoading = false;
   }
@@ -8418,14 +8418,14 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${item.voltage}</td>
       <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}${singleSourceRefDesSet.has(item.refDes) ? ' <span title="Single-source risk: limited qualified alternatives" style="background:#7c3aed;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">SSR</span>' : ''}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
-      <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem">📌</span>' : ''}`}</td>
+      <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem"></span>' : ''}`}</td>
       <td>&#163;${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
-      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Live-priced from distributor">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '📌' : '📍'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
+      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Live-priced from distributor">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
     </tr>`).join('');
 
   const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
   const dfm = r.dfmIssues.map(s => `<li>⚠ ${s}</li>`).join('');
-  const opts = r.optimisationSuggestions.map(s => `<li>💡 ${s}</li>`).join('');
+  const opts = r.optimisationSuggestions.map(s => `<li>${s}</li>`).join('');
   const limits = r.analysisLimitations.map(s => `<li>${s}</li>`).join('');
   const complexityScoreHtml = r.complexityScore ? `<div class="occt-stat"><div class="occt-stat-value">${r.complexityScore.score}/100</div><div class="occt-stat-label">Complexity (${r.complexityScore.label})</div></div>
         <div class="occt-stat"><div class="occt-stat-value">Class ${r.complexityScore.ipcClass}</div><div class="occt-stat-label">IPC class</div></div>` : '';
@@ -8433,7 +8433,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
   return `
     <div class="pcb-analysis-panel" style="${pcbEditMode ? 'border:2px solid #f59e0b;' : ''}">
       <div class="pcb-analysis-header">
-        <span style="font-size:1rem">🔬</span>
+        <span style="font-size:1rem"></span>
         <div style="flex:1">
           <strong>${r.partName}</strong>
           <span style="font-size:0.65rem;color:var(--text-muted);margin-left:8px">PCB Image Analysis</span>
@@ -8574,13 +8574,13 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
             <span style="color:var(--text-muted)">${b.pkg ? `· ${b.pkg}` : ''}${b.lineTotalGBP ? ` · est. £${b.lineTotalGBP.toFixed(2)}/board` : ''}</span>
           </li>`).join('');
         return `<div id="pcb-recapture-panel" style="margin-top:8px;padding:11px 13px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.3);border-left:3px solid #dc2626;border-radius:8px">
-          <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">🎯 Improve accuracy — ${uc.length} component${uc.length > 1 ? 's' : ''} need${uc.length > 1 ? '' : 's'} a close-up</div>
+          <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">Improve accuracy — ${uc.length} component${uc.length > 1 ? 's' : ''} need${uc.length > 1 ? '' : 's'} a close-up</div>
           <div style="font-size:0.68rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">The AI priced these high-value parts without reading their markings. Take a close, glare-free photo where the printed part numbers are legible, add it below, and re-analyze — the second pass will identify and re-price them.</div>
           <ul style="margin:7px 0 0;padding-left:16px;font-size:0.7rem">${rows}</ul>
           ${uc.length > 8 ? `<div style="font-size:0.64rem;color:var(--text-muted);margin-top:2px">…and ${uc.length - 8} more (flagged UNCONFIRMED in the BOM table below)</div>` : ''}
           <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center">
             <input type="file" id="pcb-recapture-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none"/>
-            <button class="btn btn-secondary btn-sm" id="pcb-recapture-add" style="font-size:0.7rem">📷 Add close-up photo</button>
+            <button class="btn btn-secondary btn-sm" id="pcb-recapture-add" style="font-size:0.7rem">Add close-up photo</button>
             <button class="btn btn-primary btn-sm" id="pcb-recapture-rerun" style="font-size:0.7rem">↻ Re-analyze with close-ups</button>
             <span id="pcb-recapture-status" style="font-size:0.66rem;color:var(--text-muted)"></span>
           </div>
@@ -8588,13 +8588,13 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       })()}
 
       <div class="pcb-apply-row">
-        <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">⚡ Apply to PCB Fab Form</button>
-        <button class="btn btn-primary btn-sm" id="pcb-apply-pcba-btn">⚡ Apply to PCBA BOM + Assembly</button>
+        <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">Apply to PCB Fab Form</button>
+        <button class="btn btn-primary btn-sm" id="pcb-apply-pcba-btn">Apply to PCBA BOM + Assembly</button>
         <button class="btn btn-secondary btn-sm" id="pcb-save-lib-btn" title="Save this PCB should-cost into the Parts Library so it appears in your dashboard and saved results">&#11014; Save to Library</button>
       </div>
 
       <div class="pcb-analysis-section">
-        <div class="pcb-analysis-section-title">📋 Bill of Materials (${totalBOMLines} lines · ${totalPlacements} placements)</div>
+        <div class="pcb-analysis-section-title">Bill of Materials (${totalBOMLines} lines · ${totalPlacements} placements)</div>
         <div class="pcb-bom-wrap">
           <table class="pcb-bom-table">
             <thead><tr><th>#</th><th>Ref Des</th><th>Description</th><th>Pkg</th><th>Value</th><th>Voltage</th><th>Part No.</th><th>Qty</th><th>Unit &#163;</th><th>Ext &#163;</th><th>Flags${pcbEditMode ? '/Del' : ''}</th></tr></thead>
@@ -8632,7 +8632,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
 
       <div class="pcb-insights-grid">
         <div class="pcb-analysis-section">
-          <div class="pcb-analysis-section-title">💡 AI Insights</div>
+          <div class="pcb-analysis-section-title">AI Insights</div>
           <ul class="pcb-insight-list">${insights}</ul>
         </div>
         <div class="pcb-analysis-section">
@@ -8640,11 +8640,11 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           <ul class="pcb-insight-list pcb-insight-list--warn">${dfm}</ul>
         </div>
         <div class="pcb-analysis-section">
-          <div class="pcb-analysis-section-title">🔑 High-Cost Components</div>
+          <div class="pcb-analysis-section-title">High-Cost Components</div>
           <ul class="pcb-insight-list pcb-insight-list--cost">${r.highCostComponents.map(s => `<li>${s}</li>`).join('')}</ul>
         </div>
         <div class="pcb-analysis-section">
-          <div class="pcb-analysis-section-title">✂ Optimisation Opportunities</div>
+          <div class="pcb-analysis-section-title">Optimisation Opportunities</div>
           <ul class="pcb-insight-list pcb-insight-list--opt">${opts}</ul>
         </div>
       </div>
@@ -8747,7 +8747,7 @@ function buildRiskRadarSection(r: PCBImageAnalysis): string {
 
   return `
     <div class="pcb-analysis-section">
-      <div class="pcb-analysis-section-title">🛡 Supply Chain Risk Radar</div>
+      <div class="pcb-analysis-section-title">Supply Chain Risk Radar</div>
       <div style="overflow-x:auto">
         <table class="pcb-bom-table" style="font-size:0.72rem;white-space:nowrap">
           <thead><tr><th>Country</th><th>Geopolitical</th><th>Logistics</th><th>Quality</th><th>Lead Time</th><th>Overall</th></tr></thead>
@@ -8771,7 +8771,7 @@ function buildScenarioBuilderSection(r: PCBImageAnalysis): string {
 
   return `
     <details class="pcb-analysis-section" style="margin-top:8px">
-      <summary class="pcb-analysis-section-title" style="cursor:pointer;list-style:revert">🧪 What-If Scenario Builder</summary>
+      <summary class="pcb-analysis-section-title" style="cursor:pointer;list-style:revert">What-If Scenario Builder</summary>
       <div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;font-size:0.72rem">
         <label style="display:flex;flex-direction:column;gap:3px">Surface finish
           <select id="pcb-scn-finish" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
@@ -8788,7 +8788,7 @@ function buildScenarioBuilderSection(r: PCBImageAnalysis): string {
         </label>
         <label style="display:flex;flex-direction:column;gap:3px">Country
           <select id="pcb-scn-country" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
-            ${countryOpt('cn','🇨🇳','China')}${countryOpt('vn','🇻🇳','Vietnam')}${countryOpt('in','🇮🇳','India')}${countryOpt('th','🇹🇭','Thailand')}${countryOpt('my','🇲🇾','Malaysia')}${countryOpt('tw','🇹🇼','Taiwan')}${countryOpt('kr','🇰🇷','South Korea')}${countryOpt('mx','🇲🇽','Mexico')}${countryOpt('cz','🇨🇿','Czechia')}${countryOpt('pl','🇵🇱','Poland')}${countryOpt('de','🇩🇪','Germany')}${countryOpt('gb','🇬🇧','UK')}${countryOpt('us','🇺🇸','USA')}${countryOpt('jp','🇯🇵','Japan')}
+            ${countryOpt('cn','','China')}${countryOpt('vn','','Vietnam')}${countryOpt('in','','India')}${countryOpt('th','','Thailand')}${countryOpt('my','','Malaysia')}${countryOpt('tw','','Taiwan')}${countryOpt('kr','','South Korea')}${countryOpt('mx','','Mexico')}${countryOpt('cz','','Czechia')}${countryOpt('pl','','Poland')}${countryOpt('de','','Germany')}${countryOpt('gb','','UK')}${countryOpt('us','','USA')}${countryOpt('jp','','Japan')}
           </select>
         </label>
       </div>
@@ -8865,7 +8865,7 @@ function buildRFQTrackerSection(r: PCBImageAnalysis): string {
   const countryName = r._selectedCountryBreakdown?.countryName.split(' (')[0] ?? (r._selectedCountry ?? 'cn').toUpperCase();
   return `
     <details class="pcb-analysis-section" style="margin-top:8px">
-      <summary class="pcb-analysis-section-title" style="cursor:pointer;list-style:revert">📥 RFQ Tracker — Log &amp; Compare EMS Quotes</summary>
+      <summary class="pcb-analysis-section-title" style="cursor:pointer;list-style:revert">RFQ Tracker — Log &amp; Compare EMS Quotes</summary>
       <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;font-size:0.72rem">
         <label style="display:flex;flex-direction:column;gap:3px">EMS Name
           <input type="text" id="pcb-rfq-ems" placeholder="e.g. Jabil" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"/>
@@ -8946,7 +8946,7 @@ function buildBoardAnnotationSection(): string {
   return `
     <div class="pcb-analysis-section">
       <div class="pcb-analysis-section-title" style="display:flex;align-items:center;gap:8px">
-        🖼 Annotated Board
+        Annotated Board
         <button class="btn btn-secondary btn-sm" id="pcb-annot-toggle" style="font-size:0.62rem;margin-left:auto">Show Annotated Board</button>
       </div>
       <div id="pcb-annot-wrap" style="display:none;margin-top:6px;text-align:center">
@@ -9945,7 +9945,7 @@ function buildFeatureOpsTable(geo: OCCTGeometry): string {
   const totalOps = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + r.count, 0);
   return `
     <div style="margin-top:10px">
-      <div style="font-size:0.78rem;font-weight:700">🔩 Geometry Feature Table <span style="font-weight:400;color:var(--text-muted)">(exact, from B-rep — ${totalOps} hole operations)</span></div>
+      <div style="font-size:0.78rem;font-weight:700">Geometry Feature Table <span style="font-weight:400;color:var(--text-muted)">(exact, from B-rep — ${totalOps} hole operations)</span></div>
       <table class="data-table" style="margin-top:6px;font-size:0.74rem;font-variant-numeric:tabular-nums">
         <thead><tr><th>Feature</th><th>Ø (mm)</th><th>Depth (mm)</th><th>Type</th><th>Qty</th><th>→ Operation</th></tr></thead>
         <tbody>
@@ -9972,7 +9972,7 @@ function buildFeatureOpsTable(geo: OCCTGeometry): string {
 function renderMachinedFeaturesPanel(prefix: string): string {
   return `
     <details id="${prefix}-mf-details" style="margin-top:8px" open>
-      <summary style="font-weight:700;font-size:0.78rem;cursor:pointer;color:var(--accent)">🛠 Machined Features from Geometry <span style="font-weight:400;color:var(--text-muted)">— secondary machining on the near-net part</span></summary>
+      <summary style="font-weight:700;font-size:0.78rem;cursor:pointer;color:var(--accent)">Machined Features from Geometry <span style="font-weight:400;color:var(--text-muted)">— secondary machining on the near-net part</span></summary>
       <div id="${prefix}-mf-body" style="margin-top:6px">
         <div style="font-size:0.72rem;color:var(--text-muted)">Upload a CAD file (STEP/IGES) on this form to auto-detect machined features (bores, holes, bosses) and add their machining cost to the total.</div>
       </div>
@@ -10371,7 +10371,7 @@ function inlineCADPanelHTML(commodity?: CommodityType): string {
   const partial = commodity ? CAD_PARTIAL_FILL[commodity] : undefined;
   return `
     <details class="cad-inline-panel" style="margin:0 0 10px;border:1px dashed var(--border-strong);border-radius:8px;background:var(--surface-elevated)">
-      <summary style="cursor:pointer;padding:8px 12px;font-size:0.8rem;font-weight:600;color:var(--accent);user-select:none">📐 Upload CAD to auto-fill this form <span style="font-weight:400;color:var(--text-secondary)">— STEP / IGES → real weight, size &amp; inputs</span></summary>
+      <summary style="cursor:pointer;padding:8px 12px;font-size:0.8rem;font-weight:600;color:var(--accent);user-select:none">Upload CAD to auto-fill this form <span style="font-weight:400;color:var(--text-secondary)">— STEP / IGES → real weight, size &amp; inputs</span></summary>
       <div style="padding:2px 12px 12px">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <input type="file" id="cad-inline-input" accept=".step,.stp,.iges,.igs,.stl" style="font-size:0.72rem"/>
@@ -10406,7 +10406,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
   const btn = el<HTMLButtonElement>('cad-inline-btn');
   const setStatus = (t: string) => { if (status) status.textContent = t; };
   cadFile = file;
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Analyzing…'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Analyzing…'; }
   setStatus('Uploading & running the OCCT geometry engine… (can take ~20–60 s)');
   try {
     const annVol = el<HTMLInputElement>('annual-volume')?.value || '100000';
@@ -12623,7 +12623,7 @@ function updateGearRouteNote(): void {
   try {
     const a = analyseGear(currentGearInputs());
     if (a.blocked) {
-      host.innerHTML = `<span style="color:var(--danger,#b91c1c)">⛔ ${escHtml(a.blocked)}</span>`;
+      host.innerHTML = `<span style="color:var(--danger,#b91c1c)">${escHtml(a.blocked)}</span>`;
       return;
     }
     const ops = a.operations.map(o => `${escHtml(o.label)} (${o.cycleSec.toFixed(0)}s)`).join(' → ');
@@ -14538,7 +14538,7 @@ function handleAIAutofill(): void {
   const inputEl = document.getElementById('ai-autofill-input') as HTMLInputElement | null;
   const btn = document.getElementById('ai-autofill-btn') as HTMLButtonElement | null;
   if (!inputEl || !inputEl.value.trim()) { showToast('Enter a part description first.', 'warning'); return; }
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Filling…'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Filling…'; }
 
   const prompt = `Extract manufacturing cost parameters from this part description. Respond with ONLY valid JSON, no explanation:
 "${inputEl.value.trim()}"
@@ -15925,7 +15925,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           calibrationCard = `
       <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #7c3aed;border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">📈 Data-calibrated estimate <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from ${hcal.n} actual quotes for ${segTxt})</span></div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Data-calibrated estimate <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from ${hcal.n} actual quotes for ${segTxt})</span></div>
           <div style="font-size:1.15rem;font-weight:700;color:#7c3aed">${cf(calibrated)}</div>
         </div>
         <div style="margin-top:6px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
@@ -15987,7 +15987,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         return `
       <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #059669;border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">🌱 Embodied carbon <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(cradle-to-gate, indicative)</span></div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Embodied carbon <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(cradle-to-gate, indicative)</span></div>
           <div style="font-size:1.15rem;font-weight:700;color:#059669">${cb.totalKgCO2e} kgCO₂e <span style="font-size:0.78rem;color:var(--text-muted)">· ${cb.perNetKgCO2e} /kg</span></div>
         </div>
         <div style="margin-top:8px;height:8px;border-radius:4px;overflow:hidden;display:flex;background:var(--border)">
@@ -16014,7 +16014,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
             Green = cheapest per column, Red = highest. Tooling fixed. Indicative — confirm with RFQ.
           </span>
           <button id="landed-cost-toggle" class="btn ${_landedCostMode ? 'btn-primary' : 'btn-secondary'} btn-sm" style="flex-shrink:0">
-            ${_landedCostMode ? '🚢 Landed: ON' : '🚢 Landed Cost'}
+            ${_landedCostMode ? 'Landed: ON' : 'Landed Cost'}
           </button>
         </div>
         ${regionalTable}
@@ -16143,7 +16143,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
               Request a deeper engineering analysis from Claude AI. Provides expert commentary on design risks,
               supplier negotiation strategy, and process alternatives specific to this commodity.
             </p>
-            <button class="btn btn-primary" id="dfm-ai-btn" style="gap:6px">⚡ Run AI Deep Analysis</button>
+            <button class="btn btn-primary" id="dfm-ai-btn" style="gap:6px">Run AI Deep Analysis</button>
             <div id="dfm-ai-result" style="margin-top:12px"></div>
           </div>
 
@@ -16154,7 +16154,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
         const btn = document.getElementById('dfm-ai-btn') as HTMLButtonElement;
         const aiResult = document.getElementById('dfm-ai-result')!;
         btn.disabled = true;
-        btn.textContent = '⏳ Analysing…';
+        btn.textContent = 'Analysing…';
         aiResult.innerHTML = paneSkeleton('Waiting for AI analysis…');
         try {
           const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token') ?? '';
@@ -16171,7 +16171,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
           aiResult.innerHTML = `<div style="color:#e63b3b;font-size:0.78rem">AI analysis failed: ${escHtml(String(err))}. Ensure the server is running and ANTHROPIC_API_KEY is set.</div>`;
         } finally {
           btn.disabled = false;
-          btn.textContent = '⚡ Run AI Deep Analysis';
+          btn.textContent = 'Run AI Deep Analysis';
         }
       });
 
