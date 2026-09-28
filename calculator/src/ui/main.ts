@@ -20065,7 +20065,10 @@ async function init(): Promise<void> {
   // Learning curve: disable inputs when checkbox is unchecked
   function syncLCInputs(): void {
     const enabled = (el<HTMLInputElement>('lc-enabled')).checked;
-    ['annual-volume', 'learning-curve-pct', 'reference-volume'].forEach(id => {
+    // Annual volume is not a learning-curve input: costing, tooling
+    // amortisation and the self-audit all read it. Disabling it with the curve
+    // greyed the user's own figure out like a hint, and made it uneditable (L3).
+    ['learning-curve-pct', 'reference-volume'].forEach(id => {
       const inp = document.getElementById(id) as HTMLInputElement | null;
       if (inp) { inp.disabled = !enabled; inp.style.opacity = enabled ? '' : '0.4'; }
     });
