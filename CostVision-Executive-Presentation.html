@@ -323,8 +323,8 @@ body{
   <div class="slide-dots" id="dots"></div>
   <button class="nav-btn" onclick="scrollSlide(-1)">← Prev</button>
   <button class="nav-btn" onclick="scrollSlide(1)">Next →</button>
-  <button class="theme-btn" onclick="toggleTheme()">☀ / 🌙</button>
-  <button class="print-btn" onclick="window.print()">⬇ Export PDF</button>
+  <button class="theme-btn" onclick="toggleTheme()">Light / Dark</button>
+  <button class="print-btn" onclick="window.print()">Export PDF</button>
 </div>
 
 <div style="height:48px"></div><!-- spacer for fixed topbar -->
@@ -334,23 +334,25 @@ body{
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <!-- SLIDE 1 — Title Slide                                                  -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Every claim here matches docs/decks/tool-facts.md and the generated
+     CostVision-Executive-Presentation.pptx (build_pptx.py). No emoji. -->
 <div class="slide" id="slide-1">
   <div class="s1-body">
     <div class="s1-orb"></div>
     <div class="s1-tag">Confidential — Management Review</div>
     <div class="s1-title">CostVision</div>
-    <div class="s1-sub">AI-Powered Should-Cost Intelligence<br>for Modern Engineering Organisations</div>
+    <div class="s1-sub">What a part should cost to make —<br>every number traced to a rate</div>
     <div class="s1-divider"></div>
     <div class="s1-author">Designed &amp; Developed by <strong>Avinash Bhosale</strong><br>
       <span style="font-size:.82rem;color:var(--text-3);margin-top:4px;display:block">Cost Engineering &amp; Digital Innovation</span>
     </div>
     <div class="s1-meta">
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-3)"></div>21 Commodity Models</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent)"></div>AI Agent + CAD Analysis</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-2)"></div>DFM / DFA Intelligence</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--orange)"></div>20 Regions · 10 Currencies</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:#10b981"></div>Assembly BOM Rollup</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:#f472b6"></div>Wright's Law Learning Curve</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-3)"></div>19 Manufacturing Processes</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent)"></div>CAD to Cost, on Rules</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-2)"></div>AI Switched Off at JLR</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--orange)"></div>20 Regions</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:#10b981"></div>Assembly Roll-Up</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:#f472b6"></div>Windows Laptop, No Internet</div>
     </div>
   </div>
 </div>
@@ -373,48 +375,43 @@ body{
   <div class="slide-body">
     <div>
       <div class="section-label">Problem Statement</div>
-      <div class="slide-title">Traditional Costing Is Broken</div>
-      <div class="slide-subtitle">Manual effort, slow turnaround, and supplier dependency cost organisations millions annually.</div>
+      <div class="slide-title">Costing by Hand Is Slow and Hard to Check</div>
+      <div class="slide-subtitle">Most should-costs are built by hand, one spreadsheet at a time. That is slow, and hard to defend.</div>
     </div>
 
     <div class="two-col" style="flex:1">
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card card-red">
-          <div class="card-icon">⏱</div>
-          <div class="card-title">Weeks, Not Minutes</div>
-          <div class="card-body">Manual should-cost analysis takes 2–4 weeks per part. Sourcing decisions stall. Programme timelines slip.</div>
+          <div class="card-title">Slow</div>
+          <div class="card-body">A should-cost built by hand can take weeks. By the time it lands, the sourcing decision is often made.</div>
         </div>
         <div class="card card-orange">
-          <div class="card-icon">🔒</div>
-          <div class="card-title">Supplier Dependency</div>
-          <div class="card-body">Without independent cost intelligence, engineers accept supplier quotes at face value — no leverage, no transparency.</div>
+          <div class="card-title">Quotes Taken on Trust</div>
+          <div class="card-body">Without our own number, a quote is hard to challenge. The supplier's margin stays hidden.</div>
         </div>
         <div class="card card-red">
-          <div class="card-icon">📊</div>
-          <div class="card-title">Inconsistent Methodology</div>
-          <div class="card-body">Every engineer calculates cost differently. No standard model. No auditable assumptions. No cross-team comparability.</div>
+          <div class="card-title">No Common Method</div>
+          <div class="card-body">Each engineer builds the cost a different way. Assumptions are not written down, so numbers cannot be compared.</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card card-orange">
-          <div class="card-icon">🌍</div>
-          <div class="card-title">No Regional Visibility</div>
-          <div class="card-body">Labour, machine, material and energy rates vary dramatically by country. Manual adjustment is error-prone and subjective.</div>
+          <div class="card-title">Country Rates Are Hard</div>
+          <div class="card-body">Labour, machine, energy and material rates differ by country. Adjusting them by hand is easy to get wrong.</div>
         </div>
         <div class="card card-red">
-          <div class="card-icon">🎯</div>
-          <div class="card-title">Late-Stage Cost Surprises</div>
-          <div class="card-body">Cost issues discovered at SOP — not at concept. DFM problems missed. Expensive redesigns. Margin erosion at launch.</div>
+          <div class="card-title">Problems Found Late</div>
+          <div class="card-body">Cost problems show up near launch, not at concept. By then a change means new tooling and lost margin.</div>
         </div>
         <div style="background:var(--surface-2);border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border)">
-          <div style="font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Industry Data Point</div>
-          <div style="font-size:1.3rem;font-weight:900;color:var(--text)">80% of part cost</div>
-          <div style="font-size:.78rem;color:var(--text-2);margin-top:4px;line-height:1.5">is locked in at the design stage — yet most cost analysis happens after design freeze.</div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Industry rule of thumb — not a CostVision result</div>
+          <div style="font-size:1.3rem;font-weight:900;color:var(--text)">~80% of part cost</div>
+          <div style="font-size:.78rem;color:var(--text-2);margin-top:4px;line-height:1.5">is fixed at the design stage, yet most cost work happens after design freeze. We want a defensible number earlier.</div>
         </div>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -435,69 +432,60 @@ body{
   <div class="slide-body">
     <div>
       <div class="section-label">Solution Overview</div>
-      <div class="slide-title">A World-Class Should-Cost Engine Powered by AI</div>
-      <div class="slide-subtitle">From CAD geometry to full cost breakdown — in minutes, not weeks.</div>
+      <div class="slide-title">A Should-Cost Engine You Can Trace to a Rate</div>
+      <div class="slide-subtitle">Every number is arithmetic. AI is switched off at JLR, and it never sets a price.</div>
     </div>
 
     <div class="three-col" style="flex:1">
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card card-accent">
-          <div class="card-icon">🤖</div>
-          <div class="card-title">AI Agent — Natural Language Costing</div>
-          <div class="card-body">Describe a part in plain English. AI Agent auto-builds the complete cost model: material, process route, machines, operations, and cycle times — no manual form filling.</div>
+          <div class="card-title">CAD to Cost</div>
+          <div class="card-body">Upload STEP, IGES or STL. The tool measures the part, and asks you where the geometry cannot decide — process route, material family, hole count on an STL.</div>
         </div>
         <div class="card">
-          <div class="card-icon">📐</div>
-          <div class="card-title">CAD-to-Cost Automation</div>
-          <div class="card-body">Upload STEP / IGES / photo. AI extracts geometry, infers material, selects the correct process model, and generates a full cost breakdown — automatically.</div>
+          <div class="card-title">Form Entry</div>
+          <div class="card-body">Type the inputs for any of the 19 processes. Same engine, same eight cost buckets.</div>
         </div>
         <div class="card">
-          <div class="card-icon">🌍</div>
-          <div class="card-title">20 Global Regions · 10 Currencies</div>
-          <div class="card-body">Labour, machine, material and energy rates for UK, EU, China, India, USA, Korea, Vietnam, Brazil and more. Currency auto-switches when region is selected.</div>
+          <div class="card-title">20 Regions</div>
+          <div class="card-body">Each with its own labour, energy and machine rates, shown in its own currency.</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card card-purple">
-          <div class="card-icon">🧠</div>
-          <div class="card-title">21 Engineering-Grade Cost Models</div>
-          <div class="card-body">Physics-based models for every major commodity — machining, casting, plastics, sheet metal, PCB, PCBA, composites, harness and more. Each encodes routing logic, yield curves, and tooling amortisation.</div>
+          <div class="card-title">19 Manufacturing Processes</div>
+          <div class="card-body">Machining, casting, forging, gear cutting, sheet metal, plastics, rubber, composites, PCB, PCBA, harness, painting, BIW — plus an assembly roll-up and an automotive software cost model.</div>
         </div>
         <div class="card">
-          <div class="card-icon">🔗</div>
-          <div class="card-title">Assembly BOM Rollup</div>
-          <div class="card-body">Cost entire assemblies, not just single parts. Build a multi-level BOM, assign commodity models per component, and roll up to a total assembly should-cost with full breakdown.</div>
+          <div class="card-title">Rate Library</div>
+          <div class="card-body">Dated 16 June 2026: 328 materials, 178 machines, 42 labour grades. Editable and versioned.</div>
         </div>
         <div class="card">
-          <div class="card-icon">📉</div>
-          <div class="card-title">Learning Curve / Wright's Law</div>
-          <div class="card-body">Model volume-driven cost reduction. Configure the learning curve % (default 85%). CostVision projects cost at any volume — critical for programme pricing and LTA negotiations.</div>
+          <div class="card-title">Checks Its Own Work</div>
+          <div class="card-body">A self-audit and a P10–P90 uncertainty band come with every result.</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card card-green">
-          <div class="card-icon">🔬</div>
-          <div class="card-title">DFM / DFA Intelligence</div>
-          <div class="card-body">Bolt-on AI layer scores manufacturability and assembly efficiency 1–10. Identifies critical issues, estimates saving potential, and provides actionable engineering recommendations.</div>
+          <div class="card-title">DFM / DFA Advice</div>
+          <div class="card-body">Rule-based advice on how to make the part cheaper, scored 1–10. It never changes the price.</div>
         </div>
         <div class="card">
-          <div class="card-icon">💰</div>
           <div class="card-title">Supplier Quote Comparison</div>
-          <div class="card-body">Enter supplier quotes directly into CostVision. Compare vs should-cost side-by-side, identify margin gaps, and generate data-driven negotiation talking points.</div>
+          <div class="card-body">Put a quote next to the should-cost, bucket by bucket, and see where the gap is.</div>
         </div>
         <div class="card">
-          <div class="card-icon">📈</div>
-          <div class="card-title">Scenarios, Sensitivity &amp; Export</div>
-          <div class="card-body">Save and compare A/B/C scenarios. Tornado sensitivity charts (±10%). Export 6-sheet Excel workbook or professional PDF report. Cloud sync for team sharing.</div>
+          <div class="card-title">Exports</div>
+          <div class="card-body">6-sheet Excel, PDF report and negotiation pack. Each matches the screen to the penny.</div>
         </div>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 4 — AI Agent Workflow                                             -->
+<!-- SLIDE 4 — Workflow                                                      -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="slide" id="slide-4">
   <div class="slide-header">
@@ -507,88 +495,80 @@ body{
     </div>
     <div style="text-align:right">
       <div class="section-label">Workflow</div>
-      <div style="font-size:1.1rem;font-weight:700">AI Agent — End-to-End Flow</div>
+      <div style="font-size:1.1rem;font-weight:700">From Part to Cost</div>
     </div>
   </div>
 
   <div class="slide-body">
     <div>
-      <div class="section-label">8-Step Intelligent Workflow</div>
-      <div class="slide-title">From Part Selection to Actionable Cost Intelligence</div>
+      <div class="section-label">Eight Steps</div>
+      <div class="slide-title">From Part to Cost — Eight Steps</div>
     </div>
 
     <div class="flow-row" style="flex:1">
       <div class="flow-step">
         <div class="flow-num">1</div>
-        <div class="flow-icon">🏭</div>
-        <div class="flow-title">Select Commodity</div>
-        <div class="flow-body">Choose from 17 manufacturing commodities — machining, casting, plastics, PCB, PCBA, harness and more</div>
+        <div class="flow-title">Pick the Process</div>
+        <div class="flow-body">Choose one of the 19 processes, or let the CAD rules offer a route</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">2</div>
-        <div class="flow-icon">📁</div>
-        <div class="flow-title">Upload CAD / Photo</div>
-        <div class="flow-body">Upload STEP, DXF, or a part photo. Or enter parameters manually for any commodity</div>
+        <div class="flow-title">Upload CAD or Fill Form</div>
+        <div class="flow-body">STEP, IGES or STL — or type the inputs directly</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">3</div>
-        <div class="flow-icon">🔍</div>
-        <div class="flow-title">AI Feature Extraction</div>
-        <div class="flow-body">AI reads geometry, identifies features, infers material grade and manufacturing intent</div>
+        <div class="flow-title">Measure the Geometry</div>
+        <div class="flow-body">Volume, weight, size, walls, holes and features</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">4</div>
-        <div class="flow-icon">🧠</div>
-        <div class="flow-title">AI Routing &amp; Model Selection</div>
-        <div class="flow-body">AI selects the optimal process route, machine IDs, cycle times, and tooling strategy</div>
+        <div class="flow-title">Ask Where Unsure</div>
+        <div class="flow-body">Route, material family, holes on an STL — the engineer answers</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">5</div>
-        <div class="flow-icon">📐</div>
-        <div class="flow-title">Should-Cost Calculation</div>
-        <div class="flow-body">Physics-based engine computes material + process + labour + tooling + overhead + margin</div>
+        <div class="flow-title">Calculate 8 Buckets</div>
+        <div class="flow-body">Material, process, labour, tooling, packaging, logistics, overhead, margin</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">6</div>
-        <div class="flow-icon">💡</div>
-        <div class="flow-title">AI Insights Generated</div>
-        <div class="flow-body">Benchmark comparisons, regional cost index, supplier margin analysis, saving opportunities</div>
+        <div class="flow-title">Self-Audit and Band</div>
+        <div class="flow-body">Flags implausible results. P10–P90 uncertainty band</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">7</div>
-        <div class="flow-icon">🔬</div>
-        <div class="flow-title">DFM / DFA Analysis</div>
-        <div class="flow-body">Manufacturability and assembly scores, critical issues, cost optimisation levers, AI deep analysis</div>
+        <div class="flow-title">DFM / DFA Advice</div>
+        <div class="flow-body">Ranked ways to make it cheaper. The price does not change</div>
       </div>
       <div class="flow-step" style="border-right:1px solid var(--border);border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)">
         <div class="flow-num" style="background:var(--grad-green)">8</div>
-        <div class="flow-icon">📤</div>
-        <div class="flow-title">Export &amp; Compare</div>
-        <div class="flow-body">Export Excel / PDF. Save scenarios. Compare multiple parts. Share with team. Full audit trail</div>
+        <div class="flow-title">Export and Negotiate</div>
+        <div class="flow-body">6-sheet Excel, PDF report, negotiation pack</div>
       </div>
     </div>
 
     <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 16px;border:1px solid var(--border);font-size:.75rem;color:var(--text-2)">
-      <strong style="color:var(--accent)">Two entry points — same outcome:</strong> &nbsp;
-      <span style="color:var(--accent-3)">🤖 AI Agent</span> — type a description in plain English and AI auto-fills the cost model &nbsp;|&nbsp;
-      <span style="color:var(--accent-2)">📐 CAD Upload</span> — upload STEP/photo and AI extracts geometry automatically &nbsp;|&nbsp;
-      <span style="color:var(--text)">✏️ Manual Entry</span> — directly enter parameters for full control
+      <strong style="color:var(--accent)">Two ways in at JLR — same engine:</strong> &nbsp;
+      <span style="color:var(--accent-2)">CAD upload</span> — STEP, IGES or STL, measured by the geometry kernel &nbsp;|&nbsp;
+      <span style="color:var(--text)">Form entry</span> — type the inputs directly &nbsp;|&nbsp;
+      <span style="color:var(--text-3)">Describe the part in words — AI mode, switched off at JLR</span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <div class="tag blue">⚡ Minutes, not weeks</div>
-      <div class="tag green">✓ Auditable assumptions</div>
-      <div class="tag purple">🤖 Claude AI powered</div>
-      <div class="tag orange">🌍 20 regions · 10 currencies</div>
-      <div class="tag blue">📊 Scenario A/B/C comparison</div>
-      <div class="tag green">📐 Assembly BOM rollup</div>
-      <div class="tag purple">📉 Wright's Law learning curve</div>
+      <div class="tag blue">Every step traceable</div>
+      <div class="tag green">No AI in the price</div>
+      <div class="tag orange">20 regions</div>
+      <div class="tag blue">Scenarios side by side</div>
+      <div class="tag green">Assembly roll-up</div>
+      <div class="tag purple">Learning curve</div>
+      <div class="tag purple">Runs offline</div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 5 — CAD-to-Cost Automation                                        -->
+<!-- SLIDE 5 — CAD-to-Cost on rules                                          -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="slide" id="slide-5">
   <div class="slide-header">
@@ -597,32 +577,32 @@ body{
       <div class="slide-logo">CostVision</div>
     </div>
     <div style="text-align:right">
-      <div class="section-label">Automation</div>
-      <div style="font-size:1.1rem;font-weight:700">CAD-to-Cost Intelligence</div>
+      <div class="section-label">CAD to Cost</div>
+      <div style="font-size:1.1rem;font-weight:700">Measured, Then Asked</div>
     </div>
   </div>
 
   <div class="slide-body">
     <div>
       <div class="section-label">Capability Highlight</div>
-      <div class="slide-title">From CAD File to Full Should-Cost — Automatically</div>
-      <div class="slide-subtitle">AI reads your geometry and generates a fully routed, benchmarked cost model without manual input.</div>
+      <div class="slide-title">CAD to Cost: Measured by the Tool, Checked by You</div>
+      <div class="slide-subtitle">The geometry engine measures the part. Rules turn that into cost inputs. You answer what it cannot decide.</div>
     </div>
 
     <div class="two-col" style="flex:1">
-      <!-- Left: capability list -->
+      <!-- Left: what is measured -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card" style="flex:1">
           <div class="accent-bar"></div>
-          <div style="font-weight:700;font-size:.9rem;margin-bottom:12px">What AI Extracts from CAD</div>
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:12px">What the Tool Measures</div>
           <ul class="bullet-list">
-            <li><strong>Part geometry:</strong> envelope dimensions, volume, surface area, wall thickness</li>
-            <li><strong>Feature recognition:</strong> holes, pockets, ribs, undercuts, threads, datum features</li>
-            <li><strong>Material inference:</strong> visual texture, density estimation, typical grade selection</li>
-            <li><strong>Process selection:</strong> AI matches geometry to most cost-effective manufacturing route</li>
-            <li><strong>Cycle time estimation:</strong> material removal rate, tool path length, fixture strategy</li>
-            <li><strong>Complexity classification:</strong> simple / moderate / complex — drives machine selection and OEE</li>
-            <li><strong>DFM flags:</strong> thin walls, tight radii, undercuts, critical tolerances — flagged before costing</li>
+            <li><strong>Volume and weight:</strong> weight is volume × the density of the material you pick</li>
+            <li><strong>Size:</strong> bounding box, wall thickness, and how much of the box the part fills</li>
+            <li><strong>Features:</strong> holes, bosses and threads (from STEP and IGES)</li>
+            <li><strong>Faces:</strong> types and areas, for machining and coating</li>
+            <li><strong>Cycle time:</strong> a bottom-up CNC estimate built from the feature table</li>
+            <li><strong>Thick walls (over ~6 mm):</strong> offered casting, forging or machining — never sheet metal or moulding</li>
+            <li><strong>Coverage:</strong> 13 of the 19 processes can be costed straight from CAD this way</li>
           </ul>
         </div>
         <div style="display:flex;gap:10px">
@@ -641,70 +621,67 @@ body{
         </div>
       </div>
 
-      <!-- Right: mockup -->
+      <!-- Right: where it asks, and a real pinned result -->
       <div class="mockup-frame" style="flex:1;display:flex;flex-direction:column">
         <div class="mockup-bar">
           <div class="mockup-dot" style="background:#ef4444"></div>
           <div class="mockup-dot" style="background:#f59e0b"></div>
           <div class="mockup-dot" style="background:#10b981"></div>
-          <span style="font-size:.7rem;color:var(--text-3);margin-left:8px">CostVision — CAD Analysis</span>
+          <span style="font-size:.7rem;color:var(--text-3);margin-left:8px">CostVision — CAD to Cost (JLR build, AI off)</span>
         </div>
         <div class="mockup-body" style="flex:1;display:flex;flex-direction:column;gap:10px">
-          <!-- Upload zone placeholder -->
           <div style="background:var(--surface-2);border:2px dashed var(--border);border-radius:8px;padding:18px;text-align:center">
-            <div style="font-size:1.5rem;margin-bottom:6px">📁</div>
-            <div style="font-size:.75rem;color:var(--text-2);font-weight:600">Aluminium Bracket — STEP File Uploaded</div>
-            <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">gearbox_bracket_v4.step · 847 KB · Analysing…</div>
+            <div style="font-size:.75rem;color:var(--text-2);font-weight:600">steering_knuckle_RH.stp — measured</div>
+            <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">.STEP · .STP · .IGES · .IGS · .STL &nbsp;+ .DXF flat pattern for sheet metal</div>
           </div>
-          <!-- AI result rows -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
-              <div style="font-size:.65rem;color:var(--text-3)">AI Detected</div>
-              <div style="font-size:.78rem;font-weight:700;color:var(--accent)">Machined Aluminium 6082-T6</div>
+              <div style="font-size:.65rem;color:var(--text-3)">Process route</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--accent)">Asked if more than one fits</div>
             </div>
             <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
-              <div style="font-size:.65rem;color:var(--text-3)">Suggested Process</div>
-              <div style="font-size:.78rem;font-weight:700;color:var(--accent-3)">3-Axis CNC Milling + Drilling</div>
+              <div style="font-size:.65rem;color:var(--text-3)">Material family</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--accent)">Asked: steel, aluminium, plastic ...</div>
             </div>
             <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
-              <div style="font-size:.65rem;color:var(--text-3)">Envelope (L×W×H)</div>
-              <div style="font-size:.78rem;font-weight:700">220 × 140 × 85 mm</div>
+              <div style="font-size:.65rem;color:var(--text-3)">Cycle time, machined STL</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--orange)">Costing blocked until you type one</div>
             </div>
             <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
-              <div style="font-size:.65rem;color:var(--text-3)">Complexity</div>
-              <div style="font-size:.78rem;font-weight:700;color:var(--orange)">Moderate — 3 setups</div>
+              <div style="font-size:.65rem;color:var(--text-3)">Service questions</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--accent-3)">Pressure-tight? Safety-critical?</div>
             </div>
           </div>
-          <!-- Cost preview bar -->
           <div style="background:var(--surface-2);border-radius:6px;padding:10px 12px">
             <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-              <span style="font-size:.72rem;color:var(--text-2);font-weight:600">AI Should-Cost Preview</span>
-              <span style="font-size:.9rem;font-weight:900;color:var(--accent-3)">£ 28.40</span>
+              <span style="font-size:.72rem;color:var(--text-2);font-weight:600">Real part: steering knuckle, forged steel, UK rates</span>
+              <span style="font-size:.9rem;font-weight:900;color:var(--accent-3)">£ 32.16</span>
             </div>
             <div style="display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden">
-              <div style="width:38%;background:var(--accent)" title="Material 38%"></div>
-              <div style="width:32%;background:var(--accent-2)" title="Process 32%"></div>
-              <div style="width:12%;background:var(--accent-3)" title="Labour 12%"></div>
-              <div style="width:8%;background:var(--orange)" title="Tooling 8%"></div>
-              <div style="width:10%;background:var(--text-3)" title="OH+Margin 10%"></div>
+              <div style="width:24.6%;background:var(--accent)" title="Material £7.92"></div>
+              <div style="width:32.6%;background:var(--accent-2)" title="Process £10.47"></div>
+              <div style="width:19.5%;background:var(--accent-3)" title="Labour £6.28"></div>
+              <div style="width:4.7%;background:var(--orange)" title="Tooling £1.51"></div>
+              <div style="width:18.6%;background:var(--text-3)" title="Overhead, margin, packaging, logistics £5.99"></div>
             </div>
             <div style="display:flex;gap:10px;margin-top:5px;flex-wrap:wrap">
-              <span style="font-size:.62rem;color:var(--text-3)">■ Material 38%</span>
-              <span style="font-size:.62rem;color:var(--text-3)">■ Process 32%</span>
-              <span style="font-size:.62rem;color:var(--text-3)">■ Labour 12%</span>
-              <span style="font-size:.62rem;color:var(--text-3)">■ Tooling 8%</span>
-              <span style="font-size:.62rem;color:var(--text-3)">■ O/H+Margin 10%</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Material £7.92</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Process £10.47</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Labour £6.28</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Tooling £1.51</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ OH + margin + pack/log £5.99</span>
             </div>
+            <div style="font-size:.62rem;color:var(--text-3);margin-top:6px;font-style:italic">Pinned in the real-parts baseline. It records what the tool says — it has not been compared with a price JLR paid.</div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 6 — Commodities Covered                                           -->
+<!-- SLIDE 6 — Processes Covered                                             -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="slide" id="slide-6">
   <div class="slide-header">
@@ -714,121 +691,42 @@ body{
     </div>
     <div style="text-align:right">
       <div class="section-label">Coverage</div>
-      <div style="font-size:1.1rem;font-weight:700">17 Manufacturing Commodities</div>
+      <div style="font-size:1.1rem;font-weight:700">19 Manufacturing Processes</div>
     </div>
   </div>
 
   <div class="slide-body">
     <div>
-      <div class="section-label">Full Commodity Coverage</div>
-      <div class="slide-title">Every Major Manufacturing Process — One Platform</div>
-      <div class="slide-subtitle">From stamped sheet metal to 16-layer HDI PCBs — all 21 commodities modelled to engineering depth.</div>
+      <div class="section-label">Full Coverage</div>
+      <div class="slide-title">19 Manufacturing Processes — One Engine</div>
+      <div class="slide-subtitle">Plus an assembly roll-up and an automotive software cost model. The same eight cost buckets for all.</div>
     </div>
 
     <div class="comm-grid" style="flex:1">
-      <div class="comm-card">
-        <div class="comm-icon">⚙️</div>
-        <div class="comm-name">CNC Machining</div>
-        <div class="comm-sub">3/4/5-axis, turning, grinding</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🪨</div>
-        <div class="comm-name">Casting</div>
-        <div class="comm-sub">HPDC, gravity, investment, sand</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🔨</div>
-        <div class="comm-name">Forging</div>
-        <div class="comm-sub">Hot, warm, cold die forging</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🪗</div>
-        <div class="comm-name">Sheet Metal</div>
-        <div class="comm-sub">Blanking, forming, welding</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🔩</div>
-        <div class="comm-name">Sheet Metal Fab</div>
-        <div class="comm-sub">Laser, punch, press brake, MIG/TIG</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🏺</div>
-        <div class="comm-name">Injection Moulding</div>
-        <div class="comm-sub">Thermoplastics, multi-cavity</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🫧</div>
-        <div class="comm-name">Blow Moulding</div>
-        <div class="comm-sub">HDPE, PET, extrusion blow</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">♨️</div>
-        <div class="comm-name">Thermoforming</div>
-        <div class="comm-sub">Vacuum, pressure, twin-sheet</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🔄</div>
-        <div class="comm-name">Rotational Moulding</div>
-        <div class="comm-sub">Hollow complex shapes</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🧱</div>
-        <div class="comm-name">Rubber Moulding</div>
-        <div class="comm-sub">Compression, injection, LSR</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🪢</div>
-        <div class="comm-name">Composites</div>
-        <div class="comm-sub">CFRP, GFRP, autoclave, RTM, AFP</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🖥️</div>
-        <div class="comm-name">PCB Fabrication</div>
-        <div class="comm-sub">2–16L, HDI, rigid-flex, RF/μwave</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🔌</div>
-        <div class="comm-name">PCBA / SMD</div>
-        <div class="comm-sub">SMT placement, TH, BOM-driven</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🔗</div>
-        <div class="comm-name">Wiring Harness</div>
-        <div class="comm-sub">Cut-strip-crimp, sub-assembly</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🚗</div>
-        <div class="comm-name">BIW Assembly</div>
-        <div class="comm-sub">Spot weld, hem, MIG, structural bond</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🎨</div>
-        <div class="comm-name">Painting / Coating</div>
-        <div class="comm-sub">Electro-coat, powder, wet paint</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🔩</div>
-        <div class="comm-name">Extrusion</div>
-        <div class="comm-sub">Profile, pipe, sheet, rod, continuous</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🏗️</div>
-        <div class="comm-name">Cast + Machine</div>
-        <div class="comm-sub">Casting + post-machining + HT</div>
-      </div>
-      <div class="comm-card">
-        <div class="comm-icon">🤖</div>
-        <div class="comm-name">AI Agent</div>
-        <div class="comm-sub">Natural language → any commodity</div>
-      </div>
-      <div class="comm-card" style="border-color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 8%,var(--surface))">
-        <div class="comm-icon">🔗</div>
-        <div class="comm-name">Assembly BOM Rollup</div>
-        <div class="comm-sub">Multi-part BOM, full cost rollup</div>
-      </div>
+      <div class="comm-card"><div class="comm-icon">01</div><div class="comm-name">CNC Machining</div><div class="comm-sub">Milling, turning, drilling</div></div>
+      <div class="comm-card"><div class="comm-icon">02</div><div class="comm-name">Casting</div><div class="comm-sub">HPDC, gravity, investment, sand</div></div>
+      <div class="comm-card"><div class="comm-icon">03</div><div class="comm-name">Cast + Machine</div><div class="comm-sub">Casting plus finish machining</div></div>
+      <div class="comm-card"><div class="comm-icon">04</div><div class="comm-name">Forging</div><div class="comm-sub">Hot die forging</div></div>
+      <div class="comm-card"><div class="comm-icon">05</div><div class="comm-name">Sheet Metal</div><div class="comm-sub">Pressed: progressive / transfer</div></div>
+      <div class="comm-card"><div class="comm-icon">06</div><div class="comm-name">Sheet Metal Fab</div><div class="comm-sub">Laser, punch, brake, weld</div></div>
+      <div class="comm-card"><div class="comm-icon">07</div><div class="comm-name">Gear Cutting</div><div class="comm-sub">Hob, shape, skive, grind</div></div>
+      <div class="comm-card"><div class="comm-icon">08</div><div class="comm-name">Injection Moulding</div><div class="comm-sub">Thermoplastics, multi-cavity</div></div>
+      <div class="comm-card"><div class="comm-icon">09</div><div class="comm-name">Blow Moulding</div><div class="comm-sub">Hollow parts: tanks, ducts</div></div>
+      <div class="comm-card"><div class="comm-icon">10</div><div class="comm-name">Extrusion</div><div class="comm-sub">Profile, pipe, tube</div></div>
+      <div class="comm-card"><div class="comm-icon">11</div><div class="comm-name">Thermoforming</div><div class="comm-sub">Vacuum, pressure, twin-sheet</div></div>
+      <div class="comm-card"><div class="comm-icon">12</div><div class="comm-name">Rotational Moulding</div><div class="comm-sub">Large hollow shapes</div></div>
+      <div class="comm-card"><div class="comm-icon">13</div><div class="comm-name">Rubber Moulding</div><div class="comm-sub">Compression, transfer, LSR</div></div>
+      <div class="comm-card"><div class="comm-icon">14</div><div class="comm-name">Composites</div><div class="comm-sub">Hand lay-up, RTM, autoclave</div></div>
+      <div class="comm-card"><div class="comm-icon">15</div><div class="comm-name">Painting / Coating</div><div class="comm-sub">E-coat, powder, wet, anodise</div></div>
+      <div class="comm-card"><div class="comm-icon">16</div><div class="comm-name">BIW Assembly</div><div class="comm-sub">Spot weld, MIG, hem, bond</div></div>
+      <div class="comm-card"><div class="comm-icon">17</div><div class="comm-name">PCB Fabrication</div><div class="comm-sub">Bought-in price, fabricator tables</div></div>
+      <div class="comm-card"><div class="comm-icon">18</div><div class="comm-name">PCBA</div><div class="comm-sub">SMT, through-hole, reflow</div></div>
+      <div class="comm-card"><div class="comm-icon">19</div><div class="comm-name">Wiring Harness</div><div class="comm-sub">Cut, strip, crimp, test</div></div>
+      <div class="comm-card" style="border-color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 8%,var(--surface))"><div class="comm-icon">20</div><div class="comm-name">Assembly Roll-Up</div><div class="comm-sub">Multi-part BOM, one total</div></div>
+      <div class="comm-card" style="border-color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 8%,var(--surface))"><div class="comm-icon">21</div><div class="comm-name">Automotive Software</div><div class="comm-sub">49-module cost model</div></div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -842,76 +740,71 @@ body{
     </div>
     <div style="text-align:right">
       <div class="section-label">Engineering Depth</div>
-      <div style="font-size:1.1rem;font-weight:700">Should-Cost Model Architecture</div>
+      <div style="font-size:1.1rem;font-weight:700">What Sits Behind Every Number</div>
     </div>
   </div>
 
   <div class="slide-body">
     <div>
       <div class="section-label">Technical Depth</div>
-      <div class="slide-title">Industry-Grade Cost Models — Not Spreadsheet Estimates</div>
-      <div class="slide-subtitle">Built on aPriori-calibrated benchmarks, IPC standards, and first-principles engineering.</div>
+      <div class="slide-title">Arithmetic You Can Follow — Not Estimated by Feel</div>
+      <div class="slide-subtitle">Rate library 2.1.0, dated 16 June 2026. Every rate is on record and editable.</div>
     </div>
 
     <div class="two-col" style="flex:1">
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card">
           <div class="accent-bar"></div>
-          <div class="card-title">📦 Material Database</div>
-          <div class="card-body">Alloy steels, aluminium grades, engineering plastics, elastomers, composites, PCB laminates, copper — all with live density, price and grade logic. FX-adjusted per region.</div>
+          <div class="card-title">Materials</div>
+          <div class="card-body">328 materials — metals, plastics, rubber, composites and board laminates — each with density and price, adjusted by region.</div>
         </div>
         <div class="card">
           <div class="accent-bar" style="background:var(--grad-green)"></div>
-          <div class="card-title">⚙️ Machine &amp; Rate Library</div>
-          <div class="card-body">Rate library with 50+ machine types — CNC centres, presses, moulding machines, SMT lines, reflow ovens, test equipment. Rates editable per project/region.</div>
+          <div class="card-title">Machines &amp; Labour</div>
+          <div class="card-body">178 machines and 42 labour grades. Each rate is editable per project and per region. JLR's own rate card converts in with a macro-free workbook.</div>
         </div>
         <div class="card">
           <div class="accent-bar" style="background:linear-gradient(135deg,var(--orange),var(--red))"></div>
-          <div class="card-title">🛤️ Routing &amp; Process Logic</div>
-          <div class="card-body">AI-driven operation sequencing. Each operation has: machine ID, cycle time (hr), OEE, setup time, labour grade, and overhead allocation.</div>
+          <div class="card-title">Routing &amp; Process Logic</div>
+          <div class="card-body">Each operation has a machine, a cycle time, a setup time and a labour grade. Nothing is a single lump sum.</div>
         </div>
         <div class="card">
           <div class="accent-bar" style="background:linear-gradient(135deg,var(--accent-2),#ec4899)"></div>
-          <div class="card-title">🔩 Tooling &amp; NRE Amortisation</div>
-          <div class="card-body">Dies, moulds, fixtures, PCB NRE — all properly amortised over annual volume. Tooling life curves for press tools and EDM electrodes.</div>
+          <div class="card-title">Tooling &amp; NRE</div>
+          <div class="card-body">Dies, moulds and fixtures spread over annual volume × programme life (a blank life counts as one year).</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card">
-          <div class="accent-bar" style="background:var(--grad-green)"></div>
-          <div class="card-title">📉 Yield &amp; Scrap Models</div>
-          <div class="card-body">First-pass yield computed from 10 penalty factors per commodity: layer count, trace width, via type, HDI structure, impedance control, BGA pitch, alloy grade, section thickness and more.</div>
-        </div>
-        <div class="card">
           <div class="accent-bar"></div>
-          <div class="card-title">🌍 Regional Cost Multipliers</div>
-          <div class="card-body">20 manufacturing regions — each with calibrated labour tiers (skilled / semi-skilled / engineer / inspector), energy costs, and machine hour rates. Currency FX auto-corrects.</div>
+          <div class="card-title">Eight Cost Buckets</div>
+          <div class="card-body">Material, process, labour, tooling, packaging, logistics, overhead and margin. Overhead is a % of material + process + labour + tooling; margin is a % of the subtotal.</div>
         </div>
         <div class="card">
           <div class="accent-bar" style="background:linear-gradient(135deg,var(--orange),var(--accent))"></div>
-          <div class="card-title">📊 Benchmarks &amp; Sensitivity</div>
-          <div class="card-body">Every cost element benchmarked against aPriori/Cleansheet industry ranges. Tornado chart shows top 10 cost drivers at ±10%. Scenario A/B/C comparison.</div>
+          <div class="card-title">Benchmarks &amp; Sensitivity</div>
+          <div class="card-body">Checked against typical cost ranges. Each driver flexed ±10% (by default) and ranked by impact. Scenarios side by side.</div>
         </div>
         <div class="card card-purple">
-          <div class="card-title">🤖 AI-Driven Assumptions</div>
-          <div class="card-body">Where geometry is unknown, Claude AI fills assumptions using engineering judgement — material, complexity, process, geometry — with transparent explanation of every assumption made.</div>
+          <div class="card-title">Uncertainty Band and Self-Audit</div>
+          <div class="card-body">A P10–P90 band on every result from a Monte Carlo run over every cost driver. A self-audit flags a wrong machine size, the wrong tooling volume, implausible cycle times and more.</div>
         </div>
         <div class="card card-green">
-          <div class="card-title">📉 Learning Curve (Wright's Law)</div>
-          <div class="card-body">Configure an 85% (or custom) learning curve to model volume-driven cost reduction. Project programme cost at any volume milestone — essential for LTA negotiations and make-vs-buy decisions.</div>
+          <div class="card-title">Learning Curve</div>
+          <div class="card-body">What the part costs as volume builds — the figure you need for a long-term agreement or make-vs-buy.</div>
         </div>
         <div class="card card-orange">
-          <div class="card-title">💰 Supplier Quote Comparison</div>
-          <div class="card-body">Log supplier quotes (name, date, currency, price) directly into CostVision. Compare vs should-cost instantly. Identify margin gaps and generate data-driven negotiation talking points.</div>
+          <div class="card-title">Supplier Quote Comparison</div>
+          <div class="card-body">Log a supplier quote in any currency. Compared with the should-cost bucket by bucket, and the gap stated plainly.</div>
         </div>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 8 — Demo Screen Mockups                                           -->
+<!-- SLIDE 8 — Six real parts, pinned                                        -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="slide" id="slide-8">
   <div class="slide-header">
@@ -920,116 +813,98 @@ body{
       <div class="slide-logo">CostVision</div>
     </div>
     <div style="text-align:right">
-      <div class="section-label">Demo</div>
-      <div style="font-size:1.1rem;font-weight:700">Representative Cost Outputs</div>
+      <div class="section-label">Real Parts</div>
+      <div style="font-size:1.1rem;font-weight:700">Regression Baseline</div>
     </div>
   </div>
 
   <div class="slide-body" style="gap:10px">
     <div>
-      <div class="section-label">Sample Outputs — Luxury SUV Programme</div>
-      <div class="slide-title">Real-World Cost Benchmarks Across Commodities</div>
+      <div class="section-label">Measured from real CAD · costed by the product's own chain · UK rates</div>
+      <div class="slide-title">Six Real Production Parts — Pinned in the Build</div>
     </div>
 
-    <!-- Demo table -->
     <div style="flex:1;overflow:auto">
       <table style="width:100%;border-collapse:collapse;font-size:.76rem">
         <thead>
           <tr style="background:var(--surface-2);border-bottom:2px solid var(--border)">
-            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Commodity</th>
-            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Demo Part</th>
-            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Key Inputs</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Part</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">What it is</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Route (engineer's answer)</th>
             <th style="text-align:right;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Should-Cost</th>
-            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Top AI Insight</th>
-            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">DFM Flag</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Measured</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Why this route</th>
           </tr>
         </thead>
         <tbody>
           <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">⚙️ Machining</td>
-            <td style="padding:7px 10px">Aluminium Gearbox Bracket</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Al 6082-T6 · 0.85 kg · 3 setups</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 28.40</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Process 44% of cost — near-net-shape casting saves £8</td>
-            <td style="padding:7px 10px"><span style="color:var(--orange);font-weight:600">3 setups → 5-axis consolidation</span></td>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">Steering knuckle</td>
+            <td style="padding:7px 10px">Suspension upright, RH</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Forging, steel</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 32.16</td>
+            <td style="padding:7px 10px;color:var(--text-2)">9.0 mm bulk wall · 6% fill</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Safety-critical, so forged; bore and faces machined after</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border);background:var(--surface-2)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🪨 HPDC Casting</td>
-            <td style="padding:7px 10px">Alloy Transmission Housing</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Al A380 · 3.2 kg · 50k/yr</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 18.70</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Die cost 9% — acceptable. Margin 21% — negotiate</td>
-            <td style="padding:7px 10px"><span style="color:var(--accent-3);font-weight:600">Good — no critical issues</span></td>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">Casting bracket</td>
+            <td style="padding:7px 10px">Mounting bracket</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Cast + machine, steel</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 37.61</td>
+            <td style="padding:7px 10px;color:var(--text-2)">10.2 mm wall · 16% fill · 10 holes</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Named as a casting; holes and threads to finish</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🪗 Sheet Metal</td>
-            <td style="padding:7px 10px">Rear Door Inner Panel</td>
-            <td style="padding:7px 10px;color:var(--text-2)">DC04 1.2mm · 4.1 kg · 60k/yr</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 22.10</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Blank nesting 64% — improve to save £2.80/part</td>
-            <td style="padding:7px 10px"><span style="color:var(--red);font-weight:600">Critical: blank nesting &lt;65%</span></td>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">PRCR002 housing</td>
+            <td style="padding:7px 10px">Cast housing, 277 mm</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Cast + machine, aluminium</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 52.67</td>
+            <td style="padding:7px 10px;color:var(--text-2)">15.1 mm bulk wall · 9% fill</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Assumed not pressure-tight — if it is, the cost rises</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border);background:var(--surface-2)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🏺 Injection</td>
-            <td style="padding:7px 10px">PP Bumper Bracket</td>
-            <td style="padding:7px 10px;color:var(--text-2)">PP-TD20 · 0.42 kg · 100k/yr</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 3.85</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Mould cost 8% — good amortisation at this volume</td>
-            <td style="padding:7px 10px"><span style="color:var(--accent-3);font-weight:600">Good — runner waste 15%</span></td>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">Part1</td>
+            <td style="padding:7px 10px">Machined part, 274 mm</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Machining, aluminium</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 38.93</td>
+            <td style="padding:7px 10px;color:var(--text-2)">10.4 mm bulk wall · 23% fill</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Machined from billet at this volume</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🖥️ PCB Fab</td>
-            <td style="padding:7px 10px">4-Layer FR4 ECU Board</td>
-            <td style="padding:7px 10px;color:var(--text-2)">100×80mm · ENIG · Flying probe</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 4.20</td>
-            <td style="padding:7px 10px;color:var(--text-2)">NRE 6% per board — increase batch for better rate</td>
-            <td style="padding:7px 10px"><span style="color:var(--accent-3);font-weight:600">Good — standard technology</span></td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border);background:var(--surface-2)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🔌 PCBA</td>
-            <td style="padding:7px 10px">ECU PCBA — 85 components</td>
-            <td style="padding:7px 10px;color:var(--text-2)">SMT + TH · 4 TH joints</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 32.60</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Labour 38% — convert TH to SMT to save £4</td>
-            <td style="padding:7px 10px"><span style="color:var(--orange);font-weight:600">Major: high TH labour content</span></td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🔗 Wiring Harness</td>
-            <td style="padding:7px 10px">Door Module Harness</td>
-            <td style="padding:7px 10px;color:var(--text-2)">24 circuits · 2.1 m avg length</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 11.80</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Labour 58% — automation saves 20% at scale</td>
-            <td style="padding:7px 10px"><span style="color:var(--red);font-weight:600">Critical: labour &gt;50%</span></td>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">Seat locking bracket</td>
+            <td style="padding:7px 10px">Pressed bracket</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Sheet metal, steel</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 4.96</td>
+            <td style="padding:7px 10px;color:var(--text-2)">1.55 mm wall · 15 bends · 4% fill</td>
+            <td style="padding:7px 10px;color:var(--text-2)">The one genuine pressing</td>
           </tr>
           <tr>
-            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🧱 Rubber</td>
-            <td style="padding:7px 10px">EPDM Door Seal</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Extrusion · 2.8 m · 85 Shore A</td>
-            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 4.10</td>
-            <td style="padding:7px 10px;color:var(--text-2)">Process 42% — cure cycle dominant cost driver</td>
-            <td style="padding:7px 10px"><span style="color:var(--orange);font-weight:600">Major: cure time optimise</span></td>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">Spur gear m3 z38</td>
+            <td style="padding:7px 10px">38 teeth, ISO class 8</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Gear cutting, steel</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 25.50</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Module 3, teeth counted off the tip</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Routed by measuring the gear</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div style="background:var(--surface-2);border-radius:8px;padding:10px 14px;border:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center;font-size:.75rem">
-      <span><strong style="color:var(--accent)">AI Agent:</strong> <span style="color:var(--text-2)">Describe "4-layer PCB for automotive ECU, ENIG finish, 10k/yr" — AI generates the full cost model automatically</span></span>
-      <span><strong style="color:var(--accent-3)">Assembly Rollup:</strong> <span style="color:var(--text-2)">BIW + Painting + Harness + Electronics = full vehicle-level should-cost in one session</span></span>
+      <span><strong style="color:var(--accent)">Why it exists:</strong> <span style="color:var(--text-2)">all tests once passed while a steering knuckle costed at £5.43 — every test used clean synthetic blocks. Now a change that moves any of these parts fails the build.</span></span>
+      <span><strong style="color:var(--orange)">What it is not:</strong> <span style="color:var(--text-2)">it pins what the tool says. None of these has been compared with a price JLR paid.</span></span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <div class="tag blue">All costs in GBP · auto-converts per region</div>
-      <div class="tag green">AI insights + DFM/DFA per part</div>
-      <div class="tag orange">6-sheet Excel · PDF report per part</div>
-      <div class="tag purple">Supplier quote comparison built-in</div>
-      <div class="tag blue">Wright's Law learning curve per part</div>
+      <div class="tag blue">UK region, GBP</div>
+      <div class="tag green">Answers are stated engineering judgements</div>
+      <div class="tag orange">Replayed on every build</div>
+      <div class="tag purple">Re-measured inside the CAD image in CI</div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 9 — Business Benefits                                             -->
+<!-- SLIDE 9 — What we can claim today                                       -->
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="slide" id="slide-9">
   <div class="slide-header">
@@ -1038,79 +913,77 @@ body{
       <div class="slide-logo">CostVision</div>
     </div>
     <div style="text-align:right">
-      <div class="section-label">Value Delivered</div>
-      <div style="font-size:1.1rem;font-weight:700">Business Impact &amp; Benefits</div>
+      <div class="section-label">Value — Honestly Stated</div>
+      <div style="font-size:1.1rem;font-weight:700">What Is Proven, What Is Not</div>
     </div>
   </div>
 
   <div class="slide-body">
     <div>
-      <div class="section-label">Why This Matters for the Business</div>
-      <div class="slide-title">Measurable Impact Across Cost, Speed, and Quality</div>
+      <div class="section-label">Only what the repository can show</div>
+      <div class="slide-title">What We Can Claim Today</div>
     </div>
 
     <div class="benefit-row" style="flex:1">
       <div class="benefit-card b1">
-        <div class="benefit-num" style="color:var(--accent)">70–90%</div>
-        <div class="benefit-label">Reduction in Costing Time</div>
-        <div class="benefit-desc">From 2–4 weeks per part to minutes. Engineers spend time on decisions, not spreadsheets.</div>
-      </div>
-      <div class="benefit-card b2">
         <div class="benefit-num" style="color:var(--accent-3)">&lt;0.01%</div>
         <div class="benefit-label">Engine vs Hand Calculation</div>
-        <div class="benefit-desc">Physics-based models with every rate on record. Accuracy against real prices is measured as they are logged — not claimed up front.</div>
+        <div class="benefit-desc">The engine's arithmetic matches a hand calculation on the reference machined bracket (£23.27).</div>
+      </div>
+      <div class="benefit-card b2">
+        <div class="benefit-num" style="color:var(--accent)">6</div>
+        <div class="benefit-label">Real Parts Pinned</div>
+        <div class="benefit-desc">Steering knuckle, two castings, a pressed seat bracket, a machined part and a gear. Move one and the build fails.</div>
       </div>
       <div class="benefit-card b3">
-        <div class="benefit-num" style="color:var(--orange)">15–25%</div>
-        <div class="benefit-label">Supplier Negotiation Saving</div>
-        <div class="benefit-desc">Should-cost models give buyers a defensible floor price. Supplier margins become visible and challengeable.</div>
+        <div class="benefit-num" style="color:var(--accent-2)">2,438</div>
+        <div class="benefit-label">Automated Tests</div>
+        <div class="benefit-desc">Plus browser tests that cost every commodity, export Excel and PDF, upload an STL and check accessibility on every run.</div>
       </div>
       <div class="benefit-card b4">
-        <div class="benefit-num" style="color:var(--accent-2)">3×</div>
-        <div class="benefit-label">Faster Sourcing Decisions</div>
-        <div class="benefit-desc">Cost intelligence available at concept — not just after SOP. Faster programme decisions with full cost visibility.</div>
+        <div class="benefit-num" style="color:var(--orange)">19</div>
+        <div class="benefit-label">Manufacturing Processes</div>
+        <div class="benefit-desc">Plus an assembly roll-up and a 49-module automotive software cost model.</div>
       </div>
       <div class="benefit-card b5">
-        <div class="benefit-num" style="color:var(--red)">100%</div>
-        <div class="benefit-label">Standardised Methodology</div>
-        <div class="benefit-desc">One consistent cost model across all teams, programmes, and regions. Full audit trail for every assumption.</div>
+        <div class="benefit-num" style="color:#22d3ee">20</div>
+        <div class="benefit-label">Manufacturing Regions</div>
+        <div class="benefit-desc">Each with its own labour, energy and machine rates, and its own currency.</div>
       </div>
       <div class="benefit-card b6">
-        <div class="benefit-num" style="color:#f472b6">10/10</div>
-        <div class="benefit-label">DFM Score Target</div>
-        <div class="benefit-desc">DFM/DFA analysis at concept stage prevents expensive late-stage redesigns. Engineering issues caught early.</div>
+        <div class="benefit-num" style="color:#f472b6">AA</div>
+        <div class="benefit-label">WCAG 2.1 Accessibility</div>
+        <div class="benefit-desc">Every page passes an automated WCAG 2.1 AA check.</div>
       </div>
       <div class="benefit-card b7">
-        <div class="benefit-num" style="color:#22d3ee">20</div>
-        <div class="benefit-label">Global Regions + 10 Currencies</div>
-        <div class="benefit-desc">Instantly compare UK, China, India, Mexico, Korea — true regional cost transparency. Currency auto-switches per region selection.</div>
+        <div class="benefit-num" style="color:var(--red)">0</div>
+        <div class="benefit-label">Compared With a JLR-Paid Price</div>
+        <div class="benefit-desc">Not done yet. Accuracy against real prices is measured as actuals are logged — not claimed up front.</div>
       </div>
     </div>
 
     <div style="background:var(--surface-2);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border);display:flex;align-items:stretch;gap:16px">
       <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
-        <div style="font-size:1.4rem">💼</div>
         <div>
-          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Strategic Business Case</div>
+          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Safe on a Locked-Down Laptop</div>
           <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
-            On a £500M commodity spend, a <strong style="color:var(--accent-3)">3% improvement in supplier pricing</strong> through should-cost intelligence delivers
-            <strong style="color:var(--accent-3)">£15M annual saving</strong>. CostVision makes that achievable through data, not negotiation luck.
+            A Windows folder: copy it, double-click to start. <strong style="color:var(--accent-3)">No installer, no admin rights, no internet, no AI.</strong>
+            It listens on the laptop only unless deliberately shared.
           </div>
         </div>
       </div>
       <div style="width:1px;background:var(--border)"></div>
       <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
-        <div style="font-size:1.4rem">☁️</div>
         <div>
-          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Team &amp; Cloud Collaboration</div>
+          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Sign-In and Privacy</div>
           <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
-            Scenarios sync to the cloud — engineers across sites share a consistent cost baseline. Secure JWT authentication, multi-user access, and full audit trail per calculation.
+            Sign-in on everything that holds data. Users see only their own saved scenarios. A password reset or "sign out everywhere" ends every old session; a deleted account stops working at once.
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+  <div class="slide-footer"><span>CostVision — Should-Cost Engineering</span><span>Avinash Bhosale</span></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -1124,88 +997,79 @@ body{
     </div>
     <div style="text-align:right">
       <div class="section-label">Next Steps</div>
-      <div style="font-size:1.1rem;font-weight:700">Vision, Roadmap &amp; Pilot</div>
+      <div style="font-size:1.1rem;font-weight:700">Roadmap &amp; Pilot</div>
     </div>
   </div>
 
   <div class="slide-body">
     <div>
       <div class="section-label">Closing</div>
-      <div class="slide-title">The Future of Cost Engineering is Intelligent, Instant, and Integrated</div>
+      <div class="slide-title">What Comes Next — and a Small First Step</div>
     </div>
 
     <div class="two-col" style="flex:1">
-      <!-- Roadmap -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card">
-          <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;color:var(--accent)">📍 Current Capabilities (Live Today)</div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;color:var(--accent)">Runs Today</div>
           <ul class="bullet-list">
-            <li><strong>21 commodity should-cost models</strong> — fully parametric, engineering-grade</li>
-            <li><strong>AI Agent</strong> — describe a part in plain English, AI builds the cost model</li>
-            <li><strong>AI CAD analysis</strong> — STEP / photo → geometry → cost in minutes</li>
-            <li><strong>Assembly BOM Rollup</strong> — multi-part, multi-commodity assemblies</li>
-            <li><strong>Learning Curve (Wright's Law)</strong> — volume-cost projection at any milestone</li>
-            <li><strong>Supplier Quote Comparison</strong> — log quotes, identify margin gaps instantly</li>
-            <li><strong>DFM / DFA intelligence</strong> — bolt-on AI optimisation layer, 1–10 scores</li>
-            <li><strong>20 global regions · 10 currencies</strong> with live auto-switching</li>
-            <li><strong>6-sheet Excel export + PDF report</strong> with part photo and full traceability</li>
-            <li><strong>Cloud sync, team sharing &amp; secure authentication</strong> — multi-user ready</li>
+            <li><strong>19 manufacturing processes</strong>, plus assembly roll-up and software</li>
+            <li><strong>CAD to Cost on rules</strong> — asks where the geometry can't decide</li>
+            <li><strong>Rate library</strong> dated 16 June 2026, editable and versioned</li>
+            <li><strong>Self-audit and a P10–P90 band</strong> on every result</li>
+            <li><strong>Learns from actuals</strong> — after 3 logged prices for a commodity, the band is corrected</li>
+            <li><strong>20 regions</strong>, each in its own currency</li>
+            <li><strong>Quote comparison and negotiation pack</strong></li>
+            <li><strong>Excel and PDF</strong> that match the screen to the penny</li>
+            <li><strong>Windows laptop package</strong> — no internet, no admin rights</li>
+            <li><strong>AI switched off at JLR</strong> — the code is there, turned on only by a setting</li>
           </ul>
         </div>
         <div style="display:flex;gap:10px">
           <div class="card" style="flex:1">
-            <div style="font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Phase 2 — Q3 2026</div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Next</div>
             <ul class="bullet-list" style="font-size:.74rem">
-              <li>PLM / ERP integration connectors</li>
-              <li>Mass-import BOM costing</li>
-              <li>Supplier quotation comparison matrix</li>
-              <li>Cost target waterfall dashboards</li>
+              <li>Connect to Teamcenter and SAP</li>
+              <li>Cost-target view for programme teams</li>
+              <li>Compare several suppliers side by side</li>
             </ul>
           </div>
           <div class="card" style="flex:1">
-            <div style="font-size:.7rem;font-weight:700;color:var(--accent-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Phase 3 — Q1 2027</div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--accent-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Then</div>
             <ul class="bullet-list" style="font-size:.74rem">
-              <li>Market price learning engine</li>
-              <li>Should-cost vs actual variance tracker</li>
-              <li>Autonomous sourcing RFQ generation</li>
-              <li>Executive analytics dashboard</li>
+              <li>Calibrate from live ERP actuals</li>
+              <li>Draft the RFQ from the should-cost</li>
+              <li>Portfolio view for leadership</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <!-- Right: CTA + contact -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card card-accent" style="flex:1">
-          <div style="font-size:1.3rem;margin-bottom:8px">🚀</div>
-          <div style="font-weight:700;font-size:1rem;margin-bottom:10px">Invitation: Pilot Rollout</div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:10px">Pilot — the Ask</div>
           <ul class="bullet-list">
-            <li><strong>Pilot scope:</strong> 2–3 commodity families, one programme team</li>
-            <li><strong>Duration:</strong> 4–6 weeks structured pilot with real parts</li>
-            <li><strong>Deliverable:</strong> Validated should-cost models vs actual supplier quotes</li>
-            <li><strong>Success metric:</strong> ≥15% supplier price reduction identified per part</li>
-            <li><strong>Team training:</strong> Half-day onboarding, full user documentation</li>
-            <li><strong>Support:</strong> Direct access to developer throughout pilot</li>
+            <li><strong>Scope:</strong> two or three commodities, one programme team</li>
+            <li><strong>Duration:</strong> four to six weeks, on real parts</li>
+            <li><strong>Evidence:</strong> real supplier quotes and PO prices, logged against each should-cost</li>
+            <li><strong>Measure:</strong> the gap between should-cost and what was paid — measured, not claimed</li>
+            <li><strong>Support:</strong> direct access to the developer throughout</li>
           </ul>
         </div>
 
-        <!-- Contact Card -->
         <div style="background:var(--surface-2);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);text-align:center">
-          <div style="font-size:1.4rem;margin-bottom:8px">👤</div>
           <div style="font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:3px">Avinash Bhosale</div>
           <div style="font-size:.78rem;color:var(--text-2);margin-bottom:10px">Cost Engineering &amp; Digital Innovation</div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-            <div class="tag blue">📧 Direct Message</div>
-            <div class="tag green">💬 Teams / Slack</div>
-            <div class="tag purple">📋 POC Available</div>
+            <div class="tag blue">Direct message</div>
+            <div class="tag green">Teams</div>
+            <div class="tag purple">Demo available</div>
           </div>
         </div>
 
-        <!-- Vision statement -->
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--accent-3)">
           <div style="font-size:.72rem;color:var(--accent-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Vision</div>
           <div style="font-size:.82rem;color:var(--text);line-height:1.55;font-style:italic">
-            "Every engineer should have instant access to accurate, defensible should-cost intelligence — at concept stage, across every commodity, in every region. CostVision makes that a reality today."
+            "Every engineer should have a should-cost they can defend — at concept stage, across every process, in every region."
           </div>
           <div style="font-size:.72rem;color:var(--text-3);margin-top:8px">— Avinash Bhosale, CostVision</div>
         </div>
@@ -1213,8 +1077,8 @@ body{
     </div>
   </div>
   <div class="slide-footer">
-    <span>CostVision — AI-Powered Should-Cost Intelligence</span>
-    <span style="color:var(--accent-3);font-weight:600">Thank you — Questions welcome</span>
+    <span>CostVision — Should-Cost Engineering</span>
+    <span style="color:var(--accent-3);font-weight:600">Thank you — questions welcome</span>
     <span>Avinash Bhosale</span>
   </div>
 </div>
