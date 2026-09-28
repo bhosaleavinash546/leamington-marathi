@@ -1,12 +1,15 @@
 /**
- * "How CostVision Actually Works" — the 56-slide workflow explainer.
+ * "How CostVision Actually Works" — the 58-slide workflow explainer (app V4.2).
+ *
+ * Every claim must agree with docs/decks/tool-facts.md or be checked in code.
+ * At JLR the AI is switched off (AIR_GAPPED=1); slides say so wherever AI appears.
  *
  * Slides 5–8 are the PCBA market landscape (who else automates PCBA costing,
  * at what automation level, software vs service, and what they charge). Every
  * claim there is sourced; the URL list lives in slide 6's speaker notes. No
  * price is stated unless the vendor publishes it.
  *
- * Slides 46–54 are the DFM/DFA & idea-generation rule-library appendix,
+ * Slides 48–56 are the DFM/DFA & idea-generation rule-library appendix,
  * transcribed from calculator/src/engine/dfm-dfa.ts + idea-levers.ts +
  * modules/*-advisor.ts (52 rules · 19 parameters/signals · 10 advisors ·
  * 36 levers) — keep them in sync if those engines' thresholds change.
@@ -79,21 +82,22 @@ function owner(s, x, y, label, col, tint) {
   const s = pres.addSlide(); s.background = { color: NAVY };
   logoMark(s, 0.8, 1.3, 0.8, '4F46E5');
   s.addText('CostVision', { x: 1.78, y: 1.42, w: 6, h: 0.4, fontFace: 'Calibri', fontSize: 19.0, bold: true, color: 'FFFFFF', margin: 0, valign: 'middle' });
-  s.addText('AI Cost Intelligence', { x: 1.78, y: 1.78, w: 6, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, color: '8FA3CC', margin: 0, valign: 'middle' });
+  s.addText('Should-Cost Intelligence', { x: 1.78, y: 1.78, w: 6, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, color: '8FA3CC', margin: 0, valign: 'middle' });
   s.addText('How CostVision Actually Works', { x: 0.8, y: 2.25, w: 11.7, h: 0.8, fontFace: 'Cambria', fontSize: 42.0, bold: true, color: 'FFFFFF', margin: 0 });
   s.addText('Who does what — followed end to end on one real part', { x: 0.8, y: 3.15, w: 11.7, h: 0.45, fontFace: 'Calibri', fontSize: 20.0, color: 'CADCFC', margin: 0 });
   s.addShape('roundRect', { x: 0.8, y: 3.95, w: 11.7, h: 0.75, fill: { color: '24406E' }, rectRadius: 0.1 });
   s.addText([
     { text: 'The one line to remember:  ', options: { color: '9FB6DF', bold: true } },
-    { text: 'the rules derive every input, the engine does every calculation, a person approves the answer — and the AI is an optional second opinion.', options: { color: 'FFFFFF', bold: true } },
+    { text: 'the tool measures the part, the engineer answers what geometry cannot, the engine does the arithmetic, and a person signs it off. AI is switched off at JLR.', options: { color: 'FFFFFF', bold: true } },
   ], { x: 1.1, y: 3.95, w: 11.1, h: 0.75, fontFace: 'Calibri', fontSize: 15.0, margin: 0, valign: 'middle' });
   s.addText('Worked example: die-cast aluminium housing · 2.8 kg · 60,000 per year · made in China',
     { x: 0.8, y: 5.1, w: 11.7, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, color: '8FA3CC', margin: 0 });
   s.addNotes(
-    'Thank you all for coming back. In the last session I showed you what this tool produces. The feedback I got — very fairly — was that the workflow itself was still a black box. People told me they could not follow who does what, and where the AI actually sits in all this. So today I am going to open the box. ' +
-    'I am going to take one real part — a die-cast aluminium housing, the sort of thing we buy tens of thousands of a year — and walk it through the tool from the moment we upload the CAD file to the moment a buyer walks into a supplier meeting with a number. Every single step. ' +
-    'And I will keep colour-coding who owns each step, because that is the bit that has been confusing. Blue is measuring. Purple is the AI. Amber is the safety checks. Teal is the costing engine doing the arithmetic. Green is where a human signs it off. ' +
-    'If you take one line away today, take the line on the screen: the rules derive every input, the engine does every calculation, a person approves the answer — and the AI is an optional second opinion, off by default. Everything I show you for the next twenty minutes is an elaboration of that sentence.'
+    'Thank you for coming back. Last time I showed you what CostVision produces. The fair feedback was that the workflow was still a black box. People could not see who does what, or where the AI sits. So today I want to open the box. ' +
+    'I will take one worked example, a die-cast aluminium housing, and walk it through the tool step by step: from the CAD file to a number a buyer can take into a supplier meeting. Then I will do the same on a very different part, a moulded bumper, to show the method holds. ' +
+    'I will colour-code who owns each step, because that was the confusing bit. Blue is measuring. Purple is the optional AI. Amber is the safety checks. Teal is the cost engine doing the arithmetic. Green is the engineer. ' +
+    'One thing to say up front. In the build we ship to JLR, the AI is switched off. JLR has no AI approval yet. The AI code is still in the product, turned off by a setting, so it could be switched on later without a rebuild. Even when it is on, it never sets a price. ' +
+    'So the line on the screen is the one to remember. The tool measures, the engineer answers what geometry cannot decide, the engine does the sums, and a person signs it off. Everything else today is detail behind that sentence.'
   );
 }
 
@@ -127,10 +131,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation & the business case', 'Slides 3–13', 'How it connects, the PCB flow, who else does this in the market, and the money case ending in one decision', '24 min', BLUE, true],
-    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 14–32', 'Twelve stages end to end: measure, derive, guard, calculate, approve — including the calculation and the confidence band shown in full.', '22 min', TEAL, false],
-    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 33–43', 'The same method on a very different part — plus paint, and the two findings nobody predicted', '18 min', PURPLE, false],
-    ['4', 'The honest limits', 'Slide 44', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
+    ['1', 'Orientation & the business case', 'Slides 3–13', 'How it connects, the PCB flow (an AI feature, off at JLR), who else does this, and the business case ending in one decision', '24 min', BLUE, true],
+    ['2', 'Worked example one — die-cast aluminium housing', 'Slides 14–32', 'Twelve stages end to end: measure, ask, check, calculate, approve — with the calculation and the confidence band shown in full.', '22 min', TEAL, false],
+    ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 33–45', 'The same method on a very different part, plus paint, two findings — and the new gear model', '18 min', PURPLE, false],
+    ['4', 'The honest limits', 'Slide 46', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
   ];
   secs.forEach(([n, name, range, desc, mins, col, exec], i) => {
     const y = 1.22 + i * 1.16;
@@ -143,26 +147,27 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     s.addText(String(mins), { x: 11.85, y: y + 0.16, w: 0.85, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
     if (exec) {
       s.addShape('roundRect', { x: 10.2, y: y + 0.52, w: 2.5, h: 0.3, fill: { color: GREEN_T }, line: { color: GREEN, width: 1 }, rectRadius: 0.15 });
-      s.addText('★  on the 10-minute path', { x: 10.2, y: y + 0.52, w: 2.5, h: 0.3, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: GREEN, align: 'center', valign: 'middle', margin: 0 });
+      s.addText('On the 10-minute path', { x: 10.2, y: y + 0.52, w: 2.5, h: 0.3, fontFace: 'Calibri', fontSize: 8.4, bold: true, color: GREEN, align: 'center', valign: 'middle', margin: 0 });
     }
   });
 
   s.addShape('roundRect', { x: 0.5, y: 5.92, w: 12.33, h: 0.9, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
-    { text: 'Appendix (slides 42–52): ', options: { bold: true, color: '9FB6E0' } },
+    { text: 'Appendix (slides 47–58): ', options: { bold: true, color: '9FB6E0' } },
     { text: 'the complete DFM/DFA rule library and the technical architecture — reference material, not part of the hour.\n', options: { color: 'CADCFC' } },
     { text: 'If you only have ten minutes:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'slides 3–4 (how it connects, incl. the PCB flow) · slides 5–8 (who else does this, and where we honestly stand) · slides 9–13 (the business case) · slide 32 (the housing on one page) · slide 42 (the two findings) · slide 44 (the limits).', options: { color: 'FFFFFF' } },
+    { text: 'slide 3 (how it connects) · slides 9–13 (the business case) · slide 32 (the housing on one page) · slide 42 (the two findings) · slide 46 (the limits).', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.02, w: 11.65, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Quick map of where we are going, because there is more here than an hour needs and I would rather you chose than sat through all of it. ' +
-    'Section one, five slides: how the whole thing connects, and what it is worth measured against doing the same job by hand — including the category-by-category comparison with CAPEE from our internal review. About eight minutes. ' +
-    'Section two is the first worked example — a die-cast aluminium housing, followed through all twelve stages from CAD file to defensible price, including the calculation shown in full so you can check it. Eighteen slides, about twenty-two minutes, and it is the heart of the pack. ' +
-    'Section three does the same thing on a completely different part, an injection-moulded bumper fascia, plus paint, plus two findings that I genuinely did not predict. Eleven slides, about eighteen minutes. ' +
-    'Section four is five minutes on what the tool cannot do. ' +
-    'And the strip along the bottom is there because I have been in enough of these meetings. If the hour collapses to ten minutes, take slides three and four, the three business-case slides, slide twenty-six, slide thirty-six and slide thirty-eight. Everything in between is the evidence for those five, and you can read it afterwards.'
+    'A quick map, because there is more here than an hour needs, and I would rather you chose than sat through all of it. ' +
+    'Section one sets the scene. How the pieces connect, the PCB photo flow, who else sells this kind of tool, and the business case. That section ends with one decision I am asking for. The PCB photo flow uses AI, so it is switched off in the JLR build. I show it so you know what exists, not because you can use it today. ' +
+    'Section two is the heart of the pack. One worked example, a die-cast aluminium housing, taken through all twelve stages. I show the calculation in full so you can check it with a calculator. ' +
+    'Section three runs the same method on a bumper fascia. It is a very different part, and the money turns out to sit somewhere else. I finish that section with the new gear model. ' +
+    'Section four is five minutes on what the tool cannot do. I would rather you heard that from me. ' +
+    'The appendix is reference only: the full DFM and DFA rule book and the technical architecture. ' +
+    'If we only get ten minutes, take the network picture on slide three, the business case, the one-page summary on slide thirty-two, the two findings on slide forty-two and the limits on slide forty-six. Everything else is the evidence behind those.'
   );
 }
 
@@ -182,29 +187,29 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   // ── why believe the picture: four measured facts ──
   s.addShape('roundRect', { x: 0.45, y: 1.18, w: 2.0, h: 0.83, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText('WHY TRUST THIS PICTURE', { x: 0.56, y: 1.23, w: 1.85, h: 0.15, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
-  s.addText('Same file + answers = same price\n12 of 19 commodities rules-driven\n1,777 automated tests\n6 real parts · fleet error ≈13%',
+  s.addText('Same file + answers = same price\n13 of 19 processes from CAD\n2,438 automated tests\n6 real parts pinned in a baseline',
     { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
   // ── OUTSIDE the tool: the OPTIONAL AI ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 1.12, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('OPTIONAL AI — off by default, the only outbound call', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('OPTIONAL AI — SWITCHED OFF AT JLR (AIR_GAPPED=1)', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
-    { text: 'Three modes: ', options: { color: SLATE } },
+    { text: 'When on: ', options: { color: SLATE } },
     { text: 'Rules only (default) · Compare · AI-led. ', options: { bold: true, color: NAVY } },
-    { text: 'Words back, never money — no price, no machine, no DFM score. ', options: { color: SLATE } },
-    { text: 'One required use: a PCB PHOTO ', options: { bold: true, color: PURPLE } },
-    { text: '— vision reads the board; prices still come from the offline catalogue.', options: { color: SLATE } },
+    { text: 'Words back, never money. Rate-limited per user. ', options: { color: SLATE } },
+    { text: 'The PCB PHOTO flow needs it ', options: { bold: true, color: PURPLE } },
+    { text: '— so at JLR that screen is hidden.', options: { color: SLATE } },
   ], { x: 3.28, y: 1.27, w: 4.35, h: 0.46, fontFace: 'Calibri', fontSize: 7.8, margin: 0, valign: 'top' });
-  s.addText('Routable to a private endpoint · AIR_GAPPED=1 refuses the call — CAD and manual costing still work; only the PCB photo path stops', { x: 3.28, y: 1.77, w: 4.35, h: 0.32, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: PURPLE, margin: 0, valign: 'top' });
+  s.addText('The code is kept and can be switched on by a setting, no rebuild. With it off, CAD and manual costing work in full.', { x: 3.28, y: 1.77, w: 4.35, h: 0.32, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: PURPLE, margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 8.0, y: 1.02, w: 4.83, h: 0.99, fill: { color: CARD }, line: { color: LINE, width: 1, dashType: 'dash' }, rectRadius: 0.09 });
-  s.addText('OPTIONAL FEEDS — off by default, none of them price a part', { x: 8.2, y: 1.12, w: 4.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
-  s.addText('Live component pricing (PCB only) · industry news · metal-price ticker (display only)',
+  s.addText('OPTIONAL FEEDS — none of them price a part', { x: 8.2, y: 1.12, w: 4.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
+  s.addText('Live component pricing (PCB, off) · news (needs internet) · price ticker (indicative, simulated, display only)',
     { x: 8.2, y: 1.38, w: 4.5, h: 0.5, fontFace: 'Calibri', fontSize: 9.0, color: SLATE, margin: 0, valign: 'top' });
   // ── the boundary ──
   s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
   s.addShape('roundRect', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fill: { color: TEAL }, rectRadius: 0.14 });
-  s.addText('INSIDE — RUNS ON YOUR OWN SERVER', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+  s.addText('INSIDE — RUNS ON YOUR OWN MACHINE', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
   // dashed link guardrails <-> AI, crossing the boundary
   s.addShape('line', { x: 4.15, y: 2.01, w: 0, h: 0.67, line: { color: PURPLE, width: 1.5, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
   const link = (x1, y1, x2, y2, col, wid = 1.75) => s.addShape('line', {
@@ -227,14 +232,14 @@ function divider(kicker, name, sub, col, items, mins, notes) {
       s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
     });
   };
-  col(0.65, 2.0, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Plain description\nor an RFQ sheet', 'Volume + region\n(the engineer types)'], 2.74);
+  col(0.65, 2.0, 'WHAT GOES IN', BLUE, ['3D CAD model\n(STEP / IGES / STL)', 'Photo of a PCB', 'Typed inputs on the\ncommodity form', 'Volume + region\n(the engineer types)'], 2.74);
   // The PCB photo is the one input that MUST leave the network to be read.
   // Everything else can be costed with the cable unplugged, so say so here
   // rather than leaving it to a footnote on the AI box.
   s.addShape('roundRect', { x: 0.65, y: 3.54, w: 2.0, h: 0.68, fill: { color: 'FFFFFF' }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.07 });
   s.addText('Photo of a PCB', { x: 0.78, y: 3.56, w: 1.74, h: 0.26, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
   s.addShape('roundRect', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fill: { color: PURPLE }, rectRadius: 0.095 });
-  s.addText('NEEDS THE AI', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
+  s.addText('AI · OFF AT JLR', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
   s.addShape('line', { x: 0.55, y: 1.98, w: 0, h: 1.90, line: { color: PURPLE, width: 1.4, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
   s.addShape('line', { x: 0.55, y: 1.98, w: 2.0, h: 0, line: { color: PURPLE, width: 1.4, dashType: 'dash', endArrowType: 'triangle' } });
   col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'DFM/DFA + savings\nranked in £/part\n(engine, not AI)', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74, 0.76);
@@ -242,10 +247,10 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   node(2.85, 2.68, 2.1, 1.22, BLUE, BLUE_T, 'Geometry kernel', 'OCCT measures the part: volume, walls, holes, faces, topology. Never guessed.', I.ruler);
   node(2.85, 4.06, 2.1, 1.22, '4F46E5', 'EEF2FF', 'Rules + optimisers', 'Derive every input AND pick the machine: press/die tonnage by physics; routing & cavitation cost-ranked.', I.cog);
   node(2.85, 5.44, 2.1, 1.02, GREEN, GREEN_T, 'The engineer', 'Answers only what geometry cannot know: material, duty, volume, region. Hard stop — no silent guess.', I.person);
-  node(5.35, 2.68, 2.15, 1.22, AMBER, AMBER_T, 'Guardrails', 'Sanity checks + physics caps; a self-audit challenges every estimate (machine sizing flagged in £/part). Measurements beat the AI.', I.shield);
+  node(5.35, 2.68, 2.15, 1.22, AMBER, AMBER_T, 'Guardrails', 'Sanity checks + physics caps; a self-audit challenges every estimate (machine sizing flagged in £/part). Measurements always win.', I.shield);
   node(8.5, 2.68, 2.1, 1.22, TEAL, TEAL_T, 'Rate library', 'Materials, machines, labour, 20 regions. The only source of money in the tool.', I.coins);
   node(8.5, 4.06, 2.1, 1.22, TEAL, TEAL_T, 'Local database', 'Parts, quotes, real actuals — the learning loop that calibrates the estimates.', I.clip);
-  node(8.5, 5.44, 2.1, 1.02, GREEN, GREEN_T, 'Uncertainty', 'Monte-Carlo band (P10–P90), conformal-calibrated from actuals.', null);
+  node(8.5, 5.44, 2.1, 1.02, GREEN, GREEN_T, 'Uncertainty', 'Monte-Carlo band (P10–P90), corrected by real actuals once 3 are logged.', null);
   // the hub
   s.addShape('roundRect', { x: 5.35, y: 4.06, w: 2.15, h: 1.58, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 6.16, y: 4.20, w: 0.5, h: 0.5, fill: { color: '17A398' } });
@@ -286,11 +291,16 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
-    { text: 'everything badged AUTO is unattended — measure, derive, pick the machine, check, calculate, write the DFM/DFA and saving ideas. The engineer answers and approves; the AI is an optional second opinion that can reach none of the money.', options: { color: SLATE } },
+    { text: 'everything badged AUTO is unattended — measure, derive, pick the machine, check, calculate, write the DFM/DFA and saving ideas. The engineer answers and approves. The AI is off at JLR, and even when on it can reach none of the money.', options: { color: SLATE } },
   ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Before the twelve stages, the whole thing on one picture — and one important update since the last session: the tool is now deterministic by default. Start in the middle-left. The blue box measures the part — OCCT, real geometry, never guessed. Below it the indigo box is new: the rules engine. Twelve commodities of explicit engineering rules that derive every cost input straight from the measurement — cycle times, tooling, press size, yield. Where geometry genuinely cannot know something — what the part is made of, whether it is safety-critical, how many a year — the tool does not guess. It stops and asks the engineer, that is the green box, and the costing is blocked until a person answers. That combination is what changed: the purple box at the top, the AI, is now OPTIONAL. Three modes on the form: Rules only, which is the default and makes no outbound call at all; Compare, which runs both and shows you exactly where they disagree, field by field; and AI-led, the old behaviour, kept for comparison. When the AI does run, its words come down through the amber guardrails — nine sanity checks, and its numbers are overwritten wherever the rules can derive the value, its machining time capped by what the stock could physically give up. On the right, unchanged: the rate library is still the only source of money in the tool, the local database holds our parts and real actuals for calibration, the engine is still fixed eight-bucket arithmetic with no judgement in it, and the uncertainty layer turns the number into an honest range. The one line: the kernel measures, the rules derive, the engineer answers, the guardrails check, the engine calculates. The AI is a second opinion — useful, optional, and unable to reach the money. Three annotations on this version of the picture, from questions this room asked. Every box badged AUTO runs unattended — the only HUMAN badge on the slide is the engineer, answering material, duty, volume and region, and approving. WHO picks the machine and the tonnage: the indigo rules-and-optimisers box — presses and dies sized by clamp and forming physics, and the machining routing and mould cavitation actually cost-ranked, with the losing options printed in the trace. And WHERE the DFM, DFA and saving ideas come from: the cost engine itself — rule thresholds and geometry advisors, every idea priced — not from the AI; you can see that on the outputs column now, and it is verified in the source code. Two more things this version of the picture carries. The little green card top-left is why to believe the boxes: the tool is deterministic — same file and same answers give the same price, every time; twelve of the eighteen commodities are fully rules-driven and the slide says so honestly; the arithmetic sits behind roughly one and a half thousand automated tests; and it has been validated against six real parts with independent manual costs, at about thirteen percent fleet error. And the small dashed arrow feeding back into the local database is the flywheel: every won quote and real invoice we record calibrates the estimates and tightens the confidence band — this is a tool that gets better the more we use it. One flow deserves its own sentence because it is the exception to the rules-first rule: the PCB photo. A photograph has no geometry for the kernel to measure, so this is the one input where the AI is REQUIRED — its vision reads the board and names the components and the fab spec. But naming is all it does: the board spec is then stabilised deterministically, every component price is snapped to our OFFLINE price catalogue with class-median caps — the model never prices a component — and the deterministic PCB fabrication and assembly models cost the board from the rate library like any other part. The live distributor pricing you see top-right is optional and off by default. So even on the one path that needs the AI\u2019s eyes, the money never comes from the AI.'
+    'Before the twelve stages, here is the whole thing on one picture. ' +
+    'Start in the middle left. The blue box is the geometry kernel. It measures the CAD file: volume, weight, walls, holes and features. Nothing is guessed. Under it, the indigo box is the rules. They turn those measurements into cost inputs: cycle times, tooling, press size, yield. Thirteen commodities can be costed from CAD this way. ' +
+    'Where geometry cannot decide something, such as the material family or the process route, the tool does not guess. It asks the engineer, the green box, and it will not cost the part until someone answers. ' +
+    'The purple box at the top is the AI. In the JLR build it is switched off. The code is still there, and a setting could turn it on later without a rebuild. When it is on, it hands back words, never money, and every AI route is rate-limited per user. The PCB photo flow needs it, so at JLR that screen is hidden. ' +
+    'On the right, the rate library is the only source of money. The engine does fixed eight-bucket arithmetic, and the uncertainty layer turns the number into a range. The dashed arrow is learning from actuals: after three real prices for a commodity, the band is corrected. ' +
+    'The green card top left is why you can trust the picture. Same file and same answers give the same price. There are 2,438 automated tests, and six real parts are pinned in a regression baseline. What I cannot claim yet is accuracy against a price JLR actually paid.'
   );
 }
 
@@ -299,13 +309,13 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
   s.addText('The PCB Photo → Should-Cost — One Picture', { x: 1.25, y: 0.2, w: 9.6, h: 0.44, fontFace: 'Cambria', fontSize: 24.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('The one flow where the AI is required — its eyes read the board; the catalogue prices it, the engine costs it, the engineer owns the doubtful lines.', { x: 1.25, y: 0.66, w: 11.0, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, italic: true, color: MUTED, margin: 0 });
+  s.addText('An AI feature, switched off at JLR. When on: the AI reads the board, the catalogue prices it, the engine costs it, the engineer checks it.', { x: 1.25, y: 0.66, w: 11.0, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, italic: true, color: MUTED, margin: 0 });
 
   // ── OUTSIDE: AI VISION — required for this input ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 7.6, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('AI VISION — REQUIRED here (a photo has no geometry to measure) · the only outbound call', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('AI VISION — REQUIRED here · OFF AT JLR, so this screen is hidden', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: 'Pass 1: ', options: { bold: true, color: NAVY } },
     { text: 'names the board (dims, layers, finish) and EVERY component — reference, package, part number where legible — with a confidence per line. ', options: { color: SLATE } },
@@ -313,12 +323,12 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     { text: 're-inspects the markings of every unconfirmed part. ', options: { color: SLATE } },
     { text: 'Words only — it prices nothing.', options: { bold: true, color: PURPLE } },
   ], { x: 3.28, y: 1.29, w: 6.75, h: 0.5, fontFace: 'Calibri', fontSize: 8.4, margin: 0, valign: 'top' });
-  s.addText('Photo fingerprint cached (SHA-256) — the same photos never pay for a second read', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
+  s.addText('Rate-limited per user when on · the model never prices a component', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
 
   // ── boundary ──
   s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
   s.addShape('roundRect', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fill: { color: TEAL }, rectRadius: 0.14 });
-  s.addText('INSIDE — RUNS ON YOUR OWN SERVER', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
+  s.addText('INSIDE — RUNS ON YOUR OWN MACHINE', { x: 0.75, y: 2.05, w: 3.5, h: 0.28, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.5 });
   s.addShape('line', { x: 6.35, y: 2.01, w: 0, h: 0.67, line: { color: PURPLE, width: 1.5, beginArrowType: 'triangle', endArrowType: 'triangle' } });
 
   const link2 = (x1, y1, x2, y2, col, wid = 1.75) => s.addShape('line', {
@@ -358,12 +368,12 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('ellipse', { x: 9.2, y: 2.84, w: 0.5, h: 0.5, fill: { color: '17A398' } });
   s.addImage({ data: I.calc, x: 9.33, y: 2.97, w: 0.24, h: 0.24 });
   s.addText('COST ENGINE', { x: 8.3, y: 3.42, w: 2.3, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
-  s.addText('PCB fab model: layers × area × finish, panelisation.\nAssembly: placements, AOI, test — at country rates.', { x: 8.3, y: 3.74, w: 2.3, h: 0.72, fontFace: 'Calibri', fontSize: 7.6, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
-  node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rates', 'Real per-country labour £/hr and electricity £/kWh (IPC/CBRE published figures) — not scaled guesses.', null);
+  s.addText('PCB fab: a bought-in price from fabricators\u2019 price tables — no overhead or margin added.\nAssembly: placements, AOI, test — at country rates.', { x: 8.3, y: 3.74, w: 2.3, h: 0.72, fontFace: 'Calibri', fontSize: 7.6, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
+  node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rates', 'Per-country labour £/hr and electricity £/kWh from published figures — not scaled guesses.', null);
 
   s.addShape('roundRect', { x: 2.85, y: 5.42, w: 2.35, h: 1.04, fill: { color: 'FBEAE8' }, line: { color: RED, width: 1.25 }, rectRadius: 0.09 });
-  s.addText('IF THE NETWORK IS OFF', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
-  s.addText('AIR_GAPPED=1 blocks this flow — a photo cannot be costed without the vision read. CAD and manual costing are unaffected.\nLive distributor pricing exists but is OFF by default; the offline catalogue is the source.',
+  s.addText('AT JLR — AI IS OFF', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
+  s.addText('AIR_GAPPED=1 hides this flow. The PCB fab and PCBA forms still cost a board from typed inputs.\nLive distributor pricing exists but is off; the offline catalogue is the source.',
     { x: 3.00, y: 5.66, w: 2.05, h: 0.74, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
   // flows
   link2(2.65, 3.29, 2.85, 3.29, BLUE);                       // photos → (up via AI) parser
@@ -386,19 +396,16 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
-    { text: 'the AI’s eyes read the board and name every part — then the offline catalogue prices it, the deterministic fab + assembly models cost it, and the engineer owns every doubtful line. The model never prices a component.', options: { color: SLATE } },
+    { text: 'when AI is on, it reads the board and names every part — then the offline catalogue prices it, the fab price and assembly model cost it, and the engineer owns every doubtful line. Off at JLR.', options: { color: SLATE } },
   ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'The previous slide had one exception on it, and it deserves its own picture: the PCB photo, the one flow in the tool where the AI is genuinely required. Here is exactly what happens, stage by stage, straight from the code. ' +
-    'What goes in: one or more photographs of the board — top and bottom if we have them — the annual quantity and region our engineer types, and any dimensions or layer counts we already know as optional overrides. ' +
-    'The photo goes up to the AI’s vision, and this is the only outbound call on the path. It makes two passes. Pass one names the board — dimensions, layer count, surface finish — and every component it can see: reference designator, package, and the part number where the marking is legible, each line carrying its own confidence. Pass two goes back and re-inspects the markings of every part it could not confirm the first time. And that is the entirety of its job: words. It prices nothing. The photos are fingerprinted, so the same board never pays for a second reading. ' +
-    'Everything after that line is deterministic and runs on our own server. The BOM parser normalises the model’s list and — a real lesson from a real failure — salvages line by line when a long automotive board truncates the reply, so a two-hundred-line BOM cannot silently come back empty. Automotive keywords force the conservative component class. The board-spec stabiliser snaps dimensions and layers to stable values, so re-running the same photos gives the same board and the same price. ' +
-    'Then the money, and this is the slide’s most important box: price grounding. Every line the vision CONFIRMED snaps to our offline price catalogue — curated market prices, no distributor API, volume-scaled from the ten-thousand base. Every line it could NOT confirm gets the class-median cap, so one unreadable chip cannot balloon the BOM, and it is flagged for a person. The model never prices a component — not one. ' +
-    'The cost engine then does what it does for every commodity: the fabrication model prices the bare board from layers, area, finish and panelisation — how many boards actually fit a panel — and the assembly model prices placement, inspection and test, at real per-country labour and electricity rates from published figures, not scaled guesses. ' +
-    'And the human: our engineer reviews every flagged line, can edit any line of the BOM, and a real quotation overrides the catalogue — same rule as everywhere else in the tool. What comes out: a priced BOM where every line says whether it is confirmed or capped, the fab spec and the eight-bucket board cost, the honest headline split between confirmed cost and cost that still needs verification, and the PDF report with the country comparison. ' +
-    'One line to keep: the AI’s eyes read the board — the catalogue prices it, the engine costs it, the engineer owns the doubt.'
+    'This is the PCB photo flow. I want to be clear first: it uses AI, so in the JLR build it is switched off and the screen is hidden. I show it because it exists in the product and could be turned on later. At JLR today, a board is costed through the PCB fabrication and PCBA forms from typed inputs. ' +
+    'When AI is on, this is what happens. The engineer uploads photos of the board and types the annual quantity and region. The AI reads the photos in two passes. First it names the board and every part it can see, with a confidence on each line. Then it looks again at the parts it could not confirm. That is its whole job. It prices nothing. ' +
+    'Everything after that runs on your own machine and is plain code. The parser tidies the list and rescues long lists that get cut short. The board-spec stabiliser snaps size and layers to stable values, so the same photos give the same board. ' +
+    'Then the money. Confirmed parts take their price from an offline catalogue. Parts it could not read get a capped class price and a flag for a person. The bare board is a bought-in price from fabricators\u2019 price tables, so no overhead or margin is added on top. Assembly is costed from placements, inspection and test at country rates. ' +
+    'The engineer can edit any line, and a real quote beats the catalogue. The model never prices a component.'
   );
 }
 
@@ -473,17 +480,17 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addShape('roundRect', { x: 0.5, y: 6.36, w: 12.33, h: 0.6, fill: { color: B.blueTint }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Where we sit:  ', options: { bold: true, color: BLUE } },
-    { text: 'camp B by purpose — a buyer-side should-cost — reached by camp C’s route, from the physical board, but automatically. That combination is the thing to defend.', options: { color: SLATE } },
+    { text: 'camp B by purpose — a buyer-side should-cost — reached by camp C’s route, from the physical board, automatically. The photo route needs AI, so it is off at JLR.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.36, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
   s.addNotes(
-    'I was asked who else does this, so I went and looked properly rather than answering from memory. The first thing worth saying is that three different markets all get called "automated PCBA costing", and they are not competing with each other — they answer different questions for different people. ' +
-    'Camp A, on the left, is EMS quoting. Luminovo and CalcuQuote. This is supplier-side: a contract manufacturer receives a bill of materials from a customer and needs a competitive quote back quickly. It is genuinely the most automated thing in the market today — Luminovo say they have over three hundred EMS customers including Zollner, Cicor and TQ. But note the direction. They already have the BOM, because the customer sent it. They are answering "what shall I charge", not "what should this cost".  ' +
-    'Camp B is enterprise should-cost, and this is our camp: aPriori, Siemens Teamcenter, FACTON, Tset, Boothroyd Dewhurst. Buyer-side, used by cost engineering and purchasing. I want to correct something I said earlier in the week, because I had it wrong: I described PCBA as the thin end of what these platforms do. It is not. aPriori ships a dedicated printed-circuit-board-assembly costing module with more than forty-five out-of-the-box assembly and test cost models and over twenty-eight PCB manufacturing processes, and it picks its processes off pin counts and mount type exactly as ours does. That is a mature, direct competitor and we should treat it as one. ' +
-    'Camp C is reverse costing — Yole SystemPlus and TechInsights. This is the closest thing to what we did with the brake ECU: take a real board and work out what it costs. The difference is that they do it by hand. Engineers decap the parts, X-ray the board, cross-section it. It is a consultancy engagement, sold per report. ' +
-    'Two things underneath. The grey strip: every one of these companies rents its component price book — SiliconExpert, Z2Data, Octopart, Supplyframe. Nobody builds their own, and that is worth remembering when we come to our own gap. And the amber strip is the thing people confuse with should-cost most often: JLCPCB and PCBWay will give you a fully automated price in seconds, and it is a real published price. But it is their selling price. You cannot negotiate with a supplier using another supplier’s quotation; you negotiate with a cost model. ' +
-    'The blue line at the bottom is the position: we are camp B by purpose — a buyer-side should-cost — but we get there by camp C’s route, from the physical board, automatically. Nobody else joins those two.'
+    'I was asked who else does this, so I looked properly rather than answering from memory. The first finding is that three different markets all get called automated PCBA costing. They answer different questions for different people. ' +
+    'Camp A is EMS quoting: Luminovo and CalcuQuote. A contract manufacturer gets a BOM from a customer and needs a quick, competitive quote. It is the most automated part of the market. But they already have the BOM. They answer what shall I charge, not what should this cost. ' +
+    'Camp B is enterprise should-cost: aPriori, Siemens, FACTON, Tset, Boothroyd Dewhurst. Buyer-side, used by cost engineering and purchasing. aPriori ships a full PCBA costing module, so treat it as a mature, direct competitor. ' +
+    'Camp C is reverse costing: Yole SystemPlus and TechInsights. They take a real board apart by hand and sell a report. ' +
+    'Underneath all three, everyone rents their component prices from someone like SiliconExpert or Octopart. And the amber strip: JLCPCB will give you an instant price, but it is their selling price. You cannot negotiate with another supplier\u2019s quotation. ' +
+    'Where do we sit? Camp B by purpose, reached from the physical board like camp C. One honest caveat for JLR: the photo route needs AI, and AI is switched off in the JLR build. So at JLR today, a board is costed from typed inputs.'
   );
 }
 
@@ -502,7 +509,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     { text: 'L3 ', options: { bold: true, color: GREEN } }, { text: 'photo / unstructured in → BOM + cost out', options: { color: SLATE } },
   ], { x: 0.68, y: 1.18, w: 12.0, h: 0.44, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'middle' });
 
-  const cw = [2.28, 1.02, 2.28, 0.52, 2.72, 3.51];
+  const cw = [2.0, 1.0, 2.05, 0.52, 3.6, 3.16];
   const ch = ['Who', 'Model', 'What goes in', 'Auto', 'Price (published only)', 'Source'];
   let hx = 0.5;
   ch.forEach((h, i) => {
@@ -512,10 +519,10 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
 
   const rows = [
     ['Luminovo', 'Software\nSaaS', 'BOM file + PCB spec\n(LLM BOM importer, auto MPN match)', 'L2',
-     'NOT PUBLISHED. Pricing page names 4 tiers (Starter / Advanced / Professional / Enterprise), scaled by procurement spend or assemblies per year — no figures.',
+     'NOT PUBLISHED. Pricing page names 4 tiers (Starter / Advanced / Professional / Enterprise), scaled by spend or assemblies per year — no figures.',
      'luminovo.com/pricing · /platform/quoting-intelligence · own FAQ "Are prices listed online?"'],
     ['CalcuQuote (Elisa IndustrIQ)', 'Software\nSaaS', 'BOM file + sourcing rules', 'L2',
-     'NOT PUBLISHED. Monthly, 3 tiers (Foundational / Professional / Enterprise), unlimited users, scaled by annual quoting volume. "Request Pricing" pages.',
+     'NOT PUBLISHED. Monthly, 3 tiers, unlimited users, scaled by annual quoting volume. "Request Pricing" pages.',
      'calcuquote.com/quotecq · /request-pricing-quote · elisaindustriq.com/calcuquote/pricing'],
     ['aPriori', 'Software\non-prem or SaaS', 'BOM + board spec (CAD for mechanical)', 'L1–L2',
      'NOT PUBLISHED. Named-user annual subscription; Foundation module sized by deployment, cost models priced separately.',
@@ -530,13 +537,13 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
      'NOT PUBLISHED. Contact sales.',
      'dfma.com/software/cost.asp · /resources/pcb-cost-estimating.asp'],
     ['Yole SystemPlus', 'SERVICE\nper report', 'The physical board', 'L0',
-     'PER-REPORT LIST PRICE — but the only figures I could verify are 2017–18 flyers (EUR 2,490 / 3,490 / 4,990). Treat as order-of-magnitude, not current.',
+     'PER-REPORT LIST PRICE — the only figures I could verify are 2017–18 flyers (EUR 2,490 / 3,490 / 4,990). Order of magnitude only.',
      'systemplus.fr/services/reverse-costing · reverse-costing.com · yolegroup.com'],
     ['TechInsights', 'SERVICE\n+ subscription', 'The physical board', 'L0',
      'NOT PUBLISHED. Channel subscriptions incl. a Component Price Landscape feed.',
      'techinsights.com/.../teardown-costing · /reverse-engineering-subscriptions'],
     ['JLCPCB (instant quote)', 'Supplier\nself-serve', 'BOM + Gerber upload', 'L2',
-     'FULLY PUBLISHED, real time: SMT USD 0.0017/joint; setup USD 25 one side / USD 50 double-sided; hand solder USD 3.50 + USD 0.0173/joint. Their SELLING price, prototype/consumer scope.',
+     'FULLY PUBLISHED: SMT USD 0.0017/joint; setup USD 25 one side / 50 two; hand solder USD 3.50 + 0.0173/joint. Their SELLING price, prototype scope.',
      'jlcpcb.com/help/article/pcb-assembly-price · jlcpcb.com/parts/bom-tool'],
     ['PCB Tracer', 'Software\nbrowser', 'Photos of the board (top + bottom)', 'L3',
      'PUBLISHED: built-in features free; AI features ≈ USD 0.50 per schematic. Extracts BOM and netlist — does NOT cost the board.',
@@ -570,13 +577,12 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
 
   footer(s, ++PG);
   s.addNotes(
-    'This is the evidence slide, and I want to be precise about how much weight it carries before anyone quotes it outside this room. ' +
-    'The automation scale across the top is defined so that "how automated is it" is not a matter of opinion. L0 is a manual service — people physically take the board apart. L1 is software where a human still keys the bill of materials. L2 is a BOM file in, cost out, no keying. L3 is unstructured input — a photograph — in, and a BOM and a cost out. ' +
-    'Now the pricing column, which is what I was actually asked for. The honest answer is that almost nobody publishes. Luminovo has a public pricing page that names four tiers and tells you the tiers scale with your procurement spend or your number of new assemblies a year — and then gives no numbers at all; they even have a FAQ page whose title is "are prices listed online". CalcuQuote is the same shape: monthly, three tiers, unlimited users, and a "request pricing" page instead of a price. aPriori is a named-user annual subscription where the Foundation module is sized to your deployment and the cost models are priced separately, and their own guidance is to request a customised price guide. Siemens and Tset and Boothroyd Dewhurst, the same. ' +
-    'So the amber box at the bottom is the finding, not an apology for missing data: this entire market sells on quotation. If anyone shows you a "typical aPriori licence cost", it is a guess. I have deliberately left those cells saying NOT PUBLISHED rather than filling them with a plausible number, and I would ask that we keep it that way. ' +
-    'Two rows do have real figures. Yole SystemPlus sells reverse costing per report at a list price — but the only figures I could actually verify are from 2017 and 2018 flyers, two thousand four hundred and ninety to four thousand nine hundred and ninety euros, and I have labelled them as order-of-magnitude rather than current, because I could not open the current price list. And JLCPCB publishes everything in real time: a tenth of a cent per solder joint, twenty-five dollars of setup for one side, fifty for two. That is genuinely useful as a floor reference — but it is a prototype and consumer-scope selling price with no automotive quality grade, no in-circuit test, no X-ray and no conformal coating, so please do not put it next to our brake-ECU number and call it a comparison. ' +
-    'The last row is the one that made me change what I was going to say on the next slide. PCB Tracer is a browser tool that takes photographs of the top and bottom of a board and uses AI to identify the parts and export a bill of materials — that is L3, the same input we take. The built-in features are free and the AI runs at about fifty cents a schematic. It does not cost the board, which is the whole point of the distinction I draw next, but I am not going to stand here and tell you photo-to-BOM is uncontested when a free tool does it. ' +
-    'One caveat on the whole slide, and it is in the source code comments as well. This session’s network policy blocked me from opening the vendor websites directly — the proxy returned a 403 for every one of them — so these pages were read through the search index rather than fetched and quoted. That is good enough to cite and to plan against. It is not good enough for me to claim I have read the current price list, and where that matters, on the Yole line, I have said so on the slide.' +
+    'This is the evidence slide, and I want to be clear how much weight it carries before anyone quotes it. ' +
+    'The scale across the top makes automation a definition, not an opinion. L0 is a manual service. L1 is software where a person keys the BOM. L2 is a BOM file in and a cost out. L3 is a photo in and a BOM and cost out. ' +
+    'The price column is what I was asked for, and the honest answer is that almost nobody publishes. Luminovo, CalcuQuote, aPriori, Siemens, Tset and Boothroyd all sell on quotation. So the amber box is the finding, not a gap in my research. If someone shows you a typical licence cost for these tools, it is a guess. I have left those cells saying not published, and I would like to keep it that way. ' +
+    'Two rows have real figures. Yole sells reports at list price, but the only prices I could verify are from 2017 and 2018, so treat them as order of magnitude. JLCPCB publishes everything, but it is a prototype and consumer selling price. ' +
+    'PCB Tracer is the row that changed my view. It reads board photos into a BOM, free or nearly free. It does not cost the board, but photo to BOM is not uncontested. ' +
+    'One caveat: vendor sites were read through a search index, not opened directly. Good enough to cite, not to quote word for word.' +
     '\n\n───────────── SOURCES (accessed 7 August 2026, via search index — direct fetch blocked by network policy) ─────────────\n' +
     'Luminovo — luminovo.com/pricing · luminovo.com/platform/quoting-intelligence · luminovo.com/platform/pcb-pricing · luminovo.com/faq/how-does-luminovo-pricing-work-are-prices-listed-online · luminovo.com/faq/how-much-does-luminovo-cost\n' +
     'CalcuQuote / Elisa IndustrIQ — calcuquote.com/quotecq · calcuquote.com/request-pricing-quote · elisaindustriq.com/calcuquote/pricing · elisaindustriq.com/resources/blog/6-bom-management-and-quoting-software-platforms-for-ems-providers-in-2026\n' +
@@ -610,12 +616,12 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
 
   // verdict: 'w' = we lead, 'l' = we lose, 'n' = neutral/equal
   const rows2 = [
-    ['Starts from', 'A BOM file', 'A BOM + board spec', 'The physical board', 'A photograph', 'w'],
+    ['Starts from', 'A BOM file', 'A BOM + board spec', 'The physical board', 'A photograph\n(AI — off at JLR)', 'w'],
     ['Automation', 'L2', 'L1–L2', 'L0 — people', 'L3', 'w'],
     ['Turnaround', 'Minutes', 'Hours (after data entry)', 'Weeks', 'Minutes', 'w'],
-    ['Cost engine', 'Supplier price build-up', 'Deterministic should-cost', 'Bottom-up from teardown', 'Deterministic, 8-bucket,\n~1,600 pinned tests', 'n'],
+    ['Cost engine', 'Supplier price build-up', 'Deterministic should-cost', 'Bottom-up from teardown', 'Deterministic, 8-bucket,\n2,438 automated tests', 'n'],
     ['Component prices', 'Live distributor APIs', 'Licensed price libraries', 'Own price database', 'Live API built + wired\n— but UNCONFIGURED,\nso offline catalogue in practice', 'l'],
-    ['Runs air-gapped', 'No — cloud SaaS', 'On-prem possible', 'n/a — a service', 'Yes, AIR_GAPPED=1', 'w'],
+    ['Runs air-gapped', 'No — cloud SaaS', 'On-prem possible', 'n/a — a service', 'Yes, AIR_GAPPED=1 —\nbut the photo read\nneeds AI', 'w'],
     ['Per-line evidence', 'Distributor quote ref', 'Model + library ref', 'Physical inspection', 'Evidence tag per line\n(legible / partial / inferred)', 'w'],
     ['PCBA accuracy\nvs actuals', 'Won/lost quote feedback', 'Vendor-claimed ROI cases', 'The reference standard', 'NOT VALIDATED — no PCBA\nactuals recorded yet', 'l'],
     ['Maturity', '300+ EMS customers claimed', 'Decades, thousands of seats', '250+ automotive teardowns', 'One board, internally', 'l'],
@@ -641,16 +647,17 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addShape('roundRect', { x: 0.5, y: 6.44, w: 12.33, h: 0.66, fill: { color: 'F9E8E5' }, line: { color: RED, width: 1.2 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read the two red rows first.  ', options: { bold: true, color: RED } },
-    { text: 'We have never checked a PCBA estimate against a real invoice — the 13% fleet error we quote is mechanical parts only, and does not transfer. And the brake-ECU study rested on a fitted price curve with 18% of the BOM inferred and roughly £20 of Bosch captive silicon that has no market price at all. Both are fixable. Neither is fixed.', options: { color: SLATE } },
+    { text: 'We have never checked a PCBA estimate against a real invoice — and no estimate of any kind has yet been compared with a price JLR paid. The brake-ECU study rested on a fitted price curve with 18% of the BOM inferred and roughly £20 of Bosch captive silicon that has no market price. Both are fixable. Neither is fixed.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.44, w: 12.0, h: 0.66, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
   s.addNotes(
-    'Same axes as the previous slide, with us in the indigo column, and I have coloured our cell green only where I can defend the claim and red where I cannot. ' +
-    'The green rows are real and they are worth saying plainly. We start from a photograph rather than a bill of materials, which no should-cost platform in camp B does. We return an answer in minutes where reverse costing takes weeks. We run air-gapped, which matters for a programme where the board itself is confidential. And every line in our bill of materials carries an evidence tag saying whether the part number was legible in the photograph, partly legible, or inferred — I have not found anyone else who prints that. ' +
-    'Now the row I want to correct myself on, because I told this room the opposite earlier in the week. I said we have no live distributor pricing. That is wrong, and I found it by reading our own source rather than trusting my memory. The integration is built and it is wired into the costing path — Octopart via Nexar, and RS Components — and it grounds the bill of materials before the total is summed. What is true is that it is gated on an API key, we do not have one, and so every price falls back to our offline catalogue. So the honest cell is not "we do not have this". It is "we have it, and it is switched off", which is a completely different size of problem and a completely different conversation with the budget holder. ' +
-    'The two red rows are the ones I would read first if I were you. We have never validated a PCBA estimate against a real invoice. The thirteen percent fleet accuracy we quote elsewhere in this deck is from mechanical parts — castings, mouldings, forgings — and it does not transfer to a populated circuit board. Until we cost a board we already have a purchase-order price for, our accuracy on this commodity is unknown, and I would rather say that than let the number drift across from another slide. ' +
-    'And maturity. Luminovo claims over three hundred EMS customers. Yole has done more than two hundred and fifty automotive teardowns. We have done one board, internally, and we found three part-number errors in our own first pass at it. That is not an argument against the tool — finding them is what the evidence tagging is for — but it is where we are.'
+    'Same axes as the last slide, with us in the indigo column. I have coloured our cell green only where I can defend it, and red where I cannot. ' +
+    'The green rows first. We start from a photo rather than a BOM. We return an answer in minutes rather than weeks. We can run air-gapped. And every BOM line carries an evidence tag: legible, partly legible or inferred. I have not seen anyone else print that. ' +
+    'But notice the caveat I have added. The photo read needs AI, and AI is off in the JLR build. So at JLR today, the photo route is not available. The board is costed from typed inputs on the PCB forms. ' +
+    'The component price row. Live distributor pricing is built and wired in, but it needs an API key and internet, and we do not have one. So in practice every price comes from the offline catalogue. It exists, and it is switched off. ' +
+    'Now the red rows, which I would read first. We have never checked a PCBA estimate against a real invoice. More broadly, no estimate of any commodity has yet been compared with a price JLR paid. We measure accuracy as actuals are logged; we do not claim it up front. ' +
+    'And maturity. Others have hundreds of customers or teardowns. We have done one board, internally. That is where we are.'
   );
 }
 
@@ -664,7 +671,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addShape('rect', { x: 0.5, y: 1.24, w: 6.05, h: 0.34, fill: { color: GREEN } });
   s.addText('WHAT IS ACTUALLY OURS', { x: 0.64, y: 1.24, w: 5.77, h: 0.34, fontFace: 'Calibri', fontSize: 9.2, bold: true, color: 'FFFFFF', charSpacing: 0.5, margin: 0, valign: 'middle' });
   s.addText([
-    { text: 'Photograph → BOM → deterministic should-cost, in one pass.\n', options: { bold: true, color: NAVY } },
+    { text: 'Photograph → BOM → deterministic should-cost, in one pass (AI mode).\n', options: { bold: true, color: NAVY } },
     { text: 'Each half exists elsewhere. PCB Tracer reads a board photo into a BOM for free. aPriori costs a PCBA properly from a BOM. ', options: { color: SLATE } },
     { text: 'Nobody joins them', options: { bold: true, color: GREEN } },
     { text: ' — and the join is what lets a buyer cost a competitor’s board, or their own board when the supplier will not open the BOM.\n\n', options: { color: SLATE } },
@@ -711,17 +718,17 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addShape('roundRect', { x: 0.5, y: 6.06, w: 12.33, h: 0.9, fill: { color: B.greenTint }, line: { color: GREEN, width: 1.2 }, rectRadius: 0.08 });
   s.addText([
     { text: 'The ask:  ', options: { bold: true, color: GREEN } },
-    { text: 'one distributor API key and one board with a known purchase price. Those two together turn every red cell on the previous slide amber or green, and neither needs a line of new engineering — the integration and the calibration machinery are both already built and tested. Until then the honest headline stays: ', options: { color: SLATE } },
+    { text: 'one distributor API key and one board with a known purchase price. The integration and the learning-from-actuals machinery are already built. The key needs internet, so it does not apply to the air-gapped JLR build. Until then the honest headline stays: ', options: { color: SLATE } },
     { text: 'a defensible, fully traceable estimate — not a priced quotation.', options: { bold: true, color: NAVY } },
   ], { x: 0.68, y: 6.06, w: 12.0, h: 0.9, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
   s.addNotes(
-    'Last one on the market, and it is the decision slide. ' +
-    'Top left is what is genuinely ours, and I have narrowed the claim deliberately. Both halves of what we do exist elsewhere: PCB Tracer will read a photograph of a board into a bill of materials for nothing, and aPriori will cost a PCBA properly once you give it one. What I could not find anywhere is the two joined into a single pass. That join is the whole product, because it is what lets a buyer cost a board when nobody will hand them the bill of materials — a competitor’s board, or frankly our own supplier’s. ' +
-    'Top right, and I would rather we said this before anyone else does. Four things. We have not validated PCBA accuracy against a single real invoice. Our live pricing is built and switched off. Around twenty pounds of the brake ECU is Bosch captive silicon that has no market price at all, and no data feed on earth fixes that one — it is an irreducible uncertainty and we should keep saying so. And the placement rate: the fourteen pounds twenty-one of process cost on that board comes straight out of our library’s components-per-hour assumptions, and if a real automotive line runs two or three times faster, that number falls to between four and seven pounds. That single unvalidated assumption is worth more than the entire volume change from two hundred thousand to three hundred and fifty thousand that we spent this week modelling. ' +
-    'The three cards along the bottom are what to do about it, in order of value for effort. First, turn the price feed on. This is not a development project — the code is in pcb-live-pricing dot ts, it is already wired to ground the bill of materials before the total is summed, and it is waiting on an API key we have not bought. While we are there we should lift the twenty-part grounding cap, because the ECU bill of materials has exactly twenty lines and is therefore already sitting on the limit. Second, validate: cost one board where we already know the purchase-order price, and record the actual. The calibration and drift machinery that learns from actuals is already built and has never once been given a circuit board. Third, ring one EMS supplier and ask what their real placement rate is on a comparable board. ' +
-    'So the ask is small and specific: one distributor API key, and one board with a known price. No new engineering. And until we have both, the headline we put on a should-cost stays exactly what it is today — a defensible, fully traceable estimate, and not a priced quotation. I would rather we were the ones enforcing that distinction than have a supplier enforce it on us in a negotiation.'
+    'Last one on the market, and it is the decision slide for the PCB side. ' +
+    'Top left is what is genuinely ours, and I have kept the claim narrow. Photo to BOM exists elsewhere. Costing a PCBA from a BOM exists elsewhere. What I could not find is the two joined in one pass. That join lets a buyer cost a board when nobody will hand over the BOM. It depends on AI, which is off at JLR. ' +
+    'Top right, four things we should say before anyone else does. PCBA accuracy is not validated against a single invoice. Live pricing is built and switched off. About twenty pounds of the brake ECU is Bosch captive silicon with no market price, and no data feed fixes that. And the placement rate: the process cost on that board rests on our library\u2019s placements per hour, and if a real line runs two or three times faster the number falls a lot. ' +
+    'The three cards are what to do, in order of value for effort. Turn the price feed on where the network allows it. Cost one board where we already know the purchase price, and log it as an actual. And ask one EMS supplier for a real placement rate. ' +
+    'Until then the headline stays what it is: a defensible, traceable estimate, not a priced quotation.'
   );
 }
 
@@ -742,13 +749,13 @@ FOOT = FOOT_MAIN;
   const streams = [
     [I.coins, 'A · Negotiation floor', GREEN,
       'A defensible should-cost turns a quote into a conversation with a floor price under it. Supplier margin and overhead are priced as separate lines, and every line prints its own derivation — so the challenge survives the meeting.',
-      'Measured: £5.55/part of combined opportunity on the £25.14 reference part — 22% of piece cost. The single biggest action is a £4.53 sourcing lever.'],
+      'Example: on a machined bracket the tool lists £5.38/part of ideas to test; the biggest is a £4.38 sourcing study. Ideas, not savings achieved.'],
     [I.cube, 'B · Design-stage avoidance', TEAL,
-      'Cost known while the design can still move. At 10–15 minutes a part this runs at concept stage rather than after the quote lands, while wall thickness, cavitation and routing are all still open.',
-      'Measured: on the bumper, tooling was 43% of piece cost — more than resin, press and labour combined. Nobody predicted that before the run.'],
+      'Cost known while the design can still move. Quick enough to run at concept stage rather than after the quote lands, while wall thickness, cavitation and routing are all still open.',
+      'Worked example: on the bumper, tooling is 43% of piece cost — more than resin, press and labour combined.'],
     [I.person, 'C · Engineering capacity', BLUE,
       'The hours are the enabler, not the prize. You cannot hold 40 floor-price negotiations a year if each should-cost costs half a day to prepare — capacity is what makes stream A reachable at all.',
-      'Measured: 16–30× faster than the confirmed CAPEE baseline · ≈1,650 h/yr on an illustrative 500-part mix.'],
+      'Not yet measured. The pilot times real runs; until then the hours are a planning estimate.'],
   ];
   streams.forEach(([ico, t, col, body, ev], i) => {
     const x = 0.5 + i * 4.19;
@@ -765,7 +772,7 @@ FOOT = FOOT_MAIN;
   s.addText('THE CALCULATION — ATTACK ANY OF THE THREE TERMS', { x: 0.5, y: 3.14, w: 8, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
   const chain = [
     ['Addressed spend', '£20 m', 'annual purchased value of the\nparts we put through it', MUTED, false],
-    ['× Identified', '8%', 'planning figure — the tool\nmeasured 22% on the\nreference part', MUTED, false],
+    ['× Identified', '8%', 'planning assumption —\nthe pilot measures\nthe real figure', MUTED, false],
     ['× Captured', '20%', 'the share we actually\nimplement — the honest\nunknown', AMBER, false],
     ['= Saving', '£320k/yr', 'recurring, against a one-off\npilot cost of ≈ £25k', GREEN, true],
   ];
@@ -783,8 +790,8 @@ FOOT = FOOT_MAIN;
   s.addText('WHAT WE ASSUMED — SWAP ANY OF THESE FOR OUR REAL NUMBERS', { x: 0.68, y: 4.85, w: 7.2, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: MUTED, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: '40 parts in the pilot basket · £500k average annual purchased value each · 8% identified · 20% captured.\n', options: { color: SLATE } },
-    { text: 'Deliberately conservative: ', options: { bold: true, color: NAVY } },
-    { text: 'the 8% is barely a third of the 22% the tool actually measured, and a 20% capture assumes four of every five ideas are never acted on. Nothing here needs the tool to be right about one part — only roughly right across a basket.', options: { color: SLATE } },
+    { text: 'All four are planning assumptions, not tool results. ', options: { bold: true, color: NAVY } },
+    { text: 'A 20% capture assumes four of every five ideas are never acted on. Nothing here needs the tool to be right about one part — only roughly right across a basket.', options: { color: SLATE } },
   ], { x: 0.68, y: 5.07, w: 7.2, h: 0.86, fontFace: 'Calibri', fontSize: 8.4, margin: 0, valign: 'top' });
 
   // Cost of doing nothing.
@@ -805,25 +812,26 @@ FOOT = FOOT_MAIN;
   footer(s, ++PG);
 
   s.addNotes(
-    'This is the slide the business case was missing, and I want to be honest about why. The previous version led with engineer-hours — and hours are not money. Worse, we then said "capacity, not headcount", which to a budget holder reads as "nothing actually comes out". So this version leads with the money and puts the hours where they belong. ' +
-    'Three streams. A, the negotiation floor: a defensible should-cost turns a quote into a conversation with a number underneath it, and because every line prints its own derivation the challenge survives the meeting rather than collapsing the first time a supplier pushes back. On our reference part the tool identified five pounds fifty-five of combined opportunity against a twenty-five pound piece cost, and its single biggest action was a four-pound-fifty sourcing lever. B, design-stage avoidance: at ten to fifteen minutes a part this can run at concept stage, while wall thickness and cavitation are still open — and the bumper is the proof, where tooling turned out to be forty-three percent of piece cost, more than the resin, the press and the labour added together. Nobody in this room predicted that in advance. C, capacity — and note that I have put it third. The hours are the enabler, not the prize. You cannot hold forty floor-price negotiations a year if every should-cost costs half a day to prepare. ' +
-    'Then the calculation, laid out as a chain deliberately, so you can attack any single term instead of the whole idea. Addressed spend, times what the tool identifies, times what we actually capture. Twenty million of purchased value, eight percent identified, twenty percent captured: three hundred and twenty thousand a year, recurring, against a one-off pilot cost of about twenty-five thousand. ' +
-    'The assumptions are printed on the slide because I would rather you argued with the model than with me — and they are deliberately pessimistic. Eight percent is barely a third of the twenty-two percent the tool actually measured. A twenty percent capture assumes four out of every five ideas never get acted on. ' +
-    'But the line to leave with is the navy strip. At this pilot cost the break-even capture rate is one point six percent. One pound in sixty. I am not asking you to believe twenty percent — I am asking whether one point six is plausible. If it is, the pilot is very nearly free, and the only remaining question is whether the tool works, which is precisely what a pilot is for.'
+    'This is where the money comes from. Hours are not money, so I lead with the money and put the hours where they belong. ' +
+    'Three streams. A, the negotiation floor. A should-cost turns a quote into a conversation with a number under it. Every line shows how it was worked out, so the challenge survives the meeting. As an example, on a machined bracket the tool lists about five pounds forty a part of ideas to test. Those are ideas, not savings anyone has banked. ' +
+    'B, design-stage avoidance. The tool is quick enough to use while the design can still change. On the bumper, tooling turns out to be forty-three percent of the piece cost. You want to know that before the tool is ordered. ' +
+    'C, capacity. I have put it third on purpose. We have not timed the tool against the manual method yet. The pilot will do that. ' +
+    'Then the calculation, laid out as a chain so you can attack any one term. Twenty million of spend, eight percent identified, twenty percent captured, gives three hundred and twenty thousand a year. Every one of those is a planning assumption, not a tool result. Swap in our real numbers. ' +
+    'The line to leave with is the navy strip. At a pilot cost of about twenty-five thousand, break-even is capturing one point six percent of what is identified. I am not asking you to believe twenty percent. I am asking whether one point six is plausible.'
   );
 }
 {
   // ── Business case I — minutes, not hours ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case II — Minutes, Not Hours', 'Why the capacity in stream C exists — the same should-cost, by commodity, against the CAPEE-by-hand baseline', GREEN);
+  title(s, 'Business Case II — Where the Time Goes', 'Expected time per should-cost, by commodity, against the CAPEE-by-hand baseline — planning figures until the pilot times them', GREEN);
   // What the CostVision minutes actually contain (the tool truth)
   const steps = [
     [I.upload, 'Upload CAD', '~1 min'],
     [I.ruler, 'Measure + derive', '1–2 min\nautomatic'],
-    [I.person, 'Answer 2–5 questions', '2–5 min\nmaterial · duty'],
-    [I.check, 'Review band + approve', '5–8 min'],
+    [I.person, 'Answer questions', '2–5 min\nmaterial · route'],
+    [I.check, 'Review + approve', '5–8 min'],
   ];
-  s.addText('WHAT THE COSTVISION MINUTES CONTAIN', { x: 0.5, y: 1.16, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
+  s.addText('WHAT THE COSTVISION MINUTES WOULD CONTAIN', { x: 0.5, y: 1.16, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
   steps.forEach(([ico, t, d], i) => {
     const x = 0.5 + i * 1.52;
     s.addShape('roundRect', { x, y: 1.42, w: 1.4, h: 1.16, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.08 });
@@ -834,24 +842,23 @@ FOOT = FOOT_MAIN;
     if (i < 3) s.addImage({ data: I.arrow, x: x + 1.41, y: 1.92, w: 0.12, h: 0.12 });
   });
   s.addText([
-    { text: 'End to end: 10–15 minutes ', options: { bold: true, color: TEAL, fontSize: 12.0 } },
-    { text: 'for a CAD part, engineer at the screen throughout. The tool computes; the engineer answers and approves.', options: { color: SLATE, fontSize: 9.5 } },
-    { text: ' In CAPEE these inputs are keyed by hand from the CAD — automatic feeding is the largest single saving.', options: { color: NAVY, fontSize: 8.2, bold: true } },
+    { text: 'Expected: 10–15 minutes ', options: { bold: true, color: TEAL, fontSize: 12.0 } },
+    { text: 'for a CAD part, engineer at the screen. Not yet timed.', options: { color: SLATE, fontSize: 9.5 } },
+    { text: ' CAPEE keys these inputs by hand; here the tool measures them.', options: { color: NAVY, fontSize: 8.2, bold: true } },
   ], { x: 0.5, y: 2.64, w: 5.9, h: 0.42, fontFace: 'Calibri', margin: 0, valign: 'top' });
   // Per-commodity time table
   const rows = [
-    ['Casting + machining (CAD)', '10–15 min', '4–5 h', '✓ confirmed baseline'],
+    ['Casting + machining (CAD)', '10–15 min', '4–5 h', 'confirmed baseline'],
     ['Machining from billet (CAD)', '10–15 min', '3–4 h', 'team-reported'],
     ['Injection moulding (CAD)', '10–15 min', '3–4 h', 'team-reported'],
     ['Forging + machining (CAD)', '10–15 min', '3–4 h', 'team-reported'],
     ['Sheet-metal pressing (CAD)', '10–15 min', '2–3 h', 'team-reported'],
     ['Blow-moulded tank (CAD)', '10–15 min', '3–4 h', 'team-reported'],
-    ['PCB — from a photo', '≈ 10 min', '4–6 h', 'team-reported'],
-    ['Manual form (any of 18)', '15–30 min', '2–4 h', 'team-reported'],
+    ['Manual form (any of 19)', '15–30 min', '2–4 h', 'team-reported'],
   ];
   const ty = 3.34;
   s.addText('TIME PER SHOULD-COST, BY COMMODITY', { x: 0.5, y: ty - 0.22, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
-  const th = ['Commodity', 'CostVision', 'CAPEE by hand', 'Baseline'];
+  const th = ['Commodity', 'CostVision*', 'CAPEE by hand', 'Baseline'];
   const tw = [2.5, 1.0, 1.2, 1.35];
   let tx = 0.5;
   th.forEach((h, i) => { s.addText(h, { x: tx, y: ty, w: tw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.3, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 }); tx += tw[i]; });
@@ -861,16 +868,16 @@ FOOT = FOOT_MAIN;
     const cells = [c, cv, cap, note];
     cells.forEach((v, i) => {
       s.addText(v, { x, y, w: tw[i], h: 0.335, fontFace: 'Calibri', fontSize: 8.4,
-        bold: i === 1, color: i === 1 ? TEAL : (i === 3 && v.startsWith('✓') ? GREEN : SLATE),
+        bold: i === 1, color: i === 1 ? TEAL : (i === 3 && v.startsWith('confirmed') ? GREEN : SLATE),
         fill: { color: r % 2 ? 'F0F4F9' : 'FFFFFF' }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 });
       x += tw[i];
     });
   });
   // Bar chart: the same rows as minutes
-  s.addText('THE SAME TABLE AS A PICTURE — MINUTES PER ESTIMATE', { x: 6.85, y: 1.16, w: 6.0, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
+  s.addText('THE SAME TABLE AS A PICTURE — PLANNING MINUTES', { x: 6.85, y: 1.16, w: 6.0, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.6, margin: 0 });
   s.addChart('bar', [
-    { name: 'CostVision (midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould', 'PCB photo'], values: [12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 10] },
-    { name: 'CAPEE by hand (midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould', 'PCB photo'], values: [270, 210, 210, 210, 150, 210, 300] },
+    { name: 'CostVision (expected midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould'], values: [12.5, 12.5, 12.5, 12.5, 12.5, 12.5] },
+    { name: 'CAPEE by hand (midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould'], values: [270, 210, 210, 210, 150, 210] },
   ], {
     x: 6.85, y: 1.42, w: 6.0, h: 4.6, barDir: 'bar', barGrouping: 'clustered',
     chartColors: [B.teal, B.amber], showLegend: true, legendPos: 'b', legendFontSize: 9,
@@ -879,24 +886,28 @@ FOOT = FOOT_MAIN;
     catAxisLabelColor: B.slate, valAxisLabelColor: B.muted, catAxisLabelFontSize: 9, valAxisLabelFontSize: 8,
     valGridLine: { color: B.line, size: 0.5 }, catGridLine: { style: 'none' },
   });
-  s.addText('16–30× faster on the confirmed baseline. CAPEE midpoints marked "team-reported" are working figures — confirm with the costing team before circulating beyond this room.',
+  s.addText('* Expected, not yet measured. CAPEE rows marked "team-reported" are working figures. The pilot replaces both with timed runs — confirm before circulating.',
     { x: 6.85, y: 6.10, w: 6.0, h: 0.5, fontFace: 'Calibri', fontSize: 8.6, italic: true, color: MUTED, margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 0.5, y: 6.32, w: 5.9, h: 0.72, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Man-hours saved = Σ (CAPEE hrs − CostVision hrs) × annual parts. ', options: { bold: true, color: GREEN, fontSize: 8.6 } },
-    { text: 'Illustrative 500-part/yr mix over this table\u2019s midpoints: ', options: { color: SLATE, fontSize: 8.3 } },
-    { text: '≈ 1,650 h/yr ≈ one engineer-year', options: { bold: true, color: NAVY, fontSize: 9.0 } },
-    { text: ' — capacity that moves into negotiation. Replace with your annual volumes; the tool logs its own run times.', options: { color: SLATE, fontSize: 8.3 } },
+    { text: 'Illustrative 500-part/yr mix over these planning midpoints: ', options: { color: SLATE, fontSize: 8.3 } },
+    { text: '≈ 1,650 h/yr', options: { bold: true, color: NAVY, fontSize: 9.0 } },
+    { text: ' — an estimate, not a result. Replace with our real volumes and the pilot\u2019s timed runs.', options: { color: SLATE, fontSize: 8.3 } },
   ], { x: 0.68, y: 6.38, w: 5.6, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'top' });
   footer(s, ++PG);
   s.addNotes(
-    'The business case starts with time, because time is the thing nobody disputes. The left side shows what the CostVision minutes actually contain — upload, automatic measurement and derivation, then the engineer answers the two to five questions geometry cannot answer, reviews the band and approves. Ten to fifteen minutes end to end for a CAD part, and I want to be precise: that is not unattended time, that is an engineer at the screen owning the answer. The table is the same should-cost by commodity. One row is a confirmed baseline — casting plus machining, four to five hours in CAPEE, measured by us. The other CAPEE figures are team-reported working numbers and the slide says so; I would rather show you an honest label than a precise-looking guess. The chart makes the point the table makes: the green bars are barely visible against the amber ones. And the box at the bottom links straight back to the money slide — this capacity is stream C, and stream C is what makes stream A reachable. At these times one engineer reviews fifteen to twenty-five should-costs a day instead of preparing one or two. The hours we save do not disappear, they move into negotiation preparation, which is where the money actually is. Two additions from our own review. First, the single biggest category of saving is input data feeding: in CAPEE every measurement and cycle input is read off the CAD and keyed by hand; here the geometry kernel measures the file and feeds the cost engine automatically. Second, the total: hours saved equals the per-part difference times the annual number of parts, summed over the commodities. On an illustrative five-hundred-part annual mix over this table\u2019s own midpoints that is roughly one thousand six hundred and fifty hours a year — about one engineer-year. That mix is illustrative and the slide says so; substitute our real annual volumes and the tool\u2019s own logged run times to firm it up.'
+    'This slide is about time, and I want to be careful with it, because we have not timed the tool properly yet. ' +
+    'On the left is what a CAD should-cost would involve. Upload the file. The tool measures the part and derives the inputs. The engineer answers the handful of questions geometry cannot settle, such as the material or the process route. Then they review the range and approve it. We expect ten to fifteen minutes for a CAD part, with an engineer at the screen the whole time. That is an expectation, not a measurement. ' +
+    'The table compares those expected times with doing the job by hand in CAPEE. One CAPEE row, casting plus machining at four to five hours, is a baseline we confirmed. The other CAPEE rows are working figures from the team, and the slide says so. ' +
+    'The main difference is input feeding. In CAPEE every measurement is read off the CAD and typed in. Here the kernel measures the file. ' +
+    'The green box shows how you would total the hours: the difference per part, times parts a year, summed by commodity. On an illustrative mix that comes to about sixteen hundred and fifty hours. Treat that as planning arithmetic. The pilot replaces every figure on this slide with timed runs.'
   );
 }
 {
   // ── Business case II — CostVision vs CAPEE, category by category ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case III — CostVision vs CAPEE, Category by Category', 'The seven saving categories from our internal review — what CAPEE does today, and what changes', GREEN);
+  title(s, 'Business Case III — CostVision vs CAPEE, by Category', 'The seven saving categories from our internal review — what CAPEE does today, and what changes', GREEN);
 
   const cw = [2.35, 2.55, 5.55, 1.85];
   const ch = ['Saving category', 'CAPEE today', 'CostVision', 'Shown at'];
@@ -906,13 +917,13 @@ FOOT = FOOT_MAIN;
     hx += cw[i];
   });
   const rows = [
-    ['1 · Input data feeding', 'Every measurement and cycle input read off the CAD and keyed by hand', 'The geometry kernel measures the CAD file and feeds every input automatically — the single largest time saving', 'Measure + kernel slides'],
+    ['1 · Input data feeding', 'Every measurement and cycle input read off the CAD and keyed by hand', 'The geometry kernel measures the CAD file and feeds the inputs; the engineer answers only what geometry cannot decide', 'Measure + kernel slides'],
     ['2 · Machine, tonnage & process selection', 'Partially automated', 'Automatic AND cost-ranked: presses sized by clamp/force physics; machining routing and mould cavitation chosen by price, with the losing alternatives printed in the trace', 'Process-selection + routing slides'],
-    ['3 · Coverage & early programme support', 'Few parts, usually after the quote lands', '15–25 should-costs per engineer-day — directional cost early in the programme, while wall thickness and process can still change', 'Business Case II'],
-    ['4 · Total man-hours saved', '—', 'Σ (CAPEE hrs − CostVision hrs) × annual parts, per commodity. Illustrative 500-part/yr mix ≈ 1,650 h/yr ≈ one engineer-year — replace with our real volumes', 'Business Case II strip'],
+    ['3 · Coverage & early programme support', 'Few parts, usually after the quote lands', 'More parts costed per engineer (the pilot measures how many) — directional cost early, while wall thickness and process can still change', 'Business Case II'],
+    ['4 · Total man-hours saved', '—', 'Σ (CAPEE hrs − CostVision hrs) × annual parts, per commodity — a planning estimate until the pilot times real runs', 'Business Case II strip'],
     ['5 · DFM / DFA insights', 'Not available', 'Generated by the deterministic COST ENGINE — 52 threshold rules + 10 geometry advisors, scores by fixed arithmetic. Not by AI: the AI cannot write a score, severity or saving', 'DFM/DFA slide'],
     ['6 · Cost-saving ideas', 'Engineer\u2019s own analysis', 'Generated by the cost engine\u2019s rule layer and the optimisers — each idea priced in £/part with its lever owner (design / supplier / sourcing); the AI adds display-only commentary at most', 'DFM + routing slides'],
-    ['7 · Beyond a conventional tool', '—', '20-region pricing on every run · confidence band · negotiation pack · every cost line carries its printed derivation · self-audit · learns from actuals · landed cost incl. duty/CBAM · carbon · PCB photo→BOM · air-gapped mode', 'Throughout the deck'],
+    ['7 · Beyond a conventional tool', '—', '20-region pricing on every run · confidence band · negotiation pack · every cost line carries its printed derivation · self-audit · learns from actuals · landed cost incl. duty/CBAM · carbon · Windows package, no install', 'Throughout the deck'],
   ];
   rows.forEach((r, ri) => {
     const y = 1.58 + ri * 0.665;
@@ -928,23 +939,31 @@ FOOT = FOOT_MAIN;
   s.addShape('roundRect', { x: 0.5, y: 6.35, w: 12.33, h: 0.6, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'The honest one-liner:  ', options: { bold: true, color: GREEN } },
-    { text: 'CAPEE is a costing calculator that a person feeds; CostVision is a measuring, deciding and explaining system with the same deterministic arithmetic at its core — the AI reads part descriptions and writes commentary, and is never allowed to touch a number.', options: { color: SLATE } },
+    { text: 'CAPEE is a costing calculator that a person feeds; CostVision measures, asks and explains, with the same deterministic arithmetic at its core. At JLR the AI is off; when on, it may classify and comment, and never touches a number.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.35, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'This slide is our internal review with the manager, made presentable — seven categories, and I will take them in order. One, input data feeding, and this is the big one: in CAPEE every measurement and every cycle input is read off the CAD by a person and keyed in by hand; here the geometry kernel measures the file and feeds the cost engine automatically. Two, machine and tonnage selection: CAPEE partially automates this; here it is automatic and, more importantly, cost-ranked — the press is sized by physics, and the machining routing and the mould cavitation are chosen by price with the losing alternatives printed in the trace, so the choice defends itself. Three, coverage: at these cycle times one engineer reviews fifteen to twenty-five should-costs a day, which means directional cost support early in the programme, while the design can still move. Four, the total: hours saved per part times annual parts, summed by commodity — on an illustrative five-hundred-part mix, about one thousand six hundred and fifty hours a year, roughly one engineer-year; that mix is illustrative and we will substitute our real volumes. Five, and I checked this in the source code before putting it on a slide: the DFM and DFA insights are generated by the deterministic cost engine — fifty-two threshold rules and ten geometry advisors, scores by fixed arithmetic — not by the AI. CAPEE has nothing equivalent. Six, same answer for the cost-saving ideas: they come from the engine\u2019s rule layer and the optimisers, each one priced in pounds per part with a named lever owner; the AI is allowed to add commentary and nothing else. And seven, everything a conventional tool does not do: twenty regions priced on every run, the confidence band, the negotiation pack, full derivation on every line, the self-audit, learning from actuals, landed cost including duty and carbon border adjustment, and the air-gapped mode for IP-sensitive programmes.'
+    'This is our internal review with the manager, made presentable. Seven categories, taken in order. ' +
+    'One, input feeding. In CAPEE a person reads every measurement off the CAD and types it in. Here the kernel measures the file, and the engineer only answers what geometry cannot decide. ' +
+    'Two, machine and tonnage. CAPEE partly automates this. Here the press is sized by physics, and the machining routing and mould cavitation are chosen by cost, with the losing options printed so the choice defends itself. ' +
+    'Three, coverage. If a should-cost takes minutes rather than hours, we can cost more parts, earlier. How many more is for the pilot to measure. ' +
+    'Four, total hours. The formula is on the slide. Until the pilot times real runs, the answer is a planning estimate. ' +
+    'Five, DFM and DFA. I checked this in the code: the findings come from the deterministic engine, fifty-two threshold rules and the geometry advisors. Not from AI. ' +
+    'Six, cost-saving ideas. Same answer. The engine\u2019s rules and optimisers produce them, each priced in pounds per part with an owner. ' +
+    'Seven, the extras: twenty regions on every run, the confidence band, the negotiation pack, the self-audit, learning from actuals, landed cost with duty, carbon, and a Windows package that runs with no install. ' +
+    'The honest one-liner is at the bottom. The arithmetic at the core is the same kind CAPEE does. The difference is that this tool measures, asks and explains.'
   );
 }
 {
   // ── Business case III — evidence, coverage, cost to run ──
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Business Case IV — Evidence, Coverage, Cost to Run', 'Every figure on this slide is measured from the tool — nothing is projected', GREEN);
+  title(s, 'Business Case IV — Evidence, Coverage, Cost to Run', 'What is proven, what is covered, what it costs to run — and what is not proven yet', GREEN);
   // KPI band
   const kpis = [
-    ['16–30×', 'faster than the confirmed\nCAPEE baseline', TEAL],
-    ['£0', 'marginal cost per estimate\nin Rules mode — no AI call', GREEN],
+    ['2,438', 'automated tests, plus\nbrowser tests on every run', TEAL],
+    ['£0', 'marginal cost per estimate\n— AI off, no call to pay for', GREEN],
     ['20', 'manufacturing regions\npriced on every run', BLUE],
-    ['100%', 'of cost lines carry their\nown printed derivation', NAVY],
+    ['Every', 'cost line carries its\nown printed derivation', NAVY],
   ];
   kpis.forEach(([n, d, c], i) => {
     const x = 0.5 + i * 3.16;
@@ -952,56 +971,58 @@ FOOT = FOOT_MAIN;
     s.addText(n, { x: x + 0.15, y: 1.26, w: 2.65, h: 0.52, fontFace: 'Cambria', fontSize: 30.0, bold: true, color: c, margin: 0 });
     s.addText(d, { x: x + 0.15, y: 1.80, w: 2.65, h: 0.44, fontFace: 'Calibri', fontSize: 8.6, color: MUTED, margin: 0, valign: 'top' });
   });
-  // Accuracy evidence — the six verified parts
-  s.addText('ACCURACY — 6 REAL PARTS vs INDEPENDENT MANUAL SHOULD-COSTS (China · 100k/yr)', { x: 0.5, y: 2.56, w: 7.6, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
-  const parts = [
-    ['Fuel tank (blow-moulded)', '£20–30', '£25.92', '+4%', GREEN],
-    ['Front bumper (inj. moulded)', '£8–9', '£8.28', '−3%', GREEN],
-    ['Seat cross-member (pressed)', '£1.20–1.60', '£1.33', '−5%', GREEN],
-    ['Steering knuckle (cast+mach)', '£16–18', '£14.10', '−17%', AMBER],
-    ['Stub axle (forged+mach)', '≈ £30', '£38.98', '+30%', AMBER],
-    ['Servo horn (CNC, 3 g)', '≈ £2.20', '£2.65', '+21%', AMBER],
+  // What is proven — and what is not (docs/decks/tool-facts.md)
+  s.addText('WHAT IS PROVEN — AND WHAT IS NOT', { x: 0.5, y: 2.56, w: 7.6, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
+  const proof = [
+    ['Arithmetic vs a hand calculation', 'Matches to under 0.01%', GREEN],
+    ['6 real production parts', 'Pinned; a change fails the build', GREEN],
+    ['Automated tests', '2,438 + browser tests every run', GREEN],
+    ['Same file, same answers', 'Same price, every time', GREEN],
+    ['Estimate vs a price JLR paid', 'Not yet compared', AMBER],
+    ['An accuracy percentage', 'Not claimed — measured as actuals are logged', AMBER],
   ];
-  const pw = [2.55, 1.05, 1.0, 0.75];
+  const pw = [2.45, 3.25];
   let px = 0.5;
-  ['Part', 'Manual', 'CostVision', 'Error'].forEach((h, i) => { s.addText(h, { x: px, y: 2.82, w: pw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 }); px += pw[i]; });
-  parts.forEach(([p, m, cv, e, c], r) => {
+  ['Check', 'Status today'].forEach((h, i) => { s.addText(h, { x: px, y: 2.82, w: pw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: 'left', valign: 'middle', margin: 0.04 }); px += pw[i]; });
+  proof.forEach(([k, v, c], r) => {
     const y = 3.06 + r * 0.315;
-    let x = 0.5;
-    [p, m, cv, e].forEach((v, i) => {
-      s.addText(v, { x, y, w: pw[i], h: 0.315, fontFace: 'Calibri', fontSize: 8.3, bold: i === 3, color: i === 3 ? c : SLATE, fill: { color: r % 2 ? 'F0F4F9' : 'FFFFFF' }, align: i ? 'center' : 'left', valign: 'middle', margin: 0.04 });
-      x += pw[i];
-    });
+    s.addText(k, { x: 0.5, y, w: pw[0], h: 0.315, fontFace: 'Calibri', fontSize: 8.3, color: SLATE, fill: { color: r % 2 ? 'F0F4F9' : 'FFFFFF' }, align: 'left', valign: 'middle', margin: 0.04 });
+    s.addText(v, { x: 0.5 + pw[0], y, w: pw[1], h: 0.315, fontFace: 'Calibri', fontSize: 8.3, bold: true, color: c, fill: { color: r % 2 ? 'F0F4F9' : 'FFFFFF' }, align: 'left', valign: 'middle', margin: 0.04 });
   });
   s.addText([
-    { text: 'Fleet error ≈13% vs the AI path’s 28% on the same parts. ', options: { bold: true, color: NAVY } },
-    { text: 'Every miss is visible and every over-estimate errs on the negotiating side — no silent under-quote. Validated on these 6 parts; validation on unseen parts is the next step and is said so out loud.', options: { color: SLATE } },
+    { text: 'Pinned means the answer cannot move without us noticing — not that it is proven right. ', options: { bold: true, color: NAVY } },
+    { text: 'Accuracy is measured as real quotes and PO prices are logged; after 3 for a commodity the band is corrected by real data.', options: { color: SLATE } },
   ], { x: 0.5, y: 5.02, w: 5.9, h: 0.8, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'top' });
-  // Donuts: commodity coverage + verification state
+  // Coverage donut + rate library card
   s.addChart('doughnut', [
-    { name: 'Commodity coverage', labels: ['Deterministic rules (12)', 'AI-assisted (6)'], values: [12, 6] },
+    { name: 'Coverage', labels: ['Costed from CAD on rules (13)', 'Form inputs only (6)'], values: [13, 6] },
   ], {
     x: 6.6, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
     chartColors: [B.teal, B.amber], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
-    showValue: false, showTitle: true, title: '19 commodities', titleFontSize: 10, titleColor: B.navy,
+    showValue: false, showTitle: true, title: '19 manufacturing processes', titleFontSize: 10, titleColor: B.navy,
   });
-  s.addChart('doughnut', [
-    { name: 'Verification', labels: ['Inside manual band (3)', 'Within ±30% (3)', 'No manual yet (2)'], values: [3, 3, 2] },
-  ], {
-    x: 9.85, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
-    chartColors: [B.green, B.amber, B.line], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
-    showValue: false, showTitle: true, title: '8 parts costed, 8 of 8 succeeded', titleFontSize: 10, titleColor: B.navy,
+  s.addShape('roundRect', { x: 9.95, y: 2.72, w: 2.88, h: 2.38, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
+  s.addText('RATE LIBRARY 2.1.0 · 16 JUNE 2026', { x: 10.1, y: 2.8, w: 2.6, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: NAVY, charSpacing: 0.3, margin: 0 });
+  [['328', 'materials'], ['178', 'machines'], ['42', 'labour grades'], ['20', 'regions']].forEach(([n, l], i) => {
+    const y = 3.1 + i * 0.47;
+    s.addText(n, { x: 10.1, y, w: 0.9, h: 0.42, fontFace: 'Cambria', fontSize: 18.0, bold: true, color: TEAL, margin: 0, valign: 'middle' });
+    s.addText(l, { x: 11.05, y, w: 1.7, h: 0.42, fontFace: 'Calibri', fontSize: 10.0, color: SLATE, margin: 0, valign: 'middle' });
   });
   // what it is NOT — the trust strip
   s.addShape('roundRect', { x: 0.5, y: 5.95, w: 12.33, h: 1.02, fill: { color: B.amberTint }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
   s.addImage({ data: I.warn, x: 0.68, y: 6.12, w: 0.26, h: 0.26 });
   s.addText([
     { text: 'What we are NOT claiming — ', options: { bold: true, color: AMBER } },
-    { text: 'the tool does not read drawings or tolerances yet; it stops and asks the engineer for the material rather than guessing; accuracy is verified on 6 parts and the validation set is being widened before any accuracy figure goes into a supplier commitment. Every number above is reproducible from the tool today — the evidence pack (per-part derivations, all three benchmark rounds) accompanies this deck.', options: { color: SLATE } },
+    { text: 'the tool does not read drawings or tolerances; it asks the engineer rather than guessing; and no estimate has yet been compared with a price JLR paid, so we quote no accuracy figure. Every number above can be reproduced from the tool and the code today.', options: { color: SLATE } },
   ], { x: 1.05, y: 6.02, w: 11.6, h: 0.9, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Second half of the business case: evidence, coverage, and what it costs to run. Four headline figures, all measured. Sixteen to thirty times faster on the baseline we confirmed ourselves. Zero marginal cost per estimate in the default mode — there is no AI call, no per-seat metering on the costing path, it is arithmetic on our own server. Twenty manufacturing regions priced on every single run. And every line of every estimate prints its own derivation — that is what makes it usable in a supplier meeting. The table is the accuracy evidence: six real parts with independent manual bottom-up costs. Three inside the manual band. Three within about thirty percent, every one of them an over-estimate — the miss direction you can live with, because an over-estimate is a negotiating position and an under-estimate is a signed mistake. Fleet error thirteen percent, against twenty-eight for the AI path on the same parts. The two donuts: twelve of eighteen commodities run fully deterministic today, and of the eight parts we costed, all eight produced a number — the AI path managed five of eight before we hardened it. And the amber strip is deliberate, because this deck goes up, and the fastest way to lose the room is to overclaim: it does not read drawings yet, it asks rather than guesses on material, and six parts is six parts — we widen the validation set before any of these figures goes into a commitment. Everything on this slide can be regenerated from the tool this afternoon.'
+    'Second half of the business case: what is proven, what is covered, and what it costs to run. ' +
+    'The four figures across the top. 2,438 automated tests, plus browser tests that cost every commodity, export Excel and PDF, upload an STL and check accessibility on every run. Zero marginal cost per estimate, because with AI off there is no call to pay for; it is arithmetic on your own machine. Twenty regions priced on every run. And every cost line shows how it was worked out. ' +
+    'The table is the honest part. The engine matches a hand calculation to under 0.01 percent on a reference machined bracket. Six real production parts, a steering knuckle, two castings, a pressed seat bracket, a machined part and a gear, are pinned in a regression baseline, so a change that moves any of them fails the build. ' +
+    'But pinned is not the same as right. No estimate has yet been compared with a price JLR actually paid. So I quote no accuracy percentage. We measure accuracy as actuals are logged, and after three for a commodity the band is corrected by real data. ' +
+    'The donut shows coverage: nineteen manufacturing processes, thirteen of them costed straight from CAD on rules, the rest from the form. The card shows the rate library behind it: version 2.1.0, dated sixteenth of June 2026. ' +
+    'The amber strip is what we are not claiming. I would rather say it now than have it found later.'
   );
 }
 {
@@ -1017,7 +1038,7 @@ FOOT = FOOT_MAIN;
   s.addText('WHAT WE ARE ASKING FOR', { x: 0.72, y: 1.22, w: 5.2, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, charSpacing: 0.6, margin: 0 });
   s.addText([
     { text: 'Approve a 90-day pilot on 40 parts.\n', options: { bold: true, color: NAVY, fontSize: 15.0 } },
-    { text: 'One named owner · 0.3 FTE · one VM · ≈£25k one-off · no licence, no per-seat and no per-estimate cost. Nothing recurring is committed until the day-90 review.', options: { color: SLATE, fontSize: 9.5 } },
+    { text: 'One named owner · 0.3 FTE · one laptop or VM · ≈£25k one-off · no licence, no per-seat and no per-estimate cost. Nothing recurring is committed until the day-90 review.', options: { color: SLATE, fontSize: 9.5 } },
   ], { x: 0.72, y: 1.48, w: 5.2, h: 1.08, fontFace: 'Calibri', margin: 0, valign: 'top' });
 
   // Scope.
@@ -1035,7 +1056,7 @@ FOOT = FOOT_MAIN;
   // Timeline.
   s.addText('90 DAYS, THREE PHASES', { x: 0.5, y: 4.32, w: 5.6, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: NAVY, charSpacing: 0.4, margin: 0 });
   [
-    ['Days 1–30', 'Set up + calibrate', 'One VM, our own rates loaded, the 6 validated parts re-run to confirm the baseline, two engineers trained.', TEAL],
+    ['Days 1–30', 'Set up + calibrate', 'Package installed, our rates loaded (Rate Converter), the 6 baseline parts re-run, two engineers trained.', TEAL],
     ['Days 31–60', 'Run the basket', 'The 40 parts costed. Every estimate logged against the quote or the actual PO. Top levers taken to suppliers.', BLUE],
     ['Days 61–90', 'Measure + decide', 'Scored against the four criteria opposite. Captured saving written up. Go / no-go presented here.', GREEN],
   ].forEach(([d, t, body, col], i) => {
@@ -1053,7 +1074,7 @@ FOOT = FOOT_MAIN;
     { x: 6.5, y: 1.44, w: 6.1, h: 0.26, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: MUTED, margin: 0 });
   [
     ['Accuracy', '≥ 70% of pilot parts within ±20% of an independent manual should-cost or the actual PO price'],
-    ['Speed', 'Median ≤ 20 min per CAD part, engineer-attended — read from the tool’s own run logs, not estimated'],
+    ['Speed', 'Median ≤ 20 min per CAD part, engineer-attended — timed during the pilot, not estimated'],
     ['Value', '≥ £800k of annualised opportunity identified across the basket — half what Business Case I assumes — and ≥ 3 levers taken to a supplier with the outcome recorded either way'],
     ['Adoption', '2+ engineers running it unaided after one day of training, without the person who built it in the room'],
   ].forEach(([k, v], i) => {
@@ -1068,8 +1089,8 @@ FOOT = FOOT_MAIN;
   s.addImage({ data: I.warn, x: 6.5, y: 3.85, w: 0.2, h: 0.2 });
   s.addText('THE FOUR OBJECTIONS — AND WHAT IS ALREADY BUILT FOR THEM', { x: 6.78, y: 3.84, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: AMBER, charSpacing: 0.4, margin: 0 });
   [
-    ['“It will be wrong on parts it has not seen.”', 'The band is agreed before we start, every actual is logged, and the calibration layer learns from them. 6 parts validated so far and the deck says so.'],
-    ['“The AI is inventing numbers.”', 'Deterministic by default — no outbound call at all. Every cost line prints its own derivation, and there is an air-gapped mode.'],
+    ['“It will be wrong on parts it has not seen.”', 'Every actual is logged; after 3 per commodity the band is corrected. 6 real parts pinned so far — none yet checked against a JLR price.'],
+    ['“The AI is inventing numbers.”', 'AI is switched off at JLR, and even when on it never sets a price. Every cost line prints its own derivation.'],
     ['“Rates go stale and nobody notices.”', 'The engine blocks a duty rate that is unverified or over 90 days old rather than quietly using it. The refresh gets a named owner in the pilot.'],
     ['“Engineering will read it as criticism.”', 'Already changed: the output is savings ranked by category, with no score and no severity anywhere an engineer sees.'],
   ].forEach(([q, a], i) => {
@@ -1082,17 +1103,17 @@ FOOT = FOOT_MAIN;
   s.addShape('roundRect', { x: 0.5, y: 6.10, w: 12.33, h: 0.86, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'The decision on the table:  ', options: { bold: true, color: '9FB6E0', fontSize: 12.0 } },
-    { text: '≈£25k and 90 days to find out whether a tool that is already built and already validated on six parts holds up on forty of ours. If it misses the criteria we stop and nothing recurring has been committed. If it meets them, the same £25k has already bought its way out at a 1.6% capture rate.', options: { color: 'FFFFFF', fontSize: 11.5 } },
+    { text: '≈£25k and 90 days to find out whether a tool that is already built, with six real parts pinned, holds up on forty of ours. If it misses the criteria we stop and nothing recurring has been committed. If it meets them, the £25k is covered at a 1.6% capture rate.', options: { color: 'FFFFFF', fontSize: 11.5 } },
   ], { x: 0.85, y: 6.14, w: 11.65, h: 0.78, fontFace: 'Calibri', margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'And this is the slide the old deck did not have at all — it ended on what the tool cannot do, which left you with nothing to decide. So here is one specific ask. ' +
-    'Approve a ninety-day pilot on forty parts. One named owner, three tenths of an engineer, one virtual machine, about twenty-five thousand pounds one-off. No licence, no per-seat cost, no per-estimate cost — in the default mode there is no AI call to pay for. And nothing recurring is committed until we come back at day ninety. ' +
-    'Scope is deliberately bounded. Forty live parts across four or five commodities we already buy, picked with purchasing, deliberately mixing parts already quoted with parts still in design so we can test both value streams. And explicitly out of scope: no supplier is ever told a number came from a tool, and every figure is reviewed and owned by an engineer before it leaves the building. ' +
-    'Ninety days in three phases: set up and calibrate, run the basket, then measure and decide. ' +
-    'The criteria on the right are the part I would most like you to hold me to, and I want them agreed today rather than at day ninety. Seventy percent of parts within twenty percent of an independent manual cost or the actual PO price. Median twenty minutes a part, read from the tool’s own logs rather than estimated by me. A hundred and fifty thousand of opportunity identified and at least three levers actually taken to a supplier with the outcome recorded — including when the answer is no. And two engineers running it unaided without the person who built it in the room. If we miss those, stopping is the correct decision and I will say so. ' +
-    'The amber box is the four objections I expect, with what is already built for each. And the close is the arithmetic from the money slide: twenty-five thousand pounds and ninety days to find out whether something already built and already validated on six parts holds up on forty of ours. If it fails we stop, having committed nothing ongoing. If it works, it has already paid for itself at a one point six percent capture rate.'
+    'This is the ask. One specific, small, time-boxed decision. ' +
+    'Approve a ninety-day pilot on forty parts. One named owner, about a third of an engineer, one laptop or virtual machine, roughly twenty-five thousand pounds one-off. No licence, no per-seat cost, and no per-estimate cost, because with AI off there is nothing to pay for per run. Nothing recurring is committed until day ninety. ' +
+    'Scope. Forty live parts across four or five commodities we already buy, chosen with purchasing. A mix of parts already quoted and parts still in design, so we test both value streams. Out of scope: no supplier is told a number came from a tool, and an engineer owns every figure before it leaves the building. ' +
+    'Three phases. Set up: install the Windows package, load our own rates through the Rate Converter workbook, re-run the six baseline parts, train two engineers. Run the basket, logging every quote or PO price as an actual. Then measure and decide. ' +
+    'The criteria on the right are the part I would most like you to hold me to, and I want them agreed today. If we miss them, stopping is the right answer. ' +
+    'The amber box lists the objections I expect, with what is already built for each. The honest one: six real parts are pinned, but none has yet been checked against a price JLR paid. The pilot is how we find out.'
   );
 }
 
@@ -1103,7 +1124,7 @@ function partSlide(img, kicker, name, sub, tint, specs, note, notes) {
   s.addImage({ path: img, x: 0.45, y: 1.24, w: 7.9, h: 4.42 });
   s.addShape('roundRect', { x: 8.55, y: 1.24, w: 4.28, h: 4.42, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText(name, { x: 8.8, y: 1.36, w: 3.8, h: 0.5, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: tint, margin: 0, valign: 'middle' });
-  s.addText('WHAT THE KERNEL WILL MEASURE', { x: 8.8, y: 1.92, w: 3.8, h: 0.22, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: MUTED, charSpacing: 0.6, margin: 0 });
+  s.addText('THE WORKED-EXAMPLE INPUTS', { x: 8.8, y: 1.92, w: 3.8, h: 0.22, fontFace: 'Calibri', fontSize: 8.6, bold: true, color: MUTED, charSpacing: 0.6, margin: 0 });
   specs.forEach(([k, v], i) => {
     const y = 2.2 + i * 0.30;
     if (i % 2 === 0) s.addShape('rect', { x: 8.7, y: y - 0.02, w: 3.98, h: 0.28, fill: { color: PAGE } });
@@ -1111,37 +1132,40 @@ function partSlide(img, kicker, name, sub, tint, specs, note, notes) {
     s.addText(v, { x: 11.15, y, w: 1.45, h: 0.32, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: NAVY, align: 'right', margin: 0, valign: 'middle' });
   });
   s.addText(note, { x: 8.8, y: 2.2 + specs.length * 0.30 + 0.2, w: 3.8, h: 0.55, fontFace: 'Calibri', fontSize: 9.5, italic: true, color: SLATE, margin: 0, valign: 'top' });
-  s.addText('Illustration — drawn to the dimensions the tool actually measured on this part.',
+  s.addText('Illustration of the worked-example part. The costs that follow are engine output from these inputs.',
     { x: 0.5, y: 5.76, w: 7.8, h: 0.24, fontFace: 'Calibri', fontSize: 8.4, italic: true, color: MUTED, margin: 0 });
   footer(s, ++PG);
   s.addNotes(notes);
 }
 
-divider('SECTION TWO', 'A Die-Cast Aluminium Housing', 'One real part, followed through all twelve stages', TEAL,
-  ['What the geometry kernel measures, and what the AI is allowed to say',
-   'Four automatic guards, and the autocorrect that fires when they disagree',
+divider('SECTION TWO', 'A Die-Cast Aluminium Housing', 'One worked example, followed through all twelve stages', TEAL,
+  ['What the geometry kernel measures, and what it asks the engineer',
+   'Four automatic guards, and the autocorrect when an input disagrees with geometry',
    'The press chosen by physics; every cutting minute derived from a feature',
    'Eight buckets, twenty countries, an honest range — and a person signing it off'], '22',
-  'That is the orientation done. Now I want to slow right down and take one real part through all twelve stages, because the only way to judge a costing tool is to watch it work on something concrete. ' +
-  'This is a die-cast aluminium housing. Over the next fourteen slides you will see exactly what the geometry kernel measures and what the AI is allowed to say about it, the four automatic guards and the autocorrect that fires when the AI and the measurements disagree, how the press gets chosen by physics rather than by default, where every single cutting minute comes from, and then the eight buckets, the country comparison, the confidence band and the human sign-off. ' +
-  'If you take nothing else from this section, take the calculation slide. It is the one you can check with a calculator while I am talking.');
+  'That is the orientation done. Now I want to slow right down and take one part through all twelve stages. The only fair way to judge a costing tool is to watch it work on something concrete. ' +
+  'This is a die-cast aluminium housing. It is a worked example: the inputs are the kind the kernel measures from a STEP file, and every pound you will see is real engine output from those inputs. I re-ran it against today\u2019s engine and rate library before this session, and the figures still match. ' +
+  'Over the next slides you will see what the kernel measures, and what the tool asks the engineer because geometry cannot decide it. Then the four automatic guards, and what happens when an input disagrees with the geometry. Then how the press is chosen by physics, where every cutting minute comes from, and the eight buckets, the country comparison, the confidence band and the sign-off. ' +
+  'In the JLR build the AI is switched off, so wherever I mention it, I am describing an optional mode, not what you will see on your laptop. ' +
+  'If you take one slide from this section, take the calculation slide. You can check it with a calculator while I talk.');
 
 partSlide('assets/workflow-deck/part-housing.png',
   'The Part We Are Costing', 'Die-cast aluminium housing',
-  'One real component, followed from CAD file to defensible price', BLUE,
+  'One worked-example component, followed from CAD file to defensible price', BLUE,
   [['Finished weight', '2.8 kg'], ['Poured weight', '4.83 kg'], ['Wall thickness', '≈ 3.0 mm'],
    ['Projected shadow', '1,650 cm²'], ['Precision bores', '2 × Ø40'], ['Tapped holes', '16 × M8'],
    ['Machined faces', '2'], ['Annual volume', '60,000'], ['Made in', 'China']],
-  'Every one came out of the 3D model — nobody typed them.',
-  'This is the part. A die-cast aluminium housing — the sort of thing that sits on an engine or a gearbox and that we buy tens of thousands of a year without ever really knowing what it should cost. ' +
-  'Two point eight kilos finished. Walls about three millimetres. Two precision bores that have to be reamed. Sixteen holes that get drilled and tapped. Two faces that have to be machined flat because something bolts to them. And a projected shadow of one thousand six hundred and fifty square centimetres, which is going to decide which press it runs on. ' +
-  'I want you to look at that list on the right and register one thing: every single number on it came out of the three-D model. Nobody typed them in, nobody estimated them off a drawing, and if we open the same file tomorrow we get exactly the same numbers. That is the foundation everything else in this deck is built on. ' +
-  'The picture is an illustration rather than a photograph, but it is drawn to the dimensions the tool actually measured — so what you are looking at is the part as the software sees it.');
+  'Size, walls and features are what the kernel measures on a STEP file. Volume and region are typed.',
+  'This is the part. A die-cast aluminium housing, the sort of thing that sits on an engine or a gearbox, and that we buy in tens of thousands a year. ' +
+  'Two point eight kilos finished. Walls about three millimetres. Two precision bores that need reaming. Sixteen holes to drill and tap. Two faces machined flat, because something bolts to them. And a projected shadow of sixteen hundred and fifty square centimetres, which will decide the press size. ' +
+  'I want to be precise about where these numbers come from. This is a worked example. On a real STEP file, the size, the walls, the holes and the faces are what the kernel measures. The annual volume and the country are typed by the engineer, because no drawing can tell you those. The poured weight is derived from the finished weight and a casting yield. ' +
+  'Every cost on the following slides is what the engine produces from these inputs today. We keep a script that re-runs this example and fails loudly if a rate or a module moves, so the deck cannot quietly drift away from the tool. ' +
+  'The picture is an illustration of the part, not a photograph or a screenshot.');
 
 // ══════════ 3 · THE PART + THE JOURNEY ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'The Part, and the Journey It Takes', 'One housing, twelve stages, about two minutes of computer time');
+  title(s, 'The Part, and the Journey It Takes', 'One housing, twelve stages, five owners');
 
   s.addShape('roundRect', { x: 0.5, y: 1.28, w: 12.33, h: 1.15, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 0.72, y: 1.5, w: 0.7, h: 0.7, fill: { color: NAVY } });
@@ -1157,7 +1181,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   const phases = [
     [BLUE, BLUE_T, 'MEASURE', 'Ruler', ['1 · Upload the file', '2 · Measure the geometry', '3 · Sense-check the shape'], 'Facts, not opinions'],
-    [PURPLE, PURPLE_T, 'AI READS (OPT.)', 'AI — optional', ['4 · Second-opinion read', '   alloy · process · finish', '   skipped in Rules mode'], 'Words only — no prices'],
+    [PURPLE, PURPLE_T, 'ASK', 'Engineer · AI off at JLR', ['4 · The tool asks what', '   geometry cannot decide', '   material · route · volume'], 'Asked, never guessed'],
     [AMBER, AMBER_T, 'SAFETY CHECKS', 'Engine', ['5 · Four automatic guards', '6 · Autocorrect wrong calls', '   before any money is counted'], 'Measurements always win'],
     [TEAL, TEAL_T, 'CALCULATE', 'Engine', ['7 · Pick machines & cycles', '8 · Cost every operation', '9-10 · Build & regionalise'], 'Fixed formulas'],
     [GREEN, GREEN_T, 'CHECK & USE', 'Engineer', ['11 · Confidence band', '12 · Report & approval'], 'A person signs it off'],
@@ -1176,16 +1200,16 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addShape('roundRect', { x: 0.5, y: 5.45, w: 12.33, h: 1.15, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText('Notice the proportions', { x: 0.8, y: 5.58, w: 5, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: NAVY, margin: 0 });
   s.addText([
-    { text: 'Of the twelve stages, the AI owns exactly one. ', options: { bold: true, color: PURPLE } },
-    { text: 'Three are measurement, two are automatic safety checks, four are arithmetic, and two are human review. That ratio is the design — the AI is the smallest, most bounded part of the tool, not the centre of it.', options: { color: SLATE } },
+    { text: 'Only one of the twelve stages could ever involve AI — and at JLR it is off. ', options: { bold: true, color: PURPLE } },
+    { text: 'Three stages measure, one asks the engineer, two are automatic checks, four are arithmetic, two are review and sign-off. Even when AI is on, it is the smallest part of the tool.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.86, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Here is the part and here is the map of where we are going. The housing weighs two point eight kilos finished, has walls about three millimetres thick, two precision bores, sixteen holes that need drilling and threading, and two faces that must be machined flat. We buy sixty thousand a year and we are looking at making them in China. ' +
-    'Underneath, the five phases. Blue, we measure. Purple, the optional AI reads — and in the default Rules mode this phase is skipped entirely, the rules and the engineer answer instead. Amber, four automatic safety checks run. Teal, the engine calculates. Green, a person checks and signs. Twelve stages in total, and the whole thing takes about two minutes of computer time. ' +
-    'Now look at the box at the bottom, because this answers the question I was asked most often last time — how much of this is AI? Of the twelve stages, the AI owns exactly one. One. Three stages are measurement, two are safety checks, four are arithmetic, two are human review. ' +
-    'That is deliberate. We did not build an AI tool and bolt some costing onto it. We built a costing engine and gave it a very small, very bounded AI assistant to do the one job AI is genuinely good at — recognising what something is. Everything else is engineering that we can audit.'
+    'Here is the part, and the map of where we are going. Two point eight kilos finished, walls about three millimetres, two precision bores, sixteen holes to drill and tap, two faces to machine flat. Sixty thousand a year, and we are looking at making it in China. ' +
+    'Underneath are the five phases. Blue, the tool measures the part. Purple, it asks the engineer what geometry cannot decide: the material family, the process route where there is a real choice, the volume and the region. In the JLR build this is always the engineer, because AI is switched off. Amber, four automatic safety checks. Teal, the engine calculates. Green, a person checks the range and signs it off. ' +
+    'Look at the box at the bottom, because it answers the question I was asked most last time: how much of this is AI? At most one stage of twelve could ever involve it, and at JLR it is off. Three stages measure, one asks, two check, four calculate and two are review. ' +
+    'That is deliberate. We did not build an AI tool and bolt costing onto it. We built a costing engine. The AI, when it is switched on, is a small, bounded helper that can read and classify. It never sets a price. Everything else is engineering you can audit.'
   );
 }
 
@@ -1216,7 +1240,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   s.addShape('roundRect', { x: 9.4, y: 1.32, w: 3.43, h: 2.5, fill: { color: BLUE_T }, line: { color: BLUE, width: 1.25 }, rectRadius: 0.1 });
   s.addText('WHY THIS MATTERS', { x: 9.65, y: 1.5, w: 3, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: BLUE, charSpacing: 1, margin: 0 });
-  s.addText('Nobody typed these numbers.\nNobody estimated them.\n\nNote the kernel measures VOLUME. It cannot know the weight until something names the material — so it publishes a weight for every candidate density and waits.', {
+  s.addText('On a STEP file nobody types these numbers, and nobody estimates them.\n\nThe kernel measures VOLUME. It cannot know the weight until the material is named — so it gives a weight for each candidate density and waits.', {
     x: 9.65, y: 1.85, w: 3, h: 1.9, fontFace: 'Calibri', fontSize: 10.5, color: SLATE, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 4.05, w: 12.33, h: 1.5, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -1231,17 +1255,17 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   s.addShape('roundRect', { x: 0.5, y: 5.72, w: 12.33, h: 0.9, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
-    { text: 'Where is the AI so far?  Nowhere. ', options: { bold: true, color: PURPLE } },
-    { text: 'Everything on this slide happened before the AI was involved at all. That ordering is intentional: the measurements exist first, so that when the AI does speak, there is already an independent set of facts to check it against.', options: { color: SLATE } },
+    { text: 'Where is the AI?  Nowhere. ', options: { bold: true, color: PURPLE } },
+    { text: 'At JLR it is switched off. Even when it is on, the measurements come first, so anything it says can be checked against an independent set of facts.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Stage one. Our engineer uploads the CAD file, and types in two things the drawing cannot possibly tell us: how many we need a year, and where we plan to make them. Those two numbers matter enormously — the volume decides how thinly the tooling cost is spread, and the location decides which labour and machine rates apply. ' +
-    'Stage two is the measuring. The geometry kernel opens the 3D model and measures it like a very fast, very precise digital ruler. It computes the exact solid volume — one thousand and thirty-seven cubic centimetres. Note what it does NOT do: it does not tell you the weight, because weight needs a density and nothing has named the material yet. So it publishes a weight for every candidate density — aluminium, steel, plastic, cast iron, copper, titanium — and waits. On aluminium that is two point eight kilos. It finds the walls are about three millimetres. It counts two precision bores, sixteen holes that need threading, two faces that must be machined flat. ' +
-    'I want to labour this point because it is where people assume AI is involved. It is not. This is geometry. Nobody typed these numbers and nobody estimated them. Give it the same file tomorrow and you get identical results — which, incidentally, is why two different engineers costing the same part now get the same answer, which was never true with spreadsheets. ' +
-    'Stage three is a small step with a huge consequence. The tool asks: is this hollow or solid? Three millimetre walls around an enclosed space means hollow — a casting. So the cutting machines are only tidying up surfaces. If it wrongly decided this was a solid block of aluminium, it would price machining the entire shape out of solid metal, and the answer would come out roughly double. One sense-check, and it protects the whole number. ' +
-    'And notice the purple box. Where is the AI so far? Nowhere. It has not been involved at all. That ordering is deliberate — we establish the facts first, so that when the AI does speak, we already have something independent to check it against.'
+    'Stage one. The engineer uploads the CAD file: STEP, IGES or STL. They also type two things no drawing can tell us: how many a year, and where we plan to make it. Those matter a lot. Volume decides how thinly the tooling is spread. Location decides which labour and machine rates apply. ' +
+    'Stage two is measuring. The geometry kernel opens the model and measures it like a very precise digital ruler. On this part, the solid volume is about a thousand and thirty-seven cubic centimetres. It does not give one weight, because weight needs a density. So it gives a weight for each candidate material. On aluminium, that is two point eight kilos. It finds the walls, the bores, the holes and the faces to machine. ' +
+    'One limit to know. An STL file is only a mesh of triangles. It has no feature table, so a machined STL arrives with no cycle time. The tool will not cost it until the engineer types one in. ' +
+    'Stage three is a small check with a big effect: is the part hollow or solid? Thin walls around an enclosed space mean a casting, so the machines only finish surfaces. If the tool thought it was a solid block, it would price carving the whole shape from metal, and the answer would be roughly double. ' +
+    'And the AI? It is not involved. At JLR it is off. The facts exist first, from measurement.'
   );
 }
 
@@ -1277,7 +1301,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   });
   s.addText([
     { text: 'No per-seat CAD licence, no vendor lock-in, and no third party ever sees the model. ', options: { bold: true, color: NAVY } },
-    { text: 'The kernel runs as a local process on our own server — the CAD file is measured where it sits.', options: { color: SLATE } },
+    { text: 'The kernel runs as a local process on the laptop or your own server — the CAD file is measured where it sits.', options: { color: SLATE } },
   ], { x: 7.1, y: 3.15, w: 5.5, h: 0.65, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 4.12, w: 12.33, h: 1.62, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -1302,28 +1326,28 @@ partSlide('assets/workflow-deck/part-housing.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'I was asked what the geometry kernel actually is, so let me answer that properly, including the commercial question underneath it. ' +
-    'A geometry kernel is the mathematical engine that understands solid shapes. It is the same class of software that sits underneath CATIA, SolidWorks and NX — when you drag a face in CAD, a kernel is doing the maths. Ours is Open CASCADE, usually called OCCT, and we drive it from Python through its official bindings, called OCP. Worth being precise: the measurement code calls OCP directly, so there is one fewer library sitting between your CAD file and the number. ' +
-    'The important distinction is that it reads the real geometry, not a picture of it. A STEP file describes a cylinder as a genuine mathematical cylinder with a radius and an axis. A mesh file only has triangles that look round. That is why we can say "this is a twelve millimetre bore, forty millimetres deep, and it goes all the way through" with certainty rather than approximation. ' +
-    'Is it open source? Yes, and I want to be transparent about the licences because someone will ask. Open CASCADE is LGPL version two point one with a linking exception, which is what lets us use it in a commercial tool. The OCP bindings are Apache two point zero. The three-D viewer you see on screen is three.js, which is MIT. All permissive, all long-established, all free. ' +
-    'Practically that means three things. There is no per-seat CAD licence to buy for the costing tool. There is no vendor who can change the terms on us. And — this is the one that matters for us — no third party ever sees the model, because the kernel runs as a process on our own server. The CAD file is measured exactly where it sits. ' +
-    'How does it actually measure? Four things. It integrates the solid to get an exact volume, then publishes a weight for every candidate density and waits for something to name the material. It walks every cylindrical face to build the hole table — diameter from the exact radius, depth from the surface parameter span, and through-versus-blind by comparing that depth to the bounding box. It ray-casts inside the solid to find true wall thickness, which is the measurement that distinguishes a casting from a machined block. And it classifies every face by surface type, so the flats we will have to mill are counted rather than guessed. ' +
-    'And the honest limitation, which I would rather you hear from me. The kernel is exact about what is in the model and completely silent about what is not. It cannot read a tolerance, a surface finish or a material callout unless the CAD file actually carries it. Those still come off the drawing or from our engineer. It measures. It does not interpret.'
+    'I was asked what the geometry kernel actually is, so here is a proper answer. ' +
+    'A geometry kernel is the maths engine that understands solid shapes. It is the same kind of software that sits under CATIA, SolidWorks and NX. Ours is Open CASCADE, usually called OCCT. We drive it from Python through its bindings, called OCP. ' +
+    'The key point is that it reads real geometry, not a picture of it. A STEP file describes a cylinder as a true cylinder with a radius and an axis. A mesh file only has triangles that look round. That is why an STL gets a simpler path, with no feature table. ' +
+    'Is it open source? Yes. OCCT is LGPL 2.1 with an exception that allows commercial use. OCP is Apache 2.0. The 3D viewer is three.js, which is MIT. ' +
+    'In practice that means no per-seat CAD licence and no vendor who can change the terms. And no third party sees the model, because the kernel runs on the laptop or your own server. In the Windows package it ships inside the folder, with its own embedded Python. ' +
+    'How does it measure? It integrates the solid for an exact volume. It walks every cylindrical face to build the hole table. It casts rays inside the solid to find true wall thickness. And it classifies every face, so the flats to be milled are counted. ' +
+    'The limit: it is exact about what is in the model and silent about what is not. It cannot read a tolerance, a surface finish or a material callout unless the file carries it.'
   );
 }
 
 // ══════════ 5 · AI READS ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Stage 4 · The AI Reads the Part (Optional)', 'Off by default — and skipped entirely when the engineer enters the answers', PURPLE);
-  owner(s, 10.05, 0.74, 'OWNER: AI — OPTIONAL', PURPLE, PURPLE_T);
+  title(s, 'Stage 4 · The Tool Asks, the Engineer Answers', 'Where geometry cannot decide, the tool asks rather than guesses — AI is switched off at JLR', PURPLE);
+  owner(s, 10.3, 0.74, 'OWNER: THE ENGINEER', PURPLE, PURPLE_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.75, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('WHAT THE AI IS GIVEN', { x: 0.75, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
-  s.addText('Runs only in the Compare and AI-led modes — the default Rules-only path makes no AI call: the rules derive the inputs and the ENGINEER answers the material and duty questions. When it does run, it is given only the measurements — never a price list, never the rate library.',
+  s.addText('WHAT THE ENGINEER IS ASKED', { x: 0.75, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
+  s.addText('Only what the geometry cannot settle. The tool will not cost the part until each question is answered — no silent guess. Typical questions on a part like this, with the engineer\u2019s answers:',
     { x: 0.75, y: 1.76, w: 5.5, h: 0.7, fontFace: 'Calibri', fontSize: 11.0, color: SLATE, margin: 0, valign: 'top' });
-  s.addText('WHAT IT SAYS BACK', { x: 0.75, y: 2.48, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
-  const says = [['Material family', 'Aluminium die-casting alloy'], ['How it is made', 'High-pressure die cast'], ['Then what', 'Machine-finished on a cutting machine'], ['How sure it is', '84% confident']];
+  s.addText('THE ANSWERS', { x: 0.75, y: 2.48, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: PURPLE, charSpacing: 1, margin: 0 });
+  const says = [['Material family', 'Aluminium die-casting alloy'], ['Process route', 'High-pressure die cast'], ['Then what', 'Machine-finished on a cutting machine'], ['Volume · region', '60,000 a year · China']];
   says.forEach(([k, v], i) => {
     const y = 2.8 + i * 0.3;
     s.addText(k, { x: 0.85, y, w: 1.8, h: 0.28, fontFace: 'Calibri', fontSize: 10.0, color: MUTED, margin: 0, valign: 'middle' });
@@ -1331,7 +1355,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   });
 
   s.addShape('roundRect', { x: 6.75, y: 1.3, w: 6.08, h: 2.92, fill: { color: CARD }, line: { color: RED, width: 1.5 }, rectRadius: 0.1 });
-  s.addText('WHAT THE AI CANNOT DO', { x: 7.0, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: RED, charSpacing: 1, margin: 0 });
+  s.addText('IF AI IS EVER SWITCHED ON, IT CANNOT', { x: 7.0, y: 1.45, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: RED, charSpacing: 1, margin: 0 });
   const cannot = [
     'Set a price, or any part of a price',
     'Change a measured dimension or weight',
@@ -1345,26 +1369,27 @@ partSlide('assets/workflow-deck/part-housing.png',
   });
 
   s.addShape('roundRect', { x: 0.5, y: 4.28, w: 12.33, h: 1.25, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
-  s.addText('The confidence score is not decoration — it changes what happens next', {
+  s.addText('If AI is switched on later, it reads — it never prices', {
     x: 0.8, y: 4.42, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: NAVY, margin: 0 });
   s.addText([
-    { text: 'In the AI modes: at 84% the tool proceeds but flags the call for review. Below 50% a hard rule fires — "material suggestion is only N% confident, add a part photo or confirm the material manually" — and it stays on the result until a person clears it. ', options: { color: SLATE } },
-    { text: 'A confident-sounding wrong answer is the most dangerous thing an AI can produce — so uncertainty is made visible rather than smoothed over.', options: { bold: true, color: NAVY } },
+    { text: 'It could offer a first answer to these questions, with a confidence score. Below 50% a flag stays on the result until a person clears it. Every AI route is rate-limited per user. ', options: { color: SLATE } },
+    { text: 'Its answers arrive as editable pre-fills, and an engineer\u2019s entry always wins.', options: { bold: true, color: NAVY } },
   ], { x: 0.8, y: 4.75, w: 11.75, h: 0.72, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 5.7, w: 12.33, h: 0.9, fill: { color: GREEN_T }, line: { color: GREEN, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'In plain terms: ', options: { bold: true, color: GREEN } },
-    { text: 'the AI does the job an experienced engineer does in the first ten seconds of picking up a part — "ah, that\'s a die-cast housing, that\'ll be machined after". It saves setup time. It does not do the costing, it cannot — and on the default Rules-only path this whole stage is skipped: the engineer\u2019s answers replace the AI\u2019s reading.', options: { color: SLATE } },
+    { text: 'at JLR this stage is the engineer answering a few questions. It takes a minute, and it means nothing is guessed. If AI is ever switched on, it would only offer a first answer for the engineer to accept or change.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Stage four, the AI — and the first thing to say has changed since this deck was first written: this stage is OPTIONAL, and by default it does not run at all. The default mode is Rules only — the geometry kernel measures, the rules derive every cost input, and the two or three things geometry cannot know, the material and the duty questions, are answered by our engineer on the form. No outbound call, nothing leaves the network, and the costing is complete. ' +
-    'The AI exists for the other two modes. In Compare it reads the part alongside the rules and we see field by field where the two disagree. In AI-led — kept mainly for comparison — it does the classification job you see on the left: it is handed the measurements and the shape signature, never a price list, never the rate library, and it hands back words — aluminium die-casting alloy, high-pressure die cast, machine-finished — with a confidence score. ' +
-    'The red box is unchanged and worth reading slowly, because every line is enforced in code, not requested in a prompt: the AI cannot set a price or any part of one, cannot change a measured dimension, cannot choose the machine or the cycle time, cannot touch the rate library, cannot override a safety check — and cannot overrule anything the engineer entered. An engineer\u2019s entry outranks the model everywhere, always. ' +
-    'When the AI does run, the confidence score is not decoration. At eighty-four percent the tool proceeds but flags the call for review. Below fifty percent a hard rule fires and stays on the result until a person clears it — because a confident-sounding wrong answer is the most dangerous thing an AI can produce, so uncertainty is made visible rather than smoothed over. ' +
-    'In plain terms: the AI does the job an experienced engineer does in the first ten seconds of picking up a part. It saves setup time when we want a second opinion. It does not do the costing, it cannot — and on the default path it is not even in the room: the engineer\u2019s answers replace its reading entirely.'
+    'Stage four. This used to be the AI slide. At JLR it is the engineer\u2019s slide, because the AI is switched off. ' +
+    'Here is what happens. The kernel has measured the part and the rules have derived what they can. Some things geometry cannot settle. What material family is it? Where more than one process could make it, which route? How many a year, and where? The tool asks those questions instead of guessing, and it will not cost the part until each one is answered. ' +
+    'There is one routing rule worth knowing. A part with thick, sparse walls, over about six millimetres, is only offered casting, forging, cast plus machine or machining. Never sheet metal or moulding. So the question itself is already sensible. ' +
+    'For this housing, the engineer answers: aluminium die-casting alloy, high-pressure die cast, then machined, sixty thousand a year, China. ' +
+    'On the right is what the AI cannot do, even if it is switched on one day. It cannot set a price, change a measurement, choose the machine or cycle time, touch the rate library, override a safety check, or overrule the engineer. These are enforced in code. ' +
+    'If it were on, it could offer a first answer to the questions, with a confidence score, as an editable pre-fill. The engineer\u2019s entry always wins. That is all.'
   );
 }
 
@@ -1376,19 +1401,19 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   const guards = [
     ['1 · Buy the metal you actually pour',
-      'AI/naive view: buy 2.8 kg — the part weight.',
+      'Naive view: buy 2.8 kg — the part weight.',
       'Corrected to 4.83 kg. To sell a 2.8 kg casting the supplier pours 4.83 kg; the rest runs down the feed channels and is recycled at scrap value.',
       'The single most common casting cost error.'],
     ['2 · Machining is finishing, not carving',
-      'AI/naive view: machine the shape out of metal.',
+      'Naive view: machine the shape out of metal.',
       'Capped to a finish envelope: 0.10 hr setup + 0.07 hr/kg. For 2.8 kg that is a 0.30 hr ceiling; this part\'s 0.27 hr of cutting sits just inside it.',
       'Prevents roughly doubling the cost.'],
     ['3 · Use a real die-casting alloy',
-      'AI/naive view: a generic or wrought aluminium grade.',
-      'Redirected to a genuine die-casting alloy. A machined face can tempt the model toward "machined from solid billet" — the guard keeps casting as the primary process.',
+      'Naive view: a generic or wrought aluminium grade.',
+      'Redirected to a genuine die-casting alloy. A machined face can tempt a quick read toward "machined from solid billet" — the guard keeps casting as the primary process.',
       'Wrong alloy = wrong price per kilo.'],
     ['4 · Size the machine to the part',
-      'AI/naive view: use a default press.',
+      'Naive view: use a default press.',
       'Sized to 1,600 t off the ladder 160 / 500 / 800 / 1,600 / 6,100 / 9,000 t — the smallest press that clamps the part, at £137.55/hr.',
       'Explained in full on the next slide.'],
   ];
@@ -1397,9 +1422,9 @@ partSlide('assets/workflow-deck/part-housing.png',
     const x = 0.5 + col * 6.33, y = 1.3 + row * 1.72, w = 6.0, hh = 1.55;
     s.addShape('roundRect', { x, y, w, h: hh, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.09 });
     s.addText(h, { x: x + 0.22, y: y + 0.09, w: w - 0.4, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: AMBER, margin: 0 });
-    s.addText([{ text: '✕  ', options: { color: RED, bold: true } }, { text: before, options: { color: MUTED, italic: true } }],
+    s.addText([{ text: '×  ', options: { color: RED, bold: true } }, { text: before, options: { color: MUTED, italic: true } }],
       { x: x + 0.22, y: y + 0.4, w: w - 0.4, h: 0.24, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
-    s.addText([{ text: '✓  ', options: { color: GREEN, bold: true } }, { text: after, options: { color: SLATE } }],
+    s.addText([{ text: '→  ', options: { color: GREEN, bold: true } }, { text: after, options: { color: SLATE } }],
       { x: x + 0.22, y: y + 0.65, w: w - 0.42, h: 0.62, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'top' });
     s.addText(why, { x: x + 0.22, y: y + hh - 0.32, w: w - 0.4, h: 0.26, fontFace: 'Calibri', fontSize: 9.0, bold: true, italic: true, color: AMBER, margin: 0 });
   });
@@ -1408,7 +1433,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addImage({ data: I.warn, x: 0.78, y: 5.09, w: 0.3, h: 0.3 });
   s.addText([
     { text: 'This is the autocorrect. ', options: { bold: true, color: NAVY } },
-    { text: 'When the AI and the measurements disagree, ', options: { color: SLATE } },
+    { text: 'When an input and the measurements disagree, ', options: { color: SLATE } },
     { text: 'the measurements win — automatically, every time. ', options: { bold: true, color: NAVY } },
     { text: 'The tool corrects the input, records what it changed and why, and shows the engineer. It never proceeds silently.', options: { color: SLATE } },
   ], { x: 1.2, y: 4.95, w: 11.4, h: 0.85, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
@@ -1421,21 +1446,20 @@ partSlide('assets/workflow-deck/part-housing.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'This is the slide I most wanted to get in front of you, because it answers the question "what if the AI is wrong". The answer is that the tool assumes it might be, and checks. ' +
-    'Four checks ran on this part, before a single pound was calculated. ' +
-    'Check one. To sell us a two point eight kilo casting, the supplier does not melt two point eight kilos. They pour four point eight three kilos. The difference runs down the feed channels and into the overflow, and gets recycled at scrap value. If you cost only the part weight you understate the metal by seventy percent. This is the single most common error in casting cost, and the tool cannot make it. ' +
-    'Check two. On a casting, the bores and the holes are already cast in. The cutter is removing a thin skim to hit tolerance. So machining adds time, not material. If the model were allowed to think the cutter was carving the shape out of metal, the cost would roughly double. The guard caps machining to a finishing envelope. ' +
-    'Check three. Because this part has machined faces, a model can be tempted to say "machined from solid billet". The guard keeps casting as the primary process and redirects the material to a genuine die-casting alloy, not a wrought grade — different alloys have genuinely different prices per kilo. ' +
-    'Check four is machine sizing, and I will give that its own slide in a moment. ' +
-    'Now the amber box, and this is the autocorrect feature you asked about. When the AI and the measurements disagree, the measurements win. Automatically. Every time. The tool corrects the input, writes down what it changed and why, and shows our engineer. It never quietly proceeds with something it knows is wrong. ' +
-    'And why four checks rather than one general one? Because a cast-and-machined part has four distinct ways to go wrong, and each guard was written after a specific real-world costing mistake. They are lessons, not decoration.'
+    'This slide answers the question: what if an input is wrong? The tool assumes it might be, and checks. Four checks ran on this part before a single pound was calculated. ' +
+    'Check one. To sell us a two point eight kilo casting, the supplier pours four point eight three kilos. The rest runs down the feed channels and is recycled at scrap value. If you cost only the part weight, you understate the metal badly. It is the most common casting cost error, and the tool cannot make it. ' +
+    'Check two. On a casting, the bores and holes are already cast in. The cutter takes a thin skim. So the guard caps machining time to a finishing envelope: a tenth of an hour plus nought point nought seven hours per kilo. For this part that ceiling is about eighteen minutes. ' +
+    'Check three. A machined face can tempt a quick read towards machined from solid. The guard keeps casting as the main process, with a real die-casting alloy, because alloys have different prices per kilo. ' +
+    'Check four is machine sizing, which gets its own slide next. ' +
+    'The amber box is the autocorrect. When an input disagrees with the measurements, the measurements win. The tool corrects it, records what changed and why, and shows the engineer. It never carries on silently. ' +
+    'Each guard exists because of a specific costing mistake. They are lessons, not decoration.'
   );
 }
 
 // ══════════ 7 · PROCESS & MACHINE SELECTION ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Stage 7 · Choosing the Process and the Machine', 'Why high-pressure die casting, why a 1,600-tonne press — and what happens when the engineer chooses differently', TEAL);
+  title(s, 'Stage 7 · Choosing the Process and the Machine', 'Why die casting, why a 1,600-tonne press — and what happens if the engineer disagrees', TEAL);
   owner(s, 10.3, 0.74, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.5, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
@@ -1476,27 +1500,26 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addText([
     { text: 'Every machine in the library carries its own hourly rate — a bigger press costs more per hour to own and run. ', options: { color: SLATE } },
     { text: 'Pick a press that is too big and you overstate the cost; too small and the part physically cannot be made. ', options: { bold: true, color: NAVY } },
-    { text: 'So the engine sizes the machine from the geometry rather than accepting a default — and every choice on this slide is optional: enter a process or a machine yourself and that entry is respected. The engine keeps it, prices its own alternative alongside it as a negotiation lever, and the self-audit flags an over- or undersized machine with the £/part difference.', options: { color: SLATE } },
+    { text: 'So the engine sizes the machine rather than accepting a default. Enter a process or machine yourself and it is respected: the engine prices its own choice alongside as a lever, and the self-audit flags a wrong-sized machine with the £/part difference.', options: { color: SLATE } },
   ], { x: 0.8, y: 4.48, w: 11.75, h: 0.82, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 5.58, w: 12.33, h: 1.05, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Who decided all this?  ', options: { bold: true, color: PURPLE } },
-    { text: 'The rules engine — by default, with no AI call: ', options: { bold: true, color: TEAL } },
+    { text: 'The rules engine, with no AI call: ', options: { bold: true, color: TEAL } },
     { text: 'it tested the shape against each process\u2019s physics, rejected the alternatives, and sized the press by calculation. ', options: { color: SLATE } },
-    { text: 'The optional AI ', options: { bold: true, color: PURPLE } },
-    { text: 'offered a second opinion ("die casting" — it agreed). ', options: { color: SLATE } },
-    { text: 'A pinned engineer choice overrides both. ', options: { bold: true, color: NAVY } },
-    { text: 'And if anyone — AI or person — had said "sand casting", the 3 mm walls would have argued back with the physics.', options: { color: SLATE } },
+    { text: 'The engineer confirmed the route. ', options: { bold: true, color: PURPLE } },
+    { text: 'A pinned engineer choice always wins. ', options: { bold: true, color: NAVY } },
+    { text: 'And if anyone had said "sand casting", the 3 mm walls would have argued back with the physics.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.7, w: 11.75, h: 0.85, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Now we are into the engine, and this is where the real engineering lives. Two questions get answered here: which process, and which machine — and one thing to hold onto throughout: every answer on this slide is a DEFAULT, not a decree. ' +
-    'First, the process, and note who decides: the rules engine, by default with no AI call at all. It tests the measured shape against what each process can physically do. Three millimetre walls, a hollow shape, sixty thousand a year — that combination points firmly at high-pressure die casting. Sand casting is rejected because it cannot reliably produce three millimetre walls at that quality or speed. Machining from solid would cut away about eighty percent of the metal — absurd on cost. Gravity die casting cannot reliably fill walls that thin. In the optional AI modes the model offers its own reading — here it agreed, die casting — and where it disagrees, the physics wins. ' +
-    'Second, the press. Molten aluminium injected under pressure tries to force the two mould halves apart, so the engine takes the shadow area it measured from the CAD, multiplies by the cavity pressure, adds a safety margin, and picks the smallest press in the library that clamps it: sixteen hundred tonnes. Smallest-that-covers is also cheapest-per-hour on the ladder, so the sizing IS the cost optimisation. ' +
-    'Third — and this is the point our own review sharpened — all of it is optional the moment our engineer enters data. Pin the process on the form and the pin is honoured everywhere, including on re-analysis. Pick a different machine by hand and the tool respects the choice: it keeps your machine, prices its own alternative alongside as a negotiation lever, and the self-audit challenges the selection in both directions — a machine bigger than the physics needs is flagged with the pounds-per-part it wastes, a smaller one with the reason it cannot work. Enter a toolmaker quotation and it overrides every tooling estimate. The tool decides where the engineer has not; the engineer outranks the tool everywhere they have. ' +
-    'And the purple box is the one line to remember: the rules engine decided, the optional AI seconded, a pinned engineer choice overrides both — and physics argues back at anyone, human or machine, who picks a process the walls cannot survive.'
+    'Now we are into the engine. Two questions get answered here: which process, and which machine. Hold on to one idea: every answer on this slide is a default, and the engineer can override it. ' +
+    'First, the process. The rules test the measured shape against what each process can physically do. Three millimetre walls, a hollow shape, sixty thousand a year: that points firmly at high-pressure die casting. Sand casting cannot hold three millimetre walls at that speed. Machining from solid would cut away about eighty percent of the metal. Gravity die casting struggles to fill walls that thin. The engineer confirmed the route when asked. ' +
+    'Second, the press. Molten aluminium under pressure tries to push the die halves apart. So the engine takes the measured shadow area, multiplies by the cavity pressure, adds a safety margin, and picks the smallest press in the library that can clamp it: sixteen hundred tonnes. The smallest press that works is also the cheapest per hour, so sizing it correctly is the cost optimisation. ' +
+    'Third, the engineer outranks the tool wherever they have entered something. Pin the process and it stays pinned. Pick a different machine and the tool keeps it, prices its own choice alongside as a negotiation lever, and the self-audit flags a machine that is too big or too small, with the pounds per part. Enter a toolmaker quote and it overrides every tooling estimate. ' +
+    'No AI was involved in any of this.'
   );
 }
 
@@ -1537,7 +1560,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
       ['× 1.2 safety factor (engine constant)', '1,413 t'],
     ],
     [['160 t', '£18.66/hr', 'too small'], ['500 t', '£52.47/hr', 'too small'], ['800 t', '£79.12/hr', 'too small'], ['1,600 t', '£137.55/hr', 'CHOSEN']],
-    'Area from the model, pressure a material property, ladder and rates from the library.');
+    'The CAD rules path sizes by mass instead; the self-audit flags a wrong size.');
 
   s.addShape('roundRect', { x: 6.78, y: 1.3, w: 6.05, h: 3.55, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText('B · WHERE THE CUTTING MINUTES COME FROM', { x: 7.03, y: 1.42, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
@@ -1579,13 +1602,12 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
 
   s.addNotes(
-    'I was asked to show the calculation rather than assert it, so this slide is the arithmetic behind the two numbers that matter most on a casting: which press, and how many minutes of cutting. ' +
-    'Left-hand side, the press. The kernel measures the projected shadow of the part — the silhouette you would see looking down the direction the die opens — and gets one thousand six hundred and fifty square centimetres. Aluminium high-pressure die casting runs at about seventy megapascals of cavity pressure; that is a material property, not an opinion. Multiply the two and you get the force trying to blow the die open: one thousand one hundred and seventy-eight tonnes. The engine applies a twenty percent safety factor, so we need a press that can hold one thousand four hundred and thirteen tonnes. Then it walks the ladder — one sixty, five hundred, eight hundred, sixteen hundred — and takes the smallest one that covers it. Sixteen hundred tonnes, one hundred and thirty-seven pounds fifty-five an hour. ' +
-    'Nothing on that left-hand side was typed in by a person. The area came out of the model, the pressure is a property of the alloy, and the ladder and the rates are the rate library. ' +
-    'Right-hand side, the cutting minutes, and this is where people are most sceptical, so let us be concrete. Every feature the kernel found gets its own time from a published shop formula. Two faces at one eighty by one twenty millimetres: nought point two zero minutes of approach plus the area divided by eight thousand square millimetres a minute of face-mill coverage — three point seven seven minutes each. Two bores at forty millimetres diameter, forty-five deep: nought point five plus forty-five times nought point zero five — three point five eight each. Sixteen blind holes at eight millimetres: nought point one five plus depth times nought point zero two, plus a tenth of a minute because a blind hole needs its bottom finishing — nought point eight five each. ' +
-    'Add it up with a thirty percent uplift for the reamed tolerance on the bores and the geometry proposes twenty-eight point two minutes. ' +
-    'Now watch what happens next, because this is the guard doing real work in front of you. The near-net envelope says a two point eight kilo casting cannot need more than nought point one hours plus nought point zero seven hours per kilo of finishing — seventeen point eight minutes. Twenty-eight is above that, so the guard caps it. And the routing we actually costed from the supplier is fifteen point nine minutes, which sits inside both. ' +
-    'Three independent numbers, bounding each other. That is the point I want you to take away. When they agree, as they do here, the number stands. When they disagree badly, that is the signal — either the part is not really near-net, or the routing is wrong, or the quote is padded. Either way, you find out before the meeting rather than during it.'
+    'I was asked to show the calculation rather than assert it. So this is the arithmetic behind the two numbers that matter most on a casting: which press, and how many minutes of cutting. ' +
+    'Left side, the press. The projected shadow is sixteen hundred and fifty square centimetres. Aluminium high-pressure die casting runs at about seventy megapascals in the cavity. Multiply them and you get about eleven hundred and seventy-eight tonnes trying to open the die. The engine adds a twenty percent safety factor, so we need about fourteen hundred tonnes. It walks the ladder and takes the smallest press that covers it: sixteen hundred tonnes, at a hundred and thirty-seven pounds fifty-five an hour. ' +
+    'One honest detail. That is how the form sizes the press. On the CAD rules path, where no shadow area is passed in yet, the rules size the press from part mass, which can pick a smaller machine. The self-audit flags a machine that is the wrong size, so check the press the trace shows. ' +
+    'Right side, the cutting minutes. Each feature gets its own time from a shop formula: the two faces, the two bores, the sixteen blind holes. Add a thirty percent uplift for the reamed bores, and the geometry proposes about twenty-eight minutes. ' +
+    'Then the guard. A two point eight kilo casting should not need more than about seventeen point eight minutes of finishing, so the guard caps it. The routing we costed is fifteen point nine minutes, inside both. ' +
+    'Three numbers bounding each other. When they agree, the number stands. When they disagree badly, you find out before the meeting.'
   );
 }
 
@@ -1621,7 +1643,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addText('Machine + labour, one housing', { x: 0.75, y: 4.07, w: 4, h: 0.28, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0 });
   [['0.3919', 6.00, 0.80], ['27.99', 6.85, 0.82], ['4.59', 7.72, 0.58], ['£32.57', 8.35, 0.72]].forEach(([t, x, w]) =>
     s.addText(String(t), { x, y: 4.07, w, h: 0.28, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, align: 'right', margin: 0 }));
-  s.addText('Machine £ = £/hr x charged time.  Labour £ = charged time x 0.5 operators x their grade rate.  Nothing else is added here.',
+  s.addText('Machine £ = £/hr x charged time.  Labour £ = cycle ÷ 0.9 labour efficiency x 0.5 operators x grade rate.',
     { x: 0.75, y: 4.4, w: 8.3, h: 0.3, fontFace: 'Calibri', fontSize: 9.2, italic: true, color: MUTED, margin: 0 });
 
   s.addShape('roundRect', { x: 9.45, y: 1.28, w: 3.38, h: 3.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.1 });
@@ -1659,13 +1681,11 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
 
   s.addNotes(
-    'This is the detail people usually want and rarely get, so let us go through it properly — and I have deliberately laid this table out so you can check any row with a calculator while I am talking. ' +
-    'Take the milling row. The five-axis machine costs eighty-five pounds an hour. The cut itself takes nought point one one of an hour. But a machine is never a hundred percent available, so the engine divides by the overall equipment effectiveness — eighty-five percent — which gives nought point one two nine four of an hour of machine occupied. Eighty-five pounds times that is eleven pounds exactly. Then labour: half an operator at twenty-six pounds an hour for that time is one pound fifty-nine. Twelve fifty-nine for the operation. Every row on this slide works the same way and every row multiplies out. ' +
-    'The casting shot: fifty-five seconds on the sixteen-hundred-tonne press at one hundred and thirty-seven fifty-five an hour, plus a two percent reject uplift, is two pounds sixty-eight. Boring and reaming the two bores, nine seventy-three. Drilling and tapping sixteen holes on a cheaper drill-and-tap machine at thirty pounds an hour, three twenty-four. Leak test, deburr and wash, four pounds. Plus a small amortised setup. ' +
-    'Add it up: nought point three nine of an hour of machine time, twenty-eight pounds of machine and four pounds fifty-nine of labour — thirty-two pounds fifty-seven at UK rates. ' +
-    'On the right, how a cycle time is actually built, and I want to draw your eye to that third box. The divide-by-OEE column is the one people miss. It is the difference between costing the theoretical best case and costing the factory as it really runs. ' +
-    'Now the chart at the bottom, which for me is the single most valuable output on this part. The famous casting shot — the thing everyone pictures when you say die casting — is two pounds sixty-eight. Eight percent. Cutting metal is twenty-five eighty-nine, seventy-nine percent; add the test and clean-up and everything after the shot is twenty-nine eighty-nine, ninety-two percent. ' +
-    'Think about what that means for a negotiation. If you go in to argue about the price of aluminium, you are arguing about eight percent of the making cost. The money is in cycle time. So the productive conversation with that supplier is about fixturing, tool paths and how many seconds each operation really takes.'
+    'This is the detail people usually want and rarely get. I laid the table out so you can check any row with a calculator. ' +
+    'Take the milling row. The five-axis machine costs eighty-five pounds an hour. The cut takes nought point one one of an hour. A machine is never available a hundred percent of the time, so the engine divides by the equipment effectiveness, eighty-five percent. That gives nought point one two nine four of an hour. Eighty-five pounds times that is eleven pounds. Labour is half an operator at twenty-six pounds an hour, allowing for ninety percent labour efficiency: one pound fifty-nine. Twelve fifty-nine for the operation. ' +
+    'The casting shot is fifty-five seconds on the sixteen hundred tonne press, with a two percent reject allowance: two pounds sixty-eight. Boring and reaming, nine seventy-three. Drilling and tapping on a cheaper machine, three twenty-four. Leak test, deburr and wash, four pounds. Plus a small amortised setup. In total, thirty-two pounds fifty-seven at UK rates. ' +
+    'Now the chart, which for me is the most useful output on this part. The casting shot, the thing everyone pictures, is two pounds sixty-eight, about eight percent of the making cost. Everything after it is ninety-two percent. ' +
+    'So if you argue about the aluminium price, you are arguing about the wrong thing. The money is in cycle time. The productive conversation with this supplier is about fixturing, tool paths and seconds per operation.'
   );
 }
 
@@ -1712,18 +1732,19 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addText('Two rules the engine applies to every single part, without exception', { x: 0.8, y: 5.2, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: NAVY, margin: 0 });
   s.addText([
     { text: '1.  Always the same eight buckets. ', options: { bold: true, color: TEAL } },
-    { text: 'A stamped bracket, a moulded housing and this casting are all built the same way, so any two parts can be compared honestly. Overhead is applied once, on the factory cost. Margin is applied once, on the subtotal. Never twice.\n', options: { color: SLATE } },
+    { text: 'A stamped bracket, a moulded housing and this casting are all built the same way, so any two parts compare honestly. Overhead is a % of material + process + labour + tooling. Margin is a % of the subtotal. Each once.\n', options: { color: SLATE } },
     { text: '2.  Every figure traces back to a driver. ', options: { bold: true, color: TEAL } },
     { text: 'Material = measured weight x a published metal price. Process = calculated time x a machine rate. Change any input and you can point at exactly why the answer moved — there is no black box in the money.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.52, w: 11.75, h: 1.25, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Now the money comes together. Every part this tool costs — whether it is a one pound stamped bracket or this casting — is built into the same eight buckets. Material, process, labour, tooling, packaging, logistics, overhead, margin. Always the same eight. ' +
-    'For this housing made in China: the metal, costed at the poured weight and net of the scrap we get back on the runner, is twelve pounds eighteen. The making — the casting shot plus all the machining — is fourteen thirty-four. People one thirty-six. The die spread across the year, two seventeen. Packaging and transport, one pound seventy between them. Then factory overhead at twelve percent and a nine percent supplier margin. Thirty-eight pounds fifty-five. ' +
-    'Bottom right, the same part priced elsewhere, and every one of those is a full recalculation on that country’s own rates, not a fudge factor. India thirty-seven seventeen. China thirty-eight fifty-five. Mexico forty forty-four. The UK, fifty-nine sixty. ' +
-    'And the reason the gap is not larger is worth understanding, because buyers get this wrong. Look at the metal: twelve pounds eighteen in China, twelve fifty-six in the UK. Aluminium is a world commodity — it costs roughly the same everywhere. What actually changes between countries is the labour, the machine and the overhead rates. On a machining-heavy part like this, that is the whole difference. ' +
-    'Two rules at the bottom that I would ask you to hold onto. First, always the same eight buckets, which is what lets you compare two completely different parts honestly — and overhead is applied once, margin is applied once, never twice, which is a classic quoting trick. Second, every figure traces back to a driver. Material is measured weight times a published metal price. Process is calculated time times a machine rate. If you change an input you can point at exactly why the number moved. There is no black box anywhere in the money.'
+    'Now the money comes together. Every part the tool costs is built into the same eight buckets: material, process, labour, tooling, packaging, logistics, overhead and margin. ' +
+    'For this housing made in China. Metal, costed at the poured weight and net of the scrap credit: twelve pounds eighteen. Process, the casting shot plus all the machining: fourteen thirty-four. Labour: one thirty-six. The die, spread over the volume: two seventeen. Packaging and transport: one pound seventy between them. ' +
+    'Then overhead at twelve percent. It is a percentage of material, process, labour and tooling only, not of packaging and logistics. That gives three sixty-one. Margin at nine percent of the subtotal gives three eighteen. Total, thirty-eight pounds fifty-five. The tool shows the overhead base on screen, in the PDF and in the workbook, so nobody has to guess. ' +
+    'Bottom right, the same part priced elsewhere. Each is a recalculation on that country\u2019s own rates. India thirty-seven seventeen, China thirty-eight fifty-five, Mexico forty forty-four, UK fifty-nine sixty. The tool prices twenty regions on every run; I have shown four. ' +
+    'Notice the metal barely moves between countries. Aluminium is a world commodity. What changes is labour, machine and overhead rates, and on a machining-heavy part that is the whole gap. ' +
+    'Every figure traces back to a driver and a rate. Change an input and you can point at exactly why the answer moved.'
   );
 }
 
@@ -1754,9 +1775,9 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   const outs = [
     'The 8-bucket breakdown, with every figure traceable',
     'The operation list — what takes the time and why',
-    'Every AI call made, flagged for confirmation',
-    'Every autocorrection, with what changed and why',
-    'Country comparison, and an exportable report',
+    'Every question asked, and the answer given',
+    'Every autocorrection and self-audit flag, with why',
+    '20-country table · Excel and PDF exports',
   ];
   outs.forEach((t, i) => {
     s.addImage({ data: I.check, x: 7.05, y: 1.86 + i * 0.34, w: 0.16, h: 0.16 });
@@ -1768,7 +1789,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addImage({ data: I.person, x: 0.94, y: 4.38, w: 0.28, h: 0.28 });
   s.addText('Nothing leaves the tool unapproved', { x: 1.6, y: 4.0, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, bold: true, color: GREEN, margin: 0 });
   s.addText([
-    { text: 'Every AI suggestion arrives as an editable pre-fill — highlighted, never silently applied. ', options: { color: SLATE } },
+    { text: 'Every derived input arrives as an editable pre-fill — highlighted, never silently applied. ', options: { color: SLATE } },
     { text: 'Our engineer can change the material, the process, the machine, the cycle time or the rates, and the whole cost recalculates instantly. ', options: { bold: true, color: NAVY } },
     { text: 'The tool proposes. The engineer disposes. That is the last line of defence, and it is a person.', options: { color: SLATE } },
   ], { x: 1.6, y: 4.34, w: 11.0, h: 0.85, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
@@ -1782,11 +1803,12 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
 
   s.addNotes(
-    'Two stages left, and they are the two that make this usable in a real negotiation rather than just interesting. ' +
-    'Stage eleven. The tool does not give you one number pretending to be exact. It runs the whole calculation four thousand times, varying the inputs it is least confident about — and it varies them by different amounts, because tooling estimates are genuinely less certain than a published metal price. Overhead and margin are percentages of policy, so they simply follow. What comes out is a range: ten percent of the runs came in below thirty-two thirty-one, ten percent came in above forty-five thirty-eight, and the middle of the distribution is our thirty-eight fifty-five. About plus or minus seventeen percent on this part. ' +
-    'I would rather hand you an honest range than a falsely precise number, and the width of that band is itself information — it is wider here than it would be on a simple pressing, because a machining-heavy casting carries more cycle-time risk. ' +
-    'Stage twelve, and this is the one I care most about. Every AI suggestion arrives as an editable pre-fill. Highlighted. Never silently applied. Our engineer can change the material, the process, the machine, the cycle time, the rates — and the whole cost recalculates instantly. The tool proposes. The engineer disposes. The last line of defence is a person, and it always will be. ' +
-    'And here is what it is all for. A supplier quotes fifty-two pounds for this part. That is above our P90 — above where ninety percent of our simulated outcomes landed. Our buyer no longer has to say "that feels high". They can open the operation list and say: your machining time looks about thirty percent above what this geometry needs, walk me through your fixturing. That is a completely different conversation, and it is the reason this tool exists.'
+    'Two stages left, and they make this usable in a real negotiation. ' +
+    'Stage eleven. The tool does not give one number pretending to be exact. It runs the calculation four thousand times, varying the inputs it is least sure of, and by different amounts. Tooling varies most, because tooling estimates are the least certain. Overhead and margin are policy percentages, so they are recalculated, not varied. ' +
+    'The result is a range. On this part, ten percent of runs came in below thirty-two thirty-one, ten percent above forty-five thirty-eight, and the middle is our thirty-eight fifty-five. About plus or minus seventeen percent. The width is information: a machining-heavy casting carries more cycle-time risk than a simple pressing. ' +
+    'Stage twelve is the one I care most about. Every derived input arrives as an editable pre-fill, highlighted, never silently applied. The engineer can change the material, the process, the machine, the cycle time or the rates, and the cost recalculates. The self-audit sits alongside, flagging things like a wrong machine size, tooling spread over the wrong volume, a material-only costing, or an implausible cycle time. ' +
+    'Then the exports: an Excel workbook with six sheets including a traceability sheet, a PDF report, and the negotiation pack. All carry the on-screen total to the penny. ' +
+    'And here is what it is for. If a supplier quotes fifty-two pounds, that is above our P90. The buyer can open the operation list and ask about the machining time, line by line. That is a different conversation.'
   );
 }
 
@@ -1798,7 +1820,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   const steps = [
     ['1 · Every line carries a confidence grade', 'Each cost line remembers where it came from: measured geometry and library rates grade High, derived values Medium, assumptions Low. This provenance already exists for the trace — the band re-uses it.'],
     ['2 · Grade becomes a spread', 'High = ±5%, Medium = ±12%, Low = ±22% (one sigma). Per-bucket reality applied on top: tooling estimates are the least certain (×1.8); packaging and logistics are contracted and stable (×0.6); overhead and margin are policy percentages — never perturbed, always recomputed.'],
-    ['3 · 4,000 trials', 'Each trial multiplies every base bucket — material, process, labour, tooling, packaging, logistics — by a lognormal factor with that spread (always positive, mean 1), then recomposes overhead and margin exactly as the real engine does. 4,000 slightly different worlds, 4,000 totals.'],
+    ['3 · 4,000 trials', 'Where the tool knows each input\u2019s source, a trial varies every driver — weight, cycle times, rates, even flat material prices — and re-runs the real engine. Otherwise it scales each base bucket by a lognormal factor (always positive, mean 1). Overhead and margin are recomposed exactly as the engine does. 4,000 totals.'],
     ['4 · Read the distribution', 'Sort the 4,000 totals: the 10th percentile is the optimistic case, the median is the estimate, the 90th is the conservative case. The half-width becomes the ± figure on the result card, and the band is labelled tight, moderate or wide.'],
   ];
   steps.forEach(([t, d], i) => {
@@ -1825,7 +1847,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     { x: 8.15, y: 3.02, w: 4.5, h: 0.24, fontFace: 'Calibri', fontSize: 7.8, italic: true, color: MUTED, margin: 0 });
   const promises = [
     ['Reproducible, on purpose', 'The random draws are seeded: the same part, volume and region gives the same band every single time, and the band is unit-tested. No "run it again and hope".', I.check, TEAL],
-    ['Calibrated by real actuals', 'Once enough real quotes or invoices exist for a segment, a conformal calibration layer replaces the prior — the band then provably covers the target share of actual outcomes. Until then, the Monte-Carlo prior stands and says so.', I.clip, GREEN],
+    ['Corrected by real actuals', 'Log a real quote or PO price ("Log Actual £"). After 3 actuals for a commodity, the band is corrected by real data. Until then the Monte-Carlo band stands, and says so.', I.clip, GREEN],
     ['Honest by construction', 'Assumptions widen the band automatically — a part costed from an unanswered question cannot show a tight range. The band is the tool admitting exactly how much it does not know.', I.shield, AMBER],
   ];
   promises.forEach(([t, d, ico, c], i) => {
@@ -1839,11 +1861,17 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Why it matters:  ', options: { bold: true, color: GREEN } },
-    { text: 'a single number pretends to a precision the inputs never had. The band is the same arithmetic run 4,000 times with each input as uncertain as its provenance says it is — so “£26 ± 18%” is a statement of evidence, not of confidence.', options: { color: SLATE } },
+    { text: 'a single number pretends to a precision the inputs never had. The band is the same arithmetic run 4,000 times with each input as uncertain as its provenance says it is — so “£38.55 ± 17%” is a statement of evidence, not of confidence.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'A question I get every time is where the plus-or-minus comes from, so here is the mechanism, exactly as the code does it. Step one: every cost line already carries a confidence grade from its provenance — measured geometry and library rates are High, derived values Medium, assumptions Low. Step two: those grades become spreads — five, twelve and twenty-two percent at one sigma — with per-bucket reality on top: tooling estimates get one-point-eight times the spread because tooling is genuinely the least certain thing we estimate, packaging and logistics get less because they are contracted, and overhead and margin are never perturbed at all because they are policy percentages — they are recomputed inside every trial exactly as the real engine composes them. Step three: four thousand trials. Each one multiplies every base bucket by a lognormal factor — always positive, mean one — and rebuilds the stack. Step four: sort the four thousand totals and read off the tenth, fiftieth and ninetieth percentiles. That is the band on the result card. Three properties worth stating. It is seeded, so the same part gives the same band every time — it is reproducible and it is unit-tested. It is calibrated: once we have enough real actuals in a segment, a conformal layer replaces the prior with a band that provably covers the target share of real outcomes — that is a statistical guarantee, and until we have the data the tool says it is on the prior. And it is honest by construction: assumptions widen the band automatically, so a part costed on guesses cannot pretend to precision. The one line: the band is the same arithmetic run four thousand times with each input exactly as uncertain as its provenance says.'
+    'A question I get every time is where the plus or minus comes from. Here is the mechanism, as the code does it. ' +
+    'Step one. Every cost line already carries a confidence grade from where it came from. Measured geometry and library rates grade high. Derived values grade medium. Assumptions grade low. ' +
+    'Step two. Those grades become spreads: five, twelve and twenty-two percent. Tooling gets one point eight times the spread, because it is the least certain thing we estimate. Packaging and logistics get less, because they are usually contracted. Overhead and margin are never varied; they are percentages, recalculated inside each trial. ' +
+    'Step three, four thousand trials. Where the tool knows the source of each input, as on the CAD path, it varies every driver, including flat material prices, and re-runs the real engine. Otherwise it scales each bucket. ' +
+    'Step four. Sort the totals and read the tenth, fiftieth and ninetieth percentiles. That is the band on the result card. ' +
+    'Three properties. It is seeded, so the same part gives the same band every time, and that is tested. It learns: log real quotes or PO prices, and after three for a commodity the band is corrected by real data. And it is honest by construction: assumptions widen the band, so a part costed on guesses cannot look precise. ' +
+    'In one line: the same arithmetic, run four thousand times, with each input as uncertain as its source.'
   );
 }
 
@@ -1878,7 +1906,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   const promises = [
     ['Same part, same report', 'Deterministic and unit-tested: identical inputs produce an identical report, every run. Every threshold is a named constant in code a reviewer can read — not a prompt.', I.check, TEAL],
     ['Honest saving maths', 'The headline saving is NOT the sum of every issue — it is the root-sum-square of the top three, capped at 40%. Stacked opportunities are never allowed to promise an impossible discount.', I.calc, GREEN],
-    ['The AI cannot touch it', 'In optional AI mode the model may add advisory commentary to the CAD analysis panel — display-only. It writes no score, no severity, no saving and no recommendation in this report.', I.shield, AMBER],
+    ['The AI cannot touch it', 'AI is off at JLR. If switched on, it may add display-only commentary to the CAD panel. It writes no score, severity, saving or recommendation in this report.', I.shield, AMBER],
   ];
   promises.forEach(([t, d, ico, c], i) => {
     const y = 3.46 + i * 0.99;
@@ -1895,7 +1923,13 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Sections twelve to fifteen of every report — DFM, DFA, cost optimisation and the roadmap — come from one deterministic rule engine, and I want to show exactly how, because the honest answer to "is this AI opinion?" is no. Step one: the engine runs AFTER the costing and reads the finished result — the eight buckets and the same measured inputs the estimate used. It critiques the numbers that were actually costed. Step two: fifty-two fixed thresholds fire — material utilisation below sixty percent is critical, below seventy-two major; OEE below seventy critical; every bucket compared to its commodity benchmark band. Each hit carries a severity, a saving percentage and a recommendation, all constants in code. Step three: ten per-process advisor modules add the geometry findings — heavy sections that will draw porosity, sharp corners that start hot tears, missing draft, near-net opportunities — read from the measured solid, not guessed. Step four: the score is arithmetic — start at ten, minus two per critical, one per major, half per minor — and the roadmap is a filter of the same actions by risk and timeframe. Two properties to underline. The saving headline is root-sum-square of the top three issues capped at forty percent — we deliberately do not add up every opportunity, because stacked savings never materialise additively. And the AI cannot touch any of it: in AI mode it may add commentary to the analysis panel, but no score, severity or saving in this report comes from a model. Source: src slash engine slash dfm-dfa dot ts plus the ten advisor modules — one function, feeding both the screen and the PDF, so the two can never disagree.'
+    'Sections twelve to fifteen of every report, the DFM, DFA, cost optimisation and roadmap, come from one deterministic rule engine. The honest answer to is this AI opinion is no. ' +
+    'Step one. The engine runs after the costing and reads the finished result: the eight buckets and the same inputs the estimate used. So it critiques the numbers that were actually costed. ' +
+    'Step two. Fifty-two fixed thresholds fire. For example, material utilisation below sixty percent, or equipment effectiveness below seventy, or a bucket far outside its commodity benchmark. Each one carries a saving percentage and a recommendation, written as constants in code. ' +
+    'Step three. Ten process advisors add findings from the measured solid: heavy sections that will draw porosity, sharp corners, missing draft, too much machining stock. ' +
+    'Step four. Every finding is turned into pounds per part and ranked, biggest first. The engine grades findings internally to put them in order, but no score and no severity is ever shown. Engineers see what to do and what it is worth, not a mark against their design. ' +
+    'Two properties to underline. The headline saving is the root-sum-square of the top three, capped at forty percent, so overlapping ideas are not double-counted. And the AI cannot touch any of it. At JLR it is off anyway. ' +
+    'One function feeds both the screen and the PDF, so the two cannot disagree.'
   );
 }
 
@@ -1907,7 +1941,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     ['1 · Rank the routings in pounds', 'Before a single pound is booked, the feasible routings are priced under the same conventions the cost charges: split across cheap 3-axis stations (one fixturing per approach direction plus the drill press) vs a single-setup 5-axis consolidation vs turning-led — batch setup amortisation AND per-part handling at every fixturing included.'],
     ['2 · The losers print in the trace', 'The chosen machine carries the full comparison as its basis: "split-3axis £12.91 vs consolidated-5axis £21.11 → split-3axis, £8.20/part cheaper". A buyer can defend the process line with the table, and the AI cannot pick a machine on any path — the rules overwrite it everywhere.'],
     ['3 · Suggestions read the same arithmetic', 'The report used to advise "consolidate with multi-axis machining" against routings the tool itself had chosen. Now the advice is station-aware: it fires only on a genuinely split routing, flips to "routing verified optimal — quote it as evidence" when the lever is already taken, and every finding carries a lever tag: design · supplier · sourcing · assumption · verified.'],
-    ['4 · The Re-quote suggestion — a real case', 'On the stub-axle routing, the old §14 claimed "multi-axis consolidation, 11% saving". The optimiser ranked it: consolidation LOSES on that part. The new action: "Re-quote machining on the cost-optimal routing — £28.58 as costed vs £21.63 optimal, a £6.95/part (20%) machine-mix saving" — a Quick Win negotiation, not a capex project.'],
+    ['4 · The Re-quote suggestion — a real case', 'On the stub-axle routing, the old §14 claimed "multi-axis consolidation, 11% saving". The optimiser ranked it: consolidation LOSES on that part. The new action: "Re-quote machining on the cost-optimal routing — £28.58 as costed vs £21.63 optimal, £6.95/part" (figures from that report at the time) — a Quick Win negotiation, not a capex project.'],
   ];
   steps.forEach(([t, d], i) => {
     const y = 1.18 + i * 1.28;
@@ -1925,7 +1959,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     { x: 8.13, y: 1.74, w: 4.55, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 7.95, y: 2.44, w: 4.88, h: 0.92, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.09 });
   s.addText('AFTER — the optimiser’s delta', { x: 8.13, y: 2.54, w: 4.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, margin: 0 });
-  s.addText('"Re-quote machining on the cost-optimal routing: £6.95/part (20% of the machining spend) · Quick Win. 5-axis consolidation was ranked and does NOT win on this part."',
+  s.addText('"Re-quote machining on the cost-optimal routing: £6.95/part · Quick Win. 5-axis consolidation was ranked and does NOT win on this part."',
     { x: 8.13, y: 2.76, w: 4.55, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
   const promises = [
     ['AI never picks the machine', 'The model may name machines; the rules overwrite them with the cost-ranked choice on every path. What it said is kept for the comparison panel.', I.shield, '4F46E5'],
@@ -1947,7 +1981,12 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'A buyer challenged us with exactly the right question: the tool costed a five-machine routing and then recommended consolidating it with multi-axis machining — why did it not just pick the right machine in the first place? So now it does, and I want to show the mechanism. Step one: before any pound is booked, the routing optimiser prices the feasible alternatives — the split routing on cheap three-axis stations with a fixturing per approach direction, the single-setup five-axis consolidation, the turning-led route when the part is round — including batch setup amortisation and the per-part handling every extra fixturing costs. Cheapest capable routing wins. Step two: the losers are printed in the derivation trace next to the chosen machine, so the process line comes with its own defence. Step three: the suggestion layer reads the same arithmetic — it no longer critiques the tool’s own choices, it flips to "routing verified optimal" when the lever is already taken, and every finding is tagged with who owns the lever. And step four is my favourite, because it is the honest one: on the very report that prompted the question, the old advice said multi-axis consolidation, eleven percent, long term. The optimiser ranked it and consolidation loses on that part. The new suggestion is a quick-win re-quote: the same machining content on the cheapest capable machines is six pounds ninety-five cheaper per part — twenty percent of the machining spend — and the report says out loud that consolidation was ranked and does not win. Three rules of engagement: the AI never picks the machine, an engineer’s explicit choice is respected with the delta surfaced beside it, and if there is no verifiable delta there is no claim.'
+    'A buyer asked exactly the right question. The tool costed a five-machine routing and then recommended consolidating it on a multi-axis machine. Why not pick the right machine in the first place? So now it does. ' +
+    'Step one. Before any pound is booked, the routing optimiser prices the options: split across cheap three-axis stations, one five-axis setup, or a turning-led route for round parts. It includes batch setup and the handling every extra fixturing costs. The cheapest capable routing wins. ' +
+    'Step two. The losing options are printed next to the chosen machine, so the process line comes with its own defence. ' +
+    'Step three. The suggestions read the same arithmetic. They no longer criticise the tool\u2019s own choice. If the lever is already taken, the report says routing verified optimal. Every finding is tagged with who owns the lever. ' +
+    'Step four is the honest case. On the stub-axle report that prompted the question, the old advice said consolidate. The optimiser ranked it, and consolidation loses on that part. The new advice was a quick-win re-quote on the cheapest capable machines. Those figures are from that report at the time; they move with rates. ' +
+    'Three rules. The AI never picks the machine. An engineer\u2019s choice is respected, with the cheaper option shown beside it. And if there is no verifiable difference, there is no claim.'
   );
 }
 
@@ -1971,7 +2010,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addText(d, { x: 1.12, y: y + 0.3, w: 5.95, h: 0.64, fontFace: 'Calibri', fontSize: 7.7, color: SLATE, margin: 0, valign: 'top' });
   });
   // Right: the bumper mould as the ACTUAL quotation the engine prints
-  s.addText('THE PROOF — THE BUMPER MOULD, LINE BY LINE', { x: 7.35, y: 1.16, w: 5.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
+  s.addText('THE CHECK — THE BUMPER MOULD, AS FIRST CALIBRATED', { x: 7.35, y: 1.16, w: 5.5, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: TEAL, charSpacing: 0.6, margin: 0 });
   s.addShape('roundRect', { x: 7.35, y: 1.42, w: 5.48, h: 4.86, fill: { color: CARD }, line: { color: TEAL, width: 1.25 }, rectRadius: 0.09 });
   const q = [
     ['Tool design & CAM', '568 h × £58', '£32,956'],
@@ -1993,19 +2032,24 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   });
   s.addShape('line', { x: 7.55, y: 4.96, w: 5.1, h: 0, line: { color: TEAL, width: 1 } });
   s.addText([
-    { text: 'Engine total £423,985', options: { bold: true, color: TEAL, fontSize: 10.5 } },
-    { text: '  vs the toolmaker’s real quotation ', options: { color: SLATE, fontSize: 9.0 } },
-    { text: '£420,000', options: { bold: true, color: NAVY, fontSize: 10.5 } },
-    { text: '  — within 1%. 4,797 toolroom hours; every line is a number a toolmaker can argue with, and that is the point.', options: { color: SLATE, fontSize: 8.4 } },
+    { text: 'Engine total ≈£424k', options: { bold: true, color: TEAL, fontSize: 10.5 } },
+    { text: '  vs a real toolmaker quotation of ', options: { color: SLATE, fontSize: 9.0 } },
+    { text: '£420k', options: { bold: true, color: NAVY, fontSize: 10.5 } },
+    { text: '. One tool, one quotation — not a general accuracy claim. Line values move with inputs and rates; every line is one a toolmaker can argue with.', options: { color: SLATE, fontSize: 8.4 } },
   ], { x: 7.55, y: 5.06, w: 5.1, h: 1.1, fontFace: 'Calibri', margin: 0, valign: 'top' });
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: TEAL } },
-    { text: 'tooling is a toolmaker’s quotation the engine writes itself — hours × rate, steel by the kilogram, bought-outs each, overhead stated — validated against a real quotation, and a real quotation still beats it every time.', options: { color: SLATE } },
+    { text: 'tooling is a toolmaker’s quotation the engine writes itself — hours × rate, steel by the kilogram, bought-outs each, overhead stated — checked against one real quotation, and a real quotation still beats it every time.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'This slide answers one question precisely: how does the tool price a die or a mould? Not as a percentage of the part price, and not from a lookup table — it writes the toolmaker\u2019s quotation itself. The method first. One toolmaking shop model prices every commodity: design at fifty-eight pounds an hour, CNC at fifty-two, EDM at fifty-eight, bench fitting at forty-eight, polishing at forty-five, press tryout at eighty-five; tool steels by the kilogram from P20 at six-eighty to powder-metallurgy grades at fourteen; hot-runner drops and core-pull cylinders at catalogue prices; and the shop’s twenty-two percent overhead and profit as its own visible line. The hours come from one law — twelve plus three-point-four times area to the nought-point-seven-two per cavity, depth-corrected — with EDM, polishing and fitting as fractions driven by complexity and finish grade. And the right-hand side is why you can believe it: the bumper fascia mould, the one tool we hold a real toolmaker’s quotation for, printed line by line exactly as the engine builds it. Five hundred and sixty-eight hours of design. Eight and a half tonnes of steel. Two thousand seven hundred hours of CNC. Every line ends in a number a toolmaker can argue with — and the total lands at four hundred and twenty-four thousand against a real quotation of four hundred and twenty. Within one percent. The old single-formula parametric said six hundred and ninety. That is the confidence claim: the engine does not estimate a tooling number, it composes a quotation you can take to a die shop and argue line by line.'
+    'This slide answers one question: how does the tool price a die or a mould? Not as a percentage of the part price, and not from a lookup table. It writes the toolmaker\u2019s quotation itself. ' +
+    'One toolmaking shop model prices every commodity. Design at fifty-eight pounds an hour, CNC at fifty-two, EDM at fifty-eight, bench fitting at forty-eight, polishing at forty-five, press tryout at eighty-five. Tool steel by the kilogram. Hot-runner drops and core-pull cylinders at catalogue prices. And the shop\u2019s twenty-two percent overhead and profit as its own visible line. ' +
+    'The hours come from one law: twelve plus three point four times the area to the power nought point seven two, per cavity, corrected for depth. EDM, polishing and fitting follow as fractions driven by complexity and finish. ' +
+    'Then tool life. The steel class follows the programme volume and sets the life, which decides how many tools you need and the tooling per part. ' +
+    'The right side is the check we calibrated against: the bumper mould, the one tool we hold a real quotation for. The engine came to about four hundred and twenty-four thousand against a quotation of four hundred and twenty. That is one tool and one quotation. It is not a general accuracy claim, and the line values move with the inputs and rates. ' +
+    'The rule that beats everything: a real toolmaker quotation overrides every estimate. That is what the bumper example later in the deck uses.'
   );
 }
 
@@ -2019,10 +2063,10 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
      'Die life is ALLOY-KEYED: base hits by alloy (aluminium 80,000 · carbon steel 40,000 · alloy steel 30,000 · stainless 18,000 · titanium 8,000 · superalloy 3,500) × complexity (0.6–1.3) × size penalty (100/area)^0.2 — the forged metal, not the die, decides how long the die lives.'],
     ['STAMPING DIE  ·  shop build-up',
      'die set £2,900 + £3.20/cm² + strip-design NRE by die type\nper station: H13 sections by kg + (70 + 0.11×blank cm²) h\n  × hardness × type — split wire-EDM 35% / CNC 45% / fitting 20%\n+ die-set machining + 4 tryout strip runs',
-     'Die life = 1M strokes × (300 ÷ shear MPa)^1.3 × thickness factor (× 0.6 fine-blanking), clamped 50k–3M — harder, thicker steel wears the tool faster and the law says by how much. Validation: the shop model and the kernel’s independent B-rep estimate agree within 1.5% on the reference die.'],
+     'Die life = 1M strokes × (300 ÷ shear MPa)^1.3 × thickness factor (× 0.6 fine-blanking), clamped 50k–3M — harder, thicker steel wears the tool faster and the law says by how much. The shop model is cross-checked against the kernel’s independent B-rep estimate.'],
     ['BLOW MOULD  ·  shop build-up',
      'cavity halves: 14 × litres^0.75 kg (Al 7075 or P20/H13)\nCNC: (30 + 9.5 × litres) h × material · cooling drilling 8–20%\n+ frame + pinch-off inserts + IBM/SBM core-rod tooling + tryout',
-     'A container’s cavity is its whole inner surface, so hours scale with the litres it holds — not with a projected shadow. Life follows the mould material: aluminium 500,000 · P20 1M · H13 2M shots. Sanity: a 60 L tank tool prices £73k, inside the £60–75k industry band.'],
+     'A container’s cavity is its whole inner surface, so hours scale with the litres it holds — not with a projected shadow. Life follows the mould material: aluminium 500,000 · P20 1M · H13 2M shots.'],
     ['CASTING · MACHINING · INVESTMENT',
      'HPDC/gravity/sand: the kernel B-rep parametric is PRIMARY on the\nCAD path; the same shop model prices STL and manual paths\n(H13 die + shot sleeve + cooling drilling + stress-relief HT).\nMachining: fixtures + £15,000 CNC-programming NRE, amortised.',
      'INVESTMENT tooling is priced as what it physically is: a wax-injection tool is an aluminium/P20 mould run at low pressure — the mould shop model × 0.8, plus £1,200 per soluble-core box. And the one rule above everything on both slides: a toolmaker quotation overrides every estimate, always.'],
@@ -2038,11 +2082,16 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'E7F4F2' }, line: { color: TEAL, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Why you can trust these numbers:  ', options: { bold: true, color: TEAL } },
-    { text: 'every tool is priced the way a toolmaker quotes it — hours × toolroom rates, steel by the kilogram, bought-outs each, the shop’s 22% overhead as its own line — in unit-tested source, validated against a real quotation and cross-checked by the geometry kernel’s independent B-rep estimates. This is a tooling model, not a percentage on the part price.', options: { color: SLATE } },
+    { text: 'every tool is priced the way a toolmaker quotes it — hours × toolroom rates, steel by the kilogram, bought-outs each, the shop’s 22% overhead as its own line — in unit-tested source, checked against a real quotation and cross-checked by the kernel’s independent B-rep estimates. A tooling model, not a percentage on the part price.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'Same shop, three more commodities — and every card reads like the quotation a die shop would send. The forging die: blocks at four times the impression silhouette in real die steels priced by the kilogram, sinking hours per impression scaled by complexity and by how hard the chosen steel is to cut, EDM, hardening priced per kilogram of block, polishing per impression, tryout strokes. The die life is keyed to the alloy being forged — aluminium is gentle on a die at eighty thousand hits, a superalloy destroys one in three and a half thousand — times complexity and a size penalty. The stamping die: die set plus strip-design engineering plus per-station steel and hours split across wire EDM, CNC and bench fitting — and as validation, the shop model and the geometry kernel\u2019s independent estimate agree within one and a half percent on the reference die. The blow mould scales with the litres the container holds, in aluminium or steel, with the life following the mould material. And the bottom-right card closes the loop: the kernel stays primary where it has a B-rep; the shop model answers the STL and manual paths that used to have to ask; and investment tooling is priced as the wax-injection mould it physically is. One rule survives everything on both slides: a real toolmaker quotation beats every estimate, every time.'
+    'Same shop, three more commodities. Each card reads like the quotation a die shop would send. ' +
+    'The forging die. Die blocks sized from the impression, in real die steels priced by the kilogram. Sinking hours per impression, scaled by complexity and by how hard the steel is to cut. Then EDM, hardening, polishing and tryout. Die life depends on the metal being forged. Aluminium is gentle on a die; a superalloy wears one out very quickly. ' +
+    'The stamping die. A die set, strip-design engineering, and per-station steel and hours split across wire EDM, CNC and bench fitting. Die life falls as the sheet gets harder and thicker, and the law says by how much. The shop model is cross-checked against the kernel\u2019s independent estimate from the solid. ' +
+    'The blow mould. The cavity is the container\u2019s whole inner surface, so the hours scale with the litres it holds, not with a shadow area. Life follows the mould material. ' +
+    'The last card: for castings, the kernel\u2019s estimate from the solid leads on the CAD path, and the same shop model prices STL and manual entries. Investment casting tooling is priced as the wax-injection mould it really is. ' +
+    'One rule survives everything on both slides. A real toolmaker quotation beats every estimate, every time.'
   );
 }
 
@@ -2058,9 +2107,9 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     ['Material', 'measured volume x density x published £/kg'],
     ['Process', 'cycle time / OEE x machine £/hr'],
     ['Labour', 'same time x manning x wage-grade £/hr'],
-    ['Tooling', 'entered die cost / parts over its life'],
+    ['Tooling', 'die cost ÷ (annual volume × programme life)'],
     ['Packaging, Logistics', 'entered directly by the engineer'],
-    ['Overhead, Margin', 'a % of the figures above — applied once'],
+    ['Overhead, Margin', '% of material+process+labour+tooling; % of subtotal'],
   ];
   prov.forEach(([k, v], i) => {
     const y = 1.76 + i * 0.32;
@@ -2071,26 +2120,26 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     { x: 0.78, y: 3.76, w: 5.6, h: 0.32, fontFace: 'Calibri', fontSize: 10.5, bold: true, italic: true, color: NAVY, margin: 0 });
 
   s.addShape('roundRect', { x: 6.85, y: 1.3, w: 5.98, h: 2.9, fill: { color: AMBER_T }, line: { color: AMBER, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('THE CHECKS THAT RUN ON EVERY ESTIMATE', { x: 7.1, y: 1.42, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: AMBER, charSpacing: 0.6, margin: 0 });
+  s.addText('THE CHECKS THAT RUN AUTOMATICALLY', { x: 7.1, y: 1.42, w: 5.5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: AMBER, charSpacing: 0.6, margin: 0 });
   const checks = [
-    'AI volume vs measured volume — >25% apart warns, >50% errors',
+    'A stated volume vs the measured one — >25% apart warns',
     'Weight must equal volume x density to within 20%',
-    'Material confidence under 50% — asks for a photo or confirmation',
+    'Self-audit: tooling over the wrong volume, material-only costing',
     'Any cycle time outside 1.8 seconds to 24 hours is rejected',
     'Near-net machining capped to 0.10 hr + 0.07 hr/kg',
     'Machine must be big enough for the part, or it is flagged',
   ];
   checks.forEach((t, i) => s.addText('•  ' + t, { x: 7.12, y: 1.76 + i * 0.32, w: 5.5, h: 0.3, fontFace: 'Calibri', fontSize: 9.6, color: SLATE, margin: 0, valign: 'middle' }));
-  s.addText('Each one is code, not a prompt — code cannot be talked out of a rule.',
+  s.addText('Each one is code, not a prompt.',
     { x: 7.12, y: 3.76, w: 5.5, h: 0.32, fontFace: 'Calibri', fontSize: 10.5, bold: true, italic: true, color: NAVY, margin: 0 });
 
   s.addShape('roundRect', { x: 0.5, y: 4.35, w: 12.33, h: 1.25, fill: { color: CARD }, line: { color: GREEN, width: 1.5 }, rectRadius: 0.1 });
   s.addText('The claim we make — and the claim we do not', { x: 0.8, y: 4.47, w: 11, h: 0.3, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: GREEN, margin: 0 });
   s.addText([
-    { text: 'We do say: no AI-invented number ever becomes money. ', options: { bold: true, color: NAVY } },
-    { text: 'The AI hands over words — "aluminium die-casting alloy", "high-pressure die cast" — and the engine takes it from there.  ', options: { color: SLATE } },
-    { text: 'We do not say the AI is never wrong. ', options: { bold: true, color: RED } },
-    { text: 'It can misread a part. That is exactly why it carries a confidence score, why the checks above run automatically, and why a person signs the result.', options: { color: SLATE } },
+    { text: 'We do say: no AI number ever becomes money — and at JLR the AI is off. ', options: { bold: true, color: NAVY } },
+    { text: 'Every figure comes from a measurement, a rule, an engineer\u2019s answer or a library rate.  ', options: { color: SLATE } },
+    { text: 'We do not say every input is right. ', options: { bold: true, color: RED } },
+    { text: 'An answer can be mistyped or a rate can be out of date. That is why the checks above run automatically, and why a person signs the result.', options: { color: SLATE } },
   ], { x: 0.8, y: 4.79, w: 11.75, h: 0.74, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 5.75, w: 12.33, h: 1.05, fill: { color: TEAL_T }, line: { color: TEAL, width: 1 }, rectRadius: 0.1 });
@@ -2101,12 +2150,12 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   footer(s, ++PG);
 
   s.addNotes(
-    'I have been asked, quite reasonably, whether this thing makes numbers up. Let me answer it precisely rather than reassuringly, because the precise answer is more useful. ' +
-    'On the left, all eight buckets and what each one is actually made of. Material is measured volume times a density times a published price per kilo. Process is cycle time divided by machine availability, times a machine rate from our library. Labour is that same time times the manning level times a wage-grade rate. Tooling is the die cost our engineer entered, divided by the parts it will make. Packaging and logistics are typed in directly. Overhead and margin are percentages of the figures above, applied once each. ' +
-    'Read down that list and notice what is missing. Not one of those six lines contains a number the AI produced. It cannot, because the AI never sees the rate library and never touches the arithmetic. ' +
-    'On the right, the checks that run automatically on every single estimate. If the AI reports a volume more than twenty-five percent away from what we measured, that warns; more than fifty percent and it is an error. Weight must equal volume times density to within twenty percent. If material confidence drops under fifty percent, it asks for a photo or a manual confirmation. Any cycle time outside one point eight seconds to twenty-four hours is physically implausible and gets rejected. Near-net machining is capped to a finish envelope. And the machine must be big enough for the part or it is flagged. Every one of those is code. That distinction matters — a prompt can be talked out of a rule; a line of code cannot. ' +
-    'Now the honest part, and please hear both halves of it. We do say that no AI-invented number ever becomes money. The AI hands over words, and the engine takes it from there. What we do not say is that the AI is never wrong. It can misread a part. It might look at an unusual casting and call it something else. That is exactly why it carries a confidence score, why those checks run automatically, and why a person signs the result before it goes anywhere. Anyone who tells you their AI never makes a mistake is selling you something. ' +
-    'And one last thing, which is the test I would apply to any costing tool. Run the same file with the same inputs a hundred times and you get thirty-eight fifty-five a hundred times. The arithmetic is fixed code. The answer cannot drift between runs, between two engineers, or between one supplier meeting and the next one. That is what makes it defensible.'
+    'I have been asked, fairly, whether this thing makes numbers up. Let me answer precisely rather than reassuringly. ' +
+    'On the left is what each bucket is made of. Material is measured volume times density times a price per kilo. Process is cycle time divided by machine availability, times a machine rate from the library. Labour is the same time times the manning and a wage rate. Tooling is the tool cost spread over annual volume times programme life. Packaging and logistics are typed in. Overhead is a percentage of material, process, labour and tooling. Margin is a percentage of the subtotal. Each applied once. ' +
+    'Not one of those lines contains an AI number. At JLR the AI is off, and even when on it never sees the rate library or touches the arithmetic. ' +
+    'On the right are checks that run automatically. A stated volume far from the measured one is flagged. Weight must match volume times density. Cycle times outside one point eight seconds to twenty-four hours are rejected. Near-net machining is capped. The self-audit flags a machine of the wrong size, tooling spread over the wrong volume, or a costing with material only. These are code, not prompts. ' +
+    'The honest half: we do not claim every input is right. An answer can be mistyped, or a rate can go stale. That is why the checks run and a person signs. ' +
+    'Run the same file with the same answers a hundred times, and you get thirty-eight fifty-five a hundred times.'
   );
 }
 
@@ -2117,7 +2166,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
 
   const lanes = [
     [BLUE, BLUE_T, 'THE RULER', 'Measures the CAD file', ['Volume, weight, walls', 'Bores, holes, faces', 'Hollow-vs-solid check'], 'Same answer every time'],
-    [PURPLE, PURPLE_T, 'THE AI', 'Optional second opinion', ['Alloy family', 'Process route', 'Confidence score'], 'Words only. Never money.'],
+    [PURPLE, PURPLE_T, 'THE AI', 'Off at JLR · optional', ['Could suggest the alloy', 'Could suggest the route', 'Never sets a price'], 'Words only. Never money.'],
     [AMBER, AMBER_T, 'THE GUARDS', 'Check and autocorrect', ['Pour weight, not part weight', 'Machining = finishing', 'Right alloy, right press'], 'Measurements always win'],
     [TEAL, TEAL_T, 'THE ENGINE', 'Does every calculation', ['Sizes the machine', 'Builds each cycle time', '8 buckets, 20 countries'], 'Fixed formulas, traceable'],
     [GREEN, GREEN_T, 'THE ENGINEER', 'Answers and approves', ['Sets volume and region', 'Answers what geometry can\u2019t — their entry always wins', 'Signs off the number'], 'The final decision'],
@@ -2135,37 +2184,38 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   });
 
   s.addShape('roundRect', { x: 0.5, y: 5.1, w: 12.33, h: 0.85, fill: { color: NAVY }, rectRadius: 0.1 });
-  s.addText('The rules derive.  The engine calculates.  A person approves.  The AI is an optional second opinion.', {
-    x: 0.5, y: 5.1, w: 12.33, h: 0.85, fontFace: 'Cambria', fontSize: 19.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
+  s.addText('The tool measures.  The engineer answers.  The engine calculates.  A person approves.', {
+    x: 0.5, y: 5.1, w: 12.33, h: 0.85, fontFace: 'Cambria', fontSize: 17.0, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0 });
 
   s.addShape('roundRect', { x: 0.5, y: 6.1, w: 12.33, h: 0.78, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Result on this part:  ', options: { bold: true, color: NAVY } },
-    { text: 'a defensible £38.55, with a £32–£45 confidence band, built in about two minutes — and every penny of it traceable to a measurement or a published rate.', options: { color: SLATE } },
+    { text: 'a defensible £38.55, with a £32–£45 confidence band — and every penny of it traceable to a measurement, an answer or a library rate.', options: { color: SLATE } },
   ], { x: 0.8, y: 6.2, w: 11.75, h: 0.6, fontFace: 'Calibri', fontSize: 12.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Let me put the whole thing on one page, because this is the answer to the question you asked me after the last session. ' +
-    'Five players, left to right, in the order they act. The ruler measures the CAD file and gives the same answer every time. The AI is the optional player: off by default, and when it does run it names what the part is — words only, never money. The guards check it against the measurements and autocorrect where they disagree, and the measurements always win. The engine does every calculation — sizes the machine, builds the cycle times, fills the eight buckets, reprices across twenty countries — with fixed, traceable formulas. And our engineer answers what geometry cannot know, overrides any choice they disagree with — their entry always wins — and signs off the number. ' +
-    'The line in the middle is the whole tool in one sentence. The rules derive. The engine calculates. A person approves. The AI is an optional second opinion. ' +
-    'And the result on this housing: a defensible forty pounds ninety-nine, with a thirty-five to forty-seven confidence band, produced in about two minutes, and every penny traceable to either a measurement or a published rate. ' +
-    'That is the workflow. I am very happy to take questions — and if it would help, I can run this live on any part you want to throw at me, and you can watch each of these stages happen in real time.'
+    'Here is the whole thing on one page. It is the answer to the question you asked after the last session: who does what? ' +
+    'Five players, left to right, in the order they act. The ruler, the geometry kernel, measures the CAD file and gives the same answer every time. The AI is switched off at JLR. If it were ever switched on, it could suggest the alloy and the route, as words, never money. The guards check every input against the measurements and correct it where they disagree. The engine does every calculation: it sizes the machine, builds the cycle times, fills the eight buckets and reprices across twenty countries, with fixed formulas you can trace. And the engineer sets the volume and region, answers what geometry cannot decide, can override any choice, and signs off the number. ' +
+    'The line in the middle is the tool in one sentence. The tool measures. The engineer answers. The engine calculates. A person approves. ' +
+    'The result on this housing is thirty-eight pounds fifty-five, with a band of roughly thirty-two to forty-five pounds. Every penny traces back to a measurement, an answer or a library rate. ' +
+    'That is the workflow. If it would help, I can run it live on a part you choose, so you can watch each stage happen.'
   );
 }
 
 
 FOOT = 'CostVision · how the tool works, step by step · injection-moulded bumper fascia worked example';
 
-divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method, a part that could hardly be more different', PURPLE,
-  ['Same kernel, same AI, same rate library, same eight buckets',
+divider('SECTION THREE', 'A Moulded Bumper Fascia', 'The same method, a part that could hardly be more different', PURPLE,
+  ['Same kernel, same questions, same rate library, same eight buckets',
    'Cooling calculated from wall thickness — and what half a millimetre is worth',
    'The paint line, costed from film thickness rather than a percentage uplift',
    'Two findings that nobody in the room would have predicted'], '18',
-  'Second worked example, and the reason it is here is to answer a fair question: is this a tool, or is it a demo that only works on one part? ' +
-  'So we do it all again on something as different as I could find — an injection-moulded bumper fascia. Same kernel, same AI, same rate library, same eight buckets, same person signing it off. What changes is which bucket holds the money, and the answer is going to surprise you. ' +
-  'Along the way you will see cooling time calculated from wall thickness and what half a millimetre of wall is actually worth, and the paint line costed properly from film thickness rather than as a percentage uplift on the moulded price. ' +
-  'And it ends with two findings that I would not have predicted before we ran it — which is, in the end, the whole argument for having the tool at all.');
+  'Second worked example. It is here to answer a fair question: is this a tool, or a demo that only works on one part? ' +
+  'So we do it all again on something as different as I could find: an injection-moulded bumper fascia. Same kernel, same questions, same rate library, same eight buckets, same person signing it off. What changes is which bucket holds the money, and the answer surprised me. ' +
+  'Along the way you will see cooling time calculated from wall thickness, and what half a millimetre of wall is worth. You will see the paint line costed from film thickness, not as a percentage uplift. And the section ends with two findings I would not have predicted before we ran it. ' +
+  'As with the housing, the costs are real engine output from the worked-example inputs, re-checked against today\u2019s engine and rates. ' +
+  'I finish the section with the new gear model, because it came straight from a request in this room.');
 
 // ══════════ PART 2 · A · SAME METHOD, DIFFERENT PART ══════════
 {
@@ -2185,7 +2235,7 @@ divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method,
 
   const phases = [
     [BLUE, BLUE_T, 'MEASURE', 'Ruler', ['1 · Upload the file', '2 · Measure the geometry', '3 · Draft & undercut check'], 'Same kernel, same facts'],
-    [PURPLE, PURPLE_T, 'AI READS (OPT.)', 'AI — optional', ['4 · Second-opinion read', 'resin · process · finish', 'skipped in Rules mode'], 'Words only — no prices'],
+    [PURPLE, PURPLE_T, 'ASK', 'Engineer · AI off at JLR', ['4 · The tool asks what', 'geometry cannot decide', 'resin · route · finish'], 'Asked, never guessed'],
     [AMBER, AMBER_T, 'SAFETY CHECKS', 'Engine', ['5 · Four automatic guards', '6 · Autocorrect wrong calls', 'before any money is counted'], 'Measurements always win'],
     [TEAL, TEAL_T, 'CALCULATE', 'Engine', ['7 · Pick press & cycle', '8 · Cost every second', '9-10 · Build & regionalise'], 'The same eight buckets'],
     [GREEN, GREEN_T, 'CHECK & USE', 'Engineer', ['11 · Confidence band', '12 · Report & approval'], 'A person signs it off'],
@@ -2210,11 +2260,11 @@ divider('SECTION THREE', 'An Injection-Moulded Bumper Fascia', 'The same method,
   footer(s, ++PG);
 
   s.addNotes(
-    'Right — second worked example, and I have chosen a part that could not be much more different from the casting: a front bumper fascia. ' +
-    'It is talc-filled polypropylene, four point two kilos, walls three millimetres thick, roughly one point eight metres by half a metre, with six undercut features that need sliding sections in the tool for the lamp and sensor apertures, and it is Class-A painted. Sixty thousand a year, made in China — deliberately the same volume and the same country as the casting so you can compare like with like. ' +
-    'Look at the five phases across the middle and compare them with the strip I showed you on the casting. They are identical. Same twelve stages, same owners, same colours. The geometry kernel is the same kernel. The AI does the same one job. The rate library is the same library. The engine builds the same eight buckets. ' +
-    'That is the point of this second example, and it is worth saying out loud: we have not built twenty different tools. We have built one method that applies to eighteen commodities. When someone brings us a part we have never costed before, nothing new has to be invented. ' +
-    'What does change — and this is what makes it worth your time — is which bucket ends up holding the money. On the casting it was the machining. On this part it is somewhere completely different, and I think the answer will surprise you as much as it surprised me.'
+    'Second worked example, and I chose a part that could hardly be more different from the casting: a front bumper fascia. ' +
+    'Talc-filled polypropylene, four point two kilos, three millimetre walls, about one point eight metres by half a metre. It has six undercut features that need sliding sections in the tool, for the lamp and sensor openings. And it is painted to a Class-A finish. Sixty thousand a year, made in China: deliberately the same volume and country as the casting, so we compare like with like. ' +
+    'Look at the five phases and compare them with the casting. They are identical. Same twelve stages, same owners, same colours. The kernel is the same kernel. The questions to the engineer are the same kind. The rate library is the same library. The engine builds the same eight buckets. ' +
+    'That is the point of a second example. We have not built nineteen different tools. We have built one method that covers nineteen manufacturing processes. When someone brings a part we have never costed, nothing new has to be invented. ' +
+    'What does change is where the money ends up. On the casting it was machining. On this part it is somewhere else entirely.'
   );
 }
 
@@ -2225,15 +2275,16 @@ partSlide('assets/workflow-deck/part-bumper.png',
    ['Overall width', '1,800 mm'], ['Undercut features', '6 slides'], ['Painted area', '1.6 m²'],
    ['Resin', 'PP-T20'], ['Annual volume', '60,000'], ['Made in', 'China']],
   'Same volume and country as the casting, so the two compare like for like.',
-  'And here is the second part, chosen because it could hardly be more different from the casting while still being something every one of us would recognise. ' +
-  'A front bumper fascia. Four point two kilos of talc-filled polypropylene, walls three millimetres thick, one point eight metres across. The grille aperture, the two fog-lamp openings and the parking-sensor holes all face back against the direction the mould opens, so the tool needs six sliding sections to release the part — and each of those slides is real money in the mould. ' +
-  'The projected shadow is nine thousand nine hundred square centimetres, which is six times the casting, and that single number is going to drive the biggest process decision on this part. ' +
-  'Note the last two rows deliberately: sixty thousand a year, made in China. Exactly the same volume and the same country as the casting, so when we compare the two at the end we are comparing like with like rather than two different sourcing scenarios.');
+  'Here is the second part. It is a worked example again: the inputs are the kind the kernel measures, and the costs are engine output. ' +
+  'A front bumper fascia. Four point two kilos of talc-filled polypropylene, three millimetre walls, one point eight metres across. The grille opening, the fog-lamp openings and the parking-sensor holes all face back against the direction the mould opens. So the tool needs six sliding sections to release the part, and each slide is real money in the mould. ' +
+  'The projected shadow is nine thousand nine hundred square centimetres, six times the casting. That one number drives the biggest process decision on this part: the size of the press. ' +
+  'The painted area is one point six square metres, which we need later for the paint line. ' +
+  'And note the last two rows: sixty thousand a year, made in China. The same volume and country as the casting, so when we compare the two at the end, we compare like with like rather than two sourcing scenarios.');
 
 // ══════════ PART 2 · B · MEASURE + AI ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Stages 1–4 · Measured First, Then Read', 'Same kernel, same order — the facts exist before the AI speaks', BLUE);
+  title(s, 'Stages 1–4 · Measured First, Then Asked', 'Same kernel, same order — the facts exist before anyone answers a question', BLUE);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 5.4, h: 2.9, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 0.75, y: 1.5, w: 0.46, h: 0.46, fill: { color: BLUE } });
@@ -2253,14 +2304,14 @@ partSlide('assets/workflow-deck/part-bumper.png',
   });
 
   s.addShape('roundRect', { x: 6.15, y: 1.3, w: 3.35, h: 2.9, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
-  s.addText('WHAT THE OPTIONAL AI SAYS BACK', { x: 6.4, y: 1.44, w: 3.4, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: PURPLE, charSpacing: 0.8, margin: 0 });
-  const says = [['Material family', 'Talc-filled polypropylene'], ['How it is made', 'Injection moulded, one shot'], ['Then what', 'Painted, Class-A finish'], ['How sure it is', '0.87 confident']];
+  s.addText('WHAT THE ENGINEER IS ASKED', { x: 6.4, y: 1.44, w: 3.4, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: PURPLE, charSpacing: 0.8, margin: 0 });
+  const says = [['Material family', 'Talc-filled polypropylene'], ['How it is made', 'Injection moulded, one shot'], ['Then what', 'Painted, Class-A finish'], ['Volume · region', '60,000 a year · China']];
   says.forEach(([k, v], i) => {
     const y = 1.78 + i * 0.52;
     s.addText(k, { x: 6.4, y, w: 2.9, h: 0.22, fontFace: 'Calibri', fontSize: 9.0, color: MUTED, margin: 0 });
     s.addText(v, { x: 6.4, y: y + 0.21, w: 2.9, h: 0.3, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: 'top' });
   });
-  s.addText('Four words. No numbers.', { x: 6.4, y: 3.88, w: 2.9, h: 0.26, fontFace: 'Calibri', fontSize: 9.5, bold: true, italic: true, color: PURPLE, margin: 0 });
+  s.addText('Answered, not guessed.', { x: 6.4, y: 3.88, w: 2.9, h: 0.26, fontFace: 'Calibri', fontSize: 9.5, bold: true, italic: true, color: PURPLE, margin: 0 });
 
   s.addShape('roundRect', { x: 9.75, y: 1.3, w: 3.08, h: 2.9, fill: { color: BLUE_T }, line: { color: BLUE, width: 1.25 }, rectRadius: 0.1 });
   s.addText('THE UNDERCUT COUNT', { x: 10.0, y: 1.44, w: 2.6, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, bold: true, color: BLUE, charSpacing: 0.8, margin: 0 });
@@ -2281,16 +2332,16 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('roundRect', { x: 0.5, y: 5.75, w: 12.33, h: 0.85, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Identical to the casting: ', options: { bold: true, color: PURPLE } },
-    { text: 'stages 1 to 3 happen before any AI is involved; in the AI modes it hands back four words and a confidence score with no access to a price, a rate or a machine — and in the default Rules mode it is skipped entirely.', options: { color: SLATE } },
+    { text: 'stages 1 to 3 measure first; stage 4 is the engineer answering what geometry cannot decide. AI is off at JLR — and even when on, it never sees a price, a rate or a machine.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.86, w: 11.75, h: 0.66, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'Stages one to four, and I will go quickly because the method is the one you have already seen. ' +
-    'The kernel opens the model and measures. Volume, and on polypropylene that is four point two kilos. Wall thickness, three millimetres — hold onto that, it matters more than you would think. The projected shadow in the direction the mould opens, nine thousand nine hundred square centimetres. The painted surface area, one point six square metres. ' +
-    'And then the measurement that I find genuinely clever: it classifies every face by its angle to the mould-opening direction and counts the ones pointing back against the draw. Six of them. Every one of those needs a sliding section in the tool so the part can be released, and every slide is real money in the mould. Nobody counted those by eye off a drawing. ' +
-    'In the optional AI modes the model then does its one job and hands back four words: talc-filled polypropylene, injection moulded in one shot, painted to a Class-A finish, eighty-seven percent confident. Four words and a score. No numbers. It still cannot see a price list, a rate or a machine — and in the default Rules mode this step is skipped: the filename, the geometry and the engineer\u2019s answer supply the same facts. ' +
-    'And the box across the bottom is the one I would underline. That projected shadow, nine thousand nine hundred square centimetres, decides the biggest process number on this part. Molten plastic pushing outwards across that area is what tries to force the mould open, so it sets the press size — and the press rate then sets the moulding cost. A part this size simply cannot be moulded on a small machine, no matter how cheap that machine is per hour. We will see exactly what that costs on the next slide.'
+    'Stages one to four. I will go quickly, because you have seen the method. ' +
+    'The kernel measures. Volume, which on polypropylene is four point two kilos. Wall thickness, three millimetres: hold on to that, it matters more than you would think. The projected shadow in the direction the mould opens, nine thousand nine hundred square centimetres. And the painted area, one point six square metres. ' +
+    'Then a clever measurement. The kernel classifies every face by its angle to the mould-opening direction, and counts the faces that point back against it. Six of them. Each needs a sliding section in the tool, and each slide costs real money. Nobody counted those by eye. ' +
+    'Stage four is the engineer answering what geometry cannot decide: the material family, the process, the finish, the volume and the region. Here: talc-filled polypropylene, injection moulded in one shot, painted to Class-A, sixty thousand a year in China. At JLR it is always the engineer, because the AI is off. ' +
+    'The box at the bottom is the one I would underline. The shadow area decides the biggest process number on this part. Molten plastic pushing out across that area tries to force the mould open, so it sets the press size, and the press rate sets the moulding cost. A part this size cannot be moulded on a small machine, however cheap that machine is.'
   );
 }
 
@@ -2336,12 +2387,12 @@ partSlide('assets/workflow-deck/part-bumper.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'Stages five to seven. Four guards run on this part, and they are different guards from the casting — because a moulded part goes wrong in different ways. ' +
-    'Guard one, the runner. On a cold-runner tool, every shot also produces a sprue and runner — six hundred to nine hundred grams of plastic that is not the part. This tool has a hot runner, so the shot weight is the part weight. The guard makes sure we neither charge for plastic that does not exist nor forget it when the tool is cold-runner. ' +
-    'Guard two, cooling. And this is the number people guess and should not. Cool time is three point one six times the wall thickness squared. At three millimetres that is twenty-eight point four seconds — more than half the entire cycle. Notice it is the wall SQUARED. Take the wall from three millimetres to two point five and you take about nine seconds out of every shot. That is the single most powerful lever in injection moulding, and it is a design decision, not a purchasing one. ' +
-    'Guard three is the press, and it is the same physics as the die-casting slide, just a different commodity. Nine thousand nine hundred square centimetres of shadow, times twenty-five megapascals of cavity pressure, times a fifteen percent safety factor, gives two thousand nine hundred tonnes of clamp force needed. The engine walks the ladder and takes the smallest press that covers it — three and a half thousand tonnes at three hundred and six pounds an hour. ' +
-    'Guard four, the tool cost. A four hundred and twenty thousand pound mould is a quotation from a toolmaker, not something we invent. The tool takes it as an input, applies the Class-A finish uplift, and shows you the arithmetic. ' +
-    'Now the red box, because this is the commercial argument for having the guard at all. If you let the model sit on a default two-thousand-tonne press, you cost the moulding at a hundred and seventy-eight pounds an hour instead of three hundred and six. Forty-two percent too cheap. And worse than being wrong — the part would never mould, because that press cannot hold the tool shut. You would walk into a supplier meeting and negotiate hard against a price that is physically impossible to deliver. That is the kind of mistake that costs credibility, and you only need to make it once.'
+    'Stages five to seven. Four guards run on this part, and they are different from the casting guards, because a moulded part goes wrong in different ways. ' +
+    'Guard one, the runner. A cold-runner tool makes a sprue and runner with every shot, six to nine hundred grams of plastic that is not the part. This tool has a hot runner, so the shot weight is the part weight. The guard makes sure we neither charge for plastic that does not exist nor forget it on a cold-runner tool. ' +
+    'Guard two, cooling. This is the number people guess and should not. Cooling time is three point one six times the wall thickness squared. At three millimetres that is twenty-eight point four seconds, more than half the cycle. The wall is squared, so it is the strongest lever in moulding, and it is a design decision. ' +
+    'Guard three, the press. Same physics as the casting. Nine thousand nine hundred square centimetres, times twenty-five megapascals, times a fifteen percent safety factor, is about two thousand nine hundred tonnes. The smallest press that covers it is thirty-five hundred tonnes, at three hundred and six pounds an hour. ' +
+    'Guard four, the tool cost. A four hundred and twenty thousand pound mould is a toolmaker\u2019s quotation. The tool takes it as an input and applies the Class-A finish uplift. ' +
+    'The red box is why the press guard matters. A default two thousand tonne press would cost the moulding about forty-two percent too cheap, and the part could not even be made on it.'
   );
 }
 
@@ -2351,7 +2402,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   title(s, 'Cooling Time from First Principles', 'The Fourier slab solution, calibrated to industry data — every input printable, nothing guessed', PURPLE);
   const steps = [
     ['1 · The physical law, not a fitted curve', 'Cooling a moulded wall between two mould faces is textbook transient conduction, and its exact solution is:  t_cool = wall² ÷ (π²·α) × ln[ (4/π) × (T_melt − T_mould) ÷ (T_eject − T_mould) ].  The wall enters SQUARED because heat must diffuse out through half the thickness — that is why wall is the most powerful lever in moulding.'],
-    ['2 · Every resin carries its real temperatures', '19 resin families each carry typical melt / mould / eject temperatures. PP (the bumper): melt 230 °C, mould 40 °C, eject 85 °C → log term ln(1.273 × 190/45) = 1.682. ABS runs 240/60/95; PA6 280/80/125; PC 300/90/130. Change the resin and the physics changes with it.'],
+    ['2 · Every resin carries its real temperatures', '20 resin families each carry typical melt / mould / eject temperatures. PP (the bumper): melt 230 °C, mould 40 °C, eject 85 °C → log term ln(1.273 × 190/45) = 1.682. ABS runs 240/60/95; PA6 280/80/125; PC 300/90/130. Change the resin and the physics changes with it.'],
     ['3 · Calibrated ONCE against industry cycle data', 'The effective diffusivity α_eff is derived from the curated industry factor at those reference temperatures — for PP: α_eff = 1.682 ÷ (π² × 3.16) = 0.054 mm²/s. α_eff deliberately absorbs what the ideal slab ignores: latent heat of crystallisation and mould-interface resistance. At reference temperatures the formula reproduces the curated factor EXACTLY — adopting the physics changed provenance, not price.'],
     ['4 · The governing wall, and a sanity clamp', 'Cooling is evaluated at the 95th-percentile measured wall (capped at 2× the mean): the part ejects when its THICKEST section is stiff, so the mean systematically under-times ribs and bosses. And the computed factor is clamped to [0.5×, 2×] of the curated value — physics may move the cycle; a pathological temperature pair may not run away with the cost.'],
   ];
@@ -2398,7 +2449,12 @@ partSlide('assets/workflow-deck/part-bumper.png',
   ], { x: 0.68, y: 6.42, w: 12.0, h: 0.55, fontFace: 'Calibri', fontSize: 9.6, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
-    'This slide exists because cooling is the biggest single number in a moulding cycle and the one everybody used to guess. Here is exactly how the tool calculates it now — from first principles, and I can defend every symbol. Step one, the law: a moulded wall cooling between two mould faces is textbook transient heat conduction, and the exact solution says cooling time equals wall squared, divided by pi squared times the thermal diffusivity, times the log of a temperature ratio — how far the melt has to fall against how much margin there is at ejection. The wall enters squared because heat has to diffuse out through half the thickness. That is physics, not a fitted curve. Step two: each of nineteen resin families carries its real processing temperatures. Polypropylene — this bumper — melts in at two hundred and thirty, the mould runs at forty, the part ejects safely at eighty-five. Step three is the honest part: the diffusivity is not taken from a textbook, it is calibrated once so that at those reference temperatures the formula reproduces the curated industry factor exactly — for PP, three point one six seconds per millimetre squared. That calibration deliberately absorbs what the ideal equation ignores, like the latent heat a crystallising polymer gives up and the imperfect contact between plastic and steel. So adopting the physics did not move a single estimate — it changed the provenance from “a constant we assert” to “a law you can check”. Step four: it is evaluated at the ninety-fifth percentile wall, because the part ejects when its thickest section is stiff, and the result is clamped to within a factor of two of the curated value so a bad temperature input cannot run away with the cost. And the payoff is on the right: because it is a formula, it answers questions a constant never could. Chill the mould to twenty degrees and cooling drops four and a half seconds a shot, priced by the law. Thin the wall half a millimetre and nine seconds come out, one pound eleven a part. Those are the two conversations this slide is built to start.'
+    'Cooling is the biggest single number in a moulding cycle, and the one people used to guess. Here is how the tool calculates it, from first principles. ' +
+    'Step one, the law. A plastic wall cooling between two mould faces is textbook heat conduction. The exact solution says cooling time equals wall squared, divided by pi squared times the thermal diffusivity, times the log of a temperature ratio. The wall is squared because heat has to travel out through half the thickness. ' +
+    'Step two. Each of twenty resin families carries its typical temperatures. Polypropylene, this bumper, goes in at two hundred and thirty degrees, the mould runs at forty, and the part ejects at eighty-five. ' +
+    'Step three is the honest part. The diffusivity is calibrated once, so that at those standard temperatures the formula gives exactly the industry factor we used before: three point one six seconds per millimetre squared. So adopting the physics did not move a single estimate. It changed the source from a constant we assert to a law you can check. ' +
+    'Step four. It uses the thickest sections, the ninety-fifth percentile wall, because the part ejects when its thickest section is stiff. And the result is clamped, so a bad temperature input cannot run away with the cost. ' +
+    'The payoff is on the right. Chill the mould to twenty degrees and about four and a half seconds come off each shot. Thin the wall by half a millimetre and nearly nine seconds come off, one pound eleven a part at UK rates. Those are the two conversations this slide should start.'
   );
 }
 
@@ -2427,7 +2483,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
     ['Cool  =  3.16 × wall²  =  3.16 × 3.0²', 'CALCULATED', '28.44 s', true],
     ['Open, eject, close', 'process input', '9.00 s', false],
     ['Sub-total', '', '53.94 s', false],
-    ['× 1.02 reject uplift', 'engine rule', '55.02 s', false],
+    ['÷ 0.98 (2% reject allowance)', 'engine rule', '55.04 s', false],
   ];
   cyc.forEach(([k, src, v, hi], i) => {
     const y = 1.78 + i * 0.32;
@@ -2446,7 +2502,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addText('What that squared term is worth — take 0.5 mm out of the wall', { x: 0.8, y: 5.12, w: 8, h: 0.28, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: GREEN, margin: 0 });
   const sens = [['', '3.0 mm wall', '2.5 mm wall', 'Change'],
     ['Cool time', '28.44 s', '19.75 s', '−8.69 s'],
-    ['Total cycle', '55.02 s', '46.17 s', '−8.85 s'],
+    ['Total cycle', '55.04 s', '46.17 s', '−8.87 s'],
     ['Press cost per part', '£5.51', '£4.62', '−£0.89'],
     ['Part cost, UK', '£31.06', '£29.95', '−£1.11']];
   const sx = [0.85, 3.6, 5.4, 7.2];
@@ -2465,12 +2521,11 @@ partSlide('assets/workflow-deck/part-bumper.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'Same treatment for the bumper — show the calculation, do not assert it. ' +
-    'Left-hand side, the press, and I want you to notice that it is literally the same slide as the casting with different numbers in it. Projected shadow off the CAD, nine thousand nine hundred square centimetres. Cavity pressure for a large thin-wall polypropylene part, twenty-five megapascals. Multiply: two thousand five hundred and twenty-four tonnes trying to force the mould open. Fifteen percent safety factor, two thousand nine hundred and two tonnes. Walk the ladder — eight hundred, twelve hundred, two thousand, three and a half thousand — and take the smallest that covers it. Three and a half thousand tonnes at three hundred and six pounds twelve an hour. Same physics, same rule, same code path. Different commodity. ' +
-    'Right-hand side, the cycle, and here I want to be precise about which numbers are calculated and which are entered, because that distinction matters. Fill, pack and eject are process inputs — four and a half seconds, twelve seconds, nine seconds — they come from the moulder or from our process engineer. But the cooling term is calculated: three point one six times the wall thickness squared. Three millimetres squared is nine, times three point one six is twenty-eight point four four seconds. Then the engine adds a two percent reject uplift and you get fifty-five seconds. ' +
-    'Cooling is over half of that cycle, and it is the one term the tool works out for itself rather than accepting. ' +
-    'Which brings me to the box along the bottom, and this is the most commercially useful thing on the slide. Because the wall enters squared, taking half a millimetre out of it — three millimetres down to two point five — drops the cooling from twenty-eight point four to nineteen point eight seconds. The whole cycle falls by nearly nine seconds. The press cost per part drops eighty-nine pence, and the UK part cost drops one pound eleven. ' +
-    'Now think about who that conversation belongs to. That is not a purchasing conversation. You cannot negotiate eighty-nine pence out of a moulder who is already running an efficient press. That is a design conversation, and it has to happen before the design is frozen. What the tool gives you is the ability to put a hard number on it while there is still time to act — and in my experience that is worth more than any of the negotiation the rest of this deck talks about.'
+    'Same treatment for the bumper: show the calculation, do not assert it. ' +
+    'Left side, the press. It is the same slide as the casting with different numbers. Shadow area, nine thousand nine hundred square centimetres. Cavity pressure for a large thin-wall polypropylene part, twenty-five megapascals. That is about two thousand five hundred tonnes trying to open the mould. Add fifteen percent and you need about two thousand nine hundred. Walk the ladder and take the smallest press that covers it: thirty-five hundred tonnes, at three hundred and six pounds twelve an hour. ' +
+    'Right side, the cycle. I want to be clear which numbers are calculated and which are entered. Fill, pack and eject are process inputs: four and a half, twelve and nine seconds. They come from the moulder or our process engineer. Cooling is calculated: three point one six times three squared, twenty-eight point four four seconds. The engine then allows for two percent rejects and you get about fifty-five seconds. ' +
+    'The box at the bottom is the useful part. Take half a millimetre out of the wall. Cooling drops to about nineteen point eight seconds. The cycle falls by nearly nine seconds. The press cost per part drops eighty-nine pence, and the UK part cost drops one pound eleven. I re-ran that on today\u2019s engine. ' +
+    'That is a design conversation, not a purchasing one, and it has to happen before the design is frozen. The tool lets you put a number on it while there is still time.'
   );
 }
 
@@ -2481,7 +2536,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 5.5, h: 2.65, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText('HOW THE 55-SECOND CYCLE IS BUILT', { x: 0.75, y: 1.42, w: 5, h: 0.26, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
-  const cyc = [['Fill the cavity', '4.5 s'], ['Pack and hold', '12.0 s'], ['Cool  =  3.16 × 3.0²', '28.4 s'], ['Open and eject', '9.0 s'], ['+ 2% reject uplift', '1.1 s']];
+  const cyc = [['Fill the cavity', '4.5 s'], ['Pack and hold', '12.0 s'], ['Cool  =  3.16 × 3.0²', '28.4 s'], ['Open and eject', '9.0 s'], ['+ 2% reject allowance', '1.1 s']];
   cyc.forEach(([k, v], i) => {
     const y = 1.78 + i * 0.33;
     const big = i === 2;
@@ -2541,13 +2596,12 @@ partSlide('assets/workflow-deck/part-bumper.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'Stages eight to ten. Left-hand box, how the fifty-five second cycle is built, and every line of it is calculated rather than typed. Four and a half seconds to fill the cavity. Twelve seconds packing and holding under pressure. Twenty-eight point four seconds cooling — which, remember, is three point one six times three millimetres squared. Nine seconds to open and eject. Plus a two percent reject uplift. Fifty-five seconds. ' +
-    'Right-hand box, and this is the arithmetic you can check while I talk. Fifty-five seconds is nought point zero one five three of an hour. Divide by eighty-five percent machine availability and the press is occupied for nought point zero one eight of an hour. Times three hundred and six pounds twelve an hour gives five pounds fifty-one of machine. Add half an operator at nineteen eighty an hour, seventeen pence of labour. Five pounds sixty-seven — and if you add the two rounded figures on the slide you get sixty-eight, because both are rounded to the penny; the engine carries the full precision. ' +
-    'And now stop and look at that number, because it is the whole making cost of a car bumper. Five pounds sixty-seven. On the casting, making the part was thirty-two fifty-seven. Here it is under six pounds — one shot, fifty-five seconds, done. ' +
-    'So where did the money go? Look at the chart. The tooling bar — eleven pounds twenty — is more than twice the next biggest bucket, and it is bigger than the resin, the press and the labour added together. On this part, the tool IS the cost. ' +
-    'Twenty-six pounds eight in China, and that is unpainted and ex-works — paint is a separate operation and I will come to it. ' +
-    'And look at the country row, because it makes a point I would not have predicted. China twenty-six oh eight, the UK thirty-one oh six. Only nineteen percent apart. On the casting the UK was fifty-five percent above China. Why the difference? Because the tool, the packaging and the logistics do not get cheaper by moving the factory, and the resin is a world price. Only the press hours and the labour move — and on this part there are barely any labour hours to move. ' +
-    'The lesson for a sourcing strategy is worth stating plainly: offshoring saves you a lot on a labour-heavy part and very little on a tooling-heavy one.'
+    'Stages eight to ten. On the left, how the fifty-five second cycle is built. Fill, four and a half seconds. Pack and hold, twelve. Cooling, twenty-eight point four. Open and eject, nine. Plus a two percent reject allowance. ' +
+    'On the right, the arithmetic you can check. Fifty-five seconds is nought point nought one five three of an hour. Divide by eighty-five percent availability and the press is busy for nought point nought one eight of an hour. Times three hundred and six pounds twelve gives five pounds fifty-one of machine. Half an operator gives seventeen pence of labour. Five pounds sixty-seven in total. If you add the two rounded figures you get sixty-eight; the engine keeps full precision. ' +
+    'Stop and look at that. Five pounds sixty-seven is the whole making cost of a car bumper. On the casting, making the part was thirty-two fifty-seven. ' +
+    'So where did the money go? Look at the chart. Tooling, eleven pounds twenty, is the biggest bucket by far, bigger than resin, press and labour together. On this part, the tool is the cost. ' +
+    'Twenty-six pounds oh eight in China, unpainted and ex-works. Paint is next. ' +
+    'And the country row. China twenty-six oh eight, UK thirty-one oh six, only about nineteen percent apart. On the casting it was fifty-five percent. The tool, packaging and logistics do not get cheaper when the factory moves, and resin is a world price. Offshoring saves a lot on a labour-heavy part and little on a tooling-heavy one.'
   );
 }
 
@@ -2578,7 +2632,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('line', { x: 0.78, y: 3.28, w: 7.05, h: 0, line: { color: LINE, width: 1 } });
   const pl = [
     ['Paint on 1.6 m² of bumper, + 6% rework', '£11.01'],
-    ['Paint line, 55 parts/hr ÷ 0.85 OEE × £102.13/hr', '£2.32'],
+    ['Paint line (UK rate), 55 parts/hr ÷ 0.85 OEE × £102.13/hr', '£2.32'],
     ['Two operators on the line', '£0.85'],
     ['Masking fixtures, £45k ÷ 60,000', '£0.75'],
   ];
@@ -2599,31 +2653,30 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('line', { x: 8.6, y: 2.7, w: 4, h: 0, line: { color: '9FD9CF', width: 1 } });
   s.addText('£39.22', { x: 8.6, y: 2.82, w: 4, h: 0.7, fontFace: 'Cambria', fontSize: 34.0, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
   s.addText('painted, ex-works, per part', { x: 8.6, y: 3.56, w: 4, h: 0.26, fontFace: 'Calibri', fontSize: 10.0, color: 'CDEDE7', align: 'center', margin: 0 });
-  s.addText('Paint is a third of the delivered cost — and half of THAT is one litre of basecoat.',
+  s.addText('Paint is a third of the delivered cost — and about 40% of that is the basecoat.',
     { x: 8.6, y: 3.9, w: 4, h: 0.56, fontFace: 'Calibri', fontSize: 9.2, italic: true, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 4.74, w: 12.33, h: 1.26, fill: { color: CARD }, line: { color: GREEN, width: 1.5 }, rectRadius: 0.1 });
   s.addText('Why this is worth costing separately rather than as a percentage uplift', { x: 0.8, y: 4.85, w: 11.5, h: 0.28, fontFace: 'Calibri', fontSize: 12.5, bold: true, color: GREEN, margin: 0 });
   s.addText([
     { text: 'Transfer efficiency is the number nobody argues about and everybody should. ', options: { bold: true, color: NAVY } },
-    { text: 'At 60% transfer, four of every ten pounds of basecoat lands in the booth filters rather than on the car. Move that one line to 70% with better electrostatics and the basecoat drops from £5.55 to £4.76 — on 60,000 parts a year that is £47,000. A percentage uplift on the moulded cost would have hidden that completely.', options: { color: SLATE } },
+    { text: 'At 60% transfer, four of every ten pounds of basecoat lands in the booth filters rather than on the car. Move that one line to 70% with better electrostatics and the basecoat drops from £5.55 to £4.75 — on 60,000 parts a year that is about £47,000. A percentage uplift on the moulded cost would have hidden that completely.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.16, w: 11.75, h: 0.76, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'top' });
 
   s.addShape('roundRect', { x: 0.5, y: 6.12, w: 12.33, h: 0.76, fill: { color: AMBER_T }, line: { color: AMBER, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Honest note:  ', options: { bold: true, color: AMBER } },
-    { text: 'the paint line is a separate costing in the tool, not a bucket inside the moulding one — because in the real world it is usually a separate supplier with its own overhead and margin. The £39.22 above adds the two ex-works costs; it does not double-count either supplier’s margin.', options: { color: SLATE } },
+    { text: 'the paint line is a separate costing, not a bucket inside the moulding one — in the real world it is usually a separate supplier. The £13.14 is the line\u2019s cost before the painter\u2019s own overhead and margin; the £39.22 simply adds it to the moulded ex-works cost.', options: { color: SLATE } },
   ], { x: 0.8, y: 6.2, w: 11.75, h: 0.6, fontFace: 'Calibri', fontSize: 11.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'I owe you the other half of this part, because a bumper is not finished when it comes off the press — it gets painted, and paint is not a rounding error. ' +
-    'The formula at the top is the whole of it, and it is the standard paint-shop calculation rather than anything we invented. Wet litres equals the area you are covering times the dry film thickness you need, divided by the solids content of the paint times the transfer efficiency of the booth. ' +
-    'Work it through for the basecoat, because that is where the money is. One point six square metres of bumper, twenty microns of dry film — that is thirty-two millilitres of actual paint on the car. But basecoat is only twenty-five percent solids, and only sixty percent of what the gun sprays lands on the part. So you have to buy two hundred and thirteen millilitres of wet paint to get thirty-two millilitres of dry film on the car. At twenty-six pounds a litre, five pounds fifty-five. ' +
-    'Add the primer and the clearcoat, add six percent for rework because painted parts do get rejected, and the paint material alone is eleven pounds. Then the line itself — fifty-five parts an hour, divided by eighty-five percent availability, at a hundred and two pounds an hour — two thirty-two. Two operators, eighty-five pence. Masking fixtures spread over the year, seventy-five pence. ' +
-    'So the delivered bumper, painted and ex-works in China, is thirty-nine pounds twenty-two. The moulded part was twenty-six oh eight. Paint is a third of the delivered cost, and half of the paint is one litre of basecoat. ' +
-    'Now the box that I would put in front of a purchasing team. Transfer efficiency is the number nobody argues about and everybody should. At sixty percent, four of every ten pounds of basecoat you buy ends up in the booth filters instead of on the car. Move one line from sixty to seventy percent with better electrostatics and the basecoat drops from five fifty-five to four seventy-six a part — on sixty thousand parts a year that is forty-seven thousand pounds, from one process parameter. If we had costed paint as a percentage uplift on the moulded price, which is what most tools do, that number would simply not exist. ' +
-    'And the honest note at the bottom. We cost the paint line as a separate costing, not as a bucket inside the moulding one, because in the real world it is usually a separate supplier with its own overhead and margin. The thirty-nine twenty-two adds two ex-works costs — it does not double-count anybody’s margin.'
+    'A bumper is not finished when it comes off the press. It gets painted, and paint is not a rounding error. ' +
+    'The formula at the top is the standard paint-shop calculation. Wet litres equals the area, times the dry film thickness you need, divided by the paint\u2019s solids content times the booth\u2019s transfer efficiency. ' +
+    'Take the basecoat, because that is where the money is. One point six square metres at twenty microns is thirty-two millilitres of dry paint on the part. But basecoat is only twenty-five percent solids, and only sixty percent of what the gun sprays lands on the part. So you buy about two hundred and thirteen millilitres of wet paint. At twenty-six pounds a litre, five pounds fifty-five. ' +
+    'Add primer, clearcoat and six percent for rework, and paint material alone is eleven pounds. Then the line time, two operators and the masking fixtures. At China rates the paint line comes to thirteen fourteen. That is before the painter\u2019s own overhead and margin, and the honest note at the bottom says so. ' +
+    'Add it to the moulded part and the painted bumper is thirty-nine pounds twenty-two. Paint is about a third of it. ' +
+    'Now the box for purchasing. At sixty percent transfer efficiency, four pounds in every ten of basecoat ends up in the booth filters. Move to seventy percent and the basecoat drops to four seventy-five a part. On sixty thousand parts that is about forty-seven thousand pounds a year. A percentage uplift would have hidden that completely.'
   );
 }
 
@@ -2670,13 +2723,13 @@ partSlide('assets/workflow-deck/part-bumper.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'I want to stop on these two, because they are the return on having done any of this. ' +
-    'Finding one. Tooling is eleven pounds twenty of a twenty-six pound part. Forty-three percent — the biggest single bucket, and larger than the resin, the press and the labour added together, which come to six pounds ninety-six between them. On the casting, tooling was two pounds seventeen, about six percent. Same method, same engine, same eight buckets — and the money has moved to a completely different place. ' +
-    'Finding two. China twenty-six oh eight against a UK thirty-one oh six. A nineteen percent gap. On the casting that same comparison was fifty-five percent. The reason is straightforward once you see it: the tool, the packaging and the logistics do not get cheaper by moving the factory, and polypropylene is a world price. The only things that actually move are press hours and labour, and this part has almost no labour in it. ' +
-    'Now the row that matters, which is what each of those changes on Monday morning. ' +
-    'Finding one says stop negotiating the piece price and go and negotiate the tooling deal instead. Who owns the tool. Over how many parts it is amortised. What happens at end of programme. Amortised over five years instead of one, this part is fifteen fourteen rather than twenty-six oh eight — and no amount of piece-price haggling gets you eleven pounds. ' +
-    'Finding two says do not move a tooling-heavy part offshore expecting the savings you got on a casting. Nineteen percent, once you set it against freight, lead time, quality risk and the cost of transferring the tool, may not clear the bar at all. That is a decision you would rather make with a number than a hunch. ' +
-    'And I would put one honest question to the room. Before we ran this, would anybody here have told you the tool was forty-three percent of a bumper, or that offshoring it saves only nineteen percent? I would not have. That is exactly what the method is for.'
+    'I want to stop on these two, because they are the return on doing any of this. ' +
+    'Finding one. Tooling is eleven pounds twenty of a twenty-six pound part. Forty-three percent, the biggest single bucket, and larger than the resin, the press and the labour added together, which come to six ninety-six. On the casting, tooling was two seventeen, about six percent. Same method, same engine, and the money has moved to a different place. ' +
+    'Finding two. China twenty-six oh eight against the UK at thirty-one oh six, a gap of about nineteen percent. On the casting it was fifty-five. The tool, the packaging and the logistics do not get cheaper when the factory moves, and polypropylene is a world price. Only press hours and labour move, and this part has almost no labour. ' +
+    'Now, what each finding changes on Monday morning. ' +
+    'Finding one says: stop haggling over the piece price and negotiate the tooling deal. Who owns the tool, how many parts it is spread over, and what happens at the end of the programme. Spread over five years instead of one, this part is fifteen fourteen rather than twenty-six oh eight. ' +
+    'Finding two says: do not move a tooling-heavy part offshore expecting casting-sized savings. Nineteen percent, set against freight, lead time, quality risk and moving the tool, may not clear the bar. ' +
+    'Before we ran this, would anyone have said the tool was forty-three percent of a bumper? I would not have. That is what the method is for.'
   );
 }
 // ══════════ PART 2 · E · BAND, HUMAN, AND THE CONTRAST ══════════
@@ -2742,11 +2795,11 @@ partSlide('assets/workflow-deck/part-bumper.png',
 
   s.addNotes(
     'Last two stages, and then the payoff. ' +
-    'Stage eleven, the honest range. Nineteen eighty-three to thirty-three sixteen, plus or minus twenty-six percent. That is wider than the casting was, and the reason is worth knowing: on this part a very large share of the answer rides on one tooling quotation, and tooling is the input the tool trusts least. The band is telling you where the risk actually sits. ' +
-    'Stage twelve, and here the engineer has a lever that did not exist on the casting. How long do we amortise the tool over? Over one year, sixty thousand parts, tooling is eleven pounds twenty and the part is twenty-six pounds eight. Over a three-year programme it is three seventy-three and the part is under seventeen pounds. Over five years, two twenty-four and fifteen fourteen. Same part, same supplier, same tool — nearly eleven pounds of difference, and it is purely a commercial decision about programme life. If a supplier quotes you twenty-six pounds while amortising over one year, that is not them being expensive, that is them carrying tooling risk. Now you can have that conversation properly. ' +
-    'And one thing I owe you for completeness: this is the unpainted, ex-works fascia. Paint is a separate operation on a separate line, and the tool costs it separately — at UK rates it comes out at about fifteen pounds a part, of which eleven is the paint material itself. So paint roughly doubles the delivered cost of a bumper, which is exactly why the industry cares so much about body-colour versus grained finishes. ' +
-    'Now the table across the middle, which for me is the single most valuable slide in this pack. Two parts. One method. Look at where the money is. Making the casting cost thirty-two fifty-seven; moulding the bumper cost five sixty-seven — one shot beats four machining operations, comfortably. But tooling on the casting was two pounds seventeen and on the bumper it is eleven twenty. The biggest bucket flips from process to tooling. The China-to-UK gap collapses from fifty-five percent to nineteen. And the lever you push in a supplier meeting changes completely — cycle time and fixturing on one, programme volume and wall thickness on the other. ' +
-    'And that is the whole argument for having this tool at all. Nobody in this room could have told you in advance that the money was in machining on one part and in tooling on the other. Not reliably, not with numbers you could defend. The method finds it. Every time, on any part, without anyone having to already know the answer.'
+    'Stage eleven, the range. Nineteen eighty-three to thirty-three sixteen, about plus or minus twenty-six percent. That is wider than the casting, because so much of this answer rides on one tooling number, and tooling is the input the tool trusts least. The band shows you where the risk sits. ' +
+    'Stage twelve, and here the engineer has a lever the casting did not offer: how long is the tool spread over? The tool spreads tooling over annual volume times programme life. Over one year, tooling is eleven twenty and the part is twenty-six oh eight. Over three years, three seventy-three and just under seventeen pounds. Over five, two twenty-four and fifteen fourteen. Same part, same supplier, same tool, nearly eleven pounds apart. If a supplier quotes twenty-six pounds on a one-year spread, they are carrying tooling risk, and now you can talk about it properly. ' +
+    'Remember this is unpainted. At UK rates the paint line adds about fifteen pounds before the painter\u2019s overhead and margin. ' +
+    'The table in the middle is, for me, the most valuable slide in the pack. Making the casting cost thirty-two fifty-seven; moulding the bumper, five sixty-seven. Tooling flips from two seventeen to eleven twenty. The biggest bucket flips from process to tooling. The China to UK gap drops from fifty-five percent to nineteen. And the lever to push changes completely. ' +
+    'Nobody could have told you that in advance with numbers you could defend. The method finds it.'
   );
 }
 
@@ -2779,8 +2832,8 @@ partSlide('assets/workflow-deck/part-bumper.png',
   const STEP_W = 1.18, STEP_H = 0.40, STEP_GAP = 0.22, ROUTE_X = 3.95;
   const rows = [
     ['ISO class 9 — as cut',            ['Hob', 'Deburr', 'Inspect'],                        '£8.26',  '95 s',  GREEN, []],
-    ['ISO class 6 — hardened + ground', ['Hob', 'Deburr', 'Carburise', 'Grind', 'Inspect'],  '£13.55', '141 s', AMBER, [2, 3]],
-    ['Internal ring gear, class 7',     ['Power skive', 'Deburr', 'Carburise', 'Inspect'],   '£11.19', '115 s', BLUE,  [2]],
+    ['ISO class 6 — hardened + ground', ['Hob', 'Deburr', 'Carburise', 'Grind', 'Inspect'],  '£13.47', '141 s', AMBER, [2, 3]],
+    ['Internal ring gear, class 7',     ['Power skive', 'Deburr', 'Carburise', 'Grind', 'Inspect'], '£17.02', '172 s', BLUE,  [2, 3]],
   ];
   rows.forEach(([what, steps, cost, cyc, col, added], i) => {
     const y = 2.42 + i * 0.66;
@@ -2825,7 +2878,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
 
   s.addShape('roundRect', { x: 6.78, y: 4.72, w: 6.05, h: 1.36, fill: { color: BLUE_T }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
   s.addText('IT PICKS THE MACHINE, AND REFUSES WHEN IT CANNOT', { x: 6.98, y: 4.80, w: 5.7, h: 0.22, fontFace: 'Calibri', fontSize: 9.0, bold: true, color: BLUE, charSpacing: 0.5, margin: 0 });
-  [['14 gear machines in the rate library — hobbers, shapers, skivers, grinders, broach, honer, checker', 0],
+  [['15 gear machines in the library — hob, shape, skive, grind, broach, hone', 0],
    ['Sized on module × diameter × face width, not diameter alone', 1],
    ['A gear beyond every machine is BLOCKED, never costed on the biggest one', 2]]
     .forEach(([t, i]) => {
@@ -2837,18 +2890,18 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('roundRect', { x: 0.5, y: 6.20, w: 12.33, h: 0.5, fill: { color: 'FDEEEC' }, line: { color: RED, width: 1 }, rectRadius: 0.07 });
   s.addText([
     { text: 'Said plainly: ', options: { bold: true, color: RED, fontSize: 10.0 } },
-    { text: 'all 80 shop numbers — feeds, speeds, tool life, heat-treat rates — are representative, not from your plant. The tool prints that warning on every gear estimate. It shows the right structure; it is not yet a quotable number.', options: { color: SLATE, fontSize: 10.0 } },
+    { text: 'all 88 shop numbers — feeds, speeds, tool life, heat-treat rates — are representative, not from your plant. The tool prints that warning on every gear estimate. It shows the right structure; it is not yet a quotable number.', options: { color: SLATE, fontSize: 10.0 } },
   ], { x: 0.72, y: 6.20, w: 11.9, h: 0.5, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
   s.addNotes(
-    'This one is new since we last met, and it came straight from you. Cost engineering and the plant asked why gears went through the tool as if they were just milled parts. Fair question, because that is exactly what was happening, and the machining model cannot see a tooth. ' +
-    'So gears now have their own model. Look at the three rows in the middle. Same gear, same size, same programme. The only thing changing is how accurate we ask it to be. ' +
-    'Top row, a loose gear, we just cut the teeth and check it. Eight pounds twenty-six. Middle row, we ask for a tight gear. Now it has to be hardened in a furnace, and because hardening bends it slightly, it then has to be ground. Two extra machines. Thirteen fifty-five. ' +
-    'That is the important bit, so let me say it a different way. Asking for a tighter gear does not make the same operations cost more. It adds operations. Any tool that just multiplies by one-point-four is wrong, and it will be wrong in the direction that loses you money. ' +
-    'The bottom row is an internal ring gear. A hob physically cannot get inside a bore, so the tool does not even offer it — it picks power skiving instead. Geometry decides, not preference. ' +
-    'Bottom left: the cycle time is not a guess. It is the gear train arithmetic, and the tool prints the sum so your plant can argue with it. ' +
-    'And the red bar at the bottom is me being straight with you. The structure is right, the arithmetic is right, but the feeds and speeds are representative numbers, not yours. Give me your machine list and your feeds and this becomes a real should-cost. Until then it is directional, and the tool says so itself on every single output.'
+    'This one is new, and it came straight from you. Cost engineering and the plant asked why gears went through the tool as if they were milled parts. Fair question: that is what was happening, and the machining model cannot see a tooth. ' +
+    'So gear cutting now has its own model, and it is one of the thirteen commodities that can be costed from CAD. Look at the three rows. The first two are the same gear, same size, same programme. Only the accuracy we ask for changes. ' +
+    'Top row, ISO class nine, as cut: hob it, deburr it, inspect it. Eight pounds twenty-six. Middle row, class six. Now it must be carburised, and because hardening distorts it, it must then be ground. Two extra operations. Thirteen forty-seven. ' +
+    'That is the key idea. A tighter gear does not make the same operations cost more. It adds operations. A tool that just multiplies by one point four is wrong, in the direction that loses you money. ' +
+    'Bottom row, an internal ring gear. A hob cannot get inside a bore, so the tool uses power skiving. Skiving holds class six as cut, but hardening distorts it, so class seven after heat treat needs grinding too. Seventeen pounds oh two. Geometry decides the route, not preference. ' +
+    'The cycle time is gear-train arithmetic, printed so your plant can argue with it. ' +
+    'The red bar is me being straight. The structure is right, but all eighty-eight shop numbers are representative, not yours. The tool prints that warning on every gear estimate. Give us your feeds and speeds and it becomes a real should-cost.'
   );
 }
 
@@ -2859,10 +2912,10 @@ partSlide('assets/workflow-deck/part-bumper.png',
   owner(s, 10.33, 0.28, 'OWNER: US', RED, 'FDEEEC');
 
   const faults = [
-    ['Volume did nothing', 'The same gear cost £13.05 at 1,000 a year and £13.05 at a million a year. Identical to the penny.', 'Fixture, programming, first-article and broach capital now amortise. £35.81 at 1k/yr → £13.46 at 1M/yr.'],
-    ['A gear with zero teeth got a price', '£11.12. So did negative teeth and zero face width. A zero amortisation volume returned "not a number".', '16 impossible definitions are now refused, each naming the field that is wrong.'],
-    ['An internal gear was sent to the wrong grinder', 'A generating grinder works from outside and cannot enter a bore. Not a smaller machine — the wrong machine.', 'Grinder choice is now internal-aware; honing and shaving are refused on internal gears.'],
-    ['Quality grade stopped mattering once grinding started', 'Class 6, 5 and 4 all ground for exactly 39.3 seconds — contradicting the whole point of the model.', 'Tighter classes now buy spark-out passes, and the tool shows them in the sum.'],
+    ['Volume did nothing', 'The same gear cost £13.05 at 1,000 a year and £13.05 at a million a year. Identical to the penny.', 'Fixture, programming, first-article and broach capital now amortise, so a low-volume gear correctly costs more than a high-volume one.'],
+    ['A gear with zero teeth got a price', '£11.12. So did negative teeth and zero face width. A zero amortisation volume returned "not a number".', 'Impossible definitions are now refused, each naming the field that is wrong.'],
+    ['Internal gear, wrong grinder', 'A generating grinder works from outside and cannot enter a bore. Not a smaller machine — the wrong machine.', 'Grinder choice is now internal-aware; honing and shaving are refused on internal gears.'],
+    ['Grade stopped mattering once ground', 'Class 6, 5 and 4 all ground for exactly 39.3 seconds — contradicting the whole point of the model.', 'Tighter classes now buy spark-out passes, and the tool shows them in the sum.'],
   ];
   faults.forEach(([t, was, now], i) => {
     const y = 1.3 + i * 1.16;
@@ -2875,18 +2928,19 @@ partSlide('assets/workflow-deck/part-bumper.png',
   });
 
   s.addShape('roundRect', { x: 0.5, y: 6.02, w: 12.33, h: 0.5, fill: { color: TEAL_T }, line: { color: TEAL, width: 1 }, rectRadius: 0.07 });
-  s.addText('All seven are now locked down by 38 automated tests, so they cannot come back. Total suite: 1,777 tests.',
+  s.addText('All seven are now locked down by automated tests, so they cannot quietly come back. Total suite today: 2,438 tests.',
     { x: 0.72, y: 6.02, w: 11.9, h: 0.5, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
   s.addNotes(
-    'I want to show you this slide because it is the one that should give you the most confidence, even though it is a list of our own mistakes. ' +
-    'After building the gear model, we did not just test that it works. We attacked it — deliberately fed it nonsense and looked for answers that were wrong but looked right. That is the dangerous kind of wrong. You can argue with a number that looks silly. You cannot argue with one that looks fine and is not. ' +
-    'We found seven. Take the first. The same gear cost thirteen pounds and five pence whether you made a thousand a year or a million. Identical to the penny. That is the very first thing any of you would check, and it was flat, because we had never modelled the one-off costs — the fixture, the programming, the first article approval, the broach. Now they are in, and a low-volume gear correctly costs nearly three times a high-volume one. ' +
-    'The second one is embarrassing and I will say it anyway. A gear with zero teeth returned eleven pounds twelve. It should have refused. Now it refuses, and it tells you which field is wrong. ' +
-    'The third is a genuine manufacturing error. We were sending internal ring gears to a grinder that physically cannot reach inside a bore. Your plant would have spotted that in a second and lost trust in everything else on the page. ' +
-    'And the fourth undermined the whole feature — once a gear was being ground, asking for tighter and tighter accuracy changed nothing at all. ' +
-    'Every one of those is now fixed and locked down with tests, so they cannot quietly return. I would rather show you this slide than have your plant head find any of it in a meeting.'
+    'This slide is a list of our own mistakes, and I think it should give you more confidence, not less. ' +
+    'After building the gear model, we did not just test that it worked. We attacked it. We fed it nonsense on purpose and looked for answers that were wrong but looked right. That is the dangerous kind of wrong. You can argue with a number that looks silly. You cannot argue with one that looks fine. ' +
+    'We found seven faults. Four are on the slide. ' +
+    'First, volume did nothing. The same gear cost the same to the penny at a thousand a year and at a million. We had not modelled the one-off costs: the fixture, the programming, the first-article approval, the broach. Now they are in, and a low-volume gear correctly costs more. ' +
+    'Second, a gear with zero teeth got a price. It should have been refused. Now impossible definitions are refused, and the tool says which field is wrong. ' +
+    'Third, internal ring gears were sent to a grinder that cannot reach inside a bore. Your plant would have spotted that in a second. ' +
+    'Fourth, once a gear was being ground, asking for tighter accuracy changed nothing. Now tighter classes buy extra finishing passes, shown in the sum. ' +
+    'All seven are fixed and locked down by tests. The whole suite today is 2,438 tests. I would rather show you this than have your plant find it in a meeting.'
   );
 }
 
@@ -2897,11 +2951,11 @@ partSlide('assets/workflow-deck/part-bumper.png',
 
   const lims = [
     ['Cost an assembly from one CAD file', 'It rolls up an assembly from parts you have already costed. It cannot open one assembly model, work out which parts are in it, how they join, or what the assembly labour is. Multi-part programmes still need a person to define the structure.'],
-    ['Read a tolerance or a surface finish', 'The kernel measures shape, exactly. It cannot see a ±0.02 callout, a Ra value or a material spec unless the CAD file carries the annotation — and most do not. Those still come off the drawing or from our engineer.'],
-    ['Guarantee the AI classified correctly', 'It can misread an unusual part. That is why it carries a confidence score, why nine checks run automatically, and why a person signs the result. We claim no AI-invented number becomes money — not that the AI is never wrong.'],
+    ['Read a tolerance or a surface finish', 'The kernel measures shape, exactly. It cannot see a ±0.02 callout, a Ra value or a material spec unless the CAD file carries it — most do not. And an STL has no feature table, so a machined STL needs a typed cycle time.'],
+    ['Prove its accuracy yet', 'No estimate has yet been compared with a price JLR paid. Six pinned parts prove the answer is stable, not that it is right. Accuracy is measured as actuals are logged; after 3 for a commodity the band is corrected.'],
     ['Replace a quotation', 'This is a should-cost: what the part ought to cost on stated assumptions. It is a negotiating instrument and a design-feedback loop, not a price, and not a substitute for an RFQ.'],
     ['Keep duty and tariff data fresh by itself', 'Rates decay. The engine blocks any rate that is unverified or older than 90 days rather than quietly using it — but somebody has to run the refresh against the official tariff service.'],
-    ['Cost a process it has never met', 'Eighteen manufacturing commodities are modelled (plus assembly roll-up and software). A genuinely novel process needs a new module — days of work, not minutes, and a process engineer to specify it.'],
+    ['Cost a process it has never met', '19 manufacturing processes are modelled, plus an assembly roll-up and a software cost model. A genuinely new process needs a new module — days of work, and a process engineer to specify it.'],
   ];
   lims.forEach(([h, t], i) => {
     const col = i % 2, row = Math.floor(i / 2);
@@ -2920,14 +2974,14 @@ partSlide('assets/workflow-deck/part-bumper.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'I would rather you heard the limits from me than found them yourself in three months, so here are six, honestly. ' +
-    'One, and it is the one I get asked most: it cannot cost an assembly from a single CAD file. It will happily roll up an assembly from parts you have already costed — that works today. What it cannot do is open one assembly model and work out which parts are in it, how they join, and what the assembly labour is. That needs a person to define the structure. We looked hard at whether that could be automated and concluded honestly that it cannot, not reliably. ' +
-    'Two, it cannot read a tolerance or a surface finish. The kernel measures shape and it measures it exactly, but a plus-or-minus two-hundredths callout or a roughness value is an annotation, and most CAD files we receive do not carry them. Those still come off the drawing or out of our engineer’s head. ' +
-    'Three, it cannot guarantee the AI classified the part correctly. It can misread something unusual. That is precisely why there is a confidence score, why nine checks run automatically on every estimate, and why a person signs the result. Our claim is narrow and deliberate: no AI-invented number ever becomes money. It is not that the AI is never wrong. ' +
-    'Four, it does not replace a quotation. This is a should-cost — what the part ought to cost on stated assumptions. It is a negotiating instrument and a design-feedback loop. It is not a price and it does not replace an RFQ. ' +
-    'Five, it cannot keep the duty and tariff data fresh on its own. Rates decay. The engine will block a rate that is unverified or more than ninety days old rather than quietly using it — which is the right behaviour — but somebody still has to run the refresh against the official tariff service. ' +
-    'Six, it cannot cost a process it has never met. Eighteen manufacturing commodities are modelled, plus assembly roll-up and software. Something genuinely novel needs a new module: days of work, and a process engineer to specify it. ' +
-    'And the reason I am showing you this slide at all is on the navy strip. A tool that claims no limits is a tool nobody should trust with a supplier negotiation. Every one of those six is either on the roadmap or is a job we have deliberately chosen to leave with a person.'
+    'I would rather you heard the limits from me than found them yourselves in three months. Six of them. ' +
+    'One. It cannot cost an assembly from a single CAD file. It rolls up an assembly from parts you have already costed. It cannot open one assembly model and work out the parts, the joins and the assembly labour. A person defines the structure. ' +
+    'Two. It cannot read a tolerance or a surface finish unless the CAD file carries it, and most do not. Those come from the drawing or the engineer. And an STL is only a mesh, with no feature table, so a machined STL is blocked until the engineer types a cycle time. ' +
+    'Three, and the most important. It cannot prove its accuracy yet. No estimate has been compared with a price JLR actually paid. The six pinned parts prove the answer is stable, not that it is right. We will measure accuracy as actuals are logged. ' +
+    'Four. It does not replace a quotation. It is a should-cost: what the part ought to cost on stated assumptions. A negotiating tool and a design-feedback loop, not a price. ' +
+    'Five. It cannot keep duty and tariff data fresh by itself. It blocks a rate that is unverified or over ninety days old, but someone has to run the refresh. ' +
+    'Six. It cannot cost a process it has never met. Nineteen are modelled. A new one needs a new module and a process engineer. ' +
+    'A tool that claims no limits should not be trusted in a supplier negotiation.'
   );
 }
 
@@ -2939,7 +2993,10 @@ divider('APPENDIX', 'Reference Material', 'Everything behind the numbers — kep
    'Technical architecture — languages, code size, licences and what calls out',
    'Backup: the data contracts, field by field'],
   null,
-  'That is the end of the hour. Everything from here is reference material, and I do not intend to present it — it is here so that when somebody asks how the DFM rules actually work, or what the tool is built from, or whether anything calls out to the internet, the answer is in the pack rather than in my head. Two groups. The first is the complete DFM and DFA rule library: every threshold, every geometry advisor and every idea lever, with the exact numbers they fire on. The second is the technical architecture for the engineers — languages, code size, licences, and a straight answer on what talks to the outside world. Jump to whichever gets asked about.');
+  'That is the end of the hour. Everything from here is reference material. I do not plan to present it. It is here so that when someone asks how the DFM rules work, what the tool is built from, or whether anything calls out to the internet, the answer is in the pack and not only in my head. ' +
+  'There are two groups. First, the complete DFM and DFA rule library: every threshold rule, every geometry advisor and every idea lever, with the exact numbers they fire on. It was transcribed from the engine\u2019s source code, so if the engine changes, these slides must change too. ' +
+  'Second, the technical architecture for engineers: what each box is built from, what data passes between them, the licences, and a straight answer on what talks to the outside world. In the JLR build, with AI off, the answer is nothing on the costing path. ' +
+  'Jump to whichever gets asked about.');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // APPENDIX · DFM / DFA & IDEA GENERATION — THE COMPLETE RULE LIBRARY
@@ -2993,7 +3050,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   s.addShape('roundRect', { x: 0.5, y: 5.28, w: 12.33, h: 0.7, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1, dashType: 'dash' }, rectRadius: 0.1 });
   s.addText([
     { text: 'Where the AI sits:  ', options: { bold: true, color: PURPLE } },
-    { text: 'nowhere in the rules. Every check, score and saving on the next seven slides is deterministic engine code. The optional "AI deep analysis" only writes commentary on findings the rules have already made — it cannot add, remove or re-score one.', options: { color: SLATE } },
+    { text: 'nowhere in the rules. Every check and saving on the next seven slides is deterministic engine code. The optional "AI deep analysis" (off at JLR) only writes commentary on findings the rules made — it cannot add, remove or re-rank one.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.33, w: 11.75, h: 0.6, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
 
   s.addShape('roundRect', { x: 0.5, y: 6.14, w: 12.33, h: 0.76, fill: { color: NAVY }, rectRadius: 0.1 });
@@ -3004,11 +3061,11 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   footer(s, ++PG);
 
   s.addNotes(
-    'This appendix exists because of a fair question: when the tool scores a part eight and a half out of ten for manufacturability and offers a dozen cost-reduction ideas — where do those actually come from? ' +
-    'The answer is a written rule book, and it is small enough to show you in full. Fifty-two threshold rules reading nineteen parameters and signals, ten geometry advisors reading the measured solid, and a thirty-six-lever idea catalogue spanning eight categories — material, design, process, tooling, logistics, commercial, quality and sustainability. That is the entire analysis. There is no hidden model behind it. ' +
-    'And I want to be upfront: the first version of this layer was thinner — ten levers, mostly cost-structure ones. We took the challenge that it read like a basic checklist rather than what a good VAVE engineer would produce, went back to the engine, and rebuilt it as a full 360-degree catalogue. Everything you are about to see ships in the tool today. ' +
-    'The flow is five steps and all of them are arithmetic. The costing is reduced to its parameters. Fifty-two written checks run, each one a plain threshold that fires or passes, while the geometry advisors do the same job on the measured shape. Findings knock points off two scores that start at ten. The three biggest savings combine root-sum-square so overlapping fixes are never double-counted. And the lever catalogue turns what fired into a ranked, categorised action list priced from the part’s own numbers. ' +
-    'One thing to be precise about, because it is the theme of this whole pack: the AI is nowhere in this. Every rule is deterministic engine code — same part in, same findings out, with the network cable unplugged. The optional AI button writes commentary around the findings; it cannot add one, remove one, or change a score.'
+    'This appendix exists because of a fair question: when the tool lists a dozen cost-reduction ideas, where do they actually come from? ' +
+    'The answer is a written rule book, small enough to show in full. Fifty-two threshold rules reading nineteen parameters and signals. Ten geometry advisors reading the measured solid. And a thirty-six lever idea catalogue across eight categories: material, design, process, tooling, logistics, commercial, quality and sustainability. That is the whole analysis. There is no hidden model behind it. ' +
+    'The first version of this layer was thinner, about ten levers, mostly on cost structure. We took the challenge that it read like a checklist rather than what a good value engineer would produce, and rebuilt it. ' +
+    'The flow is five steps, all arithmetic. Reduce the costing to its parameters. Run the fifty-two checks, while the advisors check the shape. Price each finding in pounds per part and rank it. Combine the top three by root-sum-square, capped at forty percent, so overlapping ideas are not double-counted. Then turn what fired into a ranked, categorised action list. ' +
+    'And the AI is nowhere in this. Same part in, same findings out, with the network cable unplugged. At JLR the AI is off anyway. If it were on, it could comment on findings, but not add, remove or re-rank one.'
   );
 }
 
@@ -3070,12 +3127,11 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
 
   footer(s, ++PG);
   s.addNotes(
-    'These are the numbers the analysis is allowed to read — the ten core parameters from before, and nine extended signals we added with the 360-degree upgrade. Nothing else goes in. ' +
-    'The ten core ones you know: the total, six bucket shares, the operation count, OEE and material utilisation — teal read straight from the costing, blue entered with the part, with stated assumptions when left blank. ' +
-    'The nine extended signals are what let the new rules and levers behave like an experienced cost engineer instead of a checklist. Packaging and logistics shares — two buckets the old rules ignored entirely. Labour efficiency per operation. The per-operation cost split, so the tool knows WHICH operation carries the money, not just how many there are. Consumables — cores, patterns, shell. The tooling investment and, importantly, its amortisation basis against the stated annual volume — a mismatch there is a commercial finding on its own. Manning and parts-per-cycle. Labour time against machine cycle time. And the operation names themselves — welding, inspection, rework and heat-treat words in the routing are signals, and the rules read them. ' +
-    'And the card on the right is the one that changed most recently, on direct feedback from this room. It used to be a scoring card — manufacturability out of ten, assembly out of ten. It is now a ranking card. Every finding is priced against this part: saving percentage times the part cost equals pounds per part, ranked biggest first inside its category. No score is published and no severity label appears anywhere an engineer sees. The engine still grades findings internally, because it needs an order — but that grading never leaves the engine. ' +
-    'The reason is worth saying out loud: a previous exercise like this scored designs, and the engineering team quite reasonably read it as a report card on their work. Nothing gets implemented after that. A ranked list of actions with money against each one is the same arithmetic and a completely different conversation. ' +
-    'The headline is unchanged: the three biggest combined root-sum-square, capped at forty percent. And the context gates at the bottom — if the volume was assumed rather than entered, if the part is already costed in the region a lever would recommend, or if pack rates are tool estimates, the lever downgrades itself to a confirm-first note. The tool does not instruct on facts nobody gave it.'
+    'These are the numbers the analysis is allowed to read, and nothing else goes in. Ten core parameters, and nine extended signals. ' +
+    'The ten core ones are the total, the six bucket shares, the operation count, equipment effectiveness and material utilisation. The teal ones are read straight from the costing. The blue ones are entered with the part, and a stated assumption is used when they are left blank. ' +
+    'The nine extended signals are what let the rules behave like an experienced cost engineer rather than a checklist. Packaging and logistics shares. Labour efficiency. Which single operation carries the money. Consumables like cores and patterns. The tooling investment and whether it is spread over the stated annual volume. Manning and parts per cycle. Labour time against machine time. And the operation names themselves, because words like rework or inspection in a routing are signals. ' +
+    'The card on the right changed after feedback from this room. It used to be a score out of ten. Now it is a ranking. Every finding is priced against this part and ranked biggest first. No score and no severity label is shown to an engineer. A previous exercise that scored designs was read as a report card, and nothing got implemented. ' +
+    'Finally, the context gates. If the volume was assumed, or pack rates were estimated, a lever downgrades itself to a confirm-first note. The tool does not instruct on facts nobody gave it.'
   );
 }
 
@@ -3185,10 +3241,11 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   footer(s, ++PG);
 
   s.addNotes(
-    'The second third — twenty-seven checks that switch on for the specific process being costed. A casting is never judged by sheet-metal rules. ' +
-    'Most of these you saw in the previous version. What changed with the upgrade: extrusion and rotational moulding now have their own rule blocks — conversion cost and offcut scrap for extrusion, oven cycle and secondary operations for rotomoulding — where before those commodities only got the universal checks. Painting gains the rule this deck itself argues for two sections earlier: paint material above forty percent of cost points straight at transfer efficiency, because at sixty percent transfer efficiency four litres in ten end up in the booth filters. And cast-and-machine parts now run BOTH the machining rules and the casting rules — the split-routing check on their machining content, the die-cost check on their casting content — where before they fell between the two. ' +
-    'The machining rules are also smarter than a count: the split-routing rule is station-aware. It knows the difference between seven operations across five machines and seven operations on one five-axis — and when the routing is already consolidated it says so as a verified note instead of recommending what has already been done. ' +
-    'And notice again the two biggest numbers sit with wiring harness and composites — labour past half the cost, hand layup past forty percent. Where the money is people, the rules say so bluntly.'
+    'The second third: twenty-seven checks that switch on for the specific process being costed. A casting is never judged by sheet-metal rules. ' +
+    'What changed in the upgrade. Extrusion and rotational moulding now have their own rules: conversion cost and offcut scrap for extrusion, oven cycle and secondary operations for rotomoulding. Painting gains a rule this deck argued for earlier: paint material above forty percent of cost points straight at transfer efficiency. And cast-and-machine parts now run both the machining rules and the casting rules, where before they fell between the two. ' +
+    'The machining rules are smarter than a count. The split-routing rule knows the difference between seven operations across five machines and seven operations on one five-axis machine. When the routing is already consolidated, it says so as a verified note instead of recommending what has already been done. ' +
+    'Note where the biggest savings sit: wiring harness and composites, where labour passes half the cost or hand lay-up dominates. Where the money is people, the rules say so plainly. ' +
+    'One reminder for the whole appendix. The severity column orders the rules inside the engine. It is never shown to an engineer.'
   );
 }
 
@@ -3277,14 +3334,14 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
     s.addText(r[3], { x: acx[3], y, w: acw[3], h: 0.45, fontFace: 'Calibri', fontSize: 9.6, bold: true, color: TEAL, align: 'right', margin: 0, valign: 'middle' });
   });
 
-  s.addText('75 geometry checks in total. They run alongside the 52 cost-structure rules and feed the same DFM/DFA sections of the report — findings the AI can comment on but never write.',
+  s.addText('75 geometry checks in total. They run alongside the 52 cost-structure rules and feed the same DFM/DFA sections of the report — deterministic, and never written by AI.',
     { x: 0.5, y: 6.62, w: 12.33, h: 0.4, fontFace: 'Calibri', fontSize: 8.5, italic: true, color: MUTED, margin: 0 });
   footer(s, ++PG);
 
   s.addNotes(
     'The fifty-two rules you have just seen read the cost structure. This slide is the other half of the DFM story: the ten geometry advisors, which read the measured solid itself — the walls, the draft, the radii, the spans — one advisor module per manufacturing process, seventy-five checks between them. ' +
     'Each row is one advisor. The casting advisor looks for the things a foundry would: heavy isolated sections that solidify last and draw porosity, missing draft, too little machining stock. The forging advisor checks webs, fillets and grain flow. Sheet metal checks bend radii against the material gauge and holes too close to an edge. Injection moulding is the busiest — ten checks covering ribs, bosses, draft, undercuts, flow length and weld lines. Blow moulding and thermoforming watch thinning — blow-up ratios and deep draws. Extrusion checks wall balance across the profile, rubber checks where the flash line lands — on a sealing face that is a leak path — lamination checks tooth and bridge widths on electrical steels, and rotomoulding checks venting and kiss-offs. ' +
-    'The important sentence is the footnote: these seventy-five checks run alongside the fifty-two cost-structure rules and feed the same sections of the report. All of it deterministic, all of it from the measured geometry — and the AI can add commentary to these findings, but it cannot write one.'
+    'The important sentence is the footnote. These seventy-five checks run alongside the fifty-two cost-structure rules and feed the same sections of the report. All of it is deterministic, all of it from the measured geometry. At JLR the AI is off; even when on, it could comment on these findings but never write one.'
   );
 }
 
@@ -3425,27 +3482,28 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   footer(s, ++PG);
 
   s.addNotes(
-    'The second half of the catalogue — tooling, packaging and logistics, commercial, quality and sustainability. This is the "360 degrees" part of the claim: the old layer stopped at the factory gate; this one follows the part all the way to the loading dock and the contract. ' +
-    'Tooling: the volume lever as before, plus soft tooling below twenty-five thousand parts, a tooling-ownership clause — who owns the tool, who maintains it, what happens at end of programme — and a tool-life programme on die processes. ' +
-    'Packaging and logistics were completely dark before: returnable packaging above four percent, pack density above eight, freight mode above six, and my favourite of the new set — the near-shore check. If the part is already in China and logistics is past nine percent of its cost, the tool now asks the opposite question to the usual one: would a nearer supplier win on LANDED cost? The same arithmetic that used to only push parts offshore can now push back. ' +
-    'Commercial: the three from before — regional sourcing, open-book overhead, competitive RFQ — plus make-vs-buy, a raw-material indexation clause, a learning-curve price-down where a real volume was confirmed, and payment terms. ' +
-    'Quality reads the routing: standalone inspection and manual finishing both get challenged at source. And sustainability carries real money as well as carbon: recycled resin content and process energy. ' +
-    'Two honest notes to close. Every lever is gated on what a person actually told the tool — assumed volumes, quoted regions and estimated pack rates downgrade the lever to a confirm-first note. And the two backstops still exist so no part ever leaves with an empty list — they are labelled as what they are.'
+    'The second half of the catalogue: tooling, packaging and logistics, commercial, quality and sustainability. This is the 360 degree part. The old layer stopped at the factory gate. This one follows the part to the loading dock and into the contract. ' +
+    'Tooling: spread the tool over more volume, soft tooling below twenty-five thousand parts, a tooling-ownership clause, and a tool-life programme on die processes. ' +
+    'Packaging and logistics were not looked at before. Now there are returnable packaging, pack density, freight mode, and a near-shore check. If a part is already in a low-cost country and logistics is past nine percent of its cost, the tool asks the opposite of the usual question: would a nearer supplier win on landed cost? ' +
+    'Commercial: regional sourcing, open-book overhead, a competitive RFQ with the should-cost as the floor, make versus buy, a raw-material index clause, a learning-curve price-down where a real volume was confirmed, and payment terms. ' +
+    'Quality reads the routing and challenges standalone inspection and manual finishing at the source. Sustainability covers recycled resin and process energy. ' +
+    'Two honest notes. Every lever is gated on what a person actually told the tool. And the two backstop levers exist so no part leaves with an empty list; they are labelled as backstops.'
   );
 }
 
 // ══════════ A9 · WHAT ENGINEERING ACTUALLY SEES ══════════
-// Real output: the £23.27 reference bracket, run through the shipped engine.
+// Real output: the reference machined bracket's inputs (tests/reference-part.test.ts),
+// run through generateDFMDFA + rankOpportunities on the current rate library.
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'What Engineering Actually Sees', 'The output for one real part — ranked by money, grouped by category, nothing graded', GREEN);
+  title(s, 'What Engineering Actually Sees', 'The output for one part — ranked by money, grouped by category, nothing graded', GREEN);
   owner(s, 10.33, 0.28, 'OWNER: THE ENGINE', TEAL, TEAL_T);
 
   // headline strip
   s.addShape('roundRect', { x: 0.5, y: 1.18, w: 12.33, h: 0.72, fill: { color: GREEN_T }, line: { color: GREEN, width: 1.25 }, rectRadius: 0.08 });
   s.addText([
-    { text: 'Combined opportunity £5.55/part ', options: { bold: true, color: GREEN, fontSize: 13.0 } },
-    { text: '(~22% of the £25.14 piece cost)  ·  10 ranked opportunities across 4 categories  ·  machining', options: { color: SLATE, fontSize: 11.0 } },
+    { text: 'Combined opportunity £5.38/part ', options: { bold: true, color: GREEN, fontSize: 13.0 } },
+    { text: '(top three, root-sum-square)  ·  machined Al bracket, £24.34 at UK rates  ·  9 ideas in 4 categories — to test, not savings achieved', options: { color: SLATE, fontSize: 10.0 } },
   ], { x: 0.78, y: 1.18, w: 11.8, h: 0.72, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   const ccx = [0.72, 1.25, 4.9, 10.15, 11.25, 12.15], ccw = [0.4, 3.6, 5.2, 1.0, 0.85, 1.1];
@@ -3470,45 +3528,46 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
 
   let y = 2.02;
   header(y); y += 0.2;
-  band(y, 'COMMERCIAL & SOURCING · 2 opportunities', '£4.53', NAVY, 'E8EDF6'); y += 0.26;
+  band(y, 'COMMERCIAL & SOURCING · 1 opportunity', '£4.38', NAVY, 'E8EDF6'); y += 0.26;
   [
-    ['1', 'Regional sourcing study (LCC)', 'Conversion cost at 69.6% of the part — real regional arbitrage', '£4.53', 'High', 'Long term'],
-    ['2', 'Learning-curve price-down', 'Labour 23.5% with a confirmed volume and no curve priced in', '£0.75', 'Low', 'Quick win'],
+    ['1', 'Regional sourcing study (LCC)', 'Conversion cost at 69.1% of the part — real regional arbitrage', '£4.38', 'High', 'Long term'],
   ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
 
-  y += 0.06; band(y, 'MATERIAL · 2 opportunities', '£2.52', TEAL, TEAL_T); y += 0.26;
+  y += 0.06; band(y, 'MATERIAL · 2 opportunities', '£2.43', TEAL, TEAL_T); y += 0.26;
   [
-    ['3', 'Near-net-shape / better nesting', 'Utilisation 65% against the 80–90% target', '£2.52', 'Med', 'Medium term'],
-    ['4', 'Scrap revenue at index prices', '35% of bought metal leaves as chips — claim the credit', '£0.82', 'Low', 'Quick win'],
+    ['2', 'Near-net-shape / better nesting', 'Utilisation 65% against the 80–90% target', '£2.43', 'Med', 'Medium term'],
+    ['3', 'Scrap revenue at index prices', '35% of bought metal leaves as chips — claim the credit', '£0.79', 'Low', 'Quick win'],
   ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
 
-  y += 0.06; band(y, 'PROCESS & AUTOMATION · 4 opportunities', '£2.01', BLUE, BLUE_T); y += 0.26;
+  y += 0.06; band(y, 'PROCESS & AUTOMATION · 4 opportunities', '£1.95', BLUE, BLUE_T); y += 0.26;
   [
-    ['5', 'Attack the bottleneck: "CNC Milling"', 'One operation carries 64% of the conversion cost', '£2.01', 'Med', 'Medium term'],
-    ['6', 'Near-net-shape pre-form (cast/forge)', 'Machining is 46.0% of the part cost', '£2.01', 'Med', 'Medium term'],
-    ['7', 'Unmanned / lights-out running', 'Machine-paced, labour 23.5%, OEE 89% — the classic profile', '£1.51', 'Med', 'Medium term'],
-    ['8', 'Multi-machine manning', 'One operator per machine while the machine paces the cycle', '£1.26', 'Low', 'Quick win'],
+    ['4', 'Attack the bottleneck: "CNC Milling"', 'One operation carries 66% of the conversion cost', '£1.95', 'Med', 'Medium term'],
+    ['5', 'Near-net-shape pre-form (cast/forge)', 'Machining is 45.9% of the part cost', '£1.95', 'Med', 'Medium term'],
+    ['6', 'Unmanned / lights-out running', 'Machine-paced, labour 23.2%, OEE 85% — the classic profile', '£1.46', 'Med', 'Medium term'],
+    ['7', 'Multi-machine manning', 'One operator per machine while the machine paces the cycle', '£1.22', 'Low', 'Quick win'],
   ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
 
-  y += 0.06; band(y, 'DESIGN & GEOMETRY · 2 opportunities', '£1.26', PURPLE, PURPLE_T); y += 0.26;
+  y += 0.06; band(y, 'DESIGN & GEOMETRY · 2 opportunities', '£1.22', PURPLE, PURPLE_T); y += 0.26;
   [
-    ['9', 'Pallet / tombstone fixturing', '3 operations across 3 stations imply repeated re-fixturing', '£1.26', 'Low', 'Quick win'],
-    ['10', 'Tolerance & surface-finish relaxation', 'The tightest callouts set the machine, cycle and inspection', '£1.01', 'Low', 'Quick win'],
+    ['8', 'Pallet / tombstone fixturing', '3 operations across 3 stations imply repeated re-fixturing', '£1.22', 'Low', 'Quick win'],
+    ['9', 'Tolerance & surface-finish relaxation', 'The tightest callouts set the machine, cycle and inspection', '£0.97', 'Low', 'Quick win'],
   ].forEach((r, i) => { row(y, r, i % 2 === 0); y += 0.25; });
 
   s.addShape('roundRect', { x: 0.5, y: 6.14, w: 12.33, h: 0.76, fill: { color: NAVY }, rectRadius: 0.1 });
   s.addText([
     { text: 'Read the whole slide and notice what is missing:  ', options: { bold: true, color: '9FB6E0' } },
-    { text: 'no score, no “critical”, nothing that grades the design. Ten things to do, what each is worth, who owns it and how long it takes — the identical deterministic findings, presented as work rather than as a verdict.', options: { color: 'FFFFFF' } },
+    { text: 'no score, no “critical”, nothing that grades the design. Nine things to do, what each is worth, the risk and how long it takes — deterministic findings, presented as work rather than as a verdict.', options: { color: 'FFFFFF' } },
   ], { x: 0.85, y: 6.22, w: 11.65, h: 0.6, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'This is the output, for a real part — the reference machined bracket, run through the shipped engine. Not a mock-up; these are the numbers the tool produced. ' +
-    'Top line: five pounds fifty-five per part of combined opportunity, about twenty-two percent of a twenty-five pound piece cost, ten ranked opportunities across four categories. ' +
-    'Then the list, and this is the whole point of the change. Commercial and sourcing first, because it holds the single biggest action — a regional sourcing study worth four pounds fifty-three a part, and the tool flags it high risk and long term rather than pretending it is free. Material second: near-net-shape at two fifty-two, and a scrap-credit clause at eighty-two pence that costs nothing but a conversation. Process third, led by the bottleneck lever that names the operation — CNC milling carries sixty-four percent of the conversion cost on this part, so that is where cycle-time work pays. Design last on this part, at a pound twenty-six. ' +
-    'Every row says what to do, why it is on the list, what it is worth in pounds, who can pull it and how long it takes. ' +
-    'And now the thing I would ask you to notice, which is what is NOT on the slide. There is no score. There is no "critical". There is nothing that grades the part or the person who designed it. This is exactly the same deterministic arithmetic we had before — fifty-two rules, ten advisors, thirty-six levers — presented as a work list instead of a verdict. That was the feedback, and I think it is right: the last time an exercise like this scored designs, engineering read it as criticism and nothing got implemented. A ranked list with money against it is a conversation people want to have.'
+    'This is the output for one part: a machined aluminium bracket, the same inputs as our reference part, run through today\u2019s engine and rate library. Not a mock-up. ' +
+    'The part costs twenty-four thirty-four at UK rates. The tool lists nine ideas across four categories. The top three combined, by root-sum-square, come to about five pounds thirty-eight a part. Please read that as a list of ideas to test, not savings anyone has achieved. ' +
+    'Commercial and sourcing comes first because it holds the biggest single idea: a regional sourcing study worth about four pounds thirty-eight a part. The tool marks it high risk and long term, rather than pretending it is free. ' +
+    'Material second: near-net shape or better nesting, and a scrap-credit clause that costs nothing but a conversation. ' +
+    'Process third, led by the bottleneck lever that names the operation. CNC milling carries sixty-six percent of the conversion cost here, so that is where cycle-time work pays. ' +
+    'Design last on this part: pallet fixturing and relaxing tolerances. ' +
+    'Now notice what is missing. No score, no critical, nothing that grades the part or the person who designed it. The same deterministic arithmetic, shown as a work list instead of a verdict. That was the feedback, and I think it is right.'
   );
 }
 
@@ -3535,22 +3594,22 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     // the hand-off
     s.addShape('roundRect', { x: x + 0.06, y: y + 1.02, w: w - 0.12, h: 0.54, fill: { color: 'F0F4F9' }, line: { color: LINE, width: 0.75 }, rectRadius: 0.05 });
     s.addText('HANDS ON', { x: x + 0.06, y: y + 1.04, w: w - 0.12, h: 0.12, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: MUTED, align: 'center', charSpacing: 0.3, margin: 0 });
-    s.addText(obj, { x: x + 0.03, y: y + 1.16, w: w - 0.06, h: 0.14, fontFace: MONO, fontSize: 7.5, bold: true, color: NAVY, align: 'center', margin: 0 });
+    s.addText(obj, { x: x + 0.03, y: y + 1.16, w: w - 0.06, h: 0.14, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: NAVY, align: 'center', margin: 0 });
     s.addText(objPlain, { x: x + 0.06, y: y + 1.30, w: w - 0.12, h: 0.24, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, align: 'center', margin: 0, valign: 'top' });
   };
 
-  step(0.50, 1, 'Upload', 'A CAD file, a PCB photo, or a typed form', 'the file', 'STEP · IGES · STL · JPG', BLUE);
+  step(0.50, 1, 'Upload', 'A CAD file, or a typed commodity form', 'the file', 'STEP · IGES · STL · DXF', BLUE);
   step(1.78, 2, 'Measure', 'The Python kernel measures the solid', 'OCCTGeometry', 'size, walls, holes, draft', AMBER);
-  step(3.06, 3, 'Derive', '162 rules turn measurements into cost inputs', 'UniversalStackInput', 'material, operations, tooling', TEAL);
+  step(3.06, 3, 'Derive', 'Rules turn measurements into cost inputs', 'cost inputs', 'material, operations, tooling', TEAL);
 
   s.addShape('line', { x: 4.28, y: 1.87, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
 
   // ── the cost engine, in the middle ──
   s.addShape('roundRect', { x: 4.54, y: 1.06, w: 4.26, h: 1.62, fill: { color: TEAL_T }, line: { color: TEAL, width: 2 }, rectRadius: 0.1 });
   s.addText('THE COST ENGINE  ·  src/engine/', { x: 4.68, y: 1.11, w: 4.0, h: 0.22, fontFace: 'Calibri', fontSize: 10.5, bold: true, color: TEAL, margin: 0, valign: 'middle' });
-  s.addText('TypeScript · 27,181 lines · 1,777 tests · same code runs in the browser and on the server',
+  s.addText('TypeScript · ~30,500 lines · 2,438 tests · runs in browser and server',
     { x: 4.68, y: 1.32, w: 4.0, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: NAVY, margin: 0 });
-  [['core.ts works out the 8 cost buckets', 0], ['19 commodity modules', 1], ['Optimisers pick the cheapest capable machine', 2], ['Guardrails check every number', 3]]
+  [['core.ts: the 8 cost buckets', 0], ['19 commodity modules', 1], ['Optimisers pick the machine', 2], ['Guardrails check every number', 3]]
     .forEach(([t, i]) => {
       const cx = 4.68 + (i % 2) * 2.02, cy = 1.53 + Math.floor(i / 2) * 0.185;
       s.addShape('ellipse', { x: cx, y: cy + 0.05, w: 0.07, h: 0.07, fill: { color: TEAL } });
@@ -3560,7 +3619,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   s.addText([
     { text: 'HANDS ON  ', options: { fontSize: 7.5, bold: true, color: MUTED } },
     { text: 'PartCostResult', options: { fontFace: MONO, fontSize: 7.5, bold: true, color: NAVY } },
-    { text: '  — the 8 buckets, plus where every number came from', options: { fontSize: 7.5, color: SLATE } },
+    { text: '  — 8 buckets + where each number came from', options: { fontSize: 7.5, color: SLATE } },
   ], { x: 4.76, y: 1.92, w: 3.82, h: 0.3, fontFace: 'Calibri', margin: 0, valign: 'middle' });
   s.addShape('roundRect', { x: 4.68, y: 2.28, w: 3.98, h: 0.3, fill: { color: NAVY }, rectRadius: 0.05 });
   s.addText('Numbers in, numbers out. No database, no network, no file access.',
@@ -3569,8 +3628,8 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   s.addShape('line', { x: 8.84, y: 1.87, w: 0.22, h: 0, line: { color: TEAL, width: 2.5, endArrowType: 'triangle' } });
 
   step(9.08, 4, 'Check', 'Guardrails, self-audit and the confidence band', 'a checked cost', 'plus any warnings', AMBER);
-  step(10.36, 5, 'Rank', 'Findings become savings, ranked by money', 'RankedOpportunities', 'what to do, what it is worth', GREEN);
-  step(11.64, 6, 'Keep', 'Saved on your server; reports made in the browser', 'SQLite · 12 tables', 'PDF · Excel · PowerPoint', PURPLE);
+  step(10.36, 5, 'Rank', 'Findings become savings, ranked by money', 'ranked ideas', 'what to do, what it is worth', GREEN);
+  step(11.64, 6, 'Keep', 'Saved locally; reports made in the browser', 'SQLite', '14 tables · PDF · Excel', PURPLE);
 
   // ── what is actually inside those parcels ────────────────────────────────
   s.addShape('roundRect', { x: 0.5, y: 2.78, w: 12.33, h: 0.66, fill: { color: 'F0F4F9' }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
@@ -3593,16 +3652,16 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   th.forEach((h, i) => s.addText(h, { x: cx[i], y: 3.54, w: cw[i], h: 0.24, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: 'FFFFFF', fill: { color: NAVY }, align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06 }));
 
   const rows = [
-    ['Geometry kernel', 'Python 3 + Open CASCADE (via OCP)', '1,587', 'Yes — LGPL-2.1 + exc. / Apache-2.0', 'No', GREEN],
-    ['3D viewer', 'TypeScript + three.js (WebGL)', '2,334', 'Yes — MIT', 'No', GREEN],
-    ['Cost engine (core + 18 modules)', 'TypeScript, no framework', '29,229', 'Yes — our own code', 'No', GREEN],
-    ['Cost-input rules (162 of them)', 'TypeScript, inside the engine', '7,525', 'Yes — our own code', 'No', GREEN],
-    ['Optimisers + DFM / idea levers', 'TypeScript, inside the engine', '1,973', 'Yes — our own code', 'No', GREEN],
-    ['Guardrails + self-audit', 'TypeScript (engine + server)', '780', 'Yes — our own code', 'No', GREEN],
-    ['Rate library — 20 regions', 'TypeScript data files, in git', '2,501', 'Yes — our own data', 'No', GREEN],
-    ['Server + database', 'TypeScript · Express + SQLite', '14,215', 'Yes — MIT', 'Localhost only', GREEN],
-    ['AI classifier — OPTIONAL', 'TypeScript · Anthropic SDK', '~900', 'SDK free · API paid per token', 'YES — the only one', PURPLE],
-    ['Automated tests', 'TypeScript · Vitest', '17,507', 'Yes — MIT', 'No', GREEN],
+    ['Geometry kernel', 'Python 3 + Open CASCADE (via OCP)', '~2,500', 'Yes — LGPL-2.1 + exc. / Apache-2.0', 'No', GREEN],
+    ['3D viewer', 'TypeScript + three.js (WebGL)', '~2,200', 'Yes — MIT', 'No', GREEN],
+    ['Cost engine (core + 19 modules)', 'TypeScript, no framework', '~30,500', 'Yes — our own code', 'No', GREEN],
+    ['Cost-input rules (13 commodities)', 'TypeScript, inside the engine', '~8,900', 'Yes — our own code', 'No', GREEN],
+    ['Optimisers + DFM / idea levers', 'TypeScript, inside the engine', 'in engine', 'Yes — our own code', 'No', GREEN],
+    ['Guardrails + self-audit', 'TypeScript (engine + server)', 'in engine', 'Yes — our own code', 'No', GREEN],
+    ['Rate library — 20 regions', 'TypeScript data files, in git', 'in engine', 'Yes — our own data', 'No', GREEN],
+    ['Server + database', 'TypeScript · Express + SQLite', '~17,300', 'Yes — MIT', 'Localhost only', GREEN],
+    ['AI — OFF AT JLR (optional)', 'TypeScript · Anthropic SDK', '—', 'SDK free · API paid per token', 'Only if switched on', PURPLE],
+    ['Automated tests', 'TypeScript · Vitest', '~28,300', 'Yes — MIT', 'No', GREEN],
   ];
   rows.forEach((r, ri) => {
     const y = 3.78 + ri * 0.196;
@@ -3617,17 +3676,17 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
       });
     });
   });
-  s.addText('Line counts measured from the repository. Licences as published by each project — worth a formal review before anything is distributed outside the company.',
+  s.addText('Approximate line counts, measured from the repository on 28 Sep 2026. Licences as published by each project — worth a formal review before distribution outside the company.',
     { x: 0.5, y: 5.76, w: 12.33, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: MUTED, margin: 0 });
 
   // ── the network answer ────────────────────────────────────────────────────
   s.addShape('roundRect', { x: 0.5, y: 6.00, w: 12.33, h: 0.94, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.08 });
   s.addText('DOES IT CALL ANYTHING? — API, KPI AND TELEMETRY, IN FULL', { x: 0.68, y: 6.04, w: 6, h: 0.18, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
   const net = [
-    ['API calls', 'One — and optional', 'The AI classifier → api.anthropic.com, or your own endpoint. AIR_GAPPED=1 switches it off. The costing path never calls out.', PURPLE],
+    ['API calls', 'None at JLR', 'The optional AI is off (AIR_GAPPED=1). The costing path never calls out.', PURPLE],
     ['KPI calls', 'None. Not one.', 'No KPIs measured, no usage tracked, no per-seat licence check phoning home. No analytics call of any kind.', GREEN],
-    ['Error telemetry', 'Yes — stays in-house', 'Uncaught errors go to /api/telemetry/error on YOUR server, into YOUR log. No Sentry, no Analytics, no third party.', AMBER],
-    ['Optional feeds', 'Off by default', 'PCB component prices, metal ticker, industry news. Display-only — none of them can price a part.', MUTED],
+    ['Error telemetry', 'Yes — stays in-house', 'Uncaught errors go to YOUR server\u2019s log. No Sentry, no analytics, no third party.', AMBER],
+    ['Optional feeds', 'None price a part', 'PCB live prices (off) · news (needs internet) · dashboard ticker (indicative, simulated).', MUTED],
   ];
   net.forEach(([k, v, d, col], i) => {
     const y = 6.24 + (i % 2) * 0.32, x = 0.68 + Math.floor(i / 2) * 6.15;
@@ -3639,14 +3698,13 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
 
   footer(s, ++PG);
   s.addNotes(
-    'This is slide three with the lid off, and it answers two questions at once: what each box is built from, and what it hands to the next box. Follow it left to right. ' +
-    'Upload a CAD file, a PCB photo or a typed form. The Python kernel measures the solid and hands on a parcel we call OCCTGeometry — sizes, wall thickness, holes, draft angles. All measured; none of it guessed. The rules layer turns those measurements into cost inputs and the engineer answers the two or three things a shape cannot tell you, such as what it is made of and how many a year; that parcel is the UniversalStackInput — a material, a list of operations, and a tooling block. ' +
-    'The cost engine sits in the middle because everything either feeds it or renders what it produced. It works out the eight buckets, it has a module per commodity, its optimisers pick the cheapest capable machine, and its guardrails check every number. What it hands on is the PartCostResult: the eight buckets, plus where every single number came from. ' +
-    'The line at the bottom of that box is the design decision that matters most — numbers in, numbers out, no database, no network, no file access. That is exactly why fifteen hundred tests can cover it and why the identical code runs in the browser and on the server. ' +
-    'Then out to the right: the guardrails and self-audit check the answer and attach a confidence band, the findings become savings ranked by money — which is the change we made after the last review — and finally it is saved to SQLite on our own server, with the reports built in the browser. ' +
-    'The grey strip underneath opens those four parcels up, because somebody always asks what is actually in them. The geometry parcel carries bounding box, volume, wall thickness including a ninety-fifth percentile because the thickest section governs cooling, draft, setup count and a hole table. The input parcel carries one row per operation with cycle time, OEE, manning and efficiency. The result parcel carries the eight buckets and a traceability row for every figure — value, unit, which rate it used and how confident that rate is; that is what prints under every number in the report. And the opportunities parcel carries each idea with its saving in pounds per part, its risk, its timeframe and its owner. ' +
-    'The table answers the language, size and licence questions row by row. Only one component is Python — the geometry kernel, driving Open CASCADE, the same kernel FreeCAD is built on. Everything else is TypeScript. Is it free? Yes, with exactly one exception: every library is MIT, Apache-2.0 or LGPL, there is no licence fee and no per-seat cost, and the single paid item anywhere in the stack is the optional Anthropic API call, metered per token only when somebody chooses to use it. I would still get that list formally reviewed before we distribute anything outside the company. ' +
-    'And the box along the bottom is the question I was asked, answered completely rather than reassuringly. API calls: one, and it is optional, through a single point in the code so it can be pointed at a private endpoint or switched off with an environment variable. KPI calls: none — no KPIs measured, no usage tracked, nothing phoning home. Error telemetry: yes, and I want to be precise because an earlier draft of this slide said "no telemetry" and that was too absolute. When the app hits an uncaught error it posts it to our own Express server and it lands in our own log. No Sentry, no Google Analytics, no third party, nothing leaving the network. And the optional feeds are off by default and display-only; none of them can price a part.'
+    'This is slide three with the lid off. It shows what each box is built from and what it hands to the next. ' +
+    'Left to right. Upload a CAD file, STEP, IGES or STL, with an optional DXF flat pattern for sheet metal; or fill in a commodity form. The Python kernel measures the solid and hands on the geometry: size, walls, holes, draft. The rules turn that into cost inputs, and the engineer answers what a shape cannot tell you. ' +
+    'The cost engine sits in the middle. It works out the eight buckets, with one module per commodity, optimisers that pick the cheapest capable machine, and guardrails that check every number. It hands on the result: the eight buckets plus where every number came from. ' +
+    'The key design choice is at the bottom of that box: numbers in, numbers out, no database, no network, no file access. That is why it can be tested so heavily, 2,438 tests today, and why the same code runs in the browser and on the server. ' +
+    'Then checks and the confidence band, the findings ranked by money, and storage in a local SQLite file with fourteen tables. Reports are built in the browser. ' +
+    'The table answers language, size and licence. Line counts are approximate and measured today. Every library is MIT, Apache or LGPL. ' +
+    'The bottom box: in the JLR build, nothing on the costing path calls out. The AI is off. There is no usage tracking. Errors go to your own server\u2019s log, not to a third party.'
   );
 }
 
@@ -3683,11 +3741,11 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   const xs = [0.5, 0.5 + CW + GAP, 0.5 + 2 * (CW + GAP), 0.5 + 3 * (CW + GAP), 0.5 + 4 * (CW + GAP)];
 
   contract(xs[0], Y, CW, H, 1, 'OCCTGeometry', 'Python kernel → JSON on stdout', AMBER,
-    'status: success|error\nboundingBox: {xMm,yMm,zMm}\nvolume: {mm3, cm3}\nsurfaceArea: {mm2, cm2}\nfillRatio: number\ntopology: {solidCount,\n  shellCount, voidCount,\n  enclosesSealedVoid,\n  openShell}\nwallThickness: {minMm,\n  maxMm, meanMm, p95Mm,\n  method, uniformity}\ndraftAnalysis: {undercut-\n  FaceCount, minPositive-\n  DraftDeg, ...}\nsetupAnalysis: {estimated-\n  SetupCount, principal-\n  Directions[]}\ncncCycleTimeEstimate: {...}\nweights: {aluminiumKg,\n  steelKg, plasticKg}\nfeatureTable, detected-\n  Hardware, bendCount',
+    'status: success|error\nboundingBox: {xMm,yMm,zMm}\nvolume: {mm3, cm3}\nsurfaceArea: {mm2, cm2}\nfillRatio: number\ntopology: {solidCount,\n  shellCount, voidCount,\n  enclosesSealedVoid,\n  openShell}\nwallThickness: {minMm,\n  maxMm, meanMm, p95Mm,\n  method, uniformity}\ndraftAnalysis: {undercut-\n  FaceCount, minPositive-\n  DraftDeg, ...}\nsetupAnalysis: {estimated-\n  SetupCount, principal-\n  Directions[]}\ncncCycleTimeEstimate: {...}\nweights: {aluminiumKg, ...}\nfeatureTable, bendCount, ...',
     'Measured. Never guessed.');
 
-  contract(xs[1], Y, CW, H, 2, 'UniversalStackInput', '162 rules + engineer answers', TEAL,
-    'partName: string\nrawMaterial: {\n  materialId: string\n  netWeightKg: number\n  materialUtilization: number\n  directCost?: number\n  consumablesCostPerPart?\n}\noperations: [{\n  operationName: string\n  machineId: string\n  labourId: string\n  cycleTimeHr: number\n  partsPerCycle: number\n  oee: number\n  manning: number\n  labourTimeHr: number\n  labourEfficiency: number\n}]\ntooling: {totalToolingCost,\n  amortizationVolume, mode}\npackagingPerPart: number\nlogisticsPerPart: number\noverheadPct · marginPct\nannualVolume?',
+  contract(xs[1], Y, CW, H, 2, 'UniversalStackInput', 'rules + engineer answers', TEAL,
+    'partName: string\nrawMaterial: {\n  materialId: string\n  netWeightKg: number\n  materialUtilization: number\n  directCost?: number\n  consumablesCostPerPart?\n}\noperations: [{\n  operationName: string\n  machineId · labourId: string\n  cycleTimeHr: number\n  partsPerCycle: number\n  oee · manning: number\n  labourTimeHr, labourEff...\n}]\ntooling: {totalToolingCost,\n  amortizationVolume, mode}\npackagingPerPart,\nlogisticsPerPart, overheadPct,\nmarginPct, annualVolume?',
     'Geometry wins; engineer fills gaps.');
 
   contract(xs[2], Y, CW, H, 3, 'PartCostResult', 'core.ts :: computeUniversalStack()', BLUE,
@@ -3695,11 +3753,11 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     'traceability[] = the printed derivation.');
 
   contract(xs[3], Y, CW, H, 4, 'RankedOpportunities', 'dfm-dfa → opportunity-ranking', GREEN,
-    'groups: [{\n  category: LeverCategory\n  label: string\n  opportunities: [{\n    action: string\n    basis: string\n    detail?: string\n    savingPct: number\n    savingPerPart: number\n    risk · timeframe\n    owner?: design|supplier|\n      sourcing|assumption\n    signal: string\n  }]\n  groupSavingPerPart\n  topSavingPerPart\n}]\nall: RankedOpportunity[]\nverificationChecks: [{\n  title, detail, action\n}]\nheadlineSavingPct\nheadlineSavingPerPart\npartTotal',
+    'groups: [{\n  category: LeverCategory\n  label: string\n  opportunities: [{\n    action: string\n    basis: string\n    detail?: string\n    savingPct: number\n    savingPerPart: number\n    risk · timeframe\n    owner?: design|supplier|\n      sourcing|assumption\n    signal: string\n  }]\n  groupSavingPerPart\n  topSavingPerPart\n}]\nall: RankedOpportunity[]\nverificationChecks: [...]\nheadlineSavingPct\nheadlineSavingPerPart · partTotal',
     'Ranked by money, never scored.');
 
-  contract(xs[4], Y, CW, H, 5, 'SQLite  ·  12 tables', 'better-sqlite3 — one file, your server', PURPLE,
-    'projects (id, user_id, kind,\n  name, data, created_at,\n  updated_at)\nscenarios (id, name,\n  description, data,\n  created_by, created_at)\nsupplier_quotes (id,\n  scenario_id, supplier_name,\n  supplier_country, unit_price,\n  currency, moq,\n  lead_time_weeks, tooling_cost)\nbom_items (id,\n  parent_scenario_id,\n  child_scenario_id, quantity,\n  unit_cost_override)\nrate_library (id, data,\n  updated_at, updated_by)\nrate_overrides (id, tbl,\n  row_id, field, value)\nusers · shared_costings ·\nmaterial_price_overrides ·\nprice_fetch_log · app_settings',
+  contract(xs[4], Y, CW, H, 5, 'SQLite  ·  14 tables', 'better-sqlite3 — one file, your server', PURPLE,
+    'projects (id, user_id, kind,\n  name, data, created_at,\n  updated_at)\nscenarios (id, name,\n  description, data,\n  created_by, created_at)\nsupplier_quotes (id,\n  scenario_id, supplier_name,\n  unit_price, currency, ...)\nbom_items (id,\n  parent_scenario_id,\n  child_scenario_id, quantity,\n  unit_cost_override)\nrate_library (id, data,\n  updated_at, updated_by)\nrate_overrides (id, tbl,\n  row_id, field, value)\nusers · shared_costings ·\nmaterial_price_overrides ·\nprice_fetch_log · app_settings\n+ otp_tokens · dfm_jobs ·\nrate_library_versions',
     'data columns hold the JSON above.');
 
   // arrows between the five contracts
@@ -3712,7 +3770,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   s.addText([
     { text: 'Same sentence as the previous slide:  ', options: { bold: true, color: TEAL, fontSize: 10.5 } },
     { text: 'computeUniversalStack(UniversalStackInput, RateLibrary) → PartCostResult', options: { bold: true, color: NAVY, fontSize: 10.5, fontFace: MONO } },
-    { text: '   — a pure transform between two typed structures. Same input, same output, forever. That is what makes 1,777 tests possible and why the identical code runs in the browser and on the server.', options: { color: SLATE, fontSize: 9.5 } },
+    { text: '   — a pure transform between two typed structures. Same input, same output, forever. That is what makes 2,438 tests practical, and why the identical code runs in the browser and on the server.', options: { color: SLATE, fontSize: 9.5 } },
   ], { x: 0.72, y: 4.68, w: 11.9, h: 0.62, fontFace: 'Calibri', margin: 0, valign: 'middle' });
 
   // ── where fields come from, and the rules a data person will ask about ──
@@ -3734,14 +3792,13 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
 
   footer(s, ++PG);
   s.addNotes(
-    'This is the deep-dive slide, and I have pitched it at someone who thinks in schemas rather than in castings, because that is the question I was asked. Five typed hand-offs from CAD file to database, and every type name and field on this slide is copied from the source rather than paraphrased. ' +
-    'One: the kernel writes an OCCTGeometry document to stdout as JSON. Bounding box, volume, surface area, fill ratio, and then the interesting parts — a topology block that tells you whether the shape encloses a sealed void, which is how a fuel tank is distinguished from a bumper; a wall-thickness block with a p95 because the thickest section is what governs cooling; draft, setup count, a bottom-up CNC cycle estimate, and weights in three candidate materials. Everything in there is measured. Nothing in there is guessed. ' +
-    'Two: the rules layer plus the engineer’s answers produce a UniversalStackInput. This is the form the cost engine actually eats — a material with a utilisation, an array of operations each with cycle time, OEE, manning and labour efficiency, a tooling block, and the universal per-part costs. Where geometry can determine a field, geometry wins; where it cannot, the engineer answers and the tool blocks until they do. ' +
-    'Three: computeUniversalStack turns that into a PartCostResult. Eight buckets, per-operation detail, and — the field I would point at first — a traceability array. Every cost line emits its field, value, unit, rate source, rate id and confidence. That is what prints beneath every number in the report, and it is why a figure survives a supplier meeting. ' +
-    'Four: the DFM/DFA layer reads the finished result and produces RankedOpportunities, which is the change we made after the last review — savings ranked in money per part and grouped by category, with no score and no severity anywhere a person sees. ' +
-    'Five: SQLite, twelve tables, one file on our own server. And note the design decision, because a data person will spot it immediately: the JSON objects above are stored whole in data columns rather than shredded into a relational model. The engine owns the schema, so a costing round-trips byte-identical, and rate_overrides is a proper audit trail of who changed which rate and when. ' +
-    'The teal strip in the middle is the sentence I would like him to leave with. The whole system is one pure transform between two typed structures: UniversalStackInput and a RateLibrary in, PartCostResult out. Same input, same output, forever. That property is what makes fifteen hundred tests possible, and it is why the identical code runs in the browser and on the server without a line changing. ' +
-    'And the three panels at the bottom are the things I would want to be asked about. Provenance: nothing is a bare number. Units: fields carry their unit in the name, because seconds-versus-hours and millimetres-versus-centimetres are genuinely where the bugs in this domain come from, and that convention is pinned by tests rather than by good intentions. Storage: typed in code, JSON at rest.'
+    'This is the deep-dive slide, pitched at someone who thinks in schemas rather than castings. Five typed hand-offs from CAD file to database. Every type name and field is copied from the source. ' +
+    'One. The kernel writes a geometry document as JSON: bounding box, volume, surface area, fill ratio, a topology block that tells a sealed tank from an open shell, wall thickness including a ninety-fifth percentile, draft, setup count, a CNC cycle estimate, and weights in three candidate materials. All measured. ' +
+    'Two. The rules plus the engineer\u2019s answers produce the input the engine eats: a material with its utilisation, a list of operations with cycle time, equipment effectiveness, manning and labour efficiency, a tooling block, and the per-part costs. Where geometry can decide a field, geometry wins. Where it cannot, the engineer answers, and the tool waits until they do. ' +
+    'Three. The engine turns that into the result: eight buckets, per-operation detail, and a traceability array. Every cost line records its value, unit, rate source and confidence. That is what prints under every number in the report. ' +
+    'Four. The DFM layer produces the ranked opportunities, in pounds per part, with no score shown. ' +
+    'Five. SQLite, fourteen tables in one file. The JSON is stored whole, so a costing round-trips exactly, and rate overrides keep an audit trail. ' +
+    'The teal strip is the one idea to leave with: one pure transform, input and rate library in, result out. Same input, same output.'
   );
 }
 
