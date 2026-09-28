@@ -64,6 +64,7 @@
     "@types/nodemailer": "^8.0.1",
     "@types/pngjs": "^6.0.5",
     "@types/three": "^0.185.1",
+    "axe-core": "^4.13.0",
     "concurrently": "^8.2.0",
     "exceljs": "^4.4.0",
     "pixelmatch": "^7.2.0",

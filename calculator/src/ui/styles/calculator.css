@@ -7063,3 +7063,24 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
 /* AIR_GAPPED=1: the AI code stays, its entry points are hidden. */
 html[data-ai="off"] .ai-only { display: none !important; }
 html[data-ai="off"] .hs-modes { grid-template-columns: 1fr; }
+
+/* ── Contrast (M10, WCAG 2.1 AA 1.4.3) ───────────────────────────────────────
+   Dark theme: white on the sky-blue primary was 2.14:1. Dark text holds 6.7–8.6:1
+   across the whole gradient (#38bdf8 → #a78bfa) and on the #0ea5e9 hover. */
+html:not([data-theme="light"]) .btn-primary,
+html:not([data-theme="light"]) .btn-primary:hover { color: #04111f; }
+/* Light theme: active nav label #2563eb on #e5ecfd was 4.36:1. */
+[data-theme="light"] .anav-item.active { color: #1d4ed8; }
+/* Demo cards: process labels and the CAD tag, both themes. */
+html:not([data-theme="light"]) .demo-card-process-label { color: #b8c5dc !important; }
+html:not([data-theme="light"]) .demo-tag--ai-cad { color: #34d399; }
+[data-theme="light"] .demo-card-process-label { color: #1e3a8a !important; }
+[data-theme="light"] .demo-tag--ai-cad { color: #065f46; }
+/* Same white-on-sky pattern on two more active controls in the dark theme. */
+html:not([data-theme="light"]) .news-cat.active,
+html:not([data-theme="light"]) .chart-mode-btn.active { color: #04111f; }
+/* Light theme amber (#d97706) as text on near-white was ~3:1 — warnings box,
+   the ± beside the total, the band chip. #b45309 is ~5:1 on the same grounds. */
+[data-theme="light"] { --amber: #b45309; }
+/* Light theme: plain demo tags, #2563eb on #dbe5fc was 4.09:1. */
+[data-theme="light"] .demo-tag:not(.demo-tag--ai-cad) { color: #1e40af; }

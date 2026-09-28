@@ -3,6 +3,7 @@ import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
 import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
+import { initA11y } from './a11y.js';
 import './styles/calculator.css';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
@@ -3950,7 +3951,7 @@ function wireSheetMetalFabAdvisor(): void {
     const resultEl = document.getElementById('smf-adv-result');
     if (!resultEl) return;
     resultEl.innerHTML = `
-      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+      <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px">
         <div style="font-weight:700;color:#b34700">${rec.primaryProcess} → ${rec.formingProcess}</div>
         <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.join(' → ')}</div>
         <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
@@ -4875,7 +4876,7 @@ function renderWiringHarnessForm(): string {
 
 function renderCastingForm(): string {
   return `
-    <div style="font-size:0.72rem;color:#888;padding:2px 4px 6px;background:#fff8f3;border-radius:4px;border-left:3px solid #e65100;margin-bottom:4px">
+    <div style="font-size:0.72rem;color:#5f5f5f;padding:2px 4px 6px;background:#fff8f3;border-radius:4px;border-left:3px solid #e65100;margin-bottom:4px">
       For as-cast parts only. Use <strong>Cast+Machine</strong> if the casting is subsequently machined.
     </div>
     <div class="section-title">Common</div>
@@ -5760,7 +5761,7 @@ function renderCastAndMachineForm(): string {
         <option value="5">5 — Complex organic</option>
       </select></div>
     </div>
-    <div id="cam-recommend" style="font-size:0.75rem;color:#888;margin:4px 0 6px;padding:4px 8px;background:#f9f9f9;border-radius:4px"></div>
+    <div id="cam-recommend" style="font-size:0.75rem;color:#5f5f5f;margin:4px 0 6px;padding:4px 8px;background:#f9f9f9;border-radius:4px"></div>
     <div class="field-row">
       <div class="field-group"><label>Setup Time (hr)</label><input type="number" id="cam-mach-setup-time" step="0.25" min="0" value="0.5"/></div>
       <div class="field-group"><label>Batch Size</label><input type="number" id="cam-mach-batch-size" step="1" min="1" value="50"/></div>
@@ -12989,7 +12990,7 @@ function wireStampingAdvisor(): void {
     }
 
     out.innerHTML = `
-      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px">
+      <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px;margin-bottom:6px">
         <div style="font-weight:700;color:#b34700">${escHtml(rec.primaryProcess)} → ${escHtml(rec.formingProcess)}</div>
         <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.map(escHtml).join(' → ')}</div>
         <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
@@ -13477,7 +13478,7 @@ function wireForgingAdvisor(): void {
     const resultEl = document.getElementById('forge-adv-result');
     if (!resultEl) return;
     resultEl.innerHTML = `
-      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+      <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px">
         <div style="font-weight:700;color:#b34700">${escHtml(rec.processLabel)}</div>
         <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.map(escHtml).join(' → ')}</div>
         <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
@@ -13525,7 +13526,7 @@ function wireInjectionAdvisor(): void {
     const resultEl = document.getElementById('imm-adv-result');
     if (!resultEl) return;
     resultEl.innerHTML = `
-      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+      <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px">
         <span style="font-weight:700">Moulding design review — ${notesHeading}</span>
         <span style="color:#777;margin-left:6px">${escHtml(dfm.summary)}</span>
         ${issuesHtml}
@@ -14289,8 +14290,8 @@ function wireExtrusionAdvisor(): void {
       minInternalRadiusMm: num('ext-radius') || undefined, toleranceMm: num('ext-tol') || undefined, layers: num('ext-die-layers') || 1,
     });
     out.innerHTML = `
-      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px;font-size:0.82rem">
-        <div style="font-weight:700;color:#ca8a04">Extrusion process estimate</div>
+      <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px;margin-bottom:6px;font-size:0.82rem">
+        <div style="font-weight:700;color:var(--text-primary);border-left:3px solid #ca8a04;padding-left:6px">Extrusion process estimate</div>
         <div style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
           <span><strong>Line rate:</strong> ${usedRate} kg/hr ${num('ext-rate') > 0 ? '(manual)' : `(auto — ${lr.limitedBy === 'cooling' ? 'cooling-limited' : 'screw-output'})`}</span>
           <span><strong>Cooling limit:</strong> ${lr.coolingLimitedKgHr != null ? lr.coolingLimitedKgHr + ' kg/hr' : 'n/a'}${lr.lineSpeedMPerMin != null ? ` (${lr.lineSpeedMPerMin} m/min)` : ''}</span>
@@ -14384,8 +14385,8 @@ function wireThermoformingAdvisor(): void {
       plugAssist: el<HTMLInputElement>('tf-plug')?.checked,
     });
     out.innerHTML = `
-      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px;font-size:0.82rem">
-        <div style="font-weight:700;color:#ec4899">Thermoforming process estimate</div>
+      <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px;margin-bottom:6px;font-size:0.82rem">
+        <div style="font-weight:700;color:var(--text-primary);border-left:3px solid #ec4899;padding-left:6px">Thermoforming process estimate</div>
         <div style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
           <span><strong>Heat:</strong> ${heat ? heat + ' s' : 'n/a'}${num('tf-heat') > 0 ? ' (manual)' : ' (auto)'}</span>
           <span><strong>Cool:</strong> ${cool ? cool + ' s' : 'n/a'}${num('tf-cool') > 0 ? ' (manual)' : ' (auto)'}</span>
@@ -14525,12 +14526,12 @@ interface _DFMIssueLike { severity: string; title: string; description: string; 
 const _SEV_RANK: Record<string, number> = { critical: 0, major: 1, minor: 2, opportunity: 3 };
 
 function renderDFMNotes(issues: _DFMIssueLike[], summary: string): string {
-  if (issues.length === 0) return `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(summary)}</div>`;
+  if (issues.length === 0) return `<div style="color:var(--success);margin-top:4px">✓ ${escHtml(summary)}</div>`;
   const ordered = [...issues].sort((a, b) => (_SEV_RANK[a.severity] ?? 9) - (_SEV_RANK[b.severity] ?? 9));
   return ordered.map(i => `
       <div style="margin-top:5px;padding-left:7px;border-left:3px solid #4f8ef7">
-        <div style="font-weight:600;color:#333">${escHtml(i.recommendation)}</div>
-        <div style="color:#666;font-size:0.95em">${escHtml(i.title)} — ${escHtml(i.description)}</div>
+        <div style="font-weight:600;color:var(--text-primary)">${escHtml(i.recommendation)}</div>
+        <div style="color:var(--text-muted);font-size:0.95em">${escHtml(i.title)} — ${escHtml(i.description)}</div>
       </div>`).join('');
 }
 
@@ -14538,7 +14539,7 @@ function renderDFMPanel(_score: number, issues: _DFMIssueLike[], summary: string
   const heading = issues.length === 0
     ? 'Design review — no manufacturing constraints flagged'
     : `Design review — ${issues.length} point${issues.length === 1 ? '' : 's'} to consider, most significant first`;
-  return `<div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+  return `<div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px">
       <span style="font-weight:700">${heading}</span>${renderDFMNotes(issues, summary)}
     </div>`;
 }
@@ -15142,7 +15143,8 @@ function switchResultTab(tab: string): void {
     t.setAttribute('role', 'tab');
     t.setAttribute('aria-selected', String(active));
   });
-  document.getElementById('results-tabs')?.setAttribute('role', 'tablist');
+  // The tablist is .rtab-list (index.html), not #results-tabs: that also holds
+  // the Focus button, which is not a tab (axe aria-required-children).
   document.getElementById('results-breakdown')?.style.setProperty('display', tab === 'breakdown' ? '' : 'none');
   document.getElementById('results-detail')?.style.setProperty('display', tab === 'detail' ? '' : 'none');
   document.getElementById('results-insights')?.style.setProperty('display', tab === 'insights' ? '' : 'none');
@@ -15920,7 +15922,7 @@ function renderSelfAudit(result: PartCostResult, input: UniversalStackInput): vo
       </div>`;
     }).join('');
     div.innerHTML = `<div style="font-size:0.82rem;font-weight:700;color:var(--text-primary,#222);display:flex;align-items:center;gap:6px">
-      <span style="background:#e65100;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
+      <span style="background:#c2410c;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
       ${findings.length} check${findings.length > 1 ? 's' : ''} to review — the deterministic lessons layer flagged these automatically.</div>${rows}`;
   } else {
     div.innerHTML = `<div style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:6px;padding:8px 12px;font-size:0.78rem;color:#1b6b3a"><strong>✓ Self-audit</strong> — no physics/geometry inconsistencies detected on this estimate.</div>`;
@@ -20058,6 +20060,9 @@ async function init(): Promise<void> {
   }
   el<HTMLInputElement>('lc-enabled')?.addEventListener('change', syncLCInputs);
   syncLCInputs(); // enforce initial disabled state
+
+  // Field names for generated forms, Escape for dialogs (a11y.ts).
+  initA11y();
 
   // Start on machining
   switchCommodity('machining');

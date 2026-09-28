@@ -24,6 +24,9 @@ import { chromium, type Browser, type Page } from 'playwright';
 import Database from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
 import ExcelJS from 'exceljs';
+import { createRequire } from 'node:module';
+
+const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 
 const ROOT = join(import.meta.dirname, '..');
 const IS_CI = !!process.env.CI;
@@ -44,6 +47,15 @@ const heroTotal = (page: Page) => page.evaluate(() => {
   const m = h.textContent?.match(/£\s*([\d,]+\.\d{2})/);
   return m ? Number(m[1].replace(/,/g, '')) : null;
 });
+
+/** WCAG 2.1 A/AA violations on the page as it stands (M10 regression guard). */
+async function axeViolations(page: Page): Promise<string[]> {
+  await page.waitForTimeout(700);   // let theme and entrance transitions settle
+  if (!(await page.evaluate(() => 'axe' in window))) await page.evaluate(AXE);
+  return page.evaluate(() => (window as unknown as { axe: { run: (d: Document, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: Array<{ target: string[] }> }> }> } })
+    .axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })
+    .then(r => r.violations.map(v => `${v.id} ×${v.nodes.length} (${v.nodes[0]?.target.join(' ')})`)));
+}
 
 async function pick(page: Page, commodity: string): Promise<void> {
   await page.click('#new-costing-btn', { timeout: 15_000 });
@@ -101,6 +113,7 @@ async function main(): Promise<void> {
       localStorage.setItem('cv-wizard-off', '1');
     }, token);
     await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+    for (const v of await axeViolations(page)) fail(`home: accessibility — ${v}`);
 
     // ── Every commodity costs on its defaults ──────────────────────────────
     const commodities = await page.$$eval('#commodity-picker-view .cpicker-tile[data-commodity]:not(.cpicker-tile--ai)',
@@ -123,9 +136,10 @@ async function main(): Promise<void> {
         return r.top >= 0 && r.bottom <= innerHeight;
       });
       if (!onScreen) fail(`${c}: result not scrolled into view`);
+      for (const v of await axeViolations(page)) fail(`${c}: accessibility — ${v}`);
       costed.push(`${c} £${total.toFixed(2)}`);
     }
-    log(`${costed.length}/${commodities.length} commodities cost on their defaults`);
+    log(`${costed.length}/${commodities.length} commodities cost on their defaults, each with no WCAG 2.1 AA violation`);
 
     // ── Exports reproduce the on-screen total ──────────────────────────────
     await pick(page, 'machining');

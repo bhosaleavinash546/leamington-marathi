@@ -50,12 +50,12 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-BB0-Oy_J.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-BuFkE7aM.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-fL0WZFAO.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-1pfzay6h.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-JmP-vRUk.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-C67kAVLL.css">
 </head>
 <body>
 
@@ -111,7 +111,7 @@
     <!-- Manufacturing region -->
     <div class="hdr-select-wrap" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
       <svg class="ic hdr-select-ic"><use href="#i-globe"/></svg>
-      <select id="mfg-region-selector" class="hdr-select">
+      <select id="mfg-region-selector" class="hdr-select" aria-label="Manufacturing region">
         <option value="UK">UK</option>
         <option value="DE">Germany</option>
         <option value="FR">France</option>
@@ -136,7 +136,7 @@
     </div>
     <!-- Currency -->
     <div class="hdr-select-wrap" title="Display currency">
-      <select id="currency-selector" class="hdr-select">
+      <select id="currency-selector" class="hdr-select" aria-label="Display currency">
         <option value="GBP">£ GBP</option>
         <option value="EUR">€ EUR</option>
         <option value="USD">$ USD</option>
@@ -151,7 +151,7 @@
         <option value="CZK">Kč CZK</option>
       </select>
     </div>
-    <button class="btn btn-primary hdr-primary" id="new-costing-btn" aria-label="Start new should-costing"><svg class="ic"><use href="#i-plus"/></svg>New Costing</button>
+    <button class="btn btn-primary hdr-primary" id="new-costing-btn" title="Start a new should-costing"><svg class="ic"><use href="#i-plus"/></svg>New Costing</button>
     <!-- Theme toggle -->
     <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme"><svg class="ic"><use href="#i-moon"/></svg></button>
     <!-- User -->
@@ -1255,13 +1255,15 @@
 
     <!-- Results tab bar -->
     <div class="results-tabs" id="results-tabs" style="display:none">
-      <button class="rtab active" data-panel="breakdown">Breakdown</button>
-      <button class="rtab" data-panel="detail">Detail</button>
-      <button class="rtab" data-panel="insights">AI Insights<span class="rtab-badge" id="badge-insights" style="display:none"></span></button>
-      <button class="rtab" data-panel="sensitivity">Sensitivity</button>
-      <button class="rtab" data-panel="scenarios">Scenarios</button>
-      <button class="rtab" data-panel="dfm">DFM / DFA<span class="rtab-badge" id="badge-dfm" style="display:none"></span></button>
-      <button class="rtab" data-panel="upload">Upload ↑</button>
+      <div class="rtab-list" role="tablist" aria-label="Result views" style="display:contents">
+        <button class="rtab active" data-panel="breakdown">Breakdown</button>
+        <button class="rtab" data-panel="detail">Detail</button>
+        <button class="rtab" data-panel="insights">AI Insights<span class="rtab-badge" id="badge-insights" style="display:none"></span></button>
+        <button class="rtab" data-panel="sensitivity">Sensitivity</button>
+        <button class="rtab" data-panel="scenarios">Scenarios</button>
+        <button class="rtab" data-panel="dfm">DFM / DFA<span class="rtab-badge" id="badge-dfm" style="display:none"></span></button>
+        <button class="rtab" data-panel="upload">Upload ↑</button>
+      </div>
       <button class="results-focus-btn" id="results-focus-btn" title="Expand the report to full width (hide the input form)" aria-label="Toggle full-width report"><span class="rfb-icon">⤢</span><span class="rfb-label">Focus</span></button>
     </div>
 
@@ -5039,7 +5041,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
 </script>
 
 <!-- ── Contextual Tooltip Popover ─────────────────────────────────────────── -->
-<div id="cv-popover" role="tooltip" aria-live="polite"></div>
+<div id="cv-popover" aria-live="polite"></div>
 
 <!-- ── Product Tour Overlay ───────────────────────────────────────────────── -->
 <div id="cv-tour-overlay" style="display:none">
