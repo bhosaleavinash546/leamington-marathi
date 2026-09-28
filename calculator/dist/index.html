@@ -9,7 +9,7 @@
     <link rel="manifest" href="/calculator/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/calculator/icons/icon-192x192.png" />
     <link rel="icon" type="image/svg+xml" href="/calculator/favicon.svg" />
-  <meta name="description" content="CostVision — AI-powered should-cost intelligence. Bottom-up cost engineering across 19+ manufacturing processes, from a photo, a CAD file, or a plain-English brief." />
+  <meta name="description" content="CostVision — AI-powered should-cost intelligence. Bottom-up cost engineering across 19 manufacturing processes, from a photo, a CAD file, or a plain-English brief." />
   <meta property="og:title" content="CostVision — AI Cost Intelligence" />
   <meta property="og:description" content="Know what a part should cost — before you negotiate. Physics-based should-costing with self-learning accuracy." />
   <meta property="og:type" content="website" />
@@ -50,7 +50,7 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-Cm-cFLZX.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-BTdha-fO.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-fL0WZFAO.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
@@ -167,7 +167,7 @@
   <div class="anav-group">
     <button class="anav-item" id="home-btn" aria-label="Go to dashboard"><svg class="ic"><use href="#i-home"/></svg><span class="anav-label">Home</span></button>
     <button class="anav-item" id="analytics-btn" aria-label="Portfolio analytics" title="Portfolio KPIs, commodity dashboard, filters &amp; charts" data-cv-tip="Aggregate portfolio analytics — KPIs, commodity price intelligence, filters and cost charts across all your costings." data-cv-tip-title="Portfolio Analytics"><svg class="ic"><use href="#i-chart"/></svg><span class="anav-label">Portfolio</span></button>
-    <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
+    <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across the 19 manufacturing processes. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
     <button class="anav-item" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence"><svg class="ic"><use href="#i-news"/></svg><span class="anav-label">News</span></button>
     <button class="anav-item" id="negotiation-btn" aria-label="Negotiation Intelligence" title="Supplier-quote teardown vs should-cost" data-cv-tip="Paste a supplier quote — the agent tears it down against should-cost and hands you the levers, questions and closing plays. Export to PDF or PowerPoint." data-cv-tip-title="Negotiation Intelligence"><svg class="ic"><use href="#i-trend-up"/></svg><span class="anav-label">Negotiation</span></button>
     <button class="anav-item" id="viewer-btn" aria-label="3D CAD Viewer" title="Open a 3D CAD model for analysis &amp; measurement" data-cv-tip="Open a STEP / IGES / STL model to inspect, measure and analyse geometry — no costing. Rotate, section, measure, wall-thickness &amp; draft." data-cv-tip-title="3D CAD Viewer"><svg class="ic"><use href="#i-cube"/></svg><span class="anav-label">3D Viewer</span></button>
@@ -303,7 +303,7 @@
       <button class="hs-chip" data-commodity="injection_moulding">Plastics</button>
       <button class="hs-chip" data-commodity="forging">Forging</button>
       <button class="hs-chip" data-commodity="pcba">PCBA</button>
-      <button class="hs-chip hs-chip--more" id="hs-browse-all">Browse all 20
+      <button class="hs-chip hs-chip--more" id="hs-browse-all" title="19 manufacturing processes, plus assembly roll-up and automotive software">Browse all 19
         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
   </div>
@@ -796,6 +796,7 @@
     </div>
   </div>
   <div class="cpicker-section-label">Manufacturing Commodities</div>
+  <div class="cpicker-key" style="font-size:0.72rem;color:var(--text-muted);margin:-2px 0 8px"><span style="display:inline-block;width:10px;height:10px;border:2px solid var(--accent);border-radius:3px;vertical-align:-1px"></span> <span data-ai-off-text="Blue border — has a specialist tool: the 49-module model for automotive software.">Blue border — has a specialist tool: PCB photo-to-BOM on PCB Fab and PCBA, the 49-module model for automotive software.</span> &nbsp;<span style="display:inline-block;width:10px;height:10px;border:2px solid var(--accent2);border-radius:3px;vertical-align:-1px"></span> <span data-ai-off-text="Violet — starts from a CAD file.">Violet — starts from a file or from AI.</span></div>
   <div class="cpicker-grid">
     <!-- Plastics: injection barrel + nozzle + piston handle -->
     <button class="cpicker-tile" data-commodity="injection_moulding">
@@ -1111,10 +1112,10 @@
     <!-- Commodity selector tabs -->
     <div class="commodity-tabs" id="commodity-tabs">
       <button class="ctab ai-only" id="agent-tab" data-commodity="ai_agent" style="background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;border-color:#1565c0" title="Unified AI Should-Cost Agent — describe your part in natural language, upload a photo, and let the AI orchestrate the full cost model">AI Agent ✦</button>
-      <button class="ctab" data-commodity="cad_analysis" style="background:linear-gradient(135deg,#e65100,#ff8f00);color:#fff;border-color:#e65100">AI CAD ✦</button>
+      <button class="ctab" data-commodity="cad_analysis" style="background:linear-gradient(135deg,#e65100,#ff8f00);color:#fff;border-color:#e65100">CAD to Cost</button>
       <button class="ctab active" data-commodity="machining">Machining</button>
       <button class="ctab" data-commodity="sheet_metal" title="Press shop / stamping route — blanking die + forming die. Progressive or transfer tooling.">Sheet Metal</button>
-      <button class="ctab" data-commodity="sheet_metal_fab" title="Fabrication shop route — Laser Cut / Turret Punch / Shear → Press Brake → optional Spot Weld / MIG Weld. Includes process advisor.">SM Fab ✓</button>
+      <button class="ctab" data-commodity="sheet_metal_fab" title="Fabrication shop route — Laser Cut / Turret Punch / Shear → Press Brake → optional Spot Weld / MIG Weld. Includes process advisor.">SM Fab</button>
       <button class="ctab" data-commodity="injection_moulding" title="Injection moulding — thermoplastics. Includes runner system, tolerance and surface finish multipliers.">Injection</button>
       <button class="ctab" data-commodity="blow_moulding" title="Extrusion blow moulding — hollow parts (bottles, tanks, ducts). HDPE/PP/PET.">Blow Moulding</button>
       <button class="ctab" data-commodity="extrusion" title="Profile/pipe/sheet extrusion — continuous process costed per cut part length.">Extrusion</button>
@@ -1122,15 +1123,15 @@
       <button class="ctab" data-commodity="rotational_moulding" title="Rotational moulding — large hollow parts (tanks, playground equipment). LLDPE powder.">Rotomoulding</button>
       <button class="ctab" data-commodity="casting" title="As-cast parts only (HPDC, sand, gravity, investment). No machining. Use Cast+Machine if subsequent machining is required.">Casting</button>
       <button class="ctab" data-commodity="forging">Forging</button>
-      <button class="ctab" data-commodity="gear" title="Gear cutting and finishing — hobbing / shaping / power skiving, heat treat, grinding/honing/shaving, ISO 1328 class-driven routing. Blank priced separately (bar slice or forged blank).">Gear Cutting ⚙</button>
+      <button class="ctab" data-commodity="gear" title="Gear cutting and finishing — hobbing / shaping / power skiving, heat treat, grinding/honing/shaving, ISO 1328 class-driven routing. Blank priced separately (bar slice or forged blank).">Gear Cutting</button>
       <button class="ctab" data-commodity="painting">Painting</button>
       <button class="ctab" data-commodity="biw_assembly">BIW / Assembly</button>
-      <button class="ctab" data-commodity="pcb_fab" title="PCB Fabrication cost model — includes 🔬 Image-to-BOM: upload a PCB photo to auto-detect components and populate the form">PCB Fab 🔬</button>
-      <button class="ctab" data-commodity="pcba" title="PCB Assembly cost model (SMT + TH + BGA) — includes 🔬 Image-to-BOM: upload a PCB photo to auto-build the BOM">PCBA 🔬</button>
-      <button class="ctab" data-commodity="cast_and_machine" title="Casting + machining in one model. Covers: die cast housing → face mill → bore → drill+tap. Includes post-casting operations (heat treatment, shot blast, impregnation).">Cast+Machine ✓</button>
-      <button class="ctab" data-commodity="rubber" title="Rubber moulding and extrusion — compression, transfer, LSR injection, extrusion+vulcanise. EPDM, NBR, Silicone, NR, FKM/Viton.">Rubber ✓</button>
-      <button class="ctab" data-commodity="composites" title="Composite manufacturing — CFRP/GFRP hand layup, prepreg, RTM, VARTM, filament winding, pultrusion. Autoclave/oven/press cure.">Composites ✓</button>
-      <button class="ctab" data-commodity="wiring_harness" title="Wiring harness should-cost — wire gauges, connectors, splices, conduit, tape, crimping assembly, electrical test.">Harness ✓</button>
+      <button class="ctab" data-commodity="pcb_fab" title="PCB Fabrication cost model — includes 🔬 Image-to-BOM: upload a PCB photo to auto-detect components and populate the form">PCB Fab</button>
+      <button class="ctab" data-commodity="pcba" title="PCB Assembly cost model (SMT + TH + BGA) — includes 🔬 Image-to-BOM: upload a PCB photo to auto-build the BOM">PCBA</button>
+      <button class="ctab" data-commodity="cast_and_machine" title="Casting + machining in one model. Covers: die cast housing → face mill → bore → drill+tap. Includes post-casting operations (heat treatment, shot blast, impregnation).">Cast+Machine</button>
+      <button class="ctab" data-commodity="rubber" title="Rubber moulding and extrusion — compression, transfer, LSR injection, extrusion+vulcanise. EPDM, NBR, Silicone, NR, FKM/Viton.">Rubber</button>
+      <button class="ctab" data-commodity="composites" title="Composite manufacturing — CFRP/GFRP hand layup, prepreg, RTM, VARTM, filament winding, pultrusion. Autoclave/oven/press cure.">Composites</button>
+      <button class="ctab" data-commodity="wiring_harness" title="Wiring harness should-cost — wire gauges, connectors, splices, conduit, tape, crimping assembly, electrical test.">Harness</button>
       <button class="ctab" data-commodity="assembly">Assembly BOM</button>
     </div>
 
@@ -1438,7 +1439,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
         <div class="help-card-title"><div class="help-icon">1</div>Navigate to a Commodity</div>
         <p>There are two ways to start a costing:</p>
         <ul>
-          <li><strong>New Costing</strong> (top bar, or press <strong>&#8984;K</strong>) → opens the full commodity picker screen with all 19+ manufacturing processes and specialist tools as tiles → click a tile to open the right-side workflow panel.</li>
+          <li><strong>New Costing</strong> (top bar, or press <strong>&#8984;K</strong>) → opens the full commodity picker screen with all 19 manufacturing processes, the assembly roll-up and automotive software as tiles → click a tile to open the right-side workflow panel.</li>
           <li><strong>One-Click Shortcuts</strong> on the Home Dashboard → jump directly to a specific commodity in full-screen mode.</li>
           <li><strong>🚗 Automotive Software Should-Cost</strong> — new in V4.1 — select from the picker to open the dedicated 49-module software cost model for premium EV programmes.</li>
         </ul>
@@ -5126,7 +5127,7 @@ function initTooltips() {
 // ── 2. Product Tour ───────────────────────────────────────────────────────
 var TOUR_STEPS = [
   { selector: null, title: 'Welcome to CostVision V4.2', body: 'This quick tour covers the key features in under 2 minutes. Skip at any time with the button below.', position: 'center' },
-  { selector: '#new-costing-btn', title: 'Start a New Costing', body: 'Click <strong>New Costing</strong> in the top bar to open the commodity picker. Choose from 19+ manufacturing processes or AI-powered tools — or press <strong>&#8984;K</strong> and type a commodity name.', position: 'below' },
+  { selector: '#new-costing-btn', title: 'Start a New Costing', body: 'Click <strong>New Costing</strong> in the top bar to open the commodity picker. Choose from 19 manufacturing processes, the assembly roll-up and automotive software — or press <strong>&#8984;K</strong> and type a commodity name.', position: 'below' },
   { selector: '#demo-btn', title: 'Demo Gallery', body: '<strong>Demos</strong> in the left sidebar opens 50+ pre-loaded luxury SUV examples across all commodity types. Load any demo instantly with one click.', position: 'below' },
   { selector: '#news-btn', title: 'Live Market Intelligence', body: '<strong>News</strong> in the left sidebar gives you 120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 minutes.', position: 'below' },
   { selector: '#help-btn', title: 'Help Centre', body: '<strong>Help</strong> at the bottom of the sidebar opens search, guides, glossary, keyboard shortcuts, and the changelog.', position: 'below' },
