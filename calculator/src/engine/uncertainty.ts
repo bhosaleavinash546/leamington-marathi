@@ -101,6 +101,11 @@ export interface DriverProvenance {
   toolingCost?: DriverSource;
   packaging?: DriverSource;
   logistics?: DriverSource;
+  /** A pre-computed material figure (painting, BIW, PCB). Missing → the Medium
+   *  grade the engine gives it in traceability, not `default`. */
+  directCost?: DriverSource;
+  /** Per-part consumables (cores, wax, shell). Missing → Medium, as above. */
+  consumables?: DriverSource;
 }
 
 export interface UncertaintyOptions {
@@ -148,11 +153,21 @@ function driverTrials(
       }),
     };
     const util = Math.min(0.99, Math.max(0.05, input.rawMaterial.materialUtilization * lognormalMult(cvOf(prov.materialUtilization), rng)));
+    // A flat material figure is a driver too. Weight, utilisation and the price
+    // per kg never touch it, so left alone it pinned most of a painted or PCB
+    // part's cost and the band read "±0.1%" beside "Low confidence". Drawn only
+    // when present, so a weight-priced part's draws — and band — are unchanged.
+    const rm = input.rawMaterial;
+    const flatCv = (src: DriverSource | undefined) => (src ? DRIVER_CV[src] : LIB_CV.Medium);
+    const directCost = rm.directCost !== undefined ? rm.directCost * lognormalMult(flatCv(prov.directCost), rng) : undefined;
+    const consumables = rm.consumablesCostPerPart ? rm.consumablesCostPerPart * lognormalMult(flatCv(prov.consumables), rng) : rm.consumablesCostPerPart;
     const trial: UniversalStackInput = {
       ...input,
-      rawMaterial: { ...input.rawMaterial,
-        netWeightKg: input.rawMaterial.netWeightKg * lognormalMult(cvOf(prov.netWeightKg), rng),
-        materialUtilization: util },
+      rawMaterial: { ...rm,
+        netWeightKg: rm.netWeightKg * lognormalMult(cvOf(prov.netWeightKg), rng),
+        materialUtilization: util,
+        ...(directCost !== undefined ? { directCost } : {}),
+        ...(consumables !== undefined ? { consumablesCostPerPart: consumables } : {}) },
       operations: input.operations.map((op, k) => {
         const m = lognormalMult(cvOf(prov.cycleTimeHr?.[k]), rng);
         return { ...op, cycleTimeHr: op.cycleTimeHr * m, labourTimeHr: op.labourTimeHr * m };
