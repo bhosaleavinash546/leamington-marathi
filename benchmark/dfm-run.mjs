@@ -575,6 +575,10 @@ async function main() {
       record(fx.file, 'bend r/t', near(m.minBendRadiusToThickness, t.minBendRadiusToThickness, 0.01),
         `${m.minBendRadiusToThickness} vs ${t.minBendRadiusToThickness}`);
     }
+    if (t.holeToBendClearanceMm !== undefined) {
+      record(fx.file, 'hole-to-bend clearance (rim, in plane)', near(m.holeToBendClearanceMm, t.holeToBendClearanceMm, 0.05),
+        `${m.holeToBendClearanceMm} vs ${t.holeToBendClearanceMm}`);
+    }
     if (t.deepDrawingDepthRulePasses !== undefined) {
       const row = [...(() => { const r = runDfmRules(g, 'deep-drawing', { material: 'Steel (mild)' });
         return [...r.findings, ...r.passed, ...r.notEvaluated]; })()].find(f => f.id === 'dd-draw-depth');
@@ -616,8 +620,14 @@ async function main() {
       continue;
     }
     const t = fx.truth;
-    const m = extractMeasures(g);
+    const m = extractMeasures(g, t.measureProcess ? { process: t.measureProcess } : {});
 
+    for (const v of t.pocketVerdicts || []) {
+      const r = runDfmRules(g, v.family, { material: 'Steel (mild)' });
+      const row = [...r.findings, ...r.passed, ...r.notEvaluated].find(f => f.id === v.ruleId);
+      record(fx.file, `${v.family} pocket rule`, row?.status === v.status,
+        row ? `${row.status} at ${row.measured} (expected ${v.status})` : 'rule missing entirely');
+    }
     for (const [key, tol] of [['minInternalCornerRadiusMm', 0.02], ['maxPocketDepthToWidth', 0.02],
       ['maxHoleDiaMm', 0.02], ['minHoleDiaMm', 0.02], ['slendernessLtoD', 0.02]]) {
       if (t[key] === undefined) continue;
@@ -681,6 +691,15 @@ async function main() {
     for (const [deg, want] of Object.entries(t.overhangCurve || {})) {
       const got = o.overhangAreaBelowDeg?.[deg];
       record(fx.file, `overhang below ${deg} deg`, near(got, want, 0.3), `${got}% vs ${want}%`);
+    }
+    if (t.onPlateAreaPct !== undefined) {
+      record(fx.file, 'on-plate area', near(o.onPlateAreaPct, t.onPlateAreaPct, 0.1),
+        `${o.onPlateAreaPct}% vs ${t.onPlateAreaPct}% — the face the part stands on is supported`);
+    }
+    if (t.orientationBest) {
+      const sw = o.orientationSweep || {};
+      record(fx.file, 'best build orientation', sw.best === t.orientationBest && near(sw.bestBelowCutoffPct, t.orientationBestPct, 0.1),
+        `${sw.best} at ${sw.bestBelowCutoffPct}% vs ${t.orientationBest} at ${t.orientationBestPct}%`);
     }
     if (t.lpbfOverhangRule) {
       const r = runDfmRules(g, 'lpbf', { material: 'Titanium Ti-6Al-4V' });

@@ -44,6 +44,8 @@ interface Finding {
   rationale: string; fix: string; source: string; sourceStatus?: string; status: string; reason?: string;
   /** Where the MEASURED side came from: model PMI, the 2D drawing, or typed. */
   measuredBasis?: string;
+  /** Why a rule produced no verdict — see dfm-abstention.mjs. */
+  abstention?: { kind: 'needs-input' | 'outside-source' | 'not-applicable' | 'not-measured'; input?: string; reason: string };
   cost?: {
     priced: boolean; basis?: string; changeDescription?: string;
     asDrawnEur?: number; improvedEur?: number; deltaEur?: number; annualDeltaEur?: number;
@@ -55,6 +57,11 @@ interface ProcessResult {
   findings: Finding[]; passed: Finding[]; notEvaluated: Finding[];
   ruleCount: number; evaluatedCount: number; coveragePct: number; score: number | null;
   impact?: { pricedCount: number; unpricedCount: number; perPartEur: number; annualEur: number; caveat: string | null };
+  /** Rules about features this part does not have leave the denominator. */
+  applicableCount?: number; notApplicableCount?: number;
+  needsInputCount?: number; outsideSourceCount?: number; notMeasuredCount?: number;
+  /** "Declare the alloy to check 6 more rules", most rules first. */
+  unlocks?: Array<{ input: string; label: string; field: string; count: number; ruleIds: string[] }>;
 }
 interface DfmResponse {
   partName?: string;
@@ -272,6 +279,11 @@ export default function DfmStudioPage() {
   const [tightestTolMm, setTightestTolMm] = useState('');
   const [toleranceGrade, setToleranceGrade] = useState<'standard' | 'precision'>('standard');
   const [flatnessCalloutMm, setFlatnessCalloutMm] = useState('');
+  // The server has always accepted these two and the die-casting and sand
+  // rules need them, but the studio had no field for either — so those rules
+  // could never be evaluated from this page (DFM review, 28 Sept 2026).
+  const [roughnessRaUm, setRoughnessRaUm] = useState('');
+  const [machiningStockMm, setMachiningStockMm] = useState('');
   // SFSA 2000 production series (steel castings): short is the honest
   // first-article default; long declares that tooling has been iterated.
   const [productionSeries, setProductionSeries] = useState<'short' | 'long'>('short');
@@ -429,6 +441,10 @@ export default function DfmStudioPage() {
     fd.append('productionSeries', productionSeries);
     if (tightestTolMm.trim()) fd.append('tightestToleranceMm', tightestTolMm.trim());
     if (flatnessCalloutMm.trim()) fd.append('flatnessMm', flatnessCalloutMm.trim());
+    // Ra in micrometres on screen, micro-inches on the wire: NADCA's roughness
+    // table is printed in micro-inches, and 1 µm = 39.37 µin exactly enough.
+    if (Number(roughnessRaUm) > 0) fd.append('surfaceRoughnessUin', (Number(roughnessRaUm) * 39.37).toFixed(1));
+    if (Number(machiningStockMm) > 0) fd.append('machiningStockMm', machiningStockMm.trim());
     // A pinned draw direction, when the tool split is already decided. Left
     // blank the engine sweeps for the axis with the least undercut, which is
     // the right default and the wrong answer once a foundry has told you where
@@ -1041,11 +1057,29 @@ export default function DfmStudioPage() {
       medium: findings.filter(f => f.severity === 'medium').length,
       low: findings.filter(f => f.severity === 'low').length,
       evaluated: rs.reduce((n, r) => n + r.evaluatedCount, 0),
-      ruleCount: rs.reduce((n, r) => n + r.ruleCount, 0),
+      // "of N that apply" was printed over EVERY rule in the family, boss
+      // rules on a part with no bosses included. N is now what it says.
+      ruleCount: rs.reduce((n, r) => n + (r.applicableCount ?? r.ruleCount), 0),
       annualEur: rs.reduce((n, r) => n + (r.impact?.annualEur ?? 0), 0),
-      notEvaluated: rs.reduce((n, r) => n + r.notEvaluated.length, 0),
+      notEvaluated: rs.reduce((n, r) => n + r.notEvaluated.filter(x => x.abstention?.kind !== 'not-applicable').length, 0),
+      needsInput: rs.reduce((n, r) => n + (r.needsInputCount ?? 0), 0),
     };
   }, [result]);
+  // "Declare the alloy to check 6 more rules" → take the reader to the field.
+  // The setup form collapses once a report exists, which takes the fields off
+  // the page — so it is re-opened first, and the field is found after the
+  // re-render rather than assumed to be there.
+  const focusDeclaredInput = useCallback((field: string) => {
+    setSetupOpen(true);
+    let tries = 0;
+    const seek = () => {
+      const el = document.getElementById(`dfm-in-${field}`) as HTMLInputElement | HTMLSelectElement | null;
+      if (!el) { if (tries++ < 20) window.setTimeout(seek, 50); return; }
+      el.scrollIntoView({ block: 'center', behavior: m.reduced ? 'auto' : 'smooth' });
+      window.setTimeout(() => el.focus({ preventScroll: true }), m.reduced ? 0 : 350);
+    };
+    window.setTimeout(seek, 0);
+  }, [m.reduced]);
   // What the drawing supplies, so the manual callout inputs can say they are
   // superseded rather than silently ignored.
   const drawingSupplies = useMemo(() => {
@@ -1649,7 +1683,7 @@ export default function DfmStudioPage() {
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
                 <label className="text-sm text-slate-200 font-medium">Material
-                  <select value={material} onChange={e => setMaterial(e.target.value)}
+                  <select id="dfm-in-material" value={material} onChange={e => setMaterial(e.target.value)}
                     className="dfm-select mt-1.5" data-unset={material ? 'false' : 'true'}>
                     {/* Short, because a ~200 px select truncated the old label
                         mid-sentence. What it COSTS you to leave it unset is said
@@ -1752,7 +1786,7 @@ export default function DfmStudioPage() {
               </p>
               <div className="grid sm:grid-cols-3 gap-3">
                 <label className={`text-xs ${drawingSupplies.tolerance ? 'text-slate-500' : 'text-slate-400'}`}>Tightest tolerance band (mm)
-                  <input type="number" value={tightestTolMm} min={0} step={0.01}
+                  <input id="dfm-in-tightestToleranceMm" type="number" value={tightestTolMm} min={0} step={0.01}
                     placeholder={drawingSupplies.tolerance ? 'superseded by the uploaded drawing' : 'e.g. 0.5 for ±0.25'}
                     disabled={drawingSupplies.tolerance}
                     title={drawingSupplies.tolerance ? 'The uploaded drawing carries toleranced dimensions, and those are judged each at their own size — a single typed band would be weaker evidence.' : undefined}
@@ -1767,9 +1801,21 @@ export default function DfmStudioPage() {
                   </select>
                 </label>
                 <label className="text-xs text-slate-400">Flatness callout (mm)
-                  <input type="number" value={flatnessCalloutMm} min={0} step={0.01}
+                  <input id="dfm-in-flatnessMm" type="number" value={flatnessCalloutMm} min={0} step={0.01}
                     placeholder={drawingSupplies.flatness ? 'drawing supplies one; typing here overrides it' : 'e.g. 0.3'}
                     onChange={e => setFlatnessCalloutMm(e.target.value)}
+                    className="dfm-input mt-1" />
+                </label>
+                <label className="text-xs text-slate-400">Surface finish, Ra (µm)
+                  <input id="dfm-in-surfaceRoughnessUin" type="number" value={roughnessRaUm} min={0} step={0.1}
+                    placeholder={drawing?.roughness?.length ? 'the drawing supplies one; typing here overrides it' : 'e.g. 3.2'}
+                    onChange={e => setRoughnessRaUm(e.target.value)}
+                    className="dfm-input mt-1" />
+                </label>
+                <label className="text-xs text-slate-400">Machining stock (mm)
+                  <input id="dfm-in-machiningStockMm" type="number" value={machiningStockMm} min={0} step={0.1}
+                    placeholder="e.g. 0.8 left on machined faces"
+                    onChange={e => setMachiningStockMm(e.target.value)}
                     className="dfm-input mt-1" />
                 </label>
                 <label className="text-xs text-slate-400">Production series (SFSA 2000, steel castings)
@@ -2277,7 +2323,10 @@ export default function DfmStudioPage() {
                       sub: summary.annualEur > 0 ? 'upper bound, engine-priced' : 'nothing priced',
                       tone: summary.annualEur > 0 ? 'text-emerald-400' : 'text-slate-500' },
                     { label: 'Not evaluated', value: summary.notEvaluated,
-                      sub: 'measurement unavailable', tone: 'text-slate-300' },
+                      sub: summary.needsInput > 0
+                        ? `${summary.needsInput} wait on an input you can declare`
+                        : summary.notEvaluated > 0 ? 'outside the source or not measurable' : 'every applicable rule ran',
+                      tone: 'text-slate-300' },
                   ].map((k) => (
                     <div key={k.label} className="min-w-0">
                       <p className={`dfm-kpi-value ${k.tone}`}>
@@ -2608,7 +2657,9 @@ export default function DfmStudioPage() {
                           animate={{ width: `${Math.max(0, Math.min(100, r.coveragePct))}%` }}
                           transition={m.t(0.6, m.beat(2))} />
                       </span>
-                      <span className="dfm-num">{r.coveragePct}% ({r.evaluatedCount}/{r.ruleCount})</span>
+                      <span className="dfm-num" title={r.notApplicableCount ? `${r.notApplicableCount} rule${r.notApplicableCount === 1 ? '' : 's'} in this family are about features this part does not have, so they are not counted.` : undefined}>
+                        {r.coveragePct}% ({r.evaluatedCount}/{r.applicableCount ?? r.ruleCount}{r.notApplicableCount ? ' that apply' : ''})
+                      </span>
                     </span>
                     {r.impact?.annualEur ? <span className="text-emerald-400 dfm-num"><Money eur={r.impact.annualEur} decimals={0} suffix="/yr" /> priced</span> : null}
                   </div>
@@ -2761,18 +2812,7 @@ export default function DfmStudioPage() {
                   </p>
                 )}
 
-                {r.notEvaluated.length > 0 && (
-                  <details className="mt-3">
-                    <summary className="text-slate-400 text-xs cursor-pointer hover:text-slate-200 flex items-center gap-1.5">
-                      <MinusCircle size={13} /> {r.notEvaluated.length} rule{r.notEvaluated.length === 1 ? '' : 's'} could NOT be checked — these are not passes
-                    </summary>
-                    <ul className="mt-2 space-y-1">
-                      {r.notEvaluated.map(n => (
-                        <li key={n.id} className="text-slate-500 text-xs">· {n.title} — {n.reason}</li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
+                {r.notEvaluated.length > 0 && <AbstentionPanel r={r} onDeclare={focusDeclaredInput} />}
                 {r.passed.length > 0 && (
                   <details className="mt-2">
                     <summary className="text-emerald-500/80 text-xs cursor-pointer hover:text-emerald-300">
@@ -3055,6 +3095,77 @@ function Metric({ label, value, hint }: { label: string; value: string; hint?: s
         )}
       </p>
       <p className="text-white font-semibold mt-0.5 dfm-num">{value}</p>
+    </div>
+  );
+}
+
+
+/**
+ * WHY RULES DID NOT RUN, in four answers instead of one sentence.
+ *
+ * The list used to read "12 rules could NOT be checked" over a flat list whose
+ * every line said "no measurement available". Most of those were waiting on
+ * something the engineer can type, a few were rules the published source does
+ * not cover for this alloy, and a third of them were about features the part
+ * does not have. The groups say which, the inputs that would unlock rules sit
+ * at the top as actions, and rules that do not apply are counted out of the
+ * coverage figure rather than hidden.
+ */
+function AbstentionPanel({ r, onDeclare }: { r: ProcessResult; onDeclare: (field: string) => void }) {
+  const by = (k: string) => r.notEvaluated.filter(n => (n.abstention?.kind ?? 'not-measured') === k);
+  const groups: Array<{ kind: string; title: string; tone: string; rows: Finding[] }> = [
+    { kind: 'needs-input', title: 'Waiting on an input you can declare', tone: 'text-gold-300', rows: by('needs-input') },
+    { kind: 'outside-source', title: 'Outside the published source for this material', tone: 'text-slate-300', rows: by('outside-source') },
+    { kind: 'not-measured', title: 'Not measurable on this geometry', tone: 'text-slate-300', rows: by('not-measured') },
+  ].filter(g => g.rows.length);
+  const na = by('not-applicable');
+  const open = groups.reduce((n, g) => n + g.rows.length, 0);
+  return (
+    <div className="mt-3 space-y-2">
+      {!!r.unlocks?.length && (
+        <div className="rounded-lg border border-gold-500/25 bg-gold-500/[0.06] px-3 py-2">
+          <p className="text-xs text-slate-300 mb-1.5">Declare these to check more rules — none of them is a pass until it runs:</p>
+          <div className="flex flex-wrap gap-2">
+            {r.unlocks.map(u => (
+              <button key={u.input} type="button" onClick={() => onDeclare(u.field)}
+                className="inline-flex items-center gap-1.5 min-h-[32px] px-2.5 rounded-lg border border-gold-500/35 text-xs text-gold-300 hover:bg-gold-500/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60">
+                {u.label} <span className="dfm-num text-slate-400">+{u.count} rule{u.count === 1 ? '' : 's'}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {open > 0 && (
+        <details>
+          <summary className="text-slate-400 text-xs cursor-pointer hover:text-slate-200 flex items-center gap-1.5">
+            <MinusCircle size={13} /> {open} rule{open === 1 ? '' : 's'} could NOT be checked — these are not passes
+          </summary>
+          <div className="mt-2 space-y-2">
+            {groups.map(g => (
+              <div key={g.kind}>
+                <p className={`text-2xs uppercase tracking-wider font-medium ${g.tone}`}>{g.title} · {g.rows.length}</p>
+                <ul className="mt-1 space-y-1">
+                  {g.rows.map(n => (
+                    <li key={n.id} className="text-slate-500 text-xs">· {n.title} — {n.reason}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+      {na.length > 0 && (
+        <details>
+          <summary className="text-slate-500 text-xs cursor-pointer hover:text-slate-300">
+            {na.length} rule{na.length === 1 ? '' : 's'} do not apply to this part — not counted in coverage
+          </summary>
+          <ul className="mt-2 space-y-1">
+            {na.map(n => (
+              <li key={n.id} className="text-slate-500 text-xs">· {n.title} — {n.abstention?.reason ?? n.reason}</li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
   );
 }

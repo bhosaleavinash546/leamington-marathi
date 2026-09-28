@@ -898,6 +898,57 @@ def tool_accessibility(tess, inter, directions=None, tool_dia_mm=10.0, reach=1e5
 OVERHANG_CUTOFFS_DEG = (20.0, 30.0, 40.0, 45.0, 50.0, 60.0)
 
 
+#: How close to the lowest point a flat, downward face must sit to be standing
+#: ON the build plate rather than hanging over it.
+PLATE_TOL_MM = 0.05
+
+
+def _plate_level(tess, build):
+    """Lowest centroid height along the build direction, or None."""
+    n = tess.get("count") or 0
+    lo = None
+    for i in range(n):
+        h = tess["cx"][i] * build[0] + tess["cy"][i] * build[1] + tess["cz"][i] * build[2]
+        if lo is None or h < lo:
+            lo = h
+    return lo
+
+
+def _on_plate(tess, i, d, build, plate):
+    """True for a triangle lying flat on the build plate: facing straight down
+    and at the lowest level. The plate supports it; it is not an overhang."""
+    if plate is None or d > -0.9999:
+        return False
+    h = tess["cx"][i] * build[0] + tess["cy"][i] * build[1] + tess["cz"][i] * build[2]
+    return h - plate <= PLATE_TOL_MM
+
+
+def _orientation_sweep(tess, cutoff=45.0):
+    """Overhang share below `cutoff` for the six axis build directions."""
+    total = tess.get("totalAreaMm2") or 0.0
+    n = tess.get("count") or 0
+    if not n or total <= 0:
+        return None
+    rows = []
+    for name, b in (("+Z", (0, 0, 1)), ("-Z", (0, 0, -1)), ("+X", (1, 0, 0)),
+                    ("-X", (-1, 0, 0)), ("+Y", (0, 1, 0)), ("-Y", (0, -1, 0))):
+        plate = _plate_level(tess, b)
+        below = 0.0
+        for i in range(n):
+            ar = tess["area"][i]
+            if ar <= 0:
+                continue
+            d = tess["nx"][i] * b[0] + tess["ny"][i] * b[1] + tess["nz"][i] * b[2]
+            if d >= 0 or _on_plate(tess, i, d, b, plate):
+                continue
+            if math.degrees(math.acos(min(1.0, -d))) < cutoff:
+                below += ar
+        rows.append({"build": name, "belowCutoffPct": round(100.0 * below / total, 2)})
+    best = min(rows, key=lambda r: r["belowCutoffPct"])
+    return {"cutoffDeg": cutoff, "rows": rows, "best": best["build"],
+            "bestBelowCutoffPct": best["belowCutoffPct"]}
+
+
 def overhang(tess, build=(0.0, 0.0, 1.0)):
     """Area share of the surface that is a DOWNWARD-facing overhang, by angle.
 
@@ -944,6 +995,8 @@ def overhang(tess, build=(0.0, 0.0, 1.0)):
     # their centres.
     face_moment = {c: {} for c in OVERHANG_CUTOFFS_DEG}
     faces = tess.get("face")
+    plate = _plate_level(tess, (bx, by, bz))
+    plate_area = 0.0
     for i in range(n):
         ar = tess["area"][i]
         if ar <= 0:
@@ -952,6 +1005,9 @@ def overhang(tess, build=(0.0, 0.0, 1.0)):
         # Component along the build axis. Negative means the face looks down.
         d = nx * bx + ny * by + nz * bz
         if d >= 0:
+            continue
+        if _on_plate(tess, i, d, (bx, by, bz), plate):
+            plate_area += ar
             continue
         down_area += ar
         # Angle of the SURFACE from the build plate: a floor-parallel face reads
@@ -998,6 +1054,15 @@ def overhang(tess, build=(0.0, 0.0, 1.0)):
 
     return {
         "buildDirectionXYZ": [round(v, 4) for v in (bx, by, bz)],
+        # The face the part stands on is supported by the plate itself. It used
+        # to count as a 0-degree overhang: a T-shaped part read 30.8% below 45
+        # degrees against a true 28.8% (DFM review, 28 Sept 2026).
+        "onPlateAreaPct": round(100.0 * plate_area / total, 2),
+        # EVERY AXIS ORIENTATION, not only the one it was drawn in. The rule
+        # still judges the part as drawn — the report says which way it was
+        # drawn — but the best of the six is measured the same way and shown
+        # beside it, because re-orienting is the cheapest fix there is.
+        "orientationSweep": _orientation_sweep(tess),
         # The faces behind each entry of the curve below, keyed identically so a
         # finding that quotes `overhangAreaBelowDeg["45"]` can paint exactly the
         # faces that figure counted. Worst-area first and capped, like every

@@ -745,6 +745,88 @@ def overhang_wedge(outdir):
     return _write(solid, os.path.join(outdir, "overhang-wedge.step")), round(vol, 1)
 
 
+# ─── Found by the held-out review, 28 Sept 2026 ──────────────────────────────
+#
+# Each of these was first built as a HELD-OUT part — geometry the engine had
+# never been run against — and each exposed a defect the 200 checks above were
+# blind to. They are fixtures now so the defects cannot come back.
+
+def overhang_tee(outdir):
+    """A 10x10x30 post carrying a 40x40x5 cap: a T. The cap's underside is a
+    genuine 0-degree overhang; the post's foot stands ON the build plate.
+
+    Truth by construction, +Z build:
+      post sides 4*10*30 = 1200; post foot 10*10 = 100 (on the plate)
+      cap underside 40*40 - 10*10 = 1500 (0 deg overhang)
+      cap top 1600; cap sides 4*40*5 = 800;  total = 5200 mm^2
+      overhang below any cutoff = 1500 / 5200 = 28.85 %
+      on the plate               =  100 / 5200 =  1.92 %
+    Built upside down (-Z) the cap top rests on the plate and nothing hangs:
+    0 %. On its side (+/-X, +/-Y) one 10x30 post face hangs: 300/5200 = 5.77 %.
+    The engine used to count the foot as an overhang too (30.77 %).
+    """
+    post = BRepPrimAPI_MakeBox(gp_Pnt(15, 15, 0), 10.0, 10.0, 30.0).Shape()
+    cap = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 30), 40.0, 40.0, 5.0).Shape()
+    s = BRepAlgoAPI_Fuse(post, cap).Shape()
+    return _write(s, os.path.join(outdir, "overhang-tee.step")), {"overhangPct": 28.85, "onPlatePct": 1.92}
+
+
+def deep_sharp_pocket(outdir):
+    """100x60x40 block with ONE closed pocket 8 wide (X) x 40 long (Y) x 36 deep,
+    open at the top, every corner SHARP.
+
+    Truth by construction:
+      depth / width = 36 / 8 = 4.5  (past the 4:1 machining guideline)
+      the pocket's four vertical corners run along the cutter axis and carry
+      radius 0: a rotating cutter cannot make them.
+    The engine took the largest planar face (a 40x36 wall, 4.5x the floor's
+    area) as the floor and reported 0.22 — a pass — and reported the corners as
+    "no measurement available".
+    """
+    s = BRepPrimAPI_MakeBox(100.0, 60.0, 40.0).Shape()
+    s = BRepAlgoAPI_Cut(s, BRepPrimAPI_MakeBox(gp_Pnt(10, 10, 4), 8.0, 40.0, 36.0).Shape()).Shape()
+    return _write(s, os.path.join(outdir, "deep-sharp-pocket.step")), {"depthToWidth": 4.5, "cornerR": 0.0}
+
+
+def wall_to_wall_rib(outdir):
+    """80x60x20 open cover, 2.0 wall, carrying ONE rib 1.6 thick x 10 tall that
+    runs the full 56 mm between the two long walls.
+
+    Truth by construction: rib t / wall = 0.8, rib h / wall = 5.0.
+    A wall-to-wall rib cuts the floor into two faces, so its two sides share no
+    floor face — only the end walls — and the engine measured the height along
+    the rib's LENGTH: 56 mm, h/wall 28.
+    """
+    s = BRepAlgoAPI_Cut(BRepPrimAPI_MakeBox(80.0, 60.0, 20.0).Shape(),
+                        BRepPrimAPI_MakeBox(gp_Pnt(2, 2, 2), 76.0, 56.0, 20.0).Shape()).Shape()
+    s = BRepAlgoAPI_Fuse(s, BRepPrimAPI_MakeBox(gp_Pnt(39.2, 2, 2), 1.6, 56.0, 10.0).Shape()).Shape()
+    return _write(s, os.path.join(outdir, "wall-to-wall-rib.step")), {"ribT": 1.6, "ribH": 10.0}
+
+
+def bend_hole_bracket(outdir):
+    """2.0 mm L-bracket, inside bend radius 1.0, legs 30 (Y) and 25 (Z), 40 wide,
+    with one d3 hole in the horizontal leg centred 18 mm from the bend axis line.
+
+    Truth by construction, measured IN THE SHEET PLANE FROM THE HOLE'S EDGE:
+      bend tangent line at y = 3; hole rim nearest it at y = 18 - 1.5 = 16.5
+      rim to bend = 13.5; required 2t + r = 5.0; clearance = 8.5 mm
+      r / t = 0.5; d / t = 1.5
+    The engine measured from the hole CENTRE and out of plane: 10.03.
+    """
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Common
+    t, ri, w = 2.0, 1.0, 40.0
+    ro = ri + t
+    horiz = BRepPrimAPI_MakeBox(gp_Pnt(0, ro, 0), w, 30.0 - ro, t).Shape()
+    vert = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, ro), w, t, 25.0 - ro).Shape()
+    tube = BRepAlgoAPI_Cut(
+        BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0, ro, ro), gp_Dir(1, 0, 0)), ro, w).Shape(),
+        BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0, ro, ro), gp_Dir(1, 0, 0)), ri, w).Shape()).Shape()
+    quad = BRepAlgoAPI_Common(tube, BRepPrimAPI_MakeBox(w, ro, ro).Shape()).Shape()
+    s = BRepAlgoAPI_Fuse(BRepAlgoAPI_Fuse(horiz, vert).Shape(), quad).Shape()
+    s = BRepAlgoAPI_Cut(s, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(20, 18, -1), gp_Dir(0, 0, 1)), 1.5, t + 2).Shape()).Shape()
+    return _write(s, os.path.join(outdir, "bend-hole-bracket.step")), {"holeToBendClearanceMm": 8.5}
+
+
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
     os.makedirs(outdir, exist_ok=True)
@@ -768,7 +850,10 @@ def main():
                # Appended for the additive tranche: one face at exactly 30 deg
                # from the build plate, so the overhang curve has a fixture that
                # straddles it rather than sitting at one end.
-               overhang_wedge):
+               overhang_wedge,
+               # Appended by the held-out DFM review (28 Sept 2026): each one
+               # was a defect the gate above could not see.
+               overhang_tee, deep_sharp_pocket, wall_to_wall_rib, bend_hole_bracket):
         path, truth = fn(outdir)
         print(f"  {os.path.basename(path):26s}  analytic truth: {truth}")
     print(f"wrote fixtures to {outdir}")

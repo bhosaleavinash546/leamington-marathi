@@ -137,7 +137,7 @@ def build_aag(shape):
     from OCP.BRepAdaptor import BRepAdaptor_Curve, BRepAdaptor_Surface
     from OCP.BRepGProp import BRepGProp
     from OCP.GProp import GProp_GProps
-    from OCP.GeomAbs import (GeomAbs_Cone, GeomAbs_Cylinder, GeomAbs_Plane,
+    from OCP.GeomAbs import (GeomAbs_Cone, GeomAbs_Cylinder, GeomAbs_Line, GeomAbs_Plane,
                              GeomAbs_Sphere, GeomAbs_Torus)
     from OCP.gp import gp_Pnt, gp_Vec
     from OCP.TopAbs import TopAbs_EDGE, TopAbs_FACE
@@ -299,7 +299,26 @@ def build_aag(shape):
         else:
             s = cross.Dot(tan) * _edge_sense_in(f1, edge)
             label = "convex" if s > 1e-9 else "concave" if s < -1e-9 else "tangent"
-        arcs.append({"a": fmap.FindIndex(f1), "b": fmap.FindIndex(f2), "label": label})
+        arc = {"a": fmap.FindIndex(f1), "b": fmap.FindIndex(f2), "label": label}
+        # THE EDGE ITSELF, for straight edges: direction, length and midpoint.
+        # A sharp internal corner is an EDGE, not a face, so a graph that kept
+        # only which faces meet could say a corner was concave but never how
+        # long it was, which way it ran, or where to point at it — and a
+        # rotating cutter only cares about corners that run along its own axis.
+        try:
+            if ad.GetType() == GeomAbs_Line:
+                p0, p1 = ad.Value(ad.FirstParameter()), ad.Value(ad.LastParameter())
+                v = [p1.X() - p0.X(), p1.Y() - p0.Y(), p1.Z() - p0.Z()]
+                ln = math.sqrt(sum(c * c for c in v))
+                if ln > 1e-9:
+                    arc["edgeDir"] = [round(c / ln, 5) for c in v]
+                    arc["edgeLenMm"] = round(ln, 3)
+                    arc["edgeMidXYZ"] = [round((p0.X() + p1.X()) / 2, 3),
+                                         round((p0.Y() + p1.Y()) / 2, 3),
+                                         round((p0.Z() + p1.Z()) / 2, 3)]
+        except Exception:
+            pass
+        arcs.append(arc)
 
     return {"faces": faces, "arcs": arcs,
             "totalAreaMm2": sum(f["areaMm2"] for f in faces.values())}
@@ -589,31 +608,52 @@ def _component_extents(aag, comp):
     return [round(hi[k] - lo[k], 3) for k in range(3)]
 
 
-def _pocket_depth_axis(aag, comp):
+def _pocket_depth_axis(aag, comp, ext=None):
     """Which axis a pocket is CUT ALONG, from its floor.
 
-    The floor is the largest planar face in the component and the cutter comes
-    in along its normal, so the depth is the component's span on that axis and
-    the width is the narrower of the other two. Guessing instead — taking the
-    smallest span as the width and the middle as the depth — gets a wide shallow
-    pocket exactly backwards.
+    THE FLOOR IS THE FACE WITH NO OPPOSITE. A pocket's side walls come in
+    facing pairs — a wall looking along +X has a partner looking along -X — and
+    the floor is the one planar face whose opposite direction is not in the
+    component, because that side is the opening. The cutter comes in along the
+    floor's normal, so depth is the span on that axis and width the narrower
+    of the other two.
 
-    Returns None when no planar face carries a usable axis-aligned normal, and
-    the slenderness measure then abstains rather than picking an axis at random.
+    This replaced "the floor is the largest planar face", which is true of a
+    shallow pocket and exactly backwards for a deep narrow one — the case the
+    4:1 rule exists for. On an 8 mm wide, 36 mm deep pocket the side walls are
+    4.5 times the floor's area, the wall was taken as the floor, the depth was
+    read sideways and a 4.5:1 pocket reported 0.22 and PASSED (held-out part,
+    DFM review 28 Sept 2026).
+
+    When more than one face is unpaired — a slot open at one end as well as the
+    top — the cutter may come in from either, and the machinist picks the
+    shorter reach, so the axis with the smallest depth/width is returned.
+    Returns None when no planar face carries an axis-aligned normal, and the
+    slenderness measure abstains rather than picking an axis at random.
     """
-    best_area, axis = 0.0, None
+    signed = {}
     for fid in comp:
         f = aag["faces"].get(fid) or {}
         if f.get("type") != "PLANE":
             continue
         n = f.get("normal")
-        if not n or f.get("areaMm2", 0) <= best_area:
+        if not n:
             continue
         for k in range(3):
             if abs(n[k]) > 0.999:
-                best_area, axis = f["areaMm2"], k
+                signed.setdefault((k, 1 if n[k] > 0 else -1), 0.0)
+                signed[(k, 1 if n[k] > 0 else -1)] += f.get("areaMm2", 0.0)
                 break
-    return axis
+    unpaired = sorted({k for (k, sgn) in signed if (k, -sgn) not in signed})
+    if not unpaired:
+        return None
+    if len(unpaired) == 1 or not ext or len(ext) != 3:
+        return unpaired[0]
+
+    def ratio(k):
+        width = min(ext[j] for j in range(3) if j != k)
+        return ext[k] / width if width > 0 else float("inf")
+    return min(unpaired, key=ratio)
 
 
 def prismatic_features(aag):
@@ -680,7 +720,7 @@ def prismatic_features(aag):
             # could be named and located but never judged for slenderness.
             # Sorted ascending: [narrowest, middle, longest].
             "extentsMm": _component_extents(aag, comp),
-            "depthAxis": _pocket_depth_axis(aag, comp),
+            "depthAxis": _pocket_depth_axis(aag, comp, _component_extents(aag, comp)),
             # The measured approach span, published rather than merely used: a
             # feature at 95° is a shallow pocket with drafted walls, and a
             # reviewer is entitled to see how close to the limit it sat.
@@ -976,9 +1016,32 @@ def rib_features(shape, aag):
             delta = tuple(q - p for p, q in zip(gi["c"], gj["c"]))
             if _dot(delta, gi["n"]) >= 0:
                 continue                      # void between them — a slot, not a rib
-            # A base both sides meet concavely. Largest by area when several.
-            shared = (concave.get(i, set()) & concave.get(j, set()))
-            base = max(shared, key=lambda f: faces.get(f, {}).get("areaMm2", 0.0), default=None)
+            # A base both sides meet concavely. A rib that runs wall to wall
+            # CUTS the floor into two faces, one on each side of it, so the two
+            # sides share no floor face at all — only the end walls — and the
+            # height used to be measured along the rib's length (a 10 mm rib
+            # spanning a 56 mm cover read 56 mm tall, h/wall 28 instead of 5).
+            # Coplanar faces are one base for this test.
+            ci, cj = concave.get(i, set()), concave.get(j, set())
+            shared = set(ci & cj)
+            for fi in ci:
+                gfi = geo.get(fi)
+                if not gfi:
+                    continue
+                for fj in cj:
+                    gfj = geo.get(fj)
+                    if gfj and fj != fi and _dot(gfi["n"], gfj["n"]) > 0.9999 and \
+                            abs(_dot(tuple(q - p for p, q in zip(gfi["c"], gfj["c"])), gfi["n"])) < 0.01:
+                        shared.add(fi)
+                        shared.add(fj)
+            # And the base is the face the rib STANDS on: the one whose normal
+            # matches the rib's free top (a face convex to both sides). A wall
+            # the rib merely butts against has no top facing away from it.
+            tops = [geo[t]["n"] for t in (adjacent.get(i, set()) & adjacent.get(j, set()))
+                    if t in geo and t not in ci and t not in cj]
+            standing = {f for f in shared if f in geo and any(_dot(geo[f]["n"], tn) > 0.99 for tn in tops)}
+            pool = standing or shared
+            base = max(pool, key=lambda f: faces.get(f, {}).get("areaMm2", 0.0), default=None)
             if base is None:
                 continue
             bn = geo.get(base, {}).get("n")
@@ -1509,12 +1572,26 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
         if d > 0 and (hole_dia is None or d < hole_dia):
             hole_dia = d
         hp = row["axisPointXYZ"]
+        hax = row.get("axisXYZ")
         for b in bends:
             delta = [q - p for p, q in zip(b["axisPointXYZ"], hp)]
+            # IN THE SHEET'S OWN PLANE. The hole axis is the sheet normal, so
+            # the component of the offset along it is only the half-thickness
+            # between the bend axis and the hole's mid-plane — not distance
+            # along the flange — and it inflated the clearance.
+            if hax and len(hax) == 3:
+                nm = math.sqrt(sum(c * c for c in hax)) or 1.0
+                hu = [c / nm for c in hax]
+                h = sum(x * u for x, u in zip(delta, hu))
+                delta = [x - h * u for x, u in zip(delta, hu)]
             along = sum(x * u for x, u in zip(delta, b["axisXYZ"]))
             perp = math.sqrt(max(0.0, sum(x * x for x in delta) - along * along))
             required = 2 * thickness + b["insideRadiusMm"]
-            c = perp - required
+            # FROM THE HOLE'S EDGE. The guideline is material between the rim
+            # and the bend zone, and it is how hole-to-hole and hole-to-edge are
+            # measured two functions up. Measured from the centre it passed a
+            # hole whose rim sat half a diameter inside the zone.
+            c = perp - d / 2.0 - required
             if clearance is None or c < clearance:
                 clearance = c
                 clearance_at = [round(v, 3) for v in hp]
@@ -1528,7 +1605,7 @@ def sheet_metal_features(shape, feature_table=None, wall_p50_mm=None, aperture_b
             delta = [q - p for p, q in zip(b["axisPointXYZ"], (ax, ay, az))]
             along = sum(x * u for x, u in zip(delta, b["axisXYZ"]))
             perp = math.sqrt(max(0.0, sum(x * x for x in delta) - along * along))
-            c = perp - (2 * thickness + b["insideRadiusMm"])
+            c = perp - adia / 2.0 - (2 * thickness + b["insideRadiusMm"])
             if clearance is None or c < clearance:
                 clearance = c
                 clearance_at = [round(ax, 3), round(ay, 3), round(az, 3)]
@@ -1636,6 +1713,67 @@ def _min_internal_corner_radius(aag, fillets):
     return round(corners[0][0], 3), located
 
 
+#: A sharp internal edge shorter than this is a sliver where two faces meet,
+#: not a corner a tool or a melt front has to deal with.
+SHARP_EDGE_MIN_LEN_MM = 1.0
+
+
+def _sharp_internal_edges(aag, prismatic):
+    """Straight CONCAVE edges between two planar faces: internal corners with
+    no radius at all, as modelled.
+
+    Before this, a sharp corner produced no measurement: the corner-radius
+    pass only sees faces, a sharp corner has no face, and the rule reported
+    "no measurement available on this geometry" on the one defect every
+    machinist, die designer and mould maker checks first. It is not a missing
+    measurement. The model says zero, and zero is what is reported — with the
+    basis "modelled sharp", so a reader can tell it from a measured radius.
+
+    Two counts, because the processes care about different corners:
+
+    * `count` — every sharp internal edge. A casting, a moulding or a forging
+      needs a fillet in all of them: they are where metal freezes last and where
+      a crack starts.
+    * `alongCutterAxis` — only the edges INSIDE a recognised pocket or slot that
+      run parallel to that feature's depth axis. A rotating cutter can leave a
+      sharp edge where a wall meets the floor (a flat end mill does exactly
+      that) but it cannot leave one where two walls meet: the corner always
+      carries at least the tool's radius.
+
+    Tangent (filleted) edges are not concave, and edges on the far side of a
+    collapsed blend are not in the raw graph, so a filleted corner never
+    appears here.
+    """
+    faces = aag.get("faces") or {}
+    pocket_axis = {}
+    for p in prismatic or []:
+        if p.get("kind") in ("pocket", "slot") and p.get("depthAxis") is not None:
+            for fid in p.get("faceIds") or []:
+                pocket_axis[fid] = p["depthAxis"]
+    found = []
+    for arc in aag.get("arcs") or []:
+        if arc.get("label") != "concave" or arc.get("viaBlend") is not None:
+            continue
+        d = arc.get("edgeDir")
+        ln = arc.get("edgeLenMm") or 0.0
+        if not d or ln < SHARP_EDGE_MIN_LEN_MM:
+            continue
+        fa, fb = faces.get(arc["a"]) or {}, faces.get(arc["b"]) or {}
+        if fa.get("type") != "PLANE" or fb.get("type") != "PLANE":
+            continue
+        axis = pocket_axis.get(arc["a"])
+        along = (axis is not None and pocket_axis.get(arc["b"]) == axis and abs(d[axis]) > 0.99)
+        found.append({"lenMm": ln, "midXYZ": arc.get("edgeMidXYZ"), "alongCutterAxis": along})
+    found.sort(key=lambda e: (not e["alongCutterAxis"], -e["lenMm"]))
+    return {
+        "count": len(found),
+        "alongCutterAxis": sum(1 for e in found if e["alongCutterAxis"]),
+        "located": [e for e in found if e["midXYZ"]][:12],
+        "basis": ("Straight concave edges between two planar faces, at least "
+                  f"{SHARP_EDGE_MIN_LEN_MM:g} mm long: internal corners modelled with no radius."),
+    }
+
+
 def _max_pocket_slenderness(prismatic):
     """Worst depth/width over recognised pockets and slots, or None.
 
@@ -1727,6 +1865,7 @@ def recognise(shape, feature_table, extents=None, aag=None):
         counts["chamfer"] = len(chamfers)
 
     _min_corner_r, _corner_regions = _min_internal_corner_radius(aag, fillets)
+    _sharp = _sharp_internal_edges(aag, prismatic)
 
     return {
         "graph": {"faces": len(aag["faces"]), "arcs": len(aag["arcs"]),
@@ -1750,6 +1889,7 @@ def recognise(shape, feature_table, extents=None, aag=None):
         # read as needing a 1 mm cutter.
         "minInternalCornerRadiusMm": _min_corner_r,
         "internalCorners": _corner_regions,
+        "sharpInternalEdges": _sharp,
         "maxPocketDepthToWidth": _max_pocket_slenderness(prismatic),
         "chamfers": chamfers,
         # Cylindrical features are found analytically, so their faces are named

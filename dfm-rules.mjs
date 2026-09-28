@@ -100,6 +100,7 @@ function worstCoaxialBossPair(table) {
   return worst;
 }
 import { MATERIALS } from './costing-engine.mjs';
+import { classifyAbstention, featureCensus, unlocksFrom } from './dfm-abstention.mjs';
 import {
   minBendRadiusMm, maxBendRadiusMm, springback, minPunchedHoleMm,
   blankingForceKN, bendingForceKN, pressClass, drawStages, stripLayout,
@@ -285,7 +286,42 @@ export function extractMeasures(geo = {}, opts = {}) {
   const dfm = geo.dfm || {};
   const wall = dfm.wallThickness || geo.wallThickness || {};
   const draft = dfm.draft || geo.draftAnalysis || {};
-  const features = dfm.features || {};
+  const rawFeatures = dfm.features || {};
+  // ── SHARP INTERNAL CORNERS ARE A MEASUREMENT: radius 0, as modelled ──────
+  //
+  // The corner-radius pass sees faces, and a sharp corner has no face, so a
+  // part with sharp internal corners — the defect a machinist, a die designer
+  // and a mould maker each check first — reported "no measurement available"
+  // on every corner and fillet rule (DFM review, 28 Sept 2026). The recogniser
+  // now counts straight concave plane-plane edges, and they are read as what
+  // the model says: zero, with a basis that names it "modelled sharp" so it
+  // cannot be mistaken for a measured radius.
+  //
+  // WHICH corners depends on the process. A cutter leaves a sharp edge where a
+  // wall meets a floor and cannot leave one where two walls meet, so machining
+  // and turning count only the edges running along a pocket's cutter axis.
+  // Castings, mouldings and forgings need a fillet in every internal corner.
+  const sharp = rawFeatures.sharpInternalEdges || null;
+  const radiusedCorner = (() => {
+    const v = rawFeatures.minInternalCornerRadiusMm;
+    if (v === null || v === undefined || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  })();
+  const cutterProcess = opts.process === 'machining' || opts.process === 'turning';
+  const sharpCount = sharp ? (cutterProcess ? Number(sharp.alongCutterAxis) || 0 : Number(sharp.count) || 0) : 0;
+  const cornerSharp = sharpCount > 0;
+  const features = cornerSharp ? { ...rawFeatures, minInternalCornerRadiusMm: 0 } : rawFeatures;
+  const sharpLocated = cornerSharp && Array.isArray(sharp.located)
+    ? sharp.located
+      .filter(e => !cutterProcess || e.alongCutterAxis)
+      .map(e => ({ ratio: 0, atXYZ: e.midXYZ, lengthMm: e.lenMm, modelledSharp: true }))
+    : undefined;
+  const cornerBasis = cornerSharp
+    ? `Modelled sharp: ${sharpCount} internal edge${sharpCount === 1 ? '' : 's'} carry no radius` +
+      (cutterProcess ? ' where two pocket walls meet along the cutter axis' : '') +
+      '. Zero is the radius as modelled, not a measured small radius.'
+    : undefined;
   const setups = dfm.setups || geo.setupAnalysis || {};
   // Sheet-metal measures come from real bend recognition (paired coaxial
   // cylinders) — and, when there is no bend to recognise, from the ray-cast wall.
@@ -711,6 +747,12 @@ export function extractMeasures(geo = {}, opts = {}) {
       // features, so the same worst-first promise needs the opposite sort.
       minHoleDiaMm: sizeInstances('hole', 'diaMm'),
       minBossDiaMm: sizeInstances('boss', 'diaMm'),
+      // Where the sharp corners are, so the finding can point at them — on
+      // every measure that reads the corner, not only the plain radius: the
+      // NADCA fillet-to-wall finding printed "not shown on the model" while
+      // the corner it was about had a location (browser check, 28 Sept 2026).
+      ...Object.fromEntries(['minInternalCornerRadiusMm', 'nadcaFilletToWall', 'resinFilletMargin', 'sfsaJunctionFilletMargin']
+        .map(k => [k, sharpLocated])),
     }),
 
     // THE DRAFT CURVE, not one point on it. `wallAreaBelowMinDraftPct` above is
@@ -736,6 +778,20 @@ export function extractMeasures(geo = {}, opts = {}) {
     // reads that point off this curve — so a family cannot silently be judged
     // at an angle its source never quoted.
     _overhangCurve: (dfm.overhang || {}).overhangAreaBelowDeg || undefined,
+    // THE BEST OF THE SIX AXIS ORIENTATIONS, measured the same way. The rule
+    // judges the part as drawn; this says what re-orienting it would do,
+    // because that is the first and cheapest thing an AM engineer tries.
+    _overhangBasis: (() => {
+      const sw = (dfm.overhang || {}).orientationSweep;
+      const asDrawn = sw?.rows?.find(r => r.build === '+Z');
+      if (!sw || !asDrawn) return undefined;
+      const onPlate = Number((dfm.overhang || {}).onPlateAreaPct) || 0;
+      const plate = onPlate > 0 ? ` The ${onPlate}% resting on the build plate is supported and not counted.` : '';
+      if (sw.best === '+Z' || !(asDrawn.belowCutoffPct - sw.bestBelowCutoffPct >= 1)) {
+        return `Judged as drawn (+Z build); no axis orientation does better below ${sw.cutoffDeg}°.${plate}`;
+      }
+      return `Judged as drawn (+Z build). Built ${sw.best} instead, ${sw.bestBelowCutoffPct}% lies below ${sw.cutoffDeg}° against ${asDrawn.belowCutoffPct}% — re-orienting is the cheapest fix.${plate}`;
+    })(),
 
     // ── The two measures that were absent for the whole life of the rules ──
     //
@@ -749,7 +805,8 @@ export function extractMeasures(geo = {}, opts = {}) {
     // Both stay UNDEFINED when the recogniser has nothing, which is the whole
     // three-state discipline: a part with no concave fillet has not been
     // measured as having a small corner, it has been measured as having none.
-    minInternalCornerRadiusMm: num(features.minInternalCornerRadiusMm),
+    minInternalCornerRadiusMm: cornerSharp ? 0 : radiusedCorner,
+    _cornerBasis: cornerBasis,
     maxPocketDepthToWidth: num(features.maxPocketDepthToWidth),
 
     // ── NADCA, READ FIRST-HAND ────────────────────────────────────────────
@@ -807,6 +864,9 @@ function iso8062Limits(draft, features, wall, geo, opts = {}) {
   // is always iterated — so the series input does not move this one.
   {
     const sel = isoGradeFor('permanentMould', opts.material, 'long');
+    // The reason travels, so the abstention can say "declare the alloy"
+    // instead of blaming the geometry (DFM review, 28 Sept 2026).
+    if (!sel.ok) out._iso8062Basis = sel.reason;
     if (sel.ok) {
       const pmiSrc = pmiSource(geo);
       const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
@@ -908,7 +968,12 @@ function din16742Limits(draft, features, wall, geo, opts = {}) {
   // the module refuses them, so this input can never assume a negotiation.
   const series = opts.toleranceGrade === 'precision' ? 2 : 1;
   const sel = dinTgFor(opts.material, { series });
-  if (!sel.ok) return out;
+  // ROTATIONAL MOULDING DOES NOT WAIT FOR THE RESIN. DIN 16742 7.1.1 puts the
+  // PROCESS in TG9 — whatever the powder — so its judgement needs only the
+  // tolerance. It used to sit behind the injection-moulding resin lookup, and a
+  // rotomoulding run with no material (or a polyethylene outside the Annex C
+  // table) never judged its tolerance at all (DFM review, 28 Sept 2026).
+  if (!sel.ok) out._din16742Basis = sel.reason;
 
   const pmiSrc = pmiSource(geo);
   const pmiRows = (Array.isArray(geo.dfm?.pmi?.dimensions) ? geo.dfm.pmi.dimensions : [])
@@ -938,7 +1003,7 @@ function din16742Limits(draft, features, wall, geo, opts = {}) {
     return worst;
   };
 
-  const im = judge(sel.tg, sel.basis);
+  const im = sel.ok ? judge(sel.tg, sel.basis) : null;
   if (im) {
     out.din16742ToleranceMargin = im.margin;
     out._din16742Tolerance = im;
@@ -951,7 +1016,7 @@ function din16742Limits(draft, features, wall, geo, opts = {}) {
 
   // ── The report figure: what the standard promises at this part's size ───
   // Printed whether or not a rule fires, like the CT and NADCA summaries.
-  {
+  if (sel.ok) {
     const bb = (geo.geometry || {}).boundingBox || geo.boundingBox || {};
     const ext = [num(bb.xMm), num(bb.yMm), num(bb.zMm)].filter((v) => v > 0);
     if (ext.length) {
@@ -1704,6 +1769,9 @@ function thresholdText(rule) {
  * @param {string} process  key of PROCESS_FAMILIES
  * @returns {{process, processName, findings, passed, notEvaluated, coveragePct, score}}
  */
+/** Measures that read the internal corner radius, directly or as a fillet margin. */
+const CORNER_MEASURES = new Set(['minInternalCornerRadiusMm', 'nadcaFilletToWall', 'resinFilletMargin', 'sfsaJunctionFilletMargin']);
+
 export function runDfmRules(geo, process, opts = {}) {
   const { material, overrides } = opts;
   if (!PROCESS_FAMILIES[process]) {
@@ -1722,7 +1790,9 @@ export function runDfmRules(geo, process, opts = {}) {
   // dropped here: first `material`, which left every alloy-specific measure
   // abstaining while the table held the answer, and then the two NADCA declared
   // inputs. Spreading the object means a new option cannot be forgotten.
-  const measures = extractMeasures(geo, opts);
+  const measures = extractMeasures(geo, { ...opts, process });
+  // What the recogniser positively found — the only licence for "not applicable".
+  const census = featureCensus(geo, { process });
   // A workspace can DISABLE a rule as well as retune it. A disabled rule is
   // removed from the denominator too — leaving it in as "not evaluated" would
   // drag the coverage figure down for a check the plant deliberately does not
@@ -1915,7 +1985,9 @@ export function runDfmRules(geo, process, opts = {}) {
       thresholdMaterial: material ?? null,
       // Where the MEASURED side of a tolerance comparison came from. Only set on
       // the rules that read it, so no other finding carries a stray claim.
-      measuredBasis: rule.measure === 'tightestToleranceMm' ? measures._toleranceBasis
+      measuredBasis: measures._cornerBasis && CORNER_MEASURES.has(rule.measure) ? measures._cornerBasis
+        : rule.measure === 'overhangAreaBelowDeg' && measures._overhangBasis ? measures._overhangBasis
+        : rule.measure === 'tightestToleranceMm' ? measures._toleranceBasis
         : rule.measure === 'nadca402ToleranceMargin' ? measures._nadca402Tolerance?.basis
           : rule.measure === 'nadca402FlatnessMargin' ? measures._nadca402Flatness?.basis
             : rule.measure === 'sfsaSandToleranceMargin' ? measures._sfsaSandTolerance?.basis
@@ -1947,9 +2019,15 @@ export function runDfmRules(geo, process, opts = {}) {
     else if (status === 'pass') passed.push(row);
     // fallthrough below adds the not-evaluated row
     else {
+      // WHY, in one of four answers — see dfm-abstention.mjs. The evaluator's
+      // own reason (a formula threshold, an unknown comparator) still wins when
+      // it has one; otherwise the classification speaks.
+      const abstention = classifyAbstention(rule, measures, census,
+        { ...opts, sheetReason: geo.dfm?.sheetMetal?.isSheetMetal ? undefined : geo.dfm?.sheetMetal?.reason });
       notEvaluated.push({
         ...row,
-        reason: reason || `no measurement available for "${rule.measure}" on this geometry`,
+        reason: reason || abstention.reason,
+        abstention,
       });
     }
   }
@@ -1963,7 +2041,15 @@ export function runDfmRules(geo, process, opts = {}) {
   const blockers = findings.filter(f => f.blocking);
 
   const evaluated = findings.length + passed.length;
-  const coveragePct = rules.length ? Math.round((evaluated / rules.length) * 1000) / 10 : 0;
+  // COVERAGE OF THE RULES THAT APPLY. A boss rule on a part with no bosses is
+  // not a check we failed to run — there is nothing for it to check — so it
+  // leaves the denominator, exactly as a rule the plant disabled does. Every
+  // other abstention stays in: a missing input or a measurement gap is a real
+  // hole in the report and the figure must show it.
+  const tally = (k) => notEvaluated.filter(r => r.abstention?.kind === k).length;
+  const notApplicableCount = tally('not-applicable');
+  const applicableCount = rules.length - notApplicableCount;
+  const coveragePct = applicableCount > 0 ? Math.round((evaluated / applicableCount) * 1000) / 10 : 0;
 
   return {
     process,
@@ -1979,6 +2065,14 @@ export function runDfmRules(geo, process, opts = {}) {
       .map(r => r.id),
     evaluatedCount: evaluated,
     coveragePct,
+    applicableCount,
+    notApplicableCount,
+    needsInputCount: tally('needs-input'),
+    outsideSourceCount: tally('outside-source'),
+    notMeasuredCount: tally('not-measured'),
+    // "Declare the alloy to evaluate 6 more rules": the needs-input rows,
+    // grouped by the input that would unlock them, most rules first.
+    unlocks: unlocksFrom(notEvaluated),
     blockers,
     blockedReason: blockers.length
       ? `${blockers[0].title} — ${blockers[0].fix}`

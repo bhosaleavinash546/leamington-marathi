@@ -4231,3 +4231,50 @@ modal — a toast is the reply to what the modal did), every FIXED element is
 on the scale, and the gate scans every `.tsx` for a fixed element with a
 raw z value. Sticky bars and absolute badges keep local values on purpose:
 they stack inside their own context, not against the page.
+
+## 88. A pocket's floor is the face with no opposite; a sharp corner is radius 0
+
+Both from the held-out DFM review (docs/DFM-REVIEW-2026-09-28.md).
+
+The pocket depth axis was taken from the largest planar face in the pocket.
+That is the floor of a shallow pocket and a WALL of a deep narrow one, so the
+4:1 depth-to-width rule read an 8 × 36 pocket as 0.22 and passed it: the rule
+could not fail on the pockets it was written for. Side walls come in opposing
+pairs; the floor is the planar face whose opposite direction is absent, because
+that side is the opening. When two faces are unpaired (a slot open at an end
+as well as the top) the smaller depth/width wins — the cutter takes the shorter
+reach.
+
+A part modelled with sharp internal corners used to report "no measurement
+available" on every corner and fillet rule. That was a deliberate choice —
+"a part modelled sharp has not been measured as having a small radius" — and it
+silenced the defect every machinist, die designer and mould maker checks first.
+The model says zero, so zero is reported, with the basis "modelled sharp" so it
+cannot be mistaken for a measured radius, and with each corner located. Which
+corners count depends on the process: a cutter leaves a sharp edge where a wall
+meets a floor and cannot leave one where two walls meet, so machining and
+turning count only edges along a pocket's cutter axis; castings, mouldings and
+forgings count every straight concave plane–plane edge of at least 1 mm.
+
+## 89. Why a rule did not run is one of four answers, and coverage is over the rules that apply
+
+`dfm-abstention.mjs` classifies every rule that produced no verdict as
+needs-input, outside-source, not-applicable or not-measured. Not-applicable is
+claimed only on positive evidence — the feature recogniser ran and found none of
+the feature — and feature absence is decided first, so the page never asks for
+an input that could not unlock the rule. Not-applicable rules leave the
+coverage denominator, exactly as disabled rules already did; every other
+abstention stays in it, because a missing input or a measurement gap is a real
+hole in the report. `unlocks` groups the needs-input rows by input for the
+studio's "declare these to check more rules" actions.
+
+## 90. The build plate supports what stands on it
+
+An overhang is a down-facing surface NOT in contact with the platform (VDI
+3405-3-3). The lowest flat downward face now counts as on-plate, not as a
+0-degree overhang; the `plate-two-holes` fixture that asserted the opposite was
+corrected with that rationale and a T-shaped fixture now pins a real 0-degree
+overhang. The overhang block also sweeps the six axis build directions and the
+finding names the best one. It judges the part as drawn and does not claim the
+best axis is the cheapest build — height and support volume are not scored yet,
+as the unwritten-rules entry says.

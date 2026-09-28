@@ -374,6 +374,17 @@ export const DFM_FIXTURES = [
       bosses: 0,
     },
   },
+  {
+    file: 'wall-to-wall-rib.step',
+    what: '80x60x20 cover, 2.0 wall, one 1.6 x 10 rib running wall to wall',
+    truth: {
+      // The rib splits the floor into two faces, so its sides share only the
+      // end walls; the height was read along the rib's 56 mm length (h/wall 28).
+      // Coplanar floor halves are one base, and the base is the face opposite
+      // the rib's free top.
+      ribs: [{ thicknessMm: 1.6, heightMm: 10.0 }],
+    },
+  },
 ];
 
 /**
@@ -643,6 +654,17 @@ export const SHEET_FORMING_FIXTURES = [
       thresholdSpread: { 'sm-bend-radius': 1, 'hs-bend-radius': 6, 'fb-corner-radius': 0.5 },
     },
   },
+  {
+    file: 'bend-hole-bracket.step',
+    what: '2 mm L-bracket, R1 inside bend, d3 hole 18 mm from the bend axis',
+    truth: {
+      minBendRadiusToThickness: 0.5,
+      // In the sheet plane, from the hole's RIM: 18 - 1.5 - 3 (tangent) = 13.5
+      // to the bend, less 2t + r = 5 required -> 8.5 mm clear. The centre-based,
+      // out-of-plane measurement read 10.03.
+      holeToBendClearanceMm: 8.5,
+    },
+  },
 ];
 
 
@@ -722,6 +744,21 @@ export const MACHINING_FIXTURES = [
     },
   },
   {
+    file: 'deep-sharp-pocket.step',
+    what: '100x60x40 block, one closed pocket 8 wide x 40 long x 36 deep, sharp corners',
+    truth: {
+      // 36 / 8 = 4.5 exactly. The floor is the one face with no opposite; the
+      // walls are 4.5x its area, and taking the largest face as the floor read
+      // this 0.22 and passed it (held-out review, 28 Sept 2026).
+      maxPocketDepthToWidth: 4.5,
+      // Four vertical corners along the cutter axis, radius 0 as modelled.
+      minInternalCornerRadiusMm: 0,
+      measureProcess: 'machining',
+      pocketVerdicts: [{ family: 'machining', ruleId: 'mach-pocket-depth-ratio', status: 'fail' }],
+      cornerVerdicts: [{ family: 'machining', ruleId: 'mach-internal-corner-radius', status: 'fail' }],
+    },
+  },
+  {
     file: 'bushing-tube.step',
     what: 'OD 60 / L 50 bushing — round, so the lathe slenderness measure applies',
     truth: {
@@ -768,13 +805,36 @@ export const ADDITIVE_FIXTURES = [
   },
   {
     file: 'plate-two-holes.step',
-    what: '60x40x10 plate flat on the plate — the worst possible overhang case',
+    what: '60x40x10 plate lying flat ON the build plate',
     truth: {
-      // The whole underside is a flat downward face at 0 deg from the plate.
-      // It is below EVERY cutoff, which is the correct answer and the reason an
-      // AM engineer tips a plate up before building it.
+      // CORRECTED 28 Sept 2026. This fixture used to assert that the plate's
+      // underside is a 0-degree overhang — "the worst possible case" — and the
+      // rule failed it at 32.67%. It is not an overhang at all: the underside
+      // rests on the build plate, which supports it, and an overhang is a
+      // down-facing surface NOT in contact with the platform (VDI 3405-3-3).
+      // The truth is still analytic: the underside is 60*40 - pi*5^2 =
+      // 2321.46 mm^2 of a 7107.88 mm^2 surface, 32.66%, and all of it is on the
+      // plate. Nothing else faces down, so there is no overhang to report.
+      // The 0-degree overhang case now has its own fixture, overhang-tee.
+      onPlateAreaPct: 32.66,
+      overhangCurve: { 20: 0, 45: 0, 60: 0 },
+      lpbfOverhangRule: 'pass',
+    },
+  },
+  {
+    file: 'overhang-tee.step',
+    what: '10x10x30 post under a 40x40x5 cap — a true 0-degree overhang',
+    truth: {
+      // Cap underside 1500 of 5200 mm^2 = 28.85% below every cutoff; the post
+      // foot, 100 mm^2, stands on the plate and is NOT counted (it used to be:
+      // 30.77%).
       shallowestOverhangDeg: 0.0,
+      overhangCurve: { 20: 28.85, 45: 28.85 },
+      onPlateAreaPct: 1.92,
       lpbfOverhangRule: 'fail',
+      // Upside down the cap top rests on the plate and nothing hangs.
+      orientationBest: '-Z',
+      orientationBestPct: 0,
     },
   },
 ];

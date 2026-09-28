@@ -4664,9 +4664,9 @@ export const UNWRITTEN_RULES = [
     proxy: '`mim-tolerance-capability` and the other families without a pinned standard (machining, sheet metal, forging, extrusion and the rest) still use a flat millimetre screening value and say so. A part whose tight band sits on a small feature will pass when it should fail — on those families only.',
   },
   {
-    topic: 'Best BUILD ORIENTATION for an additive part',
-    needs: 'A sweep over candidate build directions, scoring support area, height and down-facing area for each — the additive equivalent of the draw-direction sweep this engine already does for moulding. `overhang()` measures the part AS DRAWN along +Z, and re-orienting on the plate is the first thing an AM engineer does.',
-    proxy: 'The overhang figure is a measure of the model in its modelled orientation, and the rule says so. A part that fails at 45° may be entirely self-supporting once tipped.',
+    topic: 'Best BUILD ORIENTATION for an additive part — PARTLY BUILT',
+    needs: 'Build HEIGHT (layer count drives LPBF time and cost) and support VOLUME, scored beside overhang area, and orientations off the six axes. Since 28 Sept 2026 `overhang()` sweeps the six axis orientations on overhang area below 45°, excluding the face on the build plate, and the overhang finding names the best of them — but a part that is best tipped 30° is still only judged at the axes, and a lower-overhang orientation can be a much taller build.',
+    proxy: 'The rule judges the part as drawn and its finding states the best AXIS orientation and its overhang share. It does not claim that orientation is the cheapest build.',
   },
   {
     topic: 'BLOW MOULDING as a family',
