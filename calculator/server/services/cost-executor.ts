@@ -191,6 +191,9 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       logisticsPerPart,
       overheadPct,
       marginPct,
+      // A supplier's price (PCB fabrication) already contains their overhead
+      // and margin — the same rule the form applies (pcb-fab.ts).
+      ...(drivers.priceBasis === 'market_price' ? { priceBasis: 'market_price' as const, overheadPct: 0, marginPct: 0 } : {}),
     };
 
     // VALIDATE BEFORE COSTING. This path is driven by an LLM choosing `params`,

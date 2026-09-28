@@ -722,7 +722,8 @@ export function renderShouldCostSections(
     // What overhead is a percentage of. Beside factory cost alone the rate
     // looked wrong: factory cost adds packaging and logistics, the base doesn't.
     ['      Overhead base (mat + proc + lab + tooling)', overheadBaseOf(result), 0,                 'base'],
-    [`7.  Overhead (SG&A) — ${(overheadRateOf(result) * 100).toFixed(1)}% of base`, result.breakdown.overhead, pcts.overhead, ''],
+    [input.priceBasis === 'market_price' ? '7.  Overhead — not added: bought-in price'
+      : `7.  Overhead (SG&A) — ${(overheadRateOf(result) * 100).toFixed(1)}% of base`, result.breakdown.overhead, pcts.overhead, ''],
     ['    Subtotal',             result.subtotal,              (result.subtotal  / result.total) * 100,   'sub'],
     ['8.  Supplier Margin',      result.breakdown.margin,      pcts.margin,                               ''],
     ['TOTAL SHOULD-COST',        result.total,                 100,                                       'total'],

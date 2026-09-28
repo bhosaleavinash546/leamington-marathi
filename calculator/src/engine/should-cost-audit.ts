@@ -299,6 +299,21 @@ const checkZeroConversion: Check = (ctx) => {
   if (material <= 0) return null;               // nothing costed at all — not this lesson
   if (conversion > 0.005) return null;          // has a routing
   const ops = ctx.input.operations?.length ?? 0;
+  // A declared price (PCB fabrication from a fab's price table) has no routing
+  // by design, so "no routing was entered" is not the issue. The ECU lesson
+  // still is: a populated board priced as a bare one under-states it.
+  if (ctx.input.priceBasis === 'market_price') {
+    return {
+      id: 'zero-conversion-cost',
+      title: 'Priced as a bare board — check this is not an assembly',
+      severity: 'medium',
+      message: `This is a fabricator's price for a bare board (${material.toFixed(2)}): no conversion is modelled and no `
+        + 'overhead or margin is added, because the price already contains them. If the part is a populated board, cost '
+        + 'it as PCBA — a bare-board price leaves out every component and the assembly.',
+      expected: 'a bare board, or a PCBA costing for a populated one',
+      actual: 'bare-board price',
+    };
+  }
   return {
     id: 'zero-conversion-cost',
     title: 'Costed as material only — no conversion',

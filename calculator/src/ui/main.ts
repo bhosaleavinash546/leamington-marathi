@@ -12166,6 +12166,7 @@ function switchCommodity(type: CommodityType): void {
   calcBtn.style.display = '';
   const universalCostsEl = document.getElementById('universal-costs');
   if (universalCostsEl) universalCostsEl.style.display = '';
+  showPriceBasisNote(type === 'pcb_fab');
 
   // Show/hide part-name for non-assembly modes
   const partNameWrap = el('part-name').closest<HTMLElement>('div[style]');
@@ -12630,6 +12631,34 @@ function switchCommodity(type: CommodityType): void {
   }
 
   followAmortDefaults(area);
+}
+
+/**
+ * PCB fabrication is priced from fabricators' price tables, which already hold
+ * their overhead and margin, so the collector adds none (pcb-fab.ts). The two
+ * fields are greyed out and say so rather than showing a 12% and 8% that are
+ * silently not applied. Every other commodity gets them back as they were.
+ */
+function showPriceBasisNote(on: boolean): void {
+  for (const id of ['overhead-pct', 'margin-pct']) {
+    const f = document.getElementById(id) as HTMLInputElement | null;
+    if (!f) continue;
+    f.disabled = on;
+    f.style.opacity = on ? '0.45' : '';
+    f.title = on ? 'Not applied: a fabricator\'s price already includes their overhead and margin.' : '';
+  }
+  let note = document.getElementById('price-basis-note');
+  if (on && !note) {
+    const anchor = document.getElementById('overhead-pct')?.closest('.field-row, .field-group');
+    if (anchor) {
+      note = document.createElement('div');
+      note.id = 'price-basis-note';
+      note.style.cssText = 'font-size:0.74rem;color:var(--text-muted);margin:2px 0 6px';
+      note.textContent = 'PCB fabrication is priced from fabricators\' price tables, which already include their overhead and margin — none is added on top.';
+      anchor.before(note);
+    }
+  }
+  if (note) note.style.display = on ? '' : 'none';
 }
 
 // ─── Tooling amortisation defaults ────────────────────────────────────────────
@@ -13922,7 +13951,12 @@ function collectPCBFabInput(): UniversalStackInput {
     amortizationVolume:   num('pcbf-amort') || num('annual-volume') || 100000,
     fabYieldOverride:     yieldOverride > 0 ? yieldOverride : undefined,
   });
-  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+  const tail = getUniversalTail();
+  return {
+    ...tail, rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling,
+    // A fabricator's price already contains their overhead and margin (pcb-fab.ts).
+    ...(drivers.priceBasis === 'market_price' ? { priceBasis: 'market_price' as const, overheadPct: 0, marginPct: 0 } : {}),
+  };
 }
 
 /** Package label per component type — the class is the package on a BOM line. */
@@ -16001,12 +16035,14 @@ function renderBreakdown(result: PartCostResult): void {
               <td style="color:var(--text-muted);font-size:0.9em;padding-left:18px">Overhead base (material + process + labour + tooling)</td><td style="color:var(--text-muted)">${fmt(overheadBaseOf(result))}</td><td></td><td></td>
             </tr>
             <tr>
-              <td>7. Overhead (SG&amp;A) — ${fmtPct(overheadRateOf(result) * 100)} of base</td><td>${fmt(result.breakdown.overhead)}</td><td>${fmtPct(pcts.overhead)}</td>
+              <td>${lastInput?.priceBasis === 'market_price'
+                ? '7. Overhead — not added: bought-in price'
+                : `7. Overhead (SG&amp;A) — ${fmtPct(overheadRateOf(result) * 100)} of base`}</td><td>${fmt(result.breakdown.overhead)}</td><td>${fmtPct(pcts.overhead)}</td>
               <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.overhead / maxPct) * 160)}px;opacity:0.4"></div></div></td>
             </tr>
             <tr class="subtotal-row"><td>Subtotal</td><td>${fmt(result.subtotal)}</td><td>${fmtPct((result.subtotal / result.total) * 100)}</td><td></td></tr>
             <tr>
-              <td>8. Supplier Margin</td><td>${fmt(result.breakdown.margin)}</td><td>${fmtPct(pcts.margin)}</td>
+              <td>${lastInput?.priceBasis === 'market_price' ? '8. Supplier Margin — already in the price' : '8. Supplier Margin'}</td><td>${fmt(result.breakdown.margin)}</td><td>${fmtPct(pcts.margin)}</td>
               <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.margin / maxPct) * 160)}px;opacity:0.4"></div></div></td>
             </tr>
             <tr class="total-row"><td>TOTAL SHOULD COST</td><td>${fmt(result.total)}</td><td>100.0%</td><td></td></tr>

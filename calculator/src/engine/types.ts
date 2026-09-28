@@ -219,6 +219,13 @@ export interface UniversalStackInput {
   logisticsPerPart: number;
   overheadPct: number;
   marginPct: number;
+  /**
+   * 'market_price' when the cost comes from a supplier's price table rather
+   * than being built up (PCB fabrication). A price already contains the
+   * supplier's overhead and margin; the collector sets both to zero and the
+   * displays say why.
+   */
+  priceBasis?: 'market_price';
   /** Optional: when set, adjusts total labour cost using Wright's Law */
   learningCurve?: LearningCurveConfig;
   /** Annual production volume — required when learningCurve is enabled */
@@ -317,6 +324,8 @@ export interface CommodityDrivers {
   rawMaterial: RawMaterialInput;
   operations: OperationInput[];
   tooling: ToolingInput;
+  /** Set by a module whose figure is a supplier's price, not a build-up. */
+  priceBasis?: 'market_price';
 }
 
 // ─── Supplier Quote ──────────────────────────────────────────────────────────

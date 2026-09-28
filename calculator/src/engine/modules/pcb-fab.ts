@@ -357,5 +357,12 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
     mode: 'amortized',
   };
 
-  return { rawMaterial, operations: [], tooling };
+  // Every table above is what a fabricator charges — "base panel price" by
+  // region, price-list adders for finish and test — so the figure already
+  // carries the fab's overhead and margin. Adding 12% and 8% again overstated
+  // a default board by ×1.22 (£82.43 → £100.75). It is declared a price, and
+  // the caller adds no overhead or margin. Modelling imaging, etching,
+  // lamination and plating as operations would need rates this repo has no
+  // source for.
+  return { rawMaterial, operations: [], tooling, priceBasis: 'market_price' };
 }

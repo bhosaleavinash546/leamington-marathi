@@ -55,7 +55,9 @@ export async function exportToExcelBlob(
     sum.push(['NRE / Tooling (one-time, not in unit cost)', c(result.toolingNRE), '', '']);
   }
   sum.push([], ['── COMMERCIAL PARAMETERS ──']);
-  sum.push(['Overhead Rate', `${pct(input.overheadPct * 100)} of material + process + labour + tooling`]);
+  sum.push(['Overhead Rate', input.priceBasis === 'market_price'
+    ? 'not added — a fabricator\'s price already includes overhead and margin'
+    : `${pct(input.overheadPct * 100)} of material + process + labour + tooling`]);
   sum.push(['Supplier Margin Rate', pct(input.marginPct * 100)]);
   sum.push(['Packaging per Part', c(input.packagingPerPart)]);
   sum.push(['Logistics per Part', c(input.logisticsPerPart)]);
