@@ -49,17 +49,22 @@ describe('gear metrology vs the known-truth involute gear', () => {
     assertTruth(rec.gear as GearMetrics, rec.volume.cm3 as number);
   });
 
-  it('live re-measure matches the recording (skipped without cadquery)', () => {
-    let hasCadquery = false;
+  it('live re-measure matches the recording (skipped without the OCP kernel)', () => {
+    // Probe for OCP, not cadquery: the engine imports OCP only, and the product
+    // and the Windows package ship cadquery-ocp-novtk — so probing for the full
+    // cadquery package skipped this everywhere that matters (L9). PYTHON_BIN as
+    // geometry-bridge.ts uses it: there is no python3 on Windows.
+    const PY = process.env.PYTHON_BIN || 'python3';
+    let hasKernel = false;
     try {
-      execFileSync('python3', ['-c', 'import cadquery'], { stdio: 'ignore', timeout: 30_000 });
-      hasCadquery = true;
+      execFileSync(PY, ['-c', 'import OCP'], { stdio: 'ignore', timeout: 30_000 });
+      hasKernel = true;
     } catch { /* CI without OCP — the recording carries the check */ }
-    if (!hasCadquery || !existsSync(STEP)) {
-      console.warn('[gear-metrology] cadquery unavailable — live re-measure skipped, recording stands');
+    if (!hasKernel || !existsSync(STEP)) {
+      console.warn('[gear-metrology] OCP unavailable — live re-measure skipped, recording stands');
       return;
     }
-    const out = JSON.parse(execFileSync('python3', [ENGINE, STEP],
+    const out = JSON.parse(execFileSync(PY, [ENGINE, STEP],
       { maxBuffer: 64 * 1024 * 1024, timeout: 180_000 }).toString());
     assertTruth(out.gear as GearMetrics, out.volume.cm3 as number);
     expect(out.gear.teeth).toBe(rec.gear.teeth);
