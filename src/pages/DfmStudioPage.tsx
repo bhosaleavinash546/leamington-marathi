@@ -107,6 +107,8 @@ interface RouteRow {
   deltaPieceEur?: number | null; deltaToolingEur?: number | null;
   /** False when a feasibility rule failed: the route cannot make this part at all. */
   viable?: boolean; blockedReason?: string | null;
+  /** False when nothing shows this route can form this shape (shapeFeasibility). */
+  shapeEstablished?: boolean; shapeBasis?: string;
 }
 interface AnalysisLimit { kind: string; severity: 'blocking' | 'warning'; message: string }
 // ── The 2D drawing, as /api/dfm/drawing-extract returns it ──────────────────
@@ -144,7 +146,7 @@ interface BatchPart {
   score?: number | null; coveragePct?: number; findingCount?: number; highSeverityCount?: number;
   worstFinding?: string | null; measuredProcess?: string | null; processName?: string;
   weightKg?: number | null; wallP50Mm?: number | null; scoreReason?: string;
-  bestRoute?: { process: string; piecePriceEur: number; score: number | null } | null;
+  bestRoute?: { process: string; piecePriceEur: number; score: number | null; isChosen?: boolean } | null;
 }
 interface BatchResponse { parts: BatchPart[]; basis: string; material: string | null }
 interface DfaResponse {
@@ -2051,7 +2053,7 @@ export default function DfmStudioPage() {
                         <td className="py-2 px-2 text-slate-300">{p.measuredProcess ?? <span className="text-slate-500">unsettled</span>}</td>
                         <td className="py-2 px-2 text-slate-400">{p.worstFinding ?? '—'}</td>
                         <td className="py-2 pl-2 text-slate-300">
-                          {p.bestRoute ? `${p.bestRoute.process} — EUR ${p.bestRoute.piecePriceEur.toFixed(2)}` : '—'}
+                          {p.bestRoute ? `${p.bestRoute.process}${p.bestRoute.isChosen ? ' (your route)' : ''} — EUR ${p.bestRoute.piecePriceEur.toFixed(2)}` : '—'}
                         </td>
                       </>
                     )}
@@ -2898,8 +2900,16 @@ export default function DfmStudioPage() {
                               </span>
                             )}
                             {r.viable !== false && !r.isChosen && Number.isFinite(r.deltaPieceEur as number) && (
-                              <span className={`block mt-0.5 ${(r.deltaPieceEur as number) < 0 ? 'text-emerald-400/80' : 'text-slate-500'}`}>
+                              <span className={`block mt-0.5 ${(r.deltaPieceEur as number) < 0 && r.shapeEstablished !== false ? 'text-emerald-400/80' : 'text-slate-500'}`}>
                                 {(r.deltaPieceEur as number) < 0 ? '−' : '+'}<Money eur={Math.abs(r.deltaPieceEur as number)} />/part vs your route
+                              </span>
+                            )}
+                            {/* A cheaper price on a route nothing shows can form
+                                this shape is a redesign, not a saving — so it is
+                                not painted green, and the row says why. */}
+                            {r.viable !== false && !r.isChosen && r.shapeEstablished === false && (
+                              <span className="block text-amber-300/90 mt-0.5" title={r.shapeBasis}>
+                                shape not shown makeable this way — would need a redesign
                               </span>
                             )}
                             {r.topFindings?.[0] && (

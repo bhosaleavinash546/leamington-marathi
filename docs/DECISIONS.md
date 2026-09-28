@@ -4310,3 +4310,35 @@ Snapshots now store each card's ceiling and pre-launch state; scoring
 for older snapshots and says so, and does not score pre-launch entries. The
 lane-rule version is bumped so lanes moved by DECISIONS 92 read as a
 definition change, not as technologies that moved.
+
+## 94. A process switch is argued only when the route is shown able to form the shape
+
+Most rule families never ask whether their process can form the shape at all.
+So a route with a few rules and no shape-class check passed as "viable", and
+Cold Heading became the W3 entitlement for a die-cast housing. Across the
+corpus, 65 of 78 recommended switches went to a route of another shape class.
+Every route family now has a kinematic `SHAPE_CLASS`
+(`dfm-process-registry.mjs`). The classes carry no numbers. A switch counts
+(`shapeFeasibility`) when the candidate shares the current route's class, is
+shape-universal (machining, LPBF), or matches the class the geometry measures
+(`inferProcessFamily`). One gate, `recommendableRoutes`, serves Prism W3, the
+DFM report sentence, the DFM route table and the DFM batch "best route". The
+gate is deliberately conservative: real cross-class levers (cold-forged shaft,
+cast-then-machined block) are lost until a class can be measured. A 90%
+axisymmetry gate for Cold Heading was rejected because hex bolts measure
+73.7–85.0%. (docs/PRISM-REVIEW-2026-09-28.md)
+
+## 95. Evidence floors read rule depth, not applicable-rule coverage
+
+Since DECISIONS 89, coverage counts only applicable rules, which is right for
+"how complete is this check". It is wrong for "is this score a basis for a
+negotiation": 1 of 6 rules read 100%. The W3 floor (score ≥ 50 over ≥ 40% of
+the family's rules) and the DFM route "narrow check" caveat now use
+evaluated ÷ all rules (`ruleDepthPct`).
+
+## 96. CAD-derived mass uses the catalogue density and names its basis
+
+`cadMass` multiplies the measured volume by the active library's density and
+returns the sentence saying so. The kernel's six stock densities are only a
+labelled fallback. Previously every plastic was 1.05 g/cm³ (POM −26%) and 25 of
+69 materials got no mass, while the page claimed "catalogue density".

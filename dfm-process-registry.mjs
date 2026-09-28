@@ -145,6 +145,110 @@ export const SECONDARY_OPERATION_FAMILIES = {
 };
 
 /**
+ * WHAT KIND OF SHAPE EACH ROUTE'S KINEMATICS CAN FORM.
+ *
+ * A rule family answers "how well would this process make this part" — draft,
+ * wall, corner radius. Almost none of them first asks "can this process form
+ * this shape at all": of 248 rules, only the centrifugal and spinning
+ * body-of-revolution gates do. So a route whose family happened to contain few
+ * rules, none of them shape-class checks, passed as viable for anything its
+ * size gates allowed. The Prism review (28 Sept 2026) found Cold Heading offered
+ * as the cheaper route for a die-cast housing, a stamped bracket and a machined
+ * ribbed plate — a wire-fed header cannot make any of them.
+ *
+ * The classes group routes by HOW THE TOOL MAKES THE SHAPE, not by anything
+ * tunable: a cavity filled by liquid or feedstock, sheet worked in a press, a
+ * slug upset along the wire axis, a section pushed through a die, a mould or
+ * a roller turning about one axis. Two routes in one class form the same shapes,
+ * which is why a switch between them is on the SAME drawing. A switch across
+ * classes may still be possible, but nothing here measures that, and a switch
+ * that needs the part redesigned first is a redesign, not a process saving.
+ *
+ * `universal` is material removal and powder-bed fusion: neither is limited to a
+ * class of shape (each family's own rules still judge size and features).
+ * Secondary operations are absent on purpose — they are never routes.
+ */
+export const SHAPE_CLASS = {
+  machining: 'universal',
+  lpbf: 'universal',
+  hpdc: 'cavity', 'hpdc-zinc': 'cavity', 'gravity-die': 'cavity', 'sand-casting': 'cavity',
+  'investment-casting': 'cavity', lpdc: 'cavity', 'squeeze-casting': 'cavity',
+  'semi-solid': 'cavity', 'shell-mould': 'cavity',
+  'injection-moulding': 'cavity', mim: 'cavity', 'rubber-moulding': 'cavity',
+  // Three bodies-of-revolution routes, three classes: turning cuts any round
+  // part from bar, a spinning mould casts only a HOLLOW one (the bore is a free
+  // liquid surface), and a spinning roller forms only a thin shell. A solid
+  // turned shaft is none of the latter two.
+  turning: 'turned', centrifugal: 'spun-casting', 'metal-spinning': 'spun-shell',
+  'sheet-metal': 'sheet-press', 'hot-stamping': 'sheet-press',
+  'fine-blanking': 'fine-blanked',
+  'deep-drawing': 'drawn-shell',
+  'roll-forming': 'rolled-profile',
+  hydroforming: 'hydroformed',
+  extrusion: 'constant-section',
+  'cold-heading': 'wire-headed',
+  'forging-hot': 'die-forged', 'forging-cold': 'die-forged',
+  'open-die-forging': 'open-die',
+  'powder-metallurgy': 'pressed-powder',
+  thermoforming: 'thermoformed',
+  'rotational-moulding': 'hollow-shell',
+  'composite-rtm': 'laminate',
+};
+
+export const SHAPE_CLASS_NAMES = {
+  universal: 'material removal or powder-bed fusion, not limited to a shape class',
+  cavity: 'filling a closed tool cavity',
+  turned: 'cutting a body of revolution from bar',
+  'spun-casting': 'casting a hollow body of revolution in a spinning mould',
+  'spun-shell': 'rolling a thin sheet shell over a rotating mandrel',
+  'sheet-press': 'sheet worked in press tools',
+  'fine-blanked': 'a flat profile sheared from strip',
+  'drawn-shell': 'a shell drawn from a sheet blank',
+  'rolled-profile': 'a constant profile rolled from strip',
+  hydroformed: 'a tube or sheet expanded by internal pressure',
+  'constant-section': 'a constant section pushed through a die',
+  'wire-headed': 'a slug of wire upset along its own axis',
+  'die-forged': 'a solid billet forged between shaped dies',
+  'open-die': 'a billet worked between flat or simple dies',
+  'pressed-powder': 'powder pressed along one axis and sintered',
+  thermoformed: 'plastic sheet drawn over a single-sided tool',
+  'hollow-shell': 'a hollow shell rotated inside a mould',
+  laminate: 'fibre preform impregnated in a closed mould',
+};
+
+/**
+ * Is it ESTABLISHED that `candidateFamily` can form this part's shape?
+ *
+ * Three ways, each a measurement or a statement about the tool, never a guess:
+ *   1. the candidate shares the class of the route the part is ALREADY made by
+ *      — that route forms this shape, so the class demonstrably does;
+ *   2. the candidate is shape-universal;
+ *   3. the candidate's class is the one the geometry itself measures
+ *      (`inferredFamily` from inferProcessFamily: folded sheet from paired bend
+ *      radii, a body of revolution from the axisymmetry pass, a tooled part
+ *      from releasing draft).
+ * Anything else is `false` with the reason — not "infeasible", but unshown.
+ */
+export function shapeFeasibility(candidateFamily, { chosenFamily = null, inferredFamily = null } = {}) {
+  const cls = SHAPE_CLASS[candidateFamily];
+  if (!cls) return { established: false, shapeClass: null, basis: 'This process is an operation on an existing part, not a route that forms it.' };
+  const name = SHAPE_CLASS_NAMES[cls];
+  if (cls === 'universal') return { established: true, shapeClass: cls, basis: `Forms by ${name}.` };
+  const chosenCls = chosenFamily ? SHAPE_CLASS[chosenFamily] : null;
+  if (chosenCls && chosenCls === cls) {
+    return { established: true, shapeClass: cls, basis: `Forms by ${name} — the same way as the route this part is already made by.` };
+  }
+  const inferredCls = inferredFamily ? SHAPE_CLASS[inferredFamily] : null;
+  if (inferredCls && inferredCls === cls) {
+    return { established: true, shapeClass: cls, basis: `Forms by ${name}, which is what the measured geometry shows this part to be.` };
+  }
+  return {
+    established: false, shapeClass: cls,
+    basis: `Forms by ${name}. Nothing measured on this part shows that shape class, and the route it is made by forms ${chosenCls ? `by ${SHAPE_CLASS_NAMES[chosenCls]}` : 'an unknown class'} — so switching would need the part redesigned first, which is not a process saving on this drawing.`,
+  };
+}
+
+/**
  * Largest bounding-box dimension a process can physically make, in mm.
  *
  * Only for processes whose SIZE ceiling is the thing that rules them out, and

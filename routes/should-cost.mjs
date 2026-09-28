@@ -45,6 +45,12 @@ app.get('/api/should-cost/catalogue', (_req, res) => {
     regions: Object.keys(lib.REGIONS),
     // compatibility map: process -> allowed material families, and material -> family
     materialFamilies: Object.fromEntries(Object.entries(lib.MATERIALS).map(([k, v]) => [k, v.family])),
+    // g/cm³ per catalogue material, so a measured volume becomes a mass in
+    // THIS material rather than in one of six stock densities (Prism review
+    // 2026-09-28: every plastic was weighed at 1.05 — POM 25% light, PP 16%
+    // heavy — and 25 of 69 materials got no mass at all).
+    materialDensities: Object.fromEntries(Object.entries(lib.MATERIALS)
+      .filter(([, v]) => Number(v?.density) > 0).map(([k, v]) => [k, Number(v.density)])),
     processFamilies: Object.fromEntries(Object.entries(lib.PROCESSES).map(([k, v]) => [k, v.families])),
     library: getActiveMeta(),
   });

@@ -36,14 +36,13 @@ describe('entitlement waterfall discipline', () => {
     // Found on the first live parts: `viable` alone let a score-0 roll-formed
     // stub axle set the entitlement. The floor is the score scale's "watch"
     // boundary and a null score (nothing evaluated) must fail it too.
-    assert.match(part360, /const W3_MIN_DFM_SCORE = 50;/);
-    assert.match(part360, /Number\.isFinite\(r\.score\) && r\.score >= W3_MIN_DFM_SCORE/);
-    // ...and a score resting on one evaluable rule is no better: coverage
-    // gates too (a "100 at 16.7%" roll-formed fuel tank got through without it).
-    assert.match(part360, /const W3_MIN_COVERAGE_PCT = 40;/);
-    assert.match(part360, /r\.coveragePct >= W3_MIN_COVERAGE_PCT/);
+    // Behaviour, not source text (Prism review 2026-09-28): the floor now lives
+    // in defensibleRoutes() and is exercised directly in prism-review.test.mjs.
+    assert.match(part360, /export const W3_MIN_DFM_SCORE = 50;/);
+    assert.match(part360, /export const W3_MIN_RULE_DEPTH_PCT = 40;/);
+    assert.match(part360, /const viable = defensibleRoutes\(shapeShown\);/);
     // Excluded-but-cheaper routes are DISCLOSED, not silently dropped.
-    assert.match(part360, /excluded: DFM score below/);
+    assert.match(part360, /\$\{w3Exclusions\(belowFloor, shapeUnshown\)\}/);
   });
 });
 

@@ -129,10 +129,21 @@ const DEFAULT_LENSES = new Set(['vave', 'process', 'spec', 'commercial']);
 // concatenation so the display-boundary gate can tell it from a rendered figure).
 const eurForModel = (n: number | null | undefined) => (n == null || !Number.isFinite(n) ? '—' : '€' + n.toFixed(2));
 
-// The DFM engines weigh the measured volume in six stock materials
-// (geometry.weights). Map the chosen catalogue material onto the right one so
-// the wizard can OFFER the measured mass — a suggestion with a stated basis,
-// never a silent overwrite. No match ⇒ no suggestion (absent is not default).
+// The measured mass is OFFERED — a suggestion with a stated basis, never a
+// silent overwrite. Measured volume × this material's catalogue density
+// first (the same rule as part360.cadMass on the server); only without a
+// catalogue density does it fall back to the six stock weights, and the basis
+// says so. No match ⇒ no suggestion (absent is not default).
+function measuredMass(geometry: Record<string, unknown> | undefined, material: string, densities?: Record<string, number>): { kg: number; basis: string } | null {
+  const cm3 = Number((geometry as { volume?: { cm3?: number } } | undefined)?.volume?.cm3);
+  const rho = densities?.[material];
+  if (Number.isFinite(cm3) && cm3 > 0 && Number(rho) > 0) {
+    return { kg: Math.round(cm3 * (rho as number)) / 1000, basis: `measured ${cm3.toFixed(1)} cm³ × ${rho} g/cm³ catalogue density` };
+  }
+  const kg = measuredMassKg(geometry, material);
+  return kg == null ? null : { kg, basis: 'measured volume × stock density for the family — this material has no catalogue density' };
+}
+
 function measuredMassKg(geometry: Record<string, unknown> | undefined, material: string): number | null {
   const w = (geometry as { weights?: Record<string, number> } | undefined)?.weights;
   if (!w) return null;
@@ -189,7 +200,7 @@ export default function Part360Page() {
   const [step, setStep] = useState(0);
 
   // ── Step 1: part + files ───────────────────────────────────────────────────
-  const [catalogue, setCatalogue] = useState<{ materials: string[]; processes: string[] } | null>(null);
+  const [catalogue, setCatalogue] = useState<{ materials: string[]; processes: string[]; materialDensities?: Record<string, number> } | null>(null);
   const [partName, setPartName] = useState('');
   const [partContext, setPartContext] = useState('');
   const [material, setMaterial] = useState('');
@@ -288,7 +299,7 @@ export default function Part360Page() {
     fetch('/api/should-cost/catalogue')
       .then(r => r.json())
       .then(d => {
-        setCatalogue({ materials: d.materials ?? [], processes: d.processes ?? [] });
+        setCatalogue({ materials: d.materials ?? [], processes: d.processes ?? [], materialDensities: d.materialDensities ?? undefined });
         if (d.materials?.length) setMaterial((mm: string) => mm || d.materials[0]);
         if (d.processes?.length) setProcessName((p: string) => p || d.processes[0]);
       })
@@ -298,7 +309,8 @@ export default function Part360Page() {
   const inputsValid = Boolean(material && processName && Number(weightKg) > 0 && Number(annualVolume) > 0);
 
   // CAD-measured mass for the chosen material — the wizard's offer, not its decision.
-  const cadMassKg = dfmResult ? measuredMassKg(dfmResult.geometry, material) : null;
+  const cadMassInfo = dfmResult ? measuredMass(dfmResult.geometry, material, catalogue?.materialDensities) : null;
+  const cadMassKg = cadMassInfo?.kg ?? null;
   const typedMass = Number(weightKg);
   const massDiverges = cadMassKg != null && typedMass > 0
     && Math.abs(typedMass - cadMassKg) / cadMassKg > 0.25;
@@ -1360,7 +1372,7 @@ export default function Part360Page() {
                     <div className="text-xs text-slate-300 flex-1 min-w-[240px]">
                       Geometry-derived mass for <span className="text-white font-medium">{material}</span>:{' '}
                       <span className="text-white font-semibold dfm-num">{cadMassKg.toFixed(3)} kg</span>
-                      <span className="text-slate-500"> (measured volume × catalogue density)</span>
+                      <span className="text-slate-500"> ({cadMassInfo?.basis})</span>
                       {massLooksSolid ? (
                         <span className="block text-amber-400 mt-0.5">
                           This is {'>'}5× your entered mass — the model is likely a CLOSED SOLID (enclosed volume, not shell material), so the measured figure is unreliable for a hollow part. Keep your own mass unless you know the model is truly solid.
@@ -1672,8 +1684,11 @@ export default function Part360Page() {
                       {wiBusy ? <Loader2 size={18} className="animate-spin inline text-slate-500" /> : wiTotal != null ? <Money tick eur={wiTotal} decimals={2} /> : '—'}
                     </div>
                     {wiTotal != null && !wiBusy && (
-                      <div className={`dfm-num text-xs mt-0.5 ${wiTotal <= dossier.engineTotalEur ? 'text-emerald-400' : 'text-amber-400'}`}>
-                        {wiTotal <= dossier.engineTotalEur ? '−' : '+'}<Money eur={Math.abs(wiTotal - dossier.engineTotalEur)} /> vs dossier baseline
+                      <div className={`dfm-num text-xs mt-0.5 ${Math.abs(wiTotal - dossier.engineTotalEur) < 0.005 ? 'text-slate-500' : wiTotal < dossier.engineTotalEur ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        {/* A signed zero reads as a saving that is not there. */}
+                        {Math.abs(wiTotal - dossier.engineTotalEur) < 0.005
+                          ? 'same as dossier baseline'
+                          : <>{wiTotal < dossier.engineTotalEur ? '−' : '+'}<Money eur={Math.abs(wiTotal - dossier.engineTotalEur)} /> vs dossier baseline</>}
                       </div>
                     )}
                   </div>

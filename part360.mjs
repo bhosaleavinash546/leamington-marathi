@@ -97,10 +97,30 @@ export function weightsKeyForMaterial(material) {
   return null;
 }
 
-export function cadMassKg(geometry, material) {
+/**
+ * Measured volume × THIS material's catalogue density, when both are known.
+ * Only when the catalogue carries no density does it fall back to the family
+ * stock weights (six densities, one for every plastic) — and then says so via
+ * `cadMassBasis`. Before the Prism review (2026-09-28) the stock weights were
+ * the only path: POM was weighed at 1.05 g/cm³ against its 1.41, and 25 of 69
+ * catalogue materials — every magnesium, zinc and composite — got no mass.
+ */
+export function cadMassKg(geometry, material, materials = null) {
+  return cadMass(geometry, material, materials)?.kg ?? null;
+}
+
+export function cadMass(geometry, material, materials = null) {
+  const cm3 = Number(geometry?.volume?.cm3);
+  if (materials && Number.isFinite(cm3) && cm3 > 0) {
+    const mat = resolveMaterial(String(material || ''), materials);
+    const rho = Number(mat ? materials[mat.key]?.density : NaN);
+    if (rho > 0) {
+      return { kg: Math.round(cm3 * rho) / 1000, basis: `measured ${cm3.toFixed(1)} cm³ × ${rho} g/cm³ (${mat.key})` };
+    }
+  }
   const key = weightsKeyForMaterial(material);
   const v = key ? geometry?.weights?.[key] : undefined;
-  return Number.isFinite(v) && v > 0 ? v : null;
+  return Number.isFinite(v) && v > 0 ? { kg: v, basis: `measured volume × stock ${key.replace(/Kg$/, '')} density (no catalogue density for this material)` } : null;
 }
 
 // ── Quote forensics ──────────────────────────────────────────────────────────
@@ -279,6 +299,45 @@ export function counterOffer(forensics, waterfall) {
 
 // ── The entitlement waterfall ────────────────────────────────────────────────
 
+// A route only counts toward the ENTITLEMENT when its own rule family actually
+// rates this geometry makeable: measured score >= 50 (the score scale's
+// "watch" floor) resting on >= 40% of its family's rules. `viable` alone is a
+// family-compatibility claim — on the first live parts it let a score-0
+// roll-formed stub axle set the entitlement, and after the score floor a "100
+// at 16.7% coverage" (one evaluable rule) slipped through on a fuel tank.
+// Neither is a number anyone could defend in a negotiation. A null score
+// (nothing evaluated) fails the floor too: unmeasured is not a pass.
+export const W3_MIN_DFM_SCORE = 50;
+export const W3_MIN_RULE_DEPTH_PCT = 40;
+
+/**
+ * RULE DEPTH — rules evaluated / ALL rules in the family — not coverage.
+ * Since coverage became "over the rules that apply" (DECISIONS 89), one checked
+ * rule out of one that applies reads 100%: exactly the route the floor exists
+ * to exclude (Prism review, 28 Sept 2026). Rows without the counts fall back to
+ * their coverage figure.
+ */
+export function ruleDepthPct(r) {
+  return Number(r?.ruleCount) > 0 && Number.isFinite(Number(r?.evaluatedCount))
+    ? (100 * Number(r.evaluatedCount)) / Number(r.ruleCount)
+    : Number(r?.coveragePct);
+}
+
+/** The routes a negotiation could defend as a process-change entitlement. */
+/** Why routes were left out of W3, in words — empty when none were. */
+export function w3Exclusions(belowFloor, shapeUnshown) {
+  const parts = [];
+  if (shapeUnshown > 0) parts.push(`${shapeUnshown} route${shapeUnshown === 1 ? '' : 's'} not shown able to form this shape — the part would need redesigning first, which is not a process saving on this drawing`);
+  if (belowFloor > 0) parts.push(`${belowFloor} route${belowFloor === 1 ? '' : 's'} with a DFM score below ${W3_MIN_DFM_SCORE} or fewer than ${W3_MIN_RULE_DEPTH_PCT}% of the family's rules evaluated, not defensible as an entitlement basis`);
+  return parts.length ? ` (excluded: ${parts.join('; ')})` : '';
+}
+
+export function defensibleRoutes(routes) {
+  return (routes || []).filter(r =>
+    Number.isFinite(r.score) && r.score >= W3_MIN_DFM_SCORE
+    && Number.isFinite(ruleDepthPct(r)) && ruleDepthPct(r) >= W3_MIN_RULE_DEPTH_PCT);
+}
+
 /**
  * Decompose a price into named premiums via a CHAIN of engine runs.
  *
@@ -365,14 +424,16 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
       // on a fuel tank. Neither is a number anyone could defend in a
       // negotiation. A null score (nothing evaluated) fails the floor too:
       // unmeasured is not a pass.
-      const W3_MIN_DFM_SCORE = 50;
-      const W3_MIN_COVERAGE_PCT = 40;
       const candidates = (cmp.routes || []).filter(r =>
         r.viable && r.netShape && Number.isFinite(r.piecePriceEur) && !r.isChosen);
-      const viable = candidates.filter(r =>
-        Number.isFinite(r.score) && r.score >= W3_MIN_DFM_SCORE
-        && Number.isFinite(r.coveragePct) && r.coveragePct >= W3_MIN_COVERAGE_PCT);
-      const belowFloor = candidates.length - viable.length;
+      // AND the route must be shown able to form this shape (shapeFeasibility):
+      // the first Prism review found Cold Heading setting the entitlement for a
+      // die-cast housing, a stamped bracket and a ribbed plate, because its
+      // family has no rule that asks whether a wire header can make the shape.
+      const shapeShown = candidates.filter(r => r.shapeEstablished === true);
+      const shapeUnshown = candidates.length - shapeShown.length;
+      const viable = defensibleRoutes(shapeShown);
+      const belowFloor = shapeShown.length - viable.length;
       // The chosen route's own carbon, for the delta a process switch buys.
       const chosenCo2 = (cmp.routes || []).find(r => r.isChosen)?.kgCo2e ?? null;
       let bestAlt = null;
@@ -382,13 +443,13 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
             { material, process: r.process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
             library, calibration,
           );
-          if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: r.coveragePct, kgCo2e: r.kgCo2e ?? null };
+          if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: Math.round(ruleDepthPct(r)), kgCo2e: r.kgCo2e ?? null, shapeBasis: r.shapeBasis ?? null };
         } catch { /* a route the engine refuses at this spec is not an option */ }
       }
       if (bestAlt && bestAlt.totalEur < cursor) {
         const co2Known = Number.isFinite(chosenCo2) && Number.isFinite(bestAlt.kgCo2e);
         push('Process premium', cursor, bestAlt.totalEur,
-          `Best DFM-viable net-shape alternative: ${bestAlt.process} (DFM score ${bestAlt.dfmScore ?? '—'} at ${bestAlt.coveragePct ?? '—'}% rule coverage; tooling €${round2(bestAlt.toolingEur) ?? '—'} up-front). A process change is a programme decision — the routes section carries the full comparison including tooling cheques.`,
+          `Best DFM-viable net-shape alternative: ${bestAlt.process} (DFM score ${bestAlt.dfmScore ?? '—'} with ${bestAlt.coveragePct ?? '—'}% of its family's rules evaluated; tooling €${round2(bestAlt.toolingEur) ?? '—'} up-front).${bestAlt.shapeBasis ? ` ${bestAlt.shapeBasis}` : ''} A process change is a programme decision — the routes section carries the full comparison including tooling cheques.`,
           co2Known ? {
             co2DeltaKg: Number((bestAlt.kgCo2e - chosenCo2).toFixed(3)),
             co2Basis: `computeCarbon on both routes' engine input mass: ${bestAlt.process} ${bestAlt.kgCo2e} vs current ${chosenCo2} kg CO2e/part (cradle-to-gate material + process energy; not a full LCA).`,
@@ -397,7 +458,7 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
         bestProcess = bestAlt.process;
       } else {
         push('Process premium', cursor, cursor,
-          `The stated process is already the best-fit among DFM-viable alternatives at this volume${belowFloor > 0 ? ` (${belowFloor} cheaper route${belowFloor === 1 ? '' : 's'} excluded: DFM score below ${W3_MIN_DFM_SCORE} or rule coverage below ${W3_MIN_COVERAGE_PCT}%, not defensible as an entitlement basis)` : ''}.`);
+          `The stated process is already the best-fit among DFM-viable alternatives at this volume${w3Exclusions(belowFloor, shapeUnshown)}.`);
       }
     } catch (e) {
       push('Process premium', cursor, cursor, 'Route comparison failed.', { skipped: true, reason: e.message });

@@ -32,7 +32,7 @@ import crypto from 'crypto';
 import multer from 'multer';
 import {
   entitlementWaterfall, quoteForensics, buildDossier, dossierToPromptBlock,
-  inferSpecFromDrawing, allocateGap, LENSES, cadMassKg, inputAnomalies, counterOffer,
+  inferSpecFromDrawing, allocateGap, LENSES, cadMass, cadMassKg, inputAnomalies, counterOffer,
 } from '../part360.mjs';
 import { geoSignature, rankSimilarRuns, rankTeardowns } from '../prism-memory.mjs';
 import {
@@ -432,7 +432,7 @@ Rules:
       const anomalies = inputAnomalies({
         weightKg, annualVolume, processKey: tdCtx.processKey,
         quote, geo: b.geo && typeof b.geo === 'object' ? b.geo : null,
-        cadDerivedMassKg: b.geo ? cadMassKg(b.geo, material) : null,
+        cadDerivedMassKg: b.geo ? cadMassKg(b.geo, material, library?.MATERIALS) : null,
       });
 
       const dossier = buildDossier({
@@ -580,7 +580,11 @@ Rules:
             } catch { /* fall through: cost the assembly as one body, warning included below */ }
           }
 
-          const mass = cadMassKg(g, material);
+          // The catalogue density, as the single-part path uses — this batch
+          // path still took the stock-family weight (1.05 g/cm³ for every
+          // plastic) while its label said "catalogue density" (Prism review).
+          const massInfo = cadMass(g, material, library?.MATERIALS);
+          const mass = massInfo?.kg ?? null;
           if (mass == null) throw new Error(`no CAD-derived mass for ${material} — geometry carries no matching density`);
           const wf = entitlementWaterfall(
             { material, process: processName, weightKg: mass, annualVolume, region },
@@ -593,7 +597,7 @@ Rules:
           rows.push({
             file: f.originalname,
             massKg: Number(mass.toFixed(3)),
-            massSource: 'CAD-derived (measured volume × catalogue density) — confirm before deep-dive',
+            massSource: `CAD-derived (${massInfo.basis}) — confirm before deep-dive`,
             engineEur, entitlementEur: wf.entitlementEur, gapEur,
             gapPct: engineEur > 0 ? Number(((gapEur / engineEur) * 100).toFixed(1)) : null,
             annualGapEur: gapEur != null ? Number((gapEur * annualVolume).toFixed(0)) : null,

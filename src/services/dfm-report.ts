@@ -25,6 +25,8 @@ import { downloadXlsx, type SheetSpec } from './xlsx-write';
 
 export interface DfmFinding {
   id: string;
+  /** Why a rule produced no verdict (dfm-abstention.mjs). */
+  abstention?: { kind?: string; input?: string; reason?: string };
   title: string;
   severity: 'high' | 'medium' | 'low';
   measure: string;
@@ -82,6 +84,8 @@ export interface DfmProcessResult {
   ruleCount: number;
   evaluatedCount: number;
   coveragePct: number;
+  /** Rules about features this part lacks leave the denominator (DECISIONS 89). */
+  applicableCount?: number; notApplicableCount?: number;
   score: number | null;
   impact?: { pricedCount: number; unpricedCount: number; perPartEur: number; annualEur: number; caveat: string | null };
 }
@@ -204,6 +208,7 @@ export interface DfmReportData {
        * recommended as an alternative way to make the part.
        */
       netShape?: boolean; secondaryReason?: string | null;
+      shapeClass?: string | null; shapeEstablished?: boolean; shapeBasis?: string;
       /** Piece-price and tooling difference against the chosen route, when there is one. */
       deltaPieceEur?: number | null; deltaToolingEur?: number | null;
     }>;
@@ -718,9 +723,20 @@ export function exportDfmPdf(
     // four of nine rules is not the same claim as a score over nine of nine.
     if (one) {
       const pct = one.coveragePct;
+      // Coverage is over the rules that APPLY (DECISIONS 89), and the
+      // not-evaluated rules are four different things — "could not be
+      // measured on this geometry" was true of only some of them.
+      const kinds = (k: string) => one.notEvaluated.filter((n) => n.abstention?.kind === k).length;
+      const applicable = one.applicableCount ?? one.ruleCount;
+      const na = one.notApplicableCount ?? 0;
+      const waiting = kinds('needs-input');
+      const unchecked = one.notEvaluated.length - na - waiting;
       mono(6.4); setText(doc, pct >= 80 ? MUT : AMBER);
-      doc.text(fit(doc, `RULE COVERAGE ${pct}%  —  ${one.evaluatedCount} of ${one.ruleCount} evaluated, `
-        + `${one.notEvaluated.length} could not be measured on this geometry and are NOT passes.`, CW), ML, y);
+      doc.text(fit(doc, `RULE COVERAGE ${pct}%  —  ${one.evaluatedCount} of ${applicable} applicable rules evaluated`
+        + (waiting ? `, ${waiting} waiting on a declared input` : '')
+        + (unchecked ? `, ${unchecked} could not be checked` : '')
+        + ' (none of these are passes)'
+        + (na ? `; ${na} do not apply to this part` : '') + '.', CW), ML, y);
       y += 6;
     }
   }
@@ -1649,7 +1665,7 @@ export function exportDfmPdf(
   for (const r of data.results) {
     if (!r.ruleCount) continue;
     newPage();
-    sectionTitle(r.processName, `${r.findings.length} finding${r.findings.length === 1 ? '' : 's'} · ${r.evaluatedCount}/${r.ruleCount} rules evaluated`);
+    sectionTitle(r.processName, `${r.findings.length} finding${r.findings.length === 1 ? '' : 's'} · ${r.evaluatedCount}/${r.applicableCount ?? r.ruleCount} applicable rules evaluated`);
 
     // Score + coverage, always together. A score without its coverage invites
     // the reader to assume the whole catalogue ran.
@@ -2038,6 +2054,9 @@ export function exportDfmPdf(
       const cheaper = sorted.filter(r => !r.isChosen
         && r.viable !== false
         && r.netShape !== false
+        // Shown able to form this shape (shapeFeasibility) — a route whose
+        // family never asks has not earned a "switch" sentence.
+        && r.shapeEstablished !== false
         && (r.evaluatedCount ?? 0) > 0
         && Number.isFinite(r.piecePriceEur as number)
         && (r.piecePriceEur as number) < (chosenRow.piecePriceEur as number));

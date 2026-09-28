@@ -25,8 +25,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { computeShouldCost } from './costing-engine.mjs';
 import { computeCarbon } from './carbon.mjs';
-import { runDfmRules } from './dfm-rules.mjs';
-import { processesForMaterial, SECONDARY_OPERATION_FAMILIES } from './dfm-process-registry.mjs';
+import { runDfmRules, inferProcessFamily } from './dfm-rules.mjs';
+import {
+  processesForMaterial, SECONDARY_OPERATION_FAMILIES, PROCESS_TO_DFM_FAMILY, shapeFeasibility,
+} from './dfm-process-registry.mjs';
 
 /**
  * @param {object} geo      measured geometry (the engine's analyze() output)
@@ -41,6 +43,9 @@ export function compareRoutes(geo, opts = {}) {
     // first question anybody asks of this table, and a reader who cannot answer
     // it reads the whole page as a generic survey of every process.
     chosenProcess = null,
+    // The DFM family the user picked when they named a rule family rather than
+    // a costed process. Either one says what the part is made by today.
+    chosenFamily: chosenFamilyOpt = null,
   } = opts;
   if (!material) {
     return {
@@ -51,6 +56,12 @@ export function compareRoutes(geo, opts = {}) {
 
   const routes = [];
   const skipped = [];
+  // What the geometry itself says the part is, measured once for every row —
+  // one of the three ways a route's shape class can be established (see
+  // shapeFeasibility).
+  let inferredFamily = null;
+  try { inferredFamily = inferProcessFamily(geo, { material }).family; } catch { /* unmeasured */ }
+  const chosenFamily = (chosenProcess ? PROCESS_TO_DFM_FAMILY[chosenProcess] : null) ?? chosenFamilyOpt ?? null;
 
   for (const candidate of processesForMaterial(material)) {
     // Only processes that SHAPE the part are routes. E-coat and washing are
@@ -86,6 +97,12 @@ export function compareRoutes(geo, opts = {}) {
       // labelled, and the recommendation below can never land on one.
       row.netShape = !SECONDARY_OPERATION_FAMILIES[candidate.dfmFamily];
       row.secondaryReason = SECONDARY_OPERATION_FAMILIES[candidate.dfmFamily] ?? null;
+      // CAN THIS ROUTE FORM THIS SHAPE AT ALL. "No blocking rule fired" is not
+      // that answer — most families contain no shape-class rule to fire.
+      const shape = shapeFeasibility(candidate.dfmFamily, { chosenFamily, inferredFamily });
+      row.shapeClass = shape.shapeClass;
+      row.shapeEstablished = shape.established;
+      row.shapeBasis = shape.basis;
       // The two worst findings, so a row explains itself without a drill-down.
       row.topFindings = r.findings.slice(0, 2).map(f => ({
         title: f.title, severity: f.severity, measured: f.measured,
@@ -96,8 +113,12 @@ export function compareRoutes(geo, opts = {}) {
       // were. The coverage travels in the row for exactly that reason.
       row.scoreCaveat = r.evaluatedCount === 0
         ? 'No rule in this family could be evaluated on this geometry, so there is no score — not a clean sheet.'
-        : r.coveragePct < 60
-          ? `Only ${r.evaluatedCount} of ${r.ruleCount} rules could be evaluated, so this score rests on a partial check.`
+        // DEPTH (evaluated / all rules), not coverage: since coverage counts
+        // only the rules that apply, a route checked on 3 of 12 rules can read
+        // 100% — complete for what applies, and still a narrow basis for a
+        // score someone will compare (Prism review, 28 Sept 2026).
+        : r.ruleCount > 0 && r.evaluatedCount / r.ruleCount < 0.6
+          ? `Only ${r.evaluatedCount} of ${r.ruleCount} rules in this family produced a verdict on this part, so the score rests on a narrow check.`
           : null;
     } catch (e) {
       row.score = null;
@@ -196,6 +217,21 @@ function unsuitableFor(material) {
   return all
     .filter(p => p.dfmFamily && !offered.has(p.name))
     .map(p => [p.name, `The cost model lists this process as incompatible with ${material}.`]);
+}
+
+/**
+ * Routes that may be put forward as "switch to this and save": the gates the
+ * report sentence, the Prism W3 step and the batch table all need, in one place
+ * so they cannot drift apart. Blocked, secondary-operation, unjudged (no rule
+ * evaluated), unpriced, or not shown able to form this shape — each is out.
+ */
+export function recommendableRoutes(routes) {
+  return (routes || []).filter(r => !r.isChosen
+    && r.viable !== false
+    && r.netShape !== false
+    && r.shapeEstablished === true
+    && (r.evaluatedCount ?? 0) > 0
+    && Number.isFinite(r.piecePriceEur));
 }
 
 const round2 = n => (Number.isFinite(n) ? Math.round(n * 100) / 100 : null);

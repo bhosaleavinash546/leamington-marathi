@@ -26,7 +26,7 @@ import {
 import {
   dfmOptions, familyForSelection, familyOfMaterial, processesForMaterial,
 } from '../dfm-process-registry.mjs';
-import { compareRoutes, rankRoutes } from '../dfm-routing.mjs';
+import { compareRoutes, rankRoutes, recommendableRoutes } from '../dfm-routing.mjs';
 import { priceFindings, summarisePricedImpact, formingContent } from '../dfm-cost-impact.mjs';
 import { DFM_RULES, PROCESS_FAMILIES, UNWRITTEN_RULES } from '../dfm-rule-catalogue.mjs';
 import { analyseDfa } from '../dfa-engine.mjs';
@@ -997,7 +997,7 @@ export function registerDfmRoutes(app, {
             annualVolume: numOr(req.body?.annualVolume, 50000), weightKg,
             // So the table can mark the row the user is standing on and price
             // every other row as a difference from it.
-            chosenProcess: chosenProcess || null })
+            chosenProcess: chosenProcess || null, chosenFamily: selected.family || null })
         : null,
       // Named when the chosen process shapes nothing, so the reader is told why
       // there are no findings instead of seeing an empty report.
@@ -1085,14 +1085,20 @@ export function registerDfmRoutes(app, {
       if (material && row.weightKg > 0) {
         const { routes } = compareRoutes(geo, {
           material, region, annualVolume, weightKg: row.weightKg,
-          chosenProcess: chosenProcess || null,
+          chosenProcess: chosenProcess || null, chosenFamily: selected.family || null,
         });
         // What switching would actually be worth on THIS part, rather than a
         // cheapest-route name the reader has to price against their own by hand.
         const chosenRow = routes.find(r2 => r2.isChosen) ?? null;
         row.chosenRoutePieceEur = chosenRow?.piecePriceEur ?? null;
-        const priced = rankRoutes(routes, 'piecePriceEur').filter(r2 => Number.isFinite(r2.piecePriceEur));
-        row.bestRoute = priced[0] ? { process: priced[0].process, piecePriceEur: priced[0].piecePriceEur, score: priced[0].score } : null;
+        // The same gates as every other "switch to this" statement: this used to
+        // take the cheapest PRICED route, so a blocked route, a secondary
+        // operation, or one that cannot form the shape could head a portfolio
+        // row (Prism review, 28 Sept 2026). The chosen route is a candidate too
+        // — "stay where you are" is a legitimate best route.
+        const eligible = [...(chosenRow && Number.isFinite(chosenRow.piecePriceEur) ? [chosenRow] : []), ...recommendableRoutes(routes)];
+        const priced = rankRoutes(eligible, 'piecePriceEur');
+        row.bestRoute = priced[0] ? { process: priced[0].process, piecePriceEur: priced[0].piecePriceEur, score: priced[0].score, isChosen: !!priced[0].isChosen } : null;
         row.routeCount = routes.length;
       }
       rows.push(row);
