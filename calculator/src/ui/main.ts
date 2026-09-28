@@ -6451,6 +6451,9 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     formData.append('deepAnalysis', String((document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
     const mode = selectedAnalysisMode();
     formData.append('mode', mode);
+    // Answers already given to this part's questions (reset on a new file or
+    // Clear). The server's /analyze applies them just as /reanalyze does.
+    if (Object.keys(_cadDecisionAnswers).length) formData.append('decisionAnswers', JSON.stringify(_cadDecisionAnswers));
 
     const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
@@ -7126,7 +7129,13 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 // Re-analyse using cached OCCT geometry (no STEP file re-upload required)
 async function reanalyzeCAD(): Promise<void> {
   if (!cadOCCTGeometry) {
-    alert('No cached OCCT geometry available. Please run a full analysis first.');
+    // An STL is measured in the request and not kept on the server, so there is
+    // no geometry hash to re-cost against. Answering its questions used to end
+    // here in an alert — every STL part, which in the air-gapped build always
+    // asks its route and material, could never be costed. Re-run the analysis
+    // with the file still in hand; analyzeCAD sends the answers with it.
+    if (cadFile) { await analyzeCAD(); return; }
+    showToast('Upload the CAD file again to re-cost it.', 'warning');
     return;
   }
 
@@ -14790,6 +14799,25 @@ function collectInput(): UniversalStackInput {
 
 // ─── Compute ──────────────────────────────────────────────────────────────────
 
+/**
+ * Whether a blocking CAD sanity finding still describes what is about to be
+ * costed. Most are about the measured geometry and cannot be edited away. The
+ * cycle-time check is about a figure the engineer replaces on the form: an STL
+ * has no feature table, so the deterministic route hands machining a 0 h
+ * operation, and after the engineer typed a real cycle time the gate still
+ * said "0 hr is implausible" — the only way through was to tick a box
+ * accepting a zero that was no longer there, on the record.
+ */
+function sanityStillApplies(code: string): boolean {
+  if (code !== 'cycle_time_implausible') return true;
+  try {
+    const ops = collectInput()?.operations ?? [];
+    return !ops.length || ops.some(op => !(op.cycleTimeHr >= 0.0005 && op.cycleTimeHr <= 24));   // cad-sanity.ts bounds
+  } catch {
+    return true;   // cannot read the form — keep the gate
+  }
+}
+
 function compute(): void {
   const errBox = el('validation-errors');
   const warnBox = el('validation-warnings');
@@ -14802,7 +14830,7 @@ function compute(): void {
   // attribute would not.
   // Blocking sanity findings require one explicit acknowledgement each — never
   // a silent cost on a measured contradiction (audit gap 4).
-  const blockingSanity = cadSanityWarnings.filter(w => w.blocking && !_cadSanityAcks.has(w.code));
+  const blockingSanity = cadSanityWarnings.filter(w => w.blocking && !_cadSanityAcks.has(w.code) && sanityStillApplies(w.code));
   if (blockingSanity.length && _pendingCostingSource === 'cad') {
     errBox.style.display = '';
     errBox.innerHTML = `<strong>${blockingSanity.length} consistency check${blockingSanity.length === 1 ? '' : 's'} must be acknowledged before this can be costed</strong>`
