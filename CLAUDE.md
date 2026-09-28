@@ -152,7 +152,7 @@ what is true** — nothing here has been compared with a price JLR paid.
 - Default dev branch is `claude/new-session-ts4byp`.
 - Before shipping a cost-logic change, prove it: unit test + `npm run accuracy`
   or a hand-calc reproduction. `tests/reference-part.test.ts` pins a hand-computed
-  £23.27 machined bracket to <0.01% — keep engine changes reconciling to it.
+  £24.34 machined bracket to <0.01% — keep engine changes reconciling to it.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

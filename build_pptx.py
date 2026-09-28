@@ -1346,7 +1346,7 @@ txb(slide, "Status as of September 2026.",
 
 headers12a = ["Check", "Evidence", "What it shows", "Status"]
 data12a = [
-    ("Hand calculation",   "Reference bracket, £23.27",   "Engine arithmetic matches to <0.01%",          "Proven"),
+    ("Hand calculation",   "Reference bracket, £24.34",   "Engine arithmetic matches to <0.01%",          "Proven"),
     ("Real-parts baseline", "6 production parts pinned",  "A change that moves one fails the build",      "In place"),
     ("Automated tests",    "2,438 tests + browser tests", "Every commodity, exports, STL, accessibility", "Every run"),
     ("JLR-paid prices",    "None compared yet",           "Measured as actuals are logged",               "Not proven"),

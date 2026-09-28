@@ -977,7 +977,7 @@ text(s, Inches(0.45), Inches(6.5), Inches(7.3), Inches(0.6),
      [[('Built-in rate library 2.1.0 (16 June 2026): materials, machines and labour grades, plus the regions and processes covered.', 10, MUTED, False, True)]],
      line_spacing=1.1)
 stats = [
-    ('<0.01%', 'gap to a hand calculation on the reference machined bracket (£23.27)', BLUE),
+    ('<0.01%', 'gap to a hand calculation on the reference machined bracket (£24.34)', BLUE),
     ('6 parts', 'real production parts pinned in a baseline; a change that moves one fails the build', VIOLET),
     ('2,438', 'automated tests, plus browser tests of every commodity, exports and accessibility', GREEN),
     ('Not yet', 'compared with a price JLR actually paid. Measured as actuals are logged', AMBER),
@@ -993,7 +993,7 @@ notes(s, "This is the evidence slide, for when someone asks whether it actually 
          "The chart shows what the numbers rest on. The built-in rate library has 328 materials, 178 machines and "
          "42 labour grades. The tool covers twenty regions and nineteen processes. "
          "On the right is what's proven. The engine's arithmetic matches a hand calculation to under a hundredth of "
-         "a percent on our reference machined bracket, which costs £23.27. Six real production parts are pinned in "
+         "a percent on our reference machined bracket, which costs £24.34. Six real production parts are pinned in "
          "a baseline, so if a change moves any of them, the build fails. There are 2,438 automated tests, plus "
          "browser tests that cost every commodity, export Excel and PDF, and check accessibility. "
          "The last box is the honest one. None of this shows the tool is right about real prices. It shows the "

@@ -538,7 +538,7 @@ for i, t in enumerate(tool):
 # ════════════════════════════════════════════════════════════════════════════
 s = header('What is proven — and what is not', 'Evidence')
 rows = [
-    ('Engine arithmetic vs a hand calculation (reference bracket, £23.27)', 'under 0.01%', GREEN),
+    ('Engine arithmetic vs a hand calculation (reference bracket, £24.34)', 'under 0.01%', GREEN),
     ('Real production parts pinned in a regression baseline', '6 parts', GREEN),
     ('Automated tests, plus browser tests on every run', '2,438 tests', VIOLET),
     ('Real prices needed before a correction is applied', '3 per group', CYAN),

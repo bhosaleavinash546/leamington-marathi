@@ -66,7 +66,7 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
 
 ## What is proven — and what is not
 - The engine's arithmetic matches a **hand calculation to under 0.01%** on the
-  reference machined bracket (£23.27).
+  reference machined bracket (£24.34).
 - **6 real production parts** are pinned in a regression baseline (steering knuckle,
   two castings, a pressed seat bracket, a machined part, a gear). A change that moves
   any of them fails the build.

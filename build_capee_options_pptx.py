@@ -1165,7 +1165,7 @@ text(s, Inches(0.45), Inches(1.68), Inches(12.4), Inches(0.32),
 rows = [
     ('19 manufacturing processes; 13 costed from CAD', 'Commodity modules and CAD rule packs in the code'),
     ('About 12 to 70 values typed per part', 'Rough count of the input fields on CostVision\'s own forms, by commodity'),
-    ('Engine matches a hand calculation to under 0.01%', 'Reference machined bracket, £23.27, pinned in an automated test'),
+    ('Engine matches a hand calculation to under 0.01%', 'Reference machined bracket, £24.34, pinned in an automated test'),
     ('6 real production parts pinned', 'A change that moves any of them fails the build'),
     ('2,438 automated tests', 'Plus browser tests that cost every commodity and export Excel and PDF'),
     ('Measuring makes no internet connection', 'Windows package runs offline and listens on this laptop only (127.0.0.1)'),

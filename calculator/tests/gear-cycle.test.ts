@@ -4,7 +4,7 @@
  * `gear-cycle.ts` ships without citations because it is arithmetic rather than a
  * claim about the world. That is only a defensible position if the arithmetic is
  * actually checked, so these tests do the sums independently — the way
- * `reference-part.test.ts` pins a hand-computed £23.27 bracket — and assert the
+ * `reference-part.test.ts` pins a hand-computed £24.34 bracket — and assert the
  * code reproduces them to floating-point tolerance.
  *
  * The most important test in the file is `hobbing time is LINEAR in tooth
