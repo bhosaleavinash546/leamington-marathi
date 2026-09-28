@@ -15,6 +15,7 @@
  */
 import type { PartDetail, SupplierDetail, SupplierOperation } from '../engine/quote-teardown-detailed.js';
 import { buildWorkbook, downloadWorkbook } from './xlsx-util.js';
+import { exportFilename } from './filename.js';
 
 const HRS_TO_S = 3600;
 
@@ -151,8 +152,7 @@ export async function downloadNegotiationTemplate(part: PartDetail, meta: Templa
     { name: 'Detailed', rows, cols: [26, 32, 13, 16, 22] },
     { name: 'Summary', rows: summary, cols: [24, 12, 16, 22] },
   ]);
-  const safe = meta.partName.replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'part';
-  await downloadWorkbook(wb, `Quote-Template_${safe}.xlsx`);
+  await downloadWorkbook(wb, exportFilename('quote-template', meta.partName, 'xlsx'));
 }
 
 // ─── Parsing (forgiving) ──────────────────────────────────────────────────────

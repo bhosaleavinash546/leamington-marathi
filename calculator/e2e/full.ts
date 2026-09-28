@@ -158,7 +158,12 @@ async function main(): Promise<void> {
     const [pdf] = await Promise.all([page.waitForEvent('download', { timeout: 30_000 }), page.evaluate(() => document.getElementById('export-pdf-btn')!.click())]);
     const pdfBytes = readFileSync(await pdf.path());
     if (pdfBytes.subarray(0, 5).toString() !== '%PDF-' || pdfBytes.length < 20_000) fail(`PDF export: not a PDF or suspiciously small (${pdfBytes.length} bytes)`);
-    log(`exports: workbook carries £${screen}, PDF ${Math.round(pdfBytes.length / 1024)} KB`);
+    // One naming rule (L6): same stem, lower case, dated.
+    const [xn, pn] = [xlsx.suggestedFilename(), pdf.suggestedFilename()];
+    if (xn.replace(/\.xlsx$/, '') !== pn.replace(/\.pdf$/, '') || !/^should-cost-[a-z0-9-]+-\d{4}-\d{2}-\d{2}\.xlsx$/.test(xn)) {
+      fail(`exports: names disagree or break the rule — ${xn} vs ${pn}`);
+    }
+    log(`exports: workbook carries £${screen}, PDF ${Math.round(pdfBytes.length / 1024)} KB, both named ${xn.replace(/\.xlsx$/, '')}`);
 
     // ── Assembly rolls up priced lines, and explains an empty BOM ──────────
     await pick(page, 'assembly');

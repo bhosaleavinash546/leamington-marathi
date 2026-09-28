@@ -11,6 +11,7 @@ import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, type ManufacturingRegion } from '../engine/regional-rates.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
+import { exportFilename } from './filename.js';
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -1876,7 +1877,7 @@ export function printPDF(
 
   addFooters();
 
-  const fname = `should-cost-${result.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  const fname = exportFilename('should-cost', result.partName, 'pdf');
   doc.save(fname);
 }
 
@@ -2327,6 +2328,6 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
 
   addFooters();
 
-  const fname = `cad-analysis-${r.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  const fname = exportFilename('cad-analysis', r.partName, 'pdf');
   doc.save(fname);
 }

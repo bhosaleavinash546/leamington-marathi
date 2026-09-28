@@ -26,6 +26,7 @@ import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.j
 import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 import { projectStore } from '../project-store.js';
+import { exportFilename } from '../../export/filename.js';
 
 // Saved configs are stored as projects of this kind — server-backed when the
 // user is logged in, localStorage when not.
@@ -87,7 +88,7 @@ async function renderSWRateAdmin(): Promise<void> {
     const res = await fetch('/api/rate-library/sw/template', { headers: swAuthHeader() });
     if (!res.ok) { msg('Admin only.', false); return; }
     const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob());
-    a.download = 'CostVision-SW-Rate-Template.xlsx'; a.click();
+    a.download = 'costvision-sw-rate-template.xlsx'; a.click();
   });
   document.getElementById('swra-file')?.addEventListener('change', async (e) => {
     const f = (e.target as HTMLInputElement).files?.[0]; if (!f) return;
@@ -2062,7 +2063,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     { name: 'Benchmarks',         rows: bmData,      cols: [28, 18, 12, 18, 44] },
     { name: 'Configuration',      rows: cfgData,     cols: [28, 40, 10, 8, 12, 10, 12] },
   ]);
-  await downloadWorkbook(wb, 'SW_Should_Cost_CostVision.xlsx');
+  await downloadWorkbook(wb, exportFilename('sw-should-cost', null, 'xlsx'));
 }
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────
@@ -2247,7 +2248,7 @@ function exportSWPDF(result: SWProgramResult): void {
         doc.text(`CostVision — Automotive Software Should-Cost  |  Confidential  |  Page ${p} of ${totalPages}`, W / 2, 290, { align: 'center' });
       }
 
-      doc.save('SW_Should_Cost_Report.pdf');
+      doc.save(exportFilename('sw-should-cost', null, 'pdf'));
     });
   });
 }

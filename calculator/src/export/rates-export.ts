@@ -15,6 +15,7 @@ import {
   type ManufacturingRegion,
 } from '../engine/regional-rates.js';
 import { buildWorkbook, downloadWorkbook } from './xlsx-util.js';
+import { exportFilename } from './filename.js';
 
 const FAMILY_LABEL: Record<string, string> = {
   commodity: 'Commodity resin (regional feedstock index)',
@@ -129,5 +130,5 @@ export async function exportActiveRates(library: RateLibrary, region: Manufactur
     { name: 'Energy Tariffs', rows: energy, cols: [18, 16, 16, 12, 12, 11, 60] },
     { name: 'Country Database', rows: countryDb, cols: [18, 6, 9, 9, ...Array(8).fill(12), 13, 10, ...Array(4).fill(14), 13, 11, 12, 11] },
   ]);
-  await downloadWorkbook(wb, `costvision-rates-${region}-${today}.xlsx`);
+  await downloadWorkbook(wb, exportFilename('costvision-rates', region, 'xlsx'));
 }

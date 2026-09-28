@@ -199,6 +199,7 @@ import {
   animateResultHero, pulseCalculate,
 } from './animations.js';
 import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.js';
+import { exportFilename } from '../export/filename.js';
 
 /** What the suggestion layer may know about the current costing — the region
  *  select and whether a person actually typed an annual volume — so the
@@ -9047,7 +9048,7 @@ function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `pcb-analysis-${r.partName.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}-${dateStr}.csv`;
+  a.download = exportFilename('pcb-analysis', r.partName, 'csv');
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -9108,7 +9109,7 @@ function exportPCBAnalysisExcel(r: PCBImageAnalysis): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `pcb-analysis-${r.partName.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}-${dateStr}.xls`;
+  a.download = exportFilename('pcb-analysis', r.partName, 'xls');
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -9546,7 +9547,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
   }
 
   addFooters();
-  const fname = `pcb-analysis-${r.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  const fname = exportFilename('pcb-analysis', r.partName, 'pdf');
   doc.save(fname);
 }
 
@@ -16302,7 +16303,7 @@ function renderScenarios(): void {
     const blob = new Blob([exportScenarios({ version: library.version, lastModified: library.lastModified })], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `scenarios-v${library.version}-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = exportFilename('scenarios', `v${library.version}`, 'json');
     a.click();
   });
 
@@ -16377,7 +16378,7 @@ async function downloadExcel(): Promise<void> {
   const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied());
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `should-cost-${lastResult.partName.replace(/\s+/g, '-')}.xlsx`;
+  a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
   a.click();
 }
 
@@ -16885,7 +16886,7 @@ async function printMasterPDF(): Promise<void> {
   }
 
   const parts = [hasCost ? 'SC' : '', hasCAD ? 'CAD' : '', hasPCB ? 'PCB' : ''].filter(Boolean).join('-');
-  doc.save(`master-report-${parts}-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(exportFilename('master-report', parts, 'pdf'));
 }
 
 /** Uploaded part photo as a data URL — from the costing photo drop-zone or the CAD flow. */
@@ -18979,7 +18980,7 @@ async function renderCompanyRateAdmin(): Promise<void> {
     const res = await fetch('/api/rate-library/template', { headers: authHeader() });
     if (!res.ok) { msg('Download failed (admin only).', false); return; }
     const blob = await res.blob(); const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'CostVision-Rate-Library-Template.xlsx'; a.click();
+    a.href = URL.createObjectURL(blob); a.download = 'costvision-rate-library-template.xlsx'; a.click();
   });
 
   document.getElementById('cra-file')?.addEventListener('change', async (e) => {

@@ -16,6 +16,7 @@
  */
 
 import { parseSTLMesh } from './cad-views.js';
+import { exportFilename } from '../export/filename.js';
 
 type V3 = { x: number; y: number; z: number };
 
@@ -1421,7 +1422,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'cad-measurements.csv';
+    a.download = exportFilename('cad-measurements', null, 'csv');
     a.click();
     URL.revokeObjectURL(a.href);
     statusHint.textContent = `${measurements.length} measurement${measurements.length === 1 ? '' : 's'} exported to CSV`;
@@ -2123,7 +2124,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           statusHint.textContent = 'Snapshot attached to report';
         } else {
           const a = document.createElement('a');
-          a.href = url; a.download = 'cad-view.jpg'; a.click();
+          a.href = url; a.download = exportFilename('cad-view', null, 'jpg'); a.click();
           statusHint.textContent = 'Snapshot downloaded';
         }
         break;
