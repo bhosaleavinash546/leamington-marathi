@@ -20,10 +20,11 @@ RULES THIS FILE FOLLOWS.
    says so on its face. Option 2 does use an AI assistant, and the approval to
    use AI is listed as the first thing it needs — stated, not buried.
 
-2. THE AI SETS UP, IT NEVER PRICES. Slide 3 says this in plain words. The
-   assistant picks the process route and the machine and fills what the
-   geometry gives; the money is still worked out by `computeUniversalStack` on
-   the same rate library. If that ever stops being true the slide is wrong.
+2. AI IS OFF AT JLR, AND NEVER PRICES. The JLR build runs with AIR_GAPPED=1.
+   The AI features (board photo, RFQ pack, assistant) are hidden there, so
+   slide 3 labels them as the optional AI mode. Even when it is on, the AI only
+   reads and sorts; the money is `computeUniversalStack` on the rate library.
+   Facts on every slide follow docs/decks/tool-facts.md.
 
 3. NO INVENTED SAVING. Every benefit figure on slide 4 is an empty box for JLR
    to fill, with the arithmetic printed beside it. We have never timed an
@@ -34,12 +35,11 @@ RULES THIS FILE FOLLOWS.
    slide. It answered a question nobody in that room was asking. Capability
    belongs there; the timings live in the 21-slide pack.
 
-5. ONLY WHAT IS IN THE SOFTWARE, verified September 2026: 12 to 69 input boxes
-   by commodity; the quote teardown runs live (a machined part quoted 28% above
-   should-cost returned the gap by bucket, recovery levers and supplier
-   questions); the comparison table shows ten countries side by side out of
-   twenty in the rate library; calibration from actuals, scenario, sensitivity,
-   landed cost and the DFM savings levers are all wired through to the UI.
+5. ONLY WHAT IS IN THE SOFTWARE, re-checked 28 September 2026: roughly a
+   dozen to seventy input values by commodity on the tool's own forms; the bulk
+   run is scripts/bulk-cost.ts (no AI, writes a run record naming the rate
+   book); the quote teardown compares bucket by bucket; the software model has
+   49 modules; proof is a hand calc to <0.01%, 6 real parts and 2,438 tests.
 
 Regenerate:  python3 build_capee_business_case_pptx.py
 Output:      CostVision-CAPEE-Business-Case.pptx
@@ -360,7 +360,7 @@ card(s, Inches(0.45), Inches(1.96), Inches(6.1), Inches(4.5), AMBER,
       ('',),
       ('Manual data entry', DARK, True),
       ('Geometry and tolerances read off the 3D model and the',),
-      ('drawings, then typed in — 12 to 69 values per part.',),
+      ('drawings, then typed in. About 12 to 70 values a part.',),
       ('',),
       ('Updated by hand', DARK, True),
       ('Rates and inputs refreshed manually as economics move.',)])
@@ -400,39 +400,33 @@ callout(s, Inches(0.45), Inches(6.56), Inches(12.43), Inches(0.82), GREENBG, GRE
         'Nothing about the method changes. The judgement, the build-up and the numbers we would '
         'defend to a supplier all stay as they are. What we are proposing to remove is the typing, '
         'and then the limit on how many parts we can get through.')
-notes(s, "I want to start by saying what we do well, because none of this is a criticism of it. The "
-         "left-hand card is our should-cost as it runs today. The method is trusted and thorough: a "
-         "rigorous bottom-up build-up, applied across every commodity we buy, and it is the number "
-         "we would defend in front of a supplier. Nothing I am about to propose changes that. What "
-         "I want to talk about is the effort behind it. The setup is hands-on: a person chooses the "
-         "material, the process and the machine, part by part. The data entry is manual: somebody "
-         "opens the 3D model and the drawings, reads the geometry and the tolerances, and types "
-         "them in. And when the economics move, somebody goes back and updates the rates by hand. "
-         "The line at the bottom of that card is the size of it: between twelve and sixty-nine "
-         "values typed per part depending on the commodity, and those counts come straight off our "
-         "own input forms. None of that is wrong. It is just slow, and it is the reason we cost the "
-         "parts we have time for rather than the parts we would like to. Now the right-hand side, "
-         "and I want to be straight about why it is empty. I have not put a saving on this slide, "
-         "because we have never timed this job and we have never compared this tool against a price "
-         "we have actually paid. Any number I put there would be my estimate dressed up as a "
-         "measurement. Four of these five are ours and we can get them quickly: how long a part "
-         "takes, how much of that is reading and typing, how many parts we cost a year, and how "
-         "many in a basket we never cost at all. Time a handful of parts in one commodity and you "
-         "have the first two; the others are in our own records and the programme data. The fifth, "
-         "E, is what the trial measures. Put those numbers in and the three boxes underneath fill "
-         "themselves in: the hours we spend typing today, the hours we would get back, and how many "
-         "more parts that time would cost. That is a business case we own rather than one I have "
-         "handed you. And the green strip is the whole idea in one line: same method, same "
-         "defensible answer, with the manual work taken out of it.")
+notes(s, "I want to start with what we do well, because this is not a criticism of it. The "
+         "left-hand card is our should-cost as it runs today. The method is sound. It is bottom-up, "
+         "it covers every commodity we buy, and it is the number we would defend to a supplier. "
+         "Nothing I propose changes that. What I want to talk about is the effort behind it. A person "
+         "picks the material, the process and the machine, part by part. Somebody opens the 3D model "
+         "and the drawing, reads off the geometry and the tolerances, and types them in. When prices "
+         "move, somebody updates the rates by hand. To give a sense of size: on CostVision's own input "
+         "forms a part needs somewhere between about twelve and seventy values, depending on the "
+         "commodity. I have not counted CAPEE's screens, so treat that as a guide. None of this is "
+         "wrong. It is just slow, and it is why we cost the parts we have time for rather than all of "
+         "them. Now the right-hand side, and why it is empty. I have not put a saving here. We have "
+         "never timed this job, and the tool has never been compared with a price JLR actually paid. "
+         "Any number I wrote in would be a guess. Four of these five numbers are ours, and we can get "
+         "them quickly. Time a handful of parts and we have A and B. C and D are in our own records. "
+         "E is what the trial measures. Put them in and the three boxes underneath work themselves "
+         "out: hours spent typing, hours we would get back, and how many more parts that would cost. "
+         "That makes it our business case, not mine. The green strip is the whole idea: same method, "
+         "same answer we can defend, with the typing taken out.")
 
 # ═══════════ 2 · OPTION 1 · AUTOMATE THE DATA ENTRY, INSIDE CAPEE ═══════════
 s = header('Option 1: automate the data entry, inside CAPEE', 'Option 1 · start now')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
      [[('CAPEE keeps doing the costing. The engineer stops typing the input and starts checking it. '
-        'Reads the 3D model only, so no AI is involved.', 11.5, BODY, False)]])
+        'It measures the 3D model only, so no AI is involved.', 11.5, BODY, False)]])
 steps = [
     ('upload', 'Attach the 3D model', 'STEP, IGES or STL, from the CAPEE screen', INDIGO),
-    ('ruler', 'The software measures it', 'On a JLR server, with no internet connection', INDIGO),
+    ('ruler', 'The software measures it', 'On a JLR server or laptop, with no internet', INDIGO),
     ('cog', 'The values fill in', 'Fixed rules. Same part, same numbers, always', INDIGO),
     ('person', 'The engineer confirms', 'Only what a 3D model cannot show', AMBER),
     ('calc', 'CAPEE costs the part', 'Exactly as it does now. It just gets the numbers', GREEN),
@@ -449,7 +443,7 @@ card(s, Inches(0.45), Inches(4.02), Inches(6.1), Inches(2.05), GREEN,
      'WHAT THE 3D MODEL GIVES, WITH NOTHING TYPED',
      [('Weight, volume, overall size, surface area.',),
       ('Wall thickness, holes, pockets, bosses, bends,',),
-      ('gear teeth, draft, machined face count.',),
+      ('gear teeth, machined faces.',),
       ('',),
       ('Fixed rules turn those measurements into the', DARK, True),
       ('values the CAPEE form asks for.', DARK, True)], fill=GREENBG)
@@ -463,24 +457,24 @@ card(s, Inches(6.78), Inches(4.02), Inches(6.1), Inches(2.05), AMBER,
       ('The tool asks. It never guesses and never pre-ticks.', DARK, True)], fill=AMBERBG)
 callout(s, Inches(0.45), Inches(6.17), Inches(12.43), Inches(1.06), PANEL2, INDIGO,
         'Why this one can start now',
-        'The 3D model is measured by ordinary engineering software, the same kind of geometry '
-        'engine that sits inside a CAD package, and the values are filled in by fixed rules. There '
-        'is no AI in this option, so it needs no AI approval. The file is read on a JLR server and '
-        'never leaves it, and CAPEE still does the costing on the same screens.')
-notes(s, "This is the smaller of the two and it is deliberately narrow. CAPEE does not move. It "
-         "still does the costing, on the same screens, with the same maths, and nobody has to learn "
-         "a new tool. The only thing that changes is where the input comes from. The engineer "
-         "attaches the 3D model from inside CAPEE. The software measures it on a JLR server with no "
-         "internet connection, and fixed rules turn those measurements into the values the form "
-         "wants. The engineer then confirms the handful of things a 3D model genuinely cannot show, "
-         "and CAPEE costs the part. The green card is what we get for free once the model is "
-         "attached: weight, size, surface area, wall thickness, the hole and pocket counts, and so "
-         "on. The amber card is the honest limit. The model cannot tell us what the part is made "
-         "of. Steel and aluminium look identical in a 3D file and the weight differs by about three "
-         "times, so somebody answers that, or it comes off the part master. Same for tolerance "
-         "class, finish and heat treatment. The tool asks rather than guessing. The point of the "
-         "blue strip is the one I would make to this room: there is no AI in this option at all, so "
-         "it does not wait on an AI decision. We could start it now.")
+        'The 3D model is measured by the same kind of geometry engine that sits inside a CAD '
+        'package. Fixed rules fill in the values. There is no AI in this option, so it needs no AI '
+        'approval. The file never leaves JLR, and CAPEE still does the costing on the same screens.')
+notes(s, "This is the smaller of the two, and it is narrow on purpose. CAPEE does not move. It "
+         "still does the costing, on the same screens, with the same maths, and nobody learns a new "
+         "tool. The only change is where the input comes from. The engineer attaches the 3D model "
+         "from CAPEE. CostVision measures it, with no internet connection. That can be on a JLR "
+         "server, or on a laptop using the Windows package, which needs no installer and no admin "
+         "rights. Fixed rules turn the measurements into the values the form wants. The engineer "
+         "confirms the few things a model cannot show, and CAPEE costs the part. The green card is "
+         "what we get from the model: weight, size, surface area, walls, holes, pockets and so on. "
+         "The amber card is the honest limit. A 3D file cannot tell steel from aluminium, and the "
+         "weight differs by about three times. So the tool asks. Same for tolerance, finish and heat "
+         "treatment. It asks rather than guesses. One more limit: an STL file has no feature table, "
+         "so for a machined STL the engineer types the cycle time. The measuring and the rules exist "
+         "today for thirteen commodities. What does not exist yet is the link into CAPEE. The point of "
+         "the blue strip is simple. There is no AI here at all, so this does not wait for an AI "
+         "decision. We could start it now.")
 
 # ═══════════ 3 · WHAT COSTVISION DOES ══════════════════════════════════════
 def tile(slide, x, y, w, h, icon, title, body, accent):
@@ -496,30 +490,30 @@ def tile(slide, x, y, w, h, icon, title, body, accent):
 
 s = header('Option 2: what CostVision does', 'Option 2 · the capability')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
-     [[('All six work today. The top row needs no AI at all; the bottom row needs an AI service, '
-        'which is the approval to start now.', 11.5, BODY, False)]])
+     [[('The top row runs in the JLR build today, with no AI. The bottom row needs the optional AI '
+        'mode, which is switched off at JLR.', 11.5, BODY, False)]])
 tiles = [
     # Top row — no AI anywhere in it. These run under a deny-all-egress firewall.
     ('cog', 'Cost a whole basket, unattended',
-     'A list of parts and their 3D models goes in. Every part costed and reported '
-     'with nobody sitting there, on our own rates.', GREEN),
+     'A list of parts and their 3D models goes in. Each part is costed on our rates. '
+     'What it cannot decide comes back as one question.', GREEN),
     ('coins', 'Supplier quotes taken apart',
      'Put their price next to our own build-up and see which part of it the gap is '
      'in, with the questions to put to them.', GREEN),
     ('press', 'Design changes priced, not guessed',
-     'It flags what makes a part expensive and puts a number on each change, '
-     'ranked by the money it would save.', GREEN),
+     'It flags what makes a part expensive and suggests changes, with an estimated '
+     'saving on each.', GREEN),
     # Bottom row — these read something a person would otherwise read, so they
-    # need a model, and therefore the approval.
+    # need a model. AI is switched off in the JLR build; these are hidden there.
     ('eye', 'A board photo becomes a BOM',
-     'Take a picture of a circuit board. The tool works out what is on it, builds '
-     'the bill of materials and the board spec, and costs it.', VIOLET),
+     'AI mode, off at JLR. A photo of a circuit board is read into a parts list '
+     'and board spec, then costed by the engine.', VIOLET),
     ('clip', 'An RFQ pack becomes costed lines',
-     'The tool pulls the line items out of the pack, costs each one, ranks them by '
-     'money and drafts the negotiation brief.', VIOLET),
+     'AI mode, off at JLR. The line items are read out of the pack, then each one '
+     'is costed by the engine.', VIOLET),
     ('person', 'An assistant does the setting up',
-     'It picks the process route and the machine and fills in what the geometry '
-     'gives, then asks one question instead of a hundred.', VIOLET),
+     'AI mode, off at JLR. It suggests the process route and fills in the form. '
+     'The engineer checks it and the engine prices it.', VIOLET),
 ]
 tw, tg = Inches(4.01), Inches(0.2)
 for i, (ic, t_, b_, c_) in enumerate(tiles):
@@ -528,35 +522,25 @@ for i, (ic, t_, b_, c_) in enumerate(tiles):
     tile(s, tx, ty, tw, Inches(2.05), ic, t_, b_, c_)
 callout(s, Inches(0.45), Inches(6.32), Inches(12.43), Inches(0.95), PANEL2, INDIGO,
         'All six end in the same engine',
-        'Where the AI is used it reads, sorts and sets up — the photo, the pack, the drawing, the '
-        'process route. It never sets a price. The money is worked out by the same fixed rules and '
-        'the same rate book in every one of the six, so every number can be explained line by line.')
-notes(s, "This is the slide I would spend the most time on, because it is the part of the case that "
-         "is easy to under-sell. Six things the tool does, and all six of them work today. The "
-         "split on the slide is not what works and what does not — it is what needs an AI service "
-         "and what does not. The top row needs none at all. It is the fixed rules and our own rate "
-         "book, so it is the same policy position as Option one. The bottom row reads something a "
-         "person would otherwise read, so it needs a model, and that is the approval I am asking "
-         "us to start. Taking the top row first. A list of parts and their three-D models goes in "
-         "and every part comes back costed, with a report per part and per basket, with nobody "
-         "sitting there and on our own rates. That one is built and it runs; today we cost the "
-         "parts we have hours for and estimate the rest from a sample. Next to it is the one our "
-         "buyers will care about most. Put a supplier's price next to our own build-up and the "
-         "tool tells you which part of it the gap sits in and what to ask them about it. And the "
-         "third turns design-for-cost from a list into a decision: it flags what makes a part "
-         "expensive and puts a number on each change, ordered by what it saves. Now the bottom "
-         "row. The first usually gets a reaction in the room. You take a photograph of a circuit "
-         "board and the tool works out what is on it, builds the bill of materials, works out the "
-         "board specification and costs it. That is a job that takes an electronics buyer a long "
-         "time and most of us cannot do at all. Next along, an RFQ pack goes in and comes back as "
-         "costed lines, ranked by where the money is, with a first draft of the negotiation brief "
-         "written for you. And the last is the assistant, and I want to be precise about it. It "
-         "does the setting up: it picks the process route and the machine and fills in what the "
-         "geometry gives it, and then it comes back to a person with one question rather than a "
-         "hundred. The blue strip at the bottom is the sentence I would want people to leave with. "
-         "Where the AI is used it reads and sorts and sets up. It never sets a price. The money is "
-         "still worked out by the same fixed rules and the same rate book we use now, so every "
-         "number can be explained line by line, exactly as it can today.")
+        'Where the AI mode is used, it only reads and sorts. It never sets a price. The money comes '
+        'from the same fixed rules and the same rate book in all six, so every number can be traced '
+        'to a rate. With AI off, as at JLR, the top row works exactly the same.')
+notes(s, "This slide is about what CostVision can do beyond Option one. The split is not between "
+         "what works and what does not. It is between what needs AI and what does not. The top row "
+         "needs no AI at all, and it runs in the build we have given JLR today. First, a whole basket. "
+         "A list of parts and their 3D models goes in, and each one is costed on our rates. It is a "
+         "command-line run today, not a screen. Where the geometry cannot decide something, like the "
+         "material, it does not guess. It comes back with one question that covers every part it "
+         "affects. Second, supplier quotes. Put their price next to our build-up and it shows, bucket "
+         "by bucket, where the gap is and what to ask. Third, design changes. It flags what makes a "
+         "part expensive and suggests changes with an estimated saving. Now the bottom row. These "
+         "need the AI mode, and I want to be clear: AI is switched off in the JLR build. The code is "
+         "there, so it could be turned on later with a setting, but these three screens are hidden "
+         "until it is. They are a board photo read into a parts list, an RFQ pack read into lines, "
+         "and an assistant that helps set up a part. With AI on, each user is also rate-limited. The "
+         "blue strip is the rule I would want you to leave with. Even with AI on, it only reads and "
+         "sorts. It never sets a price. The money is plain arithmetic on our rate book, so every "
+         "number can be traced back to a rate.")
 
 # ═══════════ 4 · WHAT WE GET FROM EACH ═════════════════════════════════════
 def wide_card(slide, x, y, w, h, accent, title, col1, col2):
@@ -585,7 +569,7 @@ text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
 card(s, Inches(0.45), Inches(1.98), Inches(3.95), Inches(4.7), INDIGO,
      'OPTION 1 · input into CAPEE',
      [('The typing goes', INDIGO, True),
-      ('Between 12 and 69 values per part.',),
+      ('About 12 to 70 values per part.',),
       ('Nothing to mistype', INDIGO, True),
       ('And nothing to re-check afterwards.',),
       ('The same answer every time', INDIGO, True),
@@ -604,21 +588,21 @@ card(s, Inches(0.45), Inches(1.98), Inches(3.95), Inches(4.7), INDIGO,
 
 wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.7), VIOLET,
           'OPTION 2 · CostVision end to end',
-          [('It runs on its own', VIOLET, True),
-           ('Parts go in, costed reports come out. A',),
-           ('person answers only what the model cannot show.',),
+          [('A basket runs on its own', VIOLET, True),
+           ('Parts go in, costed results come out.',),
+           ('A person answers only the gaps.',),
            ('',),
            ('The same method for everything we make', VIOLET, True),
            ('Metal, plastic, rubber, composites,',),
            ('electronics and assemblies.',),
            ('',),
            ('We can cost electronics', VIOLET, True),
-           ('A photo of a circuit board gives us the parts',),
-           ('list, the board spec and a price.',),
+           ('PCB fabrication, PCBA and wiring harness.',),
+           ('A board photo needs the AI mode, off at JLR.',),
            ('',),
            ('Software costed too', VIOLET, True),
-           ('43 modules, from powertrain and driver',),
-           ('assistance through to cloud.',)],
+           ('A 49-module model, from powertrain and',),
+           ('driver assistance through to cloud.',)],
           [('Where a supplier price differs', VIOLET, True),
            ('Their price next to our build-up, with the gap',),
            ('shown in each part of the cost.',),
@@ -628,46 +612,35 @@ wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.7), VIOLET,
            ('it is worth over a year.',),
            ('',),
            ('A whole RFQ pack costed', VIOLET, True),
-           ('The line items are pulled out, priced and put',),
-           ('in order of money.',),
+           ('Line items read out and priced. Needs the AI',),
+           ('mode, which is off at JLR.',),
            ('',),
            ('Design changes with a price on them', VIOLET, True),
-           ('What makes the part expensive, and what',),
-           ('each change would save.',)])
+           ('What makes the part expensive, and an',),
+           ('estimated saving for each change.',)])
 
 callout(s, Inches(0.45), Inches(6.74), Inches(12.43), Inches(0.66), GREENBG, GREEN,
         'The two build on each other',
         "Option 1's benefits arrive first and are kept when Option 2 lands; Option 2's rest on the "
         'accuracy figure Option 1 produces.')
-notes(s, "This is what we get for it, written in kind rather than in pounds, for the reason I gave "
-         "on the first slide: we have never timed this job and never checked the tool against a "
-         "price we paid, so a pound figure from me would be a guess. The left column is Option one, "
-         "and it is all about the same thing: the time we spend putting numbers into CAPEE by hand. "
-         "The typing goes — between twelve and sixty-nine values a part, depending on the "
-         "commodity, now filled from the model. With nothing typed there is nothing to mistype, so "
-         "the checking of our own transcription goes with it. It gives the same answer every time, "
-         "so parts costed by different engineers are comparable. Re-costing becomes nearly free: a "
-         "new volume or a new set of rates does not mean reading the model again. And the saving is "
-         "not a one-off — it repeats on every part, so it grows with how many we cost. What is left "
-         "is the judgement: material, tolerance class, finish and heat treatment, the calls only we "
-         "can make. That column can start now, because there is no AI in it to approve. And the "
-         "last line points back at slide one: put our four numbers in and all of that becomes "
-         "hours. The right column is wider because Option two genuinely has more in it. "
-         "It runs on its own — parts go in and costed reports come out, and a person answers only "
-         "what the model cannot show. It uses the same method for everything we make, so a plastic "
-         "clip and a machined bracket are built up the same way and can sit in the same report. It "
-         "costs electronics from a photograph of the board, which is work we largely cannot do "
-         "today. It costs software as well: forty-three modules, from powertrain and driver "
-         "assistance through to the cloud back end, which matters more every programme. Then the "
-         "second half of that column is the part I would put to purchasing. It shows where a "
-         "supplier's price differs from our own build-up and which part of the cost the gap sits "
-         "in. Then it tells us what to do about it: what to go after, what to ask them, and what it "
-         "is worth over a year. A whole RFQ pack can go in and come back priced and put in order of "
-         "money. And design changes come back with a price on them rather than as a list of "
-         "suggestions. The green strip is the sequencing point. Option one's benefits arrive first "
-         "and we keep them. Option two's depend on the accuracy figure Option one produces, which "
-         "is why these are an order rather than a choice.")
-
+notes(s, "This is what we get from each option, written in kind rather than in pounds. The reason "
+         "is the same as on slide one. We have never timed this job, and the tool has never been "
+         "checked against a price JLR paid. A pound figure from me would be a guess. The left column "
+         "is Option one, and it is all about typing. The typing goes: roughly twelve to seventy values "
+         "a part now come from the model. Nothing typed means nothing mistyped. Everyone gets the "
+         "same answer for the same part. A re-cost at a new volume or new rates is nearly free. The "
+         "saving repeats on every part. What is left is the judgement: material, tolerance, finish, "
+         "heat treatment. And there is no AI in it, so it can start now. The right column is wider "
+         "because Option two does more. A basket can run on its own, and a person answers only what "
+         "the model cannot show. It uses one method for metal, plastic, rubber, composites, "
+         "electronics and assemblies: nineteen manufacturing processes in all, across twenty regions. "
+         "It costs PCB fabrication, PCBA and harnesses from their inputs. Reading a board from a photo "
+         "needs the AI mode, which is off at JLR. It also has a forty-nine-module software cost model. "
+         "The second half is for purchasing. It shows where a supplier's price differs from our build-"
+         "up, bucket by bucket, and what to ask. An RFQ pack can be read in, but again only with AI on. "
+         "And design changes come with an estimated saving. The green strip is about order. Option "
+         "one's benefits come first and we keep them. Option two depends on the accuracy figure that "
+         "Option one produces.")
 
 # ═══════════ 5 · WHAT WE ARE ASKING FOR ════════════════════════════════════
 def strip(slide, x, y, w, h, label, body, accent):
@@ -687,19 +660,19 @@ card(s, Inches(0.45), Inches(1.72), Inches(6.1), Inches(1.05), GREEN,
       ('already bought, inside CAPEE.',)])
 card(s, Inches(6.78), Inches(1.72), Inches(6.1), Inches(1.05), VIOLET,
      'OPTION 2 · no decision today',
-     [('The bulk run is built and runs unattended on our own',),
-      ('parts. Start the AI approval so it is not what holds us up.',)])
+     [('The bulk run is built and needs no AI. Load our own',),
+      ('rates and try it on one basket after the trial.',)])
 
 card(s, Inches(0.45), Inches(2.89), Inches(6.1), Inches(1.32), INDIGO,
      'OPTION 1 NEEDS',
-     [('A server to run the measurement on, and a way to pass numbers into CAPEE',),
+     [('A server or laptop to measure on, and a way to pass numbers into CAPEE',),
       ('30 to 50 parts where we know the price we paid',),
       ('An engineer from the commodity team for the trial',)])
 card(s, Inches(6.78), Inches(2.89), Inches(6.1), Inches(1.32), VIOLET,
      'OPTION 2 NEEDS',
-     [('Everything above, plus approval to use AI — for the',),
-      ('three on the last slide that read something',),
-      ('Our own rate book loaded. The rest is built',)])
+     [('Everything above, plus our own rate card, loaded',),
+      ('through the JLR Rate Converter (no macros)',),
+      ('AI approval only if we want the three AI features',)])
 
 callout(s, Inches(0.45), Inches(4.33), Inches(12.43), Inches(0.9), GREENBG, GREEN,
         'What the trial gives us',
@@ -709,40 +682,34 @@ callout(s, Inches(0.45), Inches(4.33), Inches(12.43), Inches(0.9), GREENBG, GREE
 
 strip(s, Inches(0.45), Inches(5.36), Inches(12.43), Inches(0.58),
       'The rule that does not bend',
-      'The AI reads, sorts and sets up. It never sets a price — the money comes from the same '
-      'fixed rules we use today.', INDIGO)
+      'AI is off at JLR. Even when on, it never sets a price. The money is plain arithmetic '
+      'on our rate book.', INDIGO)
 strip(s, Inches(0.45), Inches(5.98), Inches(12.43), Inches(0.58),
       'If the trial disappoints',
-      'Never checked against a price JLR has paid, and never yet run on a JLR laptop. If the answer '
-      'is poor we stop, having spent only our own time.', AMBER)
+      'Never yet checked against a price JLR paid. If the answer is poor, we stop, having '
+      'spent only our own time.', AMBER)
 strip(s, Inches(0.45), Inches(6.60), Inches(12.43), Inches(0.58),
       'Nobody has sized this yet',
       'How long it takes waits on one answer from IT about how CAPEE is built. The sizing comes '
       'back with it.', AMBER)
-notes(s, "So this is the decision, and I have split it into what I want today and what I do not. On "
-         "the left, Option one: approve the trial. One commodity, thirty to fifty parts we have "
-         "already bought, run inside CAPEE. On the right, Option two: I am not asking you to decide "
-         "it. The bulk run itself is built — it costs a basket of our own parts unattended, on our "
-         "own rates. What I am asking is that we start the AI approval alongside the trial, "
-         "because that is the long pole and there is no sense discovering at the end of the "
-         "trial that we now have to begin it. The two cards underneath are what each one needs. Option one needs a "
-         "server, a way to pass numbers into CAPEE, some parts where we know what we paid, and an "
-         "engineer from the commodity team for the trial. Option two needs all of that, plus the AI "
-         "approval and our own rate book loaded into the tool. The rest of it is built. The green strip is what we get out of the trial and it is the reason to do it: "
-         "two numbers that nobody in this company can state today. How close the tool gets to a "
-         "price we actually paid, and how much of the input it fills on its own. Until we have "
-         "those, any conversation about Option two is people trading opinions. Then three short "
-         "things I want to say plainly rather than have asked. The first is the governance point "
-         "and it is the one I would repeat if you take nothing else away: the AI reads, sorts and "
-         "sets up, and it never sets a price. The money comes out of the same fixed rules and the "
-         "same rate book as today, so every number can be defended line by line exactly as it can "
-         "now. The second is the exit. We have never compared this against a price we have paid, "
-         "and it has never been run on a JLR laptop. If the trial says the tool is not close enough, "
-         "we stop, and what we will have spent is our "
-         "own engineering time — that is precisely why I am asking for a trial and not a rollout. "
-         "And the third is the honest answer to how long: nobody has sized it. It waits on one "
-         "answer from IT about how CAPEE is built, and the sizing comes back with that answer "
-         "rather than being invented now.")
+notes(s, "So this is the decision. I have split it into what I am asking for today and what I am "
+         "not. On the left, Option one: approve the trial. One commodity, thirty to fifty parts we "
+         "have already bought, run inside CAPEE. On the right, Option two: I am not asking you to "
+         "decide it today. The bulk run is already built, and it needs no AI. What it needs is our "
+         "own rates. JLR's rate card can be loaded through the Rate Converter workbook, which has no "
+         "macros. The built-in rate library is dated sixteenth of June 2026, so our own card matters. "
+         "The two cards underneath say what each option needs. Option one needs somewhere to run the "
+         "measuring, a way to pass numbers into CAPEE, parts where we know the price we paid, and an "
+         "engineer for the trial. Option two needs that plus our rates. AI approval is only needed "
+         "if we later want the photo, RFQ and assistant features. The green strip is why the trial "
+         "matters. It gives us two numbers nobody can state today: how close the tool gets to a price "
+         "we paid, and how much of the input it fills itself. Then three plain points. AI is off at "
+         "JLR, and even when on it never sets a price. Second, the exit. Here is what is proven: the "
+         "engine matches a hand calculation to under 0.01 percent on a reference part, six real "
+         "production parts are pinned in a regression test, and there are 2,438 automated tests. "
+         "What is not proven is accuracy against a price JLR paid. If the trial says it is not close "
+         "enough, we stop, having spent only our own time. Third, how long. Nobody has sized it. That "
+         "waits on one answer from IT about how CAPEE is built.")
 
 
 # ───────────────────────────────────────────────────────────────────────────
