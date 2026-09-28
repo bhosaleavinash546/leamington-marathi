@@ -19,13 +19,14 @@ are standalone scripts, not part of the app).
 ```bash
 npm run dev:full        # Vite UI (:5174) + Express/tsx API (:3002) together — normal dev loop
 npm run dev             # UI only     npm run server   # API only (tsx server/index.ts)
-npm test                # vitest run — full suite (~930 tests)
+npm test                # vitest run — full suite (~2,430 tests)
 npm test -- <substr>    # single file/suite, e.g. npm test -- cad-machining-guard
 npm run test:watch      # vitest watch
 npm run typecheck       # tsc --noEmit  (CI uses: tsc -p tsconfig.build.json --noEmit)
 npm run build           # tsc -p tsconfig.build.json && vite build  → writes calculator/dist
 npm run accuracy        # scripts/accuracy-report.ts — grade estimate-vs-actual (MAPE/bias)
 npm run test:e2e        # e2e/smoke.ts — headless browser boot + drive (needs a build first)
+npm run test:e2e:full   # e2e/full.ts — real server, every commodity, exports, STL upload, axe WCAG 2.1 AA
 ```
 
 From the repo root, `make start|stop|restart|logs` drives the single Docker
@@ -100,11 +101,17 @@ Vision pipeline: photo → BOM + fab spec → should-cost. Read ALL model text b
 (`pcb-bom-grounding.ts`, `pcb-price-catalogue.ts`).
 
 ### Frontend & server shell
-- `src/ui/main.ts` is a ~17.8k-line monolith holding the whole SPA (forms per
+- `src/ui/main.ts` is a ~20.3k-line monolith holding most of the SPA (forms per
   commodity, results, CAD viewer wiring, exports). Cost inputs are collected by
   `collect<Commodity>Input()` functions that read DOM fields and call the engine;
   the engine is the single source of truth — the UI must not re-implement cost
   math (drift bugs). Exports (`src/export/*.ts`) reuse engine results, never recompute.
+  It is being split (review L12). Put new UI code in a module, not in main.ts.
+  What moves out first is what reads no main.ts state: types and pure
+  `(data) → HTML` builders (`src/ui/pcb/types.ts`, `src/ui/pcb/panels.ts`); a
+  builder that needs a piece of state takes it as a parameter. Page-level glue
+  also lives in modules: `ai-mode.ts` (no-AI build), `a11y.ts` (field names,
+  Escape), `auth-fetch.ts`, `field-labels.ts`.
 - `server/` — Express + `better-sqlite3`; routes in `server/routes/*.ts`, JWT auth.
   **Every LLM call MUST go through `server/utils/ai-client.ts::createAnthropic()`**
   — never `new Anthropic()`. It enforces `AIR_GAPPED=1` (throws, deterministic core
