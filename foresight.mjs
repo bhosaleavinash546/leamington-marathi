@@ -113,6 +113,12 @@ export function bassTimeFor(F, { p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q } = {}
  */
 export function projectAdoption(currentPct, yearsAhead, { p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q, ceilingPct = 90 } = {}) {
   const ceiling = Math.max(Number(ceilingPct) || 0, 0.1);   // never divide by zero
+  // A technology AT its own ceiling holds there. The 0.999 cap on the inverse
+  // below read 90% of a 90% ceiling back as 89.9%, so a saturated technology
+  // was projected to decline (Horizon review, 28 Sept 2026) — and "today" is
+  // today's curated share, not the seeded one.
+  if (currentPct >= ceiling) return Math.round(currentPct * 10) / 10;
+  if (!(yearsAhead > 0)) return currentPct;
   const seeded = Math.max(currentPct, 0.5);           // 0% can't be inverted; seed at launch-adjacent share
   const F0 = Math.min(seeded / ceiling, 0.999);
   const t0 = bassTimeFor(F0, { p, q });
@@ -197,12 +203,45 @@ export function wrightCostIndex(cumulativeMultiple, learningRate = 0.15) {
 // Curated cost-trend direction → Wright learning rate used for the index.
 export const TREND_LEARNING = { 'falling-fast': 0.22, falling: 0.12, flat: 0.03, rising: -0.05 };
 
-/** Modelled cost index N years ahead: adoption growth drives cumulative volume. */
+/**
+ * Cumulative Bass adoption ∫₀ᵗ F(τ) dτ, in share-years (closed form).
+ * With a = q/p and k = p + q:  t + (1+a)/(a·k) · ln((1 + a·e^(−kt)) / (1 + a)).
+ */
+export function bassCumulative(t, { p = BASS_DEFAULTS.p, q = BASS_DEFAULTS.q } = {}) {
+  if (!(t > 0)) return 0;
+  const k = p + q, a = q / p;
+  return t + ((1 + a) / (a * k)) * (Math.log(1 + a * Math.exp(-k * t)) - Math.log(1 + a));
+}
+
+/**
+ * Modelled cost index N years ahead.
+ *
+ * WRIGHT'S LAW RUNS ON CUMULATIVE PRODUCTION. This used to feed it the ratio
+ * of future to current adoption SHARE — an annual rate, not a cumulative
+ * volume — so a technology whose share had flattened showed almost no further
+ * learning even though every year of production keeps doubling the total: a
+ * 55% heat pump read 0.92 in eight years at a 12% learning rate, against the
+ * ~0.77 two doublings of cumulative volume give (Horizon review, 28 Sept 2026).
+ *
+ * With a constant segment volume, annual output is proportional to share, so
+ * cumulative output is the integral of the Bass curve. The starting total is
+ * floored at ONE YEAR of today's output: the curve's own integral from launch
+ * is near zero for a technology just past launch, and Wright's law
+ * extrapolated from a near-zero base returns doublings nobody would quote.
+ */
 export function costOutlook(tech, yearsAhead) {
   const lr = TREND_LEARNING[tech.costTrend] ?? 0.03;
-  const nowPct = Math.max(tech.adoptionPct, 0.5);
-  const futurePct = projectAdoption(tech.adoptionPct, yearsAhead, { ceilingPct: tech.ceiling ?? 90 });
-  const multiple = Math.max(futurePct / nowPct, 1);
+  const ceiling = Math.max(Number(tech.ceiling ?? 90) || 0, 0.1);
+  const F0 = Math.min(Math.max(tech.adoptionPct, 0.5) / ceiling, 0.999);
+  const t0 = bassTimeFor(F0);
+  const cum0 = Math.max(bassCumulative(t0), F0 * 1);
+  // At saturation the curve is flat at the ceiling: output continues at that
+  // rate, so cumulative volume still grows linearly — learning slows, it does
+  // not stop.
+  const cum1 = cum0 + (tech.adoptionPct >= ceiling
+    ? F0 * yearsAhead
+    : bassCumulative(t0 + yearsAhead) - bassCumulative(t0));
+  const multiple = Math.max(cum1 / cum0, 1);
   return wrightCostIndex(multiple, lr);
 }
 
@@ -288,22 +327,45 @@ export function powertrainHint(query) {
  * Match a free-text part/assembly query against register matchTerms.
  * Returns [{ tech, score }] sorted by score desc — empty when nothing matches.
  */
+/**
+ * WHOLE WORDS, NOT SUBSTRINGS. `q.includes(term)` matched a term anywhere
+ * inside a word, and the register carries dozens of short terms, so a
+ * turbo-CHARGER matched EV charging, a crank-SHAFT matched half-shafts, a
+ * muffler and SILencer matched software-in-the-loop, and variabLe Valve timing
+ * matched the 48 V LV network — each presented as an exact answer, not context
+ * (Horizon review, 28 Sept 2026). A term now matches only where it starts and
+ * ends on a word boundary, with a plural ending allowed.
+ */
+const termPatterns = new Map();
+function termPattern(term) {
+  let re = termPatterns.get(term);
+  if (!re) {
+    const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+    re = new RegExp(`(?:^|[^a-z0-9])${esc}(?:s|es)?(?![a-z0-9])`);
+    termPatterns.set(term, re);
+  }
+  return re;
+}
+
 export function resolveParts(query, register = FORESIGHT_REGISTER) {
   const q = String(query ?? '').toLowerCase();
   if (!q.trim()) return [];
-  const qTokens = new Set(q.split(/[^a-z0-9]+/).filter((w) => w.length >= 2));
+  const raw = q.split(/[^a-z0-9]+/).filter((w) => w.length >= 2);
+  // Singular forms too, so "sensors" satisfies a multi-word term's "sensor".
+  const qTokens = new Set([...raw, ...raw.map((w) => w.replace(/(?:es|s)$/, '')).filter((w) => w.length >= 2)]);
   const scored = [];
   for (const tech of register) {
     let score = 0;
+    const hits = { multi: 0, single: 0, tokens: 0 };
     for (const term of tech.matchTerms) {
       // A multi-word exact hit ("electrical steel") is more specific than a
       // single generic word ("electrical") and must outrank it (2026 audit).
-      if (q.includes(term)) score += term.includes(' ') ? 3 : 2;
+      if (termPattern(term).test(q)) { const multi = term.includes(' '); score += multi ? 3 : 2; hits[multi ? 'multi' : 'single']++; }
       // Multi-word terms need EVERY word present — a lone generic token like
       // "front" or "air" must not drag in unrelated technologies.
-      else if (term.split(/\s+/).every((w) => qTokens.has(w))) score += 1;
+      else if (term.split(/\s+/).every((w) => qTokens.has(w))) { score += 1; hits.tokens++; }
     }
-    if (score > 0) scored.push({ tech, score });
+    if (score > 0) scored.push({ tech, score, hits });
   }
   return scored.sort((a, b) => b.score - a.score || a.tech.id.localeCompare(b.tech.id));
 }
@@ -428,21 +490,54 @@ export function landscapeCurrency(cards, { now = REGISTER_VINTAGE } = {}) {
 
 
 
-function techCard(tech, now, anchors) {
+/**
+ * NOT YET IN PRODUCTION ANYWHERE: 0% share and no named production programme.
+ *
+ * The Bass curve counts years from LAUNCH, and 0% cannot be placed on it, so
+ * the model seeded such a technology at 0.5% today — i.e. assumed it launches
+ * this year. A TRL-6 cathode chemistry with no production anywhere was
+ * projected to 14.8% of the segment in three years on that assumption alone
+ * (Horizon review, 28 Sept 2026). The register does not date launches, so no
+ * adoption or cost figure is projected for these entries, and their lane
+ * follows maturity. Technologies at 0% that DO have a named programme exist at
+ * a fractional share, and the 0.5% seed is a fair rounding for them.
+ */
+export function isPrelaunch(adoptionPct, firstProduction, trl = null) {
+  const named = typeof firstProduction === 'string' && firstProduction.trim() !== '' && !/^none/i.test(firstProduction.trim());
+  // TRL 8-9 is qualified or proven in service: a missing programme name on
+  // such an entry is a curation gap, not evidence of no production — central
+  // tyre inflation ships on commercial vehicles and its entry names none. Only
+  // TRL 7 and below is called pre-launch on the absence of a name.
+  if (typeof trl === 'number' && trl >= 8) return false;
+  return !(adoptionPct > 0) && !named;
+}
+
+export const PRELAUNCH_BASIS = 'Not in series production anywhere yet. The diffusion model counts years from a launch this register does not date, so no adoption or cost figure is projected; the lane follows maturity.';
+
+/** The lane for one technology, by the same rule wherever it is needed. */
+export function laneFor(tech, now = REGISTER_VINTAGE, anchors = REG_ANCHORS) {
   const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
-  // Only law that exists can pull a horizon: proposed / under-revision anchors
-  // are context, not commitments (2026 audit).
   const pullYear = anchor && (anchor.status === 'in-force' || anchor.status === 'adopted') ? anchor.year : null;
   const ceilingPct = tech.ceiling ?? 90;
+  const decisionYear = isPrelaunch(tech.adoptionPct, tech.firstProduction, tech.trl)
+    ? null
+    : inflectionYears(tech.adoptionPct, { now, ceilingPct }).cross25;
+  return horizonFor(tech.trl, tech.adoptionPct, pullYear, now, { decisionYear, ceilingPct });
+}
+
+function techCard(tech, now, anchors) {
+  const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
+  const ceilingPct = tech.ceiling ?? 90;
+  const prelaunch = isPrelaunch(tech.adoptionPct, tech.firstProduction, tech.trl);
   const adoption = { now: tech.adoptionPct };
   const costIndex = { now: 1 };
   for (const y of PROJECTION_YEARS) {
-    adoption[`in${y}`] = projectAdoption(tech.adoptionPct, y, { ceilingPct });
-    costIndex[`in${y}`] = costOutlook(tech, y);
+    adoption[`in${y}`] = prelaunch ? null : projectAdoption(tech.adoptionPct, y, { ceilingPct });
+    costIndex[`in${y}`] = prelaunch ? null : costOutlook(tech, y);
   }
-  const crossings = inflectionYears(tech.adoptionPct, { now, ceilingPct });
+  const crossings = prelaunch ? null : inflectionYears(tech.adoptionPct, { now, ceilingPct });
   // The lane follows the modelled decision year, not raw maturity (2026 fix).
-  const { horizon, regPulled } = horizonFor(tech.trl, tech.adoptionPct, pullYear, now, { decisionYear: crossings.cross25, ceilingPct });
+  const { horizon, regPulled } = laneFor(tech, now, anchors);
   return {
     ...tech,
     phase: sCurvePhase(tech.trl, tech.adoptionPct),
@@ -453,8 +548,10 @@ function techCard(tech, now, anchors) {
     confidence: confidenceTier(tech),
     regAnchorDetail: anchor,
     projection: {
-      basis: `Bass diffusion (p=0.03, q=0.38${ceilingPct !== 90 ? `, segment ceiling ~${ceilingPct}%` : ''}) + Wright learning by cost trend — modelled, not measured`,
-      adoption, costIndex, crossings,
+      basis: prelaunch
+        ? PRELAUNCH_BASIS
+        : `Bass diffusion (p=0.03, q=0.38${ceilingPct !== 90 ? `, segment ceiling ~${ceilingPct}%` : ''}) + Wright learning on cumulative volume by cost trend — modelled, not measured`,
+      adoption, costIndex, crossings, prelaunch: prelaunch || undefined,
     },
   };
 }
@@ -464,7 +561,7 @@ function techCard(tech, now, anchors) {
  * free-text query / commodity / powertrain, position each on the S-curve and
  * horizon map, and return horizon lanes sorted by momentum.
  */
-export function foresightFor({ query = '', commodity = null, powertrain = null, segment = null } = {}, { now = REGISTER_VINTAGE, register = FORESIGHT_REGISTER, anchors = REG_ANCHORS } = {}) {
+export function foresightFor({ query = '', commodity = null, powertrain = null, segment = null, commodityHint = null } = {}, { now = REGISTER_VINTAGE, register = FORESIGHT_REGISTER, anchors = REG_ANCHORS } = {}) {
   let pool = register;
   let usedCommodity = commodity ?? null;
   // Segment lens first: 'off-road' / 'luxury' narrows every later filter.
@@ -474,14 +571,42 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
   let matched = [];
   const hasQuery = Boolean(String(query ?? '').trim());
   const relatedIds = new Set();
+  let demotedTechs = [];
   if (hasQuery) {
     matched = resolveParts(query, pool);
+    // ONE GENERIC WORD IS NOT AN ANSWER FROM ANOTHER COMMODITY. With whole-word
+    // matching the remaining false answers were single common words crossing
+    // commodities: "rotor magnets" matched brake-disc coatings via "rotor",
+    // "catalytic converter" a GaN inverter via "converter". When the query's
+    // own commodity is known, a technology from a different one is an EXACT
+    // answer only on a multi-word term or two distinct hits; on one generic
+    // word it is kept as labelled context (`related`), never dropped — a
+    // "48v MHEV battery" query still gets Battery-commodity technologies,
+    // which match on "48v" AND "battery" (Horizon review, 28 Sept 2026).
+    // Where the user PICKED the part (the BOM browser) is ground truth; the
+    // text classifier is a guess from the words ("lambda sensors" reads as
+    // Electrical), so the hint wins when there is one.
+    const qDomain = usedCommodity ? null : (commodityHint ?? inferCommodityKey(query) ?? null);
+    if (qDomain) {
+      const weak = (m) => m.tech.commodity !== qDomain && !m.hits?.multi && ((m.hits?.single ?? 0) + (m.hits?.tokens ?? 0)) < 2;
+      const demoted = matched.filter(weak);
+      matched = matched.filter((m) => !weak(m));
+      for (const m of demoted) relatedIds.add(m.tech.id);
+      demotedTechs = demoted.map((m) => m.tech);
+    }
     if (!matched.length && !usedCommodity) {
       // Free text that matched no terms: try the commodity classifier as a net.
-      const inferred = inferCommodityKey(query);
+      // The BOM hint first — where the user picked the part is known, the
+      // classifier only guesses from the words.
+      const inferred = commodityHint ?? inferCommodityKey(query);
       if (inferred) {
         usedCommodity = inferred;
         pool = register.filter((t) => t.commodity === inferred && (!segment || t.segments?.includes(segment)));
+        // NOTHING HERE MATCHED THE PART. The net is the commodity's landscape,
+        // and it used to be shown as if every entry answered the query —
+        // "lambda sensors" returned the whole Electrical register as exact
+        // answers (Horizon review, 28 Sept 2026). It is context, labelled so.
+        for (const t of pool) relatedIds.add(t.id);
       } else {
         // Nothing resolved the query and no commodity was chosen: say so
         // honestly rather than dumping the whole register.
@@ -512,12 +637,7 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
       // Capping on count alone starved that lane for parts with several weak
       // near-term matches (caught by the coverage gate on the first run of this
       // change: 276 of 291 BOM leaves still passed, 15 lost their future).
-      const laneOf = (t) => horizonFor(
-        t.trl, t.adoptionPct,
-        (() => { const a = t.regAnchor ? anchors.find((x) => x.id === t.regAnchor) : null; return a && (a.status === 'in-force' || a.status === 'adopted') ? a.year : null; })(),
-        now,
-        { decisionYear: inflectionYears(t.adoptionPct, { now, ceilingPct: t.ceiling ?? 90 }).cross25, ceilingPct: t.ceiling ?? 90 },
-      ).horizon;
+      const laneOf = (t) => laneFor(t, now, anchors).horizon;
       const hasFuture = () => matched.some((m) => laneOf(m.tech) !== 'H1');
       const pool2 = register
         .filter((t) => t.commodity === domain && !have.has(t.id) && (!segment || t.segments?.includes(segment)))
@@ -542,6 +662,11 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     }
   }
   let selected = matched.length ? matched.map((m) => m.tech) : pool;
+  // Demoted single-word foreign matches travel as context after everything else.
+  if (demotedTechs.length) {
+    const have = new Set(selected.map((t) => t.id));
+    selected = [...selected, ...demotedTechs.filter((t) => !have.has(t.id))];
+  }
   if (powertrain) selected = selected.filter((t) => t.powertrains.includes(powertrain));
 
   // Term-matched queries rank by RELEVANCE first, then momentum — so "48V
@@ -559,8 +684,12 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     const hit = t.powertrains.filter((p) => ptHint.includes(p)).length;
     return (hit / t.powertrains.length) * 4;
   };
+  const demotedIds = new Set(demotedTechs.map((t) => t.id));
   const cards = selected.map((t) => ({
     ...techCard(t, now, anchors),
+    // Context because it matched on ONE generic word from another commodity —
+    // distinct from landscape widening, and labelled so.
+    demoted: demotedIds.has(t.id) || undefined,
     matchScore: (scoreById.get(t.id) ?? 0) + ptBoost(t),
     powertrainMatch: ptHint.length ? t.powertrains?.some((p) => ptHint.includes(p)) || false : undefined,
     related: relatedIds.has(t.id) || undefined,
@@ -601,4 +730,47 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     // query resolved to nothing exact, the summary covers what IS shown.
     currency: landscapeCurrency(cards.some((c) => !c.related) ? cards.filter((c) => !c.related) : cards, { now }),
   };
+}
+
+
+// ── Prediction ledger scoring ────────────────────────────────────────────────
+/**
+ * Drift and projection error between a saved snapshot and today's register.
+ * Pure, so the scoring rule is tested directly (it used to live inline in the
+ * route, where its ceiling defect could only be seen over HTTP).
+ */
+export function scoreSnapshot(then, nowById, yearsElapsed, laneRule) {
+  return then.map((t) => {
+    const n = nowById.get(t.id);
+    if (!n) return { id: t.id, name: t.name, then: t, now: null, removed: true };
+    const d = {
+      id: t.id, name: t.name, then: t, removed: false,
+      now: { trl: n.trl, adoptionPct: n.adoptionPct, horizon: n.horizon, momentum: n.momentum, confidence: n.confidence },
+      trlDelta: n.trl - t.trl,
+      adoptionDelta: Math.round((n.adoptionPct - t.adoptionPct) * 10) / 10,
+      // A lane difference is only real drift when both sides were computed
+      // under the same lane rule; otherwise it is a definition change and is
+      // reported as such rather than as a moved technology.
+      horizonMoved: n.horizon !== t.horizon && (t.laneRule ?? null) === laneRule,
+      horizonRuleChanged: n.horizon !== t.horizon && (t.laneRule ?? null) !== laneRule,
+      momentumDelta: n.momentum - t.momentum,
+    };
+    if (yearsElapsed > 0 && t.prelaunch) {
+      // Nothing was projected for a technology not yet in production, so
+      // there is nothing to score — and a zero would read as a hit.
+      d.projectionError = null;
+      d.unscoredReason = 'not in production when snapshotted — no projection was made';
+    } else if (yearsElapsed > 0) {
+      // What the snapshot's Bass curve implied for today vs today's curated
+      // share — on the SAME ceiling the card was drawn with. Snapshots older
+      // than this fix did not store it; the entry's current ceiling is the
+      // best available stand-in and the row says so.
+      const ceilingPct = t.ceilingPct ?? n.ceiling ?? 90;
+      const expected = projectAdoption(t.adoptionPct, yearsElapsed, { ceilingPct });
+      d.projectionError = Math.round(Math.abs(expected - n.adoptionPct) * 10) / 10;
+      d.projectedForNow = expected;
+      if (t.ceilingPct === undefined) d.ceilingBasis = 'snapshot predates stored ceilings; scored on the current register ceiling';
+    }
+    return d;
+  });
 }

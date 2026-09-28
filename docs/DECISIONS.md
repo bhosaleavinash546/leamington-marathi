@@ -4278,3 +4278,35 @@ overhang. The overhang block also sweeps the six axis build directions and the
 finding names the best one. It judges the part as drawn and does not claim the
 best axis is the cheapest build — height and support volume are not scored yet,
 as the unwritten-rules entry says.
+
+## 91. Horizon matches part names by whole word, and one generic word from another commodity is context
+
+Substring matching let "turbocharger" answer with EV chargers and "muffler
+and silencer" with software-in-the-loop, as exact answers (184 of 291 BOM
+parts had a cross-commodity exact answer). Terms now match on word
+boundaries. When the part's commodity is known — from the BOM the user picked
+it in (sent as `commodityHint`, which beats the text classifier's guess) or
+from the text — a technology from another commodity is an exact answer only on
+a multi-word term or two distinct hits; on one generic word it is labelled
+context (`related` + `demoted`), never dropped. A query that matches nothing
+returns its commodity's landscape labelled as context, not as answers.
+(docs/HORIZON-REVIEW-2026-09-28.md)
+
+## 92. Wright's law runs on cumulative volume; nothing is launched "today"
+
+The cost index used the ratio of adoption SHARES; Wright's law is defined on
+cumulative production, so it now integrates the Bass curve (closed form),
+floored at one year of today's output. Technologies at 0% with no named
+production programme and TRL ≤ 7 are pre-launch: the register does not date
+their launch, so no adoption, cost or milestone figure is projected and the
+lane follows maturity. TRL 8–9 without a named programme is a curation gap,
+not a pre-launch claim. The learning rates per trend word remain uncalibrated
+constants and are the largest modelling risk left.
+
+## 93. The prediction ledger scores the curve the card was drawn on
+
+Snapshots now store each card's ceiling and pre-launch state; scoring
+(`scoreSnapshot`, pure) uses the stored ceiling, falls back to the current one
+for older snapshots and says so, and does not score pre-launch entries. The
+lane-rule version is bumped so lanes moved by DECISIONS 92 read as a
+definition change, not as technologies that moved.

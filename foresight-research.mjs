@@ -21,7 +21,7 @@
 // Pure module: no Express, no DB, no direct network — `performSearch`,
 // `searchPatents` and the Anthropic client are injected so tests run offline.
 // ─────────────────────────────────────────────────────────────────────────────
-import { sCurvePhase, horizonFor, inflectionYears, projectAdoption, REGISTER_VINTAGE, landscapeCurrency } from './foresight.mjs';
+import { sCurvePhase, horizonFor, inflectionYears, projectAdoption, REGISTER_VINTAGE, landscapeCurrency, isPrelaunch, PRELAUNCH_BASIS } from './foresight.mjs';
 import { fetchArticles, quoteSupported } from './foresight-fetch.mjs';
 
 /**
@@ -226,10 +226,13 @@ export function positionCandidates(candidates, { now = REGISTER_VINTAGE } = {}) 
     // range — a candidate is a candidate, not a measured position.
     const adoptionPct = clampNum(c.adoptionEstimatePct, 0, 40, 0);
     const ceilingPct = Math.max(clampNum(c.ceilingEstimatePct, 1, 90, 30), Math.max(adoptionPct, 1));
-    const crossings = inflectionYears(adoptionPct, { now, ceilingPct });
-    const { horizon } = horizonFor(trl, adoptionPct, null, now, { decisionYear: crossings.cross25, ceilingPct });
+    // Same pre-launch rule as the register: an estimated 0% with no production
+    // cited has no launch to count from, so nothing is projected.
+    const prelaunch = isPrelaunch(adoptionPct, str(c.earliestProduction, 160) || null, trl);
+    const crossings = prelaunch ? null : inflectionYears(adoptionPct, { now, ceilingPct });
+    const { horizon } = horizonFor(trl, adoptionPct, null, now, { decisionYear: prelaunch ? null : crossings.cross25, ceilingPct });
     const adoption = { now: adoptionPct };
-    for (const y of [3, 5, 8]) adoption[`in${y}`] = projectAdoption(adoptionPct, y, { ceilingPct });
+    for (const y of [3, 5, 8]) adoption[`in${y}`] = prelaunch ? null : projectAdoption(adoptionPct, y, { ceilingPct });
     return {
       id: `researched-${i + 1}`,
       name: str(c.name, 120),
@@ -245,9 +248,12 @@ export function positionCandidates(candidates, { now = REGISTER_VINTAGE } = {}) 
       phase: sCurvePhase(trl, adoptionPct),
       horizon,
       projection: {
-        basis: `Bass diffusion (p=0.03, q=0.38, ceiling ~${Math.round(ceilingPct)}%) over AI-ESTIMATED TRL/adoption — modelled on estimated inputs, not measured`,
+        basis: prelaunch
+          ? `${PRELAUNCH_BASIS} TRL is an AI estimate.`
+          : `Bass diffusion (p=0.03, q=0.38, ceiling ~${Math.round(ceilingPct)}%) over AI-ESTIMATED TRL/adoption — modelled on estimated inputs, not measured`,
         adoption,
         crossings,
+        prelaunch: prelaunch || undefined,
         estimatedInputs: true,
       },
       researched: true,

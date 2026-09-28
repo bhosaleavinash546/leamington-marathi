@@ -26,7 +26,7 @@ export interface ForesightReportCard {
   related?: boolean; origin?: string; kind?: string;
   currency?: { tier: 'fresh' | 'stale' | 'undated'; evidenceYear: number | null; verified: boolean; lastVerified: string | null; evidenceUrl: string | null; basis: string };
   detail?: { howItWorks?: string; origin?: string; benefits?: string[]; tradeoffs?: string[]; outlook?: string };
-  projection: { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null } };
+  projection: { basis: string; prelaunch?: boolean; adoption: Record<string, number | null>; costIndex: Record<string, number | null>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; band25?: [number | null, number | null] | null; band50?: [number | null, number | null] | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null } };
 }
 export interface ForesightReportBenchmark {
   vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string;
@@ -35,7 +35,7 @@ export interface ForesightResearchedCandidate {
   id: string; name: string; whatItIs: string; replaces: string; whyItMatters: string;
   earliestProduction: string; players: string[]; sourceUrl: string;
   trl: number; adoptionPct: number; phase: string; horizon: 'H1' | 'H2' | 'H3';
-  projection: { basis: string; adoption: Record<string, number>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null }; estimatedInputs?: boolean };
+  projection: { basis: string; prelaunch?: boolean; adoption: Record<string, number | null>; crossings?: { cross25: number | 'passed' | null; cross50: number | 'passed' | null; share25?: number; share50?: number; ceiling?: number; peakGrowth?: number | 'passed' | null }; estimatedInputs?: boolean };
 }
 export interface ForesightReportResearched {
   candidates: ForesightResearchedCandidate[];
@@ -390,7 +390,10 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       newPage();   // its own instrument page — never flows onto the cover
       sectionTitle('Prediction board', 'Every technology’s modelled milestones');
       const yr = (v: number | 'passed' | null | undefined): { s: string; c: RGB } =>
-        v === 'passed' ? { s: 'PASSED', c: P.TEAL } : typeof v === 'number' ? { s: `~${v}`, c: P.GOLD } : { s: '>15Y', c: P.DIM };
+        v === 'passed' ? { s: 'PASSED', c: P.TEAL } : typeof v === 'number' ? { s: `~${v}`, c: P.GOLD }
+          // undefined = no curve at all (not in production), which is NOT
+          // the same statement as ">15 years" on a curve that exists.
+          : v === undefined ? { s: 'PRE-LAUNCH', c: P.DIM } : { s: '>15Y', c: P.DIM };
       const bx = [ML, ML + 78, ML + 94, ML + 110, ML + 130, ML + 150, ML + 168];
       const header = () => {
         mono(6.6, true); setColor(doc, P.DIM);
@@ -438,13 +441,18 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   const critiquesFor = (id: string) =>
     panel?.panel.flatMap(p => p.critiques.filter(c => c.techId === id).map(c => ({ persona: p.persona, ...c }))) ?? [];
 
-  const adoptionVals = (c: ForesightReportCard) =>
-    [c.projection.adoption.now, c.projection.adoption.in3, c.projection.adoption.in5, c.projection.adoption.in8];
+  // Pre-launch technologies carry no projection (null) — they are left off the
+  // adoption graphs rather than drawn as a flat zero, which would read as a
+  // forecast of no adoption.
+  const adoptionVals = (c: ForesightReportCard): number[] =>
+    [c.projection.adoption.now, c.projection.adoption.in3, c.projection.adoption.in5, c.projection.adoption.in8].map(v => Number(v) || 0);
+  const projected = (c: ForesightReportCard) => !c.projection.prelaunch && c.projection.adoption.in3 != null;
   const SERIES: RGB[] = [P.GOLD, P.TEAL, P.VIOLET, P.EVID, P.REG];
 
   // Lane overview graph: the lane's leading adoption curves on one instrument.
   function lanePaths(cards: ForesightReportCard[]) {
-    const top = cards.slice(0, 5);
+    const top = cards.filter(projected).slice(0, 5);
+    if (!top.length) return;
     const chX = ML + 3, chW = CW - 6, chH = 34;
     ensure(chH + 12 + top.length * 4.2);
     mono(7, true); setColor(doc, P.DIM);
@@ -543,14 +551,22 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       mono(6.6, true); setColor(doc, P.DIM);
       ['MODELLED PROJECTION', 'NOW', '+3Y', '+5Y', '+8Y'].forEach((h, i) => doc.text(h, px[i] + 2, y + 0.5));
       mono(7); setColor(doc, P.BODY);
-      const aVals = adoptionVals(c);
+      const aRaw = [c.projection.adoption.now, c.projection.adoption.in3, c.projection.adoption.in5, c.projection.adoption.in8];
       const cVals = [c.projection.costIndex.now, c.projection.costIndex.in3, c.projection.costIndex.in5, c.projection.costIndex.in8];
-      const adoption = ['ADOPTION %', ...aVals.map(String)];
-      const cost = ['COST INDEX', ...cVals.map(v => v.toFixed(2))];
+      const adoption = ['ADOPTION %', ...aRaw.map(v => (v == null ? '—' : String(v)))];
+      const cost = ['COST INDEX', ...cVals.map(v => (v == null ? '—' : v.toFixed(2)))];
       adoption.forEach((v, i) => doc.text(v, px[i] + 2, y + 4.6));
       cost.forEach((v, i) => doc.text(v, px[i] + 2, y + 8.7));
       // the same numbers, drawn: gold = adoption %, teal = cost index
       const gx = ML + 3 + 112, gw = blockW - 112 - 3;
+      if (!projected(c)) {
+        // Nothing was projected, so nothing is drawn — a flat line at zero
+        // would read as a forecast of no adoption.
+        mono(5.8); setColor(doc, P.DIM);
+        doc.text('NOT IN PRODUCTION — NO CURVE PROJECTED', gx, y + 4.6);
+      } else {
+      const aVals = adoptionVals(c);
+      const cNum = cVals.map(v => Number(v) || 0);
       setFill(doc, P.GOLD); doc.rect(gx, y - 0.6, 2.2, 1.2, 'F');
       setFill(doc, P.TEAL); doc.rect(gx + 12.5, y - 0.6, 2.2, 1.2, 'F');
       mono(5.6); setColor(doc, P.DIM);
@@ -558,21 +574,22 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       const gy0 = y + 2.6, gh = 9.4;
       setDraw(doc, P.RULE, 0.25); doc.line(gx, gy0 + gh, gx + gw - 10, gy0 + gh);
       const aMax = Math.max(...aVals, 10);
-      const cMax = Math.max(...cVals, 1.05);
+      const cMax = Math.max(...cNum, 1.05);
       const GX = (yr: number) => gx + (yr / 8) * (gw - 12);
       const AY = (v: number) => gy0 + gh - (v / aMax) * gh;
       const CY = (v: number) => gy0 + gh - (v / cMax) * gh;
-      ([[aVals, AY, P.GOLD], [cVals, CY, P.TEAL]] as const).forEach(([vals, YFn, col]) => {
+      ([[aVals, AY, P.GOLD], [cNum, CY, P.TEAL]] as const).forEach(([vals, YFn, col]) => {
         const pts = [0, 3, 5, 8].map((yr, i) => [GX(yr), YFn(vals[i])] as const);
         setDraw(doc, col, 0.6);
         for (let i = 1; i < pts.length; i++) doc.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]);
         setFill(doc, col); doc.circle(pts[3][0], pts[3][1], 0.7, 'F');
       });
       mono(5.6, true);
-      let aLy = AY(aVals[3]) + 0.9, cLy = CY(cVals[3]) + 0.9;
+      let aLy = AY(aVals[3]) + 0.9, cLy = CY(cNum[3]) + 0.9;
       if (Math.abs(aLy - cLy) < 2.2) { if (aLy <= cLy) cLy = aLy + 2.2; else aLy = cLy + 2.2; }
       setColor(doc, P.GOLD); doc.text(`${aVals[3]}%`, GX(8) + 1.6, aLy);
-      setColor(doc, P.TEAL); doc.text(cVals[3].toFixed(2), GX(8) + 1.6, cLy);
+      setColor(doc, P.TEAL); doc.text(cNum[3].toFixed(2), GX(8) + 1.6, cLy);
+      }
       y += 17;
 
       if (c.projection.crossings) {

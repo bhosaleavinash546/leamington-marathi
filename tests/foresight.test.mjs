@@ -91,6 +91,8 @@ test('audit: proposed/under-revision anchors give context but never pull a horiz
 test('audit: crossing bands are ordered and only present on real crossings', () => {
   const r = foresightFor({ commodity: 'EDU' });
   for (const c of [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3]) {
+    // Not in production anywhere: no curve, so no crossings (Horizon review 2026-09).
+    if (c.projection.prelaunch) { assert.equal(c.projection.crossings, null, c.id); continue; }
     const { cross50, band50 } = c.projection.crossings;
     if (typeof cross50 === 'number' && band50) {
       if (typeof band50[0] === 'number') assert.ok(band50[0] <= cross50, `${c.id}: early band after point`);
@@ -419,6 +421,7 @@ test('techCard projection carries the crossing years', () => {
   const r = foresightFor({ commodity: 'Battery' });
   const all = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3];
   for (const c of all) {
+    if (c.projection.prelaunch) { assert.equal(c.projection.crossings, null, c.id); assert.equal(c.projection.adoption.in5, null, c.id); continue; }
     assert.ok('cross25' in c.projection.crossings && 'cross50' in c.projection.crossings, c.id);
     const v = c.projection.crossings.cross50;
     assert.ok(v === null || v === 'passed' || (typeof v === 'number' && v >= REGISTER_VINTAGE), c.id);
@@ -504,8 +507,13 @@ test('foresightFor: commodity + powertrain filters and horizon lanes', () => {
     assert.equal(c.commodity, 'Battery');
     assert.ok(c.powertrains.includes('BEV'));
     assert.ok(['committed', 'probable', 'speculative'].includes(c.confidence));
-    assert.ok(c.projection.adoption.in5 >= c.adoptionPct);
-    assert.ok(c.projection.basis.includes('modelled'));
+    if (c.projection.prelaunch) {
+      assert.equal(c.projection.adoption.in5, null, `${c.id}: a pre-launch card projects nothing`);
+      assert.match(c.projection.basis, /Not in series production/);
+    } else {
+      assert.ok(c.projection.adoption.in5 >= c.adoptionPct);
+      assert.ok(c.projection.basis.includes('modelled'));
+    }
   }
   // Lanes are sorted by momentum descending.
   for (const lane of ['H1', 'H2', 'H3']) {
@@ -733,7 +741,10 @@ test('landscape floor: exact matches lead, widened entries are stamped related',
   }
   // A strong multi-match query must NOT be diluted with related entries.
   const strong = foresightFor({ query: 'battery pack' });
-  assert.ok([...strong.horizons.H1, ...strong.horizons.H2, ...strong.horizons.H3].every((c) => !c.related), 'strong query was widened');
+  // Demoted entries (one generic word from another commodity, Horizon review
+  // 2026-09) are context by a different rule and are stamped as such; what
+  // must not appear is commodity-net WIDENING.
+  assert.ok([...strong.horizons.H1, ...strong.horizons.H2, ...strong.horizons.H3].every((c) => !c.related || c.demoted), 'strong query was widened');
 });
 
 test('knowledge: research cache round-trips, ages out, never caches emptiness', async () => {
@@ -834,7 +845,7 @@ test('ontology: air suspension landscape now carries the researched gaps', () =>
   // And each is positioned by the same deterministic cores as any other entry.
   for (const c of all) {
     assert.ok(['H1', 'H2', 'H3'].includes(c.horizon), `${c.id}: no lane`);
-    assert.ok(c.projection?.crossings, `${c.id}: no milestones`);
+    assert.ok(c.projection?.crossings || c.projection?.prelaunch, `${c.id}: no milestones and not marked pre-launch`);
   }
 });
 

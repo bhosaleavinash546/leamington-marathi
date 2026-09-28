@@ -13,7 +13,7 @@ import './foresight.css';
 interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision'; effect: string; }
 type Crossing = number | 'passed' | null;
 type CrossingBand = [number | null, number | null] | null;
-interface Projection { basis: string; adoption: Record<string, number>; costIndex: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand; share25?: number; share50?: number; ceiling?: number; peakGrowth?: Crossing }; }
+interface Projection { basis: string; prelaunch?: boolean; adoption: Record<string, number | null>; costIndex: Record<string, number | null>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand; share25?: number; share50?: number; ceiling?: number; peakGrowth?: Crossing }; }
 interface TechCard {
   id: string; name: string; commodity: string; powertrains: string[]; replaces: string;
   trl: number; adoptionPct: number; firstProduction?: string; drivers: string[];
@@ -89,7 +89,7 @@ interface ResearchedCandidate {
   id: string; name: string; whatItIs: string; replaces: string; whyItMatters: string;
   earliestProduction: string; players: string[]; sourceUrl: string;
   trl: number; adoptionPct: number; phase: string; horizon: 'H1' | 'H2' | 'H3';
-  projection: { basis: string; adoption: Record<string, number>; crossings?: { cross25: Crossing; cross50: Crossing; share25?: number; share50?: number; peakGrowth?: Crossing }; estimatedInputs?: boolean };
+  projection: { basis: string; prelaunch?: boolean; adoption: Record<string, number | null>; crossings?: { cross25: Crossing; cross50: Crossing; share25?: number; share50?: number; peakGrowth?: Crossing }; estimatedInputs?: boolean };
   /** Phase 2 grounding: the verbatim sentence this rests on, whether we opened
    *  the page it came from, and the hard number it turns on. */
   sourceQuote?: string; sourceRead?: boolean; quantitativeSpec?: string;
@@ -285,8 +285,12 @@ function SCurveSpark({ phase }: { phase: string }) {
 }
 
 /** Modelled adoption path (now → +8y) as a small drawn area chart. */
-function BassSpark({ adoption }: { adoption: Record<string, number> }) {
-  const vals = [adoption.now, adoption.in3, adoption.in5, adoption.in8];
+function BassSpark({ adoption }: { adoption: Record<string, number | null> }) {
+  // Not in production anywhere: nothing was projected, so nothing is drawn.
+  if (adoption.in3 == null) {
+    return <span className="text-2xs text-slate-500 w-[118px] shrink-0 leading-tight">not in production — no curve projected</span>;
+  }
+  const vals = [adoption.now, adoption.in3, adoption.in5, adoption.in8].map(v => Number(v) || 0);
   const W = 118, H = 32, PAD = 4;
   const max = Math.max(...vals, 1);
   const px = (i: number) => PAD + (i / 3) * (W - 2 * PAD);
@@ -505,16 +509,15 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               <tr>
                 <td className="text-slate-500 py-0.5">Adoption %</td>
                 <td className="text-right">{c.projection.adoption.now}</td>
-                <td className="text-right">{c.projection.adoption.in3}</td>
-                <td className="text-right">{c.projection.adoption.in5}</td>
-                <td className="text-right">{c.projection.adoption.in8}</td>
+                <td className="text-right">{c.projection.adoption.in3 ?? '—'}</td>
+                <td className="text-right">{c.projection.adoption.in5 ?? '—'}</td>
+                <td className="text-right">{c.projection.adoption.in8 ?? '—'}</td>
               </tr>
               <tr>
                 <td className="text-slate-500 py-0.5">Cost index</td>
-                <td className="text-right">{c.projection.costIndex.now.toFixed(2)}</td>
-                <td className="text-right">{c.projection.costIndex.in3.toFixed(2)}</td>
-                <td className="text-right">{c.projection.costIndex.in5.toFixed(2)}</td>
-                <td className="text-right">{c.projection.costIndex.in8.toFixed(2)}</td>
+                {(['now', 'in3', 'in5', 'in8'] as const).map(k => (
+                  <td key={k} className="text-right">{c.projection.costIndex[k] == null ? '—' : (c.projection.costIndex[k] as number).toFixed(2)}</td>
+                ))}
               </tr>
             </tbody>
           </table>
@@ -727,11 +730,15 @@ export default function ForesightPage() {
     } finally { setPrLoading(false); }
   }
 
-  function bomPick(part: string) {
+  // The BOM browser knows which commodity a part sits under. It is sent as a
+  // HINT, not a filter: the search still spans every commodity (a 48v MHEV
+  // battery legitimately wants Battery technologies), but a single generic
+  // word from ANOTHER commodity is then shown as context, not as an answer.
+  function bomPick(part: string, commodityHint?: string) {
     setQuery(part);
     setCommodity('');
     setBomOpen(false);
-    predict(part);   // explicit query — no stale-closure risk
+    predict(part, commodityHint);   // explicit query — no stale-closure risk
   }
 
   async function promoteCandidateToRegister(c: ResearchedCandidate) {
@@ -776,7 +783,7 @@ export default function ForesightPage() {
     }
   }
 
-  async function predict(qOverride?: string) {
+  async function predict(qOverride?: string, commodityHint?: string) {
     const q = qOverride ?? query;
     if (!q.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
     if (!token) { setError('Please sign in.'); return; }
@@ -788,7 +795,7 @@ export default function ForesightPage() {
       const r = await fetch('/api/foresight/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ query: q, commodity: qOverride ? undefined : (commodity || undefined), powertrain: powertrain || undefined, segment: segment || undefined, apiKey }),
+        body: JSON.stringify({ query: q, commodity: qOverride ? undefined : (commodity || undefined), commodityHint, powertrain: powertrain || undefined, segment: segment || undefined, apiKey }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Foresight failed.');
@@ -1315,7 +1322,7 @@ export default function ForesightPage() {
                       <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">{assembly}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {parts.map(p => (
-                          <button key={p} onClick={() => bomPick(p)}
+                          <button key={p} onClick={() => bomPick(p, bomCommodity)}
                             className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 text-2xs hover:border-teal-500/40 hover:text-teal-300 transition-colors">
                             {p}
                           </button>

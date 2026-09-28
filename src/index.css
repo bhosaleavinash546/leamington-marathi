@@ -368,7 +368,8 @@
 [data-theme="light"] .text-emerald-300, [data-theme="light"] .text-emerald-400,
 [data-theme="light"] .text-green-300,   [data-theme="light"] .text-green-400,
 [data-theme="light"] .text-success-300, [data-theme="light"] .text-success-400 { color: #036045 !important; }  /* 4.33:1 on an emerald chip before */
-[data-theme="light"] .text-teal-300,    [data-theme="light"] .text-teal-400    { color: #0f766e !important; }
+[data-theme="light"] .text-teal-200,
+[data-theme="light"] .text-teal-300,    [data-theme="light"] .text-teal-400    { color: #0d6b64 !important; }  /* -200 added and one step darker: #0f766e measured 4.36:1 on a teal-500/15 chip (Horizon review 2026-09-28); #0d6b64 is 5.5:1 */
 [data-theme="light"] .text-lime-300,    [data-theme="light"] .text-lime-400    { color: #4d7c0f !important; }
 [data-theme="light"] .text-sky-300,     [data-theme="light"] .text-sky-400     { color: #0369a1 !important; }
 [data-theme="light"] .text-cyan-300,    [data-theme="light"] .text-cyan-400    { color: #0e7490 !important; }
@@ -406,7 +407,14 @@
 [data-theme="light"] [class*="text-success-500/"] { color: #036045 !important; }
 [data-theme="light"] [class*="text-teal-300/"],
 [data-theme="light"] [class*="text-teal-400/"],
-[data-theme="light"] [class*="text-teal-500/"] { color: #0f766e !important; }
+[data-theme="light"] [class*="text-teal-500/"] { color: #0d6b64 !important; }
+/* Gold at an opacity modifier, the pale -200, and the pulsing "committed"
+   badge (its animated glow is part of what the text sits on) — each measured
+   4.39-4.44:1 on a gold chip in light (Horizon review 2026-09-28). */
+[data-theme="light"] [class*="text-gold-200/"],
+[data-theme="light"] [class*="text-gold-300/"],
+[data-theme="light"] .text-gold-200,
+[data-theme="light"] .hz-committed { color: #6b4e05 !important; }
 [data-theme="light"] [class*="text-lime-300/"],
 [data-theme="light"] [class*="text-lime-400/"] { color: #4d7c0f !important; }
 [data-theme="light"] [class*="text-sky-300/"],
