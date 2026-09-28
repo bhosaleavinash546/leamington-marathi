@@ -26,15 +26,18 @@ import { createRequire } from 'module';
 import { readFileSync } from 'fs';
 const require = createRequire(import.meta.url);
 const pptxgen = require('pptxgenjs');
+import { readFileSync as __brandRead } from 'node:fs';
+// Brand colours — calculator/src/brand/brand.json, shared with the app (I5).
+const B = JSON.parse(__brandRead(new URL('./calculator/src/brand/brand.json', import.meta.url), 'utf8')).onLight;
 
 // Palette continuous with the CostVision workbook the audience has already seen
-const NAVY = '16325C', SLATE = '3A4356', MUTED = '6B7280', PAGE = 'F4F7FB', CARD = 'FFFFFF';
-const BLUE = '1D6FB8', BLUE_T = 'E8F1FA';       // measure
-const PURPLE = '6B3FA0', PURPLE_T = 'F1EBF8';   // AI
-const AMBER = 'B7791F', AMBER_T = 'FCF3E3';     // guardrails
-const TEAL = '0E8074', TEAL_T = 'E6F4F1';       // costing engine
-const GREEN = '2E8B57', GREEN_T = 'EAF6EF';     // output / human
-const RED = 'B03A2E', LINE = 'DCE3EE';
+const NAVY = B.navy, SLATE = B.slate, MUTED = B.muted, PAGE = B.page, CARD = 'FFFFFF';
+const BLUE = B.blue, BLUE_T = B.blueTint;       // measure
+const PURPLE = B.violet, PURPLE_T = B.violetTint;   // AI
+const AMBER = B.amber, AMBER_T = B.amberTint;     // guardrails
+const TEAL = B.teal, TEAL_T = B.tealTint;       // costing engine
+const GREEN = B.green, GREEN_T = B.greenTint;     // output / human
+const RED = B.red, LINE = B.line;
 
 /** Pre-rendered icons — see the header note on regenerating them. */
 const ICON_DIR = 'assets/workflow-deck/icons';
@@ -177,7 +180,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     s.addText(t, { x: x + 0.16, y, w: 1.25, h: 0.22, fontFace: 'Calibri', fontSize: 7.8, color: SLATE, margin: 0, valign: 'middle' });
   });
   // ── why believe the picture: four measured facts ──
-  s.addShape('roundRect', { x: 0.45, y: 1.18, w: 2.0, h: 0.83, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.45, y: 1.18, w: 2.0, h: 0.83, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText('WHY TRUST THIS PICTURE', { x: 0.56, y: 1.23, w: 1.85, h: 0.15, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: GREEN, charSpacing: 0.4, margin: 0 });
   s.addText('Same file + answers = same price\n12 of 19 commodities rules-driven\n1,777 automated tests\n6 real parts · fleet error ≈13%',
     { x: 0.56, y: 1.39, w: 1.85, h: 0.6, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
@@ -260,7 +263,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   chip(9.92, 2.59, 'AUTO', TEAL);       // rate library
   chip(9.92, 3.97, 'AUTO', TEAL);       // local db
   chip(9.92, 5.35, 'AUTO', GREEN);      // uncertainty
-  chip(6.82, 3.97, 'AUTO', '0E8074');   // cost engine
+  chip(6.82, 3.97, 'AUTO', B.teal);   // cost engine
   chip(4.27, 5.35, 'HUMAN', GREEN);     // the engineer — the only manual step
 
   // flows: inputs→kernel, kernel→rules, engineer→rules, AI⇢guardrails⇢rules, rules→engine, rates→engine, engine↔db, engine→uncertainty→outputs
@@ -280,7 +283,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('actuals\nfeed back', { x: 10.56, y: 4.50, w: 0.55, h: 0.38, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: GREEN, align: 'center', margin: 0, valign: 'top' });
   link(10.60, 3.29, 11.05, 3.29, GREEN);
   // read-in-one-line
-  s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
     { text: 'everything badged AUTO is unattended — measure, derive, pick the machine, check, calculate, write the DFM/DFA and saving ideas. The engineer answers and approves; the AI is an optional second opinion that can reach none of the money.', options: { color: SLATE } },
@@ -376,11 +379,11 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   chip2(4.59, 2.59, 'AUTO', '4F46E5');
   chip2(4.59, 3.97, 'AUTO', '4F46E5');
   chip2(7.14, 2.59, 'AUTO', AMBER);
-  chip2(10.09, 2.59, 'AUTO', '0E8074');
+  chip2(10.09, 2.59, 'AUTO', B.teal);
   chip2(10.09, 4.67, 'AUTO', TEAL);
   chip2(7.14, 5.21, 'HUMAN', GREEN);
 
-  s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
     { text: 'the AI’s eyes read the board and name every part — then the offline catalogue prices it, the deterministic fab + assembly models cost it, and the engineer owns every doubtful line. The model never prices a component.', options: { color: SLATE } },
@@ -461,13 +464,13 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   ], { x: 0.68, y: 4.86, w: 12.0, h: 0.66, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
 
   // And the fourth thing people confuse with should-cost
-  s.addShape('roundRect', { x: 0.5, y: 5.64, w: 12.33, h: 0.6, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 5.64, w: 12.33, h: 0.6, fill: { color: B.amberTint }, line: { color: AMBER, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Not the same thing:  ', options: { bold: true, color: AMBER } },
     { text: 'JLCPCB / PCBWay / Eurocircuits instant quoting is fully automated and fully public — but it returns THEIR price, which is a quotation, not a should-cost. Useful as a floor reference; useless as a negotiation position.', options: { color: SLATE } },
   ], { x: 0.68, y: 5.64, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.4, margin: 0, valign: 'middle' });
 
-  s.addShape('roundRect', { x: 0.5, y: 6.36, w: 12.33, h: 0.6, fill: { color: 'E8F1FA' }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.36, w: 12.33, h: 0.6, fill: { color: B.blueTint }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Where we sit:  ', options: { bold: true, color: BLUE } },
     { text: 'camp B by purpose — a buyer-side should-cost — reached by camp C’s route, from the physical board, but automatically. That combination is the thing to defend.', options: { color: SLATE } },
@@ -559,7 +562,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     });
   });
 
-  s.addShape('roundRect', { x: 0.5, y: 6.62, w: 12.33, h: 0.5, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.62, w: 12.33, h: 0.5, fill: { color: B.amberTint }, line: { color: AMBER, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'The pricing finding:  ', options: { bold: true, color: AMBER } },
     { text: 'every should-cost and quoting platform in this market sells on quotation — not one publishes a figure. Only the per-report services and the instant-quote suppliers put a number in public. Any "typical licence cost" you are offered for these tools is somebody’s guess.', options: { color: SLATE } },
@@ -621,7 +624,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     const y = 1.62 + ri * 0.53;
     let x = 0.5;
     const verdict = r[5];
-    const vfill = verdict === 'w' ? 'EAF6EF' : verdict === 'l' ? 'F9E8E5' : 'EEF1F6';
+    const vfill = verdict === 'w' ? B.greenTint : verdict === 'l' ? 'F9E8E5' : 'EEF1F6';
     const vcol = verdict === 'w' ? GREEN : verdict === 'l' ? RED : SLATE;
     r.slice(0, 5).forEach((v, i) => {
       const isUs = i === 4;
@@ -705,7 +708,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     s.addText(note, { x: x + 0.28, y: 5.24, w: 3.42, h: 0.6, fontFace: 'Calibri', fontSize: 7.5, italic: true, color: col, margin: 0, valign: 'middle' });
   });
 
-  s.addShape('roundRect', { x: 0.5, y: 6.06, w: 12.33, h: 0.9, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1.2 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.06, w: 12.33, h: 0.9, fill: { color: B.greenTint }, line: { color: GREEN, width: 1.2 }, rectRadius: 0.08 });
   s.addText([
     { text: 'The ask:  ', options: { bold: true, color: GREEN } },
     { text: 'one distributor API key and one board with a known purchase price. Those two together turn every red cell on the previous slide amber or green, and neither needs a line of new engineering — the integration and the calibration machinery are both already built and tested. Until then the honest headline stays: ', options: { color: SLATE } },
@@ -870,15 +873,15 @@ FOOT = FOOT_MAIN;
     { name: 'CAPEE by hand (midpoint)', labels: ['Cast+mach', 'Machining', 'Inj. mould', 'Forging', 'Sheet metal', 'Blow mould', 'PCB photo'], values: [270, 210, 210, 210, 150, 210, 300] },
   ], {
     x: 6.85, y: 1.42, w: 6.0, h: 4.6, barDir: 'bar', barGrouping: 'clustered',
-    chartColors: ['0E8074', 'B7791F'], showLegend: true, legendPos: 'b', legendFontSize: 9,
-    showValue: true, dataLabelPosition: 'outEnd', dataLabelFontSize: 8, dataLabelColor: '3A4356',
+    chartColors: [B.teal, B.amber], showLegend: true, legendPos: 'b', legendFontSize: 9,
+    showValue: true, dataLabelPosition: 'outEnd', dataLabelFontSize: 8, dataLabelColor: B.slate,
     valAxisTitle: 'minutes', showValAxisTitle: true, valAxisTitleFontSize: 9,
-    catAxisLabelColor: '3A4356', valAxisLabelColor: '6B7280', catAxisLabelFontSize: 9, valAxisLabelFontSize: 8,
-    valGridLine: { color: 'DCE3EE', size: 0.5 }, catGridLine: { style: 'none' },
+    catAxisLabelColor: B.slate, valAxisLabelColor: B.muted, catAxisLabelFontSize: 9, valAxisLabelFontSize: 8,
+    valGridLine: { color: B.line, size: 0.5 }, catGridLine: { style: 'none' },
   });
   s.addText('16–30× faster on the confirmed baseline. CAPEE midpoints marked "team-reported" are working figures — confirm with the costing team before circulating beyond this room.',
     { x: 6.85, y: 6.10, w: 6.0, h: 0.5, fontFace: 'Calibri', fontSize: 8.6, italic: true, color: MUTED, margin: 0, valign: 'top' });
-  s.addShape('roundRect', { x: 0.5, y: 6.32, w: 5.9, h: 0.72, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.32, w: 5.9, h: 0.72, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Man-hours saved = Σ (CAPEE hrs − CostVision hrs) × annual parts. ', options: { bold: true, color: GREEN, fontSize: 8.6 } },
     { text: 'Illustrative 500-part/yr mix over this table\u2019s midpoints: ', options: { color: SLATE, fontSize: 8.3 } },
@@ -922,7 +925,7 @@ FOOT = FOOT_MAIN;
     });
   });
 
-  s.addShape('roundRect', { x: 0.5, y: 6.35, w: 12.33, h: 0.6, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.35, w: 12.33, h: 0.6, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'The honest one-liner:  ', options: { bold: true, color: GREEN } },
     { text: 'CAPEE is a costing calculator that a person feeds; CostVision is a measuring, deciding and explaining system with the same deterministic arithmetic at its core — the AI reads part descriptions and writes commentary, and is never allowed to touch a number.', options: { color: SLATE } },
@@ -979,18 +982,18 @@ FOOT = FOOT_MAIN;
     { name: 'Commodity coverage', labels: ['Deterministic rules (12)', 'AI-assisted (6)'], values: [12, 6] },
   ], {
     x: 6.6, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
-    chartColors: ['0E8074', 'B7791F'], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
-    showValue: false, showTitle: true, title: '19 commodities', titleFontSize: 10, titleColor: '16325C',
+    chartColors: [B.teal, B.amber], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
+    showValue: false, showTitle: true, title: '19 commodities', titleFontSize: 10, titleColor: B.navy,
   });
   s.addChart('doughnut', [
     { name: 'Verification', labels: ['Inside manual band (3)', 'Within ±30% (3)', 'No manual yet (2)'], values: [3, 3, 2] },
   ], {
     x: 9.85, y: 2.66, w: 3.1, h: 2.5, holeSize: 60,
-    chartColors: ['2E8B57', 'B7791F', 'DCE3EE'], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
-    showValue: false, showTitle: true, title: '8 parts costed, 8 of 8 succeeded', titleFontSize: 10, titleColor: '16325C',
+    chartColors: [B.green, B.amber, B.line], showLegend: true, legendPos: 'b', legendFontSize: 8.5,
+    showValue: false, showTitle: true, title: '8 parts costed, 8 of 8 succeeded', titleFontSize: 10, titleColor: B.navy,
   });
   // what it is NOT — the trust strip
-  s.addShape('roundRect', { x: 0.5, y: 5.95, w: 12.33, h: 1.02, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
+  s.addShape('roundRect', { x: 0.5, y: 5.95, w: 12.33, h: 1.02, fill: { color: B.amberTint }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
   s.addImage({ data: I.warn, x: 0.68, y: 6.12, w: 0.26, h: 0.26 });
   s.addText([
     { text: 'What we are NOT claiming — ', options: { bold: true, color: AMBER } },
@@ -1061,7 +1064,7 @@ FOOT = FOOT_MAIN;
   });
 
   // Risks, each with the mitigation already built.
-  s.addShape('roundRect', { x: 6.3, y: 3.76, w: 6.53, h: 2.22, fill: { color: 'FCF3E3' }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
+  s.addShape('roundRect', { x: 6.3, y: 3.76, w: 6.53, h: 2.22, fill: { color: B.amberTint }, line: { color: AMBER, width: 1 }, rectRadius: 0.09 });
   s.addImage({ data: I.warn, x: 6.5, y: 3.85, w: 0.2, h: 0.2 });
   s.addText('THE FOUR OBJECTIONS — AND WHAT IS ALREADY BUILT FOR THEM', { x: 6.78, y: 3.84, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: AMBER, charSpacing: 0.4, margin: 0 });
   [
@@ -1737,7 +1740,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   // Scale: £28 .. £50 across the track, so the band and the marker sit where the numbers say.
   const TX = 0.75, TW = 5.5, LO = 28, HI = 50;
   const px = (v) => TX + ((v - LO) / (HI - LO)) * TW;
-  s.addShape('roundRect', { x: TX, y: 2.46, w: TW, h: 0.34, fill: { color: 'DCE3EE' }, rectRadius: 0.17 });
+  s.addShape('roundRect', { x: TX, y: 2.46, w: TW, h: 0.34, fill: { color: B.line }, rectRadius: 0.17 });
   s.addShape('roundRect', { x: px(32.31), y: 2.46, w: px(45.38) - px(32.31), h: 0.34, fill: { color: TEAL }, rectRadius: 0.17 });
   s.addShape('rect', { x: px(38.55) - 0.028, y: 2.38, w: 0.056, h: 0.5, fill: { color: NAVY } });
   s.addText('P10  £32.31', { x: px(32.31) - 0.55, y: 2.9, w: 1.1, h: 0.24, fontFace: 'Calibri', fontSize: 9.0, color: MUTED, align: 'center', margin: 0 });
@@ -1812,7 +1815,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   // mini histogram (illustrative shape only — labelled as such)
   const bars = [0.10, 0.22, 0.44, 0.72, 0.95, 1.0, 0.88, 0.62, 0.38, 0.18, 0.08];
   bars.forEach((h, i) => {
-    s.addShape('rect', { x: 8.35 + i * 0.38, y: 2.62 - h * 0.95, w: 0.3, h: h * 0.95, fill: { color: i >= 1 && i <= 9 ? '9FD9CF' : 'DCE3EE' } });
+    s.addShape('rect', { x: 8.35 + i * 0.38, y: 2.62 - h * 0.95, w: 0.3, h: h * 0.95, fill: { color: i >= 1 && i <= 9 ? '9FD9CF' : B.line } });
   });
   s.addShape('line', { x: 8.73, y: 2.72, w: 3.04, h: 0, line: { color: TEAL, width: 2 } });
   s.addText('P10', { x: 8.55, y: 2.78, w: 0.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: TEAL, margin: 0 });
@@ -1833,7 +1836,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
     s.addText(t, { x: 8.52, y: y + 0.09, w: 4.2, h: 0.22, fontFace: 'Calibri', fontSize: 9.5, bold: true, color: c, margin: 0 });
     s.addText(d, { x: 8.52, y: y + 0.33, w: 4.22, h: 0.52, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'top' });
   });
-  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
+  s.addShape('roundRect', { x: 0.5, y: 6.42, w: 12.33, h: 0.55, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Why it matters:  ', options: { bold: true, color: GREEN } },
     { text: 'a single number pretends to a precision the inputs never had. The band is the same arithmetic run 4,000 times with each input as uncertain as its provenance says it is — so “£26 ± 18%” is a statement of evidence, not of confidence.', options: { color: SLATE } },
@@ -1920,7 +1923,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   s.addText('BEFORE — generic claim', { x: 8.13, y: 1.52, w: 4.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: RED, margin: 0 });
   s.addText('"Multi-Axis Machining to Consolidate Operations — 11% saving · Long Term." Fired on operation count alone; on this part the arithmetic says consolidation loses money.',
     { x: 8.13, y: 1.74, w: 4.55, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
-  s.addShape('roundRect', { x: 7.95, y: 2.44, w: 4.88, h: 0.92, fill: { color: 'EAF6EF' }, line: { color: GREEN, width: 1 }, rectRadius: 0.09 });
+  s.addShape('roundRect', { x: 7.95, y: 2.44, w: 4.88, h: 0.92, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.09 });
   s.addText('AFTER — the optimiser’s delta', { x: 8.13, y: 2.54, w: 4.5, h: 0.2, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: GREEN, margin: 0 });
   s.addText('"Re-quote machining on the cost-optimal routing: £6.95/part (20% of the machining spend) · Quick Win. 5-axis consolidation was ranked and does NOT win on this part."',
     { x: 8.13, y: 2.76, w: 4.55, h: 0.56, fontFace: 'Calibri', fontSize: 8.2, color: SLATE, margin: 0, valign: 'top' });
@@ -2684,7 +2687,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.05, h: 1.88, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.1 });
   s.addText('11 · The honest range on this part', { x: 0.75, y: 1.42, w: 5.5, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, bold: true, color: GREEN, margin: 0 });
   const TX = 0.78, TW = 5.5, LO = 16, HI = 37, px = v => TX + ((v - LO) / (HI - LO)) * TW;
-  s.addShape('roundRect', { x: TX, y: 1.86, w: TW, h: 0.3, fill: { color: 'DCE3EE' }, rectRadius: 0.15 });
+  s.addShape('roundRect', { x: TX, y: 1.86, w: TW, h: 0.3, fill: { color: B.line }, rectRadius: 0.15 });
   s.addShape('roundRect', { x: px(19.83), y: 1.86, w: px(33.16) - px(19.83), h: 0.3, fill: { color: TEAL }, rectRadius: 0.15 });
   s.addShape('rect', { x: px(26.08) - 0.026, y: 1.79, w: 0.052, h: 0.44, fill: { color: NAVY } });
   s.addText('P10  £19.83', { x: px(19.83) - 0.6, y: 2.24, w: 1.2, h: 0.22, fontFace: 'Calibri', fontSize: 8.5, color: MUTED, align: 'center', margin: 0 });
@@ -3609,7 +3612,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
         x: cx[i], y, w: cw[i], h: 0.196, fontFace: 'Calibri', fontSize: 7.5,
         bold: i === 0 || i === 4, italic: i === 2,
         color: i === 4 ? r[5] : (i === 0 ? (ai ? PURPLE : NAVY) : SLATE),
-        fill: { color: ai ? 'F1EBF8' : (ri % 2 ? 'F0F4F9' : 'FFFFFF') },
+        fill: { color: ai ? B.violetTint : (ri % 2 ? 'F0F4F9' : 'FFFFFF') },
         align: i === 2 ? 'right' : 'left', valign: 'middle', margin: 0.06,
       });
     });

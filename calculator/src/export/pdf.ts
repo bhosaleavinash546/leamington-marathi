@@ -12,6 +12,7 @@ import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, type ManufacturingRegion } from '../engine/regional-rates.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { exportFilename } from './filename.js';
+import { brandRgb } from '../brand/index.js';
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -161,19 +162,21 @@ const W  = 210;
 const MG = 14;
 const CW = W - MG * 2; // 182 mm
 
-// Corporate palette
-const NAVY:  RGB = [15,  32,  65];
-const ORANGE:RGB = [230, 81,  0];
-const SLATE: RGB = [30,  41,  59];
-const GREY:  RGB = [100, 116, 139];
+// Brand palette (src/brand/brand.json) — the same colours as the decks and the
+// app's light theme (I5). ORANGE is the report's accent; the name is historical
+// (~120 call sites) and it now carries the brand blue.
+const NAVY:  RGB = brandRgb('navy');
+const ORANGE:RGB = brandRgb('blue');
+const SLATE: RGB = brandRgb('slate');
+const GREY:  RGB = brandRgb('muted');
 const LGREY: RGB = [160, 170, 185];
 const LIGHT: RGB = [248, 250, 252];
 const WHITE: RGB = [255, 255, 255];
-const OR_LT: RGB = [255, 237, 213];
+const OR_LT: RGB = brandRgb('blueTint');
 const HDR:   RGB = [232, 235, 245];
-const GN:    RGB = [22,  163, 74];
-const RD:    RGB = [198, 40,  40];
-const AM:    RGB = [180, 83,  9];
+const GN:    RGB = brandRgb('green');
+const RD:    RGB = brandRgb('red');
+const AM:    RGB = brandRgb('amber');
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 

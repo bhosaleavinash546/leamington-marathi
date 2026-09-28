@@ -38,10 +38,11 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.ns import qn
 from copy import deepcopy
 import subprocess, os
+from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 OUT = 'CostVision-Option-3-Business-Case.pptx'
 
-INK      = RGBColor(0x1F, 0x2A, 0x44)   # headings
+INK      = rgb('navy')   # headings
 BODY     = RGBColor(0x33, 0x33, 0x33)   # bullets
 HEADER   = RGBColor(0x59, 0x59, 0x59)   # the small line above the title
 OUTLINE  = RGBColor(0xC9, 0xCF, 0xD7)   # box edges

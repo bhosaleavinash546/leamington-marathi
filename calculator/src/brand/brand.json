@@ -1,0 +1,37 @@
+{
+  "_about": "CostVision brand tokens — the one source for the app's light theme and PDF export, the deck generators (build_*.py / build_*.mjs) and the rate-card workbook. Values are hex without '#'. Every 'onLight' colour passes WCAG AA (4.5:1) as text on white and on 'page'. The dark theme uses the brighter 'onDark' variants of the same hues: a text colour tuned for white turns to mush on navy, and the reverse. Edit here, then run: node scripts/brand-css.mjs (regenerates src/ui/styles/brand.css) and the deck generators.",
+  "onLight": {
+    "navy":   "16325C",
+    "blue":   "1D6FB8",
+    "violet": "6B3FA0",
+    "teal":   "0D7D71",
+    "green":  "2A7F50",
+    "amber":  "99651A",
+    "red":    "B03A2E",
+    "slate":  "3A4356",
+    "muted":  "686F7D",
+    "page":   "F4F7FB",
+    "card":   "FFFFFF",
+    "line":   "DCE3EE",
+    "blueTint":   "E8F1FA",
+    "violetTint": "F1EBF8",
+    "tealTint":   "E6F4F1",
+    "greenTint":  "EAF6EF",
+    "amberTint":  "FCF3E3",
+    "redTint":    "FBECEA"
+  },
+  "onDark": {
+    "blue":   "38BDF8",
+    "violet": "A78BFA",
+    "teal":   "2DD4BF",
+    "green":  "34D399",
+    "amber":  "FBBF24",
+    "red":    "F87171"
+  },
+  "fonts": {
+    "screen": "Inter",
+    "officeTitle": "Cambria",
+    "officeBody": "Calibri",
+    "mono": "Consolas"
+  }
+}

@@ -1,0 +1,20 @@
+/* GENERATED from src/brand/brand.json by scripts/brand-css.mjs — do not edit.
+   One identity across the app and its documents (review I5): the decks, the
+   rate-card workbook and the PDF export use the same brand colours. */
+[data-theme="light"] {
+  --accent: #1D6FB8;
+  --accent-dark: #16325C;
+  --accent-light: #E8F1FA;
+  --accent2: #6B3FA0;
+  --accent3: #0D7D71;
+  --blue: #1D6FB8;      --blue-bg: #E8F1FA;
+  --green: #2A7F50;    --green-bg: #EAF6EF;
+  --amber: #99651A;    --amber-bg: #FCF3E3;
+  --red: #B03A2E;        --red-bg: #FBECEA;
+  --brand-navy: #16325C;
+}
+html:not([data-theme="light"]) {
+  --accent: #38BDF8;
+  --accent2: #A78BFA;
+  --brand-navy: #16325C;
+}

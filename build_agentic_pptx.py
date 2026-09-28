@@ -20,6 +20,7 @@ from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
 from pptx_fixup import finalise
+from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 # ── Brand palette ─────────────────────────────────────────────────────────────
 # Same hex values as build_workflow_deck.mjs and build_pptx.py, so all four decks
@@ -29,21 +30,21 @@ from pptx_fixup import finalise
 #
 # Note the page/card relationship inverts: the page is now the tinted colour and
 # the cards are white, where before the page was white and the panels tinted.
-INDIGO  = RGBColor(0x1D, 0x6F, 0xB8)   # logo badge
-BLUE    = RGBColor(0x1D, 0x6F, 0xB8)   # wordmark / primary accent
-DARK    = RGBColor(0x16, 0x32, 0x5C)   # headings — navy
-BODY    = RGBColor(0x3A, 0x43, 0x56)   # body text — slate
-MUTED   = RGBColor(0x6B, 0x72, 0x80)   # captions
-BG      = RGBColor(0xF4, 0xF7, 0xFB)   # page
+INDIGO  = rgb('blue')   # logo badge
+BLUE    = rgb('blue')   # wordmark / primary accent
+DARK    = rgb('navy')   # headings — navy
+BODY    = rgb('slate')   # body text — slate
+MUTED   = rgb('muted')   # captions
+BG      = rgb('page')   # page
 PANEL   = RGBColor(0xFF, 0xFF, 0xFF)   # card
-PANEL2  = RGBColor(0xE8, 0xF1, 0xFA)   # pale blue callout
-GREEN   = RGBColor(0x2E, 0x8B, 0x57)
-AMBER   = RGBColor(0xB7, 0x79, 0x1F)
-RED     = RGBColor(0xB0, 0x3A, 0x2E)
-VIOLET  = RGBColor(0x6B, 0x3F, 0xA0)
-CYAN    = RGBColor(0x0E, 0x80, 0x74)
-LINE    = RGBColor(0xDC, 0xE3, 0xEE)
-NAVY    = RGBColor(0x16, 0x32, 0x5C)   # dark plates (table headers, masthead)
+PANEL2  = rgb('blueTint')   # pale blue callout
+GREEN   = rgb('green')
+AMBER   = rgb('amber')
+RED     = rgb('red')
+VIOLET  = rgb('violet')
+CYAN    = rgb('teal')
+LINE    = rgb('line')
+NAVY    = rgb('navy')   # dark plates (table headers, masthead)
 
 # BG doubles as a TEXT colour wherever white type sits on a coloured fill. Now
 # that BG is the tinted page, those sites need an explicit white or the type goes

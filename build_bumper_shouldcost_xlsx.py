@@ -19,19 +19,20 @@ from openpyxl.chart.label import DataLabelList
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.comments import Comment
 import os
+from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 IMG_DIR = 'bumper-part-images'
 
-INDIGO = '4F46E5'
-DARK   = '0F172A'
-BODY   = '334155'
-MUTED  = '64748B'
-PANEL  = 'F1F5F9'
-PANEL2 = 'EFF6FF'
-GREEN  = '059669'
-GREENBG= 'ECFDF5'
-AMBER  = 'D97706'
-AMBERBG= 'FFFBEB'
+INDIGO = hexcol('blue')
+DARK   = hexcol('navy')
+BODY   = hexcol('slate')
+MUTED  = hexcol('muted')
+PANEL  = hexcol('page')
+PANEL2 = hexcol('blueTint')
+GREEN  = hexcol('green')
+GREENBG= hexcol('greenTint')
+AMBER  = hexcol('amber')
+AMBERBG= hexcol('amberTint')
 WHITE  = 'FFFFFF'
 
 INR2 = '"₹" #,##0.00'

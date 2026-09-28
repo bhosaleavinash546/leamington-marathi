@@ -7,6 +7,8 @@ import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
 import { buildCostDriverChart, buildNPISection, buildConfidenceRoadmap, buildSanityWarningsBanner, buildASILBadge, buildAutomotiveNRESection, buildSingleSourceWarnings, buildAutomotiveAssemblySection, buildAutomotiveFabSection, buildBOMCompletenessSection, buildProgramPricingSection, buildBenchmarkComparison, buildRevisionComparison, buildCountryBreakdownSection, buildVolumeCurveSection } from './pcb/panels.js';
 import './styles/calculator.css';
+// After calculator.css: the brand colours (generated from src/brand/brand.json) win.
+import './styles/brand.css';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,

@@ -14,11 +14,14 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const sharp = require('sharp');
 const fs = require('fs');
+import { readFileSync as __brandRead } from 'node:fs';
+// Brand colours — calculator/src/brand/brand.json, shared with the app (I5).
+const B = JSON.parse(__brandRead(new URL('./calculator/src/brand/brand.json', import.meta.url), 'utf8')).onLight;
 const OUT = 'assets/workflow-deck';
 
-const NAVY='#16325C', SLATE='#3A4356', MUTED='#6B7280', LINE='#C7D2E2';
-const AL1='#C9D4E2', AL2='#9FB0C6', AL3='#7C8FA8', MACH='#E8F1FA', BLUE='#1D6FB8';
-const PP1='#5B6675', PP2='#3F4854', PP3='#2C333C', TEAL='#0E8074';
+const NAVY=('#' + B.navy), SLATE=('#' + B.slate), MUTED=('#' + B.muted), LINE='#C7D2E2';
+const AL1='#C9D4E2', AL2='#9FB0C6', AL3='#7C8FA8', MACH=('#' + B.blueTint), BLUE=('#' + B.blue);
+const PP1='#5B6675', PP2='#3F4854', PP3='#2C333C', TEAL=('#' + B.teal);
 
 /** Isometric helper: 3D point → 2D. */
 const iso = (x, y, z) => [ (x - z) * 0.866, y + (x + z) * 0.5 ];
@@ -53,7 +56,7 @@ function housing() {
     <text x="${tx}" y="${ty+21}" font-family="Calibri,Arial" font-size="16" fill="${MUTED}">${t2}</text>`;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560">
-  <rect width="1000" height="560" fill="#F4F7FB"/>
+  <rect width="1000" height="560" fill="${'#' + B.page}"/>
   <polygon points="${pts(front)}" fill="${AL2}" stroke="${SLATE}" stroke-width="2"/>
   <polygon points="${pts(right)}" fill="${AL3}" stroke="${SLATE}" stroke-width="2"/>
   <polygon points="${pts(top)}" fill="${MACH}" stroke="${BLUE}" stroke-width="2.5"/>
@@ -84,7 +87,7 @@ function bumper() {
   <defs><linearGradient id="pp" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="${PP1}"/><stop offset="60%" stop-color="${PP2}"/><stop offset="100%" stop-color="${PP3}"/>
   </linearGradient></defs>
-  <rect width="1000" height="560" fill="#F4F7FB"/>
+  <rect width="1000" height="560" fill="${'#' + B.page}"/>
   <path d="${body}" fill="url(#pp)" stroke="${PP3}" stroke-width="2.5"/>
   <path d="M 300 208 L 700 208 C 716 208, 716 262, 700 262 L 300 262 C 284 262, 284 208, 300 208 Z" fill="#1B2027" stroke="${TEAL}" stroke-width="2.5"/>
   <ellipse cx="238" cy="300" rx="46" ry="30" fill="#1B2027" stroke="${TEAL}" stroke-width="2.5"/>

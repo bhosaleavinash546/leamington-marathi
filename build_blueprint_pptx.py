@@ -21,6 +21,7 @@ from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
 from pptx_fixup import finalise
+from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 # Same hex values as build_workflow_deck.mjs, build_pptx.py and the Agentic
 # builder, so all four decks read as one pack. This deck was already light but a
@@ -28,23 +29,23 @@ from pptx_fixup import finalise
 #
 # The page/card relationship inverts: the page is now tinted and the cards are
 # white, where before the page was white and the panels tinted.
-INDIGO  = RGBColor(0x1D, 0x6F, 0xB8)
-BLUE    = RGBColor(0x1D, 0x6F, 0xB8)
-DARK    = RGBColor(0x16, 0x32, 0x5C)   # navy
-BODY    = RGBColor(0x3A, 0x43, 0x56)   # slate
-MUTED   = RGBColor(0x6B, 0x72, 0x80)
-BG      = RGBColor(0xF4, 0xF7, 0xFB)   # page
+INDIGO  = rgb('blue')
+BLUE    = rgb('blue')
+DARK    = rgb('navy')   # navy
+BODY    = rgb('slate')   # slate
+MUTED   = rgb('muted')
+BG      = rgb('page')   # page
 PANEL   = RGBColor(0xFF, 0xFF, 0xFF)   # card
-PANEL2  = RGBColor(0xE8, 0xF1, 0xFA)   # pale blue callout
-GREENBG = RGBColor(0xEA, 0xF6, 0xEF)
-AMBERBG = RGBColor(0xFC, 0xF3, 0xE3)
-GREEN   = RGBColor(0x2E, 0x8B, 0x57)
-AMBER   = RGBColor(0xB7, 0x79, 0x1F)
-RED     = RGBColor(0xB0, 0x3A, 0x2E)
-VIOLET  = RGBColor(0x6B, 0x3F, 0xA0)
-CYAN    = RGBColor(0x0E, 0x80, 0x74)
-LINE    = RGBColor(0xDC, 0xE3, 0xEE)
-NAVY    = RGBColor(0x16, 0x32, 0x5C)   # dark plates
+PANEL2  = rgb('blueTint')   # pale blue callout
+GREENBG = rgb('greenTint')
+AMBERBG = rgb('amberTint')
+GREEN   = rgb('green')
+AMBER   = rgb('amber')
+RED     = rgb('red')
+VIOLET  = rgb('violet')
+CYAN    = rgb('teal')
+LINE    = rgb('line')
+NAVY    = rgb('navy')   # dark plates
 
 # BG doubled as a TEXT colour for white type on coloured fills, and as the fill
 # for white cards sitting on a tinted panel. Now that BG is the tinted page,

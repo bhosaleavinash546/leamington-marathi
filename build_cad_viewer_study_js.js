@@ -6,13 +6,17 @@
 // Usage:  NODE_PATH=calculator/node_modules node build_cad_viewer_study_js.js
 const pptxgen = require('pptxgenjs');
 
+// Brand accents on a dark ground: the onDark variants of the same hues the
+// light decks and the app use (calculator/src/brand/brand.json, I5).
+const BRAND = require('./calculator/src/brand/brand.json');
+const D = BRAND.onDark;
 const C = {
   BG:'0B0F17', SURF:'141B28', SURF2:'1C2536', BORDER:'2B3A52',
-  CYAN:'22D3EE', BLUE:'3B82F6', VIOLET:'8B5CF6', GREEN:'10B981',
-  AMBER:'F59E0B', RED:'EF4444',
+  CYAN:D.teal, BLUE:D.blue, VIOLET:D.violet, GREEN:D.green,
+  AMBER:D.amber, RED:D.red,
   W:'EAF0F8', GREY:'9AA7BD', DIM:'5C6B85', INK:'0B0F17',
 };
-const FONT='Calibri', HEADF='Calibri';
+const FONT=BRAND.fonts.officeBody, HEADF=BRAND.fonts.officeTitle;
 const p=new pptxgen(); p.defineLayout({name:'W',width:13.333,height:7.5}); p.layout='W';
 p.author='CostVision'; p.title='3D CAD Viewer & CAD-to-Cost Capture — Study & Roadmap';
 const W=13.333, H=7.5;

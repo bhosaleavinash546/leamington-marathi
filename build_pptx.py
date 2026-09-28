@@ -16,6 +16,7 @@ from lxml import etree
 import copy
 
 from pptx_fixup import finalise
+from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 # ─── Brand colours — light theme, matched to CostVision-Workflow-Explained ────
 # The palette is deliberately the same set of hex values as build_workflow_deck.mjs
@@ -26,24 +27,24 @@ from pptx_fixup import finalise
 #
 # The token NAMES are historical — TEXT_W is the primary text colour, not white.
 # They are kept because ~300 call sites use them, so the theme is one edit here.
-BG          = RGBColor(0xF4, 0xF7, 0xFB)   # page
+BG          = rgb('page')   # page
 SURFACE     = RGBColor(0xF7, 0xF9, 0xFC)   # tinted panel / alternating table row
 SURFACE2    = RGBColor(0xFF, 0xFF, 0xFF)   # card
-BORDER      = RGBColor(0xDC, 0xE3, 0xEE)   # hairline rule
-ACCENT_B    = RGBColor(0x1D, 0x6F, 0xB8)   # blue
-ACCENT_G    = RGBColor(0x2E, 0x8B, 0x57)   # green
-ACCENT_P    = RGBColor(0x6B, 0x3F, 0xA0)   # purple
-ORANGE      = RGBColor(0xB7, 0x79, 0x1F)   # amber
-RED         = RGBColor(0xB0, 0x3A, 0x2E)   # red
-TEXT_W      = RGBColor(0x16, 0x32, 0x5C)   # primary — navy
-TEXT_G      = RGBColor(0x3A, 0x43, 0x56)   # body — slate
-TEXT_D      = RGBColor(0x6B, 0x72, 0x80)   # secondary — muted
+BORDER      = rgb('line')   # hairline rule
+ACCENT_B    = rgb('blue')   # blue
+ACCENT_G    = rgb('green')   # green
+ACCENT_P    = rgb('violet')   # purple
+ORANGE      = rgb('amber')   # amber
+RED         = rgb('red')   # red
+TEXT_W      = rgb('navy')   # primary — navy
+TEXT_G      = rgb('slate')   # body — slate
+TEXT_D      = rgb('muted')   # secondary — muted
 WHITE       = RGBColor(0xFF, 0xFF, 0xFF)
 
 # The title slide stays a dark navy panel, exactly as the Workflow deck's does —
 # a light deck still wants one dark plate to open on. These are the only colours
 # used against it, and they are the ONLY place white type is correct.
-HERO_BG     = RGBColor(0x16, 0x32, 0x5C)   # navy plate
+HERO_BG     = rgb('navy')   # navy plate
 HERO_PANEL  = RGBColor(0x1E, 0x40, 0x70)   # slightly lifted centre
 HERO_TEXT   = RGBColor(0xFF, 0xFF, 0xFF)
 HERO_SUB    = RGBColor(0xCA, 0xDC, 0xFC)
@@ -564,7 +565,7 @@ for role, msg in chats:
     # The AI reply used to be a dark blue bubble against a dark page. On a light
     # page the same distinction is made the other way round: the user's turn is
     # the plain white bubble, the AI's is a pale blue tint.
-    bg_col = SURFACE2 if is_user else RGBColor(0xE8, 0xF1, 0xFA)
+    bg_col = SURFACE2 if is_user else rgb('blueTint')
     border_col = BORDER if is_user else ACCENT_B
     lines = msg.count('\n') + 1
     bh = Inches(BUB_PAD + lines * BUB_LINE)
@@ -730,7 +731,7 @@ notes(slide,
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 6 — 3D CAD Viewer (latest capabilities)
 # ══════════════════════════════════════════════════════════════════════════════
-TEAL = RGBColor(0x0E, 0x80, 0x74)   # Workflow deck's teal
+TEAL = rgb('teal')   # Workflow deck's teal
 slide = add_slide()
 slide_header(slide, 6, "New in 2026 · Engineering-Grade Viewer",
              "3D CAD Viewer — Inspect, Measure & Analyse",

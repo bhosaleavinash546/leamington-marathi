@@ -55,6 +55,7 @@
  */
 import ExcelJS from 'exceljs';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
+import { brandArgb } from '../src/brand/index.js';
 
 const LIB = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const OUT = process.argv[2] ?? 'CostVision-JLR-Rate-Converter.xlsx';
@@ -62,16 +63,16 @@ const OUT = process.argv[2] ?? 'CostVision-JLR-Rate-Converter.xlsx';
 // ─── House style ─────────────────────────────────────────────────────────────
 // One palette, used the same way everywhere: navy says "heading", amber says
 // "you type here", grey says "this fills itself in".
-const INK = 'FF1F2A44';       // headings and header bands
+const INK = brandArgb('navy');       // headings and header bands
 const PAPER = 'FFF4F6F8';     // calculated cells
 const INPUT = 'FFFFF6DE';     // cells a person fills in
 const INPUT_EDGE = 'FFD9B441';
 const WORKING = 'FFEDEFF3';   // helper columns — visible, plainly secondary
 const BAND = 'FFEEF2F7';      // section headings on the guide tabs
-const GOOD = 'FF1E7F4B';
-const BAD = 'FFB3261E';
-const MUTED = 'FF6B7686';
-const LINE = 'FFD5DAE2';
+const GOOD = brandArgb('green');
+const BAD = brandArgb('red');
+const MUTED = brandArgb('muted');
+const LINE = brandArgb('line');
 
 const FONT = 'Calibri';
 const fill = (argb: string): ExcelJS.Fill => ({ type: 'pattern', pattern: 'solid', fgColor: { argb } });

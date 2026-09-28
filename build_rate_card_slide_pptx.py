@@ -32,20 +32,21 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
 from pptx_fixup import finalise
+from brand import rgb, hexcol   # calculator/src/brand/brand.json — shared with the app (I5)
 
 # Same palette as the business-case deck so the two read as one pack.
-BLUE    = RGBColor(0x1D, 0x6F, 0xB8)
-DARK    = RGBColor(0x16, 0x32, 0x5C)
-BODY    = RGBColor(0x3A, 0x43, 0x56)
-MUTED   = RGBColor(0x6B, 0x72, 0x80)
-BG      = RGBColor(0xF4, 0xF7, 0xFB)
+BLUE    = rgb('blue')
+DARK    = rgb('navy')
+BODY    = rgb('slate')
+MUTED   = rgb('muted')
+BG      = rgb('page')
 PANEL   = RGBColor(0xFF, 0xFF, 0xFF)
-GREENBG = RGBColor(0xEA, 0xF6, 0xEF)
-PANEL2  = RGBColor(0xE8, 0xF1, 0xFA)
-GREEN   = RGBColor(0x2E, 0x8B, 0x57)
-AMBER   = RGBColor(0xB7, 0x79, 0x1F)
-LINE    = RGBColor(0xDC, 0xE3, 0xEE)
-NAVY    = RGBColor(0x16, 0x32, 0x5C)
+GREENBG = rgb('greenTint')
+PANEL2  = rgb('blueTint')
+GREEN   = rgb('green')
+AMBER   = rgb('amber')
+LINE    = rgb('line')
+NAVY    = rgb('navy')
 ON_DARK = RGBColor(0xFF, 0xFF, 0xFF)
 
 TITLE_FONT = 'Cambria'
