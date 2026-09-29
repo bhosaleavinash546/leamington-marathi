@@ -4,7 +4,7 @@
  *
  * The smoke test drives one commodity through `vite preview`, which has no
  * server, so nothing behind /api is exercised. This boots the real server the
- * way the Windows package runs it — air-gapped, its own data folder, a signed-in
+ * way the Windows package runs it — no air gap and no API key yet, its own data folder, a signed-in
  * user — and serves the build from it. It exists because unit tests passed while
  * the app showed one commodity's cost under another's heading (M1), hid its
  * result below the fold (M7), and could not cost an STL at all: answering its
@@ -71,7 +71,9 @@ async function main(): Promise<void> {
   const secret = 'e2e-' + Math.random().toString(36).slice(2);
   const env: NodeJS.ProcessEnv = {
     ...process.env, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1',
-    JWT_SECRET: secret, AIR_GAPPED: '1', CV_DATA_DIR: dir,
+    // The default install: NOT air-gapped and no API key yet. AI entry points must
+    // stay hidden and every costing path must work without them.
+    JWT_SECRET: secret, AIR_GAPPED: '0', ANTHROPIC_API_KEY: '', CV_DATA_DIR: dir,
   };
   const server: ChildProcess = spawn(join(ROOT, 'node_modules/.bin/tsx'), ['server/index.ts'],
     { cwd: ROOT, env, stdio: 'ignore', detached: true });
@@ -95,7 +97,7 @@ async function main(): Promise<void> {
                 VALUES ('e2e', 'e2e@test', 'x', 'E2E', 1, ?)`).run(new Date().toISOString());
     db.close();
     const token = jwt.sign({ userId: 'e2e', email: 'e2e@test', emailVerified: true }, secret, { expiresIn: '1h' });
-    log(`server up on ${port} (air-gapped, production build)`);
+    log(`server up on ${port} (no air gap, no API key, production build)`);
 
     try {
       browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined });
@@ -113,6 +115,10 @@ async function main(): Promise<void> {
       localStorage.setItem('cv-wizard-off', '1');
     }, token);
     await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+    // No key yet → AI is unavailable → its entry points are hidden, not broken.
+    const health = await page.evaluate(async () => (await fetch('/api/health')).json()) as { airGapped?: boolean; aiAvailable?: boolean };
+    if (health.airGapped !== false || health.aiAvailable !== false) fail(`health: expected not air-gapped and AI unavailable, got ${JSON.stringify(health)}`);
+    if (await page.getAttribute('html', 'data-ai') !== 'off') fail('no API key: AI entry points are showing (html[data-ai] is not "off")');
     for (const v of await axeViolations(page)) fail(`home: accessibility — ${v}`);
 
     // ── Every commodity costs on its defaults ──────────────────────────────

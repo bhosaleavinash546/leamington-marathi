@@ -136,10 +136,13 @@ describe('the Windows launcher and the code agree', () => {
     expect(readFileSync(join(APP, 'server', 'db.ts'), 'utf8')).toContain('CV_DATA_DIR');
   });
 
-  it('turns AI off provably rather than just leaving it unconfigured', () => {
-    // An absent key is not the same claim as "this deployment cannot call out".
-    // AIR_GAPPED=1 makes createAnthropic throw.
-    expect(bat).toMatch(/AIR_GAPPED=1/);
+  it('does not air-gap AI, and says how to switch it on or off', () => {
+    // The air gap was removed (AI to be enabled later with a key). The launcher
+    // must not write an active AIR_GAPPED=1; it leaves both switches, commented,
+    // in the settings file it creates.
+    expect(bat).not.toMatch(/^\s*>>\s*"%ENV_FILE%"\s*echo\s+AIR_GAPPED=1/m);
+    expect(bat).toMatch(/echo # ANTHROPIC_API_KEY=/);
+    expect(bat).toMatch(/echo # AIR_GAPPED=1/);
   });
 
   it('has CRLF line endings, or cmd.exe mis-parses it', () => {

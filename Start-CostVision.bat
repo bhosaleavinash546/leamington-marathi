@@ -94,11 +94,12 @@ if not exist "%ENV_FILE%" (
   rem baked into a package everyone installs is not a secret.
   for /f "delims=" %%S in ('"!NODE_EXE!" -e "console.log(require('crypto').randomBytes(32).toString('hex'))"') do set "GEN=%%S"
   > "%ENV_FILE%" echo JWT_SECRET=!GEN!
-  rem No AI in this deployment. AIR_GAPPED=1 makes every model call throw
-  rem rather than merely being unconfigured, so it cannot start reaching out
-  rem because someone pasted a key in. Delete this line to allow AI later --
-  rem the code is all still there.
-  >> "%ENV_FILE%" echo AIR_GAPPED=1
+  rem AI is not air-gapped. With no ANTHROPIC_API_KEY the AI features stay
+  rem hidden and every costing path works without them; add a key below and
+  rem restart to switch them on. AIR_GAPPED=1 switches AI off deliberately
+  rem (every model call then refuses, even with a key).
+  >> "%ENV_FILE%" echo # ANTHROPIC_API_KEY=
+  >> "%ENV_FILE%" echo # AIR_GAPPED=1
   >> "%ENV_FILE%" echo PORT=3002
   echo   [ok] First run - settings written to %ENV_FILE%
 )

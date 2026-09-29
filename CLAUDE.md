@@ -125,8 +125,11 @@ prebuilds and OCP is a `win_amd64` wheel with no sdist; the script refuses other
 platforms rather than produce a folder that fails on someone's desk. It ends by
 measuring a STEP fixture with the bundled interpreter against the committed
 truth value. Kernel pinned in root `requirements.txt` (`cadquery-ocp-novtk`,
-never `cadquery` — the engine imports OCP only). The launcher sets `AIR_GAPPED=1`
-(JLR has no AI approval yet — the AI code stays, it is switched off),
+never `cadquery` — the engine imports OCP only). AI is **not air-gapped** by default:
+with no `ANTHROPIC_API_KEY` the AI entry points are hidden (`/api/health`
+`aiAvailable:false` → `ai-mode.ts`) and every costing path works; add a key and
+restart to switch AI on. `AIR_GAPPED=1` still switches it off deliberately. The
+launcher writes both, commented, into the settings file. It sets
 `CV_DATA_DIR` (the install folder is not user-writable on Windows) and
 `PYTHON_BIN` (there is no `python3` on Windows). Anything POSIX-only in the
 Python engine must stay behind a `hasattr` guard — see `_set_alarm`; `SIGALRM`

@@ -11,11 +11,11 @@ inputs an engineer types, using real 2026 rates. Every number is plain arithmeti
 you can trace to a rate. It runs on a laptop with no internet and no AI.
 
 ## How it works (as shipped to JLR)
-- **AI is switched off in the JLR build** (`AIR_GAPPED=1`). JLR has no AI approval
-  yet. The AI code is still in the product, turned off, so it can be switched on
-  later by a setting — no rebuild. With AI off, the screens that need it (PCB photo
-  → BOM, "Describe a part", the AI assistant, the AI agent) are hidden, and the
-  tool says "AI is switched off in this installation" rather than asking for a key.
+- **AI is ready but not yet switched on** (updated 29 Sep 2026: the air gap was
+  removed). Until an API key is added, the screens that need AI (PCB photo → BOM,
+  "Describe a part", the AI assistant, the AI agent) are hidden and every costing
+  path works without them. Adding a key switches them on — no rebuild.
+  `AIR_GAPPED=1` can still switch AI off deliberately.
 - **AI never sets a price, even when it is on.** At most it reads or classifies
   (material, process route, a drawing). All money is deterministic arithmetic.
   With AI on, every AI route is rate-limited per user.

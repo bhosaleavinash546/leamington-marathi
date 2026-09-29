@@ -1,12 +1,15 @@
 # CostVision on a Windows laptop
 
-For an offline, locked-down machine with no administrator rights and no AI.
-The deterministic cost engine, the CAD-to-Cost pipeline and bulk costing all
-run; every model call throws rather than reaching out.
+For a locked-down machine with no administrator rights. The deterministic cost
+engine, the CAD-to-Cost pipeline and bulk costing all run offline; AI features
+appear only once an API key is added (they need internet access to the API).
 
-The AI code is **not removed**. It is switched off by `AIR_GAPPED=1`, which is
-one line in a settings file — so the same package becomes the full Option 2
-tool the day the approval lands.
+AI is **not air-gapped**. Until an API key is added the AI screens are hidden
+and every costing path works without them. To switch AI on, put
+`ANTHROPIC_API_KEY=<key>` in `%LOCALAPPDATA%\CostVision\settings.env` (the
+launcher writes the line, commented) and restart. To switch AI off
+deliberately — every model call then refuses, even with a key — uncomment
+`AIR_GAPPED=1` in the same file.
 
 ---
 
@@ -95,7 +98,7 @@ built elsewhere on Windows.
 
 | Variable | Value | Why |
 |---|---|---|
-| `AIR_GAPPED` | `1` | Every model call throws `AirGappedError`. An absent API key only means *unconfigured*; this is a stated, testable property, enforced by `tests/architecture-invariants.test.ts`. |
+| `AIR_GAPPED` | not set (commented `# AIR_GAPPED=1` in settings.env) | Uncomment to switch AI off: every model call throws `AirGappedError`, enforced by `tests/architecture-invariants.test.ts`. Unset, AI runs once `ANTHROPIC_API_KEY` is set and stays hidden until then. |
 | `CV_DATA_DIR` | `%LOCALAPPDATA%\CostVision` | A standard user cannot write under `C:\Program Files`, and the database is opened on the first request. Also survives a reinstall. |
 | `PYTHON_BIN` | the bundled `python.exe` | `geometry-bridge.ts` spawns `python3` by default, and there is no `python3` on Windows. |
 | `JWT_SECRET` | generated on first run | A secret baked into a package everyone installs is not a secret. |

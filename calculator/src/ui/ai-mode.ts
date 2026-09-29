@@ -1,8 +1,11 @@
 /**
  * Whether this installation has AI, and hiding what needs it when it does not.
  *
- * The JLR build runs with AIR_GAPPED=1: the AI code stays in the app, switched
- * off. Before this module the interface could not tell — /api/health did not
+ * AI is usable when the air gap is off (AIR_GAPPED unset) and the server has an
+ * ANTHROPIC_API_KEY. Until then the AI entry points are hidden and every costing
+ * path works without them; AIR_GAPPED=1 still switches AI off deliberately.
+ *
+ * Before this module the interface could not tell — /api/health did not
  * report it — so the no-AI build led with AI start cards, a chat bubble and an
  * "AI Cost Intelligence" tagline, and every AI click ended in "add an API key",
  * the one thing the policy forbids.
@@ -56,15 +59,16 @@ applyAiMode();
 /** Resolves once the server has answered (or failed to); the value is isAiOff(). */
 export const aiModeReady: Promise<boolean> = fetch(`${apiBase}/api/health`, { signal: AbortSignal.timeout(5000) })
   .then(r => (r.ok ? r.json() : null))
-  .then((h: { airGapped?: boolean } | null) => {
+  .then((h: { airGapped?: boolean; aiAvailable?: boolean } | null) => {
     // No answer is not an answer: keep whatever was last known.
-    if (h && typeof h.airGapped === 'boolean' && h.airGapped !== aiOff) {
-      aiOff = h.airGapped;
-      remember(aiOff);
-      applyAiMode();
-    } else if (h && typeof h.airGapped === 'boolean') {
-      remember(aiOff);
-    }
+    if (!h || typeof h.airGapped !== 'boolean') return aiOff;
+    // AI is off when it is switched off (air-gapped) OR not set up yet (no key).
+    // Without the second half, an installation with the air gap removed but no key
+    // led with AI buttons that each ended in "API key not configured". Add a key,
+    // restart the server, and the AI entry points appear on the next load.
+    const off = h.airGapped || h.aiAvailable === false;
+    if (off !== aiOff) { aiOff = off; applyAiMode(); }
+    remember(aiOff);
     return aiOff;
   })
   .catch(() => aiOff);
