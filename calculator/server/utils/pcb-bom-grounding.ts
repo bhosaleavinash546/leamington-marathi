@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { cataloguePrice, classMedianCap, volumeScaleFrom10k } from './pcb-price-catalogue.js';
+import { cataloguePrice, classMedianCap, volumeScaleFrom10k, POWER_INDUCTOR_CAP_GBP } from './pcb-price-catalogue.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -139,7 +139,11 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number): Live
 // unit price is treated as unverified — capped to its class median AND flagged.
 const HIGH_VALUE_UNMATCHED_GBP = 10;
 
-export function capUnconfirmedPrices(bom: BomLine[]): { bom: BomLine[]; capped: number } {
+/** The tool's own stated price range for a part it can name (e.g. an OCR-read
+ *  NXP S32R294 → £22–48 at 100K). Supplied by the route, which owns the ranges. */
+export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string } | null;
+
+export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): { bom: BomLine[]; capped: number } {
   let capped = 0;
   const out = bom.map(line => {
     const verified = line.livePriced === true || line.priceSource === 'catalogue';
@@ -154,7 +158,26 @@ export function capUnconfirmedPrices(bom: BomLine[]): { bom: BomLine[]; capped: 
       || unit > HIGH_VALUE_UNMATCHED_GBP;
     if (!unconfirmed) return line;
     const qty = num(line.qty, 1);
-    const capUnit = classMedianCap(String(line.componentType ?? ''), unit);
+    // A part read off the chip with full confidence whose range the tool states
+    // is held inside THAT range, not a generic class median — an OCR-confirmed
+    // S32R294 was cut from £26 to the £18 BGA median, below the tool's own £22
+    // floor. Still flagged: a range is not a quote.
+    const range = line.ocrExtracted === true && num(line.lineConf) >= 0.95 ? knownRange?.(line) ?? null : null;
+    if (range) {
+      const inRange = Math.min(unit, range.hi);
+      return {
+        ...line,
+        aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
+        unitPriceGBP: round(inRange, 4),
+        lineTotalGBP: round(inRange * qty, 2),
+        priceSource: 'known-range',
+        priceCapped: inRange < unit - 1e-6,
+        priceNote: `OCR-confirmed ${range.label}; tool range £${range.lo}–${range.hi} at 100K — confirm with a quote`,
+        needsVerification: true,
+      };
+    }
+    const isInductor = /inductor|choke/i.test(String(line.description ?? ''));
+    const capUnit = isInductor ? Math.min(unit, POWER_INDUCTOR_CAP_GBP) : classMedianCap(String(line.componentType ?? ''), unit);
     if (capUnit < unit - 1e-6) {
       capped++;
       return {
@@ -205,9 +228,9 @@ export interface GroundingOutcome {
  * unconfirmed lines, resum the total, and split confirmed vs needs-verification.
  * Called from BOTH the streaming and non-streaming Stage-4 paths so they can't drift.
  */
-export function groundAndSplit(bom: BomLine[], livePrices: LivePriceResult[]): GroundingOutcome {
+export function groundAndSplit(bom: BomLine[], livePrices: LivePriceResult[], knownRange?: KnownRange): GroundingOutcome {
   const reconciled = reconcileBomWithCatalogue(bom, livePrices);
-  const capResult = capUnconfirmedPrices(reconciled.bom);
+  const capResult = capUnconfirmedPrices(reconciled.bom, knownRange);
   const split = splitConfirmedUnverified(capResult.bom);
   return {
     bom: capResult.bom,

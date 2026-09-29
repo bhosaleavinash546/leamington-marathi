@@ -481,6 +481,10 @@ function computeConformalCoatingCost(
   asilLevel: ASILLevel,
 ): number {
   if (domain !== 'automotive_adas') return 0;
+  // Only a board that IS coated pays for coating. This used to charge every
+  // automotive board; the model now reports conformalCoating from the photos
+  // (a UV photo shows it fluorescing) and the user can correct it.
+  if (boardSpec.conformalCoating !== true) return 0;
   const widthMm = Number(boardSpec.widthMm) || 100;
   const heightMm = Number(boardSpec.heightMm) || 80;
   const areaCm2 = (widthMm * heightMm) / 100;
@@ -488,8 +492,9 @@ function computeConformalCoatingCost(
   // ASIL-D requires conformal + edge seal; ASIL-A/B selective is fine
   const ratePerCm2 = asilLevel === 'ASIL-D' || asilLevel === 'ASIL-C' ? 0.20 : 0.12;
   const coatingCost = areaCm2 * ratePerCm2;
-  // Minimum batch setup £18, maximum per-board £280
-  return Math.min(280, Math.max(18, Math.round(coatingCost * 100) / 100));
+  // Capped at £280/board. (The old £18 floor was a per-BATCH setup charge applied
+  // per board.)
+  return Math.min(280, Math.round(coatingCost * 100) / 100);
 }
 
 // ── Automotive Assembly Cost Model (IATF 16949) ───────────────────────────────
@@ -552,6 +557,7 @@ function computeAutomotiveFabAdjustment(
   boardSpec: Record<string, unknown>,
   fabCostMid: number,
   domain: string,
+  boardsPerPanel = 1,
 ): AutomotiveFabAdjustment {
   if (domain !== 'automotive_adas' || fabCostMid <= 0) {
     return { standardFabGBP: fabCostMid, iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0, totalAutomotiveFabGBP: fabCostMid, premiumPctOverStandard: 0 };
@@ -563,8 +569,11 @@ function computeAutomotiveFabAdjustment(
   const iatfFabPremiumGBP = fabCostMid * 0.18;
   const laminatePct = layers >= 8 ? 0.50 : 0.35;
   const automotiveLaminatePremiumGBP = fabCostMid * 0.40 * laminatePct;
-  const ipcClass3InspectionGBP = Math.min(45, Math.max(8, areaCm2 * 0.08));
-  const couponTestingGBP = Math.min(35, Math.max(5, layers * 2.5));
+  // Class-3 microsection inspection and coupon testing are done per PANEL (the
+  // coupons are cut from the panel rails), so they are shared by its boards.
+  const perPanel = Math.max(1, boardsPerPanel);
+  const ipcClass3InspectionGBP = Math.min(45, Math.max(8, areaCm2 * 0.08)) / perPanel;
+  const couponTestingGBP = Math.min(35, Math.max(5, layers * 2.5)) / perPanel;
   const totalAutomotiveFabGBP = fabCostMid + iatfFabPremiumGBP + automotiveLaminatePremiumGBP + ipcClass3InspectionGBP + couponTestingGBP;
   const premiumPctOverStandard = Math.round((totalAutomotiveFabGBP / fabCostMid - 1) * 100);
   const r = (n: number) => Math.round(n * 100) / 100;
@@ -630,7 +639,9 @@ interface ProgramPricingResult {
   multiplier: number;
 }
 function computeProgramPricing(bomTotal: number, orderQty: number, domain: string): ProgramPricingResult {
-  const annualProgramVolume = orderQty * 4;
+  // The quantity field IS the annual volume (the PDF labels it so). It used to be
+  // multiplied by 4 — 250k/yr became a 1M "Tier-1 contract" and a −50% BOM.
+  const annualProgramVolume = orderQty;
   let multiplier: number; let pricingTier: ProgramPricingResult['pricingTier'];
   if (domain !== 'automotive_adas') { multiplier = 1.0; pricingTier = 'distributor_spot'; }
   else if (annualProgramVolume >= 500_000) { multiplier = 0.50; pricingTier = 'tier1_contract'; }
@@ -800,6 +811,9 @@ manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 // ── IC price hints from OCR markings ──────────────────────────────────────
 // Known automotive IC price ranges (100K volume, AEC-Q qualified)
 const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string }> = [
+  // ── Automotive radar MCUs (ranges as in the automotive system prompt) ─────
+  { test: m => /S32R29[0-9]|S32R27[0-9]/i.test(m), label: 'NXP S32R294/S32R274 radar MCU (ASIL-B)', price: '£22–48' },
+  { test: m => /S32R4[0-9]/i.test(m), label: 'NXP S32R45/S32R41 radar processor', price: '£45–95' },
   // ── Automotive MCUs ────────────────────────────────────────────────────────
   { test: m => /AURIX|TC39[0-9]|TC38[0-9]|TC37[0-9]/i.test(m), label: 'Infineon AURIX TC3xx/TC4xx (ASIL-D lockstep)', price: '£35–130' },
   { test: m => /TC2[6-9][0-9]|TC26|TC27|TC29/i.test(m), label: 'Infineon AURIX TC2xx (ASIL-D)', price: '£18–55' },
@@ -842,7 +856,8 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /AUIPS|IPD|IPS200/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },
   // ── Radar & RF (Automotive) ────────────────────────────────────────────────
   { test: m => /BGT60|BGT24|BGT12/i.test(m), label: 'Infineon BGT60/24 77GHz/24GHz radar frontend', price: '£18–80' },
-  { test: m => /TEF810|TEF81/i.test(m), label: 'NXP TEF810x 77GHz radar transceiver', price: '£25–90' },
+  // Same range as the automotive system prompt — the two used to disagree (£25–90 here vs £9–22 there).
+  { test: m => /TEF810|TEF81/i.test(m), label: 'NXP TEF810x 77GHz radar transceiver', price: '£9–22' },
   { test: m => /AWR1843|AWR1642|AWR1443/i.test(m), label: 'TI AWR 77GHz ADAS radar SoC', price: '£20–75' },
   // ── Memory (Automotive) ────────────────────────────────────────────────────
   { test: m => /IS42S|IS43T|IS66W/i.test(m), label: 'ISSI automotive SDRAM/SRAM', price: '£1.50–8' },
@@ -857,6 +872,15 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /TLV3|TLV6|TLV7/i.test(m), label: 'TI TLV comparator/op-amp', price: '£0.12–1.80' },
   { test: m => /LM317|LM358|LM741|LM324/i.test(m), label: 'TI/Fairchild classic linear IC', price: '£0.08–0.80' },
 ];
+
+/** The tool's stated 100K range for a BOM line it can name, for the grounding cap. */
+export function icKnownRange(line: { partNumber?: unknown; description?: unknown }): { lo: number; hi: number; label: string } | null {
+  const text = `${String(line.partNumber ?? '')} ${String(line.description ?? '')}`.toUpperCase();
+  const hit = IC_PRICE_HINTS.find(h => h.test(text));
+  if (!hit) return null;
+  const m = /£\s*([0-9.]+)\s*[–-]\s*([0-9.]+)/.exec(hit.price);
+  return m ? { lo: Number(m[1]), hi: Number(m[2]), label: hit.label } : null;
+}
 
 function buildICPriceHints(markings: string[], domain: string): string {
   const automotiveNote = domain === 'automotive_adas'
@@ -906,7 +930,7 @@ connector_smt, through_hole, manual_solder
 
 === BOARD TECHNOLOGY ===
 technologyType: FR4_STD | FR4_HTg | HDI_RIGID | RIGID_FLEX | RF_MICRO
-surfaceFinish: hasl | hasl_lf | enig | osp | enepig | iteq
+surfaceFinish: hasl | hasl_lf | enig | osp | enepig | imag (immersion silver — silvery, not gold)
 hdiStructure: none | 1plus_n_plus1 | 2plus_n_plus2 | any_layer
 qualityGrade: consumer | industrial | auto_grade2 | auto_grade1 | aerospace
 complexity: low | medium | high | very_high
@@ -919,6 +943,7 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
     "estimatedLayers": 2,
     "widthMm": 100,
     "heightMm": 80,
+    "dimensionsSource": "estimated",
     "surfaceFinish": "enig",
     "solderMaskColour": "green",
     "silkscreenSides": 2,
@@ -933,7 +958,8 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
     "impedanceControlRequired": false,
     "copperWeightOz": 1,
     "qualityGrade": "industrial",
-    "panelUtilisation": 0.75
+    "panelUtilisation": 0.75,
+    "conformalCoating": false
   },
   "bom": [
     {
@@ -987,6 +1013,8 @@ INSTRUCTIONS:
 - smtPlacements = total qty of all SMT components
 - throughHoleJoints = sum of qty x pins for through_hole components
 - Estimate board dimensions from component sizes, connector pitch, or visible rulers
+- dimensionsSource: "measured" ONLY if width/height were READ from a label, drawing, board-data table, ruler or scale in the photos; otherwise "estimated"
+- conformalCoating: true only if a coating is visible (glossy film over components, fluorescence in a UV photo); otherwise false
 - List at least 3 aiInsights, 2 dfmIssues, 3 optimisationSuggestions, 1 analysisLimitation
 - IMPORTANT: Return ONLY the JSON — nothing else`;
 }
@@ -1426,7 +1454,7 @@ ${userPromptText}`;
         const liveHit = new Set(livePrices.map(p => p.mpn.toUpperCase()));
         livePrices = [...livePrices, ...offlineCataloguePrices(candidatePNs.filter(pn => !liveHit.has(pn.toUpperCase())), orderQty)];
       }
-      const grounded = groundAndSplit(enrichedBOM, livePrices);
+      const grounded = groundAndSplit(enrichedBOM, livePrices, icKnownRange);
       enrichedBOM = grounded.bom as Array<Record<string, unknown>>;
       a.bom = enrichedBOM;
       livePriceHits = grounded.matched;
@@ -2308,7 +2336,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       livePrices2 = [...livePrices2, ...offlineCataloguePrices(candidatePNs2.filter(pn => !liveHit2.has(pn.toUpperCase())), orderQty2)];
     }
     // Ground + class-median-cap the unconfirmed guesses + split confirmed/unverified.
-    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2);
+    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2, icKnownRange);
     enrichedBOM2 = grounded2.bom as Array<Record<string, unknown>>;
     streamLivePriceHits = grounded2.matched;
     streamNeedsVerification = grounded2.needsVerification;
@@ -2343,6 +2371,14 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     countryComparison2 = computeAllCountryCosts(costInput2);
     const resolvedCountry2 = PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn';
     selectedCountryBreakdown2 = computePCBCountryCost(costInput2, resolvedCountry2);
+    // The automotive panels need the country breakdown, which did not exist when
+    // they were first computed above (they read null → flat fallbacks). Recompute
+    // them now: assembly on the country's assembly, fab on the BARE board (not the
+    // stabilised fab that already carries assembly and a ×1.3 automotive uplift).
+    if (domain === 'automotive_adas' && selectedCountryBreakdown2) {
+      streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, selectedCountryBreakdown2.assemblyPerBoard);
+      streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, selectedCountryBreakdown2.pcbFabPerBoard, domain, selectedCountryBreakdown2.panelInfo?.boardsPerPanel ?? 1);
+    }
     const sorted2 = [...countryComparison2].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
     const cheapestId2 = sorted2[0]?.countryId ?? 'cn';
     const volQtys2 = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];

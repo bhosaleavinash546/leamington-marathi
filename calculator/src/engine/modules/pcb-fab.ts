@@ -19,7 +19,8 @@ export type PCBQualityGrade =
   | 'auto_grade1'  // AEC-Q Grade 1, IATF 16949 — £×1.80
   | 'aerospace';   // IPC Class 3, AS9100 — £×2.20
 
-export type SurfaceFinish = 'hasl' | 'hasl_lf' | 'osp' | 'enig' | 'enepig' | 'iteq';
+/** 'imag' = immersion silver; 'iteq' is its legacy key (same price). */
+export type SurfaceFinish = 'hasl' | 'hasl_lf' | 'osp' | 'enig' | 'enepig' | 'imag' | 'iteq';
 
 export type HDIStructure =
   | 'none'             // Standard through-hole only
@@ -98,7 +99,11 @@ export const FINISH_ADDER_GBP: Record<SurfaceFinish, number> = {
   osp:     0.32,
   enig:    0.85,
   enepig:  1.80,
-  iteq:    1.60,
+  // Immersion silver: the country table prices it at +10% over HASL against
+  // ENIG's +22%, so its adder is ENIG's £0.85 × 10/22. It was £1.60 here —
+  // dearer than ENIG, which no fabricator charges.
+  imag:    0.39,
+  iteq:    0.39,
 };
 
 /** HDI build-up structure multiplier (sequential lamination cost). */
@@ -235,7 +240,7 @@ export function getPCBFabInputSchema(): Record<string, string> {
     hasFinePitchBGA: 'boolean — BGA ≤0.65mm pitch (yield penalty)',
     solderMaskColor: 'green | black | white | red | blue',
     silkscreenSides: '0 | 1 | 2 — number of silkscreen layers',
-    surfaceFinish: 'hasl | hasl_lf | osp | enig | enepig | iteq',
+    surfaceFinish: 'hasl | hasl_lf | osp | enig | enepig | imag (immersion silver)',
     testMethod: 'none | aoi_only | flying_probe | ict_fixtureless | ict_fixture | ict_xray',
     qualityGrade: 'consumer | industrial | auto_grade2 | auto_grade1 | aerospace',
     region: 'uk | eu | china | india | na — sourcing region (drives base panel price)',

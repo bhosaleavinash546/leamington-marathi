@@ -106,8 +106,14 @@ const CLASS_MEDIAN: Record<string, number> = {
   ic_sot: 1.20, ic: 4.00,
   connector_smt: 6.00, through_hole: 3.50, connector: 6.00,
   crystal_osc: 2.00, fuse_tvs: 0.60,
-  passive_0402: 0.03, passive_0805: 0.08, passive_1206: 0.12, passive: 0.06,
+  passive_0402: 0.03, passive_0603: 0.06, passive_0805: 0.08, passive_1206: 0.12, passive: 0.06,
 };
+
+/** Power inductors / chokes have no component type of their own (the prompt's
+ *  list has none), so they arrive as passive_0805 and were capped at a chip
+ *  capacitor's £0.08. The tool's own anchor is £0.018–0.60 for 0805-class
+ *  inductors, ×3–5 at AEC-Q200 — cap at that ceiling instead. */
+export const POWER_INDUCTOR_CAP_GBP = 1.80;
 
 /**
  * Cap the unit price of an UNCONFIRMED part to its class median. Returns the

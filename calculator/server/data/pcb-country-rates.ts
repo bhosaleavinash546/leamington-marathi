@@ -22,6 +22,8 @@ export interface PCBFabRates {
     enig: number;
     osp: number;
     enepig: number;
+    /** Immersion silver (ImAg). Historically stored under the key 'iteq' — kept
+     *  as an alias so saved analyses still resolve. */
     iteq: number;
   };
   /** £ adder per 100 through vias drilled */
@@ -1065,6 +1067,24 @@ export function bestPanelFit(boardW: number, boardH: number, panels = STANDARD_P
   return best;
 }
 
+
+/**
+ * One spelling for every finish the model, the UI or a saved analysis may send.
+ * Immersion silver was keyed 'iteq' in this table, "ITEQ / ImAg" in the UI, mapped
+ * to HASL-LF by the fab form and priced at £1.60 (above ENIG) by pcb-fab.ts; it
+ * now resolves to 'iteq' here (the table's ImAg column) wherever it comes from.
+ * Unknown strings still fall back to ENIG, as before.
+ */
+export function normaliseFinish(raw: unknown): string {
+  const k = String(raw ?? '').toLowerCase().trim().replace(/[\s-]+/g, '_');
+  const ALIAS: Record<string, string> = {
+    imag: 'iteq', immersion_silver: 'iteq', silver: 'iteq', iag: 'iteq', iteq: 'iteq',
+    immersion_gold: 'enig', enig: 'enig', hasl: 'hasl', hasl_lf: 'hasl_lf', lead_free_hasl: 'hasl_lf',
+    osp: 'osp', enepig: 'enepig', hard_gold: 'enepig',
+  };
+  return ALIAS[k] ?? k;
+}
+
 export function computePCBCountryCost(input: PCBCostInput, countryId: string): PCBCountryCostBreakdown {
   const rate = PCB_COUNTRY_RATES[countryId];
   if (!rate) throw new Error(`Unknown country: ${countryId}`);
@@ -1084,7 +1104,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // PCB Fabrication (base + layer cost carry the panel waste factor)
   const pcbBase = boardAreaDm2 * r.baseCostPerDm2_2L * wasteFactor;
   const pcbLayers = boardAreaDm2 * r.layerAdderPerDm2 * extraLayers * wasteFactor;
-  const finishKey = input.surfaceFinish as keyof typeof r.surfaceFinishMultiplier;
+  const finishKey = normaliseFinish(input.surfaceFinish) as keyof typeof r.surfaceFinishMultiplier;
   const finishMult = r.surfaceFinishMultiplier[finishKey] ?? r.surfaceFinishMultiplier.enig;
   const pcbSurface = (pcbBase + pcbLayers) * (finishMult - 1);
   const pcbVias = (input.throughVias / 100) * r.viaAdderPer100Through

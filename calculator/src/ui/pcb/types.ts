@@ -107,6 +107,10 @@ export interface PCBImageAnalysis {
     copperWeightOz: number;
     qualityGrade: string;
     panelUtilisation: number;
+    /** 'measured' = read from a label/sheet/ruler or typed by the user (kept exactly); 'estimated' = AI guess (stabilised). */
+    dimensionsSource?: 'measured' | 'estimated';
+    /** A conformal coat is present (costed only when true). */
+    conformalCoating?: boolean;
   };
   bom: PCBBOMItem[];
   assembly: {

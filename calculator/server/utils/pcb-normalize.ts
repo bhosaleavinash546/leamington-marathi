@@ -55,7 +55,7 @@ export function normalizePCBAnalysis(a: Record<string, unknown>): void {
     estimatedLayers: num(bs.estimatedLayers, 4),
     widthMm: num(bs.widthMm, 100),
     heightMm: num(bs.heightMm, 80),
-    surfaceFinish: str(bs.surfaceFinish, 'HASL'),
+    surfaceFinish: str(bs.surfaceFinish, 'hasl').toLowerCase(),
     solderMaskColour: str(bs.solderMaskColour, 'green'),
     silkscreenSides: num(bs.silkscreenSides, 1),
     throughVias: num(bs.throughVias, 0),

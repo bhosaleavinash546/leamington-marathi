@@ -5243,7 +5243,7 @@ function renderPCBFabForm(): string {
         <option value="osp">OSP</option>
         <option value="enig" selected>ENIG (automotive std)</option>
         <option value="enepig">ENEPIG (wire bond)</option>
-        <option value="iteq">ITEQ / ImAg</option>
+        <option value="imag">Immersion silver (ImAg)</option>
       </select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -8220,6 +8220,11 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     estimatedLayers:          Math.round(gNum('pcb-edit-layers', r.boardSpec.estimatedLayers)),
     widthMm:                  gNum('pcb-edit-width', r.boardSpec.widthMm),
     heightMm:                 gNum('pcb-edit-height', r.boardSpec.heightMm),
+    // A size the user typed is measured, and the server keeps it exactly.
+    dimensionsSource:         (gNum('pcb-edit-width', r.boardSpec.widthMm) !== r.boardSpec.widthMm
+                               || gNum('pcb-edit-height', r.boardSpec.heightMm) !== r.boardSpec.heightMm)
+                               ? 'measured' : r.boardSpec.dimensionsSource,
+    conformalCoating:         r.boardSpec.conformalCoating,
     surfaceFinish:            g('pcb-edit-surface')?.value ?? r.boardSpec.surfaceFinish,
     solderMaskColour:         r.boardSpec.solderMaskColour,
     silkscreenSides:          r.boardSpec.silkscreenSides,
@@ -8464,7 +8469,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <label style="font-size:0.68rem">Layers<br/><input type="number" id="pcb-edit-layers" min="1" value="${b.estimatedLayers}" style="width:60px"/></label>
         <label style="font-size:0.68rem">Width (mm)<br/><input type="number" id="pcb-edit-width" min="0" value="${b.widthMm}" style="width:60px"/></label>
         <label style="font-size:0.68rem">Height (mm)<br/><input type="number" id="pcb-edit-height" min="0" value="${b.heightMm}" style="width:60px"/></label>
-        <label style="font-size:0.68rem">Surface Finish<br/><select id="pcb-edit-surface"><option value="hasl" ${b.surfaceFinish==='hasl'?'selected':''}>HASL</option><option value="hasl_lf" ${b.surfaceFinish==='hasl_lf'?'selected':''}>HASL LF</option><option value="enig" ${b.surfaceFinish==='enig'?'selected':''}>ENIG</option><option value="osp" ${b.surfaceFinish==='osp'?'selected':''}>OSP</option><option value="enepig" ${b.surfaceFinish==='enepig'?'selected':''}>ENEPIG</option><option value="iteq" ${b.surfaceFinish==='iteq'?'selected':''}>ITEQ</option></select></label>
+        <label style="font-size:0.68rem">Surface Finish<br/><select id="pcb-edit-surface"><option value="hasl" ${b.surfaceFinish==='hasl'?'selected':''}>HASL</option><option value="hasl_lf" ${b.surfaceFinish==='hasl_lf'?'selected':''}>HASL LF</option><option value="enig" ${b.surfaceFinish==='enig'?'selected':''}>ENIG</option><option value="osp" ${b.surfaceFinish==='osp'?'selected':''}>OSP</option><option value="enepig" ${b.surfaceFinish==='enepig'?'selected':''}>ENEPIG</option><option value="iteq" ${b.surfaceFinish==='iteq'?'selected':''}>ITEQ</option><option value="imag" ${['imag','iteq'].includes(b.surfaceFinish)?'selected':''}>Immersion silver</option></select></label>
         <label style="font-size:0.68rem">Through Vias<br/><input type="number" id="pcb-edit-through-vias" min="0" value="${b.throughVias}" style="width:60px"/></label>
         <label style="font-size:0.68rem">Blind Vias<br/><input type="number" id="pcb-edit-blind-vias" min="0" value="${b.blindVias}" style="width:60px"/></label>
         <label style="font-size:0.68rem">Micro Vias<br/><input type="number" id="pcb-edit-micro-vias" min="0" value="${b.microVias}" style="width:60px"/></label>
@@ -8777,7 +8782,7 @@ function buildScenarioBuilderSection(r: PCBImageAnalysis): string {
       <div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;font-size:0.72rem">
         <label style="display:flex;flex-direction:column;gap:3px">Surface finish
           <select id="pcb-scn-finish" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
-            ${finishOpt('hasl', 'HASL')}${finishOpt('hasl_lf', 'HASL-LF')}${finishOpt('enig', 'ENIG')}${finishOpt('osp', 'OSP')}${finishOpt('enepig', 'ENEPIG')}
+            ${finishOpt('hasl', 'HASL')}${finishOpt('hasl_lf', 'HASL-LF')}${finishOpt('enig', 'ENIG')}${finishOpt('osp', 'OSP')}${finishOpt('enepig', 'ENEPIG')}${finishOpt('imag', 'Immersion silver')}
           </select>
         </label>
         <label style="display:flex;flex-direction:column;gap:3px">Layer count
@@ -9676,11 +9681,14 @@ function applyPCBImageToFab(): void {
     'enig': 'enig',
     'osp': 'osp',
     'enepig': 'enepig',
-    'iteq': 'iteq',
+    'imag': 'imag',
+    'iteq': 'imag',
+    'silver': 'imag',
+    'immersion_silver': 'imag',
     'hard_gold': 'enepig',
     'hard gold': 'enepig',
     'immersion gold': 'enig',
-    'immersion silver': 'hasl_lf',
+    'immersion silver': 'imag',
   };
   const rawFinish = (b.surfaceFinish ?? '').toLowerCase().trim();
   const mappedFinish = FINISH_MAP[rawFinish] ?? 'enig';

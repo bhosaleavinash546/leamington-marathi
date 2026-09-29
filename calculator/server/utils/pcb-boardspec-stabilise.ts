@@ -64,16 +64,25 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   const modelAreaCm2 = (wModel * hModel) / 100;
   const aspect = hModel > 0 ? Math.min(3, Math.max(1 / 3, wModel / hModel)) : 1.4;
 
+  // A MEASURED size (read off a label, drawing, board-data sheet or ruler, or typed
+  // by the user) is ground truth and is kept exactly. Only an ESTIMATED size is
+  // pulled toward the placement-density anchor — that clamp exists to stop two
+  // reads of one board disagreeing, and it assumes ~1.6 placements/cm², so it
+  // turned a measured 87.8×48.9 mm automotive radar board (7.6/cm²) into 161×89.
+  const measured = String(spec.dimensionsSource ?? '').toLowerCase() === 'measured'
+    && modelAreaCm2 >= AREA_MIN_CM2 && modelAreaCm2 <= AREA_MAX_CM2;
   let areaCm2 = modelAreaCm2;
-  if (modelAreaCm2 < anchorAreaCm2 * AREA_BAND_LO) areaCm2 = anchorAreaCm2 * AREA_BAND_LO;
-  else if (modelAreaCm2 > anchorAreaCm2 * AREA_BAND_HI) areaCm2 = anchorAreaCm2 * AREA_BAND_HI;
-  areaCm2 = Math.min(AREA_MAX_CM2, Math.max(AREA_MIN_CM2, areaCm2));
-  // rebuild width/height at the stabilised area, preserving the model's aspect ratio
-  const areaMm2 = areaCm2 * 100;
-  const height = Math.sqrt(areaMm2 / aspect);
-  const width = height * aspect;
-  spec.widthMm = Math.round(width);
-  spec.heightMm = Math.round(height);
+  if (!measured) {
+    if (modelAreaCm2 < anchorAreaCm2 * AREA_BAND_LO) areaCm2 = anchorAreaCm2 * AREA_BAND_LO;
+    else if (modelAreaCm2 > anchorAreaCm2 * AREA_BAND_HI) areaCm2 = anchorAreaCm2 * AREA_BAND_HI;
+    areaCm2 = Math.min(AREA_MAX_CM2, Math.max(AREA_MIN_CM2, areaCm2));
+    // rebuild width/height at the stabilised area, preserving the model's aspect ratio
+    const areaMm2 = areaCm2 * 100;
+    const height = Math.sqrt(areaMm2 / aspect);
+    const width = height * aspect;
+    spec.widthMm = Math.round(width);
+    spec.heightMm = Math.round(height);
+  }
 
   // ── 2. Layers: quantise to a standard stack-up ──────────────────────────────
   const layers = standardLayers(n(spec.estimatedLayers, 2));
@@ -89,7 +98,11 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   spec.technologyType = deriveTechnology(
     layers, n(spec.microVias), String(spec.hdiStructure ?? 'none'),
     Boolean(spec.impedanceControlRequired), bgaCount > 0 || Boolean(spec.bgaDetected), automotive);
-  if (bgaCount > 0) spec.surfaceFinish = 'enig';             // BGA solderability needs ENIG
+  // HASL is not flat enough for fine-pitch BGA — move those to ENIG. A stated
+  // flat finish (immersion silver, OSP, ENEPIG, ENIG) is kept: this used to force
+  // ENIG onto every BGA board, overwriting a board's real immersion-silver finish.
+  const finish = String(spec.surfaceFinish ?? '').toLowerCase();
+  if (bgaCount > 0 && (finish === '' || finish.startsWith('hasl'))) spec.surfaceFinish = 'enig';
 
   return spec;
 }
