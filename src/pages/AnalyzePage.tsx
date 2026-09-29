@@ -937,10 +937,10 @@ export default function AnalyzePage() {
                   </div>
                   {enableSearch && (
                     <div className="space-y-2">
-                      <p className="text-slate-400 text-xs">The AI will search the web for current material costs, OEM benchmarks, technology trends, and regulatory data before generating ideas.</p>
+                      <p className="text-slate-400 text-xs">The AI searches the web — through Anthropic, on your existing API key — for current material costs, OEM benchmarks, technology trends and regulatory data before generating ideas. Up to 5 searches a run, about 1¢ each plus the results it reads.</p>
                       <div>
                         <label className="block text-xs font-medium text-slate-400 mb-1.5">
-                          Brave Search API Key <span className="text-slate-500">(optional — uses DuckDuckGo free if blank)</span>
+                          Brave Search API Key <span className="text-slate-500">(optional — leave blank to use Anthropic's search; enter one only to search through Brave instead)</span>
                         </label>
                         <input
                           type="password"

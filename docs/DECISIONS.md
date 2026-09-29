@@ -4449,3 +4449,21 @@ of the 29 Sept demo failure, found once the error text was passed through
 `anthropic-workspace-id` header on every client: the server, `check:ai`, the
 Horizon scripts and the ideation eval. Unset, it sends nothing, so a key
 created inside a workspace needs no change.
+
+## 109. Analyze searches through Anthropic, and a cut-off idea list keeps its complete ideas
+
+With web search on and no Brave key, Analyze sends Anthropic's server-side
+`web_search_20260209` tool (at most 5 searches, $10 per 1,000 plus the result
+tokens read). The old fallback, DuckDuckGo instant answers, returned "0
+results" for every engineering query. Searches are reported in the feed as
+they happen (the stream is watched for `server_tool_use` and
+`web_search_tool_result` blocks), recorded as sources, and a `pause_turn` is
+resumed by sending the assistant content back. A Brave key, when entered,
+still takes precedence.
+
+A response cut off at `max_tokens` used to lose every idea and then re-run
+the whole generation. The streamed `emit_ideas` input is now kept, and every
+idea whose object closed is salvaged (`salvageIdeasFromPartialJson`); the
+re-run happens only when nothing survived. The prompt caps the list at 12
+ideas (it said "do not stop at 8 — generate all"), and the output budget is
+32k tokens.

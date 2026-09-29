@@ -150,11 +150,44 @@ http.createServer(async (req, res) => {
     write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'signature_delta', signature: 'stub' } });
     write(res, 'content_block_stop', { type: 'content_block_stop', index: idx }); idx++;
   }
+  // Anthropic's server-side web search, shaped as the API returns it: the query
+  // as a server_tool_use block, the results as a web_search_tool_result block,
+  // both inside this same response. FAKE_LLM_PAUSE=1 answers the first such
+  // call with stop_reason "pause_turn" to exercise the resume path.
+  const serverSearch = (p.tools || []).some(t => String(t.type || '').startsWith('web_search_'));
+  if (serverSearch && process.env.FAKE_LLM_PAUSE && !stats.paused) {
+    stats.paused = true;
+    write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'server_tool_use', id: 'srvtoolu_pause', name: 'web_search', input: {} } });
+    write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: JSON.stringify({ query: 'SYNTHETIC paused search' }) } });
+    write(res, 'content_block_stop', { type: 'content_block_stop', index: idx }); idx++;
+    write(res, 'message_delta', { type: 'message_delta', delta: { stop_reason: 'pause_turn', stop_sequence: null }, usage: { output_tokens: 10 } });
+    write(res, 'message_stop', { type: 'message_stop' }); stats.completed++; return res.end();
+  }
+  if (serverSearch) {
+    for (const [k, q] of [['1', 'SYNTHETIC hairpin stator cost 2026'], ['2', 'SYNTHETIC copper price trend']]) {
+      write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'server_tool_use', id: `srvtoolu_${k}`, name: 'web_search', input: {} } });
+      write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: JSON.stringify({ query: q }) } });
+      write(res, 'content_block_stop', { type: 'content_block_stop', index: idx }); idx++;
+      write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'web_search_tool_result', tool_use_id: `srvtoolu_${k}`, content: [
+        { type: 'web_search_result', url: `https://example.com/stub-${k}-a`, title: `SYNTHETIC result ${k}a`, encrypted_content: 'x', page_age: 'September 2026' },
+        { type: 'web_search_result', url: `https://example.org/stub-${k}-b`, title: `SYNTHETIC result ${k}b`, encrypted_content: 'x' } ] } });
+      write(res, 'content_block_stop', { type: 'content_block_stop', index: idx }); idx++;
+    }
+  }
+  // FAKE_LLM_TRUNCATE=0.6 streams only that share of the tool input and stops
+  // with max_tokens — the live failure where the idea list was cut off.
+  const truncate = Number(process.env.FAKE_LLM_TRUNCATE) > 0 && Number(process.env.FAKE_LLM_TRUNCATE) < 1 ? Number(process.env.FAKE_LLM_TRUNCATE) : null;
   if (tool) {
     write(res, 'content_block_start', { type: 'content_block_start', index: idx, content_block: { type: 'tool_use', id: 'toolu_stub', name: tool.name, input: {} } });
-    const chunks = 40, step = Math.ceil(json.length / chunks), pace = Math.max(50, (PACE_MS * 0.75) / chunks);
-    for (let i = 0; i < json.length && !gone; i += step) { write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: json.slice(i, i + step) } }); await sleep(pace); }
+    const body = truncate ? json.slice(0, Math.floor(json.length * truncate)) : json;
+    const chunks = 40, step = Math.ceil(body.length / chunks), pace = Math.max(50, (PACE_MS * 0.75) / chunks);
+    for (let i = 0; i < body.length && !gone; i += step) { write(res, 'content_block_delta', { type: 'content_block_delta', index: idx, delta: { type: 'input_json_delta', partial_json: body.slice(i, i + step) } }); await sleep(pace); }
     if (gone) return;
+    if (truncate) {
+      write(res, 'content_block_stop', { type: 'content_block_stop', index: idx });
+      write(res, 'message_delta', { type: 'message_delta', delta: { stop_reason: 'max_tokens', stop_sequence: null }, usage: { output_tokens: Number(p.max_tokens) || 0 } });
+      write(res, 'message_stop', { type: 'message_stop' }); stats.completed++; return res.end();
+    }
   } else {
     // A plain-text reply (the chat) streams at the same pace as a tool reply,
     // so a caller hanging up mid-answer is observable here too.

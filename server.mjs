@@ -56,6 +56,7 @@ import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes, orgAccess } from './routes/orgs.mjs';
 import { registerTrizRoutes } from './routes/triz.mjs';
 import { describeLlmError, providerDetail } from './llm-error.mjs';
+import { serverWebSearchTool, harvestServerSearches, salvageIdeasFromPartialJson } from './anthropic-search.mjs';
 import { registerPart360Routes } from './routes/part360.mjs';
 import { registerInnovationRoutes } from './routes/innovation.mjs';
 import { registerForesightRoutes } from './routes/foresight.mjs';
@@ -2389,7 +2390,7 @@ HARNESS CHECK: a wiring harness is not a part with a process, so engineCheckRequ
 Use JSON null (not the string 'null') for any optional field that is not applicable.
 Each idea must address a genuinely different engineering mechanism. Do not generate variations of the same core idea with different titles. If two ideas share the same root cause and technical approach, merge them into one richer idea.${IDEATION_LEGACY ? '' : `
 DIVERSITY REQUIREMENT: before writing ideas, silently sweep the full mechanism space — material substitution, process change, architecture/part-count integration, spec & tolerance relaxation, commonisation/carry-over, supplier & commercial levers, logistics/packaging, and emerging technology — and draw ideas from EVERY class that genuinely applies. Cap any single mechanism class at 3 ideas. Do not anchor on the first mechanism you think of, on the precedent examples, or on the most obvious substitution for this part family; the batch is scored on diversity as well as depth.`}
-Cover EVERY viable lever — material substitution, process optimisation, design changes, commonisation, logistics, warranty, tooling amortisation, and emerging technology. Do not stop at 8 — generate all ideas that a Chief Engineer would seriously consider. Include a spread of Low/Medium/High difficulty, at least 1 commonisation idea, and at least 1 emerging-technology idea.${trizLens}Return ONLY the JSON array — no markdown, no preamble.`;
+Cover EVERY viable lever — material substitution, process optimisation, design changes, commonisation, logistics, warranty, tooling amortisation, and emerging technology. Emit at most 12 ideas — the strongest a Chief Engineer would seriously consider, each fully developed. The response has a hard length limit and an idea cut off at the end is lost, so never start an idea you cannot finish. Include a spread of Low/Medium/High difficulty, at least 1 commonisation idea, and at least 1 emerging-technology idea.${trizLens}Return ONLY the JSON array — no markdown, no preamble.`;
 }
 
 const webSearchTool = {
@@ -3220,7 +3221,9 @@ const ANALYZE_TIMEOUT_MS = Number(process.env.CV_ANALYZE_TIMEOUT_MS ?? 1_200_000
 const ANALYZE_CALL_TIMEOUT_MS = Number(process.env.CV_ANALYZE_CALL_TIMEOUT_MS ?? 900_000);
 // Output the emit_ideas call needs on its own. Thinking headroom is ADDED to
 // this (llm-budget.mjs) — it must never be carved out of it.
-const BASE_OUTPUT_TOKENS = 24000;
+// 32k since 29 Sept 2026: a live run with web search wrote past 24k and the
+// whole idea list was lost. The prompt now also caps the list at 12 ideas.
+const BASE_OUTPUT_TOKENS = 32000;
 
 function autoSaveProject(userId, projectId, systemName, subassemblyName, partName, config, ideas, sources) {
   try {
@@ -3252,10 +3255,39 @@ function autoSaveProject(userId, projectId, systemName, subassemblyName, partNam
 // This only became reachable once extended thinking actually started working
 // (see the adaptive-thinking fix above): while it was being silently stripped,
 // the call was fast enough to fit.
-async function createLongMessage(client, params, opts, onProgress) {
+async function createLongMessage(client, params, opts, onProgress, onSearch) {
   const t0 = Date.now();
   const meta = client._meta || {};
   const stream = client.messages.stream(params, opts);
+  // The emit_ideas input as it streamed, kept so a response cut off at
+  // max_tokens can still yield every idea whose object closed
+  // (salvageIdeasFromPartialJson) instead of losing the lot.
+  const emitIdx = new Set(); let emitPartial = '';
+  // Anthropic's server-side searches, reported AS THEY HAPPEN: the query when
+  // its block closes, the result count when the result block arrives. They
+  // run inside this one long response, so reporting them after it would show
+  // nothing during the search phase and every line at once at the end.
+  const searchIdx = new Map();   // content index → { id, json }
+  const searchQuery = new Map(); // server_tool_use id → query
+  stream.on('streamEvent', ev => {
+    if (!onSearch) return;
+    try {
+      if (ev.type === 'content_block_start' && ev.content_block?.type === 'server_tool_use' && ev.content_block?.name === 'web_search') searchIdx.set(ev.index, { id: ev.content_block.id, json: '' });
+      else if (ev.type === 'content_block_delta' && ev.delta?.type === 'input_json_delta' && searchIdx.has(ev.index)) searchIdx.get(ev.index).json += ev.delta.partial_json || '';
+      else if (ev.type === 'content_block_stop' && searchIdx.has(ev.index)) {
+        const b = searchIdx.get(ev.index); searchIdx.delete(ev.index);
+        let q = ''; try { q = String(JSON.parse(b.json || '{}').query || ''); } catch { /* partial */ }
+        searchQuery.set(b.id, q); onSearch({ type: 'query', id: b.id, query: q });
+      } else if (ev.type === 'content_block_start' && ev.content_block?.type === 'web_search_tool_result') {
+        const c = ev.content_block.content;
+        onSearch({ type: 'result', id: ev.content_block.tool_use_id, query: searchQuery.get(ev.content_block.tool_use_id) ?? '', count: Array.isArray(c) ? c.length : 0, error: Array.isArray(c) ? null : c?.error_code ?? null });
+      }
+    } catch { /* feed only — never break the call */ }
+  });
+  stream.on('streamEvent', ev => {
+    if (ev.type === 'content_block_start' && ev.content_block?.type === 'tool_use' && ev.content_block?.name === 'emit_ideas') emitIdx.add(ev.index);
+    else if (ev.type === 'content_block_delta' && ev.delta?.type === 'input_json_delta' && emitIdx.has(ev.index)) emitPartial += ev.delta.partial_json || '';
+  });
   if (onProgress) {
     // Adaptive thinking streams summarised deltas (often empty text), so token
     // counts during reasoning are unknowable from here; report elapsed time
@@ -3273,6 +3305,7 @@ async function createLongMessage(client, params, opts, onProgress) {
   }
   try {
     const msg = await stream.finalMessage();
+    Object.defineProperty(msg, 'emitPartialJson', { value: emitPartial, enumerable: false });
     try {
       db.prepare('INSERT INTO llm_calls (id, model, inputTokens, outputTokens, cacheReadTokens, latencyMs, ok, createdAt, userId, route) VALUES (?,?,?,?,?,?,1,?,?,?)')
         .run(crypto.randomUUID(), params.model + ' (stream)', msg.usage?.input_tokens ?? null, msg.usage?.output_tokens ?? null, msg.usage?.cache_read_input_tokens ?? null, Date.now() - t0, new Date().toISOString(), meta.userId ?? null, meta.route ?? null);
@@ -3656,6 +3689,8 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       return await finishAnalysis(merged);
     }
 
+    const useBrave = !!String(searchApiKey || '').trim();
+    const seenServerSearches = new Set(), pendingServerSearches = new Map();
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error(`Analysis timed out after ${Math.round(ANALYZE_TIMEOUT_MS / 60000)} minutes. Please try again with web search disabled.`);
       // Chief-Engineer-grade tradeoffs deserve actual reasoning. On the flagship
@@ -3668,7 +3703,12 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       // off; the number picks the effort level.
       const budget = ideationParams(BASE_OUTPUT_TOKENS, process.env.CV_THINKING_BUDGET ?? 6000);
       const params = { model: 'claude-opus-4-8', max_tokens: budget.max_tokens, system: cachedSystem(CHIEF_ENGINEER_PROMPT), messages };
-      params.tools = enableSearch ? [webSearchTool, emitIdeasTool] : [emitIdeasTool];
+      // Web search: the user's own Brave key when they gave one (the app runs
+      // those searches), otherwise Anthropic's server-side search — the
+      // DuckDuckGo fallback returned nothing for engineering queries.
+      params.tools = !enableSearch ? [emitIdeasTool]
+        : useBrave ? [webSearchTool, emitIdeasTool]
+        : [serverWebSearchTool(), emitIdeasTool];
       params.tool_choice = { type: 'auto' };
       if (budget.thinking) { params.thinking = budget.thinking; params.output_config = budget.output_config; }
 
@@ -3684,22 +3724,47 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       const onTokens = ({ elapsedMs, outTokens }) => emit({ type: 'progress', phase: outTokens > 0 ? 'write' : 'reason', elapsedMs, outTokens, message: outTokens > 0
         ? `Writing ideas… ~${outTokens.toLocaleString()} tokens (${fmt(elapsedMs)})`
         : `Reasoning… ${fmt(elapsedMs)}` });
+      const liveSearchIds = new Set();
+      const onSearch = (e) => {
+        if (e.type === 'query') emit({ type: 'searching', phase: 'search', query: e.query, purpose: 'web', searchNumber: sources.length + liveSearchIds.size + 1 });
+        else { liveSearchIds.add(e.id); emit({ type: 'search_done', searchNumber: sources.length + liveSearchIds.size, resultCount: e.count, query: e.query + (e.error ? ` — ${e.error}` : '') }); }
+      };
       const withoutThinking = () => { delete params.thinking; delete params.output_config; params.max_tokens = BASE_OUTPUT_TOKENS; };
       let response;
       try {
-        response = await createLongMessage(client, params, callOpts, onTokens);
+        response = await createLongMessage(client, params, callOpts, onTokens, onSearch);
       } catch (e) {
         // Defensive: if this provider/config combination rejects extended
         // thinking, retry once without rather than failing the analysis.
         if ((params.thinking || params.output_config) && e?.status === 400 && /thinking|output_config|effort/i.test(e?.message || '')) {
           withoutThinking();
-          response = await createLongMessage(client, params, callOpts, onTokens);
+          response = await createLongMessage(client, params, callOpts, onTokens, onSearch);
         } else throw e;
       }
       lastStopReason = response.stop_reason;
 
+      // Anthropic's searches ran inside this response: record them as sources
+      // and show them in the feed, exactly as the Brave path does.
+      for (const h of harvestServerSearches(response.content, seenServerSearches, pendingServerSearches)) {
+        const shownLive = liveSearchIds.has(h.id);
+        if (!shownLive) emit({ type: 'searching', query: h.query, purpose: 'web', searchNumber: sources.length + 1 });
+        sources.push({ query: h.query, purpose: 'web', results: h.results, timestamp: new Date().toISOString(), provider: 'anthropic', ...(h.error ? { error: h.error } : {}) });
+        if (!shownLive) emit({ type: 'search_done', searchNumber: sources.length, resultCount: h.results.length, query: h.query + (h.error ? ` — ${h.error}` : '') });
+        console.log(`[Search:anthropic] "${h.query}" → ${h.results.length} results${h.error ? ` (${h.error})` : ''}`);
+      }
+
       // Strict path: the model called emit_ideas — its input IS the idea array.
       let emitBlock = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
+      // CUT OFF AT THE LIMIT: keep every complete idea rather than none, and do
+      // not spend a second full generation when something survived.
+      if (response.stop_reason === 'max_tokens' && !(Array.isArray(emitBlock?.input?.ideas) && emitBlock.input.ideas.length)) {
+        const saved = salvageIdeasFromPartialJson(response.emitPartialJson);
+        if (saved.length) {
+          emit({ type: 'progress', message: `The response reached the output limit — kept the ${saved.length} complete idea${saved.length === 1 ? '' : 's'}; only the one being written when it stopped was lost.` });
+          console.warn(`[Analysis] max_tokens — salvaged ${saved.length} complete ideas from the cut-off emit_ideas call.`);
+          emitBlock = { type: 'tool_use', name: 'emit_ideas', input: { ideas: saved } };
+        }
+      }
       // Output-budget starvation is detected and SAID, then recovered once with
       // reasoning off — announced in the progress feed, never silent. A second
       // truncation is a real error and is reported as one.
@@ -3708,7 +3773,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         emit({ type: 'progress', message: `${trunc} Retrying once with reasoning off.` });
         console.warn('[Analysis] ' + trunc + ' Retrying once without thinking.');
         withoutThinking();
-        response = await createLongMessage(client, params, callOpts, onTokens);
+        response = await createLongMessage(client, params, callOpts, onTokens, onSearch);
         lastStopReason = response.stop_reason;
         emitBlock = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
         trunc = truncationReason(response.stop_reason, emitBlock, params.max_tokens, false);
@@ -3717,6 +3782,14 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       if (emitBlock) {
         emit({ type: 'synthesizing', phase: 'verify', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
         return await finishAnalysis(Array.isArray(emitBlock.input?.ideas) ? emitBlock.input.ideas : []);
+      }
+
+      // A server-side search turn that hit its internal step limit pauses; it
+      // resumes by sending the assistant content back as-is — no new user text.
+      if (response.stop_reason === 'pause_turn') {
+        messages.push({ role: 'assistant', content: response.content });
+        emit({ type: 'progress', phase: 'search', message: 'Web research is still running — continuing…' });
+        continue;
       }
 
       if (response.stop_reason === 'tool_use') {
