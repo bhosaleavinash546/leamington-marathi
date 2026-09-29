@@ -5,6 +5,7 @@ import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
+import { pcbCostOverview } from './pcb/cost-overview.js';
 import { buildCostDriverChart, buildNPISection, buildConfidenceRoadmap, buildSanityWarningsBanner, buildASILBadge, buildAutomotiveNRESection, buildSingleSourceWarnings, buildAutomotiveAssemblySection, buildAutomotiveFabSection, buildBOMCompletenessSection, buildProgramPricingSection, buildBenchmarkComparison, buildRevisionComparison, buildCountryBreakdownSection, buildVolumeCurveSection } from './pcb/panels.js';
 import './styles/calculator.css';
 // After calculator.css: the brand colours (generated from src/brand/brand.json) win.
@@ -388,6 +389,18 @@ let cadPartPhotoBase64 = '';
 let cadDrawingFile: File | null = null;
 let cadPartPhotoMime = 'image/jpeg';
 let pcbImageResult: PCBImageAnalysis | null = null;
+/** Which photo result last filled which PCB form ("Apply to Fab" / "Apply to PCBA").
+ *  The should-cost report attaches the photos and ASIL only when the costing on the
+ *  form came from that photo: the 2026-09-29 radar report printed the untouched
+ *  default 200×150 mm fab board (£82.43) under the radar's photos and ASIL-C. */
+let _pcbFormFilledFrom: { result: PCBImageAnalysis; commodity: string } | null = null;
+function pcbPhotoMatchesForm(): boolean {
+  return !!pcbImageResult && _pcbFormFilledFrom?.result === pcbImageResult && _pcbFormFilledFrom.commodity === activeCommodity;
+}
+/** A photo result is loaded but the PCB form being reported was not filled from it. */
+function pcbFormNotFromPhoto(): boolean {
+  return !!pcbImageResult && (activeCommodity === 'pcb_fab' || activeCommodity === 'pcba') && !pcbPhotoMatchesForm();
+}
 let pcbImageLoading = false;
 let pcbBOMFile: File | null = null;
 let pcbImageDataURL: string | null = null;
@@ -9418,19 +9431,17 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
 
   // ── §3 COST OVERVIEW ──────────────────────────────────────────────────────────
-  const c = r.costEstimates;
-  sectionTitle('§3  Cost Overview');
+  // The selected country's breakdown — the screen headline — not the AI's first pass.
+  const ov = pcbCostOverview(r, parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement | null)?.value ?? '', 10) || undefined);
+  sectionTitle(`§3  Cost Overview — ${ov.basis}`);
+  const ovTotalRow = ov.rows.length;
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
-    head: [['Cost Element', `Min (${_displayCurrency})`, `Mid (${_displayCurrency})`, `Max (${_displayCurrency})`]],
+    head: [['Cost Element (per board)', `Low (${_displayCurrency})`, `Should-cost (${_displayCurrency})`, `High (${_displayCurrency})`]],
     body: [
-      ['PCB Fabrication', num(c.pcbFabGBP.min), num(c.pcbFabGBP.mid), num(c.pcbFabGBP.max)],
-      ['BOM (components)', '—', num(c.totalBOMCostGBP), '—'],
-      ['SMT Assembly', '—', num(c.smtAssemblyCostGBP), '—'],
-      ['Total Estimate', num(c.pcbFabGBP.min + c.totalBOMCostGBP + c.smtAssemblyCostGBP),
-       num(c.pcbFabGBP.mid + c.totalBOMCostGBP + c.smtAssemblyCostGBP),
-       num(c.pcbFabGBP.max + c.totalBOMCostGBP + c.smtAssemblyCostGBP)],
+      ...ov.rows.map(row => [row.label, '—', num(row.value), '—']),
+      ['Total per board', ov.low != null ? num(ov.low) : '—', num(ov.total), ov.high != null ? num(ov.high) : '—'],
     ],
     styles: { fontSize: 8, cellPadding: 2.5 },
     headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold' },
@@ -9439,7 +9450,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
     columnStyles: { 0: { halign: 'left', fontStyle: 'bold' } },
     theme: 'grid',
     didParseCell: (data: any) => {
-      if (data.section === 'body' && data.row.index === 3) {
+      if (data.section === 'body' && data.row.index === ovTotalRow) {
         data.cell.styles.fillColor = [220, 242, 255];
         data.cell.styles.fontStyle = 'bold';
       }
@@ -9597,8 +9608,10 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
 function savePCBResultToLibrary(): void {
   const r = pcbImageResult;
   if (!r) { showToast('Run a PCB analysis first', 'warning'); return; }
-  const co = r.costEstimates;
-  const total = co.totalBOMCostGBP + co.pcbFabGBP.mid + co.smtAssemblyCostGBP;
+  // The headline (selected country), not the AI's first-pass fab/assembly guess.
+  const ov = pcbCostOverview(r);
+  const total = ov.total;
+  const part = (p: string) => ov.rows.find(x => x.label.startsWith(p))?.value ?? 0;
   const existing = getPartsLibrary();
   // Avoid an accidental duplicate of the exact same board+total saved moments ago.
   if (existing.some(x => x.commodity === 'pcba' && x.partName === r.partName && Math.abs(x.totalCost - total) < 0.005)) {
@@ -9617,10 +9630,12 @@ function savePCBResultToLibrary(): void {
     region: (r._selectedCountry ?? 'cn').toUpperCase(),
     confidence: r.confidenceLevel ?? 'Medium',
     breakdown: {
-      rawMaterial: co.totalBOMCostGBP,      // components (BOM)
-      process: co.pcbFabGBP.mid,            // bare-board fabrication
-      labour: co.smtAssemblyCostGBP,        // SMT + assembly
-      tooling: 0, overhead: 0, packaging: 0, logistics: 0, margin: 0,
+      rawMaterial: part('Components'),      // components (BOM)
+      process: part('Bare board'),          // bare-board fabrication
+      labour: part('Assembly'),             // SMT + assembly + test
+      tooling: 0, overhead: 0,
+      packaging: part('Energy'),            // energy, packaging & yield loss
+      logistics: part('Logistics'), margin: 0,
     },
   });
   savePartsLibrary(existing);
@@ -9775,6 +9790,7 @@ function applyPCBImageToFab(): void {
   }
 
   switchCommodity('pcb_fab');
+  _pcbFormFilledFrom = { result: pcbImageResult, commodity: 'pcb_fab' };
 }
 
 function applyPCBImageToPCBA(): void {
@@ -9792,6 +9808,7 @@ function applyPCBImageToPCBA(): void {
 
   // Ensure we're on PCBA
   if (activeCommodity !== 'pcba') switchCommodity('pcba');
+  _pcbFormFilledFrom = { result: r, commodity: 'pcba' };
 
   setTimeout(() => {
     // Assembly parameters
@@ -16581,7 +16598,10 @@ async function printMasterPDF(): Promise<void> {
     // PCB costs are GBP-denominated — convert to the display currency.
     const pcbSym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
     const pcbFx = (n: number) => `${pcbSym}${(n * _displayFxRate).toFixed(2)}`;
-    doc.text(`${pcbImageResult.boardSpec.estimatedLayers}-layer ${pcbImageResult.boardSpec.technologyType}  ·  BOM: ${pcbFx(co.totalBOMCostGBP)}  ·  Fab: ${pcbFx(co.pcbFabGBP.mid)}  ·  Confidence: ${pcbImageResult.confidenceLevel}`, mg + 8, y + 19);
+    const ovs = pcbCostOverview(pcbImageResult, parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement | null)?.value ?? '', 10) || undefined);
+    const fabRow = ovs.rows.find(x => x.label.startsWith('Bare board'))?.value ?? co.pcbFabGBP.mid;
+    const bomRow = ovs.rows.find(x => x.label.startsWith('Components'))?.value ?? co.totalBOMCostGBP;
+    doc.text(`${pcbImageResult.boardSpec.estimatedLayers}-layer ${pcbImageResult.boardSpec.technologyType}  ·  Should-cost ${pcbFx(ovs.total)}/board (${ovs.basis})  ·  BOM ${pcbFx(bomRow)}  ·  Board ${pcbFx(fabRow)}  ·  Confidence: ${pcbImageResult.confidenceLevel}`, mg + 8, y + 19);
     y += 30;
   }
 
@@ -16822,21 +16842,23 @@ async function printMasterPDF(): Promise<void> {
     // currency + symbol so Part C matches the report's chosen currency.
     const pcSym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
     const pcv = (n: number) => (n * _displayFxRate).toFixed(2);
-    secBar('§C3 — Cost Overview', BLUE);
+    // The selected country's breakdown — the same total as the screen headline and
+    // the country table below. It printed the AI's first-pass fab/assembly guess
+    // (£101.34 against a £77.75 China headline on the radar run).
     const co = r.costEstimates;
+    const ovm = pcbCostOverview(r, parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement | null)?.value ?? '', 10) || undefined);
+    secBar(`§C3 — Cost Overview · ${ovm.basis}`, BLUE);
     autoTable(doc, {
       startY: y, margin: { left: mg, right: mg },
-      head: [['Cost Element', `Min (${pcSym})`, `Mid (${pcSym})`, `Max (${pcSym})`]],
+      head: [['Cost Element (per board)', `Low (${pcSym})`, `Should-cost (${pcSym})`, `High (${pcSym})`]],
       body: [
-        ['PCB Fabrication', pcv(co.pcbFabGBP.min), pcv(co.pcbFabGBP.mid), pcv(co.pcbFabGBP.max)],
-        ['BOM (components)', '—', pcv(co.totalBOMCostGBP), '—'],
-        ['SMT Assembly', '—', pcv(co.smtAssemblyCostGBP), '—'],
-        ['Total Estimate', pcv(co.pcbFabGBP.min+co.totalBOMCostGBP+co.smtAssemblyCostGBP), pcv(co.pcbFabGBP.mid+co.totalBOMCostGBP+co.smtAssemblyCostGBP), pcv(co.pcbFabGBP.max+co.totalBOMCostGBP+co.smtAssemblyCostGBP)],
+        ...ovm.rows.map(row => [row.label, '—', pcv(row.value), '—']),
+        ['Total per board', ovm.low != null ? pcv(ovm.low) : '—', pcv(ovm.total), ovm.high != null ? pcv(ovm.high) : '—'],
       ],
       styles: { fontSize: 8 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' },
       columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } },
       didParseCell: (d: any) => {
-        if (d.section === 'body' && d.row.index === 3) { d.cell.styles.fillColor = [219,234,254]; d.cell.styles.fontStyle = 'bold'; }
+        if (d.section === 'body' && d.row.index === ovm.rows.length) { d.cell.styles.fillColor = [219,234,254]; d.cell.styles.fontStyle = 'bold'; }
       },
     });
     y = lastY() + 5;
@@ -16947,7 +16969,8 @@ function currentPartPhotoDataUrl(): string | null {
  *  flow first: the PCB Image→BOM slots, then the generic part-photo drop-zone. */
 function reportPhotos(): ReportPhoto[] {
   const out: ReportPhoto[] = [];
-  pcbImageDataUrls.forEach((dataUrl, i) => {
+  // The board photos belong to the report only when this costing came from them.
+  if (!pcbFormNotFromPhoto()) pcbImageDataUrls.forEach((dataUrl, i) => {
     if (dataUrl) out.push({ dataUrl, label: PCB_SLOT_LABELS[i] ?? `Image ${i + 1}` });
   });
   if (out.length === 0) {
@@ -16967,7 +16990,7 @@ function reportFunctionalSafety(): FunctionalSafetyMeta | undefined {
   const mult = grade && grade in PCBA_QUALITY_MULTIPLIER
     ? PCBA_QUALITY_MULTIPLIER[grade as PCBAQualityGrade]
     : null;
-  const r = pcbImageResult;
+  const r = pcbFormNotFromPhoto() ? null : pcbImageResult;
   const asil = r?._asilLevel && !/^(unknown|n\/?a|none)$/i.test(r._asilLevel) ? r._asilLevel : null;
   return {
     asil,
@@ -17238,7 +17261,11 @@ async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Report not produced: ${why}`, 'error'); return; } }
   await ensurePdfLibs();
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta());
+  const notFromPhoto = pcbFormNotFromPhoto();
+  if (notFromPhoto) {
+    showToast(`This report costs the ${activeCommodity === 'pcba' ? 'PCBA' : 'PCB fab'} form as it stands, not your photo board — the photos and ASIL are left out. To report the photo board, use "Apply to ${activeCommodity === 'pcba' ? 'PCBA' : 'Fab'}" first, or Export PDF on the photo results.`, 'warning');
+  }
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta());
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────

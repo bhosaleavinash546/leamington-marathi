@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { cataloguePrice, classMedianCap, volumeScaleFrom10k, POWER_INDUCTOR_CAP_GBP } from './pcb-price-catalogue.js';
+import { cataloguePrice, classMedianCap, volumeScaleFrom10k, descriptionCap, isNotFitted } from './pcb-price-catalogue.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -141,7 +141,7 @@ const HIGH_VALUE_UNMATCHED_GBP = 10;
 
 /** The tool's own stated price range for a part it can name (e.g. an OCR-read
  *  NXP S32R294 → £22–48 at 100K). Supplied by the route, which owns the ranges. */
-export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string } | null;
+export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string; generic?: boolean } | null;
 
 export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): { bom: BomLine[]; capped: number } {
   let capped = 0;
@@ -150,6 +150,44 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): {
     if (verified) return line;                       // a real catalogue/live hit is trusted
     const pn = String(line.partNumber ?? '').trim();
     const unit = num(line.unitPriceGBP);
+    const qty0 = num(line.qty, 1);
+    // Bare pads / test points / unfitted footprints carry no part. The radar run
+    // priced "test/board-to-board header pads" as two £4.40 connectors.
+    if (isNotFitted(line)) {
+      if (unit === 0) return line;
+      capped++;
+      return {
+        ...line,
+        aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
+        unitPriceGBP: 0, lineTotalGBP: 0,
+        priceSource: 'not-fitted', priceCapped: true, notFitted: true,
+        priceNote: 'Described as pads / test points / not fitted — no part to buy. Price it if a part is actually fitted.',
+        needsVerification: true,
+      };
+    }
+    // A part the tool can name — read off the chip, or a function only one class of
+    // die performs (a 77 GHz transceiver) — is held inside the tool's stated range
+    // at this volume, UP as well as down: a TEF8105-class MMIC guessed at £4 is as
+    // wrong as an S32R294 cut to a generic £18 median. Still flagged: a range is not a quote.
+    const ocrConfirmed = line.ocrExtracted === true && num(line.lineConf) >= 0.95;
+    const range0 = knownRange?.(line) ?? null;
+    const range = range0 && (ocrConfirmed || range0.generic) ? range0 : null;
+    if (range) {
+      const inRange = Math.min(Math.max(unit, range.lo), range.hi);
+      if (Math.abs(inRange - unit) > 1e-6) capped++;
+      return {
+        ...line,
+        aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
+        unitPriceGBP: round(inRange, 4),
+        lineTotalGBP: round(inRange * qty0, 2),
+        priceSource: range.generic ? 'function-range' : 'known-range',
+        priceCapped: inRange < unit - 1e-6,
+        priceRaised: inRange > unit + 1e-6,
+        priceNote: `${range.generic ? 'Part not read; ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume — confirm with a quote`
+          + (line.priceNote ? ` · ${String(line.priceNote)}` : ''),
+        needsVerification: true,
+      };
+    }
     const unconfirmed = line.needsVerification === true
       || line.unconfirmedHighValue === true
       || pn.length === 0
@@ -157,27 +195,11 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): {
       // Magnitude / no-match guard — the fix for confident misreads.
       || unit > HIGH_VALUE_UNMATCHED_GBP;
     if (!unconfirmed) return line;
-    const qty = num(line.qty, 1);
-    // A part read off the chip with full confidence whose range the tool states
-    // is held inside THAT range, not a generic class median — an OCR-confirmed
-    // S32R294 was cut from £26 to the £18 BGA median, below the tool's own £22
-    // floor. Still flagged: a range is not a quote.
-    const range = line.ocrExtracted === true && num(line.lineConf) >= 0.95 ? knownRange?.(line) ?? null : null;
-    if (range) {
-      const inRange = Math.min(unit, range.hi);
-      return {
-        ...line,
-        aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
-        unitPriceGBP: round(inRange, 4),
-        lineTotalGBP: round(inRange * qty, 2),
-        priceSource: 'known-range',
-        priceCapped: inRange < unit - 1e-6,
-        priceNote: `OCR-confirmed ${range.label}; tool range £${range.lo}–${range.hi} at 100K — confirm with a quote`,
-        needsVerification: true,
-      };
-    }
-    const isInductor = /inductor|choke/i.test(String(line.description ?? ''));
-    const capUnit = isInductor ? Math.min(unit, POWER_INDUCTOR_CAP_GBP) : classMedianCap(String(line.componentType ?? ''), unit);
+    const qty = qty0;
+    // A description that names what the part is (an inductor, an electrolytic, a
+    // SOT-23 diode) is a tighter bound than the package class it was filed under.
+    const dCap = descriptionCap(String(line.description ?? ''));
+    const capUnit = dCap != null ? Math.min(unit, dCap) : classMedianCap(String(line.componentType ?? ''), unit);
     if (capUnit < unit - 1e-6) {
       capped++;
       return {

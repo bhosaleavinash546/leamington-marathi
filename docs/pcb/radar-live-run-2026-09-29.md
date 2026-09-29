@@ -133,3 +133,29 @@ Passive counts from photos (±15%); transceiver marking from the close-up; shiel
 assumed fitted in production (frames present); 2 × 7 through-holes and the edge pad row
 unpopulated (no connector on this board); prices at the tool's 100k anchors, then its
 own ×0.88 volume factor for 250k.
+
+## Round 3 — the real-model run compared (user's two PDFs, 29 Sep 2026 21:56)
+
+The tool with the real model gave **China £77.75** per board at 250k/yr against the
+stand-in's £52.32. Where the £25 went:
+
+| Item | Real-model run | Stand-in (photo reading) | Cause | Fix |
+|---|---|---|---|---|
+| TEF8105 transceiver | "77/79GHz MMIC" £4.00, no part number | TEF8105 £12.32 | OCR read it; the BOM never used it | OCR markings attached to the BOM line of the same function; unread 77 GHz transceivers held in the £9–22 class range |
+| MAX20431A, W25Q32, TCAN1044 | generic "PMIC", "flash" £1.94, "op-amp/LDO" | named | same; the chip tops read "winbond 25Q32…", "TI 1044AV" | hints for the abbreviated top marks; prompt now requires every OCR marking to be a BOM part number |
+| J2, J3 "header pads" | 2 × £4.40 | none (pads unpopulated) | pads priced as connectors | pads / test points / unfitted → £0, flagged |
+| Electrolytics 100 µF/100 V | 2 × £1.58 | £0.16 | £3.50 through-hole cap | description cap £0.60 |
+| SOT-23 diodes/transistors | 10 × £0.18 | £0.03–0.12 | £0.60 TVS cap | description cap £0.12 |
+| Reflow | single-sided, yet BOM lists bottom-side ICs | double | model inconsistency | bottom-side parts ⇒ 2 sides, warned |
+| Master report §C3 | "Total £101.34" (AI first pass) | — | printed `costEstimates`, not the country total | §C3, summary line, PCB PDF §3 and Save-to-Library use the selected country (£77.75 there) |
+| Should-cost PDF | £82.43, 200 × 150 mm default fab board, under the radar photos and ASIL-C | — | report of an untouched form carried the photo context | photos/ASIL attached only when the form was filled from that photo; warning otherwise |
+| "Effective date 2026-06-14" | pass-through placeholder's date | — | not a price | report shows the rate library date for pass-through costs |
+
+Replaying the real model's BOM through the fixed pipeline: **China £77.75 → £68.18**
+(BOM £67.84 → £58.78). Not changed by code, left for the engineer:
+
+- **Placements 224 vs ~328** and fewer passives: a counting judgement from the photos.
+- **Vias 220 vs ~1,000**: not visible in a photo; enter from the drill file (~£1.50/board here).
+- **J1 £5.28 "sealed connector"**: OCR reported an edge pad row, not a connector; flagged for verification.
+- **ASIL-C vs ASIL-B**: the model's judgement; ASIL-C adds burn-in. Confirm against the safety concept.
+- **Two "PMIC" and two "op-amp/LDO" ICs**: the real board has one MAX20431A and two TCAN1044s; the line quantities are the model's.

@@ -18,6 +18,7 @@ import {
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
+import { reconcileOcrMarkings } from '../utils/pcb-ocr-reconcile.js';
 import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
@@ -131,6 +132,32 @@ function computeConfidenceBand(
     bomConfidenceLabel: bomCL, fabConfidenceLabel: fabCL, overallLabel: overall,
     volumeMultiplier,
   };
+}
+
+/**
+ * Before pricing: carry every chip marking OCR read into the BOM (see
+ * pcb-ocr-reconcile.ts), and correct a single-sided reflow claim when the BOM
+ * itself places parts on the bottom side. Returns sanity warnings for markings
+ * that no line could take, and for the links made by function.
+ */
+export function prepareBOMFromOCR(
+  rawBOM: Array<Record<string, unknown>>,
+  icMarkings: string[],
+  assemblyData: Record<string, unknown>,
+): { bom: Array<Record<string, unknown>>; warnings: SanityWarning[] } {
+  const rec = reconcileOcrMarkings(rawBOM, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
+  const warnings: SanityWarning[] = [];
+  if (rec.attached.length) warnings.push({ code: 'OCR_MATCHED_BY_FUNCTION', severity: 'warn',
+    message: `${rec.attached.length} chip marking(s) read in the photos were missing from the AI's BOM and were attached by function: ${rec.attached.map(a => `${a.marking} → ${a.refDes}`).join(', ')}. Confirm the RefDes.` });
+  if (rec.missing.length) warnings.push({ code: 'OCR_PART_NOT_IN_BOM', severity: 'warn',
+    message: `Chip marking(s) read in the photos but not in the BOM: ${rec.missing.join(', ')}. Add the line(s) or the BOM total is short.` });
+  const bottom = rec.bom.some(l => /\bbottom[- ]side\b|\bunderside\b|\(bottom\)|\bon the bottom\b/i.test(`${l.description ?? ''} ${l.refDes ?? ''}`));
+  if (bottom && Number(assemblyData.reflowSides ?? 1) < 2) {
+    assemblyData.reflowSides = 2;
+    warnings.push({ code: 'REFLOW_SIDES_CORRECTED', severity: 'warn',
+      message: 'The BOM places parts on the bottom side, so reflow is double-sided (the AI said single-sided).' });
+  }
+  return { bom: rec.bom, warnings };
 }
 
 // Apply volume correction and flag unconfirmed high-value ICs in the BOM array
@@ -857,7 +884,9 @@ manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 
 // ── IC price hints from OCR markings ──────────────────────────────────────
 // Known automotive IC price ranges (100K volume, AEC-Q qualified)
-const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string }> = [
+// `generic` entries name a FUNCTION, not a part ("77 GHz radar transceiver MMIC"
+// with no marking read): they bound a price but never count as the part identified.
+const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string; generic?: boolean }> = [
   // ── Automotive radar MCUs (ranges as in the automotive system prompt) ─────
   { test: m => /S32R29[0-9]|S32R27[0-9]/i.test(m), label: 'NXP S32R294/S32R274 radar MCU (ASIL-B)', price: '£22–48' },
   { test: m => /S32R4[0-9]/i.test(m), label: 'NXP S32R45/S32R41 radar processor', price: '£45–95' },
@@ -886,6 +915,8 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /SJA1105|SJA1110/i.test(m), label: 'NXP SJA110x 5-port automotive Ethernet switch', price: '£8–40' },
   { test: m => /DP83TC812|DP83822|DP83867/i.test(m), label: 'TI DP83 automotive Ethernet PHY', price: '£2.50–8' },
   { test: m => /BCM8906|BCM8957|BCM89881/i.test(m), label: 'Broadcom automotive 100BASE-T1 PHY', price: '£4–15' },
+  // TI prints only "1044AV" on a TCAN1044AV-Q1's top — the chip never says TCAN.
+  { test: m => /TCAN10[0-9]{2}|\bTI\b.*\b10[0-9]{2}A?V\b|^\s*10[0-9]{2}A?V\b/i.test(m), label: 'TI TCAN10xx automotive CAN-FD transceiver', price: '£0.35–1.20' },
   { test: m => /TCAN|SN65HVD|ISO1042|ISOW/i.test(m), label: 'TI automotive CAN/isolated transceiver', price: '£0.80–4.50' },
   // ── Safety PMICs & System Basis Chips ─────────────────────────────────────
   { test: m => /TLF35584|TLF35577/i.test(m), label: 'Infineon TLF3558x automotive safety PMIC (ASIL-D)', price: '£3.50–9' },
@@ -906,27 +937,50 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   // Same range as the automotive system prompt — the two used to disagree (£25–90 here vs £9–22 there).
   { test: m => /TEF810|TEF81/i.test(m), label: 'NXP TEF810x 77GHz radar transceiver', price: '£9–22' },
   { test: m => /AWR1843|AWR1642|AWR1443/i.test(m), label: 'TI AWR 77GHz ADAS radar SoC', price: '£20–75' },
+  // A 77 GHz transceiver whose marking was not read (glob-top, shield) is still a
+  // TEF810x-class die: the 2026-09-29 run priced one at £4.00.
+  { test: m => /77\s*(\/\s*79)?\s*GHZ[^,;]*(TRANSCEIVER|MMIC|FRONT)|RADAR (TRANSCEIVER|MMIC|FRONT[- ]?END)/i.test(m), label: '77 GHz radar transceiver MMIC (part not read; TEF810x-class)', price: '£9–22', generic: true },
   // ── Memory (Automotive) ────────────────────────────────────────────────────
   { test: m => /IS42S|IS43T|IS66W/i.test(m), label: 'ISSI automotive SDRAM/SRAM', price: '£1.50–8' },
   { test: m => /K4A|K4B|K9F/i.test(m), label: 'Samsung automotive LPDDR/NAND (AEC-Q grade)', price: '£3–20' },
   { test: m => /MT41K|MT47H|MT25Q/i.test(m), label: 'Micron automotive DDR/Flash', price: '£2.50–15' },
   { test: m => /THGBM|THGLF/i.test(m), label: 'Kioxia automotive eMMC/NAND', price: '£3–18' },
+  // Winbond's top marking drops the W: "winbond 25Q32JWSIQ".
+  { test: m => /W25Q[0-9]{2,3}|WINBOND|\b25Q[0-9]{2,3}[A-Z]/i.test(m), label: 'Winbond SPI NOR flash (automotive)', price: '£0.30–1.20' },
+  { test: m => /IS25LP|IS25WP|MX25L|MX25U|GD25Q/i.test(m), label: 'SPI NOR flash (automotive)', price: '£0.30–1.50' },
   // ── General (non-automotive, fallback by brand) ────────────────────────────
   { test: m => /NRF52|NRF5340|NRF9/i.test(m), label: 'Nordic nRF MCU/SoC', price: '£0.70–4.50' },
   { test: m => /ESP32|ESP8266|ESP32-S/i.test(m), label: 'Espressif WiFi/BT SoC', price: '£0.50–2.20' },
   { test: m => /LAN9|LAN8|KSZ89|KSZ80/i.test(m), label: 'Microchip LAN/KSZ Ethernet IC', price: '£0.70–5' },
+  { test: m => /MAX2043[0-9]|MAX2041[0-9]|MAX2002[0-9]|MAX2008[0-9]/i.test(m), label: 'Maxim/ADI automotive multi-output PMIC', price: '£2.50–6.50' },
   { test: m => /MAX[0-9]{4}|MAX3|MAX4/i.test(m), label: 'Maxim/Analog interface IC', price: '£0.30–4.50' },
   { test: m => /TLV3|TLV6|TLV7/i.test(m), label: 'TI TLV comparator/op-amp', price: '£0.12–1.80' },
   { test: m => /LM317|LM358|LM741|LM324/i.test(m), label: 'TI/Fairchild classic linear IC', price: '£0.08–0.80' },
 ];
 
 /** The tool's stated 100K range for a BOM line it can name, for the grounding cap. */
-export function icKnownRange(line: { partNumber?: unknown; description?: unknown }): { lo: number; hi: number; label: string } | null {
+export function icKnownRange(line: { partNumber?: unknown; description?: unknown }, opts: { specificOnly?: boolean } = {}): { lo: number; hi: number; label: string; generic?: boolean } | null {
   const text = `${String(line.partNumber ?? '')} ${String(line.description ?? '')}`.toUpperCase();
-  const hit = IC_PRICE_HINTS.find(h => h.test(text));
+  const hit = IC_PRICE_HINTS.find(h => h.test(text) && !(opts.specificOnly && h.generic));
   if (!hit) return null;
   const m = /£\s*([0-9.]+)\s*[–-]\s*([0-9.]+)/.exec(hit.price);
-  return m ? { lo: Number(m[1]), hi: Number(m[2]), label: hit.label } : null;
+  return m ? { lo: Number(m[1]), hi: Number(m[2]), label: hit.label, ...(hit.generic ? { generic: true } : {}) } : null;
+}
+
+/** The tool's label for a chip marking it can name specifically (null = not nameable). */
+export function markingLabel(marking: string): string | null {
+  const m = marking.toUpperCase();
+  return IC_PRICE_HINTS.find(h => !h.generic && h.test(m))?.label ?? null;
+}
+
+/** icKnownRange scaled to the order volume — the table is stated at 100K. */
+export function knownRangeAtVolume(volumeMultiplier: number) {
+  return (line: Record<string, unknown>) => {
+    const r = icKnownRange(line);
+    if (!r) return null;
+    const k = volumeMultiplier;
+    return { ...r, lo: Math.round(r.lo * k * 100) / 100, hi: Math.round(r.hi * k * 100) / 100 };
+  };
 }
 
 function buildICPriceHints(markings: string[], domain: string): string {
@@ -935,7 +989,7 @@ function buildICPriceHints(markings: string[], domain: string): string {
     : '';
   const lines = markings.map(marking => {
     const m = marking.toUpperCase();
-    const hit = IC_PRICE_HINTS.find(h => h.test(m));
+    const hit = IC_PRICE_HINTS.find(h => !h.generic && h.test(m));
     if (hit) return `${marking} — ${hit.label} — ${hit.price} at 100K volume${domain === 'automotive_adas' ? ' (AEC-Q, automotive=true)' : ''}`;
     return `${marking} — use pricing table above`;
   });
@@ -1057,7 +1111,8 @@ INSTRUCTIONS:
 - Replace all example values above with actual values from the image
 - Group identical components (same type + package) into one BOM line
 - unitPriceGBP: use the COMPONENT PRICING REFERENCE above as hard anchors (calibrated to 100K unit volume); default to the LOWER HALF of each range for standard/generic components
-- For IC components identified from OCR markings, set partNumber to the exact marking, lineConf to 1.0, and ocrExtracted to true
+- For IC components identified from OCR markings, set partNumber to the exact marking, lineConf to 1.0, and ocrExtracted to true. EVERY IC marking listed above must be the partNumber of exactly one BOM line — never describe an OCR-read part generically (e.g. write TEF8105, not \"radar transceiver MMIC\")
+- Pads, test points and unfitted footprints are NOT components: leave them out of the BOM
 - For other components, set partNumber to best-guess part number or empty string, lineConf to 0.5–0.9, ocrExtracted to false
 - smtPlacements = total qty of all SMT components
 - throughHoleJoints = sum of qty x pins for through_hole components
@@ -1459,7 +1514,8 @@ ${userPromptText}`;
     const fabCostMid = Number(pcbFabGBP?.mid) || 0;
 
     // Apply volume correction to BOM, flag unconfirmed high-value ICs
-    const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    const prepared = prepareBOMFromOCR(Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [], ocrResult.icMarkings, assemblyData);
+    const rawBOM = prepared.bom;
     let enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
 
     // Automotive: enforce AEC-Q grading on any lines the AI priced at consumer grade
@@ -1505,7 +1561,7 @@ ${userPromptText}`;
         const liveHit = new Set(livePrices.map(p => p.mpn.toUpperCase()));
         livePrices = [...livePrices, ...offlineCataloguePrices(candidatePNs.filter(pn => !liveHit.has(pn.toUpperCase())), orderQty)];
       }
-      const grounded = groundAndSplit(enrichedBOM, livePrices, icKnownRange);
+      const grounded = groundAndSplit(enrichedBOM, livePrices, knownRangeAtVolume(volumeMultiplier));
       enrichedBOM = grounded.bom as Array<Record<string, unknown>>;
       a.bom = enrichedBOM;
       livePriceHits = grounded.matched;
@@ -1586,6 +1642,7 @@ ${userPromptText}`;
     // Sanity checks on AI output
     const aiStatedBOMTotal = Number((costEst as Record<string, unknown>).totalBOMCostGBP ?? 0);
     sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal, orderQty);
+    sanityWarnings.push(...prepared.warnings);
 
     // NPI vs production breakdown
     npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
@@ -2375,7 +2432,8 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
     }
     const fabCostMid2 = Number(pcbFabGBP?.mid) || 0;
-    const rawBOM2 = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    const prepared2 = prepareBOMFromOCR(Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [], ocrResult.icMarkings, assemblyData);
+    const rawBOM2 = prepared2.bom;
     let enrichedBOM2 = flagAndEnrichBOM(rawBOM2, volumeMultiplier2);
     if (domain === 'automotive_adas') {
       const gr2 = enforceAutomotiveGrading(enrichedBOM2, domain);
@@ -2417,7 +2475,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       livePrices2 = [...livePrices2, ...offlineCataloguePrices(candidatePNs2.filter(pn => !liveHit2.has(pn.toUpperCase())), orderQty2)];
     }
     // Ground + class-median-cap the unconfirmed guesses + split confirmed/unverified.
-    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2, icKnownRange);
+    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2, knownRangeAtVolume(volumeMultiplier2));
     enrichedBOM2 = grounded2.bom as Array<Record<string, unknown>>;
     streamLivePriceHits = grounded2.matched;
     streamNeedsVerification = grounded2.needsVerification;
@@ -2438,6 +2496,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     streamProgramPricing = computeProgramPricing(correctedBOMTotal2, orderQty2, domain);
     confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
     sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0), orderQty2);
+    sanityWarnings2.push(...prepared2.warnings);
     npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
     const costInput2: PCBCostInput = {
       widthMm: Number(boardSpec.widthMm) || 100, heightMm: Number(boardSpec.heightMm) || 80, layers: Number(boardSpec.estimatedLayers) || 2,

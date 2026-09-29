@@ -861,10 +861,16 @@ export function renderShouldCostSections(
     }
     matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, 'Gross - scrap credit + consumables']);
   }
+  // A pass-through placeholder has no price of its own, so its date says nothing
+  // about the cost: print the date of the library the commodity module priced from
+  // (the radar report showed the placeholder's '2026-06-14' under September rates).
+  const passThrough = input.rawMaterial.directCost !== undefined;
   matRows.push(
     ['', '', '', ''],
     ['Data Confidence', mat?.confidence ?? '—', '', ''],
-    ['Effective Date',  mat?.effectiveDate ?? '—', '', ''],
+    passThrough
+      ? ['Rates dated', String(library.lastModified ?? '—').slice(0, 10), '', `Rate library ${library.version ?? ''} used by the commodity module`]
+      : ['Effective Date', mat?.effectiveDate ?? '—', '', ''],
   );
 
   // col widths: 58 + 34 + 14 + (182-106) = 58+34+14+76 = 182 ✓

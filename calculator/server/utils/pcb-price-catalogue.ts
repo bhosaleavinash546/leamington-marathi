@@ -115,6 +115,35 @@ const CLASS_MEDIAN: Record<string, number> = {
  *  inductors, ×3–5 at AEC-Q200 — cap at that ceiling instead. */
 export const POWER_INDUCTOR_CAP_GBP = 1.80;
 
+/** An automotive aluminium electrolytic (e.g. 100 µF / 100 V, 10×13 mm radial) is
+ *  £0.20–0.50 at volume; filed as through_hole it met a £3.50 connector-class cap,
+ *  so the radar run's two came in at £1.58 each. */
+export const ELECTROLYTIC_CAP_GBP = 0.60;
+/** SOT-23 / SOD-123-class diodes, TVS and small-signal transistors: £0.02–0.10. */
+export const SMALL_SIGNAL_DISCRETE_CAP_GBP = 0.12;
+
+/** The tightest cap a line's DESCRIPTION justifies, or null when it names no such part. */
+export function descriptionCap(description: string): number | null {
+  const d = description || '';
+  if (/inductor|choke/i.test(d)) return POWER_INDUCTOR_CAP_GBP;
+  if (/electrolytic/i.test(d)) return ELECTROLYTIC_CAP_GBP;
+  if (/\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323)\b/i.test(d)
+    && /diode|TVS|transistor|MOSFET|\bESD\b|rectifier|zener/i.test(d)
+    && !/regulator|\bLDO\b|\bIC\b|driver|op-?amp/i.test(d)) return SMALL_SIGNAL_DISCRETE_CAP_GBP;
+  return null;
+}
+
+/** Pads, test points or an unfitted footprint — a BOM line with no part to buy.
+ *  Needs both a no-part word AND a connector/test context, so an IC's "exposed
+ *  thermal pad" never matches. */
+export function isNotFitted(line: Record<string, unknown>): boolean {
+  const d = `${String(line.description ?? '')} ${String(line.value ?? '')}`;
+  if (/\b(DNP|DNF|not fitted|not populated|unpopulated|footprint only|no[- ]?pop)\b/i.test(d)) return true;
+  const ct = String(line.componentType ?? '').toLowerCase();
+  const connectorish = /connector|header|through_hole/.test(ct) || /header|connector|test|pogo|probe/i.test(d);
+  return connectorish && /\b(test ?points?|test ?pads?|header pads|pads)\b/i.test(d) && !/thermal pad|exposed pad/i.test(d);
+}
+
 /**
  * Cap the unit price of an UNCONFIRMED part to its class median. Returns the
  * (possibly reduced) unit price; never raises a price. `componentType` is the
