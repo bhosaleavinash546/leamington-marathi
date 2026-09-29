@@ -1,0 +1,1203 @@
+{
+ "materialRules": [
+  {
+   "match": "^mat-virtual$",
+   "drivers": [],
+   "note": "placeholder, not priced"
+  },
+  {
+   "match": "^mat-(cofe-hiperco50|cofe-thin-010)$",
+   "drivers": [
+    [
+     "co",
+     0.49
+    ]
+   ]
+  },
+  {
+   "match": "^mat-nife-permalloy80$",
+   "drivers": [
+    [
+     "ni",
+     0.8
+    ],
+    [
+     "mo",
+     0.05
+    ]
+   ]
+  },
+  {
+   "match": "^mat-amorphous-2605sa1$",
+   "drivers": [],
+   "note": "no published index for this grade \u2014 held at the previous price"
+  },
+  {
+   "match": "^mat-(go-m105-30p|cgo-m120-27|hgo-m090-23)$",
+   "drivers": [],
+   "note": "grain-oriented electrical steel has no published index move this period \u2014 held"
+  },
+  {
+   "match": "^mat-(nogo-|m[0-9]|no[0-9]|no-semiproc|hsno-|si65|uhsno)",
+   "drivers": [
+    [
+     "crno",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-inconel718-(forge|cast)$",
+   "drivers": [
+    [
+     "ni",
+     0.53
+    ],
+    [
+     "mo",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-waspaloy-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.58
+    ],
+    [
+     "co",
+     0.13
+    ],
+    [
+     "mo",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-inconel625-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.61
+    ],
+    [
+     "mo",
+     0.09
+    ]
+   ]
+  },
+  {
+   "match": "^mat-hastelloy-c276-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.57
+    ],
+    [
+     "mo",
+     0.16
+    ]
+   ]
+  },
+  {
+   "match": "^mat-monel400-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.66
+    ],
+    [
+     "cu",
+     0.31
+    ]
+   ]
+  },
+  {
+   "match": "^mat-ti-cp-gr2$",
+   "drivers": [
+    [
+     "ti",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ti6al4v|ti-6al4v-forge)$",
+   "drivers": [
+    [
+     "ti",
+     0.9
+    ]
+   ]
+  },
+  {
+   "match": "^mat-ti-6242-forge$",
+   "drivers": [
+    [
+     "ti",
+     0.86
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(17-4ph-cast|ss17-4ph-bar|ss15-5ph-bar)$",
+   "drivers": [
+    [
+     "ni",
+     0.045
+    ],
+    [
+     "cu",
+     0.035
+    ],
+    [
+     "fecr",
+     0.27
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ss316l|ss316-sheet|ss316l-bar)$",
+   "drivers": [
+    [
+     "ni",
+     0.11
+    ],
+    [
+     "mo",
+     0.021
+    ],
+    [
+     "fecr",
+     0.28
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ss304-bar|ss303|ss304-sheet|ss304l-bar|ss304-cast|ss301-spring)$",
+   "drivers": [
+    [
+     "ni",
+     0.08
+    ],
+    [
+     "fecr",
+     0.3
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(aisi430|ss410-bar)$",
+   "drivers": [
+    [
+     "fecr",
+     0.28
+    ],
+    [
+     "hrc",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(steel4340|steel-300m)$",
+   "drivers": [
+    [
+     "bar",
+     1.0
+    ],
+    [
+     "ni",
+     0.018
+    ],
+    [
+     "mo",
+     0.0025
+    ]
+   ]
+  },
+  {
+   "match": "^mat-steel8620$",
+   "drivers": [
+    [
+     "bar",
+     1.0
+    ],
+    [
+     "ni",
+     0.005
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(steel|en8)",
+   "drivers": [
+    [
+     "bar",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-hrpo$",
+   "drivers": [
+    [
+     "hrc",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(dc01-gi|dc03-ga|znni-eg|zm-coated|gi-|ga-)",
+   "drivers": [
+    [
+     "hdg",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(dc0|dp|trip|cp8|hsla|22mnb5|ms1|usibor|if|bh|dc01-ze|tinplate|c67s|q&p|qp|cr|mild|dh|fb|mart|3g)",
+   "drivers": [
+    [
+     "crc",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(c110-copper|cu-hairpin)$",
+   "drivers": [
+    [
+     "cu",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cz108-brass$",
+   "drivers": [
+    [
+     "cu",
+     0.7
+    ],
+    [
+     "zn",
+     0.3
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(brass-cz121|brass-cz122-forge)$",
+   "drivers": [
+    [
+     "cu",
+     0.58
+    ],
+    [
+     "zn",
+     0.39
+    ],
+    [
+     "pb",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-bronze-pb1$",
+   "drivers": [
+    [
+     "cu",
+     0.89
+    ],
+    [
+     "sn",
+     0.105
+    ]
+   ]
+  },
+  {
+   "match": "^mat-bronze-c905$",
+   "drivers": [
+    [
+     "cu",
+     0.88
+    ],
+    [
+     "sn",
+     0.1
+    ],
+    [
+     "zn",
+     0.02
+    ]
+   ]
+  },
+  {
+   "match": "^mat-zamak[35]$",
+   "drivers": [
+    [
+     "zn",
+     0.96
+    ],
+    [
+     "al",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-za8$",
+   "drivers": [
+    [
+     "zn",
+     0.91
+    ],
+    [
+     "al",
+     0.08
+    ],
+    [
+     "cu",
+     0.01
+    ]
+   ]
+  },
+  {
+   "match": "^mat-za27$",
+   "drivers": [
+    [
+     "zn",
+     0.71
+    ],
+    [
+     "al",
+     0.27
+    ],
+    [
+     "cu",
+     0.02
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mag-az91$",
+   "drivers": [
+    [
+     "mg",
+     0.9
+    ],
+    [
+     "al",
+     0.09
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mag-am(50|60)$",
+   "drivers": [
+    [
+     "mg",
+     0.94
+    ],
+    [
+     "al",
+     0.055
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mag-ae44$",
+   "drivers": [
+    [
+     "mg",
+     0.92
+    ],
+    [
+     "al",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mg-az31-forge$",
+   "drivers": [
+    [
+     "mg",
+     0.96
+    ],
+    [
+     "al",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(adc12|adc12-secondary)$",
+   "drivers": [
+    [
+     "al",
+     0.85
+    ],
+    [
+     "si",
+     0.11
+    ],
+    [
+     "cu",
+     0.025
+    ]
+   ]
+  },
+  {
+   "match": "^mat-a380$",
+   "drivers": [
+    [
+     "al",
+     0.85
+    ],
+    [
+     "si",
+     0.085
+    ],
+    [
+     "cu",
+     0.035
+    ]
+   ]
+  },
+  {
+   "match": "^mat-a319$",
+   "drivers": [
+    [
+     "al",
+     0.89
+    ],
+    [
+     "si",
+     0.06
+    ],
+    [
+     "cu",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-a390$",
+   "drivers": [
+    [
+     "al",
+     0.78
+    ],
+    [
+     "si",
+     0.17
+    ],
+    [
+     "cu",
+     0.045
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(a413)$",
+   "drivers": [
+    [
+     "al",
+     0.87
+    ],
+    [
+     "si",
+     0.12
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(alsi10mg|aural5|silafont36|castasil37|al-hpdc-lowco2|htf-gigacast)$",
+   "drivers": [
+    [
+     "al",
+     0.89
+    ],
+    [
+     "si",
+     0.1
+    ]
+   ]
+  },
+  {
+   "match": "^mat-magsimal59$",
+   "drivers": [
+    [
+     "al",
+     0.92
+    ],
+    [
+     "mg",
+     0.05
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(lm25|a356|a357|a365)$",
+   "drivers": [
+    [
+     "al",
+     0.92
+    ],
+    [
+     "si",
+     0.07
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(aa7075-t6|al7075-forge|al7050-forge)$",
+   "drivers": [
+    [
+     "al",
+     0.89
+    ],
+    [
+     "zn",
+     0.06
+    ],
+    [
+     "cu",
+     0.02
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(al2011|al2618-forge)$",
+   "drivers": [
+    [
+     "al",
+     0.93
+    ],
+    [
+     "cu",
+     0.05
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(aa|al)",
+   "drivers": [
+    [
+     "al",
+     0.97
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(gjl|gjs|gjv|simo|adi)",
+   "drivers": [
+    [
+     "pigiron",
+     0.5
+    ],
+    [
+     "scrap",
+     0.55
+    ]
+   ]
+  },
+  {
+   "match": "^mat-gs-c25$",
+   "drivers": [
+    [
+     "scrap",
+     1.1
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pp|pp-homo|pp-impact|pp-bm|pp-roto|pp-tf|pp-ext-sheet)$",
+   "drivers": [
+    [
+     "pp",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pp-gf30|pp-lgf30|pp-t30)$",
+   "drivers": [
+    [
+     "pp",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pp-t20$",
+   "drivers": [
+    [
+     "pp",
+     0.8
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(tpo|pp-tpo-tf)$",
+   "drivers": [
+    [
+     "pp",
+     0.7
+    ],
+    [
+     "epdm",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-tpv$",
+   "drivers": [
+    [
+     "pp",
+     0.4
+    ],
+    [
+     "epdm",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pcr-pp|rpp-bm)$",
+   "drivers": [
+    [
+     "pp",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(hdpe|hdpe-bm|hdpe-fuel-coex|hdpe-tf|hdpe-roto|pe100-pipe|pe80-pipe|xlpe-roto)$",
+   "drivers": [
+    [
+     "hdpe",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(rhdpe-bm|rpe-roto)$",
+   "drivers": [
+    [
+     "hdpe",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ldpe|ldpe-bm|ldpe-tf|xlpe-cable)$",
+   "drivers": [
+    [
+     "ldpe",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-eva-bm$",
+   "drivers": [
+    [
+     "ldpe",
+     0.8
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(lldpe|lldpe-bm|lldpe-roto)$",
+   "drivers": [
+    [
+     "lldpe",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(foam-pe-roto|cond-pe-roto)$",
+   "drivers": [
+    [
+     "lldpe",
+     0.8
+    ]
+   ]
+  },
+  {
+   "match": "^mat-fr-pe-roto$",
+   "drivers": [
+    [
+     "lldpe",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(gpps|gpps-ext|ps-foam-tf)$",
+   "drivers": [
+    [
+     "gpps",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(hips|hips-tf)$",
+   "drivers": [
+    [
+     "hips",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(upvc|upvc-pipe|pvc-bm|rpvc-tf|pvc-foam)$",
+   "drivers": [
+    [
+     "pvc",
+     0.85
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(fpvc|pvc-cable|pvc-medical-tube)$",
+   "drivers": [
+    [
+     "pvc",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-paint-pvc-underbody$",
+   "drivers": [
+    [
+     "pvc",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pet-bg|pet-preform|apet-tf|cpet-tf)$",
+   "drivers": [
+    [
+     "pet",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pet-gf30$",
+   "drivers": [
+    [
+     "pet",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(abs|abs-ext-sheet|abs-tf|san|asa)$",
+   "drivers": [
+    [
+     "abs",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-abs-pmma-tf$",
+   "drivers": [
+    [
+     "abs",
+     0.6
+    ],
+    [
+     "pmma",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(abs-pc-tf|pc-abs)$",
+   "drivers": [
+    [
+     "pc",
+     0.6
+    ],
+    [
+     "abs",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pc|pc-bm|pc-ext-sheet|pc-tf|pc-glazing)$",
+   "drivers": [
+    [
+     "pc",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pc-fr$",
+   "drivers": [
+    [
+     "pc",
+     0.9
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pc-pbt$",
+   "drivers": [
+    [
+     "pc",
+     0.5
+    ],
+    [
+     "pbt",
+     0.5
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pa6|pa6-bm|pa6-cast)$",
+   "drivers": [
+    [
+     "pa6",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa6-gf30$",
+   "drivers": [
+    [
+     "pa6",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66$",
+   "drivers": [
+    [
+     "pa66",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66gf30$",
+   "drivers": [
+    [
+     "pa66",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66-gf35$",
+   "drivers": [
+    [
+     "pa66",
+     0.65
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66-gf50$",
+   "drivers": [
+    [
+     "pa66",
+     0.5
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pa66-min|pa66-gf25-fr)$",
+   "drivers": [
+    [
+     "pa66",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pom|pom-c)$",
+   "drivers": [
+    [
+     "pom",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pbt-gf30$",
+   "drivers": [
+    [
+     "pbt",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pmma|pmma-ext-sheet|pmma-tf|acrylic-cast)$",
+   "drivers": [
+    [
+     "pmma",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(tpu-shore85|tpu-medical-tube)$",
+   "drivers": [
+    [
+     "tpu",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pps-gf40$",
+   "drivers": [
+    [
+     "pps",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mb-white-tio2$",
+   "drivers": [
+    [
+     "tio2",
+     0.6
+    ],
+    [
+     "ldpe",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mb-black$",
+   "drivers": [
+    [
+     "carbonblack",
+     0.4
+    ],
+    [
+     "ldpe",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mb-colour$",
+   "drivers": [
+    [
+     "ldpe",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(epdm|epdm-peroxide)$",
+   "drivers": [
+    [
+     "epdm",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(nbr|nbr-high-acn)$",
+   "drivers": [
+    [
+     "nbr",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-sbr$",
+   "drivers": [
+    [
+     "sbr",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-nr$",
+   "drivers": [
+    [
+     "nr",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-br$",
+   "drivers": [
+    [
+     "butadiene",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(silicone-hcr|lsr|silicone-medical)$",
+   "drivers": [
+    [
+     "silicone",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cfrp-prepreg-t700$",
+   "drivers": [
+    [
+     "cf",
+     0.6
+    ],
+    [
+     "epoxy",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cf-uni-t800$",
+   "drivers": [
+    [
+     "cf",
+     0.65
+    ],
+    [
+     "epoxy",
+     0.35
+    ]
+   ]
+  },
+  {
+   "match": "^mat-gfrp-prepreg-e$",
+   "drivers": [
+    [
+     "gf",
+     0.6
+    ],
+    [
+     "epoxy",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cf-dry-3k$",
+   "drivers": [
+    [
+     "cf",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(gf-dry-e|csm-gf)$",
+   "drivers": [
+    [
+     "gf",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-epoxy-infusion$",
+   "drivers": [
+    [
+     "epoxy",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-vinylester-rtm$",
+   "drivers": [
+    [
+     "upr",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-smc-gf$",
+   "drivers": [
+    [
+     "upr",
+     0.3
+    ],
+    [
+     "gf",
+     0.3
+    ]
+   ]
+  },
+  {
+   "match": "^mat-bmc$",
+   "drivers": [
+    [
+     "upr",
+     0.25
+    ],
+    [
+     "gf",
+     0.15
+    ]
+   ]
+  },
+  {
+   "match": "^mat-paint-",
+   "drivers": [],
+   "pct": "coatings"
+  },
+  {
+   "match": "^mat-",
+   "drivers": [],
+   "note": "no published index for this grade \u2014 held at the previous price"
+  }
+ ]
+}

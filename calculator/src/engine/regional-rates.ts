@@ -612,7 +612,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     // and map to the target region's rate for that category.
     labour: baseLibrary.labour.map(l => ({
       ...l,
-      fullyLoadedRatePerHr: labourCategoryRates[l.id.split('-').at(-1) ?? ''] ?? l.fullyLoadedRatePerHr * (rd.labour.skilled / 26.00),
+      fullyLoadedRatePerHr: labourCategoryRates[l.id.split('-').at(-1) ?? ''] ?? l.fullyLoadedRatePerHr * (rd.labour.skilled / REGIONAL_DATA.UK.labour.skilled),
       region: rd.name,
       sourceNote: `Regional benchmark ${rd.name} — 2026 Q2`,
       confidence: 'Low' as const,
