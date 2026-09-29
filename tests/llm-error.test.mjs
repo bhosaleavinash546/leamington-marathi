@@ -38,3 +38,9 @@ test('each status gets its own instruction', () => {
   assert.equal(isProviderError(sdkError(400, 'x', 'y')), true);
   assert.equal(isProviderError(new Error('plain')), false);
 });
+
+test('a spend limit is not reported as an empty balance', () => {
+  const m = describeLlmError(sdkError(400, 'invalid_request_error', 'You have reached your specified API usage limits. You will regain access on 2026-10-01 at 00:00 UTC.'));
+  assert.match(m, /spend limit/);
+  assert.match(m, /adding credit will not lift it/);
+});

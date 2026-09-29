@@ -33,6 +33,11 @@ export function describeLlmError(err) {
   if (message && /credit balance|billing|purchase credits|plans\s*&\s*billing/i.test(message)) {
     return 'Your Anthropic account has run out of credit — the API key is valid, but Anthropic will not run requests until credit is added. Add credit at console.anthropic.com → Plans & Billing (or use a key from an account that has credit), then retry.';
   }
+  // A spend or usage LIMIT is a different fix from an empty balance: adding
+  // credit does not lift it — raising the limit does.
+  if (message && /usage limit|spend(ing)? limit|specified api usage/i.test(message)) {
+    return `Your Anthropic account or workspace has reached its spend limit — adding credit will not lift it. Raise the limit at console.anthropic.com → Settings → Limits (or the workspace's own limit), then retry.${why}`;
+  }
   if (status === 401) return `The Anthropic API key was rejected — check it in Settings (it may be mistyped, revoked or rotated).${why}`;
   if (status === 403) return `This API key is not allowed to make this request — check the key's workspace permissions in the Anthropic console.${why}`;
   if (status === 404) return `Anthropic could not find the model or endpoint this request uses.${why}`;

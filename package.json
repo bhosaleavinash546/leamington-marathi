@@ -24,7 +24,8 @@
     "thresholds:audit": "node scripts/threshold-audit.mjs",
     "horizon:live": "node scripts/horizon-live-research.mjs",
     "horizon:deep": "node scripts/horizon-deep.mjs",
-    "build:site": "VITE_STATIC_SITE=1 vite build --config vite.site.config.ts && node scripts/site-postbuild.mjs"
+    "build:site": "VITE_STATIC_SITE=1 vite build --config vite.site.config.ts && node scripts/site-postbuild.mjs",
+    "check:ai": "node scripts/check-ai.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
