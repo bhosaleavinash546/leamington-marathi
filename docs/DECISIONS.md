@@ -4377,3 +4377,37 @@ to a figure *before* a named cost. An overshoot is then `partial` with
 `bound: 'ceiling'`, mirroring the unpriced-saving floor. A shortfall stays a
 mismatch. A "share of" a bucket with no share stated is an unpriced term, not
 the whole bucket.
+
+## 101. DFA's first part is the base; a gap is a gap in either direction
+
+In the Innovation Studio's DFA core the first listed part is the base and is
+theoretically necessary by definition (Boothroyd–Dewhurst ask the three
+questions of each part as it is added). Candidates plus minimum always equal
+the part count. In the teardown delta, significance is the size of the gap
+either way, with a zero base judged by its absolute gap. Whether the gap is
+adverse comes from polarity: a short more-is-worse lexicon, or `better` stated
+per attribute, and otherwise `null`. Numbers are read with their units, and
+different units are never compared as numbers.
+(docs/INNOVATION-REVIEW-2026-09-29.md)
+
+## 102. A cost bucket is never asked for more than it can give
+
+Design-to-cost allocates the gap in proportion to each bucket's reducible
+amount (cost × reducibility), capped at it. Any remainder is reported as a
+shortfall that needs an architecture or specification change, not spread into
+impossible targets. An unstated reducibility defaults to 50% and is marked as
+assumed.
+
+## 103. A morphological sample never repeats a concept
+
+The sample is a deterministic greedy max-min spread over the combination space
+(each pick furthest from those already chosen, least-used options first). The
+old diagonal walk repeated whenever option counts shared a factor.
+
+## 104. A reference-part percentage is labelled as one, everywhere
+
+The engine re-costs a reference part to test the direction of a move. The
+Innovation page, its KPIs and its PDF/Excel exports now say "reference part —
+not this part's exact saving". Unchecked ideas carry their reason. The model's
+own cost text is labelled AI-stated. A pre-step that could not run reports why
+(`analysisNotes`) instead of leaving a gap.

@@ -39,7 +39,13 @@ export function prettify(s) {
 export function verdictOf(idea) {
   const ec = idea && idea.engineCheck;
   const raw = String((ec && (ec.direction ?? ec.status ?? ec.verdict)) ?? '').toLowerCase();
-  const saving = ec && typeof ec.savingPct === 'number' ? `engine-modelled saving ${ec.savingPct}%` : '';
+  // A REFERENCE-PART figure, and said so. The engine re-costs a reference
+  // part (1 kg when the idea gives no mass) to test the DIRECTION of a move;
+  // exported bare, "saving 18.4%" read as this part's saving (Innovation
+  // review, 29 Sept 2026).
+  const saving = ec && typeof ec.savingPct === 'number'
+    ? `engine direction check on a reference part: ${ec.savingPct}% (not this part's exact saving)${ec.referenceCase ? ` — ${ec.referenceCase}` : ''}`
+    : '';
   const detail = [saving, ec && ec.note].filter(Boolean).join(' — ');
   if (raw.includes('confirm')) return { label: 'ENGINE-CONFIRMED', tone: 'confirmed', detail };
   if (raw.includes('contradict')) return { label: 'ENGINE-CONTRADICTED', tone: 'contradicted', detail };
@@ -47,7 +53,11 @@ export function verdictOf(idea) {
   return {
     label: 'NOT ENGINE-CHECKED',
     tone: 'none',
-    detail: 'The engine had no comparable basis to test this idea against.',
+    // The idea's own reason when the pipeline stamped one — "material not in
+    // the catalogue" and "no request" are different facts from "no basis".
+    detail: idea && typeof idea.engineCheckReason === 'string' && idea.engineCheckReason.trim()
+      ? `The engine had no comparable basis to test this idea against: ${idea.engineCheckReason.trim()}.`
+      : 'The engine had no comparable basis to test this idea against.',
   };
 }
 

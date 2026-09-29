@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { Money, FxNote } from '../components/ui/Money';
+import { parseDfaLines } from '../services/innovation-input.mjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Sparkles, CheckCircle, XCircle, Layers, Cpu, Wand2, ArrowRight, FileDown, Table2,
@@ -38,9 +39,9 @@ interface Method {
   lenses: string[];
 }
 
-interface EngineCheck { direction: 'confirmed' | 'contradicted'; savingPct: number; }
-interface Idea { lens: string; title: string; technicalDescription: string; costAngle: string; riskNotes?: string; engineCheck?: EngineCheck | null; }
-interface Result { method: { id: string; name: string }; analysis: unknown; ideas: Idea[]; engineChecks?: { checked: number; confirmed: number; contradicted: number } | null; }
+interface EngineCheck { direction: 'confirmed' | 'contradicted'; savingPct: number; referenceCase?: string; kind?: string; }
+interface Idea { lens: string; title: string; technicalDescription: string; costAngle: string; riskNotes?: string; engineCheck?: EngineCheck | null; engineCheckReason?: string; }
+interface Result { method: { id: string; name: string }; analysis: unknown; analysisNotes?: string[]; ideas: Idea[]; engineChecks?: { checked: number; confirmed: number; contradicted: number } | null; }
 
 const METHODS: Method[] = [
   {
@@ -279,12 +280,9 @@ export default function InnovationStudioPage() {
       };
       // attach optional structured input so the method can show a real analysis
       if (methodId === 'dfa' && partsText.trim()) {
-        body.parts = partsText.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
-          // "name | moves | material | separate"  (y flags) — or just a name
-          const [name, ...flags] = line.split('|').map(s => s.trim());
-          const f = flags.join(' ').toLowerCase();
-          return { name, moves: /move|rotat|slide/.test(f), differentMaterial: /material|insulat|conduct/.test(f), mustSeparate: /separat|service|assembl/.test(f) };
-        });
+        // "name | moves | material | separate" as words or y/n — negation-aware
+        // (src/services/innovation-input.mjs).
+        body.parts = parseDfaLines(partsText);
       }
       if (methodId === 'design-to-cost' && currentCost && targetCost) {
         body.currentCost = Number(currentCost);
@@ -480,7 +478,7 @@ export default function InnovationStudioPage() {
 
               {methodId === 'dfa' && (
                 <div className="mt-3">
-                  <label className="block text-xs text-slate-400 mb-1" htmlFor="iv-parts">Parts list (optional — one per line; add "| moves | material | service" flags for exact scoring)</label>
+                  <label className="block text-xs text-slate-400 mb-1" htmlFor="iv-parts">Parts list (optional — one per line, BASE PART FIRST; add "| moves | material | service" flags or "| y | n | n" answers for exact scoring)</label>
                   <textarea id="iv-parts" value={partsText} onChange={e => setPartsText(e.target.value)} rows={3}
                     placeholder={'e.g.\nhousing | service\ngear | moves\nspacer'}
                     className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40 resize-none font-mono" />
@@ -604,7 +602,7 @@ export default function InnovationStudioPage() {
                     page arguing with itself. */}
                 <Kpi
                   value={kpis.bestSaving != null ? `−${kpis.bestSaving}%` : '—'}
-                  label="best confirmed" tone="text-gold-300" divider
+                  label="best confirmed · reference part" tone="text-gold-300" divider
                   icon={kpis.bestSaving != null ? TrendingDown : undefined} />
               </div>
 
@@ -613,12 +611,19 @@ export default function InnovationStudioPage() {
               {kpis.unchecked > 0 && (
                 <p className="text-slate-500 text-2xs -mt-3">
                   <span className="iv-num text-slate-400 font-semibold">{kpis.unchecked}</span> of {kpis.ideas} could
-                  not be engine-checked — no modelled cost driver connects them to a price. They are shown, not scored.
+                  not be engine-checked — each one says why below (no request, a material or process the catalogue lacks, or a move it cannot price). They are shown, not scored.
                 </p>
               )}
 
               {/* Deterministic analysis panel (method-specific, best-effort) */}
               {result.analysis != null && <AnalysisPanel methodId={result.method.id} analysis={result.analysis} />}
+              {/* A pre-step that could not run says why, rather than leaving a
+                  gap where the analysis would have been. */}
+              {Array.isArray(result.analysisNotes) && result.analysisNotes.length > 0 && (
+                <div role="note" className="iv-panel px-4 py-3 text-xs text-amber-300/90">
+                  {result.analysisNotes.map((n, i) => <p key={i}>No deterministic analysis: {n}.</p>)}
+                </div>
+              )}
 
               {/* ── Idea workspace ───────────────────────────────────────── */}
               <div className="iv-panel overflow-hidden">
@@ -682,7 +687,7 @@ export default function InnovationStudioPage() {
               </div>
 
               <p className="text-slate-500 text-2xs text-center pt-1">
-                Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.
+                The method's analysis is deterministic. The engine checks the direction of material, process and mass moves on a reference part; any figure in an idea's text is the AI's and is not verified. Validate before commercial use.
               </p>
             </div>
           </motion.div>
@@ -887,7 +892,7 @@ function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order:
                     <span className="iv-num block font-bold text-base">
                       {v.savingPct > 0 ? '−' : '+'}{Math.abs(v.savingPct)}%
                     </span>
-                    <span className="iv-label block mt-0.5 opacity-80">{v.direction}</span>
+                    <span className="iv-label block mt-0.5 opacity-80">{v.direction} · ref. part</span>
                   </span>
                 </span>
               )
@@ -898,13 +903,23 @@ function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order:
                 </span>
               )}
           </div>
+          {/* WHAT THE PERCENTAGE IS. The engine re-costs a REFERENCE part (1 kg
+              when the idea gives no mass) to test the DIRECTION of the move. It
+              was shown as this idea's saving with no qualifier, and an unchecked
+              idea gave no reason (Innovation review, 29 Sept 2026). */}
+          {v?.referenceCase && (
+            <p className="text-slate-500 text-xs mt-1.5">Engine direction check on a reference part: {v.referenceCase}. Not this part's exact saving.</p>
+          )}
+          {!v && idea.engineCheckReason && (
+            <p className="text-slate-500 text-xs mt-1.5">Not engine-checked: {idea.engineCheckReason}.</p>
+          )}
 
           <p className="iv-idea-desc text-slate-400 text-[13px] leading-relaxed mt-2">{idea.technicalDescription}</p>
 
           <div className="iv-idea-fields mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-2">
             <div>
-              <span className="iv-label block mb-0.5">Cost angle</span>
-              <p className="text-teal-300/90 text-xs leading-relaxed">{idea.costAngle}</p>
+              <span className="iv-label block mb-0.5">Cost angle · AI-stated</span>
+              <p className="text-teal-300/90 text-xs leading-relaxed">{idea.costAngle?.trim() || <span className="text-slate-500">not stated</span>}</p>
             </div>
             {idea.riskNotes && (
               <div>
@@ -1016,7 +1031,7 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
     );
   }
   if (methodId === 'teardown-delta' && Array.isArray(a.rows)) {
-    const rows = a.rows as { attribute: string; subject: unknown; benchmark: unknown; kind: string; deltaPct?: number | null; direction?: string; significant: boolean }[];
+    const rows = a.rows as { attribute: string; subject: unknown; benchmark: unknown; kind: string; delta?: number; deltaPct?: number | null; direction?: string; adverse?: boolean | null; significant: boolean; note?: string }[];
     return (
       <Panel title={`Teardown delta (${String(a.significantCount)} significant gap${a.significantCount === 1 ? '' : 's'})`}>
         <div className="space-y-1.5">
@@ -1024,8 +1039,15 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
             <div key={i} className="flex items-center justify-between text-xs gap-3">
               <span className="text-slate-300 flex-1 truncate">{r.attribute}</span>
               <span className="text-slate-500 font-mono">{String(r.subject ?? '—')} vs {String(r.benchmark ?? '—')}</span>
-              {r.kind === 'numeric' && r.deltaPct != null && (
-                <span className={`font-mono font-semibold ${r.significant ? 'text-red-400' : 'text-slate-500'}`}>{r.deltaPct > 0 ? '+' : ''}{r.deltaPct}%</span>
+              {r.kind === 'numeric' && (
+                // Red only when the gap is ADVERSE for a known more-is-worse
+                // attribute; a gap whose merit is unknown is amber, a gap where
+                // the subject is better is green. A zero benchmark has no
+                // percentage — the absolute gap is shown instead of nothing.
+                <span title={r.note || (r.adverse == null && r.significant ? 'direction of merit unknown for this attribute' : undefined)}
+                  className={`font-mono font-semibold ${!r.significant ? 'text-slate-500' : r.adverse === true ? 'text-red-400' : r.adverse === false ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {r.deltaPct != null ? `${r.deltaPct > 0 ? '+' : ''}${r.deltaPct}%` : `${(r.delta ?? 0) > 0 ? '+' : ''}${r.delta ?? 0}`}
+                </span>
               )}
               {r.kind === 'categorical' && (
                 <span className={`font-medium ${r.significant ? 'text-amber-400' : 'text-slate-500'}`}>{r.significant ? 'differs' : 'same'}</span>
@@ -1046,7 +1068,12 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
           <Stat label="Gap to close" value={`£${a.gap} (${a.gapPct}%)`} gold />
         </div>
         {Array.isArray(a.allocations) && a.allocations.length > 0 && (
-          <p className="text-slate-400 text-xs mt-3">Per-bucket targets: {(a.allocations as { name: string; target: number }[]).map(x => `${x.name} £${x.target}`).join(' · ')}</p>
+          <p className="text-slate-400 text-xs mt-3">Per-bucket targets: {(a.allocations as { name: string; target: number; maxReducible?: number; reducibilityStated?: boolean }[]).map(x => `${x.name} £${x.target}${x.maxReducible != null ? ` of at most £${x.maxReducible}${x.reducibilityStated === false ? ' (50% assumed)' : ''}` : ''}`).join(' · ')}</p>
+        )}
+        {typeof a.shortfall === 'number' && a.shortfall > 0 && (
+          <p className="text-amber-300/90 text-xs mt-2">
+            The buckets can give at most £{String(a.reducibleTotal)} — £{String(a.shortfall)} of the gap cannot be closed by trimming them. That part needs an architecture or specification change.
+          </p>
         )}
       </Panel>
     );

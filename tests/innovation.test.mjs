@@ -42,10 +42,13 @@ describe('DFA (Boothroyd-Dewhurst)', () => {
     assert.equal(r.designEfficiencyPct, 60);   // 3/5
   });
 
-  it('never divides by zero — a fully-consolidatable set floors min at 1', () => {
+  it('a fully-consolidatable set keeps its BASE part — min 1 and one fewer candidate (Innovation review 2026-09-29)', () => {
+    // This used to report min 1 AND both parts deletable — deleting everything.
     const r = dfaScore([{ name: 'a' }, { name: 'b' }]);
     assert.equal(r.theoreticalMin, 1);
-    assert.equal(r.consolidationCandidates.length, 2);
+    assert.deepEqual(r.consolidationCandidates, ['b']);
+    assert.equal(r.rows[0].basePart, true);
+    assert.equal(r.totalParts - r.consolidationCandidates.length, r.theoreticalMin);
   });
 
   it('rejects an empty part list', () => assert.throws(() => dfaScore([])));

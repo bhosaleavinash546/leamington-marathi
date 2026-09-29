@@ -23,6 +23,14 @@ test('verdictOf reads the engine stamp {direction, savingPct}', () => {
   assert.equal(v.label, 'ENGINE-CONFIRMED');
   assert.equal(v.tone, 'confirmed');
   assert.match(v.detail, /18\.4%/);
+  // Named as a reference-part direction check, never as this part's saving.
+  assert.match(v.detail, /reference part.*not this part's exact saving/);
+});
+
+test('verdictOf carries the idea\'s own reason when it was not checked', () => {
+  const v = verdictOf({ engineCheck: null, engineCheckReason: 'baseline material "silicon nitride" not in the engine catalogue' });
+  assert.equal(v.tone, 'none');
+  assert.match(v.detail, /silicon nitride/);
 });
 
 test('verdictOf never softens a contradiction', () => {
@@ -52,7 +60,7 @@ test('verdictOf reports honestly when there was no check at all', () => {
 });
 
 test('verdictOf keeps a savingPct of zero and a negative saving visible', () => {
-  assert.match(verdictOf({ engineCheck: { direction: 'contradicted', savingPct: 0 } }).detail, /saving 0%/);
+  assert.match(verdictOf({ engineCheck: { direction: 'contradicted', savingPct: 0 } }).detail, /reference part: 0%/);
   assert.match(verdictOf({ engineCheck: { direction: 'contradicted', savingPct: -3.2 } }).detail, /-3\.2%/);
 });
 

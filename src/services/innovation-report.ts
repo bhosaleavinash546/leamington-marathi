@@ -28,7 +28,8 @@ export interface InnovationIdea {
   // The engine stamps { direction, savingPct }; older/other callers may carry
   // a free-text status or note. Read all of them so the report never silently
   // shows "not checked" for an idea the engine actually judged.
-  engineCheck?: { direction?: string; savingPct?: number; status?: string; verdict?: string; note?: string } | null;
+  engineCheck?: { direction?: string; savingPct?: number; status?: string; verdict?: string; note?: string; referenceCase?: string } | null;
+  engineCheckReason?: string;
 }
 export interface InnovationReportData {
   method: { id: string; name: string };
@@ -306,7 +307,7 @@ export function exportInnovationPdf(dataIn: InnovationReportData): void {
     }
     if (idea.costAngle) {
       mono(6.4, true); setText(doc, GREEN); ensure(6);
-      doc.text('COST ANGLE', ML + 4.5, y); y += 3.8;
+      doc.text('COST ANGLE (AI-STATED, NOT ENGINE-CHECKED)', ML + 4.5, y); y += 3.8;
       wrapped(idea.costAngle, 9.2, BODY, CW - 9, 4.1, 'normal', ML + 4.5);
     }
     if (idea.riskNotes) {
@@ -413,7 +414,7 @@ export async function exportInnovationXlsx(data: InnovationReportData): Promise<
       { match: 'confirmed', argb: 'FFECFBF3' },
     ],
     rows: [
-      ['#', 'Lens', 'Title', 'Technical description', 'Cost angle', 'Risks & unknowns', 'Engine check', 'Saving %', 'Engine note'],
+      ['#', 'Lens', 'Title', 'Technical description', 'Cost angle (AI-stated)', 'Risks & unknowns', 'Engine check', 'Reference-part saving %', 'Engine note'],
       ...data.ideas.map((i, n) => [
         n + 1,
         i.lens,

@@ -24,7 +24,7 @@ export interface Tool {
 export const TOOLS: Tool[] = [
   // ── Generate ideas ──────────────────────────────────────────────────────
   { id: 'analyze',     label: 'Analyze',           route: '/analyze',      icon: Zap,          category: 'generate', description: 'AI cost-reduction ideas for any vehicle system' },
-  { id: 'innovate',    label: 'Innovation Studio', route: '/innovate',     icon: Lightbulb,    category: 'generate', description: 'Eight structured methods, engine-checked' },
+  { id: 'innovate',    label: 'Innovation Studio', route: '/innovate',     icon: Lightbulb,    category: 'generate', description: 'Eleven structured methods, engine-checked' },
   { id: 'triz',        label: 'TRIZ Studio',       route: '/triz',         icon: Target,       category: 'generate', description: 'Resolve trade-offs with inventive principles' },
   { id: 'idea-studio', label: 'Idea Studio',       route: '/idea-studio',  icon: Sparkles,     category: 'generate', description: 'Ideas from a part photo or CAD file' },
   { id: 'cad-diff',    label: 'CAD Diff',          route: '/cad-diff',     icon: GitCompare,   category: 'generate', description: 'Cost ideas from design revisions' },

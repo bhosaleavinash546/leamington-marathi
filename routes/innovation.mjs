@@ -98,6 +98,18 @@ const TEARDOWN_SCHEMA = {
 // the user), directive is the prompt text telling the model what to apply.
 async function buildMethodContext(method, body, client) {
   const part = String(body?.context?.part || body?.part || 'component');
+  // WHY THERE IS NO ANALYSIS. Every deterministic pre-step used to fail into
+  // an empty catch, so a DFA list, a cost gap or the AI's FAST decomposition
+  // that did not validate simply vanished — the page showed nothing and said
+  // nothing (Innovation review, 29 Sept 2026). The reason now travels with the
+  // response as `analysisNotes`.
+  const notes = [];
+  const note = (m) => notes.push(String(m));
+  const ctx = await buildMethodContextInner(method, body, client, part, note);
+  return { ...ctx, analysisNotes: notes };
+}
+
+async function buildMethodContextInner(method, body, client, part, note) {
   switch (method) {
     case 'scamper':
       return {
@@ -118,7 +130,7 @@ async function buildMethodContext(method, body, client) {
       // Deterministic score if a part list is supplied; else the LLM proposes it.
       let analysis = null;
       if (Array.isArray(body?.parts) && body.parts.length) {
-        try { analysis = dfaScore(body.parts); } catch { /* fall through */ }
+        try { analysis = dfaScore(body.parts); } catch (e) { note(`DFA part list not scored: ${e.message}`); }
       }
       const scoreLine = analysis ? `Deterministic DFA: ${analysis.totalParts} parts → theoretical minimum ${analysis.theoreticalMin} (efficiency ${analysis.designEfficiencyPct}%). Consolidation candidates: ${analysis.consolidationCandidates.join(', ') || 'none'}.` : `No part list supplied — first list the likely parts of the ${part} and answer the 3 DFA questions for each.`;
       return {
@@ -130,7 +142,7 @@ async function buildMethodContext(method, body, client) {
       // If the caller passed functions with cost/worth, score deterministically.
       let analysis = null;
       if (Array.isArray(body?.functions) && body.functions.length) {
-        try { analysis = valueIndex(body.functions); } catch { /* */ }
+        try { analysis = valueIndex(body.functions); } catch (e) { note(`value index not computed: ${e.message}`); }
       }
       const viLine = analysis ? `Value indices: ${analysis.rows.map(r => `${r.name} ${r.valueIndex}`).join('; ')}. Poor value (attack first): ${analysis.poorValueFunctions.join(', ') || 'none'}.` : `First decompose the ${part} into 4-6 functions (verb-noun), estimate each function's cost share and importance/worth, and identify the poor-value ones (high cost, low worth).`;
       return {
@@ -143,9 +155,11 @@ async function buildMethodContext(method, body, client) {
       const tgt = Number(body?.targetCost);
       let analysis = null;
       if (Number.isFinite(cur) && Number.isFinite(tgt)) {
-        try { analysis = targetGap(cur, tgt, body?.buckets || []); } catch { /* */ }
+        try { analysis = targetGap(cur, tgt, body?.buckets || []); } catch (e) { note(`cost gap not computed: ${e.message}`); }
       }
-      const gapLine = analysis ? `Cost gap to close: £${analysis.gap} (${analysis.gapPct}% of current). Per-bucket targets: ${analysis.allocations.map(a => `${a.name} £${a.target}`).join('; ') || '(no buckets supplied)'}.` : `Target costing for the ${part}: work backwards from the target. If no numbers supplied, ask the user to run a should-cost first.`;
+      const gapLine = analysis
+        ? `Cost gap to close: £${analysis.gap} (${analysis.gapPct}% of current). Per-bucket targets: ${analysis.allocations.map(a => `${a.name} £${a.target} (at most £${a.maxReducible} reducible)`).join('; ') || '(no buckets supplied)'}.${analysis.shortfall > 0 ? ` The buckets can give at most £${analysis.reducibleTotal}: £${analysis.shortfall} of the gap is NOT closable by trimming these buckets — say so, and propose architecture or specification changes for that part rather than stretching a bucket past its limit.` : ''}`
+        : `Target costing for the ${part}: work backwards from the target. If no numbers supplied, ask the user to run a should-cost first.`;
       return {
         analysis,
         directive: `Apply Design-to-Cost to the ${part}. ${gapLine}\nGenerate ideas SIZED to the per-bucket targets so their savings add up to the gap — each idea should state which bucket it attacks and roughly how much of the gap it closes.`,
@@ -157,10 +171,14 @@ async function buildMethodContext(method, body, client) {
       let analysis = null;
       const m = body?.matrix;
       if (m && Array.isArray(m.components) && Array.isArray(m.functions) && Array.isArray(m.alloc)) {
-        analysis = functionCostMatrix(m.components, m.functions, m.alloc);   // throws 400 upstream on bad input
+        try { analysis = functionCostMatrix(m.components, m.functions, m.alloc); } catch (e) {
+          // The caller's own matrix is malformed: that is a 400 with the reason,
+          // not the "Idea generation failed" 500 it used to surface as.
+          throw Object.assign(new Error(`FAST matrix rejected: ${e.message}`), { badRequest: true });
+        }
         analysis.proposedBy = 'user';
       } else if (client) {
-        try { analysis = await proposeFastMatrix(client, part, body?.context?.system || '', body?.context?.material || ''); if (analysis) analysis.proposedBy = 'ai'; } catch { /* prompt-only fallback */ }
+        try { analysis = await proposeFastMatrix(client, part, body?.context?.system || '', body?.context?.material || ''); if (analysis) analysis.proposedBy = 'ai'; } catch (e) { note(`the AI's function-cost decomposition failed validation twice (${String(e?.message || e).slice(0, 120)}) — ideas were generated without a matrix`); }
       }
       const fastLine = analysis
         ? `Function-cost matrix (validated, rows sum to 100%): ${analysis.functions.map(f => `${f.name} — cost ${f.costPct}% vs worth ${f.worthPct}% (VI ${f.valueIndex}, ${f.verdict})`).join('; ')}. POOR-VALUE functions to attack first: ${analysis.poorValueFunctions.join(', ') || 'none — attack the lowest-VI functions instead'}.`
@@ -184,7 +202,10 @@ async function buildMethodContext(method, body, client) {
       const relaxable = rows.filter(r => !r.ctq);
       let engineDeltas = null;
       if (body?.costBase && typeof body.costBase === 'object') {
-        try { engineDeltas = specRelaxationDeltas({ ...body.costBase, region: REGION_MAP[String(body?.context?.region || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany', annualVolume: Number(body?.context?.annualVolume) || 80000 }); } catch { /* no engine base — deltas omitted */ }
+        // The ACTIVE rate library, as every other engine call in the product
+        // uses — the default catalogue gave relaxation deltas priced on rates
+        // the user's own should-cost does not use (Innovation review).
+        try { engineDeltas = specRelaxationDeltas({ ...body.costBase, region: REGION_MAP[String(body?.context?.region || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany', annualVolume: Number(body?.context?.annualVolume) || 80000 }, getActiveLibrary()); } catch (e) { note(`engine relaxation deltas not computed: ${e.message}`); }
       }
       const deltaLine = engineDeltas && engineDeltas.steps.length
         ? `ENGINE-VERIFIED relaxation deltas on this part (${engineDeltas.material} / ${engineDeltas.process}, baseline €${engineDeltas.baseline}): ${engineDeltas.steps.map(s => `${s.label} saves €${s.savingEur} (${s.savingPct}%)`).join('; ')}. Use ONLY these figures for relaxation savings — do not invent others.`
@@ -214,14 +235,16 @@ async function buildMethodContext(method, body, client) {
           });
           subjectRows = subjectRows || ex.subject;
           benchmarkRows = benchmarkRows || ex.benchmark;
-        } catch { /* extraction best-effort */ }
+        } catch (e) { note(`teardown notes could not be read into attribute tables (${String(e?.message || e).slice(0, 100)})`); }
       }
       let analysis = null;
       if (Array.isArray(subjectRows) && Array.isArray(benchmarkRows)) {
-        try { analysis = teardownDelta(subjectRows, benchmarkRows); } catch { /* */ }
+        try { analysis = teardownDelta(subjectRows, benchmarkRows); } catch (e) { note(`teardown delta not computed: ${e.message}`); }
       }
       const deltaLine = analysis
-        ? `Deterministic delta list (${analysis.significantCount} significant): ${analysis.significantDeltas.map(d => d.kind === 'numeric' ? `${d.attribute}: ${d.subject} vs benchmark ${d.benchmark} (${d.deltaPct > 0 ? '+' : ''}${d.deltaPct}%)` : `${d.attribute}: "${d.subject}" vs "${d.benchmark}"`).join('; ') || 'none — the parts are close; look at the subject-only/benchmark-only attributes instead'}.`
+        ? `Deterministic delta list (${analysis.significantCount} significant): ${analysis.significantDeltas.map(d => d.kind === 'numeric'
+            ? `${d.attribute}: ${d.subject} vs benchmark ${d.benchmark} (${d.deltaPct != null ? `${d.deltaPct > 0 ? '+' : ''}${d.deltaPct}%` : `${d.delta > 0 ? '+' : ''}${d.delta} against a zero benchmark`}${d.adverse === true ? ', adverse' : d.adverse === false ? ', subject better' : ', direction of merit unknown'})`
+            : `${d.attribute}: "${d.subject}" vs "${d.benchmark}"`).join('; ') || 'none — the parts are close; look at the subject-only/benchmark-only attributes instead'}.`
         : `No attribute data supplied — first build the two-column attribute table (mass, part count, fastener count, material, process) for the ${part} vs its best-in-class benchmark, clearly labelling every value as an ASSUMPTION.`;
       return {
         analysis,
@@ -231,7 +254,7 @@ async function buildMethodContext(method, body, client) {
     case 'morphological': {
       let analysis = null;
       if (Array.isArray(body?.subFunctions) && body.subFunctions.length) {
-        try { analysis = morphology(body.subFunctions, 6); } catch { /* */ }
+        try { analysis = morphology(body.subFunctions, 6); } catch (e) { note(`concept space not built: ${e.message}`); }
       }
       const morphLine = analysis ? `Concept space: ${analysis.totalCombinations} combinations across ${analysis.dimensions.map(d => d.name).join(' × ')}. Sampled concepts: ${analysis.sampledConcepts.map(c => c.map(x => x.option).join('+')).join(' | ')}.` : `Decompose the ${part}'s job into 3-5 sub-functions, list 3-4 solution options for each, then form promising new concept combinations.`;
       return {
@@ -264,7 +287,7 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
     try { res.json(functionCostMatrix(req.body?.components, req.body?.functions, req.body?.alloc)); } catch (e) { res.status(400).json({ error: e.message }); }
   });
   app.post('/api/innovate/spec-deltas', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
-    try { res.json(specRelaxationDeltas(req.body || {})); } catch (e) { res.status(400).json({ error: e.message }); }
+    try { res.json(specRelaxationDeltas(req.body || {}, getActiveLibrary())); } catch (e) { res.status(400).json({ error: e.message }); }
   });
   app.post('/api/innovate/teardown-delta', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
     try { res.json(teardownDelta(req.body?.subject, req.body?.benchmark)); } catch (e) { res.status(400).json({ error: e.message }); }
@@ -293,7 +316,7 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
     const client = makeAnthropic(key, { userId: req.user?.id, route: `/api/innovate/resolve:${method.id}`, signal: run.signal });
 
     try {
-      const { analysis, directive } = await buildMethodContext(method.id, { ...req.body, context: { ...ctx, part } }, client);
+      const { analysis, directive, analysisNotes } = await buildMethodContext(method.id, { ...req.body, context: { ...ctx, part } }, client);
       const emb = await messagesJson(client, {
         maxTokens: 3500,
         toolName: 'emit_ideas',
@@ -312,11 +335,14 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
 
       res.json({
         method: { id: method.id, name: method.name, tier: method.tier, mode: method.mode },
-        analysis, ideas, engineChecks,
-        note: 'Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.',
+        analysis, analysisNotes, ideas, engineChecks,
+        // The old note said "every £ figure is engine-checked or labelled"; the
+        // ideas' own cost text carries the model's figures, which are neither.
+        note: 'The method analysis is deterministic. The engine checks the DIRECTION of material/process/mass moves on a reference part; figures in an idea\'s text are the AI\'s and are not verified. Validate before commercial use.',
       });
     } catch (err) {
       if (run.signal.aborted) return;   // nobody is listening
+      if (err?.badRequest) return res.status(400).json({ error: err.message });
       const status = err?.status || err?.response?.status;
       const msg = typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (err?.message || 'Idea generation failed.');
       res.status(typeof status === 'number' ? 502 : 500).json({ error: msg });

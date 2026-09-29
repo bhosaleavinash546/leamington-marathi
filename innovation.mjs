@@ -99,8 +99,17 @@ export function dfaScore(parts) {
     const necessary = moves || material || separate;
     return { name: String(p.name || 'part').slice(0, 80), moves, differentMaterial: material, mustSeparate: separate, necessary };
   });
+  // THE BASE PART. In Boothroyd-Dewhurst the three questions are asked of
+  // each part AS IT IS ADDED; the first part has nothing to be assembled to,
+  // so it is theoretically necessary by definition. The old `|| 1` put the
+  // minimum at 1 while still listing EVERY part as deletable — a bracket and
+  // two screws read "delete all 3" — and a base with no flag of its own was
+  // offered for deletion (Innovation review, 29 Sept 2026). The first line is
+  // the base; the output marks it and the page asks for it first.
+  rows[0].basePart = true;
+  if (!rows[0].necessary) { rows[0].necessary = true; rows[0].necessaryBecause = 'base part'; }
   const total = rows.length;
-  const theoreticalMin = rows.filter(r => r.necessary).length || 1;
+  const theoreticalMin = rows.filter(r => r.necessary).length;
   const candidates = rows.filter(r => !r.necessary).map(r => r.name);
   const designEfficiencyPct = round((theoreticalMin / total) * 100, 0);
   return { totalParts: total, theoreticalMin, consolidationCandidates: candidates, designEfficiencyPct, rows };
@@ -138,13 +147,53 @@ export function targetGap(currentCost, targetCost, buckets = []) {
   const gap = round(cur - tgt, 3);
   const gapPct = round((gap / cur) * 100, 1);
   let allocations = [];
+  let reducibleTotal = null, shortfall = null;
   if (gap > 0 && Array.isArray(buckets) && buckets.length) {
-    // weight = bucket cost × reducibility (default reducibility 0.5)
-    const weighted = buckets.map(b => ({ name: String(b.name || 'bucket'), cost: Math.max(0, Number(b.cost) || 0), red: Math.min(1, Math.max(0, b.reducibility ?? 0.5)) }));
-    const wSum = weighted.reduce((s, b) => s + b.cost * b.red, 0) || 1;
-    allocations = weighted.map(b => ({ name: b.name, target: round(gap * (b.cost * b.red) / wSum, 3) }));
+    // A bucket can give at most cost × reducibility. The old proportional split
+    // had no ceiling, so a €4 labour bucket at 50% reducibility was asked for
+    // €5 (Innovation review, 29 Sept 2026). The split is now proportional to
+    // each bucket's REDUCIBLE amount (cost × reducibility), which by
+    // construction never exceeds a ceiling while the gap fits; the loop below
+    // is a guard, not the mechanism. Whatever no bucket can absorb is reported
+    // as a shortfall rather than hidden in an impossible target.
+    // Reducibility is the caller's judgement; when absent it defaults to 0.5
+    // and the row says so.
+    const weighted = buckets.map(b => {
+      const r = Number(b?.reducibility);
+      const stated = b?.reducibility != null && b?.reducibility !== '' && Number.isFinite(r);
+      const red = stated ? Math.min(1, Math.max(0, r)) : 0.5;
+      const cost = Math.max(0, Number(b?.cost) || 0);
+      return { name: String(b?.name || 'bucket'), cost, red, stated, cap: cost * red };
+    });
+    reducibleTotal = weighted.reduce((a, b) => a + b.cap, 0);
+    const give = weighted.map(() => 0);
+    let remaining = Math.min(gap, reducibleTotal);
+    for (let pass = 0; pass < weighted.length && remaining > 1e-9; pass++) {
+      const open = weighted.map((b, i) => i).filter(i => weighted[i].cap - give[i] > 1e-9);
+      const w = open.reduce((a, i) => a + weighted[i].cap, 0);
+      if (w <= 0) break;
+      let used = 0;
+      for (const i of open) {
+        const want = remaining * weighted[i].cap / w;
+        const got = Math.min(want, weighted[i].cap - give[i]);
+        give[i] += got; used += got;
+      }
+      remaining -= used;
+    }
+    shortfall = round(Math.max(0, gap - reducibleTotal), 3);
+    allocations = weighted.map((b, i) => ({
+      name: b.name, target: round(give[i], 3), bucketCost: round(b.cost, 3),
+      maxReducible: round(b.cap, 3), reducibility: b.red, reducibilityStated: b.stated,
+    }));
   }
-  return { currentCost: round(cur, 3), targetCost: round(tgt, 3), gap, gapPct, achievable: gap <= 0, allocations };
+  return {
+    currentCost: round(cur, 3), targetCost: round(tgt, 3), gap, gapPct,
+    // `achievable` has always meant "the target is already met" (gap ≤ 0) —
+    // kept for compatibility, and named plainly beside it.
+    achievable: gap <= 0, alreadyMet: gap <= 0,
+    allocations,
+    ...(reducibleTotal != null ? { reducibleTotal: round(reducibleTotal, 3), shortfall, closableWithStatedReducibility: shortfall === 0 } : {}),
+  };
 }
 
 /** FAST function-cost matrix — the classical VE core that valueIndex only
@@ -259,6 +308,20 @@ export function specRelaxationDeltas(input, library = null) {
  *  attributes get delta/deltaPct and a significance flag (≥10% adverse gap);
  *  categorical attributes flag any mismatch. The LLM's later job is explaining
  *  HOW the benchmark achieves each significant delta — never inventing gaps. */
+// Attributes where MORE is worse — the teardown convention for mass, count,
+// cost and time. Anything else has no known polarity: its gap is reported both
+// ways with `adverse: null`, never assumed. A caller can state it per
+// attribute with `better: 'lower' | 'higher'`.
+const LOWER_IS_BETTER = /\b(mass|weight|cost|price|part(?:s| count)?|piece count|fasteners?|screws?|bolts?|rivets?|clips?|welds?|spot welds?|joints?|time|cycle|seconds?|minutes?|steps?|operations?|variants?|scrap|waste|co2e?|emissions?|tooling)\b/i;
+
+/** A leading number with an optional unit: "2.4 kg", "1,200", "~12 pcs". */
+function numberWithUnit(v) {
+  const m = /^\s*~?\s*([-−]?\d{1,3}(?:,\d{3})+(?:\.\d+)?|[-−]?\d+(?:\.\d+)?)\s*([^\d\s].*)?$/.exec(String(v ?? ''));
+  if (!m) return null;
+  const n = Number(m[1].replace(/,/g, '').replace('−', '-'));
+  return Number.isFinite(n) ? { n, unit: (m[2] || '').trim().toLowerCase() } : null;
+}
+
 export function teardownDelta(subject, benchmark) {
   const rows = [];
   const norm = (side) => {
@@ -266,7 +329,7 @@ export function teardownDelta(subject, benchmark) {
     for (const a of Array.isArray(side) ? side : []) {
       const name = String(a?.name || '').trim().slice(0, 80);
       if (!name) continue;
-      out.set(name.toLowerCase(), { name, value: a?.value });
+      out.set(name.toLowerCase(), { name, value: a?.value, better: a?.better === 'lower' || a?.better === 'higher' ? a.better : null });
     }
     return out;
   };
@@ -276,20 +339,36 @@ export function teardownDelta(subject, benchmark) {
   for (const [key, s] of subj) {
     const b = bench.get(key);
     if (!b) { rows.push({ attribute: s.name, subject: s.value, benchmark: null, kind: 'subject-only', significant: false }); continue; }
-    const sn = Number(s.value), bn = Number(b.value);
-    if (Number.isFinite(sn) && Number.isFinite(bn) && String(s.value).trim() !== '' && String(b.value).trim() !== '') {
+    // NUMBERS WITH UNITS ARE NUMBERS. "2.4 kg" vs "2.0 kg" — exactly what the
+    // verbatim extraction produces — used to be compared as TEXT ("differs",
+    // no size), and "1,200" likewise. A leading number is read; the units must
+    // match (or one side be bare), else the pair stays categorical and says why.
+    const sv = numberWithUnit(s.value), bv = numberWithUnit(b.value);
+    const unitsAgree = sv && bv && (sv.unit === bv.unit || !sv.unit || !bv.unit);
+    if (sv && bv && unitsAgree) {
+      const sn = sv.n, bn = bv.n;
       const delta = round(sn - bn, 3);
       const deltaPct = bn !== 0 ? round((delta / Math.abs(bn)) * 100, 1) : null;
+      const better = s.better || b.better || (LOWER_IS_BETTER.test(s.name) ? 'lower' : null);
+      const direction = delta > 0 ? 'subject-higher' : delta < 0 ? 'subject-lower' : 'equal';
+      // SIGNIFICANCE IS A GAP EITHER WAY. It used to be "subject higher by
+      // >10%" only, so a stiffness 33% below the benchmark, an efficiency 5
+      // points down, or 4 fasteners against the benchmark's 0 (a zero base, so
+      // no percentage at all) were never flagged. Polarity decides whether the
+      // gap is ADVERSE; it does not decide whether it is a gap.
+      const significant = deltaPct != null ? Math.abs(deltaPct) > 10 : delta !== 0;
+      const adverse = !significant || !better ? (significant ? null : false)
+        : better === 'lower' ? delta > 0 : delta < 0;
       rows.push({
-        attribute: s.name, subject: sn, benchmark: bn, delta, deltaPct, kind: 'numeric',
-        // Adverse = subject carries MORE than the benchmark (mass, parts,
-        // fasteners, cost — for these attributes more is worse).
-        direction: delta > 0 ? 'subject-higher' : delta < 0 ? 'subject-lower' : 'equal',
-        significant: deltaPct != null && deltaPct > 10,
+        attribute: s.name, subject: s.value, benchmark: b.value,
+        subjectValue: sn, benchmarkValue: bn, unit: sv.unit || bv.unit || null,
+        delta, deltaPct, kind: 'numeric', direction, better, adverse, significant,
+        ...(deltaPct == null && delta !== 0 ? { note: 'benchmark is zero — no percentage, the absolute gap is the finding' } : {}),
       });
     } else {
       const differs = String(s.value ?? '').trim().toLowerCase() !== String(b.value ?? '').trim().toLowerCase();
-      rows.push({ attribute: s.name, subject: s.value, benchmark: b.value, kind: 'categorical', direction: differs ? 'differs' : 'equal', significant: differs });
+      rows.push({ attribute: s.name, subject: s.value, benchmark: b.value, kind: 'categorical', direction: differs ? 'differs' : 'equal', significant: differs,
+        ...(sv && bv && !unitsAgree ? { note: `units differ (${sv.unit} vs ${bv.unit}) — not compared as numbers` } : {}) });
     }
   }
   for (const [key, b] of bench) {
@@ -308,12 +387,34 @@ export function morphology(subFunctions, sampleN = 5) {
     .filter(d => d.options.length > 0);
   if (dims.length === 0) throw new Error('each sub-function needs at least one option');
   const totalCombinations = dims.reduce((n, d) => n * d.options.length, 1);
-  const n = Math.min(sampleN, totalCombinations);
-  const concepts = [];
+  const n = Math.max(0, Math.min(Number(sampleN) || 0, totalCombinations));
+  // DISTINCT CONCEPTS, SPREAD APART. The old diagonal walk repeated itself
+  // whenever the option counts shared a factor: six "concepts" from a 3×3×3
+  // space were three concepts listed twice (Innovation review, 29 Sept 2026).
+  // Now a greedy max-min spread: each pick is the combination furthest (in
+  // sub-functions changed) from every pick so far, ties broken toward options
+  // used least, then by index — deterministic, and never a repeat.
+  const decode = (k) => { const idx = []; for (let d = dims.length - 1; d >= 0; d--) { idx[d] = k % dims[d].options.length; k = Math.floor(k / dims[d].options.length); } return idx; };
+  const POOL = 4096;
+  const step = totalCombinations <= POOL ? 1 : Math.floor(totalCombinations / POOL);
+  const pool = [];
+  for (let k = 0; k < totalCombinations && pool.length < POOL; k += step) pool.push(decode(k));
+  const chosen = [], usage = dims.map(d => d.options.map(() => 0));
+  const dist = (a, b) => a.reduce((s, v, i) => s + (v !== b[i] ? 1 : 0), 0);
+  const taken = new Set();
   for (let i = 0; i < n; i++) {
-    // diagonal walk: option index i+dim spread modulo option count → spreads picks
-    const combo = dims.map((d, di) => d.options[(i + di) % d.options.length]);
-    concepts.push(dims.map((d, di) => ({ subFunction: d.name, option: combo[di] })));
+    let best = null, bestKey = null;
+    for (let c = 0; c < pool.length; c++) {
+      if (taken.has(c)) continue;
+      const minD = chosen.length ? Math.min(...chosen.map(x => dist(x, pool[c]))) : dims.length;
+      const use = pool[c].reduce((s, v, d) => s + usage[d][v], 0);
+      const key = [minD, -use];
+      if (!bestKey || key[0] > bestKey[0] || (key[0] === bestKey[0] && key[1] > bestKey[1])) { best = c; bestKey = key; }
+    }
+    if (best == null) break;
+    taken.add(best); chosen.push(pool[best]);
+    pool[best].forEach((v, d) => { usage[d][v]++; });
   }
+  const concepts = chosen.map(idx => dims.map((d, di) => ({ subFunction: d.name, option: d.options[idx[di]] })));
   return { dimensions: dims, totalCombinations, sampledConcepts: concepts };
 }
