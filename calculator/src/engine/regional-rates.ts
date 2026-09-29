@@ -37,7 +37,7 @@ interface RegionalData {
   currency: string;
   /** FX rate to GBP (1 GBP = X local currency) */
   fxToGBP: number;
-  /** Fully-loaded labour rates in £/hr equivalent (2026 Q2) */
+  /** Fully-loaded labour rates in £/hr equivalent (2026-09) */
   labour: {
     skilled: number;       // machinist / toolmaker
     semiskilled: number;   // press operator / assembler
@@ -48,7 +48,7 @@ interface RegionalData {
     technician: number;    // maintenance / mould-setter / process technician
     supervisor: number;    // shift / production supervisor / team leader
   };
-  /** Industrial energy rates £/kWh (2026 Q2) */
+  /** Industrial energy rates £/kWh (2026-09) */
   energy: {
     electricityPerKwh: number;
     gasPerKwh: number;
@@ -83,8 +83,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'United Kingdom',
     currency: 'GBP',
     fxToGBP: 1.00,
-    labour: { skilled: 26.00, semiskilled: 19.80, engineer: 42.50, foundry: 18.50, electronics: 17.50, inspector: 27.50, technician: 28.60, supervisor: 35.10 },
-    energy: { electricityPerKwh: 0.23, gasPerKwh: 0.040 },
+    labour: { skilled: 26.19, semiskilled: 19.94, engineer: 42.80, foundry: 18.63, electronics: 17.63, inspector: 27.70, technician: 28.81, supervisor: 35.35 },
+    energy: { electricityPerKwh: 0.268, gasPerKwh: 0.067 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 1.00,
@@ -95,9 +95,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   DE: {
     name: 'Germany',
     currency: 'EUR',
-    fxToGBP: 1.16,
-    labour: { skilled: 40.50, semiskilled: 32.00, engineer: 65.00, foundry: 28.00, electronics: 30.00, inspector: 35.00, technician: 44.55, supervisor: 54.68 },
-    energy: { electricityPerKwh: 0.20, gasPerKwh: 0.047 },
+    fxToGBP: 1.165,
+    labour: { skilled: 40.77, semiskilled: 32.21, engineer: 65.43, foundry: 28.19, electronics: 30.20, inspector: 35.23, technician: 44.85, supervisor: 55.04 },
+    energy: { electricityPerKwh: 0.199, gasPerKwh: 0.068 },
     materialFactors: { commodityResin: 1.042, engineeringResin: 1.03, highPerfResin: 1.008 },
     materialMultiplier: 1.03,
     machineRateMultiplier: 1.05,
@@ -108,9 +108,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   FR: {
     name: 'France',
     currency: 'EUR',
-    fxToGBP: 1.16,
-    labour: { skilled: 30.00, semiskilled: 23.00, engineer: 48.00, foundry: 22.00, electronics: 20.00, inspector: 28.00, technician: 33.00, supervisor: 40.50 },
-    energy: { electricityPerKwh: 0.16, gasPerKwh: 0.07 },
+    fxToGBP: 1.165,
+    labour: { skilled: 30.07, semiskilled: 23.05, engineer: 48.11, foundry: 22.05, electronics: 20.04, inspector: 28.06, technician: 33.07, supervisor: 40.59 },
+    energy: { electricityPerKwh: 0.159, gasPerKwh: 0.091 },
     materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 0.92,
@@ -121,9 +121,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   IT: {
     name: 'Italy',
     currency: 'EUR',
-    fxToGBP: 1.16,
-    labour: { skilled: 24.00, semiskilled: 18.00, engineer: 42.00, foundry: 17.00, electronics: 16.00, inspector: 24.00, technician: 26.40, supervisor: 32.40 },
-    energy: { electricityPerKwh: 0.26, gasPerKwh: 0.09 },
+    fxToGBP: 1.165,
+    labour: { skilled: 24.08, semiskilled: 18.06, engineer: 42.14, foundry: 17.05, electronics: 16.05, inspector: 24.08, technician: 26.49, supervisor: 32.50 },
+    energy: { electricityPerKwh: 0.259, gasPerKwh: 0.111 },
     materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 0.97,
@@ -134,9 +134,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   ES: {
     name: 'Spain',
     currency: 'EUR',
-    fxToGBP: 1.16,
-    labour: { skilled: 19.00, semiskilled: 14.50, engineer: 34.00, foundry: 13.50, electronics: 13.00, inspector: 20.00, technician: 20.90, supervisor: 25.65 },
-    energy: { electricityPerKwh: 0.19, gasPerKwh: 0.07 },
+    fxToGBP: 1.165,
+    labour: { skilled: 19.08, semiskilled: 14.56, engineer: 34.13, foundry: 13.55, electronics: 13.05, inspector: 20.08, technician: 20.98, supervisor: 25.75 },
+    energy: { electricityPerKwh: 0.189, gasPerKwh: 0.091 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 0.88,
@@ -147,9 +147,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   PL: {
     name: 'Poland',
     currency: 'PLN',
-    fxToGBP: 5.05,
-    labour: { skilled: 12.00, semiskilled: 9.00, engineer: 20.00, foundry: 8.00, electronics: 10.50, inspector: 12.00, technician: 13.20, supervisor: 16.20 },
-    energy: { electricityPerKwh: 0.14, gasPerKwh: 0.06 },
+    fxToGBP: 5.096,
+    labour: { skilled: 11.90, semiskilled: 8.92, engineer: 19.83, foundry: 7.93, electronics: 10.41, inspector: 11.90, technician: 13.09, supervisor: 16.06 },
+    energy: { electricityPerKwh: 0.137, gasPerKwh: 0.08 },
     materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.72,
@@ -160,9 +160,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   CZ: {
     name: 'Czech Republic',
     currency: 'CZK',
-    fxToGBP: 29.5,
-    labour: { skilled: 13.00, semiskilled: 10.00, engineer: 22.00, foundry: 9.50, electronics: 9.00, inspector: 14.00, technician: 14.30, supervisor: 17.55 },
-    energy: { electricityPerKwh: 0.13, gasPerKwh: 0.05 },
+    fxToGBP: 28.43,
+    labour: { skilled: 13.08, semiskilled: 10.06, engineer: 22.13, foundry: 9.56, electronics: 9.05, inspector: 14.08, technician: 14.39, supervisor: 17.66 },
+    energy: { electricityPerKwh: 0.129, gasPerKwh: 0.07 },
     materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.74,
@@ -173,9 +173,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   RO: {
     name: 'Romania',
     currency: 'RON',
-    fxToGBP: 5.8,
-    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 13.00, foundry: 5.50, electronics: 5.20, inspector: 8.50, technician: 8.25, supervisor: 10.13 },
-    energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
+    fxToGBP: 6.151,
+    labour: { skilled: 7.45, semiskilled: 5.76, engineer: 12.92, foundry: 5.47, electronics: 5.17, inspector: 8.45, technician: 8.20, supervisor: 10.07 },
+    energy: { electricityPerKwh: 0.109, gasPerKwh: 0.07 },
     materialFactors: { commodityResin: 0.944, engineeringResin: 0.96, highPerfResin: 0.990 },
     materialMultiplier: 0.96,
     machineRateMultiplier: 0.65,
@@ -186,9 +186,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   HU: {
     name: 'Hungary',
     currency: 'HUF',
-    fxToGBP: 450,
-    labour: { skilled: 9.50, semiskilled: 7.50, engineer: 17.00, foundry: 7.00, electronics: 6.80, inspector: 11.00, technician: 10.45, supervisor: 12.83 },
-    energy: { electricityPerKwh: 0.12, gasPerKwh: 0.05 },
+    fxToGBP: 428.2,
+    labour: { skilled: 9.30, semiskilled: 7.34, engineer: 16.63, foundry: 6.85, electronics: 6.65, inspector: 10.76, technician: 10.23, supervisor: 12.55 },
+    energy: { electricityPerKwh: 0.115, gasPerKwh: 0.069 },
     materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.70,
@@ -199,9 +199,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   SE: {
     name: 'Sweden',
     currency: 'SEK',
-    fxToGBP: 13.8,
-    labour: { skilled: 40.00, semiskilled: 32.00, engineer: 62.00, foundry: 30.00, electronics: 28.00, inspector: 38.00, technician: 44.00, supervisor: 54.00 },
-    energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
+    fxToGBP: 13.21,
+    labour: { skilled: 39.31, semiskilled: 31.45, engineer: 60.93, foundry: 29.48, electronics: 27.52, inspector: 37.34, technician: 43.24, supervisor: 53.07 },
+    energy: { electricityPerKwh: 0.088, gasPerKwh: 0.06 },
     materialFactors: { commodityResin: 1.056, engineeringResin: 1.04, highPerfResin: 1.010 },
     materialMultiplier: 1.04,
     machineRateMultiplier: 0.87,
@@ -212,9 +212,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   NL: {
     name: 'Netherlands',
     currency: 'EUR',
-    fxToGBP: 1.16,
-    labour: { skilled: 34.00, semiskilled: 27.00, engineer: 52.00, foundry: 25.00, electronics: 23.00, inspector: 32.00, technician: 37.40, supervisor: 45.90 },
-    energy: { electricityPerKwh: 0.22, gasPerKwh: 0.08 },
+    fxToGBP: 1.165,
+    labour: { skilled: 34.13, semiskilled: 27.10, engineer: 52.19, foundry: 25.09, electronics: 23.09, inspector: 32.12, technician: 37.54, supervisor: 46.07 },
+    energy: { electricityPerKwh: 0.219, gasPerKwh: 0.101 },
     materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 1.00,
@@ -225,9 +225,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   TR: {
     name: 'Turkey',
     currency: 'TRY',
-    fxToGBP: 42.0,
-    labour: { skilled: 6.50, semiskilled: 5.00, engineer: 12.00, foundry: 4.80, electronics: 4.50, inspector: 7.00, technician: 7.15, supervisor: 8.78 },
-    energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
+    fxToGBP: 64.86,
+    labour: { skilled: 6.62, semiskilled: 5.09, engineer: 12.22, foundry: 4.89, electronics: 4.58, inspector: 7.13, technician: 7.28, supervisor: 8.94 },
+    energy: { electricityPerKwh: 0.086, gasPerKwh: 0.038 },
     materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.90,
     machineRateMultiplier: 0.60,
@@ -238,9 +238,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   CN: {
     name: 'China',
     currency: 'CNY',
-    fxToGBP: 9.05,
-    labour: { skilled: 7.90, semiskilled: 5.50, engineer: 18.00, foundry: 5.00, electronics: 6.50, inspector: 8.00, technician: 8.69, supervisor: 10.67 },
-    energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
+    fxToGBP: 8.88,
+    labour: { skilled: 8.08, semiskilled: 5.62, engineer: 18.40, foundry: 5.11, electronics: 6.64, inspector: 8.18, technician: 8.88, supervisor: 10.91 },
+    energy: { electricityPerKwh: 0.071, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 0.832, engineeringResin: 0.88, highPerfResin: 0.970 },
     materialMultiplier: 0.88,
     machineRateMultiplier: 0.55,
@@ -251,9 +251,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   IN: {
     name: 'India',
     currency: 'INR',
-    fxToGBP: 109.5,
-    labour: { skilled: 5.10, semiskilled: 3.50, engineer: 12.00, foundry: 3.00, electronics: 4.50, inspector: 5.50, technician: 5.61, supervisor: 6.89 },
-    energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
+    fxToGBP: 127.2,
+    labour: { skilled: 5.14, semiskilled: 3.52, engineer: 12.08, foundry: 3.02, electronics: 4.53, inspector: 5.54, technician: 5.65, supervisor: 6.94 },
+    energy: { electricityPerKwh: 0.069, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.90,
     machineRateMultiplier: 0.52,
@@ -264,9 +264,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   MX: {
     name: 'Mexico',
     currency: 'MXN',
-    fxToGBP: 25.5,
-    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 12.00, foundry: 4.80, electronics: 6.50, inspector: 7.50, technician: 8.25, supervisor: 10.13 },
-    energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
+    fxToGBP: 23.84,
+    labour: { skilled: 7.39, semiskilled: 5.71, engineer: 11.82, foundry: 4.73, electronics: 6.40, inspector: 7.39, technician: 8.13, supervisor: 9.98 },
+    energy: { electricityPerKwh: 0.078, gasPerKwh: 0.039 },
     materialFactors: { commodityResin: 0.930, engineeringResin: 0.95, highPerfResin: 0.988 },
     materialMultiplier: 0.95,
     machineRateMultiplier: 0.60,
@@ -277,9 +277,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   US: {
     name: 'United States',
     currency: 'USD',
-    fxToGBP: 1.27,
-    labour: { skilled: 34.00, semiskilled: 26.00, engineer: 58.00, foundry: 24.00, electronics: 24.00, inspector: 32.00, technician: 37.40, supervisor: 45.90 },
-    energy: { electricityPerKwh: 0.10, gasPerKwh: 0.04 },
+    fxToGBP: 1.324,
+    labour: { skilled: 34.25, semiskilled: 26.19, engineer: 58.43, foundry: 24.18, electronics: 24.18, inspector: 32.24, technician: 37.68, supervisor: 46.24 },
+    energy: { electricityPerKwh: 0.1, gasPerKwh: 0.04 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 0.85,
@@ -290,9 +290,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   TH: {
     name: 'Thailand',
     currency: 'THB',
-    fxToGBP: 45.5,
-    labour: { skilled: 5.80, semiskilled: 4.20, engineer: 10.00, foundry: 3.80, electronics: 4.00, inspector: 6.00, technician: 6.38, supervisor: 7.83 },
-    energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
+    fxToGBP: 44.52,
+    labour: { skilled: 5.74, semiskilled: 4.15, engineer: 9.89, foundry: 3.76, electronics: 3.96, inspector: 5.93, technician: 6.31, supervisor: 7.74 },
+    energy: { electricityPerKwh: 0.079, gasPerKwh: 0.04 },
     materialFactors: { commodityResin: 0.902, engineeringResin: 0.93, highPerfResin: 0.983 },
     materialMultiplier: 0.93,
     machineRateMultiplier: 0.58,
@@ -303,9 +303,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   VN: {
     name: 'Vietnam',
     currency: 'VND',
-    fxToGBP: 33800,
-    labour: { skilled: 3.80, semiskilled: 2.80, engineer: 7.50, foundry: 2.50, electronics: 3.00, inspector: 4.50, technician: 4.18, supervisor: 5.13 },
-    energy: { electricityPerKwh: 0.06, gasPerKwh: 0.03 },
+    fxToGBP: 34350,
+    labour: { skilled: 3.92, semiskilled: 2.89, engineer: 7.73, foundry: 2.58, electronics: 3.09, inspector: 4.64, technician: 4.31, supervisor: 5.29 },
+    energy: { electricityPerKwh: 0.061, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 0.916, engineeringResin: 0.94, highPerfResin: 0.985 },
     materialMultiplier: 0.94,
     machineRateMultiplier: 0.52,
@@ -316,9 +316,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   BR: {
     name: 'Brazil',
     currency: 'BRL',
-    fxToGBP: 6.85,
-    labour: { skilled: 8.50, semiskilled: 6.50, engineer: 16.00, foundry: 6.00, electronics: 6.50, inspector: 9.50, technician: 9.35, supervisor: 11.48 },
-    energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
+    fxToGBP: 6.916,
+    labour: { skilled: 8.44, semiskilled: 6.45, engineer: 15.88, foundry: 5.96, electronics: 6.45, inspector: 9.43, technician: 9.28, supervisor: 11.40 },
+    energy: { electricityPerKwh: 0.109, gasPerKwh: 0.05 },
     materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 0.70,
@@ -329,9 +329,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   KR: {
     name: 'South Korea',
     currency: 'KRW',
-    fxToGBP: 1790,
-    labour: { skilled: 22.00, semiskilled: 17.00, engineer: 38.00, foundry: 16.00, electronics: 17.00, inspector: 24.00, technician: 24.20, supervisor: 29.70 },
-    energy: { electricityPerKwh: 0.13, gasPerKwh: 0.06 },
+    fxToGBP: 1798,
+    labour: { skilled: 25.44, semiskilled: 19.66, engineer: 43.94, foundry: 18.50, electronics: 19.66, inspector: 27.75, technician: 27.98, supervisor: 34.34 },
+    energy: { electricityPerKwh: 0.148, gasPerKwh: 0.068 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 0.80,
@@ -408,7 +408,7 @@ export function surfaceFactors(region: string): SurfaceRegionalFactors {
 // ─── Authentic country prices — Extrusion grades ───────────────────────────────
 
 /**
- * Authentic per-country prices (£/kg, 2026 Q2) for extrusion-grade materials.
+ * Authentic per-country prices (£/kg, 2026-09) for extrusion-grade materials.
  * These REPLACE the family multiplier for the listed (material, region) pairs, so
  * a China PE100 price is the real China price — not "UK × 0.83". Each grade carries
  * its OWN regional spread: commodity resins (PE/PVC/PP) swing ±20% on regional
@@ -419,27 +419,27 @@ export function surfaceFactors(region: string): SurfaceRegionalFactors {
  */
 export const EXTRUSION_COUNTRY_PRICES: Record<string, Partial<Record<ManufacturingRegion, number>>> = {
   //                    US     DE     PL     CN     IN     MX     TH     VN
-  'mat-pe100-pipe':      { US: 1.14, DE: 1.44, PL: 1.27, CN: 1.08, IN: 1.19, MX: 1.16, TH: 1.21, VN: 1.23 },
-  'mat-pe80-pipe':       { US: 1.08, DE: 1.37, PL: 1.21, CN: 1.03, IN: 1.13, MX: 1.10, TH: 1.15, VN: 1.17 },
-  'mat-upvc-pipe':       { US: 0.77, DE: 0.98, PL: 0.85, CN: 0.71, IN: 0.79, MX: 0.81, TH: 0.83, VN: 0.85 },
-  'mat-pvc-cable':       { US: 1.19, DE: 1.44, PL: 1.27, CN: 1.11, IN: 1.21, MX: 1.23, TH: 1.25, VN: 1.27 },
-  'mat-xlpe-cable':      { US: 1.95, DE: 2.18, PL: 2.02, CN: 1.88, IN: 1.99, MX: 2.00, TH: 2.03, VN: 2.05 },
-  'mat-gpps-ext':        { US: 1.14, DE: 1.39, PL: 1.23, CN: 1.09, IN: 1.18, MX: 1.20, TH: 1.21, VN: 1.23 },
-  'mat-abs-ext-sheet':   { US: 1.66, DE: 1.94, PL: 1.76, CN: 1.55, IN: 1.68, MX: 1.71, TH: 1.70, VN: 1.72 },
+  'mat-pe100-pipe':      { US: 1.13, DE: 1.43, PL: 1.26, CN: 1.07, IN: 1.18, MX: 1.15, TH: 1.20, VN: 1.22 },
+  'mat-pe80-pipe':       { US: 1.07, DE: 1.36, PL: 1.20, CN: 1.02, IN: 1.12, MX: 1.09, TH: 1.14, VN: 1.16 },
+  'mat-upvc-pipe':       { US: 0.70, DE: 0.91, PL: 0.78, CN: 0.64, IN: 0.72, MX: 0.74, TH: 0.76, VN: 0.78 },
+  'mat-pvc-cable':       { US: 1.14, DE: 1.39, PL: 1.22, CN: 1.06, IN: 1.16, MX: 1.18, TH: 1.20, VN: 1.22 },
+  'mat-xlpe-cable':      { US: 2.17, DE: 2.40, PL: 2.24, CN: 2.10, IN: 2.21, MX: 2.22, TH: 2.25, VN: 2.27 },
+  'mat-gpps-ext':        { US: 1.51, DE: 1.76, PL: 1.60, CN: 1.46, IN: 1.55, MX: 1.57, TH: 1.58, VN: 1.60 },
+  'mat-abs-ext-sheet':   { US: 1.60, DE: 1.88, PL: 1.70, CN: 1.49, IN: 1.62, MX: 1.65, TH: 1.64, VN: 1.66 },
   'mat-pmma-ext-sheet':  { US: 2.44, DE: 2.70, PL: 2.52, CN: 2.30, IN: 2.48, MX: 2.50, TH: 2.49, VN: 2.51 },
   'mat-pc-ext-sheet':    { US: 3.02, DE: 3.33, PL: 3.10, CN: 2.85, IN: 3.02, MX: 3.08, TH: 3.05, VN: 3.07 },
-  'mat-pvc-medical-tube':{ US: 1.82, DE: 2.03, PL: 1.90, CN: 1.70, IN: 1.86, MX: 1.88, TH: 1.88, VN: 1.90 },
+  'mat-pvc-medical-tube':{ US: 1.77, DE: 1.98, PL: 1.85, CN: 1.65, IN: 1.81, MX: 1.83, TH: 1.83, VN: 1.85 },
   'mat-tpu-medical-tube':{ US: 6.25, DE: 6.70, PL: 6.40, CN: 6.00, IN: 6.30, MX: 6.35, TH: 6.30, VN: 6.35 },
   'mat-tpe-profile':     { US: 2.22, DE: 2.50, PL: 2.32, CN: 2.10, IN: 2.28, MX: 2.30, TH: 2.30, VN: 2.32 },
-  'mat-pvc-foam':        { US: 1.02, DE: 1.24, PL: 1.09, CN: 0.94, IN: 1.03, MX: 1.05, TH: 1.06, VN: 1.08 },
-  'mat-pp-ext-sheet':    { US: 0.96, DE: 1.24, PL: 1.08, CN: 0.92, IN: 1.02, MX: 1.00, TH: 1.05, VN: 1.07 },
+  'mat-pvc-foam':        { US: 0.95, DE: 1.17, PL: 1.02, CN: 0.87, IN: 0.96, MX: 0.98, TH: 0.99, VN: 1.01 },
+  'mat-pp-ext-sheet':    { US: 0.99, DE: 1.27, PL: 1.11, CN: 0.95, IN: 1.05, MX: 1.03, TH: 1.08, VN: 1.10 },
   'mat-pa12-ext-tube':   { US: 6.00, DE: 6.40, PL: 6.10, CN: 5.80, IN: 6.05, MX: 6.10, TH: 6.05, VN: 6.10 },
 };
 
 // ─── Authentic country prices — Thermoforming sheet grades ─────────────────────
 
 /**
- * Authentic per-country prices (£/kg, 2026 Q2) for thermoforming-sheet materials.
+ * Authentic per-country prices (£/kg, 2026-09) for thermoforming-sheet materials.
  * These REPLACE the family multiplier for the listed (material, region) pairs — a
  * China APET sheet price is the real China price, not "UK × factor". Commodity sheet
  * (HIPS/PP/PE/PVC/PET) swings ±~20% on regional feedstock/energy (US shale-ethane
@@ -449,23 +449,23 @@ export const EXTRUSION_COUNTRY_PRICES: Record<string, Partial<Record<Manufacturi
  */
 export const THERMOFORMING_COUNTRY_PRICES: Record<string, Partial<Record<ManufacturingRegion, number>>> = {
   //                     US      DE      PL      CN      IN      MX      TH      VN
-  'mat-hips-tf':          { US: 0.92,  DE: 1.16,  PL: 1.02,  CN: 0.85,  IN: 0.94,  MX: 0.90,  TH: 0.95,  VN: 0.97 },
-  'mat-abs-tf':           { US: 1.78,  DE: 2.22,  PL: 1.96,  CN: 1.70,  IN: 1.86,  MX: 1.82,  TH: 1.88,  VN: 1.90 },
+  'mat-hips-tf':          { US: 1.32,  DE: 1.56,  PL: 1.42,  CN: 1.25,  IN: 1.34,  MX: 1.30,  TH: 1.35,  VN: 1.37 },
+  'mat-abs-tf':           { US: 1.72,  DE: 2.16,  PL: 1.90,  CN: 1.64,  IN: 1.80,  MX: 1.76,  TH: 1.82,  VN: 1.84 },
   'mat-petg-tf':          { US: 1.62,  DE: 2.02,  PL: 1.78,  CN: 1.55,  IN: 1.72,  MX: 1.68,  TH: 1.74,  VN: 1.76 },
   'mat-apet-tf':          { US: 1.36,  DE: 1.70,  PL: 1.49,  CN: 1.28,  IN: 1.42,  MX: 1.40,  TH: 1.45,  VN: 1.47 },
   'mat-cpet-tf':          { US: 1.55,  DE: 1.90,  PL: 1.68,  CN: 1.48,  IN: 1.62,  MX: 1.60,  TH: 1.65,  VN: 1.67 },
-  'mat-rpvc-tf':          { US: 1.20,  DE: 1.50,  PL: 1.30,  CN: 1.12,  IN: 1.24,  MX: 1.26,  TH: 1.28,  VN: 1.30 },
-  'mat-pp-tf':            { US: 1.10,  DE: 1.44,  PL: 1.24,  CN: 1.05,  IN: 1.16,  MX: 1.14,  TH: 1.19,  VN: 1.21 },
-  'mat-hdpe-tf':          { US: 1.05,  DE: 1.38,  PL: 1.18,  CN: 1.00,  IN: 1.11,  MX: 1.09,  TH: 1.14,  VN: 1.16 },
-  'mat-ldpe-tf':          { US: 1.12,  DE: 1.44,  PL: 1.22,  CN: 1.05,  IN: 1.16,  MX: 1.14,  TH: 1.19,  VN: 1.21 },
-  'mat-ps-foam-tf':       { US: 1.42,  DE: 1.76,  PL: 1.55,  CN: 1.34,  IN: 1.48,  MX: 1.46,  TH: 1.51,  VN: 1.53 },
+  'mat-rpvc-tf':          { US: 1.13,  DE: 1.43,  PL: 1.23,  CN: 1.05,  IN: 1.17,  MX: 1.19,  TH: 1.21,  VN: 1.23 },
+  'mat-pp-tf':            { US: 1.13,  DE: 1.47,  PL: 1.27,  CN: 1.08,  IN: 1.19,  MX: 1.17,  TH: 1.22,  VN: 1.24 },
+  'mat-hdpe-tf':          { US: 1.04,  DE: 1.37,  PL: 1.17,  CN: 0.99,  IN: 1.10,  MX: 1.08,  TH: 1.13,  VN: 1.15 },
+  'mat-ldpe-tf':          { US: 1.34,  DE: 1.66,  PL: 1.44,  CN: 1.27,  IN: 1.38,  MX: 1.36,  TH: 1.41,  VN: 1.43 },
+  'mat-ps-foam-tf':       { US: 1.79,  DE: 2.13,  PL: 1.92,  CN: 1.71,  IN: 1.85,  MX: 1.83,  TH: 1.88,  VN: 1.90 },
   'mat-pmma-tf':          { US: 2.72,  DE: 3.08,  PL: 2.85,  CN: 2.60,  IN: 2.82,  MX: 2.84,  TH: 2.82,  VN: 2.85 },
   'mat-pc-tf':            { US: 3.20,  DE: 3.60,  PL: 3.34,  CN: 3.05,  IN: 3.30,  MX: 3.32,  TH: 3.30,  VN: 3.33 },
   'mat-pei-tf':           { US: 27.00, DE: 28.80, PL: 28.00, CN: 26.50, IN: 27.60, MX: 27.80, TH: 27.60, VN: 27.80 },
   'mat-pps-tf':           { US: 13.40, DE: 14.60, PL: 14.00, CN: 13.00, IN: 13.80, MX: 13.90, TH: 13.80, VN: 13.90 },
-  'mat-abs-pmma-tf':      { US: 2.40,  DE: 2.84,  PL: 2.56,  CN: 2.28,  IN: 2.48,  MX: 2.46,  TH: 2.50,  VN: 2.52 },
-  'mat-abs-pc-tf':        { US: 2.88,  DE: 3.36,  PL: 3.06,  CN: 2.78,  IN: 3.00,  MX: 2.98,  TH: 3.02,  VN: 3.04 },
-  'mat-pp-tpo-tf':        { US: 1.68,  DE: 2.10,  PL: 1.84,  CN: 1.60,  IN: 1.78,  MX: 1.74,  TH: 1.80,  VN: 1.82 },
+  'mat-abs-pmma-tf':      { US: 2.36,  DE: 2.80,  PL: 2.52,  CN: 2.24,  IN: 2.44,  MX: 2.42,  TH: 2.46,  VN: 2.48 },
+  'mat-abs-pc-tf':        { US: 2.85,  DE: 3.33,  PL: 3.03,  CN: 2.75,  IN: 2.97,  MX: 2.95,  TH: 2.99,  VN: 3.01 },
+  'mat-pp-tpo-tf':        { US: 1.70,  DE: 2.12,  PL: 1.86,  CN: 1.62,  IN: 1.80,  MX: 1.76,  TH: 1.82,  VN: 1.84 },
   'mat-petg-barrier-tf':  { US: 2.18,  DE: 2.62,  PL: 2.36,  CN: 2.10,  IN: 2.30,  MX: 2.28,  TH: 2.32,  VN: 2.34 },
 };
 
@@ -478,7 +478,7 @@ export const THERMOFORMING_COUNTRY_PRICES: Record<string, Partial<Record<Manufac
  * electricity price — so a region's `electricityPerKwh` genuinely drives machine
  * cost instead of being dead data. Keep in sync with REGIONAL_DATA.UK.
  */
-const UK_ELECTRICITY_BASIS_PER_KWH = 0.23;
+const UK_ELECTRICITY_BASIS_PER_KWH = 0.268;
 
 /** Resin family used to select the country price factor. */
 export type ResinFamily = 'commodity' | 'engineering' | 'highPerformance';
@@ -614,7 +614,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       ...l,
       fullyLoadedRatePerHr: labourCategoryRates[l.id.split('-').at(-1) ?? ''] ?? l.fullyLoadedRatePerHr * (rd.labour.skilled / REGIONAL_DATA.UK.labour.skilled),
       region: rd.name,
-      sourceNote: `Regional benchmark ${rd.name} — 2026 Q2`,
+      sourceNote: `Regional benchmark ${rd.name} — 2026-09`,
       confidence: 'Low' as const,
     })),
 
@@ -632,7 +632,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
           pricePerKg: authentic,
           scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * ratio,
           region: rd.name,
-          sourceNote: `${m.sourceNote} | ${rd.name} authentic 2026 Q2 price £${authentic.toFixed(2)}/kg (country-specific, not multiplier-scaled)`,
+          sourceNote: `${m.sourceNote} | ${rd.name} authentic 2026-09 price £${authentic.toFixed(2)}/kg (country-specific, not multiplier-scaled)`,
           confidence: 'Low' as const,
         };
       }
@@ -691,7 +691,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         electricityPerKwh: rd.energy.electricityPerKwh,
         gasPerKwh: rd.energy.gasPerKwh,
         effectiveDate: new Date().toISOString().slice(0, 10),
-        sourceNote: `${rd.name} industrial energy benchmark 2026 Q2`,
+        sourceNote: `${rd.name} industrial energy benchmark 2026-09`,
         confidence: 'Low' as const,
       },
     ],

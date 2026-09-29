@@ -1,0 +1,1957 @@
+{
+ "asOf": "2026-09-29",
+ "version": "2.2.0",
+ "label": "2026-09",
+ "fx": {
+  "EUR": {
+   "file": 1.16,
+   "june": 1.161,
+   "now": 1.165,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "PLN": {
+   "file": 5.05,
+   "june": 4.98,
+   "now": 5.096,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "CZK": {
+   "file": 29.5,
+   "june": 28.16,
+   "now": 28.43,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "RON": {
+   "file": 5.8,
+   "june": 6.086,
+   "now": 6.151,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "HUF": {
+   "file": 450,
+   "june": 411.5,
+   "now": 428.2,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "SEK": {
+   "file": 13.8,
+   "june": 12.88,
+   "now": 13.21,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "TRY": {
+   "file": 42,
+   "june": 61.74,
+   "now": 64.86,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "CNY": {
+   "file": 9.05,
+   "june": 8.989,
+   "now": 8.88,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "INR": {
+   "file": 109.5,
+   "june": 125.2,
+   "now": 127.2,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "MXN": {
+   "file": 25.5,
+   "june": 23.15,
+   "now": 23.84,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "USD": {
+   "file": 1.27,
+   "june": 1.323,
+   "now": 1.324,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "THB": {
+   "file": 45.5,
+   "june": 44.03,
+   "now": 44.52,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "VND": {
+   "file": 33800,
+   "june": 34814,
+   "now": 34350,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "BRL": {
+   "file": 6.85,
+   "june": 6.865,
+   "now": 6.916,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  },
+  "KRW": {
+   "file": 1790,
+   "june": 2049.5,
+   "now": 1798.0,
+   "source": "fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)"
+  }
+ },
+ "indices": {
+  "al": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 3698,
+   "now": 3772,
+   "source": "old: library anchor LME Al 3M $3,398/t + EU duty-paid premium ~$300/t at USD→GBP 0.787 (rate-library PRICING BASIS). now: LME Al cash $3,238.83/t 29 Sep 2026 (tradingeconomics.com/commodity/aluminum) + Rotterdam duty-paid premium $533/t 23 Sep 2026 (CRU).",
+   "oldFx": 1.2706
+  },
+  "cu": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 13322,
+   "now": 14257,
+   "source": "old: LME Cu 3M close 29 Jun 2026 $13,322/t. now: LME Cu average 28 Aug–28 Sep 2026 €12,550/t (topcable.com/metalprices) × EUR/USD 1.136 = $14,257/t."
+  },
+  "zn": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 2750,
+   "now": 3857,
+   "source": "old: library anchor LME Zn ~$2,750/t at 0.787 (a 2025 level — June 2026 traded $3,435–3,641/t, so zinc alloys were under-priced). now: LME Zn $3,856.85/t 29 Sep 2026.",
+   "oldFx": 1.2706
+  },
+  "ni": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 16275,
+   "now": 16388,
+   "source": "old: LME Ni cash 30 Jun 2026 $16,275/t. now: LME Ni September 2026 month-to-date average $16,388/t."
+  },
+  "sn": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 50553,
+   "now": 54550,
+   "source": "LME Sn 26 Jun 2026 $50,553/t → 25 Sep 2026 $54,550/t."
+  },
+  "pb": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 1907.5,
+   "now": 1904.5,
+   "source": "LME Pb 26 Jun 2026 $1,907.5/t → 29 Sep 2026 $1,904.5/t."
+  },
+  "mg": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 2505,
+   "now": 2348,
+   "source": "old: library anchor SMM Mg ~$2,505/t at 0.787. now: SMM Fugu 99.9% Mg ingot 15,700–15,800 CNY/t late Sep 2026 (news.metal.com) ÷ CNY/USD 6.708 = $2,348/t.",
+   "oldFx": 1.2706
+  },
+  "ti": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 7141,
+   "now": 6606,
+   "source": "SMM grade-0 Ti sponge: 48,000–49,000 CNY/t on 1 Jul 2026 ÷ 6.792 = $7,141/t → $6,606/t on 4 Sep 2026 (metal.com)."
+  },
+  "hrc": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 691,
+   "now": 745,
+   "source": "old: library anchor Fastmarkets EU HRC €691/t end-May 2026 at EUR→GBP 0.855. now: Fastmarkets HRC index domestic exw Northern Europe €745/t 28 Sep 2026 (eurometal.net).",
+   "oldFx": 1.1696
+  },
+  "crc": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 781,
+   "now": 835,
+   "source": "CRC = HRC + €90/t, the library's own spread (anchor €691+90 at 0.855 → €745+90 on 28 Sep 2026).",
+   "oldFx": 1.1696
+  },
+  "hdg": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 781,
+   "now": 835,
+   "source": "No public HDG index found; coated sheet moves with its CRC substrate (coating extra held).",
+   "oldFx": 1.1696
+  },
+  "bar": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "Kallanish N-Europe wire rod headlines: 'stable' (Jun 2026), 'decrease slightly' (Jul), 'remain stable' and 'flat' (Sep 2026) — no net move; held.",
+   "held": true
+  },
+  "ss_sur": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 2365,
+   "now": 2521,
+   "source": "Aperam European alloy surcharge, 304 (1.4301): €2,365/t June 2026 (ChemAnalyst) → €2,521/t September 2026 (Aperam). Same mill both ends; Outokumpu Sep: €2,192/t."
+  },
+  "nr": {
+   "unit": "per t",
+   "ccy": "USD",
+   "perKgDivisor": 1000,
+   "old": 2245,
+   "now": 2562,
+   "source": "Natural rubber TSR20: 224.5 US c/kg 10 Jun 2026 → 256.2 US c/kg 28 Sep 2026 (tradingeconomics.com)."
+  },
+  "ethylene": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1167.5,
+   "now": 970,
+   "source": "European ethylene contract (FD NWE): Sep 2026 €970/t (−€40, polymers.com.ua/polymerupdate); Aug +€42.5; Jul −€200 ⇒ June €1,167.5/t. Polyethylene contract prices follow the monomer settlement."
+  },
+  "propylene": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1000,
+   "now": 865,
+   "source": "European propylene contract: Jul 2026 −€190/t, Aug +€55/t (ChemOrbis, ecoplasticsinpackaging). September not found — June→August change used. Level nominal (only the change is sourced)."
+  },
+  "styrene": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1500,
+   "now": 1379,
+   "source": "European styrene reference contract: Jul 2026 −€270/t, Aug +€149/t (ecoplasticsinpackaging). September not found — June→August change used. Level nominal (only the change is sourced)."
+  },
+  "pvc": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 525.375,
+   "now": 436.5,
+   "source": "PVC moves with its ethylene content (~0.45 kg ethylene per kg PVC; the chlorine share is not indexed)."
+  },
+  "abs": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 900.0,
+   "now": 827.4,
+   "source": "ABS/SAN/ASA move with their styrene content (~0.6 kg per kg; acrylonitrile/butadiene not indexed)."
+  },
+  "pet": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pc": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pa6": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pa66": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pom": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pbt": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pmma": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "tpu": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pps": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "tio2": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "carbonblack": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "epdm": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "nbr": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "sbr": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "butadiene": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "silicone": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "cf": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "gf": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "epoxy": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "upr": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pigiron": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "scrap": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "crno": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "coatings": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "Automotive coatings increases (PPG up to 20% Apr, BASF 7% May 2026) took effect before the June anchor; no Q3 2026 automotive increase found — held.",
+   "held": true
+  },
+  "fecr": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "mo": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "co": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "si": {
+   "unit": "per t",
+   "ccy": "GBP",
+   "perKgDivisor": 1,
+   "old": 1,
+   "now": 1,
+   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "held": true
+  },
+  "pp": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1118.4,
+   "oldFx": 1.165,
+   "now": 1150,
+   "source": "Re-anchored to the market level: old = the library's reference grade mat-pp-homo £0.96/kg (what this family was priced on); now = PlasticPortal/myCEPPI weekly polymer prices, Central & Eastern Europe delivered, week 36/2026: PPH IM €1,150/t, HDPE film €1,220/t, LDPE film €1,266/t, GPPS €1,595/t (plasticportal.eu/price-reports). Each grade keeps its premium over the reference."
+  },
+  "hdpe": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1234.9,
+   "oldFx": 1.165,
+   "now": 1220,
+   "source": "Re-anchored to the market level: old = the library's reference grade mat-hdpe £1.06/kg (what this family was priced on); now = PlasticPortal/myCEPPI weekly polymer prices, Central & Eastern Europe delivered, week 36/2026: PPH IM €1,150/t, HDPE film €1,220/t, LDPE film €1,266/t, GPPS €1,595/t (plasticportal.eu/price-reports). Each grade keeps its premium over the reference."
+  },
+  "ldpe": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1013.6,
+   "oldFx": 1.165,
+   "now": 1266,
+   "source": "Re-anchored to the market level: old = the library's reference grade mat-ldpe £0.87/kg (what this family was priced on); now = PlasticPortal/myCEPPI weekly polymer prices, Central & Eastern Europe delivered, week 36/2026: PPH IM €1,150/t, HDPE film €1,220/t, LDPE film €1,266/t, GPPS €1,595/t (plasticportal.eu/price-reports). Each grade keeps its premium over the reference."
+  },
+  "lldpe": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1083.5,
+   "oldFx": 1.165,
+   "now": 1220,
+   "source": "Re-anchored to the market level: old = the library's reference grade mat-lldpe £0.93/kg (what this family was priced on); now = PlasticPortal/myCEPPI weekly polymer prices, Central & Eastern Europe delivered, week 36/2026: PPH IM €1,150/t, HDPE film €1,220/t, LDPE film €1,266/t, GPPS €1,595/t (plasticportal.eu/price-reports). No LLDPE quote — HDPE film level used. Each grade keeps its premium over the reference."
+  },
+  "gpps": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1165.0,
+   "oldFx": 1.165,
+   "now": 1595,
+   "source": "Re-anchored to the market level: old = the library's reference grade mat-gpps £1.0/kg (what this family was priced on); now = PlasticPortal/myCEPPI weekly polymer prices, Central & Eastern Europe delivered, week 36/2026: PPH IM €1,150/t, HDPE film €1,220/t, LDPE film €1,266/t, GPPS €1,595/t (plasticportal.eu/price-reports). Each grade keeps its premium over the reference."
+  },
+  "hips": {
+   "unit": "per t",
+   "ccy": "EUR",
+   "perKgDivisor": 1000,
+   "old": 1130.0,
+   "oldFx": 1.165,
+   "now": 1595,
+   "source": "Re-anchored to the market level: old = the library's reference grade mat-hips £0.97/kg (what this family was priced on); now = PlasticPortal/myCEPPI weekly polymer prices, Central & Eastern Europe delivered, week 36/2026: PPH IM €1,150/t, HDPE film €1,220/t, LDPE film €1,266/t, GPPS €1,595/t (plasticportal.eu/price-reports). No HIPS quote — GPPS level used. Each grade keeps its premium over the reference."
+  }
+ },
+ "materialRules": [
+  {
+   "match": "^mat-(adc12-secondary|al-recycled-5xxx)$",
+   "drivers": [
+    [
+     "al",
+     0.85
+    ]
+   ],
+   "floor": false,
+   "note": "recycled grade — priced off scrap, so not floored at primary-metal content"
+  },
+  {
+   "match": "^mat-virtual$",
+   "drivers": [],
+   "note": "placeholder, not priced"
+  },
+  {
+   "match": "^mat-(cofe-hiperco50|cofe-thin-010)$",
+   "drivers": [
+    [
+     "co",
+     0.49
+    ]
+   ]
+  },
+  {
+   "match": "^mat-nife-permalloy80$",
+   "drivers": [
+    [
+     "ni",
+     0.8
+    ],
+    [
+     "mo",
+     0.05
+    ]
+   ]
+  },
+  {
+   "match": "^mat-amorphous-2605sa1$",
+   "drivers": [],
+   "note": "no published index for this grade — held at the previous price"
+  },
+  {
+   "match": "^mat-(go-m105-30p|cgo-m120-27|hgo-m090-23)$",
+   "drivers": [],
+   "note": "grain-oriented electrical steel has no published index move this period — held"
+  },
+  {
+   "match": "^mat-(nogo-|m[0-9]|no[0-9]|no-semiproc|hsno-|si65|uhsno)",
+   "drivers": [
+    [
+     "crno",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-inconel718-(forge|cast)$",
+   "drivers": [
+    [
+     "ni",
+     0.53
+    ],
+    [
+     "mo",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-waspaloy-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.58
+    ],
+    [
+     "co",
+     0.13
+    ],
+    [
+     "mo",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-inconel625-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.61
+    ],
+    [
+     "mo",
+     0.09
+    ]
+   ]
+  },
+  {
+   "match": "^mat-hastelloy-c276-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.57
+    ],
+    [
+     "mo",
+     0.16
+    ]
+   ]
+  },
+  {
+   "match": "^mat-monel400-forge$",
+   "drivers": [
+    [
+     "ni",
+     0.66
+    ],
+    [
+     "cu",
+     0.31
+    ]
+   ]
+  },
+  {
+   "match": "^mat-ti-cp-gr2$",
+   "drivers": [
+    [
+     "ti",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ti6al4v|ti-6al4v-forge)$",
+   "drivers": [
+    [
+     "ti",
+     0.9
+    ]
+   ]
+  },
+  {
+   "match": "^mat-ti-6242-forge$",
+   "drivers": [
+    [
+     "ti",
+     0.86
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(17-4ph-cast|ss17-4ph-bar|ss15-5ph-bar)$",
+   "drivers": [
+    [
+     "ss_sur",
+     0.6
+    ],
+    [
+     "cu",
+     0.035
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ss316l|ss316-sheet|ss316l-bar)$",
+   "drivers": [
+    [
+     "ss_sur",
+     1.0
+    ],
+    [
+     "ni",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ss304-bar|ss303|ss304-sheet|ss304l-bar|ss304-cast|ss301-spring)$",
+   "drivers": [
+    [
+     "ss_sur",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(aisi430|ss410-bar)$",
+   "drivers": [
+    [
+     "hrc",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(steel4340|steel-300m)$",
+   "drivers": [
+    [
+     "bar",
+     1.0
+    ],
+    [
+     "ni",
+     0.018
+    ],
+    [
+     "mo",
+     0.0025
+    ]
+   ]
+  },
+  {
+   "match": "^mat-steel8620$",
+   "drivers": [
+    [
+     "bar",
+     1.0
+    ],
+    [
+     "ni",
+     0.005
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(steel|en8)",
+   "drivers": [
+    [
+     "bar",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-hrpo$",
+   "drivers": [
+    [
+     "hrc",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(dc01-gi|dc03-ga|znni-eg|zm-coated|gi-|ga-)",
+   "drivers": [
+    [
+     "hdg",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(dc0|dp|trip|cp8|hsla|22mnb5|ms1|usibor|if|bh|dc01-ze|tinplate|c67s|q&p|qp|cr|mild|dh|fb|mart|3g)",
+   "drivers": [
+    [
+     "crc",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(c110-copper|cu-hairpin)$",
+   "drivers": [
+    [
+     "cu",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cz108-brass$",
+   "drivers": [
+    [
+     "cu",
+     0.7
+    ],
+    [
+     "zn",
+     0.3
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(brass-cz121|brass-cz122-forge)$",
+   "drivers": [
+    [
+     "cu",
+     0.58
+    ],
+    [
+     "zn",
+     0.39
+    ],
+    [
+     "pb",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-bronze-pb1$",
+   "drivers": [
+    [
+     "cu",
+     0.89
+    ],
+    [
+     "sn",
+     0.105
+    ]
+   ]
+  },
+  {
+   "match": "^mat-bronze-c905$",
+   "drivers": [
+    [
+     "cu",
+     0.88
+    ],
+    [
+     "sn",
+     0.1
+    ],
+    [
+     "zn",
+     0.02
+    ]
+   ]
+  },
+  {
+   "match": "^mat-zamak[35]$",
+   "drivers": [
+    [
+     "zn",
+     0.96
+    ],
+    [
+     "al",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-za8$",
+   "drivers": [
+    [
+     "zn",
+     0.91
+    ],
+    [
+     "al",
+     0.08
+    ],
+    [
+     "cu",
+     0.01
+    ]
+   ]
+  },
+  {
+   "match": "^mat-za27$",
+   "drivers": [
+    [
+     "zn",
+     0.71
+    ],
+    [
+     "al",
+     0.27
+    ],
+    [
+     "cu",
+     0.02
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mag-az91$",
+   "drivers": [
+    [
+     "mg",
+     0.9
+    ],
+    [
+     "al",
+     0.09
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mag-am(50|60)$",
+   "drivers": [
+    [
+     "mg",
+     0.94
+    ],
+    [
+     "al",
+     0.055
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mag-ae44$",
+   "drivers": [
+    [
+     "mg",
+     0.92
+    ],
+    [
+     "al",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mg-az31-forge$",
+   "drivers": [
+    [
+     "mg",
+     0.96
+    ],
+    [
+     "al",
+     0.03
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(adc12|adc12-secondary)$",
+   "drivers": [
+    [
+     "al",
+     0.85
+    ],
+    [
+     "si",
+     0.11
+    ],
+    [
+     "cu",
+     0.025
+    ]
+   ]
+  },
+  {
+   "match": "^mat-a380$",
+   "drivers": [
+    [
+     "al",
+     0.85
+    ],
+    [
+     "si",
+     0.085
+    ],
+    [
+     "cu",
+     0.035
+    ]
+   ]
+  },
+  {
+   "match": "^mat-a319$",
+   "drivers": [
+    [
+     "al",
+     0.89
+    ],
+    [
+     "si",
+     0.06
+    ],
+    [
+     "cu",
+     0.04
+    ]
+   ]
+  },
+  {
+   "match": "^mat-a390$",
+   "drivers": [
+    [
+     "al",
+     0.78
+    ],
+    [
+     "si",
+     0.17
+    ],
+    [
+     "cu",
+     0.045
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(a413)$",
+   "drivers": [
+    [
+     "al",
+     0.87
+    ],
+    [
+     "si",
+     0.12
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(alsi10mg|aural5|silafont36|castasil37|al-hpdc-lowco2|htf-gigacast)$",
+   "drivers": [
+    [
+     "al",
+     0.89
+    ],
+    [
+     "si",
+     0.1
+    ]
+   ]
+  },
+  {
+   "match": "^mat-magsimal59$",
+   "drivers": [
+    [
+     "al",
+     0.92
+    ],
+    [
+     "mg",
+     0.05
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(lm25|a356|a357|a365)$",
+   "drivers": [
+    [
+     "al",
+     0.92
+    ],
+    [
+     "si",
+     0.07
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(aa7075-t6|al7075-forge|al7050-forge)$",
+   "drivers": [
+    [
+     "al",
+     0.89
+    ],
+    [
+     "zn",
+     0.06
+    ],
+    [
+     "cu",
+     0.02
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(al2011|al2618-forge)$",
+   "drivers": [
+    [
+     "al",
+     0.93
+    ],
+    [
+     "cu",
+     0.05
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(aa|al)",
+   "drivers": [
+    [
+     "al",
+     0.97
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(gjl|gjs|gjv|simo|adi)",
+   "drivers": [
+    [
+     "pigiron",
+     0.5
+    ],
+    [
+     "scrap",
+     0.55
+    ]
+   ]
+  },
+  {
+   "match": "^mat-gs-c25$",
+   "drivers": [
+    [
+     "scrap",
+     1.1
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pp|pp-homo|pp-impact|pp-bm|pp-roto|pp-tf|pp-ext-sheet)$",
+   "drivers": [
+    [
+     "pp",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pp-gf30|pp-lgf30|pp-t30)$",
+   "drivers": [
+    [
+     "pp",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pp-t20$",
+   "drivers": [
+    [
+     "pp",
+     0.8
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(tpo|pp-tpo-tf)$",
+   "drivers": [
+    [
+     "pp",
+     0.7
+    ],
+    [
+     "epdm",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-tpv$",
+   "drivers": [
+    [
+     "pp",
+     0.4
+    ],
+    [
+     "epdm",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pcr-pp|rpp-bm)$",
+   "drivers": [
+    [
+     "pp",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(hdpe|hdpe-bm|hdpe-fuel-coex|hdpe-tf|hdpe-roto|pe100-pipe|pe80-pipe|xlpe-roto)$",
+   "drivers": [
+    [
+     "hdpe",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(rhdpe-bm|rpe-roto)$",
+   "drivers": [
+    [
+     "hdpe",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(ldpe|ldpe-bm|ldpe-tf|xlpe-cable)$",
+   "drivers": [
+    [
+     "ldpe",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-eva-bm$",
+   "drivers": [
+    [
+     "ldpe",
+     0.8
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(lldpe|lldpe-bm|lldpe-roto)$",
+   "drivers": [
+    [
+     "lldpe",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(foam-pe-roto|cond-pe-roto)$",
+   "drivers": [
+    [
+     "lldpe",
+     0.8
+    ]
+   ]
+  },
+  {
+   "match": "^mat-fr-pe-roto$",
+   "drivers": [
+    [
+     "lldpe",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(gpps|gpps-ext|ps-foam-tf)$",
+   "drivers": [
+    [
+     "gpps",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(hips|hips-tf)$",
+   "drivers": [
+    [
+     "hips",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(upvc|upvc-pipe|pvc-bm|rpvc-tf|pvc-foam)$",
+   "drivers": [
+    [
+     "pvc",
+     0.85
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(fpvc|pvc-cable|pvc-medical-tube)$",
+   "drivers": [
+    [
+     "pvc",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-paint-pvc-underbody$",
+   "drivers": [
+    [
+     "pvc",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pet-bg|pet-preform|apet-tf|cpet-tf)$",
+   "drivers": [
+    [
+     "pet",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pet-gf30$",
+   "drivers": [
+    [
+     "pet",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(abs|abs-ext-sheet|abs-tf|san|asa)$",
+   "drivers": [
+    [
+     "abs",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-abs-pmma-tf$",
+   "drivers": [
+    [
+     "abs",
+     0.6
+    ],
+    [
+     "pmma",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(abs-pc-tf|pc-abs)$",
+   "drivers": [
+    [
+     "pc",
+     0.6
+    ],
+    [
+     "abs",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pc|pc-bm|pc-ext-sheet|pc-tf|pc-glazing)$",
+   "drivers": [
+    [
+     "pc",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pc-fr$",
+   "drivers": [
+    [
+     "pc",
+     0.9
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pc-pbt$",
+   "drivers": [
+    [
+     "pc",
+     0.5
+    ],
+    [
+     "pbt",
+     0.5
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pa6|pa6-bm|pa6-cast)$",
+   "drivers": [
+    [
+     "pa6",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa6-gf30$",
+   "drivers": [
+    [
+     "pa6",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66$",
+   "drivers": [
+    [
+     "pa66",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66gf30$",
+   "drivers": [
+    [
+     "pa66",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66-gf35$",
+   "drivers": [
+    [
+     "pa66",
+     0.65
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pa66-gf50$",
+   "drivers": [
+    [
+     "pa66",
+     0.5
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pa66-min|pa66-gf25-fr)$",
+   "drivers": [
+    [
+     "pa66",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pom|pom-c)$",
+   "drivers": [
+    [
+     "pom",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pbt-gf30$",
+   "drivers": [
+    [
+     "pbt",
+     0.7
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(pmma|pmma-ext-sheet|pmma-tf|acrylic-cast)$",
+   "drivers": [
+    [
+     "pmma",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(tpu-shore85|tpu-medical-tube)$",
+   "drivers": [
+    [
+     "tpu",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-pps-gf40$",
+   "drivers": [
+    [
+     "pps",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mb-white-tio2$",
+   "drivers": [
+    [
+     "tio2",
+     0.6
+    ],
+    [
+     "ldpe",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mb-black$",
+   "drivers": [
+    [
+     "carbonblack",
+     0.4
+    ],
+    [
+     "ldpe",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-mb-colour$",
+   "drivers": [
+    [
+     "ldpe",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(epdm|epdm-peroxide)$",
+   "drivers": [
+    [
+     "epdm",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(nbr|nbr-high-acn)$",
+   "drivers": [
+    [
+     "nbr",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-sbr$",
+   "drivers": [
+    [
+     "sbr",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-nr$",
+   "drivers": [
+    [
+     "nr",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-br$",
+   "drivers": [
+    [
+     "butadiene",
+     0.5
+    ],
+    [
+     "carbonblack",
+     0.25
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(silicone-hcr|lsr|silicone-medical)$",
+   "drivers": [
+    [
+     "silicone",
+     0.6
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cfrp-prepreg-t700$",
+   "drivers": [
+    [
+     "cf",
+     0.6
+    ],
+    [
+     "epoxy",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cf-uni-t800$",
+   "drivers": [
+    [
+     "cf",
+     0.65
+    ],
+    [
+     "epoxy",
+     0.35
+    ]
+   ]
+  },
+  {
+   "match": "^mat-gfrp-prepreg-e$",
+   "drivers": [
+    [
+     "gf",
+     0.6
+    ],
+    [
+     "epoxy",
+     0.4
+    ]
+   ]
+  },
+  {
+   "match": "^mat-cf-dry-3k$",
+   "drivers": [
+    [
+     "cf",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-(gf-dry-e|csm-gf)$",
+   "drivers": [
+    [
+     "gf",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-epoxy-infusion$",
+   "drivers": [
+    [
+     "epoxy",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-vinylester-rtm$",
+   "drivers": [
+    [
+     "upr",
+     1.0
+    ]
+   ]
+  },
+  {
+   "match": "^mat-smc-gf$",
+   "drivers": [
+    [
+     "upr",
+     0.3
+    ],
+    [
+     "gf",
+     0.3
+    ]
+   ]
+  },
+  {
+   "match": "^mat-bmc$",
+   "drivers": [
+    [
+     "upr",
+     0.25
+    ],
+    [
+     "gf",
+     0.15
+    ]
+   ]
+  },
+  {
+   "match": "^mat-paint-",
+   "drivers": [],
+   "pct": "coatings"
+  },
+  {
+   "match": "^mat-",
+   "drivers": [],
+   "note": "no published index for this grade — held at the previous price"
+  }
+ ],
+ "labour": {
+  "ukGrowth": 0.00717,
+  "ukSource": "ONS AWE manufacturing regular pay May–Jul 2026 +2.9% y/y, one quarter",
+  "regions": {
+   "DE": {
+    "growth": 0.0101,
+    "source": "Destatis nominal wages Q2 2026 +4.1% y/y, one quarter"
+   },
+   "FR": {
+    "growth": 0.0057,
+    "source": "INSEE hourly labour cost industry Q2 2026 +2.3% y/y, one quarter"
+   },
+   "IT": {
+    "growth": 0.00668,
+    "source": "Istat contractual hourly wages industry Jun 2026 +2.7% y/y, one quarter"
+   },
+   "ES": {
+    "growth": 0.00742,
+    "source": "INE labour cost manufacturing Q2 2026 +3.0% y/y, one quarter"
+   },
+   "NL": {
+    "growth": 0.00717,
+    "source": "no Dutch figure found — Eurostat euro-area industry hourly labour cost Q2 2026 +2.9% y/y, one quarter"
+   },
+   "SE": {
+    "growth": 0.00791,
+    "source": "no Swedish figure found — Eurostat EU hourly labour cost Q2 2026 +3.2% y/y, one quarter"
+   },
+   "PL": {
+    "growth": 0.01443,
+    "source": "GUS enterprise-sector wages Aug 2026 +5.9% y/y, one quarter"
+   },
+   "CZ": {
+    "growth": 0.01563,
+    "source": "CZSO average gross wage Q2 2026 +6.4% y/y, one quarter"
+   },
+   "HU": {
+    "growth": 0.01824,
+    "source": "KSH gross earnings Jul 2026 +7.5% y/y, one quarter"
+   },
+   "RO": {
+    "growth": 0.00447,
+    "source": "Eurostat hourly wage cost Q2 2026 +1.8% y/y, one quarter"
+   },
+   "TR": {
+    "growth": 0.07,
+    "source": "TurkStat gross wages in manufacturing index Q1→Q2 2026 +7.0% q/q, carried into Q3"
+   },
+   "CN": {
+    "growth": 0.00985,
+    "source": "2026 salary budget ~4.0% (china-briefing survey), one quarter"
+   },
+   "IN": {
+    "growth": 0.02295,
+    "source": "EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter"
+   },
+   "MX": {
+    "growth": 0.01443,
+    "source": "IMSS average registered wage +5.9% y/y (Jul 2026), one quarter"
+   },
+   "US": {
+    "growth": 0.00815,
+    "source": "BLS ECI private-industry compensation 12m to Jun 2026 +3.3%, one quarter"
+   },
+   "KR": {
+    "growth": 0.01443,
+    "source": "MoEL manufacturing wages H1 2026 +5.9% y/y, one quarter"
+   },
+   "VN": {
+    "growth": 0.0173,
+    "source": "2026 projected wage increase 7.1%, one quarter"
+   },
+   "TH": {
+    "growth": 0.0,
+    "source": "no 2026 wage-growth figure found; minimum wage unchanged in Q3 — local wages held, FX only"
+   },
+   "BR": {
+    "growth": 0.0,
+    "source": "no 2026 manufacturing wage-growth figure found — local wages held, FX only"
+   }
+  }
+ },
+ "energy": {
+  "UK": {
+   "electricityPerKwh": 0.268,
+   "gasPerKwh": 0.067,
+   "source": "UK: previous tariff + wholesale change passed through — baseload power £114.5→£152.55/MWh (+3.8p/kWh), NBP gas ~104→182.25 p/therm (+2.67p/kWh), Jun→24 Sep 2026 (Prestige Business Solutions market reports)"
+  },
+  "DE": {
+   "electricityPerKwh": 0.199,
+   "gasPerKwh": 0.068,
+   "source": "local tariff held, converted at EUR 1.161→1.165 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "FR": {
+   "electricityPerKwh": 0.159,
+   "gasPerKwh": 0.091,
+   "source": "local tariff held, converted at EUR 1.161→1.165 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "IT": {
+   "electricityPerKwh": 0.259,
+   "gasPerKwh": 0.111,
+   "source": "local tariff held, converted at EUR 1.161→1.165 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "ES": {
+   "electricityPerKwh": 0.189,
+   "gasPerKwh": 0.091,
+   "source": "local tariff held, converted at EUR 1.161→1.165 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "PL": {
+   "electricityPerKwh": 0.137,
+   "gasPerKwh": 0.08,
+   "source": "local tariff held, converted at PLN 4.98→5.096 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "CZ": {
+   "electricityPerKwh": 0.129,
+   "gasPerKwh": 0.07,
+   "source": "local tariff held, converted at CZK 28.16→28.43 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "RO": {
+   "electricityPerKwh": 0.109,
+   "gasPerKwh": 0.07,
+   "source": "local tariff held, converted at RON 6.086→6.151 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "HU": {
+   "electricityPerKwh": 0.115,
+   "gasPerKwh": 0.069,
+   "source": "local tariff held, converted at HUF 411.5→428.2 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "SE": {
+   "electricityPerKwh": 0.088,
+   "gasPerKwh": 0.06,
+   "source": "local tariff held, converted at SEK 12.88→13.21 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "NL": {
+   "electricityPerKwh": 0.219,
+   "gasPerKwh": 0.101,
+   "source": "local tariff held, converted at EUR 1.161→1.165 per £; gas + Dutch TTF move €48.5→€72.9/MWh Jun→23 Sep 2026 (gmk.center, tradingpedia) passed through; EU power has no sourced Sep average — held"
+  },
+  "TR": {
+   "electricityPerKwh": 0.086,
+   "gasPerKwh": 0.038,
+   "source": "local tariff held, converted at TRY 61.74→64.86 per £; regulated tariff unchanged in Q3 2026 (ERC Ft, EVN, KEPCO, EPDK)"
+  },
+  "CN": {
+   "electricityPerKwh": 0.071,
+   "gasPerKwh": 0.03,
+   "source": "local tariff held, converted at CNY 8.989→8.88 per £"
+  },
+  "IN": {
+   "electricityPerKwh": 0.069,
+   "gasPerKwh": 0.03,
+   "source": "local tariff held, converted at INR 125.2→127.2 per £"
+  },
+  "MX": {
+   "electricityPerKwh": 0.078,
+   "gasPerKwh": 0.039,
+   "source": "local tariff held, converted at MXN 23.15→23.84 per £"
+  },
+  "US": {
+   "electricityPerKwh": 0.1,
+   "gasPerKwh": 0.04,
+   "source": "local tariff held, converted at USD 1.323→1.324 per £"
+  },
+  "TH": {
+   "electricityPerKwh": 0.079,
+   "gasPerKwh": 0.04,
+   "source": "local tariff held, converted at THB 44.03→44.52 per £; regulated tariff unchanged in Q3 2026 (ERC Ft, EVN, KEPCO, EPDK)"
+  },
+  "VN": {
+   "electricityPerKwh": 0.061,
+   "gasPerKwh": 0.03,
+   "source": "local tariff held, converted at VND 3.481e+04→3.435e+04 per £; regulated tariff unchanged in Q3 2026 (ERC Ft, EVN, KEPCO, EPDK)"
+  },
+  "BR": {
+   "electricityPerKwh": 0.109,
+   "gasPerKwh": 0.05,
+   "source": "local tariff held, converted at BRL 6.865→6.916 per £"
+  },
+  "KR": {
+   "electricityPerKwh": 0.148,
+   "gasPerKwh": 0.068,
+   "source": "local tariff held, converted at KRW 2050→1798 per £; regulated tariff unchanged in Q3 2026 (ERC Ft, EVN, KEPCO, EPDK)"
+  },
+  "EU": {
+   "electricityPerKwh": 0.184,
+   "gasPerKwh": 0.066,
+   "source": "EU average: local tariff held at EUR FX move; gas + TTF move passed through"
+  }
+ },
+ "machines": {
+  "ppi": 1.012,
+  "wages": 1.00717,
+  "electricity": 1.16522,
+  "rent": 1.00961,
+  "capital": 1.0,
+  "source": "depreciation: ONS PPI basic metals/fabricated metal/machinery +4.9% y/y Jul 2026 → ~1.2% a quarter; maintenance: half PPI, half wages; energy: UK tariff 0.23→0.268; floor: Cushman & Wakefield UK industrial rents +3.9% y/y Q2 2026, one quarter; indirect: ONS AWE manufacturing +2.9% y/y, one quarter; finance: Bank Rate 3.75% unchanged (BoE MPC Jun and Sep 2026)"
+ }
+}

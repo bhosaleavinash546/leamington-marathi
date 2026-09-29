@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9c6aff4a83e5b37f",
+      "partName": "cv-cad-b4eb536dd3cc77f3",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -707,16 +707,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 37.61,
+      "total": 38.53,
       "breakdown": {
         "rawMaterial": 3.48,
-        "process": 16.18,
-        "labour": 9.03,
+        "process": 16.88,
+        "labour": 9.09,
         "tooling": 2.03,
         "packaging": 0.15,
         "logistics": 0.27,
-        "overhead": 3.69,
-        "margin": 2.79
+        "overhead": 3.78,
+        "margin": 2.85
       }
     }
   },
@@ -733,7 +733,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-989844925d251a49",
+      "partName": "cv-cad-f0cf04908ee1c2d1",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1730,16 +1730,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 52.67,
+      "total": 53.38,
       "breakdown": {
-        "rawMaterial": 11.49,
-        "process": 16.4,
-        "labour": 9.23,
+        "rawMaterial": 11.37,
+        "process": 17.03,
+        "labour": 9.29,
         "tooling": 6,
         "packaging": 0.18,
         "logistics": 0.3,
-        "overhead": 5.17,
-        "margin": 3.9
+        "overhead": 5.24,
+        "margin": 3.95
       }
     }
   },
@@ -1753,7 +1753,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-27caca85f8a0631b",
+      "partName": "cv-cad-e2a17d1d55bd0600",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2489,16 +2489,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 38.93,
+      "total": 39.07,
       "breakdown": {
-        "rawMaterial": 15.98,
-        "process": 9.49,
-        "labour": 6.5,
+        "rawMaterial": 15.71,
+        "process": 9.82,
+        "labour": 6.55,
         "tooling": 0,
         "packaging": 0.1,
         "logistics": 0.15,
-        "overhead": 3.84,
-        "margin": 2.88
+        "overhead": 3.85,
+        "margin": 2.89
       }
     }
   },
@@ -2512,7 +2512,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-808561bfd42e5554",
+      "partName": "cv-cad-13816d24e73d61b5",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -3329,10 +3329,10 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 4.96,
+      "total": 5,
       "breakdown": {
-        "rawMaterial": 0.43,
-        "process": 0.02,
+        "rawMaterial": 0.46,
+        "process": 0.03,
         "labour": 0.03,
         "tooling": 3.48,
         "packaging": 0.07,
@@ -3354,7 +3354,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-32edc4513a355869",
+      "partName": "cv-cad-041fae292beddaf8",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -4277,16 +4277,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 32.16,
+      "total": 32.75,
       "breakdown": {
         "rawMaterial": 7.92,
-        "process": 10.47,
-        "labour": 6.28,
+        "process": 10.91,
+        "labour": 6.32,
         "tooling": 1.51,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 3.14,
-        "margin": 2.38
+        "overhead": 3.2,
+        "margin": 2.43
       }
     }
   },
@@ -4302,7 +4302,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1aaeb4ed5c42b94d",
+      "partName": "cv-cad-da187fde1d1033ef",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,
@@ -4696,16 +4696,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "gear",
-      "total": 25.5,
+      "total": 26.18,
       "breakdown": {
-        "rawMaterial": 8.14,
-        "process": 8.04,
-        "labour": 3.61,
+        "rawMaterial": 8.43,
+        "process": 8.29,
+        "labour": 3.64,
         "tooling": 0.96,
         "packaging": 0.13,
         "logistics": 0.23,
-        "overhead": 2.49,
-        "margin": 1.89
+        "overhead": 2.56,
+        "margin": 1.94
       }
     }
   }

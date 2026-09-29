@@ -102,7 +102,9 @@ describe('the formulas stay simple enough to debug', () => {
   it('reads a rate from one helper column, not a nested lookup repeated', () => {
     // These were once the whole two-hop lookup inlined three times per machine
     // row: correct, unreadable, and slow over 178 rows.
-    expect(cell(wb().Sheets.Materials, 'D2').f).toBe('IF($M2>0,$M2,3.62)');
+    // Row 2 is the first library material; its built-in price is the fallback.
+    const first = DEFAULT_RATE_LIBRARY.materials[0];
+    expect(cell(wb().Sheets.Materials, 'D2').f).toBe(`IF($M2>0,$M2,${first.pricePerKg})`);
     expect(cell(wb().Sheets.Labour, 'D2').f).toMatch(/^IF\(\$L2>0,\$L2,[\d.]+\)$/);
   });
 

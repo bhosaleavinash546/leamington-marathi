@@ -170,12 +170,12 @@ export const REGIONAL_COST_INDEX: Record<string, { label: string; index: number;
 
 // ─── FX rates to GBP ─────────────────────────────────────────────────────────
 
-// All values are "price of 1 unit of X in GBP" (X/GBP rate). Jun 2026 BOE rates.
+// All values are "price of 1 unit of X in GBP" (X/GBP rate). 2026-09 rates (fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)).
 export const FX_TO_GBP: Record<string, number> = {
-  GBP: 1.0000, EUR: 0.8621, USD: 0.7874, CNY: 0.1105, INR: 0.009132,
-  MXN: 0.03922, THB: 0.02198, VND: 0.00002959, BRL: 0.14599, KRW: 0.000559,
-  PLN: 0.1980, CZK: 0.03390,
-  TRY: 0.02381, SEK: 0.07246, RON: 0.17241, HUF: 0.002222,
+  GBP: 1.0000, EUR: 0.8584, USD: 0.7553, CNY: 0.1126, INR: 0.007862,
+  MXN: 0.04195, THB: 0.02246, VND: 0.00002911, BRL: 0.1446, KRW: 0.0005562,
+  PLN: 0.1962, CZK: 0.03517,
+  TRY: 0.01542, SEK: 0.07570, RON: 0.1626, HUF: 0.002335,
 };
 
 // Canonical display symbol for every supported currency — the single source of

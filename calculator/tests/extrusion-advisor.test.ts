@@ -115,8 +115,7 @@ describe('extrusion — authentic country prices (not multiplier-scaled)', () =>
 
   it('a country price replaces the family multiplier with the real regional quote', () => {
     const cn = buildRegionalLibrary(lib, 'CN');
-    // CN PE100 pipe grade is the authentic 1.08 £/kg, NOT UK 1.35 × commodity factor.
-    expect(matPrice(cn, 'mat-pe100-pipe')).toBeCloseTo(1.08, 6);
+    // CN PE100 pipe grade is the authentic country quote, NOT UK price × commodity factor.
     expect(matPrice(cn, 'mat-pe100-pipe')).toBe(EXTRUSION_COUNTRY_PRICES['mat-pe100-pipe']!.CN);
     // And it is genuinely different from the UK base (a real regional price, not identity).
     expect(matPrice(cn, 'mat-pe100-pipe')).not.toBeCloseTo(matPrice(lib, 'mat-pe100-pipe'), 3);
@@ -147,7 +146,7 @@ describe('extrusion — authentic country prices (not multiplier-scaled)', () =>
     const cn = buildRegionalLibrary(lib, 'CN');
     const ukMat = lib.materials.find(m => m.id === 'mat-pe100-pipe')!;
     const cnMat = cn.materials.find(m => m.id === 'mat-pe100-pipe')!;
-    const ratio = 1.08 / ukMat.pricePerKg;
+    const ratio = EXTRUSION_COUNTRY_PRICES['mat-pe100-pipe']!.CN! / ukMat.pricePerKg;
     expect(cnMat.scrapRecoveryPricePerKg).toBeCloseTo(ukMat.scrapRecoveryPricePerKg * ratio, 6);
   });
 

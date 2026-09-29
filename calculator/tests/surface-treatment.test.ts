@@ -43,6 +43,10 @@ const paintPart = (over: Partial<PaintingInputs> = {}): PaintingInputs => ({
   ...over,
 });
 
+/** The painted reference part's total. £4.5936 on the June 2026 rates; £4.6583
+ *  after the 2026-09 index refresh (+1.4%: line energy, labour and machine
+ *  build-ups moved; chemistry did not). A move here must be explained. */
+const PAINTED_TOTAL = 4.6583;
 const total = (i: PaintingInputs): number => {
   const d = computePaintingDrivers(i);
   return computeUniversalStack({
@@ -500,7 +504,7 @@ describe('AUDIT: the painted reference part is pinned', () => {
   });
 
   it('and the painted part total is fixed, with the move from the import stated', () => {
-    // £4.5936 now. Before the workbook import it was £3.794 — a +21% move on
+    // £4.5936 after the workbook import (now PAINTED_TOTAL). Before it, £3.794 — a +21% move on
     // this reference part, and nothing caught it because no test held the total.
     //
     // Reconciled by hand so the delta is arithmetic, not assertion:
@@ -509,7 +513,7 @@ describe('AUDIT: the painted reference part is pinned', () => {
     //   overhead+margin  x 1.12 x 1.08                                 = 0.8000
     //   4.5936 - 0.800 = 3.794
     const now = total(REFERENCE);
-    expect(now).toBeCloseTo(4.5936, 3);
+    expect(now).toBeCloseTo(PAINTED_TOTAL, 3);
 
     const r = computeSurfaceTreatment({
       stages: STANDARD_PAINT_LINE_STAGES, surfaceAreaM2: 0.8,
@@ -517,7 +521,7 @@ describe('AUDIT: the painted reference part is pinned', () => {
     });
     const delta = (r.chemistryPerPart + r.effluentPerPart - 0.3440) * 1.03 * 1.12 * 1.08;
     expect(delta).toBeCloseTo(0.800, 2);
-    expect(now - delta).toBeCloseTo(3.794, 2);
+    expect(4.5936 - delta).toBeCloseTo(3.794, 2);   // the import step, as it was stated
   });
 
   it('coverage counts only what can move the cost', () => {

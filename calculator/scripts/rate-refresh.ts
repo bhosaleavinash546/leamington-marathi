@@ -28,14 +28,19 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 type Ccy = string;
-interface IndexDef { unit: string; ccy: Ccy; perKgDivisor: number; old: number; now: number; source: string; note?: string }
+/** oldFx: the FX the old anchor was converted at when the library was built
+ *  (1 GBP = X). Defaults to the market rate on the old date (fx.june). */
+interface IndexDef { unit: string; ccy: Ccy; perKgDivisor: number; old: number; now: number; source: string; note?: string; oldFx?: number; held?: boolean }
 /** drivers: [index, kg of that commodity per kg of material]. pct: an index
  *  published only as a % move (e.g. a coatings maker's price increase) — the
  *  whole price moves by it. */
-interface MaterialRule { match: string; drivers: [string, number][]; pct?: string; note?: string }
+/** floor (default true): never price below the commodity the material contains. */
+interface MaterialRule { match: string; drivers: [string, number][]; pct?: string; note?: string; floor?: boolean }
 interface Config {
   asOf: string; version: string; label: string;
-  fx: Record<Ccy, { old: number; now: number; source: string }>;           // 1 GBP = X
+  /** 1 GBP = X. file: the value the rate files hold now (asserted); june: the
+   *  market rate on the old anchor date; now: the market rate today. */
+  fx: Record<Ccy, { file: number; june: number; now: number; source: string }>;
   indices: Record<string, IndexDef>;
   materialRules: MaterialRule[];                                            // first match wins; id regex
   labour: { ukGrowth: number; ukSource: string; regions: Record<string, { growth: number; source: string; grades?: Record<string, number> }> };
@@ -60,9 +65,9 @@ const fmt = (n: number) => (Math.abs(n) >= 100 ? n.toFixed(0) : n.toFixed(2));
 function perKgGBP(key: string): { old: number; now: number } {
   const d = cfg.indices[key];
   if (!d) throw new Error(`index "${key}" is used by a rule but not defined`);
-  const fx = d.ccy === 'GBP' ? { old: 1, now: 1 } : cfg.fx[d.ccy];
+  const fx = d.ccy === 'GBP' ? { june: 1, now: 1 } : cfg.fx[d.ccy];
   if (!fx) throw new Error(`index "${key}" is in ${d.ccy}, which has no FX entry`);
-  return { old: d.old / d.perKgDivisor / fx.old, now: d.now / d.perKgDivisor / fx.now };
+  return { old: d.old / d.perKgDivisor / (d.oldFx ?? fx.june), now: d.now / d.perKgDivisor / fx.now };
 }
 
 /** Find the object literal `{ ... id: '<id>' ... }` in `src` and return its span. */
@@ -96,6 +101,7 @@ function stamp(obj: string, note: string, date: string): string {
 }
 
 const log: string[] = [];
+const warnings: string[] = [];
 let lib = readFileSync(LIB, 'utf8');
 
 // ── Materials ────────────────────────────────────────────────────────────────
@@ -109,6 +115,7 @@ for (const id of matIds) {
   let obj = lib.slice(a, b);
   const price = getNum(obj, 'pricePerKg');
   const scrap = getNum(obj, 'scrapRecoveryPricePerKg');
+  if (id === 'mat-virtual') continue; // placeholder: not a priced material
   if (!rule.drivers.length && !rule.pct) {
     matSummary.held++;
     deltaById[id] = 0;
@@ -127,6 +134,14 @@ for (const id of matIds) {
     const p = perKgGBP(key);
     delta += kg * (p.now - p.old);
     parts.push(`${kg}kg ${key} £${p.old.toFixed(3)}→£${p.now.toFixed(3)}/kg`);
+  }
+  // A material cannot cost less than the commodity it is made of. Where the old
+  // level was so stale that it would, it is floored at that content and flagged.
+  const content = rule.drivers.filter(([key]) => !cfg.indices[key].held).reduce((t, [key, kg]) => t + kg * perKgGBP(key).now, 0);
+  if (rule.floor !== false && price + delta < content - 0.005) {
+    warnings.push(`${id}: indexed £${(price + delta).toFixed(2)}/kg is below its own commodity content £${content.toFixed(2)}/kg — floored at content; confirm with a supplier quote`);
+    parts.push(`floored at commodity content £${content.toFixed(2)}/kg (previous level was below the metal it contains)`);
+    delta = Math.ceil(content * 100) / 100 - price;
   }
   deltaById[id] = delta;
   const newPrice = Math.max(0.01, r2(price + delta));
@@ -171,9 +186,9 @@ function labourFactor(region: string, grade?: string): { f: number; why: string 
   if (!g) throw new Error(`no labour growth for ${region}`);
   const growth = (grade && cfg.labour.regions[region]?.grades?.[grade]) ?? g.growth;
   const ccy = ccyOf[region];
-  const fx = ccy === 'GBP' ? { old: 1, now: 1 } : cfg.fx[ccy];
-  const f = (1 + growth) * (fx.old / fx.now);
-  return { f, why: `local wages ${growth >= 0 ? '+' : ''}${(growth * 100).toFixed(1)}%${ccy === 'GBP' ? '' : `, ${ccy} ${fx.old}→${fx.now} per £`}` };
+  const fx = ccy === 'GBP' ? { june: 1, now: 1 } : cfg.fx[ccy];
+  const f = (1 + growth) * (fx.june / fx.now);
+  return { f, why: `local wages ${growth >= 0 ? '+' : ''}${(growth * 100).toFixed(2)}% (${g.source})${ccy === 'GBP' ? '' : `; ${ccy} ${fx.june}→${fx.now} per £`}` };
 }
 for (const m of lib.matchAll(/id: '(lab-([a-z]+)-([a-z]+))'/g)) {
   const [, id, rc, grade] = m;
@@ -206,11 +221,12 @@ for (const [ccy, fx] of Object.entries(cfg.fx)) {
   if (!lib.includes(`id: '${id}'`)) continue;
   const [a, b] = objectSpan(lib, id);
   let obj = lib.slice(a, b);
-  if (getNum(obj, 'rate') !== fx.old) throw new Error(`${id}: library rate ${getNum(obj, 'rate')} is not the config's old ${fx.old}`);
+  if (getNum(obj, 'rate') !== fx.file) throw new Error(`${id}: library rate ${getNum(obj, 'rate')} is not the config's file value ${fx.file}`);
   obj = obj.replace(/(\brate:\s*)[0-9.]+/, `$1${fx.now}`).replace(/(effectiveDate:\s*)'[^']*'/, `$1'${cfg.asOf}'`)
     .replace(/(sourceNote:\s*)'[^']*'/, `$1'${fx.source}'`);
   lib = lib.slice(0, a) + obj + lib.slice(b);
 }
+lib = lib.replace(/export const RATE_BASIS = '[^']*';/, `export const RATE_BASIS = '${cfg.asOf.slice(0, 7)}';`);
 lib = lib.replace(/(DEFAULT_RATE_LIBRARY: RateLibrary = \{\s*version: )'[^']*'(,\s*lastModified: )'[^']*'/, `$1'${cfg.version}'$2'${cfg.asOf}'`);
 
 // ── Regional data ────────────────────────────────────────────────────────────
@@ -227,7 +243,7 @@ for (const [region, ccy] of Object.entries(ccyOf)) {
   if (ccy !== 'GBP') {
     const fx = cfg.fx[ccy];
     const cur = Number(block.match(/fxToGBP: ([0-9.]+)/)![1]);
-    if (cur !== fx.old) throw new Error(`${region} fxToGBP ${cur} is not the config's old ${fx.old}`);
+    if (cur !== fx.file) throw new Error(`${region} fxToGBP ${cur} is not the config's file value ${fx.file}`);
     block = block.replace(/fxToGBP: [0-9.]+/, `fxToGBP: ${fx.now}`);
   }
   const e = cfg.energy[region];
@@ -262,7 +278,8 @@ for (const [ccy, fx] of Object.entries(cfg.fx)) {
 ins = ins.replace(/Jun 2026 BOE rates\./, `${cfg.label} rates (${cfg.fx.EUR.source}).`);
 
 console.log(log.join('\n'));
-console.log(`\nmaterials: ${matSummary.moved} moved by index, ${matSummary.held} held`);
+console.log(`\nmaterials: ${matSummary.moved} mapped to an index, ${matSummary.held} with no index (held)`);
+if (warnings.length) console.log(`\nLEVEL WARNINGS (${warnings.length}):\n  ` + warnings.join('\n  '));
 if (WRITE) {
   writeFileSync(LIB, lib); writeFileSync(REG, reg); writeFileSync(INS, ins);
   console.log('written.');

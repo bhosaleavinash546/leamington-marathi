@@ -3,7 +3,7 @@ import { computeSheetMetalDrivers, type SheetMetalInputs } from '../src/engine/m
 import {
   estimateStampingDieCost, estimateStampingDieLife, stampingHardnessFactor,
 } from '../src/engine/modules/sheet-metal-advisor.js';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 
 const lib = DEFAULT_RATE_LIBRARY;
 
@@ -112,7 +112,7 @@ describe('SM5 — new stamping material grades', () => {
       const m = lib.materials.find(x => x.id === id)!;
       expect(m).toBeTruthy();
       expect(m.pricePerKg).toBeGreaterThan(0);
-      expect(m.effectiveDate).toBe('2026-07');
+      expect(m.effectiveDate).toBe(RATE_BASIS);
     }
     // grain-oriented electrical steel is a premium over non-oriented
     const go = lib.materials.find(m => m.id === 'mat-go-m105-30p')!.pricePerKg;

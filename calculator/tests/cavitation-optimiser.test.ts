@@ -2,7 +2,7 @@
  * The cavitation optimiser — cavity count as arithmetic, pinned by hand.
  *
  * Conventions the pins assume (mirrors of what the mapper charges):
- *   machine+labour £/part = shotHr/(1−0.03) × (rate/0.80 + 19.80/0.92) / n
+ *   machine+labour £/part = shotHr/(1−0.03) × (rate/0.80 + labour/0.92) / n  (UK semi-skilled)
  *   tooling £/part = mouldCost(n) × ceil((amortVol/n)/life) / amortVol
  *   mouldCost(n) = estimateMouldCost({cavities:n, area×n, steelClassFor(vol×5/n)})
  * Expectations are composed from the exported estimators, not magic decimals,
@@ -16,7 +16,7 @@ import {
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
 const rateOf = (id: string) => DEFAULT_RATE_LIBRARY.machines.find(m => m.id === id)!.computedRatePerHr;
-const LAB = 19.80;
+const LAB = DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-semiskilled')!.fullyLoadedRatePerHr;
 
 /** The optimiser's own cost model, restated independently for cross-checks. */
 function handCost(n: number, areaPerCav: number, mpa: number, shotSec: number, vol: number, slides = 0): number {

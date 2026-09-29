@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 import { buildRegionalLibrary, classifyMaterialFamily } from '../src/engine/regional-rates.js';
 
 const lib = DEFAULT_RATE_LIBRARY;
@@ -13,7 +13,7 @@ describe('Advanced 2026 EV materials (BYD / Xiaomi class)', () => {
       const m = mat(id)!;
       expect(m, id).toBeTruthy();
       expect(m.pricePerKg).toBeGreaterThan(0);
-      expect(m.effectiveDate).toBe('2026-07');
+      expect(m.effectiveDate).toBe(RATE_BASIS);
     }
   });
 
@@ -56,7 +56,7 @@ describe('Flagship high-speed motor laminations (SU7 Ultra / Yangwang U7/U8/U9)'
       expect(m, id).toBeTruthy();
       expect(m.category).toBe('Electrical Steel Sheet');
       expect(m.pricePerKg).toBeGreaterThan(0);
-      expect(m.effectiveDate).toBe('2026-07');
+      expect(m.effectiveDate).toBe(RATE_BASIS);
     }
   });
 

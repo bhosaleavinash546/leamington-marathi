@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import { assertPartCostInvariants } from './helpers/engine-invariants.js';
@@ -55,12 +55,12 @@ describe('sheet-metal material coverage', () => {
     expect(price('mat-aa7075-t6')).toBeGreaterThan(price('mat-aa6016-t4')); // structural > skin
   });
 
-  it('all sheet-metal grades are refreshed to the 2026-07 index-anchored basis', () => {
+  it('all sheet-metal grades are refreshed to the current index-anchored basis (RATE_BASIS)', () => {
     const smCategories = /Steel Sheet|AHSS|Ultra-High|Press-Hardening|IF Steel|Bake-Hardening|Coated|Galvanised|Electrogalvanised|Low-Carbon Steel|Aluminium Sheet|Copper & Brass/;
     const smGrades = lib.materials.filter(m => smCategories.test(m.category));
     expect(smGrades.length).toBeGreaterThan(30);
     for (const m of smGrades) {
-      expect(m.effectiveDate).toBe('2026-07');           // dated to the refresh
+      expect(m.effectiveDate).toBe(RATE_BASIS);           // dated to the refresh
     }
   });
 

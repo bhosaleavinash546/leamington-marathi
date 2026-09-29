@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import { assertPartCostInvariants } from './helpers/engine-invariants.js';
@@ -56,11 +56,11 @@ describe('forging billet coverage', () => {
     expect(price('mat-al7075-forge')).toBeGreaterThan(price('mat-al6061-forge'));        // Al-Zn > Al-Mg-Si
   });
 
-  it('all forging billets carry the 2026-07 index-anchored date', () => {
+  it('all forging billets carry the 2026-07 index-anchored date (RATE_BASIS)', () => {
     const billetCats = /Carbon Steel Billet|Alloy Steel Billet|Microalloyed Steel Billet|Stainless Steel Billet|Aluminium Forging Billet|Titanium Forging Billet|Nickel Superalloy Billet|Copper Alloy Billet/;
     const billets = lib.materials.filter(m => billetCats.test(m.category));
     expect(billets.length).toBeGreaterThan(20);
-    for (const m of billets) expect(m.effectiveDate).toBe('2026-07');
+    for (const m of billets) expect(m.effectiveDate).toBe(RATE_BASIS);
   });
 
   it('a new alloy-steel billet drives the cost engine without error', () => {

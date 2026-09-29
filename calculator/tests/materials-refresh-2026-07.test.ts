@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import { assertPartCostInvariants } from './helpers/engine-invariants.js';
@@ -24,14 +24,14 @@ const NEW_GRADES = [
 ];
 
 describe('2026-07 refresh — remaining commodities', () => {
-  it('every material except the virtual placeholder is on the 2026-07 basis', () => {
-    const stale = lib.materials.filter(m => m.id !== 'mat-virtual' && m.effectiveDate !== '2026-07');
+  it('every material except the virtual placeholder is on the current RATE_BASIS', () => {
+    const stale = lib.materials.filter(m => m.id !== 'mat-virtual' && m.effectiveDate !== RATE_BASIS);
     expect(stale.map(m => `${m.id}:${m.effectiveDate}`)).toEqual([]);
   });
 
   it('the virtual pass-through material is intentionally left un-refreshed', () => {
     const v = lib.materials.find(m => m.id === 'mat-virtual')!;
-    expect(v.effectiveDate).not.toBe('2026-07');
+    expect(v.effectiveDate).not.toBe(RATE_BASIS);
   });
 
   it('all new grades are present', () => {

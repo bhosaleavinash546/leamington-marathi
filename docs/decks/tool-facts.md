@@ -1,6 +1,6 @@
 # CostVision — what the tool does today (reference for every deck)
 
-Checked against the code on 28 September 2026 (branch `claude/new-session-ts4byp`,
+Checked against the code on 28 September 2026 (rates refreshed 29 September 2026) (branch `claude/new-session-ts4byp`,
 app version V4.2). Every deck states only what is on this page. If a deck needs a
 fact that is not here, check it in the code first, or leave it out.
 
@@ -44,8 +44,9 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
 - **20 manufacturing regions**: UK, Germany, France, Italy, Spain, Poland, Czech
   Republic, Romania, Hungary, Sweden, Netherlands, Turkey, China, India, Mexico,
   United States, Thailand, Vietnam, Brazil, South Korea.
-- **Rate library** 2.1.0, dated 16 June 2026: 328 materials, 178 machines, 42 labour
-  grades. Editable, versioned. The JLR Rate Converter workbook turns JLR's own rate
+- **Rate library** 2.2.0, rates as of 29 September 2026: 328 materials, 178 machines,
+  42 labour grades, 20 countries. Refreshed from published market indices (metals,
+  polymers, FX, wages, energy) — see docs/rates/2026-09-rate-refresh.md. Editable, versioned. The JLR Rate Converter workbook turns JLR's own rate
   card into the tool's format with no macros.
 - **8 cost buckets**: material, process, labour, tooling, packaging, logistics,
   overhead, margin. Overhead is a % of material + process + labour + tooling (shown
@@ -66,7 +67,7 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
 
 ## What is proven — and what is not
 - The engine's arithmetic matches a **hand calculation to under 0.01%** on the
-  reference machined bracket (£24.34).
+  reference machined bracket (£24.79 on the September 2026 rates).
 - **6 real production parts** are pinned in a regression baseline (steering knuckle,
   two castings, a pressed seat bracket, a machined part, a gear). A change that moves
   any of them fails the build.

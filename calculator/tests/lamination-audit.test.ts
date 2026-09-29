@@ -4,7 +4,7 @@ import {
   LAMINATION_ANNEAL_KWH_PER_KG,
 } from '../src/engine/modules/lamination-advisor.js';
 import { computeSheetMetalDrivers, type SheetMetalInputs } from '../src/engine/modules/sheet-metal.js';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 
 const lib = DEFAULT_RATE_LIBRARY;
 
@@ -22,7 +22,7 @@ describe('EM1 — electrical-steel grade ladder', () => {
       expect(m, id).toBeTruthy();
       expect(m.category).toBe('Electrical Steel Sheet');
       expect(m.pricePerKg).toBeGreaterThan(0);
-      expect(m.effectiveDate).toBe('2026-07');
+      expect(m.effectiveDate).toBe(RATE_BASIS);
     }
   });
 

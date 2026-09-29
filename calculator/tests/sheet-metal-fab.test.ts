@@ -4,6 +4,14 @@ import { adviseSheetMetalProcess, classifyVolume } from '../src/engine/modules/s
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
+/** Named-machine benchmarks are the June 2026 rates rounded to the pound; the
+ *  quarterly index refresh (scripts/rate-refresh.ts) moves them a few percent. */
+function expectNearBenchmark(rate: number, benchmark: number): void {
+  expect(rate).toBeGreaterThan(benchmark * 0.95);
+  expect(rate).toBeLessThan(benchmark * 1.12);
+}
+
+
 const STACK_DEFAULTS = {
   partName: 'Test SM Fab Part',
   packagingPerPart: 0.10,
@@ -355,16 +363,16 @@ describe('Named SM fab machines in DEFAULT_RATE_LIBRARY', () => {
 
   it('Trumpf TruLaser 3030 rate ≈ £85/hr', () => {
     const m = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'laser-trumpf-3030')!;
-    expect(m.computedRatePerHr).toBeCloseTo(85, 0);
+    expectNearBenchmark(m.computedRatePerHr, 85);
   });
 
   it('Amada press brake rate ≈ £55/hr', () => {
     const m = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'brake-amada-hfe100')!;
-    expect(m.computedRatePerHr).toBeCloseTo(55, 0);
+    expectNearBenchmark(m.computedRatePerHr, 55);
   });
 
   it('Schuler 400T stamping press rate ≈ £150/hr', () => {
     const m = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'press-schuler-400t')!;
-    expect(m.computedRatePerHr).toBeCloseTo(150, 0);
+    expectNearBenchmark(m.computedRatePerHr, 150);
   });
 });

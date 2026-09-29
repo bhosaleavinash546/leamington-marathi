@@ -8,7 +8,7 @@ import {
   resolveFurnaceEnergyPricePerKwh,
   FORGING_FLOW_STRESS_MPA,
 } from '../src/engine/modules/forging-advisor.js';
-import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
 import { buildRegionalLibrary, classifyMaterialFamily } from '../src/engine/regional-rates.js';
 
 const lib = DEFAULT_RATE_LIBRARY;
@@ -168,7 +168,7 @@ describe('F-M1 — missing forging billets', () => {
       const m = lib.materials.find(x => x.id === id)!;
       expect(m).toBeTruthy();
       expect(m.pricePerKg).toBeGreaterThan(0);
-      expect(m.effectiveDate).toBe('2026-07');
+      expect(m.effectiveDate).toBe(RATE_BASIS);
     }
     // Hastelloy C-276 (high Mo/Ni) dearer than Monel 400 (Ni-Cu)
     expect(matPrice(lib, 'mat-hastelloy-c276-forge')).toBeGreaterThan(matPrice(lib, 'mat-monel400-forge'));
