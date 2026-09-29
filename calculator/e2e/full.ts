@@ -263,6 +263,31 @@ async function main(): Promise<void> {
       await ctx2.close();
     }
 
+    // ── A browser holding an older saved rate library gets the new one ─────
+    // (It used to keep the June copy for ever and warn "106 days old".)
+    {
+      const ctx = await browser.newContext({ serviceWorkers: 'block' });
+      const p4 = await ctx.newPage();
+      await p4.addInitScript(t => {
+        if (sessionStorage.getItem('seeded-lib')) return;
+        sessionStorage.setItem('seeded-lib', '1');
+        localStorage.setItem('auth_token', t); localStorage.setItem('cv-tour-v41-seen', '1'); localStorage.setItem('cv-wizard-off', '1');
+        localStorage.setItem('shouldCostRateLibrary', JSON.stringify({ version: '2.1.0', lastModified: '2026-06-16', materials: [], machines: [], labour: [], energy: [], fx: [], overheadDefaults: [] }));
+      }, token);
+      await p4.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+      const st = await p4.evaluate(() => ({
+        lib: JSON.parse(localStorage.getItem('shouldCostRateLibrary') ?? '{}').lastModified,
+        backup: !!localStorage.getItem('shouldCostRateLibrary.backup-2.1.0'),
+        text: document.body.innerText,
+      }));
+      if (st.lib === '2026-06-16') fail('old saved rate library (16 Jun 2026) still in use after the built-in library was refreshed');
+      if (!st.backup) fail('old saved rate library was not kept as a backup');
+      if (/days old \(last updated 16\/06\/2026\)/.test(st.text)) fail('stale-rates warning still shown for the June library');
+      if (!/Rates updated to library/.test(st.text)) fail('no notice that the rates were updated');
+      else log(`saved June rate library replaced by ${st.lib}, backup kept, user told`);
+      await ctx.close();
+    }
+
     if (failures.length) throw new Error(`${failures.length} failure(s):\n  - ${failures.join('\n  - ')}`);
     log(`PASSED — ${costed.join(', ')}`);
   } catch (e) {

@@ -255,7 +255,29 @@ function driverProvenance(input: UniversalStackInput): DriverProvenance {
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
-let library: RateLibrary = recomputeMachineRates(getLibraryFromStorage());
+/**
+ * The browser keeps a copy of the rate library (saved whenever rates are edited),
+ * and that copy used to win over the built-in library for ever — a browser that
+ * used the tool in June kept the June rates after the 29 Sep 2026 refresh
+ * shipped, and warned "106 days old". When the built-in library is newer than the
+ * saved copy, the built-in one is used and the old copy is kept as a backup
+ * (localStorage `shouldCostRateLibrary.backup-<old version>`), and the user is told.
+ */
+let rateLibraryUpgradeNotice = '';
+function loadRateLibrary(): RateLibrary {
+  const stored = getLibraryFromStorage();
+  if (stored === DEFAULT_RATE_LIBRARY) return stored;
+  const storedDate = String(stored.lastModified ?? '');
+  const builtInDate = String(DEFAULT_RATE_LIBRARY.lastModified ?? '');
+  if (builtInDate && storedDate < builtInDate) {
+    try { localStorage.setItem(`shouldCostRateLibrary.backup-${stored.version ?? (storedDate || 'old')}`, JSON.stringify(stored)); } catch { /* storage full or blocked */ }
+    saveLibraryToStorage(DEFAULT_RATE_LIBRARY);
+    rateLibraryUpgradeNotice = `Rates updated to library ${DEFAULT_RATE_LIBRARY.version} (${new Date(builtInDate).toLocaleDateString('en-GB')}). Your previous saved rates (${stored.version ?? storedDate}) are kept as a backup in this browser.`;
+    return DEFAULT_RATE_LIBRARY;
+  }
+  return stored;
+}
+let library: RateLibrary = recomputeMachineRates(loadRateLibrary());
 // Commodity-specific advisory warnings surfaced by a collector (e.g. sheet-metal
 // press-tonnage adequacy). Reset each compute(); merged into the warnings box.
 let _smExtraWarnings: string[] = [];
@@ -19101,6 +19123,8 @@ async function init(): Promise<void> {
 
   // Init IndexedDB scenario store (migrates from localStorage automatically)
   await initScenarioStore();
+
+  if (rateLibraryUpgradeNotice) showToast(rateLibraryUpgradeNotice, 'info');
 
   // M13: Warn if rate library data is stale (> 90 days)
   const lastMod = library.lastModified ? new Date(library.lastModified) : null;
