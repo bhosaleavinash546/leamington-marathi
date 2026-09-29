@@ -54,6 +54,7 @@ import { registerDfmRoutes } from './routes/dfm.mjs';
 import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes, orgAccess } from './routes/orgs.mjs';
 import { registerTrizRoutes } from './routes/triz.mjs';
+import { describeLlmError, providerDetail } from './llm-error.mjs';
 import { registerPart360Routes } from './routes/part360.mjs';
 import { registerInnovationRoutes } from './routes/innovation.mjs';
 import { registerForesightRoutes } from './routes/foresight.mjs';
@@ -331,17 +332,12 @@ function runAbort(res, label) {
 function cachedSystem(text) {
   return [{ type: 'text', text, cache_control: { type: 'ephemeral' } }];
 }
-// Map raw SDK/API errors to safe, non-leaking client messages.
+// Map SDK/API errors to a message the user can act on (llm-error.mjs). The
+// server log keeps the status and Anthropic's own reason for the operator.
 function safeLlmError(err) {
   const status = err?.status || err?.response?.status;
-  const msg = err?.message || '';
-  if (status === 401) return 'Invalid or missing API key.';
-  if (status === 400) return 'The AI request was rejected — please adjust inputs and retry.';
-  if (status === 429) return 'AI provider rate limit reached. Please retry in a moment.';
-  if (status === 529 || status === 503) return 'The AI service is temporarily overloaded. Please retry shortly.';
-  if (typeof status === 'number' && status >= 500) return 'The AI service returned an error. Please retry shortly.';
-  if (/timeout|ETIMEDOUT|ECONNRESET|APIConnection/i.test(msg)) return 'The AI request timed out. Please retry.';
-  return 'AI request failed. Please try again.';
+  if (typeof status === 'number') console.warn(`[AI] provider error ${status}: ${providerDetail(err).message || err?.message || ''}`);
+  return describeLlmError(err);
 }
 
 // ─── SQLite Database ──────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@
 // Should-cost routes: catalogue, deterministic estimate, and the proprietary
 // quote corpus + learned calibration. Extracted from server.mjs (de-monolith).
 // ─────────────────────────────────────────────────────────────────────────────
+import { describeLlmError } from '../llm-error.mjs';
 import crypto from 'crypto';
 import { computeShouldCost, simulateShouldCost, volumeSensitivity, computeRouteCost, simulateRouteCost } from '../costing-engine.mjs';
 import { resolveMaterial, resolveProcess, resolveRoute } from '../material-process-resolve.mjs';
@@ -280,7 +281,7 @@ app.post('/api/should-cost/delta-ideas', requireAuth, rateLimit(20, 60 * 60 * 10
     });
   } catch (e) {
     const status = e?.status || e?.response?.status;
-    res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (e?.message || 'Gap ideation failed.') });
+    res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? describeLlmError(e) : (e?.message || 'Gap ideation failed.') });
   }
 });
 

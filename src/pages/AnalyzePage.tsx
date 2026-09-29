@@ -403,8 +403,11 @@ export default function AnalyzePage() {
         toast('Run cancelled. The model call was stopped; only what had already streamed is billed.', 'info');
       } else {
         const message = err instanceof Error ? err.message : String(err);
-        setError(message.includes('ECONNREFUSED') || message.includes('fetch')
-          ? 'Cannot connect to BrainSpark server. Run "npm run server" in a separate terminal and retry.'
+        // A network failure is a TypeError from fetch itself; testing for the
+        // word "fetch" also matched provider messages that merely contained it.
+        const unreachable = err instanceof TypeError || message.includes('ECONNREFUSED');
+        setError(unreachable
+          ? 'Cannot reach the BrainSpark server. Start it with start-macos.command (or "npm run dev"), then retry.'
           : `Analysis failed: ${message}`);
       }
     } finally {
@@ -1029,14 +1032,10 @@ export default function AnalyzePage() {
                   </div>
                 </div>
 
-                {/* Server note */}
-                <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                  <Info size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-amber-300/80 text-xs">
-                    <strong>Backend required:</strong> Run <code className="bg-black/30 px-1 rounded">npm run server</code> in a terminal (port 3001) alongside <code className="bg-black/30 px-1 rounded">vite</code> for web search to work. Or run <code className="bg-black/30 px-1 rounded">npm run dev</code> to start both together.
-                  </p>
-                </div>
-
+                {/* The old "Backend required: run npm run server" note was shown to
+                    everyone, always — including users whose server was answering
+                    (it is what produced their error). An unreachable server is
+                    detected when it happens and said then (see the catch below). */}
                 {error && (
                   <div className="flex items-start gap-3 p-4 rounded-xl bg-danger-500/10 border border-danger-500/20 text-danger-300 text-sm">
                     <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />

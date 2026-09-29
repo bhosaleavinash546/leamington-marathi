@@ -6,6 +6,7 @@
 // Deterministic-only helpers (no LLM, no key) are exposed too so the studio can
 // show a real analysis (DFA score, value index, cost gap, morphology space).
 // ─────────────────────────────────────────────────────────────────────────────
+import { describeLlmError } from '../llm-error.mjs';
 import {
   METHODS, getMethod, SCAMPER, EFFECTS, TRENDS, CIRCULARITY,
   dfaScore, valueIndex, targetGap, morphology, functionCostMatrix, specRelaxationDeltas, teardownDelta,
@@ -344,7 +345,7 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
       if (run.signal.aborted) return;   // nobody is listening
       if (err?.badRequest) return res.status(400).json({ error: err.message });
       const status = err?.status || err?.response?.status;
-      const msg = typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (err?.message || 'Idea generation failed.');
+      const msg = typeof status === 'number' ? describeLlmError(err) : (err?.message || 'Idea generation failed.');
       res.status(typeof status === 'number' ? 502 : 500).json({ error: msg });
     }
   });

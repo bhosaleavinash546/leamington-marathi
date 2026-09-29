@@ -4427,3 +4427,15 @@ rather than "corrected" from memory. (docs/TRIZ-REVIEW-2026-09-29.md)
 `engine-idea-check.mjs` keeps a reason up to 240 characters and marks a cut
 with "…". Every studio renders these reasons as text, and a clause cut
 mid-word reads as a malfunction.
+
+## 107. AI errors say what Anthropic said
+
+Provider errors go through `llm-error.mjs`. Anthropic's own error message is
+passed to the user (it carries no secret of ours), with a plain instruction for
+the cases a user can fix: no credit ("the key is valid — add credit"), a
+rejected key, a missing model, a rate limit, or no connection. The server log
+records the status and the reason. The old fixed sentences ("request was
+rejected — adjust inputs", "check your API key") sent a user with an empty
+account to the wrong fix before a management demo. The Analyze page's
+always-on "Backend required" note is gone: an unreachable server is detected
+when it happens and said then.

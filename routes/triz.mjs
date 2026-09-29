@@ -15,6 +15,7 @@
 //
 // The principles come from theory; the numbers come from the engine.
 // ─────────────────────────────────────────────────────────────────────────────
+import { describeLlmError } from '../llm-error.mjs';
 import { recommendPrinciples, trizCatalogue, separationStrategies, PARAMETERS } from '../triz.mjs';
 import { trimmingCandidates, functionModelFromFast } from '../triz-trimming.mjs';
 import { runEngineChecks } from '../engine-idea-check.mjs';
@@ -231,7 +232,7 @@ export function registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic,
     } catch (err) {
       if (run.signal?.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
-      const msg = typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (err?.message || 'TRIZ resolution failed.');
+      const msg = typeof status === 'number' ? describeLlmError(err) : (err?.message || 'TRIZ resolution failed.');
       res.status(typeof status === 'number' ? 502 : 500).json({ error: msg });
     }
   });
@@ -351,7 +352,7 @@ export function registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic,
       if (run.signal?.aborted) return;
       const status = err?.status || err?.response?.status;
       res.status(typeof status === 'number' ? 502 : 500).json({
-        error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (err?.message || 'Trimming failed.'),
+        error: typeof status === 'number' ? describeLlmError(err) : (err?.message || 'Trimming failed.'),
       });
     }
   });
@@ -398,7 +399,7 @@ export function registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic,
       if (run.signal?.aborted) return;
       const status = err?.status || err?.response?.status;
       res.status(typeof status === 'number' ? 502 : 500).json({
-        error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : (err?.message || 'Separation failed.'),
+        error: typeof status === 'number' ? describeLlmError(err) : (err?.message || 'Separation failed.'),
       });
     }
   });

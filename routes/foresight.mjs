@@ -13,6 +13,7 @@
 //   3. Without a key the endpoint degrades honestly: full deterministic result,
 //      `narrative: null`, and a note saying why.
 // ─────────────────────────────────────────────────────────────────────────────
+import { describeLlmError } from '../llm-error.mjs';
 import { randomUUID } from 'node:crypto';
 import { foresightFor, horizonWindows, patentTrend, REGISTER_VINTAGE, scoreSnapshot } from '../foresight.mjs';
 import { FORESIGHT_REGISTER, REG_ANCHORS, SEGMENTS, BENCHMARK_VEHICLES } from '../src/data/tech-foresight-register.mjs';
@@ -495,7 +496,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     } catch (err) {
       if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
-      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : 'Deep research failed.' });
+      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? describeLlmError(err) : 'Deep research failed.' });
     }
   });
 
@@ -568,7 +569,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     } catch (err) {
       if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
-      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : 'Deep research failed.' });
+      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? describeLlmError(err) : 'Deep research failed.' });
     }
   });
 
@@ -655,7 +656,7 @@ export function registerForesightRoutes(app, { db, requireAuth, rateLimit, makeA
     } catch (err) {
       if (run.signal.aborted) return;   // nobody is listening
       const status = err?.status || err?.response?.status;
-      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? 'The AI request failed — check your API key and try again.' : 'Panel critique failed.' });
+      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? describeLlmError(err) : 'Panel critique failed.' });
     }
   });
 

@@ -103,6 +103,20 @@ http.createServer(async (req, res) => {
   let gone = false;
   res.on('close', () => { if (!res.writableFinished) { gone = true; stats.aborted++; console.log('[fake-llm] caller aborted mid-reply'); } });
   let body = ''; for await (const c of req) body += c;
+  // ERROR MODE: answer every call the way Anthropic answers a failing one, so
+  // the app's error path can be exercised. FAKE_LLM_ERROR=credit returns the
+  // 400 an account with no credit gets; a number (e.g. 401, 429, 529) returns
+  // that status with a generic body.
+  if (process.env.FAKE_LLM_ERROR) {
+    const mode = process.env.FAKE_LLM_ERROR;
+    const status = mode === 'credit' ? 400 : Number(mode) || 500;
+    const error = mode === 'credit'
+      ? { type: 'invalid_request_error', message: 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.' }
+      : { type: status === 401 ? 'authentication_error' : status === 429 ? 'rate_limit_error' : status === 529 ? 'overloaded_error' : 'api_error', message: `SYNTHETIC ${status} from the test stub.` };
+    stats.completed++;
+    res.writeHead(status, { 'content-type': 'application/json', 'request-id': 'req_stub' });
+    return res.end(JSON.stringify({ type: 'error', error }));
+  }
   let p = {}; try { p = JSON.parse(body); } catch {}
   const tool = (p.tools || []).find(t => t.name === 'emit_ideas') || (p.tools || [])[0];
   // TRIZ's first step maps the contradiction onto two of the 39 parameters.
