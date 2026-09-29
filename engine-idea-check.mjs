@@ -111,9 +111,17 @@ function checkHarness(req, { region, annualVolume, library }) {
       basis: 'Deterministic wiring-harness cost model (copper, connectors, crimp/insertion/test labour) — validates the DIRECTION of the move, not this harness’s exact figure.',
     } };
   } catch (e) {
-    return { reason: `harness model out of range: ${String(e?.message || e).slice(0, 80)}` };
+    return { reason: `harness model out of range: ${reasonText(e)}` };
   }
 }
+
+// A reason is read by a person. Cutting it at 80 characters ended one
+// mid-clause ("…not compatible with Die Casting (Aluminium), which is.") — the
+// limit is now a sentence's length and a cut says it was cut (TRIZ review).
+const reasonText = (e, max = 240) => {
+  const t = String(e?.message || e).trim();
+  return t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t;
+};
 
 const clampW = (w, fallback) => {
   const n = Number(w);
@@ -404,7 +412,7 @@ function runOneCheck(req, ctx) {
     if (kind === 'cycle') return checkCycle(req, ctx);
     return checkSubstitution(req, ctx);
   } catch (e) {
-    return { reason: `engine could not price this move: ${String(e?.message || e).slice(0, 80)}` };
+    return { reason: `engine could not price this move: ${reasonText(e)}` };
   }
 }
 

@@ -4411,3 +4411,19 @@ Innovation page, its KPIs and its PDF/Excel exports now say "reference part —
 not this part's exact saving". Unchecked ideas carry their reason. The model's
 own cost text is labelled AI-stated. A pre-step that could not run reports why
 (`analysisNotes`) instead of leaving a gap.
+
+## 105. Both sides of a TRIZ contradiction nominate principles
+
+For uncurated pairs, principles on both parameters' affinity lists come first,
+then slots alternate between the improving list and the worsening list. There
+is no weight: a weighted score traded spread against reach, and its weight
+could only be tuned to a target. The same parameter on both sides is a
+physical contradiction and goes to separation. Curated pairs are labelled as
+unverified against the published matrix, and their cells are left as they are
+rather than "corrected" from memory. (docs/TRIZ-REVIEW-2026-09-29.md)
+
+## 106. Engine-check reasons are sentences, not 80-character fragments
+
+`engine-idea-check.mjs` keeps a reason up to 240 characters and marks a cut
+with "…". Every studio renders these reasons as text, and a clause cut
+mid-word reads as a malfunction.

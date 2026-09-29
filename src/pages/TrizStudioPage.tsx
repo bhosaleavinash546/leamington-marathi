@@ -24,6 +24,10 @@ interface TrizResult {
   principles: Principle[];
   ideas: TrizIdea[];
   engineChecks?: { checked: number; confirmed: number; contradicted: number } | null;
+  note?: string;
+  /** Set when the mapping landed on one parameter against itself — a physical
+   *  contradiction, resolved by the four separation strategies instead. */
+  physical?: boolean;
 }
 
 const EXAMPLES = [
@@ -342,6 +346,11 @@ export default function TrizStudioPage() {
             {/* Recommended principles */}
             <div>
               <h2 className="text-white font-bold text-lg flex items-center gap-2 mb-3"><Lightbulb size={18} className="text-gold-400" /> Inventive Principles</h2>
+              {result.physical && (
+                <p className="text-amber-300/90 text-xs mb-3">
+                  This mapped to one parameter against itself — a physical contradiction, not a trade-off between two parameters — so the ideas below apply the four separation strategies (space, time, condition, system) instead of a principle list.
+                </p>
+              )}
               <div className="grid sm:grid-cols-2 gap-3">
                 {result.principles.map(p => (
                   <div key={p.id} className="bg-navy-900 border border-white/10 rounded-xl p-4">
@@ -386,7 +395,7 @@ export default function TrizStudioPage() {
                       {idea.engineCheck ? (
                         <span className={`flex items-center gap-1 text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                           {idea.engineCheck.direction === 'confirmed' ? <CheckCircle size={13} /> : <XCircle size={13} />}
-                          Engine {idea.engineCheck.direction} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%)
+                          Engine {idea.engineCheck.direction} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%, ref. part)
                         </span>
                       ) : (
                         // A silent gap reads as a pass — say the engine did not look.
@@ -397,8 +406,17 @@ export default function TrizStudioPage() {
                       )}
                     </div>
                     <h3 className="text-white font-semibold mb-2">{idea.title}</h3>
+                    {/* The percentage is a DIRECTION check on a reference part,
+                        and an unchecked idea's reason was only in a hover title
+                        a touch screen never shows (TRIZ review, 29 Sept 2026). */}
+                    {idea.engineCheck?.referenceCase && (
+                      <p className="text-slate-500 text-xs mb-2">Engine direction check on a reference part: {idea.engineCheck.referenceCase}. Not this part's exact saving.</p>
+                    )}
+                    {!idea.engineCheck && idea.engineCheckReason && (
+                      <p className="text-slate-500 text-xs mb-2">Not engine-checked: {idea.engineCheckReason}.</p>
+                    )}
                     <p className="text-slate-400 text-sm leading-relaxed mb-2">{idea.technicalDescription}</p>
-                    <p className="text-teal-300 text-xs mb-1"><span className="text-slate-500">Cost angle:</span> {idea.costAngle}</p>
+                    <p className="text-teal-300 text-xs mb-1"><span className="text-slate-500">Cost angle (AI-stated):</span> {idea.costAngle?.trim() || <span className="text-slate-500">not stated</span>}</p>
                     {idea.riskNotes && <p className="text-amber-300/80 text-xs mb-3"><span className="text-slate-500">Risk:</span> {idea.riskNotes}</p>}
                     <div className="flex justify-end">
                       <button
@@ -412,7 +430,7 @@ export default function TrizStudioPage() {
                 ))}
               </div>
             </div>
-            <p className="text-slate-500 text-xs text-center">Principles are deterministic TRIZ theory; every £ figure is engine-checked or labelled. Validate against detailed studies before commercial use.</p>
+            <p className="text-slate-500 text-xs text-center">{result.note || 'Principle selection is deterministic. The engine checks the direction of material, process and mass moves on a reference part; figures in an idea\'s text are the AI\'s and are not verified. Validate against detailed studies before commercial use.'}</p>
           </motion.div>
         )}
 
@@ -490,7 +508,8 @@ export default function TrizStudioPage() {
                         )}
                       </div>
                       <p className="text-slate-400 text-sm leading-relaxed mb-2">{idea.technicalDescription}</p>
-                      {idea.costAngle && <p className="text-teal-300 text-xs"><span className="text-slate-500">Cost angle:</span> {idea.costAngle}</p>}
+                      {!idea.engineCheck && idea.engineCheckReason && <p className="text-slate-500 text-xs">Not engine-checked: {idea.engineCheckReason}.</p>}
+                      {idea.costAngle && <p className="text-teal-300 text-xs"><span className="text-slate-500">Cost angle (AI-stated):</span> {idea.costAngle?.trim() || <span className="text-slate-500">not stated</span>}</p>}
                       {idea.riskNotes && <p className="text-amber-300/80 text-xs mt-1"><span className="text-slate-500">Risk:</span> {idea.riskNotes}</p>}
                     </div>
                   ))}
@@ -532,7 +551,7 @@ export default function TrizStudioPage() {
                       <h3 className="text-white font-semibold">{c.carrier}</h3>
                       <span className="text-xs text-slate-400">
                         {c.costReleased != null
-                          ? <span className="text-emerald-400">releases {c.costReleased}/part</span>
+                          ? <span className="text-emerald-400" title="The component's whole cost, before whatever it costs to move its functions to the new carrier">releases up to {c.costReleased}/part (gross)</span>
                           : <span className="text-slate-500">cost not given</span>}
                         {' · '}
                         {c.questionsToAnswer === 0

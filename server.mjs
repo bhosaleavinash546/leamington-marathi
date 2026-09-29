@@ -4089,7 +4089,7 @@ registerHarnessRoutes(app, { requireAuth, rateLimit });
 registerOrgRoutes(app, { db, requireAuth, rateLimit });
 // TRIZ innovation studio: plain-English contradiction → inventive principles →
 // costed, engine-checked ideas.
-registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
+registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize, runAbort });
 // Part 360: quote forensics, entitlement waterfall and the evidence dossier —
 // the fusion layer over every engine, calibrated to the caller's quote corpus.
 registerPart360Routes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, sanitize, shouldCostApi, db, jobsApi, runAbort });

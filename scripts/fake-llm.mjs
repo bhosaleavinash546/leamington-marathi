@@ -105,7 +105,14 @@ http.createServer(async (req, res) => {
   let body = ''; for await (const c of req) body += c;
   let p = {}; try { p = JSON.parse(body); } catch {}
   const tool = (p.tools || []).find(t => t.name === 'emit_ideas') || (p.tools || [])[0];
-  const input = tool?.name === 'emit_ideas' ? { ideas } : {};
+  // TRIZ's first step maps the contradiction onto two of the 39 parameters.
+  // A synthetic pair (weight of moving object vs strength) by default;
+  // FAKE_LLM_TRIZ_MAP="14,14" drives the physical-contradiction route.
+  const [mi, mw] = String(process.env.FAKE_LLM_TRIZ_MAP || '1,14').split(',').map(Number);
+  const IDEA_TOOLS = ['emit_ideas', 'emit_triz_ideas', 'emit_separation_ideas'];
+  const input = IDEA_TOOLS.includes(tool?.name) ? { ideas }
+    : tool?.name === 'map_contradiction' ? { improvingParamId: mi, worseningParamId: mw, restatement: 'SYNTHETIC mapping from the test stub.' }
+    : {};
   const json = JSON.stringify(input);
   const inTok = Math.round(JSON.stringify(p.messages || '').length / 3.7), outTok = Math.round(json.length / 3.7);
   console.log(`[fake-llm] ${p.model} stream=${!!p.stream} tools=${(p.tools||[]).map(t=>t.name).join(',')||'-'} thinking=${p.thinking?.type||'off'} max_tokens=${p.max_tokens} -> ${tool ? 'tool_use:'+tool.name : 'text'} (${outTok} tok)`);

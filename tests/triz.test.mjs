@@ -3,8 +3,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  PRINCIPLES, PARAMETERS, SEPARATIONS, recommendPrinciples, trizCatalogue, separationStrategies,
-} from '../triz.mjs';
+  PRINCIPLES, PARAMETERS, SEPARATIONS, recommendPrinciples, trizCatalogue, separationStrategies, CURATED_BASIS, AFFINITY_BASIS } from '../triz.mjs';
 
 describe('triz core', () => {
   it('has exactly the 40 classical principles, ids 1..40, all fields present', () => {
@@ -23,9 +22,11 @@ describe('triz core', () => {
 
   it('recommends from the curated set for a classic cost pair (lighter vs strength)', () => {
     const r = recommendPrinciples(1, 14, 4);
-    assert.equal(r.basis, 'curated classical pair');
+    // Named for what it is: curated, and NOT verified against the published
+    // matrix (TRIZ review 2026-09-29).
+    assert.equal(r.basis, CURATED_BASIS);
+    assert.match(r.basis, /not verified against the published Altshuller matrix/);
     assert.equal(r.principles.length, 4);
-    // Principle 40 (composite materials) and 1 (segmentation) are canonical here.
     const ids = r.principles.map(p => p.id);
     assert.ok(ids.includes(40) || ids.includes(1));
     assert.equal(r.improving.id, 1);
@@ -34,7 +35,7 @@ describe('triz core', () => {
 
   it('falls back to the affinity model for an uncurated pair, still valid', () => {
     const r = recommendPrinciples(9, 22, 4);   // speed vs energy loss — not curated
-    assert.equal(r.basis, 'affinity model (pair not in curated set)');
+    assert.equal(r.basis, AFFINITY_BASIS);
     assert.equal(r.principles.length, 4);
     for (const p of r.principles) assert.ok(p.id >= 1 && p.id <= 40 && p.name);
   });

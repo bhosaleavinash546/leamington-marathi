@@ -82,8 +82,12 @@ export const PARAMETERS = [
   { id: 39, name: 'Productivity' },
 ];
 
-// High-confidence classical pairs (improving × worsening → principles), the
-// ones cost engineers hit constantly. Curated, not exhaustive.
+// Curated pairs (improving × worsening → principles), the ones cost engineers
+// hit constantly. Curated, not exhaustive — and NOT verified against a
+// published copy of Altshuller's matrix: no source is cited for any cell, and
+// three are identical in both directions (14|32, 27|32, 29|39), which the classical
+// matrix is not. The output used to call these a "curated classical pair";
+// it now says what they are (TRIZ review, 29 Sept 2026).
 const CURATED = {
   '1|14': [1, 8, 40, 15],    // lighter (moving) vs strength
   '2|14': [40, 26, 27, 1],   // lighter (stationary) vs strength
@@ -124,29 +128,52 @@ const AFFINITY = {
 };
 
 /** Deterministic principle recommendation for an (improving, worsening) pair. */
+export const CURATED_BASIS = 'curated pair (automotive-tuned; not verified against the published Altshuller matrix)';
+export const AFFINITY_BASIS = 'affinity model — principles associated with either parameter, strongest where they serve both (pair not curated)';
+export const PHYSICAL_BASIS = 'physical contradiction — the same parameter must take two opposite values, so it is resolved by separation, not by a parameter pair';
+
 export function recommendPrinciples(improvingId, worseningId, topN = 4) {
   const imp = Number(improvingId), wor = Number(worseningId);
   if (!AFFINITY[imp] || !AFFINITY[wor]) throw new Error('parameter ids must be 1–39');
+  const improving = PARAMETERS.find(p => p.id === imp);
+  const worsening = PARAMETERS.find(p => p.id === wor);
+  // ONE PARAMETER AGAINST ITSELF is a physical contradiction by definition —
+  // "strength must be high and low". It used to be scored as if it were a
+  // pair, returning technical-contradiction principles for a problem the
+  // method routes to separation. The caller is told, and given the property.
+  if (imp === wor) {
+    return { improving, worsening, basis: PHYSICAL_BASIS, physical: true, property: improving.name, principles: [] };
+  }
   const curated = CURATED[`${imp}|${wor}`];
   let ids, basis;
   if (curated) {
     ids = curated.slice(0, topN);
-    basis = 'curated classical pair';
+    basis = CURATED_BASIS;
   } else {
-    // Affinity scoring: improving-side position (earlier = stronger), boosted
-    // when the principle also serves the worsening side.
-    const worSet = new Set(AFFINITY[wor]);
-    ids = AFFINITY[imp]
-      .map((p, i) => ({ p, score: (AFFINITY[imp].length - i) + (worSet.has(p) ? 2 : 0) }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topN)
-      .map(x => x.p);
-    basis = 'affinity model (pair not in curated set)';
+    // BOTH SIDES OF THE CONTRADICTION NOMINATE. Candidates used to come from
+    // the improving parameter's list alone, the worsening side only reordering
+    // them — so across its 38 possible partners an improving parameter got as
+    // few as 3 distinct answers, and a principle that answers the worsening
+    // side could never appear (TRIZ review, 29 Sept 2026). The rule has no
+    // weights to tune: principles on BOTH lists come first (strongest by
+    // combined position), then the remaining slots alternate between the
+    // improving list and the worsening list in their own order, improving
+    // first. The affinity tables themselves are unchanged.
+    const A = AFFINITY[imp], B = AFFINITY[wor];
+    const both = A.filter(p => B.includes(p))
+      .sort((x, y) => (A.indexOf(x) + B.indexOf(x)) - (A.indexOf(y) + B.indexOf(y)) || A.indexOf(x) - A.indexOf(y));
+    ids = both.slice(0, topN);
+    const restA = A.filter(p => !ids.includes(p)), restB = B.filter(p => !ids.includes(p));
+    for (let turn = 0; ids.length < topN && (restA.length || restB.length); turn++) {
+      const src = (turn % 2 === 0 ? restA : restB).length ? (turn % 2 === 0 ? restA : restB) : (turn % 2 === 0 ? restB : restA);
+      const next = src.shift();
+      if (!ids.includes(next)) ids.push(next);
+      const k = (src === restA ? restB : restA).indexOf(next); if (k >= 0) (src === restA ? restB : restA).splice(k, 1);
+    }
+    basis = AFFINITY_BASIS;
   }
   return {
-    improving: PARAMETERS.find(p => p.id === imp),
-    worsening: PARAMETERS.find(p => p.id === wor),
-    basis,
+    improving, worsening, basis,
     principles: ids.map(id => PRINCIPLES.find(pr => pr.id === id)),
   };
 }

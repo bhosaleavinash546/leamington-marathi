@@ -5,9 +5,9 @@
 // asks the harder question: "what could we DELETE, and who picks up its job?"
 // Engineers default to addition and substitution; trimming is the discipline
 // that removes a component and REDISTRIBUTES its useful function to something
-// already present. Published applications report component-count reductions
-// around 83% and component-cost reductions around 95% — it is the TRIZ tool
-// with the strongest cost record, and it was the one this product lacked.
+// already present. Published case studies report large component-count and
+// cost reductions from it; the figures vary by case and are not repeated here
+// without a source (TRIZ review, 29 Sept 2026).
 //
 // ── THE THREE CLASSICAL RULES ────────────────────────────────────────────────
 // A function is "carrier acts on object". Given that, a carrier can be trimmed
