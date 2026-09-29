@@ -1281,6 +1281,24 @@ app.delete('/api/settings/api-key', requireAuth, (req, res) => {
 // generating, we retrieve the closest existing ideas so the model must go deeper
 // or different instead of re-inventing what the marketplace already holds.
 let _ideaIndex = null, _ideaIndexCount = -1;
+/**
+ * The marketplace precedent an idea restates, or null.
+ *
+ * Queried on the idea's OWN TITLE. It used to append the system name, and on
+ * the 127 saved live ideas 29 of 115 labels (25%) existed only because of those
+ * words: "Continuous wave-wound hairpins" matched a hydroformed A-pillar node
+ * and "Shift stamping footprint" a commonised bodyside, each costing the idea
+ * up to 30% of its rank for restating something it did not (Analyze review,
+ * 29 Sept 2026). The system is context for generation, not evidence of a
+ * duplicate. One function, so the deep pass re-checks a repair by the same rule.
+ */
+function priorArtFor(idea) {
+  const hits = getIdeaIndex().search(String(idea?.title || ''), 1);
+  return hits.length && hits[0].score >= PRIOR_ART_MIN_SCORE
+    ? { id: hits[0].doc.id, title: hits[0].doc.title, score: Number(hits[0].score.toFixed(1)) }
+    : null;
+}
+
 function getIdeaIndex() {
   const n = db.prepare("SELECT COUNT(*) c FROM marketplace_ideas WHERE status='approved'").get().c;
   if (_ideaIndex && n === _ideaIndexCount) return _ideaIndex;
@@ -3282,9 +3300,15 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   // Body key → stored credential → server env (resolveApiKey reads req.body.apiKey,
   // so mirror config.apiKey into it for the shared resolution order).
   if (config?.apiKey && !req.body.apiKey) req.body.apiKey = config.apiKey;
+  // A body without a config object crashed below on config.additionalContext
+  // and answered 500 (Analyze review, 29 Sept 2026). It is a malformed
+  // request, and says so.
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    return res.status(400).json({ error: 'config is required — the analysis settings object (volume, region, currency…).' });
+  }
   const resolvedKey = resolveApiKey(req);
   if (!resolvedKey) return res.status(400).json({ error: 'No API key configured — add one in Settings.' });
-  if (config) config.apiKey = resolvedKey;
+  config.apiKey = resolvedKey;
 
   const sysName = sanitize(systemName, 120);
   const subName = sanitize(subassemblyName, 120);
@@ -3487,12 +3511,9 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // it — a repair cleared by a looser rule than the one that condemned the
     // original would be theatre.
     try {
-      const idx = getIdeaIndex();
       for (const idea of ideas) {
-        const hits = idx.search(`${idea.title} ${sysName}`, 1);
-        if (hits.length && hits[0].score >= PRIOR_ART_MIN_SCORE) {
-          idea.priorArt = { id: hits[0].doc.id, title: hits[0].doc.title, score: Number(hits[0].score.toFixed(1)) };
-        }
+        const pa = priorArtFor(idea);
+        if (pa) idea.priorArt = pa;
       }
     } catch { /* index unavailable — labelling is best-effort */ }
 
@@ -3547,14 +3568,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           // against the same index that detected it. Same query and threshold
           // as the prior-art labelling above — a repair judged by a different
           // rule than the one that condemned it would prove nothing.
-          priorArtOf: (idea) => {
-            try {
-              const hits = getIdeaIndex().search(`${idea.title} ${sysName}`, 1);
-              return hits.length && hits[0].score >= PRIOR_ART_MIN_SCORE
-                ? { id: hits[0].doc.id, title: hits[0].doc.title, score: Number(hits[0].score.toFixed(1)) }
-                : null;
-            } catch { return null; }
-          },
+          priorArtOf: (idea) => { try { return priorArtFor(idea); } catch { return null; } },
         }, { emit, level: deepLevel });
         validationSummary.deep = deep;
         if (deep.critiqued > 0) emit({ type: 'progress', message: deepLevel === 'full'

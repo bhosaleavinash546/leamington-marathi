@@ -129,7 +129,26 @@ function computeSide(materialTyped, processTyped, weightKg, annualVolume, region
   const r = route.keys.length > 1
     ? computeRouteCost({ ...input, route: route.keys }, {}, null, library)
     : computeShouldCost({ ...input, process: route.keys[0] }, {}, null, library);
-  return { totalEur: r.totalShouldCost, material: mat.key, process: route.keys.join(' → ') };
+  return { totalEur: r.totalShouldCost, material: mat.key, process: route.keys.join(' → '), standIns: route.standIns || [] };
+}
+
+/**
+ * A comparison must not rest on a STAND-IN on the side that changed.
+ *
+ * "Clinching" prices on the MIG welding model and "trickle impregnation" on
+ * VPI (material-aliases PROCESS_STAND_INS). When the idea IS that change — SPR
+ * for spot welds, bonding for MIG — the engine would be comparing the stand-in,
+ * not the proposal, and a confirmed/contradicted verdict would answer a
+ * different question (Analyze review, 29 Sept 2026). A stand-in present
+ * identically on BOTH sides is unchanged by the move, so it does not block.
+ */
+function standInReason(base, prop) {
+  const a = new Set(base.standIns || []), b = new Set(prop.standIns || []);
+  const changed = [...a].filter(x => !b.has(x)).concat([...b].filter(x => !a.has(x)));
+  if (!changed.length) return null;
+  const which = changed[0];
+  const key = (b.has(which) ? prop : base).process;
+  return `"${which}" is priced on the ${key} model, which cannot price the difference this idea is about — no verdict rather than a verdict on a different process`;
 }
 
 const SUBSTITUTION_BASIS = 'Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure.';
@@ -141,6 +160,9 @@ function checkSubstitution(req, { region, annualVolume, library, defaultWeightKg
   if (base.reason) return { reason: `baseline ${base.reason}` };
   const prop = computeSide(req.proposedMaterial ?? req.baselineMaterial, req.proposedProcess ?? req.baselineProcess, wProp, annualVolume, region, library);
   if (prop.reason) return { reason: `proposed ${prop.reason}` };
+  const standIn = base.process !== prop.process || String(req.baselineProcess ?? '') !== String(req.proposedProcess ?? req.baselineProcess ?? '')
+    ? standInReason(base, prop) : null;
+  if (standIn) return { reason: standIn };
   if (base.material === prop.material && base.process === prop.process && wBase === wProp) {
     return { reason: 'nothing changed between baseline and proposed (same material, process and mass)' };
   }
@@ -235,11 +257,13 @@ function checkAssembly(req, { region, annualVolume }) {
 // They share `sameSideOf`: resolve the part once, then cost it twice under
 // different conditions, so a difference can only come from the condition under
 // test and never from a resolution difference between the two sides.
-function sameSideOf(req, defaultWeightKg) {
+function sameSideOf(req, defaultWeightKg, library) {
   const w = clampW(req.weightKg, defaultWeightKg);
-  const mat = resolveMaterial(String(req.material || ''), undefined);
+  // The ACTIVE library, as computeSide uses — resolving against the default
+  // catalogue could return a key a custom rate library does not carry.
+  const mat = resolveMaterial(String(req.material || ''), library?.MATERIALS);
   if (!mat) return { reason: `material "${String(req.material || '').slice(0, 40) || '(none)'}" not in the engine catalogue` };
-  const route = resolveRoute(String(req.process || ''), undefined);
+  const route = resolveRoute(String(req.process || ''), library?.PROCESSES);
   if (!route || route.keys.length === 0) return { reason: `process "${String(req.process || '').slice(0, 40) || '(none)'}" not in the engine catalogue` };
   return { w, matKey: mat.key, routeKeys: route.keys };
 }
@@ -262,7 +286,7 @@ function costAt(matKey, routeKeys, weightKg, annualVolume, region, library) {
  * rather than a labour-rate ratio.
  */
 function checkFootprint(req, { region, annualVolume, library, defaultWeightKg }) {
-  const side = sameSideOf(req, defaultWeightKg);
+  const side = sameSideOf(req, defaultWeightKg, library);
   if (side.reason) return { reason: side.reason };
   const from = typeof req.baselineRegion === 'string' && REGIONS[req.baselineRegion] ? req.baselineRegion : region;
   const to = typeof req.proposedRegion === 'string' ? req.proposedRegion : null;
@@ -296,7 +320,7 @@ function checkFootprint(req, { region, annualVolume, library, defaultWeightKg })
  * says so and the idea should carry a substitution request for the mass side.
  */
 function checkCommonisation(req, { region, annualVolume, library, defaultWeightKg }) {
-  const side = sameSideOf(req, defaultWeightKg);
+  const side = sameSideOf(req, defaultWeightKg, library);
   if (side.reason) return { reason: side.reason };
   const variants = Number(req.variants);
   if (!Number.isFinite(variants) || variants < 2 || variants > 50) {
@@ -328,7 +352,7 @@ function checkCommonisation(req, { region, annualVolume, library, defaultWeightK
  */
 const CYCLE_MULT_MIN = 0.2, CYCLE_MULT_MAX = 5;
 function checkCycle(req, { region, annualVolume, library, defaultWeightKg }) {
-  const side = sameSideOf(req, defaultWeightKg);
+  const side = sameSideOf(req, defaultWeightKg, library);
   if (side.reason) return { reason: side.reason };
   const cycleMult = req.cycleMult === undefined ? 1 : Number(req.cycleMult);
   const machineMult = req.machineMult === undefined ? 1 : Number(req.machineMult);

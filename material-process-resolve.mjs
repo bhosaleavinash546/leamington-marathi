@@ -15,7 +15,7 @@
  * Pure & dependency-free apart from the engine catalogues.
  */
 import { MATERIALS, PROCESSES } from './costing-engine.mjs';
-import { materialAlias, processAlias } from './material-aliases.mjs';
+import { materialAlias, processAliasMatch } from './material-aliases.mjs';
 
 const norm = (s) => String(s || '').trim().toLowerCase();
 
@@ -99,19 +99,36 @@ export function resolveMaterial(typed, materials = MATERIALS) {
  * resolve. Single-op inputs resolve to a one-element route.
  */
 export function resolveRoute(input, processes = PROCESSES) {
+  // THE WHOLE STRING FIRST. "Laser Cutting + Bending" is ONE catalogue process,
+  // and splitting on "+" before looking it up made the catalogue's own name
+  // unresolvable (Analyze review, 29 Sept 2026). Only an EXACT key or an exact
+  // whole-string alias counts here — a containment match would swallow a real
+  // chain like "HPDC + CNC + e-coat" into its first step.
+  if (!Array.isArray(input)) {
+    const whole = exact(input, Object.keys(processes)) ?? processAliasMatch(input, processes, { wholeOnly: true })?.key;
+    if (whole) {
+      const r = resolveProcess(input, processes);
+      return { keys: [whole], approx: !!r?.approx, standIns: r?.standIn ? [r.standIn] : [] };
+    }
+  }
   const parts = Array.isArray(input)
     ? input.map(p => (p && typeof p === 'object' ? p.process : p)).filter(Boolean)
     : String(input || '').split(/\s*(?:\+|->|→|\|| then )\s*/i).filter(Boolean);
   if (!parts.length) return null;
   const resolved = [];
+  const standIns = [];
   let approx = false;
   for (const p of parts) {
     const r = resolveProcess(p, processes);
     if (!r) return null;
     resolved.push(r.key);
     approx = approx || r.approx;
+    if (r.standIn) standIns.push(r.standIn);
   }
-  return { keys: resolved, approx };
+  // standIns: steps that named a DIFFERENT process priced on the nearest model
+  // ("clinching" on MIG welding). Fine for a price; a comparison must not rest
+  // on one — see engine-idea-check.mjs.
+  return { keys: resolved, approx, standIns };
 }
 
 export function resolveProcess(typed, processes = PROCESSES) {
@@ -123,8 +140,8 @@ export function resolveProcess(typed, processes = PROCESSES) {
   // Covering map first — see resolveMaterial. This is what stops "hot
   // stamping" being priced on a cold press line and "laser welding" on a
   // cutting table.
-  const aliased = processAlias(typed, processes);
-  if (aliased) return { key: aliased, approx: true };
+  const aliased = processAliasMatch(typed, processes);
+  if (aliased) return { key: aliased.key, approx: true, ...(aliased.standIn ? { standIn: aliased.standIn } : {}) };
   const has = (kw) => keys.find(k => k.toLowerCase().includes(kw));
   let key = null;
   // Forging & casting are tested BEFORE the sheet-metal branch: the words
@@ -160,5 +177,8 @@ export function resolveProcess(typed, processes = PROCESSES) {
   else if (/extru/.test(t)) key = has('extrusion');
   else if (/spot weld|resistance weld/.test(t)) key = has('spot weld') || has('welding');
   else if (/weld|mig|tig|braze/.test(t)) key = has('mig') || has('welding');
-  return key ? { key, approx: true } : null;
+  // Past the alias table this is a KEYWORD GUESS ("vacuum casting" → sand
+  // casting on /cast/). It stays usable for a price, and it is a stand-in for
+  // any comparison, exactly like a listed one.
+  return key ? { key, approx: true, standIn: `${t.slice(0, 40)} (keyword guess)` } : null;
 }

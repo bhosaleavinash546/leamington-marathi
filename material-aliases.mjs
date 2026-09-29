@@ -117,7 +117,7 @@ export const PROCESS_ALIASES = Object.freeze({
   'Vacuum-Assisted Die Casting': ['vacuum die casting', 'vacural', 'vacuum assisted hpdc', 'vacuum-assisted die casting', 'high vacuum die casting'],
   'Die Casting (Zinc)': ['zinc die casting', 'hot chamber die casting', 'zamak die casting', 'zinc casting'],
   'Sand Casting': ['sand casting', 'green sand', 'sand mould casting', 'sand mold casting', 'lost foam', 'no-bake sand'],
-  'Shell Mould Casting': ['shell mould', 'shell mold', 'shell moulding', 'croning process', 'croning casting', 'shell casting'],
+  'Shell Mould Casting': ['shell mould', 'shell mold', 'shell moulding', 'croning', 'croning process', 'croning casting', 'shell casting'],
   'Investment Casting': ['investment casting', 'lost wax', 'precision casting', 'ceramic mould casting'],
   'Gravity Die Casting': ['gravity die casting', 'gravity casting', 'permanent mould casting', 'permanent mold casting', 'gdc', 'tilt pour casting'],
   'Low-Pressure Die Casting': ['low pressure die casting', 'low-pressure die casting', 'lpdc', 'low pressure casting'],
@@ -155,6 +155,32 @@ export const PROCESS_ALIASES = Object.freeze({
   'Zinc Plating': ['zinc plating', 'electroplating', 'galvanising', 'galvanizing', 'zinc nickel', 'zinc-nickel', 'znni', 'anodising', 'anodizing', 'hard anodising', 'chrome plating', 'nickel plating', 'electroless nickel', 'phosphating', 'zinc phosphate', 'passivation', 'chromating', 'dacromet', 'geomet', 'mechanical plating'],
   'Grinding (finish)': ['grinding', 'surface grinding', 'cylindrical grinding', 'centreless grinding', 'centerless grinding', 'gear grinding', 'lapping', 'superfinishing', 'polishing', 'shot blasting', 'shot peening', 'bead blasting', 'vibratory finishing', 'tumbling'],
   'Washing & Final Inspection': ['washing', 'cleaning', 'final inspection', 'leak test', 'cmm inspection', 'end of line test', 'degreasing'],
+});
+
+/**
+ * ALIASES THAT ARE A DIFFERENT PROCESS, priced on the nearest model.
+ *
+ * The table above is a covering map: it lets someone type "clinching" and get
+ * a price. For pricing ONE part that is a fair approximation, and it stays. It
+ * is not fair in a COMPARISON whose subject is exactly the difference the
+ * approximation erases — "SPR replaces spot welds" was priced as MIG welding
+ * against spot welding, and "adhesive bonding replaces MIG" as MIG against MIG
+ * (Analyze review, 29 Sept 2026). Listed here, per catalogue key, are the
+ * aliases that name another process rather than another word for this one, so
+ * a comparison can decline instead of answering a different question.
+ * Synonyms (hpdc, gmaw, fineblanking) are deliberately absent.
+ */
+export const PROCESS_STAND_INS = Object.freeze({
+  'MIG Welding Assembly': ['tig welding', 'gtaw', 'laser welding', 'laser weld', 'remote laser welding', 'friction stir welding', 'fsw', 'laser brazing', 'brazing', 'projection welding', 'ultrasonic welding', 'clinching', 'self piercing rivet', 'self-piercing rivet', 'spr', 'riveting', 'rivet', 'flow drill screw', 'fds', 'adhesive bonding', 'structural bonding', 'weld bonding'],
+  'Zinc Plating': ['galvanising', 'galvanizing', 'anodising', 'anodizing', 'hard anodising', 'chrome plating', 'nickel plating', 'electroless nickel', 'phosphating', 'zinc phosphate', 'passivation', 'chromating', 'dacromet', 'geomet', 'mechanical plating'],
+  'Grinding (finish)': ['lapping', 'superfinishing', 'polishing', 'shot blasting', 'shot peening', 'bead blasting', 'vibratory finishing', 'tumbling'],
+  'Vacuum Pressure Impregnation (VPI)': ['trickle impregnation', 'varnishing', 'potting'],
+  'Powder Coating': ['painting', 'wet paint', 'base coat clear coat', 'topcoat', 'primer coat'],
+  'Rubber Moulding (Compression/Injection)': ['compression moulding'],
+  'Composite Layup (RTM)': ['hand layup', 'prepreg layup', 'autoclave cure', 'compression moulding composite'],
+  'Sand Casting': ['lost foam'],
+  'Heat Treatment (batch)': ['induction hardening'],
+  'Washing & Final Inspection': ['leak test', 'cmm inspection', 'end of line test'],
 });
 
 const norm = (s) => String(s ?? '')
@@ -203,18 +229,24 @@ let _processIndex = null;
  * rate library that drops an entry cannot resolve to it.
  */
 export function aliasLookup(typed, index, available) {
+  return aliasMatch(typed, index, available)?.key ?? null;
+}
+
+/** As aliasLookup, but also says WHICH alias matched and whether it was the whole string. */
+export function aliasMatch(typed, index, available, { wholeOnly = false } = {}) {
   const t = norm(typed);
   if (!t) return null;
   for (const [alias, key] of index) {
     if (available && !available.has(key)) continue;
-    if (t === alias) return key;
+    if (t === alias) return { key, alias, whole: true };
   }
+  if (wholeOnly) return null;
   for (const [alias, key] of index) {
     if (available && !available.has(key)) continue;
     // Whole-token containment: "0.6 mm dp780 sheet" matches "dp780", but
     // "adp780x" does not match "dp780".
     const re = new RegExp(`(^|[^a-z0-9])${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z0-9]|$)`);
-    if (re.test(t)) return key;
+    if (re.test(t)) return { key, alias, whole: false };
   }
   return null;
 }
@@ -229,4 +261,17 @@ export function materialAlias(typed, materials) {
 export function processAlias(typed, processes) {
   _processIndex ||= buildIndex(PROCESS_ALIASES);
   return aliasLookup(typed, _processIndex, processes ? new Set(Object.keys(processes)) : null);
+}
+
+/**
+ * The alias match for a typed process: { key, alias, whole, standIn } or null.
+ * `standIn` is the alias when it names a different process priced on this
+ * key's model (PROCESS_STAND_INS).
+ */
+export function processAliasMatch(typed, processes, opts = {}) {
+  _processIndex ||= buildIndex(PROCESS_ALIASES);
+  const m = aliasMatch(typed, _processIndex, processes ? new Set(Object.keys(processes)) : null, opts);
+  if (!m) return null;
+  const standIn = (PROCESS_STAND_INS[m.key] || []).includes(m.alias) ? m.alias : null;
+  return { ...m, standIn };
 }

@@ -150,7 +150,7 @@ export interface CostReductionIdea {
     /** What the model itself wrote before the computed figure replaced it — the swap is never silent. */
     modelStated?: string | null;
   };
-  arithmetic?: { status: 'computed' | 'consistent' | 'mismatch' | 'partial' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string; unpricedTerms?: string[];
+  arithmetic?: { status: 'computed' | 'consistent' | 'mismatch' | 'partial' | 'unparsed'; statedEur: { lo: number; hi: number; mid: number } | null; computedEur: number | null; deltaPct: number | null; basis: string | null; note: string; unpricedTerms?: string[]; unpricedDeductions?: string[]; bound?: 'floor' | 'ceiling';
     /** Second opinion: does the idea's own cost bridge reach the same figure?
      *  Read asymmetrically — agreement is evidence, disagreement is not (the
      *  prose bridge parses with a known low bias). */

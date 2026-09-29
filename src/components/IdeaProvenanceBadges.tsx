@@ -115,7 +115,9 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
                other could never have been wrong. */
             idea.arithmetic.status === 'computed' ? 'Computed, not claimed'
               : idea.arithmetic.status === 'consistent' ? 'Sums check'
-              : idea.arithmetic.status === 'partial' ? 'Sums are a floor'
+              // Partial is a floor (an unpriced saving) OR a ceiling (an unpriced
+              // deduction) — calling both a floor told the reader the wrong direction.
+              : idea.arithmetic.status === 'partial' ? (idea.arithmetic.bound === 'ceiling' ? 'Sums are a ceiling' : 'Sums are a floor')
                 : `Sums off ${idea.arithmetic.deltaPct! > 0 ? '+' : ''}${idea.arithmetic.deltaPct}%`
           }
         </Badge>

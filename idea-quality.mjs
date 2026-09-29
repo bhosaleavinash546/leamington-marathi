@@ -172,14 +172,28 @@ export function clusterIdeas(docs, { threshold = 0.45, minSize = 3, maxClusters 
  */
 export function parseAnnualValueMid(val) {
   if (!val || typeof val !== 'string') return 0;
-  const clean = val.toLowerCase().replace(/[€£$¥₹,\s%]/g, '');
-  const parts = clean.split(/[–—-]/).filter(Boolean);
-  const parseOne = (s) => {
-    const m = s.match(/([\d.]+)\s*([mk]?)/);
-    if (!m) return 0;
-    return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
-  };
-  return parts.length >= 2 ? (parseOne(parts[0]) + parseOne(parts[1])) / 2 : parseOne(clean);
+  // The FIRST money figure, with its range and its sign — not every number in
+  // the string. Splitting on every hyphen averaged "€0.4M ex-works at
+  // 10,000,000 units/yr" with the VOLUME (€5.2M), read "Net −€0.6M–€1.2M part
+  // cost" as a €0.9M saving, and returned NaN for "cost-neutral" (Analyze
+  // review, 29 Sept 2026: 3 of 127 live claims). A minus directly before the
+  // currency symbol is a sign; a dash between two figures is a range.
+  const t = val.replace(/(\d),(?=\d{3}(?!\d))/g, '$1');
+  const SYM = '[€£$¥₹]';
+  const NUM = '(\\d+(?:\\.\\d+)?)\\s?([kKmM](?![a-zA-Z]))?';
+  const re = new RegExp(`(^|[\\s(~:])([-−]\\s?)?${SYM}\\s?${NUM}(?:\\s?(?:[-–—]|to)\\s?([-−]\\s?)?${SYM}?\\s?${NUM})?`);
+  let m = re.exec(t);
+  // No currency symbol at all: a figure carrying a K/M suffix ("350K–650K").
+  if (!m) m = new RegExp(`(^|[\\s(~:])([-−]\\s?)?(\\d+(?:\\.\\d+)?)\\s?([kKmM])(?![a-zA-Z])(?:\\s?(?:[-–—]|to)\\s?([-−]\\s?)?${NUM})?`).exec(t);
+  if (!m) return 0;
+  const sc = (s) => (!s ? 1 : /k/i.test(s) ? 1e3 : 1e6);
+  const aSuf = m[4] || m[7], bSuf = m[7] || m[4];
+  const a = parseFloat(m[3]) * sc(aSuf) * (m[2] ? -1 : 1);
+  if (m[6] == null) return Number.isFinite(a) ? a : 0;
+  const bSign = m[5] ? -1 : m[2] && !m[5] ? -1 : 1;
+  const b = parseFloat(m[6]) * sc(bSuf) * bSign;
+  const mid = (a + b) / 2;
+  return Number.isFinite(mid) ? mid : 0;
 }
 
 /**
@@ -206,8 +220,22 @@ export function rankIdeas(ideas) {
   // the mean precisely because it is the inflated outliers we are guarding
   // against, and they would drag a mean up with them.
   const CLAIM_CAP_X = 3;
+  // THE MATHS OUTRANKS THE ASSERTION (Analyze review, 29 Sept 2026). When an
+  // idea's own calculation basis multiplies out to LESS than the annual value
+  // it claims, the claim is the model's assertion and the product is its
+  // arithmetic — and the house rule is math for numbers. Ranking on the claim
+  // with a ×0.7 discount left two ideas at #1 and #2 of a live lamination run
+  // whose bases came to 1/7 and 1/20 of what they claimed. An OVERSHOOT (basis
+  // above the claim) keeps the claim: it is the conservative figure.
+  const rankedValue = (i) => {
+    const claimed = parseAnnualValueMid(i.costSavingPotential?.annualValue);
+    const a = i.arithmetic;
+    return a?.status === 'mismatch' && Number.isFinite(a.computedEur) && a.computedEur >= 0 && a.computedEur < claimed
+      ? { value: a.computedEur, claimed, fromBasis: true }
+      : { value: claimed, claimed, fromBasis: false };
+  };
   const stated = list
-    .map(i => parseAnnualValueMid(i.costSavingPotential?.annualValue))
+    .map(i => rankedValue(i).value)
     .filter(v => v > 0)
     .sort((a, b) => a - b);
   const median = stated.length
@@ -219,10 +247,14 @@ export function rankIdeas(ideas) {
 
   for (const idea of list) {
     const csp = idea.costSavingPotential || {};
-    const claimed = parseAnnualValueMid(csp.annualValue);
+    const rv = rankedValue(idea);
+    const claimed = rv.value;
     const annualMid = Math.min(claimed, claimCap);
     const basis = [];
+    const fmtV = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : `${Math.round(n / 1e3)}K`);
+    if (rv.fromBasis) basis.push(`ranked on its own basis €${fmtV(rv.value)}, not the claimed €${fmtV(rv.claimed)} — the claim does not multiply out`);
     if (!annualMid) basis.push('no annual value stated — ranked by quality only');
+    if (annualMid < 0) basis.push('the idea states a net cost INCREASE — ranked below every saving');
     if (claimed > annualMid) {
       const fmt = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : `${Math.round(n / 1e3)}K`);
       basis.push(`claim ${fmt(claimed)} capped at ${CLAIM_CAP_X}x batch median (${fmt(annualMid)}) — unverified figure`);
@@ -252,14 +284,19 @@ export function rankIdeas(ideas) {
     // up to 50% costs ×0.85, a larger one ×0.7. "unparsed" is not a verdict
     // and is neutral.
     const arith = idea.arithmetic;
-    const arithFactor = arith?.status === 'mismatch' ? (Math.abs(arith.deltaPct) <= 50 ? 0.85 : 0.7) : 1;
+    // With the base already corrected to the basis on a shortfall, the factor
+    // is only the price of stating two different numbers — one light touch,
+    // not a second discount on the size of the error.
+    const arithFactor = arith?.status === 'mismatch' ? 0.85 : 1;
     if (arith?.status === 'mismatch') basis.push(`stated basis multiplies out ${arith.deltaPct > 0 ? '+' : ''}${arith.deltaPct}% vs claim ×${arithFactor}`);
     if (arith?.status === 'consistent') basis.push('stated basis multiplies out');
     // `partial` is NEUTRAL and must say so. It means the basis names a term the
     // parser could not price, so the computed figure is a floor — the reader's
     // gap, not the model's error. Silence here would leave a visible badge with
     // no counterpart in the rank explanation.
-    if (arith?.status === 'partial') basis.push('stated basis is a floor — an unpriced term named ×1');
+    if (arith?.status === 'partial') basis.push(arith.bound === 'ceiling'
+      ? 'stated basis is a ceiling — an unpriced deduction named ×1'
+      : 'stated basis is a floor — an unpriced term named ×1');
 
     const evidenceFactor = idea.evidenceUnverified === false ? 1.1 : idea.evidenceUnverified === true ? 0.9 : 1;
     if (idea.evidenceUnverified === false) basis.push('search-backed evidence ×1.1');

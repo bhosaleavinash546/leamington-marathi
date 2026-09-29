@@ -4342,3 +4342,38 @@ evaluated ÷ all rules (`ruleDepthPct`).
 returns the sentence saying so. The kernel's six stock densities are only a
 labelled fallback. Previously every plastic was 1.05 g/cm³ (POM −26%) and 25 of
 69 materials got no mass, while the page claimed "catalogue density".
+
+## 97. A comparison does not rest on a stand-in process
+
+The process alias table is a covering map. "Clinching" prices on the MIG
+welding model and "potting" on VPI, which is fine for costing one part.
+`PROCESS_STAND_INS` names the aliases that are a different process rather than
+another word for the same one. When the step an idea changes resolves through
+one, the engine check declines with the reason instead of confirming or
+contradicting a different move. Keyword-regex guesses count as stand-ins. The
+resolver also tries the whole string before splitting a route on "+", so
+catalogue names containing "+" resolve. (docs/ANALYZE-REVIEW-2026-09-29.md)
+
+## 98. Rank on the arithmetic when the claim does not multiply out
+
+When an idea's calculation basis multiplies out to less than its claimed annual
+value, the rank uses the basis figure and says so. The inconsistency costs one
+×0.85. An overshoot keeps the (lower) claim. The value reader takes the first
+money figure with its range and sign, so a stated cost increase ranks below
+every saving. The server and export readers are one implementation, asserted
+equal.
+
+## 99. Prior art is judged on the idea's own title
+
+The marketplace query no longer appends the system name. On 127 live ideas it
+carried 29 of 115 labels by itself. The system is generation context, not
+evidence of a duplicate. `priorArtFor` is the one rule, used by the labelling
+and by the deep pass's repair re-check.
+
+## 100. An unpriced deduction makes the arithmetic a ceiling
+
+"Net of X", "less X" or "minus X" with no figure means the basis multiplies out
+to a figure *before* a named cost. An overshoot is then `partial` with
+`bound: 'ceiling'`, mirroring the unpriced-saving floor. A shortfall stays a
+mismatch. A "share of" a bucket with no share stated is an unpriced term, not
+the whole bucket.

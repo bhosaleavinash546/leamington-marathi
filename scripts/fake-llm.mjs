@@ -61,6 +61,29 @@ const ideas = [
     engineering: { mechanism: 'Remove unused current margin.', specDeltas: 'Die per switch 4 → 3.', validationPlan: 'Short-circuit and drive-cycle thermal validation.', dfmImplications: 'None.', costBridge: 'Die cost.' } },
 ];
 
+// REPLAY MODE. FAKE_LLM_IDEAS_FILE=benchmark/prism-runs/hood.json serves a
+// saved LIVE run's ideas instead of the synthetic set, with every pipeline stamp
+// removed, so /api/analyze re-derives each verdict from what the model actually
+// wrote. That is how a review re-tests the deterministic stages on real text
+// without paying for a new run (Analyze review, 29 Sept 2026). The model's
+// engine-check requests were not saved in the older runs, so those ideas come
+// back with the "no request" reason — which is itself a stated limitation.
+const PIPELINE_STAMPS = ['qualityScore', 'validationFlags', 'evidenceUnverified', 'engineCheck', 'engineCheckReason', 'engineCheckAlsoTried',
+  'priorArt', 'rank', 'mergedTitles', 'arithmetic', 'depth', 'grade', 'critiques', 'refined', 'tasteMatch', 'eloRating', 'eloFactor'];
+if (process.env.FAKE_LLM_IDEAS_FILE) {
+  const { readFileSync } = await import('node:fs');
+  const saved = JSON.parse(readFileSync(process.env.FAKE_LLM_IDEAS_FILE, 'utf8'));
+  const list = Array.isArray(saved) ? saved : saved.ideas;
+  ideas.splice(0, ideas.length, ...list.map(i => {
+    const o = { ...i };
+    for (const k of PIPELINE_STAMPS) delete o[k];
+    if (o.engineCheckInput && !o.engineCheckRequest) o.engineCheckRequest = o.engineCheckInput;
+    delete o.engineCheckInput;
+    return o;
+  }));
+  console.log(`[fake-llm] replaying ${ideas.length} saved ideas from ${process.env.FAKE_LLM_IDEAS_FILE}`);
+}
+
 const write = (res, ev, data) => { if (!res.destroyed) res.write(`event: ${ev}\ndata: ${JSON.stringify(data)}\n\n`); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 

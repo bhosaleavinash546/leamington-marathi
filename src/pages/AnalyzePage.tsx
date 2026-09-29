@@ -523,9 +523,9 @@ export default function AnalyzePage() {
 
                 {/* Subassembly */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Subassembly <span className="text-gold-400">*</span></label>
+                  <label htmlFor="an-subassembly" className="block text-sm font-medium text-slate-300 mb-2">Subassembly <span className="text-gold-400">*</span></label>
                   <div className="relative">
-                    <select
+                    <select id="an-subassembly"
                       value={subassemblyId}
                       onChange={e => { setSubassemblyId(e.target.value); setPartId(''); }}
                       className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-gold-500/50"
@@ -543,9 +543,9 @@ export default function AnalyzePage() {
                 {/* Part */}
                 {selectedSub && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Specific Part <span className="text-slate-500">(optional — leave blank for whole subassembly)</span></label>
+                    <label htmlFor="an-part" className="block text-sm font-medium text-slate-300 mb-2">Specific Part <span className="text-slate-500">(optional — leave blank for whole subassembly)</span></label>
                     <div className="relative">
-                      <select
+                      <select id="an-part"
                         value={partId}
                         onChange={e => setPartId(e.target.value)}
                         className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-gold-500/50"
@@ -563,7 +563,7 @@ export default function AnalyzePage() {
 
                 {/* Vehicle Type */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="an-vehicle" className="block text-sm font-medium text-slate-300 mb-2">
                     Vehicle Type & Drivetrain
                     {propulsionRestriction && (
                       <span className="ml-2 text-xs font-normal text-amber-400/80">
@@ -574,7 +574,7 @@ export default function AnalyzePage() {
                     )}
                   </label>
                   <div className="relative">
-                    <select
+                    <select id="an-vehicle"
                       value={vehicleType}
                       onChange={e => setVehicleType(e.target.value)}
                       className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-gold-500/50"
@@ -596,9 +596,9 @@ export default function AnalyzePage() {
                 {/* Body Style + Programme fields */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Body Style</label>
+                    <label htmlFor="an-body" className="block text-sm font-medium text-slate-300 mb-2">Body Style</label>
                     <div className="relative">
-                      <select value={bodyStyle} onChange={e => setBodyStyle(e.target.value as BodyStyle)}
+                      <select id="an-body" value={bodyStyle} onChange={e => setBodyStyle(e.target.value as BodyStyle)}
                         className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-gold-500/50">
                         {BODY_STYLES.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
                       </select>
@@ -606,8 +606,8 @@ export default function AnalyzePage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Annual Volume <span className="text-slate-500 font-normal">(units/yr)</span></label>
-                    <input
+                    <label htmlFor="an-volume" className="block text-sm font-medium text-slate-300 mb-2">Annual Volume <span className="text-slate-500 font-normal">(units/yr)</span></label>
+                    <input id="an-volume"
                       type="number"
                       value={annualVolume}
                       onChange={e => setAnnualVolume(Math.max(1000, parseInt(e.target.value) || 80000))}
@@ -626,9 +626,9 @@ export default function AnalyzePage() {
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1">Plant Region</label>
+                      <label htmlFor="an-region" className="block text-xs text-slate-500 mb-1">Plant Region</label>
                       <div className="relative">
-                        <select value={plantRegion} onChange={e => setPlantRegion(e.target.value as PlantRegion)}
+                        <select id="an-region" value={plantRegion} onChange={e => setPlantRegion(e.target.value as PlantRegion)}
                           className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/50">
                           {PLANT_REGIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                         </select>
@@ -636,9 +636,9 @@ export default function AnalyzePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1">Currency</label>
+                      <label htmlFor="an-currency" className="block text-xs text-slate-500 mb-1">Currency</label>
                       <div className="relative">
-                        <select value={currency} onChange={e => setCurrency(e.target.value as Currency)}
+                        <select id="an-currency" value={currency} onChange={e => setCurrency(e.target.value as Currency)}
                           className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/50">
                           {CURRENCIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                         </select>
@@ -646,9 +646,9 @@ export default function AnalyzePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs text-slate-500 mb-1">Programme (years)</label>
+                      <label htmlFor="an-programme" className="block text-xs text-slate-500 mb-1">Programme (years)</label>
                       <div className="relative">
-                        <select value={programmeLengthYears} onChange={e => setProgrammeLengthYears(parseInt(e.target.value))}
+                        <select id="an-programme" value={programmeLengthYears} onChange={e => setProgrammeLengthYears(parseInt(e.target.value))}
                           className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/50">
                           {[2,3,4,5,6,7].map(y => <option key={y} value={y}>{y} years</option>)}
                         </select>
@@ -663,9 +663,9 @@ export default function AnalyzePage() {
 
                 {/* Additional context */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Engineering Context <span className="text-slate-500">(optional but recommended)</span></label>
+                  <label htmlFor="an-context" className="block text-sm font-medium text-slate-300 mb-2">Engineering Context <span className="text-slate-500">(optional but recommended)</span></label>
                   <div className="relative">
-                    <textarea
+                    <textarea id="an-context"
                       value={additionalContext}
                       onChange={e => setAdditionalContext(e.target.value)}
                       placeholder="e.g. Current part is DP980 steel 1.8mm, 220K units/year, target 12% cost reduction, supplier is Gestamp, concerns about rear-pole intrusion under Euro NCAP 2026 protocols..."

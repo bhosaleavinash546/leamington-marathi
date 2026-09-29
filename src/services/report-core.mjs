@@ -30,14 +30,28 @@
  */
 export function parseMoney(val) {
   if (!val || typeof val !== 'string') return 0;
-  const clean = val.toLowerCase().replace(/[€£$¥₹,\s%]/g, '');
-  const parts = clean.split(/[–—-]/).filter(Boolean);
-  const one = (s) => {
-    const m = s.match(/([\d.]+)\s*([mk]?)/);
-    if (!m) return 0;
-    return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
-  };
-  return parts.length >= 2 ? (one(parts[0]) + one(parts[1])) / 2 : one(clean);
+  // The FIRST money figure, with its range and its sign — not every number in
+  // the string. Splitting on every hyphen averaged "€0.4M ex-works at
+  // 10,000,000 units/yr" with the VOLUME (€5.2M), read "Net −€0.6M–€1.2M part
+  // cost" as a €0.9M saving, and returned NaN for "cost-neutral" (Analyze
+  // review, 29 Sept 2026: 3 of 127 live claims). A minus directly before the
+  // currency symbol is a sign; a dash between two figures is a range.
+  const t = val.replace(/(\d),(?=\d{3}(?!\d))/g, '$1');
+  const SYM = '[€£$¥₹]';
+  const NUM = '(\\d+(?:\\.\\d+)?)\\s?([kKmM](?![a-zA-Z]))?';
+  const re = new RegExp(`(^|[\\s(~:])([-−]\\s?)?${SYM}\\s?${NUM}(?:\\s?(?:[-–—]|to)\\s?([-−]\\s?)?${SYM}?\\s?${NUM})?`);
+  let m = re.exec(t);
+  // No currency symbol at all: a figure carrying a K/M suffix ("350K–650K").
+  if (!m) m = new RegExp(`(^|[\\s(~:])([-−]\\s?)?(\\d+(?:\\.\\d+)?)\\s?([kKmM])(?![a-zA-Z])(?:\\s?(?:[-–—]|to)\\s?([-−]\\s?)?${NUM})?`).exec(t);
+  if (!m) return 0;
+  const sc = (s) => (!s ? 1 : /k/i.test(s) ? 1e3 : 1e6);
+  const aSuf = m[4] || m[7], bSuf = m[7] || m[4];
+  const a = parseFloat(m[3]) * sc(aSuf) * (m[2] ? -1 : 1);
+  if (m[6] == null) return Number.isFinite(a) ? a : 0;
+  const bSign = m[5] ? -1 : m[2] && !m[5] ? -1 : 1;
+  const b = parseFloat(m[6]) * sc(bSuf) * bSign;
+  const mid = (a + b) / 2;
+  return Number.isFinite(mid) ? mid : 0;
 }
 
 /**

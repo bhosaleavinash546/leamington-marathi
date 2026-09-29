@@ -69,10 +69,53 @@ test('a real mismatch is reported with a signed delta against the nearest bound'
   const b = checkArithmetic(idea('€250K–€500K at 10,000,000 units/yr', '2-4% stack length reduction on €0.10 material [E12] plus copper saving at motor level; ×10M lam'));
   assert.equal(b.status, 'partial');
   assert.equal(b.deltaPct, -88);
-  // Above: 50% of €214.68 × 200k = €21.5M against €6.0M–€10.8M.
-  const c = checkArithmetic(idea('€6.0M–€10.8M at 200,000 units/yr', '40-60% NdFeB substitution to ferrite on €214.68 line, net of larger lamination/copper, × 200,000'));
+  // Above: 50% of €214.68 × 200k = €21.5M against €6.0M–€10.8M, with nothing
+  // left unpriced — an overshoot no reading explains.
+  const c = checkArithmetic(idea('€6.0M–€10.8M at 200,000 units/yr', '40-60% NdFeB substitution to ferrite on €214.68 line × 200,000'));
   assert.equal(c.status, 'mismatch');
   assert.ok(c.deltaPct > 0);
+});
+
+test('an unpriced DEDUCTION makes the figure a ceiling, so an overshoot is partial (Analyze review 2026-09-29)', () => {
+  // The same basis, as the model actually wrote it: "net of larger
+  // lamination/copper" is a cost it names and does not price. €21.5M is the
+  // figure BEFORE that cost, so a stated €6–10.8M below it is the deduction.
+  const c = checkArithmetic(idea('€6.0M–€10.8M at 200,000 units/yr', '40-60% NdFeB substitution to ferrite on €214.68 line, net of larger lamination/copper, × 200,000'));
+  assert.equal(c.status, 'partial');
+  assert.equal(c.bound, 'ceiling');
+  assert.equal(c.computedEur, 21468000, 'the priced part is unchanged — only the verdict about it changes');
+  assert.match(c.note, /CEILING/);
+  // A deduction cannot explain a SHORTFALL: that stays a mismatch.
+  const d = checkArithmetic(idea('€10K–€30K at 60,000 units/yr', 'realistic €0.10–0.18/part × 60,000, net of logistics'));
+  assert.equal(d.status, 'mismatch');
+  assert.ok(d.deltaPct < 0);
+});
+
+test('a SHARE of a bucket with no share stated is unpriced, not the whole bucket', () => {
+  // Read as the whole €0.66 tooling bucket, this was "consistent" at €39,600.
+  const a = checkArithmetic(idea('€20K–€45K at 60,000 units/yr', 'Laser route avoids share of tooling €0.66/part (E15) in launch/change tranches + kills 61% overbuy (E16) recovering ~€0.05/part material; fineblank removes deburr labour'));
+  assert.notEqual(a.status, 'consistent');
+  assert.ok(a.computedEur < 39600);
+  assert.ok((a.unpricedTerms || []).some(t => /share of €0\.66/.test(t)));
+  // A stated percentage applied to the share still prices it.
+  const b = checkArithmetic(idea('€500K–€1.5M at 10,000,000 units/yr', 'Marketplace precedent 24% lamination cost reduction insourcing; applied to material+process+commercial portion of €0.29'));
+  assert.equal(b.status, 'consistent');
+  assert.equal(b.computedEur, 696000);
+});
+
+test('a €/kg figure in a note does not refuse a clean product chain', () => {
+  const a = checkArithmetic(idea('€3.4M–€5.2M at 200,000 units/yr', '€214.68 magnet line × ~10% mass reduction × 200,000 (NdFeB N42 at 92 €/kg)'));
+  assert.equal(a.status, 'consistent');
+  assert.equal(a.computedEur, 4293600);
+  // …while a €/kg price with genuinely no mass is still refused.
+  const b = checkArithmetic(idea('€120K–€300K at 10,000,000 units/yr', 'stack shortens ~3-5%, trimming steel at 3.4 EUR/kg × 10M'));
+  assert.equal(b.status, 'unparsed');
+});
+
+test('"inside the stated range" is only said of a figure inside it', () => {
+  const a = checkArithmetic(idea('€6K–€11K at 60,000 units/yr', '~€0.21/part × 60,000'));
+  assert.equal(a.status, 'consistent');
+  assert.match(a.note, /within 15% of the stated/);
 });
 
 test('context figures (baseline, gap, "most of €X", "vs") are not counted as savings', () => {

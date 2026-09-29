@@ -101,7 +101,15 @@ export function findMoney(s) {
 /** Range of the FIRST money figure in a string (lo/hi/mid), or null. */
 export function parseMoneyRange(s) {
   const f = findMoney(s);
-  return f.length ? { lo: f[0].lo, hi: f[0].hi, mid: f[0].value } : null;
+  if (!f.length) return null;
+  // A minus directly before the symbol is a SIGN: "Net −€0.6M–€1.2M part cost"
+  // is a cost increase, and reading it as a €0.6–1.2M saving handed the
+  // arithmetic check a claim the idea never made (Analyze review, 2026-09-29).
+  const before = String(s).slice(Math.max(0, f[0].index - 2), f[0].index);
+  if (/(^|[\s(~:])[-−]\s?$/.test(before) || /^[-−]\s?$/.test(before)) {
+    return { lo: -f[0].hi, hi: -f[0].lo, mid: -f[0].value };
+  }
+  return { lo: f[0].lo, hi: f[0].hi, mid: f[0].value };
 }
 
 /** Annual volume stated in a text, or null. */
@@ -222,7 +230,11 @@ function clauseTerm(clause) {
   // Product chain
   const tokens = c.split(/\s*×\s*|\s[x*]\s/i).map(t => t.trim()).filter(Boolean);
   if (tokens.length >= 2 && money.length) {
-    const chainHasPerKg = /\/\s?kg/i.test(c);
+    // A €/kg PRICE in the chain — a money figure immediately followed by /kg.
+    // Any "/kg" anywhere used to count, so a parenthetical "(NdFeB N42 at
+    // 92 €/kg)" beside a clean "€214.68 × 10% × 200,000" refused the whole
+    // clause for want of a mass (Analyze review, 29 Sept 2026).
+    const chainHasPerKg = findMoney(c).some(m => /^\s*\/\s?kg/i.test(c.slice(m.index + m.raw.length)));
     let product = 1, hasVolume = false, labels = [], usable = 0, sawMass = false;
     for (const tok of tokens) {
       const ct = chainToken(tok, chainHasPerKg);
@@ -261,17 +273,28 @@ function clauseTerm(clause) {
     const bucketLead = (x) => /(?:material|machine|setup|tooling|labour|labor|overhead|logistics|finishing|conversion|scrap|coating)\s*(?:line|bucket)?\s*~?$/i.test(c.slice(Math.max(0, x.index - 16), x.index));
     // "(E12 tooling €0.01/part)" is the bucket, not the saving — a per-unit
     // figure led by a bucket word only counts when a saving word sits by it.
-    const usable = scored.filter(s => !(bucketLead(s.x) && !s.saving));
+    // "avoids SHARE OF tooling €0.66/part" names the bucket and leaves the
+    // share unstated. Reading it as the saving turned an unpriced claim into a
+    // "consistent" €39,600 (Analyze review, 29 Sept 2026). The figure is the
+    // bucket; the saving is an unpriced term.
+    const shareLead = (x) => /\b(?:share|portion|fraction|part)\s+of\s+(?:the\s+)?(?:[a-z/-]+\s+){0,3}~?$/i.test(c.slice(Math.max(0, x.index - 50), x.index));
+    const shares = scored.filter(s => shareLead(s.x));
+    const usable = scored.filter(s => !(bucketLead(s.x) && !s.saving) && !shareLead(s.x));
+    // A share with no percentage in reach is unpriced; a stated percentage
+    // elsewhere in the basis ("24% … applied to the portion of €0.29") still
+    // applies to it, so it travels as context and parseBasis decides.
+    if (shares.length && !usable.length) return { context: shares[0].x.value, shareOf: `share of ${shares[0].x.raw} (share not stated)` };
     const best = usable.find(s => s.perUnit && s.saving) || usable.find(s => s.perUnit) || usable[0];
     if (!best) return { context: scored[0].x.value };
+    const shareNote = shares.length ? { unpricedAlso: `share of ${shares[0].x.raw} (share not stated)` } : {};
     const m = best.x;
     if (/^\s*\/\s?kg/.test(c.slice(m.index + m.raw.length))) return { refused: 'a €/kg price with no mass stated' };
     const lead = c.slice(Math.max(0, m.index - 14), m.index);
     const perUnit = PER_UNIT_RE.test(c);
     const isContext = CONTEXT_LEAD_RE.test(lead) || (CONTEXT_RE.test(c) && !(best.perUnit && best.saving) && !SAVING_RE.test(c));
     if (isContext) return { context: m.value };
-    if (m.value >= 1000) return perYear ? { value: m.value * halved, perYear: true, how: m.raw } : { refused: `${m.raw} has no stated period` };
-    return { value: m.value * halved, perYear: false, how: m.raw + (perUnit ? '' : ' (read as per unit)') };
+    if (m.value >= 1000) return perYear ? { value: m.value * halved, perYear: true, how: m.raw, ...shareNote } : { refused: `${m.raw} has no stated period` };
+    return { value: m.value * halved, perYear: false, how: m.raw + (perUnit ? '' : ' (read as per unit)'), ...shareNote };
   }
   return null;
 }
@@ -292,13 +315,21 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
   // reduction of the running total. Mark the subtractive ones with a sign.
   const marked = b.replace(/\b(?:minus|less)\s+(?=~?[€£$]|~?\d+(?:\.\d+)?\s?(?:EUR|GBP|USD))/gi, ';NEG ');
   const clauses = marked.split(/;|\bplus\b/i).map(s => s.trim()).filter(Boolean);
-  const terms = [], refused = [], reductions = [], unpriced = [];
-  let perPart = 0, perYear = 0, anyPerPart = false, anyPerYear = false, context = null, pendingApply = null;
+  const terms = [], refused = [], reductions = [], unpriced = [], unpricedDeductions = [];
+  let perPart = 0, perYear = 0, anyPerPart = false, anyPerYear = false, context = null, pendingApply = null, pendingShare = null;
   for (const raw of clauses) {
     const neg = /^NEG\s/.test(raw);
     const c = neg ? raw.replace(/^NEG\s/, '') : raw;
     const t0 = clauseTerm(c);
     const t = t0 && neg && typeof t0.value === 'number' ? { ...t0, value: -t0.value, how: `− ${t0.how}` } : t0;
+    // AN UNPRICED DEDUCTION makes the computed figure a CEILING — the mirror of
+    // an unpriced saving making it a floor. "…× 15% × 200,000, net of end-plate
+    // tooling" names a cost it does not price, so a stated range BELOW the
+    // gross product is the model netting it off, not an arithmetic error. Two
+    // of the twelve mismatches on the live corpus were this shape.
+    const ded = /\b(?:net of|less|minus|offset by|net after)\s+(?!~?\s?[€£$\d])([a-z][a-z /&+-]{2,50})/i.exec(c);
+    if (ded && !findMoney(c.slice(ded.index)).length && !PCT_RE.test(c.slice(ded.index))) unpricedDeductions.push(ded[0].trim().slice(0, 60));
+    if (t0?.unpricedAlso) unpriced.push(t0.unpricedAlso);
     if (!t) {
       // A clause that NAMES a saving but carries no figure this parser can
       // price ("plus cross-variant NRE avoidance", "plus copper slot-fill
@@ -317,6 +348,7 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
     if (t.reduce != null) { reductions.push(t.reduce); continue; }
     if (t.context != null) {
       context = t.context;
+      if (t.shareOf && pendingApply == null) pendingShare = t.shareOf;
       if (pendingApply != null) { perPart += context * pendingApply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * pendingApply, perYear: false, how: `${Math.round(pendingApply * 100)}% × ${context}`   /* symbol-agnostic: the clause text alongside carries the currency the model wrote */ }); pendingApply = null; }
       continue;
     }
@@ -327,7 +359,7 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
       // per-part term at all, so the capture rate was parked in pendingApply and
       // silently never applied, leaving the ceiling as the answer.
       else if (anyPerYear && perYear > 0) { perYear *= t.apply; terms.push({ clause: c.slice(0, 80), value: null, perYear: true, how: `× ${Math.round(t.apply * 100)}%` }); }
-      else if (context != null) { perPart += context * t.apply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * t.apply, perYear: false, how: `${Math.round(t.apply * 100)}% × ${context}` }); }   /* symbol-agnostic, as above */
+      else if (context != null) { pendingShare = null; perPart += context * t.apply; anyPerPart = true; terms.push({ clause: c.slice(0, 80), value: context * t.apply, perYear: false, how: `${Math.round(t.apply * 100)}% × ${context}` }); }   /* symbol-agnostic, as above */
       else pendingApply = t.apply;
       continue;
     }
@@ -368,12 +400,13 @@ export function parseBasis(basis, { annualVolume = null, annualValueText = '' } 
     terms.push({ clause: c.slice(0, 80), value: t.value, perYear: t.perYear, how: t.how });
     if (t.perYear) { perYear += t.value; anyPerYear = true; } else { perPart += t.value; anyPerPart = true; }
   }
+  if (pendingShare) unpriced.push(pendingShare);
   if (!anyPerPart && !anyPerYear) return refused.length ? { computedEur: null, refused, terms, unpriced, form: `refused: ${refused[0]}` } : null;
   if (anyPerPart && volume == null) return { computedEur: null, refused, terms, unpriced, form: 'unit saving without a volume' };
   let computedEur = (anyPerPart ? perPart * volume : 0) + perYear;
   for (const r of reductions) computedEur *= (1 - r);
   const form = anyPerPart && anyPerYear ? 'unit × volume + annual total' : anyPerPart ? 'unit × volume' : 'annual total';
-  return { computedEur, volume, volumeSource, terms, refused, reductions, unpriced, form };
+  return { computedEur, volume, volumeSource, terms, refused, reductions, unpriced, unpricedDeductions, form };
 }
 
 /**
@@ -487,6 +520,9 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
   let status = deltaPct === 0 ? 'consistent' : 'mismatch';
   const unpriced = parsed.unpriced ?? [];
   if (status === 'mismatch' && deltaPct < 0 && unpriced.length) status = 'partial';
+  const deductions = parsed.unpricedDeductions ?? [];
+  const ceiling = status === 'mismatch' && deltaPct > 0 && deductions.length > 0;
+  if (ceiling) status = 'partial';
   const volTxt = parsed.volume != null ? `${parsed.volume.toLocaleString('en-GB')}/yr` : '';
   const how = parsed.terms
     .map(x => (x.value == null ? x.how : x.perYear ? x.how : `${x.how} × ${volTxt}`))
@@ -498,8 +534,13 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
     status, statedEur: stated, computedEur: Math.round(c), deltaPct,
     basis: `${parsed.form}: ${how}${red}${vol}`,
     ...(unpriced.length ? { unpricedTerms: unpriced } : {}),
+    ...(ceiling ? { unpricedDeductions: deductions, bound: 'ceiling' } : status === 'partial' ? { bound: 'floor' } : {}),
     note: status === 'consistent'
-      ? `basis multiplies out to ${fmt(c)}, inside the stated range`
+      // "Inside the stated range" was said of figures that were only inside the
+      // ±15% band around it (€12,600 against €6K–€11K).
+      ? `basis multiplies out to ${fmt(c)}, ${c >= stated.lo && c <= stated.hi ? 'inside the stated range' : `within ${ARITH_TOLERANCE_PCT}% of the stated ${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''}`}`
+      : ceiling
+        ? `the basis multiplies out to ${fmt(c)} BEFORE ${deductions.join('; ')}, which it names but does not price — a CEILING, so a stated ${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''} below it is the deduction, not an arithmetic error`
       : status === 'partial'
         ? `the priced part of the basis multiplies out to ${fmt(c)}, a FLOOR — ${unpriced.length} term${unpriced.length === 1 ? '' : 's'} named but not priced here (${unpriced.join('; ')}), which is enough to explain the ${Math.abs(deltaPct)}% gap to the stated ${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''}`
         : `basis multiplies out to ${fmt(c)}, ${Math.abs(deltaPct)}% ${deltaPct < 0 ? 'below the stated minimum' : 'above the stated maximum'} (${fmt(stated.lo)}${stated.hi !== stated.lo ? `–${fmt(stated.hi)}` : ''})`,
