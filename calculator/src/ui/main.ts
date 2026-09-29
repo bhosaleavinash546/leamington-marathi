@@ -593,6 +593,10 @@ function saveCalibrationRecords(records: CalibrationRecord[]): void {
 /** Log the current result's actual quoted/PO price so the model self-calibrates. */
 /** Headline should-cost of a PCB image result (BOM + fab + assembly), for calibration. */
 function pcbHeadlineTotal(r: PCBImageAnalysis): number {
+  // The headline is the selected country's total — the same number the PDF, the
+  // scenario baseline and (server-side) the confidence band use.
+  const sel = (r as unknown as { _selectedCountryBreakdown?: { totalPerBoard?: number } })._selectedCountryBreakdown;
+  if (sel && typeof sel.totalPerBoard === 'number' && sel.totalPerBoard > 0) return sel.totalPerBoard;
   const cb = (r as unknown as { _confidenceBand?: { totalMid?: number } })._confidenceBand;
   if (cb && typeof cb.totalMid === 'number') return cb.totalMid;
   const co = r.costEstimates;
@@ -7440,10 +7444,10 @@ function buildPCBImageUploadZone(): string {
               <option value="jp">Japan (Nagano) — Ultra-precision</option>
             </optgroup>
           </select>
-          <input type="number" id="pcb-order-qty" value="100" min="1" step="50"
-            style="width:70px;font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"
-            title="Order quantity (affects setup amortisation)"/>
-          <label style="font-size:0.68rem;color:var(--text-muted)">qty</label>
+          <input type="number" id="pcb-order-qty" value="10000" min="1" step="1000"
+            style="width:80px;font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"
+            title="Annual production volume — boards per year. Drives component price breaks, setup and freight. Not the teardown sample quantity."/>
+          <label for="pcb-order-qty" style="font-size:0.68rem;color:var(--text-muted)">boards / year</label>
         </div>
 
         <!-- Multi-image slots: Top, Bottom, + 3 Additional -->
@@ -7760,7 +7764,7 @@ async function analyzePCBImages(): Promise<void> {
     ?? sessionStorage.getItem('cv_api_key') ?? '';
 
   const selectedCountry = (document.getElementById('pcb-mfg-country') as HTMLSelectElement)?.value ?? 'cn';
-  const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
+  const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '10000';
 
   const formData = new FormData();
   // Balanced 1600 px by default (keeps image tokens ~3× lower); full 2576 px
@@ -8238,6 +8242,9 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     hdiStructure:             g('pcb-edit-hdi')?.value ?? r.boardSpec.hdiStructure,
     impedanceControlRequired: gBool('pcb-edit-impedance'),
     copperWeightOz:           gNum('pcb-edit-copper-oz', r.boardSpec.copperWeightOz),
+    // An edited copper weight replaces the per-layer list read from board data.
+    copperOzByLayer:          gNum('pcb-edit-copper-oz', r.boardSpec.copperWeightOz) !== r.boardSpec.copperWeightOz ? [] : r.boardSpec.copperOzByLayer,
+    boardWeightG:             r.boardSpec.boardWeightG,
     qualityGrade:             g('pcb-edit-quality')?.value ?? r.boardSpec.qualityGrade,
     panelUtilisation:         r.boardSpec.panelUtilisation,
   };
@@ -8279,7 +8286,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
     ?? sessionStorage.getItem('cv_api_key') ?? '';
 
   const selectedCountry = (document.getElementById('pcb-mfg-country') as HTMLSelectElement)?.value ?? 'cn';
-  const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
+  const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '10000';
 
   const formData = new FormData();
   // Same balanced-resolution rule as the initial analysis: 1600 px default,
@@ -8624,7 +8631,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       ${buildSingleSourceWarnings(r)}
       ${buildBOMCompletenessSection(r)}
       ${buildProgramPricingSection(r)}
-      ${buildBenchmarkComparison(r)}
+      ${buildBenchmarkComparison(r, pcbHeadlineTotal(r))}
       ${buildRevisionComparison(r)}
 
       ${buildVolumeCurveSection(r)}
@@ -9774,8 +9781,16 @@ function applyPCBImageToPCBA(): void {
     setF('pcba-bga-count', a.bgaCount);
     if (a.ictTimeSec > 0) setF('pcba-ict-time', a.ictTimeSec);
 
-    // PCB cost from fab estimate mid
-    setF('pcba-pcb-cost', r.costEstimates.pcbFabGBP.mid.toFixed(2));
+    // BARE board only. pcbFabGBP.mid is the stabilised fab ×1.3 PLUS the country's
+    // SMT/AOI/X-ray/ICT — the PCBA module adds its own assembly operations, so
+    // passing it counted assembly twice (and booked it as material).
+    const selBd = (r as unknown as { _selectedCountryBreakdown?: { pcbFabPerBoard?: number } })._selectedCountryBreakdown;
+    const bareBoard = selBd && Number(selBd.pcbFabPerBoard) > 0 ? Number(selBd.pcbFabPerBoard) : r.costEstimates.pcbFabGBP.mid;
+    setF('pcba-pcb-cost', bareBoard.toFixed(2));
+    // The BOM prices were already set for the photo page's annual volume; carry
+    // that volume across so the PCBA form does not rescale them to another one.
+    const pageVol = parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement | null)?.value ?? '', 10);
+    if (pageVol > 0) setF('annual-volume', pageVol);
 
     // Packaging & logistics: a populated board needs a moisture-barrier bag,
     // desiccant, an ESD tray and a labelled carton. The generic £0.15 / £0.25

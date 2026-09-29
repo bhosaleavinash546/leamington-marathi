@@ -994,7 +994,20 @@ export interface PCBCostInput {
   conformalCoatAreaCm2: number;
   totalBOMCostGBP: number;
   orderQuantity: number;
+  /** Copper per layer in oz (1 oz = 35 µm), top to bottom. Absent = 1 oz everywhere. */
+  copperOzByLayer?: number[];
+  /** Measured bare/assembled board weight, kg — replaces the area×layers estimate for freight. */
+  weightKg?: number;
 }
+
+/**
+ * Heavy-copper surcharge: Chinese fabricators add ~25 CNY/m² per layer for every
+ * 0.5 oz above 1 oz (Queen EMS / AIVON 2026 copper-weight guides — 2 oz on all
+ * layers lands at the quoted +20–40%). Converted at 29 Sep 2026 CNY 8.88/£ and
+ * scaled to other countries by their 2-layer base rate relative to China's.
+ */
+export const HEAVY_CU_CNY_PER_M2_PER_HALF_OZ = 25;
+const CNY_PER_GBP_2026_09 = 8.88;
 
 export interface PCBCountryCostBreakdown {
   countryId: string;
@@ -1016,6 +1029,8 @@ export interface PCBCountryCostBreakdown {
     pcbVias: number;
     pcbHDI: number;
     pcbSetup: number;
+    /** Heavy-copper surcharge (layers above 1 oz) */
+    pcbCopper: number;
     smtAssembly: number;
     thAssembly: number;
     aoi: number;
@@ -1118,7 +1133,13 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // Panelisation: setup is per panel-design; total boards = panels × boardsPerPanel,
   // but cost is divided by the actual ordered board quantity for per-board figure.
   const pcbSetup = r.setupCostGBP / Math.max(input.orderQuantity, 1);
-  const pcbFabPerBoard = pcbBase + pcbLayers + pcbSurface + pcbVias + pcbHDI + pcbImpedance + pcbSetup;
+  // Heavy copper, per layer. Copper weight used to be read, shown and editable but
+  // never costed — a 2 oz outer stack priced the same as 1 oz.
+  const halfOzSteps = (input.copperOzByLayer ?? []).reduce((t, oz) => t + Math.max(0, (Number(oz) || 1) - 1) / 0.5, 0);
+  const cnBase = PCB_COUNTRY_RATES.cn?.pcbFab.baseCostPerDm2_2L || r.baseCostPerDm2_2L;
+  const pcbCopper = halfOzSteps * (HEAVY_CU_CNY_PER_M2_PER_HALF_OZ / CNY_PER_GBP_2026_09)
+    * (boardAreaDm2 / 100) * wasteFactor * (r.baseCostPerDm2_2L / cnBase);
+  const pcbFabPerBoard = pcbBase + pcbLayers + pcbSurface + pcbVias + pcbHDI + pcbImpedance + pcbSetup + pcbCopper;
 
   // SMT Assembly — rate model: cost/placement = smtLineRatePerHr / 3600 CPH reference
   // Simplified: cost = placements × (rate / placements-per-hr)
@@ -1139,7 +1160,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // Logistics. Sea freight applies at volume (>= 2500 boards/order) where a
   // sea rate exists (audit fix: seaFreightPerKgGBP was defined but never used,
   // so bulk orders were costed at air rates).
-  const estWeightKg = Math.max(0.02, boardAreaDm2 * input.layers * 0.028);
+  // A measured weight wins (a 0.43 dm² 8-layer board is ~26 g; the old estimate
+  // below gave ~96 g).
+  const estWeightKg = input.weightKg && input.weightKg > 0 ? input.weightKg : Math.max(0.02, boardAreaDm2 * input.layers * 0.028);
   const useSea = input.orderQuantity >= 2500 && l.seaFreightPerKgGBP > 0;
   const freightRate = useSea ? l.seaFreightPerKgGBP : l.airFreightPerKgGBP;
   const freight = Math.max(l.minAirFreightGBP / Math.max(input.orderQuantity, 1),
@@ -1194,6 +1217,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       pcbVias: Math.round(pcbVias * 100) / 100,
       pcbHDI: Math.round(pcbHDI * 100) / 100,
       pcbSetup: Math.round(pcbSetup * 100) / 100,
+      pcbCopper: Math.round(pcbCopper * 100) / 100,
       smtAssembly: Math.round((smtAssembly + thAssembly + manualAssembly) * 100) / 100,
       thAssembly: Math.round(thAssembly * 100) / 100,
       aoi: Math.round((aoiCost + xrayCost + ictCost + confCost) * 100) / 100,

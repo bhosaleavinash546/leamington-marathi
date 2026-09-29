@@ -18,7 +18,7 @@ import {
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
-import { stabiliseBoardSpec, stableFabMid } from '../utils/pcb-boardspec-stabilise.js';
+import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
@@ -67,6 +67,29 @@ const HIGH_VALUE_COMP_TYPES = new Set(['ic_bga', 'ic_tqfp', 'ic_qfp', 'ic_qfn', 
 interface BOMLineForBand {
   qty: number; unitPriceGBP: number; lineConf: number;
   ocrExtracted: boolean; componentType?: string; partNumber?: string;
+}
+
+/**
+ * One total on every panel: rebase the confidence band on the headline country
+ * total (components + board + assembly + logistics/duty + energy + packaging +
+ * yield), keeping the band's own percentage spread. The band used to be
+ * components + (fab×1.3 + assembly) with no logistics, so the UI showed £54.23
+ * beside a £51.34 headline for the same board.
+ */
+export function anchorBandToHeadline<T extends {
+  bomCostLow: number; bomCostMid: number; bomCostHigh: number;
+  fabCostLow: number; fabCostMid: number; fabCostHigh: number;
+  totalLow: number; totalMid: number; totalHigh: number;
+}>(band: T | null, bd: { bomCostPerBoard: number; pcbFabPerBoard: number; assemblyPerBoard: number; totalPerBoard: number } | null): T | null {
+  if (!band || !bd || !(band.totalMid > 0)) return band;
+  const r = (x: number) => Math.round(x * 100) / 100;
+  const scale = (lo: number, mid: number, hi: number, newMid: number) =>
+    mid > 0 ? [r(lo / mid * newMid), r(newMid), r(hi / mid * newMid)] : [r(newMid), r(newMid), r(newMid)];
+  const [bl, bm, bh] = scale(band.bomCostLow, band.bomCostMid, band.bomCostHigh, bd.bomCostPerBoard);
+  const [fl, fm, fh] = scale(band.fabCostLow, band.fabCostMid, band.fabCostHigh, bd.pcbFabPerBoard + bd.assemblyPerBoard);
+  const other = bd.totalPerBoard - bm - fm;               // logistics, duty, energy, packaging, yield
+  return { ...band, bomCostLow: bl, bomCostMid: bm, bomCostHigh: bh, fabCostLow: fl, fabCostMid: fm, fabCostHigh: fh,
+    totalLow: r(bl + fl + other), totalMid: r(bd.totalPerBoard), totalHigh: r(bh + fh + other) };
 }
 
 function computeConfidenceBand(
@@ -202,13 +225,21 @@ const setCached = (key: string, payload: unknown): void => pcbCache.set(key, pay
 
 // ── Board sanity checks ────────────────────────────────────────────────────────
 interface SanityWarning { code: string; message: string; severity: 'warn' | 'error' }
-function runSanityChecks(
+export function runSanityChecks(
   boardSpec: Record<string, unknown>,
   assembly: Record<string, unknown>,
   bom: Array<Record<string, unknown>>,
   aiTotalBOM: number,
+  orderQty?: number,
 ): SanityWarning[] {
   const warnings: SanityWarning[] = [];
+  // The quantity is the ANNUAL production volume. A teardown sample's "Quantity 1"
+  // entered here prices the board as a prototype run (BOM ×8, setup ÷1, minimum
+  // freight ÷1) — say so rather than let it pass as a should-cost.
+  if (typeof orderQty === 'number' && orderQty < 100) {
+    warnings.push({ code: 'PROTOTYPE_VOLUME', severity: 'warn',
+      message: `Annual volume ${orderQty} is a prototype quantity — components, setup and freight are priced for ${orderQty} board(s). Enter the production volume per year for a should-cost.` });
+  }
   const widthMm = Number(boardSpec.widthMm) || 100;
   const heightMm = Number(boardSpec.heightMm) || 80;
   const areaCm2 = (widthMm * heightMm) / 100;
@@ -310,7 +341,7 @@ function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: nu
 }
 
 // ── Post-analysis automotive grade enforcement ────────────────────────────────
-function enforceAutomotiveGrading(
+export function enforceAutomotiveGrading(
   bom: Array<Record<string, unknown>>,
   domain: string,
 ): { bom: Array<Record<string, unknown>>; forcedCount: number } {
@@ -318,6 +349,14 @@ function enforceAutomotiveGrading(
   let forcedCount = 0;
   const updated = bom.map(line => {
     if (line.automotive === true) return line;
+    // Only a line the model EXPLICITLY priced as consumer grade is uplifted. A
+    // missing flag (the specialist prompt already demands automotive pricing) was
+    // multiplied ×2.5–3.5 on top of an automotive price, and so were parts read
+    // off the chip or live-priced, whose price is not a grade guess at all.
+    const unstated = line.automotive !== false || line.automotiveUnstated === true;
+    if (unstated || line.ocrExtracted === true || line.livePriced === true) {
+      return { ...line, automotive: true, automotiveGradeAssumed: unstated };
+    }
     const ct = String(line.componentType ?? '');
     const mult = ct.startsWith('ic_') || ct === 'power_module' ? 3.5
       : ct.startsWith('passive_') ? 2.5
@@ -509,7 +548,7 @@ interface AutomotiveAssemblyCost {
   standardAssemblyGBP: number;
   premiumPctOverStandard: number;
 }
-function computeAutomotiveAssemblyCost(
+export function computeAutomotiveAssemblyCost(
   assemblyData: Record<string, unknown>,
   asilLevel: ASILLevel,
   orderQty: number,
@@ -519,17 +558,25 @@ function computeAutomotiveAssemblyCost(
   const bgaCount = Number(assemblyData.bgaCount) || 0;
   const thJoints = Number(assemblyData.throughHoleJoints) || 0;
   const manualJoints = Number(assemblyData.manualJoints) || 0;
-  const baseAssemblyGBP = countryAssemblyPerBoard > 0
+  // The country assembly figure already contains SMT, AOI, X-ray and ICT. The panel
+  // used to add a flat prototype X-ray (£8 + £1.2/BGA → £10.40 a board at 250k),
+  // £0.80 serialisation and burn-in over 200 boards a shift on top of it.
+  const haveCountry = countryAssemblyPerBoard > 0;
+  const baseAssemblyGBP = haveCountry
     ? countryAssemblyPerBoard
     : smtPlacements * 0.018 + thJoints * 0.025 + manualJoints * 0.045;
   const standardAssemblyGBP = baseAssemblyGBP;
-  const iatfPremiumGBP = standardAssemblyGBP * 0.20;
-  const axiCostGBP = bgaCount > 0 ? Math.min(15, 8 + bgaCount * 1.2) : 0;
-  const serialisationGBP = 0.80;
-  const aoiBase = Boolean(assemblyData.aoiRequired) ? 2.5 : 0;
-  const ipcClass3GBP = aoiBase * 0.15;
-  const boardsPerShift = Math.max(1, Math.min(200, orderQty));
-  const burnInShifts = asilLevel === 'ASIL-D' ? 6 : asilLevel === 'ASIL-C' ? 4 : asilLevel === 'ASIL-B' ? 2 : 0;
+  const iatfPremiumGBP = standardAssemblyGBP * 0.20;              // IATF 16949 process control / traceability
+  // Separate X-ray only when there is no country figure that already carries it.
+  const axiCostGBP = !haveCountry && bgaCount > 0 ? Math.min(15, 8 + bgaCount * 1.2) : 0;
+  // Laser-mark + scan: ~6 s at a ~£30/hr station at volume; setup-dominated below 1,000.
+  const serialisationGBP = orderQty >= 1000 ? 0.05 : 0.80;
+  // IPC Class 3 workmanship: ~5% more inspection time on the assembly.
+  const ipcClass3GBP = standardAssemblyGBP * 0.05;
+  // Burn-in / ESS is an ASIL-C/D practice; ASIL-B modules take an end-of-line test
+  // (in ICT). Chamber ~£180/shift; racks hold ~500 small modules at volume.
+  const burnInShifts = asilLevel === 'ASIL-D' ? 6 : asilLevel === 'ASIL-C' ? 4 : 0;
+  const boardsPerShift = orderQty >= 1000 ? 500 : Math.max(1, Math.min(200, orderQty));
   const burnInGBP = burnInShifts > 0 ? Math.round((180 * burnInShifts / boardsPerShift) * 100) / 100 : 0;
   const totalAutomotiveAssemblyGBP = standardAssemblyGBP + iatfPremiumGBP + axiCostGBP + serialisationGBP + ipcClass3GBP + burnInGBP;
   const premiumPctOverStandard = standardAssemblyGBP > 0 ? Math.round((totalAutomotiveAssemblyGBP / standardAssemblyGBP - 1) * 100) : 0;
@@ -957,6 +1004,8 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
     "hdiStructure": "none",
     "impedanceControlRequired": false,
     "copperWeightOz": 1,
+    "copperOzByLayer": [],
+    "boardWeightG": 0,
     "qualityGrade": "industrial",
     "panelUtilisation": 0.75,
     "conformalCoating": false
@@ -1014,6 +1063,8 @@ INSTRUCTIONS:
 - throughHoleJoints = sum of qty x pins for through_hole components
 - Estimate board dimensions from component sizes, connector pitch, or visible rulers
 - dimensionsSource: "measured" ONLY if width/height were READ from a label, drawing, board-data table, ruler or scale in the photos; otherwise "estimated"
+- copperOzByLayer: per-layer copper in oz (35 µm = 1 oz, 70 µm = 2 oz), top to bottom, ONLY when a board-data table or drawing states it; otherwise []
+- boardWeightG: board weight in grams ONLY if stated in the photos; otherwise 0
 - conformalCoating: true only if a coating is visible (glossy film over components, fluorescence in a UV photo); otherwise false
 - List at least 3 aiInsights, 2 dfmIssues, 3 optimisationSuggestions, 1 analysisLimitation
 - IMPORTANT: Return ONLY the JSON — nothing else`;
@@ -1506,11 +1557,19 @@ ${userPromptText}`;
       conformalCoatAreaCm2: conformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
       totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
       orderQuantity:        orderQty,
+      copperOzByLayer:      copperLayersFromSpec(boardSpec),
+      weightKg:             weightKgFromSpec(boardSpec),
     };
 
     countryComparison = computeAllCountryCosts(costInput);
     const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
     selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
+    confidenceBand = anchorBandToHeadline(confidenceBand, selectedCountryBreakdown) ?? confidenceBand!;
+    // Automotive panels need the country breakdown (it was null when they were first computed).
+    if (domain === 'automotive_adas' && selectedCountryBreakdown) {
+      automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, selectedCountryBreakdown.assemblyPerBoard);
+      automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, selectedCountryBreakdown.pcbFabPerBoard, domain, selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1);
+    }
 
     // Volume sensitivity curves for cheapest, selected, and UK.
     const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
@@ -1526,7 +1585,7 @@ ${userPromptText}`;
 
     // Sanity checks on AI output
     const aiStatedBOMTotal = Number((costEst as Record<string, unknown>).totalBOMCostGBP ?? 0);
-    sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal);
+    sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal, orderQty);
 
     // NPI vs production breakdown
     npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
@@ -1888,11 +1947,19 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
       conformalCoatAreaCm2: reanalConformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
       totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
       orderQuantity:        orderQty,
+      copperOzByLayer:      copperLayersFromSpec(boardSpec),
+      weightKg:             weightKgFromSpec(boardSpec),
     };
 
     countryComparison = computeAllCountryCosts(costInput);
     const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
     selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
+    confidenceBand = anchorBandToHeadline(confidenceBand, selectedCountryBreakdown) ?? confidenceBand!;
+    // Automotive panels need the country breakdown (it was null when they were first computed).
+    if (domain === 'automotive_adas' && selectedCountryBreakdown) {
+      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, 'Unknown' as ASILLevel, orderQty, selectedCountryBreakdown.assemblyPerBoard);
+      reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, selectedCountryBreakdown.pcbFabPerBoard, domain, selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1);
+    }
 
     const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
     const cheapestId = sorted[0]?.countryId ?? 'cn';
@@ -2021,6 +2088,8 @@ router.post('/scenario', (req, res): void => {
     conformalCoatAreaCm2: Number(b.conformalCoatAreaCm2) || 0,
     totalBOMCostGBP:      Number(b.totalBOMCostGBP)     || 0,
     orderQuantity:        Number(b.orderQuantity)       || 100,
+    copperOzByLayer:      Array.isArray(b.copperOzByLayer) ? b.copperOzByLayer.map(Number) : undefined,
+    weightKg:             Number(b.weightKg) > 0 ? Number(b.weightKg) : undefined,
   };
 
   try {
@@ -2145,6 +2214,18 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   // Stage 3
   emit('progress', { stage: 3, label: 'Stage 3 — Full BOM analysis (this takes ~20s)', pct: 50 });
   const reqOrderQty2 = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  // Same safety net as the non-stream path: Stage 1 sees only the top photo, so a
+  // radar board with an S32R/TEF81x marking can come back rf_microwave/general —
+  // which drops automotive pricing, ASIL and AEC-Q grading. The chip markings win.
+  if (stage1Result.domain !== 'automotive_adas' && looksAutomotiveSilicon(ocrResult.icMarkings)) {
+    console.log(`[PCB/stream] Promoted domain -> automotive_adas from IC markings (Stage 1 said ${stage1Result.domain})`);
+    stage1Result.domain = 'automotive_adas';
+    stage1Result.conf = Math.max(stage1Result.conf, 0.9);
+    if (streamAsilClassification.asilLevel === 'Unknown') {
+      try { streamAsilClassification = await classifyASILLevel(anthropic, imageFiles, imageLabels, ocrResult.icMarkings.join(', ')); }
+      catch { /* keep Unknown */ }
+    }
+  }
   const domain = stage1Result.domain;
   const specSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
   const multiNote = multiImage ? `\n\nNOTE: ${imageFiles.length} photos (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together.` : '';
@@ -2356,7 +2437,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     // Program pricing (automotive only, or show discount potential)
     streamProgramPricing = computeProgramPricing(correctedBOMTotal2, orderQty2, domain);
     confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
-    sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0));
+    sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0), orderQty2);
     npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
     const costInput2: PCBCostInput = {
       widthMm: Number(boardSpec.widthMm) || 100, heightMm: Number(boardSpec.heightMm) || 80, layers: Number(boardSpec.estimatedLayers) || 2,
@@ -2367,10 +2448,12 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       bgaCount: Number(assemblyData.bgaCount) || 0, aoiRequired: Boolean(assemblyData.aoiRequired), ictTimeSec: Number(assemblyData.ictTimeSec) || 0,
       conformalCoatAreaCm2: streamConformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
       totalBOMCostGBP: correctedBOMTotal2 || Number(costEst.totalBOMCostGBP) || fabCostMid2 || 0, orderQuantity: orderQty2,
+      copperOzByLayer: copperLayersFromSpec(boardSpec), weightKg: weightKgFromSpec(boardSpec),
     };
     countryComparison2 = computeAllCountryCosts(costInput2);
     const resolvedCountry2 = PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn';
     selectedCountryBreakdown2 = computePCBCountryCost(costInput2, resolvedCountry2);
+    confidenceBand2 = anchorBandToHeadline(confidenceBand2, selectedCountryBreakdown2) ?? confidenceBand2!;
     // The automotive panels need the country breakdown, which did not exist when
     // they were first computed above (they read null → flat fallbacks). Recompute
     // them now: assembly on the country's assembly, fab on the BARE board (not the

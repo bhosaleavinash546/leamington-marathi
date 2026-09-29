@@ -26,15 +26,18 @@ removed on the sample). 8 layers, FR4, 87.8 × 48.9 mm, 1.31 mm, copper
 70/70/35/35/35/35/70/70 µm, immersion silver, one-sided, no conformal coat (UV
 photo shows no fluorescence). 328 placements, 2 BGAs.
 
-## Result — China, per board, 250k/yr
+## Result — China, per board, 250k/yr (after all fixes)
 
 | | £ |
 |---|---|
 | Components (BOM, China price index) | 41.36 |
-| Bare board | 1.46 |
+| Bare board (incl. 1,000 vias £1.90, heavy copper £0.13) | 2.42 |
 | Assembly (SMT 1.06 + test/inspection 4.27) | 5.33 |
-| Logistics + duty to UK | 1.82 |
-| **Total per board** | **51.34** |
+| Logistics + duty to UK | 1.83 |
+| **Total per board** | **52.32** |
+
+Confidence band (same total): £41.73 / **£52.32** / £76.10.
+Automotive assembly panel £6.71 (country assembly + IATF 20% + serialisation + Class 3; no burn-in at ASIL-B).
 
 Bare board detail: base 0.06, layers 0.25, finish 0.03, vias 1.05.
 Cross-check: published China volume pricing for 8-layer FR4 is $100–150/m² ≈ $2.90–4.20
@@ -69,24 +72,24 @@ The two radar chips are 75% of the BOM. Neither has a public volume
 price (NXP quotes them direct); both sit inside the tool's stated ranges and are
 flagged **confirm with a quote**.
 
-## All countries (same board)
+## All countries (same board, after all fixes)
 
 | Country | BOM | Board | Assembly | Logistics | Total |
 |---|---|---|---|---|---|
-| China (Shenzhen / Suzhou) | £41.36 | £1.46 | £5.33 | £1.82 | **£51.34** |
-| Vietnam (Ho Chi Minh City / Hanoi) | £43.24 | £1.78 | £4.55 | £2.76 | **£53.78** |
-| Malaysia (Penang / Johor Bahru) | £42.77 | £2.08 | £7.15 | £2.90 | **£56.11** |
-| Thailand (Bangkok / Ayutthaya) | £43.71 | £2.18 | £6.26 | £2.91 | **£56.34** |
-| India (Pune / Bengaluru / Chennai) | £44.65 | £1.95 | £5.50 | £2.91 | **£56.63** |
-| Taiwan (Taoyuan / Hsinchu / Taichung) | £42.30 | £3.70 | £10.69 | £2.15 | **£59.69** |
-| Mexico (Juárez / Monterrey / Guadalajara) | £46.06 | £3.21 | £8.06 | £2.18 | **£60.81** |
-| South Korea (Suwon / Busan) | £43.24 | £4.90 | £13.31 | £0.05 | **£62.36** |
-| Poland (Wrocław / Łódź / Poznań) | £49.82 | £3.76 | £9.52 | £0.11 | **£64.47** |
-| Czech Republic (Brno / Prague) | £49.35 | £4.21 | £10.73 | £0.12 | **£65.68** |
-| Germany (München / Stuttgart / Hamburg) | £55.46 | £8.63 | £25.62 | £0.07 | **£90.74** |
-| USA (San Jose / Austin / Milpitas) | £54.05 | £8.21 | £28.21 | £3.40 | **£94.79** |
-| United Kingdom (Birmingham / Coventry / Edinburgh) | £57.34 | £10.32 | £30.02 | £0.00 | **£98.81** |
-| Japan (Nagano / Yokohama / Osaka) | £56.40 | £15.10 | £32.37 | £0.06 | **£104.66** |
+| China (Shenzhen / Suzhou) | £41.36 | £2.42 | £5.33 | £1.83 | **£52.32** |
+| Vietnam (Ho Chi Minh City / Hanoi) | £43.24 | £2.95 | £4.55 | £2.80 | **£55.00** |
+| Malaysia (Penang / Johor Bahru) | £42.77 | £3.40 | £7.15 | £2.94 | **£57.49** |
+| Thailand (Bangkok / Ayutthaya) | £43.71 | £3.57 | £6.26 | £2.96 | **£57.79** |
+| India (Pune / Bengaluru / Chennai) | £44.65 | £3.20 | £5.50 | £2.95 | **£57.93** |
+| Taiwan (Taoyuan / Hsinchu / Taichung) | £42.30 | £5.83 | £10.69 | £2.19 | **£61.88** |
+| Mexico (Juárez / Monterrey / Guadalajara) | £46.06 | £5.04 | £8.06 | £2.20 | **£62.69** |
+| South Korea (Suwon / Busan) | £43.24 | £7.66 | £13.31 | £0.01 | **£65.10** |
+| Poland (Wrocław / Łódź / Poznań) | £49.82 | £5.91 | £9.52 | £0.03 | **£66.56** |
+| Czech Republic (Brno / Prague) | £49.35 | £6.58 | £10.73 | £0.03 | **£67.98** |
+| Germany (München / Stuttgart / Hamburg) | £55.46 | £13.50 | £25.62 | £0.02 | **£95.56** |
+| USA (San Jose / Austin / Milpitas) | £54.05 | £12.86 | £28.21 | £3.53 | **£99.58** |
+| United Kingdom (Birmingham / Coventry / Edinburgh) | £57.34 | £16.05 | £30.02 | £0.00 | **£104.55** |
+| Japan (Nagano / Yokohama / Osaka) | £56.40 | £23.42 | £32.37 | £0.02 | **£112.94** |
 
 ## What this run found in the tool — and what was fixed
 
@@ -106,22 +109,23 @@ flagged **confirm with a quote**.
 China total per board: **£48.88 → £51.34**. The old figure was close only because errors
 cancelled (board area ×3.3 and a phantom coat up; radar MCU and inductors down).
 
-## Still open — for decision
+## Round 2 — the open items, fixed
 
-1. **Three different totals on screen.** Headline £51.34 (includes logistics, duty, yield);
-   confidence band mid £54.23 (BOM + fab + assembly, no logistics); benchmark panel
-   adds the AI's own assembly again. One headline function should feed all.
-2. **Automotive assembly panel £19.77** — X-ray at £10.40/board and burn-in over
-   200 boards/shift are prototype-scale figures; the headline uses the country model's £4.27.
-3. **Copper weight and thickness are not costed** (2 oz outer = 1 oz in the price). Needs a
-   heavy-copper uplift figure from a fabricator.
-4. **Via count is clamped** to 1.8 × a density norm (1,000 → 556); radar boards with via fences exceed it.
-5. **One quantity field** is both "order qty" and annual volume. A teardown sample entered
-   as qty 1 prices at prototype rates (BOM ×8). Needs separate sample / annual-volume inputs.
-6. **Missing-flag re-grading:** a line without `automotive: true` is multiplied ×2.5–3.5 even
-   if already priced at automotive grade (not triggered on this board).
-7. **8-bucket hand-off** (PCB page → PCBA form) double-counts assembly as material.
-8. **Stream path** lacks the OCR automotive promotion and IC refinement the older path has.
+| # | Item | Fix | On this board |
+|---|---|---|---|
+| 1 | Three different totals | Confidence band and benchmark anchored to the headline country total (spread kept); UI headline = selected country total | band mid £54.23 → £52.32 = headline |
+| 2 | Automotive assembly panel at prototype scale | Built on the country assembly (already has AOI/X-ray/ICT); no second X-ray; serialisation £0.05 at volume; burn-in only ASIL-C/D, 500 boards/shift at volume | £19.77 → £6.71 |
+| 3 | Copper weight not costed | Per-layer heavy-copper surcharge, 25 CNY/m² per layer per 0.5 oz above 1 oz (country-scaled); per-layer list from board data, else copperWeightOz on the outer layers; UI copper edit now costs | +£0.13 |
+| 4 | Via count clamped to 1.8× norm | Upper bound 4× (via-fenced RF boards run 3–4×) | 556 → 1,000 vias (+£0.85) |
+| 5 | One quantity field | Field is "boards / year" (default 10,000, was 100); a warning below 100 says it is a prototype price | — |
+| 6 | Missing-flag re-grading ×2.5–3.5 | Uplift only a line explicitly priced consumer-grade; unstated, OCR-read and live-priced lines untouched | 0 lines uplifted |
+| 7 | PCBA hand-off double count | Bare board only (not fab + assembly) to the PCBA form; the photo page's annual volume carried across | — |
+| 8 | Stream path missing automotive promotion | Ported: IC markings (S32R/TEF81x…) promote the board to automotive and run ASIL | — |
+
+Also: a measured board weight (26.4 g) now drives freight instead of the area × layers estimate.
+Evidence for the copper figure: [Queen EMS copper weight guide](https://www.queenems.com/blog/pcb-copper-weight-1oz-2oz-3oz/), [AIVON 2 oz cost analysis](https://www.aivon.com/blog/pcb-knowledge/2oz-copper-pcb-cost-analysis-is-the-performance-worth-the-premium/).
+
+China total per board across the run: £48.88 (as found) → £51.34 (round 1) → **£52.32** (round 2).
 
 ## Assumptions in the photo reading
 

@@ -22,6 +22,9 @@ export function normalizePCBAnalysis(a: Record<string, unknown>): void {
     line.moq = num(line.moq, 1);
     line.lineConf = num(line.lineConf, 0.5);   // undefined here → NaN → null downstream (crashed .toFixed)
     line.ocrExtracted = typeof line.ocrExtracted === 'boolean' ? line.ocrExtracted : false;
+    // Record when the model did not state the grade, so automotive re-grading can
+    // tell "priced as consumer" (false) from "didn't say" (absent → false here).
+    if (typeof line.automotive !== 'boolean') line.automotiveUnstated = true;
     line.automotive = typeof line.automotive === 'boolean' ? line.automotive : false;
     line.highCost = typeof line.highCost === 'boolean' ? line.highCost : false;
     line.partNumber = str(line.partNumber, '');

@@ -49,6 +49,26 @@ export function deriveTechnology(layers: number, microVias: number, hdi: string,
 }
 
 /**
+ * Copper per layer (oz) from a board spec: the per-layer list when the board data
+ * gave one (e.g. 70/70/35/35/35/35/70/70 µm), else the single copperWeightOz on the
+ * two outer layers, else undefined (1 oz everywhere).
+ */
+export function copperLayersFromSpec(spec: Record<string, unknown>): number[] | undefined {
+  const list = spec.copperOzByLayer;
+  if (Array.isArray(list) && list.length > 0) return list.map(v => Math.max(0.5, n(v, 1)));
+  const oz = n(spec.copperWeightOz, 1);
+  const layers = Math.max(1, Math.round(n(spec.estimatedLayers, 2)));
+  if (oz <= 1) return undefined;
+  return Array.from({ length: layers }, (_, i) => (i === 0 || i === layers - 1 ? oz : 1));
+}
+
+/** Measured board weight (boardWeightG, grams) → kg, when the board data gives it. */
+export function weightKgFromSpec(spec: Record<string, unknown>): number | undefined {
+  const g = n(spec.boardWeightG, 0);
+  return g > 0 ? g / 1000 : undefined;
+}
+
+/**
  * Stabilise the fab-driving fields of a board spec IN PLACE. Returns the same
  * object for convenience. `domain === 'automotive_adas'` nudges laminate to high-Tg.
  */
@@ -90,7 +110,10 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
 
   // ── 3. Vias: bound to a plausible density for the (stabilised) area × layers ──
   const expThrough = areaCm2 * layers * 0.9;                 // ~0.9 through-vias/cm²/layer
-  spec.throughVias = Math.round(Math.min(Math.max(n(spec.throughVias), expThrough * 0.3), expThrough * 1.8));
+  // Upper bound 4× the norm: via-fenced RF/radar and shielded boards run 3–4× a
+  // plain board's density (the 77 GHz radar board: ~1,000 vias on 43 cm², 3.2×).
+  // It was 1.8×, which cut that board's vias to 556.
+  spec.throughVias = Math.round(Math.min(Math.max(n(spec.throughVias), expThrough * 0.3), expThrough * 4));
   spec.microVias = Math.max(0, Math.round(n(spec.microVias)));
   spec.blindVias = Math.max(0, Math.round(n(spec.blindVias)));
 
@@ -124,6 +147,7 @@ export function stableFabMid(spec: StabiliseInput, asm: AssemblyInput, orderQty:
       manualJoints: n(asm.manualJoints), bgaCount: n(asm.bgaCount), aoiRequired: Boolean(asm.aoiRequired),
       ictTimeSec: n(asm.ictTimeSec), conformalCoatAreaCm2: 0, totalBOMCostGBP: 0,
       orderQuantity: Math.max(1, orderQty || 1),
+      copperOzByLayer: copperLayersFromSpec(spec), weightKg: weightKgFromSpec(spec),
     }, country);
     // The headline "PCB Fabrication" band covers ALL non-BOM manufacturing (the
     // total is BOM + this), so include SMT/TH assembly + AOI/X-ray/ICT, not just

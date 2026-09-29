@@ -64,7 +64,7 @@ export interface PCBCountryBreakdown {
   bestFor: string;
   breakdown: {
     pcbBase: number; pcbLayers: number; pcbSurface: number;
-    pcbVias: number; pcbHDI: number; pcbSetup: number;
+    pcbVias: number; pcbHDI: number; pcbSetup: number; pcbCopper?: number;
     smtAssembly: number; thAssembly: number; aoi: number;
     logistics: number; importDuty: number;
   };
@@ -111,6 +111,10 @@ export interface PCBImageAnalysis {
     dimensionsSource?: 'measured' | 'estimated';
     /** A conformal coat is present (costed only when true). */
     conformalCoating?: boolean;
+    /** Per-layer copper, oz (from board data). */
+    copperOzByLayer?: number[];
+    /** Measured board weight, g. */
+    boardWeightG?: number;
   };
   bom: PCBBOMItem[];
   assembly: {

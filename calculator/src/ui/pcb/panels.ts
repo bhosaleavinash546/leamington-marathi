@@ -304,8 +304,12 @@ export function buildProgramPricingSection(r: PCBImageAnalysis): string {
   </div>`;
 }
 
-export function buildBenchmarkComparison(r: PCBImageAnalysis): string {
-  const total = r.costEstimates.totalBOMCostGBP + r.costEstimates.pcbFabGBP.mid + r.costEstimates.smtAssemblyCostGBP;
+/** `headlineTotal`: the page's one total. The benchmark used to add the AI's own
+ *  assembly guess to a fab figure that already contained assembly. */
+export function buildBenchmarkComparison(r: PCBImageAnalysis, headlineTotal?: number): string {
+  const total = headlineTotal && headlineTotal > 0
+    ? headlineTotal
+    : r.costEstimates.totalBOMCostGBP + r.costEstimates.pcbFabGBP.mid;
   const areaCm2 = (r.boardSpec.widthMm * r.boardSpec.heightMm) / 100;
   const costPerCm2 = areaCm2 > 0 ? total / areaCm2 : 0;
   const costPerPlacement = r.assembly.smtPlacements > 0 ? total / r.assembly.smtPlacements : 0;
