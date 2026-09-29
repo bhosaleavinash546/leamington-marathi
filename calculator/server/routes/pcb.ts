@@ -19,6 +19,9 @@ import {
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings } from '../utils/pcb-ocr-reconcile.js';
+import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
+import { bomFromFile } from '../utils/pcb-bom-truth.js';
+import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
 import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
@@ -158,6 +161,74 @@ export function prepareBOMFromOCR(
       message: 'The BOM places parts on the bottom side, so reflow is double-sided (the AI said single-sided).' });
   }
   return { bom: rec.bom, warnings };
+}
+
+/** Measure the uploaded drill / Gerber files (never throws; null when none). */
+function measureUploadedFabData(files: Record<string, Express.Multer.File[]> | undefined): FabMeasurement | null {
+  const ups = files?.fabFiles ?? [];
+  if (!ups.length) return null;
+  try {
+    const m = measureFabData(ups.map(f => ({ name: f.originalname, text: f.buffer.toString('latin1') })));
+    console.log(`[PCB] Fab data: ${m.filesUsed.length}/${ups.length} files read — size ${m.widthMm}×${m.heightMm}, layers ${m.layers}, vias ${m.throughVias}`);
+    return m;
+  } catch (err) { console.warn('[PCB] Fab data measurement failed:', (err as Error).message); return null; }
+}
+
+/**
+ * Ground truth before the model's guess: a supplied BOM file replaces the AI's
+ * BOM (identity + quantity; the model's reading fills a package or estimates a
+ * price for the same ref-des), and measured fab data replaces the guessed size,
+ * layer count and via count. Both are reported in the warnings list so the
+ * screen says what was measured and what was read.
+ */
+export function applyGroundTruth(
+  a: Record<string, unknown>,
+  parsed: ParsedBOMLine[],
+  fab: FabMeasurement | null,
+  domain: string,
+): SanityWarning[] {
+  const warnings: SanityWarning[] = [];
+  const boardSpec = (a.boardSpec ?? {}) as Record<string, unknown>;
+  const asm = (a.assembly ?? {}) as Record<string, unknown>;
+  if (parsed.length > 0) {
+    const aiBom = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    const t = bomFromFile(parsed, aiBom, domain === 'automotive_adas');
+    a.bom = t.bom;
+    a.bomSource = 'file';
+    if (t.smtPlacements > 0) asm.smtPlacements = t.smtPlacements;
+    if (t.bgaCount > 0) asm.bgaCount = t.bgaCount;
+    if (t.throughHoleLines > 0 && !(Number(asm.throughHoleJoints) > 0)) asm.throughHoleJoints = t.throughHoleLines * 2;
+    if (t.bottomSide && Number(asm.reflowSides ?? 1) < 2) asm.reflowSides = 2;
+    warnings.push({ code: 'BOM_FROM_FILE', severity: 'warn',
+      message: `BOM taken from your file: ${t.bom.length} lines, ${t.smtPlacements} SMT placements. The photos were used for the board build and to fill gaps, not to write the BOM.` });
+    if (t.aiOnly.length) warnings.push({ code: 'AI_PARTS_NOT_IN_BOM_FILE', severity: 'warn',
+      message: `The photos show parts your BOM file does not list: ${t.aiOnly.slice(0, 12).join(', ')}${t.aiOnly.length > 12 ? ', …' : ''}. If they are fitted, the file is short.` });
+  }
+  if (fab) {
+    const changed = applyFabMeasurement(boardSpec, fab);
+    if (changed.length) warnings.push({ code: 'FAB_DATA_MEASURED', severity: 'warn',
+      message: `Measured from the fab data (${fab.filesUsed.join(', ')}): ${changed.join('; ')}.${fab.notes.length ? ` Notes: ${fab.notes.join('; ')}.` : ''}` });
+    else warnings.push({ code: 'FAB_DATA_UNREAD', severity: 'warn',
+      message: `Fab files were attached but nothing could be measured (${fab.notes.join('; ') || 'no drill, outline or copper layer recognised'}). The board build stays estimated from the photos.` });
+  }
+  return warnings;
+}
+
+/**
+ * Stage 3 with structured output: the schema in pcb-analysis-schema.ts is sent
+ * as output_config.format, so the answer parses by construction. A model or
+ * proxy that rejects the parameter (400 naming it) gets the plain call, and the
+ * salvage / repair path behind it stays as the second line.
+ */
+type Stage3Params = { model: string; max_tokens: number; system: string; messages: Anthropic.MessageParam[] };
+async function stage3Message(anthropic: Anthropic, params: Stage3Params, tag: string) {
+  try {
+    return await anthropic.messages.parse({ ...params, output_config: pcbAnalysisOutputConfig() });
+  } catch (err) {
+    if (!isOutputFormatRejection(err)) throw err;
+    console.warn(`[PCB${tag}] structured output not accepted (${(err as Error).message.slice(0, 120)}) — falling back to free-text JSON`);
+    return await anthropic.messages.create(params);
+  }
 }
 
 // Apply volume correction and flag unconfirmed high-value ICs in the BOM array
@@ -735,6 +806,14 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     // pcbImages (array) must be images; bomFile accepts csv/xml/txt text formats.
+    // fabFiles: Excellon drill + Gerber layers. Gerber extensions are a zoo
+    // (.gtl/.g2/.gko/.gbr/.art/.txt), so any text-like file under this field is
+    // accepted and the measurer decides what it is.
+    if (file.fieldname === 'fabFiles') {
+      if (/\.(zip|rar|7z|png|jpe?g|pdf)$/i.test(file.originalname)) cb(new Error('Fab files must be the individual drill / Gerber files, not an archive'));
+      else cb(null, true);
+      return;
+    }
     if (file.fieldname === 'bomFile') {
       if (/\.(csv|xml|txt)$/i.test(file.originalname) || /^(text\/|application\/(xml|csv|vnd\.ms-excel))/i.test(file.mimetype)) cb(null, true);
       else cb(new Error('BOM file must be .csv, .xml or .txt'));
@@ -1110,7 +1189,7 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
 INSTRUCTIONS:
 - Replace all example values above with actual values from the image
 - Group identical components (same type + package) into one BOM line
-- unitPriceGBP: use the COMPONENT PRICING REFERENCE above as hard anchors (calibrated to 100K unit volume); default to the LOWER HALF of each range for standard/generic components
+- unitPriceGBP: your ESTIMATE only, inside the COMPONENT PRICING REFERENCE range for the part's class (100K volume; lower half for standard/generic parts). The server prices every line from its own table, catalogue and part ranges — your figure only picks the point within the range
 - For IC components identified from OCR markings, set partNumber to the exact marking, lineConf to 1.0, and ocrExtracted to true. EVERY IC marking listed above must be the partNumber of exactly one BOM line — never describe an OCR-read part generically (e.g. write TEF8105, not \"radar transceiver MMIC\")
 - Pads, test points and unfitted footprints are NOT components: leave them out of the BOM
 - For other components, set partNumber to best-guess part number or empty string, lineConf to 0.5–0.9, ocrExtracted to false
@@ -1149,6 +1228,7 @@ ${raw}`;
 router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
   { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },   // up to 8 images: top, bottom, + 6 close-ups
   { name: 'bomFile', maxCount: 1 },
+  { name: 'fabFiles', maxCount: 40 },
 ]), async (req, res): Promise<void> => {
   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
   const imageFiles = files?.pcbImages ?? [];
@@ -1312,7 +1392,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
 
   try {
     // ── Attempt 1: Full vision analysis (all images) ─────────────────────
-    const msg1 = await anthropic.messages.create({
+    const msg1 = await stage3Message(anthropic, {
       model: extractionModel(deepAnalysis),
       max_tokens: EXTRACT_MAX_TOKENS,
       system: specialistSystem,
@@ -1323,7 +1403,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
           { type: 'text', text: userPromptText },
         ],
       }],
-    });
+    }, '');
     if (msg1.stop_reason === 'max_tokens') console.warn('[PCB] Stage 3 hit the output-token limit — BOM likely truncated; will salvage/consolidate');
 
     lastRaw = textOf(msg1);
@@ -1415,13 +1495,13 @@ ${userPromptText}`;
   if (bomIsEmpty(analysis)) {
     console.warn('[PCB] Stage 3 returned an EMPTY BOM — retrying once with emphasis');
     try {
-      const retry = await anthropic.messages.create({
+      const retry = await stage3Message(anthropic, {
         model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS, system: specialistSystem,
         messages: [{ role: 'user', content: [
           ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
           { type: 'text', text: userPromptText + EMPTY_BOM_RETRY_NOTE },
         ]}],
-      });
+      }, '');
       if (retry.stop_reason === 'max_tokens') console.warn('[PCB] Empty-BOM retry hit the output-token limit — salvaging');
       const retryRaw = textOf(retry);
       let retryAnalysis: Record<string, unknown> | null;
@@ -1506,6 +1586,7 @@ ${userPromptText}`;
     // Stabilise the fab-driving board spec (area/layers/vias/tech), then replace
     // the model's noisy fab guess with a deterministic fab from those stable
     // features — stops the headline swinging run-to-run on the same board.
+    const groundTruthWarnings = applyGroundTruth(a, parsedBOM, measureUploadedFabData(files), domain);
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     {
       const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', domain === 'automotive_adas');
@@ -1561,7 +1642,7 @@ ${userPromptText}`;
         const liveHit = new Set(livePrices.map(p => p.mpn.toUpperCase()));
         livePrices = [...livePrices, ...offlineCataloguePrices(candidatePNs.filter(pn => !liveHit.has(pn.toUpperCase())), orderQty)];
       }
-      const grounded = groundAndSplit(enrichedBOM, livePrices, knownRangeAtVolume(volumeMultiplier));
+      const grounded = groundAndSplit(enrichedBOM, livePrices, knownRangeAtVolume(volumeMultiplier), { automotive: domain === 'automotive_adas' });
       enrichedBOM = grounded.bom as Array<Record<string, unknown>>;
       a.bom = enrichedBOM;
       livePriceHits = grounded.matched;
@@ -1642,7 +1723,7 @@ ${userPromptText}`;
     // Sanity checks on AI output
     const aiStatedBOMTotal = Number((costEst as Record<string, unknown>).totalBOMCostGBP ?? 0);
     sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal, orderQty);
-    sanityWarnings.push(...prepared.warnings);
+    sanityWarnings.push(...groundTruthWarnings, ...prepared.warnings);
 
     // NPI vs production breakdown
     npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
@@ -2162,6 +2243,7 @@ router.post('/scenario', (req, res): void => {
 router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },
   { name: 'bomFile', maxCount: 1 },
+  { name: 'fabFiles', maxCount: 40 },
 ]), async (req, res): Promise<void> => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -2297,13 +2379,13 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   let stage3Raw = '';
   // ── Stage 3 attempt 1: full vision analysis ──────────────────────────────
   try {
-    const msg = await anthropic.messages.create({
+    const msg = await stage3Message(anthropic, {
       model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS, system: specSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
         { type: 'text', text: userPromptText2 },
       ]}],
-    });
+    }, '/stream');
     if (msg.stop_reason === 'max_tokens') console.warn('[PCB/stream] Stage 3 hit the output-token limit — BOM likely truncated; will salvage/consolidate');
     stage3Raw = textOf(msg);
     console.log('[PCB/stream] Stage 3 stop=%s blocks=%s textLen=%d', msg.stop_reason, JSON.stringify(msg.content.map(b => b.type)), stage3Raw.length);
@@ -2367,13 +2449,13 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     console.warn('[PCB/stream] Stage 3 returned an EMPTY BOM — retrying once with emphasis');
     emit('progress', { stage: 3, label: 'Stage 3 — empty BOM returned, retrying', pct: 65 });
     try {
-      const retry = await anthropic.messages.create({
+      const retry = await stage3Message(anthropic, {
         model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS, system: specSystem,
         messages: [{ role: 'user', content: [
           ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
           { type: 'text', text: userPromptText2 + EMPTY_BOM_RETRY_NOTE },
         ]}],
-      });
+      }, '/stream');
       if (retry.stop_reason === 'max_tokens') console.warn('[PCB/stream] Empty-BOM retry hit the output-token limit — salvaging');
       const retryRaw = textOf(retry);
       let retryAnalysis: Record<string, unknown> | null;
@@ -2426,6 +2508,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     const costEst = a.costEstimates as Record<string, unknown> ?? {};
     const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
     // Stabilise the board spec + derive a deterministic fab (see analyze path).
+    const groundTruthWarnings2 = applyGroundTruth(a, parsedBOM2, measureUploadedFabData(files), domain);
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     {
       const sf = stableFabMid(boardSpec, assemblyData, orderQty2, PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn', domain === 'automotive_adas');
@@ -2475,7 +2558,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       livePrices2 = [...livePrices2, ...offlineCataloguePrices(candidatePNs2.filter(pn => !liveHit2.has(pn.toUpperCase())), orderQty2)];
     }
     // Ground + class-median-cap the unconfirmed guesses + split confirmed/unverified.
-    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2, knownRangeAtVolume(volumeMultiplier2));
+    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2, knownRangeAtVolume(volumeMultiplier2), { automotive: domain === 'automotive_adas' });
     enrichedBOM2 = grounded2.bom as Array<Record<string, unknown>>;
     streamLivePriceHits = grounded2.matched;
     streamNeedsVerification = grounded2.needsVerification;
@@ -2496,7 +2579,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     streamProgramPricing = computeProgramPricing(correctedBOMTotal2, orderQty2, domain);
     confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
     sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0), orderQty2);
-    sanityWarnings2.push(...prepared2.warnings);
+    sanityWarnings2.push(...groundTruthWarnings2, ...prepared2.warnings);
     npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
     const costInput2: PCBCostInput = {
       widthMm: Number(boardSpec.widthMm) || 100, heightMm: Number(boardSpec.heightMm) || 80, layers: Number(boardSpec.estimatedLayers) || 2,

@@ -159,3 +159,44 @@ Replaying the real model's BOM through the fixed pipeline: **China £77.75 → �
 - **J1 £5.28 "sealed connector"**: OCR reported an edge pad row, not a connector; flagged for verification.
 - **ASIL-C vs ASIL-B**: the model's judgement; ASIL-C adds burn-in. Confirm against the safety concept.
 - **Two "PMIC" and two "op-amp/LDO" ICs**: the real board has one MAX20431A and two TCAN1044s; the line quantities are the model's.
+
+## Round 4 — root cause, and the correction
+
+Rounds 1–3 fixed symptoms. The cause is structural: the photo pipeline asked one
+model call to identify, count, judge the board build **and price** the board, and
+used its prices for every line it could not name — most of the BOM. Nothing in the
+pipeline took the two inputs that are true, the BOM file and the fab data, as truth:
+the BOM file was pasted into the prompt as a hint and the model re-wrote it; there
+was no way to give the drill file at all. So "confirmed" was £0 and every number was
+a bounded guess.
+
+Corrected:
+
+| Root cause | Correction |
+|---|---|
+| The model sets prices | `pcb-class-pricing.ts`: the price table is data. Every unnamed line is priced inside its class range (AEC-Q variant on automotive boards); the model's figure only picks the point. Each line records `priceSource` / `priceBasis` / `priceNote`; the screen shows a CAT / RANGE / TABLE / FILE / NF badge per line. |
+| BOM file only a hint | `pcb-bom-truth.ts`: the file's lines are the BOM; the photo fills a package or estimates within range for the same ref-des. Photo-only parts are listed as a warning (the file may be short). |
+| No fab data input | `pcb-fab-data.ts`: Excellon drill (hole table, vias ≤ 0.6 mm vs holes), Gerber outline (extents), copper-layer files (layer count). Measured values override the guess and the stabiliser leaves them alone. New "Attach Fab Files" on the photo page. |
+| Free-text JSON scraped, salvaged, "repaired" | Stage 3 uses structured output (`output_config.format`, schema in `pcb-analysis-schema.ts`), falling back to the old path if a model or proxy rejects it. |
+| "Confirmed £0" | Small lines priced by count from the table count as priced; "to verify" is the £1+ lines with no quote. |
+
+Replay of the real model's answer, China, 250k/yr, through the corrected pipeline:
+see the numbers appended below by the run.
+
+**Replay results (stand-in returning the real model's answer; China, 250k/yr):**
+
+| Input | Total / board | BOM | Bare board | Vias used | Placements | Priced / to verify |
+|---|---|---|---|---|---|---|
+| Real run as delivered (before round 3) | £77.75 | £67.84 | £0.94 | 220 (guessed) | 224 | — |
+| Photos only, corrected pipeline | £68.21 | £58.82 | £0.82 | 220 (guessed) | 224 | £1.95 / £64.89 |
+| Photos + BOM file + drill/Gerber files | **£57.13** | £46.04 | £2.30 | 1,000 (measured) | 322 (from the file) | £3.89 / £48.43 |
+| Hand reading of the photos (stand-in, round 2) | £52.32 | £41.36 | £2.42 | 1,000 (stated) | 328 | — |
+
+With the files attached the tool lands within 10% of the careful hand reading, and
+every line states its basis (named-part range, class table, catalogue). The £48 "to
+verify" is the six named ICs: they are inside the tool's ranges, and only a quote
+closes them. Without the files the tool is still costing a photo, and says so.
+
+Why the photo-only number will never be exact: a photo cannot show the via count
+(£1.50 here), the layer count, or the passives under a shield; and the model's
+component count is a judgement (224 vs 322). Attach the BOM and the fab data.

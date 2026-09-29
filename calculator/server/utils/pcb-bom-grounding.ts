@@ -15,6 +15,7 @@
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
 import { cataloguePrice, classMedianCap, volumeScaleFrom10k, descriptionCap, isNotFitted } from './pcb-price-catalogue.js';
+import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -143,7 +144,9 @@ const HIGH_VALUE_UNMATCHED_GBP = 10;
  *  NXP S32R294 → £22–48 at 100K). Supplied by the route, which owns the ranges. */
 export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string; generic?: boolean } | null;
 
-export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): { bom: BomLine[]; capped: number } {
+export interface CapOptions { automotive?: boolean }
+
+export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, opts: CapOptions = {}): { bom: BomLine[]; capped: number } {
   let capped = 0;
   const out = bom.map(line => {
     const verified = line.livePriced === true || line.priceSource === 'catalogue';
@@ -169,11 +172,16 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): {
     // die performs (a 77 GHz transceiver) — is held inside the tool's stated range
     // at this volume, UP as well as down: a TEF8105-class MMIC guessed at £4 is as
     // wrong as an S32R294 cut to a generic £18 median. Still flagged: a range is not a quote.
-    const ocrConfirmed = line.ocrExtracted === true && num(line.lineConf) >= 0.95;
+    // Identity is confirmed by a chip marking read with confidence, or by a part
+    // number in the user's BOM file — the file names the part.
+    const identityConfirmed = (line.ocrExtracted === true && num(line.lineConf) >= 0.95)
+      || (line.bomSource === 'file' && pn.length > 0);
     const range0 = knownRange?.(line) ?? null;
-    const range = range0 && (ocrConfirmed || range0.generic) ? range0 : null;
+    const range = range0 && (identityConfirmed || range0.generic) ? range0 : null;
     if (range) {
-      const inRange = Math.min(Math.max(unit, range.lo), range.hi);
+      // No estimate at all (a BOM-file line): the lower-half midpoint, not the floor.
+      const est = unit > 0 ? unit : range.lo + (range.hi - range.lo) * 0.25;
+      const inRange = Math.min(Math.max(est, range.lo), range.hi);
       if (Math.abs(inRange - unit) > 1e-6) capped++;
       return {
         ...line,
@@ -183,43 +191,57 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange): {
         priceSource: range.generic ? 'function-range' : 'known-range',
         priceCapped: inRange < unit - 1e-6,
         priceRaised: inRange > unit + 1e-6,
-        priceNote: `${range.generic ? 'Part not read; ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume — confirm with a quote`
+        priceNote: `${range.generic ? 'Part not read; ' : line.bomSource === 'file' ? 'Named in your BOM: ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume${unit > 0 ? '' : '; no estimate — lower-half midpoint'} — confirm with a quote`
           + (line.priceNote ? ` · ${String(line.priceNote)}` : ''),
         needsVerification: true,
       };
     }
     const unconfirmed = line.needsVerification === true
       || line.unconfirmedHighValue === true
+      || line.bomSource === 'file'                    // a file names the part; the table prices it
+      || !(unit > 0)                                  // no estimate at all
       || pn.length === 0
       || /\b(class|est|unknown|generic)\b/i.test(pn)
       // Magnitude / no-match guard — the fix for confident misreads.
       || unit > HIGH_VALUE_UNMATCHED_GBP;
     if (!unconfirmed) return line;
     const qty = qty0;
-    // A description that names what the part is (an inductor, an electrolytic, a
-    // SOT-23 diode) is a tighter bound than the package class it was filed under.
+    // Every other unconfirmed line is priced INSIDE its class range (the tool's
+    // own table, pcb-class-pricing.ts). The model's estimate only chooses the
+    // point within the range; with no estimate the line lands at the lower-half
+    // midpoint. Ceilings: the class median for an unidentified part (a guessed
+    // "AURIX-class" BGA must not enter at £60) and the description caps (an
+    // inductor, an electrolytic, a SOT-23 diode) where they are tighter.
+    const cls = classRange({ ...line, description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}` }, opts.automotive === true);
     const dCap = descriptionCap(String(line.description ?? ''));
-    const capUnit = dCap != null ? Math.min(unit, dCap) : classMedianCap(String(line.componentType ?? ''), unit);
-    if (capUnit < unit - 1e-6) {
-      capped++;
-      return {
-        ...line,
-        aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
-        unitPriceGBP: round(capUnit, 4),
-        lineTotalGBP: round(capUnit * qty, 2),
-        priceSource: 'class-median-cap',
-        priceCapped: true,
-        // A capped line is, by definition, an unconfirmed guess — send it to the
-        // "needs verification" bucket so it never inflates the confirmed headline.
-        needsVerification: true,
-      };
-    }
-    // High-value but the class median didn't reduce it (rare): still can't confirm
-    // the price → flag for verification so it leaves the confirmed headline.
-    if (unit > HIGH_VALUE_UNMATCHED_GBP && line.needsVerification !== true) {
-      return { ...line, needsVerification: true };
-    }
-    return line;
+    // The class median is a guard for an UNIDENTIFIED part ("some BGA"); a line
+    // whose description names its kind (inductor, PMIC, electrolytic) is bounded
+    // by that kind's own range instead.
+    const unidentified = /\.any(\.|$)/.test(cls.key) || /\b(class|est|unknown|generic)\b/i.test(pn);
+    const ceiling = Math.min(unidentified ? classMedianCap(String(line.componentType ?? ''), Infinity) : Infinity, cls.hi, dCap ?? Infinity);
+    const lo = Math.min(cls.lo, ceiling);
+    const priced = unit > 0 ? Math.min(Math.max(unit, lo), ceiling) : Math.min(classDefaultPrice(cls), ceiling);
+    const lowered = priced < unit - 1e-6;
+    // Counted as a cap only when it moved the price by a margin (a 0402 guessed
+    // £0.001 over its ceiling is a rounding, not a caught misread).
+    if (lowered && (unit - priced) / unit > 0.10) capped++;
+    const lineTotal = round(priced * qty, 2);
+    return {
+      ...line,
+      aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? (unit > 0 ? round(unit, 4) : undefined),
+      unitPriceGBP: round(priced, 5),
+      lineTotalGBP: lineTotal,
+      priceSource: 'class-range',
+      priceBasis: cls.key,
+      priceCapped: lowered,
+      priceRaised: priced > unit + 1e-6 && unit > 0,
+      priceNote: `${cls.label}: table range £${cls.lo}–£${cls.hi} at 100K${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}${unit > 0 ? `; AI estimate £${round(unit, 4)}` : '; no estimate — lower-half midpoint'}`,
+      // A table price is a class average, not a quote: worth an engineer's minute
+      // only where the line moves the board (≥ £1). Passives priced by count from
+      // the table are the best anyone can do without an order, and stay in the
+      // priced total instead of flooding "to verify" with £0.37 lines.
+      needsVerification: lineTotal >= 1 || unit > HIGH_VALUE_UNMATCHED_GBP,
+    };
   });
   return { bom: out, capped };
 }
@@ -250,9 +272,9 @@ export interface GroundingOutcome {
  * unconfirmed lines, resum the total, and split confirmed vs needs-verification.
  * Called from BOTH the streaming and non-streaming Stage-4 paths so they can't drift.
  */
-export function groundAndSplit(bom: BomLine[], livePrices: LivePriceResult[], knownRange?: KnownRange): GroundingOutcome {
+export function groundAndSplit(bom: BomLine[], livePrices: LivePriceResult[], knownRange?: KnownRange, opts: CapOptions = {}): GroundingOutcome {
   const reconciled = reconcileBomWithCatalogue(bom, livePrices);
-  const capResult = capUnconfirmedPrices(reconciled.bom, knownRange);
+  const capResult = capUnconfirmedPrices(reconciled.bom, knownRange, opts);
   const split = splitConfirmedUnverified(capResult.bom);
   return {
     bom: capResult.bom,

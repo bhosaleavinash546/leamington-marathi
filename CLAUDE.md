@@ -95,10 +95,24 @@ Note `make start` runs natively via Node when npm is present and only falls back
 Docker — a local STEP run needs cadquery on your own `python3` (`make dev` warns you).
 
 ### PCB Image→BOM — `server/routes/pcb.ts` (+ `server/utils/pcb-*.ts`, `server/data/pcb-country-rates.ts`)
-Vision pipeline: photo → BOM + fab spec → should-cost. Read ALL model text blocks
-(a leading thinking block once caused empty BOMs); board spec is stabilised
-(`pcb-boardspec-stabilise.ts`) and BOM prices grounded/capped
-(`pcb-bom-grounding.ts`, `pcb-price-catalogue.ts`).
+Vision pipeline: photo → BOM + fab spec → should-cost. **Ground truth first, the
+photo second**: a supplied BOM file IS the BOM (`pcb-bom-truth.ts` — identity and
+quantity from the file, the photo only fills a package or estimates a price for the
+same ref-des), and drill/Gerber `fabFiles` are measured for size, layer count and via
+count (`pcb-fab-data.ts`, no AI) and override the guess (`dimensionsSource` /
+`layersSource` / `viasSource: 'measured'` switch off the stabiliser's clamps).
+**The model never sets a price**: its `unitPriceGBP` is an estimate that only picks a
+point inside the line's class range (`pcb-class-pricing.ts` — the price table as data;
+precedence catalogue → OCR-named part range → function range → class range, each
+line carrying `priceSource` / `priceBasis` / `priceNote`, `pcb-bom-grounding.ts`).
+Chip markings OCR read are attached to the BOM line of the same function
+(`pcb-ocr-reconcile.ts`). Stage 3 asks for structured output
+(`pcb-analysis-schema.ts`, `messages.parse` + `output_config.format`) and falls back
+to free text + salvage if the model rejects it. Read ALL model text blocks (a leading
+thinking block once caused empty BOMs); the board spec is stabilised
+(`pcb-boardspec-stabilise.ts`). What a photo cannot show — via count, layer count,
+parts under shields — stays an estimate until the files are attached; the screen's
+"to verify" bucket is the £1+ lines with no quote behind them.
 
 ### Frontend & server shell
 - `src/ui/main.ts` is a ~20.3k-line monolith holding most of the SPA (forms per

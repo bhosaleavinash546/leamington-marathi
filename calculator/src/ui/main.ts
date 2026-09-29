@@ -403,6 +403,7 @@ function pcbFormNotFromPhoto(): boolean {
 }
 let pcbImageLoading = false;
 let pcbBOMFile: File | null = null;
+let pcbFabFiles: File[] = [];
 let pcbImageDataURL: string | null = null;
 // All uploaded board photos (downscaled JPEG data URLs + dimensions), retained so
 // every export report (PDF, Excel) can embed the exact images the analysis used.
@@ -7531,6 +7532,17 @@ function buildPCBImageUploadZone(): string {
           </div>
         </div>
 
+        <!-- Fab data (drill + Gerber) — measured board size, layer count and via count; a photo cannot show these -->
+        <div style="margin-top:8px;padding:10px 12px;background:rgba(37,99,235,0.05);border:1px dashed rgba(37,99,235,0.35);border-radius:8px">
+          <div style="font-size:0.72rem;font-weight:600;color:#2563eb;margin-bottom:4px">Attach Fab Data — drill + Gerber files (board size, layers, vias measured)</div>
+          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">A photo cannot show the layer count or the via count, and the bare-board cost depends on both. Drop the Excellon drill file (.drl/.txt) and the Gerbers (outline + copper layers) and they are measured, not guessed.</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input type="file" id="pcb-fab-input" multiple style="display:none"/>
+            <button class="btn btn-secondary btn-sm" id="pcb-fab-pick-btn" style="font-size:0.68rem;padding:4px 12px">Attach Fab Files</button>
+            <span id="pcb-fab-filename" style="font-size:0.66rem;color:var(--text-secondary);font-style:italic">No files — AI will estimate size, layers and vias from the photos</span>
+          </div>
+        </div>
+
         <!-- Automotive NRE toggle (Feature 7) -->
         <div style="margin-top:8px;display:flex;justify-content:center">
           <label style="font-size:0.70rem;display:flex;align-items:center;gap:6px;cursor:pointer">
@@ -7677,6 +7689,18 @@ function wirePCBImageZone(): void {
     if (bomLabel) bomLabel.textContent = bf
       ? `${bf.name} (${(bf.size / 1024).toFixed(0)} KB) — used as ground truth`
       : 'No file — AI will extract BOM from image';
+  });
+
+  // Fab data picker (drill + Gerbers): measured size / layers / vias
+  const fabPickBtn = el<HTMLButtonElement>('pcb-fab-pick-btn');
+  const fabInput = el<HTMLInputElement>('pcb-fab-input');
+  const fabLabel = el('pcb-fab-filename');
+  fabPickBtn?.addEventListener('click', () => fabInput?.click());
+  fabInput?.addEventListener('change', () => {
+    pcbFabFiles = Array.from(fabInput?.files ?? []);
+    if (fabLabel) fabLabel.textContent = pcbFabFiles.length
+      ? `${pcbFabFiles.length} file${pcbFabFiles.length === 1 ? '' : 's'}: ${pcbFabFiles.slice(0, 4).map(f => f.name).join(', ')}${pcbFabFiles.length > 4 ? ', …' : ''} — measured, not guessed`
+      : 'No files — AI will estimate size, layers and vias from the photos';
   });
 
   // Automotive NRE toggle (Feature 7)
@@ -7836,6 +7860,7 @@ async function analyzePCBImages(): Promise<void> {
   const bomFileInput = document.getElementById('pcb-bom-input') as HTMLInputElement | null;
   const bomFile = bomFileInput?.files?.[0] ?? pcbBOMFile;
   if (bomFile) formData.append('bomFile', bomFile);
+  for (const f of pcbFabFiles) formData.append('fabFiles', f);
 
   // Store the primary (first) image as a data URL for board annotation (Feature 9)
   try {
@@ -8446,6 +8471,24 @@ function escapedForDisplay<T>(v: T): T {
   return v;
 }
 
+/** Where a BOM line's price came from — every line says, so the total is arguable line by line. */
+function pcbPriceBasisBadge(item: PCBBOMItem): string {
+  const src = String((item as unknown as { priceSource?: string }).priceSource ?? '');
+  const note = String((item as unknown as { priceNote?: string }).priceNote ?? '').replace(/"/g, '&quot;');
+  const file = (item as unknown as { bomSource?: string }).bomSource === 'file';
+  const map: Record<string, [string, string, string]> = {
+    'catalogue':      ['CAT',   '#16a34a', 'Catalogue price for this part number'],
+    'known-range':    ['RANGE', '#2563eb', 'Part read off the chip; held in the tool\'s price range for it'],
+    'function-range': ['RANGE', '#2563eb', 'Part not read; priced in the range for what it does'],
+    'class-range':    ['TABLE', '#64748b', 'Priced from the class price table (not a quote)'],
+    'not-fitted':     ['NF',    '#b45309', 'Pads / test points / not fitted — no part to buy'],
+    'ai-estimate':    ['AI',    '#b45309', 'AI estimate only'],
+  };
+  const m = map[src];
+  const badge = m ? `<span class="pcb-badge" style="background:${m[1]};color:#fff" title="${note || m[2]}">${m[0]}</span>` : '';
+  return `${file ? '<span class="pcb-badge" style="background:#0f766e;color:#fff" title="From your BOM file">FILE</span>' : ''}${badge}`;
+}
+
 function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const b = r.boardSpec;
   const a = r.assembly;
@@ -8469,7 +8512,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem"></span>' : ''}`}</td>
       <td>&#163;${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
-      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Live-priced from distributor">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
+      <td>${pcbPriceBasisBadge(item)}${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Live-priced from distributor">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
     </tr>`).join('');
 
   const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
@@ -8576,8 +8619,8 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
                 const nvc = nv.needsVerificationCount ?? nv._needsVerificationCount ?? 0;
                 if (ce && typeof ce.unverifiedBOMCostGBP === 'number' && ce.unverifiedBOMCostGBP > 0.01) {
                   return `<div style="font-size:0.58rem;margin-top:3px;line-height:1.3">`
-                    + `<span style="color:#0e9f6e">&#10003; &#163;${(ce.confirmedBOMCostGBP ?? 0).toFixed(2)} confirmed</span>`
-                    + ` · <span style="color:#b45309">&#163;${ce.unverifiedBOMCostGBP.toFixed(2)} to verify${nvc ? ` (${nvc})` : ''}</span></div>`;
+                    + `<span style="color:#0e9f6e" title="Catalogue prices, parts read off the chips, and small lines priced by count from the table">&#10003; &#163;${(ce.confirmedBOMCostGBP ?? 0).toFixed(2)} priced</span>`
+                    + ` · <span style="color:#b45309" title="Lines worth £1+ per board with no quote behind the price — confirm these">&#163;${ce.unverifiedBOMCostGBP.toFixed(2)} to verify${nvc ? ` (${nvc} lines)` : ''}</span></div>`;
                 }
                 return '';
               })()}

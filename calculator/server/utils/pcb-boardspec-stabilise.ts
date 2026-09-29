@@ -15,6 +15,7 @@ import { computePCBCountryCost } from '../data/pcb-country-rates.js';
 export interface StabiliseInput {
   widthMm?: unknown; heightMm?: unknown; estimatedLayers?: unknown;
   throughVias?: unknown; blindVias?: unknown; microVias?: unknown;
+  layersSource?: unknown; viasSource?: unknown;
   hdiStructure?: unknown; impedanceControlRequired?: unknown;
   technologyType?: unknown; surfaceFinish?: unknown; bgaDetected?: unknown;
   [k: string]: unknown;
@@ -105,7 +106,9 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   }
 
   // ── 2. Layers: quantise to a standard stack-up ──────────────────────────────
-  const layers = standardLayers(n(spec.estimatedLayers, 2));
+  // A layer count read from the fab data (copper-layer files) is kept as is.
+  const layers = String(spec.layersSource ?? '') === 'measured' && n(spec.estimatedLayers) >= 1
+    ? Math.round(n(spec.estimatedLayers)) : standardLayers(n(spec.estimatedLayers, 2));
   spec.estimatedLayers = layers;
 
   // ── 3. Vias: bound to a plausible density for the (stabilised) area × layers ──
@@ -113,7 +116,10 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   // Upper bound 4× the norm: via-fenced RF/radar and shielded boards run 3–4× a
   // plain board's density (the 77 GHz radar board: ~1,000 vias on 43 cm², 3.2×).
   // It was 1.8×, which cut that board's vias to 556.
-  spec.throughVias = Math.round(Math.min(Math.max(n(spec.throughVias), expThrough * 0.3), expThrough * 4));
+  // A via count from the drill file is ground truth — the density band is for guesses.
+  spec.throughVias = String(spec.viasSource ?? '') === 'measured'
+    ? Math.max(0, Math.round(n(spec.throughVias)))
+    : Math.round(Math.min(Math.max(n(spec.throughVias), expThrough * 0.3), expThrough * 4));
   spec.microVias = Math.max(0, Math.round(n(spec.microVias)));
   spec.blindVias = Math.max(0, Math.round(n(spec.blindVias)));
 
