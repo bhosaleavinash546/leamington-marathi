@@ -10,6 +10,7 @@ import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import type { ForgingInputs } from '../src/engine/modules/forging.js';
 import type { PaintingInputs } from '../src/engine/modules/painting.js';
 import type { BIWAssemblyInputs } from '../src/engine/modules/biw-assembly.js';
+import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
 
 const STACK_DEFAULTS = { packagingPerPart: 0.00, logisticsPerPart: 0.00, overheadPct: 0.10, marginPct: 0.07 };
 
@@ -73,7 +74,7 @@ describe('Forging module', () => {
     expect(r.breakdown.tooling).toBeCloseTo(((FORGE_INPUTS.dieCost ?? 0) * numSets) / withHT.amortizationVolume, 3);
     // Heat treat + billet heating are per-part recurring costs → appear in rawMaterial, not tooling
     const billetWt = (withHT.partWeightKg + withHT.flashAndScaleKg) / withHT.yieldFraction;
-    const heating = withHT.heatingEnergyKwhPerKg * billetWt * 0.23;   // default UK tariff
+    const heating = withHT.heatingEnergyKwhPerKg * billetWt * ukElectricityPerKwh();   // default UK tariff (library)
     expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.80 * withHT.partWeightKg + heating, 4);
   });
 });

@@ -195,8 +195,9 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "Kallanish N-Europe wire rod headlines: 'stable' (Jun 2026), 'decrease slightly' (Jul), 'remain stable' and 'flat' (Sep 2026) — no net move; held.",
-   "held": true
+   "source": "Index flat: Kallanish N-Europe wire rod 'stable' (Jun 2026), 'decrease slightly' (Jul), 'remain stable' / 'flat' (Sep 2026) — carbon and alloy bar unchanged.",
+   "held": true,
+   "flat": true
   },
   "ss_sur": {
    "unit": "per t",
@@ -260,7 +261,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pc": {
@@ -269,7 +270,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pa6": {
@@ -278,7 +279,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pa66": {
@@ -287,7 +288,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pom": {
@@ -296,7 +297,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pbt": {
@@ -305,7 +306,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pmma": {
@@ -314,7 +315,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "tpu": {
@@ -323,7 +324,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "pps": {
@@ -332,7 +333,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: engineering resin prices are paywalled (PIE/ICIS). Direction only: PC rising through Aug 2026, PA6 rebounding, PA66 under pressure, PET declining — no like-for-like June→Sep figures.",
    "held": true
   },
   "tio2": {
@@ -341,7 +342,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June and September level on the same basis.",
    "held": true
   },
   "carbonblack": {
@@ -350,7 +351,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: synthetic rubber moves were weekly and mixed (ERJ, w/e 23 Sep 2026: SBR −2.3%, EPDM −1%, NBR +1%); no June→Sep level.",
    "held": true
   },
   "epdm": {
@@ -359,7 +360,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: synthetic rubber moves were weekly and mixed (ERJ, w/e 23 Sep 2026: SBR −2.3%, EPDM −1%, NBR +1%); no June→Sep level.",
    "held": true
   },
   "nbr": {
@@ -368,7 +369,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: synthetic rubber moves were weekly and mixed (ERJ, w/e 23 Sep 2026: SBR −2.3%, EPDM −1%, NBR +1%); no June→Sep level.",
    "held": true
   },
   "sbr": {
@@ -377,7 +378,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: synthetic rubber moves were weekly and mixed (ERJ, w/e 23 Sep 2026: SBR −2.3%, EPDM −1%, NBR +1%); no June→Sep level.",
    "held": true
   },
   "butadiene": {
@@ -386,7 +387,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: synthetic rubber moves were weekly and mixed (ERJ, w/e 23 Sep 2026: SBR −2.3%, EPDM −1%, NBR +1%); no June→Sep level.",
    "held": true
   },
   "silicone": {
@@ -395,7 +396,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: synthetic rubber moves were weekly and mixed (ERJ, w/e 23 Sep 2026: SBR −2.3%, EPDM −1%, NBR +1%); no June→Sep level.",
    "held": true
   },
   "cf": {
@@ -404,7 +405,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: composites inputs (epoxy China 12,500–12,900 CNY/t Sep 2026; glass fibre 'mild downward pressure') have no June level on the same basis.",
    "held": true
   },
   "gf": {
@@ -413,7 +414,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: composites inputs (epoxy China 12,500–12,900 CNY/t Sep 2026; glass fibre 'mild downward pressure') have no June level on the same basis.",
    "held": true
   },
   "epoxy": {
@@ -422,7 +423,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: composites inputs (epoxy China 12,500–12,900 CNY/t Sep 2026; glass fibre 'mild downward pressure') have no June level on the same basis.",
    "held": true
   },
   "upr": {
@@ -431,7 +432,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: composites inputs (epoxy China 12,500–12,900 CNY/t Sep 2026; glass fibre 'mild downward pressure') have no June level on the same basis.",
    "held": true
   },
   "pigiron": {
@@ -440,7 +441,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS 'June' figure found was a 2020 article; UK yard prices not comparable).",
    "held": true
   },
   "scrap": {
@@ -449,17 +450,16 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS 'June' figure found was a 2020 article; UK yard prices not comparable).",
    "held": true
   },
   "crno": {
    "unit": "per t",
-   "ccy": "GBP",
-   "perKgDivisor": 1,
-   "old": 1,
-   "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
-   "held": true
+   "ccy": "CNY",
+   "perKgDivisor": 1000,
+   "old": 5500,
+   "now": 5800,
+   "source": "Baosteel non-oriented electrical steel list price +300 CNY/t for July 2026 sales (IndexBox, 'Baosteel July 2026 Price Announcement: Flat Steel Unchanged, Electrical Steel Up 300 Yuan/t'); no August/September change found; October's +200 CNY/t falls after 29 Sep. Level nominal (~5,500 CNY/t) — only the change is sourced."
   },
   "coatings": {
    "unit": "per t",
@@ -467,8 +467,9 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "Automotive coatings increases (PPG up to 20% Apr, BASF 7% May 2026) took effect before the June anchor; no Q3 2026 automotive increase found — held.",
-   "held": true
+   "source": "Index flat: automotive coatings increases (PPG up to 20% Apr, BASF 7% May 2026) took effect before the June anchor; no Q3 2026 automotive coatings increase announced.",
+   "held": true,
+   "flat": true
   },
   "fecr": {
    "unit": "per t",
@@ -476,7 +477,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June and September level on the same basis.",
    "held": true
   },
   "mo": {
@@ -485,7 +486,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June and September level on the same basis.",
    "held": true
   },
   "co": {
@@ -494,7 +495,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June and September level on the same basis.",
    "held": true
   },
   "si": {
@@ -503,7 +504,7 @@
    "perKgDivisor": 1,
    "old": 1,
    "now": 1,
-   "source": "No sourced June→September 2026 move found (paywalled or unpublished) — held at the previous price.",
+   "source": "Not sourced this period: no June and September level on the same basis.",
    "held": true
   },
   "pp": {
@@ -572,6 +573,15 @@
    ],
    "floor": false,
    "note": "recycled grade — priced off scrap, so not floored at primary-metal content"
+  },
+  {
+   "match": "^mat-(medmn1180|greensteel-dc01)$",
+   "drivers": [
+    [
+     "crc",
+     1.0
+    ]
+   ]
   },
   {
    "match": "^mat-virtual$",
@@ -1953,5 +1963,122 @@
   "rent": 1.00961,
   "capital": 1.0,
   "source": "depreciation: ONS PPI basic metals/fabricated metal/machinery +4.9% y/y Jul 2026 → ~1.2% a quarter; maintenance: half PPI, half wages; energy: UK tariff 0.23→0.268; floor: Cushman & Wakefield UK industrial rents +3.9% y/y Q2 2026, one quarter; indirect: ONS AWE manufacturing +2.9% y/y, one quarter; finance: Bank Rate 3.75% unchanged (BoE MPC Jun and Sep 2026)"
+ },
+ "regionalFactors": {
+  "CN": [
+   {
+    "field": "materialMultiplier",
+    "multiply": 0.9431,
+    "source": "China HRC flat in CNY: Mysteel June range 3,720–3,800 CNY/t incl. 13% VAT vs SunSirs Shanghai 3,320 CNY/t ex-VAT on 16 Sep 2026 (×1.13 = 3,752) — replaces the European +7.3% steel move the UK base carries; covers mill steel and other non-resin, non-exchange-traded materials"
+   },
+   {
+    "field": "commodityResin",
+    "multiply": 0.9638,
+    "source": "China PP: Dalian PP futures 8,683 CNY/t (4 Jun 2026, sci99) → 8,501 CNY/t (28 Sep 2026, tradingeconomics) −2.1% in CNY — replaces the European PP re-anchor (+2.8%)"
+   }
+  ],
+  "IN": [
+   {
+    "field": "materialMultiplier",
+    "multiply": 0.9888,
+    "source": "India HRC: ~INR 57,500/t (Jul 2026, procurementresource) → ~INR 62,000/t (Sep 2026, BigMint via dailypioneer; four-year high) +7.8% — replaces the European +7.3% steel move"
+   }
+  ]
+ },
+ "pcb": {
+  "months": 8.5,
+  "basis": "PCB country table is '2026 Edition … calibrated to Jan 2026 FX'. £ values move by the market FX change 15 Jan → 29 Sep 2026 (the stored per-country fxToGBP values were stale labels, e.g. INR 107 vs 121.2 market); labour also by local wage growth over 8.5 months; freight and duty held (no lane index sourced); UK electricity aligned with the library tariff.",
+  "fxJan": {
+   "cn": 9.3603,
+   "vn": 35357.0,
+   "in": 121.24,
+   "th": 42.299,
+   "my": 5.4392,
+   "tw": 42.389,
+   "kr": 1974.0,
+   "mx": 23.906,
+   "cz": 27.989,
+   "pl": 4.8604,
+   "de": 1.1542,
+   "gb": 1,
+   "us": 1.3433,
+   "jp": 212.71
+  },
+  "fxNow": {
+   "cn": 8.8799,
+   "vn": 34350.0,
+   "in": 127.2,
+   "th": 44.524,
+   "my": 5.4055,
+   "tw": 42.167,
+   "kr": 1798.0,
+   "mx": 23.836,
+   "cz": 28.426,
+   "pl": 5.0958,
+   "de": 1.1653,
+   "gb": 1,
+   "us": 1.3238,
+   "jp": 208.47
+  },
+  "wages": {
+   "cn": {
+    "annual": 0.04,
+    "source": "2026 salary budget ~4.0% (china-briefing survey)"
+   },
+   "vn": {
+    "annual": 0.071,
+    "source": "2026 projected wage increase 7.1%"
+   },
+   "in": {
+    "annual": 0.095,
+    "source": "EY Future of Pay 2026: manufacturing/automotive increments 9.5%"
+   },
+   "th": {
+    "annual": 0.0,
+    "source": "no 2026 wage-growth figure found; minimum wage unchanged in Q3 — local wages held, FX only"
+   },
+   "my": {
+    "annual": 0.0,
+    "source": "no wage-growth figure sourced for this country — FX only"
+   },
+   "tw": {
+    "annual": 0.0,
+    "source": "no wage-growth figure sourced for this country — FX only"
+   },
+   "kr": {
+    "annual": 0.059,
+    "source": "MoEL manufacturing wages H1 2026 +5.9% y/y"
+   },
+   "mx": {
+    "annual": 0.059,
+    "source": "IMSS average registered wage +5.9% y/y (Jul 2026)"
+   },
+   "cz": {
+    "annual": 0.064,
+    "source": "CZSO average gross wage Q2 2026 +6.4% y/y"
+   },
+   "pl": {
+    "annual": 0.059,
+    "source": "GUS enterprise-sector wages Aug 2026 +5.9% y/y"
+   },
+   "de": {
+    "annual": 0.041,
+    "source": "Destatis nominal wages Q2 2026 +4.1% y/y"
+   },
+   "gb": {
+    "annual": 0.029,
+    "source": "ONS AWE manufacturing regular pay May–Jul 2026 +2.9% y/y"
+   },
+   "us": {
+    "annual": 0.033,
+    "source": "BLS ECI private-industry compensation 12m to Jun 2026 +3.3%"
+   },
+   "jp": {
+    "annual": 0.0,
+    "source": "no wage-growth figure sourced for this country — FX only"
+   }
+  },
+  "ukElectricity": 0.268,
+  "fxSource": "fawazahmed0/currency-api daily snapshots 2026-01-15 and 2026-09-29 (npm @fawazahmed0/currency-api)"
  }
 }

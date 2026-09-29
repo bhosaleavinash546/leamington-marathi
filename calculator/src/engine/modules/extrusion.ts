@@ -4,6 +4,7 @@ import {
   extrusionFamilyOf,
   type ExtrusionFamily, type ExtrusionProcess, type ScrewType, type ExtrusionCooling, type DieComplexity,
 } from './extrusion-advisor.js';
+import { ukElectricityPerKwh } from '../uk-tariff.js';
 
 export interface ExtrusionInputs {
   materialId: string;
@@ -104,7 +105,7 @@ export function computeExtrusionDrivers(inputs: ExtrusionInputs): CommodityDrive
 
   // ── Variable process energy (melt + drive + chill) and additive/masterbatch ──
   const specificEnergy = estimateExtrusionSpecificEnergy(family, screwType); // kWh/kg
-  const energyCostPerPart = specificEnergy * grossWeightKg * Math.max(0, inputs.energyPricePerKwh ?? 0.20);
+  const energyCostPerPart = specificEnergy * grossWeightKg * Math.max(0, inputs.energyPricePerKwh ?? ukElectricityPerKwh());
   const additiveFrac = Math.max(0, Math.min(0.3, inputs.additiveFraction ?? 0));
   const additiveCostPerPart = additiveFrac * grossWeightKg * Math.max(0, inputs.additivePricePerKg ?? 0);
   const consumablesCostPerPart = energyCostPerPart + additiveCostPerPart;

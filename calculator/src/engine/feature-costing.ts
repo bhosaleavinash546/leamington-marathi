@@ -1,4 +1,5 @@
 import type { DFMSeverity } from './dfm-dfa.js';
+import { libraryMachineRate } from './uk-tariff.js';
 
 /**
  * Feature-based costing (FBC) — the aPriori-style differentiator.
@@ -81,7 +82,7 @@ export function physicalRemovalCeilingMin(
 const STD_DRILL_DIA = [1, 1.5, 2, 2.5, 3, 3.3, 4, 4.2, 5, 5.5, 6, 6.8, 8, 8.5, 10, 10.5, 12, 14, 16, 18, 20];
 
 export function computeFeatureCosting(f: RecognizedFeatures, opts: FeatureCostOptions = {}): FeatureCostResult {
-  const rate = opts.machineRateGBPPerHr ?? 75;
+  const rate = opts.machineRateGBPPerHr ?? libraryMachineRate('mach-vmc3');
   const mf = Math.max(0.5, opts.materialFactor ?? 1.0);
   // Setup is size-aware: loading a small part into a small fixture is not a 30-min
   // bridge-mill setup. Scale toward the part's size when geometry is known.

@@ -12,7 +12,7 @@ SHEET METAL COST INPUT RULES:
   pitchMm=361  [blank 336 mm + 25 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
   stripWidthMm=301  [blank 252 mm + 2 × 25 mm edge margin — deterministic, use verbatim]
   strokesPerMin=40  [feed-limited: 18 m/min ÷ 361 mm pitch, de-rated for 4 bends — deterministic, use verbatim]
-  dieCostGBP=59387  [single_stage die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
+  dieCostGBP=59706  [single_stage die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
   dieLife=1050000  [170 MPa shear at 12.25 mm on a single_stage die — deterministic, use verbatim]
   dieType=single_stage  [high volume at 12.25 mm: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
   process=Laser Cutting  [high volume: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]

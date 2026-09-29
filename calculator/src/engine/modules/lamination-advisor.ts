@@ -1,4 +1,5 @@
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
+import { ukElectricityPerKwh } from '../uk-tariff.js';
 
 /**
  * E-motor / transformer lamination advisor — the finishing steps that sit on top
@@ -72,7 +73,7 @@ export function estimateLaminationFinishing(inputs: LaminationFinishingInputs): 
   const joinPerStack = estimateLaminationJoinCostPerStack(inputs);
   const joinPerPart = joinPerStack / n;                 // per single lamination
   const annealEnergyPerPart = inputs.stressReliefAnneal
-    ? LAMINATION_ANNEAL_KWH_PER_KG * Math.max(0, inputs.partWeightKg) * (inputs.annealEnergyPricePerKwh ?? 0.23)
+    ? LAMINATION_ANNEAL_KWH_PER_KG * Math.max(0, inputs.partWeightKg) * (inputs.annealEnergyPricePerKwh ?? ukElectricityPerKwh())
     : 0;
   const coatingPerPart = inputs.reCoat ? LAMINATION_COATING_GBP_PER_KG * Math.max(0, inputs.partWeightKg) : 0;
   const totalPerPart = joinPerPart + annealEnergyPerPart + coatingPerPart;

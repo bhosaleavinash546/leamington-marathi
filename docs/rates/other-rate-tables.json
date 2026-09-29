@@ -1,0 +1,250 @@
+[
+ {
+  "file": "src/engine/rate-library.ts",
+  "table": "Materials, machines, labour, energy, FX",
+  "prices": "All UK base rates",
+  "perCountry": "UK base (every country derives)",
+  "status": "Updated",
+  "reason": "See Materials UK / Machines UK / Labour sheets"
+ },
+ {
+  "file": "src/engine/regional-rates.ts",
+  "table": "REGIONAL_DATA, EXTRUSION/THERMOFORMING_COUNTRY_PRICES",
+  "prices": "Country labour, energy, FX, factors, country resin prices",
+  "perCountry": "Yes (20)",
+  "status": "Updated",
+  "reason": "See Labour by country / Energy / FX / Country factors / Country price tables"
+ },
+ {
+  "file": "server/data/pcb-country-rates.ts",
+  "table": "PCB_COUNTRY_RATES, NRE_DATA, ENERGY_PACKAGING",
+  "prices": "PCB fab £/dm², assembly £/hr, NRE, energy, packaging",
+  "perCountry": "Yes (14)",
+  "status": "Updated",
+  "reason": "Re-based Jan→29 Sep 2026 FX; labour + local wages (8.5 months); freight/duty held; UK energy = library. See PCB country rates sheet"
+ },
+ {
+  "file": "src/engine/toolmaking.ts",
+  "table": "TOOLROOM_RATES",
+  "prices": "UK toolroom £/hr (design, CNC, EDM, fitting, polish, try-out)",
+  "perCountry": "UK",
+  "status": "Updated",
+  "reason": "× UK wage growth one quarter; drives every mould/die/pattern estimate"
+ },
+ {
+  "file": "src/engine/toolmaking.ts",
+  "table": "TOOL_MATERIAL_GBP_PER_KG, BOUGHT_OUT_GBP",
+  "prices": "Tool steel £/kg; hot runners, texturing £ each",
+  "perCountry": "UK",
+  "status": "Held",
+  "reason": "No public tool-steel or catalogue index — refresh by supplier quote"
+ },
+ {
+  "file": "src/engine/surface-treatment-data.ts",
+  "table": "SURFACE_METAL_PRICES",
+  "prices": "Plated metal £/kg (Zn, Ni, Cu, Sn, Al, Zn-Ni)",
+  "perCountry": "No",
+  "status": "Updated",
+  "reason": "LME late Sep 2026; chromium (bath cost, not a market price) held"
+ },
+ {
+  "file": "src/engine/surface-treatment-data.ts",
+  "table": "SURFACE_STAGES, DEFAULT_SURFACE_LINE",
+  "prices": "25 surface-treatment stages: chemistry, effluent, capital",
+  "perCountry": "No (SURFACE_REGIONAL_FACTORS)",
+  "status": "Updated",
+  "reason": "Workbook of 13 Aug 2026 (recent) — USD figures re-converted at 29 Sep 2026 FX; chemistry itself held (6 weeks old)"
+ },
+ {
+  "file": "src/engine/gear-heat-treat-data.ts",
+  "table": "GEAR_HEAT_TREAT_PROCESSES, HT_SHOP_BY_REGION",
+  "prices": "15 heat-treat processes; shop economics (UK, EU, DE, CN, IN)",
+  "perCountry": "Yes (5)",
+  "status": "Updated",
+  "reason": "Workbook of 13 Aug 2026 — USD re-converted at 29 Sep FX; energy priced at the library tariff at run time"
+ },
+ {
+  "file": "src/engine/gear-shop-data.ts",
+  "table": "DEFAULT_GEAR_SHOP_DATA",
+  "prices": "Gear tools (hob, cutters, wheels) £, NRE £",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Recorded 9 Aug 2026 (representative, unverified) — no index; review with supplier quotes"
+ },
+ {
+  "file": "src/engine/modules/*-advisor.ts, casting-tooling.ts, injection-moulding.ts, composites.ts",
+  "table": "Tool/die/mould cost formulas",
+  "prices": "£ base + £/cm² per process (HPDC, forging, stamping, blow, roto, rubber, thermoforming, extrusion, composites)",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Parametric tooling formulas (Jun 2026) — toolroom labour inside them moved via TOOLROOM_RATES where used; fixed £ terms held"
+ },
+ {
+  "file": "src/engine/modules/forging-advisor.ts",
+  "table": "HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART",
+  "prices": "Forging heat treat £/kg, NDT £/part",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Subcontract benchmarks (Jun 2026), no index — review"
+ },
+ {
+  "file": "src/engine/modules/casting-advisor.ts",
+  "table": "HIP/HEAT_TREAT/NDT/FETTLING costs",
+  "prices": "Casting secondary £",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Not used by any costing path (dead code)"
+ },
+ {
+  "file": "src/engine/modules/lamination-advisor.ts",
+  "table": "LAMINATION_COATING_GBP_PER_KG, join costs",
+  "prices": "Lamination coating £/kg, stack joining £",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Benchmarks, no index; anneal energy now at the library tariff"
+ },
+ {
+  "file": "src/engine/modules/sheet-metal-fab.ts",
+  "table": "ASSIST_GAS_COST_PER_HR, WATERJET_ABRASIVE",
+  "prices": "Laser assist gas £/hr, abrasive £/hr",
+  "perCountry": "UK",
+  "status": "Held",
+  "reason": "Industrial gas / garnet — no index sourced"
+ },
+ {
+  "file": "src/engine/modules/sheet-metal-hardware.ts",
+  "table": "HARDWARE_CATALOGUE",
+  "prices": "36 fastener £/piece",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "UK distributor pricing Jul 2026 (recent) — no index"
+ },
+ {
+  "file": "src/engine/modules/pcb-fab.ts",
+  "table": "BASE_PANEL_PRICE_2L etc.",
+  "prices": "PCB panel £ (UK, EU, CN, IN, NA)",
+  "perCountry": "Yes (5)",
+  "status": "Held",
+  "reason": "Bought-in market price model; basis date not recorded — review against the PCB country table"
+ },
+ {
+  "file": "src/engine/modules/pcba.ts",
+  "table": "packaging/freight formulas, price decay",
+  "prices": "PCBA £ formulas",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Formulas (Aug 2026 ladder) — held"
+ },
+ {
+  "file": "src/engine/landed-cost.ts, landed-cost-data.ts",
+  "table": "FREIGHT_GBP_PER_KG, ORIGIN_INLAND, duties, CBAM",
+  "prices": "Sea freight £/kg (24 countries), inland, duty %",
+  "perCountry": "Yes",
+  "status": "Held",
+  "reason": "Reviewed Jul/Aug 2026; used by scripts only, not the UI; no freight index sourced"
+ },
+ {
+  "file": "src/engine/cost-input-rules/to-cost-params.ts",
+  "table": "SHOP_DEFAULTS",
+  "prices": "Packaging £0.15, logistics £0.25, OH 12%, margin 8%",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Policy defaults, not market rates"
+ },
+ {
+  "file": "src/engine/sw-rate-library.ts, sw-should-cost.ts",
+  "table": "DEFAULT_SW_RATE_LIBRARY, SW_MODULES",
+  "prices": "Software person-month rates, licences",
+  "perCountry": "Yes",
+  "status": "Held",
+  "reason": "Separate software cost model (asOf 2024-01/2025-01) — out of manufacturing scope; flagged for its own review"
+ },
+ {
+  "file": "src/engine/insights.ts",
+  "table": "FX_TO_GBP",
+  "prices": "Display/conversion FX (16 currencies)",
+  "perCountry": "Yes",
+  "status": "Updated",
+  "reason": "29 Sep 2026 FX"
+ },
+ {
+  "file": "src/engine/insights.ts",
+  "table": "REGIONAL_COST_INDEX",
+  "prices": "Insight text cost index",
+  "perCountry": "Display / not a costing path",
+  "status": "Display / not a costing path",
+  "reason": "Display only"
+ },
+ {
+  "file": "server/utils/pcb-live-pricing.ts",
+  "table": "FX_TO_GBP",
+  "prices": "Distributor price conversion FX",
+  "perCountry": "Yes",
+  "status": "Fixed to read library",
+  "reason": "Was a Jan 2026 copy (USD 0.787); now reads insights FX_TO_GBP"
+ },
+ {
+  "file": "server/utils/pcb-price-catalogue.ts, pcb-bom-postprocess.ts",
+  "table": "EXACT, FAMILY, CLASS_MEDIAN, DEFAULT_UNIT_PRICE_GBP",
+  "prices": "Electronic component £ unit prices",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Distributor prices early 2026 — AI photo route only (off at JLR); no index"
+ },
+ {
+  "file": "server/routes/pcb.ts",
+  "table": "assembly model, conformal coating, PRICING_TABLE",
+  "prices": "PCBA automotive assembly £, AI prompt price ranges",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "AI photo route only (off at JLR)"
+ },
+ {
+  "file": "server/routes/agent.ts",
+  "table": "SYSTEM_PROMPT machine/labour £/hr",
+  "prices": "AI agent prompt text",
+  "perCountry": "No",
+  "status": "Fixed to read library",
+  "reason": "Was typed-in and stale; now rewritten from the library at load (AI off at JLR)"
+ },
+ {
+  "file": "server/routes/commodities.ts",
+  "table": "COMMODITY_CATALOG",
+  "prices": "Display / not a costing path",
+  "perCountry": "No",
+  "status": "Display / not a costing path",
+  "reason": "Dashboard ticker — simulated, labelled indicative"
+ },
+ {
+  "file": "server/services/price-fetcher.ts",
+  "table": "PRICE_MAP",
+  "prices": "Display / not a costing path",
+  "perCountry": "No",
+  "status": "Display / not a costing path",
+  "reason": "Display-only override table read by no costing path"
+ },
+ {
+  "file": "src/engine/modules/forging.ts, sheet-metal.ts, lamination-advisor.ts, extrusion.ts, thermoforming.ts",
+  "table": "energy price fallbacks",
+  "prices": "£0.23 / £0.20 per kWh literals",
+  "perCountry": "No",
+  "status": "Fixed to read library",
+  "reason": "Now read the library UK tariff (£0.268/kWh)"
+ },
+ {
+  "file": "src/engine/feature-costing.ts",
+  "table": "machine rate fallback",
+  "prices": "£75/hr literal",
+  "perCountry": "No",
+  "status": "Fixed to read library",
+  "reason": "Now reads the library generic VMC rate"
+ },
+ {
+  "file": "src/engine/cavitation-optimiser.ts",
+  "table": "labour fallback ?? 19.80",
+  "prices": "UK semi-skilled",
+  "perCountry": "No",
+  "status": "Held",
+  "reason": "Primary path reads the library; the literal is an unreachable fallback"
+ }
+]

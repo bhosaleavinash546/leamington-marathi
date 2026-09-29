@@ -1,4 +1,5 @@
 import { isAirGapped } from './ai-client.js';
+import { FX_TO_GBP as ENGINE_FX_TO_GBP } from '../../src/engine/insights.js';
 /**
  * Optional live component pricing integration.
  * Three providers: Octopart/Nexar (GraphQL), RS Components, Farnell/element14.
@@ -35,10 +36,12 @@ export interface LivePriceResult {
   rawUnitPrice: number;
 }
 
-// ─── FX rates for conversion (mid-market Jan 2026) ───────────────────────────
-const FX_TO_GBP: Record<string, number> = {
-  GBP: 1.0, USD: 0.787, EUR: 0.855, JPY: 0.00518, CNY: 0.109,
-};
+// ─── FX rates for conversion ─────────────────────────────────────────────────
+// The engine's one display/conversion table (insights.ts), refreshed with the
+// rates. This file used to carry its own Jan 2026 copy (USD 0.787) and converted
+// live distributor prices at it long after the pound had moved. JPY is not in the
+// engine table, so it keeps its own dated rate.
+const FX_TO_GBP: Record<string, number> = { ...ENGINE_FX_TO_GBP, JPY: 1 / 208.47 /* 29 Sep 2026 */ };
 
 function toGBP(amount: number, currency: string): number {
   return amount * (FX_TO_GBP[currency.toUpperCase()] ?? 1.0);

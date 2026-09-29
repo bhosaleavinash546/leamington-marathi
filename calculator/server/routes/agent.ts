@@ -172,7 +172,21 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are the Unified Should-Cost Orchestrator AI Agent for an advanced manufacturing cost estimation platform.
+/**
+ * The prompt quotes machine and labour £/hr next to their library ids. Those
+ * numbers used to be typed in and had drifted (lab-uk-skilled £24 against the
+ * library's rate). Every "<id> (£N/hr" is now rewritten from the library at load.
+ */
+function withLibraryRates(text: string): string {
+  const rate = new Map<string, number>([
+    ...DEFAULT_RATE_LIBRARY.machines.map(m => [m.id, m.computedRatePerHr] as [string, number]),
+    ...DEFAULT_RATE_LIBRARY.labour.map(l => [l.id, l.fullyLoadedRatePerHr] as [string, number]),
+  ]);
+  return text.replace(/\b([a-z0-9]+(?:-[a-z0-9]+)+) \(£([0-9.]+)\/hr/g, (m, id: string) =>
+    rate.has(id) ? `${id} (£${rate.get(id)!.toFixed(2)}/hr` : m);
+}
+
+const SYSTEM_PROMPT = withLibraryRates(`You are the Unified Should-Cost Orchestrator AI Agent for an advanced manufacturing cost estimation platform.
 
 ## Primary Objective
 Provide accurate, transparent, engineering-grade should-cost estimates for manufactured parts across all commodities using structured reasoning, geometry analysis, cost-driver extraction, and Design-for-Cost (DFM/DFC) recommendations.
@@ -883,7 +897,7 @@ When the user message contains [Cost Engine Result: ...], interpret as follows:
 | 2 | Pocket Rough | VMC 3-axis | 12 min |
 | **Total** | | | **20 min** |
 
-Always be technically precise. Never invent material prices or machine rates.`;
+Always be technically precise. Never invent material prices or machine rates.`);
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 

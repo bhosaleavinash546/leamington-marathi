@@ -10,7 +10,8 @@
  *
  * Source: "Gear Heat Treatment & Should-Cost Rate Model" workbook, sheet
  * 04_Rate_Buildup, rows HT-01 China/India/Europe/UK. Its figures are USD/kg;
- * the engine works in GBP, so the workbook's own USD/GBP 1.33 converts them.
+ * the engine works in GBP, so they convert at the data file's USD/GBP (1.33 when
+ * typed in Aug 2026; the Sep 2026 refresh moved it to the market rate).
  */
 import { describe, it, expect } from 'vitest';
 import {
@@ -24,7 +25,7 @@ import {
 import { REGIONAL_DATA } from '../src/engine/regional-rates.js';
 import { analyseGear } from '../src/engine/modules/gear.js';
 
-const USD_PER_GBP = 1.33;
+import { USD_PER_GBP } from '../src/engine/gear-heat-treat-data.js';
 const gbp = (usd: number): number => usd / USD_PER_GBP;
 
 /** Rebuild the workbook's own shop economics so its rows can be reproduced. */
@@ -301,8 +302,8 @@ describe('heat treat regionalises as conversion, not as material', () => {
     const uk = computeHeatTreatRate('gas_carburise', 'UK').ratePerKg;
     const cn = computeHeatTreatRate('gas_carburise', 'CN').ratePerKg;
     const ratio = cn / uk;
-    // Nowhere near the 0.88 material multiplier that used to be applied.
-    expect(REGIONAL_DATA.CN.materialMultiplier).toBeCloseTo(0.88, 2);
+    // Nowhere near the CN material multiplier (0.83 on Sep 2026 rates) that used to be applied.
+    expect(ratio).toBeLessThan(REGIONAL_DATA.CN.materialMultiplier - 0.1);
     expect(ratio).toBeLessThan(0.70);
     expect(ratio).toBeGreaterThan(0.25);
   });

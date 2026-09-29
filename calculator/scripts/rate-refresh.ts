@@ -30,7 +30,9 @@ import { resolve } from 'node:path';
 type Ccy = string;
 /** oldFx: the FX the old anchor was converted at when the library was built
  *  (1 GBP = X). Defaults to the market rate on the old date (fx.june). */
-interface IndexDef { unit: string; ccy: Ccy; perKgDivisor: number; old: number; now: number; source: string; note?: string; oldFx?: number; held?: boolean }
+/** held: no sourced move this period (unchanged, reason in source). flat: sourced,
+ *  and the market did not move. Either way the rate is unchanged and says why. */
+interface IndexDef { unit: string; ccy: Ccy; perKgDivisor: number; old: number; now: number; source: string; note?: string; oldFx?: number; held?: boolean; flat?: boolean }
 /** drivers: [index, kg of that commodity per kg of material]. pct: an index
  *  published only as a % move (e.g. a coatings maker's price increase) — the
  *  whole price moves by it. */
@@ -46,6 +48,11 @@ interface Config {
   labour: { ukGrowth: number; ukSource: string; regions: Record<string, { growth: number; source: string; grades?: Record<string, number> }> };
   energy: Record<string, { electricityPerKwh?: number; gasPerKwh?: number; source: string }>;
   machines: { ppi: number; wages: number; electricity: number; rent: number; capital: number; source: string };
+  /** A country whose own market moved differently from the European index the UK
+   *  base follows: its factor vs the UK is multiplied so its local price follows
+   *  its own index. field is a REGIONAL_DATA key (materialMultiplier) or a
+   *  materialFactors key (commodityResin, engineeringResin, highPerfResin). */
+  regionalFactors?: Record<string, { field: string; multiply: number; source: string }[]>;
 }
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -116,10 +123,17 @@ for (const id of matIds) {
   const price = getNum(obj, 'pricePerKg');
   const scrap = getNum(obj, 'scrapRecoveryPricePerKg');
   if (id === 'mat-virtual') continue; // placeholder: not a priced material
-  if (!rule.drivers.length && !rule.pct) {
+  const keys = [...rule.drivers.map(([k]) => k), ...(rule.pct ? [rule.pct] : [])];
+  const live = keys.filter(k => !cfg.indices[k].held && !cfg.indices[k].flat);
+  if (!live.length) {
     matSummary.held++;
     deltaById[id] = 0;
-    obj = stamp(obj, rule.note ?? 'no published index move — held', cfg.asOf.slice(0, 7));
+    const why = !keys.length
+      ? 'SPECIALTY — no public market index for this grade; held at the June 2026 price — refresh by supplier quote'
+      : keys.every(k => cfg.indices[k].flat)
+        ? `INDEX FLAT — ${cfg.indices[keys[0]].source}`
+        : `NOT SOURCED — ${keys.filter(k => cfg.indices[k].held).join(', ')}: ${cfg.indices[keys.find(k => cfg.indices[k].held)!].source} Held at the June 2026 price.`;
+    obj = stamp(obj, why, cfg.asOf.slice(0, 7));
     lib = lib.slice(0, a) + obj + lib.slice(b);
     continue;
   }
@@ -190,7 +204,7 @@ function labourFactor(region: string, grade?: string): { f: number; why: string 
   const f = (1 + growth) * (fx.june / fx.now);
   return { f, why: `local wages ${growth >= 0 ? '+' : ''}${(growth * 100).toFixed(2)}% (${g.source})${ccy === 'GBP' ? '' : `; ${ccy} ${fx.june}→${fx.now} per £`}` };
 }
-for (const m of lib.matchAll(/id: '(lab-([a-z]+)-([a-z]+))'/g)) {
+for (const m of lib.matchAll(/id: '(lab-([a-z]+)-([a-z-]+))'/g)) {
   const [, id, rc, grade] = m;
   const region = regionOfLab[rc];
   if (!region) throw new Error(`labour ${id}: unknown region code ${rc}`);
@@ -226,6 +240,10 @@ for (const [ccy, fx] of Object.entries(cfg.fx)) {
     .replace(/(sourceNote:\s*)'[^']*'/, `$1'${fx.source}'`);
   lib = lib.slice(0, a) + obj + lib.slice(b);
 }
+if (!/export const RATE_BASIS = /.test(lib)) {
+  lib = lib.replace('// UK default rate library — all rates editable at runtime',
+    `/** The month the built-in rates are indexed to. scripts/rate-refresh.ts moves it;\n *  tests assert every indexed rate carries it, so a partial refresh cannot pass. */\nexport const RATE_BASIS = '';\n\n// UK default rate library — all rates editable at runtime`);
+}
 lib = lib.replace(/export const RATE_BASIS = '[^']*';/, `export const RATE_BASIS = '${cfg.asOf.slice(0, 7)}';`);
 lib = lib.replace(/(DEFAULT_RATE_LIBRARY: RateLibrary = \{\s*version: )'[^']*'(,\s*lastModified: )'[^']*'/, `$1'${cfg.version}'$2'${cfg.asOf}'`);
 
@@ -245,6 +263,14 @@ for (const [region, ccy] of Object.entries(ccyOf)) {
     const cur = Number(block.match(/fxToGBP: ([0-9.]+)/)![1]);
     if (cur !== fx.file) throw new Error(`${region} fxToGBP ${cur} is not the config's file value ${fx.file}`);
     block = block.replace(/fxToGBP: [0-9.]+/, `fxToGBP: ${fx.now}`);
+  }
+  for (const f of cfg.regionalFactors?.[region] ?? []) {
+    const re = new RegExp(`(\\b${f.field}: )([0-9.]+)`);
+    const m = block.match(re);
+    if (!m) throw new Error(`${region}: factor ${f.field} not found`);
+    const dp = (m[2].split('.')[1] ?? '').length || 2;
+    block = block.replace(re, `$1${(Number(m[2]) * f.multiply).toFixed(Math.max(3, dp))}`);
+    log.push(`regional ${region} ${f.field}: ${m[2]} → ${(Number(m[2]) * f.multiply).toFixed(Math.max(3, dp))} (${f.source})`);
   }
   const e = cfg.energy[region];
   if (e?.electricityPerKwh !== undefined) block = block.replace(/electricityPerKwh: [0-9.]+/, `electricityPerKwh: ${e.electricityPerKwh}`);

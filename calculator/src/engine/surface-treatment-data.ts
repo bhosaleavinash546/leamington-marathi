@@ -60,7 +60,7 @@ import type { GearParam } from './gear-shop-data.js';
  */
 export type ShopParam<T = number> = GearParam<T>;
 
-const USD_PER_GBP = 1.33;
+export const USD_PER_GBP = 1.3238; // 29 Sep 2026 (fawazahmed0 daily snapshot); was 1.33 when the workbook was typed in Aug 2026
 /** Convert once, at transcription, so no runtime FX can move a should-cost. */
 const usd = (v: number): number => Math.round((v / USD_PER_GBP) * 1e6) / 1e6;
 
@@ -468,12 +468,12 @@ export const SURFACE_STAGES: Record<string, SurfaceStage> = {
  * this library excludes) has almost no conversion cost left to negotiate.
  */
 export const SURFACE_METAL_PRICES: Record<SurfaceMetal, ShopParam> = {
-  zinc: b(usd(3.67), 'LME spot reference Aug 2026, USD 3,672/t'),
-  nickel: b(usd(16.31), 'LME 3-month reference Jun-Aug 2026'),
-  copper: b(usd(14.62), 'COMEX USD 6.63/lb, Aug 2026'),
-  tin: b(usd(50.22), 'LME reference Aug 2026 — metal-led even at 8 um'),
-  aluminium: b(usd(3.22), 'LME reference Aug 2026, USD 3,221/t'),
-  'zinc-nickel': b(usd(5.57), 'blended 85% Zn / 15% Ni by mass'),
+  zinc: b(usd(3.86), 'LME 29 Sep 2026, USD 3,856.85/t (was Aug 2026 USD 3,672/t)'),
+  nickel: b(usd(16.39), 'LME September 2026 month-to-date average USD 16,388/t (was Jun-Aug 16,310)'),
+  copper: b(usd(14.26), 'LME average 28 Aug-28 Sep 2026 USD 14,257/t (was COMEX Aug 2026 USD 6.63/lb)'),
+  tin: b(usd(54.55), 'LME 25 Sep 2026 USD 54,550/t (was Aug 50,220) — metal-led even at 8 um'),
+  aluminium: b(usd(3.24), 'LME cash 29 Sep 2026, USD 3,238.83/t (was Aug 3,221)'),
+  'zinc-nickel': b(usd(5.74), 'blended 85% Zn / 15% Ni by mass at the Sep 2026 prices above'),
   chromium: b(usd(6.00),
     'effective cost of chromium deposited from CrO3 incl. bath make-up and drag-out — '
     + 'NOT a metal market price. Workbook tags this [Guessing].'),

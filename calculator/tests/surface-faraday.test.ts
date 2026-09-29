@@ -154,9 +154,8 @@ describe('deposited metal is a pass-through that scales with area', () => {
 
   it('the zinc figure reconciles by hand', () => {
     // 1 m² x 8 um x 7140 kg/m³ = 0.05712 kg, / 0.80 efficiency = 0.0714 kg,
-    // x £2.7594/kg = £0.1970.
+    // x the zinc price (LME, Sep 2026 refresh).
     const expected = (1 * 8e-6 * 7140 / 0.80) * SURFACE_METAL_PRICES.zinc.value;
     expect(depositedMetalCost(SURFACE_STAGES.zinc_plate, 1)).toBeCloseTo(expected, 9);
-    expect(expected).toBeCloseTo(0.1970, 3);
   });
 });

@@ -39,17 +39,20 @@ export interface ToolCostDetail {
   total: number;
 }
 
-/** UK toolroom fully-loaded rates, £/hr (Jun 2026 benchmarks). */
+/** UK toolroom fully-loaded rates, £/hr. Jun 2026 benchmarks (58/52/58/48/45/85)
+ *  moved to Sep 2026 by one quarter of UK manufacturing wage growth (ONS AWE +2.9%
+ *  y/y → ×1.0072) — toolroom hours are labour-dominated. */
 export const TOOLROOM_RATES = {
-  design: 58,
-  cnc: 52,
-  edm: 58,
-  fitting: 48,
-  polish: 45,
-  tryoutPress: 85,
+  design: 58.42,
+  cnc: 52.37,
+  edm: 58.42,
+  fitting: 48.35,
+  polish: 45.32,
+  tryoutPress: 85.61,
 } as const;
 
-/** Tool materials, £/kg delivered (Jun 2026). */
+/** Tool materials, £/kg delivered (Jun 2026). Held at the Sep 2026 refresh: no
+ *  public tool-steel (P20/H13) price index was sourced — refresh by supplier quote. */
 export const TOOL_MATERIAL_GBP_PER_KG = {
   'p20': 6.8,
   'p20-hard': 8.2,      // pre-hard/H13-class production steel
@@ -62,7 +65,8 @@ export const TOOL_MATERIAL_GBP_PER_KG = {
 } as const;
 export type ToolMaterialId = keyof typeof TOOL_MATERIAL_GBP_PER_KG;
 
-/** Bought-out components, £ each (catalogue-typical, Jun 2026). */
+/** Bought-out components, £ each (catalogue-typical, Jun 2026). Held at the Sep 2026
+ *  refresh: catalogue prices, no index — refresh by supplier quote. */
 export const BOUGHT_OUT_GBP = {
   hotRunnerPerDrop: 3800,
   hotRunnerController: 5500,

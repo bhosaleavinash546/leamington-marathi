@@ -1,6 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { estimateForgingDieCost, type DieSteel, type ShapeComplexity } from './forging-advisor.js';
+import { ukElectricityPerKwh } from '../uk-tariff.js';
 
 export interface ForgingInputs {
   materialId: string;
@@ -189,7 +190,7 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   // Billet heating energy — a real per-part cost (furnace/induction), previously
   // collected but never costed. Priced on the whole billet at the fuel tariff.
   const heatingCostPerPart =
-    (inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * (inputs.heatingEnergyPricePerKwh ?? 0.23);
+    (inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * (inputs.heatingEnergyPricePerKwh ?? ukElectricityPerKwh());
 
   // Heat treat and descale are recurring per-part costs → rawMaterial.consumablesCostPerPart
   const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;

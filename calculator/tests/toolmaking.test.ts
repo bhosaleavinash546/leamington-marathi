@@ -11,8 +11,8 @@ describe('toolmaking shop model', () => {
       labourLine('CNC', 'machining', 100, TOOLROOM_RATES.cnc, 'x'),
       materialLine('steel', 100, 'h13', 'x'),
     ]);
-    // 100h × £52 + 100kg × £9.5 = £6,150 → +22% = £7,503
-    expect(d.total).toBe(Math.round(6150 * (1 + SHOP_OVERHEAD_PROFIT)));
+    // 100h × CNC £/hr + 100kg × £9.5 H13 → +22% (£7,503 on the Jun 2026 £52/hr)
+    expect(d.total).toBe(Math.round((100 * TOOLROOM_RATES.cnc + 100 * 9.5) * (1 + SHOP_OVERHEAD_PROFIT)));
     expect(d.lines.at(-1)!.kind).toBe('overheadProfit');
     expect(d.lines.reduce((s, l) => s + l.cost, 0)).toBe(d.total);
     expect(d.labourHours).toBe(100);

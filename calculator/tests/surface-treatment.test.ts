@@ -29,6 +29,7 @@ import { computeUniversalStack, validateStackInput } from '../src/engine/core.js
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { REGIONAL_DATA } from '../src/engine/regional-rates.js';
 import { runSensitivity } from '../src/engine/sensitivity.js';
+import { USD_PER_GBP } from '../src/engine/surface-treatment-data.js';
 
 const paintPart = (over: Partial<PaintingInputs> = {}): PaintingInputs => ({
   surfaceAreaM2: 0.8,
@@ -45,8 +46,9 @@ const paintPart = (over: Partial<PaintingInputs> = {}): PaintingInputs => ({
 
 /** The painted reference part's total. £4.5936 on the June 2026 rates; £4.6583
  *  after the 2026-09 index refresh (+1.4%: line energy, labour and machine
- *  build-ups moved; chemistry did not). A move here must be explained. */
-const PAINTED_TOTAL = 4.6583;
+ *  build-ups moved; chemistry converted at the Sep 2026 USD/GBP 1.3238 instead of
+ *  1.33 → £4.6632). A move here must be explained. */
+const PAINTED_TOTAL = 4.6632;
 const total = (i: PaintingInputs): number => {
   const d = computePaintingDrivers(i);
   return computeUniversalStack({
@@ -497,8 +499,9 @@ describe('AUDIT: the painted reference part is pinned', () => {
       'dry_off', 'flash_off', 'cure_oven']
       .reduce((sum, k) => sum + findSurfaceStage(k)!.chemistryGBPPerUnit.value, 0);
     expect(r.chemistryPerPart).toBeCloseTo(chemPerM2 * 0.8, 9);
-    expect(r.chemistryPerPart).toBeCloseTo(0.6795, 3);
-    expect(r.effluentPerPart).toBeCloseTo(0.3067, 3);
+    // £0.6795 at the workbook's USD/GBP 1.33; £0.6822 at the 29 Sep 2026 rate 1.3238.
+    expect(r.chemistryPerPart).toBeCloseTo(0.6795 * 1.33 / USD_PER_GBP, 3);
+    expect(r.effluentPerPart).toBeCloseTo(0.3067 * 1.33 / USD_PER_GBP, 3);
     // A bare paint route deposits no metal.
     expect(r.depositedMetalPerPart).toBe(0);
   });
@@ -519,7 +522,9 @@ describe('AUDIT: the painted reference part is pinned', () => {
       stages: STANDARD_PAINT_LINE_STAGES, surfaceAreaM2: 0.8,
       partsPerRack: 6, racksPerHour: 20,
     });
-    const delta = (r.chemistryPerPart + r.effluentPerPart - 0.3440) * 1.03 * 1.12 * 1.08;
+    // The import step is stated at the workbook's USD/GBP 1.33, so restate chemistry there.
+    const atImportFx = (r.chemistryPerPart + r.effluentPerPart) * USD_PER_GBP / 1.33;
+    const delta = (atImportFx - 0.3440) * 1.03 * 1.12 * 1.08;
     expect(delta).toBeCloseTo(0.800, 2);
     expect(4.5936 - delta).toBeCloseTo(3.794, 2);   // the import step, as it was stated
   });

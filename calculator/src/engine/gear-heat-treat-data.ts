@@ -44,7 +44,7 @@ import type { GearParam } from './gear-shop-data.js';
 /** USD -> GBP used ONCE, at transcription, so nothing depends on FX at runtime.
  *  The workbook's own rate; it tags FX `[Guessing]`, hence the single conversion
  *  point and the explicit note on every converted figure. */
-const USD_PER_GBP = 1.33;
+export const USD_PER_GBP = 1.3238; // 29 Sep 2026 (fawazahmed0 daily snapshot); was 1.33 when typed in Aug 2026
 const usd = (v: number): number => Math.round((v / USD_PER_GBP) * 1e6) / 1e6;
 
 const SRC = 'Gear Heat Treatment Should-Cost Model workbook (plant-supplied research, '

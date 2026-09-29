@@ -9,7 +9,8 @@ import {
   FORGING_FLOW_STRESS_MPA,
 } from '../src/engine/modules/forging-advisor.js';
 import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
-import { buildRegionalLibrary, classifyMaterialFamily } from '../src/engine/regional-rates.js';
+import { buildRegionalLibrary, classifyMaterialFamily, REGIONAL_DATA } from '../src/engine/regional-rates.js';
+import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
 
 const lib = DEFAULT_RATE_LIBRARY;
 const matPrice = (l: typeof lib, id: string) => l.materials.find(m => m.id === id)!.pricePerKg;
@@ -30,9 +31,9 @@ describe('F-C1 — billet heating energy is costed', () => {
     const coldC = cold.rawMaterial.consumablesCostPerPart ?? 0;
     const hotC = hot.rawMaterial.consumablesCostPerPart ?? 0;
     expect(hotC).toBeGreaterThan(coldC);
-    // billet = (1.5+0.4)/0.92 = 2.0652 kg; heating = 0.4 × 2.0652 × 0.23 ≈ £0.19
+    // billet = (1.5+0.4)/0.92 = 2.0652 kg; heating = 0.4 × 2.0652 × UK tariff (library energy-uk)
     const billet = (BASE.partWeightKg + BASE.flashAndScaleKg) / BASE.yieldFraction;
-    expect(hotC - coldC).toBeCloseTo(0.4 * billet * 0.23, 4);
+    expect(hotC - coldC).toBeCloseTo(0.4 * billet * ukElectricityPerKwh(), 4);
   });
 
   it('a higher fuel tariff raises the heating cost proportionally', () => {
@@ -136,7 +137,7 @@ describe('F-H4 — exchange vs mill metal pricing', () => {
     const steelRatio = matPrice(cn, 'mat-steel4340') / matPrice(lib, 'mat-steel4340');
     expect(inconelRatio).toBeGreaterThan(0.95);   // global nickel market ~flat
     expect(steelRatio).toBeLessThan(inconelRatio); // mill steel discounts more in CN
-    expect(steelRatio).toBeCloseTo(0.88, 2);       // CN materialMultiplier
+    expect(steelRatio).toBeCloseTo(REGIONAL_DATA.CN.materialMultiplier, 2); // CN materialMultiplier
   });
 
   it('UK metal prices are unchanged (identity)', () => {
