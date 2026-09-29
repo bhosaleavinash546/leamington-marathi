@@ -351,7 +351,8 @@ try {
   if (judgeAgainst) {
     const baseline = JSON.parse(readFileSync(resultsPath(judgeAgainst), 'utf8'));
     const { default: Anthropic } = await import('@anthropic-ai/sdk');
-    const client = new Anthropic({ apiKey: KEY });
+    const { anthropicClientOptions } = await import('../anthropic-options.mjs');
+    const client = new Anthropic({ apiKey: KEY, ...anthropicClientOptions() });
     const rand = mulberry32(42);
     const AXES = ['novelty', 'specificity', 'strategic fit'];
     const wins = Object.fromEntries(AXES.map(a => [a, 0]));

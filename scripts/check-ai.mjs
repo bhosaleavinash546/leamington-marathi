@@ -14,6 +14,7 @@
 // The key is never printed, logged or written anywhere.
 // ─────────────────────────────────────────────────────────────────────────────
 import Anthropic from '@anthropic-ai/sdk';
+import { anthropicClientOptions } from '../anthropic-options.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { describeLlmError, providerDetail } from '../llm-error.mjs';
 
@@ -41,10 +42,17 @@ async function readKey() {
   });
 }
 
+// The app's server reads ANTHROPIC_WORKSPACE_ID from .brainspark-local.env;
+// this check must send the same header, or it tests a different request.
+if (!process.env.ANTHROPIC_WORKSPACE_ID && existsSync('.brainspark-local.env')) {
+  const w = /^ANTHROPIC_WORKSPACE_ID=(.+)$/m.exec(readFileSync('.brainspark-local.env', 'utf8'));
+  if (w && w[1].trim()) process.env.ANTHROPIC_WORKSPACE_ID = w[1].trim();
+}
 const key = await readKey();
 if (!key) { console.log('No key given.'); process.exit(1); }
-console.log(`Key: ${key.slice(0, 10)}…${key.slice(-4)} (${key.length} characters${/\s/.test(key) ? ', CONTAINS WHITESPACE — re-copy it' : ''})\n`);
-const client = new Anthropic({ apiKey: key, maxRetries: 0, timeout: 60_000 });
+console.log(`Key: ${key.slice(0, 10)}…${key.slice(-4)} (${key.length} characters${/\s/.test(key) ? ', CONTAINS WHITESPACE — re-copy it' : ''})`);
+console.log(`Workspace: ${process.env.ANTHROPIC_WORKSPACE_ID ? `${process.env.ANTHROPIC_WORKSPACE_ID} (sent as anthropic-workspace-id)` : 'none set — fine for a key created inside a workspace'}\n`);
+const client = new Anthropic({ apiKey: key, maxRetries: 0, timeout: 60_000, ...anthropicClientOptions() });
 const tool = { name: 'emit_ideas', description: 'Emit ideas.', input_schema: { type: 'object', properties: { ideas: { type: 'array', items: { type: 'object' } } }, required: ['ideas'] } };
 
 const checks = [

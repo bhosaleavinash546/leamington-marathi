@@ -11,6 +11,7 @@
 //
 // Depths: quick (1 round) · standard (2 rounds, default) · deep (4 rounds).
 import Anthropic from '@anthropic-ai/sdk';
+import { anthropicClientOptions } from '../anthropic-options.mjs';
 import { writeFileSync } from 'node:fs';
 import { messagesJson } from '../llm-json.mjs';
 import { deepResearch, deepFindingsToCandidates } from '../foresight-deep.mjs';
@@ -49,7 +50,7 @@ console.log(`search: ${braveKey ? 'Brave' : 'NONE'} · patents: ${process.env.PA
 
 const out = await deepResearch(subject, {
   performSearch, fetchImpl: globalThis.fetch, searchPatents,
-  client: new Anthropic({ apiKey: key, maxRetries: 2, timeout: 600_000 }),
+  client: new Anthropic({ apiKey: key, maxRetries: 2, timeout: 600_000, ...anthropicClientOptions() }),
   messagesJson, model: process.env.CV_SMALL_MODEL || 'claude-sonnet-5',
   searchApiKey: braveKey,
   onProgress: (m) => console.log(`  · ${m}`),

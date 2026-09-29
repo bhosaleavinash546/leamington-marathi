@@ -4439,3 +4439,13 @@ rejected — adjust inputs", "check your API key") sent a user with an empty
 account to the wrong fix before a management demo. The Analyze page's
 always-on "Backend required" note is gone: an unreachable server is detected
 when it happens and said then.
+
+## 108. Every Anthropic client can name a workspace
+
+An organization-level API key on an organization that requires workspaces is
+refused ("This API key is not scoped to a workspace…"). That was the real cause
+of the 29 Sept demo failure, found once the error text was passed through
+(DECISIONS 107). `anthropic-options.mjs` sends `ANTHROPIC_WORKSPACE_ID` as the
+`anthropic-workspace-id` header on every client: the server, `check:ai`, the
+Horizon scripts and the ideation eval. Unset, it sends nothing, so a key
+created inside a workspace needs no change.

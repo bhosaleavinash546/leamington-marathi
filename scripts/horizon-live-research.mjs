@@ -16,6 +16,7 @@
 // checked against that page in code. Anything whose quote could not be found
 // is dropped and listed under REJECTED. That is the whole mechanism, visible.
 import Anthropic from '@anthropic-ai/sdk';
+import { anthropicClientOptions } from '../anthropic-options.mjs';
 import { messagesJson } from '../llm-json.mjs';
 import { researchFutureTechnologies } from '../foresight-research.mjs';
 
@@ -47,7 +48,7 @@ console.log(`search provider: ${braveKey ? 'Brave (configured)' : 'NONE — snip
 const t0 = Date.now();
 const out = await researchFutureTechnologies(subject, {
   performSearch, searchPatents: null,
-  client: new Anthropic({ apiKey: key, maxRetries: 2, timeout: 300_000 }),
+  client: new Anthropic({ apiKey: key, maxRetries: 2, timeout: 300_000, ...anthropicClientOptions() }),
   messagesJson, model: process.env.CV_SMALL_MODEL || 'claude-sonnet-5',
   sanitize: (s) => s, searchApiKey: braveKey, now: new Date().getFullYear(),
   fetchImpl: globalThis.fetch, readCount: Number(process.env.CV_FORESIGHT_READ_COUNT ?? 6),

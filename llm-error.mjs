@@ -33,6 +33,11 @@ export function describeLlmError(err) {
   if (message && /credit balance|billing|purchase credits|plans\s*&\s*billing/i.test(message)) {
     return 'Your Anthropic account has run out of credit — the API key is valid, but Anthropic will not run requests until credit is added. Add credit at console.anthropic.com → Plans & Billing (or use a key from an account that has credit), then retry.';
   }
+  // An ORGANIZATION-level key on an org that requires a workspace (29 Sept
+  // 2026 — the demo blocker). Either fix works; the second needs no new key.
+  if (message && /not scoped to a workspace|anthropic-workspace-id/i.test(message)) {
+    return 'This API key was created at the organization level, and your Anthropic organization requires requests to name a workspace. Fix either way: (1) in console.anthropic.com open Workspaces → pick a workspace → API keys → create a key there and paste it into Settings; or (2) put ANTHROPIC_WORKSPACE_ID=<your workspace id, starting wrkspc_> in .brainspark-local.env and restart the app.';
+  }
   // A spend or usage LIMIT is a different fix from an empty balance: adding
   // credit does not lift it — raising the limit does.
   if (message && /usage limit|spend(ing)? limit|specified api usage/i.test(message)) {

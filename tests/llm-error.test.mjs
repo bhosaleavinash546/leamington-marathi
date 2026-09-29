@@ -44,3 +44,17 @@ test('a spend limit is not reported as an empty balance', () => {
   assert.match(m, /spend limit/);
   assert.match(m, /adding credit will not lift it/);
 });
+
+test('an organization-level key without a workspace names both fixes', () => {
+  const m = describeLlmError(sdkError(400, 'invalid_request_error', 'This API key is not scoped to a workspace, so this request must include the anthropic-workspace-id header with the ID of the workspace to use. Add the header, or use an API key that is scoped to a workspace.'));
+  assert.match(m, /organization level/);
+  assert.match(m, /Workspaces/);
+  assert.match(m, /ANTHROPIC_WORKSPACE_ID/);
+});
+
+test('ANTHROPIC_WORKSPACE_ID becomes the anthropic-workspace-id header; unset adds nothing', async () => {
+  const { anthropicClientOptions } = await import('../anthropic-options.mjs');
+  assert.deepEqual(anthropicClientOptions({ ANTHROPIC_WORKSPACE_ID: ' wrkspc_abc ' }), { defaultHeaders: { 'anthropic-workspace-id': 'wrkspc_abc' } });
+  assert.deepEqual(anthropicClientOptions({}), {});
+  assert.deepEqual(anthropicClientOptions({ ANTHROPIC_WORKSPACE_ID: '' }), {});
+});

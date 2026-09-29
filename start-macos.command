@@ -71,6 +71,8 @@ if [ ! -f "$ENV_FILE" ]; then
     echo "CREDENTIALS_SECRET=$(node -e 'console.log(require("crypto").randomBytes(48).toString("base64url"))')"
     echo "# Optional. Leave blank and paste your key into Settings in the app instead."
     echo "ANTHROPIC_API_KEY="
+    echo "# Only if your key was created at the ORGANIZATION level and Anthropic asks for a workspace:"
+    echo "# ANTHROPIC_WORKSPACE_ID=wrkspc_..."
   } > "$ENV_FILE"
   chmod 600 "$ENV_FILE"
   ok "Created $ENV_FILE with fresh secrets (readable only by you)"

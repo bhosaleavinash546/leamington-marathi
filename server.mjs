@@ -15,6 +15,7 @@ import pino from 'pino';
 import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 import Anthropic from '@anthropic-ai/sdk';
+import { anthropicClientOptions } from './anthropic-options.mjs';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
@@ -260,7 +261,7 @@ const LLM_TIMEOUT_MS  = 90_000;
 function makeAnthropic(apiKey, meta = {}) {
   // meta = { userId, route }: attribution columns so the llm_calls table can
   // actually answer "what does this endpoint / this user cost us".
-  const client = new Anthropic({ apiKey: (apiKey || '').trim(), maxRetries: LLM_MAX_RETRIES, timeout: LLM_TIMEOUT_MS });
+  const client = new Anthropic({ apiKey: (apiKey || '').trim(), maxRetries: LLM_MAX_RETRIES, timeout: LLM_TIMEOUT_MS, ...anthropicClientOptions() });
   // Instrument messages.create: every call logs model/tokens/latency to llm_calls
   // (metadata only — never prompt content). Failures are logged with ok=0.
   const origCreate = client.messages.create.bind(client.messages);

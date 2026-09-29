@@ -57,6 +57,7 @@ merely picking a default, the row says so.
 |---|---|---|
 | `JWT_SECRET` | `autocost-ai-dev-secret-2025` | **The server refuses to start when `NODE_ENV=production`.** Every issued token would be forgeable with a secret published in this repo. |
 | `ANTHROPIC_API_KEY` | — | Server-side key resolution fails; users must supply their own key in Settings. Every LLM-backed tool returns an honest "no API key configured" rather than degrading silently. |
+| `ANTHROPIC_WORKSPACE_ID` | — | Sent as the `anthropic-workspace-id` header on every Anthropic call. Needed only when the key was created at the organization level and Anthropic answers "This API key is not scoped to a workspace". Put it in `.brainspark-local.env`; a key created inside a workspace needs nothing. |
 | `CREDENTIALS_SECRET` | falls back to `JWT_SECRET` | Stored per-user API keys are encrypted with the JWT secret, so rotating the JWT secret makes every stored key undecryptable. Set it separately in production. |
 | `DATA_DIR` | `./data` | The SQLite DB lands inside the checkout — lost on every container rebuild. |
 
