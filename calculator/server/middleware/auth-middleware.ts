@@ -30,10 +30,15 @@ export const JWT_SECRET_CONFIGURED = !!JWT_SECRET;
  * the user row — one indexed SQLite lookup — and takes the email and verified
  * flag from it, not from the token.
  */
+/** Every 401 below means "this browser's sign-in is no good": the page clears
+ *  it and goes to sign-in on this code, instead of each screen showing its own
+ *  "Analysis failed: …" while still greeting the user by name. */
+export const SESSION_INVALID = 'SESSION_INVALID';
+
 export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'Authentication required' });
+    res.status(401).json({ error: 'Sign in to continue.', code: SESSION_INVALID });
     return;
   }
 
@@ -42,7 +47,7 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
   try {
     payload = jwt.verify(token, _JWT_SECRET) as { userId: string; iat?: number };
   } catch {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    res.status(401).json({ error: 'Your sign-in has expired. Sign in again.', code: SESSION_INVALID });
     return;
   }
 
@@ -51,11 +56,11 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
     | { id: string; email: string; email_verified: number; sessions_valid_from: number | null }
     | undefined;
   if (!user) {
-    res.status(401).json({ error: 'This account no longer exists. Sign in again.' });
+    res.status(401).json({ error: 'This account no longer exists. Sign in again.', code: SESSION_INVALID });
     return;
   }
   if (user.sessions_valid_from != null && (payload.iat ?? 0) < user.sessions_valid_from) {
-    res.status(401).json({ error: 'This session was signed out. Sign in again.' });
+    res.status(401).json({ error: 'This session was signed out. Sign in again.', code: SESSION_INVALID });
     return;
   }
   req.user = { userId: user.id, email: user.email, emailVerified: !!user.email_verified };

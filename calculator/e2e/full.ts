@@ -227,6 +227,36 @@ async function main(): Promise<void> {
       fail(`CAD: the uploaded STL did not cost (${err.slice(0, 160)})`);
     } else log(`CAD: STL measured (${netWt} kg), questions answered, costed at £${cadTotal.toFixed(2)}`);
 
+    // ── A dead sign-in goes to the sign-in page, not "Analysis failed" ─────
+    // A token signed with another secret (issued before .env was read, C1) has
+    // an unexpired date, so the page's own gate lets it in; the server refuses
+    // it. The page must clear it and say why, not keep greeting the user.
+    {
+      const ctx = await browser.newContext({ serviceWorkers: 'block' });
+      const p2 = await ctx.newPage();
+      const stale = jwt.sign({ userId: 'e2e', email: 'e2e@test', emailVerified: true }, 'an-older-secret', { expiresIn: '1h' });
+      await p2.addInitScript(t => { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('auth_token', t); sessionStorage.setItem('seeded', '1'); } localStorage.setItem('cv-tour-v41-seen', '1'); localStorage.setItem('cv-wizard-off', '1'); }, stale);
+      await p2.goto(`${base}/calculator/`);
+      try {
+        await p2.waitForURL(/auth\.html\?session=ended/, { timeout: 15_000 });
+        const banner = await p2.textContent('#signin-banner-text');
+        if (!/sign in again/i.test(banner ?? '')) fail(`stale sign-in: sign-in page does not say why ("${banner}")`);
+        if (await p2.evaluate(() => localStorage.getItem('auth_token'))) fail('stale sign-in: the refused token was left in storage');
+        log('stale sign-in: cleared and sent to sign-in with a reason');
+      } catch { fail(`stale sign-in: stayed on ${p2.url()} with a token the server refuses`); }
+      await ctx.close();
+
+      // A sign-in without "remember me" lives in sessionStorage; it must be sent.
+      const ctx2 = await browser.newContext({ serviceWorkers: 'block' });
+      const p3 = await ctx2.newPage();
+      await p3.addInitScript(t => { sessionStorage.setItem('auth_token', t); localStorage.setItem('cv-tour-v41-seen', '1'); localStorage.setItem('cv-wizard-off', '1'); }, token);
+      await p3.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+      const status = await p3.evaluate(async () => (await fetch('/api/quotes')).status);
+      if (status !== 200) fail(`session-only sign-in: the API answered ${status}; the token in sessionStorage was not sent`);
+      if (!/\/calculator\/?$/.test(new URL(p3.url()).pathname)) fail(`session-only sign-in: sent away to ${p3.url()}`);
+      await ctx2.close();
+    }
+
     if (failures.length) throw new Error(`${failures.length} failure(s):\n  - ${failures.join('\n  - ')}`);
     log(`PASSED — ${costed.join(', ')}`);
   } catch (e) {

@@ -76,10 +76,10 @@ describe('the routes that are public on purpose still are', () => {
   it('signing in', async () => {
     // A wrong password is itself a 401, so the check is on WHY it was refused:
     // the route must be reachable, answering about the credentials rather than
-    // with the sign-in guard's "Authentication required".
+    // with the sign-in guard's SESSION_INVALID.
     const r = await call('POST', '/api/auth/signin', undefined, { email: 'a@b.c', password: 'x' });
-    const body = await r.json() as { error?: string };
-    expect(body.error ?? '').not.toBe('Authentication required');
+    const body = await r.json() as { error?: string; code?: string };
+    expect(body.code).not.toBe('SESSION_INVALID');
   });
 });
 
@@ -123,6 +123,18 @@ describe('a session ends when the account does', () => {
   it('refuses a validly signed token for a user who never existed', async () => {
     const r = await call('GET', '/api/quotes', tokenFor('nobody'));
     expect(r.status).toBe(401);
+  });
+
+  // The page clears its sign-in and goes to the sign-in screen on this code.
+  // A token signed with another secret — e.g. one issued before .env was read
+  // (C1) — used to surface as "Analysis failed: Invalid or expired token".
+  it('marks every refused session with SESSION_INVALID, whatever the reason', async () => {
+    const foreign = jwt.sign({ userId: 'dave', email: 'd@test', emailVerified: true }, 'another-secret', { expiresIn: '5m' });
+    for (const t of [undefined, foreign, tokenFor('nobody')]) {
+      const r = await call('GET', '/api/quotes', t);
+      expect(r.status).toBe(401);
+      expect((await r.json() as { code?: string }).code).toBe('SESSION_INVALID');
+    }
   });
 
   it('refuses a deleted user at once, not after the token expires', async () => {

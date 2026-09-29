@@ -1391,6 +1391,11 @@ document.addEventListener('visibilitychange', () => {
 
 /* ── Init ───────────────────────────────────────────────────────────────── */
 setupOTPInputs();
+// Sent here by the app because the server refused the stored sign-in
+// (expired, signed out everywhere, or issued under an older server secret).
+if (new URLSearchParams(window.location.search).get('session') === 'ended') {
+  showBanner('signin', 'Your sign-in has ended. Please sign in again to carry on.', 'info');
+}
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/calculator/sw.js', { scope: '/calculator/' });
 }

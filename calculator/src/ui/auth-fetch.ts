@@ -13,6 +13,13 @@
  * VITE_API_BASE. A request to anywhere else is left exactly as it was, so the
  * token never leaks to a third party.
  *
+ * WHEN THE SERVER SAYS THE SESSION IS NO GOOD (401 with code SESSION_INVALID —
+ * expired, signed with another secret, signed out everywhere, account deleted),
+ * the sign-in is cleared and the page goes to the sign-in screen with a reason.
+ * The page's own gate only checks the token's expiry date, so it used to keep
+ * greeting the user by name while every screen failed on its own — "Analysis
+ * failed: Invalid or expired token" on the PCB photo route, for one.
+ *
  * Must be imported before anything that fetches.
  */
 import { apiBase } from '../api-base.js';
@@ -28,8 +35,30 @@ function isOurApi(url: URL): boolean {
   } catch { return false; }
 }
 
+/** "Remember me" keeps the token in localStorage; without it the sign-in page
+ *  puts it in sessionStorage. Read both, in the order the page's gate does. */
 function token(): string | null {
-  try { return window.localStorage.getItem(TOKEN_KEY); } catch { return null; }
+  try { return window.localStorage.getItem(TOKEN_KEY) || window.sessionStorage.getItem(TOKEN_KEY); } catch { return null; }
+}
+
+let leaving = false;
+function endSession(): void {
+  if (leaving) return;
+  leaving = true;
+  for (const store of [window.localStorage, window.sessionStorage]) {
+    try { store.removeItem(TOKEN_KEY); store.removeItem('auth_user'); } catch { /* storage blocked */ }
+  }
+  const authUrl = (window as { __cvAuthUrl?: string }).__cvAuthUrl
+    ?? window.location.pathname.replace(/[^/]*$/, '') + 'auth.html';
+  window.location.replace(authUrl + '?session=ended');
+}
+
+/** Resolve with the response either way; only a dead session ends the page. */
+function watch(res: Response): Response {
+  if (res.status === 401) {
+    res.clone().json().then((b: { code?: string }) => { if (b?.code === 'SESSION_INVALID') endSession(); }, () => {});
+  }
+  return res;
 }
 
 if (typeof window !== 'undefined' && typeof window.fetch === 'function' && !(window.fetch as { __cvAuth?: boolean }).__cvAuth) {
@@ -43,8 +72,8 @@ if (typeof window !== 'undefined' && typeof window.fetch === 'function' && !(win
         const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
         if (!headers.has('Authorization')) {
           headers.set('Authorization', `Bearer ${t}`);
-          if (input instanceof Request && !init) return original(new Request(input, { headers }));
-          return original(input, { ...init, headers });
+          if (input instanceof Request && !init) return original(new Request(input, { headers })).then(watch);
+          return original(input, { ...init, headers }).then(watch);
         }
       }
     } catch { /* anything unexpected: send the request untouched */ }
