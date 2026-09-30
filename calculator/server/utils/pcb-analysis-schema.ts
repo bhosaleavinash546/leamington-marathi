@@ -1,6 +1,9 @@
 /**
  * The Stage 3 answer as a JSON schema, for structured output.
  *
+ * The model is asked for readings only — no costEstimates: the server prices the
+ * board from its rate tables (the golden rule).
+ *
  * Stage 3 used to be free text scraped for the outermost {…}, then salvaged or
  * sent back for "repair" when it did not parse — the origin of the empty-BOM
  * failures. With `output_config.format` the model must return this shape. Models
@@ -57,20 +60,11 @@ export const PCB_ANALYSIS_JSON_SCHEMA = {
       required: ['smtPlacements', 'throughHoleJoints', 'manualJoints', 'bgaCount', 'complexity', 'reflowSides', 'aoiRequired', 'ictTimeSec'],
       additionalProperties: false,
     },
-    costEstimates: {
-      type: 'object',
-      properties: {
-        pcbFabGBP: { type: 'object', properties: { min: num, mid: num, max: num }, required: ['min', 'mid', 'max'], additionalProperties: false },
-        totalBOMCostGBP: num, smtAssemblyCostGBP: num,
-      },
-      required: ['pcbFabGBP', 'totalBOMCostGBP', 'smtAssemblyCostGBP'],
-      additionalProperties: false,
-    },
     aiInsights: strs, dfmIssues: strs, highCostComponents: strs, optimisationSuggestions: strs,
     confidenceLevel: { type: 'string', enum: ['High', 'Medium', 'Low'] },
     analysisLimitations: strs,
   },
-  required: ['partName', 'boardSpec', 'bom', 'assembly', 'costEstimates', 'aiInsights', 'dfmIssues', 'highCostComponents', 'optimisationSuggestions', 'confidenceLevel', 'analysisLimitations'],
+  required: ['partName', 'boardSpec', 'bom', 'assembly', 'aiInsights', 'dfmIssues', 'highCostComponents', 'optimisationSuggestions', 'confidenceLevel', 'analysisLimitations'],
   additionalProperties: false,
 } as const;
 

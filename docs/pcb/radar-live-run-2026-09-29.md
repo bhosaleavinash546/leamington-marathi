@@ -200,3 +200,25 @@ closes them. Without the files the tool is still costing a photo, and says so.
 Why the photo-only number will never be exact: a photo cannot show the via count
 (£1.50 here), the layer count, or the passives under a shield; and the model's
 component count is a judgement (224 vs 322). Attach the BOM and the fab data.
+
+## Round 5 (30 Sep) — models, streaming, and the whole path traced
+
+Models: Stage 3 Sonnet 5 → **Sonnet 5.5**; Deep analysis Opus 4.8 → **Opus 5.5**
+(cheaper, $4/$20); chip-marking OCR Haiku 4.5 → **Sonnet 5.5**. Stage 3 now streams
+(the API requires it above ~16K output tokens) with structured output.
+
+Tracing every step (`traced-example-radar.md`) found four more places where a
+number reached the total without a basis, all fixed:
+
+| Gap | Effect on the radar board | Fix |
+|---|---|---|
+| Automotive premiums (IATF line, class 3, burn-in, laminate, coupons) computed for side panels but not in the headline | headline was a commercial-grade £68.21 with "+£4 automotive" beside it | folded into fab and assembly of the selected country and every comparison row; duty re-based; volume curve graded |
+| `costEstimates.smtAssemblyCostGBP` was the model's guess (£18) and the prompt asked the model for costs | leaked into the PDF fallback and the "AI first pass" | prompt and schema carry no cost fields; `costEstimates` rewritten from the country figure, model figures kept as `aiFirstPass` |
+| `smtPlacements` was the model's separate count (224), not its list (222) | assembly per placement on the wrong count | counted from the priced lines; warning when the two differ |
+| Controlled-impedance uplift in the total but missing from the breakdown table | table under-added by £0.06 | `breakdown.pcbImpedance` |
+| Re-analysis (after edits) did not price un-edited lines and reset the ASIL to Unknown | edited boards lost the range/table pricing and the burn-in rule | grounded like a first analysis; edited lines kept as `user`; ASIL sent back by the page |
+
+Result, China, 250k/yr, photos only, automotive grade ASIL-C: **£72.33**
+(= £68.21 commercial + £1.24 fab grade + £2.74 assembly grade + £0.15 duty on them).
+Proven end to end in a browser (`npm run test:e2e:pcb`): screen headline = China row
+= server total = PDF = Parts Library entry.

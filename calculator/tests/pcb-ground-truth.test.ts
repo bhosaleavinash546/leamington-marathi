@@ -208,7 +208,8 @@ describe('fab data is measured, not guessed', () => {
 describe('structured output for Stage 3', () => {
   it('the schema names every field the normaliser reads', () => {
     const props = PCB_ANALYSIS_JSON_SCHEMA.properties;
-    expect(Object.keys(props)).toEqual(expect.arrayContaining(['partName', 'boardSpec', 'bom', 'assembly', 'costEstimates', 'confidenceLevel']));
+    expect(Object.keys(props)).toEqual(expect.arrayContaining(['partName', 'boardSpec', 'bom', 'assembly', 'confidenceLevel']));
+    expect(Object.keys(props)).not.toContain('costEstimates');   // the model is not asked for a cost
     expect(props.bom.items.required).toEqual(expect.arrayContaining(['refDes', 'componentType', 'qty', 'unitPriceGBP', 'partNumber', 'ocrExtracted']));
     expect(props.boardSpec.required).toEqual(expect.arrayContaining(['dimensionsSource', 'copperOzByLayer', 'boardWeightG', 'conformalCoating']));
   });

@@ -27,6 +27,7 @@ npm run build           # tsc -p tsconfig.build.json && vite build  → writes c
 npm run accuracy        # scripts/accuracy-report.ts — grade estimate-vs-actual (MAPE/bias)
 npm run test:e2e        # e2e/smoke.ts — headless browser boot + drive (needs a build first)
 npm run test:e2e:full   # e2e/full.ts — real server, every commodity, exports, STL upload, axe WCAG 2.1 AA
+npm run test:e2e:pcb    # e2e/pcb-live.ts — photo→cost in a browser against e2e/pcb-stand-in.mjs (a fixed model reply)
 ```
 
 From the repo root, `make start|stop|restart|logs` drives the single Docker
@@ -106,9 +107,19 @@ point inside the line's class range (`pcb-class-pricing.ts` — the price table 
 precedence catalogue → OCR-named part range → function range → class range, each
 line carrying `priceSource` / `priceBasis` / `priceNote`, `pcb-bom-grounding.ts`).
 Chip markings OCR read are attached to the BOM line of the same function
-(`pcb-ocr-reconcile.ts`). Stage 3 asks for structured output
-(`pcb-analysis-schema.ts`, `messages.parse` + `output_config.format`) and falls back
-to free text + salvage if the model rejects it. Read ALL model text blocks (a leading
+(`pcb-ocr-reconcile.ts`). Models: Haiku 4.5 classifies, **Sonnet 5.5** reads chips
+and writes the parts list, **Opus 5.5** under "Deep analysis" — none takes
+`temperature` (only the Haiku calls send it). Stage 3 is streamed (32K output) with
+structured output (`pcb-analysis-schema.ts`, `output_config.format`, no cost fields
+in the schema) and falls back to free text + salvage if the model rejects it.
+After Stage 4 the response is fully deterministic: `costEstimates` is rewritten from
+the selected country (`setDeterministicCostEstimates`, model first pass kept under
+`aiFirstPass`), placements are counted from the priced lines
+(`derivePlacementsFromBOM`), and on an automotive board the IATF / class 3 /
+burn-in / laminate premiums are folded into the headline and every country row
+(`applyAutomotiveGrade`; `breakdown.automotiveFab/automotiveAssembly`) — they used
+to sit only in side panels. `docs/pcb/traced-example-radar.md` walks the radar
+board from photo to pound; `tests/pcb-headline-trace.test.ts` pins it. Read ALL model text blocks (a leading
 thinking block once caused empty BOMs); the board spec is stabilised
 (`pcb-boardspec-stabilise.ts`). What a photo cannot show — via count, layer count,
 parts under shields — stays an estimate until the files are attached; the screen's

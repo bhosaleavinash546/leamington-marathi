@@ -1,0 +1,363 @@
+{
+ "stage1": {
+  "domain": "automotive_adas",
+  "conf": 0.95,
+  "hints": [
+   "NXP S32R radar MCU",
+   "77 GHz transceiver with RF feed lines",
+   "EMI shield fences"
+  ]
+ },
+ "asil": {
+  "asilLevel": "ASIL-C",
+  "asilRationale": "Radar for AEB/ACC",
+  "safetyFunctions": [
+   "Radar signal processing and object detection",
+   "Sensor fusion for autonomous emergency braking"
+  ]
+ },
+ "ocr": {
+  "icMarkings": [
+   "NXP FS32R294KCMJD 0P68C QMR2445D",
+   "TEF8105 TR7YC228 sKN2437",
+   "MAX20431A R/V 446 +BVFK",
+   "winbond 25Q32JWNSM 2438",
+   "TI 1044AV 4AB ARYS",
+   "TI 1044AV 4AB ARYS",
+   "S32R294 radar"
+  ],
+  "refDesGroups": [],
+  "connectors": [
+   "Edge pad row, 2 x 10 contacts (board-to-board / spring contacts)",
+   "2 x 7 plated through-holes, unpopulated"
+  ],
+  "boardText": [
+   "31",
+   "L01",
+   "026-072",
+   "528179704",
+   "302401",
+   "28677120A",
+   "0338",
+   "L08",
+   "28740337",
+   "53HIE",
+   "2434"
+  ],
+  "extractionQuality": "high"
+ },
+ "analysis": {
+  "partName": "Automotive 77GHz FMCW Radar Sensor Module (NXP S32R294-based)",
+  "boardSpec": {
+   "estimatedLayers": 8,
+   "widthMm": 87.8,
+   "heightMm": 48.9,
+   "surfaceFinish": "imag",
+   "solderMaskColour": "green",
+   "silkscreenSides": 2,
+   "throughVias": 220,
+   "blindVias": 0,
+   "buriedVias": 0,
+   "microVias": 0,
+   "bgaDetected": true,
+   "minTraceSpaceMm": 0.1,
+   "technologyType": "FR4_HTg",
+   "hdiStructure": "none",
+   "impedanceControlRequired": true,
+   "copperWeightOz": 1,
+   "qualityGrade": "auto_grade1",
+   "panelUtilisation": 0.75,
+   "dimensionsSource": "measured",
+   "conformalCoating": false,
+   "copperOzByLayer": [],
+   "boardWeightG": 0
+  },
+  "bom": [
+   {
+    "refDes": "U1",
+    "componentType": "ic_bga",
+    "description": "NXP S32R294 automotive radar MCU (ASIL-B), 77GHz FMCW signal processing",
+    "pkg": "BGA/FCBGA",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 32.0,
+    "partNumber": "S32R294",
+    "ocrExtracted": true,
+    "lineConf": 1.0,
+    "automotive": true
+   },
+   {
+    "refDes": "U2",
+    "componentType": "ic_qfn",
+    "description": "77/79GHz FMCW radar transceiver MMIC (glob-top epoxy near antenna feed)",
+    "pkg": "QFN (glob-top)",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 4.0,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "U3",
+    "componentType": "ic_soic",
+    "description": "32Mbit SPI serial flash memory, automotive grade",
+    "pkg": "SOIC-8",
+    "value": "32Mbit",
+    "qty": 1,
+    "unitPriceGBP": 2.2,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "U4, U5",
+    "componentType": "ic_soic",
+    "description": "Automotive op-amp/LDO regulator IC",
+    "pkg": "SOIC-8",
+    "value": "",
+    "qty": 2,
+    "unitPriceGBP": 1.4,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "U6, U7",
+    "componentType": "ic_tqfp",
+    "description": "Automotive PMIC/safety supervisor IC",
+    "pkg": "TQFP-20",
+    "value": "",
+    "qty": 2,
+    "unitPriceGBP": 5.5,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "U8",
+    "componentType": "ic_qfn",
+    "description": "Unidentified automotive QFN IC (likely CAN/LIN transceiver or interface controller), top side",
+    "pkg": "QFN-24",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 3.2,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "U9",
+    "componentType": "ic_qfn",
+    "description": "Unidentified automotive QFN IC, bottom side near label 31",
+    "pkg": "QFN-16",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 3.2,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "U10",
+    "componentType": "ic_soic",
+    "description": "Unidentified automotive SOIC-8 IC, bottom side",
+    "pkg": "SOIC-8",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 1.2,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "D1-D6, Q1-Q4",
+    "componentType": "fuse_tvs",
+    "description": "Automotive AEC-Q101 TVS diodes / small-signal transistors, SOT-23/SOD-123",
+    "pkg": "SOT-23/SOD-123",
+    "value": "",
+    "qty": 10,
+    "unitPriceGBP": 0.2,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "C_bulk1, C_bulk2",
+    "componentType": "through_hole",
+    "description": "Electrolytic capacitor 100V, power supply filtering (JW 100V series)",
+    "pkg": "THT radial 10x13mm",
+    "value": "100uF/100V",
+    "qty": 2,
+    "unitPriceGBP": 1.8,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "Y1",
+    "componentType": "crystal_osc",
+    "description": "Automotive-grade TCXO/oscillator, metal can",
+    "pkg": "SMD 5x7mm",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 2.0,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "R1-R70",
+    "componentType": "passive_0402",
+    "description": "Automotive AEC-Q200 thick-film resistor",
+    "pkg": "0402",
+    "value": "various",
+    "qty": 70,
+    "unitPriceGBP": 0.006,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "C1-C90",
+    "componentType": "passive_0402",
+    "description": "Automotive AEC-Q200 X7R MLCC capacitor",
+    "pkg": "0402",
+    "value": "various",
+    "qty": 90,
+    "unitPriceGBP": 0.015,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "C91-C120",
+    "componentType": "passive_0603",
+    "description": "Automotive AEC-Q200 X7R MLCC capacitor",
+    "pkg": "0603",
+    "value": "various",
+    "qty": 30,
+    "unitPriceGBP": 0.03,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "L1-L10",
+    "componentType": "passive_0805",
+    "description": "Automotive power/RF inductor",
+    "pkg": "0805",
+    "value": "various",
+    "qty": 10,
+    "unitPriceGBP": 0.09,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "J1",
+    "componentType": "connector_smt",
+    "description": "Sealed automotive SMT board-to-board/antenna connector, right edge",
+    "pkg": "SMT header",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 6.0,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   },
+   {
+    "refDes": "J2, J3",
+    "componentType": "connector_smt",
+    "description": "Automotive test/board-to-board header pads, left and bottom edges",
+    "pkg": "2x5 header",
+    "value": "",
+    "qty": 2,
+    "unitPriceGBP": 5.0,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": true
+   }
+  ],
+  "assembly": {
+   "smtPlacements": 224,
+   "throughHoleJoints": 4,
+   "manualJoints": 0,
+   "bgaCount": 1,
+   "complexity": "high",
+   "reflowSides": 1,
+   "aoiRequired": true,
+   "ictTimeSec": 90
+  },
+  "costEstimates": {
+   "pcbFabGBP": {
+    "min": 5,
+    "mid": 6.25,
+    "max": 8.13
+   },
+   "totalBOMCostGBP": 87.6,
+   "smtAssemblyCostGBP": 18
+  },
+  "aiInsights": [
+   "77 GHz FMCW radar: S32R294 processor + TEF8105 transceiver \u2014 these two parts are ~85% of BOM cost",
+   "Waveguide launch structures beside the MMIC and a slotted, via-fenced exposed-metal field on the bottom indicate a waveguide antenna interface",
+   "Two EMI shield frames (cans removed on the teardown sample) split RF/digital from power"
+  ],
+  "dfmIssues": [
+   "Surface finish immersion silver (from board data); fine-pitch BGA compatible",
+   "Mixed copper 70/35 \u00b5m (2 oz outer) with ~1000 stitching vias \u2014 dense via fences drive drill time"
+  ],
+  "highCostComponents": [
+   "NXP FS32R294KCMJD radar MCU",
+   "NXP TEF8105 radar transceiver",
+   "MAX20431A PMIC"
+  ],
+  "optimisationSuggestions": [
+   "Negotiate S32R294 + TEF8105 as a chipset under an NXP programme price",
+   "Review 2 oz outer copper need outside the power area",
+   "Standardise bulk MLCCs on 1206 to reduce feeder count"
+  ],
+  "confidenceLevel": "Medium",
+  "analysisLimitations": [
+   "Passive counts estimated from photos (\u00b115%)",
+   "Transceiver under a cover \u2014 marking read from close-up",
+   "Volume: pricing anchors at 100K; order 250K"
+  ],
+  "stage1Classification": {
+   "domain": "automotive_adas",
+   "conf": 0.95,
+   "hints": [
+    "NXP S32R radar MCU",
+    "77 GHz transceiver with RF feed lines",
+    "EMI shield fences"
+   ]
+  },
+  "ocrExtraction": {
+   "icMarkings": [
+    "NXP FS32R294KCMJD 0P68C QMR2445D",
+    "TEF8105 TR7YC228 sKN2437",
+    "MAX20431A R/V 446 +BVFK",
+    "winbond 25Q32JWNSM 2438",
+    "TI 1044AV 4AB ARYS",
+    "TI 1044AV 4AB ARYS"
+   ],
+   "extractionQuality": "high"
+  }
+ }
+}

@@ -32,17 +32,18 @@ export function pcbCostOverview(r: PCBImageAnalysis, pageQty?: number): PCBCostO
   if (bd && bd.totalPerBoard > 0) {
     const four = bd.pcbFabPerBoard + bd.assemblyPerBoard + bd.bomCostPerBoard + bd.logisticsPerBoard;
     const other = r2(bd.totalPerBoard - four);
+    const ag = bd.automotiveGrade;
     const rows: PCBCostOverviewRow[] = [
       { label: 'Components (BOM)', value: bd.bomCostPerBoard, note: 'sourced in-country' },
-      { label: 'Bare board (fab)', value: bd.pcbFabPerBoard },
-      { label: 'Assembly & test', value: bd.assemblyPerBoard },
+      { label: 'Bare board (fab)', value: bd.pcbFabPerBoard, note: ag ? `incl. £${ag.fabPremiumGBP.toFixed(2)} automotive grade` : undefined },
+      { label: 'Assembly & test', value: bd.assemblyPerBoard, note: ag ? `incl. £${ag.assemblyPremiumGBP.toFixed(2)} IATF / class 3 / ${ag.asil}` : undefined },
       { label: 'Logistics & import duty', value: bd.logisticsPerBoard },
     ];
     if (Math.abs(other) >= 0.005) rows.push({ label: 'Energy, packaging & yield loss', value: other });
     const bandOk = band && band.totalLow > 0 && band.totalHigh >= band.totalLow;
     return {
       fromCountry: true,
-      basis: `${bd.countryName}${qty > 0 ? ` · ${qty.toLocaleString('en-GB')} boards/yr` : ''}`,
+      basis: `${bd.countryName}${qty > 0 ? ` · ${qty.toLocaleString('en-GB')} boards/yr` : ''}${ag ? ` · automotive grade (${ag.asil})` : ''}`,
       rows,
       total: bd.totalPerBoard,
       low: bandOk ? band!.totalLow : null,

@@ -412,9 +412,9 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
       <div style="margin-top:8px;padding:8px;background:var(--card-bg);border-radius:6px">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
           <span style="font-size:0.72rem;font-weight:700;color:var(--text-secondary)">Total per board:</span>
-          <span style="font-size:1.1rem;font-weight:800;color:var(--accent)">£${sel.totalPerBoard.toFixed(2)}</span>
+          <span id="pcb-headline-total" data-total="${sel.totalPerBoard.toFixed(2)}" style="font-size:1.1rem;font-weight:800;color:var(--accent)">£${sel.totalPerBoard.toFixed(2)}</span>
         </div>
-        <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)}</div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} + impedance £${(sel.breakdown.pcbImpedance ?? 0).toFixed(2)}${sel.breakdown.pcbCopper ? ` + copper £${sel.breakdown.pcbCopper.toFixed(2)}` : ''}${sel.breakdown.automotiveFab ? ` + automotive grade £${sel.breakdown.automotiveFab.toFixed(2)}` : ''} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)}${sel.breakdown.automotiveAssembly ? ` | automotive grade £${sel.breakdown.automotiveAssembly.toFixed(2)}` : ''} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)} | energy £${(sel.breakdown.energy ?? 0).toFixed(2)} + packaging £${(sel.breakdown.packaging ?? 0).toFixed(2)} + yield £${(sel.breakdown.yieldLoss ?? 0).toFixed(2)}</div>
       </div>
       ${sel.panelInfo ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Panelisation: <strong style="color:var(--text-secondary)">${sel.panelInfo.boardsPerPanel}-up</strong> on ${sel.panelInfo.panelW}×${sel.panelInfo.panelH}mm panel · utilisation <strong style="color:var(--text-secondary)">${Math.round(sel.panelInfo.utilisation * 100)}%</strong> (waste amortised into PCB base cost)</div>` : ''}
       ${pcbNREEnabled && PCB_COUNTRY_META[selectedCountryId]?.nre ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Automotive NRE (one-time/programme): PPAP £${PCB_COUNTRY_META[selectedCountryId].nre.ppapGBP.toLocaleString()} + FMEA £${PCB_COUNTRY_META[selectedCountryId].nre.fmeaGBP.toLocaleString()} + DVP&amp;R £${PCB_COUNTRY_META[selectedCountryId].nre.dvprGBP.toLocaleString()} + FAI £${PCB_COUNTRY_META[selectedCountryId].nre.firstArticleGBP.toLocaleString()} + IATF £${PCB_COUNTRY_META[selectedCountryId].nre.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${PCB_COUNTRY_META[selectedCountryId].nre.totalGBP.toLocaleString()}</strong></div>` : ''}
@@ -449,7 +449,7 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
       <td>£${c.pcbFabPerBoard.toFixed(2)}</td>
       <td>£${c.assemblyPerBoard.toFixed(2)}</td>
       <td>£${c.logisticsPerBoard.toFixed(2)}</td>
-      <td style="color:var(--accent);font-weight:700">£${c.totalPerBoard.toFixed(2)}</td>
+      <td style="color:var(--accent);font-weight:700" data-country-total="${c.countryId}">£${c.totalPerBoard.toFixed(2)}</td>
       ${deltaCell}
       <td>
         <div style="display:flex;align-items:center;gap:4px">

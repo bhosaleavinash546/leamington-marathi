@@ -8368,6 +8368,8 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
   formData.append('deepAnalysis', String((document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
+  // The ASIL from the first analysis: burn-in and the NRE tier depend on it.
+  if (pcbImageResult?._asilLevel) formData.append('asilLevel', pcbImageResult._asilLevel);
 
   try {
     const resp = await fetch('/api/pcb/reanalyze', {
@@ -8471,6 +8473,16 @@ function escapedForDisplay<T>(v: T): T {
   return v;
 }
 
+/** The price basis as words, for the PDFs. */
+function pcbPriceBasisLabel(item: PCBBOMItem): string {
+  const x = item as unknown as { priceSource?: string; bomSource?: string; priceBasis?: string };
+  const src: Record<string, string> = {
+    'catalogue': 'Catalogue', 'known-range': 'Named-part range', 'function-range': 'Function range',
+    'class-range': 'Class table', 'not-fitted': 'Not fitted (£0)', 'ai-estimate': 'AI estimate', 'user': 'User entered',
+  };
+  return `${x.bomSource === 'file' ? 'BOM file · ' : ''}${src[String(x.priceSource ?? '')] ?? '—'}`;
+}
+
 /** Where a BOM line's price came from — every line says, so the total is arguable line by line. */
 function pcbPriceBasisBadge(item: PCBBOMItem): string {
   const src = String((item as unknown as { priceSource?: string }).priceSource ?? '');
@@ -8483,6 +8495,7 @@ function pcbPriceBasisBadge(item: PCBBOMItem): string {
     'class-range':    ['TABLE', '#64748b', 'Priced from the class price table (not a quote)'],
     'not-fitted':     ['NF',    '#b45309', 'Pads / test points / not fitted — no part to buy'],
     'ai-estimate':    ['AI',    '#b45309', 'AI estimate only'],
+    'user':           ['USER',  '#7c3aed', 'Price entered by you'],
   };
   const m = map[src];
   const badge = m ? `<span class="pcb-badge" style="background:${m[1]};color:#fff" title="${note || m[2]}">${m[0]}</span>` : '';
@@ -9543,7 +9556,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
-    head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${_displayCurrency}`, `Ext ${_displayCurrency}`, 'Flags']],
+    head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${_displayCurrency}`, `Ext ${_displayCurrency}`, 'Price basis', 'Flags']],
     body: r.bom.map((item, i) => [
       String(i + 1),
       item.refDes,
@@ -9553,9 +9566,10 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
       String(item.qty),
       num(item.unitPriceGBP, 3),
       num(item.qty * item.unitPriceGBP),
+      pcbPriceBasisLabel(item),
       [item.automotive ? 'AEC' : '', item.highCost ? '$$' : '', item.ocrExtracted ? 'OCR' : ''].filter(Boolean).join(' '),
     ]),
-    foot: [['', '', '', '', '', '', 'Total BOM', num(r.costEstimates.totalBOMCostGBP), '']],
+    foot: [['', '', '', '', '', '', 'Total BOM', num(r.costEstimates.totalBOMCostGBP), '', '']],
     styles: { fontSize: 6.5, cellPadding: 1.5 },
     headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold', fontSize: 7 },
     footStyles: { fillColor: LIGHT, fontStyle: 'bold', fontSize: 7, textColor: DARK },
@@ -16928,9 +16942,9 @@ async function printMasterPDF(): Promise<void> {
     secBar(`§C5 — Bill of Materials  (${r.bom.length} lines · ${r.assembly.smtPlacements} SMT placements)`, BLUE);
     autoTable(doc, {
       startY: y, margin: { left: mg, right: mg },
-      head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${pcSym}`, `Ext ${pcSym}`]],
-      body: r.bom.map((item, i) => [String(i+1), item.refDes, item.description, item.pkg, item.value, String(item.qty), (item.unitPriceGBP * _displayFxRate).toFixed(3), pcv(item.qty*item.unitPriceGBP)]),
-      foot: [['', '', '', '', '', '', 'BOM Total', `${pcSym}${pcv(co.totalBOMCostGBP)}`]],
+      head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${pcSym}`, `Ext ${pcSym}`, 'Price basis']],
+      body: r.bom.map((item, i) => [String(i+1), item.refDes, item.description, item.pkg, item.value, String(item.qty), (item.unitPriceGBP * _displayFxRate).toFixed(3), pcv(item.qty*item.unitPriceGBP), pcbPriceBasisLabel(item)]),
+      foot: [['', '', '', '', '', '', 'BOM Total', `${pcSym}${pcv(co.totalBOMCostGBP)}`, '']],
       styles: { fontSize: 6.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
       footStyles: { fillColor: LIGHT, fontStyle: 'bold' },
       columnStyles: { 0: { cellWidth: 7, halign: 'center' }, 1: { cellWidth: 14 }, 6: { halign: 'right' }, 7: { halign: 'right', fontStyle: 'bold' } },

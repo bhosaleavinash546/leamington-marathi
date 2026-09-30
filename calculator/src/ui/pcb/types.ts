@@ -50,6 +50,8 @@ export interface PCBBOMItem {
   livePriced?: boolean;
 }
 export interface PCBCountryBreakdown {
+  /** Present when IATF / class 3 / burn-in / laminate premiums are in the totals. */
+  automotiveGrade?: { asil: string; fabPremiumGBP: number; assemblyPremiumGBP: number };
   countryId: string;
   countryName: string;
   flag: string;
@@ -64,7 +66,8 @@ export interface PCBCountryBreakdown {
   bestFor: string;
   breakdown: {
     pcbBase: number; pcbLayers: number; pcbSurface: number;
-    pcbVias: number; pcbHDI: number; pcbSetup: number; pcbCopper?: number;
+    pcbVias: number; pcbHDI: number; pcbSetup: number; pcbCopper?: number; pcbImpedance?: number;
+    automotiveFab?: number; automotiveAssembly?: number; energy?: number; packaging?: number; yieldLoss?: number;
     smtAssembly: number; thAssembly: number; aoi: number;
     logistics: number; importDuty: number;
   };

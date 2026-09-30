@@ -1029,8 +1029,14 @@ export interface PCBCountryCostBreakdown {
     pcbVias: number;
     pcbHDI: number;
     pcbSetup: number;
+    /** Controlled-impedance uplift (was in the total but missing from this table) */
+    pcbImpedance: number;
     /** Heavy-copper surcharge (layers above 1 oz) */
     pcbCopper: number;
+    /** Automotive grade folded into the headline (IATF, laminate, class 3, coupons) — automotive boards only */
+    automotiveFab?: number;
+    /** Automotive grade folded into the headline (IATF line, class 3, serialisation, burn-in) — automotive boards only */
+    automotiveAssembly?: number;
     smtAssembly: number;
     thAssembly: number;
     aoi: number;
@@ -1045,6 +1051,8 @@ export interface PCBCountryCostBreakdown {
   };
   /** Panelisation result (Feature 3 / panel optimiser) */
   panelInfo: { boardsPerPanel: number; utilisation: number; panelW: number; panelH: number };
+  /** Set when the automotive premiums are in this breakdown's totals. */
+  automotiveGrade?: { asil: string; fabPremiumGBP: number; assemblyPremiumGBP: number };
 }
 
 // ─── Panelisation optimiser (Feature 3) ────────────────────────────────────
@@ -1217,6 +1225,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       pcbVias: Math.round(pcbVias * 100) / 100,
       pcbHDI: Math.round(pcbHDI * 100) / 100,
       pcbSetup: Math.round(pcbSetup * 100) / 100,
+      pcbImpedance: Math.round(pcbImpedance * 100) / 100,
       pcbCopper: Math.round(pcbCopper * 100) / 100,
       smtAssembly: Math.round((smtAssembly + thAssembly + manualAssembly) * 100) / 100,
       thAssembly: Math.round(thAssembly * 100) / 100,

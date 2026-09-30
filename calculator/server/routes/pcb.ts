@@ -14,6 +14,7 @@ import {
   PCB_COUNTRY_RATES,
   COUNTRY_DISPLAY_ORDER,
   type PCBCostInput,
+  type VolumeCurvePoint,
   type PCBCountryCostBreakdown,
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
@@ -221,14 +222,118 @@ export function applyGroundTruth(
  * salvage / repair path behind it stays as the second line.
  */
 type Stage3Params = { model: string; max_tokens: number; system: string; messages: Anthropic.MessageParam[] };
-async function stage3Message(anthropic: Anthropic, params: Stage3Params, tag: string) {
+// Streamed: the API reference requires streaming above ~16K output tokens, and a
+// full automotive BOM is asked for with 32K. The whole message is still awaited.
+async function stage3Message(anthropic: Anthropic, params: Stage3Params, tag: string): Promise<Anthropic.Message> {
   try {
-    return await anthropic.messages.parse({ ...params, output_config: pcbAnalysisOutputConfig() });
+    return await anthropic.messages.stream({ ...params, output_config: pcbAnalysisOutputConfig() }).finalMessage();
   } catch (err) {
     if (!isOutputFormatRejection(err)) throw err;
     console.warn(`[PCB${tag}] structured output not accepted (${(err as Error).message.slice(0, 120)}) — falling back to free-text JSON`);
-    return await anthropic.messages.create(params);
+    return await anthropic.messages.stream(params).finalMessage();
   }
+}
+
+/**
+ * Placement count from the BOM itself. The model reported a separate
+ * `smtPlacements` (224 on the radar run) that did not equal its own list (222
+ * SMT + 2 through-hole + 2 unfitted pads). The assembly cost is per placement, so
+ * it is derived from the priced lines, deterministically; the model's figure is
+ * kept for the record and a warning says when the two disagree.
+ */
+export function derivePlacementsFromBOM(bom: Array<Record<string, unknown>>, assemblyData: Record<string, unknown>): SanityWarning[] {
+  let smt = 0, th = 0, bga = 0;
+  for (const l of bom) {
+    if (l.notFitted === true || l.priceSource === 'not-fitted') continue;
+    const qty = Math.max(0, Number(l.qty) || 0);
+    const ct = String(l.componentType ?? '');
+    if (ct === 'through_hole') th += qty;
+    else if (ct === 'manual_solder' || ct === 'mechanical') continue;
+    else smt += qty;
+    if (ct === 'ic_bga') bga += qty;
+  }
+  const out: SanityWarning[] = [];
+  const aiSmt = Number(assemblyData.smtPlacements) || 0;
+  if (smt > 0) {
+    if (aiSmt > 0 && Math.abs(aiSmt - smt) / Math.max(aiSmt, smt) > 0.10) {
+      out.push({ code: 'PLACEMENTS_FROM_BOM', severity: 'warn',
+        message: `SMT placements set to ${smt} from the BOM lines (the AI reported ${aiSmt}). Assembly is costed per placement, so the count follows the priced list.` });
+    }
+    assemblyData.aiSmtPlacements = aiSmt;
+    assemblyData.smtPlacements = smt;
+  }
+  if (bga > 0) assemblyData.bgaCount = Math.max(bga, Number(assemblyData.bgaCount) || 0);
+  if (th > 0 && !(Number(assemblyData.throughHoleJoints) > 0)) assemblyData.throughHoleJoints = th * 2;
+  return out;
+}
+
+/**
+ * Automotive grade in the headline. `computePCBCountryCost` prices a commercial
+ * board; IATF 16949 line premium, IPC class 3 workmanship, serialisation, burn-in
+ * (ASIL-C/D), automotive laminate and coupon testing were computed for side
+ * panels but never added to the headline — the radar board's £68.21 was a
+ * consumer-grade cost with an "automotive premium" of £4 shown next to it. Now
+ * the premiums are folded into the breakdown (fab and assembly), duty is
+ * re-based on the graded value, and the panels report what was added.
+ */
+export function applyAutomotiveGrade(
+  bd: PCBCountryCostBreakdown,
+  boardSpec: Record<string, unknown>,
+  assemblyData: Record<string, unknown>,
+  asil: ASILLevel,
+  orderQty: number,
+  domain: string,
+): { assembly: AutomotiveAssemblyCost; fab: AutomotiveFabAdjustment } | null {
+  if (domain !== 'automotive_adas') return null;
+  const assembly = computeAutomotiveAssemblyCost(assemblyData, asil, orderQty, bd.assemblyPerBoard);
+  const fab = computeAutomotiveFabAdjustment(boardSpec, bd.pcbFabPerBoard, domain, bd.panelInfo?.boardsPerPanel ?? 1);
+  const asmPremium = Math.max(0, assembly.totalAutomotiveAssemblyGBP - assembly.standardAssemblyGBP);
+  const fabPremium = Math.max(0, fab.totalAutomotiveFabGBP - fab.standardFabGBP);
+  const duty = PCB_COUNTRY_RATES[bd.countryId]?.logistics.importDutyFraction ?? 0;
+  const dutyDelta = (asmPremium + fabPremium) * duty;
+  const r = (n: number) => Math.round(n * 100) / 100;
+  bd.pcbFabPerBoard = r(bd.pcbFabPerBoard + fabPremium);
+  bd.assemblyPerBoard = r(bd.assemblyPerBoard + asmPremium);
+  bd.logisticsPerBoard = r(bd.logisticsPerBoard + dutyDelta);
+  bd.totalPerBoard = r(bd.totalPerBoard + fabPremium + asmPremium + dutyDelta);
+  bd.breakdown.automotiveFab = r(fabPremium);
+  bd.breakdown.automotiveAssembly = r(asmPremium);
+  bd.breakdown.importDuty = r(bd.breakdown.importDuty + dutyDelta);
+  bd.automotiveGrade = { asil, fabPremiumGBP: r(fabPremium), assemblyPremiumGBP: r(asmPremium) };
+  return { assembly, fab };
+}
+
+/** The same premiums on a volume-curve point (which carries no breakdown). */
+export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<string, unknown>, assemblyData: Record<string, unknown>, asil: ASILLevel, domain: string, boardsPerPanel: number): VolumeCurvePoint[] {
+  if (domain !== 'automotive_adas') return points;
+  const r = (n: number) => Math.round(n * 100) / 100;
+  return points.map(pt => {
+    const a = computeAutomotiveAssemblyCost(assemblyData, asil, pt.qty, pt.assemblyPerBoard);
+    const f = computeAutomotiveFabAdjustment(boardSpec, pt.pcbFabPerBoard, domain, boardsPerPanel);
+    const asmP = Math.max(0, a.totalAutomotiveAssemblyGBP - a.standardAssemblyGBP);
+    const fabP = Math.max(0, f.totalAutomotiveFabGBP - f.standardFabGBP);
+    return { ...pt, assemblyPerBoard: r(pt.assemblyPerBoard + asmP), pcbFabPerBoard: r(pt.pcbFabPerBoard + fabP), totalPerBoard: r(pt.totalPerBoard + asmP + fabP) };
+  });
+}
+
+/**
+ * `costEstimates` is what the screen, the PDFs and Save-to-Library fall back to.
+ * It came from the model (its guess at fab, assembly and BOM) with only the BOM
+ * total overwritten. Now every field is the deterministic figure for the
+ * selected country; the model's first pass is kept under `aiFirstPass` for audit.
+ */
+export function setDeterministicCostEstimates(a: Record<string, unknown>, bd: PCBCountryCostBreakdown | null, bomTotal: number): void {
+  const prev = (a.costEstimates && typeof a.costEstimates === 'object' ? a.costEstimates : {}) as Record<string, unknown>;
+  const r = (n: number) => Math.round(n * 100) / 100;
+  const fab = bd ? bd.pcbFabPerBoard : Number((prev.pcbFabGBP as { mid?: number } | undefined)?.mid) || 0;
+  a.costEstimates = {
+    ...prev,
+    pcbFabGBP: { min: r(fab * 0.8), mid: r(fab), max: r(fab * 1.3) },
+    totalBOMCostGBP: r(bomTotal),
+    smtAssemblyCostGBP: bd ? bd.assemblyPerBoard : Number(prev.smtAssemblyCostGBP) || 0,
+    basis: bd ? `deterministic — ${bd.countryName}` : 'deterministic',
+    aiFirstPass: prev.aiFirstPass ?? { pcbFabGBP: prev.pcbFabGBP, totalBOMCostGBP: prev.totalBOMCostGBP, smtAssemblyCostGBP: prev.smtAssemblyCostGBP },
+  };
 }
 
 // Apply volume correction and flag unconfirmed high-value ICs in the BOM array
@@ -260,8 +365,15 @@ function flagAndEnrichBOM(
 // to Opus 4.8 for complex/high-value boards — deeper reasoning on ambiguous
 // components. The Stage 3b refinement of unconfirmed ICs ALWAYS runs on Opus:
 // it is small (2K tokens) and sits exactly where analyses fail.
-const EXTRACT_MODEL = 'claude-sonnet-5';
-const DEEP_EXTRACT_MODEL = 'claude-opus-4-8';
+// 2026-09-30: Sonnet 5.5 (same price and image resolution as Sonnet 5, current
+// Sonnet) for extraction; Opus 5.5 for deep analysis — newer than Opus 4.8,
+// cheaper ($4/$20 vs $5/$25) and the Opus line is the one documented as stronger
+// at counting and measuring. Neither takes `temperature`; none is sent.
+export const EXTRACT_MODEL = 'claude-sonnet-5-5';
+export const DEEP_EXTRACT_MODEL = 'claude-opus-5-5';
+// Chip-marking OCR moved off Haiku: a mis-read marking is the costliest single
+// error in the pipeline (a TEF8105 read as "MMIC" was a £4 line, not £8–£19).
+export const OCR_MODEL = 'claude-sonnet-5-5';
 const extractionModel = (deep: boolean): string => (deep ? DEEP_EXTRACT_MODEL : EXTRACT_MODEL);
 
 // A fully-populated automotive/HDI board can enumerate hundreds of components at
@@ -1171,11 +1283,6 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
     "aoiRequired": true,
     "ictTimeSec": 60
   },
-  "costEstimates": {
-    "pcbFabGBP": { "min": 5.0, "mid": 8.0, "max": 12.0 },
-    "totalBOMCostGBP": 25.0,
-    "smtAssemblyCostGBP": 10.0
-  },
   "aiInsights": ["Insight 1", "Insight 2", "Insight 3"],
   "dfmIssues": ["DFM issue 1", "DFM issue 2"],
   "highCostComponents": ["High-cost component 1"],
@@ -1189,6 +1296,7 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
 INSTRUCTIONS:
 - Replace all example values above with actual values from the image
 - Group identical components (same type + package) into one BOM line
+- Do NOT estimate board fabrication, assembly or total costs — the server computes every cost from its rate tables
 - unitPriceGBP: your ESTIMATE only, inside the COMPONENT PRICING REFERENCE range for the part's class (100K volume; lower half for standard/generic parts). The server prices every line from its own table, catalogue and part ranges — your figure only picks the point within the range
 - For IC components identified from OCR markings, set partNumber to the exact marking, lineConf to 1.0, and ocrExtracted to true. EVERY IC marking listed above must be the partNumber of exactly one BOM line — never describe an OCR-read part generically (e.g. write TEF8105, not \"radar transceiver MMIC\")
 - Pads, test points and unfitted footprints are NOT components: leave them out of the BOM
@@ -1251,7 +1359,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
     ...imageFiles.map(f => f.buffer),
     // v2: payload-shape version — bumped when the response contract changes so
     // stale cached payloads (e.g. pre-`assembly`-normalization) never replay.
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 6 })),
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 7 })),
   ]);
   const cached = getCached(cacheKey);
   if (cached) {
@@ -1327,8 +1435,8 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
     const s2MultiNote = multiImage
       ? `\n\nNOTE: ${imageFiles.length} PCB photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract text from ALL images — the bottom side and additional photos often expose component markings not visible from the top.`
       : '';
-    const s2Msg = await anthropic.messages.create({ temperature: 0,
-      model: 'claude-haiku-4-5-20251001',
+    const s2Msg = await anthropic.messages.create({
+      model: OCR_MODEL,
       max_tokens: 4096,
       system: 'You are an expert at reading text from PCB images. Extract all readable text. Return ONLY JSON.',
       messages: [{
@@ -1657,6 +1765,7 @@ ${userPromptText}`;
     }
 
     // Re-sum BOM from grounded + capped prices
+    const placementWarnings = derivePlacementsFromBOM(enrichedBOM, assemblyData);
     const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
     if (a.costEstimates && typeof a.costEstimates === 'object') {
       (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
@@ -1701,29 +1810,27 @@ ${userPromptText}`;
     countryComparison = computeAllCountryCosts(costInput);
     const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
     selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
+    // Automotive grade into the headline (and every country), then the band on it.
+    for (const c of countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, asilClassification.asilLevel, orderQty, domain);
+    const graded = applyAutomotiveGrade(selectedCountryBreakdown, boardSpec, assemblyData, asilClassification.asilLevel, orderQty, domain);
+    if (graded) { automotiveAssemblyCost = graded.assembly; automotiveFabAdjustment = graded.fab; }
     confidenceBand = anchorBandToHeadline(confidenceBand, selectedCountryBreakdown) ?? confidenceBand!;
-    // Automotive panels need the country breakdown (it was null when they were first computed).
-    if (domain === 'automotive_adas' && selectedCountryBreakdown) {
-      automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, selectedCountryBreakdown.assemblyPerBoard);
-      automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, selectedCountryBreakdown.pcbFabPerBoard, domain, selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1);
-    }
+    setDeterministicCostEstimates(a, selectedCountryBreakdown, correctedBOMTotal);
 
     // Volume sensitivity curves for cheapest, selected, and UK.
     const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
     const cheapestId = sorted[0]?.countryId ?? 'cn';
     const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-    volumeCurves = {
-      [cheapestId]: computeVolumeCurve(costInput, cheapestId, volumeQtys),
-      [resolvedCountry]: computeVolumeCurve(costInput, resolvedCountry, volumeQtys),
-      gb: computeVolumeCurve(costInput, 'gb', volumeQtys),
-    };
+    const bpp = selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1;
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, asilClassification.asilLevel, domain, bpp);
+    volumeCurves = { [cheapestId]: curve(cheapestId), [resolvedCountry]: curve(resolvedCountry), gb: curve('gb') };
 
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
 
     // Sanity checks on AI output
     const aiStatedBOMTotal = Number((costEst as Record<string, unknown>).totalBOMCostGBP ?? 0);
     sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal, orderQty);
-    sanityWarnings.push(...groundTruthWarnings, ...prepared.warnings);
+    sanityWarnings.push(...groundTruthWarnings, ...prepared.warnings, ...placementWarnings);
 
     // NPI vs production breakdown
     npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
@@ -1805,7 +1912,7 @@ function buildCorrectionContext(
   }
   parts.push('IMPORTANT: Use the corrected values above verbatim in your boardSpec, assembly, and bom');
   parts.push('output fields. Only generate new content for: aiInsights, dfmIssues, highCostComponents,');
-  parts.push('optimisationSuggestions, confidenceLevel, analysisLimitations, partName, and costEstimates.\n');
+  parts.push('optimisationSuggestions, confidenceLevel, analysisLimitations and partName. Do not estimate costs — the server prices the board.\n');
   return parts.join('\n');
 }
 
@@ -1872,7 +1979,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     const contentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; data: string } } | { type: 'text'; text: string }> =
       imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
-    const msg1 = await anthropic.messages.create({
+    const msg1 = await stage3Message(anthropic, {
       model: extractionModel(deepAnalysis),
       max_tokens: EXTRACT_MAX_TOKENS,
       system: specialistSystem,
@@ -1883,7 +1990,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
           { type: 'text', text: userPromptText },
         ],
       }],
-    });
+    }, '/reanalyze');
 
     lastRaw = textOf(msg1);
 
@@ -1969,6 +2076,9 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
   // ── Stage 4: Volume correction + confidence band + country costs ──────────
   const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  // The ASIL from the first analysis (the UI sends it back): burn-in and the NRE
+  // tier depend on it, and a re-analysis used to reset it to Unknown.
+  const reanalAsil = (/^(ASIL-[ABCD]|QM)$/.test(String(req.body?.asilLevel ?? '')) ? String(req.body?.asilLevel) : 'Unknown') as ASILLevel;
 
   let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
   let selectedCountryBreakdown: PCBCountryCostBreakdown | null = null;
@@ -1983,6 +2093,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
   let reanalAutomotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
   let reanalBomCompleteness: BOMCompletenessResult | null = null;
   let reanalProgramPricing: ProgramPricingResult | null = null;
+  let reanalSanityWarnings: SanityWarning[] = [];
   const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
@@ -2008,11 +2119,11 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
       reanalAutomotiveGradeEnforcedCount = gradeResult.forcedCount;
       reanalSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
       const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      reanalAutomotiveNRE = computeAutomotiveNRE('Unknown', bomTotalForNRE);
-      reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, 'Unknown');
+      reanalAutomotiveNRE = computeAutomotiveNRE(reanalAsil, bomTotalForNRE);
+      reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, reanalAsil);
       // Automotive assembly cost model
       const reanalCountryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, 'Unknown' as ASILLevel, orderQty, reanalCountryAssemblyPerBoard);
+      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, reanalAsil, orderQty, reanalCountryAssemblyPerBoard);
       // Automotive fab adjustment
       reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
     }
@@ -2047,7 +2158,20 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
       });
     }
 
+    // Lines the user did not edit are priced like a first analysis (catalogue →
+    // named range → class table); an edited line is the user's and is kept.
+    {
+      const candidatePNs = groundingCandidates(enrichedBOM.filter(l => l.userCorrected !== true), 20);
+      const grounded = groundAndSplit(enrichedBOM, offlineCataloguePrices(candidatePNs, orderQty), knownRangeAtVolume(volumeMultiplier), { automotive: domain === 'automotive_adas' });
+      enrichedBOM = grounded.bom.map((l, i) => (enrichedBOM[i].userCorrected === true ? { ...enrichedBOM[i], priceSource: 'user', needsVerification: false } : l)) as Array<Record<string, unknown>>;
+      if (a.costEstimates && typeof a.costEstimates === 'object') {
+        const ce = a.costEstimates as Record<string, unknown>;
+        const split = enrichedBOM.reduce<{ c: number; u: number }>((t, l) => { const v = Number(l.lineTotalGBP) || 0; if (l.needsVerification === true) t.u += v; else t.c += v; return t; }, { c: 0, u: 0 });
+        ce.confirmedBOMCostGBP = Math.round(split.c * 100) / 100; ce.unverifiedBOMCostGBP = Math.round(split.u * 100) / 100;
+      }
+    }
     a.bom = enrichedBOM;
+    reanalSanityWarnings = derivePlacementsFromBOM(enrichedBOM, assemblyData);
 
     const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
     if (a.costEstimates && typeof a.costEstimates === 'object') {
@@ -2092,21 +2216,18 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     countryComparison = computeAllCountryCosts(costInput);
     const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
     selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
+    for (const c of countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, reanalAsil, orderQty, domain);
+    const graded = applyAutomotiveGrade(selectedCountryBreakdown, boardSpec, assemblyData, reanalAsil, orderQty, domain);
+    if (graded) { reanalAutomotiveAssemblyCost = graded.assembly; reanalAutomotiveFabAdjustment = graded.fab; }
     confidenceBand = anchorBandToHeadline(confidenceBand, selectedCountryBreakdown) ?? confidenceBand!;
-    // Automotive panels need the country breakdown (it was null when they were first computed).
-    if (domain === 'automotive_adas' && selectedCountryBreakdown) {
-      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, 'Unknown' as ASILLevel, orderQty, selectedCountryBreakdown.assemblyPerBoard);
-      reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, selectedCountryBreakdown.pcbFabPerBoard, domain, selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1);
-    }
+    setDeterministicCostEstimates(a, selectedCountryBreakdown, correctedBOMTotal);
 
     const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
     const cheapestId = sorted[0]?.countryId ?? 'cn';
     const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-    volumeCurves = {
-      [cheapestId]: computeVolumeCurve(costInput, cheapestId, volumeQtys),
-      [resolvedCountry]: computeVolumeCurve(costInput, resolvedCountry, volumeQtys),
-      gb: computeVolumeCurve(costInput, 'gb', volumeQtys),
-    };
+    const bpp = selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1;
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, reanalAsil, domain, bpp);
+    volumeCurves = { [cheapestId]: curve(cheapestId), [resolvedCountry]: curve(resolvedCountry), gb: curve('gb') };
 
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
 
@@ -2133,6 +2254,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     automotiveFabAdjustment: reanalAutomotiveFabAdjustment,
     bomCompleteness: reanalBomCompleteness,
     programPricing: reanalProgramPricing,
+    sanityWarnings: reanalSanityWarnings,
   });
 });
 
@@ -2336,8 +2458,8 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   try {
     emit('progress', { stage: 2, label: 'Stage 2 — OCR text extraction', pct: 35 });
     const s2Note = multiImage ? `\n\nNOTE: ${imageFiles.length} photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract from ALL images.` : '';
-    const s2Msg = await anthropic.messages.create({ temperature: 0,
-      model: 'claude-haiku-4-5-20251001', max_tokens: 4096,
+    const s2Msg = await anthropic.messages.create({
+      model: OCR_MODEL, max_tokens: 4096,
       system: 'You are an expert at reading PCB text. Return ONLY JSON.',
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
@@ -2563,6 +2685,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     streamLivePriceHits = grounded2.matched;
     streamNeedsVerification = grounded2.needsVerification;
     a.bom = enrichedBOM2;
+    const placementWarnings2 = derivePlacementsFromBOM(enrichedBOM2, assemblyData);
     const correctedBOMTotal2 = grounded2.bomTotal;
     if (a.costEstimates && typeof a.costEstimates === 'object') {
       const ce = a.costEstimates as Record<string, unknown>;
@@ -2579,7 +2702,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     streamProgramPricing = computeProgramPricing(correctedBOMTotal2, orderQty2, domain);
     confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
     sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0), orderQty2);
-    sanityWarnings2.push(...groundTruthWarnings2, ...prepared2.warnings);
+    sanityWarnings2.push(...groundTruthWarnings2, ...prepared2.warnings, ...placementWarnings2);
     npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
     const costInput2: PCBCostInput = {
       widthMm: Number(boardSpec.widthMm) || 100, heightMm: Number(boardSpec.heightMm) || 80, layers: Number(boardSpec.estimatedLayers) || 2,
@@ -2595,19 +2718,18 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     countryComparison2 = computeAllCountryCosts(costInput2);
     const resolvedCountry2 = PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn';
     selectedCountryBreakdown2 = computePCBCountryCost(costInput2, resolvedCountry2);
+    // Automotive grade into the headline (and every country), then the band on it.
+    for (const c of countryComparison2) applyAutomotiveGrade(c, boardSpec, assemblyData, streamAsilClassification.asilLevel, orderQty2, domain);
+    const graded2 = applyAutomotiveGrade(selectedCountryBreakdown2, boardSpec, assemblyData, streamAsilClassification.asilLevel, orderQty2, domain);
+    if (graded2) { streamAutomotiveAssemblyCost = graded2.assembly; streamAutomotiveFabAdjustment = graded2.fab; }
     confidenceBand2 = anchorBandToHeadline(confidenceBand2, selectedCountryBreakdown2) ?? confidenceBand2!;
-    // The automotive panels need the country breakdown, which did not exist when
-    // they were first computed above (they read null → flat fallbacks). Recompute
-    // them now: assembly on the country's assembly, fab on the BARE board (not the
-    // stabilised fab that already carries assembly and a ×1.3 automotive uplift).
-    if (domain === 'automotive_adas' && selectedCountryBreakdown2) {
-      streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, selectedCountryBreakdown2.assemblyPerBoard);
-      streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, selectedCountryBreakdown2.pcbFabPerBoard, domain, selectedCountryBreakdown2.panelInfo?.boardsPerPanel ?? 1);
-    }
+    setDeterministicCostEstimates(a, selectedCountryBreakdown2, correctedBOMTotal2);
     const sorted2 = [...countryComparison2].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
     const cheapestId2 = sorted2[0]?.countryId ?? 'cn';
     const volQtys2 = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-    volumeCurves2 = { [cheapestId2]: computeVolumeCurve(costInput2, cheapestId2, volQtys2), [resolvedCountry2]: computeVolumeCurve(costInput2, resolvedCountry2, volQtys2), gb: computeVolumeCurve(costInput2, 'gb', volQtys2) };
+    const bpp2 = selectedCountryBreakdown2.panelInfo?.boardsPerPanel ?? 1;
+    const curve2 = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput2, id, volQtys2), boardSpec, assemblyData, streamAsilClassification.asilLevel, domain, bpp2);
+    volumeCurves2 = { [cheapestId2]: curve2(cheapestId2), [resolvedCountry2]: curve2(resolvedCountry2), gb: curve2('gb') };
     complexityScore2 = computeComplexityScore(boardSpec, assemblyData);
   } catch (err) {
     console.warn('[PCB/stream] Stage 4 failed:', (err as Error).message);
