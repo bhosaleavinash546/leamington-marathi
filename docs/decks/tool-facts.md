@@ -38,7 +38,10 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
   into its flat blank: outline, holes, the smallest rectangle it nests in, and a DXF
   to download. Exact on a bent part (checked against a hand-calculated bracket); where
   the metal was stretch-formed or drawn the tool says so and lowers its confidence,
-  and the FastBlank DXF is still the answer for the formed process.
+  and the FastBlank DXF is still the answer for the formed process. The blank is then
+  nested on the coil: the orientation and pitch that use the least strip, with a
+  two-up interlock reported as a tooling trade-off rather than applied, and the metal
+  bought is the strip the press feeds.
 - **STL files have no feature table**, so a machined STL arrives with no cycle
   time; the tool blocks the costing until the engineer types one.
 

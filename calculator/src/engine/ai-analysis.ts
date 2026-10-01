@@ -208,6 +208,9 @@ export interface OCCTGeometry {
     maxStrainPct?: number;
     /** Hash under which the server holds this blank (and its DXF) for /reanalyze and download. */
     blankHash?: string;
+    /** The outer profile in the strip frame, decimated to a few hundred points — what the
+     *  coil nesting (src/engine/nesting.ts) lays out. Holes do not affect nesting. */
+    outline?: Array<[number, number]>;
   };
   /**
    * Gear metrology, from the B-rep: teeth counted from tip-circle cylinder

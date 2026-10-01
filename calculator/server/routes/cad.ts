@@ -14,6 +14,7 @@ import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
 import { measureBlankDxf } from '../utils/dxf-blank.js';
 import { blankHashOf, putBlank, getBlank, getBlankDxf } from '../utils/geometry-store.js';
 import { developBlankFromCad } from '../services/blank-development.js';
+import { decimateOutline } from '../../src/engine/nesting.js';
 import type { TessellationMeta } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
@@ -735,6 +736,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         source: `FASTBLANK DXF (${blankUpload.originalname})`
           + (m.unitsAssumed ? ', units not declared — read as mm' : ''),
         developedFrom: 'dxf' as const,
+        outline: decimateOutline(m.outlinePoints),
         ...(m.warnings.length ? { warnings: m.warnings } : {}),
       };
       // Kept under the DXF's own hash so /reanalyze can pick the same blank up

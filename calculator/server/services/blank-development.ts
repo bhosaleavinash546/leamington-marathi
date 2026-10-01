@@ -14,6 +14,7 @@ import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
 import { extractSkinMesh } from '../utils/geometry-bridge.js';
 import { developBlank, blankToDxf } from '../utils/blank-unfold.js';
 import { putBlank, putBlankDxf } from '../utils/geometry-store.js';
+import { decimateOutline } from '../../src/engine/nesting.js';
 
 export type DevelopedBlankRecord = NonNullable<OCCTGeometry['blank']>;
 
@@ -61,6 +62,7 @@ export async function developBlankFromCad(
     developable: developed.developable,
     maxStrainPct: Math.round(developed.maxStrainPct * 10) / 10,
     blankHash,
+    outline: decimateOutline(developed.skins[0].outline),
     ...(developed.warnings.length ? { warnings: developed.warnings } : {}),
   };
   putBlank(blankHash, blank);

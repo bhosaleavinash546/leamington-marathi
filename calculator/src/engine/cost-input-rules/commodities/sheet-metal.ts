@@ -32,6 +32,7 @@ import { materialFacts } from '../derive/material.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
+import { nestOnCoil, type NestResult } from '../../nesting.js';
 import type { MaterialFamily } from '../../material-family.js';
 
 /** Shear strength MPa by family — drives die hardness and press tonnage. */
@@ -83,7 +84,7 @@ export function blankDims(ctx: RuleContext): BlankDims | null {
     return {
       lengthMm: Math.round(dev.boundingRectMm.lengthMm),
       widthMm: Math.round(dev.boundingRectMm.widthMm),
-      basis: `developed blank from ${dev.source} — ${(dev.grossAreaMm2 / 100).toFixed(0)} cm² profile `
+      basis: `${own ? 'blank ' : 'developed blank from '}${dev.source} — ${(dev.grossAreaMm2 / 100).toFixed(0)} cm² profile `
         + `filling ${(dev.rectangleFill * 100).toFixed(0)}% of its ${Math.round(dev.boundingRectMm.lengthMm)}`
         + `×${Math.round(dev.boundingRectMm.widthMm)} mm rectangle`
         + (stretched ? '. Parts of the pressing are stretch-formed, so the unfold slightly understates the blank where the '
@@ -187,6 +188,68 @@ export function gaugeMm(ctx: RuleContext): { mm: number; basis: string; confiden
     }
   }
   return read;
+}
+
+/** The strip layout: how the blank sits on the coil, and what that costs in metal. */
+export interface StripLayout {
+  pitchMm: number;
+  stripWidthMm: number;
+  webMm: number;
+  edgeMm: number;
+  /** Present when the blank's outline was nested; absent on the rectangle fall-back. */
+  nested?: NestResult;
+  pitchBasis: string;
+  stripBasis: string;
+  confidence: number;
+}
+
+const nestCache = new WeakMap<object, NestResult>();
+
+/**
+ * Pitch and strip width. With a developed blank's outline the blank is nested
+ * on the coil (src/engine/nesting.ts): best orientation, the next blank as
+ * close as the web allows on every scanline. Without one, the rectangle plus a
+ * web and two edge margins — which cannot see the scrap inside the rectangle.
+ * A 2-up interlock that saves 3 points or more is reported on the basis, not
+ * applied: it needs a two-blank die, which is a tooling decision.
+ */
+export function stripLayout(ctx: RuleContext): StripLayout | null {
+  const b = blankDims(ctx);
+  const g = gaugeMm(ctx);
+  if (!b || !g) return null;
+  const web = Math.max(3, 2 * g.mm);
+  const edge = Math.max(3, 2 * g.mm);
+  const dev = ctx.geo.blank;
+  if (dev?.outline && dev.outline.length >= 3) {
+    let nested = nestCache.get(dev);
+    if (!nested) {
+      try { nested = nestOnCoil(dev.outline, { webMm: web, edgeMarginMm: edge }); nestCache.set(dev, nested); }
+      catch { nested = undefined; }
+    }
+    if (nested) {
+      const one = nested.oneUp;
+      const pct = (u: number) => `${Math.round(u * 100)}%`;
+      const twoUp = nested.twoUp
+        ? `; 2-up ${nested.twoUp.layout === '2-up-rotated' ? 'turned 180°' : 'mirrored'} would reach ${pct(nested.twoUp.utilisation)} `
+          + `at ${Math.round(nested.twoUp.pitchMm)} mm per pair, but needs a two-blank die — shown, not applied`
+        : '';
+      const common = `blank outline nested on the coil, 1-up at ${Math.round(one.angleDeg)}°: pitch ${Math.round(one.pitchMm)} mm × `
+        + `strip ${Math.round(one.stripWidthMm)} mm = ${pct(one.utilisation)} utilisation (the rectangle would give `
+        + `${pct(nested.rectangleUtilisation)})${twoUp}`;
+      return {
+        pitchMm: Math.round(one.pitchMm), stripWidthMm: Math.round(one.stripWidthMm), webMm: web, edgeMm: edge, nested,
+        pitchBasis: `${common} — ${web.toFixed(0)} mm web (max(3, 2 × gauge))`,
+        stripBasis: `${common} — ${edge.toFixed(0)} mm edge margin each side`,
+        confidence: 0.85,
+      };
+    }
+  }
+  return {
+    pitchMm: Math.round(b.lengthMm + web), stripWidthMm: Math.round(b.widthMm + 2 * edge), webMm: web, edgeMm: edge,
+    pitchBasis: `blank ${b.lengthMm} mm + ${web.toFixed(0)} mm web (max(3, 2 × gauge))`,
+    stripBasis: `blank ${b.widthMm} mm + 2 × ${edge.toFixed(0)} mm edge margin`,
+    confidence: 0.7,
+  };
 }
 
 /** Hole count from the exact feature table — or the engineer's figure on a mesh upload. */
@@ -373,9 +436,10 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         const dev = ctx.geo.blank;
         if (dev && dev.outerPerimeterMm > 0) {
           const total = dev.outerPerimeterMm + (dev.holePerimeterMm ?? 0);
+          const own = dev.developedFrom === 'solid';
           return decided('sheetMetal.perimeterMm', Math.round(total), 'geometry',
             `${Math.round(dev.outerPerimeterMm)} mm outline + ${Math.round(dev.holePerimeterMm ?? 0)} mm of `
-            + `${dev.holeCount} hole edge(s), measured from ${dev.source}`, 0.95);
+            + `${dev.holeCount} hole edge(s), measured on ${own ? 'the blank unfolded from the solid' : dev.source}`, own ? 0.85 : 0.95);
         }
         const ab = analyticBlank(ctx);
         if (ab?.cutLengthMm) {
@@ -408,27 +472,23 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       // blind mapper defaults until the A/B showed them costing real money.
       id: 'sheetMetal.pitchMm',
       path: 'sheetMetal.pitchMm',
+      fieldId: 'sm-pitch',
       label: 'pitchMm',
-      appliesWhen: (ctx) => !!blankDims(ctx) && !!gaugeMm(ctx),
+      appliesWhen: (ctx) => !!stripLayout(ctx),
       evaluate: (ctx) => {
-        const b = blankDims(ctx)!;
-        const g = gaugeMm(ctx)!;
-        const web = Math.max(3, 2 * g.mm);
-        return decided('sheetMetal.pitchMm', Math.round(b.lengthMm + web), 'rule',
-          `blank ${b.lengthMm} mm + ${web.toFixed(0)} mm web (max(3, 2 × gauge))`, 0.7);
+        const l = stripLayout(ctx)!;
+        return decided('sheetMetal.pitchMm', l.pitchMm, l.nested ? 'geometry' : 'rule', l.pitchBasis, l.confidence);
       },
     },
     {
       id: 'sheetMetal.stripWidthMm',
       path: 'sheetMetal.stripWidthMm',
+      fieldId: 'sm-strip-w',
       label: 'stripWidthMm',
-      appliesWhen: (ctx) => !!blankDims(ctx) && !!gaugeMm(ctx),
+      appliesWhen: (ctx) => !!stripLayout(ctx),
       evaluate: (ctx) => {
-        const b = blankDims(ctx)!;
-        const g = gaugeMm(ctx)!;
-        const edge = Math.max(3, 2 * g.mm);
-        return decided('sheetMetal.stripWidthMm', Math.round(b.widthMm + 2 * edge), 'rule',
-          `blank ${b.widthMm} mm + 2 × ${edge.toFixed(0)} mm edge margin`, 0.7);
+        const l = stripLayout(ctx)!;
+        return decided('sheetMetal.stripWidthMm', l.stripWidthMm, l.nested ? 'geometry' : 'rule', l.stripBasis, l.confidence);
       },
     },
     {
@@ -441,11 +501,9 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       path: 'sheetMetal.strokesPerMin',
       fieldId: 'sm-spm',
       label: 'strokesPerMin',
-      appliesWhen: (ctx) => !!blankDims(ctx) && !!gaugeMm(ctx),
+      appliesWhen: (ctx) => !!stripLayout(ctx),
       evaluate: (ctx) => {
-        const b = blankDims(ctx)!;
-        const g = gaugeMm(ctx)!;
-        const pitch = b.lengthMm + Math.max(3, 2 * g.mm);
+        const pitch = stripLayout(ctx)!.pitchMm;
         const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
         let spm = 18_000 / pitch;
         if (bends >= 4) spm *= 0.8;

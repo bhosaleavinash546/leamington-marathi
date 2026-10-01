@@ -63,6 +63,8 @@ export interface BlankMeasurement {
   boundingRectMm: { lengthMm: number; widthMm: number };
   /** How much of its own bounding rectangle the blank fills, 0–1. */
   rectangleFill: number;
+  /** The outer profile as tessellated points, for coil nesting. */
+  outlinePoints: Array<[number, number]>;
   units: 'mm' | 'inch';
   /** True when the file did not declare its units and millimetres were assumed. */
   unitsAssumed: boolean;
@@ -413,6 +415,7 @@ export function measureBlankDxf(text: string): BlankMeasurement {
     holeCount: holes.length,
     boundingRectMm: { lengthMm, widthMm },
     rectangleFill: lengthMm * widthMm > 0 ? outer.area / (lengthMm * widthMm) : 0,
+    outlinePoints: outer.pts.map(p => [p.x, p.y] as [number, number]),
     units, unitsAssumed, entities, warnings,
   };
 }

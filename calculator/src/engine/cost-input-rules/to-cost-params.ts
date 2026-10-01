@@ -35,6 +35,7 @@
  */
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
+import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
 import { computeFeatureMachining } from '../feature-machining.js';
 import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
@@ -603,6 +604,12 @@ export function toCostParams(
       // seat bracket that is 1,012 mm against 1,940 mm, half the press.
       const perimeter = num(s.perimeterMm, 2 * (L + W));
       const tonnes = (perimeter * t * shear) / 9807;
+      // With a developed blank the strip cell (pitch × width) is real, so the
+      // metal bought is the strip the press feeds: cell × gauge × density. The
+      // module then takes utilisation = net ÷ that, which counts the outline's
+      // own scrap — the rectangle-on-rectangle ratio it falls back to cannot see
+      // it, and on the seat bracket reads 96% for a blank that nests at 73%.
+      const density = geo?.blank ? DEFAULT_RATE_LIBRARY.materials.find(m => m.id === materialId)?.densityKgPerM3 : undefined;
       return {
         commodity, assumed: [...assumed, 'pressId', 'strokesPerMin', 'strip layout'],
         params: {
@@ -615,6 +622,7 @@ export function toCostParams(
           stripWidthMm: num(s.stripWidthMm, W * 1.1),
           pitchMm: num(s.pitchMm, L * 1.05),
           partsPerStroke: 1,
+          ...(density ? { densityKgPerM3: density } : {}),
           pressId: pickStampingPressId(tonnes),
           // Feed-limited when the rules carried it; 20 SPM was the old blind
           // default and alone inflated the cross-member cycle ~4.5×.

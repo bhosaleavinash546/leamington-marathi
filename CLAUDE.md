@@ -70,7 +70,11 @@ reproducible, and it is the invariant to preserve in any change.
   (`/api/cad/blank/:hash/blank.dxf`), via `services/blank-development.ts` — the one
   entry point the route and the real-parts baseline share. Exact on a bent part; a
   stretch-formed or drawn skin is flagged by its strain (`developable: false`) and the
-  rules lower the blank's confidence. See `docs/sheet-metal/`.
+  rules lower the blank's confidence. The blank carries its `outline`, which
+  `src/engine/nesting.ts` nests on the coil (`stripLayout` in the rules: 1-up pitch and
+  strip width applied, a 2-up interlock stated as a die trade-off), and with a developed
+  blank the cost parameters pass the material density so the module buys the strip cell
+  × gauge × density rather than a rectangle ratio. See `docs/sheet-metal/`.
 - `rate-library.ts` (`DEFAULT_RATE_LIBRARY`) + `regional-rates.ts`
   (`REGIONAL_DATA`, `computeRegionalComparison`, `buildRegionalLibrary`) hold the
   real 2026-Q2 rates. Two regionalisation paths exist and must stay consistent:
