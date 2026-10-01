@@ -80,14 +80,14 @@ describe('lines with no part, and over-priced commodity parts', () => {
     expect(bom[0].priceSource).toBe('not-fitted');
   });
   it('electrolytics and SOT-23 discretes are capped by what they are', () => {
-    expect(descriptionCap('Electrolytic capacitor 100V, power supply filtering')).toBe(0.60);
+    expect(descriptionCap('Electrolytic capacitor 100V, power supply filtering')).toBe(0.90);
     expect(descriptionCap('Automotive AEC-Q101 TVS diodes / small-signal transistors, SOT-23/SOD-123')).toBe(0.12);
     expect(descriptionCap('LDO regulator IC SOT-23-5')).toBeNull();
     const { bom } = capUnconfirmedPrices([
       { componentType: 'through_hole', description: 'Electrolytic capacitor 100V (JW 100V series)', qty: 2, unitPriceGBP: 1.584 },
       { componentType: 'fuse_tvs', description: 'Automotive AEC-Q101 TVS diodes / small-signal transistors, SOT-23/SOD-123', qty: 10, unitPriceGBP: 0.176 },
     ]);
-    expect(bom[0].unitPriceGBP).toBe(0.60);
+    expect(bom[0].unitPriceGBP).toBe(0.90);
     expect(bom[1].unitPriceGBP).toBe(0.12);
   });
 });

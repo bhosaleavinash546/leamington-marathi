@@ -4802,12 +4802,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.3765,
-"q10k": 0.32,
-"q100k": 0.272
+"q1k": 0.17647,
+"q10k": 0.15,
+"q100k": 0.1275
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.186 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -4819,12 +4819,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.3765,
-"q10k": 0.32,
-"q100k": 0.272
+"q1k": 0.17647,
+"q10k": 0.15,
+"q100k": 0.1275
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as ECS-250 (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -4836,12 +4836,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.2118,
-"q10k": 0.18,
-"q100k": 0.153
+"q1k": 0.42353,
+"q10k": 0.36,
+"q100k": 0.306
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on TXC $0.46 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -4853,12 +4853,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.3294,
-"q10k": 0.28,
-"q100k": 0.238
+"q1k": 0.23529,
+"q10k": 0.2,
+"q100k": 0.17
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as ABM8/TXC (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -4870,12 +4870,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.2588,
-"q10k": 0.22,
-"q100k": 0.187
+"q1k": 0.21176,
+"q10k": 0.18,
+"q100k": 0.153
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.164–0.30 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -4904,12 +4904,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.8824,
-"q10k": 0.75,
-"q100k": 0.6375
+"q1k": 0.70588,
+"q10k": 0.6,
+"q100k": 0.51
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.67–0.84 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -4972,12 +4972,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.3765,
-"q10k": 0.32,
-"q100k": 0.272
+"q1k": 0.25882,
+"q10k": 0.22,
+"q100k": 0.187
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as ABM8/TXC (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5006,12 +5006,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.1647,
-"q10k": 0.14,
-"q100k": 0.119
+"q1k": 0.2,
+"q10k": 0.17,
+"q100k": 0.1445
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.19–0.30 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5210,46 +5210,46 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.0212,
-"q10k": 0.018,
-"q100k": 0.0153
+"q1k": 0.02471,
+"q10k": 0.021,
+"q100k": 0.01785
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.046 @3k / £0.021 UK (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
 "mpn": "1N4148WS",
 "family": "1N4148WS",
-"mfr": "various",
-"desc": "Switching diode SOD-323",
+"mfr": "onsemi/Vishay",
+"desc": "75 V switching diode SOD-323",
 "category": "fuse_tvs",
-"pkg": "SMD",
-"aecq": true,
+"pkg": "SOD-323",
+"aecq": false,
 "gbp": {
-"q1k": 0.0129,
-"q10k": 0.011,
-"q100k": 0.0093
+"q1k": 0.01918,
+"q10k": 0.0163,
+"q100k": 0.01381
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"confidence": "distributor",
+"source": "Future (Vishay 1N4148WS-E3-08): $0.0209 @3,000; onsemi $0.0238–0.034; LCSC $0.0045; to 1k by the curve, 10k ×0.85, 100k ×0.72",
 "asOf": "2026-10-01"
 },
 {
 "mpn": "SS34",
 "family": "SS34",
-"mfr": "various",
-"desc": "Schottky 3 A SMA",
+"mfr": "onsemi",
+"desc": "40 V 3 A Schottky SMA",
 "category": "fuse_tvs",
-"pkg": "SMD",
-"aecq": true,
+"pkg": "SMA",
+"aecq": false,
 "gbp": {
-"q1k": 0.0529,
-"q10k": 0.045,
-"q100k": 0.0382
+"q1k": 0.09176,
+"q10k": 0.078,
+"q100k": 0.06607
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"confidence": "distributor",
+"source": "TME $0.26 @1.5k, Digi-Key $0.246 @3k, LCSC $0.017 @5k; mid $0.10 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
 "asOf": "2026-10-01"
 },
 {
@@ -5278,12 +5278,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.0647,
-"q10k": 0.055,
-"q100k": 0.0467
+"q1k": 0.08471,
+"q10k": 0.072,
+"q100k": 0.0612
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.089–0.10 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5329,12 +5329,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.0412,
-"q10k": 0.035,
-"q100k": 0.0298
+"q1k": 0.30588,
+"q10k": 0.26,
+"q100k": 0.221
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on Littelfuse 0603SF $0.32–0.37 @1–4k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5346,12 +5346,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.0647,
-"q10k": 0.055,
-"q100k": 0.0467
+"q1k": 0.35294,
+"q10k": 0.3,
+"q100k": 0.255
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as 0603 fuse +15% (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5363,12 +5363,12 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.0412,
+"q1k": 0.04118,
 "q10k": 0.035,
-"q100k": 0.0298
+"q100k": 0.02975
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on NCP18 0603 $0.03–0.06 @4k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5391,18 +5391,18 @@
 {
 "mpn": "BSS138",
 "family": "BSS138",
-"mfr": "various",
-"desc": "N-MOSFET SOT-23 AEC-Q101",
+"mfr": "onsemi",
+"desc": "N-MOSFET 50 V 220 mA SOT-23",
 "category": "fuse_tvs",
-"pkg": "SOT-23/DPAK",
-"aecq": true,
+"pkg": "SOT-23",
+"aecq": false,
 "gbp": {
-"q1k": 0.0259,
-"q10k": 0.022,
-"q100k": 0.0187
+"q1k": 0.05276,
+"q10k": 0.04485,
+"q100k": 0.03799
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"confidence": "distributor",
+"source": "Digi-Key: $0.0575 @3,000 (Diodes BSS138-7-F $0.0457); to 1k by the curve, 10k ×0.85, 100k ×0.72",
 "asOf": "2026-10-01"
 },
 {
@@ -5431,12 +5431,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0212,
-"q10k": 0.018,
-"q100k": 0.0153
+"q1k": 0.02353,
+"q10k": 0.02,
+"q100k": 0.017
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on Nexperia $0.025–0.049 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5448,12 +5448,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0129,
-"q10k": 0.011,
-"q100k": 0.0093
+"q1k": 0.01529,
+"q10k": 0.013,
+"q100k": 0.01105
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on BC847B $0.017–0.023 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5465,12 +5465,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0129,
-"q10k": 0.011,
-"q100k": 0.0093
+"q1k": 0.01529,
+"q10k": 0.013,
+"q100k": 0.01105
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as BC847 (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5482,12 +5482,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0129,
-"q10k": 0.011,
-"q100k": 0.0093
+"q1k": 0.01529,
+"q10k": 0.013,
+"q100k": 0.01105
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as BC847 (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5499,12 +5499,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0129,
-"q10k": 0.011,
-"q100k": 0.0093
+"q1k": 0.01529,
+"q10k": 0.013,
+"q100k": 0.01105
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as BC847 (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5533,12 +5533,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0412,
-"q10k": 0.035,
-"q100k": 0.0298
+"q1k": 0.07059,
+"q10k": 0.06,
+"q100k": 0.051
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as SI2301 class (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5550,12 +5550,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0412,
-"q10k": 0.035,
-"q100k": 0.0298
+"q1k": 0.07059,
+"q10k": 0.06,
+"q100k": 0.051
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as SI2301 class (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5567,12 +5567,12 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0529,
-"q10k": 0.045,
-"q100k": 0.0382
+"q1k": 0.08235,
+"q10k": 0.07,
+"q100k": 0.0595
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.075–0.17 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5822,12 +5822,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0041,
-"q10k": 0.0035,
-"q100k": 0.003
+"q1k": 0.00529,
+"q10k": 0.0045,
+"q100k": 0.00382
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on CRCW0402 $0.0064 @5k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5839,12 +5839,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0053,
-"q10k": 0.0045,
-"q100k": 0.0038
+"q1k": 0.00565,
+"q10k": 0.0048,
+"q100k": 0.00408
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on ERJ-3EK $0.0048–0.0081 @5k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5958,12 +5958,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0088,
-"q10k": 0.0075,
-"q100k": 0.0064
+"q1k": 0.00647,
+"q10k": 0.0055,
+"q100k": 0.00467
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on GCM155 $0.006–0.0087 @10k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5975,12 +5975,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0212,
-"q10k": 0.018,
-"q100k": 0.0153
+"q1k": 0.02824,
+"q10k": 0.024,
+"q100k": 0.0204
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on GCM188 $0.030 @28k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -5992,12 +5992,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0529,
-"q10k": 0.045,
-"q100k": 0.0382
+"q1k": 0.10824,
+"q10k": 0.092,
+"q100k": 0.0782
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on GCM21B $0.113–0.124 @10k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6009,12 +6009,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.1,
-"q10k": 0.085,
-"q100k": 0.0723
+"q1k": 0.11765,
+"q10k": 0.1,
+"q100k": 0.085
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on GRM31C 25 V $0.085 @1k, +auto/50 V (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6043,12 +6043,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.3294,
-"q10k": 0.28,
-"q100k": 0.238
+"q1k": 0.25882,
+"q10k": 0.22,
+"q100k": 0.187
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on GRM32E $0.28 @2k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6060,12 +6060,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0129,
-"q10k": 0.011,
-"q100k": 0.0093
+"q1k": 0.00588,
+"q10k": 0.005,
+"q100k": 0.00425
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on GCM1555 10 pF $0.005 @10k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6179,12 +6179,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.2353,
-"q10k": 0.2,
-"q100k": 0.17
+"q1k": 0.35294,
+"q10k": 0.3,
+"q100k": 0.255
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on scaled from UCD 100 V and EEE-FK 35 V (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6196,12 +6196,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.4471,
-"q10k": 0.38,
-"q100k": 0.323
+"q1k": 0.81176,
+"q10k": 0.69,
+"q100k": 0.5865
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on Nichicon UCD 100 µF 100 V $1.04 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6230,12 +6230,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.4941,
-"q10k": 0.42,
-"q100k": 0.357
+"q1k": 0.61176,
+"q10k": 0.52,
+"q100k": 0.442
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on scaled from UCD (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6247,12 +6247,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.5647,
-"q10k": 0.48,
-"q100k": 0.408
+"q1k": 0.70588,
+"q10k": 0.6,
+"q100k": 0.51
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on scaled from UCD (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6264,12 +6264,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.2235,
+"q1k": 0.22353,
 "q10k": 0.19,
 "q100k": 0.1615
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on EEE-FK1V101P $0.165–0.275 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6281,12 +6281,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.6471,
-"q10k": 0.55,
-"q100k": 0.4675
+"q1k": 0.23529,
+"q10k": 0.2,
+"q100k": 0.17
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on EEH-ZC1V470P $0.195–0.27 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6366,12 +6366,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.0088,
-"q10k": 0.0075,
-"q100k": 0.0064
+"q1k": 0.01765,
+"q10k": 0.015,
+"q100k": 0.01275
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on BLM18 $0.017–0.021 @4k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6400,12 +6400,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.2,
-"q10k": 0.17,
-"q100k": 0.1445
+"q1k": 0.22353,
+"q10k": 0.19,
+"q100k": 0.1615
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on SRN4018-class, scaled (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6417,12 +6417,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.2471,
+"q1k": 0.24706,
 "q10k": 0.21,
 "q100k": 0.1785
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on scaled (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6434,12 +6434,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.3059,
-"q10k": 0.26,
-"q100k": 0.221
+"q1k": 0.24706,
+"q10k": 0.21,
+"q100k": 0.1785
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on SRN6045 $0.246 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6468,12 +6468,12 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.1647,
-"q10k": 0.14,
-"q100k": 0.119
+"q1k": 0.22353,
+"q10k": 0.19,
+"q100k": 0.1615
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on $0.246 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6757,12 +6757,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.4471,
-"q10k": 0.38,
-"q100k": 0.323
+"q1k": 0.48235,
+"q10k": 0.41,
+"q100k": 0.3485
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on 39281043 $0.51–0.53 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6774,12 +6774,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.6471,
-"q10k": 0.55,
-"q100k": 0.4675
+"q1k": 0.84706,
+"q10k": 0.72,
+"q100k": 0.612
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on 43045-0800 $0.93 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6791,12 +6791,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.1294,
-"q10k": 0.11,
-"q100k": 0.0935
+"q1k": 0.23529,
+"q10k": 0.2,
+"q100k": 0.17
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on SM06B-GHS $0.20–0.30 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6825,12 +6825,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.3294,
-"q10k": 0.28,
-"q100k": 0.238
+"q1k": 0.50588,
+"q10k": 0.43,
+"q100k": 0.3655
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on USB4085 $0.545–0.572 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6910,12 +6910,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 1.2941,
-"q10k": 1.1,
-"q100k": 0.935
+"q1k": 0.52941,
+"q10k": 0.45,
+"q100k": 0.3825
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on DF40C-60DP $0.36–0.76 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -6995,12 +6995,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 1.2941,
-"q10k": 1.1,
-"q100k": 0.935
+"q1k": 1.11765,
+"q10k": 0.95,
+"q100k": 0.8075
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on V23086 $1.13 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -7012,12 +7012,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.6471,
-"q10k": 0.55,
-"q100k": 0.4675
+"q1k": 1.41176,
+"q10k": 1.2,
+"q100k": 1.02
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on G6K-2F-Y $0.61–3.18 @1k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -7063,12 +7063,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.0212,
-"q10k": 0.018,
-"q100k": 0.0153
+"q1k": 0.10588,
+"q10k": 0.09,
+"q100k": 0.0765
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on OSRAM LG L29K $0.10–0.14 @3k (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -7080,12 +7080,12 @@
 "pkg": "PCB",
 "aecq": true,
 "gbp": {
-"q1k": 0.0329,
-"q10k": 0.028,
-"q100k": 0.0238
+"q1k": 0.11765,
+"q10k": 0.1,
+"q100k": 0.085
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "engineering estimate re-based on as LG L29K (2026-10-01)",
 "asOf": "2026-10-01"
 },
 {
@@ -7222,6 +7222,621 @@
 },
 "confidence": "estimate",
 "source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "CRCW040210K0FKED",
+"family": "CRCW0402",
+"mfr": "Vishay",
+"desc": "10 kΩ 1% 0402 thick-film, AEC-Q200",
+"category": "passive_0402",
+"pkg": "0402",
+"aecq": true,
+"gbp": {
+"q1k": 0.00501,
+"q10k": 0.00426,
+"q100k": 0.00361
+},
+"confidence": "distributor",
+"source": "Digi-Key: $0.00642 @5,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ERJ-3EKF1002V",
+"family": "ERJ-3EK",
+"mfr": "Panasonic",
+"desc": "10 kΩ 1% 0603 thick-film, AEC-Q200",
+"category": "passive_0603",
+"pkg": "0603",
+"aecq": true,
+"gbp": {
+"q1k": 0.00468,
+"q10k": 0.00398,
+"q100k": 0.00337
+},
+"confidence": "distributor",
+"source": "Arrow $0.0060 / Newark $0.006 / Future $0.0048 / Digi-Key $0.0081: $0.006 @5,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "GCM155R71H104KE02D",
+"family": "GCM155",
+"mfr": "Murata",
+"desc": "100 nF 50 V X7R 0402, AEC-Q200",
+"category": "passive_0402",
+"pkg": "0402",
+"aecq": true,
+"gbp": {
+"q1k": 0.00642,
+"q10k": 0.00546,
+"q100k": 0.00462
+},
+"confidence": "distributor",
+"source": "Mouser $0.0070 (others $0.0060–0.0087): $0.007 @10,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "GCM188R71E105KA64D",
+"family": "GCM188",
+"mfr": "Murata",
+"desc": "1 µF 25 V X7R 0603, AEC-Q200",
+"category": "passive_0603",
+"pkg": "0603",
+"aecq": true,
+"gbp": {
+"q1k": 0.0279,
+"q10k": 0.02371,
+"q100k": 0.02009
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.0304 @28k reel; Arrow $0.0325 @4k: $0.0304 @28,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "GCM21BC71C106KE36",
+"family": "GCM21B",
+"mfr": "Murata",
+"desc": "10 µF 16 V X7R 0805, AEC-Q200",
+"category": "passive_0805",
+"pkg": "0805",
+"aecq": true,
+"gbp": {
+"q1k": 0.10691,
+"q10k": 0.09087,
+"q100k": 0.07698
+},
+"confidence": "distributor",
+"source": "Newark / Verical reel $0.113–0.120 @10k: $0.1165 @10,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "GRM31CR71E106KA12L",
+"family": "GRM31C",
+"mfr": "Murata",
+"desc": "10 µF 25 V X7R 1206",
+"category": "passive_1206",
+"pkg": "1206",
+"aecq": false,
+"gbp": {
+"q1k": 0.06638,
+"q10k": 0.05642,
+"q100k": 0.04779
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.0851 @1k reel: $0.0851 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "GRM32ER71A476KE15L",
+"family": "GRM32E",
+"mfr": "Murata",
+"desc": "47 µF 10 V X7R 1210",
+"category": "passive_1206",
+"pkg": "1210",
+"aecq": false,
+"gbp": {
+"q1k": 0.2191,
+"q10k": 0.18623,
+"q100k": 0.15775
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.2809 @2k reel; TTI €0.178 @3k: $0.2809 @2,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BLM18AG601SN1D",
+"family": "BLM18",
+"mfr": "Murata",
+"desc": "600 Ω ferrite bead 0603",
+"category": "passive_0603",
+"pkg": "0603",
+"aecq": false,
+"gbp": {
+"q1k": 0.01638,
+"q10k": 0.01392,
+"q100k": 0.01179
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.021 @4k; LCSC $0.017; TME $0.02: $0.021 @4,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01",
+"aliases": [
+"BLM18AG601"
+]
+},
+{
+"mpn": "GCM1555C1H100JA16D",
+"family": "GCM1555",
+"mfr": "Murata",
+"desc": "10 pF C0G 0402, AEC-Q200",
+"category": "passive_0402",
+"pkg": "0402",
+"aecq": true,
+"gbp": {
+"q1k": 0.00459,
+"q10k": 0.0039,
+"q100k": 0.0033
+},
+"confidence": "distributor",
+"source": "Mouser $0.005 @10k; Farnell £0.0058 @5k: $0.005 @10,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "WSL2512R1000FEA",
+"family": "WSL2512",
+"mfr": "Vishay",
+"desc": "100 mΩ 1 W 2512 current-sense",
+"category": "passive_1206",
+"pkg": "2512",
+"aecq": false,
+"gbp": {
+"q1k": 0.22409,
+"q10k": 0.19048,
+"q100k": 0.16134
+},
+"confidence": "distributor",
+"source": "Newark $0.338 @100: $0.338 @100; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "2N7002,215",
+"family": "2N7002",
+"mfr": "Nexperia",
+"desc": "N-MOSFET 60 V SOT-23, AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23",
+"aecq": true,
+"gbp": {
+"q1k": 0.03822,
+"q10k": 0.03249,
+"q100k": 0.02752
+},
+"confidence": "distributor",
+"source": "Mouser $0.049 @3k (LCSC $0.011): $0.049 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BC847B,215",
+"family": "BC847",
+"mfr": "Nexperia",
+"desc": "NPN 45 V 100 mA SOT-23",
+"category": "fuse_tvs",
+"pkg": "SOT-23",
+"aecq": false,
+"gbp": {
+"q1k": 0.01825,
+"q10k": 0.01551,
+"q100k": 0.01314
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.0234 @3k; Future $0.017; LCSC $0.0064: $0.0234 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BAT54S,215",
+"family": "BAT54S",
+"mfr": "Nexperia",
+"desc": "Dual Schottky SOT-23",
+"category": "fuse_tvs",
+"pkg": "SOT-23",
+"aecq": false,
+"gbp": {
+"q1k": 0.03596,
+"q10k": 0.03057,
+"q100k": 0.02589
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.0461 @3k (UK £0.0208): $0.0461 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PMEG4010ER,115",
+"family": "PMEG4010",
+"mfr": "Nexperia",
+"desc": "40 V 1 A Schottky SOD-123W",
+"category": "fuse_tvs",
+"pkg": "SOD-123W",
+"aecq": false,
+"gbp": {
+"q1k": 0.06958,
+"q10k": 0.05914,
+"q100k": 0.0501
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.0892 @3k; Future $0.0896; TTI $0.10: $0.0892 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IRLML6344TRPBF",
+"family": "IRLML6344",
+"mfr": "Infineon",
+"desc": "N-MOSFET 30 V 5 A SOT-23",
+"category": "fuse_tvs",
+"pkg": "SOT-23",
+"aecq": false,
+"gbp": {
+"q1k": 0.08057,
+"q10k": 0.06848,
+"q100k": 0.05801
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.1033 @3k: $0.1033 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SI2301CDS-T1-GE3",
+"family": "SI2301",
+"mfr": "Vishay",
+"desc": "P-MOSFET 20 V 3.1 A SOT-23",
+"category": "fuse_tvs",
+"pkg": "SOT-23",
+"aecq": false,
+"gbp": {
+"q1k": 0.0702,
+"q10k": 0.05967,
+"q100k": 0.05054
+},
+"confidence": "distributor",
+"source": "TTI €0.075–0.082, Arrow $0.115, LCSC $0.047, Digi-Key $0.17 @3k; mid $0.09: $0.09 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NCP18XH103F03RB",
+"family": "NCP18",
+"mfr": "Murata",
+"desc": "NTC 10 kΩ 1% 0603",
+"category": "fuse_tvs",
+"pkg": "0603",
+"aecq": false,
+"gbp": {
+"q1k": 0.0351,
+"q10k": 0.02983,
+"q100k": 0.02527
+},
+"confidence": "distributor",
+"source": "Avnet $0.0619, LCSC $0.0303, Future $0.0784 @4k; mid $0.045: $0.045 @4,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "EEE-FK1V101P",
+"family": "EEE-FK",
+"mfr": "Panasonic",
+"desc": "100 µF 35 V SMD electrolytic 105 °C",
+"category": "through_hole",
+"pkg": "SMD 8×10",
+"aecq": false,
+"gbp": {
+"q1k": 0.18252,
+"q10k": 0.15514,
+"q100k": 0.13141
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.275, Future $0.165 @1k; mid $0.234: $0.234 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UCD2A101MNQ1MS",
+"family": "UCD2A",
+"mfr": "Nichicon",
+"desc": "100 µF 100 V radial electrolytic 105 °C",
+"category": "through_hole",
+"pkg": "radial 10×16",
+"aecq": false,
+"gbp": {
+"q1k": 0.8112,
+"q10k": 0.68952,
+"q100k": 0.58406
+},
+"confidence": "distributor",
+"source": "LCSC $1.0426 / JLCPCB $1.0365 @1k: $1.04 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "EEH-ZC1V470P",
+"family": "EEH-ZC",
+"mfr": "Panasonic",
+"desc": "47 µF 35 V hybrid polymer SMD",
+"category": "through_hole",
+"pkg": "SMD 6.3×7.7",
+"aecq": true,
+"gbp": {
+"q1k": 0.1794,
+"q10k": 0.15249,
+"q100k": 0.12917
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.266, TTI/Avnet $0.195, Future $0.32 @1k: $0.23 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SRN6045TA-4R7M",
+"family": "SRN6045",
+"mfr": "Bourns",
+"desc": "4.7 µH 4.5 A semi-shielded inductor 6×6",
+"category": "passive_0805",
+"pkg": "6045",
+"aecq": false,
+"gbp": {
+"q1k": 0.19172,
+"q10k": 0.16296,
+"q100k": 0.13804
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.2458 @1k; TTI €0.164 @5k: $0.2458 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "744043100",
+"family": "744043",
+"mfr": "Würth",
+"desc": "10 µH 1.19 A shielded inductor 4.8×4.8",
+"category": "passive_0805",
+"pkg": "4848",
+"aecq": false,
+"gbp": {
+"q1k": 0.5733,
+"q10k": 0.4873,
+"q100k": 0.41278
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.735 @1k reel: $0.735 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "7V-25.000MAAE-T",
+"family": "7V-25",
+"mfr": "TXC",
+"desc": "25 MHz crystal 3.2×2.5 ±30 ppm",
+"category": "crystal_osc",
+"pkg": "3225",
+"aecq": false,
+"gbp": {
+"q1k": 0.3588,
+"q10k": 0.30498,
+"q100k": 0.25834
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.463, Mouser $0.459 @1k: $0.46 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ECS-250-20-3X-TR",
+"family": "ECS-250",
+"mfr": "ECS",
+"desc": "25 MHz crystal 7×5 20 pF",
+"category": "crystal_osc",
+"pkg": "7050",
+"aecq": false,
+"gbp": {
+"q1k": 0.14508,
+"q10k": 0.12332,
+"q100k": 0.10446
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.186 @1k (EN -40/+85 °C $0.249): $0.186 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ABM8-25.000MHZ-B2-T",
+"family": "ABM8",
+"mfr": "Abracon",
+"desc": "25 MHz crystal 3.2×2.5 18 pF",
+"category": "crystal_osc",
+"pkg": "3225",
+"aecq": false,
+"gbp": {
+"q1k": 0.1794,
+"q10k": 0.15249,
+"q100k": 0.12917
+},
+"confidence": "distributor",
+"source": "Future $0.164, PCBX $0.195, Digi-Key $0.302 @3k; mid $0.23: $0.23 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SIT8008BI-71-33E-25.000000",
+"family": "SIT8008",
+"mfr": "SiTime",
+"desc": "25 MHz MEMS oscillator",
+"category": "crystal_osc",
+"pkg": "2520",
+"aecq": false,
+"gbp": {
+"q1k": 0.585,
+"q10k": 0.49725,
+"q100k": 0.4212
+},
+"confidence": "distributor",
+"source": "SiTime list $0.67–0.84 @1k for SiT8008BI-71 variants: $0.75 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ABS07-32.768KHZ-T",
+"family": "ABS07",
+"mfr": "Abracon",
+"desc": "32.768 kHz crystal 3.2×1.5",
+"category": "crystal_osc",
+"pkg": "3215",
+"aecq": false,
+"gbp": {
+"q1k": 0.1794,
+"q10k": 0.15249,
+"q100k": 0.12917
+},
+"confidence": "distributor",
+"source": "Future $0.19, LCSC $0.19, Master $0.297, Newark $0.42 @3k; mid $0.23: $0.23 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "43045-0800",
+"family": "43045",
+"mfr": "Molex",
+"desc": "Micro-Fit 3.0 8-way right-angle header",
+"category": "through_hole",
+"pkg": "TH",
+"aecq": false,
+"gbp": {
+"q1k": 0.72462,
+"q10k": 0.61593,
+"q100k": 0.52173
+},
+"confidence": "distributor",
+"source": "distributor $0.929 @1k; Jameco $1.12 @1.2k: $0.929 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SM06B-GHS-TB",
+"family": "SM06B-GHS",
+"mfr": "JST",
+"desc": "GH 1.25 mm 6-way SMT header",
+"category": "connector_smt",
+"pkg": "SMT",
+"aecq": false,
+"gbp": {
+"q1k": 0.234,
+"q10k": 0.1989,
+"q100k": 0.16848
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.300, JAK $0.291, GAM $0.336 @1k (LCSC $0.475, TLC $0.196): $0.3 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DF40C-60DP-0.4V(51)",
+"family": "DF40C",
+"mfr": "Hirose",
+"desc": "DF40 0.4 mm 60-way board-to-board header",
+"category": "connector_smt",
+"pkg": "SMT",
+"aecq": false,
+"gbp": {
+"q1k": 0.429,
+"q10k": 0.36465,
+"q100k": 0.30888
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.764, Newark $0.75–0.81, LCSC $0.36, Ersa $0.41 @1k; mid $0.55: $0.55 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "USB4085-GF-A",
+"family": "USB4085",
+"mfr": "GCT",
+"desc": "USB-C 2.0 receptacle 16-way",
+"category": "connector_smt",
+"pkg": "SMT/TH",
+"aecq": false,
+"gbp": {
+"q1k": 0.43524,
+"q10k": 0.36995,
+"q100k": 0.31337
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.572 @700, $0.545 @1.4k: $0.558 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "G6K-2F-Y DC12",
+"family": "G6K-2F",
+"mfr": "Omron",
+"desc": "DPDT signal relay 12 V SMD",
+"category": "relay_switch",
+"pkg": "SMD",
+"aecq": false,
+"gbp": {
+"q1k": 1.17,
+"q10k": 0.9945,
+"q100k": 0.8424
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.18, Newark $3.47 @1k; LCSC $0.61–0.69 @900; mid $1.50: $1.5 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "V23086-C1001-A403",
+"family": "V23086",
+"mfr": "TE Connectivity",
+"desc": "Automotive micro power relay 12 V 25 A",
+"category": "relay_switch",
+"pkg": "TH",
+"aecq": true,
+"gbp": {
+"q1k": 0.936,
+"q10k": 0.7956,
+"q100k": 0.67392
+},
+"confidence": "distributor",
+"source": "LCSC $1.131, JLCPCB $1.127, Master $1.27 @1k: $1.2 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "0603SFF200F/32-2",
+"family": "0603SF",
+"mfr": "Littelfuse",
+"desc": "2 A 32 V chip fuse 0603 (obsolete; SFP successor)",
+"category": "fuse_tvs",
+"pkg": "0603",
+"aecq": false,
+"gbp": {
+"q1k": 0.24648,
+"q10k": 0.20951,
+"q100k": 0.17747
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.316 @4k reel, $0.367 @1k: $0.316 @4,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LG L29K-G2J1-24",
+"family": "LG L29K",
+"mfr": "ams OSRAM",
+"desc": "Green 0603 SmartLED",
+"category": "led",
+"pkg": "0603",
+"aecq": false,
+"gbp": {
+"q1k": 0.07956,
+"q10k": 0.06763,
+"q100k": 0.05728
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.102 @2.5–5k; LCSC $0.139 @5k: $0.102 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "0039281043",
+"family": "0039281",
+"mfr": "Molex",
+"desc": "Mini-Fit Jr 4-way vertical header",
+"category": "through_hole",
+"pkg": "TH",
+"aecq": false,
+"gbp": {
+"q1k": 0.4056,
+"q10k": 0.34476,
+"q100k": 0.29203
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.535 @700, $0.509 @1.4k: $0.52 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
 "asOf": "2026-10-01"
 }
 ]

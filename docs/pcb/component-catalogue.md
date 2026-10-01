@@ -1,17 +1,17 @@
 # Offline component price catalogue
 
-`calculator/server/data/pcb-component-catalogue.json` — 422 parts and families,
+`calculator/server/data/pcb-component-catalogue.json` — 458 parts and families,
 GBP unit prices at the 1k / 10k / 100k breaks, AEC-Q grade where the part is
-automotive, **a source and a date on every entry**. Built 1 October 2026.
+automotive, **a source and a date on every entry**. Built 1 October 2026; commodity parts added the same day.
 
 ## Where the numbers come from — be clear about this in a review
 
 | Confidence | Count | Meaning |
 |---|---|---|
-| `distributor` | 38 | A distributor's published price (Digi-Key, Mouser, LCSC, Farnell/Newark, Arrow, Avnet, RS, TME, Rochester) read from the product page on the date shown. Brokers were disregarded. The 10k and 100k breaks are derived from that price by the franchise curve (10k = 1k × 0.85, 100k = 1k × 0.72). |
-| `estimate` | 384 | An engineering estimate at 2025/26 distributor levels. Dated, labelled, and the first thing an import replaces. |
+| `distributor` | 77 | A distributor's published price (Digi-Key, Mouser, LCSC, Farnell/Newark, Arrow, Avnet, RS, TME, Rochester) read from the product page on the date shown. Brokers were disregarded. The 10k and 100k breaks are derived from that price by the franchise curve (10k = 1k × 0.85, 100k = 1k × 0.72). |
+| `estimate` | 381 | An engineering estimate at 2025/26 distributor levels. Dated, labelled, and the first thing an import replaces. |
 
-The 38 researched parts are the ones that move an automotive board: the radar
+The researched parts: 38 ICs and named parts that move an automotive board —  the radar
 MCU (S32R294: Arrow $29, Mouser $30.33, Avnet $27.11, Newark $26.54 at 1k), the
 AURIX, S32K, RH850 and STM32H7 families, CAN / CAN-SIC / LIN transceivers
 (TJA1044, TJA1051, TJA1462, TCAN1044, MCP2562, ATA6560), Ethernet PHYs (TJA1103,
@@ -19,7 +19,7 @@ DP83TC812), safety PMICs and SBCs (TLF35584, TLE9261), flash (W25Q32JW,
 W25Q128JV, MT25QL256), power (TPS54560, LMR33630, LM5143, BTS7008, UCC27211,
 IPB017N06), analog (INA240, TLV9002), protection (SMBJ33A, PESD1CAN), a power
 inductor, a crystal and two sealed automotive connectors (AMPSEAL 23-way,
-MX150 12-way).
+MX150 12-way) — and, added on the same day, 39 commodity parts: 0402/0603/0805/1206/1210 resistors and MLCCs (Vishay CRCW, Panasonic ERJ, Murata GCM/GRM), a ferrite bead and a C0G, a 2512 shunt, SOT-23 transistors and MOSFETs (BC847, 2N7002, BSS138, IRLML6344, SI2301), small diodes (BAT54S, 1N4148WS, SS34, PMEG4010), an NTC, SMD/radial/hybrid electrolytics (Panasonic EEE-FK, Nichicon UCD, Panasonic EEH-ZC), power inductors (Bourns SRN6045, Würth 744043), crystals and an oscillator (TXC, ECS, Abracon ABM8/ABS07, SiTime), connectors (Molex Micro-Fit and Mini-Fit, JST GH, Hirose DF40, GCT USB-C), two relays (Omron G6K, TE V23086), a chip fuse and an OSRAM LED. `rate-cross-check-2026-10.md` lists what they changed.
 
 What this research changed in the tool's named-part ranges (`IC_PRICE_HINTS`):
 

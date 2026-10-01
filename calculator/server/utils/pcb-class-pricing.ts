@@ -31,18 +31,18 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.0005, 0.003, 'chip resistor 0402', [0.003, 0.012]) },
     { kind: 'ind', test: /inductor|choke|ferrite|bead/i, row: R(0.004, 0.04, 'chip inductor / ferrite 0402', [0.01, 0.08]) },
     { kind: 'cap_c0g', test: /c0g|np0/i, row: R(0.003, 0.02, 'MLCC C0G 0402', [0.012, 0.04]) },
-    { kind: 'cap', row: R(0.001, 0.015, 'MLCC 0402', [0.008, 0.025]) },
+    { kind: 'cap', row: R(0.001, 0.015, 'MLCC 0402', [0.005, 0.025]) },   // GCM155 100 nF AEC $0.006–0.0087 @10k (2026-10-01)
   ],
   passive_0603: [
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.001, 0.005, 'chip resistor 0603', [0.004, 0.015]) },
     { kind: 'ind', test: /inductor|choke|ferrite|bead/i, row: R(0.006, 0.06, 'chip inductor / ferrite 0603', [0.025, 0.15]) },
-    { kind: 'cap', row: R(0.002, 0.04, 'MLCC 0603', [0.015, 0.06]) },
+    { kind: 'cap', row: R(0.002, 0.04, 'MLCC 0603', [0.012, 0.06]) },   // GCM188 1 µF AEC $0.030 @28k (2026-10-01)
   ],
   passive_0805: [
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.002, 0.01, 'chip resistor 0805', [0.006, 0.03]) },
     { kind: 'ind', test: /inductor|choke/i, row: R(0.018, 0.6, 'power / RF inductor 0805-class', [0.06, 1.8]) },
     { kind: 'fb', test: /ferrite|bead/i, row: R(0.008, 0.08, 'ferrite bead 0805', [0.02, 0.15]) },
-    { kind: 'cap', row: R(0.005, 0.18, 'MLCC 0805', [0.015, 0.5]) },
+    { kind: 'cap', row: R(0.005, 0.18, 'MLCC 0805', [0.03, 0.5]) },   // GCM21B 10 µF AEC $0.113–0.124 @10k (2026-10-01)
   ],
   passive_1206: [
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.003, 0.015, 'chip resistor 1206', [0.008, 0.04]) },
@@ -52,7 +52,7 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   crystal_osc: [
     { kind: 'ocxo', test: /ocxo/i, row: R(6, 35, 'OCXO') },
     { kind: 'tcxo', test: /tcxo|vcxo|oscillator|\bosc\b/i, row: R(0.5, 2.8, 'TCXO / oscillator', [1.8, 8]) },
-    { kind: 'xtal', row: R(0.04, 0.35, 'SMD crystal', [0.15, 1.2]) },
+    { kind: 'xtal', row: R(0.12, 0.45, 'SMD crystal', [0.2, 0.8]) },   // TXC 7V $0.46, ECS $0.19, ABM8 $0.16–0.30 @1–3k (2026-10-01)
   ],
   power_module: [
     { kind: 'iso', test: /isolat/i, row: R(4, 22, 'isolated DC-DC module', [12, 55]) },
@@ -66,18 +66,18 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   led: [
     { kind: 'hp', test: /high[- ]?power|\d+\s*W\b/i, row: R(0.2, 2, 'high-power LED') },
     { kind: 'rgb', test: /rgb/i, row: R(0.05, 0.25, 'RGB LED') },
-    { kind: 'ind', row: R(0.01, 0.06, 'indicator LED', [0.03, 0.15]) },
+    { kind: 'ind', row: R(0.02, 0.14, 'indicator LED', [0.05, 0.25]) },   // OSRAM LG L29K $0.10–0.14 @3k (2026-10-01)
   ],
   relay_switch: [
     { kind: 'relay_hc', test: /relay.*(high|\d{2}\s*A)|(high|\d{2}\s*A).*relay/i, row: R(1, 5.5, 'high-current relay', [1.2, 6]) },
-    { kind: 'relay', test: /relay/i, row: R(0.14, 1, 'SMD signal relay', [0.6, 3]) },
+    { kind: 'relay', test: /relay/i, row: R(0.5, 3.5, 'SMD signal relay', [0.8, 3.5]) },   // Omron G6K $0.61–3.18 @1k (2026-10-01)
     { kind: 'sw', row: R(0.02, 0.22, 'tactile switch', [0.06, 0.5]) },
   ],
   fuse_tvs: [
     { kind: 'array', test: /array|\d\s*ch/i, row: R(0.1, 0.6, 'TVS / ESD array', [0.2, 1.2]) },
     { kind: 'tvs', test: /tvs|esd|transient|zener/i, row: R(0.03, 0.22, 'TVS diode', [0.12, 0.8]) },
     { kind: 'poly', test: /poly|ptc/i, row: R(0.03, 0.15, 'SMD polyfuse', [0.08, 0.35]) },
-    { kind: 'fuse', row: R(0.02, 0.12, 'SMD fuse', [0.05, 0.3]) },
+    { kind: 'fuse', row: R(0.08, 0.4, 'SMD chip fuse', [0.15, 0.6]) },   // Littelfuse 0603SF $0.32–0.37 @1–4k (2026-10-01)
   ],
   ic_soic: [
     { kind: 'sot', test: /\b(SOT-?23-?[5-8]?|SOT-?353|SOT-?363|SC-?70|TSOT|SOT-?553)\b/i, row: R(0.05, 0.6, 'small IC in SOT-23 / SC-70', [0.12, 1.2]) },
@@ -124,7 +124,7 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   ],
   through_hole: [
     { kind: 'elec_l', test: /electrolytic.*(\d{3,}\s*[uµ]F|\d{2,}x\d{2,}|large)|(\d{3,}\s*[uµ]F).*electrolytic/i, row: R(0.22, 2.8, 'large electrolytic', [0.4, 3.5]) },
-    { kind: 'elec', test: /electrolytic|\balu\b/i, row: R(0.05, 0.6, 'electrolytic capacitor', [0.12, 0.8]) },
+    { kind: 'elec', test: /electrolytic|\balu\b/i, row: R(0.12, 0.9, 'electrolytic capacitor', [0.2, 1.2]) },   // Nichicon UCD 100 µF/100 V $1.04, EEE-FK 100 µF/35 V $0.17–0.27 @1k (2026-10-01)
     { kind: 'to220', test: /to-?220|to-?247|to-?263/i, row: R(0.14, 2.8, 'TO-220 / D2PAK power device', [0.4, 5]) },
     { kind: 'pwr_conn', test: /power connector|automotive.*connector/i, row: R(0.4, 4.5, 'TH power connector', [2, 12]) },
     { kind: 'conn', test: /connector|header|terminal|socket/i, row: R(0.12, 1.8, 'TH connector', [0.4, 4]) },
@@ -142,7 +142,7 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
  *  list, so they arrive as fuse_tvs / ic_soic / passive. Description wins. */
 const DISCRETE: Array<{ test: RegExp; row: Row }> = [
   { test: /\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b.*\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt)\b|\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt)\b.*\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b/i,
-    row: R(0.02, 0.1, 'SOT-23 / SOD-123 discrete', [0.05, 0.12]) },
+    row: R(0.015, 0.1, 'SOT-23 / SOD-123 discrete', [0.03, 0.12]) },   // BC847 $0.017–0.023, 2N7002 AEC $0.025–0.049, BSS138 $0.045–0.06 @3k (2026-10-01)
   { test: /\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak)\b.*(mosfet|fet|transistor)|(mosfet|fet|transistor).*\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak)\b/i,
     row: R(0.15, 1.5, 'power MOSFET DPAK-class', [0.35, 3]) },
 ];

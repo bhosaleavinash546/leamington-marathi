@@ -120,10 +120,11 @@ const CLASS_MEDIAN: Record<string, number> = {
  *  inductors, ×3–5 at AEC-Q200 — cap at that ceiling instead. */
 export const POWER_INDUCTOR_CAP_GBP = 1.80;
 
-/** An automotive aluminium electrolytic (e.g. 100 µF / 100 V, 10×13 mm radial) is
- *  £0.20–0.50 at volume; filed as through_hole it met a £3.50 connector-class cap,
- *  so the radar run's two came in at £1.58 each. */
-export const ELECTROLYTIC_CAP_GBP = 0.60;
+/** An aluminium electrolytic filed as through_hole met a £3.50 connector-class
+ *  cap, so the radar run's two 100 µF / 100 V came in at £1.58 each. Research
+ *  (2026-10-01): Nichicon UCD 100 µF / 100 V $1.04 @1k, Panasonic EEE-FK
+ *  100 µF / 35 V $0.17–0.27 @1k — so the ceiling is £0.90, not the £0.60 first set. */
+export const ELECTROLYTIC_CAP_GBP = 0.90;
 /** SOT-23 / SOD-123-class diodes, TVS and small-signal transistors: £0.02–0.10. */
 export const SMALL_SIGNAL_DISCRETE_CAP_GBP = 0.12;
 

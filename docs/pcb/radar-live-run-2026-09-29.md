@@ -237,3 +237,15 @@ Radar board, China, 250k/yr, photos only, automotive grade: **£59.08**
 parts and stay engineering estimates, labelled as such and listed to verify.
 The priced bucket now holds real distributor numbers for the first time; the
 Winbond flash and TI CAN transceiver match the catalogue by their chip top marks.
+
+## Round 7 (1 Oct) — commodity parts researched; fab and assembly rates cross-checked
+
+39 commodity parts read from distributor pages (resistors, MLCCs, ferrite, shunt,
+SOT-23 transistors and MOSFETs, small diodes, NTC, SMD/radial/hybrid electrolytics,
+power inductors, crystals, an oscillator, connectors, relays, a chip fuse, an LED) —
+77 researched entries in a 458-part catalogue. The class ranges were re-based on
+them; two of my 29 Sep caps were too low (electrolytic £0.60 → £0.90, chip fuse).
+The fab and assembly tables were checked against the 2026 published figures
+(`rate-cross-check-2026-10.md`): base rate, ENIG, impedance, high-Tg, copper and
+per-placement assembly all sit inside the published bands; no rate was changed.
+Radar board, China, 250k/yr, photos only, automotive grade: **£59.63**.

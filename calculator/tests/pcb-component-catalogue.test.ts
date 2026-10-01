@@ -9,7 +9,7 @@ const raw = JSON.parse(readFileSync(new URL('../server/data/pcb-component-catalo
 
 describe('catalogue data', () => {
   it('is large, dated and sourced on every line', () => {
-    expect(CATALOGUE_SIZE).toBeGreaterThan(400);
+    expect(CATALOGUE_SIZE).toBeGreaterThan(450);
     expect(CATALOGUE_AS_OF).toBe(raw.asOf);
     for (const p of raw.parts) {
       expect(p.source.length, p.mpn).toBeGreaterThan(10);
@@ -19,8 +19,8 @@ describe('catalogue data', () => {
       expect(p.gbp.q100k).toBeGreaterThan(0);
     }
     const researched = raw.parts.filter(p => p.confidence === 'distributor');
-    expect(researched.length).toBeGreaterThanOrEqual(35);
-    for (const p of researched) expect(p.source).toMatch(/Digi-Key|Mouser|LCSC|Farnell|Newark|Arrow|Avnet|TME|Rochester|Chip One|Heilind|ICC|FindChips|Spirit|Master|Comet|OMO|Component Stockers|XON|distributor/);
+    expect(researched.length).toBeGreaterThanOrEqual(70);
+    for (const p of researched) expect(p.source, p.mpn).toMatch(/Digi-Key|Mouser|LCSC|Farnell|Newark|Arrow|Avnet|TME|Rochester|Chip One|Heilind|ICC|FindChips|Spirit|Master|Comet|OMO|Component Stockers|XON|distributor|Future|JLCPCB|Jameco|JAK|GAM|Ersa|PCBX|SiTime|TTI|Verical|DigiPart/);
   });
   it('has no duplicate part numbers', () => {
     const seen = new Set<string>();
