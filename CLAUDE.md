@@ -108,8 +108,8 @@ precedence catalogue → OCR-named part range → function range → class range
 line carrying `priceSource` / `priceBasis` / `priceNote`, `pcb-bom-grounding.ts`).
 Chip markings OCR read are attached to the BOM line of the same function
 (`pcb-ocr-reconcile.ts`). The offline catalogue is **data**:
-`server/data/pcb-component-catalogue.json` (422 parts, 1k/10k/100k GBP breaks, a
-source and date on every entry — 38 read from distributor pages on 2026-10-01, the
+`server/data/pcb-component-catalogue.json` (458 parts, 1k/10k/100k GBP breaks, a
+source and date on every entry — 77 read from distributor pages on 2026-10-01, the
 rest labelled engineering estimates; see `docs/pcb/component-catalogue.md`), loaded
 by `pcb-price-catalogue.ts` (`catalogueEntry` / `cataloguePriceAt`, aliases for chip
 top marks) and refreshed with `scripts/pcb-catalogue-import.ts` from a distributor
