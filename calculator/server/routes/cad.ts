@@ -51,7 +51,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 24;   // 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
+const CAD_PROMPT_VERSION = 25;   // 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).

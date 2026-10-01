@@ -31,6 +31,7 @@ import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcom
 import { materialFacts } from '../derive/material.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
+import { analyticBlank } from '../derive/blank.js';
 import type { MaterialFamily } from '../../material-family.js';
 
 /** Shear strength MPa by family — drives die hardness and press tonnage. */
@@ -85,15 +86,30 @@ export function blankDims(ctx: RuleContext): BlankDims | null {
   const bb = ctx.geo.boundingBox;
   if (!bb) return null;
   const sorted = [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a);
-  return {
-    lengthMm: Math.round(sorted[0] * 1.05),
-    widthMm: Math.round(sorted[1] * 1.05),
-    basis: 'ESTIMATED from the formed part\u2019s bounding box × 1.05 — no developed blank was '
-      + 'supplied. A formed part\u2019s footprint is not its flat pattern, so this can be well out '
-      + 'in either direction; upload the FASTBLANK DXF to replace it with the real profile',
-    confidence: 0.45,
-    developed: false,
-  };
+  const lengthMm = Math.round(sorted[0] * 1.05);
+  const widthMm = Math.round(sorted[1] * 1.05);
+  let basis = 'ESTIMATED from the formed part\u2019s bounding box × 1.05 — no developed blank was '
+    + 'supplied. A formed part\u2019s footprint is not its flat pattern, so this can be well out '
+    + 'in either direction; upload the FASTBLANK DXF to replace it with the real profile';
+  let confidence = 0.45;
+  // The B-rep says how much metal the part actually needs. When the rectangle
+  // guess is more than 15% away from that, say so — the seat bracket's box buys
+  // 637 cm² for a part whose blank is 444 cm² of metal. Only on a gauge measured
+  // between bend pairs: with the bulk-wall read V/t is S/2 by construction, and
+  // on a misread gauge (the mass floor's case) it would accuse the right rectangle.
+  const ab = analyticBlank(ctx);
+  if (ab && ab.gaugeSource === 'bend-pairs' && ab.grossAreaMm2 > 0) {
+    const rect = lengthMm * widthMm;
+    const ratio = rect / ab.grossAreaMm2;
+    if (Math.abs(ratio - 1) > 0.15) {
+      const pct = Math.round(Math.abs(ratio - 1) * 100);
+      basis += `. CHECK: this ${(rect / 100).toFixed(0)} cm² rectangle is ${pct}% ${ratio > 1 ? 'more' : 'less'} than the `
+        + `${(ab.grossAreaMm2 / 100).toFixed(0)} cm² the part\u2019s metal needs (volume ÷ gauge + holes)`
+        + (ratio > 1 ? '; the real blank nests inside a smaller rectangle than this' : '; a drawn or tall-flanged part unfolds larger than its footprint');
+      confidence = 0.35;
+    }
+  }
+  return { lengthMm, widthMm, basis, confidence, developed: false };
 }
 
 /**
@@ -107,11 +123,17 @@ export function gaugeMm(ctx: RuleContext): { mm: number; basis: string; confiden
   let read: { mm: number; basis: string; confidence: number } | null = null;
   const sm = ctx.geo.sheetMetal;
   if (sm?.thicknessMm && sm.thicknessMm > 0) {
-    read = {
-      mm: Math.round(sm.thicknessMm * 100) / 100,
-      basis: `measured from ${sm.bendCount ?? 0} bend face(s) — coil gauge`,
-      confidence: 0.9,
-    };
+    read = sm.thicknessSource === 'bend-pairs'
+      ? {
+        mm: Math.round(sm.thicknessMm * 100) / 100,
+        basis: `measured between ${sm.gaugeSamples ?? 0} bend pair(s) — the radius step from a bend\u2019s inner to its outer face is the coil gauge`,
+        confidence: 0.95,
+      }
+      : {
+        mm: Math.round(sm.thicknessMm * 100) / 100,
+        basis: `bulk wall 2·V/S over ${sm.bendCount ?? 0} bend face(s) — coil gauge, reads a little low on a part with much cut edge`,
+        confidence: 0.85,
+      };
   } else {
     const min = ctx.geo.wallThickness?.minMm;
     if (min && min > 0) {
@@ -323,6 +345,37 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('sheetMetal.blankWidthMm', b.widthMm, 'geometry', b.basis, b.confidence);
+      },
+    },
+    {
+      // Cut length — what the blanking force and the press pick are sized on.
+      // The rectangle's 2(L+W) ignores every hole: the seat bracket cuts
+      // 1,939 mm (954 outline + 985 of holes) against the 1,012 mm the box gave,
+      // half the press. The FASTBLANK profile is the answer when it exists; the
+      // B-rep identity (S − 2V/t)/t reproduces it to 0.1% on a bent part.
+      id: 'sheetMetal.perimeterMm',
+      path: 'sheetMetal.perimeterMm',
+      fieldId: 'sm-perim',
+      label: 'perimeterMm',
+      appliesWhen: (ctx) => !!blankDims(ctx),
+      evaluate: (ctx) => {
+        const dev = ctx.geo.blank;
+        if (dev && dev.outerPerimeterMm > 0) {
+          const total = dev.outerPerimeterMm + (dev.holePerimeterMm ?? 0);
+          return decided('sheetMetal.perimeterMm', Math.round(total), 'geometry',
+            `${Math.round(dev.outerPerimeterMm)} mm outline + ${Math.round(dev.holePerimeterMm ?? 0)} mm of `
+            + `${dev.holeCount} hole edge(s), measured from ${dev.source}`, 0.95);
+        }
+        const ab = analyticBlank(ctx);
+        if (ab?.cutLengthMm) {
+          return decided('sheetMetal.perimeterMm', ab.cutLengthMm, 'geometry',
+            `outline + hole edges from the solid: (surface ${(ctx.geo.surfaceArea!.mm2 / 100).toFixed(0)} cm² − 2 × `
+            + `${(ab.netAreaMm2 / 100).toFixed(0)} cm² blank) ÷ ${ab.gaugeMm.toFixed(2)} mm gauge`, 0.85);
+        }
+        const b = blankDims(ctx)!;
+        return decided('sheetMetal.perimeterMm', 2 * (b.lengthMm + b.widthMm), 'rule',
+          `2 × (${b.lengthMm} + ${b.widthMm}) of the blank rectangle — ignores the outline shape and every `
+          + `hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length`, 0.4);
       },
     },
     {

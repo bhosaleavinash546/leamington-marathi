@@ -58,6 +58,13 @@ reproducible, and it is the invariant to preserve in any change.
   returns `CommodityDrivers`; the matching `*-advisor.ts` produces DFM guidance.
   Common bug classes here: sec/hr and mm/cm/kg conversions, and `partsPerCycle`
   must divide BOTH machine and labour time.
+- Sheet metal from CAD (`cost-input-rules/commodities/sheet-metal.ts` + `derive/blank.ts`):
+  the FASTBLANK DXF is the blank when supplied (`dxf-blank.ts`); otherwise the gauge is
+  the radius step between a bend's inner and outer face (`thicknessSource: 'bend-pairs'`,
+  kernel `_gauge_from_bend_pairs`), net blank = V/t, cut length = (S − 2V/t)/t — exact on
+  a bent part, and trusted only on a bend-measured gauge because with t = 2·V/S it is
+  zero by construction. `sheetMetal.perimeterMm` (DXF → identity → 2(L+W)) sizes the
+  press. The blank OUTLINE still needs the DXF; see `docs/sheet-metal/`.
 - `rate-library.ts` (`DEFAULT_RATE_LIBRARY`) + `regional-rates.ts`
   (`REGIONAL_DATA`, `computeRegionalComparison`, `buildRegionalLibrary`) hold the
   real 2026-Q2 rates. Two regionalisation paths exist and must stay consistent:

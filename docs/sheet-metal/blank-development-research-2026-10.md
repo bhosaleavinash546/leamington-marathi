@@ -12,19 +12,21 @@ one new finding that changes the first step.
 |---|---|---|
 | Read the FASTBLANK DXF when CAPPe has one | **Built.** Gross and net area, outer and hole perimeter, bounding rectangle, units check, 11 tests | `server/utils/dxf-blank.ts`, `routes/cad.ts`, `tests/dxf-blank.test.ts` |
 | Use the DXF blank for the strip rectangle, pitch, strip width, die footprint | **Built.** The rules prefer a developed blank and say so on the basis line | `cost-input-rules/commodities/sheet-metal.ts::blankDims` |
-| Use the DXF **cut length** for blanking force and the press pick | **Not built.** The cost parameters still use 2 × (L + W) of the rectangle and ignore every hole | `cost-input-rules/to-cost-params.ts` (sheet_metal case) |
-| Blank when there is no DXF | **Estimated**: formed-part bounding box × 1.05, labelled as such | `blankDims` fallback |
-| Gauge from the STEP | Ray-cast thinnest hit. On the seat bracket it reads **0.53 mm**; the part is 1.6 mm | `cad-geometry-engine.py::_detect_bends` |
+| Use the DXF **cut length** for blanking force and the press pick | **Built 1 Oct** (`sheetMetal.perimeterMm` rule: DXF outline + holes → B-rep identity → 2(L+W) last) | `cost-input-rules/commodities/sheet-metal.ts`, `to-cost-params.ts` |
+| Blank when there is no DXF | **Estimated**: formed-part bounding box × 1.05, labelled as such. **Since 1 Oct** the basis adds a CHECK when the rectangle is more than 15% away from the metal the part needs (V/t + holes) | `blankDims` fallback |
+| Net blank area and cut length from the solid | **Built 1 Oct**: net = V/t, gross = net + holes, cut = (S − 2V/t)/t, trusted only on a bend-measured gauge | `cost-input-rules/derive/blank.ts` |
+| Gauge from the STEP | **Since 1 Oct** the radius step between a bend's inner and outer face (`thicknessSource: 'bend-pairs'`), 2·V/S as the fallback. Seat bracket: 1.60 mm from 15 pairs; 2·V/S gave 1.55; the old ray-cast gave 0.53 | `cad-geometry-engine.py::_gauge_from_bend_pairs` |
 | Bend count and bend length from the STEP | Built (cylinder faces spanning the width) | same |
 | Develop the blank ourselves | **Research prototype only**, Python + numpy, not shipped | `research/fastblank/proto.py` |
 | Nesting | Research prototype only (`nest.py`) | — |
 | Forming properties (n, r, yield, FLC) in the material library | **None.** The library holds prices and density only | `rate-library.ts` |
 | BIW stamping process (draw addendum, blanking line, tailor-welded blanks) | Not modelled; BIW module costs assembly stations and joints only | `modules/biw-assembly.ts` |
 
-So of the five-phase plan from September, Phase 0 ("fix now") is half done: the
-DXF is read and used for the rectangle, but its perimeter never reaches the
-tonnage. On the seat bracket that understates blanking force by about half
-(1,012 mm against 1,939 mm of cut), which affects which press is picked.
+Phase 0 ("fix now") was done on 1 October: on the seat bracket the cut length
+the press is sized on went from 1,012 mm (the rectangle) to 1,940 mm, the
+blanking force from 45 t to 89 t and the press from the 100 t to the 200 t tier.
+The part's cost moved by less than a penny, because the press rate is a small
+share of a stamping; the material and tooling buckets wait on the outline (Phase 1).
 
 ## 2. What FASTBLANK and CostOptimizer actually do
 

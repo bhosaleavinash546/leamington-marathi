@@ -31,7 +31,12 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
 - **Thick-walled sparse parts** (walls over ~6 mm) are offered casting, forging,
   cast + machine or machining — never sheet metal or moulding.
 - **Sheet metal blanks:** a DXF flat pattern (e.g. from FastBlank) can be uploaded
-  with the STEP, and the measured blank is used instead of the bounding box.
+  with the STEP, and the measured blank is used instead of the bounding box. Without
+  one (1 Oct 2026), the gauge is measured between the bend faces, the metal the part
+  needs (volume ÷ gauge, plus holes) and the cut length are worked out from the
+  solid, the press is sized on that cut length, and the tool flags a bounding-box
+  blank that is more than 15% away from the metal needed. The blank outline itself
+  still needs the DXF.
 - **STL files have no feature table**, so a machined STL arrives with no cycle
   time; the tool blocks the costing until the engineer types one.
 

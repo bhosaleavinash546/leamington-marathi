@@ -169,7 +169,15 @@ export interface OCCTGeometry {
     faceIds?: number[];
   }>;
   /** Sheet-metal forming features — geometry-measured bend count for SM Fab. */
-  sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
+  sheetMetal?: {
+    bendCount: number; totalBendLengthMm: number; thicknessMm: number;
+    /** 'bend-pairs': the radius step between a bend's inner and outer face — the coil
+     *  gauge as modelled. 'bulk-wall': 2·V/S, which reads low on a part with much cut edge. */
+    thicknessSource?: 'bend-pairs' | 'bulk-wall';
+    /** Coaxial bend pairs that agreed on the gauge. */
+    gaugeSamples?: number;
+    bulkWallMm?: number;
+  };
   /**
    * The developed flat blank, read from a DXF the engineer supplied.
    *
@@ -394,6 +402,8 @@ export interface CADAnalysisResult {
       pitchMm?: number;
       stripWidthMm?: number;
       strokesPerMin?: number;
+      /** Cut length for blanking force: DXF outline + holes, else (S − 2V/t)/t, else 2(L+W). */
+      perimeterMm?: number;
     };
     /** Gear cutting — rule-engine owned; every value carries provenance. */
     gear?: {

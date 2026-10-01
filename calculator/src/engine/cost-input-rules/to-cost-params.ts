@@ -597,8 +597,11 @@ export function toCostParams(
       const W = num(s.blankWidthMm, 100);
       const t = num(s.thicknessMm, 1.5);
       const shear = num(s.shearStrengthMPa, 250);
-      // Blanking force ≈ perimeter × thickness × shear strength.
-      const perimeter = 2 * (L + W);
+      // Blanking force ≈ cut length × thickness × shear strength. The rules carry
+      // the real cut length (DXF outline + holes, or the B-rep identity); the
+      // rectangle's 2(L+W) is the last resort and ignores every hole — on the
+      // seat bracket that is 1,012 mm against 1,940 mm, half the press.
+      const perimeter = num(s.perimeterMm, 2 * (L + W));
       const tonnes = (perimeter * t * shear) / 9807;
       return {
         commodity, assumed: [...assumed, 'pressId', 'strokesPerMin', 'strip layout'],

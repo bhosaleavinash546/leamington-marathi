@@ -304,12 +304,14 @@ def _detect_bends(wrapped, sheet_thickness):
     t = sheet_thickness
     # Gate: needs a real, thin sheet thickness. Non-sheet parts return 0.
     if not t or t <= 0 or t > 8.0:
-        return {"bendCount": 0, "totalBendLengthMm": 0.0, "thicknessMm": round(t or 0.0, 2)}
+        return {"bendCount": 0, "totalBendLengthMm": 0.0, "thicknessMm": round(t or 0.0, 2),
+                "thicknessSource": "bulk-wall"}
 
     max_bend_r = max(8.0, t * 6)          # bend radius ≈ 0.5–3× thickness (headroom to 6×)
     min_bend_len = max(10.0, t * 5)       # a bend spans real width; a hole is only ~t deep
 
     bends = {}                            # axis identity -> length
+    axes = []                             # (dir, loc, radius) of every bend-qualified cylinder
     exp = TopExp_Explorer(wrapped, TopAbs_FACE)
     while exp.More():
         face = TopoDS.Face_s(exp.Current())
@@ -332,14 +334,64 @@ def _detect_bends(wrapped, sheet_thickness):
                      round(p.X() - d.X() * p.X(), 1), round(p.Y() - d.Y() * p.Y(), 1))
             if ident not in bends or length > bends[ident]:
                 bends[ident] = length
+            axes.append(((d.X(), d.Y(), d.Z()), (p.X(), p.Y(), p.Z()), r))
         except Exception:
             continue
 
-    return {
+    # Gauge from the bends themselves. The inner and outer face of one bend are
+    # coaxial cylinders whose radii differ by exactly the sheet thickness, as
+    # modelled — which is a better coil gauge than 2·V/S. The bulk wall counts
+    # the edge band (cut length × t) as skin, so it reads LOW on a part with a
+    # lot of cut edge: the seat bracket is 1.546 mm by 2·V/S against 1.60 mm
+    # between its 23 bend pairs. That 3% matters because the analytic cut
+    # length (S − 2V/t)/t collapses to zero by construction when t = 2·V/S.
+    gauge, samples = _gauge_from_bend_pairs(axes)
+    out = {
         "bendCount": len(bends),
         "totalBendLengthMm": round(sum(bends.values()), 1),
-        "thicknessMm": round(t, 2),
+        "thicknessMm": round(gauge if gauge else t, 2),
+        "thicknessSource": "bend-pairs" if gauge else "bulk-wall",
+        "bulkWallMm": round(t, 2),
     }
+    if gauge:
+        out["gaugeSamples"] = samples
+    return out
+
+
+def _gauge_from_bend_pairs(axes, tol_mm=0.05):
+    """Modal radius difference between coaxial bend cylinders, or (None, 0).
+
+    Two cylinders are the two faces of one bend when their axes are parallel and
+    collinear (within `tol_mm`) and their radii differ by a sheet-like amount.
+    The mode of those differences, at 0.01 mm, is the gauge; a single pair is
+    accepted only when it is the only bend, otherwise two must agree.
+    """
+    import math
+    diffs = {}
+    n = len(axes)
+    for i in range(n):
+        di, pi, ri = axes[i]
+        for j in range(i + 1, n):
+            dj, pj, rj = axes[j]
+            dot = di[0] * dj[0] + di[1] * dj[1] + di[2] * dj[2]
+            if abs(dot) < 0.999:
+                continue
+            v = (pi[0] - pj[0], pi[1] - pj[1], pi[2] - pj[2])
+            along = v[0] * di[0] + v[1] * di[1] + v[2] * di[2]
+            perp2 = v[0] * v[0] + v[1] * v[1] + v[2] * v[2] - along * along
+            if perp2 > tol_mm * tol_mm:
+                continue
+            dr = abs(ri - rj)
+            if dr < 0.3 or dr > 8.0:
+                continue
+            key = round(dr, 2)
+            diffs[key] = diffs.get(key, 0) + 1
+    if not diffs:
+        return None, 0
+    key, count = max(diffs.items(), key=lambda kv: (kv[1], -kv[0]))
+    if count < 2 and n > 2:
+        return None, 0
+    return key, count
 
 
 def _classify_faces(faces):

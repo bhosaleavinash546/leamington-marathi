@@ -21,6 +21,7 @@ import {
 import {
   thinWallAmbiguity, THIN_WALL_COMMODITY_DECISION_ID,
 } from '../src/engine/cost-input-rules/derive/thin-wall-ambiguity.js';
+import { analyticBlank } from '../src/engine/cost-input-rules/derive/blank.js';
 import { MATERIAL_FAMILY_DECISION_ID } from '../src/engine/cost-input-rules/derive/material.js';
 import {
   estimateStampingDieCost, estimateStampingDieLife,
@@ -160,7 +161,7 @@ describe('gauge', () => {
     const g = gaugeMm(ctx(CROSS_MEMBER))!;
     // The ray cast said 1.1 mm because it hit a radius. The coil is 1.5 mm.
     expect(g.mm).toBe(1.5);
-    expect(g.confidence).toBe(0.9);
+    expect(g.confidence).toBe(0.85);
     expect(g.basis).toContain('coil gauge');
   });
 
@@ -351,5 +352,116 @@ describe('determinism', () => {
     const b = { [THIN_WALL_COMMODITY_DECISION_ID]: 'sheet_metal', [MATERIAL_FAMILY_DECISION_ID]: 'steel' };
     expect(runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, a)).suggestions)
       .toEqual(runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, b)).suggestions);
+  });
+});
+
+/**
+ * The blank from the B-rep alone (docs/sheet-metal/blank-development-research-2026-10.md §3.1).
+ *
+ * A sheet solid's surface is two skins plus the edge band, so with the gauge t:
+ * net area = V/t and cut length = (S − 2V/t)/t. On the real seat bracket these
+ * reproduce the ARAP unfold to 0.1% — but only with the gauge measured between
+ * bend pairs; with t = 2·V/S the cut length is zero by construction.
+ */
+describe('the analytic blank and the cut length', () => {
+  // The cross member, with the kernel's bend-pair gauge: V = 168,000 mm³,
+  // S = 232,000 mm², t = 1.5 → net 112,000 mm², cut (232,000 − 224,000)/1.5 = 5,333 mm.
+  const BEND_PAIRS = {
+    ...CROSS_MEMBER,
+    sheetMetal: { bendCount: 4, totalBendLengthMm: 640, thicknessMm: 1.5, thicknessSource: 'bend-pairs', gaugeSamples: 4, bulkWallMm: 1.45 },
+  } as unknown as OCCTGeometry;
+
+  it('derives net area, gross area and cut length from volume, surface and gauge', () => {
+    const ab = analyticBlank(ctx(BEND_PAIRS))!;
+    expect(ab.netAreaMm2).toBe(112_000);
+    expect(ab.holeCount).toBe(6);
+    expect(ab.holeAreaMm2).toBe(Math.round(6 * Math.PI * 25));
+    expect(ab.grossAreaMm2).toBe(112_000 + Math.round(6 * Math.PI * 25));
+    expect(ab.cutLengthMm).toBe(5333);
+    expect(ab.gaugeSource).toBe('bend-pairs');
+    expect(ab.basis).toContain('4 bend pair(s)');
+  });
+
+  it('reports the area but refuses the cut length on a bulk-wall gauge', () => {
+    // CROSS_MEMBER carries no thicknessSource — the kernel's 2·V/S read.
+    const ab = analyticBlank(ctx(CROSS_MEMBER))!;
+    expect(ab.netAreaMm2).toBe(112_000);
+    expect(ab.cutLengthMm).toBeNull();
+    expect(ab.gaugeSource).toBe('bulk-wall');
+    expect(ab.basis).toContain('needs a bend-measured gauge');
+  });
+
+  it('refuses a cut length shorter than the smallest outline that could enclose the part', () => {
+    // A gauge 3% off makes S − 2V/t tiny: the identity must reject it, not report 150 mm.
+    const off = { ...BEND_PAIRS, sheetMetal: { ...BEND_PAIRS.sheetMetal, thicknessMm: 1.449 } } as unknown as OCCTGeometry;
+    const ab = analyticBlank(ctx(off))!;
+    expect(ab.cutLengthMm).toBeNull();
+    expect(ab.basis).toContain('did not hold');
+  });
+
+  it('is null for a part with no bends — a flat plate or a casting proves nothing', () => {
+    const noBends = { ...CROSS_MEMBER, sheetMetal: { bendCount: 0, totalBendLengthMm: 0, thicknessMm: 9.02 } } as unknown as OCCTGeometry;
+    expect(analyticBlank(ctx(noBends))).toBeNull();
+  });
+
+  it('the gauge rule says it was measured between bend pairs', () => {
+    const g = gaugeMm(ctx(BEND_PAIRS))!;
+    expect(g.mm).toBe(1.5);
+    expect(g.confidence).toBe(0.95);
+    expect(g.basis).toContain('4 bend pair(s)');
+    expect(gaugeMm(ctx(CROSS_MEMBER))!.basis).toContain('bulk wall');
+  });
+
+  it('the cut length reaches the cost parameters: B-rep identity over the rectangle', () => {
+    const r = runCostInputRules(SHEET_METAL_RULES, ctx(BEND_PAIRS, STEEL));
+    const sm = r.suggestions.sheetMetal as Record<string, unknown>;
+    expect(sm.perimeterMm).toBe(5333);
+    const rule = r.provenance['sm-perim'];
+    expect(rule.source).toBe('geometry');
+    expect(rule.basis).toContain('÷ 1.50 mm gauge');
+  });
+
+  it('falls back to 2(L+W) of the rectangle, and says the holes are missing', () => {
+    const r = runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, STEEL));
+    const sm = r.suggestions.sheetMetal as Record<string, unknown>;
+    expect(sm.perimeterMm).toBe(2 * (651 + 189));
+    const rule = r.provenance['sm-perim'];
+    expect(rule.source).toBe('rule');
+    expect(rule.confidence).toBe(0.4);
+    expect(rule.basis).toContain('every hole');
+  });
+
+  it('the FASTBLANK DXF wins: outline plus every hole edge', () => {
+    const withDxf = {
+      ...BEND_PAIRS,
+      blank: {
+        grossAreaMm2: 49_000, netAreaMm2: 44_400, outerPerimeterMm: 954, holePerimeterMm: 985,
+        holeCount: 21, boundingRectMm: { lengthMm: 282, widthMm: 210 }, rectangleFill: 0.83,
+        source: 'FASTBLANK DXF (bracket.dxf)',
+      },
+    } as unknown as OCCTGeometry;
+    const r = runCostInputRules(SHEET_METAL_RULES, ctx(withDxf, STEEL));
+    const sm = r.suggestions.sheetMetal as Record<string, unknown>;
+    expect(sm.perimeterMm).toBe(1939);
+    const rule = r.provenance['sm-perim'];
+    expect(rule.basis).toContain('954 mm outline + 985 mm of 21 hole edge(s)');
+    expect(rule.confidence).toBe(0.95);
+  });
+
+  it('flags a bounding-box rectangle that is more than 15% away from the metal the part needs', () => {
+    // Half the metal in the same box: 651 × 189 = 1,230 cm² against 560 cm² of blank.
+    const sparse = { ...BEND_PAIRS, volume: { mm3: 84_000, cm3: 84 } } as unknown as OCCTGeometry;
+    const b = blankDims(ctx(sparse))!;
+    expect(b.developed).toBe(false);
+    expect(b.confidence).toBe(0.35);
+    expect(b.basis).toMatch(/CHECK: this 1230 cm² rectangle is \d+% more than the 56\d cm²/);
+    // The cross member itself is 9% over — inside the band, so no flag.
+    const fine = blankDims(ctx(BEND_PAIRS))!;
+    expect(fine.confidence).toBe(0.45);
+    expect(fine.basis).not.toContain('CHECK');
+    // No flag on a bulk-wall gauge: V/t is S/2 by construction there, and a
+    // misread gauge would make the check accuse the right rectangle.
+    const bulk = blankDims(ctx({ ...sparse, sheetMetal: { bendCount: 4, totalBendLengthMm: 640, thicknessMm: 1.5 } } as unknown as OCCTGeometry))!;
+    expect(bulk.basis).not.toContain('CHECK');
   });
 });

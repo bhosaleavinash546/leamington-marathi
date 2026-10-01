@@ -11166,10 +11166,15 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           smBlankW = dims[1] * 1.05;
           setNumericField('sm-blank-l', smBlankL, 0);
           setNumericField('sm-blank-w', smBlankW, 0);
+          // Gauge: the rules' bend-measured coil gauge first; the ray-cast minimum
+          // lands on a radius and read the seat bracket at 0.53 mm against 1.6.
+          const ruleGauge = c.sheetMetal?.thicknessMm;
           const wallMin = cadOCCTGeometry?.wallThickness?.minMm;
-          setNumericField('sm-thick', wallMin ?? dims[2], 1);
-          // Perimeter ≈ 2×(L+W), strip width and pitch with typical scrap allowances
-          setNumericField('sm-perim', 2 * (smBlankL + smBlankW), 0);
+          setNumericField('sm-thick', (ruleGauge && ruleGauge > 0) ? ruleGauge : (wallMin ?? dims[2]), 2);
+          // Cut length: the rules' figure (DXF or B-rep identity) over 2×(L+W),
+          // which ignores every hole. Strip width and pitch with typical scrap allowances.
+          const rulePerim = c.sheetMetal?.perimeterMm;
+          setNumericField('sm-perim', (rulePerim && rulePerim > 0) ? rulePerim : 2 * (smBlankL + smBlankW), 0);
           setNumericField('sm-strip-w', smBlankW * 1.06, 0);
           setNumericField('sm-pitch', smBlankL * 1.04, 0);
         }
