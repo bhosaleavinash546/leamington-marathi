@@ -34,6 +34,8 @@ export interface LivePriceResult {
   rawCurrency: string;
   /** Raw unit price before conversion */
   rawUnitPrice: number;
+  /** Where the price came from and when (shown on the BOM line). */
+  sourceNote?: string;
 }
 
 // ─── FX rates for conversion ─────────────────────────────────────────────────

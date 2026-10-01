@@ -1,28 +1,28 @@
-// ─── Offline automotive component price catalogue ───────────────────────────
-// Purpose: catalogue-ground BOM prices WITHOUT any external distributor API.
-// Live grounding (Octopart/Nexar, RS) needs API keys + open network — unavailable
-// in air-gapped / on-prem deployments, which is exactly where this tool is pitched.
-// This curated table lets confirmed lines snap to real market prices offline, and
-// gives a class-median cap so an unreadable high-value part can't balloon the BOM
-// on a conservative AI guess.
-//
-// Prices are indicative GBP unit prices at a ~10k automotive (AEC-Q) break, from
-// public distributor references (LCSC / DigiKey / Arrow, early 2026). They are a
-// grounding ANCHOR, not a quote — a real Octopart/RS hit, when available, wins.
+// ─── Offline component price catalogue ───────────────────────────────────────
+// Purpose: price BOM lines by part number WITHOUT an external distributor API.
+// The data lives in server/data/pcb-component-catalogue.json — one entry per
+// part or family, with GBP prices at the 1k / 10k / 100k breaks and, on every
+// entry, where the number came from and when:
+//   confidence "distributor" — a distributor's published price read on `asOf`
+//   confidence "estimate"    — an engineering estimate at 2025/26 distributor levels
+// Refresh / extend it with scripts/pcb-catalogue-import.ts (a distributor CSV
+// export, or Nexar when a key exists). A live provider hit, when available, wins.
 
-/**
- * Catalogue unit prices are anchored at a ~10k automotive break. Scale to the
- * actual order quantity (gentle for production volumes; steeper for prototype).
- * Returns a multiplier relative to the 10k price (1.0 at 10k).
- */
-export function volumeScaleFrom10k(qty: number): number {
-  const steps: Array<[number, number]> = [
-    [100, 2.4], [500, 1.8], [1000, 1.45], [2500, 1.22],
-    [5000, 1.10], [10000, 1.00], [25000, 0.95], [100000, 0.90],
-  ];
-  for (const [maxQty, mult] of steps) if (qty <= maxQty) return mult;
-  return 0.87;
+import { readFileSync } from 'node:fs';
+
+export interface CatalogueEntry {
+  mpn: string; family: string; mfr: string; desc: string; category: string; pkg: string; aecq: boolean;
+  /** Other spellings the part is seen under — chip top marks ("25Q32JW", "1044AV"), order codes. */
+  aliases?: string[];
+  gbp: { q1k: number; q10k: number; q100k: number };
+  confidence: 'distributor' | 'estimate'; source: string; asOf: string;
 }
+interface CatalogueFile { asOf: string; fxUsdToGbp: number; currency: string; basis: string; parts: CatalogueEntry[] }
+
+const FILE = new URL('../data/pcb-component-catalogue.json', import.meta.url);
+const CAT: CatalogueFile = JSON.parse(readFileSync(FILE, 'utf8'));
+export const CATALOGUE_AS_OF: string = CAT.asOf;
+export const CATALOGUE_SIZE: number = CAT.parts.length;
 
 /** Normalise an MPN for matching: uppercase, drop packaging/grade/rev suffixes. */
 export function normaliseMPN(raw: string): string {
@@ -35,67 +35,72 @@ export function normaliseMPN(raw: string): string {
     .trim();
 }
 
-// Exact MPN → GBP unit @ ~10k, AEC-Q grade. Keyed by normalised MPN.
-const EXACT: Record<string, number> = {
-  // MCUs / SoCs
-  'SAK-TC275TP': 16.50, 'TC275': 16.50, 'SAK-TC234L': 11.00, 'TC234L': 11.00,
-  'TC297': 24.00, 'TC224': 9.50, 'STM32H735IGK6': 6.20, 'STM32H730': 4.80,
-  'AWR1843AOP': 27.00, 'AWR1843': 27.00, 'AWR1642': 18.00,
-  // System-basis / CAN-LIN / transceivers
-  'TJA1145': 2.80, 'TJA1044': 0.95, 'TJA1044GT': 0.95, 'TJA1462': 1.85,
-  'SJA1124': 3.60, 'TLE9263': 3.80, 'TLE9261': 3.40, 'ATA6570': 1.40,
-  'TLE9180': 3.00, 'DRV8305': 2.50, 'DRV8323RS': 2.40, 'MC33879': 3.20,
-  // Power / PMIC / LDO
-  'TLF35584': 5.20, 'TPS7B82': 0.90, 'TPS7A82': 1.10, 'TPS62150': 1.80,
-  'TLV75833': 0.55, 'LP2951A': 1.20, 'LM74700': 1.00, 'FS8500': 3.20,
-  // Sense / buffer / misc IC
-  'INA240A2': 1.90, 'INA240': 1.90, 'PCA9517D': 0.70, 'S25FL256S': 2.20,
-  'S25FL128S': 1.80, 'PCA9517': 0.70,
-  // Passives / protection
-  'PRTR5V0U2X': 0.22, 'PRTR5V0U4X': 0.28,
-  // Timing
-  'SG-8018': 1.60, 'TG-5032': 1.80, 'NX3225SA': 0.60,
-};
-// NB: connectors (FAKRA-Z, OBD-II DE9, MX150-class …) are deliberately NOT in the
-// catalogue — they're form-factors, not orderable MPNs — so they stay flagged and
-// get the connector class-median cap instead of a catalogue price.
-
-// Family prefix → GBP unit. Used when the exact MPN misses but a recognisable
-// series is present (e.g. "TJA1044GT/3" → TJA1044). Longest prefix wins.
-const FAMILY: Array<[string, number]> = [
-  ['STM32H7', 5.00], ['AWR184', 26.00], ['AWR164', 18.00], ['SAK-TC27', 16.00],
-  ['SAK-TC23', 11.00], ['TC27', 16.00], ['TC23', 11.00],
-  ['TJA114', 2.80], ['TJA104', 0.95], ['TLE926', 3.60], ['TLE918', 3.00],
-  ['DRV83', 2.50], ['TLF355', 5.20], ['TPS7', 1.00], ['TPS62', 1.60],
-  ['TLV758', 0.55], ['INA24', 1.90], ['S25FL', 2.00], ['PRTR5V0', 0.25],
-  ['SG-80', 1.60], ['TG-50', 1.80],
-];
+// Exact keys (normalised mpn and family) → entry; family keys also serve as prefixes.
+const EXACT = new Map<string, CatalogueEntry>();
+const PREFIX: Array<[string, CatalogueEntry]> = [];
+for (const e of CAT.parts) {
+  const keys = new Set([normaliseMPN(e.mpn), normaliseMPN(e.family), ...(e.aliases ?? []).map(normaliseMPN)]);
+  for (const k of keys) if (k && !EXACT.has(k)) EXACT.set(k, e);
+  // A prefix must be specific enough to name a family: ≥4 chars with a digit.
+  for (const k of keys) if (k.length >= 4 && /\d/.test(k)) PREFIX.push([k, e]);
+}
+PREFIX.sort((a, b) => b[0].length - a[0].length);   // longest first
 
 /**
- * Look up an offline catalogue price for an MPN. Returns null if the string
- * is not a plausible orderable part (a description like "OBD-II DE9" or a family
- * like "MX150-class" returns null → the line stays flagged for verification).
+ * The catalogue entry for an MPN, or null if the string is not a plausible
+ * orderable part (a description like "OBD-II DE9" or a guessed family like
+ * "MX150-class" returns null → the line stays flagged for verification).
  */
-export function cataloguePrice(mpn: string): number | null {
+export function catalogueEntry(mpn: string): CatalogueEntry | null {
   if (!mpn) return null;
-  // A guessed/hallucinated or family label ("(est. …)", "MX150-class", "OBD-II DE9")
-  // is not an orderable MPN → no catalogue price (line stays flagged for review).
   if (/\b(CLASS|EST|UNKNOWN|GENERIC)\b/i.test(mpn)) return null;
-  // Build candidate tokens: the whole string AND each whitespace/comma token, so
+  // Candidate tokens: the whole string AND each whitespace/comma token, so
   // "NXP TJA1145" and "TJA1044GT/3" both resolve to the manufacturer part.
   const cands = new Set<string>([normaliseMPN(mpn)]);
   for (const tok of mpn.toUpperCase().split(/[\s,;/]+/)) {
     const t = normaliseMPN(tok);
     if (t.length >= 4) cands.add(t);
   }
-  for (const c of cands) if (c && EXACT[c] !== undefined) return EXACT[c];
-  let best: number | null = null; let bestLen = 0;
-  for (const c of cands) {
-    for (const [pre, price] of FAMILY) {
-      if (c.startsWith(pre) && pre.length > bestLen) { best = price; bestLen = pre.length; }
-    }
-  }
-  return best;
+  for (const c of cands) { const e = EXACT.get(c); if (e) return e; }
+  for (const c of cands) for (const [pre, e] of PREFIX) if (c.startsWith(pre)) return e;
+  return null;
+}
+
+/** Catalogue unit price at the ~10k break (GBP), or null. */
+export function cataloguePrice(mpn: string): number | null {
+  return catalogueEntry(mpn)?.gbp.q10k ?? null;
+}
+
+/** Catalogue unit price at an order quantity: log-linear between the 1k / 10k /
+ *  100k breaks, the 1k price below 1k scaled by the prototype curve, flat above 100k. */
+export function cataloguePriceAt(mpn: string, qty: number): number | null {
+  const e = catalogueEntry(mpn);
+  if (!e) return null;
+  const { q1k, q10k, q100k } = e.gbp;
+  const q = Math.max(1, qty || 1);
+  const lerp = (qa: number, pa: number, qb: number, pb: number) => {
+    const t = (Math.log10(q) - Math.log10(qa)) / (Math.log10(qb) - Math.log10(qa));
+    return pa + (pb - pa) * t;
+  };
+  let p: number;
+  if (q >= 100000) p = q100k;
+  else if (q >= 10000) p = lerp(10000, q10k, 100000, q100k);
+  else if (q >= 1000) p = lerp(1000, q1k, 10000, q10k);
+  else p = q1k * volumeScaleFrom10k(q) / volumeScaleFrom10k(1000);
+  return Math.round(p * 10000) / 10000;
+}
+
+/**
+ * Multiplier relative to the ~10k price for an order quantity (1.0 at 10k):
+ * gentle for production volumes, steeper for prototype quantities.
+ */
+export function volumeScaleFrom10k(qty: number): number {
+  const steps: Array<[number, number]> = [
+    [100, 2.4], [500, 1.8], [1000, 1.45], [2500, 1.22],
+    [5000, 1.10], [10000, 1.00], [25000, 0.95], [100000, 0.90],
+  ];
+  for (const [maxQty, mult] of steps) if (qty <= maxQty) return mult;
+  return 0.87;
 }
 
 // Category median caps (GBP) — the most an UNCONFIRMED part of this class may

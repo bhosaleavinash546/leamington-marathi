@@ -1,0 +1,7228 @@
+{
+"asOf": "2026-10-01",
+"fxUsdToGbp": 0.78,
+"currency": "GBP",
+"basis": "unit price at the 10k break, AEC-Q grade where the part is automotive; q1k/q100k from the stated break by the franchise curve (10k = 1k × 0.85, 100k = 1k × 0.72)",
+"provenance": {
+"distributor": "a distributor's published price read on asOf (search snippet of the product page: Digi-Key, Mouser, LCSC, Farnell/Newark, Arrow, Avnet, RS, TME); brokers disregarded",
+"estimate": "engineering estimate at 2025/26 distributor levels — replace by import (scripts/pcb-catalogue-import.ts)"
+},
+"parts": [
+{
+"mpn": "TJA1044GT",
+"family": "TJA1044",
+"mfr": "NXP",
+"desc": "CAN FD transceiver, 5 Mbps",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.5374,
+"q10k": 0.4568,
+"q100k": 0.3869
+},
+"confidence": "distributor",
+"source": "Digi-Key TJA1044GT/3Z $0.689 @1k (LCSC TJA1044GT/3 $0.226 @1k); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"TJA1044GTK",
+"TJA1044T"
+]
+},
+{
+"mpn": "TJA1051T",
+"family": "TJA1051",
+"mfr": "NXP",
+"desc": "High-speed CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.5647,
+"q10k": 0.48,
+"q100k": 0.4066
+},
+"confidence": "distributor",
+"source": "Digi-Key TJA1051T/3,118 $0.724 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1462AT",
+"family": "TJA1462",
+"mfr": "NXP",
+"desc": "CAN SIC transceiver with standby",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.5515,
+"q10k": 0.4688,
+"q100k": 0.3971
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.707 @1k; Mouser $0.691 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1145TK",
+"family": "TJA1145",
+"mfr": "NXP",
+"desc": "CAN FD transceiver, partial networking",
+"category": "ic_soic",
+"pkg": "HVSON-14",
+"aecq": true,
+"gbp": {
+"q1k": 1.6045,
+"q10k": 1.3638,
+"q100k": 1.1552
+},
+"confidence": "distributor",
+"source": "Farnell £1.78 @1k; FindChips $2.057 @1k (ATK successor $3.78 small qty); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1103AHN",
+"family": "TJA1103",
+"mfr": "NXP",
+"desc": "100BASE-T1 automotive Ethernet PHY",
+"category": "ic_qfn",
+"pkg": "HVQFN-36",
+"aecq": true,
+"gbp": {
+"q1k": 1.3338,
+"q10k": 1.1337,
+"q100k": 0.9603
+},
+"confidence": "distributor",
+"source": "Digi-Key $1.710 @1k, $1.634 @4k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TCAN1044AVDRQ1",
+"family": "TCAN1044",
+"mfr": "TI",
+"desc": "CAN FD transceiver, 5 Mbps, VIO",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.4212,
+"q10k": 0.358,
+"q100k": 0.3033
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.5168 @2.5k reel (1k ≈ $0.54); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"1044AV",
+"1044V",
+"TCAN1044AV"
+]
+},
+{
+"mpn": "TLF35584QVVS2",
+"family": "TLF35584",
+"mfr": "Infineon",
+"desc": "Multi-voltage safety PMIC (ASIL-D)",
+"category": "ic_qfn",
+"pkg": "VQFN-48",
+"aecq": true,
+"gbp": {
+"q1k": 2.4882,
+"q10k": 2.115,
+"q100k": 1.7915
+},
+"confidence": "distributor",
+"source": "Chip One Stop $3.19 @1k; Mouser $3.61 @2.5k; OMO $3.70 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"TLF35584"
+]
+},
+{
+"mpn": "TLE9261BQXV33",
+"family": "TLE9261",
+"mfr": "Infineon",
+"desc": "Lite SBC: CAN + 5 V LDO",
+"category": "ic_qfn",
+"pkg": "VQFN-48",
+"aecq": true,
+"gbp": {
+"q1k": 1.521,
+"q10k": 1.2928,
+"q100k": 1.0951
+},
+"confidence": "distributor",
+"source": "Mouser $1.95 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "W25Q32JWSSIQ",
+"family": "W25Q32JW",
+"mfr": "Winbond",
+"desc": "32 Mbit SPI NOR flash, 1.8 V (JW)",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.7933,
+"q10k": 0.6743,
+"q100k": 0.5712
+},
+"confidence": "distributor",
+"source": "LCSC $1.0168 @990+; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"25Q32JW",
+"25Q32JWSSIQ",
+"25Q32JWNSM",
+"25Q32JWSSIM"
+]
+},
+{
+"mpn": "W25Q128JVSIQ",
+"family": "W25Q128",
+"mfr": "Winbond",
+"desc": "128 Mbit SPI NOR flash",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": false,
+"gbp": {
+"q1k": 1.2808,
+"q10k": 1.0887,
+"q100k": 0.9222
+},
+"confidence": "distributor",
+"source": "LCSC $1.6422 @1k (Digi-Key JW $3.34 @1,080); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"25Q128JV",
+"25Q128JW"
+]
+},
+{
+"mpn": "MT25QL256ABA1EW9",
+"family": "MT25QL256",
+"mfr": "Micron",
+"desc": "256 Mbit SPI NOR flash",
+"category": "ic_soic",
+"pkg": "W-PDFN-8",
+"aecq": false,
+"gbp": {
+"q1k": 6.8024,
+"q10k": 5.782,
+"q100k": 4.8977
+},
+"confidence": "distributor",
+"source": "Digi-Key $8.721 @1k, $7.377 @4k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"MT25QL256",
+"RW161"
+]
+},
+{
+"mpn": "FS32K144HAT0MLLR",
+"family": "S32K144",
+"mfr": "NXP",
+"desc": "S32K144 automotive MCU, Cortex-M4F, LQFP-100",
+"category": "ic_tqfp",
+"pkg": "LQFP-100",
+"aecq": true,
+"gbp": {
+"q1k": 4.2666,
+"q10k": 3.6266,
+"q100k": 3.072
+},
+"confidence": "distributor",
+"source": "Mouser $5.47 @1k; OEMsTrade $6.20 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K344EHT1VMMST",
+"family": "S32K344",
+"mfr": "NXP",
+"desc": "S32K344 automotive MCU, Cortex-M7 lockstep, 4 MB",
+"category": "ic_bga",
+"pkg": "MAPBGA-257",
+"aecq": true,
+"gbp": {
+"q1k": 9.828,
+"q10k": 8.3538,
+"q100k": 7.0762
+},
+"confidence": "distributor",
+"source": "Digi-Key $14.79 @100 (1k ≈ $12.6); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC375TP96F300W",
+"family": "TC375",
+"mfr": "Infineon",
+"desc": "AURIX TC375 (3× TriCore, 6 MB)",
+"category": "ic_bga",
+"pkg": "LFBGA-292",
+"aecq": true,
+"gbp": {
+"q1k": 17.94,
+"q10k": 15.249,
+"q100k": 12.9168
+},
+"confidence": "distributor",
+"source": "distributor $23.84 @500 (1k ≈ $23); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SAK-TC234LP-32F200N",
+"family": "TC234",
+"mfr": "Infineon",
+"desc": "AURIX TC234 (1× TriCore, 2 MB)",
+"category": "ic_tqfp",
+"pkg": "TQFP-144",
+"aecq": true,
+"gbp": {
+"q1k": 7.41,
+"q10k": 6.2985,
+"q100k": 5.3352
+},
+"confidence": "distributor",
+"source": "LCSC $5.46 @100 (older stock); brokers $54 @1k disregarded; 1k ≈ $9.5; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "R7F7016904AFP",
+"family": "RH850F1KM",
+"mfr": "Renesas",
+"desc": "RH850/F1KM-S1 automotive MCU",
+"category": "ic_tqfp",
+"pkg": "LQFP-100",
+"aecq": true,
+"gbp": {
+"q1k": 6.8078,
+"q10k": 5.7866,
+"q100k": 4.9016
+},
+"confidence": "distributor",
+"source": "Digi-Key $8.728 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "R7F7016443AFP",
+"family": "R7F70164",
+"mfr": "Renesas",
+"desc": "RH850/F1KM-S4 automotive MCU",
+"category": "ic_tqfp",
+"pkg": "LQFP-176",
+"aecq": true,
+"gbp": {
+"q1k": 9.0035,
+"q10k": 7.653,
+"q100k": 6.4825
+},
+"confidence": "distributor",
+"source": "Digi-Key $11.543 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32H735IGK6",
+"family": "STM32H735",
+"mfr": "ST",
+"desc": "STM32H735 Cortex-M7 550 MHz, 1 MB",
+"category": "ic_bga",
+"pkg": "UFBGA-176",
+"aecq": false,
+"gbp": {
+"q1k": 8.034,
+"q10k": 6.8289,
+"q100k": 5.7845
+},
+"confidence": "distributor",
+"source": "Digi-Key $10.87 @504 (1k ≈ $10.3); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AWR1843ABGABLRQ1",
+"family": "AWR1843",
+"mfr": "TI",
+"desc": "AWR1843 77 GHz radar SoC",
+"category": "ic_bga",
+"pkg": "FCBGA-161",
+"aecq": true,
+"gbp": {
+"q1k": 19.4298,
+"q10k": 16.5153,
+"q100k": 13.9895
+},
+"confidence": "distributor",
+"source": "distributor $24.91 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AWR2944ALBGALTRQ1",
+"family": "AWR2944",
+"mfr": "TI",
+"desc": "AWR2944 77 GHz radar SoC (4T4R)",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 21.7409,
+"q10k": 18.4798,
+"q100k": 15.6534
+},
+"confidence": "distributor",
+"source": "TI/Digi-Key $27.87–34.62 per unit; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FS32R294KCMJD",
+"family": "S32R294",
+"mfr": "NXP",
+"desc": "S32R294 radar MCU (ASIL-B)",
+"category": "ic_bga",
+"pkg": "MAPBGA-257",
+"aecq": true,
+"gbp": {
+"q1k": 22.62,
+"q10k": 19.227,
+"q100k": 16.2864
+},
+"confidence": "distributor",
+"source": "Arrow $29.00, Mouser $30.33, Avnet $27.11, Newark $26.54 @1k+; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"S32R294",
+"FS32R294"
+]
+},
+{
+"mpn": "DP83TC812SRHARQ1",
+"family": "DP83TC812",
+"mfr": "TI",
+"desc": "100BASE-T1 automotive Ethernet PHY",
+"category": "ic_qfn",
+"pkg": "VQFN-32",
+"aecq": true,
+"gbp": {
+"q1k": 2.0202,
+"q10k": 1.7172,
+"q100k": 1.4545
+},
+"confidence": "distributor",
+"source": "FindChips $2.59 @500; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS54560BQDDARQ1",
+"family": "TPS54560",
+"mfr": "TI",
+"desc": "60 V 5 A step-down converter",
+"category": "ic_soic",
+"pkg": "HSOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 2.8158,
+"q10k": 2.3934,
+"q100k": 2.0274
+},
+"confidence": "distributor",
+"source": "Rochester $3.61 @1k; Mouser $4.47 @1k; Digi-Key $4.21 @2.5k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LMR33630AQDDARQ1",
+"family": "LMR33630",
+"mfr": "TI",
+"desc": "36 V 3 A step-down converter",
+"category": "ic_soic",
+"pkg": "HSOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 1.2714,
+"q10k": 1.0807,
+"q100k": 0.9154
+},
+"confidence": "distributor",
+"source": "Digi-Key LMR33630CDDA $1.63 @1,050 (Q1 variant similar); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM5143QRWGRQ1",
+"family": "LM5143",
+"mfr": "TI",
+"desc": "Dual-phase buck controller, 65 V",
+"category": "ic_qfn",
+"pkg": "VQFN-40",
+"aecq": true,
+"gbp": {
+"q1k": 7.3086,
+"q10k": 6.2123,
+"q100k": 5.2622
+},
+"confidence": "distributor",
+"source": "Mouser/Digi-Key $9.37 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTS7008-2EPA",
+"family": "BTS7008",
+"mfr": "Infineon",
+"desc": "PROFET+2 dual high-side switch",
+"category": "ic_tqfp",
+"pkg": "TSDSO-14",
+"aecq": true,
+"gbp": {
+"q1k": 0.702,
+"q10k": 0.5967,
+"q100k": 0.5054
+},
+"confidence": "distributor",
+"source": "Mouser $1.27 @1k; LCSC $0.707 @1k; mid $0.90; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "INA240A2QDRQ1",
+"family": "INA240",
+"mfr": "TI",
+"desc": "Current-sense amplifier, PWM rejection",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 1.716,
+"q10k": 1.4586,
+"q100k": 1.2355
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.505 @1k; Spirit $1.96 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLV9002QDGKRQ1",
+"family": "TLV9002",
+"mfr": "TI",
+"desc": "Dual 1 MHz RRIO op-amp",
+"category": "ic_soic",
+"pkg": "VSSOP-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.234,
+"q10k": 0.1989,
+"q100k": 0.1685
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.360 @1k; XON $0.171 @2.5k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MCP2562FD-E/SN",
+"family": "MCP2562",
+"mfr": "Microchip",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.624,
+"q10k": 0.5304,
+"q100k": 0.4493
+},
+"confidence": "distributor",
+"source": "Master $0.888 @1k; LCSC $0.711 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ATA6560-GBQW",
+"family": "ATA6560",
+"mfr": "Microchip",
+"desc": "High-speed CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.2886,
+"q10k": 0.2453,
+"q100k": 0.2078
+},
+"confidence": "distributor",
+"source": "Comet €0.333 @1k; Digi-Key $0.40 @6k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UCC27211AQDDARQ1",
+"family": "UCC27211",
+"mfr": "TI",
+"desc": "120 V half-bridge gate driver",
+"category": "ic_soic",
+"pkg": "HSOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 1.287,
+"q10k": 1.0939,
+"q100k": 0.9266
+},
+"confidence": "distributor",
+"source": "OMO $2.03–2.25 @1k; Component Stockers $1.11 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IPB017N06N3",
+"family": "IPB017N06",
+"mfr": "Infineon",
+"desc": "60 V 180 A OptiMOS, D2PAK",
+"category": "ic_soic",
+"pkg": "D2PAK",
+"aecq": true,
+"gbp": {
+"q1k": 1.2815,
+"q10k": 1.0893,
+"q100k": 0.9227
+},
+"confidence": "distributor",
+"source": "Digi-Key $1.643 @1k reel; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SMBJ33A-Q",
+"family": "SMBJ33A",
+"mfr": "Bourns",
+"desc": "600 W TVS diode 33 V, AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SMB",
+"aecq": true,
+"gbp": {
+"q1k": 0.1287,
+"q10k": 0.1094,
+"q100k": 0.0927
+},
+"confidence": "distributor",
+"source": "Newark $0.188 @1k; Digi-Key $0.161 @3k; TME ST $0.13 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"SMBJ33A",
+"SMBJ33CA"
+]
+},
+{
+"mpn": "PESD1CAN",
+"family": "PESD1CAN",
+"mfr": "Nexperia",
+"desc": "CAN bus ESD protection, dual",
+"category": "fuse_tvs",
+"pkg": "SOT-23",
+"aecq": true,
+"gbp": {
+"q1k": 0.1115,
+"q10k": 0.0948,
+"q100k": 0.0803
+},
+"confidence": "distributor",
+"source": "Digi-Key PESD1CAN-UX $0.143 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "XAL7030-472MEC",
+"family": "XAL7030",
+"mfr": "Coilcraft",
+"desc": "4.7 µH 10 A shielded power inductor",
+"category": "passive_0805",
+"pkg": "7×7×3 mm",
+"aecq": true,
+"gbp": {
+"q1k": 0.6552,
+"q10k": 0.5569,
+"q100k": 0.4717
+},
+"confidence": "distributor",
+"source": "distributor $0.84 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "776087-1",
+"family": "776087",
+"mfr": "TE Connectivity",
+"desc": "AMPSEAL 23-way sealed PCB header",
+"category": "connector_smt",
+"pkg": "TH header",
+"aecq": true,
+"gbp": {
+"q1k": 4.8177,
+"q10k": 4.095,
+"q100k": 3.4687
+},
+"confidence": "distributor",
+"source": "Digi-Key $6.1765 @1k; Digi-Key UK £4.92 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"1-776087-1",
+"AMPSEAL 23"
+]
+},
+{
+"mpn": "0334824001",
+"family": "0334824",
+"mfr": "Molex",
+"desc": "MX150 12-way sealed PCB header",
+"category": "connector_smt",
+"pkg": "TH header",
+"aecq": true,
+"gbp": {
+"q1k": 0.8557,
+"q10k": 0.7273,
+"q100k": 0.6161
+},
+"confidence": "distributor",
+"source": "ICC / Heilind $1.097 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01",
+"aliases": [
+"34824-1201",
+"MX150 12"
+]
+},
+{
+"mpn": "NX3225GD-25MHZ",
+"family": "NX3225GD",
+"mfr": "NDK",
+"desc": "25 MHz crystal 3.2×2.5, AEC-Q200",
+"category": "crystal_osc",
+"pkg": "3225",
+"aecq": true,
+"gbp": {
+"q1k": 0.39,
+"q10k": 0.3315,
+"q100k": 0.2808
+},
+"confidence": "distributor",
+"source": "DigiPart/FindChips listings: NX3225GA (non-auto) $0.279 @1k; GD 8 MHz $0.73 @1k; 25 MHz GD ≈ $0.50; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K116",
+"family": "S32K116",
+"mfr": "NXP",
+"desc": "S32K116 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 2.5882,
+"q10k": 2.2,
+"q100k": 1.87
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K118",
+"family": "S32K118",
+"mfr": "NXP",
+"desc": "S32K118 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 3.0588,
+"q10k": 2.6,
+"q100k": 2.21
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K142",
+"family": "S32K142",
+"mfr": "NXP",
+"desc": "S32K142 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 4.0,
+"q10k": 3.4,
+"q100k": 2.89
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K146",
+"family": "S32K146",
+"mfr": "NXP",
+"desc": "S32K146 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 6.1176,
+"q10k": 5.2,
+"q100k": 4.42
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K148",
+"family": "S32K148",
+"mfr": "NXP",
+"desc": "S32K148 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 7.6471,
+"q10k": 6.5,
+"q100k": 5.525
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K312",
+"family": "S32K312",
+"mfr": "NXP",
+"desc": "S32K312 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 7.0588,
+"q10k": 6.0,
+"q100k": 5.1
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K314",
+"family": "S32K314",
+"mfr": "NXP",
+"desc": "S32K314 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 8.8235,
+"q10k": 7.5,
+"q100k": 6.375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K322",
+"family": "S32K322",
+"mfr": "NXP",
+"desc": "S32K322 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 8.2353,
+"q10k": 7.0,
+"q100k": 5.95
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K324",
+"family": "S32K324",
+"mfr": "NXP",
+"desc": "S32K324 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 10.0,
+"q10k": 8.5,
+"q100k": 7.225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K342",
+"family": "S32K342",
+"mfr": "NXP",
+"desc": "S32K342 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 9.4118,
+"q10k": 8.0,
+"q100k": 6.8
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K358",
+"family": "S32K358",
+"mfr": "NXP",
+"desc": "S32K358 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 16.4706,
+"q10k": 14,
+"q100k": 11.9
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32K388",
+"family": "S32K388",
+"mfr": "NXP",
+"desc": "S32K388 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 21.1765,
+"q10k": 18,
+"q100k": 15.3
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC264",
+"family": "TC264",
+"mfr": "Infineon",
+"desc": "TC264 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 16.4706,
+"q10k": 14,
+"q100k": 11.9
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC275",
+"family": "TC275",
+"mfr": "Infineon",
+"desc": "TC275 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 18.8235,
+"q10k": 16,
+"q100k": 13.6
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC277",
+"family": "TC277",
+"mfr": "Infineon",
+"desc": "TC277 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 21.1765,
+"q10k": 18,
+"q100k": 15.3
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC297",
+"family": "TC297",
+"mfr": "Infineon",
+"desc": "TC297 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 25.8824,
+"q10k": 22,
+"q100k": 18.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC334",
+"family": "TC334",
+"mfr": "Infineon",
+"desc": "TC334 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 17.6471,
+"q10k": 15,
+"q100k": 12.75
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC364",
+"family": "TC364",
+"mfr": "Infineon",
+"desc": "TC364 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 21.1765,
+"q10k": 18,
+"q100k": 15.3
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC377",
+"family": "TC377",
+"mfr": "Infineon",
+"desc": "TC377 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 28.2353,
+"q10k": 24,
+"q100k": 20.4
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC387",
+"family": "TC387",
+"mfr": "Infineon",
+"desc": "TC387 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "LFBGA",
+"aecq": true,
+"gbp": {
+"q1k": 35.2941,
+"q10k": 30,
+"q100k": 25.5
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC397",
+"family": "TC397",
+"mfr": "Infineon",
+"desc": "TC397 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "LFBGA",
+"aecq": true,
+"gbp": {
+"q1k": 49.4118,
+"q10k": 42,
+"q100k": 35.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TC499",
+"family": "TC499",
+"mfr": "Infineon",
+"desc": "TC499 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "LFBGA",
+"aecq": true,
+"gbp": {
+"q1k": 70.5882,
+"q10k": 60,
+"q100k": 51.0
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SPC582B",
+"family": "SPC582B",
+"mfr": "ST",
+"desc": "SPC582B automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 5.8824,
+"q10k": 5,
+"q100k": 4.25
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SPC584B",
+"family": "SPC584B",
+"mfr": "ST",
+"desc": "SPC584B automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 9.4118,
+"q10k": 8,
+"q100k": 6.8
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SPC58EC",
+"family": "SPC58EC",
+"mfr": "ST",
+"desc": "SPC58EC automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 14.1176,
+"q10k": 12,
+"q100k": 10.2
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SPC58NN",
+"family": "SPC58NN",
+"mfr": "ST",
+"desc": "SPC58NN automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 29.4118,
+"q10k": 25,
+"q100k": 21.25
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MPC5744P",
+"family": "MPC5744P",
+"mfr": "NXP",
+"desc": "MPC5744P automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 21.1765,
+"q10k": 18,
+"q100k": 15.3
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MPC5748G",
+"family": "MPC5748G",
+"mfr": "NXP",
+"desc": "MPC5748G automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 23.5294,
+"q10k": 20,
+"q100k": 17.0
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MPC5775",
+"family": "MPC5775",
+"mfr": "NXP",
+"desc": "MPC5775 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 41.1765,
+"q10k": 35,
+"q100k": 29.75
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TMS570LC43",
+"family": "TMS570LC43",
+"mfr": "TI",
+"desc": "TMS570LC43 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 29.4118,
+"q10k": 25,
+"q100k": 21.25
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TMS570LS12",
+"family": "TMS570LS12",
+"mfr": "TI",
+"desc": "TMS570LS12 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 14.1176,
+"q10k": 12,
+"q100k": 10.2
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32G274",
+"family": "S32G274",
+"mfr": "NXP",
+"desc": "S32G274 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 56.4706,
+"q10k": 48,
+"q100k": 40.8
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32G399",
+"family": "S32G399",
+"mfr": "NXP",
+"desc": "S32G399 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 105.8824,
+"q10k": 90,
+"q100k": 76.5
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32R274",
+"family": "S32R274",
+"mfr": "NXP",
+"desc": "S32R274 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "MAPBGA",
+"aecq": true,
+"gbp": {
+"q1k": 21.1765,
+"q10k": 18,
+"q100k": 15.3
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32R372",
+"family": "S32R372",
+"mfr": "NXP",
+"desc": "S32R372 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "MAPBGA",
+"aecq": true,
+"gbp": {
+"q1k": 28.2353,
+"q10k": 24,
+"q100k": 20.4
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32R41",
+"family": "S32R41",
+"mfr": "NXP",
+"desc": "S32R41 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 52.9412,
+"q10k": 45,
+"q100k": 38.25
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S32R45",
+"family": "S32R45",
+"mfr": "NXP",
+"desc": "S32R45 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 82.3529,
+"q10k": 70,
+"q100k": 59.5
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AWR1443",
+"family": "AWR1443",
+"mfr": "TI",
+"desc": "AWR1443 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 16.4706,
+"q10k": 14,
+"q100k": 11.9
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AWR1642",
+"family": "AWR1642",
+"mfr": "TI",
+"desc": "AWR1642 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 18.8235,
+"q10k": 16,
+"q100k": 13.6
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AWR2243",
+"family": "AWR2243",
+"mfr": "TI",
+"desc": "AWR2243 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 25.8824,
+"q10k": 22,
+"q100k": 18.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AWR2544",
+"family": "AWR2544",
+"mfr": "TI",
+"desc": "AWR2544 automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 23.5294,
+"q10k": 20,
+"q100k": 17.0
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TDA4VM",
+"family": "TDA4VM",
+"mfr": "TI",
+"desc": "TDA4VM automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 111.7647,
+"q10k": 95,
+"q100k": 80.75
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TDA4AL",
+"family": "TDA4AL",
+"mfr": "TI",
+"desc": "TDA4AL automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 70.5882,
+"q10k": 60,
+"q100k": 51.0
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TDA4VE",
+"family": "TDA4VE",
+"mfr": "TI",
+"desc": "TDA4VE automotive MCU/SoC",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 82.3529,
+"q10k": 70,
+"q100k": 59.5
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32H743",
+"family": "STM32H743",
+"mfr": "ST",
+"desc": "STM32H743 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 8.2353,
+"q10k": 7,
+"q100k": 5.95
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32F407",
+"family": "STM32F407",
+"mfr": "ST",
+"desc": "STM32F407 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 7.0588,
+"q10k": 6,
+"q100k": 5.1
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32G474",
+"family": "STM32G474",
+"mfr": "ST",
+"desc": "STM32G474 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 4.7059,
+"q10k": 4,
+"q100k": 3.4
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32L4",
+"family": "STM32L4",
+"mfr": "ST",
+"desc": "STM32L4 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 3.5294,
+"q10k": 3,
+"q100k": 2.55
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32F4",
+"family": "STM32F4",
+"mfr": "ST",
+"desc": "STM32F4 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 5.2941,
+"q10k": 4.5,
+"q100k": 3.825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STM32H7",
+"family": "STM32H7",
+"mfr": "ST",
+"desc": "STM32H7 automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 9.4118,
+"q10k": 8,
+"q100k": 6.8
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RH850F1KH",
+"family": "RH850F1KH",
+"mfr": "Renesas",
+"desc": "RH850F1KH automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 17.6471,
+"q10k": 15,
+"q100k": 12.75
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RH850U2A",
+"family": "RH850U2A",
+"mfr": "Renesas",
+"desc": "RH850U2A automotive MCU/SoC",
+"category": "ic_tqfp",
+"pkg": "LQFP",
+"aecq": true,
+"gbp": {
+"q1k": 29.4118,
+"q10k": 25,
+"q100k": 21.25
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TEF8102",
+"family": "TEF8102",
+"mfr": "NXP",
+"desc": "77 GHz radar transceiver (3T4R)",
+"category": "ic_qfn",
+"pkg": "eWLB",
+"aecq": true,
+"gbp": {
+"q1k": 11.7647,
+"q10k": 10,
+"q100k": 8.5
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels; NDA part, no public price",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TEF8105",
+"family": "TEF8105",
+"mfr": "NXP",
+"desc": "77 GHz radar transceiver (3T4R, 1.6 GHz)",
+"category": "ic_qfn",
+"pkg": "eWLB",
+"aecq": true,
+"gbp": {
+"q1k": 14.1176,
+"q10k": 12,
+"q100k": 10.2
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels; NDA part, no public price",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TEF8232",
+"family": "TEF8232",
+"mfr": "NXP",
+"desc": "77 GHz radar transceiver (4T4R)",
+"category": "ic_qfn",
+"pkg": "eWLB",
+"aecq": true,
+"gbp": {
+"q1k": 16.4706,
+"q10k": 14,
+"q100k": 11.9
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels; NDA part, no public price",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX20430",
+"family": "MAX20430",
+"mfr": "ADI",
+"desc": "Automotive 4-output PMIC",
+"category": "ic_qfn",
+"pkg": "TQFN",
+"aecq": true,
+"gbp": {
+"q1k": 4.1176,
+"q10k": 3.5,
+"q100k": 2.975
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels; no public price",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX20431",
+"family": "MAX20431",
+"mfr": "ADI",
+"desc": "Automotive 4-output PMIC for radar",
+"category": "ic_qfn",
+"pkg": "TQFN",
+"aecq": true,
+"gbp": {
+"q1k": 4.2353,
+"q10k": 3.6,
+"q100k": 3.06
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels; no public price",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1042",
+"family": "TJA1042",
+"mfr": "NXP",
+"desc": "CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1043",
+"family": "TJA1043",
+"mfr": "NXP",
+"desc": "CAN transceiver, wake",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1057",
+"family": "TJA1057",
+"mfr": "NXP",
+"desc": "CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4941,
+"q10k": 0.42,
+"q100k": 0.357
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1443",
+"family": "TJA1443",
+"mfr": "NXP",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1448",
+"family": "TJA1448",
+"mfr": "NXP",
+"desc": "Dual CAN FD transceiver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1463",
+"family": "TJA1463",
+"mfr": "NXP",
+"desc": "CAN SIC transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1021",
+"family": "TJA1021",
+"mfr": "NXP",
+"desc": "LIN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1027",
+"family": "TJA1027",
+"mfr": "NXP",
+"desc": "LIN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1024",
+"family": "TJA1024",
+"mfr": "NXP",
+"desc": "Quad LIN transceiver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TCAN1042",
+"family": "TCAN1042",
+"mfr": "TI",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4706,
+"q10k": 0.4,
+"q100k": 0.34
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TCAN1043",
+"family": "TCAN1043",
+"mfr": "TI",
+"desc": "CAN FD transceiver, wake",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.9412,
+"q10k": 0.8,
+"q100k": 0.68
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TCAN1051",
+"family": "TCAN1051",
+"mfr": "TI",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4706,
+"q10k": 0.4,
+"q100k": 0.34
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TCAN1462",
+"family": "TCAN1462",
+"mfr": "TI",
+"desc": "CAN SIC transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TCAN4550",
+"family": "TCAN4550",
+"mfr": "TI",
+"desc": "CAN FD controller + transceiver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MCP2542",
+"family": "MCP2542",
+"mfr": "Microchip",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4706,
+"q10k": 0.4,
+"q100k": 0.34
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MCP2561",
+"family": "MCP2561",
+"mfr": "Microchip",
+"desc": "CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ATA6561",
+"family": "ATA6561",
+"mfr": "Microchip",
+"desc": "CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.3882,
+"q10k": 0.33,
+"q100k": 0.2805
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ATA6570",
+"family": "ATA6570",
+"mfr": "Microchip",
+"desc": "CAN FD transceiver, partial networking",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.4118,
+"q10k": 1.2,
+"q100k": 1.02
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ATA6571",
+"family": "ATA6571",
+"mfr": "Microchip",
+"desc": "CAN FD transceiver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9251",
+"family": "TLE9251",
+"mfr": "Infineon",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9252",
+"family": "TLE9252",
+"mfr": "Infineon",
+"desc": "CAN FD transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 0.5882,
+"q10k": 0.5,
+"q100k": 0.425
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9255",
+"family": "TLE9255",
+"mfr": "Infineon",
+"desc": "CAN FD transceiver, partial networking",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.0588,
+"q10k": 0.9,
+"q100k": 0.765
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9262",
+"family": "TLE9262",
+"mfr": "Infineon",
+"desc": "SBC: CAN + LIN + LDO",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9263",
+"family": "TLE9263",
+"mfr": "Infineon",
+"desc": "SBC: CAN + 2 LIN + LDO",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9271",
+"family": "TLE9271",
+"mfr": "Infineon",
+"desc": "SBC: CAN FD + DC-DC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE9471",
+"family": "TLE9471",
+"mfr": "Infineon",
+"desc": "SBC: CAN + boost/buck",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.5882,
+"q10k": 2.2,
+"q100k": 1.87
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UJA1169",
+"family": "UJA1169",
+"mfr": "NXP",
+"desc": "Mini SBC: CAN + LDO",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UJA1167",
+"family": "UJA1167",
+"mfr": "NXP",
+"desc": "Mini SBC: CAN + LDO",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.4118,
+"q10k": 1.2,
+"q100k": 1.02
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UJA1164",
+"family": "UJA1164",
+"mfr": "NXP",
+"desc": "Mini SBC: CAN",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FS4500",
+"family": "FS4500",
+"mfr": "NXP",
+"desc": "Safety SBC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FS6500",
+"family": "FS6500",
+"mfr": "NXP",
+"desc": "Safety SBC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.8235,
+"q10k": 2.4,
+"q100k": 2.04
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FS8500",
+"family": "FS8500",
+"mfr": "NXP",
+"desc": "Safety SBC (ASIL-D)",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 3.4118,
+"q10k": 2.9,
+"q100k": 2.465
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FS26",
+"family": "FS26",
+"mfr": "NXP",
+"desc": "FS26 safety SBC (ASIL-D)",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 4.9412,
+"q10k": 4.2,
+"q100k": 3.57
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FS23",
+"family": "FS23",
+"mfr": "NXP",
+"desc": "FS23 safety SBC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 3.2941,
+"q10k": 2.8,
+"q100k": 2.38
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLF30681",
+"family": "TLF30681",
+"mfr": "Infineon",
+"desc": "Multi-rail PMIC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 3.0588,
+"q10k": 2.6,
+"q100k": 2.21
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "L9963",
+"family": "L9963",
+"mfr": "ST",
+"desc": "Battery monitoring IC, 14 cells",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 8.8235,
+"q10k": 7.5,
+"q100k": 6.375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MC33772",
+"family": "MC33772",
+"mfr": "NXP",
+"desc": "Battery cell controller, 6 cells",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 7.6471,
+"q10k": 6.5,
+"q100k": 5.525
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BQ79616",
+"family": "BQ79616",
+"mfr": "TI",
+"desc": "Battery monitor, 16 cells",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 10.0,
+"q10k": 8.5,
+"q100k": 7.225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LTC6813",
+"family": "LTC6813",
+"mfr": "ADI",
+"desc": "Battery stack monitor, 18 cells",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 12.9412,
+"q10k": 11,
+"q100k": 9.35
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1100",
+"family": "TJA1100",
+"mfr": "NXP",
+"desc": "TJA1100 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1101",
+"family": "TJA1101",
+"mfr": "NXP",
+"desc": "TJA1101 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.6471,
+"q10k": 1.4,
+"q100k": 1.19
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1102",
+"family": "TJA1102",
+"mfr": "NXP",
+"desc": "TJA1102 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.8235,
+"q10k": 2.4,
+"q100k": 2.04
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TJA1120",
+"family": "TJA1120",
+"mfr": "NXP",
+"desc": "TJA1120 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 3.5294,
+"q10k": 3.0,
+"q100k": 2.55
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "88Q2112",
+"family": "88Q2112",
+"mfr": "Marvell",
+"desc": "88Q2112 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 3.5294,
+"q10k": 3.0,
+"q100k": 2.55
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "88Q1010",
+"family": "88Q1010",
+"mfr": "Marvell",
+"desc": "88Q1010 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "88Q5050",
+"family": "88Q5050",
+"mfr": "Marvell",
+"desc": "88Q5050 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 10.0,
+"q10k": 8.5,
+"q100k": 7.225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DP83TC811",
+"family": "DP83TC811",
+"mfr": "TI",
+"desc": "DP83TC811 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DP83TG720",
+"family": "DP83TG720",
+"mfr": "TI",
+"desc": "DP83TG720 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 3.8824,
+"q10k": 3.3,
+"q100k": 2.805
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DP83822",
+"family": "DP83822",
+"mfr": "TI",
+"desc": "DP83822 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "KSZ8081",
+"family": "KSZ8081",
+"mfr": "Microchip",
+"desc": "KSZ8081 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SJA1105",
+"family": "SJA1105",
+"mfr": "NXP",
+"desc": "SJA1105 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 7.0588,
+"q10k": 6.0,
+"q100k": 5.1
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SJA1110",
+"family": "SJA1110",
+"mfr": "NXP",
+"desc": "SJA1110 automotive Ethernet PHY/switch",
+"category": "ic_qfn",
+"pkg": "VQFN",
+"aecq": true,
+"gbp": {
+"q1k": 15.2941,
+"q10k": 13,
+"q100k": 11.05
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS7B82",
+"family": "TPS7B82",
+"mfr": "TI",
+"desc": "LDO 300 mA 40 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.7294,
+"q10k": 0.62,
+"q100k": 0.527
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS7B81",
+"family": "TPS7B81",
+"mfr": "TI",
+"desc": "LDO 150 mA 40 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS7B69",
+"family": "TPS7B69",
+"mfr": "TI",
+"desc": "LDO 150 mA 40 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.5882,
+"q10k": 0.5,
+"q100k": 0.425
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS7A82",
+"family": "TPS7A82",
+"mfr": "TI",
+"desc": "LDO 1 A low-noise",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.9412,
+"q10k": 0.8,
+"q100k": 0.68
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS7A47",
+"family": "TPS7A47",
+"mfr": "TI",
+"desc": "LDO 1 A 36 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.6471,
+"q10k": 1.4,
+"q100k": 1.19
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLV75833",
+"family": "TLV75833",
+"mfr": "TI",
+"desc": "LDO 500 mA",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.4941,
+"q10k": 0.42,
+"q100k": 0.357
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLV758P",
+"family": "TLV758P",
+"mfr": "TI",
+"desc": "LDO 500 mA",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS62150",
+"family": "TPS62150",
+"mfr": "TI",
+"desc": "Buck 1 A 17 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS62130",
+"family": "TPS62130",
+"mfr": "TI",
+"desc": "Buck 3 A 17 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS54360",
+"family": "TPS54360",
+"mfr": "TI",
+"desc": "Buck 3.5 A 60 V",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS54340",
+"family": "TPS54340",
+"mfr": "TI",
+"desc": "Buck 3.5 A 42 V",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.1176,
+"q10k": 1.8,
+"q100k": 1.53
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LMR33620",
+"family": "LMR33620",
+"mfr": "TI",
+"desc": "Buck 2 A 36 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.4118,
+"q10k": 1.2,
+"q100k": 1.02
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LMR36015",
+"family": "LMR36015",
+"mfr": "TI",
+"desc": "Buck 1.5 A 60 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM5145",
+"family": "LM5145",
+"mfr": "TI",
+"desc": "Buck controller 100 V",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 4.4706,
+"q10k": 3.8,
+"q100k": 3.23
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM5116",
+"family": "LM5116",
+"mfr": "TI",
+"desc": "Buck controller 100 V",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 3.0588,
+"q10k": 2.6,
+"q100k": 2.21
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM74700",
+"family": "LM74700",
+"mfr": "TI",
+"desc": "Ideal-diode controller",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM74610",
+"family": "LM74610",
+"mfr": "TI",
+"desc": "Ideal-diode controller",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM5060",
+"family": "LM5060",
+"mfr": "TI",
+"desc": "Hot-swap controller",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS65313",
+"family": "TPS65313",
+"mfr": "TI",
+"desc": "Multi-rail safety PMIC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 7.0588,
+"q10k": 6.0,
+"q100k": 5.1
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS65381",
+"family": "TPS65381",
+"mfr": "TI",
+"desc": "Safety PMIC (ASIL-D)",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 9.4118,
+"q10k": 8.0,
+"q100k": 6.8
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS653850",
+"family": "TPS653850",
+"mfr": "TI",
+"desc": "Safety PMIC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 10.0,
+"q10k": 8.5,
+"q100k": 7.225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM25118",
+"family": "LM25118",
+"mfr": "TI",
+"desc": "Buck-boost controller",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.5882,
+"q10k": 2.2,
+"q100k": 1.87
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UCC27201",
+"family": "UCC27201",
+"mfr": "TI",
+"desc": "Half-bridge gate driver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UCC21520",
+"family": "UCC21520",
+"mfr": "TI",
+"desc": "Isolated dual gate driver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.5882,
+"q10k": 2.2,
+"q100k": 1.87
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "UCC5320",
+"family": "UCC5320",
+"mfr": "TI",
+"desc": "Isolated gate driver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DRV8305",
+"family": "DRV8305",
+"mfr": "TI",
+"desc": "3-phase gate driver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.8235,
+"q10k": 2.4,
+"q100k": 2.04
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DRV8323RS",
+"family": "DRV8323RS",
+"mfr": "TI",
+"desc": "3-phase gate driver + shunt amps",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DRV8353",
+"family": "DRV8353",
+"mfr": "TI",
+"desc": "3-phase gate driver 100 V",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 3.8824,
+"q10k": 3.3,
+"q100k": 2.805
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DRV8873",
+"family": "DRV8873",
+"mfr": "TI",
+"desc": "H-bridge driver 10 A",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.2353,
+"q10k": 1.9,
+"q100k": 1.615
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DRV8912",
+"family": "DRV8912",
+"mfr": "TI",
+"desc": "12-ch half-bridge driver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTS7002",
+"family": "BTS7002",
+"mfr": "Infineon",
+"desc": "PROFET+2 high-side switch",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTS7006",
+"family": "BTS7006",
+"mfr": "Infineon",
+"desc": "PROFET+2 high-side switch",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTS7040",
+"family": "BTS7040",
+"mfr": "Infineon",
+"desc": "PROFET+2 high-side switch",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTS50085",
+"family": "BTS50085",
+"mfr": "Infineon",
+"desc": "PROFET high-side switch",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.1176,
+"q10k": 1.8,
+"q100k": 1.53
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTS3028",
+"family": "BTS3028",
+"mfr": "Infineon",
+"desc": "Low-side switch",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTT6030",
+"family": "BTT6030",
+"mfr": "Infineon",
+"desc": "PROFET+ dual high-side",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BTF3050",
+"family": "BTF3050",
+"mfr": "Infineon",
+"desc": "Low-side switch",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "VND7050",
+"family": "VND7050",
+"mfr": "ST",
+"desc": "High-side driver, dual",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.1176,
+"q10k": 1.8,
+"q100k": 1.53
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "VN7016",
+"family": "VN7016",
+"mfr": "ST",
+"desc": "High-side driver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NCV7805",
+"family": "NCV7805",
+"mfr": "onsemi",
+"desc": "5 V 1 A regulator",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NCV8664",
+"family": "NCV8664",
+"mfr": "onsemi",
+"desc": "LDO 150 mA 45 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NCV7520",
+"family": "NCV7520",
+"mfr": "onsemi",
+"desc": "5-ch gate driver",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE4473",
+"family": "TLE4473",
+"mfr": "Infineon",
+"desc": "Dual LDO, 5 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE4271",
+"family": "TLE4271",
+"mfr": "Infineon",
+"desc": "LDO 650 mA 5 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLS850",
+"family": "TLS850",
+"mfr": "Infineon",
+"desc": "LDO 500 mA 5 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.7647,
+"q10k": 0.65,
+"q100k": 0.5525
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLS4120",
+"family": "TLS4120",
+"mfr": "Infineon",
+"desc": "Buck 1.2 A 40 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE42754",
+"family": "TLE42754",
+"mfr": "Infineon",
+"desc": "LDO 400 mA 5 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MCP1703",
+"family": "MCP1703",
+"mfr": "Microchip",
+"desc": "LDO 250 mA",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.2588,
+"q10k": 0.22,
+"q100k": 0.187
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX20087",
+"family": "MAX20087",
+"mfr": "ADI",
+"desc": "Quad camera power protector",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX20019",
+"family": "MAX20019",
+"mfr": "ADI",
+"desc": "Dual 3 A buck",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX16941",
+"family": "MAX16941",
+"mfr": "ADI",
+"desc": "Dual LDO 36 V",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.1176,
+"q10k": 0.95,
+"q100k": 0.8075
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX25222",
+"family": "MAX25222",
+"mfr": "ADI",
+"desc": "Quad buck PMIC",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS92610",
+"family": "TPS92610",
+"mfr": "TI",
+"desc": "LED driver, single ch",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPS92662",
+"family": "TPS92662",
+"mfr": "TI",
+"desc": "LED matrix manager 12-ch",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLD5099",
+"family": "TLD5099",
+"mfr": "Infineon",
+"desc": "LED buck/boost controller",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.1176,
+"q10k": 1.8,
+"q100k": 1.53
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLD7002",
+"family": "TLD7002",
+"mfr": "Infineon",
+"desc": "16-ch LED driver",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NCV7691",
+"family": "NCV7691",
+"mfr": "onsemi",
+"desc": "LED driver, linear",
+"category": "ic_soic",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TDA7850",
+"family": "TDA7850",
+"mfr": "ST",
+"desc": "Class-AB audio amp 4×50 W",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TAS6424",
+"family": "TAS6424",
+"mfr": "TI",
+"desc": "Class-D audio amp 4-ch",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 6.4706,
+"q10k": 5.5,
+"q100k": 4.675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FDA803",
+"family": "FDA803",
+"mfr": "ST",
+"desc": "Class-D audio amp",
+"category": "ic_qfn",
+"pkg": "SOIC/VQFN/TSDSO",
+"aecq": true,
+"gbp": {
+"q1k": 4.4706,
+"q10k": 3.8,
+"q100k": 3.23
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "INA180",
+"family": "INA180",
+"mfr": "TI",
+"desc": "Current-sense amp",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "INA226",
+"family": "INA226",
+"mfr": "TI",
+"desc": "Current/power monitor",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLV9062",
+"family": "TLV9062",
+"mfr": "TI",
+"desc": "Dual 10 MHz op-amp",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLV2372",
+"family": "TLV2372",
+"mfr": "TI",
+"desc": "Dual RRIO op-amp",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM2904",
+"family": "LM2904",
+"mfr": "TI",
+"desc": "Dual op-amp",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.1294,
+"q10k": 0.11,
+"q100k": 0.0935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LM358",
+"family": "LM358",
+"mfr": "TI",
+"desc": "Dual op-amp",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.0824,
+"q10k": 0.07,
+"q100k": 0.0595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLV3202",
+"family": "TLV3202",
+"mfr": "TI",
+"desc": "Dual comparator",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.4706,
+"q10k": 0.4,
+"q100k": 0.34
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "OPA2365",
+"family": "OPA2365",
+"mfr": "TI",
+"desc": "Dual 50 MHz op-amp",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ADS1115",
+"family": "ADS1115",
+"mfr": "TI",
+"desc": "16-bit ADC, I2C",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 2.5882,
+"q10k": 2.2,
+"q100k": 1.87
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ADS7142",
+"family": "ADS7142",
+"mfr": "TI",
+"desc": "12-bit ADC",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 1.1176,
+"q10k": 0.95,
+"q100k": 0.8075
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TMP102",
+"family": "TMP102",
+"mfr": "TI",
+"desc": "Temp sensor, I2C",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TMP117",
+"family": "TMP117",
+"mfr": "TI",
+"desc": "High-accuracy temp sensor",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LMT87",
+"family": "LMT87",
+"mfr": "TI",
+"desc": "Analog temp sensor",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PCA9617",
+"family": "PCA9617",
+"mfr": "NXP",
+"desc": "I2C level translator",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PCA9517",
+"family": "PCA9517",
+"mfr": "NXP",
+"desc": "I2C repeater",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TXS0108E",
+"family": "TXS0108E",
+"mfr": "TI",
+"desc": "8-bit level shifter",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SN74LVC1G",
+"family": "SN74LVC1G",
+"mfr": "TI",
+"desc": "Single-gate logic",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.0647,
+"q10k": 0.055,
+"q100k": 0.0467
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "74HC595",
+"family": "74HC595",
+"mfr": "TI",
+"desc": "Shift register",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.1647,
+"q10k": 0.14,
+"q100k": 0.119
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SN65HVD230",
+"family": "SN65HVD230",
+"mfr": "TI",
+"desc": "CAN transceiver 3.3 V",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX3485",
+"family": "MAX3485",
+"mfr": "ADI",
+"desc": "RS-485 transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "THVD1450",
+"family": "THVD1450",
+"mfr": "TI",
+"desc": "RS-485 transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.7647,
+"q10k": 0.65,
+"q100k": 0.5525
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SN65HVD75",
+"family": "SN65HVD75",
+"mfr": "TI",
+"desc": "RS-485 transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ISO1042",
+"family": "ISO1042",
+"mfr": "TI",
+"desc": "Isolated CAN transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ISO7741",
+"family": "ISO7741",
+"mfr": "TI",
+"desc": "Quad digital isolator",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ADUM1201",
+"family": "ADUM1201",
+"mfr": "ADI",
+"desc": "Dual digital isolator",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MAX3232",
+"family": "MAX3232",
+"mfr": "ADI",
+"desc": "RS-232 transceiver",
+"category": "ic_soic",
+"pkg": "SOIC/TSSOP",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "W25Q64JW",
+"family": "W25Q64JW",
+"mfr": "Winbond",
+"desc": "64 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.0588,
+"q10k": 0.9,
+"q100k": 0.765
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "W25Q128JW",
+"family": "W25Q128JW",
+"mfr": "Winbond",
+"desc": "128 Mbit SPI NOR, auto",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.6471,
+"q10k": 1.4,
+"q100k": 1.19
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "W25Q256JW",
+"family": "W25Q256JW",
+"mfr": "Winbond",
+"desc": "256 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.8235,
+"q10k": 2.4,
+"q100k": 2.04
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "W25N01",
+"family": "W25N01",
+"mfr": "Winbond",
+"desc": "1 Gbit SPI NAND",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MX25L12835",
+"family": "MX25L12835",
+"mfr": "Macronix",
+"desc": "128 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MX25U51245",
+"family": "MX25U51245",
+"mfr": "Macronix",
+"desc": "512 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IS25LP128",
+"family": "IS25LP128",
+"mfr": "ISSI",
+"desc": "128 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S25FL128S",
+"family": "S25FL128S",
+"mfr": "Infineon",
+"desc": "128 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.1176,
+"q10k": 1.8,
+"q100k": 1.53
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S25FL256S",
+"family": "S25FL256S",
+"mfr": "Infineon",
+"desc": "256 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.5882,
+"q10k": 2.2,
+"q100k": 1.87
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S25FL512S",
+"family": "S25FL512S",
+"mfr": "Infineon",
+"desc": "512 Mbit SPI NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 4.9412,
+"q10k": 4.2,
+"q100k": 3.57
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "S25HS512T",
+"family": "S25HS512T",
+"mfr": "Infineon",
+"desc": "512 Mbit Semper NOR",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 6.1176,
+"q10k": 5.2,
+"q100k": 4.42
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MT25QL128",
+"family": "MT25QL128",
+"mfr": "Micron",
+"desc": "128 Mbit SPI NOR",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.5294,
+"q10k": 3.0,
+"q100k": 2.55
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MT25QL512",
+"family": "MT25QL512",
+"mfr": "Micron",
+"desc": "512 Mbit SPI NOR",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 11.7647,
+"q10k": 10,
+"q100k": 8.5
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IS42S16160",
+"family": "IS42S16160",
+"mfr": "ISSI",
+"desc": "256 Mbit SDRAM",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.6471,
+"q10k": 1.4,
+"q100k": 1.19
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IS42S16320",
+"family": "IS42S16320",
+"mfr": "ISSI",
+"desc": "512 Mbit SDRAM",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IS43TR16256",
+"family": "IS43TR16256",
+"mfr": "ISSI",
+"desc": "4 Gbit DDR3",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 4.4706,
+"q10k": 3.8,
+"q100k": 3.23
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MT41K256M16",
+"family": "MT41K256M16",
+"mfr": "Micron",
+"desc": "4 Gbit DDR3L",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.5294,
+"q10k": 3.0,
+"q100k": 2.55
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MT53E",
+"family": "MT53E",
+"mfr": "Micron",
+"desc": "LPDDR4 8 Gbit",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 8.8235,
+"q10k": 7.5,
+"q100k": 6.375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "K4B4G1646",
+"family": "K4B4G1646",
+"mfr": "Samsung",
+"desc": "4 Gbit DDR3",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 4.1176,
+"q10k": 3.5,
+"q100k": 2.975
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "THGBMNG5",
+"family": "THGBMNG5",
+"mfr": "Kioxia",
+"desc": "4 GB eMMC",
+"category": "ic_bga",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.8824,
+"q10k": 3.3,
+"q100k": 2.805
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MB85RS",
+"family": "MB85RS",
+"mfr": "Fujitsu",
+"desc": "SPI FRAM",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "24LC256",
+"family": "24LC256",
+"mfr": "Microchip",
+"desc": "256 Kbit I2C EEPROM",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 0.2588,
+"q10k": 0.22,
+"q100k": 0.187
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AT24C02",
+"family": "AT24C02",
+"mfr": "Microchip",
+"desc": "2 Kbit I2C EEPROM",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 0.0824,
+"q10k": 0.07,
+"q100k": 0.0595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "CAT24C",
+"family": "CAT24C",
+"mfr": "onsemi",
+"desc": "I2C EEPROM",
+"category": "ic_soic",
+"pkg": "SOIC/BGA",
+"aecq": true,
+"gbp": {
+"q1k": 0.1059,
+"q10k": 0.09,
+"q100k": 0.0765
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE4997",
+"family": "TLE4997",
+"mfr": "Infineon",
+"desc": "Linear Hall sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE5012B",
+"family": "TLE5012B",
+"mfr": "Infineon",
+"desc": "GMR angle sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TLE4998",
+"family": "TLE4998",
+"mfr": "Infineon",
+"desc": "Programmable Hall",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLX90393",
+"family": "MLX90393",
+"mfr": "Melexis",
+"desc": "3D magnetometer",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLX90316",
+"family": "MLX90316",
+"mfr": "Melexis",
+"desc": "Rotary position sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.2941,
+"q10k": 2.8,
+"q100k": 2.38
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLX90372",
+"family": "MLX90372",
+"mfr": "Melexis",
+"desc": "Triaxis position sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.7059,
+"q10k": 2.3,
+"q100k": 1.955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AS5048",
+"family": "AS5048",
+"mfr": "ams",
+"desc": "Magnetic rotary encoder",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ADXL355",
+"family": "ADXL355",
+"mfr": "ADI",
+"desc": "Low-noise accelerometer",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 12.9412,
+"q10k": 11,
+"q100k": 9.35
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ASM330LHH",
+"family": "ASM330LHH",
+"mfr": "ST",
+"desc": "Automotive 6-axis IMU",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 4.9412,
+"q10k": 4.2,
+"q100k": 3.57
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ISM330",
+"family": "ISM330",
+"mfr": "ST",
+"desc": "Industrial 6-axis IMU",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LSM6DSO",
+"family": "LSM6DSO",
+"mfr": "ST",
+"desc": "6-axis IMU",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 2.2353,
+"q10k": 1.9,
+"q100k": 1.615
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BMI088",
+"family": "BMI088",
+"mfr": "Bosch",
+"desc": "6-axis IMU",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 5.2941,
+"q10k": 4.5,
+"q100k": 3.825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SCL3300",
+"family": "SCL3300",
+"mfr": "Murata",
+"desc": "Inclinometer",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 25.8824,
+"q10k": 22,
+"q100k": 18.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MPXV5010",
+"family": "MPXV5010",
+"mfr": "NXP",
+"desc": "Pressure sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 6.4706,
+"q10k": 5.5,
+"q100k": 4.675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLX90614",
+"family": "MLX90614",
+"mfr": "Melexis",
+"desc": "IR thermometer",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 6.4706,
+"q10k": 5.5,
+"q100k": 4.675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TMP451",
+"family": "TMP451",
+"mfr": "TI",
+"desc": "Remote temp sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 0.7647,
+"q10k": 0.65,
+"q100k": 0.5525
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SI7021",
+"family": "SI7021",
+"mfr": "Silicon Labs",
+"desc": "Humidity sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.4118,
+"q10k": 1.2,
+"q100k": 1.02
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BMP390",
+"family": "BMP390",
+"mfr": "Bosch",
+"desc": "Barometric pressure",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.6471,
+"q10k": 1.4,
+"q100k": 1.19
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "VL53L1",
+"family": "VL53L1",
+"mfr": "ST",
+"desc": "ToF ranging sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TSL2591",
+"family": "TSL2591",
+"mfr": "ams",
+"desc": "Light sensor",
+"category": "ic_qfn",
+"pkg": "QFN/LGA",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NX3225SA",
+"family": "NX3225SA",
+"mfr": "NDK",
+"desc": "Crystal 3.2×2.5",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NX5032GA",
+"family": "NX5032GA",
+"mfr": "NDK",
+"desc": "Crystal 5×3.2",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ECS-250",
+"family": "ECS-250",
+"mfr": "ECS",
+"desc": "25 MHz crystal AEC-Q200",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ECS-400",
+"family": "ECS-400",
+"mfr": "ECS",
+"desc": "40 MHz crystal AEC-Q200",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "7V-25.000",
+"family": "7V-25.000",
+"mfr": "TXC",
+"desc": "25 MHz crystal",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.2118,
+"q10k": 0.18,
+"q100k": 0.153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "CX3225",
+"family": "CX3225",
+"mfr": "Kyocera",
+"desc": "Crystal 3.2×2.5",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ABM8",
+"family": "ABM8",
+"mfr": "Abracon",
+"desc": "Crystal 3.2×2.5",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.2588,
+"q10k": 0.22,
+"q100k": 0.187
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SIT1602",
+"family": "SIT1602",
+"mfr": "SiTime",
+"desc": "MEMS oscillator",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.8235,
+"q10k": 0.7,
+"q100k": 0.595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SIT8008",
+"family": "SIT8008",
+"mfr": "SiTime",
+"desc": "MEMS oscillator",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SIT2024",
+"family": "SIT2024",
+"mfr": "SiTime",
+"desc": "Automotive MEMS oscillator",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SG-8018",
+"family": "SG-8018",
+"mfr": "Epson",
+"desc": "Programmable oscillator",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 1.7647,
+"q10k": 1.5,
+"q100k": 1.275
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TG-5032",
+"family": "TG-5032",
+"mfr": "Epson",
+"desc": "TCXO",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FA-238",
+"family": "FA-238",
+"mfr": "Epson",
+"desc": "Crystal 3.2×2.5",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ASVMB",
+"family": "ASVMB",
+"mfr": "Abracon",
+"desc": "MEMS oscillator",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ABS07",
+"family": "ABS07",
+"mfr": "Abracon",
+"desc": "32.768 kHz crystal",
+"category": "crystal_osc",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.1647,
+"q10k": 0.14,
+"q100k": 0.119
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SMBJ24A",
+"family": "SMBJ24A",
+"mfr": "Littelfuse",
+"desc": "TVS 600 W 24 V",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.1176,
+"q10k": 0.1,
+"q100k": 0.085
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SMCJ33A",
+"family": "SMCJ33A",
+"mfr": "Littelfuse",
+"desc": "TVS 1500 W 33 V",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.2,
+"q10k": 0.17,
+"q100k": 0.1445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SM712",
+"family": "SM712",
+"mfr": "Littelfuse",
+"desc": "RS-485 TVS array",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.2353,
+"q10k": 0.2,
+"q100k": 0.17
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PESD2CAN",
+"family": "PESD2CAN",
+"mfr": "Nexperia",
+"desc": "CAN ESD, dual",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.1294,
+"q10k": 0.11,
+"q100k": 0.0935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PESD1LIN",
+"family": "PESD1LIN",
+"mfr": "Nexperia",
+"desc": "LIN ESD",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0824,
+"q10k": 0.07,
+"q100k": 0.0595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PRTR5V0U2X",
+"family": "PRTR5V0U2X",
+"mfr": "Nexperia",
+"desc": "USB ESD protection",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.2,
+"q10k": 0.17,
+"q100k": 0.1445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PRTR5V0U4X",
+"family": "PRTR5V0U4X",
+"mfr": "Nexperia",
+"desc": "4-ch ESD protection",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.2706,
+"q10k": 0.23,
+"q100k": 0.1955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPD4E05U06",
+"family": "TPD4E05U06",
+"mfr": "TI",
+"desc": "4-ch ESD",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.1647,
+"q10k": 0.14,
+"q100k": 0.119
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TPD2E001",
+"family": "TPD2E001",
+"mfr": "TI",
+"desc": "2-ch ESD",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.1059,
+"q10k": 0.09,
+"q100k": 0.0765
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ESD9B5",
+"family": "ESD9B5",
+"mfr": "onsemi",
+"desc": "ESD diode 0402",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0353,
+"q10k": 0.03,
+"q100k": 0.0255
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BAS16",
+"family": "BAS16",
+"mfr": "Nexperia",
+"desc": "Switching diode SOT-23",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0165,
+"q10k": 0.014,
+"q100k": 0.0119
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BAT54S",
+"family": "BAT54S",
+"mfr": "Nexperia",
+"desc": "Schottky dual SOT-23",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "1N4148WS",
+"family": "1N4148WS",
+"mfr": "various",
+"desc": "Switching diode SOD-323",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SS34",
+"family": "SS34",
+"mfr": "various",
+"desc": "Schottky 3 A SMA",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0529,
+"q10k": 0.045,
+"q100k": 0.0382
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SS54",
+"family": "SS54",
+"mfr": "various",
+"desc": "Schottky 5 A SMC",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0765,
+"q10k": 0.065,
+"q100k": 0.0553
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PMEG4010",
+"family": "PMEG4010",
+"mfr": "Nexperia",
+"desc": "Schottky 1 A SOD-123",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0647,
+"q10k": 0.055,
+"q100k": 0.0467
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PMEG6020",
+"family": "PMEG6020",
+"mfr": "Nexperia",
+"desc": "Schottky 2 A SOD-123",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0882,
+"q10k": 0.075,
+"q100k": 0.0638
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MF-MSMF",
+"family": "MF-MSMF",
+"mfr": "Bourns",
+"desc": "Resettable fuse",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0765,
+"q10k": 0.065,
+"q100k": 0.0553
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "0603 fuse",
+"family": "0603 fuse",
+"mfr": "Littelfuse",
+"desc": "Chip fuse 0603",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0412,
+"q10k": 0.035,
+"q100k": 0.0298
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "1206 fuse",
+"family": "1206 fuse",
+"mfr": "Littelfuse",
+"desc": "Chip fuse 1206",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0647,
+"q10k": 0.055,
+"q100k": 0.0467
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NTC 10k 0402",
+"family": "NTC 10k 0402",
+"mfr": "Murata",
+"desc": "NTC thermistor",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0412,
+"q10k": 0.035,
+"q100k": 0.0298
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLV 0603",
+"family": "MLV 0603",
+"mfr": "AVX",
+"desc": "Multilayer varistor",
+"category": "fuse_tvs",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 0.0824,
+"q10k": 0.07,
+"q100k": 0.0595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BSS138",
+"family": "BSS138",
+"mfr": "various",
+"desc": "N-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0259,
+"q10k": 0.022,
+"q100k": 0.0187
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BSS123",
+"family": "BSS123",
+"mfr": "various",
+"desc": "N-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0259,
+"q10k": 0.022,
+"q100k": 0.0187
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "2N7002",
+"family": "2N7002",
+"mfr": "various",
+"desc": "N-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BC847",
+"family": "BC847",
+"mfr": "various",
+"desc": "NPN SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BC857",
+"family": "BC857",
+"mfr": "various",
+"desc": "PNP SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MMBT3904",
+"family": "MMBT3904",
+"mfr": "various",
+"desc": "NPN SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MMBT3906",
+"family": "MMBT3906",
+"mfr": "various",
+"desc": "PNP SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "PBSS4350",
+"family": "PBSS4350",
+"mfr": "various",
+"desc": "NPN 3 A SOT-89 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0824,
+"q10k": 0.07,
+"q100k": 0.0595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AO3400",
+"family": "AO3400",
+"mfr": "various",
+"desc": "N-MOSFET 5.7 A SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0412,
+"q10k": 0.035,
+"q100k": 0.0298
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AO3401",
+"family": "AO3401",
+"mfr": "various",
+"desc": "P-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0412,
+"q10k": 0.035,
+"q100k": 0.0298
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SI2301",
+"family": "SI2301",
+"mfr": "various",
+"desc": "P-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0529,
+"q10k": 0.045,
+"q100k": 0.0382
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IRLML6344",
+"family": "IRLML6344",
+"mfr": "various",
+"desc": "N-MOSFET 5 A SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0941,
+"q10k": 0.08,
+"q100k": 0.068
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IRLML2502",
+"family": "IRLML2502",
+"mfr": "various",
+"desc": "N-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0941,
+"q10k": 0.08,
+"q100k": 0.068
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DMG2305",
+"family": "DMG2305",
+"mfr": "various",
+"desc": "P-MOSFET SOT-23 AEC-Q101",
+"category": "fuse_tvs",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.0529,
+"q10k": 0.045,
+"q100k": 0.0382
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IPD90N04",
+"family": "IPD90N04",
+"mfr": "various",
+"desc": "N-MOSFET 40 V DPAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IRF7416",
+"family": "IRF7416",
+"mfr": "various",
+"desc": "P-MOSFET SOIC-8 AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AUIRF7739",
+"family": "AUIRF7739",
+"mfr": "various",
+"desc": "N-MOSFET 40 V DirectFET AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 1.1765,
+"q10k": 1.0,
+"q100k": 0.85
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IPB100N06",
+"family": "IPB100N06",
+"mfr": "various",
+"desc": "N-MOSFET 60 V D2PAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STD60N3",
+"family": "STD60N3",
+"mfr": "various",
+"desc": "N-MOSFET 30 V DPAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BUK9Y",
+"family": "BUK9Y",
+"mfr": "various",
+"desc": "N-MOSFET LFPAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "NVMFS5C",
+"family": "NVMFS5C",
+"mfr": "various",
+"desc": "N-MOSFET 60 V AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.7647,
+"q10k": 0.65,
+"q100k": 0.5525
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IAUC100N",
+"family": "IAUC100N",
+"mfr": "various",
+"desc": "N-MOSFET 100 A AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SQJ",
+"family": "SQJ",
+"mfr": "various",
+"desc": "N-MOSFET PowerPAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IRFR3607",
+"family": "IRFR3607",
+"mfr": "various",
+"desc": "N-MOSFET 75 V DPAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 0.5294,
+"q10k": 0.45,
+"q100k": 0.3825
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IPD053N08",
+"family": "IPD053N08",
+"mfr": "various",
+"desc": "N-MOSFET 80 V DPAK AEC-Q101",
+"category": "ic_soic",
+"pkg": "SOT-23/DPAK",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RES 0402 AEC",
+"family": "RES 0402 AEC",
+"mfr": "various",
+"desc": "Thick-film resistor 0402 AEC-Q200",
+"category": "passive_0402",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0041,
+"q10k": 0.0035,
+"q100k": 0.003
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RES 0603 AEC",
+"family": "RES 0603 AEC",
+"mfr": "various",
+"desc": "Thick-film resistor 0603 AEC-Q200",
+"category": "passive_0603",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0053,
+"q10k": 0.0045,
+"q100k": 0.0038
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RES 0805 AEC",
+"family": "RES 0805 AEC",
+"mfr": "various",
+"desc": "Thick-film resistor 0805 AEC-Q200",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0082,
+"q10k": 0.007,
+"q100k": 0.0059
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RES 1206 AEC",
+"family": "RES 1206 AEC",
+"mfr": "various",
+"desc": "Thick-film resistor 1206 AEC-Q200",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RES 2512",
+"family": "RES 2512",
+"mfr": "various",
+"desc": "Power resistor 2512",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0824,
+"q10k": 0.07,
+"q100k": 0.0595
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SHUNT 1206 1mR",
+"family": "SHUNT 1206 1mR",
+"mfr": "various",
+"desc": "Current-sense resistor 1206",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.1,
+"q10k": 0.085,
+"q100k": 0.0723
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SHUNT 2512",
+"family": "SHUNT 2512",
+"mfr": "various",
+"desc": "Current-sense resistor 2512",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2,
+"q10k": 0.17,
+"q100k": 0.1445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RES ARRAY 4x",
+"family": "RES ARRAY 4x",
+"mfr": "various",
+"desc": "Resistor array 4×0603",
+"category": "passive_0603",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0329,
+"q10k": 0.028,
+"q100k": 0.0238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 0402 100nF X7R AEC",
+"family": "MLCC 0402 100nF X7R AEC",
+"mfr": "various",
+"desc": "MLCC 0402 100 nF 50 V X7R AEC-Q200",
+"category": "passive_0402",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0088,
+"q10k": 0.0075,
+"q100k": 0.0064
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 0603 1uF X7R AEC",
+"family": "MLCC 0603 1uF X7R AEC",
+"mfr": "various",
+"desc": "MLCC 0603 1 µF 25 V X7R",
+"category": "passive_0603",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 0805 10uF X7R AEC",
+"family": "MLCC 0805 10uF X7R AEC",
+"mfr": "various",
+"desc": "MLCC 0805 10 µF 16 V X7R",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0529,
+"q10k": 0.045,
+"q100k": 0.0382
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 1206 10uF X7R AEC",
+"family": "MLCC 1206 10uF X7R AEC",
+"mfr": "various",
+"desc": "MLCC 1206 10 µF 50 V X7R",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.1,
+"q10k": 0.085,
+"q100k": 0.0723
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 1210 22uF",
+"family": "MLCC 1210 22uF",
+"mfr": "various",
+"desc": "MLCC 1210 22 µF 25 V",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2,
+"q10k": 0.17,
+"q100k": 0.1445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 1210 47uF",
+"family": "MLCC 1210 47uF",
+"mfr": "various",
+"desc": "MLCC 1210 47 µF 16 V",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 0402 C0G",
+"family": "MLCC 0402 C0G",
+"mfr": "various",
+"desc": "MLCC 0402 C0G",
+"category": "passive_0402",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 0603 C0G",
+"family": "MLCC 0603 C0G",
+"mfr": "various",
+"desc": "MLCC 0603 C0G",
+"category": "passive_0603",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 0805 1kV",
+"family": "MLCC 0805 1kV",
+"mfr": "various",
+"desc": "MLCC 0805 1 kV",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.1294,
+"q10k": 0.11,
+"q100k": 0.0935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLCC 2220",
+"family": "MLCC 2220",
+"mfr": "various",
+"desc": "MLCC 2220 high-voltage",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TANT 1210 10uF",
+"family": "TANT 1210 10uF",
+"mfr": "various",
+"desc": "Tantalum 1210 10 µF",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TANT 2917 100uF",
+"family": "TANT 2917 100uF",
+"mfr": "various",
+"desc": "Tantalum 2917 100 µF",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "POLYMER 7343 100uF",
+"family": "POLYMER 7343 100uF",
+"mfr": "various",
+"desc": "Polymer capacitor 7343",
+"category": "passive_1206",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ELEC 100uF 50V",
+"family": "ELEC 100uF 50V",
+"mfr": "various",
+"desc": "Aluminium electrolytic 100 µF 50 V 105 °C",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2353,
+"q10k": 0.2,
+"q100k": 0.17
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ELEC 100uF 100V",
+"family": "ELEC 100uF 100V",
+"mfr": "various",
+"desc": "Aluminium electrolytic 100 µF 100 V",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ELEC 220uF 35V",
+"family": "ELEC 220uF 35V",
+"mfr": "various",
+"desc": "Aluminium electrolytic 220 µF 35 V",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2706,
+"q10k": 0.23,
+"q100k": 0.1955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ELEC 470uF 35V",
+"family": "ELEC 470uF 35V",
+"mfr": "various",
+"desc": "Aluminium electrolytic 470 µF 35 V",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.4941,
+"q10k": 0.42,
+"q100k": 0.357
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ELEC 1000uF 25V",
+"family": "ELEC 1000uF 25V",
+"mfr": "various",
+"desc": "Aluminium electrolytic 1000 µF 25 V",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.5647,
+"q10k": 0.48,
+"q100k": 0.408
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "ELEC SMD 47uF 50V",
+"family": "ELEC SMD 47uF 50V",
+"mfr": "various",
+"desc": "SMD electrolytic 47 µF 50 V",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2235,
+"q10k": 0.19,
+"q100k": 0.1615
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "HYBRID POLYMER 33uF",
+"family": "HYBRID POLYMER 33uF",
+"mfr": "various",
+"desc": "Hybrid polymer 33 µF 35 V",
+"category": "through_hole",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IND 0402 RF",
+"family": "IND 0402 RF",
+"mfr": "various",
+"desc": "RF inductor 0402",
+"category": "passive_0402",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0106,
+"q10k": 0.009,
+"q100k": 0.0076
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IND 0603",
+"family": "IND 0603",
+"mfr": "various",
+"desc": "Chip inductor 0603",
+"category": "passive_0603",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IND 0805",
+"family": "IND 0805",
+"mfr": "various",
+"desc": "Chip inductor 0805",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0329,
+"q10k": 0.028,
+"q100k": 0.0238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FB 0402",
+"family": "FB 0402",
+"mfr": "various",
+"desc": "Ferrite bead 0402",
+"category": "passive_0402",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0065,
+"q10k": 0.0055,
+"q100k": 0.0047
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FB 0603",
+"family": "FB 0603",
+"mfr": "various",
+"desc": "Ferrite bead 0603",
+"category": "passive_0603",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0088,
+"q10k": 0.0075,
+"q100k": 0.0064
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FB 0805",
+"family": "FB 0805",
+"mfr": "various",
+"desc": "Ferrite bead 0805",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.0129,
+"q10k": 0.011,
+"q100k": 0.0093
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IND POWER 4x4",
+"family": "IND POWER 4x4",
+"mfr": "various",
+"desc": "Power inductor 4×4 mm",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2,
+"q10k": 0.17,
+"q100k": 0.1445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IND POWER 5x5",
+"family": "IND POWER 5x5",
+"mfr": "various",
+"desc": "Power inductor 5×5 mm",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.2471,
+"q10k": 0.21,
+"q100k": 0.1785
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "IND POWER 6x6",
+"family": "IND POWER 6x6",
+"mfr": "various",
+"desc": "Power inductor 6×6 mm",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.3059,
+"q10k": 0.26,
+"q100k": 0.221
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "XAL1010",
+"family": "XAL1010",
+"mfr": "various",
+"desc": "Coilcraft XAL1010 power inductor",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 1.5294,
+"q10k": 1.3,
+"q100k": 1.105
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SRN6045",
+"family": "SRN6045",
+"mfr": "various",
+"desc": "Bourns SRN6045 inductor",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.1647,
+"q10k": 0.14,
+"q100k": 0.119
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SRP1265",
+"family": "SRP1265",
+"mfr": "various",
+"desc": "Bourns SRP1265 power inductor",
+"category": "passive_0805",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "CMC SMD",
+"family": "CMC SMD",
+"mfr": "various",
+"desc": "Common-mode choke SMD",
+"category": "transformer",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 0.3765,
+"q10k": 0.32,
+"q100k": 0.272
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "CMC AUTO",
+"family": "CMC AUTO",
+"mfr": "various",
+"desc": "Automotive common-mode choke",
+"category": "transformer",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TRANSFORMER SMD",
+"family": "TRANSFORMER SMD",
+"mfr": "various",
+"desc": "SMD power transformer",
+"category": "transformer",
+"pkg": "SMD/THT",
+"aecq": true,
+"gbp": {
+"q1k": 2.2353,
+"q10k": 1.9,
+"q100k": 1.615
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AMPSEAL 14",
+"family": "AMPSEAL 14",
+"mfr": "TE",
+"desc": "AMPSEAL 14-way header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AMPSEAL 35",
+"family": "AMPSEAL 35",
+"mfr": "TE",
+"desc": "AMPSEAL 35-way header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 7.2941,
+"q10k": 6.2,
+"q100k": 5.27
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "AMPSEAL16 8",
+"family": "AMPSEAL16 8",
+"mfr": "TE",
+"desc": "AMPSEAL 16 8-way header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MX150 2x",
+"family": "MX150 2x",
+"mfr": "Molex",
+"desc": "MX150 dual-row header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MX123 48",
+"family": "MX123 48",
+"mfr": "Molex",
+"desc": "MX123 48-way header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 7.0588,
+"q10k": 6.0,
+"q100k": 5.1
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MX123 72",
+"family": "MX123 72",
+"mfr": "Molex",
+"desc": "MX123 72-way header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 10.0,
+"q10k": 8.5,
+"q100k": 7.225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MLK 1.2",
+"family": "MLK 1.2",
+"mfr": "Kostal",
+"desc": "MLK 1.2 2-way header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MQS",
+"family": "MQS",
+"mfr": "TE",
+"desc": "MQS header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FAKRA Z",
+"family": "FAKRA Z",
+"mfr": "Rosenberger",
+"desc": "FAKRA Z jack PCB",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 2.0,
+"q10k": 1.7,
+"q100k": 1.445
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FAKRA SMB",
+"family": "FAKRA SMB",
+"mfr": "TE",
+"desc": "FAKRA SMB jack",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 2.3529,
+"q10k": 2.0,
+"q100k": 1.7
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "HSD",
+"family": "HSD",
+"mfr": "Rosenberger",
+"desc": "HSD 4+2 connector",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 4.9412,
+"q10k": 4.2,
+"q100k": 3.57
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "H-MTD",
+"family": "H-MTD",
+"mfr": "Rosenberger",
+"desc": "H-MTD connector",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 6.4706,
+"q10k": 5.5,
+"q100k": 4.675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MINI-FIT",
+"family": "MINI-FIT",
+"mfr": "Molex",
+"desc": "Mini-Fit Jr header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "MICRO-FIT 2x4",
+"family": "MICRO-FIT 2x4",
+"mfr": "Molex",
+"desc": "Micro-Fit 3.0 2×4 header",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "JST GH",
+"family": "JST GH",
+"mfr": "JST",
+"desc": "GH 1.25 mm header",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.1294,
+"q10k": 0.11,
+"q100k": 0.0935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FPC 0.5 30P",
+"family": "FPC 0.5 30P",
+"mfr": "Hirose",
+"desc": "FPC connector 0.5 mm 30-way",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.2588,
+"q10k": 0.22,
+"q100k": 0.187
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "USB-C",
+"family": "USB-C",
+"mfr": "various",
+"desc": "USB-C receptacle",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "M12",
+"family": "M12",
+"mfr": "Phoenix",
+"desc": "M12 connector",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 3.7647,
+"q10k": 3.2,
+"q100k": 2.72
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DE9",
+"family": "DE9",
+"mfr": "various",
+"desc": "D-sub 9 PCB",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.8824,
+"q10k": 0.75,
+"q100k": 0.6375
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "HDR 2.54 1x10",
+"family": "HDR 2.54 1x10",
+"mfr": "various",
+"desc": "Pin header 2.54 mm",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0529,
+"q10k": 0.045,
+"q100k": 0.0382
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "HDR 2x5",
+"family": "HDR 2x5",
+"mfr": "various",
+"desc": "Box header 2×5",
+"category": "through_hole",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0882,
+"q10k": 0.075,
+"q100k": 0.0638
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "DF17",
+"family": "DF17",
+"mfr": "Hirose",
+"desc": "DF17 board-to-board",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TEST POINT",
+"family": "TEST POINT",
+"mfr": "Keystone",
+"desc": "SMD test point",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0118,
+"q10k": 0.01,
+"q100k": 0.0085
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SMA",
+"family": "SMA",
+"mfr": "various",
+"desc": "SMA edge jack",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 1.0,
+"q10k": 0.85,
+"q100k": 0.7225
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "U.FL",
+"family": "U.FL",
+"mfr": "Hirose",
+"desc": "U.FL receptacle",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.1118,
+"q10k": 0.095,
+"q100k": 0.0808
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "CHIP ANT 2.4G",
+"family": "CHIP ANT 2.4G",
+"mfr": "Johanson",
+"desc": "2.4 GHz chip antenna",
+"category": "connector_smt",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.1647,
+"q10k": 0.14,
+"q100k": 0.119
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RELAY AUTO 12V",
+"family": "RELAY AUTO 12V",
+"mfr": "TE",
+"desc": "Automotive PCB relay 12 V",
+"category": "relay_switch",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 1.2941,
+"q10k": 1.1,
+"q100k": 0.935
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "RELAY SIGNAL",
+"family": "RELAY SIGNAL",
+"mfr": "Omron",
+"desc": "Signal relay",
+"category": "relay_switch",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.6471,
+"q10k": 0.55,
+"q100k": 0.4675
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "TACT SWITCH",
+"family": "TACT SWITCH",
+"mfr": "various",
+"desc": "Tactile switch",
+"category": "relay_switch",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0882,
+"q10k": 0.075,
+"q100k": 0.0638
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "FUSE HOLDER",
+"family": "FUSE HOLDER",
+"mfr": "Littelfuse",
+"desc": "Blade fuse holder PCB",
+"category": "fuse_tvs",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.2706,
+"q10k": 0.23,
+"q100k": 0.1955
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LED 0603",
+"family": "LED 0603",
+"mfr": "various",
+"desc": "Indicator LED 0603",
+"category": "led",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LED SIDE",
+"family": "LED SIDE",
+"mfr": "various",
+"desc": "Side-view LED",
+"category": "led",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0329,
+"q10k": 0.028,
+"q100k": 0.0238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LED RGB",
+"family": "LED RGB",
+"mfr": "various",
+"desc": "RGB LED",
+"category": "led",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.1118,
+"q10k": 0.095,
+"q100k": 0.0808
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "LED AUTO 1W",
+"family": "LED AUTO 1W",
+"mfr": "OSRAM",
+"desc": "Automotive 1 W LED",
+"category": "led",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.3882,
+"q10k": 0.33,
+"q100k": 0.2805
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "BUZZER",
+"family": "BUZZER",
+"mfr": "various",
+"desc": "SMD buzzer",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.3294,
+"q10k": 0.28,
+"q100k": 0.238
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SHIELD CAN",
+"family": "SHIELD CAN",
+"mfr": "various",
+"desc": "RF shield can",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.3882,
+"q10k": 0.33,
+"q100k": 0.2805
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "HEATSINK",
+"family": "HEATSINK",
+"mfr": "various",
+"desc": "PCB heatsink",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.4471,
+"q10k": 0.38,
+"q100k": 0.323
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "THERMAL PAD",
+"family": "THERMAL PAD",
+"mfr": "various",
+"desc": "Thermal pad",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.1118,
+"q10k": 0.095,
+"q100k": 0.0808
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "SCREW M3",
+"family": "SCREW M3",
+"mfr": "various",
+"desc": "M3 screw",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0212,
+"q10k": 0.018,
+"q100k": 0.0153
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+},
+{
+"mpn": "STANDOFF",
+"family": "STANDOFF",
+"mfr": "various",
+"desc": "PCB standoff",
+"category": "mechanical",
+"pkg": "PCB",
+"aecq": true,
+"gbp": {
+"q1k": 0.0529,
+"q10k": 0.045,
+"q100k": 0.0382
+},
+"confidence": "estimate",
+"source": "engineering estimate, 2025/26 distributor levels",
+"asOf": "2026-10-01"
+}
+]
+}

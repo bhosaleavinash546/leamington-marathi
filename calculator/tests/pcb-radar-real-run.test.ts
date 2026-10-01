@@ -65,7 +65,7 @@ describe('prices held inside the tool\'s own ranges', () => {
   });
   it('an OCR-confirmed S32R294 above the range is still cut to its ceiling', () => {
     const { bom } = capUnconfirmedPrices([{ partNumber: 'FS32R294KCMJD', componentType: 'ic_bga', ocrExtracted: true, lineConf: 1, qty: 1, unitPriceGBP: 60 }], at250k);
-    expect(bom[0].unitPriceGBP).toBeCloseTo(48 * 0.88, 2);
+    expect(bom[0].unitPriceGBP).toBeCloseTo(34 * 0.88, 2);   // range ceiling £34 (Arrow/Mouser/Avnet @1k, 2026-10-01)
   });
 });
 

@@ -3,6 +3,7 @@ import {
   offlineCataloguePrices, groundAndSplit, groundingCandidates, type BomLine,
 } from '../server/utils/pcb-bom-grounding.js';
 import { cataloguePrice, classMedianCap, normaliseMPN } from '../server/utils/pcb-price-catalogue.js';
+import { cataloguePriceAt } from '../server/utils/pcb-price-catalogue.js';
 
 // A representative slice of the LIVE ECU extraction (China, 10k) — AI prices as
 // they came out of the model, incl. the two dominant over-priced guesses (U1, J1).
@@ -22,9 +23,9 @@ const aiTotal = () => bom().reduce((s, l) => s + Number(l.lineTotalGBP), 0);
 describe('offline catalogue matching', () => {
   it('normalises manufacturer-prefixed MPNs to the orderable part', () => {
     expect(normaliseMPN('NXP TJA1145')).toBe('NXPTJA1145');
-    expect(cataloguePrice('NXP TJA1145')).toBe(2.80);      // token match
-    expect(cataloguePrice('TJA1044GT/3')).toBe(0.95);       // family/prefix match
-    expect(cataloguePrice('S25FL256S')).toBe(2.20);
+    expect(cataloguePrice('NXP TJA1145')).toBe(cataloguePrice('TJA1145'));      // token match
+    expect(cataloguePrice('TJA1044GT/3')).toBe(cataloguePrice('TJA1044GT'));     // family/prefix match
+    expect(cataloguePrice('S25FL256S')).toBeCloseTo(2.20, 1);
   });
   it('refuses to price a guessed / family label (stays flagged)', () => {
     expect(cataloguePrice('AT6AS70 (est. AURIX-class)')).toBeNull();
@@ -50,7 +51,7 @@ describe('groundAndSplit — end-to-end on the ECU slice', () => {
     expect(out.matched).toBeGreaterThanOrEqual(3);          // TJA1145, TLE9263, DRV8305, TJA1044…
     const u2 = out.bom.find(l => l.refDes === 'U2')!;
     expect(u2.priceSource).toBe('catalogue');
-    expect(u2.unitPriceGBP).toBe(2.80);
+    expect(u2.unitPriceGBP).toBeCloseTo(cataloguePriceAt('TJA1145', 10000)!, 4);   // the catalogue's 10k price, whatever it is today
   });
   it('caps the two unconfirmed high-value guesses', () => {
     expect(out.capped).toBe(2);                             // U1 + J1

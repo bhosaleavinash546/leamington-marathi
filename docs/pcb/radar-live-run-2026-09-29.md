@@ -222,3 +222,18 @@ Result, China, 250k/yr, photos only, automotive grade ASIL-C: **£72.33**
 (= £68.21 commercial + £1.24 fab grade + £2.74 assembly grade + £0.15 duty on them).
 Proven end to end in a browser (`npm run test:e2e:pcb`): screen headline = China row
 = server total = PDF = Parts Library entry.
+
+## Round 6 (1 Oct) — the offline catalogue, researched
+
+422-part catalogue with a source and date per entry (`docs/pcb/component-catalogue.md`);
+38 parts read from distributor pages, among them the S32R294 itself (Arrow $29.00,
+Mouser $30.33, Avnet $27.11 at 1k). The named-part ranges were mostly too high —
+written for the shortage market — and were re-based (S32R29x £22–48 → £18–34,
+AURIX TC3xx £35–130 → £15–60, TJA104x £0.80–2.80 → £0.40–1.20 …).
+
+Radar board, China, 250k/yr, photos only, automotive grade: **£59.08**
+(was £72.33). The S32R294 now prices at £16.29 from the distributor figure at the
+100k break (was £28.16 from the top of a range); the TEF8105 and MAX20431A are NDA
+parts and stay engineering estimates, labelled as such and listed to verify.
+The priced bucket now holds real distributor numbers for the first time; the
+Winbond flash and TI CAN transceiver match the catalogue by their chip top marks.

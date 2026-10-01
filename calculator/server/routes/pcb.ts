@@ -1074,24 +1074,27 @@ through_hole: electrolytic cap (small) £0.05–0.40; electrolytic cap (large) �
 manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 
 // ── IC price hints from OCR markings ──────────────────────────────────────
-// Known automotive IC price ranges (100K volume, AEC-Q qualified)
+// Known automotive IC price ranges (100K volume, AEC-Q qualified). Ranges marked
+// with a date were checked against distributor prices on that date (see
+// docs/pcb/component-catalogue.md); the catalogue (server/data/
+// pcb-component-catalogue.json) carries the per-part figures and sources.
 // `generic` entries name a FUNCTION, not a part ("77 GHz radar transceiver MMIC"
 // with no marking read): they bound a price but never count as the part identified.
 const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string; generic?: boolean }> = [
   // ── Automotive radar MCUs (ranges as in the automotive system prompt) ─────
-  { test: m => /S32R29[0-9]|S32R27[0-9]/i.test(m), label: 'NXP S32R294/S32R274 radar MCU (ASIL-B)', price: '£22–48' },
+  { test: m => /S32R29[0-9]|S32R27[0-9]/i.test(m), label: 'NXP S32R294/S32R274 radar MCU (ASIL-B)', price: '£18–34' },   // Arrow $29, Mouser $30.33, Avnet $27.11, Newark $26.54 @1k (2026-10-01)
   { test: m => /S32R4[0-9]/i.test(m), label: 'NXP S32R45/S32R41 radar processor', price: '£45–95' },
   // ── Automotive MCUs ────────────────────────────────────────────────────────
-  { test: m => /AURIX|TC39[0-9]|TC38[0-9]|TC37[0-9]/i.test(m), label: 'Infineon AURIX TC3xx/TC4xx (ASIL-D lockstep)', price: '£35–130' },
-  { test: m => /TC2[6-9][0-9]|TC26|TC27|TC29/i.test(m), label: 'Infineon AURIX TC2xx (ASIL-D)', price: '£18–55' },
-  { test: m => /S32K3[0-9]{2}|S32K3/i.test(m), label: 'NXP S32K3xx automotive MCU (ASIL-D)', price: '£12–45' },
-  { test: m => /S32K1[0-9]{2}|S32K14|S32K11/i.test(m), label: 'NXP S32K1xx automotive MCU (ASIL-B)', price: '£4.50–15' },
+  { test: m => /AURIX|TC39[0-9]|TC38[0-9]|TC37[0-9]/i.test(m), label: 'Infineon AURIX TC3xx/TC4xx (ASIL-D lockstep)', price: '£15–60' },   // TC375 $23.84 @500 (2026-10-01)
+  { test: m => /TC2[2-9][0-9]|TC26|TC27|TC29/i.test(m), label: 'Infineon AURIX TC2xx (ASIL-D)', price: '£6–30' },   // TC234 ≈ $9.5 @1k (2026-10-01)
+  { test: m => /S32K3[0-9]{2}|S32K3/i.test(m), label: 'NXP S32K3xx automotive MCU (ASIL-D)', price: '£6–20' },   // S32K344 $14.79 @100 (2026-10-01)
+  { test: m => /S32K1[0-9]{2}|S32K14|S32K11/i.test(m), label: 'NXP S32K1xx automotive MCU (ASIL-B)', price: '£2.50–9' },   // S32K144 $5.47–6.20 @1k (2026-10-01)
   { test: m => /S32G[23]/i.test(m), label: 'NXP S32G2/G3 network SoC (ASIL-B)', price: '£40–90' },
   { test: m => /MPC5748|MPC5746|MPC574/i.test(m), label: 'NXP MPC574x automotive MCU', price: '£22–65' },
   { test: m => /SPC584|SPC582|SPC560/i.test(m), label: 'STM SPC5xxx/SPC58x automotive MCU', price: '£8–40' },
-  { test: m => /RH850|R7F70|R7F01/i.test(m), label: 'Renesas RH850 automotive MCU', price: '£18–80' },
+  { test: m => /RH850|R7F70|R7F01/i.test(m), label: 'Renesas RH850 automotive MCU', price: '£6–30' },   // F1KM-S1 $8.73, S4 $11.54 @1k (2026-10-01)
   { test: m => /V4H|R8A779|R8A779G/i.test(m), label: 'Renesas R-Car V4H ADAS SoC', price: '£80–200' },
-  { test: m => /STM32[A-Z]|STM32F|STM32H|STM32L/i.test(m), label: 'STM32 microcontroller', price: '£1.00–6' },
+  { test: m => /STM32[A-Z]|STM32F|STM32H|STM32L/i.test(m), label: 'STM32 microcontroller', price: '£1.00–10' },   // H735 $10.87 @504 (2026-10-01)
   { test: m => /SAMC2|SAMD5|SAME5|SAME7/i.test(m), label: 'Microchip SAM automotive MCU', price: '£3–12' },
   // ── ADAS & Vision SoCs ────────────────────────────────────────────────────
   { test: m => /TDA4VM|TDA4AL|TDA4VH/i.test(m), label: 'TI TDA4VM/AL ADAS SoC', price: '£85–280' },
@@ -1100,34 +1103,34 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /IMX390|IMX623|IMX728/i.test(m), label: 'Sony automotive image sensor', price: '£8–35' },
   { test: m => /OV9284|OV2775|OV9782/i.test(m), label: 'OmniVision automotive image sensor', price: '£3–18' },
   // ── CAN / LIN / Ethernet Transceivers ─────────────────────────────────────
-  { test: m => /TJA110[0-9]|TJA1102|TJA1103/i.test(m), label: 'NXP TJA110x 100BASE-T1 automotive Ethernet PHY', price: '£3–9' },
-  { test: m => /TJA104[0-9]|TJA1042|TJA1044/i.test(m), label: 'NXP TJA104x CAN/CAN-FD transceiver (automotive)', price: '£0.80–2.80' },
+  { test: m => /TJA110[0-9]|TJA1102|TJA1103/i.test(m), label: 'NXP TJA110x 100BASE-T1 automotive Ethernet PHY', price: '£1.20–4' },   // TJA1103 $1.71 @1k (2026-10-01)
+  { test: m => /TJA104[0-9]|TJA1042|TJA1044/i.test(m), label: 'NXP TJA104x CAN/CAN-FD transceiver (automotive)', price: '£0.40–1.20' },   // TJA1044GT/3Z $0.689 @1k (2026-10-01)
   { test: m => /TJA110[6-9]|TJA1107/i.test(m), label: 'NXP TJA110x automotive LIN transceiver', price: '£0.45–1.60' },
   { test: m => /SJA1105|SJA1110/i.test(m), label: 'NXP SJA110x 5-port automotive Ethernet switch', price: '£8–40' },
-  { test: m => /DP83TC812|DP83822|DP83867/i.test(m), label: 'TI DP83 automotive Ethernet PHY', price: '£2.50–8' },
+  { test: m => /DP83TC812|DP83822|DP83867/i.test(m), label: 'TI DP83 automotive Ethernet PHY', price: '£1.50–5' },   // DP83TC812 $2.59 @500 (2026-10-01)
   { test: m => /BCM8906|BCM8957|BCM89881/i.test(m), label: 'Broadcom automotive 100BASE-T1 PHY', price: '£4–15' },
   // TI prints only "1044AV" on a TCAN1044AV-Q1's top — the chip never says TCAN.
-  { test: m => /TCAN10[0-9]{2}|\bTI\b.*\b10[0-9]{2}A?V\b|^\s*10[0-9]{2}A?V\b/i.test(m), label: 'TI TCAN10xx automotive CAN-FD transceiver', price: '£0.35–1.20' },
+  { test: m => /TCAN10[0-9]{2}|\bTI\b.*\b10[0-9]{2}A?V\b|^\s*10[0-9]{2}A?V\b/i.test(m), label: 'TI TCAN10xx automotive CAN-FD transceiver', price: '£0.35–1.20' },   // TCAN1044AV $0.517 @2.5k (2026-10-01)
   { test: m => /TCAN|SN65HVD|ISO1042|ISOW/i.test(m), label: 'TI automotive CAN/isolated transceiver', price: '£0.80–4.50' },
   // ── Safety PMICs & System Basis Chips ─────────────────────────────────────
-  { test: m => /TLF35584|TLF35577/i.test(m), label: 'Infineon TLF3558x automotive safety PMIC (ASIL-D)', price: '£3.50–9' },
+  { test: m => /TLF35584|TLF35577/i.test(m), label: 'Infineon TLF3558x automotive safety PMIC (ASIL-D)', price: '£2–6' },   // $2.54–3.70 @1k (2026-10-01)
   { test: m => /FS65|FS85|FS6500/i.test(m), label: 'NXP FS65/FS85 System Basis Chip (safety SBC)', price: '£2.50–7' },
   { test: m => /UJA117[0-9]|UJA1167/i.test(m), label: 'NXP UJA117x Mini SBC', price: '£1.80–5' },
   { test: m => /BD9V100|BD9S400|ROHM/i.test(m), label: 'Rohm BD automotive PMIC', price: '£2–8' },
   { test: m => /RAA271|RAA272|ISL78/i.test(m), label: 'Renesas RAA/ISL automotive multi-rail PMIC', price: '£4–14' },
   { test: m => /TPS929|TPS928|TPS9264/i.test(m), label: 'TI TPS92x automotive LED driver', price: '£1.50–6' },
-  { test: m => /TLE926|TLE4471|TLE7|TLS/i.test(m), label: 'Infineon TLE/TLS automotive voltage reg / SBC', price: '£0.80–5' },
+  { test: m => /TLE926|TLE4471|TLE7|TLS/i.test(m), label: 'Infineon TLE/TLS automotive voltage reg / SBC', price: '£0.60–4' },   // TLE9261 $1.95 @1k (2026-10-01)
   { test: m => /NCV7717|NCV7805|NCV8704/i.test(m), label: 'ON Semi NCV automotive LDO/power IC', price: '£0.60–3.50' },
   // ── Gate Drivers, FETs, Power ──────────────────────────────────────────────
   { test: m => /UCC5320|UCC5390|UCC2153/i.test(m), label: 'TI UCC isolated automotive gate driver', price: '£1.80–5' },
   { test: m => /ISO784|ISO774|DRV840|DRV862/i.test(m), label: 'TI ISO/DRV automotive driver', price: '£2–8' },
-  { test: m => /BTS700|BTS600|BTS500/i.test(m), label: 'Infineon BTS automotive smart power switch', price: '£1.20–8' },
+  { test: m => /BTS700|BTS600|BTS500/i.test(m), label: 'Infineon BTS automotive smart power switch', price: '£0.50–3' },   // BTS7008 $0.71–1.27 @1k (2026-10-01)
   { test: m => /AUIPS|IPD|IPS200/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },
   // ── Radar & RF (Automotive) ────────────────────────────────────────────────
   { test: m => /BGT60|BGT24|BGT12/i.test(m), label: 'Infineon BGT60/24 77GHz/24GHz radar frontend', price: '£18–80' },
   // Same range as the automotive system prompt — the two used to disagree (£25–90 here vs £9–22 there).
   { test: m => /TEF810|TEF81/i.test(m), label: 'NXP TEF810x 77GHz radar transceiver', price: '£9–22' },
-  { test: m => /AWR1843|AWR1642|AWR1443/i.test(m), label: 'TI AWR 77GHz ADAS radar SoC', price: '£20–75' },
+  { test: m => /AWR1843|AWR1642|AWR1443|AWR2[29]44|AWR2243/i.test(m), label: 'TI AWR 77GHz ADAS radar SoC', price: '£14–40' },   // AWR1843 $24.91, AWR2944 $27.9–34.6 @1k (2026-10-01)
   // A 77 GHz transceiver whose marking was not read (glob-top, shield) is still a
   // TEF810x-class die: the 2026-09-29 run priced one at £4.00.
   { test: m => /77\s*(\/\s*79)?\s*GHZ[^,;]*(TRANSCEIVER|MMIC|FRONT)|RADAR (TRANSCEIVER|MMIC|FRONT[- ]?END)/i.test(m), label: '77 GHz radar transceiver MMIC (part not read; TEF810x-class)', price: '£9–22', generic: true },
@@ -1137,7 +1140,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /MT41K|MT47H|MT25Q/i.test(m), label: 'Micron automotive DDR/Flash', price: '£2.50–15' },
   { test: m => /THGBM|THGLF/i.test(m), label: 'Kioxia automotive eMMC/NAND', price: '£3–18' },
   // Winbond's top marking drops the W: "winbond 25Q32JWSIQ".
-  { test: m => /W25Q[0-9]{2,3}|WINBOND|\b25Q[0-9]{2,3}[A-Z]/i.test(m), label: 'Winbond SPI NOR flash (automotive)', price: '£0.30–1.20' },
+  { test: m => /W25Q[0-9]{2,3}|WINBOND|\b25Q[0-9]{2,3}[A-Z]/i.test(m), label: 'Winbond SPI NOR flash (automotive)', price: '£0.40–1.60' },   // W25Q32JW $1.02 @1k, W25Q128JV $1.64 @1k (2026-10-01)
   { test: m => /IS25LP|IS25WP|MX25L|MX25U|GD25Q/i.test(m), label: 'SPI NOR flash (automotive)', price: '£0.30–1.50' },
   // ── General (non-automotive, fallback by brand) ────────────────────────────
   { test: m => /NRF52|NRF5340|NRF9/i.test(m), label: 'Nordic nRF MCU/SoC', price: '£0.70–4.50' },

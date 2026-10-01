@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { cataloguePrice, classMedianCap, volumeScaleFrom10k, descriptionCap, isNotFitted } from './pcb-price-catalogue.js';
+import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted } from './pcb-price-catalogue.js';
 import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
 
 export type BomLine = Record<string, unknown>;
@@ -67,7 +67,11 @@ export function reconcileBomWithCatalogue(
         leadTimeWeeks: hit.leadTimeWeeks,
         automotiveGrade: hit.automotiveGrade,
         lineConf: Math.max(num(line.lineConf), 0.95),
-        needsVerification: false,
+        // A catalogue ESTIMATE is a price with a stated basis, not a quote: it
+        // stays in the headline (identity is confirmed) but is listed to verify
+        // when the line is worth it.
+        needsVerification: hit.provider === 'catalogue' && /engineering estimate/.test(hit.sourceNote ?? '') && hit.unitPriceGBP * qty >= 1,
+        priceNote: hit.sourceNote ?? (line.priceNote as string | undefined),
       };
     }
 
@@ -112,16 +116,16 @@ export function groundingCandidates(bom: BomLine[], cap = 20): string[] {
  */
 export function offlineCataloguePrices(partNumbers: string[], qty: number): LivePriceResult[] {
   const out: LivePriceResult[] = [];
-  const vscale = volumeScaleFrom10k(qty);   // catalogue anchored at ~10k
   for (const pn of partNumbers) {
-    const base = cataloguePrice(pn);
-    if (base == null) continue;
-    const price = round(base * vscale, 4);
+    const e = catalogueEntry(pn);
+    const price = cataloguePriceAt(pn, qty);
+    if (!e || price == null) continue;
     out.push({
-      mpn: pn, description: 'offline catalogue', manufacturer: '',
+      mpn: pn, description: e.desc, manufacturer: e.mfr,
       unitPriceGBP: price, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
-      provider: 'catalogue', automotiveGrade: true, distPartNumber: '',
+      provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn,
       rawCurrency: 'GBP', rawUnitPrice: price,
+      sourceNote: `Catalogue ${e.mpn} (${e.confidence === 'distributor' ? 'distributor price' : 'engineering estimate'}, ${e.asOf}): ${e.source}; at ${qty.toLocaleString('en-GB')} from the 1k/10k/100k breaks`,
     });
   }
   return out;

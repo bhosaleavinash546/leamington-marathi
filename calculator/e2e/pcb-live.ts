@@ -132,14 +132,14 @@ async function main(): Promise<void> {
       if (api.analysis.costEstimates.smtAssemblyCostGBP !== bd.assemblyPerBoard) fail('costEstimates.assembly ≠ country assembly');
       const sources = new Set(api.analysis.bom.map(l => l.priceSource));
       if (sources.has('ai-estimate') || sources.has(undefined)) fail(`a BOM line has no price basis: ${[...sources].join(',')}`);
-      if (!sources.has('known-range') || !sources.has('class-range') || !sources.has('not-fitted')) fail(`expected named-part, class-table and not-fitted lines, got ${[...sources].join(',')}`);
+      if (!sources.has('catalogue') || !sources.has('class-range') || !sources.has('not-fitted')) fail(`expected catalogue, class-table and not-fitted lines, got ${[...sources].join(',')}`);
       const codes = api.sanityWarnings.map(w => w.code);
       if (!codes.includes('OCR_MATCHED_BY_FUNCTION')) fail('chip markings read by OCR were not attached to the BOM');
       log(`headline £${headline} = China row = server total; ${api.analysis.bom.length} lines, ${api.analysis.assembly.smtPlacements} placements, ${bd.automotiveGrade?.asil}`);
     }
     // ── The screen says where each price came from ────────────────────────
     const badges = await results.locator('.pcb-badge').allTextContents();
-    for (const b of ['RANGE', 'TABLE', 'NF']) if (!badges.includes(b)) fail(`no ${b} price-basis badge on the BOM table`);
+    for (const b of ['CAT', 'TABLE', 'NF']) if (!badges.includes(b)) fail(`no ${b} price-basis badge on the BOM table`);
     if (!/priced/.test(text) || !/to verify/.test(text)) fail('priced / to-verify split not shown');
     if (!/chip marking/i.test(text)) fail('the OCR-matched warning is not shown');
 
