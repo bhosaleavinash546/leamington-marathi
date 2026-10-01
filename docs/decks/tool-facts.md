@@ -34,9 +34,11 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
   with the STEP, and the measured blank is used instead of the bounding box. Without
   one (1 Oct 2026), the gauge is measured between the bend faces, the metal the part
   needs (volume ÷ gauge, plus holes) and the cut length are worked out from the
-  solid, the press is sized on that cut length, and the tool flags a bounding-box
-  blank that is more than 15% away from the metal needed. The blank outline itself
-  still needs the DXF.
+  solid, the press is sized on that cut length, and the tool unfolds the part itself
+  into its flat blank: outline, holes, the smallest rectangle it nests in, and a DXF
+  to download. Exact on a bent part (checked against a hand-calculated bracket); where
+  the metal was stretch-formed or drawn the tool says so and lowers its confidence,
+  and the FastBlank DXF is still the answer for the formed process.
 - **STL files have no feature table**, so a machined STL arrives with no cycle
   time; the tool blocks the costing until the engineer types one.
 

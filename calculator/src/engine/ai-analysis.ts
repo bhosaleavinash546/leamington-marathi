@@ -200,6 +200,14 @@ export interface OCCTGeometry {
     rectangleFill: number;
     source: string;
     warnings?: string[];
+    /** 'dxf': the FASTBLANK profile the engineer supplied. 'solid': unfolded from the
+     *  STEP by the tool (server/utils/blank-unfold.ts) — exact on a bent part, a
+     *  geometric approximation on a drawn one (`developable: false`). */
+    developedFrom?: 'dxf' | 'solid';
+    developable?: boolean;
+    maxStrainPct?: number;
+    /** Hash under which the server holds this blank (and its DXF) for /reanalyze and download. */
+    blankHash?: string;
   };
   /**
    * Gear metrology, from the B-rep: teeth counted from tip-circle cylinder

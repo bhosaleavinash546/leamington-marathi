@@ -2543,10 +2543,182 @@ def serve():
         print(json.dumps({"id": jid, "result": result}), file=real_stdout, flush=True)
 
 
+def extract_skin_mesh(filepath, out_path):
+    """Mesh a sheet part and write the two skins as welded triangle meshes.
+
+    Feeds the TypeScript unfold (server/utils/blank-unfold.ts), which flattens
+    each skin to the developed blank. Everything geometric that needs the
+    kernel happens here, in pure OCP and plain Python — no numpy, which the
+    Windows package does not carry — and the arithmetic happens in TypeScript.
+
+    A skin face is one whose inward ray leaves through the opposite skin about
+    one gauge away (the research prototype's two-hit test): bend faces pass,
+    because the inner and outer bend face sit a gauge apart; the edge band
+    fails, because its opposite is a flange width away. The skin triangles
+    then split into connected components, and the two largest are the two
+    skins — the edge band separates them, so they share no vertex.
+    """
+    try:
+        from OCP.BRepMesh import BRepMesh_IncrementalMesh
+        from OCP.BRep import BRep_Tool
+        from OCP.TopExp import TopExp_Explorer
+        from OCP.TopAbs import TopAbs_FACE, TopAbs_REVERSED
+        from OCP.TopoDS import TopoDS
+        from OCP.TopLoc import TopLoc_Location
+        from OCP.GProp import GProp_GProps
+        from OCP.BRepGProp import BRepGProp
+        from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+        from OCP.gp import gp_Pnt, gp_Dir, gp_Lin
+        from OCP.Bnd import Bnd_Box
+        from OCP.BRepBndLib import BRepBndLib
+    except ImportError as e:
+        return {"status": "error", "error": f"OCP not available: {e}"}
+    try:
+        wrapped, _ = _load_shape(filepath)
+    except Exception as e:
+        return {"status": "error", "code": "unreadable", "error": f"File load error: {e}"}
+    try:
+        g = GProp_GProps(); BRepGProp.VolumeProperties_s(wrapped, g); vol = g.Mass()
+        g = GProp_GProps(); BRepGProp.SurfaceProperties_s(wrapped, g); sa = g.Mass()
+        if vol <= 0 or sa <= 0:
+            return {"status": "error", "error": "no closed solid to unfold"}
+        bulk = 2.0 * vol / sa
+        bends = _detect_bends(wrapped, bulk)
+        t_guess = bends.get("thicknessMm") or bulk
+        box = Bnd_Box(); BRepBndLib.Add_s(wrapped, box)
+        x0, y0, z0, x1, y1, z1 = box.Get()
+        diag = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2)
+        lin = max(0.15, min(1.0, diag / 600.0))
+        BRepMesh_IncrementalMesh(wrapped, lin, False, 0.3, True)
+
+        key, verts, tris, tface = {}, [], [], []
+        face_best = {}                       # fid -> (area, centroid, outward normal)
+        fid = 0
+        exp = TopExp_Explorer(wrapped, TopAbs_FACE)
+        while exp.More():
+            f = TopoDS.Face_s(exp.Current()); exp.Next()
+            loc = TopLoc_Location()
+            tri = BRep_Tool.Triangulation_s(f, loc)
+            this = fid; fid += 1
+            if tri is None:
+                continue
+            trsf = loc.Transformation()
+            ids = []
+            for i in range(1, tri.NbNodes() + 1):
+                p = tri.Node(i).Transformed(trsf)
+                k = (round(p.X(), 4), round(p.Y(), 4), round(p.Z(), 4))
+                j = key.get(k)
+                if j is None:
+                    j = len(verts); key[k] = j; verts.append((p.X(), p.Y(), p.Z()))
+                ids.append(j)
+            rev = f.Orientation() == TopAbs_REVERSED
+            for j in range(1, tri.NbTriangles() + 1):
+                a, b, c = tri.Triangle(j).Get()
+                a, b, c = ids[a - 1], ids[b - 1], ids[c - 1]
+                if a == b or b == c or c == a:
+                    continue
+                if rev:
+                    b, c = c, b
+                A, B, C = verts[a], verts[b], verts[c]
+                ux, uy, uz = B[0] - A[0], B[1] - A[1], B[2] - A[2]
+                vx, vy, vz = C[0] - A[0], C[1] - A[1], C[2] - A[2]
+                nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx
+                nl = math.sqrt(nx * nx + ny * ny + nz * nz)
+                if nl < 1e-12:
+                    continue
+                area = 0.5 * nl
+                tris.append((a, b, c)); tface.append(this)
+                best = face_best.get(this)
+                if best is None or area > best[0]:
+                    cen = ((A[0] + B[0] + C[0]) / 3, (A[1] + B[1] + C[1]) / 3, (A[2] + B[2] + C[2]) / 3)
+                    face_best[this] = (area, cen, (nx / nl, ny / nl, nz / nl))
+        if len(tris) > int(os.environ.get("CV_MAX_TRIANGLES", "5000000")):
+            return {"status": "error", "error": "mesh too large to unfold"}
+
+        # Two-hit ray test per face: start half a gauge outside the face, cast
+        # inward, and take the gap between the first two crossings.
+        isec = IntCurvesFace_ShapeIntersector(); isec.Load(wrapped, 1e-6)
+        hit = {}
+        for f_id, (_, cen, n) in face_best.items():
+            d = (-n[0], -n[1], -n[2])
+            o = (cen[0] - d[0] * 0.5 * t_guess, cen[1] - d[1] * 0.5 * t_guess, cen[2] - d[2] * 0.5 * t_guess)
+            try:
+                isec.Perform(gp_Lin(gp_Pnt(*o), gp_Dir(*d)), 0.0, 1e6)
+                ws = sorted(isec.WParameter(k) for k in range(1, isec.NbPnt() + 1))
+            except Exception:
+                continue
+            ws = [w for w in ws if w > 1e-6]
+            if len(ws) >= 2:
+                hit[f_id] = ws[1] - ws[0]
+        small = sorted(h for h in hit.values() if h < 3 * t_guess)
+        t = small[len(small) // 2] if small else t_guess
+        if bends.get("thicknessSource") == "bend-pairs":
+            t = bends["thicknessMm"]           # the modelled gauge beats a median of chords
+        skin_faces = {f_id for f_id, h in hit.items() if 0.6 * t < h < 1.6 * t}
+        skin_tris = [i for i, f_id in enumerate(tface) if f_id in skin_faces]
+        if not skin_tris:
+            return {"status": "error", "error": "no skin faces found — not a sheet part"}
+
+        # Connected components of the skin triangles across shared edges.
+        parent = {}
+        def find(x):
+            while parent.get(x, x) != x:
+                parent[x] = parent.get(parent[x], parent[x]); x = parent[x]
+            return x
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra != rb: parent[ra] = rb
+        edge_owner = {}
+        for i in skin_tris:
+            a, b, c = tris[i]
+            for u, v in ((a, b), (b, c), (c, a)):
+                e = (u, v) if u < v else (v, u)
+                j = edge_owner.get(e)
+                if j is None: edge_owner[e] = i
+                else: union(i, j)
+        comps = {}
+        for i in skin_tris:
+            comps.setdefault(find(i), []).append(i)
+        def tri_area(i):
+            A, B, C = verts[tris[i][0]], verts[tris[i][1]], verts[tris[i][2]]
+            ux, uy, uz = B[0] - A[0], B[1] - A[1], B[2] - A[2]
+            vx, vy, vz = C[0] - A[0], C[1] - A[1], C[2] - A[2]
+            nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx
+            return 0.5 * math.sqrt(nx * nx + ny * ny + nz * nz)
+        ranked = sorted(comps.values(), key=lambda c: sum(tri_area(i) for i in c), reverse=True)[:2]
+        skins = []
+        for comp in ranked:
+            remap, cv, ct = {}, [], []
+            for i in comp:
+                row = []
+                for vtx in tris[i]:
+                    j = remap.get(vtx)
+                    if j is None:
+                        j = len(cv); remap[vtx] = j; cv.append([round(x, 4) for x in verts[vtx]])
+                    row.append(j)
+                ct.append(row)
+            skins.append({"vertices": cv, "triangles": ct,
+                          "area3dMm2": round(sum(tri_area(i) for i in comp), 2)})
+        out = {"status": "success", "thicknessMm": round(t, 3),
+               "thicknessSource": bends.get("thicknessSource", "bulk-wall"),
+               "bendCount": bends.get("bendCount", 0), "linearDeflectionMm": round(lin, 3),
+               "volumeMm3": round(vol, 2), "surfaceAreaMm2": round(sa, 2),
+               "triangles": len(tris), "skinFaces": len(skin_faces), "faces": fid, "skins": skins}
+        with open(out_path, "w") as fh:
+            json.dump(out, fh)
+        return {"status": "success", "triangles": len(tris), "skins": len(skins), "thicknessMm": out["thicknessMm"]}
+    except Exception as e:
+        return {"status": "error", "error": f"skin mesh failed: {e}"}
+
+
 if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] == "--serve":
         serve()
         sys.exit(0)
+    if len(sys.argv) >= 4 and sys.argv[1] == "--skin-mesh":
+        result = extract_skin_mesh(sys.argv[2], sys.argv[3])
+        print(json.dumps(result))
+        sys.exit(0 if result.get("status") == "success" else 1)
     if len(sys.argv) >= 4 and sys.argv[1] == "--stl":
         result = tessellate_to_stl(sys.argv[2], sys.argv[3], with_meta="--with-meta" in sys.argv[4:])
         print(json.dumps(result))

@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3d66b3d98eb49051",
+      "partName": "cv-cad-dcc747d574e8c40f",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -734,7 +734,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-aff453780758358e",
+      "partName": "cv-cad-a84ba59f14b493ac",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1755,7 +1755,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-41bec9f5efe7d092",
+      "partName": "cv-cad-48dc47871372edce",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2515,7 +2515,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b40cef4f1ce0d0f0",
+      "partName": "cv-cad-4d13e693c7e72c66",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -3330,21 +3330,41 @@
       "detectedHardware": {
         "available": false,
         "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "blank": {
+        "grossAreaMm2": 48619,
+        "netAreaMm2": 44107,
+        "outerPerimeterMm": 946,
+        "holePerimeterMm": 983,
+        "holeCount": 21,
+        "boundingRectMm": {
+          "lengthMm": 279.1,
+          "widthMm": 209.6
+        },
+        "rectangleFill": 0.831,
+        "source": "developed from the solid — 2 skins unfolded at K = 0.5 (mid-surface), 18,903 triangles, 15 bend(s), 1.60 mm gauge, skins agree within 0.0% — stretch-formed in places (8.0% stretch at the 95th percentile)",
+        "developedFrom": "solid",
+        "developable": false,
+        "maxStrainPct": 8,
+        "blankHash": "6174e5c39ed2cf629078dec6b1870420738f0e5353c4d74ea1bb70e64ca1751b",
+        "warnings": [
+          "Parts of this pressing are stretch-formed, not just bent: flattening it took up to 8.0% stretch over 5% of the metal (2.2% on average). The outline is a geometric unfold there and slightly understates the blank where the metal thinned; the FASTBLANK profile is the formed-process answer."
+        ]
       }
     },
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 5.03,
+      "total": 4.87,
       "breakdown": {
         "rawMaterial": 0.46,
         "process": 0.03,
         "labour": 0.03,
-        "tooling": 3.5,
+        "tooling": 3.38,
         "packaging": 0.07,
         "logistics": 0.09,
-        "overhead": 0.48,
-        "margin": 0.37
+        "overhead": 0.47,
+        "margin": 0.36
       }
     }
   },
@@ -3360,7 +3380,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-df076df49544e5df",
+      "partName": "cv-cad-faaca3485bc88da3",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -4309,7 +4329,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7ce57826ab02f4c9",
+      "partName": "cv-cad-d74fe430254be5ed",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

@@ -387,6 +387,8 @@ let cadFromCache = false;
 let _pendingCostingSource: 'cad' | 'manual' = 'manual';
 let cadPartPhotoBase64 = '';
 let cadDrawingFile: File | null = null;
+/** The FASTBLANK DXF of the developed blank, when the engineer has one — it beats the tool's own unfold. */
+let cadBlankFile: File | null = null;
 let cadPartPhotoMime = 'image/jpeg';
 let pcbImageResult: PCBImageAnalysis | null = null;
 /** Which photo result last filled which PCB form ("Apply to Fab" / "Apply to PCBA").
@@ -5868,6 +5870,11 @@ function renderCADAnalysisForm(): string {
         <input type="file" id="cad-drawing-input" accept="application/pdf,.pdf" style="display:none"/>
         <span id="cad-drawing-info" style="font-size:0.72rem;color:var(--text-muted)">No drawing attached</span>
         <button class="btn btn-secondary btn-sm" id="cad-drawing-clear" style="display:none;padding:1px 8px">✕ Remove</button>
+        <span style="margin-left:10px"></span>
+        <label class="btn btn-secondary btn-sm" for="cad-blank-input" style="padding:1px 8px;cursor:pointer" title="The flat blank CAPPe develops in FASTBLANK, exported as DXF. Sheet metal only. Without it the tool unfolds the part itself.">Developed blank (DXF)</label>
+        <input type="file" id="cad-blank-input" accept=".dxf,application/dxf,image/vnd.dxf" style="display:none"/>
+        <span id="cad-blank-info" style="font-size:0.72rem;color:var(--text-muted)">No blank attached — the tool unfolds the part</span>
+        <button class="btn btn-secondary btn-sm" id="cad-blank-clear" style="display:none;padding:1px 8px">✕ Remove</button>
       </div>
     </div>
 
@@ -6070,6 +6077,25 @@ function wireCADEvents(): void {
     if (drawingClear) drawingClear.style.display = 'none';
   });
 
+  // Developed blank (FASTBLANK DXF) — sheet metal only; beats the tool's own unfold.
+  const blankInput = document.getElementById('cad-blank-input') as HTMLInputElement | null;
+  const blankInfo  = document.getElementById('cad-blank-info');
+  const blankClear = document.getElementById('cad-blank-clear') as HTMLButtonElement | null;
+  blankInput?.addEventListener('change', () => {
+    const f = blankInput.files?.[0] ?? null;
+    if (f && f.size > 20 * 1024 * 1024) { showToast('Blank DXF is over 20 MB — export the profile alone.', 'warning'); blankInput.value = ''; return; }
+    if (f && !/\.dxf$/i.test(f.name)) { showToast('The developed blank must be a DXF (FASTBLANK → Export).', 'warning'); blankInput.value = ''; return; }
+    cadBlankFile = f;
+    if (blankInfo) blankInfo.textContent = f ? `${f.name} (${(f.size / 1024).toFixed(0)} KB)` : 'No blank attached — the tool unfolds the part';
+    if (blankClear) blankClear.style.display = f ? '' : 'none';
+  });
+  blankClear?.addEventListener('click', () => {
+    cadBlankFile = null;
+    if (blankInput) blankInput.value = '';
+    if (blankInfo) blankInfo.textContent = 'No blank attached — the tool unfolds the part';
+    if (blankClear) blankClear.style.display = 'none';
+  });
+
   const photoInput = document.getElementById('cad-photo-input') as HTMLInputElement | null;
   const photoInfo  = document.getElementById('cad-photo-info');
   const photoClear = document.getElementById('cad-photo-clear') as HTMLButtonElement | null;
@@ -6221,6 +6247,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     const formData = new FormData();
     formData.append('cadFile', cadFile);
     if (cadDrawingFile) formData.append('drawingPdf', cadDrawingFile);
+    if (cadBlankFile) formData.append('blankDxf', cadBlankFile);
     // Rendered views: 4 canonical snapshots so the vision model can SEE the
     // shape, not just its metrics. STL renders directly; STEP/IGES is first
     // tessellated server-side (OCCT --stl mode) into a mesh the renderer can
@@ -6602,6 +6629,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
           ${cadFromCache ? '&nbsp;<span title="This exact file + photo + settings was analysed before — the identical result is returned, so the analysis is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.62rem;padding:1px 6px;border-radius:10px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
           &nbsp;
           <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
+          ${cadBlankSummaryHtml()}
           ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
         </div>
       </div>
@@ -6955,6 +6983,20 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 }
 
 // Re-analyse using cached OCCT geometry (no STEP file re-upload required)
+/** One line on the developed blank — where it came from, what it measures, and the DXF to download. */
+function cadBlankSummaryHtml(): string {
+  const b = cadOCCTGeometry?.blank;
+  if (!b) return '';
+  const origin = b.developedFrom === 'dxf' ? 'from the FASTBLANK DXF'
+    : b.developable === false ? ((b.maxStrainPct ?? 0) <= 15 ? 'unfolded from the solid (stretch-formed in places)' : 'unfolded from the solid (drawn — approximate)')
+    : 'unfolded from the solid';
+  const dl = b.blankHash && b.developedFrom === 'solid'
+    ? ` &nbsp;<a href="/api/cad/blank/${encodeURIComponent(b.blankHash)}/blank.dxf" download="developed-blank.dxf" style="font-size:0.72rem">Download blank DXF</a>` : '';
+  return `<div style="margin-top:3px;font-size:0.72rem;color:var(--text-muted)" title="${escHtml(b.source)}">`
+    + `Blank: ${(b.grossAreaMm2 / 100).toFixed(0)} cm² gross · ${Math.round(b.boundingRectMm.lengthMm)}×${Math.round(b.boundingRectMm.widthMm)} mm · `
+    + `${b.holeCount} hole${b.holeCount === 1 ? '' : 's'} — ${origin}${dl}</div>`;
+}
+
 async function reanalyzeCAD(): Promise<void> {
   if (!cadOCCTGeometry) {
     // An STL is measured in the request and not kept on the server, so there is
@@ -6997,6 +7039,9 @@ async function reanalyzeCAD(): Promise<void> {
     if (matOvr)  body['material']  = matOvr;
     if (procOvr) body['process']   = procOvr;
     body['acknowledged'] = [..._cadSanityAcks];
+    // The developed blank the first pass measured or unfolded, by its hash — without it a
+    // reanalyse would fall back to the bounding-box estimate and move the material cost.
+    if (cadOCCTGeometry?.blank?.blankHash) body['blankHash'] = cadOCCTGeometry.blank.blankHash;
     if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
     body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
     // The answers the engineer just gave. The server re-runs the rules with them

@@ -12,7 +12,8 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
 import { measureBlankDxf } from '../utils/dxf-blank.js';
-import { blankHashOf, putBlank, getBlank } from '../utils/geometry-store.js';
+import { blankHashOf, putBlank, getBlank, getBlankDxf } from '../utils/geometry-store.js';
+import { developBlankFromCad } from '../services/blank-development.js';
 import type { TessellationMeta } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
@@ -485,6 +486,15 @@ function buildGeoSanityContext(
 // drawing-PDF input pre-checked 30 MB; the CAD input uploaded the whole file
 // and then learned the cap from the 413. One list of extensions for every input.
 export const CAD_ACCEPT = ['.step', '.stp', '.iges', '.igs', '.stl'];
+/** The DXF of a blank the tool developed from the solid, by the blank's hash. */
+router.get('/blank/:hash/blank.dxf', (req, res) => {
+  const dxf = getBlankDxf(String(req.params.hash ?? ''));
+  if (!dxf) { res.status(404).json({ error: 'No developed blank is held under that hash — re-run the analysis.' }); return; }
+  res.setHeader('Content-Type', 'application/dxf');
+  res.setHeader('Content-Disposition', 'attachment; filename="developed-blank.dxf"');
+  res.send(dxf);
+});
+
 router.get('/limits', (_req, res) => {
   res.json({
     maxUploadMb: MAX_UPLOAD_MB, maxDrawingPdfMb: MAX_DRAWING_PDF_BYTES / 1048576,
@@ -724,15 +734,31 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         rectangleFill: m.rectangleFill,
         source: `FASTBLANK DXF (${blankUpload.originalname})`
           + (m.unitsAssumed ? ', units not declared — read as mm' : ''),
+        developedFrom: 'dxf' as const,
         ...(m.warnings.length ? { warnings: m.warnings } : {}),
       };
       // Kept under the DXF's own hash so /reanalyze can pick the same blank up
       // without the costing quietly falling back to the bounding-box estimate.
       blankHash = blankHashOf(blankUpload.buffer);
-      putBlank(blankHash, blank);
-      geo = { ...geo, blank };
+      putBlank(blankHash, { ...blank, blankHash });
+      geo = { ...geo, blank: { ...blank, blankHash } };
     } catch (e) {
       blankError = e instanceof Error ? e.message : 'The blank DXF could not be read.';
+    }
+  }
+  // No profile supplied: develop the blank from the solid. Exact on a bent
+  // part (phase 2 of docs/sheet-metal/blank-development-research-2026-10.md);
+  // a stretch-formed or drawn one is flagged on the blank itself. The DXF the
+  // tool writes is held under the blank's hash for download and /reanalyze.
+  if (!blankUpload && geo.status === 'success') {
+    const dev = await developBlankFromCad(buffer, originalname, geo);
+    if (dev && 'blank' in dev) {
+      geo = { ...geo, blank: dev.blank };
+      blankHash = dev.blank.blankHash ?? null;
+      console.log(`[cad] blank developed from the solid in ${dev.elapsedMs} ms: ${dev.blank.source}`);
+    } else if (dev && 'error' in dev) {
+      console.warn(`[cad] blank unfold skipped: ${dev.error}`);
+      blankError = `The blank could not be developed from the solid (${dev.error}); the bounding-box estimate is used.`;
     }
   }
   const unitsDecision = unitsDecisionFor(geo);

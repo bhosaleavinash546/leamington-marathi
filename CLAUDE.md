@@ -64,7 +64,13 @@ reproducible, and it is the invariant to preserve in any change.
   kernel `_gauge_from_bend_pairs`), net blank = V/t, cut length = (S − 2V/t)/t — exact on
   a bent part, and trusted only on a bend-measured gauge because with t = 2·V/S it is
   zero by construction. `sheetMetal.perimeterMm` (DXF → identity → 2(L+W)) sizes the
-  press. The blank OUTLINE still needs the DXF; see `docs/sheet-metal/`.
+  press. With no DXF the tool unfolds the part itself: the kernel exports the two skins
+  (`--skin-mesh`, pure OCP), `server/utils/blank-unfold.ts` flattens them (Tutte → ARAP,
+  envelope Cholesky, no numpy) into the outline, holes, minimum rectangle and a DXF
+  (`/api/cad/blank/:hash/blank.dxf`), via `services/blank-development.ts` — the one
+  entry point the route and the real-parts baseline share. Exact on a bent part; a
+  stretch-formed or drawn skin is flagged by its strain (`developable: false`) and the
+  rules lower the blank's confidence. See `docs/sheet-metal/`.
 - `rate-library.ts` (`DEFAULT_RATE_LIBRARY`) + `regional-rates.ts`
   (`REGIONAL_DATA`, `computeRegionalComparison`, `buildRegionalLibrary`) hold the
   real 2026-Q2 rates. Two regionalisation paths exist and must stay consistent:

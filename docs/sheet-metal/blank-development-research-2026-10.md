@@ -17,7 +17,7 @@ one new finding that changes the first step.
 | Net blank area and cut length from the solid | **Built 1 Oct**: net = V/t, gross = net + holes, cut = (S − 2V/t)/t, trusted only on a bend-measured gauge | `cost-input-rules/derive/blank.ts` |
 | Gauge from the STEP | **Since 1 Oct** the radius step between a bend's inner and outer face (`thicknessSource: 'bend-pairs'`), 2·V/S as the fallback. Seat bracket: 1.60 mm from 15 pairs; 2·V/S gave 1.55; the old ray-cast gave 0.53 | `cad-geometry-engine.py::_gauge_from_bend_pairs` |
 | Bend count and bend length from the STEP | Built (cylinder faces spanning the width) | same |
-| Develop the blank ourselves | **Research prototype only**, Python + numpy, not shipped | `research/fastblank/proto.py` |
+| Develop the blank ourselves | **Built 1 Oct (phase 1)**: the kernel exports the two skins (`--skin-mesh`, pure OCP), TypeScript flattens them (Tutte start, ARAP, envelope Cholesky, no numpy) and writes the outline, holes, minimum rectangle and a DXF. Runs on every sheet STEP with no DXF attached; the rules cost on it. Seat bracket: 486 cm² gross, 279 × 210 mm, 21 holes, 946 + 983 mm of cut, skins agree within 0.05%, ~5 s a skin. Stretch-formed regions are detected by strain and flagged | `server/utils/blank-unfold.ts`, `services/blank-development.ts`, `tests/blank-unfold*.test.ts` |
 | Nesting | Research prototype only (`nest.py`) | — |
 | Forming properties (n, r, yield, FLC) in the material library | **None.** The library holds prices and density only | `rate-library.ts` |
 | BIW stamping process (draw addendum, blanking line, tailor-welded blanks) | Not modelled; BIW module costs assembly stations and joints only | `modules/biw-assembly.ts` |
@@ -160,13 +160,26 @@ only way to know is a quote.
 | Phase | What it delivers | Depends on | Effort |
 |---|---|---|---|
 | **0 · Fix now** | (a) Pass the DXF's outline + hole perimeter into tonnage and the press pick. (b) Gauge from coaxial bend cylinders, falling back to the ray-cast. (c) Net blank area = V/t, gross = net + holes, cut length = (S − 2A)/t from the geometry JSON, with the basis stated on each field. (d) Flag when the bounding-box estimate differs from the analytic blank by more than 15% | nothing new | 3–4 days |
-| **1 · Bent-part unfold** | Outline and rectangle from the face graph with K by r/t; DXF out; hole table carried; "cannot unfold" is a stated reason, not a crash | kernel face table (exists) | ~2 weeks |
+| **1 · Bent-part unfold** — **done 1 Oct** | Outline and rectangle by flattening the skin mesh (ARAP), not a face-graph walk, so B-spline flanges unfold too; K = 0.5 mid-surface (mean of the two skins); DXF out; holes carried; a stretch-formed or drawn skin is flagged by its strain, never silently costed as bent | kernel skin export (built) | done |
 | **2 · Nesting** | 1-up / 2-up / mirrored on the coil, pitch and width constraints, grain rule; utilisation and gross weight into material; 2-up shown as a die trade-off | Phase 1 outline or DXF | ~1 week |
 | **3 · Drawn-part solve** | ARAP start + plastic-work pass in TypeScript; thinning map; Keeler–Brazier pass/fail; forming properties added to the material library as data (n, r, yield, FLC₀) | mesh export from the kernel (exists) | 4–6 weeks |
 | **4 · BIW process** | Draw addendum and binder allowance on drawn panels; blanking-line operation (die or laser); tandem/transfer sequence (draw, trim, pierce, flange, restrike); planned scrap; tailor-welded blanks with per-zone material | Phases 0–2 | 2–3 weeks |
 
 Phase 0 is new in this form: the September plan put the analytic blank inside
 Phase 1 and did not know the identities would hold this closely on a real part.
+
+### 5.1 What phase 1 found on the seat bracket
+
+The flattening converges to a stable outline (486.2 cm² from 800 iterations on,
+486.3 at the 400 the tool runs) but not to zero strain: 2.2% on average and 8%
+at the 95th percentile, area-weighted. On the synthetic bent L-bracket the same
+code gives 0.00% strain and the developed length to the mesh's chord error, so
+the strain on the bracket is the part, not the solver: its B-spline flanges are
+stretch-formed, which is why the net flat area (441 cm²) sits 0.7% under V/t
+(444 cm²) — the metal thinned there. The tool now says so on the blank and
+drops the confidence from 0.85 to 0.75; a drawn panel (over 15% strain) goes to
+0.6 and asks for the FASTBLANK profile. Phase 3 (the physics pass) is what
+would put the stretched area back.
 
 ## 6. How it is proved
 

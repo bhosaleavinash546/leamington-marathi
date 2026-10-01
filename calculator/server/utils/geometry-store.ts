@@ -111,6 +111,14 @@ export function putBlank(hash: string, blank: unknown): void {
   blankCache.set(hash, blank);
 }
 
+/** The DXF text of a blank the tool developed itself, by the blank's hash. */
+const blankDxfCache = new Map<string, string>();
+export function putBlankDxf(hash: string, dxf: string): void { blankDxfCache.set(hash, dxf); }
+export function getBlankDxf(hash: string): string | null {
+  if (!/^[a-f0-9]{64}$/.test(hash)) return null;
+  return blankDxfCache.get(hash) ?? null;
+}
+
 export function getBlank<T>(hash: string): T | null {
   if (!/^[a-f0-9]{64}$/.test(hash)) return null;
   const b = blankCache.get(hash);

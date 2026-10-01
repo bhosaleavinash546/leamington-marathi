@@ -84,6 +84,7 @@ export function _pythonActiveCount(): number { return pythonActive; }
  * One declaration means that class of bug cannot recur.
  */
 import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
+import type { SkinMeshFile } from './blank-unfold.js';
 import { applyShellWallCorrection } from '../../src/engine/geometry-sanity.js';
 export type { OCCTGeometry };
 
@@ -325,6 +326,53 @@ export interface TessellationMeta {
 
 /** Refuse to buffer pathological outputs into Node heap. */
 const MAX_STL_BYTES = parseInt(process.env.CV_MAX_STL_BYTES ?? String(750 * 1024 * 1024), 10);
+
+/**
+ * Mesh a sheet part's two skins for the blank unfold (server/utils/blank-unfold.ts).
+ * Direct spawn only — the skin export is a one-off per analysis of a sheet part,
+ * not the hot path the pool exists for.
+ */
+export async function extractSkinMesh(
+  buffer: Buffer,
+  filename: string,
+  opts: { timeoutMs?: number } = {},
+): Promise<{ status: 'success'; mesh: SkinMeshFile } | { status: 'error'; error: string }> {
+  const { timeoutMs = DEFAULT_TESS_TIMEOUT_MS } = opts;
+  const id = randomBytes(8).toString('hex');
+  const inPath = join(tmpdir(), `cv-skin-${id}.${safeExt(filename)}`);
+  const outPath = join(tmpdir(), `cv-skin-${id}.json`);
+  const release = await acquirePython();
+  try {
+    await writeFile(inPath, buffer);
+    const result = await new Promise<{ status: string; error?: string }>((resolve) => {
+      let stdout = '';
+      let stderr = '';
+      let settled = false;
+      const settle = (r: { status: string; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
+      const child = spawn(PYTHON_BIN, [PYTHON_SCRIPT, '--skin-mesh', inPath, outPath], { env: { ...process.env, CV_TESS_TIMEOUT_MS: String(timeoutMs) } });
+      const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Skin mesh timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
+      child.stdout.on('data', (d: Buffer) => { if (stdout.length < MAX_STDOUT_BYTES) stdout += d.toString(); });
+      child.stderr.on('data', (d: Buffer) => { if (stderr.length < 8192) stderr += d.toString(); });
+      child.on('error', (err) => { clearTimeout(timer); settle({ status: 'error', error: `Python process error: ${err.message}` }); });
+      child.on('close', () => {
+        clearTimeout(timer);
+        if (settled) return;
+        try { settle(JSON.parse(stdout.trim())); }
+        catch { settle({ status: 'error', error: `Skin mesh output unparseable. stderr: ${stderr.slice(0, 300)}` }); }
+      });
+    });
+    if (result.status !== 'success') return { status: 'error', error: result.error ?? 'skin mesh failed' };
+    const { readFile } = await import('fs/promises');
+    const mesh = JSON.parse(await readFile(outPath, 'utf-8')) as SkinMeshFile;
+    return { status: 'success', mesh };
+  } catch (err) {
+    return { status: 'error', error: err instanceof Error ? err.message : String(err) };
+  } finally {
+    release();
+    unlink(inPath).catch(() => {});
+    unlink(outPath).catch(() => {});
+  }
+}
 
 export async function tessellateToSTL(
   buffer: Buffer,

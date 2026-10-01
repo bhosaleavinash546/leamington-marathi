@@ -33,6 +33,7 @@ import { join, resolve, basename } from 'node:path';
 import { createHash } from 'node:crypto';
 import { analyzeGeometry, type OCCTGeometry } from '../server/utils/geometry-bridge.js';
 import { costMeasuredPart } from '../server/services/bulk-run.js';
+import { developBlankFromCad } from '../server/services/blank-development.js';
 import { geometryPool } from '../server/utils/geometry-pool.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
 import type { BulkPartResult } from '../server/services/bulk-run.js';
@@ -161,11 +162,15 @@ async function build(): Promise<PartBaseline[]> {
       console.log(`  ${f.padEnd(28)} SKIPPED — no answers recorded in ANSWERS`);
       continue;
     }
-    const geo = await analyzeGeometry(bytes, f, 300_000);
+    let geo = await analyzeGeometry(bytes, f, 300_000);
     if (geo.status !== 'success') {
       console.log(`  ${f.padEnd(28)} geometry failed: ${geo.error}`);
       continue;
     }
+    // A sheet part is costed on its developed blank, the way the route does it.
+    const dev = await developBlankFromCad(bytes, f, geo);
+    if (dev && 'blank' in dev) geo = { ...geo, blank: dev.blank };
+    else if (dev && 'error' in dev) console.log(`  ${f.padEnd(28)} blank unfold failed: ${dev.error}`);
     const outcome = await outcomeFor(path, geo, spec.answers, spec.commodity);
     out.push({
       part: f,

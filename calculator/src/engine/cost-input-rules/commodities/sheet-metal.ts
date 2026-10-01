@@ -73,13 +73,24 @@ export interface BlankDims {
 export function blankDims(ctx: RuleContext): BlankDims | null {
   const dev = ctx.geo.blank;
   if (dev && dev.boundingRectMm.lengthMm > 0 && dev.boundingRectMm.widthMm > 0) {
+    // The tool's own unfold is exact on a bent part and only a geometric
+    // approximation on a drawn one (the metal stretched; no flattening is
+    // distortion-free), so its confidence follows what the flattening found.
+    const own = dev.developedFrom === 'solid';
+    const strain = dev.maxStrainPct ?? 0;
+    const stretched = own && dev.developable === false && strain <= 15;
+    const drawn = own && dev.developable === false && strain > 15;
     return {
       lengthMm: Math.round(dev.boundingRectMm.lengthMm),
       widthMm: Math.round(dev.boundingRectMm.widthMm),
       basis: `developed blank from ${dev.source} — ${(dev.grossAreaMm2 / 100).toFixed(0)} cm² profile `
         + `filling ${(dev.rectangleFill * 100).toFixed(0)}% of its ${Math.round(dev.boundingRectMm.lengthMm)}`
-        + `×${Math.round(dev.boundingRectMm.widthMm)} mm rectangle`,
-      confidence: 0.95,
+        + `×${Math.round(dev.boundingRectMm.widthMm)} mm rectangle`
+        + (stretched ? '. Parts of the pressing are stretch-formed, so the unfold slightly understates the blank where the '
+          + 'metal thinned; upload the FASTBLANK DXF for the formed-process profile' : '')
+        + (drawn ? '. The skin stretched when flattened, so this part was drawn, not bent: the outline '
+          + 'understates the blank where the metal thinned; upload the FASTBLANK DXF for the formed-process answer' : ''),
+      confidence: drawn ? 0.6 : stretched ? 0.75 : own ? 0.85 : 0.95,
       developed: true,
     };
   }
