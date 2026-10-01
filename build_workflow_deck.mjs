@@ -305,25 +305,26 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 }
 
 // ══════════ 1b2 · THE PCB WORKFLOW — ONE PICTURE ══════════
+// Updated 1 Oct 2026: files beat photos; the model is not asked for a cost;
+// every price carries a source; automotive grade in the headline.
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
   logoMark(s, 0.5, 0.22, 0.6);
   s.addText('The PCB Photo → Should-Cost — One Picture', { x: 1.25, y: 0.2, w: 9.6, h: 0.44, fontFace: 'Cambria', fontSize: 24.0, bold: true, color: NAVY, margin: 0, valign: 'middle' });
-  s.addText('An AI feature, switched off at JLR. When on: the AI reads the board, the catalogue prices it, the engine costs it, the engineer checks it.', { x: 1.25, y: 0.66, w: 11.0, h: 0.28, fontFace: 'Calibri', fontSize: 11.0, italic: true, color: MUTED, margin: 0 });
+  s.addText('Photos and files go in. The model reads the board. The tool prices every line from its own tables and costs the board from its rate tables. The engineer checks the lines marked "to verify".', { x: 1.25, y: 0.66, w: 11.4, h: 0.28, fontFace: 'Calibri', fontSize: 10.5, italic: true, color: MUTED, margin: 0 });
 
-  // ── OUTSIDE: AI VISION — required for this input ──
+  // ── OUTSIDE: the model reads — three steps, words and counts only ──
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 7.6, h: 0.99, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('AI VISION — REQUIRED here · OFF AT JLR, so this screen is hidden', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('THE MODEL READS THE PHOTOS — needs an API key; without one this screen is hidden', { x: 3.28, y: 1.08, w: 6.8, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
-    { text: 'Pass 1: ', options: { bold: true, color: NAVY } },
-    { text: 'names the board (dims, layers, finish) and EVERY component — reference, package, part number where legible — with a confidence per line. ', options: { color: SLATE } },
-    { text: 'Pass 2: ', options: { bold: true, color: NAVY } },
-    { text: 're-inspects the markings of every unconfirmed part. ', options: { color: SLATE } },
-    { text: 'Words only — it prices nothing.', options: { bold: true, color: PURPLE } },
-  ], { x: 3.28, y: 1.29, w: 6.75, h: 0.5, fontFace: 'Calibri', fontSize: 8.4, margin: 0, valign: 'top' });
-  s.addText('Rate-limited per user when on · the model never prices a component', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
+    { text: '1 ', options: { bold: true, color: NAVY } }, { text: 'Classifies the board (automotive, consumer, industrial) and its safety level. ', options: { color: SLATE } },
+    { text: '2 ', options: { bold: true, color: NAVY } }, { text: 'Reads the markings printed on the chips. ', options: { color: SLATE } },
+    { text: '3 ', options: { bold: true, color: NAVY } }, { text: 'Writes the parts list — reference, package, quantity, part number — and its guess at size, layers and finish. ', options: { color: SLATE } },
+    { text: 'It is not asked for a cost. The reply must match a fixed form.', options: { bold: true, color: PURPLE } },
+  ], { x: 3.28, y: 1.29, w: 6.75, h: 0.5, fontFace: 'Calibri', fontSize: 8.2, margin: 0, valign: 'top' });
+  s.addText('Sonnet 5.5 reads the chips and writes the list · Opus 5.5 for "deep analysis" · rate-limited per user', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
 
   // ── boundary ──
   s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
@@ -340,7 +341,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     s.addShape('roundRect', { x, y, w, h, fill: { color: tint }, line: { color: col, width: 1.4 }, rectRadius: 0.09 });
     if (ico) { s.addShape('ellipse', { x: x + 0.14, y: y + 0.12, w: 0.34, h: 0.34, fill: { color: col } }); s.addImage({ data: ico, x: x + 0.22, y: y + 0.20, w: 0.18, h: 0.18 }); }
     s.addText(ttl, { x: x + (ico ? 0.56 : 0.16), y: y + 0.11, w: w - (ico ? 0.70 : 0.32), h: 0.30, fontFace: 'Calibri', fontSize: 9.6, bold: true, color: col, margin: 0, valign: 'middle' });
-    s.addText(body, { x: x + 0.16, y: y + 0.45, w: w - 0.32, h: h - 0.58, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'top' });
+    s.addText(body, { x: x + 0.16, y: y + 0.45, w: w - 0.32, h: h - 0.58, fontFace: 'Calibri', fontSize: 7.8, color: SLATE, margin: 0, valign: 'top' });
   };
   const chip2 = (x, y, label, bg) => {
     s.addShape('roundRect', { x, y, w: 0.6, h: 0.17, fill: { color: bg }, rectRadius: 0.085 });
@@ -348,41 +349,51 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   };
 
   // inputs / outputs
-  const col2 = (x, w, label, c, items, y0, pitch = 0.80) => {
+  const col2 = (x, w, label, c, items, y0, pitch = 0.80, h = 0.68) => {
     s.addText(label, { x, y: y0 - 0.3, w, h: 0.24, fontFace: 'Calibri', fontSize: 8.5, bold: true, color: c, charSpacing: 0.6, margin: 0 });
     items.forEach((t, i) => {
       const y = y0 + i * pitch;
-      s.addShape('roundRect', { x, y, w, h: 0.68, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
-      s.addText(t, { x: x + 0.13, y, w: w - 0.26, h: 0.68, fontFace: 'Calibri', fontSize: 8.4, color: SLATE, margin: 0, valign: 'middle' });
+      s.addShape('roundRect', { x, y, w, h, fill: { color: CARD }, line: { color: LINE, width: 1 }, rectRadius: 0.07 });
+      s.addText(t, { x: x + 0.12, y, w: w - 0.24, h, fontFace: 'Calibri', fontSize: 8.0, color: SLATE, margin: 0, valign: 'middle' });
     });
   };
-  col2(0.65, 2.0, 'WHAT GOES IN', BLUE, ['Photo(s) of the board\n(top / bottom)', 'Annual qty + region\n(the engineer types)', 'Known dims / layers\n(optional overrides)'], 2.74);
-  col2(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['Priced BOM — every line\nconfirmed or capped', 'Fab spec + 8-bucket\nboard cost', 'Confirmed vs needs-\nverification headline', 'PDF report + country\ncomparison'], 2.74, 0.76);
+  col2(0.65, 2.0, 'WHAT GOES IN', BLUE, [
+    'Photos of the board\n(top, bottom, close-ups)',
+    'Annual quantity + country\n(the engineer types)',
+    'BOM file — optional\nbecomes the parts list',
+    'Drill + Gerber files — optional\nsize, layers, vias measured',
+  ], 2.74, 0.92, 0.80);
+  col2(11.05, 1.8, 'WHAT COMES OUT', GREEN, [
+    'Priced parts list —\na source on every line',
+    'Board cost by country,\nautomotive grade included',
+    '"Priced" and "to verify"\ntotals',
+    'PDF, master report, library —\nall the same number',
+  ], 2.74, 0.92, 0.80);
 
   // pipeline nodes
-  node2(2.85, 2.68, 2.35, 1.22, '4F46E5', 'EEF2FF', 'BOM parser + salvage', 'Parses the model’s list; SALVAGES truncated replies line by line; automotive keywords force the conservative class.', I.cog);
-  node2(2.85, 4.06, 2.35, 1.22, '4F46E5', 'EEF2FF', 'Board-spec stabiliser', 'Dims, layers and finish snapped to stable values — re-running the same photos gives the same board.', I.ruler);
-  node2(5.45, 2.68, 2.3, 1.35, AMBER, AMBER_T, 'Price grounding', 'Confirmed lines SNAP to the offline catalogue; unreadable lines get the class-median CAP; volume scaling from the 10k base. The model never prices.', I.shield);
-  node2(5.45, 5.30, 2.3, 1.16, GREEN, GREEN_T, 'The engineer', 'Reviews every flagged line, edits any BOM line — a real quote overrides the catalogue.', I.person);
+  node2(2.85, 2.68, 2.35, 1.22, '4F46E5', 'EEF2FF', 'Files beat photos', 'A BOM file replaces the read list. Drill and Gerber files replace the guessed size, layer and via counts. Chip markings read are matched to the list.', I.upload);
+  node2(2.85, 4.06, 2.35, 1.22, '4F46E5', 'EEF2FF', 'Board spec held steady', 'Guessed size, layers and vias held to plausible values; measured values kept exactly. Parts are counted from the list. Same photos, same board.', I.ruler);
+  node2(5.45, 2.68, 2.3, 1.35, AMBER, AMBER_T, 'Price every line', 'Catalogue (458 parts, source and date on each) → range for a named part → class table. The model’s figure only picks a point inside the range. Each line shows its basis.', I.shield);
+  node2(5.45, 5.30, 2.3, 1.16, GREEN, GREEN_T, 'The engineer', 'Checks the lines marked "to verify" (£1+ with no quote behind them). Can edit any line; an edit or a real quote wins.', I.person);
   s.addShape('roundRect', { x: 8.2, y: 2.68, w: 2.5, h: 1.86, fill: { color: '0E5A5A' }, rectRadius: 0.1 });
   s.addShape('ellipse', { x: 9.2, y: 2.84, w: 0.5, h: 0.5, fill: { color: '17A398' } });
   s.addImage({ data: I.calc, x: 9.33, y: 2.97, w: 0.24, h: 0.24 });
   s.addText('COST ENGINE', { x: 8.3, y: 3.42, w: 2.3, h: 0.3, fontFace: 'Calibri', fontSize: 11.5, bold: true, color: 'FFFFFF', align: 'center', margin: 0, valign: 'middle' });
-  s.addText('PCB fab: a bought-in price from fabricators\u2019 price tables — no overhead or margin added.\nAssembly: placements, AOI, test — at country rates.', { x: 8.3, y: 3.74, w: 2.3, h: 0.72, fontFace: 'Calibri', fontSize: 7.6, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
-  node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rates', 'Per-country labour £/hr and electricity £/kWh from published figures — not scaled guesses.', null);
+  s.addText('Bare board: area, layers, finish, vias, impedance, copper.\nAssembly: placements, AOI, X-ray, ICT.\nAutomotive grade (IATF, class 3, burn-in) in the headline.', { x: 8.3, y: 3.74, w: 2.3, h: 0.78, fontFace: 'Calibri', fontSize: 7.4, color: '9FD9CF', align: 'center', margin: 0, valign: 'top' });
+  node2(8.2, 4.76, 2.5, 0.92, TEAL, TEAL_T, 'Country rate tables', '14 countries; FX and wages re-based 29 Sep 2026; checked against 2026 published fab and assembly figures.', null);
 
-  s.addShape('roundRect', { x: 2.85, y: 5.42, w: 2.35, h: 1.04, fill: { color: 'FBEAE8' }, line: { color: RED, width: 1.25 }, rectRadius: 0.09 });
-  s.addText('AT JLR — AI IS OFF', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: RED, charSpacing: 0.4, margin: 0 });
-  s.addText('AIR_GAPPED=1 hides this flow. The PCB fab and PCBA forms still cost a board from typed inputs.\nLive distributor pricing exists but is off; the offline catalogue is the source.',
-    { x: 3.00, y: 5.66, w: 2.05, h: 0.74, fontFace: 'Calibri', fontSize: 7.5, color: SLATE, margin: 0, valign: 'top' });
+  s.addShape('roundRect', { x: 2.85, y: 5.42, w: 2.35, h: 1.04, fill: { color: AMBER_T }, line: { color: AMBER, width: 1.25 }, rectRadius: 0.09 });
+  s.addText('WITHOUT AN API KEY', { x: 3.00, y: 5.48, w: 2.05, h: 0.18, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: AMBER, charSpacing: 0.4, margin: 0 });
+  s.addText('This screen is hidden; the PCB fab and PCBA forms still cost a board from typed inputs.\nDistributor API pricing is built but needs its own key; the offline catalogue prices every line meanwhile.',
+    { x: 3.00, y: 5.66, w: 2.05, h: 0.74, fontFace: 'Calibri', fontSize: 7.3, color: SLATE, margin: 0, valign: 'top' });
   // flows
-  link2(2.65, 3.29, 2.85, 3.29, BLUE);                       // photos → (up via AI) parser
-  link2(3.95, 3.90, 3.95, 4.06, '4F46E5');                   // parser ↓ stabiliser
-  link2(5.20, 3.29, 5.45, 3.29, '4F46E5');                   // parser → grounding
-  link2(5.20, 4.67, 5.45, 3.85, '4F46E5', 1.4);              // stabiliser → grounding
-  link2(7.75, 3.35, 8.2, 3.35, AMBER);                       // grounding → engine
-  link2(8.2, 5.22, 7.75, 5.60, TEAL, 1.4);                   // rates ← ... engine↔rates adjacency
-  link2(6.6, 5.30, 6.6, 4.03, GREEN, 1.4);                   // engineer ↑ grounding (overrides)
+  link2(2.65, 3.29, 2.85, 3.29, BLUE);                       // inputs → files/photos
+  link2(3.95, 3.90, 3.95, 4.06, '4F46E5');                   // ↓ board spec
+  link2(5.20, 3.29, 5.45, 3.29, '4F46E5');                   // → pricing
+  link2(5.20, 4.67, 5.45, 3.85, '4F46E5', 1.4);              // board spec → pricing
+  link2(7.75, 3.35, 8.2, 3.35, AMBER);                       // pricing → engine
+  link2(8.2, 5.22, 7.75, 5.60, TEAL, 1.4);                   // rates ↔ engineer sees them
+  link2(6.6, 5.30, 6.6, 4.03, GREEN, 1.4);                   // engineer ↑ pricing (edits win)
   link2(10.70, 3.55, 11.05, 3.55, GREEN);                    // engine → outputs
   link2(10.70, 5.20, 11.05, 5.95, GREEN, 1.4);
   // AUTO/HUMAN chips
@@ -396,16 +407,18 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
-    { text: 'when AI is on, it reads the board and names every part — then the offline catalogue prices it, the fab price and assembly model cost it, and the engineer owns every doubtful line. Off at JLR.', options: { color: SLATE } },
-  ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
+    { text: 'the model reads the board and names the parts; files beat photos; the catalogue and class table price every line with a source; the rate tables cost the board; the engineer owns the lines marked to verify.', options: { color: SLATE } },
+  ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 9.6, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
   s.addNotes(
-    'This is the PCB photo flow. I want to be clear first: it uses AI, so in the JLR build it is switched off and the screen is hidden. I show it because it exists in the product and could be turned on later. At JLR today, a board is costed through the PCB fabrication and PCBA forms from typed inputs. ' +
-    'When AI is on, this is what happens. The engineer uploads photos of the board and types the annual quantity and region. The AI reads the photos in two passes. First it names the board and every part it can see, with a confidence on each line. Then it looks again at the parts it could not confirm. That is its whole job. It prices nothing. ' +
-    'Everything after that runs on your own machine and is plain code. The parser tidies the list and rescues long lists that get cut short. The board-spec stabiliser snaps size and layers to stable values, so the same photos give the same board. ' +
-    'Then the money. Confirmed parts take their price from an offline catalogue. Parts it could not read get a capped class price and a flag for a person. The bare board is a bought-in price from fabricators\u2019 price tables, so no overhead or margin is added on top. Assembly is costed from placements, inspection and test at country rates. ' +
-    'The engineer can edit any line, and a real quote beats the catalogue. The model never prices a component.'
+    'This is the PCB photo flow as it stands on 1 October. It needs an API key; without one the screen is hidden and a board is costed through the PCB fabrication and PCBA forms from typed inputs. ' +
+    'The engineer uploads photos, types the annual quantity and country, and can attach two files: the BOM, and the drill and Gerber files. ' +
+    'The model does three things. It classifies the board, it reads the markings printed on the chips, and it writes the parts list with its guess at the board build. It is not asked for a cost, and its reply has to match a fixed form. ' +
+    'Everything after that is plain code on your own machine. If a BOM file was attached, that is the parts list; the photo reading only fills gaps. If drill and Gerber files were attached, the size, layer count and via count are measured from them. Chip markings the model read are matched to the lines they belong to. ' +
+    'Then every line is priced from the tool’s own tables: first the catalogue of 458 parts, each with a source and date, 77 of them read from distributor pages; then the price range for a part the tool can name; then the class table for the rest. The model’s own figure only picks a point inside the range. Every line shows where its price came from. ' +
+    'The cost engine prices the bare board from area, layers, finish, vias, impedance and copper, and the assembly from the placements it counted in the list plus inspection and test, at the country’s rates. On an automotive board the IATF, class 3 and burn-in costs are in the headline, not in a side panel. ' +
+    'The engineer checks the lines marked to verify: anything worth a pound or more with no quote behind it. An edit or a real quote wins over the catalogue. The screen, the PDF, the master report and the parts library all show the same number.'
   );
 }
 
@@ -675,7 +688,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     { text: 'Each half exists elsewhere. PCB Tracer reads a board photo into a BOM for free. aPriori costs a PCBA properly from a BOM. ', options: { color: SLATE } },
     { text: 'Nobody joins them', options: { bold: true, color: GREEN } },
     { text: ' — and the join is what lets a buyer cost a competitor’s board, or their own board when the supplier will not open the BOM.\n\n', options: { color: SLATE } },
-    { text: 'Plus: air-gapped operation, per-line evidence tags, and the same eight-bucket engine as every other commodity — so a PCBA sits in the same portfolio as a casting.', options: { color: SLATE } },
+    { text: 'Plus: works with or without an API key, a price basis on every line, and the same eight-bucket engine as every other commodity — so a PCBA sits in the same portfolio as a casting.', options: { color: SLATE } },
   ], { x: 0.68, y: 1.66, w: 5.69, h: 1.78, fontFace: 'Calibri', fontSize: 9.0, margin: 0, valign: 'top' });
 
   // What is not
@@ -685,8 +698,8 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addText([
     { text: '1 · No validated PCBA accuracy. ', options: { bold: true, color: RED } },
     { text: 'Zero boards checked against an invoice.\n', options: { color: SLATE } },
-    { text: '2 · Live pricing is off. ', options: { bold: true, color: RED } },
-    { text: 'Built and wired; no API key, so the offline catalogue prices every line.\n', options: { color: SLATE } },
+    { text: '2 · Distributor pricing needs a key. ', options: { bold: true, color: RED } },
+    { text: 'Built and wired; meanwhile a 458-part catalogue prices every line — 77 from distributor pages, the rest labelled estimates.\n', options: { color: SLATE } },
     { text: '3 · Captive silicon is unpriceable. ', options: { bold: true, color: RED } },
     { text: 'On the brake ECU, ~£20 of Bosch in-house parts have no market price — no feed fixes that.\n', options: { color: SLATE } },
     { text: '4 · Placement rate unvalidated. ', options: { bold: true, color: RED } },
@@ -718,7 +731,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addShape('roundRect', { x: 0.5, y: 6.06, w: 12.33, h: 0.9, fill: { color: B.greenTint }, line: { color: GREEN, width: 1.2 }, rectRadius: 0.08 });
   s.addText([
     { text: 'The ask:  ', options: { bold: true, color: GREEN } },
-    { text: 'one distributor API key and one board with a known purchase price. The integration and the learning-from-actuals machinery are already built. The key needs internet, so it does not apply to the air-gapped JLR build. Until then the honest headline stays: ', options: { color: SLATE } },
+    { text: 'one distributor API key and one board with a known purchase price. The integration and the learning-from-actuals machinery are already built. The key needs internet; without it the catalogue prices the board. Until then the honest headline stays: ', options: { color: SLATE } },
     { text: 'a defensible, fully traceable estimate — not a priced quotation.', options: { bold: true, color: NAVY } },
   ], { x: 0.68, y: 6.06, w: 12.0, h: 0.9, fontFace: 'Calibri', fontSize: 10.0, margin: 0, valign: 'middle' });
 
@@ -726,7 +739,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addNotes(
     'Last one on the market, and it is the decision slide for the PCB side. ' +
     'Top left is what is genuinely ours, and I have kept the claim narrow. Photo to BOM exists elsewhere. Costing a PCBA from a BOM exists elsewhere. What I could not find is the two joined in one pass. That join lets a buyer cost a board when nobody will hand over the BOM. It depends on AI, which is off at JLR. ' +
-    'Top right, four things we should say before anyone else does. PCBA accuracy is not validated against a single invoice. Live pricing is built and switched off. About twenty pounds of the brake ECU is Bosch captive silicon with no market price, and no data feed fixes that. And the placement rate: the process cost on that board rests on our library\u2019s placements per hour, and if a real line runs two or three times faster the number falls a lot. ' +
+    'Top right, four things we should say before anyone else does. PCBA accuracy is not validated against a single invoice. Distributor pricing is built and waits for a key; the catalogue prices the board meanwhile. About twenty pounds of the brake ECU is Bosch captive silicon with no market price, and no data feed fixes that. And the placement rate: the process cost on that board rests on our library\u2019s placements per hour, and if a real line runs two or three times faster the number falls a lot. ' +
     'The three cards are what to do, in order of value for effort. Turn the price feed on where the network allows it. Cost one board where we already know the purchase price, and log it as an actual. And ask one EMS supplier for a real placement rate. ' +
     'Until then the headline stays what it is: a defensible, traceable estimate, not a priced quotation.'
   );
