@@ -2,7 +2,7 @@
  * "How CostVision Actually Works" — the 58-slide workflow explainer (app V4.2).
  *
  * Every claim must agree with docs/decks/tool-facts.md or be checked in code.
- * At JLR the AI is switched off (AIR_GAPPED=1); slides say so wherever AI appears.
+ * At JLR the AI waits for an API key (none added yet); slides say so wherever AI appears.
  *
  * Slides 5–8 are the PCBA market landscape (who else automates PCBA costing,
  * at what automation level, software vs service, and what they charge). Every
@@ -88,7 +88,7 @@ function owner(s, x, y, label, col, tint) {
   s.addShape('roundRect', { x: 0.8, y: 3.95, w: 11.7, h: 0.75, fill: { color: '24406E' }, rectRadius: 0.1 });
   s.addText([
     { text: 'The one line to remember:  ', options: { color: '9FB6DF', bold: true } },
-    { text: 'the tool measures the part, the engineer answers what geometry cannot, the engine does the arithmetic, and a person signs it off. AI is switched off at JLR.', options: { color: 'FFFFFF', bold: true } },
+    { text: 'the tool measures the part, the engineer answers what geometry cannot, the engine does the arithmetic, and a person signs it off. AI needs an API key at JLR.', options: { color: 'FFFFFF', bold: true } },
   ], { x: 1.1, y: 3.95, w: 11.1, h: 0.75, fontFace: 'Calibri', fontSize: 15.0, margin: 0, valign: 'middle' });
   s.addText('Worked example: die-cast aluminium housing · 2.8 kg · 60,000 per year · made in China',
     { x: 0.8, y: 5.1, w: 11.7, h: 0.3, fontFace: 'Calibri', fontSize: 13.0, color: '8FA3CC', margin: 0 });
@@ -96,7 +96,7 @@ function owner(s, x, y, label, col, tint) {
     'Thank you for coming back. Last time I showed you what CostVision produces. The fair feedback was that the workflow was still a black box. People could not see who does what, or where the AI sits. So today I want to open the box. ' +
     'I will take one worked example, a die-cast aluminium housing, and walk it through the tool step by step: from the CAD file to a number a buyer can take into a supplier meeting. Then I will do the same on a very different part, a moulded bumper, to show the method holds. ' +
     'I will colour-code who owns each step, because that was the confusing bit. Blue is measuring. Purple is the optional AI. Amber is the safety checks. Teal is the cost engine doing the arithmetic. Green is the engineer. ' +
-    'One thing to say up front. In the build we ship to JLR, the AI is switched off. JLR has no AI approval yet. The AI code is still in the product, turned off by a setting, so it could be switched on later without a rebuild. Even when it is on, it never sets a price. ' +
+    'One thing to say up front. In the build we ship to JLR, the AI has no API key yet. The AI code is still in the product, hidden until a key is added, so it could be switched on later without a rebuild. Even when it is on, it never sets a price. ' +
     'So the line on the screen is the one to remember. The tool measures, the engineer answers what geometry cannot decide, the engine does the sums, and a person signs it off. Everything else today is detail behind that sentence.'
   );
 }
@@ -131,7 +131,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addText('Four sections, about an hour — or five slides if that is all the time there is', { x: 1.25, y: 0.66, w: 9, h: 0.28, fontFace: 'Calibri', fontSize: 12.0, italic: true, color: MUTED, margin: 0 });
 
   const secs = [
-    ['1', 'Orientation & the business case', 'Slides 3–13', 'How it connects, the PCB flow (an AI feature, off at JLR), who else does this, and the business case ending in one decision', '24 min', BLUE, true],
+    ['1', 'Orientation & the business case', 'Slides 3–13', 'How it connects, the PCB flow (an AI feature, needs a key), who else does this, and the business case ending in one decision', '24 min', BLUE, true],
     ['2', 'Worked example one — die-cast aluminium housing', 'Slides 14–32', 'Twelve stages end to end: measure, ask, check, calculate, approve — with the calculation and the confidence band shown in full.', '22 min', TEAL, false],
     ['3', 'Worked example two — injection-moulded bumper fascia', 'Slides 33–45', 'The same method on a very different part, plus paint, two findings — and the new gear model', '18 min', PURPLE, false],
     ['4', 'The honest limits', 'Slide 46', 'Six things this tool cannot do, from us rather than from a sceptic in the room', '5 min', RED, true],
@@ -162,7 +162,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
 
   s.addNotes(
     'A quick map, because there is more here than an hour needs, and I would rather you chose than sat through all of it. ' +
-    'Section one sets the scene. How the pieces connect, the PCB photo flow, who else sells this kind of tool, and the business case. That section ends with one decision I am asking for. The PCB photo flow uses AI, so it is switched off in the JLR build. I show it so you know what exists, not because you can use it today. ' +
+    'Section one sets the scene. How the pieces connect, the PCB photo flow, who else sells this kind of tool, and the business case. That section ends with one decision I am asking for. The PCB photo flow uses AI, so at JLR it waits for an API key. I show it so you know what exists and what it will do once a key is added. ' +
     'Section two is the heart of the pack. One worked example, a die-cast aluminium housing, taken through all twelve stages. I show the calculation in full so you can check it with a calculator. ' +
     'Section three runs the same method on a bumper fascia. It is a very different part, and the money turns out to sit somewhere else. I finish that section with the new gear model. ' +
     'Section four is five minutes on what the tool cannot do. I would rather you heard that from me. ' +
@@ -193,7 +193,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 2.55, y: 1.02, w: 5.2, h: 1.12, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.5, dashType: 'dash' }, rectRadius: 0.09 });
   s.addShape('ellipse', { x: 2.70, y: 1.28, w: 0.44, h: 0.44, fill: { color: PURPLE } });
   s.addImage({ data: I.eye, x: 2.81, y: 1.39, w: 0.22, h: 0.22 });
-  s.addText('OPTIONAL AI — SWITCHED OFF AT JLR (AIR_GAPPED=1)', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
+  s.addText('OPTIONAL AI — NEEDS AN API KEY (NONE AT JLR YET)', { x: 3.28, y: 1.08, w: 4.35, h: 0.2, fontFace: 'Calibri', fontSize: 8.0, bold: true, color: PURPLE, charSpacing: 0.4, margin: 0 });
   s.addText([
     { text: 'When on: ', options: { color: SLATE } },
     { text: 'Rules only (default) · Compare · AI-led. ', options: { bold: true, color: NAVY } },
@@ -239,7 +239,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.65, y: 3.54, w: 2.0, h: 0.68, fill: { color: 'FFFFFF' }, line: { color: PURPLE, width: 1.5 }, rectRadius: 0.07 });
   s.addText('Photo of a PCB', { x: 0.78, y: 3.56, w: 1.74, h: 0.26, fontFace: 'Calibri', fontSize: 8.6, color: SLATE, margin: 0, valign: 'middle' });
   s.addShape('roundRect', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fill: { color: PURPLE }, rectRadius: 0.095 });
-  s.addText('AI · OFF AT JLR', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
+  s.addText('AI · NEEDS A KEY', { x: 0.78, y: 3.86, w: 1.15, h: 0.19, fontFace: 'Calibri', fontSize: 7.5, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle', margin: 0, charSpacing: 0.4 });
   s.addShape('line', { x: 0.55, y: 1.98, w: 0, h: 1.90, line: { color: PURPLE, width: 1.4, dashType: 'dash', beginArrowType: 'triangle', endArrowType: 'triangle' } });
   s.addShape('line', { x: 0.55, y: 1.98, w: 2.0, h: 0, line: { color: PURPLE, width: 1.4, dashType: 'dash', endArrowType: 'triangle' } });
   col(11.05, 1.8, 'WHAT COMES OUT', GREEN, ['8-bucket cost — every\nfigure shows its basis', 'Operation list —\nwhat takes the time', 'Confidence band +\n20-country comparison', 'DFM/DFA + savings\nranked in £/part\n(engine, not AI)', 'PDF · Excel · PowerPoint\nnegotiation pack'], 2.74, 0.76);
@@ -291,14 +291,14 @@ function divider(kicker, name, sub, col, items, mins, notes) {
   s.addShape('roundRect', { x: 0.45, y: 6.70, w: 12.4, h: 0.42, fill: { color: B.greenTint }, line: { color: GREEN, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Read it in one line:  ', options: { bold: true, color: GREEN } },
-    { text: 'everything badged AUTO is unattended — measure, derive, pick the machine, check, calculate, write the DFM/DFA and saving ideas. The engineer answers and approves. The AI is off at JLR, and even when on it can reach none of the money.', options: { color: SLATE } },
+    { text: 'everything badged AUTO is unattended — measure, derive, pick the machine, check, calculate, write the DFM/DFA and saving ideas. The engineer answers and approves. The AI needs a key at JLR, and even when on it can reach none of the money.', options: { color: SLATE } },
   ], { x: 0.65, y: 6.70, w: 12.0, h: 0.42, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
   s.addNotes(
     'Before the twelve stages, here is the whole thing on one picture. ' +
     'Start in the middle left. The blue box is the geometry kernel. It measures the CAD file: volume, weight, walls, holes and features. Nothing is guessed. Under it, the indigo box is the rules. They turn those measurements into cost inputs: cycle times, tooling, press size, yield. Thirteen commodities can be costed from CAD this way. ' +
     'Where geometry cannot decide something, such as the material family or the process route, the tool does not guess. It asks the engineer, the green box, and it will not cost the part until someone answers. ' +
-    'The purple box at the top is the AI. In the JLR build it is switched off. The code is still there, and a setting could turn it on later without a rebuild. When it is on, it hands back words, never money, and every AI route is rate-limited per user. The PCB photo flow needs it, so at JLR that screen is hidden. ' +
+    'The purple box at the top is the AI. In the JLR build it has no API key yet. The code is still there, and adding a key turns it on without a rebuild. When it is on, it hands back words, never money, and every AI route is rate-limited per user. The PCB photo flow needs it, so at JLR that screen is hidden. ' +
     'On the right, the rate library is the only source of money. The engine does fixed eight-bucket arithmetic, and the uncertainty layer turns the number into a range. The dashed arrow is learning from actuals: after three real prices for a commodity, the band is corrected. ' +
     'The green card top left is why you can trust the picture. Same file and same answers give the same price. There are 2,438 automated tests, and six real parts are pinned in a regression baseline. What I cannot claim yet is accuracy against a price JLR actually paid.'
   );
@@ -324,7 +324,7 @@ function divider(kicker, name, sub, col, items, mins, notes) {
     { text: '3 ', options: { bold: true, color: NAVY } }, { text: 'Writes the parts list — reference, package, quantity, part number — and its guess at size, layers and finish. ', options: { color: SLATE } },
     { text: 'It is not asked for a cost. The reply must match a fixed form.', options: { bold: true, color: PURPLE } },
   ], { x: 3.28, y: 1.29, w: 6.75, h: 0.5, fontFace: 'Calibri', fontSize: 8.2, margin: 0, valign: 'top' });
-  s.addText('Sonnet 5.5 reads the chips and writes the list · Opus 5.5 for "deep analysis" · rate-limited per user', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
+  s.addText('One model reads the chips and writes the list · a larger model for "deep analysis" · rate-limited per user', { x: 3.28, y: 1.79, w: 6.75, h: 0.2, fontFace: 'Calibri', fontSize: 7.6, italic: true, color: PURPLE, margin: 0 });
 
   // ── boundary ──
   s.addShape('roundRect', { x: 0.45, y: 2.18, w: 12.4, h: 4.4, fill: { color: 'FFFFFF' }, line: { color: TEAL, width: 1.75, dashType: 'dash' }, rectRadius: 0.12 });
@@ -493,7 +493,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   s.addShape('roundRect', { x: 0.5, y: 6.36, w: 12.33, h: 0.6, fill: { color: B.blueTint }, line: { color: BLUE, width: 1 }, rectRadius: 0.08 });
   s.addText([
     { text: 'Where we sit:  ', options: { bold: true, color: BLUE } },
-    { text: 'camp B by purpose — a buyer-side should-cost — reached by camp C’s route, from the physical board, automatically. The photo route needs AI, so it is off at JLR.', options: { color: SLATE } },
+    { text: 'camp B by purpose — a buyer-side should-cost — reached by camp C’s route, from the physical board, automatically. The photo route needs AI, so at JLR it needs a key.', options: { color: SLATE } },
   ], { x: 0.68, y: 6.36, w: 12.0, h: 0.6, fontFace: 'Calibri', fontSize: 9.8, margin: 0, valign: 'middle' });
 
   footer(s, ++PG);
@@ -503,7 +503,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     'Camp B is enterprise should-cost: aPriori, Siemens, FACTON, Tset, Boothroyd Dewhurst. Buyer-side, used by cost engineering and purchasing. aPriori ships a full PCBA costing module, so treat it as a mature, direct competitor. ' +
     'Camp C is reverse costing: Yole SystemPlus and TechInsights. They take a real board apart by hand and sell a report. ' +
     'Underneath all three, everyone rents their component prices from someone like SiliconExpert or Octopart. And the amber strip: JLCPCB will give you an instant price, but it is their selling price. You cannot negotiate with another supplier\u2019s quotation. ' +
-    'Where do we sit? Camp B by purpose, reached from the physical board like camp C. One honest caveat for JLR: the photo route needs AI, and AI is switched off in the JLR build. So at JLR today, a board is costed from typed inputs.'
+    'Where do we sit? Camp B by purpose, reached from the physical board like camp C. One honest caveat for JLR: the photo route needs AI, and the JLR build has no API key yet. So at JLR today, a board is costed from typed inputs.'
   );
 }
 
@@ -629,12 +629,12 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
 
   // verdict: 'w' = we lead, 'l' = we lose, 'n' = neutral/equal
   const rows2 = [
-    ['Starts from', 'A BOM file', 'A BOM + board spec', 'The physical board', 'A photograph\n(AI — off at JLR)', 'w'],
+    ['Starts from', 'A BOM file', 'A BOM + board spec', 'The physical board', 'A photograph\n(AI — needs a key)', 'w'],
     ['Automation', 'L2', 'L1–L2', 'L0 — people', 'L3', 'w'],
     ['Turnaround', 'Minutes', 'Hours (after data entry)', 'Weeks', 'Minutes', 'w'],
     ['Cost engine', 'Supplier price build-up', 'Deterministic should-cost', 'Bottom-up from teardown', 'Deterministic, 8-bucket,\n2,438 automated tests', 'n'],
     ['Component prices', 'Live distributor APIs', 'Licensed price libraries', 'Own price database', 'Live API built + wired\n— but UNCONFIGURED,\nso offline catalogue in practice', 'l'],
-    ['Runs air-gapped', 'No — cloud SaaS', 'On-prem possible', 'n/a — a service', 'Yes, AIR_GAPPED=1 —\nbut the photo read\nneeds AI', 'w'],
+    ['Runs air-gapped', 'No — cloud SaaS', 'On-prem possible', 'n/a — a service', 'Yes, no key needed —\nbut the photo read\nneeds AI', 'w'],
     ['Per-line evidence', 'Distributor quote ref', 'Model + library ref', 'Physical inspection', 'Evidence tag per line\n(legible / partial / inferred)', 'w'],
     ['PCBA accuracy\nvs actuals', 'Won/lost quote feedback', 'Vendor-claimed ROI cases', 'The reference standard', 'NOT VALIDATED — no PCBA\nactuals recorded yet', 'l'],
     ['Maturity', '300+ EMS customers claimed', 'Decades, thousands of seats', '250+ automotive teardowns', 'One board, internally', 'l'],
@@ -668,7 +668,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
     'Same axes as the last slide, with us in the indigo column. I have coloured our cell green only where I can defend it, and red where I cannot. ' +
     'The green rows first. We start from a photo rather than a BOM. We return an answer in minutes rather than weeks. We can run air-gapped. And every BOM line carries an evidence tag: legible, partly legible or inferred. I have not seen anyone else print that. ' +
     'But notice the caveat I have added. The photo read needs AI, and AI is off in the JLR build. So at JLR today, the photo route is not available. The board is costed from typed inputs on the PCB forms. ' +
-    'The component price row. Live distributor pricing is built and wired in, but it needs an API key and internet, and we do not have one. So in practice every price comes from the offline catalogue. It exists, and it is switched off. ' +
+    'The component price row. Live distributor pricing is built and wired in, but it needs an API key and internet, and we do not have one. So in practice every price comes from the offline catalogue. It exists, and it has no key. ' +
     'Now the red rows, which I would read first. We have never checked a PCBA estimate against a real invoice. More broadly, no estimate of any commodity has yet been compared with a price JLR paid. We measure accuracy as actuals are logged; we do not claim it up front. ' +
     'And maturity. Others have hundreds of customers or teardowns. We have done one board, internally. That is where we are.'
   );
@@ -738,7 +738,7 @@ FOOT = 'CostVision · who else automates PCBA costing · market landscape, sourc
   footer(s, ++PG);
   s.addNotes(
     'Last one on the market, and it is the decision slide for the PCB side. ' +
-    'Top left is what is genuinely ours, and I have kept the claim narrow. Photo to BOM exists elsewhere. Costing a PCBA from a BOM exists elsewhere. What I could not find is the two joined in one pass. That join lets a buyer cost a board when nobody will hand over the BOM. It depends on AI, which is off at JLR. ' +
+    'Top left is what is genuinely ours, and I have kept the claim narrow. Photo to BOM exists elsewhere. Costing a PCBA from a BOM exists elsewhere. What I could not find is the two joined in one pass. That join lets a buyer cost a board when nobody will hand over the BOM. It depends on AI, which needs a key at JLR. ' +
     'Top right, four things we should say before anyone else does. PCBA accuracy is not validated against a single invoice. Distributor pricing is built and waits for a key; the catalogue prices the board meanwhile. About twenty pounds of the brake ECU is Bosch captive silicon with no market price, and no data feed fixes that. And the placement rate: the process cost on that board rests on our library\u2019s placements per hour, and if a real line runs two or three times faster the number falls a lot. ' +
     'The three cards are what to do, in order of value for effort. Turn the price feed on where the network allows it. Cost one board where we already know the purchase price, and log it as an actual. And ask one EMS supplier for a real placement rate. ' +
     'Until then the headline stays what it is: a defensible, traceable estimate, not a priced quotation.'
@@ -974,7 +974,7 @@ FOOT = FOOT_MAIN;
   // KPI band
   const kpis = [
     ['2,438', 'automated tests, plus\nbrowser tests on every run', TEAL],
-    ['£0', 'marginal cost per estimate\n— AI off, no call to pay for', GREEN],
+    ['£0', 'marginal cost per estimate\n— no AI call to pay for', GREEN],
     ['20', 'manufacturing regions\npriced on every run', BLUE],
     ['Every', 'cost line carries its\nown printed derivation', NAVY],
   ];
@@ -1031,7 +1031,7 @@ FOOT = FOOT_MAIN;
   footer(s, ++PG);
   s.addNotes(
     'Second half of the business case: what is proven, what is covered, and what it costs to run. ' +
-    'The four figures across the top. 2,438 automated tests, plus browser tests that cost every commodity, export Excel and PDF, upload an STL and check accessibility on every run. Zero marginal cost per estimate, because with AI off there is no call to pay for; it is arithmetic on your own machine. Twenty regions priced on every run. And every cost line shows how it was worked out. ' +
+    'The four figures across the top. 2,438 automated tests, plus browser tests that cost every commodity, export Excel and PDF, upload an STL and check accessibility on every run. Zero marginal cost per estimate, because without an AI key there is no call to pay for; it is arithmetic on your own machine. Twenty regions priced on every run. And every cost line shows how it was worked out. ' +
     'The table is the honest part. The engine matches a hand calculation to under 0.01 percent on a reference machined bracket. Six real production parts, a steering knuckle, two castings, a pressed seat bracket, a machined part and a gear, are pinned in a regression baseline, so a change that moves any of them fails the build. ' +
     'But pinned is not the same as right. No estimate has yet been compared with a price JLR actually paid. So I quote no accuracy percentage. We measure accuracy as actuals are logged, and after three for a commodity the band is corrected by real data. ' +
     'The donut shows coverage: nineteen manufacturing processes, thirteen of them costed straight from CAD on rules, the rest from the form. The card shows the rate library behind it: version 2.1.0, dated sixteenth of June 2026. ' +
@@ -1103,7 +1103,7 @@ FOOT = FOOT_MAIN;
   s.addText('THE FOUR OBJECTIONS — AND WHAT IS ALREADY BUILT FOR THEM', { x: 6.78, y: 3.84, w: 5.9, h: 0.22, fontFace: 'Calibri', fontSize: 8.2, bold: true, color: AMBER, charSpacing: 0.4, margin: 0 });
   [
     ['“It will be wrong on parts it has not seen.”', 'Every actual is logged; after 3 per commodity the band is corrected. 6 real parts pinned so far — none yet checked against a JLR price.'],
-    ['“The AI is inventing numbers.”', 'AI is switched off at JLR, and even when on it never sets a price. Every cost line prints its own derivation.'],
+    ['“The AI is inventing numbers.”', 'AI needs an API key at JLR, and even when on it never sets a price. Every cost line prints its own derivation.'],
     ['“Rates go stale and nobody notices.”', 'The engine blocks a duty rate that is unverified or over 90 days old rather than quietly using it. The refresh gets a named owner in the pilot.'],
     ['“Engineering will read it as criticism.”', 'Already changed: the output is savings ranked by category, with no score and no severity anywhere an engineer sees.'],
   ].forEach(([q, a], i) => {
@@ -1122,7 +1122,7 @@ FOOT = FOOT_MAIN;
 
   s.addNotes(
     'This is the ask. One specific, small, time-boxed decision. ' +
-    'Approve a ninety-day pilot on forty parts. One named owner, about a third of an engineer, one laptop or virtual machine, roughly twenty-five thousand pounds one-off. No licence, no per-seat cost, and no per-estimate cost, because with AI off there is nothing to pay for per run. Nothing recurring is committed until day ninety. ' +
+    'Approve a ninety-day pilot on forty parts. One named owner, about a third of an engineer, one laptop or virtual machine, roughly twenty-five thousand pounds one-off. No licence, no per-seat cost, and no per-estimate cost, because without an AI key there is nothing to pay for per run. Nothing recurring is committed until day ninety. ' +
     'Scope. Forty live parts across four or five commodities we already buy, chosen with purchasing. A mix of parts already quoted and parts still in design, so we test both value streams. Out of scope: no supplier is told a number came from a tool, and an engineer owns every figure before it leaves the building. ' +
     'Three phases. Set up: install the Windows package, load our own rates through the Rate Converter workbook, re-run the six baseline parts, train two engineers. Run the basket, logging every quote or PO price as an actual. Then measure and decide. ' +
     'The criteria on the right are the part I would most like you to hold me to, and I want them agreed today. If we miss them, stopping is the right answer. ' +
@@ -1159,7 +1159,7 @@ divider('SECTION TWO', 'A Die-Cast Aluminium Housing', 'One worked example, foll
   'That is the orientation done. Now I want to slow right down and take one part through all twelve stages. The only fair way to judge a costing tool is to watch it work on something concrete. ' +
   'This is a die-cast aluminium housing. It is a worked example: the inputs are the kind the kernel measures from a STEP file, and every pound you will see is real engine output from those inputs. I re-ran it against today\u2019s engine and rate library before this session, and the figures still match. ' +
   'Over the next slides you will see what the kernel measures, and what the tool asks the engineer because geometry cannot decide it. Then the four automatic guards, and what happens when an input disagrees with the geometry. Then how the press is chosen by physics, where every cutting minute comes from, and the eight buckets, the country comparison, the confidence band and the sign-off. ' +
-  'In the JLR build the AI is switched off, so wherever I mention it, I am describing an optional mode, not what you will see on your laptop. ' +
+  'In the JLR build the AI has no API key yet, so wherever I mention it, I am describing an optional mode, not what you will see on your laptop today. ' +
   'If you take one slide from this section, take the calculation slide. You can check it with a calculator while I talk.');
 
 partSlide('assets/workflow-deck/part-housing.png',
@@ -1194,7 +1194,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   const phases = [
     [BLUE, BLUE_T, 'MEASURE', 'Ruler', ['1 · Upload the file', '2 · Measure the geometry', '3 · Sense-check the shape'], 'Facts, not opinions'],
-    [PURPLE, PURPLE_T, 'ASK', 'Engineer · AI off at JLR', ['4 · The tool asks what', '   geometry cannot decide', '   material · route · volume'], 'Asked, never guessed'],
+    [PURPLE, PURPLE_T, 'ASK', 'Engineer · AI needs a key', ['4 · The tool asks what', '   geometry cannot decide', '   material · route · volume'], 'Asked, never guessed'],
     [AMBER, AMBER_T, 'SAFETY CHECKS', 'Engine', ['5 · Four automatic guards', '6 · Autocorrect wrong calls', '   before any money is counted'], 'Measurements always win'],
     [TEAL, TEAL_T, 'CALCULATE', 'Engine', ['7 · Pick machines & cycles', '8 · Cost every operation', '9-10 · Build & regionalise'], 'Fixed formulas'],
     [GREEN, GREEN_T, 'CHECK & USE', 'Engineer', ['11 · Confidence band', '12 · Report & approval'], 'A person signs it off'],
@@ -1220,7 +1220,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 
   s.addNotes(
     'Here is the part, and the map of where we are going. Two point eight kilos finished, walls about three millimetres, two precision bores, sixteen holes to drill and tap, two faces to machine flat. Sixty thousand a year, and we are looking at making it in China. ' +
-    'Underneath are the five phases. Blue, the tool measures the part. Purple, it asks the engineer what geometry cannot decide: the material family, the process route where there is a real choice, the volume and the region. In the JLR build this is always the engineer, because AI is switched off. Amber, four automatic safety checks. Teal, the engine calculates. Green, a person checks the range and signs it off. ' +
+    'Underneath are the five phases. Blue, the tool measures the part. Purple, it asks the engineer what geometry cannot decide: the material family, the process route where there is a real choice, the volume and the region. In the JLR build this is always the engineer, because the AI has no key yet. Amber, four automatic safety checks. Teal, the engine calculates. Green, a person checks the range and signs it off. ' +
     'Look at the box at the bottom, because it answers the question I was asked most last time: how much of this is AI? At most one stage of twelve could ever involve it, and at JLR it is off. Three stages measure, one asks, two check, four calculate and two are review. ' +
     'That is deliberate. We did not build an AI tool and bolt costing onto it. We built a costing engine. The AI, when it is switched on, is a small, bounded helper that can read and classify. It never sets a price. Everything else is engineering you can audit.'
   );
@@ -1269,7 +1269,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   s.addShape('roundRect', { x: 0.5, y: 5.72, w: 12.33, h: 0.9, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Where is the AI?  Nowhere. ', options: { bold: true, color: PURPLE } },
-    { text: 'At JLR it is switched off. Even when it is on, the measurements come first, so anything it says can be checked against an independent set of facts.', options: { color: SLATE } },
+    { text: 'At JLR it needs an API key. Even when it is on, the measurements come first, so anything it says can be checked against an independent set of facts.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.83, w: 11.75, h: 0.7, fontFace: 'Calibri', fontSize: 12.0, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -1352,7 +1352,7 @@ partSlide('assets/workflow-deck/part-housing.png',
 // ══════════ 5 · AI READS ══════════
 {
   const s = pres.addSlide(); s.background = { color: PAGE };
-  title(s, 'Stage 4 · The Tool Asks, the Engineer Answers', 'Where geometry cannot decide, the tool asks rather than guesses — AI is switched off at JLR', PURPLE);
+  title(s, 'Stage 4 · The Tool Asks, the Engineer Answers', 'Where geometry cannot decide, the tool asks rather than guesses — AI needs an API key at JLR', PURPLE);
   owner(s, 10.3, 0.74, 'OWNER: THE ENGINEER', PURPLE, PURPLE_T);
 
   s.addShape('roundRect', { x: 0.5, y: 1.3, w: 6.0, h: 2.75, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1.25 }, rectRadius: 0.1 });
@@ -1397,7 +1397,7 @@ partSlide('assets/workflow-deck/part-housing.png',
   footer(s, ++PG);
 
   s.addNotes(
-    'Stage four. This used to be the AI slide. At JLR it is the engineer\u2019s slide, because the AI is switched off. ' +
+    'Stage four. This used to be the AI slide. At JLR it is the engineer\u2019s slide, because the AI has no key yet. ' +
     'Here is what happens. The kernel has measured the part and the rules have derived what they can. Some things geometry cannot settle. What material family is it? Where more than one process could make it, which route? How many a year, and where? The tool asks those questions instead of guessing, and it will not cost the part until each one is answered. ' +
     'There is one routing rule worth knowing. A part with thick, sparse walls, over about six millimetres, is only offered casting, forging, cast plus machine or machining. Never sheet metal or moulding. So the question itself is already sensible. ' +
     'For this housing, the engineer answers: aluminium die-casting alloy, high-pressure die cast, then machined, sixty thousand a year, China. ' +
@@ -1919,7 +1919,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
   const promises = [
     ['Same part, same report', 'Deterministic and unit-tested: identical inputs produce an identical report, every run. Every threshold is a named constant in code a reviewer can read — not a prompt.', I.check, TEAL],
     ['Honest saving maths', 'The headline saving is NOT the sum of every issue — it is the root-sum-square of the top three, capped at 40%. Stacked opportunities are never allowed to promise an impossible discount.', I.calc, GREEN],
-    ['The AI cannot touch it', 'AI is off at JLR. If switched on, it may add display-only commentary to the CAD panel. It writes no score, severity, saving or recommendation in this report.', I.shield, AMBER],
+    ['The AI cannot touch it', 'AI needs an API key at JLR. If switched on, it may add display-only commentary to the CAD panel. It writes no score, severity, saving or recommendation in this report.', I.shield, AMBER],
   ];
   promises.forEach(([t, d, ico, c], i) => {
     const y = 3.46 + i * 0.99;
@@ -2179,7 +2179,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
 
   const lanes = [
     [BLUE, BLUE_T, 'THE RULER', 'Measures the CAD file', ['Volume, weight, walls', 'Bores, holes, faces', 'Hollow-vs-solid check'], 'Same answer every time'],
-    [PURPLE, PURPLE_T, 'THE AI', 'Off at JLR · optional', ['Could suggest the alloy', 'Could suggest the route', 'Never sets a price'], 'Words only. Never money.'],
+    [PURPLE, PURPLE_T, 'THE AI', 'Needs a key · optional', ['Could suggest the alloy', 'Could suggest the route', 'Never sets a price'], 'Words only. Never money.'],
     [AMBER, AMBER_T, 'THE GUARDS', 'Check and autocorrect', ['Pour weight, not part weight', 'Machining = finishing', 'Right alloy, right press'], 'Measurements always win'],
     [TEAL, TEAL_T, 'THE ENGINE', 'Does every calculation', ['Sizes the machine', 'Builds each cycle time', '8 buckets, 20 countries'], 'Fixed formulas, traceable'],
     [GREEN, GREEN_T, 'THE ENGINEER', 'Answers and approves', ['Sets volume and region', 'Answers what geometry can\u2019t — their entry always wins', 'Signs off the number'], 'The final decision'],
@@ -2209,7 +2209,7 @@ function ladderPanel(s, x, y, w, h, title, chain, rows, note) {
 
   s.addNotes(
     'Here is the whole thing on one page. It is the answer to the question you asked after the last session: who does what? ' +
-    'Five players, left to right, in the order they act. The ruler, the geometry kernel, measures the CAD file and gives the same answer every time. The AI is switched off at JLR. If it were ever switched on, it could suggest the alloy and the route, as words, never money. The guards check every input against the measurements and correct it where they disagree. The engine does every calculation: it sizes the machine, builds the cycle times, fills the eight buckets and reprices across twenty countries, with fixed formulas you can trace. And the engineer sets the volume and region, answers what geometry cannot decide, can override any choice, and signs off the number. ' +
+    'Five players, left to right, in the order they act. The ruler, the geometry kernel, measures the CAD file and gives the same answer every time. The AI needs an API key at JLR. If it were switched on, it could suggest the alloy and the route, as words, never money. The guards check every input against the measurements and correct it where they disagree. The engine does every calculation: it sizes the machine, builds the cycle times, fills the eight buckets and reprices across twenty countries, with fixed formulas you can trace. And the engineer sets the volume and region, answers what geometry cannot decide, can override any choice, and signs off the number. ' +
     'The line in the middle is the tool in one sentence. The tool measures. The engineer answers. The engine calculates. A person approves. ' +
     'The result on this housing is thirty-eight pounds fifty-five, with a band of roughly thirty-two to forty-five pounds. Every penny traces back to a measurement, an answer or a library rate. ' +
     'That is the workflow. If it would help, I can run it live on a part you choose, so you can watch each stage happen.'
@@ -2248,7 +2248,7 @@ divider('SECTION THREE', 'A Moulded Bumper Fascia', 'The same method, a part tha
 
   const phases = [
     [BLUE, BLUE_T, 'MEASURE', 'Ruler', ['1 · Upload the file', '2 · Measure the geometry', '3 · Draft & undercut check'], 'Same kernel, same facts'],
-    [PURPLE, PURPLE_T, 'ASK', 'Engineer · AI off at JLR', ['4 · The tool asks what', 'geometry cannot decide', 'resin · route · finish'], 'Asked, never guessed'],
+    [PURPLE, PURPLE_T, 'ASK', 'Engineer · AI needs a key', ['4 · The tool asks what', 'geometry cannot decide', 'resin · route · finish'], 'Asked, never guessed'],
     [AMBER, AMBER_T, 'SAFETY CHECKS', 'Engine', ['5 · Four automatic guards', '6 · Autocorrect wrong calls', 'before any money is counted'], 'Measurements always win'],
     [TEAL, TEAL_T, 'CALCULATE', 'Engine', ['7 · Pick press & cycle', '8 · Cost every second', '9-10 · Build & regionalise'], 'The same eight buckets'],
     [GREEN, GREEN_T, 'CHECK & USE', 'Engineer', ['11 · Confidence band', '12 · Report & approval'], 'A person signs it off'],
@@ -2345,7 +2345,7 @@ partSlide('assets/workflow-deck/part-bumper.png',
   s.addShape('roundRect', { x: 0.5, y: 5.75, w: 12.33, h: 0.85, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1 }, rectRadius: 0.1 });
   s.addText([
     { text: 'Identical to the casting: ', options: { bold: true, color: PURPLE } },
-    { text: 'stages 1 to 3 measure first; stage 4 is the engineer answering what geometry cannot decide. AI is off at JLR — and even when on, it never sees a price, a rate or a machine.', options: { color: SLATE } },
+    { text: 'stages 1 to 3 measure first; stage 4 is the engineer answering what geometry cannot decide. AI needs a key at JLR — and even when on, it never sees a price, a rate or a machine.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.86, w: 11.75, h: 0.66, fontFace: 'Calibri', fontSize: 11.5, margin: 0, valign: 'middle' });
   footer(s, ++PG);
 
@@ -3008,7 +3008,7 @@ divider('APPENDIX', 'Reference Material', 'Everything behind the numbers — kep
   null,
   'That is the end of the hour. Everything from here is reference material. I do not plan to present it. It is here so that when someone asks how the DFM rules work, what the tool is built from, or whether anything calls out to the internet, the answer is in the pack and not only in my head. ' +
   'There are two groups. First, the complete DFM and DFA rule library: every threshold rule, every geometry advisor and every idea lever, with the exact numbers they fire on. It was transcribed from the engine\u2019s source code, so if the engine changes, these slides must change too. ' +
-  'Second, the technical architecture for engineers: what each box is built from, what data passes between them, the licences, and a straight answer on what talks to the outside world. In the JLR build, with AI off, the answer is nothing on the costing path. ' +
+  'Second, the technical architecture for engineers: what each box is built from, what data passes between them, the licences, and a straight answer on what talks to the outside world. In the JLR build, without an AI key, the answer is nothing on the costing path. ' +
   'Jump to whichever gets asked about.');
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -3063,7 +3063,7 @@ const TIMEC = { 'Quick win': GREEN, 'Medium term': AMBER, 'Long term': SLATE, 'Q
   s.addShape('roundRect', { x: 0.5, y: 5.28, w: 12.33, h: 0.7, fill: { color: PURPLE_T }, line: { color: PURPLE, width: 1, dashType: 'dash' }, rectRadius: 0.1 });
   s.addText([
     { text: 'Where the AI sits:  ', options: { bold: true, color: PURPLE } },
-    { text: 'nowhere in the rules. Every check and saving on the next seven slides is deterministic engine code. The optional "AI deep analysis" (off at JLR) only writes commentary on findings the rules made — it cannot add, remove or re-rank one.', options: { color: SLATE } },
+    { text: 'nowhere in the rules. Every check and saving on the next seven slides is deterministic engine code. The optional "AI deep analysis" (needs a key) only writes commentary on findings the rules made — it cannot add, remove or re-rank one.', options: { color: SLATE } },
   ], { x: 0.8, y: 5.33, w: 11.75, h: 0.6, fontFace: 'Calibri', fontSize: 10.5, margin: 0, valign: 'middle' });
 
   s.addShape('roundRect', { x: 0.5, y: 6.14, w: 12.33, h: 0.76, fill: { color: NAVY }, rectRadius: 0.1 });
@@ -3673,7 +3673,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
     ['Guardrails + self-audit', 'TypeScript (engine + server)', 'in engine', 'Yes — our own code', 'No', GREEN],
     ['Rate library — 20 regions', 'TypeScript data files, in git', 'in engine', 'Yes — our own data', 'No', GREEN],
     ['Server + database', 'TypeScript · Express + SQLite', '~17,300', 'Yes — MIT', 'Localhost only', GREEN],
-    ['AI — OFF AT JLR (optional)', 'TypeScript · Anthropic SDK', '—', 'SDK free · API paid per token', 'Only if switched on', PURPLE],
+    ['AI — NEEDS A KEY (optional)', 'TypeScript · Anthropic SDK', '—', 'SDK free · API paid per token', 'Only if switched on', PURPLE],
     ['Automated tests', 'TypeScript · Vitest', '~28,300', 'Yes — MIT', 'No', GREEN],
   ];
   rows.forEach((r, ri) => {
@@ -3696,7 +3696,7 @@ FOOT = 'CostVision · technical architecture — what each box is made of, and w
   s.addShape('roundRect', { x: 0.5, y: 6.00, w: 12.33, h: 0.94, fill: { color: CARD }, line: { color: NAVY, width: 1.5 }, rectRadius: 0.08 });
   s.addText('DOES IT CALL ANYTHING? — API, KPI AND TELEMETRY, IN FULL', { x: 0.68, y: 6.04, w: 6, h: 0.18, fontFace: 'Calibri', fontSize: 7.8, bold: true, color: NAVY, charSpacing: 0.5, margin: 0 });
   const net = [
-    ['API calls', 'None at JLR', 'The optional AI is off (AIR_GAPPED=1). The costing path never calls out.', PURPLE],
+    ['API calls', 'None at JLR', 'The optional AI has no key. The costing path never calls out.', PURPLE],
     ['KPI calls', 'None. Not one.', 'No KPIs measured, no usage tracked, no per-seat licence check phoning home. No analytics call of any kind.', GREEN],
     ['Error telemetry', 'Yes — stays in-house', 'Uncaught errors go to YOUR server\u2019s log. No Sentry, no analytics, no third party.', AMBER],
     ['Optional feeds', 'None price a part', 'PCB live prices (off) · news (needs internet) · dashboard ticker (indicative, simulated).', MUTED],

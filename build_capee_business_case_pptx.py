@@ -20,7 +20,7 @@ RULES THIS FILE FOLLOWS.
    says so on its face. Option 2 does use an AI assistant, and the approval to
    use AI is listed as the first thing it needs — stated, not buried.
 
-2. AI IS OFF AT JLR, AND NEVER PRICES. The JLR build runs with AIR_GAPPED=1.
+2. AI NEEDS AN API KEY, AND NEVER PRICES. The JLR build has no key yet.
    The AI features (board photo, RFQ pack, assistant) are hidden there, so
    slide 3 labels them as the optional AI mode. Even when it is on, the AI only
    reads and sorts; the money is `computeUniversalStack` on the rate library.
@@ -491,7 +491,7 @@ def tile(slide, x, y, w, h, icon, title, body, accent):
 s = header('Option 2: what CostVision does', 'Option 2 · the capability')
 text(s, Inches(0.45), Inches(1.66), Inches(12.4), Inches(0.3),
      [[('The top row runs in the JLR build today, with no AI. The bottom row needs the optional AI '
-        'mode, which is switched off at JLR.', 11.5, BODY, False)]])
+        'mode, which needs an API key.', 11.5, BODY, False)]])
 tiles = [
     # Top row — no AI anywhere in it. These run under a deny-all-egress firewall.
     ('cog', 'Cost a whole basket, unattended',
@@ -504,15 +504,15 @@ tiles = [
      'It flags what makes a part expensive and suggests changes, with an estimated '
      'saving on each.', GREEN),
     # Bottom row — these read something a person would otherwise read, so they
-    # need a model. AI is switched off in the JLR build; these are hidden there.
+    # need a model. The JLR build has no API key; these are hidden there.
     ('eye', 'A board photo becomes a BOM',
-     'AI mode, off at JLR. A photo of a circuit board is read into a parts list '
-     'and board spec, then costed by the engine.', VIOLET),
+     'AI mode, needs a key. The model reads the chips and lists the parts; the tool '
+     'prices every line from its own tables and costs the board.', VIOLET),
     ('clip', 'An RFQ pack becomes costed lines',
-     'AI mode, off at JLR. The line items are read out of the pack, then each one '
+     'AI mode, needs a key. The line items are read out of the pack, then each one '
      'is costed by the engine.', VIOLET),
     ('person', 'An assistant does the setting up',
-     'AI mode, off at JLR. It suggests the process route and fills in the form. '
+     'AI mode, needs a key. It suggests the process route and fills in the form. '
      'The engineer checks it and the engine prices it.', VIOLET),
 ]
 tw, tg = Inches(4.01), Inches(0.2)
@@ -524,7 +524,7 @@ callout(s, Inches(0.45), Inches(6.32), Inches(12.43), Inches(0.95), PANEL2, INDI
         'All six end in the same engine',
         'Where the AI mode is used, it only reads and sorts. It never sets a price. The money comes '
         'from the same fixed rules and the same rate book in all six, so every number can be traced '
-        'to a rate. With AI off, as at JLR, the top row works exactly the same.')
+        'to a rate. Without a key, as at JLR today, the top row works exactly the same.')
 notes(s, "This slide is about what CostVision can do beyond Option one. The split is not between "
          "what works and what does not. It is between what needs AI and what does not. The top row "
          "needs no AI at all, and it runs in the build we have given JLR today. First, a whole basket. "
@@ -534,8 +534,8 @@ notes(s, "This slide is about what CostVision can do beyond Option one. The spli
          "affects. Second, supplier quotes. Put their price next to our build-up and it shows, bucket "
          "by bucket, where the gap is and what to ask. Third, design changes. It flags what makes a "
          "part expensive and suggests changes with an estimated saving. Now the bottom row. These "
-         "need the AI mode, and I want to be clear: AI is switched off in the JLR build. The code is "
-         "there, so it could be turned on later with a setting, but these three screens are hidden "
+         "need the AI mode, and I want to be clear: the JLR build has no API key yet. The code is "
+         "there, so adding a key turns it on, but these three screens are hidden "
          "until it is. They are a board photo read into a parts list, an RFQ pack read into lines, "
          "and an assistant that helps set up a part. With AI on, each user is also rate-limited. The "
          "blue strip is the rule I would want you to leave with. Even with AI on, it only reads and "
@@ -598,7 +598,7 @@ wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.7), VIOLET,
            ('',),
            ('We can cost electronics', VIOLET, True),
            ('PCB fabrication, PCBA and wiring harness.',),
-           ('A board photo needs the AI mode, off at JLR.',),
+           ('A board photo needs the AI mode and a key.',),
            ('',),
            ('Software costed too', VIOLET, True),
            ('A 49-module model, from powertrain and',),
@@ -613,7 +613,7 @@ wide_card(s, Inches(4.63), Inches(1.98), Inches(8.25), Inches(4.7), VIOLET,
            ('',),
            ('A whole RFQ pack costed', VIOLET, True),
            ('Line items read out and priced. Needs the AI',),
-           ('mode, which is off at JLR.',),
+           ('mode, which needs a key.',),
            ('',),
            ('Design changes with a price on them', VIOLET, True),
            ('What makes the part expensive, and an',),
@@ -635,7 +635,7 @@ notes(s, "This is what we get from each option, written in kind rather than in p
          "the model cannot show. It uses one method for metal, plastic, rubber, composites, "
          "electronics and assemblies: nineteen manufacturing processes in all, across twenty regions. "
          "It costs PCB fabrication, PCBA and harnesses from their inputs. Reading a board from a photo "
-         "needs the AI mode, which is off at JLR. It also has a forty-nine-module software cost model. "
+         "needs the AI mode and a key. It also has a forty-nine-module software cost model. "
          "The second half is for purchasing. It shows where a supplier's price differs from our build-"
          "up, bucket by bucket, and what to ask. An RFQ pack can be read in, but again only with AI on. "
          "And design changes come with an estimated saving. The green strip is about order. Option "
@@ -682,7 +682,7 @@ callout(s, Inches(0.45), Inches(4.33), Inches(12.43), Inches(0.9), GREENBG, GREE
 
 strip(s, Inches(0.45), Inches(5.36), Inches(12.43), Inches(0.58),
       'The rule that does not bend',
-      'AI is off at JLR. Even when on, it never sets a price. The money is plain arithmetic '
+      'AI needs an API key. Even when on, it never sets a price. The money is plain arithmetic '
       'on our rate book.', INDIGO)
 strip(s, Inches(0.45), Inches(5.98), Inches(12.43), Inches(0.58),
       'If the trial disappoints',
@@ -703,7 +703,7 @@ notes(s, "So this is the decision. I have split it into what I am asking for tod
          "engineer for the trial. Option two needs that plus our rates. AI approval is only needed "
          "if we later want the photo, RFQ and assistant features. The green strip is why the trial "
          "matters. It gives us two numbers nobody can state today: how close the tool gets to a price "
-         "we paid, and how much of the input it fills itself. Then three plain points. AI is off at "
+         "we paid, and how much of the input it fills itself. Then three plain points. AI needs a key at "
          "JLR, and even when on it never sets a price. Second, the exit. Here is what is proven: the "
          "engine matches a hand calculation to under 0.01 percent on a reference part, six real "
          "production parts are pinned in a regression test, and there are 2,438 automated tests. "

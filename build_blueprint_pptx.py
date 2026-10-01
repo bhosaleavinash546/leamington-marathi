@@ -201,8 +201,8 @@ text(s, Inches(0.9), Inches(2.15), Inches(11.8), Inches(1.0),
      [[('CostVision Implementation Blueprint', 36, ON_DARK, True)]], font=TITLE_FONT)
 text(s, Inches(0.9), Inches(3.1), Inches(11.4), Inches(0.9),
      [[('How we run CostVision safely inside the company, and how it could plug into CAPEE.', 19, HERO_SUB, False)],
-      [('CAD files stay on the machine that measures them. The JLR build runs with AI switched off.', 19, HERO_SUB, False)]])
-for i, (t, c) in enumerate([('CAD stays in-house', GREEN), ('AI off in JLR build', BLUE), ('Runs on a laptop', VIOLET), ('6-phase plan', CYAN)]):
+      [('CAD files stay on the machine that measures them. The JLR build has no API key yet.', 19, HERO_SUB, False)]])
+for i, (t, c) in enumerate([('CAD stays in-house', GREEN), ('AI needs a key', BLUE), ('Runs on a laptop', VIOLET), ('6-phase plan', CYAN)]):
     x = Inches(0.9 + i * 2.95)
     chip = box(s, x, Inches(4.55), Inches(2.7), Inches(0.52), fill=ON_DARK, round_=True, radius=0.5)
     tf = chip.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -215,8 +215,8 @@ notes(s, "Thanks for making the time. This is the implementation blueprint for C
          "First, how we run the tool safely inside the company, so CAD data never leaves our hands. Second, how it "
          "could plug into CAPEE, the should-cost software our teams already use. "
          "I want to be clear about where we are. The tool is built. The version JLR has runs on a single laptop, "
-         "with no installer, no admin rights and no internet. The AI features are switched off in that build, "
-         "because we don't have AI approval yet. The code is still there, and one setting can turn it back on later. "
+         "with no installer, no admin rights and no internet. The AI features wait for an API key in that build, "
+         "and none has been added yet. The code is still there, and adding a key turns it on later. "
          "Everything on these slides was checked against the code this month. Where something is a plan and not a "
          "thing that exists, I'll say so. At the end I'll ask for one decision: approval to start phases one and two.")
 
@@ -230,7 +230,7 @@ text(s, Inches(0.8), Inches(2.35), Inches(11.8), Inches(1.1),
      line_spacing=1.2)
 pts = [
     ('Why now', 'The tool is built and has 2,438 automated tests. What is left is deployment work, not building the tool.', BLUE),
-    ('Why it is safe', 'CAD is measured on the same machine. The JLR build has AI switched off. A laptop build needs no internet.', GREEN),
+    ('Why it is safe', 'CAD is measured on the same machine. The JLR build has no API key yet. A laptop build needs no internet.', GREEN),
     ('Why CAPEE', 'CAPEE stays the tool teams use. The plan is for CostVision to work behind it as the costing engine. Nothing is ripped out.', VIOLET),
 ]
 for i, (t, d, c) in enumerate(pts):
@@ -244,7 +244,7 @@ notes(s, "I have one ask today: approve the first two phases. That's the securit
          "Why now? The tool itself is built. It has two thousand four hundred and thirty-eight automated tests. What "
          "is left is deployment work, not building the tool. "
          "Why is it safe? The CAD file is measured on the same machine that runs the tool. Nothing is sent out. In "
-         "the JLR build the AI is switched off, and the laptop version needs no internet at all. "
+         "the JLR build the AI waits for an API key, and the laptop version needs no internet at all. "
          "And why CAPEE? Because we are not replacing it. CAPEE stays the tool our teams open every day. The plan is "
          "for CostVision to sit behind it as the costing engine. To be clear, that connection is a plan. It is not "
          "built yet, and phase two is where we design it properly.")
@@ -285,7 +285,7 @@ notes(s, "A quick recap for anyone new. CostVision works out what a part should 
 s = header('Two layers — rules always on, AI optional', 'The concept · explained')
 text(s, Inches(0.45), Inches(1.78), Inches(12.4), Inches(0.4),
      [[('Left: what runs in the JLR build today, with no AI. Right: the optional AI mode, '
-        'switched off at JLR.', 12.5, BODY, False, True)]],
+        'needing an API key.', 12.5, BODY, False, True)]],
      line_spacing=1.05)
 
 def _agent_panel(x, accent, fillc, head, tag, examples):
@@ -310,8 +310,8 @@ _agent_panel(Inches(0.45), BLUE, PANEL, 'Rules and arithmetic',
      ('Learning from actuals', 'After 3 logged prices, the band uses real data.'),
      ('Negotiation', 'Compares a supplier quote with should-cost, bucket by bucket.')])
 _agent_panel(Inches(6.8), VIOLET, PANEL2, 'Optional AI mode',
-    'Switched off at JLR — code kept, one setting turns it on',
-    [('PCB photo to BOM', 'Reads a board photo and lists the parts.'),
+    'Needs an API key — code kept, adding a key turns it on',
+    [('PCB photo to BOM', 'The model lists the parts; the tool prices every line and costs the board.'),
      ('Describe a part', 'Type a description; it suggests the inputs.'),
      ('AI assistant and agent', 'Answers costing questions from your own rates.'),
      ('Rate-limited', 'When on, every AI route is limited per user.')])
@@ -328,7 +328,7 @@ notes(s, "I want to slow down here, because people often mix these two layers up
          "mistakes, like the wrong machine size or tooling spread over the wrong volume. Logged prices tighten the "
          "uncertainty band. And the negotiation view compares a supplier quote with the should-cost, bucket by bucket. "
          "On the right is the optional AI mode. Reading a PCB photo, describing a part in words, the assistant and "
-         "the agent. At JLR all of that is switched off and hidden. The code is still in the product, so a setting "
+         "the agent. At JLR all of that waits for an API key and is hidden until then. The code is still in the product, so a key "
          "can turn it on later without a rebuild. If it is turned on, each user is rate-limited. "
          "The line at the bottom holds in both columns. AI never sets a price. At most it reads or classifies. "
          "The money is always arithmetic.")
@@ -368,7 +368,7 @@ stack = [
     ('Backend', 'The engine room', 'The server program that does the work: the cost engines for 19 processes, sign-in, exports. Same code on a laptop or a server.', INDIGO),
     ('Database', 'The memory', 'Today: a local database file holding rates, saved scenarios and logged actuals. Plan: move to the corporate database for a shared server.', VIOLET),
     ('CAD engine', 'The 3D model reader', 'OpenCASCADE geometry software. Measures volume, weight, size, walls, holes and features. Runs inside the backend.', CYAN),
-    ('AI layer', 'Optional, off at JLR', 'Every AI call goes through one control point. It can be switched off (as at JLR) or pointed at a private endpoint.', GREEN),
+    ('AI layer', 'Optional, needs a key', 'Every AI call goes through one control point. It can be switched off, or pointed at a private endpoint.', GREEN),
 ]
 for i, (t, tag, d, c) in enumerate(stack):
     y = Inches(2.05 + i * 0.95)
@@ -386,8 +386,8 @@ notes(s, "Before the architecture, here are the five building blocks in plain wo
          "move is not done yet. "
          "The CAD engine is OpenCASCADE, the geometry software that measures the model. It runs inside the backend, "
          "not in anyone's cloud. "
-         "And the AI layer. Every AI call has to pass through one control point in the code. At JLR it is switched "
-         "off. If we ever get approval, the same control point can send calls to a private endpoint instead of the "
+         "And the AI layer. Every AI call has to pass through one control point in the code. At JLR it has no "
+         "key. If we ever get approval, the same control point can send calls to a private endpoint instead of the "
          "public one.")
 
 # ═══════════════ 5 — THE REQUIREMENT & KEY FINDING ═══════════════
@@ -417,7 +417,7 @@ notes(s, "The requirement from IT Security is simple and absolute. No CAD files,
          "anywhere. I want to be precise about that temp file, because an earlier version of this deck said the "
          "file never touches disk, and that wasn't quite right. "
          "The only things that could ever go out are the AI layer and two optional public feeds, part pricing and "
-         "news. In the JLR build, one setting switches all three off. The tool then says AI is switched off rather "
+         "news. In the JLR build, none has a key yet. The tool then says AI needs an API key rather "
          "than asking for a key. "
          "We listed every outbound call in the source code, and there are automated tests for the AI-off setting. "
          "So the software side is in place. What's left is infrastructure and sign-off.")
@@ -440,11 +440,11 @@ for i, (a, b) in enumerate(inside):
          [[(a, 12.5, DARK, True)], [(b, 10.5, BODY, False)]], space_after=2, line_spacing=1.05)
 box(s, Inches(8.3), Inches(2.0), Inches(4.6), Inches(4.7), fill=AMBERBG, round_=True, radius=0.05)
 text(s, Inches(8.6), Inches(2.2), Inches(4.0), Inches(0.4),
-     [[('COULD LEAVE — all off at JLR', 14, AMBER, True)]])
+     [[('COULD LEAVE — none active without a key', 14, AMBER, True)]])
 outside = [
-    ('AI calls (optional mode)', 'Photos and measured summaries. Off at JLR. If turned on, can go to a private endpoint', AMBER),
-    ('Live part pricing (optional)', 'Part-number text only. Off by default, and off with AI off', MUTED),
-    ('News feed', 'Public news, no company data. Needs internet; off with AI off', MUTED),
+    ('AI calls (optional mode)', 'Photos and measured summaries. Needs an API key. If turned on, can go to a private endpoint', AMBER),
+    ('Live part pricing (optional)', 'Part-number text only. Needs its own key; the offline catalogue prices meanwhile', MUTED),
+    ('News feed', 'Public news, no company data. Needs internet', MUTED),
 ]
 for i, (a, b, c) in enumerate(outside):
     y = Inches(2.7 + i * 1.28)
@@ -457,7 +457,7 @@ notes(s, "This is the whole security story on one slide. "
          "On the right, in amber, are the only three flows that could ever leave. The first is the AI layer, which "
          "would send photos or measured summaries. The second is live part pricing, which sends part numbers only. "
          "The third is the news feed, which pulls public news and sends no company data. "
-         "In the JLR build, all three are off. One setting does that. The AI screens are hidden, and news simply "
+         "In the JLR build, none of the three has a key. The AI screens are hidden, and news simply "
          "doesn't load without internet. "
          "If AI is approved one day, the code can send those calls to a private endpoint of our choosing rather than "
          "the public internet. That's a future option, not how it runs today.")
@@ -465,7 +465,7 @@ notes(s, "This is the whole security story on one slide. "
 # ═══════════════ 7 — DEPLOYMENT OPTIONS ═══════════════
 s = header('Deployment options — our recommendation', 'Decision')
 cols = [
-    ('OPTION A  ·  TODAY', 'AI off (air-gapped)', 'What JLR runs now. Laptop package or our own server, AI switched off. All costing, CAD measuring and learning work.',
+    ('OPTION A  ·  TODAY', 'No API key', 'What JLR runs now. Laptop package or our own server, no key added. All costing, CAD measuring and learning work.',
      'No external connections; nothing to approve for AI', 'No PCB photo, no describe-a-part, no assistant', PANEL2, BLUE),
     ('OPTION B  ·  FUTURE', 'Private AI, core in-house', 'Tool on our machines. AI calls go to a model in our own cloud account over a private link. Needs AI approval first.',
      'Adds the AI screens back; routing setting already in the code', 'Needs AI approval and cloud sign-off', PANEL, VIOLET),
@@ -486,7 +486,7 @@ for i, (tag, t, d, pro, con, fill, c) in enumerate(cols):
 text(s, Inches(0.45), Inches(6.75), Inches(12.4), Inches(0.5),
      [[('Recommendation: stay on Option A. Consider B only once AI is approved. The code supports both.', 13, DARK, True)]])
 notes(s, "There are three ways to run this. "
-         "Option A is what JLR runs today. The tool sits on a laptop or on our own server, with AI switched off. "
+         "Option A is what JLR runs today. The tool sits on a laptop or on our own server, with no API key. "
          "All the costing, the CAD measuring and the learning work. What you lose are the AI screens: the PCB "
          "photo reader, describing a part in words, and the assistant. "
          "Option B is a future option. The tool stays on our machines, and the AI calls go to a model in our own "
@@ -544,7 +544,7 @@ rows = [
     ('Feature detection (holes, walls)', 'Inside the backend', 'Local — checked in code'),
     ('BOM files read', 'Inside the backend (local parsers)', 'Local — checked in code'),
     ('Cost calculation and learning', 'Backend and local database', 'Local — checked in code'),
-    ('Photo reading (AI mode)', 'Off in the JLR build', 'Off — screens hidden'),
+    ('Photo reading (AI mode)', 'Needs an API key', 'Hidden until a key is added'),
     ('CAD file storage', 'Temp file while measured', 'Deleted after measuring'),
 ]
 for i, (a, b, c) in enumerate(rows):
@@ -563,7 +563,7 @@ notes(s, "Let's go function by function and ask where the CAD data actually goes
          "learning from actuals. All of it happens inside the backend, on the same machine. We checked that in the "
          "code. "
          "The amber row is photo reading. That's an AI feature, and in the JLR build it is off and its screen is "
-         "hidden. "
+         "hidden until a key is added. "
          "The last row is worth a word. The CAD file is not kept. While it is being measured it sits in a temp file "
          "on the same machine, and then it is deleted. "
          "Finally, security doesn't have to take my word for any of this. The AI-off setting has automated tests. "
@@ -746,7 +746,7 @@ notes(s, "Six phases. The first two, the assessment and the design, are what I'm
 # ═══════════════ 14 — RISKS ═══════════════
 s = header('Risks — and how we manage them', 'Honest view')
 risks = [
-    ('AI is never approved', 'Medium', 'We are already on Option A. The JLR build runs with AI off; costing, CAD measuring and learning all work without it.', AMBER),
+    ('AI is never approved', 'Medium', 'We are already on Option A. The JLR build runs without a key; costing, CAD measuring and learning all work without it.', AMBER),
     ('Not yet checked against JLR prices', 'Medium', 'No estimate has been compared with a price JLR paid. Phase 4 does that. Log actuals; after 3, the band uses real data.', BLUE),
     ('Knowledge sits with one team', 'Low–Med', '2,438 automated tests, 6 real parts pinned in a baseline, written docs, and a CAPEE-side maintainer trained in Phase 4.', VIOLET),
     ('Adoption ("another tool")', 'Low', 'The plan keeps users in CAPEE, with CostVision behind it. Little new to learn.', GREEN),
@@ -761,7 +761,7 @@ for i, (t, sev, m, c) in enumerate(risks):
          [[('Mitigation:  ', 11.5, DARK, True), (m, 11.5, BODY, False)]], line_spacing=1.12)
 notes(s, "Here's my honest view of the risks. "
          "First, AI may never be approved. The impact is low, because we're already living with that. The JLR "
-         "build runs with AI off, and the costing, the CAD measuring and the learning all work without it. "
+         "build runs without a key, and the costing, the CAD measuring and the learning all work without it. "
          "Second, and this is the one I'd watch, we haven't yet compared an estimate with a price JLR actually "
          "paid. The arithmetic is checked against a hand calculation, and six real parts are pinned, but that "
          "only proves the tool is consistent. It doesn't prove it's right. Phase four fixes that, and logging "
@@ -773,7 +773,7 @@ notes(s, "Here's my honest view of the risks. "
 # ═══════════════ 15 — VERDICT & ASK ═══════════════
 s = header('Feasibility verdict — and the ask', 'Decision')
 verdicts = [
-    ('Secure deployment, CAD in-house', 'FEASIBLE — CAD stays on the machine; AI off at JLR', GREEN),
+    ('Secure deployment, CAD in-house', 'FEASIBLE — CAD stays on the machine; AI needs a key', GREEN),
     ('Connecting to CAPEE', 'FEASIBLE — a plan: CAPEE calls CostVision for the cost', GREEN),
     ('Changes required', '2 of 6 items built — our estimate: 3–5 weeks remain', BLUE),
     ('Long-term governance', 'Rate-library owner · monthly review · quarterly access audit', VIOLET),
@@ -792,7 +792,7 @@ text(s, Inches(0.8), Inches(5.8), Inches(11.8), Inches(0.9),
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
 notes(s, "Let me pull it together. "
          "Running the tool securely, with CAD kept in-house, is feasible. The CAD file stays on the machine that "
-         "measures it, and the JLR build already runs with AI switched off. "
+         "measures it, and the JLR build already runs without an API key. "
          "Connecting to CAPEE is feasible too. But it's a plan, not something built, and phase two designs it. "
          "Two of the six changes are done. My estimate for the rest is three to five weeks. "
          "Governance is simple. Someone owns the rate library, there's a monthly review, and a quarterly check of "
@@ -916,7 +916,7 @@ text(s, Inches(0.75), Inches(2.18), Inches(5.4), Inches(0.4), [[('What it costs'
 costs = [
     ('Engineering', 'our estimate: 3–5 weeks on CostVision, plus small CAPEE changes, existing teams'),
     ('Infrastructure', 'laptop package today; for a server, one VM and the corporate database'),
-    ('AI usage', '£0 today — AI is off at JLR. Only a cost if AI is ever approved'),
+    ('AI usage', '£0 today — no API key. Only a cost once a key is added'),
     ('Licence spend', '£0 — built in-house, nothing to buy or renew'),
 ]
 for i, (a, b) in enumerate(costs):
@@ -1011,7 +1011,7 @@ add = [
      'worked out from the gear itself.'),
     ('A Windows package for locked-down laptops', VIOLET,
      'A folder you copy and double-click. No installer, no admin rights, no internet. It includes the geometry '
-     'kernel and runs with AI off.'),
+     'kernel and runs without an API key.'),
     ('Long-term agreements priced correctly', CYAN,
      'Tooling is spread over annual volume × programme life, so a five-year award is not priced as if it were all '
      'bought in year one.'),
@@ -1037,7 +1037,7 @@ notes(s, "The written plan is a few months old, so here are four things built si
          "model, which can't see a tooth. Now gear cutting is its own process, and the cycle is worked out from "
          "the gear itself. "
          "Third, the Windows package. It's a folder you copy to a locked-down laptop and double-click. There's no "
-         "installer, no admin rights and no internet, and it runs with AI off. "
+         "installer, no admin rights and no internet, and it runs without an API key. "
          "Fourth, tooling is now spread over annual volume times programme life. "
          "And the amber bar is me being straight. The gear model runs on representative shop figures, and we "
          "haven't checked a gear against a known cost yet.")
@@ -1099,8 +1099,8 @@ s = header('Questions you may be asking', 'Backup · Straight answers')
 qa = [
     ('Why not just buy aPriori?', 'A bought suite carries an annual licence and may keep our CAD in a vendor '
      'cloud. CostVision runs in-house, learns from our own prices, and is ours.'),
-    ('Is our data training a public AI?', 'No. The JLR build has AI switched off, so no AI calls are made at all. '
-     'The tool says "AI is switched off in this installation".'),
+    ('Is our data training a public AI?', 'No. The JLR build has no API key, so no AI calls are made at all. '
+     'The tool says AI needs an API key.'),
     ('What if the key developer leaves?', '2,438 automated tests and 6 pinned real parts define how it must behave. '
      'The design is written down, and Phase 4 trains a CAPEE-side maintainer.'),
     ('What does it cost to run?', 'Today: a laptop, no internet, no AI. For a server: one VM and the corporate '
@@ -1116,7 +1116,7 @@ for i, (q, a) in enumerate(qa):
 notes(s, "This is a backup for questions. Here are the five I expect, with straight answers. "
          "Why not just buy aPriori? A bought suite has an annual licence and may keep our CAD in a vendor's cloud. "
          "Ours runs in-house, learns from our own prices, and belongs to us. "
-         "Is our data training a public AI? No. In the JLR build AI is switched off, so no AI calls happen at all. "
+         "Is our data training a public AI? No. In the JLR build there is no API key, so no AI calls happen at all. "
          "The tool tells you that on screen. "
          "What if the key developer leaves? There are 2,438 tests and six pinned real parts that define how it "
          "must behave. The design is written down, and phase four trains a maintainer on the CAPEE side. "
@@ -1125,13 +1125,13 @@ notes(s, "This is a backup for questions. Here are the five I expect, with strai
          "hand calculation. But we haven't compared it with a price JLR paid yet, and I'd rather say so.")
 
 # ═══════════════ 22 — BACKUP: PHOTO-TO-BOM WORKFLOW ═══════════════
-s = header('PCB photo to costed BOM — step by step', 'Backup · Optional AI mode · off at JLR')
+s = header('PCB photo to costed BOM — step by step', 'Backup · Optional AI mode · needs an API key')
 pcb_steps = [
-    ('1 · Upload photos', 'Up to 5 photos of the board, plus an optional BOM or pick-and-place file. Only when AI mode is on.', BLUE),
-    ('2 · Board type (AI)', 'The AI classifies the board, for example automotive or consumer, so the right cost assumptions apply.', INDIGO),
-    ('3 · Read the markings (AI)', 'Printed part numbers and references on the chips are read from the photo.', VIOLET),
-    ('4 · List the parts (AI)', 'The AI lists each visible part: type, package, value and part number where it can.', CYAN),
-    ('5 · Rules clean up and cost it', 'Plain code, not AI, checks each line, caps prices against a catalogue, and adds assembly and test. Board fab is a bought-in price.', GREEN),
+    ('1 · Upload photos and files', 'Up to 8 photos of the board. Optional: the BOM file, and the drill and Gerber files. Needs an API key.', BLUE),
+    ('2 · Board type (model)', 'The model classifies the board, for example automotive or consumer, and its safety level.', INDIGO),
+    ('3 · Read the markings (model)', 'Printed part numbers and references on the chips are read from the photos.', VIOLET),
+    ('4 · List the parts (model)', 'The model lists each visible part: type, package, quantity and part number. It is not asked for a cost.', CYAN),
+    ('5 · Files first, then price every line', 'A BOM file is the parts list; drill and Gerber files give size, layers and vias. Plain code prices every line from the catalogue and costs board and assembly from rate tables.', GREEN),
     ('6 · Same photos, same answer', 'The result is stored against a fingerprint of the photos, so the same photos give the same BOM.', AMBER),
 ]
 y = Inches(1.95)
@@ -1141,39 +1141,41 @@ for i, (t, d, c) in enumerate(pcb_steps):
     if i < len(pcb_steps) - 1:
         down_arrow(s, Inches(6.5), y + Inches(0.015), h=Inches(0.15))
         y += Inches(0.18)
-notes(s, "This slide and the next are about the PCB photo feature. I need to say up front that it's part of the "
-         "optional AI mode, and in the JLR build it's switched off and hidden. I'm including it so you know what "
-         "the code can do if AI is ever approved. "
-         "An engineer uploads up to five photos of a board. The AI works out what kind of board it is, reads the "
-         "printed markings, and lists the parts it can see. "
-         "Step five is the important one for trust. From there it's plain code, not AI. It checks each line, caps "
-         "prices against a catalogue, and adds the assembly and test cost. The bare board is priced as a bought-in "
-         "price from fabricators' price tables, so no extra overhead or margin goes on top. "
+notes(s, "This slide and the next are about the PCB photo feature. It is part of the optional AI mode, so it needs "
+         "an API key; until one is added the screen is hidden. "
+         "An engineer uploads up to eight photos of a board, and can attach the BOM file and the drill and Gerber "
+         "files. The model works out what kind of board it is, reads the printed markings, and lists the parts it "
+         "can see. It is not asked for a cost. "
+         "Step five is the important one for trust. If a BOM file was attached, that is the parts list. If drill and "
+         "Gerber files were attached, the size, layers and via count are measured from them. Then plain code prices "
+         "every line from the tool's own catalogue or class table, each line with its source, and costs the bare "
+         "board and the assembly from the rate tables. On an automotive board the IATF, class 3 and burn-in costs are "
+         "in the headline. "
          "And step six. The same photos give the same answer, because the result is stored against a fingerprint "
-         "of the photos. The AI reads. It never sets the price.")
+         "of the photos. The model reads. It never sets the price.")
 
 # ═══════════════ 23 — BACKUP: PHOTO-TO-BOM TECH / ACCURACY / TIME ═══════════════
-s = header('PCB photo to BOM — how it works, checks, status', 'Backup · Optional AI mode · off at JLR')
+s = header('PCB photo to BOM — how it works, checks, status', 'Backup · Optional AI mode · needs an API key')
 cols3 = [
     ('How it works', BLUE, [
-        'An AI vision model reads the photos',
-        'Steps: classify, read, list, cost, store',
-        'Plain code tidies types, values, part numbers',
+        'The model reads the photos; it is not asked for a cost',
+        'Steps: classify, read chips, list parts, price, cost',
+        'A BOM file or drill and Gerber files beat the photo',
         'Same photos give the same answer',
-        'Live part pricing is optional: part numbers only',
+        'Distributor API pricing is optional: part numbers only',
     ]),
     ('Checks', GREEN, [
-        'Markings are read, then cross-checked',
-        'Code rejects part numbers that make no sense',
-        'Each line has a confidence score',
-        'Prices are capped against a catalogue',
+        'Chip markings read are matched to the parts list',
+        'Every line priced from the catalogue or class table',
+        'Each line shows where its price came from',
+        'Lines worth £1+ with no quote are listed to verify',
         'Board fab is a bought-in price, no margin on top',
     ]),
     ('Status at JLR', VIOLET, [
-        'Switched off; the screen is hidden',
-        'Code kept; one setting turns it on',
+        'Needs an API key; the screen is hidden until then',
+        'Code kept; adding a key turns it on',
         'When on, rate-limited per user',
-        'AI reads only; it never sets a price',
+        'The model reads only; it never sets a price',
         'PCB fab and PCBA forms still cost boards',
     ]),
 ]
@@ -1188,19 +1190,20 @@ for i, (t, c, items) in enumerate(cols3):
 box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=AMBERBG, round_=True, radius=0.08)
 text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
      [[('Honest limits: ', 12, AMBER, True),
-       ('a photo BOM is a first pass, not the final answer. Hidden or underside parts need more photos, and '
-        'low-confidence lines are flagged for a human check.', 11.5, BODY, False)]],
+       ('a photo cannot show the via count, the layer count or parts under a shield; those stay estimates until the '
+        'files are attached. No board has yet been compared with a price JLR paid.', 11.5, BODY, False)]],
      line_spacing=1.15)
-notes(s, "Here's the same PCB feature from three angles. Again, this is the optional AI mode, and it is off at JLR. "
-         "How it works. An AI vision model reads the photos. After that, plain code tidies the types, values and "
-         "part numbers. The same photos always give the same answer. Live part pricing is optional, and it only "
-         "sends part numbers, never images. "
-         "The checks. Markings are read and then cross-checked. Code throws out part numbers that make no sense. "
-         "Every line gets a confidence score, and prices are capped against a catalogue. "
-         "The status at JLR is the column I'd point to. It's switched off and hidden. The code is kept, and one "
-         "setting turns it on. If it's on, each user is rate-limited. And even with AI off, the PCB fab and PCBA "
-         "forms still cost a board from inputs you type. "
-         "The honest limit is that it only sees what's in the photo, so hidden parts need more photos.")
+notes(s, "Here's the same PCB feature from three angles. It needs an API key, and the screen is hidden until one is added. "
+         "How it works. The model reads the photos and is not asked for a cost. After that, plain code prices every line "
+         "from the catalogue or the class table, and the files, if attached, beat the photo. The same photos always "
+         "give the same answer. Distributor API pricing is optional and only sends part numbers, never images. "
+         "The checks. Chip markings that were read are matched to the lines they belong to. Every line is priced from "
+         "the tool's own data and shows where the price came from. Lines worth a pound or more with no quote behind "
+         "them are listed to verify. "
+         "The status at JLR. The code is kept, and adding a key turns it on. When on, each user is rate-limited. And "
+         "without a key, the PCB fab and PCBA forms still cost a board from inputs you type. "
+         "The honest limit is that a photo cannot show vias, layers or parts under a shield, and no board has been "
+         "checked against a price we paid.")
 
 # ═══════════════ 24 — BACKUP: CAD-TO-COST WORKFLOW ═══════════════
 s = header('CAD file to cost — how it works, step by step', 'Backup · Feature deep-dive')
@@ -1219,7 +1222,7 @@ for i, (t, d, c) in enumerate(cad_steps):
     if i < len(cad_steps) - 1:
         down_arrow(s, Inches(6.5), y + Inches(0.015), h=Inches(0.15))
         y += Inches(0.18)
-notes(s, "Here's CAD to Cost step by step. This one runs with AI off, so it's exactly what JLR has. "
+notes(s, "Here's CAD to Cost step by step. This one needs no key, so it's exactly what JLR has. "
          "You upload a STEP, IGES or STL file. Thirteen commodities can be costed this way. For sheet metal you "
          "can add a DXF flat pattern, and the measured blank is used instead of the bounding box. "
          "The geometry engine opens the file on the same machine. It sits in a temp file while it's measured, "
@@ -1266,7 +1269,7 @@ box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=GREENBG, ro
 text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
      [[('Security, restated: ', 12, GREEN, True),
        ('the CAD file is measured on the same machine and deleted afterwards. It is never sent anywhere. '
-        'In the JLR build, AI is off, so no geometry summary goes out either.', 11.5, BODY, True)]],
+        'In the JLR build there is no API key, so no geometry summary goes out either.', 11.5, BODY, True)]],
      line_spacing=1.15)
 notes(s, "Same feature, three angles. "
          "How it works. OpenCASCADE, a proper geometry engine, measures the model. Rules, not AI, turn those "
@@ -1322,7 +1325,7 @@ box(slide, _rx, Inches(4.6), _rw, Inches(1.75), fill=PANEL2, line=GREEN, round_=
 box(slide, _rx, Inches(4.6), Inches(0.07), Inches(1.75), fill=GREEN)
 text(slide, _rx + Inches(0.2), Inches(4.72), _rw - Inches(0.32), Inches(0.3), [[('The golden rule', 11, GREEN, True)]])
 text(slide, _rx + Inches(0.2), Inches(5.08), _rw - Inches(0.32), Inches(1.2),
-     [[('AI never sets a price, even when it is on. At JLR it is off: rules turn the measurements into inputs, and every £ is arithmetic you can trace to the rate library.', 9.5, BODY, False)]], line_spacing=1.05)
+     [[('AI never sets a price, even when it is on. At JLR it has no key: rules turn the measurements into inputs, and every £ is arithmetic you can trace to the rate library.', 9.5, BODY, False)]], line_spacing=1.05)
 notes(slide,
       "This slide answers a simple question. What does the tool take off the model by itself, and where does "
       "each thing go? "

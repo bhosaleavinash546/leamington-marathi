@@ -6,9 +6,9 @@ Light professional theme, CostVision logo top-left on every slide, native
 (editable) shapes, speaker notes per slide. Every fact on a slide or in the notes
 must agree with docs/decks/tool-facts.md or with the code under calculator/.
 No accuracy %, speed multiple or savings % is quoted as a result of this tool:
-no estimate has yet been compared with a price JLR paid. AI is switched off in
+no estimate has yet been compared with a price JLR paid. AI needs an API key in
 the JLR build; the learning features shown here are deterministic and work
-with AI off, and the AI features are labelled as switched off.
+without a key, and the AI features are labelled as needing one.
 
 Regenerate:  python3 build_agentic_pptx.py
 Output:      CostVision-Agentic-AI-Management-Presentation.pptx
@@ -262,7 +262,7 @@ text(s, Inches(0.9), Inches(2.35), Inches(11.5), Inches(1.0),
      [[('How CostVision learns', 46, ON_DARK, True)]], font=TITLE_FONT)
 text(s, Inches(0.9), Inches(3.35), Inches(11.0), Inches(0.6),
      [[('It remembers our parts, learns from real prices and watches for gaps.', 19, HERO_SUB, False)],
-      [('The learning is plain arithmetic, so it works with AI switched off.', 19, HERO_SUB, False)]])
+      [('The learning is plain arithmetic, so it works without an API key.', 19, HERO_SUB, False)]])
 for i, (t, c) in enumerate([('Remembers', BLUE), ('Recognises', CYAN), ('Corrects itself', VIOLET), ('Keeps watch', GREEN)]):
     x = Inches(0.9 + i * 2.85)
     chip = box(s, x, Inches(4.6), Inches(2.6), Inches(0.52), fill=ON_DARK, round_=True, radius=0.5)
@@ -270,7 +270,7 @@ for i, (t, c) in enumerate([('Remembers', BLUE), ('Recognises', CYAN), ('Correct
     p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
     r = p.add_run(); r.text = t; r.font.size = Pt(13); r.font.bold = True; r.font.color.rgb = c; r.font.name = 'Calibri'
 text(s, Inches(0.9), Inches(6.5), Inches(11), Inches(0.4),
-     [[('Management briefing  ·  September 2026  ·  AI is switched off in the JLR build', 12, HERO_DIM, False)]])
+     [[('Management briefing  ·  October 2026  ·  AI needs an API key in the JLR build', 12, HERO_DIM, False)]])
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=BLUE)
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -281,7 +281,7 @@ kpi_card(s, Inches(0.45), Inches(2.0), Inches(3.0), Inches(1.75), '3', 'Real pri
          'After 3 logged real prices for a process, it corrects its estimate and its range.', GREEN)
 kpi_card(s, Inches(3.65), Inches(2.0), Inches(3.0), Inches(1.75), 'Every 6 h', 'Background check',
          'Stored parts are re-checked for price gaps while the tool is running.', RED)
-kpi_card(s, Inches(6.85), Inches(2.0), Inches(3.0), Inches(1.75), 'AI off', 'Nothing here needs AI',
+kpi_card(s, Inches(6.85), Inches(2.0), Inches(3.0), Inches(1.75), 'No key needed', 'Nothing here needs AI',
          'The learning is arithmetic: medians, matches and gaps. It works at JLR today.', CYAN)
 kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '2,438', 'Automated tests',
          'Plus a hand-calc match to under 0.01% and 6 real parts pinned.', VIOLET)
@@ -486,12 +486,12 @@ text(s, Inches(0.75), Inches(6.2), Inches(11.9), Inches(0.6),
 # ════════════════════════════════════════════════════════════════════════════
 # 10 — WHAT WORKS WITH AI OFF
 # ════════════════════════════════════════════════════════════════════════════
-s = header('What works with AI off — and what is switched off', 'At JLR today')
+s = header('What works without an API key — and what needs one', 'At JLR today')
 quad = [
-    ('Works with AI off: CAD to Cost', 'Upload STEP, IGES or STL. The tool measures the part, applies rules, and asks the engineer where the geometry cannot decide.', GREEN),
-    ('Works with AI off: checks and extras', 'Self-audit on every result, shape-based DFM checks, the negotiation pack, and a CO₂e figure next to the £.', GREEN),
-    ('Switched off at JLR: AI assistant and agent', 'The chat assistant and "describe a part". Built and tested, turned off by a setting. When on, rate-limited per user.', AMBER),
-    ('Switched off at JLR: reading photos and text', 'PCB photo to bill of materials, and reading RFQ free text. The tool says "AI is switched off in this installation".', AMBER),
+    ('Without a key: CAD to Cost', 'Upload STEP, IGES or STL. The tool measures the part, applies rules, and asks the engineer where the geometry cannot decide.', GREEN),
+    ('Without a key: checks and extras', 'Self-audit on every result, shape-based DFM checks, the negotiation pack, and a CO₂e figure next to the £.', GREEN),
+    ('Needs a key: AI assistant and agent', 'The chat assistant and "describe a part". Built and tested; hidden until a key is added. When on, rate-limited per user.', AMBER),
+    ('Needs a key: reading photos and text', 'PCB photo to parts list, and reading RFQ free text. The model reads; the tool prices every line from its own tables.', AMBER),
 ]
 for i, (t, d, c) in enumerate(quad):
     x = Inches(0.45 + (i % 2) * 6.35)
@@ -708,30 +708,30 @@ text(s, Inches(0.75), Inches(5.62), Inches(11.9), Inches(1.05),
      line_spacing=1.2)
 
 # ════════════════════════════════════════════════════════════════════════════
-# F — PCB PHOTO → BOM (optional AI mode, off at JLR)
+# F — PCB PHOTO → BOM (optional AI mode, needs an API key)
 # ════════════════════════════════════════════════════════════════════════════
-s = header('PCB photo to BOM — built, but switched off at JLR', 'Optional AI mode · off at JLR')
+s = header('PCB photo to BOM — the model reads, the tool prices', 'Optional AI mode · needs an API key')
 text(s, Inches(0.45), Inches(1.82), Inches(12.4), Inches(0.42),
-     [[('With AI on, a photo of a circuit board becomes a costed bill of materials. Reading the photo needs AI, so ', 13, BODY, False),
-       ('at JLR this screen is hidden.', 13, DARK, True)]])
-# Left — what works at JLR (replaces a manual-vs-AI chart from a demo run)
+     [[('With an API key, photos of a circuit board become a priced parts list and a board cost. ', 13, BODY, False),
+       ('The model reads; it is not asked for a cost.', 13, DARK, True)]])
+# Left — what works without a key
 box(s, Inches(0.45), Inches(2.45), Inches(6.15), Inches(3.35), fill=PANEL2, round_=True, radius=0.05)
-text(s, Inches(0.75), Inches(2.62), Inches(5.6), Inches(0.35), [[('What works at JLR, with AI off', 14, DARK, True)]])
+text(s, Inches(0.75), Inches(2.62), Inches(5.6), Inches(0.35), [[('What works without a key', 14, DARK, True)]])
 for i, t in enumerate([
         'PCB fabrication and PCBA are costed from typed inputs.',
         'The fab price comes from fabricators\' price tables. It is a bought-in price, so no overhead or margin goes on top.',
-        'The tool says "AI is switched off in this installation" instead of asking for a key.']):
+        'The photo screen is hidden until a key is added. Adding one is a setting, not a rebuild.']):
     text(s, Inches(0.75), Inches(3.1 + i * 0.75), Inches(5.6), Inches(0.7),
          [[('•  ', 12, GREEN, True), (t, 12, BODY, False)]], line_spacing=1.1)
-# Right — what was built for when AI is on
+# Right — how the photo flow prices a board
 box(s, Inches(6.85), Inches(2.45), Inches(6.05), Inches(3.35), fill=PANEL, round_=True, radius=0.05)
-text(s, Inches(7.15), Inches(2.62), Inches(5.5), Inches(0.35), [[('Built for when AI is on', 14, DARK, True)]])
+text(s, Inches(7.15), Inches(2.62), Inches(5.5), Inches(0.35), [[('How the photo flow prices a board', 14, DARK, True)]])
 fixes = [
-    ('Complex boards no longer come back empty', GREEN),
-    ('Part prices checked against a catalogue', BLUE),
-    ('One misread part can no longer skew the total', VIOLET),
-    ('The board spec is steadied between runs', CYAN),
-    ('The £ to trust is split from the £ to verify', AMBER),
+    ('A BOM file or drill and Gerber files beat the photo', GREEN),
+    ('Every line priced from a 458-part catalogue or a class table', BLUE),
+    ('Chip markings read in the photos are matched to the list', VIOLET),
+    ('Automotive grade (IATF, class 3, burn-in) is in the headline', CYAN),
+    ('The £ priced is split from the £ to verify', AMBER),
 ]
 for i, (a, c) in enumerate(fixes):
     y = Inches(3.05 + i * 0.55)
@@ -740,9 +740,9 @@ for i, (a, c) in enumerate(fixes):
          [[(a, 12, BODY, False)]], line_spacing=1.0)
 box(s, Inches(0.45), Inches(5.98), Inches(12.45), Inches(0.85), fill=PANEL2, round_=True, radius=0.10)
 text(s, Inches(0.75), Inches(6.12), Inches(12.0), Inches(0.6),
-     [[('If switched on later:  ', 12.5, BLUE, True),
-       ('it is a setting, not a rebuild. Each AI call is rate-limited per user, and lines it cannot match to the '
-        'catalogue are flagged for an engineer to check.', 12, BODY, False)]],
+     [[('With a key:  ', 12.5, BLUE, True),
+       ('each AI call is rate-limited per user. Lines worth £1 or more with no quote behind the price are listed '
+        'for an engineer to check. The screen, the PDF and the parts library show the same number.', 12, BODY, False)]],
      line_spacing=1.15)
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -870,7 +870,7 @@ box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(4.4), fill=PANEL, round_=T
 text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('Status today', 16, GREEN, True)]])
 st = [
     'Built and tested: 2,438 tests across the tool',
-    'Works with AI off: nothing here needs AI',
+    'Without a key: nothing here needs AI',
     'No extra licence: part of CostVision',
     'Runs on our laptop: no data leaves',
 ]
@@ -902,10 +902,10 @@ SPEAKER_NOTES = [
     # 1 — TITLE
     "Thanks for the time. This deck is about the learning side of CostVision: how it remembers the parts we cost, "
     "how it learns from the real prices we pay, and how it keeps an eye out for price gaps. I want to be clear about "
-    "one thing up front. In the JLR build, AI is switched off, because we don't have AI approval yet. That's fine for "
+    "one thing up front. In the JLR build, AI waits for an API key; none has been added yet. That's fine for "
     "this story, because everything I'm going to show you on the learning side is plain arithmetic. Medians, match "
     "scores, gaps between two prices. None of it needs AI, so it works on a locked-down laptop today. Where a feature "
-    "does need AI, I'll say so and I'll say it's switched off. And I'll be honest about what's proven and what isn't.",
+    "does need AI, I'll say so and I'll say it needs a key. And I'll be honest about what's proven and what isn't.",
 
     # 2 — EXECUTIVE SUMMARY
     "Here's the short version. First, after three real prices are logged for a process, the tool starts correcting "
@@ -981,10 +981,10 @@ SPEAKER_NOTES = [
 
     # 10 — WHAT WORKS WITH AI OFF
     "This slide is the one I'd most like you to remember, because it draws the line clearly. The top two boxes work "
-    "at JLR today, with AI off. CAD to Cost measures the part from a STEP, IGES or STL file, applies rules, and where "
+    "at JLR today, without a key. CAD to Cost measures the part from a STEP, IGES or STL file, applies rules, and where "
     "the shape can't decide something, like the process route, it asks the engineer rather than guessing. The "
     "self-audit, the shape checks, the negotiation pack and the carbon figure all work too. The bottom two boxes are "
-    "built but switched off at JLR: the chat assistant, describe-a-part, the PCB photo reader, and reading free-text "
+    "built but hidden until a key is added: the chat assistant, describe-a-part, the PCB photo reader, and reading free-text "
     "RFQs. If they're ever switched on, it's a setting, not a rebuild, and each user is rate-limited. And even then, "
     "AI never sets a price. It only reads and classifies. The money is always arithmetic.",
 
@@ -1052,13 +1052,15 @@ SPEAKER_NOTES = [
     "same sums apply. That's a plan, not something we have today.",
 
     # 18 — PCB PHOTO TO BOM
-    "I want to be upfront about this one, because it was a highlight in earlier versions of this deck. The PCB photo "
-    "reader takes a photo of a circuit board and builds a costed bill of materials. Reading the photo needs AI, so "
-    "at JLR it's switched off and the screen is hidden. What does work with AI off is on the left. You can still cost "
-    "PCB fabrication and assembly from typed inputs. The fab price comes from fabricators' price tables, and because "
-    "it's a bought-in price, we don't add overhead or margin on top. On the right is the work done so the photo "
-    "reader is solid if it's ever switched on: catalogue price checks, caps on misread parts, and a clear split "
-    "between pounds you can trust and pounds to check. I've taken out the old accuracy chart.",
+    "The PCB photo reader. With an API key, photos of a board become a priced parts list and a board cost. "
+    "The model does the reading: it classifies the board, reads the markings on the chips, and lists the parts. It is "
+    "not asked for a cost. If a BOM file is attached, that is the parts list; if drill and Gerber files are attached, "
+    "the size, layers and via count are measured from them. "
+    "Then the tool prices every line from its own data: a catalogue of 458 parts, 77 of them read from distributor "
+    "pages, each with a source and date; a price range for a part it can name; or a class table. The model's figure "
+    "only picks a point inside the range. On an automotive board the IATF, class 3 and burn-in costs are in the "
+    "headline. Lines worth a pound or more with no quote behind them are listed to verify. "
+    "Without a key, the screen is hidden; PCB fabrication and assembly are still costed from typed inputs.",
 
     # 19 — GLASS-BOX
     "If there's one message about why this is different, it's that you can check every number. Every learned value "
@@ -1090,7 +1092,7 @@ SPEAKER_NOTES = [
 
     # 22 — NEXT STEPS
     "To close. The learning features are built and tested, as part of a tool with 2,438 automated tests. They work "
-    "with AI off, there's no extra licence, and the data stays on our own laptop or server. The honest dependency is "
+    "without a key, there's no extra licence, and the data stays on our own laptop or server. The honest dependency is "
     "that it starts empty, and we haven't yet compared any estimate with a price JLR paid. So the ask is three small "
     "decisions. One, make Log Actual pounds part of handling every quote. It's one click. Two, import our past quotes "
     "as a CSV so the correction doesn't start from nothing. Three, put the background check's findings on the "

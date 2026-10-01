@@ -20,7 +20,7 @@ case that overstates what exists is found out in the first question:
   * PCB photo to BOM is substantially built — a 2,374-line route, eleven
     supporting modules, sixteen test files, with BOM prices grounded against a
     catalogue before they are used.
-  * AIR_GAPPED=1 is what makes Option 2 acceptable under today's policy. Option
+  * No API key is what makes Option 2 acceptable under today's policy. Option
     3 needs that switch off and an approved route to the model. That is the ask,
     and the Technical Scoping panel says so rather than burying it.
   * The controls that make switching it on safe are already in the code, and the
@@ -256,7 +256,7 @@ plain(tf, 'One off-switch, a private endpoint, per-user limits. AI never sets a 
       size=9, space_before=2)
 plain(tf, 'Technical implementation/support required?', size=11, colour=INK, bold=True, space_before=8)
 plain(tf, '(YES)', size=11, colour=INK, bold=True, space_before=1)
-plain(tf, 'An approved route to the model. Option 2 runs with AI off; this cannot.',
+plain(tf, 'An approved route to the model. Option 2 runs without a key; this cannot.',
       size=9, space_before=2)
 
 
@@ -264,14 +264,14 @@ plain(tf, 'An approved route to the model. Option 2 runs with AI off; this canno
 # ── Speaker notes, slide 1 ───────────────────────────────────────────────────
 s.notes_slide.notes_text_frame.text = (
     "This is Option 3, and it comes down to one question: do we switch the AI on?\n\n"
-    "The version JLR has today runs with AI switched off. That is Option 2. It costs a part from "
+    "The version JLR has today runs without an API key. That is Option 2. It costs a part from "
     "the 3D model on rules alone, and it asks the engineer when it cannot tell.\n\n"
     "The gap is boards and drawings. Costing a circuit board means listing every component and "
     "pricing each one. We are told a medium board takes two to three weeks, and only a specialist "
     "can do it. On machined parts, a lot of what matters is on the 2D drawing, and it is typed in "
     "by hand.\n\n"
     "Option 3 lets the tool read a board photo, or a drawing alongside the 3D model. That code is "
-    "already in the product. It is switched off, and it can be switched on by a setting.\n\n"
+    "already in the product. It waits for a key, and adding one turns it on.\n\n"
     "The real question is safety, so here is what is already built. There is one off-switch. Every "
     "AI call goes through one place, and that place can point at a private endpoint. Every AI "
     "route has a per-user limit. And the AI never sets a price. It reads. The engine does the "
@@ -334,11 +334,11 @@ bullet(tf, 'Switch AI on by a setting, not a rebuild, and extend the Proof of Va
        space_before=7)
 bullet(tf, 'Upload a photo of the board. Say how many you are making and where it is built.',
        size=10.5, space_before=6)
-bullet(tf, 'The tool lists the components it can see, prices each line from the catalogue, works out '
+bullet(tf, 'The model lists the components it can see; the tool prices each line from its catalogue and class tables, works out '
            'the bare board and the assembly, and returns the full cost breakdown.', size=10.5, space_before=6)
 bullet(tf, 'For a machined part, the drawing is read alongside the 3D model, for the tolerances, '
            'finish and heat treatment the model cannot carry.', size=10.5, space_before=6)
-bullet(tf, 'Every figure it reads is checked against the price catalogue or the measured geometry '
+bullet(tf, 'The model is not asked for a cost; every price comes from the catalogue, a stated range or the class table, and each line shows its source '
            'before it is used.', size=10.5, space_before=6)
 bullet(tf, 'Compare the output against cost estimates we already have.', size=10.5, space_before=6)
 
@@ -370,8 +370,8 @@ s.notes_slide.notes_text_frame.text = (
     "Today someone identifies every component, finds a price for each line, then estimates the bare "
     "board and the assembly. It is slow, and it needs a specialist.\n\n"
     "With AI on, you upload a photo of the board and say how many and where it is built. The tool "
-    "lists the parts it can see, prices each line from a catalogue, and works out the board and the "
-    "assembly. Prices it reads are checked against that catalogue before they are used. For a "
+    "lists the parts it can see; the tool prices each line from its catalogue and class tables, and works out the board and the "
+    "assembly. The model is not asked for a cost. For a "
     "machined part, the drawing is read next to the 3D model, for things the model cannot carry, "
     "like tolerances and finish. If the AI disagrees with the measured geometry, the geometry "
     "wins.\n\n"

@@ -20,7 +20,7 @@ RULES THIS FILE FOLLOWS.
    cost with a price JLR paid. Slide 16 states what changes in KIND only.
 
 3. Facts agree with docs/decks/tool-facts.md (re-checked 28 September 2026):
-   AI switched off in the JLR build and never sets a price; 19 manufacturing
+   AI needs an API key in the JLR build and never sets a price; 19 manufacturing
    processes, 13 from CAD; 20 regions; rate library of 16 June 2026; bulk run,
    rate-book history and run record are built. Line counts on slide 7 were
    counted in the source on that date. Slide 21 lists how each was checked.
@@ -338,7 +338,7 @@ notes(s, "Thank you for the time. I want to walk you through two ways a tool we 
          "option is simple. CAPEE keeps doing the costing. CostVision measures the 3D model and "
          "fills in the numbers CAPEE needs, and we prove that on our own parts. The second option "
          "comes later. It is costing a whole basket of parts in one run, unattended. Neither option "
-         "needs AI. In the build we have given JLR, AI is switched off. I will be straight about "
+         "needs AI. In the build we have given JLR, there is no API key yet. I will be straight about "
          "what the tool does today and what it does not. The biggest gap is that it has never been "
          "checked against a price JLR actually paid. There are also no dates in this pack. Nobody "
          "has sized this work yet, so any timeline I showed you would be made up. What I can show "
@@ -408,8 +408,8 @@ card(s, Inches(6.78), Inches(1.78), Inches(6.1), Inches(3.7), GREEN,
 callout(s, Inches(0.45), Inches(5.55), Inches(12.43), Inches(1.25), PANEL2, INDIGO,
         'Measuring is not AI',
         'The 3D model is measured by software, the way a CMM measures a part. Fixed rules turn '
-        'the measurements into cost inputs. AI is switched off in the JLR build. There is an '
-        'optional AI mode that can read drawings, but it is off at JLR, and even when it is on it '
+        'the measurements into cost inputs. The JLR build has no API key yet. There is an '
+        'optional AI mode that can read drawings, but it needs a key, and even when it is on it '
         'never sets a price.')
 notes(s, "This is the problem we are trying to fix. Today an engineer opens the model, reads the "
          "drawing and types the numbers in. How many depends on the part. On CostVision's own "
@@ -420,7 +420,7 @@ notes(s, "This is the problem we are trying to fix. Today an engineer opens the 
          "measures the model. Fixed rules turn the measurements into the values the form needs. "
          "Where the shape cannot decide something, such as the material, it asks the engineer "
          "rather than guessing. The blue box is the point I would like people to hold on to. "
-         "Measuring is ordinary geometry software, not AI. The AI is switched off in the JLR build. "
+         "Measuring is ordinary geometry software, not AI. The JLR build has no API key yet. "
          "Everything on this slide works without it.")
 
 # ─────────────────────────────────── 4 · WHERE COSTVISION IS TODAY ──────────
@@ -454,7 +454,7 @@ card(s, Inches(6.78), Inches(2.1), Inches(6.1), Inches(3.6), AMBER,
       ('An STL has no feature table, so a machined STL needs',),
       ('its cycle time typed in',),
       ('The built-in rates are not JLR rates until we load ours',),
-      ('AI features are off at JLR, by design',),
+      ('AI features need an API key; none added yet',),
       ('Still under active development',)], fill=AMBERBG)
 callout(s, Inches(0.45), Inches(5.9), Inches(12.43), Inches(1.0), PANEL2, INDIGO,
         'What changed since the last time I showed you this',
@@ -1086,7 +1086,7 @@ rows = [
      'Starting points, not JLR plant measurements. They get replaced as real data comes in.',
      ('Medium', AMBER, True)),
     (('The AI mode could be switched on', DARK, True), 'Both',
-     'AI is off in the JLR build and neither option needs it. Turning it on is a setting, so it '
+     'The JLR build has no API key and neither option needs one. Adding a key turns AI on, so it '
      'needs an owner and approval first.',
      ('Low', AMBER, True)),
     (('Where the measuring engine runs', DARK, True), 'Option 1',
@@ -1108,7 +1108,7 @@ notes(s, "Eight items. The top one is the one that would stop me putting this in
          "The third is new. The software gap on records is closed, but JLR audit has not looked at "
          "them, so we should ask them early. The fourth matters more than it looks. Until our own "
          "rate card is loaded, every cost uses the built-in rates from June, and those are not our "
-         "rates. The sixth is about AI, because it always comes up. AI is off in the build we gave "
+         "rates. The sixth is about AI, because it always comes up. There is no API key in the build we gave "
          "JLR, nothing is sent out, and neither option needs it. But turning it on is only a "
          "setting, so someone should own that switch. The last row is worth saying plainly. The "
          "tool is still being worked on, so for any trial we pin one version and stay on it.")
@@ -1127,7 +1127,7 @@ asks = [
      'What it is written in, whether it can call another service on the network, and what kind of '
      'server it runs on. Three questions to IT. Unblocks Option 1.'),
     ('4', 'shield', 'Agreement that AI stays off', GREEN,
-     'Neither option needs AI, and the JLR build has it switched off. If we want the AI features '
+     'Neither option needs AI, and the JLR build has no API key. If we want the AI features '
      'later, that is a separate approval.'),
     ('5', 'person', 'A team and one part type for the trial', AMBER,
      'One cost engineer and one commodity family for the duration. Machined parts or pressings '
@@ -1169,7 +1169,7 @@ rows = [
     ('6 real production parts pinned', 'A change that moves any of them fails the build'),
     ('2,438 automated tests', 'Plus browser tests that cost every commodity and export Excel and PDF'),
     ('Measuring makes no internet connection', 'Windows package runs offline and listens on this laptop only (127.0.0.1)'),
-    ('AI is switched off in the JLR build', 'The package sets the no-AI switch; AI screens are hidden'),
+    ('AI needs an API key in the JLR build', 'No key in the package; AI screens are hidden until one is added'),
     ('A bulk run exists, with no AI', 'Command-line run: results, open questions and a run record'),
     ('Every rate book is kept', 'Stored by a content fingerprint, so a past costing can be redone'),
     ('Line counts on slide 7', 'Counted in the source files on 28 September 2026, rounded'),
@@ -1190,7 +1190,7 @@ notes(s, "Keep this one for anyone who wants to know how we know. Every claim in
          "That proves the sums are right. It does not prove the price is right. Six real production "
          "parts are pinned, so we notice if a change moves them. The measuring makes no internet "
          "connection, and the Windows package only listens on the laptop itself. That is the "
-         "answer to the first question IT security will ask. AI is switched off in that build. The "
+         "answer to the first question IT security will ask. There is no API key in that build. The "
          "amber box is the one number I have deliberately left off every slide: accuracy against "
          "real prices. The tool can learn from actual prices once they are logged, but none from "
          "JLR are in it yet. That is why ask number one is what it is.")

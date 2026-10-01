@@ -348,7 +348,7 @@ txb(slide, "Cost Engineering & Digital Innovation",
 pill_data = [
     ("19 Processes",               ACCENT_G, Inches(1.0)),
     ("CAD to Cost, on Rules",      ACCENT_B, Inches(3.4)),
-    ("AI Switched Off at JLR",     ACCENT_P, Inches(5.8)),
+    ("AI Needs an API Key",       ACCENT_P, Inches(5.8)),
     ("DFM / DFA Advice",           ORANGE,   Inches(8.2)),
     ("20 Regions",                 ACCENT_B, Inches(10.6)),
 ]
@@ -380,7 +380,7 @@ notes(slide,
     "make? Not what the supplier quotes, but what the material, the machine time, the labour and the "
     "tooling say it should cost. "
     "I want to say two things up front, because they shape everything else. First, the AI is "
-    "switched off in the JLR build. JLR has no AI approval yet, so the tool runs on measurement, "
+    "waiting for an API key in the JLR build. None has been added yet, so the tool runs on measurement, "
     "rules and arithmetic. Second, even when AI is on, it never sets a price. Every pound is a sum "
     "you can trace back to a rate in the library. "
     "Over the next slides I'll show you what it covers, which is nineteen manufacturing processes "
@@ -506,25 +506,25 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 4 — Optional AI mode (switched off at JLR)
+# SLIDE 4 — Optional AI mode (needs an API key)
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 4, "Optional AI Mode · Switched Off at JLR", "AI Mode — Built In, Switched Off, Never Sets a Price",
-             "The AI code is in the product but turned off. If AI is ever approved, a setting turns it on — no rebuild.")
+slide_header(slide, 4, "Optional AI Mode · Needs an API Key", "AI Mode — Built In, Needs a Key, Never Sets a Price",
+             "The AI code is in the product. Adding an API key turns it on — no rebuild.")
 
 # Left column — how it works
 lx, ly, lw = Inches(0.45), Inches(2.0), Inches(5.8)
 txb(slide, "How It Works", lx, ly, lw, Inches(0.3), size=10, bold=True, color=ACCENT_B)
 
 steps = [
-    ("1. What it would do (if switched on)",
-     "Read a plain-English description, a drawing or a PCB photo, and suggest the inputs: material, process route, features."),
+    ("1. What it does (with a key)",
+     "Reads a plain-English description, a drawing, or the chips on a board photo, and suggests the inputs: material, process route, parts list."),
     ("2. What it never does",
      "Set a price. Every pound is calculated by the same rules engine, from the rate library."),
     ("3. How it is kept in check",
      "Its suggestions are checked against the measured geometry. Every AI route is rate-limited per user."),
     ("4. What JLR sees today",
-     "Screens that need AI are hidden. If you reach one, the tool says \"AI is switched off in this installation\"."),
+     "Screens that need AI are hidden until a key is added. Every costing path works without them."),
 ]
 
 yy = Inches(2.35)
@@ -544,7 +544,7 @@ rw = Inches(6.3)
 
 chats = [
     ("USER",  "Aluminium bracket, 6082-T6, 200 × 100 × 50 mm, three holes, 5,000 a year, UK"),
-    ("TOOL",  "AI is switched off in this installation.\nCosting, CAD geometry and the learning loop work without it.\n• Upload the STEP file, or\n• Fill in the machining form"),
+    ("TOOL",  "AI needs an API key in this installation.\nCosting, CAD geometry and the learning loop work without it.\n• Upload the STEP file, or\n• Fill in the machining form"),
     ("USER",  "Uploads bracket.step"),
     ("TOOL",  "Measured: volume, weight, size, walls, holes.\nOne question: which process route — machining or casting?\nThen: cost from the rate library, in eight buckets."),
 ]
@@ -559,7 +559,7 @@ rect(slide, rx, ry, rw, rh, SURFACE, BORDER, Pt(0.5))
 
 # Mockup title bar
 rect(slide, rx, ry, rw, Inches(0.36), SURFACE2)
-txb(slide, "●  CostVision — JLR build, AI switched off", rx + Inches(0.14), ry + Inches(0.07),
+txb(slide, "●  CostVision — JLR build, no API key yet", rx + Inches(0.14), ry + Inches(0.07),
     rw - Inches(0.2), Inches(0.25), size=8.5, bold=True, color=ACCENT_B)
 
 cy2 = ry + Inches(0.44)
@@ -589,12 +589,12 @@ assert by + Inches(0.22) <= H - Inches(0.45), 'benefits strip runs into the foot
 notes(slide,
     "I want to be clear about AI, because it's usually the first question. "
     "The product has an optional AI mode. When it's on, it can read a plain-English description, a "
-    "drawing or a PCB photo and suggest the inputs: material, process route, features. That's all it "
+    "drawing or the chips on a board photo and suggest the inputs: material, process route, parts list. That's all it "
     "does. It never sets a price. The same rules engine does the sum either way, and anything the AI "
     "suggests is checked against the measured geometry. "
-    "At JLR that mode is switched off, because there's no AI approval yet. The code is still there, "
+    "At JLR that mode waits for an API key; none has been added yet. The code is still there, "
     "turned off by a setting, so if approval comes it can be switched on without a rebuild. "
-    "With it off, the screens that need AI are hidden. If you do reach one, the tool says so plainly "
+    "Until a key is added, the screens that need AI are hidden. If you do reach one, the tool says so plainly "
     "instead of asking for a key. The right-hand side shows what that looks like: you're pointed to "
     "the CAD upload or the form, and the costing carries on as normal.")
 
@@ -840,7 +840,7 @@ slide_header(slide, 8, "Workflow", "From Part to Cost — Eight Steps",
 # Entry point banner
 rect(slide, Inches(0.45), Inches(1.98), Inches(12.45), Inches(0.5), SURFACE2, BORDER, Pt(0.5))
 txb(slide, "Way in A: CAD upload (STEP / IGES / STL)   |   Way in B: Form entry   |   "
-    "Way in C: Describe the part in words — AI mode, switched off at JLR",
+    "Way in C: Describe the part in words — AI mode, needs an API key",
     Inches(0.6), Inches(2.08), Inches(12.1), Inches(0.36),
     size=9.5, color=TEXT_G, align=PP_ALIGN.CENTER)
 
@@ -882,7 +882,7 @@ for tag in tags:
 
 notes(slide,
     "This slide shows the flow from end to end. At JLR there are two ways in: upload a CAD file, or "
-    "fill in the form. The third door, describing the part in words, needs AI, so it's switched off. "
+    "fill in the form. The third door, describing the part in words, needs AI, so it waits for a key. "
     "Whichever way you come in, it's the same eight steps. Pick the process, give it the part, let it "
     "measure, answer its questions, and it calculates the eight buckets. Then it audits its own "
     "result and puts a P10 to P90 band around it, gives you design-for-manufacture advice, and "
@@ -1171,7 +1171,7 @@ notes(slide,
     "castings, forgings, mouldings, machined parts and pressings. It points at the actual faces that "
     "cause the problem, and every rule names its source. "
     "There's also an optional AI commentary on top, but that's part of the AI mode, so it's switched "
-    "off at JLR.")
+    "needs an API key.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1255,7 +1255,7 @@ notes(slide,
 slide = add_slide()
 slide_header(slide, 14, "What Runs Today · What Waits",
              "Runs on Rules Today — AI Mode Waits for Approval",
-             "Left: what runs at JLR now, with AI switched off. Right: the optional AI features — built, but turned off.")
+             "Left: what runs at JLR now, without an API key. Right: the optional AI features — built, waiting for a key.")
 
 def _agentic_panel(x, accent, head, tag, examples):
     w, y, h = Inches(6.05), Inches(2.0), Inches(4.4)
@@ -1281,10 +1281,10 @@ _agentic_panel(Inches(0.45), ACCENT_G, "Runs Today — No AI",
      ("Self-audit", "Checks every result: wrong machine size, wrong volume for tooling, odd cycle times."),
      ("Learning from actuals", "Log a real quote or PO price. After 3 for a commodity, the band is corrected."),
      ("Supplier price monitor", "Compares logged prices with the should-cost and flags where a supplier sits above it.")])
-_agentic_panel(Inches(6.83), ACCENT_P, "Optional AI Mode — Off at JLR",
-    "Needs AI approval. Turned on by a setting, with no rebuild.",
+_agentic_panel(Inches(6.83), ACCENT_P, "Optional AI Mode — Needs an API Key",
+    "Turned on by adding a key, with no rebuild. The model reads; the tool prices.",
     [("Describe a part", "Type a description and the AI suggests the inputs. The engine still does the sum."),
-     ("PCB photo to BOM", "Reads a board photo into a bill of materials, then costs it with the rules."),
+     ("PCB photo to BOM", "Reads the chips and lists the parts; the tool prices every line from its catalogue and tables, then costs the board."),
      ("AI assistant", "Answers costing questions in plain English."),
      ("AI agent", "Works through a costing task step by step, when asked.")])
 
@@ -1294,13 +1294,13 @@ txb(slide, "The common thread:  AI never sets a price, on or off. Every number s
 
 notes(slide,
     "This slide separates what works today from what's waiting. "
-    "On the left is everything that runs at JLR now, with AI switched off and no internet. CAD to "
+    "On the left is everything that runs at JLR now, without an API key and no internet. CAD to "
     "cost on rules. The self-audit on every result. Learning from actuals: you log a real quote or "
     "purchase-order price, and after three for a commodity the uncertainty band is corrected by real "
     "data. And a monitor that compares logged prices with the should-cost and flags where a supplier "
     "sits above it. "
     "On the right are the AI features. They're built and they're in the product, but they're switched "
-    "off: describing a part in words, PCB photo to bill of materials, the assistant and the agent. If "
+    "waiting for a key: describing a part in words, PCB photo to parts list, the assistant and the agent. If "
     "JLR approves AI, a setting turns them on. "
     "The line at the bottom is the one that doesn't change either way. AI never sets a price.")
 
@@ -1632,7 +1632,7 @@ assert yy15r + Inches(1.5) <= Inches(6.96), 'pilot box runs into the footer'
 
 notes(slide,
     "So where does that leave us? The left column is live today, not a wish list. It runs on a "
-    "laptop, with AI switched off, and it's backed by tests. "
+    "laptop, without an API key, and it's backed by tests. "
     "On the right is where it could go next. First, connecting to the systems we already use, like "
     "Teamcenter and SAP, and a cost-target view for programme teams. Then calibrating from live ERP "
     "actuals and drafting the RFQ from the should-cost. The last phase includes AI features, and those "

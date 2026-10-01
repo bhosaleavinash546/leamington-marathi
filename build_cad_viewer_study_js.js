@@ -75,7 +75,7 @@ function card(s,x,y,w,h,accent,title,body,tsize=11,bsize=9.5){
  let px=0.72; pills.forEach(([t,c])=>{ const w=0.28+t.length*0.098;
    rr(s,px,4.55,w,0.4,C.SURF2,{line:{color:c,width:1}}); T(s,t,px,4.55,w,0.4,{fontSize:10,bold:true,color:c,align:'center',valign:'middle'}); px+=w+0.22; });
  T(s,'CostVision  ·  Cost Engineering & Digital Innovation  ·  Study July 2026, updated September 2026',0.72,6.7,12,0.3,{fontSize:11,color:C.DIM});
- s.addNotes("This deck started in July as an answer to a fair challenge. Someone had seen a rival should-cost tool and liked its 3D viewer. It felt like real CAD software, and it seemed to pull data straight off the model. So I did two things. I read up on how the leading tools do this, and I went through our own viewer and geometry engine line by line. Since July we have built a good part of that plan. So I've updated the deck to say plainly what is in the tool today and what is still future. One thing to hold on to all the way through. At JLR the AI is switched off. The CAD path runs on measured geometry and plain rules. Where the geometry can't decide something, the tool asks the engineer. Nothing on these slides depends on AI.");})();
+ s.addNotes("This deck started in July as an answer to a fair challenge. Someone had seen a rival should-cost tool and liked its 3D viewer. It felt like real CAD software, and it seemed to pull data straight off the model. So I did two things. I read up on how the leading tools do this, and I went through our own viewer and geometry engine line by line. Since July we have built a good part of that plan. So I've updated the deck to say plainly what is in the tool today and what is still future. One thing to hold on to all the way through. At JLR the AI waits for an API key. The CAD path runs on measured geometry and plain rules. Where the geometry can't decide something, the tool asks the engineer. Nothing on these slides depends on AI.");})();
 
 // ════════════════════════════════════ 2 — EXEC SUMMARY ════════════════════════════════════
 (()=>{const s=header('What we found','Executive summary');
@@ -212,9 +212,9 @@ function card(s,x,y,w,h,accent,title,body,tsize=11,bsize=9.5){
    x+=6.35; });
  rr(s,0.5,5.75,12.35,0.95,'10202E',{line:{color:C.CYAN,width:1}});
  T(s,[{text:'The rule we keep:  ',options:{bold:true,color:C.CYAN}},
-   {text:'the viewer is a place to capture and check cost inputs, not decoration. The tool measures and calculates; every £ traces to a rate. AI never sets a price, and at JLR it is switched off.',options:{color:C.GREY}}],
+   {text:'the viewer is a place to capture and check cost inputs, not decoration. The tool measures and calculates; every £ traces to a rate. AI never sets a price, and runs only once an API key is added.',options:{color:C.GREY}}],
    0.8,5.75,11.7,0.95,{fontSize:11.5,valign:'middle',lineSpacingMultiple:1.08});
- s.addNotes("The whole plan comes down to two ideas. The first one is mostly done. In July the engine was already working out wall thickness, draft and undercuts, and then throwing them away as far as the viewer was concerned. Now they're coloured on the model, along with the cost per face after you run a costing. That was cheap to build because the numbers already existed. The second idea is still ahead of us. Every feature we can read from the CAD file is a field nobody has to type. Tolerances, chamfers, slots and threads are next. Until we can read them, the tool asks the engineer, and I think that's the right default. And the rule at the bottom doesn't change. The viewer is there to capture and check inputs. The tool measures and calculates. AI never sets a price, and at JLR it's switched off anyway.");})();
+ s.addNotes("The whole plan comes down to two ideas. The first one is mostly done. In July the engine was already working out wall thickness, draft and undercuts, and then throwing them away as far as the viewer was concerned. Now they're coloured on the model, along with the cost per face after you run a costing. That was cheap to build because the numbers already existed. The second idea is still ahead of us. Every feature we can read from the CAD file is a field nobody has to type. Tolerances, chamfers, slots and threads are next. Until we can read them, the tool asks the engineer, and I think that's the right default. And the rule at the bottom doesn't change. The viewer is there to capture and check inputs. The tool measures and calculates. AI never sets a price, and runs only once an API key is added.");})();
 
 // ════════════════════════════════════ 8 — TECHNOLOGY TO BUILD ON ════════════════════════════════════
 (()=>{const s=header('The technology we could build on','Future options · published and open source');
@@ -366,7 +366,7 @@ function card(s,x,y,w,h,accent,title,body,tsize=11,bsize=9.5){
    [C.BLUE,'Design issues seen early','Thin walls, zero draft and undercuts show on the model while a change is still cheap.'],
    [C.VIOLET,'Easier to explain','Click a face to see what was measured, and where the money sits. The model backs up the number.'],
    [C.AMBER,'Tolerance-aware cost (future)','Reading GD&T from the file would price precision parts from the model itself. Not built yet.'],
-   [C.GREEN,'Still traceable','The tool measures and calculates. AI never sets a price, and at JLR it is switched off.'],
+   [C.GREEN,'Still traceable','The tool measures and calculates. AI never sets a price, and runs only once an API key is added.'],
  ];
  const cw=4.03, ch=1.55, gx=0.45, gy=1.95, gap=0.13;
  ben.forEach(([c,t,b],i)=>{ const cx=gx+(i%3)*(cw+gap), cy=gy+Math.floor(i/3)*(ch+gap);
@@ -405,7 +405,7 @@ function card(s,x,y,w,h,accent,title,body,tsize=11,bsize=9.5){
   card(s,8.05,1.95,4.85,2.75,C.BLUE,'When the geometry cannot decide',
     'The rules ask the engineer instead of guessing: the process route, the material family, a hole count on an STL.\n\nThick-walled parts (walls over about 6 mm) are offered casting, forging, cast + machine or machining.\n\nAn STL has no feature table, so a machined STL waits until the engineer types a cycle time.\n\nSheet metal: upload a DXF flat pattern with the STEP, and the measured blank replaces the bounding box.',11,9.3);
   card(s,8.05,4.85,4.85,1.65,C.GREEN,'The golden rule',
-    'AI never sets a price. At JLR it is switched off. The CAD path runs on measured geometry and rules, for 13 commodities. Every £ is plain arithmetic, traceable to a rate.',11,9.5);
+    'AI never sets a price, and runs only once an API key is added. The CAD path runs on measured geometry and rules, for 13 commodities. Every £ is plain arithmetic, traceable to a rate.',11,9.5);
   s.addNotes("This slide answers the practical question. What does the tool measure on its own, and where does each number go? You can upload STEP, IGES or STL. On the left is what the geometry engine measures, with nothing typed. On the right is the cost input it feeds. Volume and weight give material cost. The bounding box sizes the machine and the stock. The hole table becomes drilling and tapping. Wall thickness helps pick the route, and draft and undercuts drive tooling. For STEP and IGES there's also a machining cycle estimate. The box on the right is the part I like most. When the geometry can't decide, the tool asks you. An STL has no feature table, so it waits for you to type a cycle time. For sheet metal you can add a DXF flat pattern, and the measured blank is used. Thirteen commodities work this way, with no AI.");})();
 
 const OUT='/home/user/leamington-marathi/CostVision-3D-CAD-Viewer-Study-and-Roadmap.pptx';

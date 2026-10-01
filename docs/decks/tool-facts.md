@@ -53,6 +53,20 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
   on screen, in the PDF and the workbook); margin is a % of the subtotal.
 - **PCB fabrication is a bought-in price** from fabricators' price tables, so no
   overhead or margin is added on top (a default board: £100.44 before, £83.08 now).
+- **PCB photo → parts list → board cost** (needs an API key; 1 Oct 2026 build). The
+  model classifies the board, reads the markings printed on the chips and writes
+  the parts list — it is not asked for a cost. A BOM file, if attached, is the parts
+  list; drill and Gerber files, if attached, give the measured size, layer count and
+  via count. Every line is priced from the tool's own data: a 458-part catalogue
+  (77 parts read from distributor pages on 1 Oct 2026, the rest labelled estimates,
+  a source and date on every entry), the price range for a part the tool can name,
+  or the class table — the model's figure only picks a point inside the range. The
+  bare board and assembly are costed from the 14-country rate table; on an
+  automotive board the IATF / class 3 / burn-in premiums are in the headline. Lines
+  worth £1+ with no quote behind them are listed "to verify". Screen, PDF, master
+  report and Parts Library show the same number. Checked in a browser against a
+  fixed model reply (`npm run test:e2e:pcb`). Radar board, China, 250k/yr, photos
+  only: £59.63 automotive grade. Not yet compared with a price JLR paid.
 - **Tooling** is spread over annual volume × programme life (blank life = one year).
 - **Uncertainty band** on every result (Monte Carlo P10–P90), covering every cost
   driver including flat material prices.
