@@ -171,6 +171,18 @@ export function computeUniversalStack(
     });
   }
 
+  // Bought-in components: in the material line, outside the overhead and margin base.
+  const boughtInCost = Math.max(0, input.rawMaterial.boughtIn?.cost ?? 0);
+  const boughtInHandling = boughtInCost * Math.max(0, input.rawMaterial.boughtIn?.handlingPct ?? 0);
+  if (boughtInCost > 0) {
+    rawMaterialCost += boughtInCost;
+    traceability.push({
+      field: 'rawMaterial.boughtIn', value: boughtInCost, unit: '£',
+      rateSource: `Bought-in at supplier price (its overhead + margin included); handling ${((input.rawMaterial.boughtIn?.handlingPct ?? 0) * 100).toFixed(1)}% charged as overhead, no second margin`,
+      rateId: input.rawMaterial.materialId, confidence: 'Medium',
+    });
+  }
+
   // 2 & 3. Process + Labour
   const operationDetails: OperationResult[] = [];
   let processTotal = 0;
@@ -266,12 +278,13 @@ export function computeUniversalStack(
   // Note: this includes raw material and tooling (not "conversion cost only").
   // Calibrate overheadPct accordingly — industry benchmark of 10–15% is on this broader base.
   const factoryCostBase = rawMaterialCost + processTotal + labourTotal + toolingPerPart;
-  const overhead = input.overheadPct * factoryCostBase;
+  // Bought-in content takes handling, not the assembler's overhead (zero when unused).
+  const overhead = input.overheadPct * (factoryCostBase - boughtInCost) + boughtInHandling;
   const factoryCost = factoryCostBase + packaging + logistics;
   const subtotal = factoryCost + overhead;
 
-  // 8. Margin
-  const margin = input.marginPct * subtotal;
+  // 8. Margin — not on bought-in content, which already carries its supplier's.
+  const margin = input.marginPct * (subtotal - boughtInCost);
   const total = subtotal + margin;
 
   // Sanity: no bucket should be negative
@@ -294,7 +307,7 @@ export function computeUniversalStack(
     breakdown,
     operationDetails,
     factoryCost,
-    overheadBase: factoryCostBase,
+    overheadBase: factoryCostBase - boughtInCost,
     subtotal,
     total,
     traceability,

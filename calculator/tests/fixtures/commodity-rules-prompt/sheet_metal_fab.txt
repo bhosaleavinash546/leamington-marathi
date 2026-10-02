@@ -9,8 +9,8 @@ SHEET METAL COST INPUT RULES:
   blankLengthMm=336  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   perimeterMm=1176  [2 × (336 + 252) of the blank rectangle — ignores the outline shape and every hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length — deterministic, use verbatim]
-  pressId=press-400t  [blanking force ≈ 1176 mm cut × 12.25 mm × 170 MPa = 250 t, × 1.25 safety → the smallest press over 312 t — deterministic, use verbatim]
-  numOps=6  [1 blank + 4 bend(s) + 1 pierce = 6 stations — deterministic, use verbatim]
+  pressId=press-400t  [cut 1176 mm × 12.25 mm × 170 MPa = 250 t + bending 0.166 × 640 mm × 12.25 mm × 213 MPa = 28 t, + 10% stripper = 306 t, × 1.25 safety; die 1844 mm long (4 station(s) × 361 mm pitch + 400 mm) — the smallest press over 383 t with a bolster that takes it (press-400t: 2500 mm, typical) — deterministic, use verbatim]
+  numOps=4  [pierce + 2 forming station(s) for 4 bend(s) at ~3 a station + cut-off = 4 — deterministic, use verbatim]
   pressLine=coil-fed  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   pressesInLine=1  [one press, coil-fed — deterministic, use verbatim]
   blankingMethod=none  [coil-fed die — the blank is cut in the die — deterministic, use verbatim]
@@ -18,14 +18,20 @@ SHEET METAL COST INPUT RULES:
   drawAddendumMm=0  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   pitchMm=361  [blank 336 mm + 25 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
   stripWidthMm=301  [blank 252 mm + 2 × 25 mm edge margin — deterministic, use verbatim]
-  strokesPerMin=40  [feed-limited: 18 m/min ÷ 361 mm pitch, de-rated for 4 bends — deterministic, use verbatim]
-  dieCostGBP=59706  [single_stage die, 6 stations, 847 cm² blank, 170 MPa shear; OCCT parametric says £92300 — deterministic, use verbatim]
-  dieLife=1050000  [170 MPa shear at 12.25 mm on a single_stage die — deterministic, use verbatim]
-  dieType=single_stage  [high volume at 12.25 mm: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
+  strokesPerMin=32  [min(feed 18 m/min ÷ 361 mm pitch, press-400t max 40 SPM), de-rated for 4 bends — deterministic, use verbatim]
+  dieCostGBP=66555  [progressive die, 4 station(s), 847 cm² blank, 170 MPa shear — toolmaker build-up; kernel face-count parametric said £92,300 (not used) — deterministic, use verbatim]
+  dieLife=1050000  [170 MPa shear at 12.25 mm on a progressive die — deterministic, use verbatim]
+  dieType=progressive  [coil-fed progressive die, 4 stations — deterministic, use verbatim]
   process=Laser Cutting  [high volume: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
   materialId=mat-aa5754-sheet  [aluminium → mat-aa5754-sheet (representative coil grade — not a drawing callout) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   shearStrengthMPa=170  [reference shear strength for aluminium sheet — deterministic, use verbatim]
+  route=stamping  [stamping — laser + brake is not an option: 12.25 mm is beyond a fibre laser's economic range — deterministic, use verbatim]
+  manning=0.5  [coil-fed press-400t: one operator tends two automatic presses (engineering-typical) — deterministic, use verbatim]
+  rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — screen had 0, headless 3% — deterministic, use verbatim]
+  setupHoursPerChange=1  [1 h to change a coil-fed die on a press-400t (engineering-typical) — deterministic, use verbatim]
+  batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
+  dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10% — deterministic, use verbatim]
 
 ### context: degraded
 SHEET METAL COST INPUT RULES:
@@ -36,7 +42,7 @@ SHEET METAL COST INPUT RULES:
   blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   perimeterMm=1176  [2 × (336 + 252) of the blank rectangle — ignores the outline shape and every hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length — deterministic, use verbatim]
   pressId: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
-  numOps=2  [1 blank + 0 bend(s) = 2 stations — deterministic, use verbatim]
+  numOps=1  [0 forming station(s) for 0 bend(s) at ~3 a station + cut-off = 1 — deterministic, use verbatim]
   pressLine=coil-fed  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   pressesInLine=1  [one press, coil-fed — deterministic, use verbatim]
   blankingMethod=none  [coil-fed die — the blank is cut in the die — deterministic, use verbatim]
@@ -49,3 +55,9 @@ SHEET METAL COST INPUT RULES:
   materialId: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   netWeightKg: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   shearStrengthMPa: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  route: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  manning: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — screen had 0, headless 3% — deterministic, use verbatim]
+  setupHoursPerChange=1  [no press plan — 1 h a die change — deterministic, use verbatim]
+  batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
+  dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10% — deterministic, use verbatim]

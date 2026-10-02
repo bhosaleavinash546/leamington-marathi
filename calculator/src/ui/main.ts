@@ -52,7 +52,7 @@ import {
 import { PCBA_QUALITY_MULTIPLIER } from '../engine/modules/pcba.js';
 import type { AssemblyComplexityLevel, PCBAQualityGrade, XrayInspectionMode } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
-import { computeSheetMetalFabDrivers, estimateBlankingCycleSec, type FabMaterialFamily } from '../engine/modules/sheet-metal-fab.js';
+import { computeSheetMetalFabDrivers } from '../engine/modules/sheet-metal-fab.js';
 import {
   adviseSheetMetalProcess, analyseSheetMetalDFM,
   estimateStampingDieCost, estimateStampingDieLife,
@@ -3467,6 +3467,9 @@ function renderSheetMetalForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label title="Press shop scrap rate. Progressive tool good quality: 0.5–1%. Complex draw/form: 1–3%. Leave 0 if scrap is included in material utilisation already.">Reject Rate (0=none) ⓘ</label><input type="number" id="sm-reject" step="0.005" min="0" max="0.2" value="0" title="Press scrap fraction. Progressive tool: 0.005–0.01. Draw/form: 0.01–0.03."/></div>
+      <div class="field-group"><label title="Die change: press and setter hours per change (every press of a tandem line stands). Engine default: progressive ≤400 t 1 h, larger / transfer 1.5 h, tandem 0.5 h a press.">Die Change (h) ⓘ</label><input type="number" id="sm-die-chg" step="0.25" min="0" value="0"/></div>
+      <div class="field-group"><label title="Parts per production run — the die change is shared over it. Engine default: annual volume ÷ 20, 50–5,000.">Batch Size ⓘ</label><input type="number" id="sm-batch" step="50" min="0" value="0"/></div>
+      <div class="field-group"><label title="Die maintenance a year (sharpening, springs, inserts) as a fraction of the die cost. Engine default 0.05 (typical 0.05–0.10); 0 for soft tooling.">Die Maint. (/yr) ⓘ</label><input type="number" id="sm-maint" step="0.01" min="0" max="0.5" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Secondary Operation (optional)</div>
     <div class="field-row">
@@ -10834,19 +10837,9 @@ function applyDetectedHardware(prefix: 'sm' | 'smf', weightFieldId: string, mate
     `Hardware detected from geometry: ${summary}. Piece prices default from the built-in catalogue — confirm or edit the hardware rows before relying on the cost.` +
     (hw.detected.length > 3 ? ` ${hw.detected.length - 3} further hardware group(s) not auto-filled (3 rows available).` : '')
   );
-  // Blank-weight correction at the sheet material's density (the merged-solid
-  // weight estimate counted the nut steel as blanked strip).
-  const curWt = num(weightFieldId);
-  if ((hw.totalVolumeCm3 ?? 0) > 0 && curWt > 0) {
-    const dens = library.materials.find(m => m.id === materialId)?.densityKgPerM3 ?? 7850;
-    const subKg = (hw.totalVolumeCm3 as number) * 1e-6 * dens;
-    if (subKg < curWt) {
-      setNumericField(weightFieldId, curWt - subKg, 3);
-      _smExtraWarnings.push(
-        `Blank weight reduced by ${subKg.toFixed(3)} kg — detected hardware is purchased, not blanked from the strip.`
-      );
-    }
-  }
+  // The blank weight is already net of the detected hardware: the net-weight
+  // rule takes it off for screen and headless alike (sheet-metal review).
+  void weightFieldId; void materialId;
 }
 
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
@@ -11245,84 +11238,29 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       }
 
       case 'sheet_metal': {
+        // From the analysis — the rule-decided values headless costs. This block
+        // used to run its own model: blank = bounding box × 1.05, strip and pitch
+        // as +6% / +4% of it, a shear-strength map keyed on ids such as
+        // 'mat-hss' that the rules never pick (DC04 fell to the default), the
+        // kernel's face-count die cost, and its own press and SPM formulas.
         setMaterial(el<HTMLSelectElement>('sm-mat'), c.materialId);
         setNumericField('sm-net-wt', c.netWeightKg, 3);
-        // Derive blank dims from OCCT bounding box (sorted: L ≥ W ≥ thickness)
-        const smBB = cadOCCTGeometry?.boundingBox;
-        let smBlankL = 0;
-        let smBlankW = 0;
-        if (smBB) {
-          const dims = [smBB.xMm, smBB.yMm, smBB.zMm].sort((a, b) => b - a);
-          smBlankL = dims[0] * 1.05;
-          smBlankW = dims[1] * 1.05;
-          setNumericField('sm-blank-l', smBlankL, 0);
-          setNumericField('sm-blank-w', smBlankW, 0);
-          // Gauge: the rules' bend-measured coil gauge first; the ray-cast minimum
-          // lands on a radius and read the seat bracket at 0.53 mm against 1.6.
-          const ruleGauge = c.sheetMetal?.thicknessMm;
-          const wallMin = cadOCCTGeometry?.wallThickness?.minMm;
-          setNumericField('sm-thick', (ruleGauge && ruleGauge > 0) ? ruleGauge : (wallMin ?? dims[2]), 2);
-          // Cut length: the rules' figure (DXF or B-rep identity) over 2×(L+W),
-          // which ignores every hole. Strip width and pitch with typical scrap allowances.
-          const rulePerim = c.sheetMetal?.perimeterMm;
-          setNumericField('sm-perim', (rulePerim && rulePerim > 0) ? rulePerim : 2 * (smBlankL + smBlankW), 0);
-          setNumericField('sm-strip-w', smBlankW * 1.06, 0);
-          setNumericField('sm-pitch', smBlankL * 1.04, 0);
-        }
-        // Material shear strength lookup
-        const smShearMap: Record<string, number> = {
-          'mat-dc01': 290, 'mat-hss': 420, 'mat-stainless-316': 520,
-          'mat-al5052': 125, 'mat-al6061': 195, 'mat-brass-crz': 350, 'mat-ss304c': 510,
-        };
-        setNumericField('sm-shear', smShearMap[c.materialId] ?? 280, 0);
         const sm = c.sheetMetal;
-        const smTC = cadOCCTGeometry?.toolingCostEstimates;
         if (sm) {
-          if (!smBB) {
-            setNumericField('sm-blank-l', sm.blankLengthMm, 0);
-            setNumericField('sm-blank-w', sm.blankWidthMm, 0);
-            setNumericField('sm-thick', sm.thicknessMm, 1);
-            smBlankL = sm.blankLengthMm;
-            smBlankW = sm.blankWidthMm;
-            setNumericField('sm-perim', 2 * (smBlankL + smBlankW), 0);
-            setNumericField('sm-strip-w', smBlankW * 1.06, 0);
-            setNumericField('sm-pitch', smBlankL * 1.04, 0);
-          }
-          // Prefer OCCT parametric progressive die cost over AI bracket estimate
-          setNumericField('sm-die-cost', smTC?.progressiveDieCostGBP ?? sm.dieCostGBP, 0);
+          setNumericField('sm-blank-l', sm.blankLengthMm, 0);
+          setNumericField('sm-blank-w', sm.blankWidthMm, 0);
+          setNumericField('sm-thick', sm.thicknessMm, 2);
+          if (sm.perimeterMm) setNumericField('sm-perim', sm.perimeterMm, 0);
+          if (sm.shearStrengthMPa) setNumericField('sm-shear', sm.shearStrengthMPa, 0);
+          if (sm.stripWidthMm) setNumericField('sm-strip-w', sm.stripWidthMm, 0);
+          if (sm.pitchMm) setNumericField('sm-pitch', sm.pitchMm, 0);
+          if (sm.strokesPerMin) setNumericField('sm-spm', sm.strokesPerMin, 0);
+          setNumericField('sm-die-cost', sm.dieCostGBP, 0);
           setNumericField('sm-die-life', sm.dieLife, 0);
           setNumericField('sm-num-ops', sm.numOps, 0);
-        } else if (smTC) {
-          setNumericField('sm-die-cost', smTC.progressiveDieCostGBP, 0);
-        }
-        // Size the stamping press to the blanking force (perimeter × thickness ×
-        // shear), not the small form default — generalised via sizeProcessMachine.
-        {
-          const smPerim = num('sm-perim'), smThick = num('sm-thick'), smShear = num('sm-shear');
-          if (smPerim > 0 && smThick > 0 && smShear > 0) {
-            const stampTonnes = estimateTonnageTonnes({ perimeterMm: smPerim, thicknessMm: smThick, shearStrengthMPa: smShear });
-            const pressId = sizeProcessMachine('sheet_metal', { stampTonnes });
+          if (sm.pressId) {
             const smPressEl = el<HTMLSelectElement>('sm-press');
-            if (pressId && smPressEl) {
-              const m = Array.from(smPressEl.options).find(o => o.value === pressId);
-              if (m) { smPressEl.value = m.value; markAIFilled(smPressEl); }
-            }
-          }
-        }
-        // Realistic press speed from geometry — the default 80 SPM implies a
-        // near-zero press cost, but a large multi-bend bracket is feed- AND
-        // forming-limited: a progressive line feeds ~18 m/min, and each extra
-        // bend/station slows indexing. Without this the forming line collapsed
-        // to ~¥0.02 on a 340 mm, 15-bend part.
-        {
-          const smBends = cadOCCTGeometry?.sheetMetal?.bendCount ?? 0;
-          const pitchMm = num('sm-pitch') || smBlankL || 0;
-          if (pitchMm > 0) {
-            let spm = 18000 / pitchMm;                 // feed-limited SPM (18 m/min ÷ pitch)
-            if (smBends >= 4)  spm *= 0.8;             // forming-complexity de-rate
-            if (smBends >= 8)  spm *= 0.8;
-            if (smBends >= 14) spm *= 0.8;
-            setNumericField('sm-spm', Math.round(Math.min(120, Math.max(10, spm))), 0);
+            if (smPressEl && Array.from(smPressEl.options).some(o => o.value === sm.pressId)) { smPressEl.value = sm.pressId; markAIFilled(smPressEl); }
           }
         }
         applyDetectedHardware('sm', 'sm-net-wt', c.materialId);
@@ -11330,48 +11268,34 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       }
 
       case 'sheet_metal_fab': {
+        // From the analysis — the rule-decided values headless costs. This block
+        // used to run its own model: cut length from the bounding box + 30 mm a
+        // hole, a TOLERANCE of "5% of the mean wall" (no physical basis — it fed a
+        // ×1.0–1.6 cycle multiplier), and fab tooling set to the STAMPING die cost
+        // (£181k of "tooling" on a laser part). Sheet-metal review.
         setMaterial(el<HTMLSelectElement>('smf-mat'), c.materialId);
         setNumericField('smf-part-wt', c.netWeightKg, 3);
-        // Bend count — prefer the GEOMETRY-MEASURED count (cylindrical bend faces
-        // with in-plane axes) over the crude planar-face proxy. Phase 3.
-        const smfBends = cadOCCTGeometry?.sheetMetal;
-        if (smfBends && smfBends.bendCount > 0) {
-          setNumericField('smf-bends', smfBends.bendCount, 0);
-          if (smfBends.totalBendLengthMm > 0) {
-            _smExtraWarnings.push(
-              `Bends: ${smfBends.bendCount} press-brake bend(s) measured from geometry ` +
-              `(${smfBends.totalBendLengthMm.toFixed(0)} mm total bend length, ${smfBends.thicknessMm.toFixed(1)} mm sheet). Adjust if the flat pattern differs.`
-            );
-          }
-        } else {
-          // Fallback: planar-face proxy (2 faces per 90° bend minus the flat base)
-          const smfPlanar = cadOCCTGeometry?.features?.planarFaceCount ?? 0;
-          if (smfPlanar > 2) setNumericField('smf-bends', Math.max(1, Math.round((smfPlanar - 2) / 2)), 0);
-        }
-        // Tolerance from wall thickness (5% of mean wall, min 0.1mm)
-        const smfWallMean = cadOCCTGeometry?.wallThickness?.meanMm;
-        if (smfWallMean) {
-          setNumericField('smf-tolerance', Math.max(0.1, smfWallMean * 0.05), 2);
-        }
-        // Laser blanking cycle time — feed rate derived from material + thickness
-        // (a 6 mm stainless part cuts ~3× slower than 1 mm mild steel; a flat feed
-        //  under-costs thick/stainless blanks). Cut length ≈ perimeter + hole edges.
-        const smfBB = cadOCCTGeometry?.boundingBox;
-        if (smfBB) {
-          const fbDims = [smfBB.xMm, smfBB.yMm, smfBB.zMm].sort((a, b) => b - a);
-          const perimMm = 2 * (fbDims[0] * 1.05 + fbDims[1] * 1.05);
-          const holeCount = cadOCCTGeometry?.features?.estimatedHoleCount ?? 0;
-          const family = inferFabMaterialFamily(c.materialId);
-          const thick = smfWallMean && smfWallMean > 0 ? smfWallMean : Math.max(0.5, fbDims[2]);
-          const blankCt = Math.max(15, Math.round(estimateBlankingCycleSec({
-            method: 'laser', materialFamily: family, thicknessMm: thick,
-            cutLengthMm: perimMm + holeCount * 30, pierceCount: holeCount + 1,
-          })));
-          setNumericField('smf-blank-ct', blankCt, 0);
-        }
-        const smFab = c.sheetMetal;
-        if (smFab) {
-          setNumericField('smf-tooling', smFab.dieCostGBP, 0);
+        const smf = c.sheetMetal;
+        if (smf) {
+          if (smf.fabBlankingCycleSec) setNumericField('smf-blank-ct', smf.fabBlankingCycleSec, 1);
+          if (smf.fabBendCount !== undefined) setNumericField('smf-bends', smf.fabBendCount, 0);
+          if (smf.fabBendSec) setNumericField('smf-bend-t', smf.fabBendSec, 1);
+          if (smf.fabToolChanges !== undefined) setNumericField('smf-tool-chg', smf.fabToolChanges, 0);
+          if (smf.fabToolChangeSec) setNumericField('smf-tool-chg-t', smf.fabToolChangeSec, 0);
+          if (smf.fabBatchSize) setNumericField('smf-batch', smf.fabBatchSize, 0);
+          if (smf.fabToolingGBP !== undefined) setNumericField('smf-tooling', smf.fabToolingGBP, 0);
+          if (smf.fabUtilization) setNumericField('smf-mat-util', smf.fabUtilization, 2);
+          if (smf.fabRejectRate !== undefined) setNumericField('smf-reject', smf.fabRejectRate, 3);
+          if (smf.fabToleranceMm) setNumericField('smf-tolerance', smf.fabToleranceMm, 2);
+          const setSel = (id: string, v?: string) => {
+            const e = el<HTMLSelectElement>(id);
+            if (e && v && Array.from(e.options).some(o => o.value === v)) { e.value = v; markAIFilled(e); }
+          };
+          setSel('smf-blank-method', 'laser');
+          setSel('smf-blank-mach', smf.fabLaserId);
+          setSel('smf-brake-mach', smf.fabBrakeId);
+          setSel('smf-brake-lab', smf.fabBrakeLabourId);
+          setSel('smf-gas', smf.fabAssistGas);
         }
         applyDetectedHardware('smf', 'smf-part-wt', c.materialId);
         break;
@@ -12412,6 +12336,9 @@ function collectSheetMetalInput(): UniversalStackInput {
     dieCostEstimate: num('sm-die-cost'),
     amortizationVolume: num('sm-amort') || num('annual-volume') || 100000,
     rejectRate: num('sm-reject') || undefined,
+    ...(num('sm-die-chg') > 0 && num('sm-batch') > 0
+      ? { setup: { hoursPerChange: num('sm-die-chg'), batchSize: num('sm-batch'), setterLabourId: 'lab-uk-technician' } } : {}),
+    dieMaintenanceFraction: num('sm-maint') || undefined,
     // BIW process: press line, blanking before the line, the drawn panel's addendum.
     pressLine: validSel<'coil-fed' | 'transfer' | 'tandem'>('sm-press-line', ['coil-fed', 'transfer', 'tandem'], 'coil-fed'),
     pressesInLine: num('sm-presses') || undefined,
@@ -13658,14 +13585,6 @@ function collectCastAndMachineInput(): UniversalStackInput {
 
   const drivers = computeCastAndMachineDrivers(inputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
-}
-
-/** Map a rate-library material to a laser feed-rate family (steel/stainless/aluminium). */
-function inferFabMaterialFamily(materialId: string): FabMaterialFamily {
-  const cat = (library.materials.find(m => m.id === materialId)?.category ?? '').toLowerCase();
-  if (/alumin/.test(cat)) return 'aluminium';
-  if (/stainless/.test(cat)) return 'stainless';
-  return 'mild_steel';
 }
 
 function collectSheetMetalFabInput(): UniversalStackInput {

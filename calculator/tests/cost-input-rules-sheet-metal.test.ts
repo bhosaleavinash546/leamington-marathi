@@ -242,7 +242,8 @@ describe('sheet-metal rules end to end', () => {
     // The blank is pure geometry — it does not care what the part is made of.
     expect(sm.blankLengthMm).toBe(651);
     expect(sm.blankWidthMm).toBe(189);
-    expect(sm.numOps).toBe(6);
+    // pierce + ceil(4 bends ÷ 3 a station) + cut-off (sheet-metal review: was one station per bend)
+    expect(sm.numOps).toBe(4);
     // ...and everything that needs the material is named as blocked, not silently absent.
     expect(sm.dieCostGBP).toBeUndefined();
     expect(r.decisions[0].blockedFieldIds).toContain('sm-die-cost');
@@ -258,7 +259,7 @@ describe('sheet-metal rules end to end', () => {
     expect(sm.thicknessMm).toBe(1.5);
     expect(sm.netWeightKg).toBe(1.319);              // 168 cm³ x 0.00785
     expect(sm.shearStrengthMPa).toBe(280);
-    expect(sm.numOps).toBe(6);                        // 1 blank + 4 bends + 1 pierce
+    expect(sm.numOps).toBe(4);                        // pierce + 2 forming (4 bends, ~3 a station) + cut-off
     expect(sm.dieType).toBe('progressive');
     expect(sm.process).toBe('Progressive Stamping');  // 120k/yr at 1.5 mm
   });
@@ -268,13 +269,13 @@ describe('sheet-metal rules end to end', () => {
     const sm = r.suggestions.sheetMetal as Record<string, number>;
     const expected = estimateStampingDieCost({
       dieType: 'progressive',
-      stations: 6,
+      stations: 4,
       blankAreaCm2: (651 * 189) / 100,
       shearStrengthMPa: 280,
     });
     expect(sm.dieCostGBP).toBe(expected.total);
     // The kernel's independent number rides along so a wide gap is visible.
-    expect(r.provenance['sm-die-cost'].basis).toContain('92300');
+    expect(r.provenance['sm-die-cost'].basis).toContain('£92,300 (not used)');
   });
 
   it('predicts die life from material and gauge instead of a flat ladder', () => {
@@ -299,7 +300,9 @@ describe('sheet-metal rules end to end', () => {
     const r = runCostInputRules(SHEET_METAL_RULES, ctx(PUNCHED_BRACKET, STEEL, { annualVolume: 20_000 }));
     const sm = r.suggestions.sheetMetal as Record<string, string>;
     expect(sm.process).toBe('Turret Punching');
-    expect(sm.dieType).toBe('single_stage');
+    // The die type now follows the press plan, and the route is priced: at
+    // 20,000/yr laser + brake vs the die decides (sheet-metal review).
+    expect(['stamping', 'fab']).toContain(sm.route);
   });
 
   it('routes an aluminium low-volume part to laser + brake', () => {
@@ -336,6 +339,7 @@ describe('the prompt cannot say anything the engine would not compute', () => {
     const r = runCostInputRules(SHEET_METAL_RULES, c);
 
     for (const rule of SHEET_METAL_RULES.rules) {
+      if (rule.appliesWhen && !rule.appliesWhen(c)) continue;   // the fab route's fields are not this part's
       const out = rule.evaluate(c);
       expect(out.ok, `${rule.id} should be decided`).toBe(true);
       if (!out.ok) continue;

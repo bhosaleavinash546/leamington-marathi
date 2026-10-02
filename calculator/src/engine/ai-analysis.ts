@@ -467,6 +467,27 @@ export interface CADAnalysisResult {
       blankingMethod?: 'none' | 'die' | 'laser';
       blanksPerMin?: number;
       drawAddendumMm?: number;
+      /** Sheet-metal review: route, crew, scrap and the fabrication (laser + brake) route. */
+      route?: 'stamping' | 'fab';
+      manning?: number;
+      rejectRate?: number;
+      fabBlankingCycleSec?: number;
+      fabBendCount?: number;
+      fabBendSec?: number;
+      fabToolChanges?: number;
+      fabToolChangeSec?: number;
+      fabBatchSize?: number;
+      fabToolingGBP?: number;
+      fabUtilization?: number;
+      fabRejectRate?: number;
+      setupHoursPerChange?: number;
+      batchSize?: number;
+      dieMaintenanceFraction?: number;
+      fabLaserId?: string;
+      fabBrakeId?: string;
+      fabBrakeLabourId?: string;
+      fabAssistGas?: 'nitrogen' | 'oxygen' | 'air';
+      fabToleranceMm?: number;
     };
     /** Gear cutting — rule-engine owned; every value carries provenance. */
     gear?: {

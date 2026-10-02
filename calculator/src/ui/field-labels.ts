@@ -14,6 +14,7 @@ const FIELDS: Record<string, string> = {
   'rawMaterial.directCost': 'Material cost',
   'rawMaterial.netWeightKg': 'Net weight',
   'rawMaterial.consumablesCostPerPart': 'Consumables',
+  'rawMaterial.boughtIn': 'Bought-in parts (supplier price)',
   'material.pricePerKg': 'Material price',
   'material.scrapRecoveryPricePerKg': 'Scrap recovery price',
   'tooling.totalToolingCost': 'Tooling cost',

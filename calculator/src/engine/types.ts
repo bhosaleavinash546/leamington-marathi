@@ -147,6 +147,15 @@ export interface RawMaterialInput {
   /** Per-part recurring consumable cost (cores, wax patterns, shell, etc.) added to raw material cost line. */
   consumablesCostPerPart?: number;
   /**
+   * Bought-in components priced at their supplier's price — which already
+   * carries that supplier's overhead and margin. Shown in the material line, but
+   * the assembler's overhead and margin are NOT applied to it again; only a
+   * material-handling / procurement charge (`handlingPct`, typical 2–5%) is,
+   * as overhead. Sheet-metal review: a BIW assembly stacked 12% + 8% on its
+   * stamped sub-parts' full should-cost.
+   */
+  boughtIn?: { cost: number; handlingPct: number };
+  /**
    * Optional itemisation behind `directCost` — the BOM for a PCBA, the wire and
    * connector schedule for a harness, the sub-part list for a BIW assembly.
    *

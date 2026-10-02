@@ -41,8 +41,31 @@ const HPDC_MACHINE_TIERS: ReadonlyArray<readonly [number, string]> = [
 ];
 
 /** Smallest stamping press covering the blanking/forming force × safety factor. */
-export function pickStampingPressId(requiredTonnes: number, safety = 1.25): string {
-  return pickTier(STAMPING_PRESS_TIERS, Math.max(0, requiredTonnes) * safety);
+export function pickStampingPressId(requiredTonnes: number, safety = 1.25, opts: { bolsterMm?: number } = {}): string {
+  const need = Math.max(0, requiredTonnes) * safety;
+  if (!opts.bolsterMm) return pickTier(STAMPING_PRESS_TIERS, need);
+  const p = STAMPING_PRESSES.find(x => x.tonnes >= need && x.bolsterMm >= opts.bolsterMm!);
+  return (p ?? STAMPING_PRESSES[STAMPING_PRESSES.length - 1]).id;
+}
+
+/**
+ * What each stamping press in the library can take besides force: the bolster
+ * (bed) length a die must fit on, mm, and the fastest it strokes, SPM.
+ * Engineering-typical for straight-side mechanical presses, replace with the
+ * press shop's own. Sheet-metal review: the press was chosen on blanking force
+ * alone, and a 12-station die 2.8 m long landed on a 200 t press.
+ */
+export const STAMPING_PRESSES: ReadonlyArray<{ id: string; tonnes: number; bolsterMm: number; maxSpm: number }> = [
+  { id: 'press-100t', tonnes: 100, bolsterMm: 1300, maxSpm: 80 },
+  { id: 'press-200t', tonnes: 200, bolsterMm: 1800, maxSpm: 60 },
+  { id: 'press-400t', tonnes: 400, bolsterMm: 2500, maxSpm: 40 },
+  { id: 'press-630t', tonnes: 630, bolsterMm: 3000, maxSpm: 30 },
+  { id: 'press-800t', tonnes: 800, bolsterMm: 3600, maxSpm: 25 },
+  { id: 'press-1000t', tonnes: 1000, bolsterMm: 4200, maxSpm: 20 },
+  { id: 'press-1250t', tonnes: 1250, bolsterMm: 4800, maxSpm: 18 },
+];
+export function stampingPressFacts(id: string) {
+  return STAMPING_PRESSES.find(p => p.id === id) ?? STAMPING_PRESSES[STAMPING_PRESSES.length - 1];
 }
 
 /** Smallest forging press covering the die-fill force × safety factor. */

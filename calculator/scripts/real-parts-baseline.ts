@@ -108,6 +108,22 @@ export const ANSWERS: Record<string, {
     answers: { 'material.resin': 'mat-pp-impact', 'commodity.route': 'injection_moulding',
                'commodity.thinWallRoute': 'injection_moulding' },
   },
+  // ── BIW pressings (sheet-metal review, 2 Oct 2026) ────────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/BIW_modelled_parts.py
+  // because the audit set held one pressing (the seat bracket) and no drawn
+  // panel, so the transfer and tandem routes had never seen real geometry.
+  'BIW_Floor_Reinforcement.stp': {
+    note: 'MODELLED: 450 x 300 x 70 mm drawn pan, 1.2 mm, 4° draft, R15/R8, 25 mm flange, 2 holes. Mild steel.',
+    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
+  },
+  'BIW_Inner_Panel.stp': {
+    note: 'MODELLED: 1100 x 700 x 120 mm drawn inner panel, 0.9 mm, 5° draft, R40/R15, 30 mm flange. Mild steel.',
+    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
+  },
+  'BIW_Reinf_Channel.stp': {
+    note: 'MODELLED: 240 mm U-channel reinforcement, 60 x 40 mm section, 2.0 mm, R3 bends, 3 holes. Mild steel.',
+    answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

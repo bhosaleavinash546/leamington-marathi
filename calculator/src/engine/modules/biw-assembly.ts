@@ -30,6 +30,8 @@ export interface BIWAssemblyInputs {
   stations: BIWStation[];
   fixturingToolingCost: number;
   amortizationVolume: number;
+  /** Material handling / procurement on the bought-in sub-parts (default 0.03, typical 0.02–0.05). */
+  subPartHandlingPct?: number;
 }
 
 export function getBIWAssemblyInputSchema(): Record<string, string> {
@@ -60,12 +62,16 @@ export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
     0
   );
 
-  // Sub-part cost + joining consumables form the material/parts bucket for BIW
+  // Joining consumables are the assembler's own material; the stamped sub-parts
+  // are bought in at their should-cost, which already carries their makers'
+  // overhead and margin — so they pass through with a handling charge only.
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual',
     netWeightKg: 0,
     materialUtilization: 1,
-    directCost: inputs.subPartTotalCost + joiningCostPerPart, // joining consumables included in material bucket
+    directCost: joiningCostPerPart,
+    ...(inputs.subPartTotalCost > 0
+      ? { boughtIn: { cost: inputs.subPartTotalCost, handlingPct: inputs.subPartHandlingPct ?? 0.03 } } : {}),
   };
 
   const operations: OperationInput[] = inputs.stations.map(s => ({

@@ -96,6 +96,11 @@ export interface SheetMetalInputs {
   hardwareMachineId?: string;
   /** Labour rate ID for hardware installation. */
   hardwareLabourId?: string;
+  // ── Sheet-metal review, second pass ──
+  /** Die change: setter + press hours per change, over the batch it serves (the whole line stands on a tandem). */
+  setup?: { hoursPerChange: number; batchSize: number; setterLabourId: string };
+  /** Die maintenance a year (sharpening, springs, inserts) as a fraction of the die cost (typical 0.05–0.10). */
+  dieMaintenanceFraction?: number;
 }
 
 export function getSheetMetalInputSchema(): Record<string, string> {
@@ -227,10 +232,14 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   // fast nameplate SPM. Floor the effective cycle by die type (transfer/fine-
   // blank run slower than progressive/single). Hot stamping is quench-limited —
   // never floor it. Only ever RAISES the cycle, never speeds it up.
+  // Sheet-metal review: these were 4.5 / 3.0 / 2.0 s, which capped every
+  // progressive die at 20 SPM whatever the press and pitch allow (a 140 mm
+  // pitch channel on a 100 t press runs ~60–80). Line losses belong in OEE; the
+  // floor is now only the fastest such a line physically strokes.
   const lineFloorSec = inputs.hotStamping ? 0
-    : inputs.dieType === 'transfer' || inputs.dieType === 'fine_blanking' ? 4.5
-    : inputs.dieType === 'progressive' ? 3.0
-    : 2.0; // single_stage
+    : inputs.dieType === 'transfer' || inputs.dieType === 'fine_blanking' ? 3.0
+    : inputs.dieType === 'progressive' ? 0.75
+    : 1.5; // single_stage
   const cycleTimeHr = Math.max(baseCycleHr, lineFloorSec / 3600) * rejectUplift;
 
   const operations: OperationInput[] = [];
@@ -339,6 +348,19 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   });
   if (hardwareOp) operations.push(hardwareOp);
 
+  // Die change: the press (every press of a tandem line) stands while a setter
+  // changes the die, once a batch.
+  if (inputs.setup && inputs.setup.hoursPerChange > 0 && inputs.setup.batchSize > 0) {
+    const hr = inputs.setup.hoursPerChange / inputs.setup.batchSize;
+    operations.push({
+      operationName: 'Die change (amortised over the batch)',
+      machineId: inputs.pressId,
+      labourId: inputs.setup.setterLabourId,
+      cycleTimeHr: hr * presses, partsPerCycle: 1, oee: 1, manning: 1,
+      labourTimeHr: hr * presses, labourEfficiency: 1,
+    });
+  }
+
   // Die life: use the given value, else predict from material hardness / thickness / die type.
   const dieLife = inputs.dieLife > 0
     ? inputs.dieLife
@@ -369,7 +391,8 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   // Number of die sets needed over the programme life
   const numDieSets = dieLife > 0 ? Math.ceil(inputs.amortizationVolume / dieLife) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: dieCost * numDieSets,
+    // + a year's die maintenance (the amortisation volume is a year's).
+    totalToolingCost: dieCost * numDieSets * (1 + Math.max(0, inputs.dieMaintenanceFraction ?? 0)),
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

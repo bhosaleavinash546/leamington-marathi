@@ -96,6 +96,8 @@ async function main(): Promise<void> {
     await page.locator('#commodity-picker-view .cpicker-tile[data-commodity="cad_analysis"]:visible').first().click({ timeout: 15_000 });
     await page.waitForTimeout(300);
     await page.setInputFiles('#cad-file-input', PART);
+    // CV_LIVE_VOLUME sets the annual volume the analysis runs at (sheet-metal review: the route choice is volume-led).
+    if (process.env.CV_LIVE_VOLUME) await page.fill('#cad-annual-volume', process.env.CV_LIVE_VOLUME).catch(() => log('no #cad-annual-volume field'));
     if (DXF && existsSync(DXF)) {
       const hasBlankInput = await page.$('#cad-blank-input');
       if (hasBlankInput) { await page.setInputFiles('#cad-blank-input', DXF); log(`attached DXF ${DXF}`); }

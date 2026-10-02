@@ -174,7 +174,11 @@ export function buildDeterministicAnalysis(
     manufacturabilityScore: geo.manufacturabilityScore ?? 0,
     manufacturabilityRisks: [],
     costInputSuggestions: {
-      recommendedCommodity: ctx.commodity,
+      // The sheet-metal rules price stamping against laser + brake; when the
+      // brake route wins the screen opens the fabrication form.
+      recommendedCommodity: ctx.commodity === 'sheet_metal'
+        && (result.suggestions.sheetMetal as { route?: string } | undefined)?.route === 'fab'
+        ? 'sheet_metal_fab' : ctx.commodity,
       netWeightKg: 0,
       materialId: '',
       estimatedCycleTimeHr: 0,

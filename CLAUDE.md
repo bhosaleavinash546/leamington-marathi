@@ -241,6 +241,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   rules; the tool is the toolmaker build-up only. A shell with bosses or a moulding name is
   asked, not routed to sheet metal. See `docs/cad/injection-moulding-review-2026-10.md` and
   `tests/moulding-review.test.ts`; the modelled mouldings are in `cad-audit/parts/IM_*`.
+- Sheet metal & BIW (`cost-input-rules/commodities/sheet-metal.ts`): one `stampingPlan` decides
+  press line, die type, stations (~3 bends a station), force (cut + bend + draw + binder), the
+  press on force AND bolster (`STAMPING_PRESSES` in machine-sizing.ts), SPM and die cost — never
+  decide one of them elsewhere. `routeChoice` prices stamping against laser + press brake; the
+  fab route re-routes headless (`toCostParams` returns `sheet_metal_fab`) and the screen
+  (`recommendedCommodity`). Soft tooling ≤ 25k programme parts. The unfold also runs on thin
+  shells (BIW radii are beyond the bend detector). Bought-in parts use `rawMaterial.boughtIn`
+  (no second overhead/margin). See `docs/sheet-metal/sheet-metal-biw-review-2026-10.md`,
+  `tests/sheet-metal-review.test.ts`; modelled pressings in `cad-audit/parts/BIW_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

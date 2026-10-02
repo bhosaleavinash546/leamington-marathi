@@ -623,9 +623,50 @@ export function toCostParams(
       };
     }
 
+    case 'sheet_metal_fab':
     case 'sheet_metal': {
       const s = ci.sheetMetal;
       if (!s) return null;
+      // Detected fastening hardware — the same three rows the screen fills, on the
+      // same pedestal spot welder (sheet-metal review: headless ignored it).
+      const hwRows = geo?.detectedHardware?.available ? (geo.detectedHardware.detected ?? []).slice(0, 3) : [];
+      const hardware = hwRows.length ? {
+        hardware: hwRows.map(h => ({ type: h.type, threadSize: h.threadSize, count: h.count })),
+        hardwareMachineId: 'spotweld-gun-manual', hardwareLabourId: 'lab-uk-semiskilled',
+      } : {};
+      // The route the rules priced: laser + press brake goes to the fabrication
+      // module. It used to be announced and never costed (sheet-metal review).
+      if (s.route === 'fab' || (commodity === 'sheet_metal_fab' && s.route !== 'stamping')) {
+        const fam = (DEFAULT_RATE_LIBRARY.materials.find(m => m.id === materialId)?.category ?? '').toLowerCase();
+        const gas = /alumin|stainless/.test(fam) ? 'nitrogen' : 'oxygen';
+        return {
+          commodity: 'sheet_metal_fab',
+          assumed: [...assumed, 'laser-trumpf-3030 / brake by blank size', `assist gas ${gas}`],
+          params: {
+            materialId,
+            partWeightKg: num(ci.netWeightKg),
+            materialUtilization: num(s.fabUtilization, 0.8),
+            blankingMethod: 'laser',
+            blankingMachineId: s.fabLaserId || 'laser-trumpf-3030',
+            blankingLabourId: 'lab-uk-semiskilled',
+            blankingCycleTimeSec: num(s.fabBlankingCycleSec, 60),
+            assistGas: s.fabAssistGas || gas,
+            ...(num(s.fabToleranceMm) > 0 ? { toleranceMm: num(s.fabToleranceMm) } : {}),
+            bendCount: num(s.fabBendCount, 0),
+            timePerBendSec: num(s.fabBendSec, 12),
+            toolChangeCount: num(s.fabToolChanges, 2),
+            toolChangeTimeSec: num(s.fabToolChangeSec, 900),
+            batchSize: num(s.fabBatchSize, standardBatchSize(annualVolume)),
+            bendMachineId: s.fabBrakeId || (Math.max(num(s.blankLengthMm), num(s.blankWidthMm)) > 1500 ? 'brake-trumpf-5230' : 'brake-trumpf-trubend3100'),
+            bendLabourId: s.fabBrakeLabourId || 'lab-uk-skilled',
+            oee: D.oee, manning: 1, labourEfficiency: D.labourEfficiency,
+            rejectRate: s.fabRejectRate !== undefined ? num(s.fabRejectRate) : D.rejectRate,
+            toolingCost: num(s.fabToolingGBP, 1500),
+            amortizationVolume: annualVolume,
+            ...hardware,
+          },
+        };
+      }
       const L = num(s.blankLengthMm, 100);
       const W = num(s.blankWidthMm, 100);
       const t = num(s.thicknessMm, 1.5);
@@ -643,9 +684,11 @@ export function toCostParams(
       // it, and on the seat bracket reads 96% for a blank that nests at 73%.
       const density = geo?.blank ? DEFAULT_RATE_LIBRARY.materials.find(m => m.id === materialId)?.densityKgPerM3 : undefined;
       return {
-        commodity, assumed: [...assumed, 'pressId', 'strokesPerMin', 'strip layout'],
+        commodity: 'sheet_metal', assumed: [...assumed, 'pressId', 'strokesPerMin', 'strip layout'],
         params: {
           ...shop,
+          ...(num(s.manning) > 0 ? { manning: num(s.manning) } : {}),
+          ...(s.rejectRate !== undefined ? { rejectRate: num(s.rejectRate) } : {}),
           materialId,
           netWeightKg: num(ci.netWeightKg),
           blankLengthMm: L, blankWidthMm: W, thicknessMm: t,
@@ -668,6 +711,10 @@ export function toCostParams(
           dieType: (s.dieType as string | undefined) || 'progressive',
           dieLife: num(s.dieLife, 1_000_000),
           dieCostEstimate: num(s.dieCostGBP),
+          ...(num(s.setupHoursPerChange) > 0 && num(s.batchSize) > 0
+            ? { setup: { hoursPerChange: num(s.setupHoursPerChange), batchSize: num(s.batchSize), setterLabourId: 'lab-uk-technician' } } : {}),
+          ...(num(s.dieMaintenanceFraction) > 0 ? { dieMaintenanceFraction: num(s.dieMaintenanceFraction) } : {}),
+          ...hardware,
         },
       };
     }
@@ -806,6 +853,6 @@ export function toCostParams(
 /** Commodities `toCostParams` can convert today. */
 export const COSTABLE_COMMODITIES = [
   'casting', 'cast_and_machine', 'forging', 'machining', 'injection_moulding',
-  'sheet_metal', 'blow_moulding', 'gear', 'rubber', 'rotational_moulding',
+  'sheet_metal', 'sheet_metal_fab', 'blow_moulding', 'gear', 'rubber', 'rotational_moulding',
   'thermoforming',
 ];

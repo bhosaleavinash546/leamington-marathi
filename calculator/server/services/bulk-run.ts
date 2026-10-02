@@ -361,6 +361,9 @@ export async function costMeasuredPart(
              error: `no cost mapping for '${commodity}' yet (have: ${COSTABLE_COMMODITIES.join(', ')})` };
   }
 
+  // The parameter builder can re-route — a pressing the rules price cheaper as
+  // laser + press brake comes back as sheet_metal_fab — so cost on ITS commodity.
+  if (mapped.commodity !== commodity) commodity = mapped.commodity;
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
     rateLibrary: regionalBook(baseBook, region, opts._regionCache ?? new Map()),

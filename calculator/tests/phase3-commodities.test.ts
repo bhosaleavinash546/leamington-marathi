@@ -190,10 +190,17 @@ const BIW_INPUTS: BIWAssemblyInputs = {
 };
 
 describe('BIW Assembly module', () => {
-  it('directCost = subPartTotalCost + joiningCostPerPart (joining folded into directCost)', () => {
+  it('joining is the assembler\'s material; the sub-parts pass through at a handling charge', () => {
+    // Sheet-metal review: the sub-parts' should-cost already carries their makers'
+    // overhead and margin, and the assembler's 12% + 8% used to be stacked on it.
     const d = computeBIWDrivers(BIW_INPUTS);
     const joiningCostPerPart = 120 * 0.05 + 0.8 * 1.20;  // 6.96
-    expect(d.rawMaterial.directCost).toBeCloseTo(BIW_INPUTS.subPartTotalCost + joiningCostPerPart, 4);
+    expect(d.rawMaterial.directCost).toBeCloseTo(joiningCostPerPart, 4);
+    expect(d.rawMaterial.boughtIn).toEqual({ cost: BIW_INPUTS.subPartTotalCost, handlingPct: 0.03 });
+    const r = computeUniversalStack({ partName: 'BIW', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
+    expect(r.breakdown.rawMaterial).toBeCloseTo(BIW_INPUTS.subPartTotalCost + joiningCostPerPart, 4);
+    const ownBase = r.breakdown.rawMaterial - BIW_INPUTS.subPartTotalCost + r.breakdown.process + r.breakdown.labour + r.breakdown.tooling;
+    expect(r.breakdown.overhead).toBeCloseTo(STACK_DEFAULTS.overheadPct * ownBase + 0.03 * BIW_INPUTS.subPartTotalCost, 6);
   });
 
   it('joining in directCost not consumables; tooling = fixturing cost only', () => {

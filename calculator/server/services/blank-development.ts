@@ -36,7 +36,14 @@ export async function developBlankFromCad(
 ): Promise<DevelopBlankResult | { error: string } | null> {
   if (geo.status !== 'success' || !BREP_EXT.test(filename)) return null;
   const sm = geo.sheetMetal;
-  if (!sm || sm.thicknessSource !== 'bend-pairs' || (sm.bendCount ?? 0) === 0) return null;
+  // A bend-measured gauge, or — the sheet-metal review — a thin shell whose
+  // gauge came from 2·V/S: a BIW panel's 15–50 mm radii are beyond the bend
+  // detector's max(8 mm, 6t), so a 1.1 m drawn inner panel registered no bends,
+  // was never unfolded, and was costed as a flat part from its bounding box.
+  const bendGauge = sm?.thicknessSource === 'bend-pairs' && (sm.bendCount ?? 0) > 0;
+  const thinShell = sm?.thicknessSource === 'bulk-wall' && (sm.thicknessMm ?? 0) > 0 && (sm.thicknessMm ?? 0) <= 4
+    && (geo.fillRatio ?? 1) < 0.1 && geo.wallThickness?.method === 'volume_surface_shell';
+  if (!sm || !(bendGauge || thinShell)) return null;
 
   const t0 = Date.now();
   const mesh = await extractSkinMesh(buffer, filename, { timeoutMs: opts.timeoutMs ?? 180_000 });

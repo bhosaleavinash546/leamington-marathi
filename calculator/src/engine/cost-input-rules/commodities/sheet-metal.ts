@@ -34,7 +34,10 @@ import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
 import { nestOnCoil, offsetOutline, type NestResult } from '../../nesting.js';
 import { formingPropertiesFor, formingLimitCheck } from '../../forming-properties.js';
-import { pickStampingPressId } from '../../machine-sizing.js';
+import { pickStampingPressId, stampingPressFacts } from '../../machine-sizing.js';
+import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../rate-library.js';
+import { estimateBlankingCycleSec } from '../../modules/sheet-metal-fab.js';
+import { standardBatchSize } from '../../routing-optimiser.js';
 import type { MaterialFamily } from '../../material-family.js';
 
 /** Shear strength MPa by family — drives die hardness and press tonnage. */
@@ -271,12 +274,29 @@ export function pressProcess(ctx: RuleContext): PressProcess {
       basis: `stretch-formed in places (${strain.toFixed(0)}% stretch): run from coil through one die, with a 10 mm trim allowance around the outline`,
     };
   }
+  // A bent blank too wide for a progressive strip carrier is blanked first and
+  // run on a transfer press (sheet-metal review: a 1 m bent part was put on a
+  // coil-fed progressive die).
+  const shortSide = dev?.boundingRectMm ? Math.min(dev.boundingRectMm.lengthMm, dev.boundingRectMm.widthMm) : (bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a)[1] : 0);
+  if (shortSide > LARGE_BLANK_MM) {
+    const laser = ctx.annualVolume < 30_000;
+    return {
+      kind, pressLine: 'transfer', operations: [], pressesInLine: 1,
+      blanking: laser ? 'laser' : 'die', blanksPerMin: laser ? 20 : 45,
+      addendumMm: 0, drawDepthMm: drawDepth,
+      basis: `bent part with a ${shortSide.toFixed(0)} mm blank — wider than a progressive strip carries (${LARGE_BLANK_MM} mm), `
+        + `so blanked first (${laser ? 'laser, 20' : 'blanking press, 45'} blanks/min) and formed on a transfer press`,
+    };
+  }
   return {
     kind, pressLine: 'coil-fed', operations: [], pressesInLine: 1, blanking: 'none', blanksPerMin: 0,
     addendumMm: 0, drawDepthMm: drawDepth,
     basis: 'bent part: run from coil through one die, no addendum',
   };
 }
+
+/** Widest blank a progressive die's strip carries before a transfer press is the norm, mm (engineering-typical). */
+export const LARGE_BLANK_MM = 600;
 
 /** The strip layout: how the blank sits on the coil, and what that costs in metal. */
 export interface StripLayout {
@@ -444,19 +464,283 @@ function advise(ctx: RuleContext): { advice: SmAdvice } | { blocked: RuleOutcome
 }
 
 /**
- * Die stations: one to blank, bends, one to pierce — CAPPED at 12.
- *
- * The kernel counts bend FACES, and a rolled channel reads 25 of them; a
- * station-per-bend model then prices a 27-station £299k transfer die for a
- * seat cross-member whose real progressive die is ~£25-60k. Real dies form
- * several bends per station past a handful; twelve stations is already a big
- * transfer die, and beyond that the count is a face-count artefact, not a
- * tooling requirement.
+ * Die stations for a coil-fed die. It was one per measured bend FACE + blank +
+ * pierce, capped at 12: the 15-"bend" seat bracket got a 12-station die and,
+ * at a 233 mm pitch, a 2.8 m die. A progressive station forms several bends
+ * at once — about three is engineering-typical — so: pierce (if holes) + one
+ * station per three bends + cut-off, + a restrike on a stretch-formed part.
  */
 function stations(ctx: RuleContext): number {
   const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
-  return Math.min(12, Math.max(2, 1 + bends + (holeCount(ctx) > 0 ? 1 : 0)));
+  const proc = pressProcess(ctx);
+  if (proc.kind === 'drawn') return proc.operations.length;
+  return Math.min(12, Math.max(1, (holeCount(ctx) > 0 ? 1 : 0) + Math.ceil(bends / BENDS_PER_STATION) + 1
+    + (proc.kind === 'stretch-formed' ? 1 : 0)));
 }
+export const BENDS_PER_STATION = 3;
+
+/** UTS from shear (typical UTS ≈ shear ÷ 0.8) — the forming forces run on UTS. */
+const UTS_PER_SHEAR = 1 / 0.8;
+
+export interface StampingPlan {
+  pressLine: 'coil-fed' | 'transfer' | 'tandem';
+  dieType: StampingDieType;
+  stations: number;
+  presses: number;
+  tonnes: number;
+  forceBasis: string;
+  bolsterMm: number;
+  bolsterBasis: string;
+  pressId: string;
+  spm: number;
+  spmBasis: string;
+  dieCostGBP: number;
+  dieBasis: string;
+}
+
+/**
+ * The whole stamping plan, decided once so every rule agrees. Before the review
+ * the die type came from the advisor, the press line from the blank, the die
+ * cost from the advisor again and the press from blanking force alone — so a
+ * part could be a "transfer" die fed from coil, a "single-stage" die with 12
+ * stations, or a tandem line priced as a progressive die.
+ */
+export function stampingPlan(ctx: RuleContext): StampingPlan | null {
+  const r = advise(ctx);
+  if ('blocked' in r) return null;
+  const b = blankDims(ctx);
+  if (!b) return null;
+  const proc = pressProcess(ctx);
+  const t = r.advice.gauge;
+  const shear = r.advice.shearMPa;
+  const uts = Math.round(shear * UTS_PER_SHEAR);
+  const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
+  const bendLen = ctx.geo.sheetMetal?.totalBendLengthMm ?? 0;
+  const dev = ctx.geo.blank;
+  const ab = analyticBlank(ctx);
+  const cut = dev && dev.outerPerimeterMm > 0 ? dev.outerPerimeterMm + (dev.holePerimeterMm ?? 0)
+    : ab?.cutLengthMm ?? 2 * (b.lengthMm + b.widthMm);
+  const cutT = cut * t * shear / 9807;
+  // V-bend force F = 1.33·L·t²·UTS / W at a die opening W ≈ 8t → 0.166·L·t·UTS.
+  const bendT = 0.166 * bendLen * t * uts / 9807;
+  const bb = ctx.geo.boundingBox;
+  const foot = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((x, y) => y - x) : [b.lengthMm, b.widthMm, 0];
+  // Drawing: punch perimeter × t × UTS, + the blank holder: binder pressure ×
+  // the binder area (blank outside the punch footprint). A flat +30% stood in
+  // for the binder, which on a large panel is the bigger force.
+  const punchT = proc.kind === 'drawn' ? 2 * (foot[0] + foot[1]) * t * uts / 9807 : 0;
+  const binderAreaMm2 = Math.max(0, b.lengthMm * b.widthMm - foot[0] * foot[1]);
+  const binderT = proc.kind === 'drawn' ? BINDER_PRESSURE_MPA * binderAreaMm2 / 9807 : 0;
+  const drawT = punchT + binderT;
+  const longSide = Math.max(b.lengthMm, b.widthMm);
+  const layout = stripLayout(ctx);
+
+  let pressLine: StampingPlan['pressLine'] = proc.pressLine;
+  let dieType: StampingDieType;
+  let st: number;
+  let presses = 1;
+  let tonnes: number;
+  let forceBasis: string;
+  let bolsterMm: number;
+  let bolsterBasis: string;
+  if (proc.kind === 'drawn') {
+    st = proc.operations.length;
+    presses = pressLine === 'tandem' ? proc.pressesInLine : 1;
+    dieType = pressLine === 'tandem' ? 'single_stage' : 'transfer';
+    tonnes = pressLine === 'tandem' ? Math.max(drawT, cutT) : drawT + cutT + bendT;
+    forceBasis = pressLine === 'tandem'
+      ? `the draw press sizes the line: ${Math.round(2 * (foot[0] + foot[1]))} mm punch perimeter × ${t} mm × ${uts} MPa UTS = ${Math.round(punchT)} t `
+        + `+ blank holder ${BINDER_PRESSURE_MPA} MPa × ${Math.round(binderAreaMm2 / 100)} cm² binder = ${Math.round(binderT)} t → ${Math.round(drawT)} t (trim ${Math.round(cutT)} t)`
+      : `draw ${Math.round(drawT)} t + trim/pierce ${Math.round(cutT)} t + flange ${Math.round(bendT)} t, all in one transfer press`;
+    bolsterMm = pressLine === 'tandem' ? Math.round(longSide + 600) : Math.round(st * (longSide + 100) + 400);
+    bolsterBasis = pressLine === 'tandem' ? `one die per press: ${Math.round(longSide)} mm blank + 600 mm`
+      : `${st} stations × (${Math.round(longSide)} + 100) mm + 400 mm`;
+  } else if (pressLine === 'transfer') {
+    st = Math.min(12, Math.max(2, 1 + Math.ceil(bends / BENDS_PER_STATION) + (holeCount(ctx) > 0 ? 1 : 0)));
+    dieType = 'transfer';
+    tonnes = cutT + bendT;
+    forceBasis = `pierce/trim ${Math.round(cutT)} t + bending ${Math.round(bendT)} t in one transfer press`;
+    bolsterMm = Math.round(st * (longSide + 100) + 400);
+    bolsterBasis = `${st} stations × (${Math.round(longSide)} + 100) mm + 400 mm`;
+  } else {
+    st = stations(ctx);
+    dieType = st <= 2 ? 'single_stage' : 'progressive';
+    tonnes = 1.1 * (cutT + bendT);
+    forceBasis = `cut ${Math.round(cut)} mm × ${t} mm × ${shear} MPa = ${Math.round(cutT)} t + bending 0.166 × ${Math.round(bendLen)} mm × ${t} mm × ${uts} MPa = ${Math.round(bendT)} t, + 10% stripper`;
+    const pitch = layout?.pitchMm ?? b.lengthMm;
+    bolsterMm = Math.round(st * pitch + 400);
+    bolsterBasis = `${st} station(s) × ${Math.round(pitch)} mm pitch + 400 mm`;
+  }
+  const pressId = pickStampingPressId(tonnes, 1.25, { bolsterMm });
+  const pf = stampingPressFacts(pressId);
+
+  let spm: number;
+  let spmBasis: string;
+  if (pressLine === 'tandem') {
+    spm = TANDEM_LINE_SPM;
+    spmBasis = `tandem line rate ${TANDEM_LINE_SPM} SPM (engineering-typical 8–15 with automated transfer between presses)`;
+  } else if (pressLine === 'transfer') {
+    spm = Math.min(pf.maxSpm, TRANSFER_SPM);
+    spmBasis = `transfer press: the feeder limits it to ~${TRANSFER_SPM} SPM (press max ${pf.maxSpm})`;
+  } else {
+    const pitch = layout?.pitchMm ?? b.lengthMm;
+    let v = Math.min(18_000 / pitch, pf.maxSpm);
+    if (bends >= 4) v *= 0.8;
+    if (bends >= 8) v *= 0.8;
+    if (bends >= 14) v *= 0.8;
+    spm = Math.max(5, Math.round(v));
+    spmBasis = `min(feed 18 m/min ÷ ${Math.round(pitch)} mm pitch, ${pressId} max ${pf.maxSpm} SPM)`
+      + (bends >= 4 ? `, de-rated for ${bends} bends` : '');
+  }
+
+  const blankAreaCm2 = (b.lengthMm * b.widthMm) / 100;
+  const soft = dieClassFor(ctx).soft;
+  const dieRaw = pressLine === 'tandem'
+    ? presses * estimateStampingDieCost({ dieType: 'single_stage', stations: 1, blankAreaCm2, shearStrengthMPa: shear }).total
+    : estimateStampingDieCost({ dieType, stations: st, blankAreaCm2, shearStrengthMPa: shear }).total;
+  const die = Math.round(dieRaw * (soft ? SOFT_TOOL.costFactor : 1));
+  const occt = ctx.geo.toolingCostEstimates?.progressiveDieCostGBP;
+  const dieBasis = (pressLine === 'tandem'
+    ? `${presses} single-stage dies, one per press (${proc.operations.join(', ')}), ${Math.round(blankAreaCm2)} cm² blank`
+    : `${dieType.replace('_', '-')} die, ${st} station(s), ${Math.round(blankAreaCm2)} cm² blank`)
+    + `, ${shear} MPa shear — toolmaker build-up`
+    + (soft ? `; SOFT TOOLING (${SOFT_TOOL.label}) at ${SOFT_TOOL.costFactor} × the £${Math.round(dieRaw).toLocaleString()} production die — ${dieClassFor(ctx).basis}` : '')
+    + (occt ? `; kernel face-count parametric said £${Math.round(occt).toLocaleString()} (not used)` : '');
+  return { pressLine, dieType, stations: st, presses, tonnes: Math.round(tonnes), forceBasis, bolsterMm, bolsterBasis,
+    pressId, spm, spmBasis, dieCostGBP: die, dieBasis };
+}
+export const TANDEM_LINE_SPM = 10;
+/** Blank-holder (binder) pressure on a drawn steel panel, MPa (engineering-typical 2–3). */
+export const BINDER_PRESSURE_MPA = 2.5;
+
+/**
+ * Soft tooling for a short programme. A production die set for a part made
+ * 2,000 a year put £117–423 a part of tooling on a drawn panel; a press shop
+ * builds zinc-alloy (Kirksite) or soft-steel dies for that — engineering-typical
+ * ~⅓ of the production die, good for ~10–25k hits.
+ */
+export const SOFT_TOOL = { costFactor: 0.35, life: 25_000, label: 'zinc-alloy / soft-steel dies', maxProgrammeParts: 25_000 };
+export const PROGRAMME_YEARS_SM = 5;
+export function dieClassFor(ctx: RuleContext): { soft: boolean; basis: string } {
+  const parts = ctx.annualVolume * PROGRAMME_YEARS_SM;
+  return parts <= SOFT_TOOL.maxProgrammeParts
+    ? { soft: true, basis: `${parts.toLocaleString('en-GB')} parts over ${PROGRAMME_YEARS_SM} years — within a soft tool's life` }
+    : { soft: false, basis: `${parts.toLocaleString('en-GB')} parts over ${PROGRAMME_YEARS_SM} years — production steel dies` };
+}
+// ── Route: stamping, or laser cutting + press brake ──────────────────────────
+
+/**
+ * Laser + press brake, priced the way the fabrication module prices it. The
+ * advisor's route was a volume rule (under 50,000/yr → laser), and the CAD path
+ * never followed it: it announced "Laser Cutting" and costed a stamping die —
+ * £57.95 a part for the seat bracket at 2,000/yr, £47 of it a die nobody would
+ * build. Constants are engineering-typical and stated on the rules.
+ */
+export const FAB = {
+  laserId: 'laser-trumpf-3030', brakeSmallId: 'brake-trumpf-trubend3100', brakeLargeId: 'brake-trumpf-5230',
+  bendSec: 12, handlingSec: 10, toolChanges: 2, toolChangeSec: 900, toolingGBP: 1500,
+  laserLabourId: 'lab-uk-semiskilled', brakeLabourId: 'lab-uk-skilled',
+} as const;
+
+export interface FabPlan {
+  feasible: boolean;
+  why: string;
+  laserCycleSec: number;
+  bends: number;
+  brakeId: string;
+  batch: number;
+  perPartGBP: number;
+}
+
+const machineRate = (id: string) => recomputeMachineRates(DEFAULT_RATE_LIBRARY).machines.find(m => m.id === id)?.computedRatePerHr ?? 0;
+const labourRate = (id: string) => DEFAULT_RATE_LIBRARY.labour.find(l => l.id === id)?.fullyLoadedRatePerHr ?? 0;
+
+export function fabPlan(ctx: RuleContext): FabPlan | null {
+  const r = advise(ctx);
+  if ('blocked' in r) return null;
+  const b = blankDims(ctx);
+  if (!b) return null;
+  const proc = pressProcess(ctx);
+  const t = r.advice.gauge;
+  const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
+  const holes = holeCount(ctx);
+  const batch = standardBatchSize(ctx.annualVolume);
+  const big = Math.max(b.lengthMm, b.widthMm) > 1500;
+  const brakeId = big ? FAB.brakeLargeId : FAB.brakeSmallId;
+  let feasible = true; let why = '';
+  if (proc.kind !== 'bent') { feasible = false; why = `${proc.kind} — a press brake cannot stretch or draw metal; it needs a die`; }
+  else if (t > 12) { feasible = false; why = `${t} mm is beyond a fibre laser's economic range`; }
+  else if (Math.max(b.lengthMm, b.widthMm) > 3000 || Math.min(b.lengthMm, b.widthMm) > 1500) { feasible = false; why = 'blank larger than a 3 × 1.5 m laser bed'; }
+  const dev = ctx.geo.blank;
+  const ab = analyticBlank(ctx);
+  const cut = dev && dev.outerPerimeterMm > 0 ? dev.outerPerimeterMm + (dev.holePerimeterMm ?? 0)
+    : ab?.cutLengthMm ?? 2 * (b.lengthMm + b.widthMm);
+  const fam = r.advice.family === 'aluminium' ? 'aluminium' : 'mild_steel';
+  const laserCycleSec = Math.round(estimateBlankingCycleSec({
+    method: 'laser', materialFamily: fam, thicknessMm: t, cutLengthMm: cut, pierceCount: holes + 1,
+  }) * 10) / 10;
+  const brakeSec = bends * FAB.bendSec + (bends > 0 ? FAB.handlingSec : 0) + (bends > 0 ? FAB.toolChanges * FAB.toolChangeSec / batch : 0);
+  const oee = 0.8;
+  const gas = fam === 'aluminium' ? 9.0 : 1.8;
+  const perPart = laserCycleSec / 3600 * (machineRate(FAB.laserId) / oee + gas + labourRate(FAB.laserLabourId) / 0.92)
+    + brakeSec / 3600 * (machineRate(brakeId) / oee + labourRate(FAB.brakeLabourId) / 0.92)
+    + FAB.toolingGBP / Math.max(1, ctx.annualVolume);
+  return { feasible, why, laserCycleSec, bends, brakeId, batch, perPartGBP: Math.round(perPart * 10_000) / 10_000 };
+}
+
+/** Stamping per part on the plan: press (+ blanking) time, crew, die amortised over a year. */
+export function stampingPerPartGBP(ctx: RuleContext, plan: StampingPlan): number {
+  const proc = pressProcess(ctx);
+  const floor = plan.dieType === 'transfer' ? 3.0 : plan.dieType === 'progressive' ? 0.75 : 1.5;
+  const strokeSec = Math.max(60 / plan.spm, floor) * plan.presses;
+  const man = pressManning(plan).n;
+  let v = strokeSec / 3600 * (machineRate(plan.pressId) / 0.8 + labourRate('lab-uk-semiskilled') * man / 0.92);
+  if (proc.blanking !== 'none' && proc.blanksPerMin > 0) {
+    v += 60 / proc.blanksPerMin / 3600 * (machineRate(proc.blanking === 'laser' ? 'laser-trumpf-5030' : 'press-200t') / 0.8
+      + labourRate('lab-uk-semiskilled') / 0.92);
+  }
+  const r = advise(ctx);
+  const life = dieClassFor(ctx).soft ? SOFT_TOOL.life
+    : 'blocked' in r ? 1_000_000 : estimateStampingDieLife({ shearStrengthMPa: r.advice.shearMPa, thicknessMm: r.advice.gauge, dieType: plan.dieType });
+  const sets = Math.max(1, Math.ceil(ctx.annualVolume / life));
+  return Math.round((v + plan.dieCostGBP * sets / Math.max(1, ctx.annualVolume)) * 10_000) / 10_000;
+}
+
+/** Operators per press: an automatic coil line ≤ 400 t is tended one to two presses; larger, transfer and tandem lines one a press. */
+export function pressManning(plan: StampingPlan): { n: number; basis: string } {
+  const t = Number(/(\d+)t/.exec(plan.pressId)?.[1] ?? 0);
+  return plan.pressLine === 'coil-fed' && t <= 400
+    ? { n: 0.5, basis: `coil-fed ${plan.pressId}: one operator tends two automatic presses (engineering-typical)` }
+    : { n: 1, basis: `${plan.pressLine} line on a ${plan.pressId}: one operator per press (engineering-typical)` };
+}
+/** Press-shop scrap (start-up, coil ends, splits): 1–2% typical; 1.5% is used. */
+export const PRESS_REJECT = 0.015;
+
+export interface RouteChoice { route: 'stamping' | 'fab'; basis: string; fab: FabPlan | null; stampGBP: number | null }
+
+/**
+ * Stamping or laser + brake, by the arithmetic. An engineer who chose
+ * sheet_metal_fab gets the fab route when the part can be brake-formed.
+ */
+export function routeChoice(ctx: RuleContext): RouteChoice | null {
+  const plan = stampingPlan(ctx);
+  const fab = fabPlan(ctx);
+  if (!plan || !fab) return null;
+  const stamp = stampingPerPartGBP(ctx, plan);
+  if (!fab.feasible) {
+    return { route: 'stamping', fab, stampGBP: stamp,
+      basis: `stamping — laser + brake is not an option: ${fab.why}` };
+  }
+  const chosenFab = ctx.commodity === 'sheet_metal_fab' || fab.perPartGBP < stamp;
+  return { route: chosenFab ? 'fab' : 'stamping', fab, stampGBP: stamp,
+    basis: `${ctx.commodity === 'sheet_metal_fab' ? 'fabrication chosen by the engineer; ' : ''}`
+      + `at ${ctx.annualVolume.toLocaleString('en-GB')}/yr: stamping £${stamp.toFixed(3)}/part `
+      + `(${plan.dieType.replace('_', '-')} die £${Math.round(plan.dieCostGBP).toLocaleString()} amortised over the year) `
+      + `vs laser + brake £${fab.perPartGBP.toFixed(3)}/part (${fab.laserCycleSec} s laser, ${fab.bends} bend(s), £${FAB.toolingGBP} programming) `
+      + `— machine + labour + tooling; material is taken as equal` };
+}
+
+export const TRANSFER_SPM = 20;
 
 export const SHEET_METAL_RULES: CommodityRuleSpec = {
   commodity: 'sheet_metal',
@@ -556,21 +840,16 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const b = blankDims(ctx);
-        if (!b) return ask({
+        const plan = stampingPlan(ctx);
+        if (!plan) return ask({
           id: 'sheetMetal.blank', kind: 'geometry_gap', question: 'What are the blank dimensions?',
           why: 'No blank, so no cut length to size the press on.', options: [{ value: 'enter', label: 'Enter blank length and width' }],
           entry: { kind: 'number' }, blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
-        const dev = ctx.geo.blank;
-        const ab = analyticBlank(ctx);
-        const cut = dev && dev.outerPerimeterMm > 0 ? dev.outerPerimeterMm + (dev.holePerimeterMm ?? 0)
-          : ab?.cutLengthMm ?? 2 * (b.lengthMm + b.widthMm);
-        const tonnes = (cut * r.advice.gauge * r.advice.shearMPa) / 9807;
-        const id = pickStampingPressId(tonnes);
-        return decided('sheetMetal.pressId', id, 'rule',
-          `blanking force ≈ ${Math.round(cut)} mm cut × ${r.advice.gauge.toFixed(2)} mm × ${r.advice.shearMPa} MPa = ${tonnes.toFixed(0)} t, `
-          + `× 1.25 safety → the smallest press over ${Math.round(tonnes * 1.25)} t`, 0.75);
+        const pf = stampingPressFacts(plan.pressId);
+        return decided('sheetMetal.pressId', plan.pressId, 'rule',
+          `${plan.forceBasis} = ${plan.tonnes} t, × 1.25 safety; die ${plan.bolsterMm} mm long (${plan.bolsterBasis}) — `
+          + `the smallest press over ${Math.round(plan.tonnes * 1.25)} t with a bolster that takes it (${plan.pressId}: ${pf.bolsterMm} mm, typical)`, 0.7);
       },
     },
     {
@@ -580,15 +859,17 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       label: 'numOps',
       evaluate: (ctx) => {
         const proc = pressProcess(ctx);
+        const plan = stampingPlan(ctx);
         if (proc.kind === 'drawn') {
           return decided('sheetMetal.numOps', proc.operations.length, 'geometry',
             `${proc.operations.join(', ')} — the operations of a drawn panel`, 0.7);
         }
         const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
         const holes = holeCount(ctx);
-        return decided('sheetMetal.numOps', stations(ctx), 'geometry',
-          `1 blank + ${bends} bend(s)${holes > 0 ? ' + 1 pierce' : ''} = ${stations(ctx)} stations`,
-          bends > 0 ? 0.75 : 0.4);
+        const n = plan?.stations ?? stations(ctx);
+        return decided('sheetMetal.numOps', n, 'geometry',
+          `${holes > 0 ? 'pierce + ' : ''}${Math.ceil(bends / BENDS_PER_STATION)} forming station(s) for ${bends} bend(s) at ~${BENDS_PER_STATION} a station + cut-off`
+          + `${proc.kind === 'stretch-formed' ? ' + restrike' : ''} = ${n}`, bends > 0 ? 0.65 : 0.4);
       },
     },
     {
@@ -689,16 +970,13 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       label: 'strokesPerMin',
       appliesWhen: (ctx) => !!stripLayout(ctx),
       evaluate: (ctx) => {
-        const pitch = stripLayout(ctx)!.pitchMm;
-        const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
-        let spm = 18_000 / pitch;
-        if (bends >= 4) spm *= 0.8;
-        if (bends >= 8) spm *= 0.8;
-        if (bends >= 14) spm *= 0.8;
-        const clamped = Math.round(Math.min(120, Math.max(10, spm)));
-        return decided('sheetMetal.strokesPerMin', clamped, 'rule',
-          `feed-limited: 18 m/min ÷ ${pitch.toFixed(0)} mm pitch`
-          + (bends >= 4 ? `, de-rated for ${bends} bends` : ''), 0.65);
+        const plan = stampingPlan(ctx);
+        if (!plan) {
+          const pitch = stripLayout(ctx)!.pitchMm;
+          return decided('sheetMetal.strokesPerMin', Math.round(Math.min(60, Math.max(10, 18_000 / pitch))), 'rule',
+            `feed-limited: 18 m/min ÷ ${pitch.toFixed(0)} mm pitch (no press plan yet)`, 0.4);
+        }
+        return decided('sheetMetal.strokesPerMin', plan.spm, 'rule', plan.spmBasis, 0.6);
       },
     },
     {
@@ -709,22 +987,8 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const b = blankDims(ctx)!;
-        const blankAreaCm2 = (b.lengthMm * b.widthMm) / 100;
-        const est = estimateStampingDieCost({
-          dieType: r.advice.dieType,
-          stations: stations(ctx),
-          blankAreaCm2,
-          shearStrengthMPa: r.advice.shearMPa,
-        });
-        // The kernel's own progressive-die number is an independent estimate off
-        // the same blank. Show it next to ours — a wide gap is worth a look, and
-        // the prompt used to quote it as the answer with nothing to compare against.
-        const occt = ctx.geo.toolingCostEstimates?.progressiveDieCostGBP;
-        const crossCheck = occt ? `; OCCT parametric says £${occt.toFixed(0)}` : '';
-        return decided('sheetMetal.dieCostGBP', est.total, 'advisor',
-          `${r.advice.dieType} die, ${stations(ctx)} stations, ${blankAreaCm2.toFixed(0)} cm² blank, `
-          + `${r.advice.shearMPa} MPa shear${crossCheck}`, 0.65);
+        const plan = stampingPlan(ctx)!;
+        return decided('sheetMetal.dieCostGBP', plan.dieCostGBP, 'advisor', plan.dieBasis, 0.6);
       },
     },
     {
@@ -735,13 +999,17 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        if (dieClassFor(ctx).soft) {
+          return decided('sheetMetal.dieLife', SOFT_TOOL.life, 'rule',
+            `soft tooling (${SOFT_TOOL.label}): ~${SOFT_TOOL.life.toLocaleString('en-GB')} hits, engineering-typical`, 0.5);
+        }
         const life = estimateStampingDieLife({
           shearStrengthMPa: r.advice.shearMPa,
           thicknessMm: r.advice.gauge,
-          dieType: r.advice.dieType,
+          dieType: stampingPlan(ctx)?.dieType ?? r.advice.dieType,
         });
         return decided('sheetMetal.dieLife', life, 'advisor',
-          `${r.advice.shearMPa} MPa shear at ${r.advice.gauge} mm on a ${r.advice.dieType} die`, 0.6);
+          `${r.advice.shearMPa} MPa shear at ${r.advice.gauge} mm on a ${stampingPlan(ctx)?.dieType ?? r.advice.dieType} die`, 0.6);
       },
     },
     {
@@ -752,13 +1020,12 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const proc = pressProcess(ctx);
-        if (proc.kind === 'drawn') {
-          return decided('sheetMetal.dieType', proc.pressLine === 'tandem' ? 'single_stage' : 'transfer', 'geometry',
-            proc.pressLine === 'tandem' ? 'a tandem line: one single-stage die per press' : 'a transfer die, one station per operation', 0.7);
-        }
-        return decided('sheetMetal.dieType', r.advice.dieType, 'advisor',
-          `${classifyVolume(ctx.annualVolume)} volume at ${r.advice.gauge} mm: ${r.advice.reason}`, 0.8);
+        const plan = stampingPlan(ctx)!;
+        return decided('sheetMetal.dieType', plan.dieType, 'geometry',
+          plan.pressLine === 'tandem' ? 'a tandem line: one single-stage die per press'
+            : plan.pressLine === 'transfer' ? 'blanks fed to a transfer press, one station per operation'
+            : plan.dieType === 'progressive' ? `coil-fed progressive die, ${plan.stations} stations`
+            : 'coil-fed single-stage (compound) die', 0.75);
       },
     },
     {
@@ -812,7 +1079,15 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
             blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
           });
         }
-        return decided('sheetMetal.netWeightKg', r.advice.massKg, 'geometry', r.advice.massBasis, 0.9);
+        // Detected weld nuts / studs are bought, not blanked from the strip: their
+        // steel comes off the part's weight here, once, for both screen and
+        // headless (the screen did it on its own, headless not at all).
+        const hw = ctx.geo.detectedHardware;
+        const hwCm3 = hw?.available && hw.detected?.length ? (hw.totalVolumeCm3 ?? 0) : 0;
+        const dens = r.advice.massKg && ctx.geo.volume?.cm3 ? r.advice.massKg / ctx.geo.volume.cm3 : 0;
+        const kg = hwCm3 > 0 && dens > 0 ? Math.round((r.advice.massKg - hwCm3 * dens) * 10_000) / 10_000 : r.advice.massKg;
+        return decided('sheetMetal.netWeightKg', kg, 'geometry',
+          r.advice.massBasis + (hwCm3 > 0 ? `, less ${hwCm3.toFixed(1)} cm³ of detected hardware (bought, not blanked)` : ''), 0.9);
       },
     },
     {
@@ -825,6 +1100,234 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         return decided('sheetMetal.shearStrengthMPa', r.advice.shearMPa, 'library',
           `reference shear strength for ${r.advice.family} sheet`, 0.7);
+      },
+    },
+    {
+      // Stamping or laser + press brake — by the arithmetic, both routes priced.
+      id: 'sheetMetal.route',
+      path: 'sheetMetal.route',
+      label: 'route',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const rc = routeChoice(ctx);
+        if (!rc) return decided('sheetMetal.route', 'stamping', 'rule', 'no blank to price the fabrication route on — stamping', 0.4);
+        return decided('sheetMetal.route', rc.route, 'rule', rc.basis, 0.6);
+      },
+    },
+    {
+      id: 'sheetMetal.manning',
+      path: 'sheetMetal.manning',
+      fieldId: 'sm-manning',
+      label: 'manning',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const plan = stampingPlan(ctx);
+        if (!plan) return decided('sheetMetal.manning', 1, 'rule', 'no press plan — one operator', 0.4);
+        const m = pressManning(plan);
+        return decided('sheetMetal.manning', m.n, 'rule', m.basis, 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.rejectRate',
+      path: 'sheetMetal.rejectRate',
+      fieldId: 'sm-reject',
+      label: 'rejectRate',
+      evaluate: () => decided('sheetMetal.rejectRate', PRESS_REJECT, 'rule',
+        'press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — screen had 0, headless 3%', 0.5),
+    },
+    {
+      id: 'sheetMetal.fabBlankingCycleSec',
+      path: 'sheetMetal.fabBlankingCycleSec',
+      fieldId: 'smf-blank-ct',
+      label: 'fabBlankingCycleSec',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const f = routeChoice(ctx)!.fab!;
+        return decided('sheetMetal.fabBlankingCycleSec', f.laserCycleSec, 'geometry',
+          `laser: measured cut length ÷ the fibre-laser feed for the gauge + pierces + 8 s sheet handling (estimateBlankingCycleSec)`, 0.6);
+      },
+    },
+    {
+      id: 'sheetMetal.fabBendCount',
+      path: 'sheetMetal.fabBendCount',
+      fieldId: 'smf-bends',
+      label: 'fabBendCount',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const f = routeChoice(ctx)!.fab!;
+        return decided('sheetMetal.fabBendCount', f.bends, 'geometry', `${f.bends} bend(s) measured on the solid`, 0.75);
+      },
+    },
+    {
+      id: 'sheetMetal.fabBendSec',
+      path: 'sheetMetal.fabBendSec',
+      fieldId: 'smf-bend-t',
+      label: 'fabBendSec',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const f = routeChoice(ctx)!.fab!;
+        const v = f.bends > 0 ? Math.round((FAB.bendSec + FAB.handlingSec / f.bends) * 10) / 10 : FAB.bendSec;
+        return decided('sheetMetal.fabBendSec', v, 'rule',
+          `${FAB.bendSec} s a bend on a CNC brake + ${FAB.handlingSec} s handling a part spread over the bends (engineering-typical; the form's 45 s is a large-part figure)`, 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.fabToolChanges',
+      path: 'sheetMetal.fabToolChanges',
+      fieldId: 'smf-tool-chg',
+      label: 'fabToolChanges',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabToolChanges', FAB.toolChanges, 'rule', 'two brake tool set-ups a batch (engineering-typical)', 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.fabToolChangeSec',
+      path: 'sheetMetal.fabToolChangeSec',
+      fieldId: 'smf-tool-chg-t',
+      label: 'fabToolChangeSec',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabToolChangeSec', FAB.toolChangeSec, 'rule', '15 min a brake tool set-up (engineering-typical)', 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.fabBatchSize',
+      path: 'sheetMetal.fabBatchSize',
+      fieldId: 'smf-batch',
+      label: 'fabBatchSize',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const f = routeChoice(ctx)!.fab!;
+        return decided('sheetMetal.fabBatchSize', f.batch, 'rule', `${ctx.annualVolume.toLocaleString('en-GB')}/yr ÷ 20 runs, 50–5,000`, 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.fabToolingGBP',
+      path: 'sheetMetal.fabToolingGBP',
+      fieldId: 'smf-tooling',
+      label: 'fabToolingGBP',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabToolingGBP', FAB.toolingGBP, 'rule',
+          `nest + brake programming and first-off, £${FAB.toolingGBP} (advisor band £500–3k) — no die; it was set to the stamping die cost`, 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.fabUtilization',
+      path: 'sheetMetal.fabUtilization',
+      fieldId: 'smf-mat-util',
+      label: 'fabUtilization',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const l = stripLayout(ctx);
+        const dev = ctx.geo.blank;
+        const b = blankDims(ctx)!;
+        const area = dev?.netAreaMm2 ?? b.lengthMm * b.widthMm;
+        const u = l ? Math.min(0.95, Math.round(area / (l.pitchMm * l.stripWidthMm) * 100) / 100) : 0.8;
+        return decided('sheetMetal.fabUtilization', u, 'geometry',
+          `blank ${Math.round(area / 100)} cm² nested on the sheet at the coil layout's cell (${l ? `${Math.round(l.pitchMm)} × ${Math.round(l.stripWidthMm)} mm` : 'none'}), max 0.95`, 0.55);
+      },
+    },
+    {
+      id: 'sheetMetal.fabRejectRate',
+      path: 'sheetMetal.fabRejectRate',
+      fieldId: 'smf-reject',
+      label: 'fabRejectRate',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabRejectRate', PRESS_REJECT, 'rule', 'fabrication scrap 1–2% typical', 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.setupHoursPerChange',
+      path: 'sheetMetal.setupHoursPerChange',
+      fieldId: 'sm-die-chg',
+      label: 'setupHoursPerChange',
+      evaluate: (ctx) => {
+        const plan = stampingPlan(ctx);
+        if (!plan) return decided('sheetMetal.setupHoursPerChange', 1, 'rule', 'no press plan — 1 h a die change', 0.3);
+        const t = Number(/(\d+)t/.exec(plan.pressId)?.[1] ?? 0);
+        const h = plan.pressLine === 'tandem' ? 0.5 : plan.pressLine === 'transfer' ? 1.5 : t > 400 ? 1.5 : 1.0;
+        return decided('sheetMetal.setupHoursPerChange', h, 'rule',
+          plan.pressLine === 'tandem' ? `${h} h a die change on each press of a quick-die-change tandem line (engineering-typical)`
+            : `${h} h to change a ${plan.pressLine} die on a ${plan.pressId} (engineering-typical)`, 0.5);
+      },
+    },
+    {
+      id: 'sheetMetal.batchSize',
+      path: 'sheetMetal.batchSize',
+      fieldId: 'sm-batch',
+      label: 'batchSize',
+      evaluate: (ctx) => decided('sheetMetal.batchSize', standardBatchSize(ctx.annualVolume), 'rule',
+        `${ctx.annualVolume.toLocaleString('en-GB')}/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch`, 0.5),
+    },
+    {
+      id: 'sheetMetal.dieMaintenanceFraction',
+      path: 'sheetMetal.dieMaintenanceFraction',
+      fieldId: 'sm-maint',
+      label: 'dieMaintenanceFraction',
+      evaluate: (ctx) => dieClassFor(ctx).soft
+        ? decided('sheetMetal.dieMaintenanceFraction', 0, 'rule', 'soft tooling is replaced, not maintained', 0.5)
+        : decided('sheetMetal.dieMaintenanceFraction', 0.05, 'rule',
+          'die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10%', 0.5),
+    },
+    {
+      id: 'sheetMetal.fabLaserId',
+      path: 'sheetMetal.fabLaserId',
+      fieldId: 'smf-blank-mach',
+      label: 'fabLaserId',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabLaserId', FAB.laserId, 'rule', '6 kW fibre laser, 3 × 1.5 m bed', 0.6);
+      },
+    },
+    {
+      id: 'sheetMetal.fabBrakeId',
+      path: 'sheetMetal.fabBrakeId',
+      fieldId: 'smf-brake-mach',
+      label: 'fabBrakeId',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const f = routeChoice(ctx)!.fab!;
+        return decided('sheetMetal.fabBrakeId', f.brakeId, 'rule',
+          f.brakeId === FAB.brakeLargeId ? 'blank over 1.5 m — 230 t, 4 m brake' : '100 t CNC press brake', 0.6);
+      },
+    },
+    {
+      id: 'sheetMetal.fabBrakeLabourId',
+      path: 'sheetMetal.fabBrakeLabourId',
+      fieldId: 'smf-brake-lab',
+      label: 'fabBrakeLabourId',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabBrakeLabourId', FAB.brakeLabourId, 'rule', 'CNC press-brake operator sets and runs the bend sequence — skilled', 0.55);
+      },
+    },
+    {
+      id: 'sheetMetal.fabAssistGas',
+      path: 'sheetMetal.fabAssistGas',
+      fieldId: 'smf-gas',
+      label: 'fabAssistGas',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: (ctx) => {
+        const fam = (DEFAULT_RATE_LIBRARY.materials.find(m => m.id === representativeMaterialId(ctx.commodity, materialFacts(ctx).family ?? 'steel'))?.category ?? '').toLowerCase();
+        const n2 = /alumin|stainless/.test(fam);
+        return decided('sheetMetal.fabAssistGas', n2 ? 'nitrogen' : 'oxygen', 'rule',
+          n2 ? 'stainless / aluminium are cut with nitrogen for a clean, oxide-free edge' : 'mild steel is cut with oxygen (the form defaulted to nitrogen, ~5× the gas cost)', 0.6);
+      },
+    },
+    {
+      id: 'sheetMetal.fabToleranceMm',
+      path: 'sheetMetal.fabToleranceMm',
+      fieldId: 'smf-tolerance',
+      label: 'fabToleranceMm',
+      appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
+      evaluate: () => {
+        return decided('sheetMetal.fabToleranceMm', 0.5, 'rule',
+          'no drawing tolerance in the CAD — general tolerance (ISO 2768-m class), no cycle multiplier; the form defaulted to 0.2 mm, a ×1.3 multiplier nobody specified', 0.4);
       },
     },
   ],
