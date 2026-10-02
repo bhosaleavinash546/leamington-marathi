@@ -233,11 +233,17 @@ export { DENSITY_KG_PER_CM3 };
 const REPRESENTATIVE_GRADE: Record<string, Partial<Record<MaterialFamily, string>>> = {
   machining:          { aluminium: 'mat-al6082-bar', steel: 'mat-en8', 'cast iron': 'mat-gjl250',
                         titanium: 'mat-ti6al4v', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pom-c' },
-  forging:            { aluminium: 'mat-al6082-bar', steel: 'mat-steel1045', titanium: 'mat-ti6al4v',
-                        'copper alloy': 'mat-brass-cz121' },
-  casting:            { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-steel1045',
-                        'copper alloy': 'mat-bronze-pb1', magnesium: 'mat-az91d' },
-  cast_and_machine:   { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-steel1045' },
+  // Forging buys billet, not bar: 38MnVS6 is the microalloyed steel automotive
+  // knuckles, conrods and crankshafts are forged from.
+  forging:            { aluminium: 'mat-al6082-forge', steel: 'mat-steel-38mnvs6', titanium: 'mat-ti-6al4v-forge',
+                        'copper alloy': 'mat-brass-cz122-forge', magnesium: 'mat-mg-az31-forge' },
+  // A steel casting is cast steel (GS-C25), not the wrought 1045 bar it used to
+  // be priced as — which the casting forms could not even show, so the screen
+  // kept ADC12 and priced steel weight at an aluminium rate (2 Oct 2026).
+  casting:            { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-gs-c25',
+                        'copper alloy': 'mat-bronze-c905', magnesium: 'mat-mag-az91' },
+  cast_and_machine:   { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-gs-c25',
+                        'copper alloy': 'mat-bronze-c905', magnesium: 'mat-mag-az91' },
   sheet_metal:        { steel: 'mat-dc04', aluminium: 'mat-aa5754-sheet' },
   sheet_metal_fab:    { steel: 'mat-dc04', aluminium: 'mat-aa5754-sheet' },
 };

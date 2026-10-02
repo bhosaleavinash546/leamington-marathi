@@ -57,7 +57,9 @@ describe('costInputSuggestions → £/part', () => {
       // Sheet steel and forged steel are both "steel" and are not the same
       // price — DC04 coil against 1045 bar.
       expect(representativeMaterialId('sheet_metal', 'steel')).toBe('mat-dc04');
-      expect(representativeMaterialId('forging', 'steel')).toBe('mat-steel1045');
+      // Forging buys billet: the form only lists billets, and the 1045 bar it used to
+      // pick was refused there (tests/material-scope-parity.test.ts).
+      expect(representativeMaterialId('forging', 'steel')).toBe('mat-steel-38mnvs6');
       expect(representativeMaterialId('casting', 'aluminium')).toBe('mat-adc12');
     });
 

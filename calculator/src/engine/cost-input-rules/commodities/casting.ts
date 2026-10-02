@@ -204,6 +204,39 @@ export const CASTING_RULES: CommodityRuleSpec = {
       },
     },
     {
+      // Sand cores: what the pattern cannot draw. The screen used to keep its
+      // £1.50 form default on every sand casting while the headless path
+      // assumed £0 — a £1.50 gap on the Casting Bracket and no rule behind
+      // either. Undercuts along the best pull are what a core forms; the bands
+      // are the form's own (simple cavity core £0.50–2, complex £2–8), stated
+      // as defaults, not measured core costs.
+      id: 'casting.coreCostPerPart',
+      path: 'casting.coreCostPerPart',
+      fieldId: 'cast-sand-core',
+      label: 'coreCostPerPart',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.process === 'sand';
+      },
+      evaluate: (ctx) => {
+        const d = ctx.geo.draftAnalysis;
+        const under = d?.undercutFaceCount ?? null;
+        const sealed = ctx.geo.topology?.available && ctx.geo.topology.enclosesSealedVoid === true;
+        if (under === null && !sealed) {
+          return decided('casting.coreCostPerPart', 1.5, 'rule',
+            'no draft analysis measured — the mid simple-core figure (£0.50–2) stands until someone checks the pattern', 0.4);
+        }
+        const n = under ?? 0;
+        const [cost, band] = sealed ? [6, 'an enclosed cavity — a complex core (£2–8)']
+          : n >= 20 ? [3, `${n} undercut faces — a complex multi-core (£2–8)`]
+          : n >= 6 ? [1.5, `${n} undercut faces — a simple cavity core (£0.50–2)`]
+          : n >= 1 ? [0.75, `${n} undercut face(s) — a small core or loose piece (£0.50–2)`]
+          : [0, 'no undercut along the best pull — the pattern draws cleanly, no core'];
+        return decided('casting.coreCostPerPart', cost, 'geometry',
+          `${band}; per-part core (sand, binder, labour), material consumable — a default band, not a core-shop quote`, 0.55);
+      },
+    },
+    {
       id: 'casting.netWeightKg',
       path: 'casting.netWeightKg',
       fieldId: 'cast-part-wt',

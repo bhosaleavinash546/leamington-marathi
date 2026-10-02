@@ -33,6 +33,8 @@
  *    ring rolling and open-die forging produce none — the advisor's own route
  *    text says so ("no flash"). The prompt charged all five routes 10%.
  */
+import { representativeMaterialId } from '../derive/material.js';
+import type { MaterialFamily } from '../../material-family.js';
 import {
   adviseForgingProcess, estimateForgingTonnage, estimateForgingDieCost,
   estimateForgingDieLife, estimateForgingSecondaryAdders, forgingHeatKwhPerKg,
@@ -300,12 +302,16 @@ export const FORGING_RULES: CommodityRuleSpec = {
       id: 'forging.materialId',
       path: 'forging.materialId',
       fieldId: 'forge-mat',
-      label: 'materialFamily',
+      label: 'materialId',
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('forging.materialId', r.advice.familyLabel, 'engineer',
-          r.advice.massBasis, 1);
+        // A GRADE, not the family word: the form's drop-down lists grade ids and
+        // refused "steel", keeping its first billet while the headless path
+        // priced the representative grade — two numbers for one part.
+        const id = representativeMaterialId('forging', r.advice.familyLabel as MaterialFamily);
+        return decided('forging.materialId', id ?? r.advice.familyLabel, 'engineer',
+          `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ?? r.advice.familyLabel} (representative forging billet — not a drawing callout)`, 1);
       },
     },
     {

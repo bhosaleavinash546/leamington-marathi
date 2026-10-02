@@ -312,6 +312,14 @@ describe('sheet-metal rules end to end', () => {
     expect(sm.process).toBe('Laser Cutting');
     expect(sm.shearStrengthMPa).toBe(170);
     expect(sm.thicknessMm).toBe(1.9);   // no bends → the ray-cast fallback
+    expect(sm.materialId).toBe('mat-aa5754-sheet');
+  });
+
+  it('decides the coil grade, so the screen and headless price the same sheet', () => {
+    // Before, no rule chose a grade: the form kept DC01 (£0.91/kg small-lot) and
+    // headless fell back to DC04 (£0.77/kg coil) for the same part.
+    const r = runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, STEEL));
+    expect((r.suggestions.sheetMetal as Record<string, unknown>).materialId).toBe('mat-dc04');
   });
 
   it('asks the commodity question before the material one on an ambiguous shell', () => {

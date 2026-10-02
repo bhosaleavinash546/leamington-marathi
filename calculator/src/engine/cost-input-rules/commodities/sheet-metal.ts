@@ -28,7 +28,7 @@ import {
   type StampingDieType, type HoleDensityLevel, type ComplexityLevel,
 } from '../../modules/sheet-metal-advisor.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
-import { materialFacts } from '../derive/material.js';
+import { materialFacts, representativeMaterialId } from '../derive/material.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
@@ -772,6 +772,26 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         return decided('sheetMetal.process', r.advice.primaryProcess, 'advisor',
           `${classifyVolume(ctx.annualVolume)} volume: ${r.advice.reason}`, 0.8);
+      },
+    },
+    {
+      // The grade. Without it the screen kept the drop-down's first entry (DC01,
+      // a small-lot delivered price, £0.91/kg) while headless costed the
+      // representative coil grade (DC04, £0.77/kg) — 16% apart on the same
+      // seat bracket's material (2 Oct 2026). Same pattern as casting.materialId.
+      id: 'sheetMetal.materialId',
+      path: 'sheetMetal.materialId',
+      fieldId: 'sm-mat',
+      label: 'materialId',
+      evaluate: (ctx) => {
+        // Is it sheet metal at all? Asked before the material, as in advise().
+        const amb = thinWallAmbiguity(ctx);
+        if (amb.decision) return ask(amb.decision);
+        const mat = materialFacts(ctx);
+        if (mat.decision) return ask(mat.decision);
+        const id = representativeMaterialId(ctx.commodity, mat.family!);
+        return decided('sheetMetal.materialId', id ?? mat.family!, 'geometry',
+          `${mat.family} → ${id ?? mat.family} (representative coil grade — not a drawing callout)`, 0.85);
       },
     },
     {

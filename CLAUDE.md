@@ -228,6 +228,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   £24.79 machined bracket (2026-09 rates; it follows the library) to <0.01% — keep
   engine changes reconciling to it. Rates move only through `scripts/rate-refresh.ts`
   and a dated config in `scripts/rate-refresh/`; see `docs/rates/`.
+- Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
+  reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
+  `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in
+  `RULE_PATHS_NOT_COSTED_HEADLESS` (`tests/rule-path-coverage.test.ts`). A grade a rule
+  picks must be one its form's drop-down offers (`src/ui/material-scope.ts`,
+  `tests/material-scope-parity.test.ts`).
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

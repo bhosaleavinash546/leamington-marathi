@@ -263,14 +263,14 @@ export function toCostParams(
       };
     }
     if (c.subtype === 'sand') {
-      assumed.push('sand.mouldLineId', 'sand.coreCostPerPart');
+      assumed.push('sand.mouldLineId', ...(c.coreCostPerPart === undefined ? ['sand.coreCostPerPart (0 — no rule decided it)'] : []));
       return {
         sand: {
           mouldLineId: 'sand-cast-line',
           cycleTimeHr: num(c.cycleTimeSandGravHr, 0.25),
           patternCost: num(c.dieMouldCostGBP),
           patternLife: num(c.dieMouldLife, 50_000),
-          coreCostPerPart: 0,
+          coreCostPerPart: num(c.coreCostPerPart, 0),
         },
       };
     }

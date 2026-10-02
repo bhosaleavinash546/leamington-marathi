@@ -160,12 +160,61 @@ casting with finish machining once confirmed.
   refusal there degrades to the numbers-only selector.
 - Other AI routes (RFQ reading, the DFM note, the agent, chat) still use the
   older model IDs; they do not identify process or material and were left alone.
-- **Found, not fixed here: the screen and the headless path disagree on a
-  cast-then-machined part's material.** Same part, same answers: material
-  £11.70 on screen against £3.48 in the headless baseline (process and tooling
-  agree within a few percent). It is a costing-parity gap in the
-  cast-and-machine form, not an identification one, and is the next thing to
-  trace.
+- Screen and headless material are now the same; see §8.
+
+## 8. Screen against headless — the material gap, closed
+
+Same part, same answers, two paths: the browser form and the headless chain
+(`costMeasuredPart` — bulk runs, the real-parts baseline, the no-key CAD branch).
+On the Casting Bracket the material was **£11.70 on screen against £3.48
+headless**. Four causes, all fixed:
+
+1. **The form could not show the grade the rules chose.** A steel casting got
+   the wrought bar `mat-steel1045`; the cast-and-machine drop-down does not
+   list bar stock, kept its first entry (aluminium ADC12), and priced 2.5 kg of
+   steel at an aluminium rate. Steel castings now get cast steel GS-C25,
+   forgings a forging billet, and `tests/material-scope-parity.test.ts` checks
+   every representative grade is one its form offers. The scope table moved to
+   `src/ui/material-scope.ts` so the test can read it. If a select still lacks
+   a grade, the screen adds it rather than silently keeping the first option.
+2. **Forging decided a family, not a grade**: `forging.materialId` now emits
+   the representative billet.
+3. **The sand core.** The screen's core field defaulted to £1.50 and headless
+   costed every sand casting coreless. `casting.coreCostPerPart` is now a rule,
+   from the undercut faces the draft analysis counts (none → £0, 1–5 → £0.75,
+   6–19 → £1.50, 20+ → £3, a sealed void → £6; no draft analysis → £1.50 at low
+   confidence).
+4. **Rule values that never reached headless.** The screen takes a rule's value
+   by its field id; headless only through `RULE_PATH_MAP` (`apply.ts`). 39 rule
+   paths were in neither, including the core cost and the sheet-metal cut
+   length, press and BIW line, so headless sized the press off 2(L+W) and
+   costed every stamping as a coil-fed die. These are now mapped. Every other path
+   is listed in `RULE_PATHS_NOT_COSTED_HEADLESS` with its reason, and
+   `tests/rule-path-coverage.test.ts` fails on any new rule that is neither.
+   The sheet-metal rules also now decide the coil grade: before, the form kept
+   DC01 (£0.91/kg, small-lot) while headless used DC04 (£0.77/kg, coil).
+
+Measured live in a browser against the headless baseline, same answers:
+
+| Part | Material on screen | Material headless |
+|---|---|---|
+| Casting Bracket, before | £11.70 | £3.48 |
+| Casting Bracket, after | **£9.48** | **£9.48** |
+| Seat bracket, before | £0.72 (DC01) | £0.62 (DC04) |
+| Seat bracket, after | **£0.60** (DC04) | **£0.62** (DC04) |
+
+**Still different, and why:**
+- The seat bracket's last 2p is the reject allowance: headless shop defaults
+  use 3% scrap, while the screen form defaults to 0%.
+- The Casting Bracket's labour is £11.03 on screen and £9.09 headless; process
+  agrees within 1%. Shop defaults (OEE, manning) differ between the form and
+  `SHOP_DEFAULTS`. Totals also differ by the volume: the screen amortises
+  tooling over 100,000 parts and the baseline over 50,000.
+- Lines marked PARITY GAP in `RULE_PATHS_NOT_COSTED_HEADLESS`: blow-moulding
+  machine and cool factor, and thermoforming, rotational-moulding and rubber
+  inputs. There the screen runs a fuller module input than `toCostParams`
+  builds. Each needs its own change to `toCostParams`; they are listed, not
+  hidden.
 
 ## 7. What is needed from JLR
 

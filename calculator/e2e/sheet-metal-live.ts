@@ -150,6 +150,11 @@ async function main(): Promise<void> {
       const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
       return [id, el ? { value: el.value, prov: el.getAttribute('data-prov'), title: (el.getAttribute('title') ?? '').slice(0, 220) } : null];
     })), fields);
+    // Every field of whichever commodity form is on screen, for parity checks.
+    summary.allFields = await page.evaluate(() => Object.fromEntries(
+      Array.from(document.querySelectorAll<HTMLInputElement | HTMLSelectElement>('#commodity-form-area input[id], #commodity-form-area select[id]'))
+        .filter(e => (e as HTMLInputElement).type !== 'file')
+        .map(e => [e.id, { value: e.value, prov: e.getAttribute('data-prov'), title: (e.getAttribute('title') ?? '').slice(0, 200) }])));
     summary.formWarnings = await page.evaluate(() => (document.getElementById('validation-errors')?.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 400));
     await page.click('#calc-btn');
     await page.waitForTimeout(1500);

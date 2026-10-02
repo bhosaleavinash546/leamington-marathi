@@ -1,6 +1,7 @@
 // First: every later fetch to our API must carry the session token.
 import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
+import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
@@ -3270,20 +3271,7 @@ function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void
 // titanium BILLETS and an injection-moulding picker on thermoplastics, instead
 // of dumping all ~320 grades (plastics, paint, rubber…) into every form.
 // Any select id not listed here falls back to the full catalogue.
-const MATERIAL_SCOPE_BY_SELECT: Record<string, RegExp> = {
-  'forge-mat': /Billet/i,                                                                    // closed-die forging → wrought billets
-  'mach-mat':  /Billet|^Carbon Steel$|^Alloy Steel$|^Stainless Steel$|^Aluminium$|^Titanium$|Copper Alloy|Magnesium Alloy|Spring Steel|Engineering Plastic/i, // machined from bar/billet
-  'cast-mat':  /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy/i,            // foundry alloys
-  'cam-mat':   /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy/i,            // cast-and-machine = cast alloys
-  'imm-mat':   /Thermoplastic|Engineering Plastic|Additive|Masterbatch/i,                    // injection-moulding resins
-  'bm-mat':    /Blow Moulding|Thermoplastic Elastomer/i,                                      // blow-moulding grades
-  'rm-mat':    /Rotational Moulding/i,
-  'tf-mat':    /Thermoforming/i,
-  'ext-mat':   /Extrusion/i,
-  'rub-mat':   /Rubber|Thermoplastic Elastomer/i,
-  'sm-mat':    /Sheet|Spring Steel Strip/i,                                                   // sheet-metal grades
-  'smf-mat':   /Sheet|Spring Steel Strip/i,
-};
+// The table lives in ./material-scope.ts so the engine's grade choices can be tested against it.
 
 function populateSelects(): void {
   const sig = _currentLibSig();
@@ -10446,8 +10434,20 @@ function applyRuleFieldsToForm(): void {
     if (elm instanceof HTMLSelectElement) {
       const wanted = String(f.value);
       // Only assign a value the select actually offers — a silent mismatch here
-      // is how "Machine '' not found" used to reach Calculate.
-      if (!Array.from(elm.options).some(o => o.value === wanted)) continue;
+      // is how "Machine '' not found" used to reach Calculate. But a skipped
+      // MATERIAL left the drop-down on its first option, and the screen then
+      // priced a different grade from the one the rules chose (a steel casting
+      // at the ADC12 aluminium rate). A real library grade the scope does not
+      // list is added and selected, so the screen and the headless path cost
+      // the same grade; anything else is reported, not dropped in silence.
+      if (!Array.from(elm.options).some(o => o.value === wanted)) {
+        const lm = elm.classList.contains('material-select') ? library.materials.find(m => m.id === wanted) : undefined;
+        if (!lm) { console.warn(`[rules] ${f.fieldId}: "${wanted}" is not offered by the form — left unchanged`); continue; }
+        const opt = document.createElement('option');
+        opt.value = lm.id;
+        opt.textContent = `${lm.grade} (${lm.region}) — ${_currFmt(lm.pricePerKg)}/kg`;
+        elm.appendChild(opt);
+      }
       elm.value = wanted;
     } else if (typeof f.value === 'number') {
       elm.value = Number.isInteger(f.value) ? String(f.value) : f.value.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');

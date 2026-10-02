@@ -23,6 +23,7 @@ SHEET METAL COST INPUT RULES:
   dieLife=1050000  [170 MPa shear at 12.25 mm on a single_stage die — deterministic, use verbatim]
   dieType=single_stage  [high volume at 12.25 mm: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
   process=Laser Cutting  [high volume: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
+  materialId=mat-aa5754-sheet  [aluminium → mat-aa5754-sheet (representative coil grade — not a drawing callout) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   shearStrengthMPa=170  [reference shear strength for aluminium sheet — deterministic, use verbatim]
 
@@ -45,5 +46,6 @@ SHEET METAL COST INPUT RULES:
   dieLife: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   dieType: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   process: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
+  materialId: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   netWeightKg: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   shearStrengthMPa: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)

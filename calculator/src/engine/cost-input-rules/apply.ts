@@ -143,6 +143,7 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'forging.materialId': { to: 'materialId' },
   'forging.partWeightKg': { to: 'netWeightKg' },
   'sheetMetal.netWeightKg': { to: 'netWeightKg' },
+  'sheetMetal.materialId': { to: 'materialId' },
   'injectionMoulding.partWeightKg': { to: 'netWeightKg' },
   'injectionMoulding.materialId': { to: 'materialId' },
   'blowMoulding.partWeightKg': { to: 'netWeightKg' },
@@ -162,6 +163,9 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'casting.dieMouldCostGBP': { to: 'casting.dieMouldCostGBP' },
   'casting.dieMouldLife': { to: 'casting.dieMouldLife' },
   'casting.cavities': { to: 'casting.cavities' },
+  // Unmapped until 2 Oct 2026: the screen took the core into material, headless
+  // costed every sand casting coreless — £1.50 apart on the Casting Bracket.
+  'casting.coreCostPerPart': { to: 'casting.coreCostPerPart' },
 
   // ── forging ───────────────────────────────────────────────────────────────
   'forging.flashAndScaleKg': { to: 'forging.flashKg' },
@@ -178,6 +182,16 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'sheetMetal.dieCostGBP': { to: 'sheetMetal.dieCostGBP' },
   'sheetMetal.dieLife': { to: 'sheetMetal.dieLife' },
   'sheetMetal.numOps': { to: 'sheetMetal.numOps' },
+  // The cut length, the press and the BIW line. `toCostParams` read all of these,
+  // but nothing wrote them, so headless sized the press off 2(L+W) and costed
+  // every stamping as a coil-fed die whatever the rules decided.
+  'sheetMetal.perimeterMm': { to: 'sheetMetal.perimeterMm' },
+  'sheetMetal.pressId': { to: 'sheetMetal.pressId' },
+  'sheetMetal.pressLine': { to: 'sheetMetal.pressLine' },
+  'sheetMetal.pressesInLine': { to: 'sheetMetal.pressesInLine' },
+  'sheetMetal.blankingMethod': { to: 'sheetMetal.blankingMethod' },
+  'sheetMetal.blanksPerMin': { to: 'sheetMetal.blanksPerMin' },
+  'sheetMetal.drawAddendumMm': { to: 'sheetMetal.drawAddendumMm' },
 
   // ── injection moulding ────────────────────────────────────────────────────
   'injectionMoulding.wallThicknessMm': { to: 'injectionMoulding.wallThicknessMm' },
@@ -235,6 +249,53 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'composites.cureTimeHr': { to: 'composites.cureTimeSec', transform: v => num(v) * 3600 },
   'composites.toolingCost': { to: 'composites.toolCostGBP' },
   'composites.toolingLife': { to: 'composites.toolLife' },
+};
+
+/**
+ * Rule paths deliberately left out of `RULE_PATH_MAP`, each with the reason.
+ *
+ * An unmapped path reaches the screen (by its field id) but not the headless
+ * costing, so screen and headless can then price the same part differently.
+ * `tests/rule-path-coverage.test.ts` fails on any rule path that is neither
+ * mapped nor listed here, so a new rule has to be wired or excused.
+ */
+export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
+  'sheetMetal.process': 'prose for the report; the die type and press line are what the costing reads',
+  'machining.operationCount': 'a count for the report; the operation plan itself is mapped',
+  'forging.process': 'prose for the report; the forge and die rules are what the costing reads',
+  'forging.shapeComplexity': 'screen-only input to the forging advisor; headless takes strokes and die cost from their own rules',
+  'injectionMoulding.sideActionsLifters': 'screen-only tooling adder; headless takes the mould cost rule, which already counts side actions',
+  'blowMoulding.process': 'prose for the report; headless picks the machine from the subtype',
+  'blowMoulding.partVolumeL': 'screen-only display; weight is what the costing reads',
+  'blowMoulding.mouldMaterial': 'screen-only; headless takes the mould cost rule',
+  // Known parity gaps, not yet closed: headless picks the machine from the
+  // subtype (SBM / IBM / EBM) and a fixed 2.5 s/mm² cool factor, the screen
+  // takes these rules. Closing them needs the rule to choose by subtype first.
+  'blowMoulding.machineId': 'PARITY GAP: the rule picks an EBM machine by shot weight; headless picks by subtype',
+  'blowMoulding.coolTimeFactorSPerMm2': 'PARITY GAP: headless uses a fixed 2.5 s/mm²',
+  // Thermoforming, rotational moulding and rubber: the screen runs a fuller
+  // module input than `toCostParams` builds (cool time from gauge, mould type,
+  // cure time). Headless costs from the times the rules decided directly.
+  'thermoforming.formedWallMm': 'report only',
+  'thermoforming.sheetThicknessMm': 'PARITY GAP: screen derives cool time from gauge; headless uses the cool-time rules',
+  'thermoforming.drawRatio': 'report only',
+  'thermoforming.coolTimeSec': 'PARITY GAP: headless has no cool-time input in toCostParams',
+  'thermoforming.projectedAreaCm2': 'PARITY GAP: headless sizes the former from the measured surface area',
+  'thermoforming.mouldMaterial': 'PARITY GAP: headless takes the tool cost rule',
+  'thermoforming.energyKwhPerKg': 'PARITY GAP: screen-only energy input',
+  'thermoforming.formability': 'report only',
+  'rotationalMoulding.materialFamily': 'PARITY GAP: screen-only; headless prices the material id',
+  'rotationalMoulding.wallThicknessMm': 'PARITY GAP: screen-only; headless takes the heat/cool time rules',
+  'rotationalMoulding.coolingMethod': 'PARITY GAP: screen-only',
+  'rotationalMoulding.projectedAreaCm2': 'PARITY GAP: screen-only',
+  'rotationalMoulding.mouldType': 'PARITY GAP: screen-only; headless takes the mould cost rule',
+  'rubber.thicknessMm': 'PARITY GAP: screen-only; headless takes the cycle-time rule',
+  'rubber.cureTimeSec': 'PARITY GAP: screen-only; headless takes the cycle-time rule',
+  'rubber.projectedAreaCm2': 'PARITY GAP: screen-only press sizing',
+  'rubber.mouldSteel': 'PARITY GAP: screen-only; headless takes the mould cost rule',
+  'composites.fibrePricePerKg': 'composites has no headless costing (toCostParams returns null)',
+  'composites.resinPricePerKg': 'composites has no headless costing (toCostParams returns null)',
+  'composites.layupTimeHrPerPart': 'composites has no headless costing (toCostParams returns null)',
 };
 
 /** Flatten `{a: {b: 1}}` to `{'a.b': 1}` so rule paths can be looked up directly. */

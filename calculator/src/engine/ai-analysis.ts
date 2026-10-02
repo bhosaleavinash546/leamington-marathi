@@ -408,6 +408,8 @@ export interface CADAnalysisResult {
       yieldFraction: number;
       cycleTimeHpdcSec: number;
       cycleTimeSandGravHr: number;
+      /** Sand cores per casting, £ (material consumable) — rule-decided from the undercuts. */
+      coreCostPerPart?: number;
     };
     forging?: {
       flashKg: number;

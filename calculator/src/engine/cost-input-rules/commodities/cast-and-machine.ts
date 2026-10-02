@@ -45,6 +45,7 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-hpdc-die-life': 'cam-hpdc-die-life',
   'cast-hpdc-cav': 'cam-hpdc-cav',
   'cast-sand-ct': 'cam-sand-ct',
+  'cast-sand-core': 'cam-sand-core',
   // machining half
   'mach-setup-mach': 'cam-mach-setup-mach',
   'mach-tooling': 'cam-mach-tooling',
