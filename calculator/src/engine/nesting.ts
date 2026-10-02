@@ -250,6 +250,36 @@ export function nestOnCoil(outline: Pt[], opts: NestOptions): NestResult {
 }
 
 /**
+ * Grow an outline outward by `d` mm — the binder and draw addendum around a
+ * drawn panel's trim line, which the blank must carry and the trim die cuts
+ * off. Each vertex moves along its outward normal (the mean of its two edge
+ * normals); exact on a smooth outline, and within a corner's radius elsewhere.
+ * The outline is taken counter-clockwise; a clockwise one is reversed first.
+ */
+export function offsetOutline(outline: Pt[], d: number): Pt[] {
+  if (outline.length < 3 || d === 0) return outline;
+  let a = 0;
+  for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) a += outline[j][0] * outline[i][1] - outline[i][0] * outline[j][1];
+  const pts = a < 0 ? outline.slice().reverse() : outline;
+  const n = pts.length;
+  const out: Pt[] = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const p = pts[(i + n - 1) % n], q = pts[i], r = pts[(i + 1) % n];
+    // Outward normal of a CCW polygon's edge (dx, dy) is (dy, −dx).
+    const e1x = q[0] - p[0], e1y = q[1] - p[1], e2x = r[0] - q[0], e2y = r[1] - q[1];
+    const l1 = Math.hypot(e1x, e1y) || 1, l2 = Math.hypot(e2x, e2y) || 1;
+    let nx = e1y / l1 + e2y / l2, ny = -e1x / l1 - e2x / l2;
+    const nl = Math.hypot(nx, ny);
+    if (nl < 1e-9) { nx = e1y / l1; ny = -e1x / l1; } else { nx /= nl; ny /= nl; }
+    // Mitre: along the bisector the move is d / cos(θ/2); cap it at 2d for sharp corners.
+    const cosHalf = Math.max(0.5, (nx * e1y / l1 - ny * e1x / l1));
+    const k = d / cosHalf;
+    out[i] = [q[0] + nx * k, q[1] + ny * k];
+  }
+  return out;
+}
+
+/**
  * Thin an outline to at most `max` points, keeping every point that turns the
  * boundary by more than a small angle — enough for nesting to a fraction of a
  * millimetre, small enough to travel in a response.

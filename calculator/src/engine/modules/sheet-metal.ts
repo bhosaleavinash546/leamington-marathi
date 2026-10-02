@@ -52,6 +52,24 @@ export interface SheetMetalInputs {
   /** Additional chained secondary operations (tap / deburr / wash / anodise …). */
   secondaryOps?: SheetMetalSecondaryOp[];
   // ── Hot stamping / press-hardening (boron / Usibor) ──
+  /**
+   * How the pressing is made (BIW process, docs/sheet-metal/blank-development-research-2026-10.md §4):
+   *  coil-fed  — one die run from coil (progressive or single-stage); the default and the old behaviour.
+   *  transfer  — blanks cut first, then one multi-station press.
+   *  tandem    — blanks cut first, then a line of presses, one operation each (draw, trim, pierce,
+   *              flange, restrike): machine and crew time are per press, so the press stroke counts
+   *              `pressesInLine` times.
+   */
+  pressLine?: 'coil-fed' | 'transfer' | 'tandem';
+  /** Presses in a tandem line; defaults to numOperations. */
+  pressesInLine?: number;
+  /** Blanks cut before a transfer or tandem line — a blanking press from coil, or a laser blanking line. */
+  blanking?: { method: 'die' | 'laser'; blanksPerMin: number; machineId?: string; labourId?: string };
+  /** Binder + draw addendum trimmed off a drawn panel, mm around the outline. Already inside the strip
+   *  figures when the rules nested the offset outline; carried for the report. */
+  drawAddendumMm?: number;
+  /** Tailor-welded blank: a premium per kg over the plain coil (typically ~30% of the coil price) and the weld. */
+  tailorWeldedBlank?: { premiumPerKg: number; weldLengthMm: number; weldCostPerMm?: number };
   hotStamping?: boolean;
   austenitiseEnergyKwhPerKg?: number;    // wall-plug/gas energy to ~900°C per kg blank (default 0.30)
   hotStampingEnergyPricePerKwh?: number; // effective fuel tariff £/kWh (default 0.23)
@@ -99,6 +117,13 @@ export function getSheetMetalInputSchema(): Record<string, string> {
     manning: 'number — operators per press',
     labourEfficiency: 'number 0–1',
     numOperations: 'number — informational: blank/pierce/form/trim stages',
+    pressLine: "'coil-fed' | 'transfer' | 'tandem' — tandem counts the press stroke once per press in the line",
+    pressesInLine: 'number? — presses in a tandem line (default numOperations)',
+    'blanking.method': "'die' | 'laser' — blanks cut before a transfer / tandem line",
+    'blanking.blanksPerMin': 'number — blanking line rate',
+    drawAddendumMm: 'number? — binder + addendum trimmed off a drawn panel, mm (report only; the strip already carries it)',
+    'tailorWeldedBlank.premiumPerKg': 'number — £/kg over the plain coil',
+    'tailorWeldedBlank.weldLengthMm': 'number — laser weld length',
     dieType: 'single_stage | progressive | transfer | fine_blanking',
     dieLife: 'number — parts per die life. ≤0 → predict from material hardness / thickness / die type',
     dieCostEstimate: 'number — total die/tooling cost £. ≤0 → estimate from die type, stations, blank size and hardness',
@@ -167,10 +192,18 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   const hardwareCostPerPart =
     (hardwarePurchaseCostPerPart(inputs.hardware) + hardwareConsumableCostPerPart(inputs.hardware)) * rejectUplift;
 
+  // Tailor-welded blank: the blank costs more than plain coil (a premium per kg
+  // on the metal bought) plus the weld; the saving it buys shows up elsewhere —
+  // fewer parts, fewer joins — and is not netted off here.
+  const twb = inputs.tailorWeldedBlank;
+  const twbCostPerPart = twb
+    ? Math.max(0, twb.premiumPerKg) * grossBlankKg + Math.max(0, twb.weldLengthMm) * (twb.weldCostPerMm ?? 0.006)
+    : 0;
+
   // Per-part material-bucket consumables: hot-stamp furnace heat + any extra
   // (e.g. lamination join/anneal-energy/coating passed via extraConsumablesPerPart).
   const consumablesCostPerPart =
-    furnaceEnergyPerPart + hardwareCostPerPart + Math.max(0, inputs.extraConsumablesPerPart ?? 0);
+    furnaceEnergyPerPart + hardwareCostPerPart + twbCostPerPart + Math.max(0, inputs.extraConsumablesPerPart ?? 0);
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -223,15 +256,40 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     });
   }
 
+  // Blanks cut before a transfer or tandem line. A blanking press runs from
+  // coil at its own rate; a laser blanking line needs no die at all.
+  const pressLine = inputs.pressLine ?? 'coil-fed';
+  if (pressLine !== 'coil-fed' && inputs.blanking && inputs.blanking.blanksPerMin > 0) {
+    const bl = inputs.blanking;
+    const blankCycleHr = (1 / (bl.blanksPerMin * 60)) * rejectUplift;
+    operations.push({
+      operationName: bl.method === 'laser' ? 'Laser blanking line' : 'Blanking press (coil → blanks)',
+      machineId: bl.machineId ?? (bl.method === 'laser' ? 'laser-trumpf-5030' : 'press-200t'),
+      labourId: bl.labourId ?? inputs.labourId,
+      cycleTimeHr: blankCycleHr,
+      partsPerCycle: inputs.partsPerStroke,
+      oee: inputs.oee,
+      manning: inputs.manning,
+      labourTimeHr: blankCycleHr,
+      labourEfficiency: inputs.labourEfficiency,
+    });
+  }
+
+  // A tandem line is one press per operation, all stroking together: the
+  // part's share of the line is one stroke on each press.
+  const presses = pressLine === 'tandem' ? Math.max(1, Math.round(inputs.pressesInLine ?? inputs.numOperations)) : 1;
   operations.push({
-    operationName: inputs.hotStamping ? 'Hot Stamping (form + quench)' : `Press (${inputs.dieType.replace('_', ' ')})`,
+    operationName: inputs.hotStamping ? 'Hot Stamping (form + quench)'
+      : pressLine === 'tandem' ? `Tandem press line (${presses} presses)`
+      : pressLine === 'transfer' ? 'Transfer press'
+      : `Press (${inputs.dieType.replace('_', ' ')})`,
     machineId: inputs.pressId,
     labourId: inputs.labourId,
-    cycleTimeHr,
+    cycleTimeHr: cycleTimeHr * presses,
     partsPerCycle: inputs.partsPerStroke,
     oee: inputs.oee,
     manning: inputs.manning,
-    labourTimeHr: cycleTimeHr,
+    labourTimeHr: cycleTimeHr * presses,
     labourEfficiency: inputs.labourEfficiency,
   });
 
@@ -290,15 +348,23 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
         dieType: inputs.dieType,
       });
 
-  // Die cost: use the given value, else estimate parametrically.
+  // Die cost: use the given value, else estimate parametrically. A tandem line
+  // is one single-stage die per press, each on its own die set.
   const dieCost = inputs.dieCostEstimate > 0
     ? inputs.dieCostEstimate
-    : estimateStampingDieCost({
-        dieType: inputs.dieType,
-        stations: inputs.numOperations,
-        blankAreaCm2: (inputs.blankLengthMm * inputs.blankWidthMm) / 100,  // mm² → cm²
-        shearStrengthMPa: inputs.shearStrengthMPa,
-      }).total;
+    : pressLine === 'tandem'
+      ? presses * estimateStampingDieCost({
+          dieType: 'single_stage',
+          stations: 1,
+          blankAreaCm2: (inputs.blankLengthMm * inputs.blankWidthMm) / 100,
+          shearStrengthMPa: inputs.shearStrengthMPa,
+        }).total
+      : estimateStampingDieCost({
+          dieType: inputs.dieType,
+          stations: inputs.numOperations,
+          blankAreaCm2: (inputs.blankLengthMm * inputs.blankWidthMm) / 100,  // mm² → cm²
+          shearStrengthMPa: inputs.shearStrengthMPa,
+        }).total;
 
   // Number of die sets needed over the programme life
   const numDieSets = dieLife > 0 ? Math.ceil(inputs.amortizationVolume / dieLife) : 1;

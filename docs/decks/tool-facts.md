@@ -46,7 +46,11 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
   uses): the blank grows to put the stretched metal back, a thinning map is reported,
   and the grade is checked against its forming limit — typical published forming
   values until JLR's coil data replaces them. It is an estimator's answer, not a forming
-  simulation: no binder force, friction or springback.
+  simulation: no binder force, friction or springback. The process follows from the
+  blank: a drawn panel is blanked first and drawn on a transfer press or a tandem line
+  (one press per operation), carrying the binder and addendum the trim die cuts off; a
+  bent part runs from coil through one die. The line rates and the addendum rule are
+  stated defaults until JLR's press-line facts replace them.
 - **STL files have no feature table**, so a machined STL arrives with no cycle
   time; the tool blocks the costing until the engineer types one.
 

@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-fbf40eac868182c6",
+      "partName": "cv-cad-f0186ced91dc2735",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -734,7 +734,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-739d066fe6a0970a",
+      "partName": "cv-cad-6770bd3b2c4a64fa",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1755,7 +1755,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-70c1c883cf13e804",
+      "partName": "cv-cad-53b16f148a93638b",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2515,7 +2515,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f857043d29b994c9",
+      "partName": "cv-cad-cbbe42da642ca087",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -5004,16 +5004,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 4.98,
+      "total": 5.37,
       "breakdown": {
-        "rawMaterial": 0.54,
+        "rawMaterial": 0.62,
         "process": 0.03,
         "labour": 0.03,
-        "tooling": 3.38,
+        "tooling": 3.63,
         "packaging": 0.07,
         "logistics": 0.09,
-        "overhead": 0.48,
-        "margin": 0.37
+        "overhead": 0.52,
+        "margin": 0.4
       }
     }
   },
@@ -5029,7 +5029,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bd0be47e6971fcf7",
+      "partName": "cv-cad-0813ba14316c0b83",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -5978,7 +5978,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2d294f2e1aacfd4e",
+      "partName": "cv-cad-527121e862382764",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

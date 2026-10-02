@@ -428,6 +428,12 @@ export interface CADAnalysisResult {
       strokesPerMin?: number;
       /** Cut length for blanking force: DXF outline + holes, else (S − 2V/t)/t, else 2(L+W). */
       perimeterMm?: number;
+      /** BIW process: how the pressing is made, and what a drawn panel carries. */
+      pressLine?: 'coil-fed' | 'transfer' | 'tandem';
+      pressesInLine?: number;
+      blankingMethod?: 'none' | 'die' | 'laser';
+      blanksPerMin?: number;
+      drawAddendumMm?: number;
     };
     /** Gear cutting — rule-engine owned; every value carries provenance. */
     gear?: {

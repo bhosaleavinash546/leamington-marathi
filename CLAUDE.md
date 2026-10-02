@@ -79,7 +79,11 @@ reproducible, and it is the invariant to preserve in any change.
   rigid-plastic power-law material minimised by L-BFGS from the unfold's flat) and the
   blank carries `forming` (thinning map, worst strain pairs); `src/engine/
   forming-properties.ts` holds n/r/K per sheet grade as labelled typical values plus the
-  Keeler–Brazier check the rules print on the blank's basis. See `docs/sheet-metal/`.
+  Keeler–Brazier check the rules print on the blank's basis. `pressProcess` in the rules
+  reads the BIW process off the blank — bent / stretch-formed / drawn → coil-fed die,
+  or blanked first (press or laser) then a transfer press or a tandem line (`pressLine`,
+  `pressesInLine`, `blanking`, `drawAddendumMm` on `SheetMetalInputs`; the addendum grows
+  the outline before nesting). See `docs/sheet-metal/`.
 - `rate-library.ts` (`DEFAULT_RATE_LIBRARY`) + `regional-rates.ts`
   (`REGIONAL_DATA`, `computeRegionalComparison`, `buildRegionalLibrary`) hold the
   real 2026-Q2 rates. Two regionalisation paths exist and must stay consistent:

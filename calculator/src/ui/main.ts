@@ -3458,6 +3458,19 @@ function renderSheetMetalForm(): string {
         <option value="single_stage">Single Stage</option>
         <option value="fine_blanking">Fine Blanking</option>
       </select></div>
+      <div class="field-group"><label>Press line <span title="Coil-fed: one die run from coil. Transfer: blanks cut first, one multi-station press. Tandem: blanks cut first, one press per operation (draw, trim, pierce, flange, restrike) — the stroke is counted once per press.">ℹ</span></label><select id="sm-press-line">
+        <option value="coil-fed" selected>Coil-fed (one die)</option>
+        <option value="transfer">Transfer press (blank-fed)</option>
+        <option value="tandem">Tandem line (blank-fed)</option>
+      </select></div>
+      <div class="field-group"><label>Presses in line <span title="Tandem only: one press per operation.">ℹ</span></label><input type="number" id="sm-presses" min="1" step="1" value="5"/></div>
+      <div class="field-group"><label>Blanking <span title="Transfer / tandem only: how the blanks are cut before the line. A blanking press from coil, or a laser blanking line (no blanking die).">ℹ</span></label><select id="sm-blanking">
+        <option value="none" selected>In the die (coil-fed)</option>
+        <option value="die">Blanking press</option>
+        <option value="laser">Laser blanking line</option>
+      </select></div>
+      <div class="field-group"><label>Blanks/min</label><input type="number" id="sm-blank-bpm" min="1" step="1" value="45"/></div>
+      <div class="field-group"><label>Draw addendum (mm) <span title="Binder + draw addendum around a drawn panel's outline, trimmed off by the trim die. 0 for a bent part. From CAD the rules set ½ × draw depth (20–80 mm) and grow the strip by it.">ℹ</span></label><input type="number" id="sm-addendum" min="0" step="1" value="0"/></div>
       <div class="field-group"><label>Die Life (strokes) <span title="Parts per die set. Leave 0 to auto-predict from material hardness, thickness and die type.">ℹ</span></label><input type="number" id="sm-die-life" step="10000" min="0" value="500000" title="0 = auto-predict"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -12392,6 +12405,12 @@ function collectSheetMetalInput(): UniversalStackInput {
     dieCostEstimate: num('sm-die-cost'),
     amortizationVolume: num('sm-amort') || num('annual-volume') || 100000,
     rejectRate: num('sm-reject') || undefined,
+    // BIW process: press line, blanking before the line, the drawn panel's addendum.
+    pressLine: validSel<'coil-fed' | 'transfer' | 'tandem'>('sm-press-line', ['coil-fed', 'transfer', 'tandem'], 'coil-fed'),
+    pressesInLine: num('sm-presses') || undefined,
+    ...(sel('sm-blanking') !== 'none' && num('sm-blank-bpm') > 0
+      ? { blanking: { method: sel('sm-blanking') === 'laser' ? 'laser' as const : 'die' as const, blanksPerMin: num('sm-blank-bpm') } } : {}),
+    drawAddendumMm: num('sm-addendum') || undefined,
     secondaryOpsMachineId: sel('sm-sec-mach') || undefined,
     secondaryOpsLabourId: sel('sm-sec-lab') || undefined,
     secondaryOpsCycleHr: num('sm-sec-ct') || undefined,

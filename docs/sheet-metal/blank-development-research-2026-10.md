@@ -163,7 +163,7 @@ only way to know is a quote.
 | **1 · Bent-part unfold** — **done 1 Oct** | Outline and rectangle by flattening the skin mesh (ARAP), not a face-graph walk, so B-spline flanges unfold too; K = 0.5 mid-surface (mean of the two skins); DXF out; holes carried; a stretch-formed or drawn skin is flagged by its strain, never silently costed as bent | kernel skin export (built) | done |
 | **2 · Nesting** — **done 1 Oct** | 1-up / 2-up turned / 2-up mirrored on the coil, exact pitch by scanlines, coil widths and a fixed orientation as constraints; the strip cell × gauge × density is the metal bought; 2-up stated as a die trade-off, not applied. Coil widths, edge margin and web per press line are still defaults (3 mm or 2 × gauge) until JLR supplies them | Phase 1 outline or DXF | done |
 | **3 · Drawn-part solve** — **done 2 Oct** | `server/utils/forming-inverse.ts`: one-step inverse from the unfold's flat — plastic work of a rigid-plastic power-law material (von Mises, incompressible, Hencky) minimised by L-BFGS with an analytic gradient through the principal stretches; runs on any skin the unfold finds non-developable. Drawn cup Ø80 × 50: the unfold is >5% short, the solve within 1.5% of the area-equivalent blank. Thinning map (p50/p95/max) and the worst (major, minor) strain pairs ride on the blank; `src/engine/forming-properties.ts` holds n, r, K per sheet grade (typical published values, labelled) and the Keeler–Brazier check, and the rules print the verdict on the blank's basis | phase 1 | done |
-| **4 · BIW process** | Draw addendum and binder allowance on drawn panels; blanking-line operation (die or laser); tandem/transfer sequence (draw, trim, pierce, flange, restrike); planned scrap; tailor-welded blanks with per-zone material | Phases 0–2 | 2–3 weeks |
+| **4 · BIW process** — **done 2 Oct** | The pressing's process read from its own blank: a drawn panel (over 15% stretch) is blanked first — a blanking press at 45/min, or a laser blanking line at 20/min under 30k/yr — then drawn on a transfer press (under 1,500 cm²) or a tandem line (one press per operation: draw, trim, pierce, flange, restrike; the stroke and the crew counted once per press, one single-stage die per press); the binder + addendum (½ × draw depth, 20–80 mm) grows the outline before nesting and the rectangle for the die; a stretch-formed part carries a 10 mm trim allowance; a bent one nothing. Tailor-welded blanks as an engine input (premium per kg + weld). Form fields for all of it | Phases 0–2 | done |
 
 Phase 0 is new in this form: the September plan put the analytic blank inside
 Phase 1 and did not know the identities would hold this closely on a real part.
@@ -192,6 +192,18 @@ quick mode, not a forming simulation. The thinning map is a membrane result at
 the mesh's resolution. The forming properties are typical handbook values with
 their source stated on every lookup; JLR's coil certificates replace them as
 data.
+
+### 5.3 What phase 4 is and is not
+
+The process rules are engineering defaults, stated on every basis line: a
+blanking press at 45 blanks a minute, a laser line at 20, a tandem line above
+1,500 cm² of blank, an addendum of half the draw depth between 20 and 80 mm,
+a 10 mm trim allowance on a stretch-formed part. They are the shape of the
+decision a process planner makes, with the numbers a planner would start from;
+JLR's press-line facts — which lines exist, their rates, their coil widths —
+replace them as data. The addendum is a uniform band around the outline, not a
+designed binder surface, and the tailor-welded blank is an input the engineer
+sets, because no CAD file says a blank was welded.
 
 ## 6. How it is proved
 

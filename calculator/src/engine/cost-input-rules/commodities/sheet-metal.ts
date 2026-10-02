@@ -32,7 +32,7 @@ import { materialFacts } from '../derive/material.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
-import { nestOnCoil, type NestResult } from '../../nesting.js';
+import { nestOnCoil, offsetOutline, type NestResult } from '../../nesting.js';
 import { formingPropertiesFor, formingLimitCheck } from '../../forming-properties.js';
 import type { MaterialFamily } from '../../material-family.js';
 
@@ -83,12 +83,14 @@ export function blankDims(ctx: RuleContext): BlankDims | null {
     const solved = own && !!dev.forming;
     const stretched = own && dev.developable === false && strain <= 15;
     const drawn = own && dev.developable === false && strain > 15;
+    const add = pressProcess(ctx).addendumMm;
     return {
-      lengthMm: Math.round(dev.boundingRectMm.lengthMm),
-      widthMm: Math.round(dev.boundingRectMm.widthMm),
+      lengthMm: Math.round(dev.boundingRectMm.lengthMm + 2 * add),
+      widthMm: Math.round(dev.boundingRectMm.widthMm + 2 * add),
       basis: `${own ? 'blank ' : 'developed blank from '}${dev.source} — ${(dev.grossAreaMm2 / 100).toFixed(0)} cm² profile `
         + `filling ${(dev.rectangleFill * 100).toFixed(0)}% of its ${Math.round(dev.boundingRectMm.lengthMm)}`
         + `×${Math.round(dev.boundingRectMm.widthMm)} mm rectangle`
+        + (add > 0 ? ` + ${add} mm ${drawn ? 'binder and draw addendum' : 'trim allowance'} each side` : '')
         + (stretched && !solved ? '. Parts of the pressing are stretch-formed, so the unfold slightly understates the blank where the '
           + 'metal thinned; upload the FASTBLANK DXF for the formed-process profile' : '')
         + (drawn && !solved ? '. The skin stretched when flattened, so this part was drawn, not bent: the outline '
@@ -215,6 +217,66 @@ export function gaugeMm(ctx: RuleContext): { mm: number; basis: string; confiden
   return read;
 }
 
+/**
+ * How the pressing is made, from what the blank told us. A bent or lightly
+ * stretch-formed part runs from coil through one die; a drawn panel is blanked
+ * first and drawn on a transfer press or, when it is big, a tandem line — one
+ * press each for draw, trim, pierce, flange and restrike. The blank of a drawn
+ * panel also carries the binder and draw addendum the trim die cuts off.
+ */
+export interface PressProcess {
+  kind: 'bent' | 'stretch-formed' | 'drawn';
+  pressLine: 'coil-fed' | 'transfer' | 'tandem';
+  /** Operations on the line: 1 blank + bends + pierce for a die, or draw / trim / pierce / flange / restrike. */
+  operations: string[];
+  pressesInLine: number;
+  blanking: 'none' | 'die' | 'laser';
+  blanksPerMin: number;
+  /** Binder + addendum around the outline, mm. */
+  addendumMm: number;
+  /** Draw depth, mm — the part's smallest extent less the gauge. */
+  drawDepthMm: number;
+  basis: string;
+}
+
+export function pressProcess(ctx: RuleContext): PressProcess {
+  const dev = ctx.geo.blank;
+  const strain = dev?.maxStrainPct ?? 0;
+  const kind: PressProcess['kind'] = dev?.developedFrom === 'solid' && dev.developable === false
+    ? (strain > 15 ? 'drawn' : 'stretch-formed') : 'bent';
+  const bb = ctx.geo.boundingBox;
+  const t = ctx.geo.sheetMetal?.thicknessMm ?? 0;
+  const drawDepth = bb ? Math.max(0, Math.min(bb.xMm, bb.yMm, bb.zMm) - t) : 0;
+  const blankCm2 = dev ? dev.grossAreaMm2 / 100 : (bb ? ([bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a).slice(0, 2).reduce((p, q) => p * q, 1) / 100) : 0);
+  if (kind === 'drawn') {
+    // Addendum: about half the draw depth, never under 20 mm nor over 80 — the
+    // range die designers quote for a binder plus addendum on a body panel.
+    const addendum = Math.round(Math.min(80, Math.max(20, 0.5 * drawDepth)));
+    const tandem = blankCm2 >= 1500;
+    return {
+      kind, pressLine: tandem ? 'tandem' : 'transfer',
+      operations: ['draw', 'trim', 'pierce', 'flange', 'restrike'], pressesInLine: 5,
+      blanking: ctx.annualVolume < 30_000 ? 'laser' : 'die', blanksPerMin: ctx.annualVolume < 30_000 ? 20 : 45,
+      addendumMm: addendum, drawDepthMm: drawDepth,
+      basis: `drawn panel (${strain.toFixed(0)}% stretch): blanked first (${ctx.annualVolume < 30_000 ? 'laser, 20' : 'blanking press, 45'} blanks/min), `
+        + `then ${tandem ? 'a tandem line, one press per operation' : 'a transfer press'} — draw, trim, pierce, flange, restrike; `
+        + `${addendum} mm binder + addendum around the outline (½ × ${drawDepth.toFixed(0)} mm draw depth, 20–80 mm) is trimmed off`,
+    };
+  }
+  if (kind === 'stretch-formed') {
+    return {
+      kind, pressLine: 'coil-fed', operations: [], pressesInLine: 1, blanking: 'none', blanksPerMin: 0,
+      addendumMm: 10, drawDepthMm: drawDepth,
+      basis: `stretch-formed in places (${strain.toFixed(0)}% stretch): run from coil through one die, with a 10 mm trim allowance around the outline`,
+    };
+  }
+  return {
+    kind, pressLine: 'coil-fed', operations: [], pressesInLine: 1, blanking: 'none', blanksPerMin: 0,
+    addendumMm: 0, drawDepthMm: drawDepth,
+    basis: 'bent part: run from coil through one die, no addendum',
+  };
+}
+
 /** The strip layout: how the blank sits on the coil, and what that costs in metal. */
 export interface StripLayout {
   pitchMm: number;
@@ -246,10 +308,13 @@ export function stripLayout(ctx: RuleContext): StripLayout | null {
   const edge = Math.max(3, 2 * g.mm);
   const dev = ctx.geo.blank;
   if (dev?.outline && dev.outline.length >= 3) {
+    const add = pressProcess(ctx).addendumMm;
     let nested = nestCache.get(dev);
     if (!nested) {
-      try { nested = nestOnCoil(dev.outline, { webMm: web, edgeMarginMm: edge }); nestCache.set(dev, nested); }
-      catch { nested = undefined; }
+      try {
+        nested = nestOnCoil(add > 0 ? offsetOutline(dev.outline, add) : dev.outline, { webMm: web, edgeMarginMm: edge });
+        nestCache.set(dev, nested);
+      } catch { nested = undefined; }
     }
     if (nested) {
       const one = nested.oneUp;
@@ -258,7 +323,7 @@ export function stripLayout(ctx: RuleContext): StripLayout | null {
         ? `; 2-up ${nested.twoUp.layout === '2-up-rotated' ? 'turned 180°' : 'mirrored'} would reach ${pct(nested.twoUp.utilisation)} `
           + `at ${Math.round(nested.twoUp.pitchMm)} mm per pair, but needs a two-blank die — shown, not applied`
         : '';
-      const common = `blank outline nested on the coil, 1-up at ${Math.round(one.angleDeg)}°: pitch ${Math.round(one.pitchMm)} mm × `
+      const common = `blank outline${add > 0 ? ` grown by the ${add} mm addendum` : ''} nested on the coil, 1-up at ${Math.round(one.angleDeg)}°: pitch ${Math.round(one.pitchMm)} mm × `
         + `strip ${Math.round(one.stripWidthMm)} mm = ${pct(one.utilisation)} utilisation (the rectangle would give `
         + `${pct(nested.rectangleUtilisation)})${twoUp}`;
       return {
@@ -484,11 +549,77 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       fieldId: 'sm-num-ops',
       label: 'numOps',
       evaluate: (ctx) => {
+        const proc = pressProcess(ctx);
+        if (proc.kind === 'drawn') {
+          return decided('sheetMetal.numOps', proc.operations.length, 'geometry',
+            `${proc.operations.join(', ')} — the operations of a drawn panel`, 0.7);
+        }
         const bends = ctx.geo.sheetMetal?.bendCount ?? 0;
         const holes = holeCount(ctx);
         return decided('sheetMetal.numOps', stations(ctx), 'geometry',
           `1 blank + ${bends} bend(s)${holes > 0 ? ' + 1 pierce' : ''} = ${stations(ctx)} stations`,
           bends > 0 ? 0.75 : 0.4);
+      },
+    },
+    {
+      // BIW process: how the pressing is made. From the blank's own evidence —
+      // a drawn panel is blanked first and drawn on a transfer press or a
+      // tandem line; everything else runs from coil through one die.
+      id: 'sheetMetal.pressLine',
+      path: 'sheetMetal.pressLine',
+      fieldId: 'sm-press-line',
+      label: 'pressLine',
+      evaluate: (ctx) => {
+        const proc = pressProcess(ctx);
+        return decided('sheetMetal.pressLine', proc.pressLine, 'geometry', proc.basis, proc.kind === 'drawn' ? 0.7 : 0.8);
+      },
+    },
+    {
+      id: 'sheetMetal.pressesInLine',
+      path: 'sheetMetal.pressesInLine',
+      fieldId: 'sm-presses',
+      label: 'pressesInLine',
+      evaluate: (ctx) => {
+        const proc = pressProcess(ctx);
+        return proc.pressLine === 'tandem'
+          ? decided('sheetMetal.pressesInLine', proc.pressesInLine, 'rule', `one press per operation: ${proc.operations.join(', ')}`, 0.7)
+          : decided('sheetMetal.pressesInLine', 1, 'rule', proc.pressLine === 'transfer' ? 'one transfer press' : 'one press, coil-fed', 0.8);
+      },
+    },
+    {
+      id: 'sheetMetal.blankingMethod',
+      path: 'sheetMetal.blankingMethod',
+      fieldId: 'sm-blanking',
+      label: 'blankingMethod',
+      evaluate: (ctx) => {
+        const proc = pressProcess(ctx);
+        return decided('sheetMetal.blankingMethod', proc.blanking, 'rule',
+          proc.blanking === 'none' ? 'coil-fed die — the blank is cut in the die'
+            : proc.blanking === 'laser' ? 'laser blanking line — no blanking die at this volume'
+            : 'blanking press from coil, feeding the line', 0.7);
+      },
+    },
+    {
+      id: 'sheetMetal.blanksPerMin',
+      path: 'sheetMetal.blanksPerMin',
+      fieldId: 'sm-blank-bpm',
+      label: 'blanksPerMin',
+      evaluate: (ctx) => {
+        const proc = pressProcess(ctx);
+        return decided('sheetMetal.blanksPerMin', proc.blanksPerMin, 'rule',
+          proc.blanking === 'none' ? 'none — the blank is cut in the die'
+            : proc.blanking === 'laser' ? 'a coil-fed laser blanking line at ~20 blanks/min on a body-panel blank'
+            : 'a blanking press at ~45 blanks/min', 0.6);
+      },
+    },
+    {
+      id: 'sheetMetal.drawAddendumMm',
+      path: 'sheetMetal.drawAddendumMm',
+      fieldId: 'sm-addendum',
+      label: 'drawAddendumMm',
+      evaluate: (ctx) => {
+        const proc = pressProcess(ctx);
+        return decided('sheetMetal.drawAddendumMm', proc.addendumMm, 'rule', proc.basis, 0.6);
       },
     },
     {
@@ -591,6 +722,11 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        const proc = pressProcess(ctx);
+        if (proc.kind === 'drawn') {
+          return decided('sheetMetal.dieType', proc.pressLine === 'tandem' ? 'single_stage' : 'transfer', 'geometry',
+            proc.pressLine === 'tandem' ? 'a tandem line: one single-stage die per press' : 'a transfer die, one station per operation', 0.7);
+        }
         return decided('sheetMetal.dieType', r.advice.dieType, 'advisor',
           `${classifyVolume(ctx.annualVolume)} volume at ${r.advice.gauge} mm: ${r.advice.reason}`, 0.8);
       },

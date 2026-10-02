@@ -623,6 +623,11 @@ export function toCostParams(
           pitchMm: num(s.pitchMm, L * 1.05),
           partsPerStroke: 1,
           ...(density ? { densityKgPerM3: density } : {}),
+          ...(s.pressLine ? { pressLine: s.pressLine } : {}),
+          ...(s.pressesInLine ? { pressesInLine: num(s.pressesInLine) } : {}),
+          ...(s.blankingMethod && s.blankingMethod !== 'none' && num(s.blanksPerMin) > 0
+            ? { blanking: { method: s.blankingMethod, blanksPerMin: num(s.blanksPerMin) } } : {}),
+          ...(num(s.drawAddendumMm) > 0 ? { drawAddendumMm: num(s.drawAddendumMm) } : {}),
           pressId: pickStampingPressId(tonnes),
           // Feed-limited when the rules carried it; 20 SPM was the old blind
           // default and alone inflated the cross-member cycle ~4.5×.

@@ -10,6 +10,11 @@ SHEET METAL COST INPUT RULES:
   blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   perimeterMm=1176  [2 × (336 + 252) of the blank rectangle — ignores the outline shape and every hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length — deterministic, use verbatim]
   numOps=6  [1 blank + 4 bend(s) + 1 pierce = 6 stations — deterministic, use verbatim]
+  pressLine=coil-fed  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
+  pressesInLine=1  [one press, coil-fed — deterministic, use verbatim]
+  blankingMethod=none  [coil-fed die — the blank is cut in the die — deterministic, use verbatim]
+  blanksPerMin=0  [none — the blank is cut in the die — deterministic, use verbatim]
+  drawAddendumMm=0  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   pitchMm=361  [blank 336 mm + 25 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
   stripWidthMm=301  [blank 252 mm + 2 × 25 mm edge margin — deterministic, use verbatim]
   strokesPerMin=40  [feed-limited: 18 m/min ÷ 361 mm pitch, de-rated for 4 bends — deterministic, use verbatim]
@@ -29,6 +34,11 @@ SHEET METAL COST INPUT RULES:
   blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   perimeterMm=1176  [2 × (336 + 252) of the blank rectangle — ignores the outline shape and every hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length — deterministic, use verbatim]
   numOps=2  [1 blank + 0 bend(s) = 2 stations — deterministic, use verbatim]
+  pressLine=coil-fed  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
+  pressesInLine=1  [one press, coil-fed — deterministic, use verbatim]
+  blankingMethod=none  [coil-fed die — the blank is cut in the die — deterministic, use verbatim]
+  blanksPerMin=0  [none — the blank is cut in the die — deterministic, use verbatim]
+  drawAddendumMm=0  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   dieCostGBP: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   dieLife: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   dieType: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
