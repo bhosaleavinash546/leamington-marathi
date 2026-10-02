@@ -261,6 +261,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   Rule-built ops carry `measured: true`; the near-net guard caps AI times only. Bench ops are
   labour only (`cycleTimeHr` 0). See `docs/cad/machining-review-2026-10.md`,
   `tests/machining-review.test.ts`; modelled parts in `cad-audit/parts/MACH_*`.
+- Forging (`cost-input-rules/commodities/forging.ts`, `modules/forging.ts`): the cycle is the forge-line
+  takt (`forgeLine`: load + hits × hit time), never the kernel's `forgeStrokes`; flash-making routes
+  trim in line (`trimPress`, stamping ladder); crew, labour, scrap and furnace are rules; die sets are
+  fractional; `partWeightKg` is the AS-FORGED weight (finished + drilled + measured machining stock);
+  the press closes across the largest silhouette (`forgingPlanAreaCm2`) + flash land. Secondary
+  machining on castings and forgings carries `secondaryMachiningCell` (handling, change-over,
+  fixtures, programming, tool wear) on both paths. Kernel: "through" = open at both ends (probed),
+  draw-axis ties go to the largest silhouette. See `docs/cad/forging-review-2026-10.md`,
+  `tests/forging-review.test.ts`; modelled parts in `cad-audit/parts/FORGE_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

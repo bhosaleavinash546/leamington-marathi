@@ -33,7 +33,7 @@ import { HARDENING_ROUTE_UNSUITABLE, HARDENING_ROUTE_SPEC } from '../engine/modu
 import type { GearProcess, HardeningRoute } from '../engine/modules/gear-advisor.js';
 import {
   estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
-  estimateForgingDieLife, forgingHeatKwhPerKg, adviseForgingProcess, analyseForgingDFM,
+  estimateForgingDieLife, adviseForgingProcess, analyseForgingDFM,
   type FurnaceType, type ShapeComplexity, type DieSteel, type ForgingAlloyFamily,
   type ForgingProcess, type ComplexityLevel, type ToleranceClass,
 } from '../engine/modules/forging-advisor.js';
@@ -165,7 +165,7 @@ import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting } from '../engine/feature-costing.js';
-import { cuttingDataFor, CORED_ABOVE_MM } from '../engine/machining-time.js';
+import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
@@ -4920,6 +4920,7 @@ function renderForgingForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Coining/Sizing (£/part, 0=none) <span title="Cold restrike for tight flatness/thickness after forging.">ℹ</span></label><input type="number" id="forge-coining" step="0.05" min="0" value="0"/></div>
       <div class="field-group"><label>NDT (£/part, 0=none) <span title="Non-destructive test per part: MPI ~£2.5, UT ~£6, CT ~£32 for safety-critical forgings.">ℹ</span></label><input type="number" id="forge-ndt" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Forging scrap fraction — laps, underfill, cracks found at inspection. Uplifts material and forge time.">Reject Rate ⓘ</label><input type="number" id="forge-reject" step="0.005" min="0" max="0.3" value="0.02"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Preform Machine (opt.) <span title="Multi-step forging: an upset/blocker pass before the finish impression, on its own machine + labour.">ℹ</span></label><select id="forge-preform-mach" class="machine-select"><option value="">— None —</option></select></div>
@@ -4934,6 +4935,7 @@ function renderForgingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Trim Cycle (hr, 0=none)</label><input type="number" id="forge-trim-ct" step="0.001" min="0" value="0"/></div>
+      <div class="field-group"><label>Trim Crew</label><input type="number" id="forge-trim-manning" step="0.5" min="0" value="1"/></div>
     </div>
     ${renderSurfaceFinishingSection('forge', 'forging')}`;
 }
@@ -10263,7 +10265,7 @@ function populateMachinedFeatures(prefix: string): void {
       </select></div>
     </div>
     <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label title="Fixtures + CNC programming for this machining, £. Not derived from the CAD — enter a quotation. 0 = not included.">Machining fixtures + CNC programming NRE (£) ⓘ</label><input type="number" id="${prefix}-mf-tooling" min="0" step="500" value="0"/></div>
+      <div class="field-group"><label title="Fixtures + CNC programming for this machining, £. 0 = derived from the fixturings and features (as headless does); a typed figure, e.g. a quotation, replaces it.">Machining fixtures + CNC programming NRE (£, 0 = derived) ⓘ</label><input type="number" id="${prefix}-mf-tooling" min="0" step="500" value="0"/></div>
     </div>
     <div id="${prefix}-mf-readout" style="margin-top:6px;font-size:0.74rem;font-weight:600;color:var(--accent)"></div>`;
   populateSelects();
@@ -10306,7 +10308,7 @@ function populateMachinedFeatures(prefix: string): void {
 }
 
 /** Read the panel and build secondary machining ops (null if none active). */
-function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; toolingCost: number; result: ReturnType<typeof computeFeatureMachining> } | null {
+function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; toolingCost: number; toolWearPerPart: number; result: ReturnType<typeof computeFeatureMachining> } | null {
   const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
   if (!rows.length) return null;
   const body = document.getElementById(`${prefix}-mf-body`);
@@ -10321,14 +10323,40 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
   // two inputs headless passes (machining review, Oct 2026).
   const family = familyFromMaterialId(sel(`${prefix}-mat`)) ?? 'steel';
   const castSub = prefix === 'cast' ? sel('cast-subtype') : '';
-  const result = computeFeatureMachining(rows, {
+  // Bores a casting cores in, or an impression forging (one that makes flash) pierces.
+  const coredAboveMm = stockCondition !== 'near_net' ? undefined
+    : castSub ? (CORED_ABOVE_MM[castSub] ?? 20)
+    : prefix === 'forge' && !/hammer/.test(sel('forge-mach')) ? CORED_ABOVE_MM.forging : undefined;
+  const base = {
     machineId, labourId, includeFlags, stockCondition, finishFactor,
+    // Near-net secondary machining: one operator tends two machines while they
+    // cut, as headless (forging review).
+    ...(stockCondition === 'near_net' ? { manning: 0.5 } : {}),
     materialFactor: cuttingDataFor(family).timeFactor,
-    ...(castSub && stockCondition === 'near_net' ? { coredAboveMm: CORED_ABOVE_MM[castSub] ?? 20 } : {}),
-  });
-  if (result.featureCount === 0) return null;
+    ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
+  };
+  const cut = computeFeatureMachining(rows, base);
+  if (cut.featureCount === 0) return null;
+  // The machining cell around the cut — load / unload, change-over, fixtures,
+  // programming, tool wear — from the same function headless calls (forging
+  // review, Oct 2026). Near-net parts only (castings, forgings).
+  if (stockCondition === 'near_net' && (prefix === 'cast' || prefix === 'forge')) {
+    const c = secondaryMachiningCell({
+      fixturings: cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? 2,
+      weightKg: num(`${prefix}-part-wt`),
+      annualVolume: num(`${prefix}-amort`) || num('annual-volume') || 100000,
+      family,
+      featureRows: cut.lines.filter(l => l.included).length,
+      cuttingMin: cut.totalCycleHr * 60,
+      engineerRatePerHr: library.labour.find(l => l.id === 'lab-uk-engineer')?.fullyLoadedRatePerHr ?? 42.8,
+    });
+    const result = computeFeatureMachining(rows, { ...base, cell: c.cell });
+    // A typed figure replaces the derived fixtures + programming; 0 keeps them.
+    const typed = num(`${prefix}-mf-tooling`);
+    return { ops: result.operations, toolingCost: typed > 0 ? typed : c.toolingGBP, toolWearPerPart: c.toolWearPerPart, result };
+  }
   const toolingCost = num(`${prefix}-mf-tooling`);
-  return { ops: result.operations, toolingCost, result };
+  return { ops: cut.operations, toolingCost, toolWearPerPart: 0, result: cut };
 }
 
 /** Live "adds N min / ₹ machining" readout in the panel. */
@@ -10495,7 +10523,10 @@ function applyRuleFieldsToForm(): void {
       }
       elm.value = wanted;
     } else if (typeof f.value === 'number') {
-      elm.value = Number.isInteger(f.value) ? String(f.value) : f.value.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+      // Six places below 0.01: a 15 s forge takt is 0.004167 h, and four places
+      // (0.0042) moved the screen's forging cost 1% off headless (forging review).
+      elm.value = Number.isInteger(f.value) ? String(f.value)
+        : f.value.toFixed(Math.abs(f.value) < 0.01 ? 6 : 4).replace(/0+$/, '').replace(/\.$/, '');
     } else if (typeof f.value === 'boolean') {
       if (elm.type === 'checkbox') (elm as HTMLInputElement).checked = f.value;
       else elm.value = String(f.value);
@@ -11099,60 +11130,23 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       }
 
       case 'forging': {
+        // The form takes the analysis — the rule-decided values headless costs —
+        // and nothing else (forging review, Oct 2026). This block preferred the
+        // kernel's face-count stroke heuristic and its £126k parametric die over
+        // the analysis, and sized the press from the bounding box's two largest
+        // sides with no flash land. The rules' fieldIds fill the rest.
         setMaterial(el<HTMLSelectElement>('forge-mat'), c.materialId);
         setNumericField('forge-part-wt', c.netWeightKg, 3);
         const forging = c.forging;
-        const forgeTC = cadOCCTGeometry?.toolingCostEstimates;
-        const forgePS = cadOCCTGeometry?.processSpecificEstimates;
         if (forging) {
           setNumericField('forge-flash', forging.flashKg, 3);
-          setNumericField('forge-yield', forging.yieldFraction, 2);
-          // Prefer OCCT geometry-derived stroke count over AI guess
-          setNumericField('forge-strokes', forgePS?.forgeStrokes ?? forging.strokes, 0);
-          setNumericField('forge-time-per-blow', forging.timePerBlowSec, 0);
-          // Prefer OCCT parametric die cost over AI bracket estimate
-          setNumericField('forge-die-cost', forgeTC?.forgeDieCostGBP ?? forging.dieCostGBP, 0);
+          setNumericField('forge-yield', forging.yieldFraction, 3);
+          setNumericField('forge-strokes', forging.strokes, 0);
+          setNumericField('forge-time-per-blow', forging.timePerBlowSec, 2);
+          setNumericField('forge-die-cost', forging.dieCostGBP, 0);
           setNumericField('forge-die-life', forging.dieLife, 0);
-        } else {
-          // Fallback geometry-derived estimates
-          setNumericField('forge-flash', c.netWeightKg * 0.1, 3);
-          setNumericField('forge-yield', 0.9, 2);
-          if (forgePS) setNumericField('forge-strokes', forgePS.forgeStrokes, 0);
-          if (forgeTC) setNumericField('forge-die-cost', forgeTC.forgeDieCostGBP, 0);
-          // Alloy-aware die life so an Al forging (long die life) isn't left at the
-          // steel-default guess — the same "cost the metal, not steel" learning.
-          setNumericField('forge-die-life', estimateForgingDieLife({
-            alloyFamily: forgingAlloyFamilyFor(c.materialId), complexity: 'moderate',
-          }), 0);
-        }
-        // Alloy-aware heating energy (kWh/kg): aluminium forges warm (~0.18) vs
-        // steel (~0.36) vs nickel superalloy (~0.45). Keyed by the resolved alloy
-        // family, not a stale material-id map, so every forging billet is covered.
-        setNumericField('forge-heat-energy',
-          forgingHeatKwhPerKg(forgingAlloyFamilyFor(c.materialId)), 2);
-        // Size the forging press to the die-fill force (F = Kt·σflow·A_projected),
-        // not the small form default — the same "size the machine to the part" rule
-        // as IM/EBM, now generalised via sizeProcessMachine.
-        {
-          const fbb = cadOCCTGeometry?.boundingBox;
-          const fdims = (fbb
-            ? [fbb.xMm, fbb.yMm, fbb.zMm]
-            : [r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z]
-          ).sort((a, b) => b - a);   // fall back to AI-analysis bbox when OCCT absent
-          const projAreaCm2 = (fdims[0] * fdims[1]) / 100;   // two largest dims → footprint mm²→cm²
-          if (projAreaCm2 > 0) {
-            const forgeTonnes = estimateForgingTonnage({
-              projectedAreaCm2: projAreaCm2,
-              alloyFamily: forgingAlloyFamilyFor(c.materialId),
-              shapeComplexity: 'moderate',
-            });
-            const forgeId = sizeProcessMachine('forging', { forgeTonnes });
-            const forgeMachEl = el<HTMLSelectElement>('forge-mach');
-            if (forgeId && forgeMachEl) {
-              const m = Array.from(forgeMachEl.options).find(o => o.value === forgeId);
-              if (m) { forgeMachEl.value = m.value; markAIFilled(forgeMachEl); }
-            }
-          }
+          if (forging.heatingEnergyKwhPerKg !== undefined) setNumericField('forge-heat-energy', forging.heatingEnergyKwhPerKg, 2);
+          if (forging.cycleTimeHr) setNumericField('forge-ct', forging.cycleTimeHr, 6);
         }
         populateMachinedFeatures('forge');
         break;
@@ -12519,6 +12513,7 @@ function collectCastingInput(): UniversalStackInput {
     ...common, ...extra,
     secondaryMachiningOps: secondary?.ops,
     secondaryMachiningToolingCost: secondary?.toolingCost,
+    secondaryMachiningConsumablesPerPart: secondary?.toolWearPerPart || undefined,
     ...(surfaceFinishing ? { surfaceFinishing } : {}),
     // Melt at the selected region's tariff, as forging heats at it.
     melt: { energyPricePerKwh: library.energy?.[0]?.electricityPerKwh },
@@ -12596,6 +12591,7 @@ function collectForgingInput(): UniversalStackInput {
     amortizationVolume: num('forge-amort') || num('annual-volume') || 100000,
     secondaryMachiningOps: forgeSecondary?.ops,
     secondaryMachiningToolingCost: forgeSecondary?.toolingCost,
+    secondaryMachiningConsumablesPerPart: forgeSecondary?.toolWearPerPart || undefined,
     heatTreatCostPerKg: num('forge-ht-cost') || undefined,
     descaleCostPerKg: num('forge-descale') || undefined,
     coiningCostPerPart: num('forge-coining') || undefined,
@@ -12606,6 +12602,8 @@ function collectForgingInput(): UniversalStackInput {
     trimmingMachineId: trimCt > 0 ? trimmingMachineId : undefined,
     trimmingLabourId: trimCt > 0 ? trimmingLabourId : undefined,
     trimmingCycleHr: trimCt > 0 ? trimCt : undefined,
+    trimmingManning: trimCt > 0 ? (num('forge-trim-manning') || undefined) : undefined,
+    rejectRate: num('forge-reject') || undefined,
     ...(forgeSurfaceFinishing ? { surfaceFinishing: forgeSurfaceFinishing } : {}),
   });
 

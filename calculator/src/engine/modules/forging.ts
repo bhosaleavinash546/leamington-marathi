@@ -37,6 +37,12 @@ export interface ForgingInputs {
   trimmingMachineId?: string;
   trimmingLabourId?: string;
   trimmingCycleHr?: number;
+  /** Crew on the trim press (default: the forge crew). */
+  trimmingManning?: number;
+  /** Fuel the billet heater runs on; the executor prices `heatingEnergyPricePerKwh` from it. */
+  furnaceType?: 'induction' | 'gas' | 'electric-resistance';
+  /** Cutting tools worn in the secondary machining, £/part. */
+  secondaryMachiningConsumablesPerPart?: number;
   heatTreatCostPerKg?: number;  // external heat treat cost £/kg of part
   descaleCostPerKg?: number;    // descaling / shot blast cost £/kg of billet
   coiningCostPerPart?: number;  // coining / sizing / straightening cost £/part
@@ -161,14 +167,17 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
       cycleTimeHr: inputs.trimmingCycleHr * rejectUplift,
       partsPerCycle: 1,
       oee: inputs.oee,
-      manning: inputs.manning,
+      manning: inputs.trimmingManning ?? inputs.manning,
       labourTimeHr: inputs.trimmingCycleHr * rejectUplift,
       labourEfficiency: inputs.labourEfficiency,
     });
   }
 
-  // Number of die sets needed over the programme life
-  const numDieSets = inputs.dieLife > 0 ? Math.ceil(inputs.amortizationVolume / inputs.dieLife) : 1;
+  // Die sets worn over the amortisation volume. Fractional above one set: a
+  // die is used up at `dieLife` forgings and the next one carries on into the
+  // next year. Rounding UP inside a one-year amortisation charged the 2.8 kg
+  // knuckle two £29k sets for 1.28 sets' wear — 56% over (forging review).
+  const numDieSets = inputs.dieLife > 0 ? Math.max(1, inputs.amortizationVolume / inputs.dieLife) : 1;
 
   // Die-set cost: use the manual figure if provided, else estimate it parametrically.
   const baseDieCost = (inputs.dieCost && inputs.dieCost > 0)
@@ -197,7 +206,8 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * billetWeightKg;
   const consumablesCostPerPart =
     heatingCostPerPart + heatTreatCostPerPart + descaleCostPerPart +
-    (inputs.coiningCostPerPart ?? 0) + (inputs.ndtCostPerPart ?? 0);
+    (inputs.coiningCostPerPart ?? 0) + (inputs.ndtCostPerPart ?? 0) +
+    (inputs.secondaryMachiningConsumablesPerPart ?? 0);
 
   // Feature-based secondary machining (geometry-driven) — appended on top of
   // the forging process. Near-net → machining TIME only; no extra billet.

@@ -60,7 +60,7 @@ describe('computeFeatureMachining', () => {
 
   it('larger bores cost more per unit depth (drill+ream vs drill)', () => {
     const drill = featureMinutesEach({ kind: 'hole', diaMm: 8, depthMm: 20, through: true, count: 1 });
-    const bore = featureMinutesEach({ kind: 'hole', diaMm: 20, depthMm: 20, through: true, count: 1 });
+    const bore = featureMinutesEach({ kind: 'hole', diaMm: 20, depthMm: 20, through: false, count: 1 });   // blind bore: drill + ream
     expect(bore).toBeGreaterThan(drill);
   });
 

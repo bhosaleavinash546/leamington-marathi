@@ -20,6 +20,7 @@ import { computeThermoformingDrivers }     from '../../src/engine/modules/thermo
 import { computeRotationalMouldingDrivers } from '../../src/engine/modules/rotational-moulding.js';
 import { computeCastingDrivers }           from '../../src/engine/modules/casting.js';
 import { computeForgingDrivers }           from '../../src/engine/modules/forging.js';
+import { resolveFurnaceEnergyPricePerKwh, type FurnaceType } from '../../src/engine/modules/forging-advisor.js';
 import { computePaintingDrivers }          from '../../src/engine/modules/painting.js';
 import { computeBIWDrivers }               from '../../src/engine/modules/biw-assembly.js';
 import { computePCBFabDrivers }            from '../../src/engine/modules/pcb-fab.js';
@@ -191,8 +192,14 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       const p = params as { drying?: { kwhPerKg: number; energyPricePerKwh?: number } };
       if (p.drying && p.drying.energyPricePerKwh == null) moduleParams = { ...p, drying: { ...p.drying, energyPricePerKwh: tariff } } as typeof params;
     } else if (tariff != null && commodity === 'forging') {
-      const p = params as { heatingEnergyPricePerKwh?: number };
-      if (p.heatingEnergyPricePerKwh == null) moduleParams = { ...p, heatingEnergyPricePerKwh: tariff } as typeof params;
+      // Priced for the furnace the rules chose — the screen resolves the same
+      // way from its furnace drop-down (forging review: the screen's default was
+      // electric resistance, ×1.35, headless plain electricity).
+      const p = params as { heatingEnergyPricePerKwh?: number; furnaceType?: FurnaceType };
+      const gas = (input.rateLibrary ?? DEFAULT_RATE_LIBRARY).energy?.[0]?.gasPerKwh ?? 0.065;
+      if (p.heatingEnergyPricePerKwh == null) {
+        moduleParams = { ...p, heatingEnergyPricePerKwh: resolveFurnaceEnergyPricePerKwh(p.furnaceType ?? 'induction', tariff, gas) } as typeof params;
+      }
     }
 
     // Call the commodity-specific driver function

@@ -138,6 +138,20 @@ export const ANSWERS: Record<string, {
         + 'Ø20 spigot with a Ø6 cross hole. Turned from steel bar.',
     answers: { 'material.family': 'steel', 'commodity.route': 'machining' },
   },
+  // ── Forgings (forging review, 2 Oct 2026) ─────────────────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/FORGE_modelled_parts.py
+  // because the audit set held one forging (the knuckle).
+  'FORGE_Control_Arm_Yoke.stp': {
+    note: 'MODELLED: control-arm yoke, two Ø50 eyes 200 mm apart, I-section arm, Ø22 bores. '
+        + 'Closed-die steel, safety-critical (suspension).',
+    answers: { 'material.family': 'steel', 'commodity.route': 'forging',
+               'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes' },
+  },
+  'FORGE_Hub_Flange.stp': {
+    note: 'MODELLED: Ø140 flange, Ø80 hub, Ø60 bore, 6 × Ø14 bolt holes. Steel, not safety-critical.',
+    answers: { 'material.family': 'steel', 'commodity.route': 'forging',
+               'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

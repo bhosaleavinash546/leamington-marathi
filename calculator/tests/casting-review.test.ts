@@ -286,7 +286,9 @@ describe('I. plain casting: finish machining is costed the same on screen and he
     } as never, 50_000, 'steel', g)!;
     const ops = m.params.secondaryMachiningOps as Array<{ machineId: string; labourId: string }>;
     expect(ops.every(o => o.machineId === 'mach-vmc3' && o.labourId === 'lab-uk-skilled')).toBe(true);
-    expect(m.params.secondaryMachiningToolingCost).toBeUndefined();
-    expect(m.assumed.join(' ')).toContain('NRE not derived');
+    // Fixtures + programming are derived now, from the fixturings and features
+    // (forging review) — the cell the screen prices too, not an invented £15k.
+    expect(m.params.secondaryMachiningToolingCost).toBeGreaterThan(0);
+    expect(m.params.secondaryMachiningToolingCost).toBeLessThan(15_000);
   });
 });

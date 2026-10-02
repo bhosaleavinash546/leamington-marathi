@@ -54,6 +54,10 @@ def _extract_feature_table(wrapped, extents):
     from OCP.TopoDS import TopoDS
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_SurfaceType
+    from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+    from OCP.TopAbs import TopAbs_State
+    from OCP.gp import gp_Pnt
+    hole_probe_ok = lambda ends: len(ends) == 2
 
     feats = {}   # physical-feature ident -> summed arc span + attributes
     # Face ids: the 1-based TopTools_IndexedMapOfShape index — the SAME id the
@@ -79,7 +83,14 @@ def _extract_feature_table(wrapped, extents):
             d = ax.Direction()
             p = ax.Location()
             axis_extent = abs(d.X()) * extents[0] + abs(d.Y()) * extents[1] + abs(d.Z()) * extents[2]
+            # Through = open at BOTH ends: a point on the axis just past each end
+            # of the bore lies in air. "Spans the whole part along its axis" called
+            # every bolt hole through an 18 mm flange on a 50 mm hub blind, and
+            # billed it a bottom and a reaming pass (forging review, Oct 2026).
+            # The extent test stays as the fallback when the probe fails.
             through = axis_extent > 0 and depth >= axis_extent - max(0.1, axis_extent * 0.02)
+            probe = (p.X(), p.Y(), p.Z(), d.X(), d.Y(), d.Z(),
+                     min(ad.FirstVParameter(), ad.LastVParameter()), max(ad.FirstVParameter(), ad.LastVParameter()))
             reversed_param = not cyl.Position().Direct()
             reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
             hole = reversed_face != reversed_param
@@ -94,7 +105,7 @@ def _extract_feature_table(wrapped, extents):
             else:
                 feats[ident] = {"kind": 'hole' if hole else 'boss', "dia": round(r * 2, 2),
                                 "depth": round(depth, 1), "through": bool(through), "arc": arc,
-                                "faceIds": [map_idx]}
+                                "faceIds": [map_idx], "probe": probe}
         except Exception:
             continue
 
@@ -105,6 +116,19 @@ def _extract_feature_table(wrapped, extents):
         # Require a near-full cylinder (≥ ~300° summed) to count as a feature.
         if f["arc"] < 5.2:
             continue
+        # Probed once per real hole (not per cylinder face — that tripled the
+        # kernel's time on a gear): is it open at both ends?
+        if f["kind"] == 'hole':
+            try:
+                px, py, pz, dx, dy, dz, v0, v1 = f["probe"]
+                ends = []
+                for v in (v0 - 0.5, v1 + 0.5):
+                    cls = BRepClass3d_SolidClassifier(wrapped, gp_Pnt(px + dx * v, py + dy * v, pz + dz * v), 1e-6)
+                    ends.append(cls.State() == TopAbs_State.TopAbs_OUT)
+                if hole_probe_ok(ends):
+                    f["through"] = all(ends)
+            except Exception:
+                pass
         key = (f["kind"], f["dia"], f["depth"], f["through"])
         inst = instances.get(key)
         if inst is None:
@@ -2231,12 +2255,24 @@ def analyze(filepath: str) -> dict:
         # down reported dozens of undercuts. Try the three principal axes,
         # keep the one with the fewest undercuts, and report the runner-up so
         # the engineer can override a near tie.
+        # Silhouettes first: a tie on undercuts is broken by the LARGEST section —
+        # dies and moulds part across the biggest plan area. The tie used to fall
+        # to the draft-count order: an undrafted forging yoke parted across its
+        # 50 × 30 end (15 cm²) instead of its 250 × 50 plan (87 cm²), and the
+        # press was sized on the end (forging review, Oct 2026).
+        try:
+            _diag_pa = math.sqrt(x_sz ** 2 + y_sz ** 2 + z_sz ** 2) or 1.0
+            _proj_early = _silhouette_areas_mm2(raw_shape, _diag_pa)
+        except Exception:
+            _proj_early = None
+        _sil = lambda d: ((_proj_early or {}).get("zMm2" if abs(d["drawDirectionXYZ"][2]) > 0.9
+                          else ("yMm2" if abs(d["drawDirectionXYZ"][1]) > 0.9 else "xMm2")) or 0)
         try:
             candidates = []
             for axis in ((0.0, 0.0, 1.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0)):
                 di = _compute_draft_analysis(faces, axis)
                 candidates.append(di)
-            candidates.sort(key=lambda d: (d["undercutFaceCount"], -d["adequateDraftFaceCount"]))
+            candidates.sort(key=lambda d: (d["undercutFaceCount"], -_sil(d), -d["adequateDraftFaceCount"]))
             draft_info = dict(candidates[0])
             runner = candidates[1] if len(candidates) > 1 else None
             draft_info["pullDirectionSearch"] = {
@@ -2250,8 +2286,7 @@ def analyze(filepath: str) -> dict:
 
         # ── Projected (silhouette) area along each axis and the draw ──────────
         try:
-            _diag_pa = math.sqrt(x_sz ** 2 + y_sz ** 2 + z_sz ** 2) or 1.0
-            proj = _silhouette_areas_mm2(raw_shape, _diag_pa)
+            proj = dict(_proj_early) if _proj_early else None
             if proj:
                 d = (draft_info or {}).get("drawDirectionXYZ") or [0.0, 0.0, 1.0]
                 key = "zMm2" if abs(d[2]) > 0.9 else ("yMm2" if abs(d[1]) > 0.9 else "xMm2")

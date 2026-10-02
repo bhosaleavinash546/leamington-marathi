@@ -25,6 +25,8 @@ export interface CastingInputs {
   secondaryMachiningOps?: OperationInput[];
   /** Fixturing + setup + CNC programming NRE for the secondary machining. */
   secondaryMachiningToolingCost?: number;
+  /** Cutting tools worn in the secondary machining, £/part. */
+  secondaryMachiningConsumablesPerPart?: number;
   // HPDC specific
   hpdc?: {
     machineId: string;
@@ -317,7 +319,8 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   consumablesCostPerPart += (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg
     + (inputs.shotBlastCostPerPart ?? 0)
     + (inputs.impregnationCostPerPart ?? 0)
-    + (inputs.ndtCostPerPart ?? 0);
+    + (inputs.ndtCostPerPart ?? 0)
+    + (inputs.secondaryMachiningConsumablesPerPart ?? 0);
 
   // Feature-based secondary machining (geometry-driven) — appended on top of
   // the casting process. Near-net → machining TIME only; no extra material.

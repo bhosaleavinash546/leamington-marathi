@@ -302,8 +302,9 @@ export const CAST_MACHINING_STOCK_MM: Record<string, number> = {
   sand_ferrous: 3.0, sand: 2.0, gravity: 1.5, investment: 1.0, hpdc: 0.5,
 };
 
-/** Holes above this are cored in a sand / gravity / investment casting; HPDC cores almost everything. */
-export const CORED_ABOVE_MM: Record<string, number> = { sand: 20, gravity: 20, investment: 20, hpdc: 6 };
+/** Holes above this are cored in a sand / gravity / investment casting; HPDC cores almost everything;
+ *  an impression forging pierces (punches out the wad of) bores above ~25 mm. */
+export const CORED_ABOVE_MM: Record<string, number> = { sand: 20, gravity: 20, investment: 20, hpdc: 6, forging: 25 };
 
 export function castMachiningStockMm(subtype: string | null, family: MaterialFamily | null): number {
   if (subtype === 'sand' && (family === 'steel' || family === 'cast iron')) return CAST_MACHINING_STOCK_MM.sand_ferrous;
@@ -377,4 +378,41 @@ export function programmingHours(fixturings: number, featureRows: number, surfac
 /** Deburr (machined edges) and gauge-check minutes a part — a bench task. */
 export function deburrInspectMinutes(faceCount: number): number {
   return Math.round((0.5 + 0.004 * faceCount + 0.5) * 100) / 100;
+}
+
+// ── Secondary machining on a casting or forging: the cell around the cut ────
+
+/**
+ * What a near-net part's secondary machining costs beyond its cutting minutes,
+ * on the casting and forging routes (the cast + machine route carries the same
+ * through the machining rules): load / unload and change-over per fixturing,
+ * fixtures, CAM programming and cutting-tool wear. One function, so the screen
+ * and headless price the same cell from the same inputs (forging review,
+ * Oct 2026 — they used to cost the cutting alone).
+ */
+export function secondaryMachiningCell(p: {
+  fixturings: number;
+  weightKg: number;
+  annualVolume: number;
+  family: MaterialFamily;
+  featureRows: number;
+  cuttingMin: number;
+  engineerRatePerHr: number;
+}): {
+  cell: { fixturings: number; handlingMin: number; setupMinPerFixturing: number; batchSize: number };
+  toolingGBP: number; toolWearPerPart: number; basis: string;
+} {
+  const fixturings = Math.max(1, Math.round(p.fixturings));
+  const batchSize = Math.round(Math.min(5000, Math.max(50, (p.annualVolume || 10_000) / 20)));
+  const fx = fixtureCostGBP(fixturings, 0, p.annualVolume);
+  const hrs = programmingHours(fixturings, p.featureRows, false);
+  const programming = Math.round(hrs * p.engineerRatePerHr);
+  const wear = toolWearPerPart(p.cuttingMin, p.family);
+  return {
+    cell: { fixturings, handlingMin: handlingMinPerFixturing(p.weightKg), setupMinPerFixturing: SETUP_MIN_PER_FIXTURING, batchSize },
+    toolingGBP: fx.gbp + programming,
+    toolWearPerPart: wear,
+    basis: `${fx.basis}; programming ${hrs} h × £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
+      + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(2)}/min = £${wear.toFixed(3)}`,
+  };
 }

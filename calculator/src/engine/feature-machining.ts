@@ -29,9 +29,9 @@ export type StockCondition = 'near_net' | 'solid_billet';
 export interface FeatureMachiningOptions {
   machineId: string;
   labourId: string;
-  oee?: number;               // default 0.85
+  oee?: number;               // default 0.80 (the shop convention, SHOP_DEFAULTS)
   manning?: number;           // default 1
-  labourEfficiency?: number;  // default 0.9
+  labourEfficiency?: number;  // default 0.92 (the shop convention)
   stockCondition?: StockCondition; // default 'near_net'
   /** Per-row inclusion override (by index). When omitted, holes/bores are
    *  machined (high confidence) and bosses are excluded (need confirmation). */
@@ -49,6 +49,10 @@ export interface FeatureMachiningOptions {
   /** Near-net only: holes above this diameter are cored in, and finish-bored
    *  rather than drilled from solid. Omit to drill every hole from solid. */
   coredAboveMm?: number;
+  /** The machining cell's per-part time that is not cutting: load / clamp /
+   *  unload at each fixturing and the batch change-over shared over the batch
+   *  (`secondaryMachiningCell` in machining-time.ts). Omit for cutting only. */
+  cell?: { fixturings: number; handlingMin: number; setupMinPerFixturing: number; batchSize: number };
 }
 
 export interface FeatureMachiningLine {
@@ -163,7 +167,12 @@ export function featureMinutesEach(row: FeatureRow): number {
   if (d > 26) {
     t = 0.50 + L * 0.050;                         // helical mill / large bore (~20 mm/min axial)
   } else if (d > 13) {
-    t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep + 0.25 + L / DRILL_FEED_MM_PER_MIN;   // drill + ream/bore pass
+    // A shallow through hole is a clearance hole (bolts pass through it) and is
+    // drilled only; a blind hole or one deeper than 2 Ø is a locating or bearing
+    // bore and takes a ream / bore pass. Every 13–26 mm hole was reamed, the bolt
+    // holes of a flange included (forging review). Tolerances would settle it.
+    const bore = row.through === false || L > 2 * d;
+    t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep + (bore ? 0.25 + L / DRILL_FEED_MM_PER_MIN : 0);
   } else if (d > 6) {
     t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep;  // drill
   } else {
@@ -256,17 +265,32 @@ export function computeFeatureMachining(
 
   const summary = active.map(featureLabel).join(', ');
 
+  const cell = opts.cell && featureCount > 0 ? opts.cell : null;
+  const cellMin = cell
+    ? cell.fixturings * (cell.handlingMin + cell.setupMinPerFixturing / Math.max(1, cell.batchSize))
+    : 0;
   const operations: OperationInput[] = featureCount === 0 ? [] : [{
     operationName: `CNC Machining — ${featureCount} feature${featureCount === 1 ? '' : 's'} (${summary}) [geometry-measured]`,
     machineId: opts.machineId,
     labourId: opts.labourId,
     cycleTimeHr: totalCycleHr,
     partsPerCycle: 1,
-    oee: opts.oee ?? 0.85,
+    oee: opts.oee ?? 0.80,
     manning: opts.manning ?? 1,
     labourTimeHr: totalCycleHr,
-    labourEfficiency: opts.labourEfficiency ?? 0.9,
-  }];
+    labourEfficiency: opts.labourEfficiency ?? 0.92,
+  }, ...(cell ? [{
+    operationName: `Machining load / unload + change-over (${cell.fixturings} fixturing(s): `
+      + `${cell.handlingMin} min each + ${cell.setupMinPerFixturing} min ÷ batch ${cell.batchSize})`,
+    machineId: opts.machineId,
+    labourId: opts.labourId,
+    cycleTimeHr: cellMin / 60,
+    partsPerCycle: 1,
+    oee: opts.oee ?? 0.80,
+    manning: 1,
+    labourTimeHr: cellMin / 60,
+    labourEfficiency: opts.labourEfficiency ?? 0.92,
+  }] : [])];
 
   return { operations, lines, featureCount, totalCycleHr, materialRemovedKg, summary };
 }

@@ -38,14 +38,16 @@ import type { MaterialFamily } from '../../material-family.js';
 import {
   adviseForgingProcess, estimateForgingTonnage, estimateForgingDieCost,
   estimateForgingDieLife, estimateForgingSecondaryAdders, forgingHeatKwhPerKg,
-  FORGING_PROCESS_REFERENCE,
+  FORGING_PROCESS_REFERENCE, FORGING_FLOW_STRESS_MPA,
   type ForgingProcess, type ForgingAlloyFamily, type ShapeComplexity,
   type DieSteel, type ComplexityLevel,
 } from '../../modules/forging-advisor.js';
-import { pickForgePressId } from '../../machine-sizing.js';
-import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { pickForgePressId, pickStampingPressId } from '../../machine-sizing.js';
+import { nearNetStockCm3, CORED_ABOVE_MM } from '../../machining-time.js';
+import type { FeatureRow } from '../../feature-ops.js';
+import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { materialFacts, toForgingAlloyFamily } from '../derive/material.js';
-import { projectedAreaCm2, isRingShape } from '../derive/envelope.js';
+import { projectedAreaCm2, projectedAreaBasis, isRingShape } from '../derive/envelope.js';
 import { isAxisymmetric } from './machining.js';
 import {
   toleranceClassDecision, safetyCriticalDecision,
@@ -148,6 +150,121 @@ export function dieSteelFor(alloy: ForgingAlloyFamily): DieSteel {
 }
 
 /**
+ * The forging's plan area at the parting line, cm².
+ *
+ * A forging parts round its largest periphery — the standard die-design rule —
+ * so the press closes across the LARGEST of the kernel's three measured
+ * silhouettes. The moulding "draw direction" it used before is chosen by the
+ * fewest undercuts on a one-way pull, which a forging (two die halves, parted
+ * mid-height) does not have: the drafted yoke was pressed across 74.5 cm² of its
+ * side instead of its 84.3 cm² plan, and the undrafted one across its 15 cm² end.
+ */
+export function forgingPlanAreaCm2(ctx: RuleContext): { cm2: number | null; basis: string } {
+  const p = ctx.geo.projectedArea;
+  const sil = [p?.xMm2, p?.yMm2, p?.zMm2].filter((v): v is number => typeof v === 'number' && v > 0);
+  if (sil.length) {
+    return { cm2: Math.round(Math.max(...sil) / 100 * 10) / 10,
+      basis: 'largest of the three measured silhouettes — a forging parts round its largest periphery' };
+  }
+  return { cm2: projectedAreaCm2(ctx), basis: projectedAreaBasis(ctx) };
+}
+
+/**
+ * The forge line (forging review, 2 Oct 2026).
+ *
+ * The cycle was "strokes × 10 s", with the stroke count a face-count heuristic
+ * in the kernel (4–12) labelled as measured. A crank-press line is paced by its
+ * hits: one per impression, an extra finisher hit for a moderate shape and two
+ * for a complex one, each hit plus its transfer ~4 s on a mechanical press
+ * (~8 s on a hydraulic press), plus ~3 s to take the billet from the heater.
+ * The trim press sits in line and works to the same takt. All values are
+ * engineering-typical and printed on the basis.
+ */
+export const FORGE_LINE = {
+  loadSec: 3,
+  hitSec: { mechanical: 4, hydraulic: 8 },
+  /** Ring mill: upset + punch + roll; open die: manipulated blows. */
+  ringRollingSec: (kg: number) => 30 + 10 * kg,
+  openDieSec: (kg: number) => 60 + 20 * kg,
+  coldFormingSec: 2,
+} as const;
+
+/** Crew on the forge line, by route; one operator on the trim press. */
+export const FORGE_CREW: Record<ForgingProcess, number> = {
+  'closed-die': 2,        // forger + heater / handler
+  precision: 2,
+  'ring-rolling': 2,
+  'open-die': 3,          // forger + manipulator + crane
+  'cold-forming': 0.5,    // automatic multi-station header, one setter to two
+};
+export const TRIM_CREW = 1;
+
+/** Forging scrap (laps, underfill, cracks found at inspection), fraction. */
+export const FORGING_REJECT = 0.02;
+
+/** Per-side machining stock on a machined face, mm, by route (as-forged allowance). */
+export const FORGING_MACHINING_STOCK_MM: Record<ForgingProcess, number> = {
+  'closed-die': 2.0, precision: 0.75, 'open-die': 5.0, 'ring-rolling': 3.0, 'cold-forming': 0,
+};
+
+const isHydraulic = (forgeId: string) => /4000t|8000t/.test(forgeId);
+
+export function forgeLine(a: { process: ForgingProcess; impressions: number; shape: ShapeComplexity; partKg: number; forgeId: string }): {
+  hits: number; hitSec: number; cycleSec: number; basis: string;
+} {
+  if (a.process === 'ring-rolling') {
+    const sec = FORGE_LINE.ringRollingSec(a.partKg);
+    return { hits: 1, hitSec: sec, cycleSec: sec, basis: `ring mill: 30 s upset / punch / roll + 10 s/kg × ${fmt(a.partKg, 2)} kg` };
+  }
+  if (a.process === 'open-die') {
+    const sec = FORGE_LINE.openDieSec(a.partKg);
+    return { hits: 1, hitSec: sec, cycleSec: sec, basis: `open die: 60 s + 20 s/kg × ${fmt(a.partKg, 2)} kg of manipulated blows` };
+  }
+  if (a.process === 'cold-forming') {
+    return { hits: a.impressions, hitSec: FORGE_LINE.coldFormingSec / a.impressions, cycleSec: FORGE_LINE.coldFormingSec,
+      basis: `multi-station cold former: ${a.impressions} stations, one part every ${FORGE_LINE.coldFormingSec} s` };
+  }
+  const extra = a.shape === 'complex' ? 2 : a.shape === 'moderate' ? 1 : 0;
+  const hits = a.impressions + extra;
+  const hitSec = isHydraulic(a.forgeId) ? FORGE_LINE.hitSec.hydraulic : FORGE_LINE.hitSec.mechanical;
+  const cycleSec = FORGE_LINE.loadSec + hits * hitSec;
+  return {
+    hits, hitSec, cycleSec,
+    basis: `${FORGE_LINE.loadSec} s billet from the heater + ${hits} hit(s) (${a.impressions} impression(s)`
+      + `${extra ? ` + ${extra} extra finisher hit(s), ${a.shape} shape` : ''}) × ${hitSec} s `
+      + `${isHydraulic(a.forgeId) ? 'hydraulic' : 'mechanical'} press hit + transfer = ${cycleSec} s takt`,
+  };
+}
+
+/**
+ * Flash at the parting line, from the silhouette: thickness ≈ 0.015 √A
+ * (A in mm², ASM closed-die practice), land ≈ 3 × the thickness, and a
+ * perimeter of ≈ 4.4 √A (a rounded rectangle; the kernel measures the area,
+ * not its outline). Used for the die-fill force over the flash land and the
+ * trim-press force.
+ */
+export function flashGeometry(areaCm2: number): { perimeterMm: number; thicknessMm: number; landMm: number; landAreaCm2: number } {
+  const aMm2 = areaCm2 * 100;
+  const perimeterMm = 4.4 * Math.sqrt(aMm2);
+  const thicknessMm = Math.max(1, 0.015 * Math.sqrt(aMm2));
+  const landMm = 3 * thicknessMm;
+  return { perimeterMm, thicknessMm, landMm, landAreaCm2: perimeterMm * landMm / 100 };
+}
+
+/** The trim press: perimeter × flash thickness × hot flow stress, on the mechanical press ladder. */
+export function trimPress(areaCm2: number, alloy: ForgingAlloyFamily): { pressId: string; tonnes: number; basis: string } {
+  const f = flashGeometry(areaCm2);
+  const flow = FORGING_FLOW_STRESS_MPA[alloy];
+  const tonnes = f.perimeterMm * f.thicknessMm * flow / 9806.65;
+  return {
+    pressId: pickStampingPressId(tonnes),
+    tonnes: Math.round(tonnes * 10) / 10,
+    basis: `${f.perimeterMm.toFixed(0)} mm flash line × ${f.thicknessMm.toFixed(1)} mm flash × ${flow} MPa hot flow stress `
+      + `= ${(tonnes).toFixed(1)} t → the smallest mechanical press with 1.25× margin`,
+  };
+}
+
+/**
  * `yieldFraction` for `computeForgingDrivers`, from the documented band.
  *
  * The module computes `billet = (part + flash) / yieldFraction`, so its
@@ -186,6 +303,9 @@ interface ForgeAdvice {
   flashKg: number;
   dieSteel: DieSteel;
   impressions: number;
+  /** As-forged weight: finished + holes drilled from solid + per-side machining stock. */
+  forgedKg: number;
+  forgedBasis: string;
 }
 
 function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutcome<never> } {
@@ -209,7 +329,7 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
     };
   }
 
-  const areaCm2 = projectedAreaCm2(ctx);
+  const areaCm2 = forgingPlanAreaCm2(ctx).cm2;
   if (!areaCm2 || mat.massKg === null) {
     return {
       blocked: ask({
@@ -245,6 +365,22 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
   });
 
   const y = yieldFractionFor(rec.process);
+  // As-forged weight. The STEP is the FINISHED part; the forging carries the
+  // stock the machining removes — measured off the feature table, as the
+  // cast + machine route does (machining review).
+  const density = mat.massKg / Math.max(1e-9, ctx.geo.volume?.cm3 ?? 0);
+  const rows = (ctx.geo.featureTable ?? []) as FeatureRow[];
+  // Bores above the pierce size are punched out (impression forgings punch the
+  // wad, a ring is punched before rolling); an open-die forging is drilled.
+  const pierce = rec.process === 'open-die' ? Infinity : CORED_ABOVE_MM.forging;
+  const drilledCm3 = rows.filter(r => r.kind === 'hole' && r.diaMm <= pierce)
+    .reduce((s2, r) => s2 + Math.PI * r.diaMm ** 2 / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
+  const stockMm = FORGING_MACHINING_STOCK_MM[rec.process];
+  const faceCm3 = stockMm > 0 ? nearNetStockCm3(rows, stockMm, pierce) : 0;
+  const forgedKg = Math.round((mat.massKg + (drilledCm3 + faceCm3) * density) * 1000) / 1000;
+  const forgedBasis = `${fmt(mat.massKg, 3)} kg finished + ${fmt(drilledCm3, 1)} cm³ of holes drilled from solid`
+    + `${pierce < Infinity ? ` (≤ Ø${pierce}; larger bores pierced)` : ''} + ${fmt(faceCm3, 1)} cm³ machining stock `
+    + `(${stockMm} mm a side on the machined faces, ${rec.process}) — ${mat.basis}`;
   return {
     advice: {
       alloy, familyLabel: mat.family!,
@@ -262,13 +398,17 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
         : ''),
       ring,
       safetyCritical: safety,
+      // Die-fill force acts over the flash land too, where the pressure is
+      // highest — the impression area alone under-sized the press.
       tonnes: Math.round(estimateForgingTonnage({
-        projectedAreaCm2: areaCm2, alloyFamily: alloy, shapeComplexity: shape,
+        projectedAreaCm2: areaCm2 + (FLASH_FRACTION[rec.process] > 0 ? flashGeometry(areaCm2).landAreaCm2 : 0),
+        alloyFamily: alloy, shapeComplexity: shape,
       })),
       yieldFraction: y.value, yieldBandMid: y.bandMid, flashFrac: y.flashFrac,
-      flashKg: Math.round(mat.massKg * y.flashFrac * 1000) / 1000,
+      flashKg: Math.round(forgedKg * y.flashFrac * 1000) / 1000,
       dieSteel: dieSteelFor(alloy),
       impressions: IMPRESSIONS[rec.process] + (shape === 'complex' && rec.process === 'closed-die' ? 1 : 0),
+      forgedKg, forgedBasis,
     },
   };
 }
@@ -277,7 +417,7 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
 function secondaries(a: ForgeAdvice) {
   return estimateForgingSecondaryAdders({
     alloyFamily: a.alloy,
-    partWeightKg: a.partKg,
+    partWeightKg: a.forgedKg,
     heatTreat: HEAT_TREAT[a.alloy],
     descale: a.process !== 'cold-forming',          // hot routes grow scale
     shotBlast: a.process === 'closed-die',
@@ -322,8 +462,8 @@ export const FORGING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('forging.partWeightKg', r.advice.partKg, 'geometry',
-          r.advice.massBasis, 0.95);
+        return decided('forging.partWeightKg', r.advice.forgedKg, 'geometry',
+          r.advice.forgedBasis, 0.9);
       },
     },
     {
@@ -343,7 +483,8 @@ export const FORGING_RULES: CommodityRuleSpec = {
       fieldId: 'forge-proj-area',
       label: 'projectedAreaCm2',
       evaluate: (ctx) => {
-        const a = projectedAreaCm2(ctx);
+        const fa = forgingPlanAreaCm2(ctx);
+        const a = fa.cm2;
         if (a === null) return ask({
           id: 'forging.envelope', kind: 'geometry_gap',
           question: 'What is the part weight and plan area?',
@@ -353,7 +494,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('forging.projectedAreaCm2', a, 'geometry',
-          'parting-plane silhouette: bbox face × √fill for a solid, bbox face for a shell', 0.8);
+          fa.basis, ctx.geo.projectedArea ? 0.85 : 0.6);
       },
     },
     {
@@ -412,26 +553,33 @@ export const FORGING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        if (r.advice.process === 'open-die') {
+          const id = r.advice.forgedKg > 50 ? 'forge-hammer-10t' : 'forge-hammer-5t';
+          return decided('forging.forgeId', id, 'advisor',
+            `open-die: drawn and upset under a hammer (${fmt(r.advice.forgedKg, 1)} kg) — no impression to fill`, 0.7);
+        }
+        if (r.advice.process === 'ring-rolling') {
+          return decided('forging.forgeId', 'forge-ring-mill', 'advisor',
+            'seamless ring: upset and punched, then rolled on the ring mill', 0.8);
+        }
         return decided('forging.forgeId', pickForgePressId(r.advice.tonnes), 'advisor',
           `F = Kt × σflow × A: ${r.advice.shape} shape in ${r.advice.alloy} over `
-          + `${r.advice.areaCm2} cm² = ${r.advice.tonnes} t (1.2 safety)`, 0.85);
+          + `${r.advice.areaCm2} cm²${r.advice.flashFrac > 0 ? ` + ${fmt(flashGeometry(r.advice.areaCm2).landAreaCm2, 0)} cm² flash land` : ''}`
+          + ` = ${r.advice.tonnes} t (1.2 safety)`, 0.85);
       },
     },
     {
+      // Hits, not "blows": one per impression plus the finisher hits the shape
+      // needs. Was the kernel's face-count heuristic (4–12) labelled measured.
       id: 'forging.strokesToForm',
       path: 'forging.strokesToForm',
       fieldId: 'forge-strokes',
       label: 'strokesToForm',
       evaluate: (ctx) => {
-        const measured = ctx.geo.processSpecificEstimates?.forgeStrokes;
-        if (measured && measured > 0) {
-          return decided('forging.strokesToForm', measured, 'geometry',
-            'blows to fill the impression, from the measured shape', 0.7);
-        }
-        const s = shapeComplexity(ctx);
-        const n = s === 'complex' ? 8 : s === 'moderate' ? 5 : 3;
-        return decided('forging.strokesToForm', n, 'rule',
-          `${s} shape — no measured stroke count, so 3 simple / 5 moderate / 8 complex`, 0.45);
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const l = forgeLine({ ...r.advice, forgeId: pickForgePressId(r.advice.tonnes) });
+        return decided('forging.strokesToForm', l.hits, 'rule', l.basis, 0.6);
       },
     },
     {
@@ -439,8 +587,110 @@ export const FORGING_RULES: CommodityRuleSpec = {
       path: 'forging.timePerBlowSec',
       fieldId: 'forge-time-per-blow',
       label: 'timePerBlowSec',
-      evaluate: () => decided('forging.timePerBlowSec', 10, 'rule',
-        'ram travel + dwell per blow on a mechanical press', 0.6),
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const l = forgeLine({ ...r.advice, forgeId: pickForgePressId(r.advice.tonnes) });
+        return decided('forging.timePerBlowSec', Math.round(l.hitSec * 100) / 100, 'rule',
+          'hit + transfer on the press (informational — the cycle below is the line takt)', 0.6);
+      },
+    },
+    {
+      id: 'forging.cycleTimeHr',
+      path: 'forging.cycleTimeHr',
+      fieldId: 'forge-ct',
+      label: 'cycleTimeHr',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const l = forgeLine({ ...r.advice, forgeId: pickForgePressId(r.advice.tonnes) });
+        return decided('forging.cycleTimeHr', Math.round(l.cycleSec / 3600 * 1e6) / 1e6, 'rule', l.basis, 0.6);
+      },
+    },
+    {
+      id: 'forging.labourId',
+      path: 'forging.labourId',
+      fieldId: 'forge-lab',
+      label: 'labourId',
+      evaluate: () => decided('forging.labourId', 'lab-uk-forge', 'rule',
+        'forge-shop operative (the screen defaulted to a skilled machinist)', 0.8),
+    },
+    {
+      id: 'forging.manning',
+      path: 'forging.manning',
+      fieldId: 'forge-manning',
+      label: 'manning',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return decided('forging.manning', FORGE_CREW[r.advice.process], 'rule',
+          `${r.advice.process} line crew (forger + heater / handler; open die adds a manipulator) — `
+          + 'engineering typical; the screen said 2, headless 1', 0.55);
+      },
+    },
+    {
+      id: 'forging.rejectRate',
+      path: 'forging.rejectRate',
+      fieldId: 'forge-reject',
+      label: 'rejectRate',
+      evaluate: () => decided('forging.rejectRate', FORGING_REJECT, 'rule',
+        `${FORGING_REJECT * 100}% forging scrap (laps, underfill, cracks at inspection) — engineering typical`, 0.5),
+    },
+    {
+      id: 'forging.furnaceType',
+      path: 'forging.furnaceType',
+      fieldId: 'forge-furnace',
+      label: 'furnaceType',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const gas = r.advice.alloy === 'aluminium' || r.advice.alloy === 'copper' || r.advice.process === 'open-die';
+        return decided('forging.furnaceType', gas ? 'gas' : 'induction', 'rule',
+          gas ? (r.advice.process === 'open-die' ? 'large open-die stock heats in a gas furnace'
+            : `${r.advice.alloy} forges warm — billets soak in a gas furnace`)
+            : 'steel / titanium billets for an impression line heat in-line by induction', 0.6);
+      },
+    },
+    {
+      id: 'forging.trimMachineId',
+      path: 'forging.trimMachineId',
+      fieldId: 'forge-trim-mach',
+      label: 'trimMachineId',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (r.advice.flashFrac === 0) return decided('forging.trimMachineId', '', 'rule', `${r.advice.process} makes no flash — no trim press`, 0.8);
+        const t = trimPress(r.advice.areaCm2, r.advice.alloy);
+        return decided('forging.trimMachineId', t.pressId, 'rule', t.basis, 0.6);
+      },
+    },
+    {
+      id: 'forging.trimCycleHr',
+      path: 'forging.trimCycleHr',
+      fieldId: 'forge-trim-ct',
+      label: 'trimCycleHr',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (r.advice.flashFrac === 0) return decided('forging.trimCycleHr', 0, 'rule', 'no flash to trim', 0.8);
+        const l = forgeLine({ ...r.advice, forgeId: pickForgePressId(r.advice.tonnes) });
+        return decided('forging.trimCycleHr', Math.round(l.cycleSec / 3600 * 1e6) / 1e6, 'rule',
+          `the trim press stands in line and works to the forge takt (${l.cycleSec} s)`, 0.6);
+      },
+    },
+    {
+      id: 'forging.trimLabourId',
+      path: 'forging.trimLabourId',
+      fieldId: 'forge-trim-lab',
+      label: 'trimLabourId',
+      evaluate: () => decided('forging.trimLabourId', 'lab-uk-forge', 'rule', 'forge-shop operative', 0.8),
+    },
+    {
+      id: 'forging.trimManning',
+      path: 'forging.trimManning',
+      fieldId: 'forge-trim-manning',
+      label: 'trimManning',
+      evaluate: () => decided('forging.trimManning', TRIM_CREW, 'rule', 'one operator on the trim press', 0.6),
     },
     {
       id: 'forging.dieSteel',
@@ -480,7 +730,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const est = estimateForgingDieCost({
           projectedAreaCm2: r.advice.areaCm2,
-          partWeightKg: r.advice.partKg,
+          partWeightKg: r.advice.forgedKg,
           dieSteel: r.advice.dieSteel,
           impressions: r.advice.impressions,
           complexity: r.advice.shape,

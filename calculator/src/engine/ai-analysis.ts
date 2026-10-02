@@ -458,6 +458,17 @@ export interface CADAnalysisResult {
       descaleCostPerKg?: number;
       ndtCostPerPart?: number;
       forgeId?: string;
+      /** Forging review (Oct 2026): rule-decided on both paths. */
+      process?: string;
+      labourId?: string;
+      manning?: number;
+      cycleTimeHr?: number;
+      rejectRate?: number;
+      furnaceType?: 'induction' | 'gas' | 'electric-resistance';
+      trimMachineId?: string;
+      trimCycleHr?: number;
+      trimLabourId?: string;
+      trimManning?: number;
     };
     sheetMetal?: {
       thicknessMm: number;

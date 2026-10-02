@@ -139,6 +139,17 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'forging.descaleCostPerKg': { to: 'forging.descaleCostPerKg' },
   'forging.ndtCostPerPart': { to: 'forging.ndtCostPerPart' },
   'forging.forgeId': { to: 'forging.forgeId' },
+  // Forging review (2 Oct 2026): the line, crew, scrap, furnace and trim press.
+  'forging.process': { to: 'forging.process' },
+  'forging.cycleTimeHr': { to: 'forging.cycleTimeHr' },
+  'forging.labourId': { to: 'forging.labourId' },
+  'forging.manning': { to: 'forging.manning' },
+  'forging.rejectRate': { to: 'forging.rejectRate' },
+  'forging.furnaceType': { to: 'forging.furnaceType' },
+  'forging.trimMachineId': { to: 'forging.trimMachineId' },
+  'forging.trimCycleHr': { to: 'forging.trimCycleHr' },
+  'forging.trimLabourId': { to: 'forging.trimLabourId' },
+  'forging.trimManning': { to: 'forging.trimManning' },
   // Gear cutting — geometry-measured z/module/face, engineer-answered helix/
   // quality/material class, rule-derived blank. materialId/netWeightKg land on
   // the shared top-level fields, as for every metal commodity.
@@ -327,7 +338,6 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'casting.labourId': 'headless takes the same id from toCostParams LABOUR (lab-uk-foundry) — pinned equal by tests/casting-review.test.ts',
   'sheetMetal.process': 'prose for the report; the die type and press line are what the costing reads',
   'machining.operationCount': 'a count for the report; the operation plan itself is mapped',
-  'forging.process': 'prose for the report; the forge and die rules are what the costing reads',
   'forging.shapeComplexity': 'screen-only input to the forging advisor; headless takes strokes and die cost from their own rules',
   'injectionMoulding.sideActionsLifters': 'screen-only tooling adder; headless takes the mould cost rule, which already counts side actions',
   'blowMoulding.process': 'prose for the report; headless picks the machine from the subtype',

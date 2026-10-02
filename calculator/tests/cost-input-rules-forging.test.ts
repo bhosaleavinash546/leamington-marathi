@@ -56,7 +56,9 @@ const AL_RING = {
   status: 'success',
   partName: 'bearing flange ring',
   boundingBox: { xMm: 300, yMm: 300, zMm: 60 },
-  volume: { mm3: 900_000, cm3: 900 },
+  // A real ring section: 81% of its Ø300 × Ø140 × 60 ring envelope (the fixture
+  // said 900 cm³, a quarter of the ring — not a shape a ring mill makes).
+  volume: { mm3: 2_700_000, cm3: 2700 },
   surfaceArea: { mm2: 180_000, cm2: 1800 },
   fillRatio: 0.167,
   wallThickness: { minMm: 18, maxMm: 30, meanMm: 24, stdDevMm: 3, sampleCount: 200, method: 'ray_cast', uniformity: 'good' },
@@ -101,9 +103,9 @@ describe('the forging yield fix', () => {
     const atPrompt = billet(0.90);          // what the prompt said, for every forging
     const atReference = billet(f.yieldFraction);
 
-    expect(f.partWeightKg).toBe(8.14);
-    expect(atPrompt).toBeCloseTo(9.95, 2);
-    expect(atReference).toBeCloseTo(12.05, 2);
+    // The forging carries its machining stock now (forging review): 8.14 kg
+    // finished + 2 mm a side on its machined faces and drilled holes.
+    expect(f.partWeightKg).toBeGreaterThan(8.14);
     expect(atReference / atPrompt).toBeCloseTo(1.21, 2);
   });
 
@@ -265,20 +267,19 @@ describe('press, die and secondary ops', () => {
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     const f = r.suggestions.forging as Record<string, number>;
     expect(f.dieCost).toBe(estimateForgingDieCost({
-      projectedAreaCm2: AXLE_SILHOUETTE_CM2, partWeightKg: 8.14, dieSteel: 'h13',
+      projectedAreaCm2: AXLE_SILHOUETTE_CM2, partWeightKg: f.partWeightKg, dieSteel: 'h13',
       impressions: 2, complexity: 'moderate',
     }).total);
     expect(r.provenance['forge-die-cost'].basis).toContain('78400');
   });
 
-  it('takes the measured stroke count over its own ladder', () => {
+  it('counts hits on the line, not the kernel\'s face-count "strokes"', () => {
+    // Forging review: one hit per impression + one extra finisher hit for a
+    // moderate shape; the kernel's 6 (a face-count heuristic) is not used.
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
-    expect((r.suggestions.forging as Record<string, number>).strokesToForm).toBe(6);
-    const noStrokes = { ...STUB_AXLE, processSpecificEstimates: undefined } as unknown as OCCTGeometry;
-    const r2 = runCostInputRules(FORGING_RULES, ctx(noStrokes, STEEL_ANSWERED));
-    expect((r2.suggestions.forging as Record<string, number>).strokesToForm).toBe(5);   // moderate
-    expect(r2.provenance['forge-strokes'].confidence).toBeLessThan(
-      r.provenance['forge-strokes'].confidence);
+    const f = r.suggestions.forging as Record<string, number>;
+    expect(f.strokesToForm).toBe(3);
+    expect(f.cycleTimeHr).toBeCloseTo(15 / 3600, 6);       // 3 s load + 3 hits × 4 s
   });
 
   it('prices NDT only on a safety-critical part', () => {

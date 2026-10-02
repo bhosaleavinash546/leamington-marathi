@@ -111,5 +111,15 @@ export function isRingShape(ctx: RuleContext): boolean {
   const biggestBore = (ctx.geo.featureTable ?? [])
     .filter(r => r.kind === 'hole')
     .reduce((m, r) => Math.max(m, r.diaMm ?? 0), 0);
-  return biggestBore >= d[0] * 0.25;
+  if (biggestBore < d[0] * 0.25) return false;
+  // A rolled ring is mostly its own ring envelope (OD, bore, height); a stepped
+  // hub-and-flange fills under half of it and is upset in a closed die. The bore
+  // test alone sent a Ø140 hub flange (Ø80 hub, 45% of its ring) to the ring
+  // mill (forging review, Oct 2026).
+  const vol = ctx.geo.volume?.mm3 ?? 0;
+  const ringMm3 = Math.PI / 4 * (d[0] ** 2 - biggestBore ** 2) * d[2];
+  return !(vol > 0 && ringMm3 > 0) || vol / ringMm3 >= RING_PROFILE_FILL;
 }
+
+/** Share of its ring envelope a rolled ring fills — below it, a stepped part. */
+export const RING_PROFILE_FILL = 0.6;

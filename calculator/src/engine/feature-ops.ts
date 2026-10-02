@@ -43,7 +43,7 @@ export function featureToOperation(row: FeatureRow): string {
   if (thread) return `Drill + tap ${thread}`;
   if (row.through === false) return row.diaMm <= 13 ? 'Drilling (blind)' : 'Drill + bore (blind)';
   if (row.diaMm <= 13) return 'Drilling';
-  if (row.diaMm <= 26) return 'Drill + ream/bore';
+  if (row.diaMm <= 26) return row.depthMm > 2 * row.diaMm ? 'Drill + ream/bore' : 'Drilling (clearance)';
   return 'Helical mill / bore';
 }
 
