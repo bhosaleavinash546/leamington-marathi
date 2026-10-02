@@ -530,6 +530,9 @@ export interface CADAnalysisResult {
       blankCostPerPart?: number;
       blankPrepCycleSec?: number;
       batchSize?: number;
+      /** Gear review (Oct 2026): rule-decided on both paths. */
+      setupTimeHrPerOperation?: number;
+      rejectRate?: number;
     };
     injectionMoulding?: {
       cavities: number;

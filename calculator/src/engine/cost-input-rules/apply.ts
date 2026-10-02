@@ -169,6 +169,8 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'gear.blankPrepCycleSec': { to: 'gear.blankPrepCycleSec' },
   'gear.cycleTimeHr': { to: 'estimatedCycleTimeHr' },
   'gear.batchSize': { to: 'gear.batchSize' },
+  'gear.setupTimeHrPerOperation': { to: 'gear.setupTimeHrPerOperation' },
+  'gear.rejectRate': { to: 'gear.rejectRate' },
   'sheetMetal.shearStrengthMPa': { to: 'sheetMetal.shearStrengthMPa' },
   'sheetMetal.dieType': { to: 'sheetMetal.dieType' },
   'sheetMetal.pitchMm': { to: 'sheetMetal.pitchMm' },

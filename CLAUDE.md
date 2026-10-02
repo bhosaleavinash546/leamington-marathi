@@ -270,6 +270,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   fixtures, programming, tool wear) on both paths. Kernel: "through" = open at both ends (probed),
   draw-axis ties go to the largest silhouette. See `docs/cad/forging-review-2026-10.md`,
   `tests/forging-review.test.ts`; modelled parts in `cad-audit/parts/FORGE_*`.
+- Gear (`modules/gear.ts`, `cost-input-rules/commodities/gear.ts`): set-up per operation and scrap are
+  rules; headless must NOT pass `labourId` (it pins every op and overrides per-process labour); gear
+  machines are crewed `GEAR_MACHINE_CREW` 0.5, deburr / checker 1; blank turning reads the shared
+  `CUTTING_DATA`. `/reanalyze` chooses the commodity exactly as `/analyze` (forced/answered route →
+  gear metrology → `inferCommodity`) — it used to fall to 'machining' in deterministic mode. See
+  `docs/cad/gear-review-2026-10.md`, `tests/gear-review.test.ts` (includes a live HTTP routing test).
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

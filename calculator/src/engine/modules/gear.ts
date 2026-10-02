@@ -200,6 +200,15 @@ const LABOUR_BY_PROCESS: Partial<Record<GearProcess, string>> = {
 const DEFAULT_LABOUR = 'lab-uk-skilled';
 
 /**
+ * Crew on a gear machine (hobber, shaper, skiver, grinder, shaver, hone, blank
+ * lathe): one operator tends two auto-loaded machines — the convention the
+ * machining routes use. Every operation was manned 1 for its whole cycle.
+ */
+export const GEAR_MACHINE_CREW = 0.5;
+/** The shop's labour efficiency (SHOP_DEFAULTS); the module had its own 0.90. */
+export const GEAR_LABOUR_EFFICIENCY = 0.92;
+
+/**
  * ISO 1328-1 flank tolerance classes actually defined by the standard.
  *
  * Outside this window a "class" is not tight or loose, it is meaningless — and
@@ -842,9 +851,9 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
           cycleTimeHr: cycleHr,
           partsPerCycle: 1,
           oee: 0.80,
-          manning: 1,
+          manning: GEAR_MACHINE_CREW,
           labourTimeHr: cycleHr,
-          labourEfficiency: 0.90,
+          labourEfficiency: GEAR_LABOUR_EFFICIENCY,
         };
       })()]
     : [];
@@ -863,9 +872,11 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
         cycleTimeHr: cycleHr,
         partsPerCycle: 1,
         oee: 0.80,
-        manning: 1,
+        // Gear machines on auto-loaders are tended two to an operator; the deburr
+        // cell and the gear checker take a whole one (gear review, Oct 2026).
+        manning: o.process === 'deburr' || o.process === 'inspection' ? 1 : GEAR_MACHINE_CREW,
         labourTimeHr: cycleHr,
-        labourEfficiency: 0.90,
+        labourEfficiency: GEAR_LABOUR_EFFICIENCY,
       };
     });
   operations.unshift(...blankPrepOps);

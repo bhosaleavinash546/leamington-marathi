@@ -130,7 +130,7 @@ describe('gear rules — what geometry decides vs what it asks', () => {
     const netKg = 265.959 * 7850 / 1e6;                               // 2.088 kg
     const matCost = stockKg * mat.pricePerKg - (stockKg - netKg) * mat.scrapRecoveryPricePerKg;
     const blankCm3 = Math.PI / 4 * (120 * 120 - 40 * 40) * 30 / 1000; // 301.6 cm³
-    const prepSec = Math.round((1.5 + (stockCm3 - blankCm3) / 40) * 60);
+    const prepSec = Math.round((1.5 + (stockCm3 - blankCm3) / 80) * 60);   // 80 cm³/min — the shared machining turning rate for steel (gear review)
 
     // MATERIAL line: the bar slice net of chips — and nothing else. The first
     // version folded the turning cost in here, misstating the material bucket

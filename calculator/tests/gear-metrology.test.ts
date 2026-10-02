@@ -69,5 +69,5 @@ describe('gear metrology vs the known-truth involute gear', () => {
     assertTruth(out.gear as GearMetrics, out.volume.cm3 as number);
     expect(out.gear.teeth).toBe(rec.gear.teeth);
     expect(out.gear.tipDiameterMm).toBeCloseTo(rec.gear.tipDiameterMm, 3);
-  });
+  }, 180_000);   // the kernel run, not vitest's 5 s default — it timed out under a loaded suite
 });

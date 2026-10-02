@@ -452,8 +452,12 @@ export function toCostParams(
         annualVolume,
         amortizationVolume: annualVolume,
         batchSize: num(g.batchSize, standardBatchSize(annualVolume)),
-        labourId,
-        rejectRate: D.rejectRate,
+        // No labourId: passing the commodity default PINNED every operation to
+        // a skilled machinist, overriding the module's per-process labour
+        // (semi-skilled deburr, inspector metrology) that the screen uses
+        // (gear review, Oct 2026).
+        rejectRate: g.rejectRate !== undefined ? num(g.rejectRate) : D.rejectRate,
+        ...(num(g.setupTimeHrPerOperation) > 0 ? { setupTimeHrPerOperation: num(g.setupTimeHrPerOperation) } : {}),
       };
       // Optional, and only when the rules actually decided them — passing a
       // zero would read as "no case depth" rather than "not stated".

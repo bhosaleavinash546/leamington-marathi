@@ -23,6 +23,8 @@
  * material model.
  */
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
+import { CUTTING_DATA } from '../../machining-time.js';
+import type { MaterialFamily } from '../../material-family.js';
 import { analyseGear } from '../../modules/gear.js';
 import { HARDENING_ROUTE_UNSUITABLE, type HardeningRoute } from '../../modules/gear-advisor.js';
 import type { GearMaterialClass } from '../../gear-shop-data.js';
@@ -52,6 +54,18 @@ const GRADE_BY_CLASS: Record<GearMaterialClass, { id: string; note: string }> = 
   bronze: { id: 'mat-bronze-pb1', note: 'PB1 phosphor bronze — worm wheels' },
   plastic: { id: 'mat-pom-c', note: 'POM-C acetal — precision plastic gears' },
 };
+
+/** The cutting family each gear material class turns as. */
+const GEAR_CLASS_FAMILY: Record<GearMaterialClass, MaterialFamily> = {
+  case_hardening_steel: 'steel', through_hardening_steel: 'steel', alloy_steel_prehardened: 'steel',
+  stainless: 'steel', cast_iron: 'cast iron', bronze: 'copper alloy', plastic: 'plastic',
+};
+
+/** Set-up per gear operation, hours a batch: change the hob / wheel and
+ *  work-holding, tram, cut and check a first-off on the gear checker. */
+export const GEAR_SETUP_HR_PER_OPERATION = 0.75;
+/** Scrap after heat treat and final inspection. */
+export const GEAR_REJECT = 0.02;
 
 interface GearGeo {
   teeth: number;
@@ -399,7 +413,10 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
   const materialCost = Math.round((stockKg * mat.pricePerKg
     - Math.max(stockKg - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
 
-  const MRR = matClass === 'plastic' ? 80 : matClass === 'bronze' ? 60 : 40; // cm³/min turning
+  // Turning removal rate from the shared machining cutting data (machining
+  // review): this rule had its own 40 cm³/min for steel, half the 80 the
+  // machining model turns the same steel at (gear review, Oct 2026).
+  const MRR = CUTTING_DATA[GEAR_CLASS_FAMILY[matClass]].turnRoughCm3PerMin;
   const prepMin = 1.5 + removalCm3 / MRR;
   const prepCycleSec = Math.round(prepMin * 60);
 
@@ -697,6 +714,25 @@ export const GEAR_RULES: CommodityRuleSpec = {
           + `= ${a.totalCycleSec.toFixed(0)} s — generating kinematics, same arithmetic as the costing`,
           0.7, [GEAR_HELIX_DECISION_ID, GEAR_QUALITY_DECISION_ID, GEAR_MATERIAL_DECISION_ID]);
       },
+    },
+    {
+      // The screen defaulted 0.75 h; headless passed nothing and the module
+      // EXCLUDED set-up with a warning (gear review, Oct 2026).
+      id: 'gear.setupTimeHrPerOperation',
+      path: 'gear.setupTimeHrPerOperation',
+      fieldId: 'gear-setup',
+      label: 'setupTimeHrPerOperation',
+      evaluate: () => decided('gear.setupTimeHrPerOperation', GEAR_SETUP_HR_PER_OPERATION, 'rule',
+        `${GEAR_SETUP_HR_PER_OPERATION} h per cutting / finishing operation a batch — change the hob or wheel and the `
+        + 'work-holding, tram and check a first-off. Engineering typical; replace with the plant figure.', 0.5),
+    },
+    {
+      id: 'gear.rejectRate',
+      path: 'gear.rejectRate',
+      fieldId: 'gear-reject',
+      label: 'rejectRate',
+      evaluate: () => decided('gear.rejectRate', GEAR_REJECT, 'rule',
+        `${GEAR_REJECT * 100}% scrap after heat treat and final inspection (screen said 2%, headless 3%)`, 0.5),
     },
     {
       id: 'gear.batchSize',

@@ -55,7 +55,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 37;   // 37: forging review — forge-line takt by hits, in-line trim press, crew 2, forge labour, 2% scrap, furnace by alloy, fractional die sets, as-forged weight with machining stock, press across the largest silhouette + flash land, ring rolling for rings only, secondary-machining cell (handling, change-over, fixtures, programming, tool wear) for castings and forgings, through = open both ends, clearance holes not reamed; 36: machining review — measured cutting build-up (stock in stocked sizes, roughing by removal rate, finishing by surface type, drilling feed, tool changes, handling), turned parts from bar, 5-axis clamped face, fixtures, programming, tool wear, crew 0.5, near-net cast machining shared with machining, face machining stock; 35: sheet-metal review — one stamping plan (die type, press line, stations, press on force + bolster, SPM, die), stamping v laser+brake priced, soft tooling, binder force, BIW unfold gate, die change, maintenance, crew, scrap; 34: moulding second pass — press shot/tie-bar capacity, cold-runner clamp area, fillet-pair nominal wall, mould change + purge, maintenance, drying; 33: moulding review — measured silhouette area, shell wall guard, per-press dry cycle and fill rate, hot/cold runner, regrind, manning, reject, build-up tool only; 32: casting second pass — crew manning, leak test, mass-based blast, investment by tree, as-cast weight with drilled stock; 31: casting review — remelted returns, melt energy, sand line per mould, section-based HPDC choice and shot time, shop-model tooling, post-cast route, alloy yields, process-aware Al grade; 30: the sheet-metal rules decide the coil grade (sheetMetal.materialId); 29: representative grades the forms can show (cast steel GS-C25, forging billets); 28: Stage 1 is the vision identification (cad-identify.ts), specialist on the 5.5 models; 27: the press is a rule (sheetMetal.pressId); 26: BIW process rules (press line, blanking, presses, draw addendum); 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
+const CAD_PROMPT_VERSION = 38;   // 38: gear review — set-up per operation and scrap are rules, blank turning at the shared machining rate, /reanalyze routes the commodity like /analyze (gears were re-routed to machining); 37: forging review — forge-line takt by hits, in-line trim press, crew 2, forge labour, 2% scrap, furnace by alloy, fractional die sets, as-forged weight with machining stock, press across the largest silhouette + flash land, ring rolling for rings only, secondary-machining cell (handling, change-over, fixtures, programming, tool wear) for castings and forgings, through = open both ends, clearance holes not reamed; 36: machining review — measured cutting build-up (stock in stocked sizes, roughing by removal rate, finishing by surface type, drilling feed, tool changes, handling), turned parts from bar, 5-axis clamped face, fixtures, programming, tool wear, crew 0.5, near-net cast machining shared with machining, face machining stock; 35: sheet-metal review — one stamping plan (die type, press line, stations, press on force + bolster, SPM, die), stamping v laser+brake priced, soft tooling, binder force, BIW unfold gate, die change, maintenance, crew, scrap; 34: moulding second pass — press shot/tie-bar capacity, cold-runner clamp area, fillet-pair nominal wall, mould change + purge, maintenance, drying; 33: moulding review — measured silhouette area, shell wall guard, per-press dry cycle and fill rate, hot/cold runner, regrind, manning, reject, build-up tool only; 32: casting second pass — crew manning, leak test, mass-based blast, investment by tree, as-cast weight with drilled stock; 31: casting review — remelted returns, melt energy, sand line per mould, section-based HPDC choice and shot time, shop-model tooling, post-cast route, alloy yields, process-aware Al grade; 30: the sheet-metal rules decide the coil grade (sheetMetal.materialId); 29: representative grades the forms can show (cast steel GS-C25, forging billets); 28: Stage 1 is the vision identification (cad-identify.ts), specialist on the 5.5 models; 27: the press is a rule (sheetMetal.pressId); 26: BIW process rules (press line, blanking, presses, draw addendum); 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -2731,10 +2731,33 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   let identification: Identification | null = null;
   let selectedCommodity = 'machining';
 
+  // The commodity is chosen exactly as /analyze chooses it: a forced or
+  // answered route, else the gear metrology, else — with no model — the
+  // deterministic inference. This path used to call the AI identifier even in
+  // deterministic mode; with no client it failed quietly and every part fell to
+  // the 'machining' default the moment a question was answered. A gear lost its
+  // gear form and was costed as milled teeth (£99.82 against £26.19 headless —
+  // gear review, Oct 2026).
+  const gearVerdictRe = looksLikeGear(geo.status === 'success' ? geo : {}, filename);
+  let commodityDecisionRe: Decision | null = null;
   if (forcedCommodity) {
     selectedCommodity = forcedCommodity;
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
     console.log(`[CAD/reanalyze] User forced commodity: ${selectedCommodity}`);
+  } else if (gearVerdictRe.gear) {
+    selectedCommodity = 'gear';
+    stage1Selection = { primary: 'gear', conf: geo.gear?.likelyGear ? 0.95 : 0.85, alt: [] };
+    console.log(`[CAD/reanalyze] Gear routing: ${gearVerdictRe.basis} → gear commodity`);
+  } else if (analysisMode === 'deterministic') {
+    const verdict = inferCommodity(ruleContextFor(
+      selectedCommodity, geo, filename, userOverrides, decisionAnswers, 'deterministic'));
+    if (verdict.commodity) {
+      selectedCommodity = verdict.commodity;
+      stage1Selection = { primary: verdict.commodity, conf: 0.9, alt: [] };
+      console.log(`[CAD/reanalyze] Deterministic commodity: ${selectedCommodity} — ${verdict.basis}`);
+    } else {
+      commodityDecisionRe = verdict.decision!;
+    }
   } else {
     const s1 = await stage1Identify(anthropic!, geo, filename, deepAnalysis,
       partPhotoBase64 ? { data: partPhotoBase64, mediaType: partPhotoMime } : null,
@@ -2829,7 +2852,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // them is the whole round-trip: no re-upload, no model, no key.
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || filename);
     const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers));
-    const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...det.result.decisions];
+    const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecisionRe ? [commodityDecisionRe] : []), ...det.result.decisions];
     const detPayload = {
       success: true,
       analysis: det.analysis,
