@@ -205,6 +205,59 @@ replace them as data. The addendum is a uniform band around the outline, not a
 designed binder surface, and the tailor-welded blank is an input the engineer
 sets, because no CAD file says a blank was welded.
 
+### 5.4 Live run, 2 October 2026 — before and after, end to end
+
+The seat bracket STEP was pushed through a real server and a real browser
+(`e2e/sheet-metal-live.ts`: upload, answer "steel", apply, Calculate) at the
+commit before this work and at the end of it, with no FASTBLANK file, and
+then once more with the DXF the tool had itself written attached as if it were
+the FASTBLANK profile. 100,000 a year, UK.
+
+| Field on the sheet-metal form | Before | After | After, DXF attached |
+|---|---|---|---|
+| Gauge (mm) | 1.55 (2·V/S) | 1.60 (15 bend pairs) | 1.60 |
+| Blank L × W (mm) | 269 × 237 (box × 1.05) | 299 × 230 (outline + 10 mm allowance) | 279 × 210 (the DXF, as given) |
+| Cut length for the press (mm) | 1,012 (rectangle) | 1,929 (947 outline + 982 holes) | 1,922 |
+| Strip pitch × width (mm) | 279 × 252 | 233 × 292, nested at 97° | 213 × 272 |
+| Press line | — | coil-fed, 10 mm trim allowance | coil-fed, no allowance |
+| Press | 100 t | 200 t (88 t blanking force × 1.25) | 200 t |
+| Material | £0.72 | £0.72 | £0.63 |
+| Tooling (12-station transfer die) | £1.75 (£175k) | £1.81 (£181k) | £1.69 (£169k) |
+| Total | £3.19 | £3.28 | £3.02 |
+| Analysis time | 7 s | 26 s (unfold + forming solve) | 7 s |
+
+What the run showed:
+
+- **The chain works end to end in the browser**: material question only, sheet
+  metal routed, the blank line on the geometry summary, the DXF downloadable,
+  the hash carried through re-analysis, every rule-filled field with its basis
+  in its tooltip. Repeat runs give the same number.
+- **The DXF round trip agrees with the unfold to 0.1%** (486.4 vs 486.5 cm²,
+  946.6 vs 947 mm outline, 21 holes, 279 × 210 both ways). The cost differs
+  (£3.02 vs £3.28) only because a supplied DXF is taken as the formed-process
+  blank and gets no trim allowance, while the tool's own unfold of a
+  stretch-formed part adds 10 mm. That is the intended rule, stated on both
+  basis lines.
+- **The material bucket did not move** between before and after (£0.72 both)
+  — a coincidence: the old rectangle strip at 1.55 mm and the new nested
+  strip at 1.60 mm weigh the same to three figures (0.855 vs 0.854 kg). The
+  screen had always costed material from the strip cell; the headless path
+  now does the same.
+- **Gap found and fixed**: the screen sized the press on the rectangle's
+  2(L + W) before the rules' cut length had reached the form, so it picked a
+  100 t press where the headless path picked 200 t. The press is now a rule
+  (`sheetMetal.pressId`) and both paths make the same pick.
+- **What dominates is not the blank.** Tooling is 55% of the part: a
+  12-station transfer die at £181k, where the kernel's own parametric says
+  £25k — the advisor's "high complexity → transfer" and the 15 bend faces →
+  12 stations drive it, and nothing in this chain checks it against a die
+  quote. That is the next thing to put a real number against.
+- **One run in seven asked the process route and landed on machining** (the
+  first after-run, while a second server was measuring the same part on the
+  same machine). It did not recur in six further runs and could not be
+  reproduced; the kernel-missing case was checked separately and fails
+  cleanly with a 422. Logged, not explained.
+
 ## 6. How it is proved
 
 - **Regression against FASTBLANK.** Every part CAPPe has flattened is a test

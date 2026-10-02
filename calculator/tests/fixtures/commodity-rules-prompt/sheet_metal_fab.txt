@@ -9,6 +9,7 @@ SHEET METAL COST INPUT RULES:
   blankLengthMm=336  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   perimeterMm=1176  [2 × (336 + 252) of the blank rectangle — ignores the outline shape and every hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length — deterministic, use verbatim]
+  pressId=press-400t  [blanking force ≈ 1176 mm cut × 12.25 mm × 170 MPa = 250 t, × 1.25 safety → the smallest press over 312 t — deterministic, use verbatim]
   numOps=6  [1 blank + 4 bend(s) + 1 pierce = 6 stations — deterministic, use verbatim]
   pressLine=coil-fed  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   pressesInLine=1  [one press, coil-fed — deterministic, use verbatim]
@@ -33,6 +34,7 @@ SHEET METAL COST INPUT RULES:
   blankLengthMm=336  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   blankWidthMm=252  [ESTIMATED from the formed part’s bounding box × 1.05 — no developed blank was supplied. A formed part’s footprint is not its flat pattern, so this can be well out in either direction; upload the FASTBLANK DXF to replace it with the real profile — deterministic, use verbatim]
   perimeterMm=1176  [2 × (336 + 252) of the blank rectangle — ignores the outline shape and every hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length — deterministic, use verbatim]
+  pressId: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   numOps=2  [1 blank + 0 bend(s) = 2 stations — deterministic, use verbatim]
   pressLine=coil-fed  [bent part: run from coil through one die, no addendum — deterministic, use verbatim]
   pressesInLine=1  [one press, coil-fed — deterministic, use verbatim]

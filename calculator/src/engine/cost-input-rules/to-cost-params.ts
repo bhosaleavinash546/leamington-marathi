@@ -628,7 +628,7 @@ export function toCostParams(
           ...(s.blankingMethod && s.blankingMethod !== 'none' && num(s.blanksPerMin) > 0
             ? { blanking: { method: s.blankingMethod, blanksPerMin: num(s.blanksPerMin) } } : {}),
           ...(num(s.drawAddendumMm) > 0 ? { drawAddendumMm: num(s.drawAddendumMm) } : {}),
-          pressId: pickStampingPressId(tonnes),
+          pressId: (typeof s.pressId === 'string' && s.pressId) || pickStampingPressId(tonnes),
           // Feed-limited when the rules carried it; 20 SPM was the old blind
           // default and alone inflated the cross-member cycle ~4.5×.
           strokesPerMin: num(s.strokesPerMin, 45),

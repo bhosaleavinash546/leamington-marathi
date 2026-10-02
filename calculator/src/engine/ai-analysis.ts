@@ -428,6 +428,8 @@ export interface CADAnalysisResult {
       strokesPerMin?: number;
       /** Cut length for blanking force: DXF outline + holes, else (S − 2V/t)/t, else 2(L+W). */
       perimeterMm?: number;
+      /** The press, sized on the cut length — the same pick the headless path makes. */
+      pressId?: string;
       /** BIW process: how the pressing is made, and what a drawn panel carries. */
       pressLine?: 'coil-fed' | 'transfer' | 'tandem';
       pressesInLine?: number;

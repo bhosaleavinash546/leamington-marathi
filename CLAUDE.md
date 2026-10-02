@@ -28,6 +28,7 @@ npm run accuracy        # scripts/accuracy-report.ts — grade estimate-vs-actua
 npm run test:e2e        # e2e/smoke.ts — headless browser boot + drive (needs a build first)
 npm run test:e2e:full   # e2e/full.ts — real server, every commodity, exports, STL upload, axe WCAG 2.1 AA
 npm run test:e2e:pcb    # e2e/pcb-live.ts — photo→cost in a browser against e2e/pcb-stand-in.mjs (a fixed model reply)
+npm run test:e2e:sheet  # e2e/sheet-metal-live.ts — the seat bracket STEP through a real server + browser (needs OCP); writes live-<label>.json
 ```
 
 From the repo root, `make start|stop|restart|logs` drives the single Docker

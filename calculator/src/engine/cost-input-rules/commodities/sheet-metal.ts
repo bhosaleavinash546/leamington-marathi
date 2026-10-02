@@ -34,6 +34,7 @@ import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
 import { nestOnCoil, offsetOutline, type NestResult } from '../../nesting.js';
 import { formingPropertiesFor, formingLimitCheck } from '../../forming-properties.js';
+import { pickStampingPressId } from '../../machine-sizing.js';
 import type { MaterialFamily } from '../../material-family.js';
 
 /** Shear strength MPa by family — drives die hardness and press tonnage. */
@@ -541,6 +542,35 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         return decided('sheetMetal.perimeterMm', 2 * (b.lengthMm + b.widthMm), 'rule',
           `2 × (${b.lengthMm} + ${b.widthMm}) of the blank rectangle — ignores the outline shape and every `
           + `hole, so the blanking force is understated; upload the FASTBLANK DXF for the real cut length`, 0.4);
+      },
+    },
+    {
+      // The press, from the blanking force the cut length implies — decided here
+      // so the screen and the headless path pick the same press. The screen used
+      // to size it from the rectangle's 2(L+W) before the rules' cut length had
+      // reached the form, and landed a tier low.
+      id: 'sheetMetal.pressId',
+      path: 'sheetMetal.pressId',
+      fieldId: 'sm-press',
+      label: 'pressId',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const b = blankDims(ctx);
+        if (!b) return ask({
+          id: 'sheetMetal.blank', kind: 'geometry_gap', question: 'What are the blank dimensions?',
+          why: 'No blank, so no cut length to size the press on.', options: [{ value: 'enter', label: 'Enter blank length and width' }],
+          entry: { kind: 'number' }, blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
+        });
+        const dev = ctx.geo.blank;
+        const ab = analyticBlank(ctx);
+        const cut = dev && dev.outerPerimeterMm > 0 ? dev.outerPerimeterMm + (dev.holePerimeterMm ?? 0)
+          : ab?.cutLengthMm ?? 2 * (b.lengthMm + b.widthMm);
+        const tonnes = (cut * r.advice.gauge * r.advice.shearMPa) / 9807;
+        const id = pickStampingPressId(tonnes);
+        return decided('sheetMetal.pressId', id, 'rule',
+          `blanking force ≈ ${Math.round(cut)} mm cut × ${r.advice.gauge.toFixed(2)} mm × ${r.advice.shearMPa} MPa = ${tonnes.toFixed(0)} t, `
+          + `× 1.25 safety → the smallest press over ${Math.round(tonnes * 1.25)} t`, 0.75);
       },
     },
     {
