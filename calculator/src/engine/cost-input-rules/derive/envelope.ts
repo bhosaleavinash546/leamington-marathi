@@ -10,6 +10,13 @@
 import type { RuleContext } from '../types.js';
 
 /** Bounding-box dimensions, largest first. */
+/** How the projected area was obtained — for the rules' basis lines. */
+export function projectedAreaBasis(ctx: RuleContext): string {
+  return ctx.geo.projectedArea?.alongDrawMm2
+    ? 'measured silhouette along the draw direction (tessellated solid, rasterised union of its shadow)'
+    : 'estimated: bbox face × √fill for a solid, bbox face for a shell below 5% fill (no measured silhouette)';
+}
+
 export function bboxSortedMm(ctx: RuleContext): [number, number, number] | null {
   const bb = ctx.geo.boundingBox;
   if (!bb) return null;
@@ -34,6 +41,13 @@ export function bboxSortedMm(ctx: RuleContext): [number, number, number] | null 
  * them the envelope IS the part.
  */
 export function projectedAreaCm2(ctx: RuleContext): number | null {
+  // Measured first: the kernel rasterises the solid's real shadow along the
+  // draw direction (`projectedArea.alongDrawMm2`). The estimate below stays the
+  // fallback for geometry measured before that existed, STL and text parses —
+  // and it was badly wrong for an OPEN shell above 5% fill (a 600 x 400 tray:
+  // 655 cm² estimated against a 2,400 cm² shadow — the press 3.5x too small).
+  const measured = ctx.geo.projectedArea?.alongDrawMm2;
+  if (measured && measured > 0) return Math.round(measured / 100 * 10) / 10;
   const d = bboxSortedMm(ctx);
   if (!d) return null;
   const faceCm2 = (d[0] * d[1]) / 100;

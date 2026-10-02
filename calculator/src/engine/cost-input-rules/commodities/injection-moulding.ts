@@ -24,14 +24,15 @@
  *    can close.
  */
 import {
-  estimateClampingTonnage, estimateMouldCost, pickIMMPressId, steelClassFor,
-  thermodynamicCoolFactor, type MouldSteelClass,
+  estimateClampingTonnage, pickIMMPressId, steelClassFor,
+  thermodynamicCoolFactor, dryCycleSeconds, injectionRateCm3PerSec, TAKE_OUT_S,
+  type MouldSteelClass,
 } from '../../modules/injection-moulding.js';
 import { optimiseCavitation, type CavitationChoice } from '../../cavitation-optimiser.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
-import { projectedAreaCm2, governingWallMm } from '../derive/envelope.js';
+import { projectedAreaCm2, projectedAreaBasis, governingWallMm } from '../derive/envelope.js';
 
 /** Largest press in the rate library, tonnes — the hard cavitation ceiling. */
 const MAX_CLAMP_TONNES = 3500;
@@ -67,38 +68,129 @@ export function cavityCount(ctx: RuleContext, resin: ResinFacts): { n: number; b
  * cycle share. Null when the geometry cannot support the arithmetic.
  */
 export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): CavitationChoice | null {
-  const wallMm = ctx.geo.wallThickness?.meanMm ?? 0;
+  const wall = mouldWallMm(ctx);
   const areaCm2 = projectedAreaCm2(ctx);
-  if (!wallMm || !areaCm2) return null;
-  const governingWall = governingWallMm(ctx.geo.wallThickness)?.mm ?? wallMm;
-  // The exact shot the mapper will charge: fill/pack off the mean wall (their
-  // rules), cooling off the governing wall (the wall rule ships it), eject flat.
-  const shotSeconds = fillSeconds(wallMm) + packSeconds(wallMm)
-    + coolFactorFor(resin) * governingWall ** 2 + EJECT_SECONDS;
+  if (!wall || !areaCm2) return null;
+  const runner = runnerChoice(ctx, resin, areaCm2);
   return optimiseCavitation({
     areaPerCavityCm2: areaCm2,
     cavityPressureMPa: resin.cavityPressureMPa ?? 50,
-    shotSeconds,
+    shotSeconds: shotSecondsFor(ctx, resin, 'imm-200t', 1),
+    cycleSecondsFor: (pressId, n) => shotSecondsFor(ctx, resin, pressId, n),
     annualVolume: ctx.annualVolume,
     sideActionsLifters: sideActions(ctx).n,
-    occtMouldCostGBP: ctx.geo.toolingCostEstimates?.imMouldCostGBP,
     maxClampTonnes: MAX_CLAMP_TONNES,
     programmeYears: PROGRAMME_YEARS,
+    runnerSystem: runner.system,
+    dropsPerCavity: runner.dropsPerCavity,
+    manning: mouldManning(pickIMMPressId(estimateClampingTonnage({
+      projectedAreaCm2: areaCm2, cavityPressureMPa: resin.cavityPressureMPa ?? 50 }))).n,
+    rejectRate: MOULDING_REJECT,
+    // Depth is NOT passed: the build-up's depth law was calibrated with its own
+    // footprint-derived depth against the one quoted tool (the bumper, £420k), and
+    // the measured depth would move that anchor +13% with nothing to check it by.
   });
 }
 
-/** Shared cycle formulas — the rules print these, the optimiser sums them.
- *  One source, so the ranked shot is exactly the shot the mapper charges. */
-export function fillSeconds(wallMm: number): number {
-  return Math.max(1.5, Math.round(wallMm * 0.5 * 10) / 10);
+/**
+ * The wall that governs the cycle, mm: the measured wall after the thin-shell
+ * correction (2·V/S when the ray-cast overshot the cavity), p95-capped when the
+ * ray cast is trusted. Fill, pack and cool all read THIS one figure now; fill
+ * and pack used the raw ray-cast mean, which on a shelled cover read 29.5 mm.
+ */
+export function mouldWallMm(ctx: RuleContext): number | null {
+  return governingWallMm(ctx.geo.wallThickness)?.mm ?? null;
+}
+
+/** Part depth along the draw, cm — the cavity block depth in the tool build-up. */
+export function partDepthCm(ctx: RuleContext): number | null {
+  const b = ctx.geo.boundingBox;
+  if (!b) return null;
+  const dims = [b.xMm, b.yMm, b.zMm];
+  const d = ctx.geo.draftAnalysis?.drawDirectionXYZ;
+  const axis = d ? d.findIndex(c => Math.abs(c) > 0.99) : -1;
+  const mm = axis >= 0 ? dims[axis] : Math.min(...dims);
+  return mm > 0 ? Math.round(mm / 10 * 10) / 10 : null;
+}
+
+/** Fill and pack, from the shot volume and the press, and the wall. */
+export function fillSeconds(shotCm3: number, pressId: string): number {
+  return Math.max(1.5, Math.round(shotCm3 / injectionRateCm3PerSec(pressId) * 10) / 10);
 }
 export function packSeconds(wallMm: number): number {
   return Math.max(2.0, Math.round(wallMm * 0.8 * 10) / 10);
 }
-export const EJECT_SECONDS = 2;
+/** Mould open, eject, take-out and close: the press dry cycle plus take-out. */
+export function ejectSeconds(pressId: string): number {
+  return Math.round((dryCycleSeconds(pressId) + TAKE_OUT_S) * 10) / 10;
+}
 export function coolFactorFor(resin: ResinFacts): number {
   return thermodynamicCoolFactor(resin.materialId ?? '')?.factorSPerMm2
     ?? resin.coolFactorSPerMm2!;
+}
+
+/** Shot volume, cm³: n parts plus the cold runner (none on a hot runner). */
+function shotCm3(ctx: RuleContext, resin: ResinFacts, n: number): number {
+  const part = ctx.geo.volume?.cm3 ?? 0;
+  const runner = runnerChoice(ctx, resin, projectedAreaCm2(ctx) ?? 0);
+  const runnerKg = runner.system === 'hot' ? 0 : coldRunnerKgPerShot(resin.massKg ?? 0, n);
+  return n * part + runnerKg / ((resin.densityKgPerM3 ?? 1000) / 1e6);
+}
+
+/** The whole shot on a press, s — what the cycle rules print and the optimiser ranks. */
+export function shotSecondsFor(ctx: RuleContext, resin: ResinFacts, pressId: string, n: number): number {
+  const wall = mouldWallMm(ctx) ?? 0;
+  return fillSeconds(shotCm3(ctx, resin, n), pressId) + packSeconds(wall)
+    + coolFactorFor(resin) * wall ** 2 + ejectSeconds(pressId);
+}
+
+/** Typical moulding scrap (start-up, short shots, cosmetics): 1–3%; 2% is used. */
+export const MOULDING_REJECT = 0.02;
+
+/**
+ * Cold runner and sprue per SHOT, kg: 15% of the shot, but never under 3 g a
+ * cavity — a small part's runner is a large share of it (an 8-up 5 g clip
+ * carries ~25 g of runner, not 6 g).
+ */
+export function coldRunnerKgPerShot(partKg: number, n: number): number {
+  return Math.round(Math.max(0.15 * partKg * n, 0.003 * n) * 10_000) / 10_000;
+}
+
+/**
+ * Hot or cold runner. Large parts (≥ 250 g) are hot-runnered as a matter of
+ * course — a cold runner on a bumper is kilograms of waste a shot — and so is
+ * high-volume work (≥ 1M a year), where the runner's material and cooling time
+ * outweigh the manifold. A large footprint takes several drops: one per ~1,500 cm².
+ * Stated engineering practice; the engineer can change it on the form.
+ */
+export function runnerChoice(ctx: RuleContext, resin: ResinFacts, areaCm2: number):
+  { system: 'hot' | 'cold'; dropsPerCavity: number; basis: string } {
+  const kg = resin.massKg ?? 0;
+  // Large automotive skins run 4–8 sequential valve gates: one per ~1,500 cm².
+  const drops = Math.max(1, Math.ceil(areaCm2 / 1500));
+  if (kg >= 0.25) {
+    return { system: 'hot', dropsPerCavity: drops,
+      basis: `${(kg * 1000).toFixed(0)} g part — hot runner, ${drops} drop(s) a cavity (one per ~1,500 cm² of ${areaCm2.toFixed(0)} cm²)` };
+  }
+  if (ctx.annualVolume >= 1_000_000) {
+    return { system: 'hot', dropsPerCavity: 1,
+      basis: `${ctx.annualVolume.toLocaleString('en-GB')}/yr — hot runner: the runner's material and cooling time outweigh the manifold at this volume` };
+  }
+  return { system: 'cold', dropsPerCavity: 0,
+    basis: `${(kg * 1000).toFixed(0)} g part at ${ctx.annualVolume.toLocaleString('en-GB')}/yr — cold runner and sprue` };
+}
+
+/**
+ * Operators per press. An automatic press with a picker or robot is tended
+ * one operator to two presses (0.5); above 500 t the parts are large and are
+ * taken off, trimmed and packed by hand — one per press. Headless charged 1.0
+ * on every press and the screen 0.25: labour 4x apart on the same part.
+ */
+export function mouldManning(pressId: string): { n: number; basis: string } {
+  const t = Number(/(\d+)t/.exec(pressId)?.[1] ?? 0);
+  return t > 500
+    ? { n: 1, basis: `${pressId}: large parts taken off, trimmed and packed by hand — one operator a press` }
+    : { n: 0.5, basis: `${pressId}: automatic press with picker / robot — one operator tends two presses` };
 }
 
 /**
@@ -144,7 +236,7 @@ function advise(ctx: RuleContext): { advice: ImAdvice } | { blocked: RuleOutcome
   const resin = resinFacts(ctx);
   if (resin.decision) return { blocked: ask(resin.decision) };
 
-  const wallMm = ctx.geo.wallThickness?.meanMm ?? 0;
+  const wallMm = mouldWallMm(ctx) ?? 0;
   const areaCm2 = projectedAreaCm2(ctx);
   if (!wallMm || !areaCm2) {
     return {
@@ -175,7 +267,7 @@ function advise(ctx: RuleContext): { advice: ImAdvice } | { blocked: RuleOutcome
       cavities: n, cavitiesBasis: choice.basis,
       slides: slides.n, slidesBasis: slides.basis,
       clampTonnes: Math.round(clampTonnes),
-      pressId: pickIMMPressId(clampTonnes),
+      pressId: choice.chosen.pressId,
       steel: { cls: choice.chosen.steelClass, life: choice.chosen.mouldLife },
       shots: Math.round(shots),
     },
@@ -222,7 +314,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
         });
         return decided('injectionMoulding.projectedAreaCm2', a, 'geometry',
-          'projection: bbox face × √fill for a solid, bbox face (worst case) for a shell', 0.75);
+          projectedAreaBasis(ctx), ctx.geo.projectedArea?.alongDrawMm2 ? 0.95 : 0.6);
       },
     },
     {
@@ -319,9 +411,11 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const v = fillSeconds(r.advice.wallMm);
+        const cm3 = shotCm3(ctx, r.advice.resin, r.advice.cavities);
+        const v = fillSeconds(cm3, r.advice.pressId);
         return decided('injectionMoulding.fillTimeSec', v, 'rule',
-          `0.5 s per mm of wall (${r.advice.wallMm.toFixed(1)} mm), floored at 1.5 s`, 0.6);
+          `${cm3.toFixed(0)} cm³ shot ÷ ${injectionRateCm3PerSec(r.advice.pressId)} cm³/s injection rate on the `
+          + `${r.advice.pressId} (engineering-typical), floored at 1.5 s`, 0.55);
       },
     },
     {
@@ -334,7 +428,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const v = packSeconds(r.advice.wallMm);
         return decided('injectionMoulding.packTimeSec', v, 'rule',
-          `0.8 s per mm of wall (${r.advice.wallMm.toFixed(1)} mm), floored at 2.0 s`, 0.6);
+          `hold to gate freeze, 0.8 s per mm of wall (${r.advice.wallMm.toFixed(1)} mm), floored at 2.0 s`, 0.55);
       },
     },
     {
@@ -342,8 +436,13 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       path: 'injectionMoulding.ejectTimeSec',
       fieldId: 'imm-eject',
       label: 'ejectTimeSec',
-      evaluate: () => decided('injectionMoulding.ejectTimeSec', 2, 'rule',
-        'mould open + eject + close, standard toggle press', 0.6),
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return decided('injectionMoulding.ejectTimeSec', ejectSeconds(r.advice.pressId), 'rule',
+          `${r.advice.pressId} dry cycle (open, close, clamp build) ${dryCycleSeconds(r.advice.pressId)} s + `
+          + `${TAKE_OUT_S} s take-out — engineering-typical, was a flat 2 s on every press`, 0.55);
+      },
     },
     {
       // Cold runner assumed. It is the cheaper tool and the more expensive shot,
@@ -359,10 +458,15 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         // TOTAL per shot: the cost model divides the runner by cavities, so a
         // per-part figure at n>1 under-counted the waste by n (a live defect).
-        const v = Math.round(r.advice.resin.massKg! * 0.15 * r.advice.cavities * 10_000) / 10_000;
+        const rc = runnerChoice(ctx, r.advice.resin, r.advice.areaCm2);
+        if (rc.system === 'hot') {
+          return decided('injectionMoulding.runnerWeightKg', 0, 'rule',
+            'hot runner — the melt stays in the manifold, no runner waste', 0.6);
+        }
+        const v = coldRunnerKgPerShot(r.advice.resin.massKg!, r.advice.cavities);
         return decided('injectionMoulding.runnerWeightKg', v, 'rule',
-          `15% of part weight × ${r.advice.cavities}-cavity shot — cold runner and sprue `
-          + 'per SHOT (the cost model allocates it per cavity); a hot runner would make this 0', 0.6);
+          `cold runner and sprue per SHOT: 15% of the ${r.advice.cavities}-cavity shot, min 3 g a cavity `
+          + '(the cost model allocates it per cavity)', 0.55);
       },
     },
     {
@@ -410,33 +514,75 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const est = estimateMouldCost({
-          cavities: r.advice.cavities,
-          projectedAreaCm2: r.advice.areaCm2 * r.advice.cavities,
-          steelClass: r.advice.steel.cls,
-          sideActionsLifters: r.advice.slides,
-          runnerSystem: 'cold',
-        });
         const occt = ctx.geo.toolingCostEstimates?.imMouldCostGBP;
-        // Two independent parametrics exist: the area-driven advisor estimate
-        // and the kernel's B-rep-derived figure. On the real bumper they said
-        // £828k and £200k, the advisor number stood alone, and tooling carried
-        // the whole +30% residual. When both exist, take the geometric mean —
-        // the standard combination for multiplicative estimators — and show
-        // both inputs in the basis so the blend is arguable, not hidden.
-        // (The explainer deck's own bumper-class example uses £420k; the blend
-        // lands at £407k.)
-        // The optimiser level-calibrates every candidate by √(occt/est(1)) — at
-        // the chosen n=1 this IS Math.round(Math.sqrt(est.total × occt)), so the
-        // shipped blend convention is preserved bit-for-bit; at n>1 the OCCT
-        // evidence corrects the level while the advisor supplies the shape in n.
-        const blended = r.advice.choice.chosen.mouldCostGBP;
-        return decided('injectionMoulding.mouldCostGBP', blended, 'advisor',
-          `${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
-          + `${r.advice.slides} slide(s)`
-          + (occt ? ` — advisor £${est.total.toFixed(0)} ⊕ OCCT £${occt.toFixed(0)} (geometric mean)` : ''),
+        // The toolmaker build-up alone (see cavitation-optimiser.ts): the old
+        // geometric mean with the kernel's face-count figure (capped at £200k)
+        // pulled the one quoted tool — the bumper, £420k — about 30% low.
+        const tool = r.advice.choice.chosen.mouldCostGBP;
+        const rc = runnerChoice(ctx, r.advice.resin, r.advice.areaCm2);
+        return decided('injectionMoulding.mouldCostGBP', tool, 'advisor',
+          `toolmaker build-up: ${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
+          + `${r.advice.slides} slide(s), ${rc.system} runner`
+          + `${rc.system === 'hot' ? ` (${rc.dropsPerCavity * r.advice.cavities} drop(s))` : ''}`
+          + (occt ? `; kernel face-count parametric said £${Math.round(occt).toLocaleString()} (not used)` : ''),
           0.65);
       },
+    },
+    {
+      id: 'injectionMoulding.runnerSystem',
+      path: 'injectionMoulding.runnerSystem',
+      fieldId: 'imm-runner-sys',
+      label: 'runnerSystem',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const rc = runnerChoice(ctx, r.advice.resin, r.advice.areaCm2);
+        return decided('injectionMoulding.runnerSystem', rc.system, 'rule', rc.basis, 0.6);
+      },
+    },
+    {
+      // Runner regrind blended back into the virgin. Headless assumed 80% and the
+      // screen 20%; the honest ceiling is the blend limit — most automotive
+      // specifications cap regrind at ~20% of the shot (less on glass-filled
+      // grades, whose fibres shorten every pass) — less ~20% lost to fines.
+      id: 'injectionMoulding.regrindFraction',
+      path: 'injectionMoulding.regrindFraction',
+      fieldId: 'imm-regrind',
+      label: 'regrindFraction',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const rc = runnerChoice(ctx, r.advice.resin, r.advice.areaCm2);
+        if (rc.system === 'hot') {
+          return decided('injectionMoulding.regrindFraction', 0, 'rule', 'hot runner — no runner to regrind', 0.7);
+        }
+        const runner = coldRunnerKgPerShot(r.advice.resin.massKg!, r.advice.cavities);
+        const shot = r.advice.resin.massKg! * r.advice.cavities + runner;
+        const v = Math.round(Math.min(0.8, 0.20 * shot / runner) * 100) / 100;
+        return decided('injectionMoulding.regrindFraction', v, 'rule',
+          `runner reused up to a 20% regrind blend in the shot, less 20% fines: min(0.8, 0.20 × ${(shot * 1000).toFixed(0)} g ÷ `
+          + `${(runner * 1000).toFixed(0)} g) — set 0 where the specification forbids regrind`, 0.5);
+      },
+    },
+    {
+      id: 'injectionMoulding.manning',
+      path: 'injectionMoulding.manning',
+      fieldId: 'imm-manning',
+      label: 'manning',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const m = mouldManning(r.advice.pressId);
+        return decided('injectionMoulding.manning', m.n, 'rule', `${m.basis} (engineering-typical)`, 0.5);
+      },
+    },
+    {
+      id: 'injectionMoulding.rejectRate',
+      path: 'injectionMoulding.rejectRate',
+      fieldId: 'imm-reject',
+      label: 'rejectRate',
+      evaluate: () => decided('injectionMoulding.rejectRate', MOULDING_REJECT, 'rule',
+        'moulding scrap (start-up, short shots, cosmetic rejects), engineering-typical 1–3% — the screen had none, headless 3%', 0.5),
     },
   ],
 };

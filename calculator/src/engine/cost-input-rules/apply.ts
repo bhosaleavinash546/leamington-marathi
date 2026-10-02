@@ -101,6 +101,11 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'injectionMoulding.cavityPressureMPa': { to: 'injectionMoulding.cavityPressureMPa' },
   'injectionMoulding.machineId': { to: 'injectionMoulding.machineId' },
   'injectionMoulding.steelClass': { to: 'injectionMoulding.steelClass' },
+  // Injection-moulding review (2 Oct 2026): screen and headless differed on all four.
+  'injectionMoulding.runnerSystem': { to: 'injectionMoulding.runnerSystem' },
+  'injectionMoulding.regrindFraction': { to: 'injectionMoulding.regrindFraction' },
+  'injectionMoulding.manning': { to: 'injectionMoulding.manning' },
+  'injectionMoulding.rejectRate': { to: 'injectionMoulding.rejectRate' },
   'forging.projectedAreaCm2': { to: 'forging.projectedAreaCm2' },
   'forging.dieSteel': { to: 'forging.dieSteel' },
   'forging.dieImpressions': { to: 'forging.dieImpressions' },

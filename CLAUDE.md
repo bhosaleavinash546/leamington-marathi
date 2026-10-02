@@ -234,6 +234,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   2·V/S, never the ray-cast min/mean wall; tooling is the toolmaker build-up, not the
   kernel's face-count figure; fettling / heat treat / blast / NDT are rules. See
   `docs/cad/casting-review-2026-10.md` and `tests/casting-review.test.ts`.
+- Injection moulding (`modules/injection-moulding.ts`, `cost-input-rules/commodities/injection-moulding.ts`,
+  `cavitation-optimiser.ts`): the shell wall correction fires below fill 0.5; projected area is
+  the kernel's measured silhouette (`projectedArea.alongDrawMm2`, shared by every press/die
+  commodity); dry cycle and fill rate follow the press; runner, regrind, manning and scrap are
+  rules; the tool is the toolmaker build-up only. A shell with bosses or a moulding name is
+  asked, not routed to sheet metal. See `docs/cad/injection-moulding-review-2026-10.md` and
+  `tests/moulding-review.test.ts`; the modelled mouldings are in `cad-audit/parts/IM_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

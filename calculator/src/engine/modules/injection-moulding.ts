@@ -115,6 +115,43 @@ export function steelClassFor(shots: number): { cls: MouldSteelClass; life: numb
   return { cls: 'high_volume', life: 5_000_000 };
 }
 
+/**
+ * Press dry cycle — mould open, close and clamp build-up — by clamp size, s.
+ *
+ * The rules charged a flat 2 s "open + eject + close" on every press, from a
+ * 50 t toggle to a 3,500 t hydraulic: a big press moves a heavy platen a long
+ * way and builds a large clamp force, and its dry cycle is several times a
+ * small one's. Engineering-typical from press datasheets (Euromap 6 dry-cycle
+ * class), to be replaced by the moulder's own press.
+ */
+const DRY_CYCLE_S: Array<[number, number]> = [
+  [50, 1.5], [100, 2.0], [200, 2.5], [350, 3.0], [500, 3.5],
+  [800, 4.5], [1200, 6.0], [2000, 8.0], [3500, 11.0],
+];
+/** Robot / picker take-out after ejection, s. */
+export const TAKE_OUT_S = 1.0;
+export function dryCycleSeconds(pressId: string): number {
+  const t = Number(/(\d+)t/.exec(pressId)?.[1] ?? 0);
+  return (DRY_CYCLE_S.find(([cap]) => t <= cap) ?? DRY_CYCLE_S[DRY_CYCLE_S.length - 1])[1];
+}
+
+/**
+ * Injection (fill) flow rate the press can deliver, cm³/s, by clamp size.
+ *
+ * Fill time is the shot volume over the injection rate. The rules had it as
+ * 0.5 s per mm of WALL — backwards: a thicker wall fills faster for the same
+ * shot, and what takes time is volume through a small press's screw.
+ * Engineering-typical, stated, replace with the press's injection-unit data.
+ */
+const INJECTION_RATE_CM3_S: Array<[number, number]> = [
+  [50, 40], [100, 70], [200, 120], [350, 200], [500, 280],
+  [800, 420], [1200, 600], [2000, 900], [3500, 1400],
+];
+export function injectionRateCm3PerSec(pressId: string): number {
+  const t = Number(/(\d+)t/.exec(pressId)?.[1] ?? 0);
+  return (INJECTION_RATE_CM3_S.find(([cap]) => t <= cap) ?? INJECTION_RATE_CM3_S[INJECTION_RATE_CM3_S.length - 1])[1];
+}
+
 export function pickIMMPressId(clampTonnes: number): string {
   const presses: Array<[number, string]> = [
     [50, 'imm-50t'], [100, 'imm-100t'], [200, 'imm-200t'], [350, 'imm-350t'],

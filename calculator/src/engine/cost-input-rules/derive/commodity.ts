@@ -168,6 +168,29 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   const meanWall = g.wallThickness?.meanMm ?? null;
   const gaugeIsTheBulkWall = meanWall == null || meanWall <= GAUGE_WALL_TOLERANCE * gauge;
   if (sm && (sm.bendCount ?? 0) >= 2 && gauge > 0 && gauge <= 6 && gaugeIsTheBulkWall) {
+    // A moulded shell reads the same way: a uniform wall with filleted corners
+    // has the concentric inner / outer radii a bend has. Found on a modelled
+    // 2.5 mm ECU cover (12 "bends") and a 3 mm tray (8), both routed to
+    // sheet metal without a question (moulding review, 2 Oct 2026). A pressing
+    // carries no bosses, and a file that names another process outranks a
+    // radius pattern — then it is a question, leaning on that evidence.
+    const bosses = (g.featureTable ?? []).filter(r => r.kind === 'boss').reduce((n, r) => n + (r.count ?? 1), 0);
+    const named = processFromNames(partNames(ctx.filename, g));
+    const namedOther = named.route && named.route !== 'sheet_metal' ? named : null;
+    if (bosses > 0 || namedOther) {
+      const lean = namedOther && ['injection_moulding', 'thermoforming', 'sheet_metal'].includes(namedOther.route!)
+        ? namedOther.route! : 'injection_moulding';
+      const evidence = [
+        bosses > 0 ? `${bosses} boss(es), which a pressing does not have` : '',
+        namedOther ? `the file calls it ${namedOther.hits[0].label} ("${namedOther.hits[0].text}", ${namedOther.hits[0].where})` : '',
+      ].filter(Boolean).join('; ');
+      return {
+        decision: ask(
+          `${sm.bendCount} bend-like radius pairs at a ${gauge.toFixed(1)} mm wall — a pressing, or a moulded shell `
+          + `whose fillets read the same way. Against a pressing: ${evidence}.`,
+          ['injection_moulding', 'sheet_metal', 'thermoforming'], lean),
+      };
+    }
     return {
       commodity: 'sheet_metal',
       basis: `${sm.bendCount} bends measured at a ${gauge.toFixed(1)} mm gauge`,

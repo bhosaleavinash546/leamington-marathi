@@ -86,6 +86,28 @@ export const ANSWERS: Record<string, {
     note: '274 mm, 23% fill, 10.4 mm bulk wall. Machined from billet at this volume.',
     answers: { 'material.family': 'aluminium', 'commodity.route': 'machining' },
   },
+  // ── Injection mouldings (moulding review, 2 Oct 2026) ─────────────────────
+  // NOT customer parts: modelled in OCP to production moulding design rules by
+  // cad-audit/parts/IM_modelled_parts.py (drafted walls, fillets, bosses, ribs,
+  // snap windows) because the audit set held no plastic part at all, and the
+  // synthetic test fixtures had hidden a 59 mm "wall" on a 2.5 mm cover. Replace
+  // with real mouldings and their quotes when JLR can supply them.
+  'IM_ECU_Cover.stp': {
+    note: 'MODELLED: 180 x 120 x 40 mm ECU cover, 2.5 mm wall, 1.5° draft, 4 screw bosses, rib grid, '
+        + '4 snap-fit windows. PA66-GF30, the usual under-bonnet cover grade.',
+    answers: { 'material.resin': 'mat-pa66gf30', 'commodity.route': 'injection_moulding',
+               'commodity.thinWallRoute': 'injection_moulding' },
+  },
+  'IM_Cable_Clip.stp': {
+    note: 'MODELLED: 40 x 25 x 12 mm cable clip, 2.0 mm wall, latch window. PA66-GF30.',
+    answers: { 'material.resin': 'mat-pa66gf30', 'commodity.route': 'injection_moulding',
+               'commodity.thinWallRoute': 'injection_moulding' },
+  },
+  'IM_Storage_Tray.stp': {
+    note: 'MODELLED: 600 x 400 x 60 mm tray, 3.0 mm wall, 2° draft, R5 fillets, 2 ribs. Impact PP.',
+    answers: { 'material.resin': 'mat-pp-impact', 'commodity.route': 'injection_moulding',
+               'commodity.thinWallRoute': 'injection_moulding' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

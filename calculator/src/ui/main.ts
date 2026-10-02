@@ -20,7 +20,7 @@ import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers, assessPressTonnage, estimateTonnageTonnes } from '../engine/modules/sheet-metal.js';
 import { sizeProcessMachine, type MachineSizingParams } from '../engine/machine-sizing.js';
 import { runShouldCostAudit, type AuditCorrection, type AuditFinding } from '../engine/should-cost-audit.js';
-import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, pickIMMPressId, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
+import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { analyseInjectionDFM, type ResinType } from '../engine/modules/injection-advisor.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
@@ -3841,6 +3841,7 @@ function renderInjectionForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Regrind Fraction <span title="Cold runner only. Hot runner = 0 waste. Max ~0.3 for unfilled resins; 0 for glass-filled.">ℹ</span></label><input type="number" id="imm-regrind" step="0.01" min="0" max="1" value="0.2"/></div>
+      <div class="field-group"><label title="Moulding scrap — start-up, short shots, cosmetic rejects. Uplifts material and press time. Engine default 2% (typical 1–3%).">Reject Rate (0–1) ⓘ</label><input type="number" id="imm-reject" step="0.005" min="0" max="0.5" value="0.02"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Mould &amp; Cycle</div>
     <div class="field-row">
@@ -11372,58 +11373,32 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       }
 
       case 'injection_moulding': {
+        // Everything comes from the analysis — the rule-decided values headless
+        // costs. This block used to run its own model: area = bbox X × Y (the
+        // orientation coin-flip the rules fixed), the raw ray-cast mean wall,
+        // the kernel's face-count mould cost, and cooling / pressure maps keyed
+        // on ids that do not exist ('mat-pp', 'mat-pc'), so every resin got
+        // 3.0 s/mm² and 50 MPa (injection-moulding review).
         setMaterial(el<HTMLSelectElement>('imm-mat'), c.materialId);
         setNumericField('imm-part-wt', c.netWeightKg, 4);
-        // OCCT-derived: projected area and wall thickness
-        const immBB = cadOCCTGeometry?.boundingBox;
-        const immWall = cadOCCTGeometry?.wallThickness?.meanMm;
-        if (immBB) {
-          const projCm2 = (immBB.xMm * immBB.yMm) / 100;
-          setNumericField('imm-area', projCm2, 1);
-        }
-        if (immWall) {
-          setNumericField('imm-wall', immWall, 1);
-        }
         const im = c.injectionMoulding;
-        const immTC = cadOCCTGeometry?.toolingCostEstimates;
         if (im) {
           setNumericField('imm-cav', im.cavities, 0);
-          if (!immBB) setNumericField('imm-area', im.projectedAreaCm2, 1);
-          if (!immWall) setNumericField('imm-wall', im.wallThicknessMm, 1);
-          // Prefer OCCT parametric mould cost over AI bracket estimate
-          setNumericField('imm-mould-cost', immTC?.imMouldCostGBP ?? im.mouldCostGBP, 0);
+          setNumericField('imm-area', im.projectedAreaCm2, 1);
+          setNumericField('imm-wall', im.wallThicknessMm, 2);
+          setNumericField('imm-mould-cost', im.mouldCostGBP, 0);
           setNumericField('imm-mould-life', im.mouldLife, 0);
           setNumericField('imm-runner-wt', im.runnerWeightKg, 4);
-        } else if (immTC) {
-          setNumericField('imm-mould-cost', immTC.imMouldCostGBP, 0);
-        }
-        // Material-specific cooling factor and cavity pressure (key cycle time drivers)
-        const immCoolMap: Record<string, number> = {
-          'mat-pp': 3.16, 'mat-pa6': 2.20, 'mat-pc': 4.50,
-        };
-        const immPressMap: Record<string, number> = {
-          'mat-pp': 35, 'mat-pa6': 55, 'mat-pc': 65,
-        };
-        const immCavPress = immPressMap[c.materialId] ?? 50;
-        setNumericField('imm-cool-f', immCoolMap[c.materialId] ?? 3.0, 2);
-        setNumericField('imm-cav-press', immCavPress, 0);
-        // Size the press to the required clamp tonnage (projected area × cavity
-        // pressure) — a bumper needs ~3900 T, not the small default press that
-        // made the moulding cost ~10× too low.
-        {
-          const projForTon = immBB ? (immBB.xMm * immBB.yMm) / 100 : (im?.projectedAreaCm2 ?? 0);
-          if (projForTon > 0) {
-            const tonnes = estimateClampingTonnage({ projectedAreaCm2: projForTon, cavityPressureMPa: immCavPress });
-            const pressId = pickIMMPressId(tonnes);
+          if (im.coolTimeFactorSPerMm2) setNumericField('imm-cool-f', im.coolTimeFactorSPerMm2, 2);
+          if (im.cavityPressureMPa) setNumericField('imm-cav-press', im.cavityPressureMPa, 0);
+          if (im.fillTimeSec) setNumericField('imm-fill', im.fillTimeSec, 1);
+          if (im.packTimeSec) setNumericField('imm-pack', im.packTimeSec, 1);
+          if (im.ejectTimeSec) setNumericField('imm-eject', im.ejectTimeSec, 1);
+          if (im.machineId) {
             const machEl = el<HTMLSelectElement>('imm-mach');
-            if (machEl) { machEl.value = resolveMachineIdForOp(pressId, 'Injection Moulding'); }
+            if (machEl) machEl.value = resolveMachineIdForOp(im.machineId, 'Injection Moulding');
           }
         }
-        // Cycle time sub-components from wall thickness
-        const wallForCycle = immWall ?? im?.wallThicknessMm ?? 2.5;
-        setNumericField('imm-fill', Math.max(1.5, parseFloat((wallForCycle * 0.5).toFixed(1))), 1);
-        setNumericField('imm-pack', Math.max(2.0, parseFloat((wallForCycle * 0.8).toFixed(1))), 1);
-        setNumericField('imm-eject', 2, 0);
         break;
       }
 
@@ -12540,7 +12515,8 @@ function collectIMMInput(): UniversalStackInput {
     runnerWeightKg: num('imm-runner-wt'),
     regrindFraction: num('imm-regrind'),
     cavities,
-    projectedAreaCm2,
+    // The module reads the total across cavities; the field is one cavity.
+    projectedAreaCm2: projectedAreaCm2 * cavities,
     cavityPressureMPa,
     wallThicknessMm: num('imm-wall'),
     coolTimeFactorSPerMm2: num('imm-cool-f'),
@@ -12563,15 +12539,17 @@ function collectIMMInput(): UniversalStackInput {
     insertCount: num('imm-insert-count') || undefined,
     insertUnitCost: num('imm-insert-cost') || undefined,
     secondaryOpCostPerPart: num('imm-secondary-cost') || undefined,
+    rejectRate: num('imm-reject') || undefined,
   });
 
   // H5: clamping-tonnage validation — warn if the part needs more clamp than the selected machine.
   const ratedTonnage = parseImmRatedTonnage(machineId);
   if (ratedTonnage && projectedAreaCm2 > 0 && cavityPressureMPa > 0) {
-    const requiredTonnage = estimateClampingTonnage({ projectedAreaCm2, cavityPressureMPa });
+    // The area field is ONE cavity; the press holds all of them shut.
+    const requiredTonnage = estimateClampingTonnage({ projectedAreaCm2: projectedAreaCm2 * cavities, cavityPressureMPa });
     if (requiredTonnage > ratedTonnage) {
       _smExtraWarnings.push(
-        `Clamping tonnage: part needs ≈${Math.round(requiredTonnage)}T (${projectedAreaCm2} cm² × ${cavityPressureMPa} MPa × 1.15 SF) ` +
+        `Clamping tonnage: part needs ≈${Math.round(requiredTonnage)}T (${projectedAreaCm2} cm² × ${cavities} cavit${cavities === 1 ? 'y' : 'ies'} × ${cavityPressureMPa} MPa × 1.15 SF) ` +
         `but the selected ${ratedTonnage}T machine is undersized — flash, short shots or press damage. ` +
         `Select a machine ≥ ${Math.ceil(requiredTonnage / 50) * 50}T, reduce cavitation, or lower cavity pressure.`
       );
@@ -12584,7 +12562,7 @@ function collectIMMInput(): UniversalStackInput {
 
   // H3: surface the estimated tool cost when it was auto-derived (mould cost left at 0).
   if (manualMouldCost <= 0) {
-    const est = estimateMouldCost({ cavities, projectedAreaCm2, steelClass, sideActionsLifters, runnerSystem });
+    const est = estimateMouldCost({ cavities, projectedAreaCm2: projectedAreaCm2 * cavities, steelClass, sideActionsLifters, runnerSystem });
     _smExtraWarnings.push(
       `Tooling: mould cost auto-estimated at £${est.total.toLocaleString()} ` +
       `(base £${est.base.toLocaleString()} + cavities £${est.cavityBlock.toLocaleString()}` +

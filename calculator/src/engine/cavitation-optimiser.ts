@@ -36,12 +36,21 @@ export interface CavitationInputs {
   /** projected area of ONE cavity, cm². */
   areaPerCavityCm2: number;
   cavityPressureMPa: number;
-  /** fill + pack + cool + eject, seconds — cavity-count invariant. */
+  /** fill + pack + cool + eject, seconds — the fallback when no per-press cycle is given. */
   shotSeconds: number;
+  /**
+   * The shot on a given press with n cavities, s. A bigger press has a longer
+   * dry cycle and a faster injection unit, and n cavities inject n parts' worth,
+   * so the shot is NOT cavity-count invariant once those are modelled.
+   */
+  cycleSecondsFor?: (pressId: string, n: number) => number;
+  /** Part depth along the draw, cm — the cavity block's depth in the tool build-up. */
+  depthCm?: number;
+  runnerSystem?: 'cold' | 'hot';
+  /** Hot-runner drops per cavity when hot (large parts take several). */
+  dropsPerCavity?: number;
   annualVolume: number;
   sideActionsLifters: number;
-  /** kernel parametric mould estimate — level-calibrates the NRE when present. */
-  occtMouldCostGBP?: number | null;
   /** turns annual volume into programme shots for the steel class. */
   programmeYears?: number;
   /** the mapper amortises tooling over this; defaults to the annual volume. */
@@ -103,27 +112,17 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
   const labourRate = library.labour.find(l => l.id === (p.labourId ?? 'lab-uk-semiskilled'))
     ?.fullyLoadedRatePerHr ?? 19.80;
 
-  // Level calibration for the mould NRE: when the kernel's parametric estimate
-  // exists, the shipped 1-cavity convention is the geometric mean of advisor
-  // and OCCT. Scaling every candidate by √(occt/est(1)) reproduces that blend
-  // bit-for-bit at n=1 while keeping the advisor's SHAPE in n — blending each
-  // candidate against the same OCCT figure would dampen NRE growth as est^0.5
-  // and systematically under-charge multi-cavity tools.
-  const est1 = estimateMouldCost({
-    cavities: 1, projectedAreaCm2: p.areaPerCavityCm2,
-    steelClass: steelClassFor(p.annualVolume * years).cls,
-    sideActionsLifters: p.sideActionsLifters, runnerSystem: 'cold',
+  // The tool is the toolmaker build-up alone. It used to be level-scaled by
+  // √(kernel / build-up) — the kernel's figure is B-rep face count × £120 plus
+  // £8,000 per undercut face, capped at £200k, and the scaling dragged the one
+  // tool we hold a quotation for (the bumper, £420k; build-up £424k) towards the
+  // cap. (Injection-moulding review, 2 Oct 2026.)
+  const mould = (n: number, cls: MouldSteelClass) => estimateMouldCost({
+    cavities: n, projectedAreaCm2: p.areaPerCavityCm2 * n, steelClass: cls,
+    sideActionsLifters: p.sideActionsLifters, runnerSystem: p.runnerSystem ?? 'cold',
+    ...(p.runnerSystem === 'hot' ? { hotRunnerDrops: n * Math.max(1, p.dropsPerCavity ?? 1) } : {}),
+    ...(p.depthCm ? { depthCm: p.depthCm } : {}),
   }).total;
-  // Clamped to a sane band: the geometric-mean blend reconciles two estimators
-  // in the same ballpark. When they disagree by an order of magnitude one of
-  // them is out of its domain, and letting the square root swing the WHOLE
-  // cavitation decision on it would launder that error into the cavity count.
-  const rawScale = p.occtMouldCostGBP && p.occtMouldCostGBP > 0 && est1 > 0
-    ? Math.sqrt(p.occtMouldCostGBP / est1)
-    : 1;
-  const levelScale = Math.min(3, Math.max(1 / 3, rawScale));
-
-  const shotHr = (p.shotSeconds / 3600) / (1 - reject);
   const all: CavitationCandidate[] = [];
   const infeasible: Array<{ n: number; clampTonnes: number }> = [];
 
@@ -138,11 +137,9 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
     const pressId = pickIMMPressId(clampTonnes);
     const rate = library.machines.find(m => m.id === pressId)?.computedRatePerHr ?? 0;
     const steel = steelClassFor((p.annualVolume * years) / n);
-    const est = estimateMouldCost({
-      cavities: n, projectedAreaCm2: p.areaPerCavityCm2 * n,
-      steelClass: steel.cls, sideActionsLifters: p.sideActionsLifters, runnerSystem: 'cold',
-    }).total;
-    const mouldCostGBP = Math.round(est * levelScale);
+    const mouldCostGBP = Math.round(mould(n, steel.cls));
+    const shotSec = p.cycleSecondsFor ? p.cycleSecondsFor(pressId, n) : p.shotSeconds;
+    const shotHr = (shotSec / 3600) / (1 - reject);
     const numMoulds = Math.max(1, Math.ceil((amortVol / n) / steel.life));
     const toolingPerPart = mouldCostGBP * numMoulds / amortVol;
     const machineLabourPerPart = shotHr * (rate / oee + labourRate * manning / labourEff) / n;
@@ -154,7 +151,7 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
       machineLabourPerPart: Math.round(machineLabourPerPart * 10_000) / 10_000,
       toolingPerPart: Math.round(toolingPerPart * 10_000) / 10_000,
       costPerPart,
-      detail: `${pressId} £${rate.toFixed(0)}/hr, ${steel.cls} tool `
+      detail: `${pressId} £${rate.toFixed(0)}/hr, ${shotSec.toFixed(1)} s shot, ${steel.cls} tool `
         + `£${mouldCostGBP.toLocaleString()} → ${fmtGBP(toolingPerPart, 4)}/part NRE`
         + (clampTonnes > maxClamp ? ` (${clampTonnes} t exceeds the largest press — costed on it regardless)` : ''),
     });

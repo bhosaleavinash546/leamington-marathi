@@ -51,6 +51,7 @@ const MACHINABILITY_FOR_CEILING: Partial<Record<MaterialFamily, number>> = {
 };
 import { representativeMaterialId, isLibraryMaterialId, familyFromMaterialId } from './derive/material.js';
 import { rubberProcFromSuggestion } from '../modules/rubber-advisor.js';
+import { estimateClampingTonnage, pickIMMPressId } from '../modules/injection-moulding.js';
 import type { MaterialFamily } from '../material-family.js';
 
 type CostInputs = CADAnalysisResult['costInputSuggestions'];
@@ -133,13 +134,6 @@ const LABOUR: Record<string, string> = {
 
 const num = (v: unknown, fallback = 0): number =>
   typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : fallback;
-
-/** Injection press tonnage from projected area — 30 MPa cavity pressure, ×1.2. */
-function pickIMMPressId(projectedAreaCm2: number): string {
-  const tonnes = (projectedAreaCm2 * 30 * 1.2) / 98.07;   // cm² × MPa → tonne-force
-  const tiers = [50, 100, 200, 350, 400, 500, 800, 1200, 2000, 3500];
-  return `imm-${tiers.find(t => t >= tonnes) ?? 3500}t`;
-}
 
 export interface ToCostParamsResult {
   commodity: string;
@@ -588,17 +582,24 @@ export function toCostParams(
       if (!m) return null;
       const area = num(m.projectedAreaCm2, 100);
       const wall = num(m.wallThicknessMm, 3);
+      const cav = num(m.cavities, 1);
+      const pressure = num(m.cavityPressureMPa, 30);
+      if (m.regrindFraction === undefined) assumed.push('regrindFraction 0.2 (no rule decided it)');
       return {
-        commodity, assumed: [...assumed, 'machineId', 'fill/pack/eject split', 'coolTimeFactor'],
+        commodity, assumed: [...assumed, ...(m.machineId ? [] : ['machineId (sized from clamp force)'])],
         params: {
           ...shop,
+          ...(num(m.manning) > 0 ? { manning: num(m.manning) } : {}),
+          ...(m.rejectRate !== undefined ? { rejectRate: num(m.rejectRate) } : {}),
           materialId,
           partWeightKg: num(ci.netWeightKg),
+          runnerSystem: m.runnerSystem === 'hot' ? 'hot' : 'cold',
           runnerWeightKg: num(m.runnerWeightKg),
-          regrindFraction: 0.8,
-          cavities: num(m.cavities, 1),
-          projectedAreaCm2: area,
-          cavityPressureMPa: num(m.cavityPressureMPa, 30),
+          regrindFraction: m.regrindFraction !== undefined ? num(m.regrindFraction) : 0.2,
+          cavities: cav,
+          // The module reads the TOTAL across cavities; the rule carries one cavity.
+          projectedAreaCm2: area * cav,
+          cavityPressureMPa: pressure,
           wallThicknessMm: wall,
           // Resin-specific when the rules carried it (they compute it per resin);
           // the PP figure is the no-carry fallback.
@@ -606,7 +607,9 @@ export function toCostParams(
           fillTimeSec: num(m.fillTimeSec, 2),
           packTimeSec: num(m.packTimeSec, 6),
           ejectTimeSec: num(m.ejectTimeSec, 3),
-          machineId: m.machineId || pickIMMPressId(area),
+          // Fallback sized from the clamp force — it used to pass the AREA (cm²)
+          // where tonnes were expected.
+          machineId: m.machineId || pickIMMPressId(estimateClampingTonnage({ projectedAreaCm2: area * cav, cavityPressureMPa: pressure })),
           steelClass: m.steelClass || undefined,
           mouldCost: num(m.mouldCostGBP),
           mouldLife: num(m.mouldLife, 1_000_000),

@@ -46,12 +46,16 @@ describe('size-aware packaging', () => {
     const horn = estimatePackagingPerPart((47 * 10 * 7.5) / 1000, 0.003);
     expect(bumper).toBeGreaterThan(0.7);   // bulky → real dunnage
     expect(bumper).toBeLessThan(1.5);
-    expect(horn).toBeCloseTo(0.05, 2);     // trivial → floor
+    // A 3 g part ships in bulk: the box-per-part 5p base scales down below a
+    // 250 cm³ envelope (moulding review) — a tenth of a penny, not 5p.
+    expect(horn).toBeLessThan(0.005);
     expect(bumper).toBeGreaterThan(horn * 10);
   });
 
   it('is floored and capped to sane bounds', () => {
-    expect(estimatePackagingPerPart(0, 0)).toBe(0.05);
+    expect(estimatePackagingPerPart(0, 0)).toBe(0.001);
+    // Above the small-part envelope the box-per-part base is unchanged.
+    expect(estimatePackagingPerPart(250, 0)).toBe(0.05);
     expect(estimatePackagingPerPart(1e12, 1e6)).toBe(6);
   });
 });

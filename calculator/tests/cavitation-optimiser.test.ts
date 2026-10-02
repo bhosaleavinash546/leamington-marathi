@@ -78,17 +78,27 @@ describe('optimiseCavitation — the cheapest feasible cavitation wins, maths sh
     expect(r.basis).toContain('3,500 t largest press');
   });
 
-  it('level calibration: with an OCCT figure, the 1-up mould cost IS the shipped geometric-mean blend', () => {
-    const occt = 412_000;
+  it('the tool is the toolmaker build-up alone — no kernel face-count blend', () => {
+    // The blend with the kernel's face-count figure (capped at £200k) pulled the
+    // quoted bumper tool (£420k; build-up £424k) ~30% low (moulding review).
     const r = optimiseCavitation({
       areaPerCavityCm2: 9000, cavityPressureMPa: 35, shotSeconds: 40,
-      annualVolume: 200_000, sideActionsLifters: 3, occtMouldCostGBP: occt,
+      annualVolume: 200_000, sideActionsLifters: 3,
     });
     const est1 = estimateMouldCost({
       cavities: 1, projectedAreaCm2: 9000, steelClass: 'production',
       sideActionsLifters: 3, runnerSystem: 'cold',
     }).total;
-    expect(r.chosen.mouldCostGBP).toBeCloseTo(Math.sqrt(est1 * occt), -1);
+    expect(r.chosen.mouldCostGBP).toBe(Math.round(est1));
+  });
+
+  it('a bigger press costs its own dry cycle in the ranking', () => {
+    const r = optimiseCavitation({
+      areaPerCavityCm2: 200, cavityPressureMPa: 50, shotSeconds: 20,
+      cycleSecondsFor: (press, n) => 20 + (press === 'imm-200t' ? 0 : 3) + n * 0,
+      annualVolume: 300_000, sideActionsLifters: 0,
+    });
+    for (const c of r.alternatives) expect(c.detail).toMatch(/s shot/);
   });
 
   it('is deterministic: identical inputs, identical choice and words', () => {

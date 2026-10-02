@@ -692,6 +692,82 @@ def _per_face_thickness(wrapped, face_map, diag: float, max_faces: int = 4000) -
 
 # ─── Draft angle & undercut analysis ─────────────────────────────────────────
 
+def _silhouette_areas_mm2(shape, diag_mm: float, cells: int = 400) -> dict:
+	"""
+	Projected (silhouette) area of the solid along each principal axis, mm².
+
+	What a moulding press or a die-casting machine has to hold shut is the
+	part's shadow on the parting plane. The rules used to estimate it as the
+	bounding-box face x sqrt(fill ratio), which is right for a solid and badly
+	wrong for an open shell: a 600 x 400 mm tray read 655 cm² against a 2,400 cm²
+	shadow, and the press came out 3.5x too small. Here the solid is tessellated,
+	every triangle projected onto the plane, and their UNION rasterised on a
+	`cells`-wide grid over the longest side (error ~ perimeter x cell / 2, well
+	under 1% on a moulding). Pure OCP + Python, no numpy.
+	"""
+	from OCP.BRepMesh import BRepMesh_IncrementalMesh
+	from OCP.BRep import BRep_Tool
+	from OCP.TopLoc import TopLoc_Location
+	from OCP.TopExp import TopExp_Explorer
+	from OCP.TopAbs import TopAbs_FACE
+	from OCP.TopoDS import TopoDS
+	BRepMesh_IncrementalMesh(shape, max(0.05, diag_mm / 400.0), False, 0.5, True)
+	tris = []
+	exp = TopExp_Explorer(shape, TopAbs_FACE)
+	while exp.More():
+		f = TopoDS.Face_s(exp.Current())
+		loc = TopLoc_Location()
+		t = BRep_Tool.Triangulation_s(f, loc)
+		if t is not None:
+			tr = loc.Transformation()
+			pts = []
+			for i in range(1, t.NbNodes() + 1):
+				q = t.Node(i).Transformed(tr)
+				pts.append((q.X(), q.Y(), q.Z()))
+			for i in range(1, t.NbTriangles() + 1):
+				a, b, c = t.Triangle(i).Get()
+				tris.append((pts[a - 1], pts[b - 1], pts[c - 1]))
+		exp.Next()
+	if not tris:
+		return {}
+	out = {}
+	for name, (iu, iv) in (("zMm2", (0, 1)), ("yMm2", (0, 2)), ("xMm2", (1, 2))):
+		us = [p[iu] for tri in tris for p in tri]
+		vs = [p[iv] for tri in tris for p in tri]
+		u0, u1, v0, v1 = min(us), max(us), min(vs), max(vs)
+		span = max(u1 - u0, v1 - v0)
+		if span <= 0:
+			out[name] = 0.0
+			continue
+		cell = span / cells
+		nu = int((u1 - u0) / cell) + 1
+		nv = int((v1 - v0) / cell) + 1
+		grid = bytearray(nu * nv)
+		for tri in tris:
+			ax, ay = tri[0][iu] - u0, tri[0][iv] - v0
+			bx, by = tri[1][iu] - u0, tri[1][iv] - v0
+			cx, cy = tri[2][iu] - u0, tri[2][iv] - v0
+			area2 = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax)
+			if abs(area2) < 1e-12:
+				continue  # edge-on to this plane: no shadow
+			i0 = max(0, int(min(ax, bx, cx) / cell)); i1 = min(nu - 1, int(max(ax, bx, cx) / cell))
+			j0 = max(0, int(min(ay, by, cy) / cell)); j1 = min(nv - 1, int(max(ay, by, cy) / cell))
+			sgn = 1.0 if area2 > 0 else -1.0
+			for j in range(j0, j1 + 1):
+				py = (j + 0.5) * cell
+				row = j * nu
+				for i in range(i0, i1 + 1):
+					if grid[row + i]:
+						continue
+					px = (i + 0.5) * cell
+					if (sgn * ((bx - ax) * (py - ay) - (by - ay) * (px - ax)) >= 0
+							and sgn * ((cx - bx) * (py - by) - (cy - by) * (px - bx)) >= 0
+							and sgn * ((ax - cx) * (py - cy) - (ay - cy) * (px - cx)) >= 0):
+						grid[row + i] = 1
+		out[name] = round(sum(grid) * cell * cell, 0)
+	return out
+
+
 def _compute_draft_analysis(faces, draw_dir=(0.0, 0.0, 1.0)) -> dict:
     """
     Classify faces by draft angle relative to the die-draw direction.
@@ -2049,6 +2125,19 @@ def analyze(filepath: str) -> dict:
         except Exception:
             draft_info = None
 
+        # ── Projected (silhouette) area along each axis and the draw ──────────
+        try:
+            _diag_pa = math.sqrt(x_sz ** 2 + y_sz ** 2 + z_sz ** 2) or 1.0
+            proj = _silhouette_areas_mm2(raw_shape, _diag_pa)
+            if proj:
+                d = (draft_info or {}).get("drawDirectionXYZ") or [0.0, 0.0, 1.0]
+                key = "zMm2" if abs(d[2]) > 0.9 else ("yMm2" if abs(d[1]) > 0.9 else "xMm2")
+                proj["alongDrawMm2"] = proj.get(key)
+                proj["method"] = "silhouette_raster"
+            projected_area = proj or None
+        except Exception:
+            projected_area = None
+
         # ── Manufacturing feature substrate (geometric DFM) ───────────────────
         # Opt-in: the per-face ray casting and adjacency build are the expensive
         # part of this kernel, and the costing path does not need them. The
@@ -2094,6 +2183,7 @@ def analyze(filepath: str) -> dict:
                 "cm2": round(sa_mm2 / 100, 3),
             },
             "fillRatio": fill_ratio,
+            "projectedArea": projected_area,
             "topology": topology,
             "weights": {
                 "aluminiumKg": round(volume_mm3 * 2.70e-6, 4),

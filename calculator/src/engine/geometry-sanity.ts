@@ -25,10 +25,23 @@ export interface WallCorrection {
  * bumper (bulky → custom dunnage/racks) and for a 3 g part (trivial). Scales with
  * shipping envelope (bounding-box volume) + weight, floored/capped to sane bounds.
  */
+/**
+ * The fixed per-part handling base (£0.05 packaging, £0.04 freight) is a
+ * box-per-part figure. A small part ships in bulk — a 5 g clip goes thousands to
+ * a carton — so below SMALL_PART_CM3 of envelope the base scales with the
+ * envelope (injection-moulding review: 9p of fixed handling on a 20p clip).
+ * Above it nothing changes.
+ */
+const SMALL_PART_CM3 = 250;
+/** Pence as before; tenths of a penny only where a part is that cheap to ship. */
+const roundHandling = (v: number) => v >= 0.05 ? Math.round(v * 100) / 100 : Math.round(v * 1000) / 1000;
+const handlingScale = (bboxVolumeCm3: number) => Math.min(1, Math.max(0, bboxVolumeCm3) / SMALL_PART_CM3);
+
 export function estimatePackagingPerPart(bboxVolumeCm3: number, weightKg: number): number {
   const volM3 = Math.max(0, bboxVolumeCm3) / 1e6;          // cm³ → m³ (shipping envelope)
-  const pkg = 0.05 + volM3 * 1.4 + Math.max(0, weightKg) * 0.04;
-  return Math.round(Math.min(6, Math.max(0.05, pkg)) * 100) / 100;
+  const base = 0.05 * handlingScale(bboxVolumeCm3);
+  const pkg = base + volM3 * 1.4 + Math.max(0, weightKg) * 0.04;
+  return roundHandling(Math.min(6, Math.max(0.001, pkg)));
 }
 
 /**
@@ -38,8 +51,8 @@ export function estimatePackagingPerPart(bboxVolumeCm3: number, weightKg: number
  */
 export function estimateLogisticsPerPart(weightKg: number, bboxVolumeCm3: number): number {
   const volM3 = Math.max(0, bboxVolumeCm3) / 1e6;
-  const log = 0.04 + Math.max(0, weightKg) * 0.09 + volM3 * 0.8;   // base + per-kg + volumetric
-  return Math.round(Math.min(4, Math.max(0.03, log)) * 100) / 100;
+  const log = 0.04 * handlingScale(bboxVolumeCm3) + Math.max(0, weightKg) * 0.09 + volM3 * 0.8;   // base + per-kg + volumetric
+  return roundHandling(Math.min(4, Math.max(0.001, log)));
 }
 
 /** Shell-wall estimate (mm) from volume + surface: 2·V/S (both shell faces). */
@@ -64,7 +77,12 @@ export function correctShellWallMm(
   // Shell-like: a genuinely thin wall (≤5 mm by the V/S estimate) in an open
   // envelope (low fill ratio). Both must hold, so a chunky forging/casting whose
   // ray-cast happens to read a few mm is never rewritten.
-  const shellLike = shellWallMm > 0 && shellWallMm < 5 && fillRatio < 0.05;
+  // The fill guard was < 0.05, which fits a bumper and misses every ordinary
+  // moulding: a 2.5 mm ECU cover (fill 0.14) kept a 29.5 mm ray-cast mean and a
+  // 59 mm "governing" wall, and costed £30 for a 159 g part; a 2 mm clip (fill
+  // 0.35) read 6.9 mm. A solid part is still excluded twice over — its 2·V/S is
+  // above 5 mm, and its fill is above 0.5 (a solid small block reads ~1).
+  const shellLike = shellWallMm > 0 && shellWallMm < 5 && fillRatio < 0.5;
   if (shellLike && (m <= 0 || m > 3 * shellWallMm)) {
     return { meanMm: Math.round(shellWallMm * 100) / 100, corrected: true, method: 'volume_surface_shell', shellWallMm };
   }

@@ -232,10 +232,16 @@ describe('injection moulding', () => {
     expect(im.cavities).toBe(1);
     expect(im.cavityPressureMPa).toBe(35);
     expect(im.coolTimeFactorSPerMm2).toBe(3.16);      // PP
-    expect(im.fillTimeSec).toBe(1.5);                  // 3.0 x 0.5, at the floor
+    // Moulding review (2 Oct 2026): fill is the shot over the press's injection
+    // rate, not 0.5 s per mm of wall; eject is the press's dry cycle, not 2 s.
+    expect(im.machineId).toBe('imm-3500t');            // 9,000 cm² x 35 MPa x 1.15 = 3,690 t
+    expect(im.fillTimeSec).toBe(3.6);                  // 5,000 cm³ ÷ 1,400 cm³/s
     expect(im.packTimeSec).toBe(2.4);                  // 3.0 x 0.8
-    expect(im.ejectTimeSec).toBe(2);
-    expect(im.runnerWeightKg).toBe(0.675);             // 15% cold runner
+    expect(im.ejectTimeSec).toBe(12);                  // 11 s dry cycle + 1 s take-out
+    expect(im.runnerSystem).toBe('hot');               // 4.5 kg part
+    expect(im.runnerWeightKg).toBe(0);                 // hot runner: no runner waste
+    expect(im.manning).toBe(1);                        // > 500 t: hand take-off
+    expect(im.rejectRate).toBe(0.02);
     expect(im.sideActionsLifters).toBe(3);
     expect(im.steelClass).toBe('production');          // 200k/yr x 5 yr, 1 cavity
     expect(im.mouldLife).toBe(1_000_000);
@@ -244,16 +250,19 @@ describe('injection moulding', () => {
   it('estimates the mould from cavitation, area, steel and slides', () => {
     const r = runCostInputRules(INJECTION_MOULDING_RULES, imCtx(BUMPER, PP));
     const im = r.suggestions.injectionMoulding as Record<string, number>;
-    // Geometric-mean blend of the two independent parametrics. The advisor
-    // alone said £828k on the real bumper against the kernel's £200k, and the
-    // £8.28/part tooling line carried the whole +30% residual; the blend lands
-    // beside the deck's own £420k bumper-class mould.
-    const advisor = estimateMouldCost({
+    // The toolmaker build-up alone, now with the hot runner it really has (6
+    // valve gates, one per ~1,500 cm²). The geometric mean with the kernel's
+    // face-count figure is gone (moulding review). Against the one quotation —
+    // £420k — this is +10%: the build-up was calibrated with a cold runner, so
+    // the quote's manifold was absorbed elsewhere; one quote cannot separate them.
+    const buildUp = estimateMouldCost({
       cavities: 1, projectedAreaCm2: 9000, steelClass: 'production',
-      sideActionsLifters: 3, runnerSystem: 'cold',
+      sideActionsLifters: 3, runnerSystem: 'hot', hotRunnerDrops: 6,
     }).total;
-    expect(im.mouldCostGBP).toBe(Math.round(Math.sqrt(advisor * 412_000)));
-    expect(r.provenance['imm-mould-cost'].basis).toContain('412000');   // both inputs on the record
+    expect(im.mouldCostGBP).toBe(buildUp);
+    expect(buildUp / 420_000).toBeGreaterThan(1.05);
+    expect(buildUp / 420_000).toBeLessThan(1.15);
+    expect(r.provenance['imm-mould-cost'].basis).toContain('£412,000 (not used)');
   });
 
   it('does not re-ask the metal-or-plastic question of someone who chose the tile', () => {

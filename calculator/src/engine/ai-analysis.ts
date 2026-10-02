@@ -68,6 +68,9 @@ export interface OCCTGeometry {
   boundingBox?: { xMm: number; yMm: number; zMm: number };
   volume?: { mm3: number; cm3: number };
   surfaceArea?: { mm2: number; cm2: number };
+  /** Silhouette (shadow) area along each axis and the draw direction, mm² —
+   *  tessellated and rasterised by the kernel. Absent on older measurements. */
+  projectedArea?: { xMm2?: number; yMm2?: number; zMm2?: number; alongDrawMm2?: number | null; method?: string } | null;
   fillRatio?: number;
   /** Sealed-hollow-body vs open-drape topology (distinguishes a fuel tank from a bumper). */
   topology?: {
@@ -496,6 +499,11 @@ export interface CADAnalysisResult {
       cavityPressureMPa?: number;
       machineId?: string;
       steelClass?: string;
+      /** Rule-written (moulding review): runner, regrind, crew, scrap. */
+      runnerSystem?: 'hot' | 'cold';
+      regrindFraction?: number;
+      manning?: number;
+      rejectRate?: number;
     };
     blowMoulding?: {
       /** 'ebm' | 'ibm' | 'sbm' */
