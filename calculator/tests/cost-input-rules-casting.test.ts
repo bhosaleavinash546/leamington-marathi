@@ -12,6 +12,8 @@ import { materialFacts } from '../src/engine/cost-input-rules/derive/material.js
 import { CASTING_PROCESS_REFERENCE } from '../src/engine/modules/casting-advisor.js';
 import type { RuleContext } from '../src/engine/cost-input-rules/types.js';
 import type { OCCTGeometry } from '../src/engine/ai-analysis.js';
+import { projectedAreaCm2 } from '../src/engine/cost-input-rules/derive/envelope.js';
+import { estimateHPDCDieCost, estimateSandPatternCost } from '../src/engine/casting-tooling.js';
 
 /** The die-cast housing from the explainer deck: 1,037 cm³, 3 mm walls. */
 const HOUSING = {
@@ -19,7 +21,10 @@ const HOUSING = {
   partName: 'housing',
   boundingBox: { xMm: 320, yMm: 240, zMm: 96 },
   volume: { mm3: 1_037_000, cm3: 1037 },
-  surfaceArea: { mm2: 122_000, cm2: 1220 },
+  // 2·V/S = 3.0 mm, the walls the fixture claims. It read 122,000 mm² until the
+  // casting review (2 Oct 2026) — a 17 mm section, which the old rules never
+  // noticed because they took the hand-written ray-cast wall instead.
+  surfaceArea: { mm2: 691_333, cm2: 6913 },
   fillRatio: 0.141,
   wallThickness: {
     minMm: 2.4, maxMm: 4.1, meanMm: 3.0, stdDevMm: 0.4,
@@ -168,14 +173,21 @@ describe('casting cost-input rules', () => {
       expect((r.suggestions.casting as Record<string, unknown>).subtype).toBe('sand');
     });
 
-    it('routes the subtype to the right tooling estimate', () => {
+    it('routes the subtype to the right tooling estimate — the toolmaker shop model', () => {
+      // The kernel's face-count parametric (118,000 / 7,250 here) is a
+      // cross-check in the basis, not the number: it charged £10,000 per
+      // undercut FACE and £150 per B-rep face (casting review, 2 Oct 2026).
+      const area = projectedAreaCm2(ctx(ALL_ANSWERED))!;
       const hpdc = runCostInputRules(CASTING_RULES, ctx(ALL_ANSWERED));
-      expect((hpdc.suggestions.casting as Record<string, number>).dieMouldCostGBP).toBe(118_000);
+      expect((hpdc.suggestions.casting as Record<string, number>).dieMouldCostGBP)
+        .toBe(estimateHPDCDieCost({ projectedAreaCm2: area, complexity: 'moderate' }).total);
+      expect(hpdc.provenance['cast-hpdc-die-cost'].basis).toContain('£118,000 (not used)');
 
       const sand = runCostInputRules(CASTING_RULES, ctx(
         { ...ALL_ANSWERED, 'material.family': 'cast iron' }, { annualVolume: 1_000 },
       ));
-      expect((sand.suggestions.casting as Record<string, number>).dieMouldCostGBP).toBe(7_250);
+      expect((sand.suggestions.casting as Record<string, number>).dieMouldCostGBP)
+        .toBe(estimateSandPatternCost({ projectedAreaCm2: area, coreCount: 1 }).total);
     });
 
     it('only offers HPDC-specific fields when HPDC is chosen', () => {
@@ -189,19 +201,22 @@ describe('casting cost-input rules', () => {
   });
 
   describe('geometry derivations', () => {
-    it('computes the HPDC shot time from the measured wall', () => {
+    it('computes the HPDC shot time from the casting section 2·V/S', () => {
       const r = runCostInputRules(CASTING_RULES, ctx(ALL_ANSWERED));
-      // 45 + 3 x 3.0 = 54
+      // 45 + 3 x 3.0 = 54 — the section, not the ray-cast mean wall.
       expect((r.suggestions.casting as Record<string, number>).cycleTimeHpdcSec).toBe(54);
-      expect(r.provenance['cast-hpdc-ct'].basis).toContain('45 + 3 × 3.0');
+      expect(r.provenance['cast-hpdc-ct'].basis).toContain('3 s/mm × 3.0 mm casting section');
     });
 
-    it('prefers the OCCT sand cycle estimate over the band', () => {
+    it('times the sand line per mould shared by its impressions, not the kernel 0.15 + 0.04 h/kg', () => {
       const r = runCostInputRules(CASTING_RULES, ctx(
         { ...ALL_ANSWERED, 'material.family': 'cast iron' }, { annualVolume: 1_000 },
       ));
-      expect((r.suggestions.casting as Record<string, number>).cycleTimeSandGravHr).toBe(0.262);
+      // 320 x 240 mm + 50 mm gating = 370 x 290 → one impression in a
+      // 500 x 400 flask, 30 moulds/h → 1/30 h. The kernel said 0.262 h.
+      expect((r.suggestions.casting as Record<string, number>).cycleTimeSandGravHr).toBe(0.0333);
       expect(r.provenance['cast-sand-ct'].source).toBe('geometry');
+      expect(r.provenance['cast-sand-ct'].basis).toContain('1 impression');
     });
 
     it('rejects the ray-cast wall artefact on a sparse shell', () => {

@@ -1,5 +1,5 @@
 import type { CommodityDrivers, OperationInput, ToolingInput } from '../types.js';
-import type { CastingSubtype } from './casting.js';
+import type { CastingSubtype, CastingInputs } from './casting.js';
 import type { MachiningOperation } from './machining.js';
 import { computeCastingDrivers } from './casting.js';
 
@@ -47,6 +47,10 @@ export interface CastAndMachineInputs {
   deburringCostPerPart?: number;
   /** Hot isostatic pressing cost per kg — closes micro-porosity for aero/safety-critical castings */
   hipCostPerKg?: number;
+  /** Gate / riser removal and grinding, bench minutes per casting (foundry labour). */
+  fettlingMinutes?: number;
+  /** Melt shop overrides — see CastingInputs.melt. */
+  melt?: CastingInputs['melt'];
   /** Non-destructive test (X-ray/CT) cost per part — safety-critical porosity screening */
   ndtCostPerPart?: number;
   /** Post-casting labour ID (for heat treat/shot blast operations) */
@@ -72,6 +76,8 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     sand: inputs.sand,
     gravity: inputs.gravity,
     investment: inputs.investment,
+    ...(inputs.fettlingMinutes ? { fettlingMinutes: inputs.fettlingMinutes } : {}),
+    ...(inputs.melt ? { melt: inputs.melt } : {}),
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)

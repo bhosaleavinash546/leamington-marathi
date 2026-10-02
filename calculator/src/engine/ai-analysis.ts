@@ -410,6 +410,15 @@ export interface CADAnalysisResult {
       cycleTimeSandGravHr: number;
       /** Sand cores per casting, £ (material consumable) — rule-decided from the undercuts. */
       coreCostPerPart?: number;
+      /** Rule-written (casting review): press, post-cast route, investment consumables. */
+      hpdcMachineId?: string;
+      fettlingMinutes?: number;
+      heatTreatCostPerKg?: number;
+      shotBlastCostPerPart?: number;
+      impregnationCostPerPart?: number;
+      ndtCostPerPart?: number;
+      investWaxCostPerPart?: number;
+      investShellCostPerPart?: number;
     };
     forging?: {
       flashKg: number;

@@ -251,10 +251,10 @@ export function toCostParams(
     if (c.subtype === 'hpdc') {
       // Tonnage is not in costInputSuggestions, so size from the plan area a
       // part of this mass implies rather than defaulting to one press.
-      assumed.push('hpdc.machineId');
+      if (!c.hpdcMachineId) assumed.push('hpdc.machineId (from mass — no footprint rule)');
       return {
         hpdc: {
-          machineId: pickHPDCMachineId(weightKg * 220),
+          machineId: c.hpdcMachineId || pickHPDCMachineId(weightKg * 220),
           cycleTimeSec: num(c.cycleTimeHpdcSec, 45),
           cavities: num(c.cavities, 1),
           dieCost: num(c.dieMouldCostGBP),
@@ -285,14 +285,27 @@ export function toCostParams(
         },
       };
     }
-    assumed.push('investment.waxCostPerPart', 'investment.shellBuildCostPerPart');
+    if (c.investWaxCostPerPart === undefined || c.investShellCostPerPart === undefined) {
+      assumed.push('investment wax / shell (0 — no rule decided them)');
+    }
     return {
       investment: {
-        waxCostPerPart: 0, shellBuildCostPerPart: 0,
+        waxCostPerPart: num(c.investWaxCostPerPart, 0), shellBuildCostPerPart: num(c.investShellCostPerPart, 0),
         pourLabourId: labourId, pourCycleHr: num(c.cycleTimeSandGravHr, 0.15),
         pourMachineId: 'invest-cast-furnace', waxDieCost: num(c.dieMouldCostGBP),
       },
     };
+  }
+
+  /** The post-cast route the rules decided, as `casting` module inputs. */
+  function postCast(c: NonNullable<CostInputs['casting']>): Record<string, number> {
+    const out: Record<string, number> = {};
+    if (num(c.fettlingMinutes) > 0) out.fettlingMinutes = num(c.fettlingMinutes);
+    if (num(c.heatTreatCostPerKg) > 0) out.heatTreatCostPerKg = num(c.heatTreatCostPerKg);
+    if (num(c.shotBlastCostPerPart) > 0) out.shotBlastCostPerPart = num(c.shotBlastCostPerPart);
+    if (num(c.impregnationCostPerPart) > 0) out.impregnationCostPerPart = num(c.impregnationCostPerPart);
+    if (num(c.ndtCostPerPart) > 0) out.ndtCostPerPart = num(c.ndtCostPerPart);
+    return out;
   }
 
   return finish(buildParams());
@@ -309,6 +322,7 @@ export function toCostParams(
         materialId,
         partWeightKg: weight,
         castingYield: num(c.yieldFraction, 0.65),
+        ...postCast(c),
       };
       Object.assign(params, castingSubtypeBlock(c, weight));
       const sec = secondaryMachining(geo, labourId);
@@ -373,6 +387,11 @@ export function toCostParams(
           castingManning: D.manning,
           castingLabourEfficiency: D.labourEfficiency,
           ...castingSubtypeBlock(c, finished),
+          ...(num(c.fettlingMinutes) > 0 ? { fettlingMinutes: num(c.fettlingMinutes) } : {}),
+          ...(num(c.heatTreatCostPerKg) > 0 ? { heatTreatmentCostPerKg: num(c.heatTreatCostPerKg) } : {}),
+          ...(num(c.shotBlastCostPerPart) > 0 ? { shotBlastCostPerPart: num(c.shotBlastCostPerPart) } : {}),
+          ...(num(c.impregnationCostPerPart) > 0 ? { impregnationCostPerPart: num(c.impregnationCostPerPart) } : {}),
+          ...(num(c.ndtCostPerPart) > 0 ? { ndtCostPerPart: num(c.ndtCostPerPart) } : {}),
 
           geometryComplexity: complexity,
           machiningOps: (ops.length

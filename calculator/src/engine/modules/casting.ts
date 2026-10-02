@@ -1,5 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
+import { meltFactsFor } from '../casting-melt.js';
+import { ukElectricityPerKwh } from '../uk-tariff.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -46,6 +48,24 @@ export interface CastingInputs {
     mouldCost: number;
     mouldLife: number;       // castings per mould (informational)
   };
+  /**
+   * The melt shop. Runners, risers and overflows are remelted in-house, so only
+   * the dross / oxidation loss on them is metal bought and lost; every kg poured
+   * is melted. Absent → the alloy's typical figures (casting-melt.ts); set
+   * `lossFraction: 1` and `energyKwhPerKg: 0` to reproduce the old behaviour
+   * (gating sold as scrap, no melt energy) for a buy-in liquid-metal price.
+   */
+  melt?: { lossFraction?: number; energyKwhPerKg?: number; energyPricePerKwh?: number };
+  // ── Post-cast operations (casting review, 2 Oct 2026) ──
+  // The advisor's route always listed fettling and, for ferrous / heat-treatable
+  // alloys, heat treatment — and none of it was costed. Absent = none.
+  /** Gate / riser removal and grinding, bench minutes per casting (foundry labour). */
+  fettlingMinutes?: number;
+  /** Heat treatment £/kg of casting (normalise, T5, T6 …). */
+  heatTreatCostPerKg?: number;
+  shotBlastCostPerPart?: number;
+  impregnationCostPerPart?: number;
+  ndtCostPerPart?: number;
   // Investment casting
   investment?: {
     waxCostPerPart: number;
@@ -98,15 +118,24 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   if (inputs.rejectRate >= 1) throw new Error('rejectRate must be < 1');
   // Reject uplift: need to cast more parts to achieve target yield
   const rejectUplift = 1 / (1 - inputs.rejectRate);
-  // Pour weight accounts for runner/gating loss (yield)
-  // materialUtilization = part weight / pour weight = castingYield
   const effectiveNetWeight = inputs.partWeightKg * rejectUplift;
 
+  // Pour weight = part ÷ yield. The gating (pour − part) goes back into the
+  // furnace; only `lossFraction` of it is metal lost. The core prices gross =
+  // net ÷ utilisation and credits (gross − net) at scrap, so the utilisation
+  // that buys exactly part + lost metal is part ÷ (part + lost).
+  const meltDefault = meltFactsFor(inputs.materialId);
+  const lossFraction = inputs.melt?.lossFraction ?? meltDefault?.lossFraction ?? 1;
+  const pourKg = effectiveNetWeight / inputs.castingYield;
+  const metalLostKg = (pourKg - effectiveNetWeight) * Math.min(1, Math.max(0, lossFraction));
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
     netWeightKg: effectiveNetWeight,
-    materialUtilization: inputs.castingYield,
+    materialUtilization: effectiveNetWeight / (effectiveNetWeight + metalLostKg),
   };
+  const meltEnergyCostPerPart = pourKg
+    * (inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0)
+    * (inputs.melt?.energyPricePerKwh ?? ukElectricityPerKwh());
 
   const operations: OperationInput[] = [];
   let tooling: ToolingInput;
@@ -220,15 +249,41 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       throw new Error(`Unknown casting subtype: ${(inputs as CastingInputs).subtype}`);
   }
 
-  // Move consumables to rawMaterial so they appear in material cost bucket, not tooling
+  // Move consumables to rawMaterial so they appear in material cost bucket, not tooling.
+  // Cores, wax and shell are consumed by every casting poured, rejects included,
+  // so they carry the same reject uplift as the metal and the line time.
   let consumablesCostPerPart = 0;
   if (inputs.subtype === 'sand' && inputs.sand) {
-    consumablesCostPerPart = inputs.sand.coreCostPerPart;
+    consumablesCostPerPart = inputs.sand.coreCostPerPart * rejectUplift;
   } else if (inputs.subtype === 'investment' && inputs.investment) {
     const waxRecovery = inputs.investment.waxRecoveryFraction ?? 0.80;
     const effectiveWaxCost = inputs.investment.waxCostPerPart * (1 - waxRecovery);
-    consumablesCostPerPart = effectiveWaxCost + inputs.investment.shellBuildCostPerPart;
+    consumablesCostPerPart = (effectiveWaxCost + inputs.investment.shellBuildCostPerPart) * rejectUplift;
   }
+  consumablesCostPerPart += meltEnergyCostPerPart;
+
+  // Post-cast: fettling is an operator at a grinder, so it is labour; heat
+  // treatment, blast, impregnation and NDT are priced per kg / per part as the
+  // forging module prices its heat treat and NDT.
+  if (inputs.fettlingMinutes && inputs.fettlingMinutes > 0) {
+    const hr = (inputs.fettlingMinutes / 60) * rejectUplift;
+    operations.push({
+      operationName: 'Fettling (gate / riser removal, grind)',
+      machineId: operations[0].machineId,
+      labourId: inputs.labourId,
+      cycleTimeHr: 0,
+      partsPerCycle: 1,
+      oee: 1,
+      manning: 1,
+      labourTimeHr: hr,
+      labourEfficiency: inputs.labourEfficiency,
+      benchOperation: true,
+    });
+  }
+  consumablesCostPerPart += (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg
+    + (inputs.shotBlastCostPerPart ?? 0)
+    + (inputs.impregnationCostPerPart ?? 0)
+    + (inputs.ndtCostPerPart ?? 0);
 
   // Feature-based secondary machining (geometry-driven) — appended on top of
   // the casting process. Near-net → machining TIME only; no extra material.

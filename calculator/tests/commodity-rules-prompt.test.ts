@@ -57,7 +57,7 @@ describe('commodity cost-input rules — prompt baseline', () => {
     // CASTING_PROCESS_REFERENCE on three of four subtypes — investment by ~2x,
     // which under-charged the metal, because yield divides into pour weight.
     // The prompt is now rendered from the rules, and the rules read the band.
-    const { CASTING_PROCESS_REFERENCE } = await import('../src/engine/modules/casting-advisor.js');
+    const { CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY } = await import('../src/engine/modules/casting-advisor.js');
     const mid = (b: readonly [number, number]) => (b[0] + b[1]) / 2;
     const oldPromptConstants = { hpdc: 0.65, sand: 0.78, gravity: 0.85, investment: 0.90 } as const;
 
@@ -70,7 +70,9 @@ describe('commodity cost-input rules — prompt baseline', () => {
     const rendered = /yieldFraction=([\d.]+)/.exec(body);
     expect(rendered, 'casting block should state a yield').not.toBeNull();
     const value = Number(rendered![1]);
-    const bands = Object.values(CASTING_PROCESS_REFERENCE).map(r => mid(r.yieldBand));
+    // Sand and gravity now read the alloy's band (casting review, 2 Oct 2026).
+    const bands = [...Object.values(CASTING_PROCESS_REFERENCE).map(r => mid(r.yieldBand)),
+      ...Object.values(SAND_GRAVITY_YIELD_BY_ALLOY).map(b => mid(b!))];
     expect(bands.map(b => Math.round(b * 100) / 100)).toContain(Math.round(value * 100) / 100);
 
     // Sand, gravity and investment can no longer appear at their old values.

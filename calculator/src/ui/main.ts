@@ -4733,6 +4733,17 @@ function renderCastingForm(): string {
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="cast-lab-eff" step="0.01" min="0.01" max="1" value="0.92" title="Labour efficiency: accounts for breaks, waiting, indirect time. 0.90–0.95 typical."/></div>
       <div class="field-group"><label title="Lifetime production volume over which tooling cost is amortised. Use total programme volume (e.g. 5-year platform life × annual volume). Directly sets tooling cost per part.">Amort. Volume ⓘ</label><input type="number" id="cast-amort" step="1000" min="1" value="200000" title="Total programme volume for tooling amortisation. Die life and cavity count determine how many die sets are needed across this volume."/></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Post-Casting Operations</div>
+    <div style="font-size:0.7rem;color:#888;margin-bottom:4px">Fettling is foundry labour; the rest are added to the material line. Filled from the CAD rules; 0 = not done. If you also cost a blast in Surface Finishing below, leave Shot Blast at 0.</div>
+    <div class="field-row">
+      <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, foundry labour. Light 2, medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cast-fettle-min" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Normalise / T5 / T6 £ per kg of casting. Engine defaults: normalise £0.35/kg, T5 £0.55/kg, T6 £1.10/kg.">Heat Treat (£/kg) ⓘ</label><input type="number" id="cast-ht-cost" step="0.05" min="0" value="0"/></div>
+      <div class="field-group"><label title="Shot blast to remove sand, scale or flash. Engine default £0.35/part.">Shot Blast (£/part) ⓘ</label><input type="number" id="cast-shot-blast" step="0.05" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="Vacuum resin impregnation for pressure-tight castings. Engine default £0.90/part.">Impregnation (£/part) ⓘ</label><input type="number" id="cast-impreg" step="0.1" min="0" value="0"/></div>
+      <div class="field-group"><label title="Radiography for safety-critical castings. 2D X-ray £5/part, CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cast-ndt" step="0.5" min="0" value="0"/></div>
+    </div>
     <!-- HPDC -->
     <div id="cast-hpdc" class="cast-section">
       <div class="section-title" style="margin-top:8px">HPDC — High Pressure Die Casting</div>
@@ -5616,12 +5627,16 @@ function renderCastAndMachineForm(): string {
     <div class="section-title" style="margin-top:8px">Post-Casting Secondary Operations</div>
     <div style="font-size:0.7rem;color:#888;margin-bottom:4px">These costs are added to the material cost line. Leave at 0 if not applicable. Check specification for mandatory operations.</div>
     <div class="field-row">
-      <div class="field-group"><label title="T5 (artificial ageing only) or T6 (solution treat + ageing) heat treatment. Structural Al castings (EDU housings, brackets, knuckles) typically REQUIRE T6. T5: £0.80–1.40/kg. T6: £1.40–2.80/kg. Enter 0 if not required.">Heat Treatment (£/kg) ⓘ</label><input type="number" id="cam-ht-cost" step="0.1" min="0" value="0" title="T5: £0.80–1.40/kg. T6: £1.40–2.80/kg. Leave 0 if not required."/></div>
+      <div class="field-group"><label title="T5 (artificial ageing only) or T6 (solution treat + ageing) heat treatment. Structural Al castings (EDU housings, brackets, knuckles) typically REQUIRE T6. Engine defaults (advisor rates): T5 £0.55/kg, T6 £1.10/kg, normalise / stress-relieve £0.35/kg — replace with a heat-treater quote. Enter 0 if not required.">Heat Treatment (£/kg) ⓘ</label><input type="number" id="cam-ht-cost" step="0.1" min="0" value="0" title="Engine defaults (advisor rates): T5 £0.55/kg, T6 £1.10/kg, normalise / stress-relieve £0.35/kg — replace with a heat-treater quote. Leave 0 if not required."/></div>
       <div class="field-group"><label title="Shot blast, vibratory deburr, or tumbling. Mandatory for most OEM castings to remove flash and improve surface finish. Typical: £0.15–0.40/part for small, £0.30–0.80 for large. Enter 0 if surface as-cast is acceptable.">Shot Blast / Deburr (£/part) ⓘ</label><input type="number" id="cam-shot-blast" step="0.05" min="0" value="0" title="Shot blast / vibratory deburr. Typical: £0.15–0.40/part small, £0.30–0.80 large."/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label title="Vacuum or pressure impregnation (Ultraseal / Loctite process) to seal micro-porosity. Required for pressure-critical parts: fuel rails, oil passages, coolant circuits. Typical: £0.80–1.80/part depending on part size.">Impregnation (£/part) ⓘ</label><input type="number" id="cam-impreg" step="0.1" min="0" value="0" title="Vacuum impregnation for pressure-critical castings. Typical: £0.80–1.80/part."/></div>
       <div class="field-group"><label title="Manual fettling / gate removal / deburring labour cost per part if not covered by shot blast. Complex castings: £0.20–1.20/part. Simple HPDC trim press: £0.05–0.15/part.">Fettling / Gate Remove (£/part) ⓘ</label><input type="number" id="cam-fettle" step="0.05" min="0" value="0" title="Manual fettling / gate removal. Simple HPDC with trim press: £0.05–0.15. Complex: £0.20–1.20."/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, costed as foundry LABOUR (not material). Engine defaults: light 2 min (trimmed HPDC / gravity), medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cam-fettle-min" step="0.5" min="0" value="0" title="Bench minutes per casting at the foundry labour rate. 0 = none."/></div>
+      <div class="field-group"><label title="Radiography for safety-critical castings. Engine defaults: 2D X-ray £5/part, industrial CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cam-ndt" step="0.5" min="0" value="0" title="X-ray / CT per casting. 0 = none."/></div>
     </div>`;
 }
 
@@ -10991,8 +11006,10 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setMaterial(el<HTMLSelectElement>('cast-mat'), c.materialId);
         setNumericField('cast-part-wt', c.netWeightKg, 3);
         const cast = c.casting;
-        const occtTC = cadOCCTGeometry?.toolingCostEstimates;
-        const occtPS = cadOCCTGeometry?.processSpecificEstimates;
+        // Tooling and the sand cycle come from the analysis — the rule-decided
+        // values headless costs — never the kernel's raw estimates. Preferring
+        // `toolingCostEstimates` here put the kernel's face-count die (£80,000 for
+        // a gravity mould the rules price at ~£11k) on screen only (casting review).
         if (cast) {
           const subtypeEl = el<HTMLSelectElement>('cast-subtype');
           if (subtypeEl) {
@@ -11004,17 +11021,17 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           if (cast.subtype === 'hpdc') {
             setNumericField('cast-hpdc-ct', cast.cycleTimeHpdcSec, 0);
             setNumericField('cast-hpdc-cav', cast.cavities, 0);
-            setNumericField('cast-hpdc-die-cost', occtTC?.hpdcDieCostGBP ?? cast.dieMouldCostGBP, 0);
+            setNumericField('cast-hpdc-die-cost', cast.dieMouldCostGBP, 0);
             setNumericField('cast-hpdc-die-life', cast.dieMouldLife, 0);
             sizeHPDCMachineFor('cast-hpdc-mach', cast.cavities || 1);
           } else if (cast.subtype === 'sand') {
-            setNumericField('cast-sand-ct', occtPS?.sandCycleTimeHr ?? cast.cycleTimeSandGravHr, 4);
-            setNumericField('cast-sand-pat-cost', occtTC?.sandPatternCostGBP ?? cast.dieMouldCostGBP, 0);
+            setNumericField('cast-sand-ct', cast.cycleTimeSandGravHr, 4);
+            setNumericField('cast-sand-pat-cost', cast.dieMouldCostGBP, 0);
             setNumericField('cast-sand-pat-life', cast.dieMouldLife, 0);
             setMachineSelect('cast-sand-line', 'sand-cast-line', 'Sand Casting — Moulding');
           } else if (cast.subtype === 'gravity') {
             setNumericField('cast-grav-ct', cast.cycleTimeSandGravHr, 4);
-            setNumericField('cast-grav-mould-cost', occtTC?.gravityMouldCostGBP ?? cast.dieMouldCostGBP, 0);
+            setNumericField('cast-grav-mould-cost', cast.dieMouldCostGBP, 0);
             setNumericField('cast-grav-mould-life', cast.dieMouldLife, 0);
             setMachineSelect('cast-grav-mach', 'grav-die-cast-std', 'Gravity Die Casting');
           } else if (cast.subtype === 'investment') {
@@ -11032,8 +11049,6 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setNumericField('cam-finish-wt', c.netWeightKg, 3);
         // Casting section
         const castCAM = c.casting;
-        const camTC = cadOCCTGeometry?.toolingCostEstimates;
-        const camPS = cadOCCTGeometry?.processSpecificEstimates;
         if (castCAM) {
           const camSubEl = el<HTMLSelectElement>('cam-cast-subtype');
           if (camSubEl) {
@@ -11045,19 +11060,19 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           if (castCAM.subtype === 'hpdc') {
             setNumericField('cam-hpdc-ct', castCAM.cycleTimeHpdcSec, 0);
             setNumericField('cam-hpdc-cav', castCAM.cavities, 0);
-            setNumericField('cam-hpdc-die-cost', camTC?.hpdcDieCostGBP ?? castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-hpdc-die-cost', castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-hpdc-die-life', castCAM.dieMouldLife, 0);
             sizeHPDCMachineFor('cam-hpdc-mach', castCAM.cavities || 1);
           } else if (castCAM.subtype === 'sand') {
-            setNumericField('cam-sand-ct', camPS?.sandCycleTimeHr ?? castCAM.cycleTimeSandGravHr, 4);
-            setNumericField('cam-sand-pat-cost', camTC?.sandPatternCostGBP ?? castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-sand-ct', castCAM.cycleTimeSandGravHr, 4);
+            setNumericField('cam-sand-pat-cost', castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-sand-pat-life', castCAM.dieMouldLife, 0);
             // Pin the foundry moulding cell — without this the select defaulted to
             // option 0 (CNC Lathe), costing sand casting on a lathe rate.
             setMachineSelect('cam-sand-line', 'sand-cast-line', 'Sand Casting — Moulding');
           } else if (castCAM.subtype === 'gravity') {
             setNumericField('cam-grav-ct', castCAM.cycleTimeSandGravHr, 4);
-            setNumericField('cam-grav-mould-cost', camTC?.gravityMouldCostGBP ?? castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-grav-mould-cost', castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-grav-mould-life', castCAM.dieMouldLife, 0);
             setMachineSelect('cam-grav-mach', 'grav-die-cast-std', 'Gravity Die Casting');
           } else if (castCAM.subtype === 'investment') {
@@ -12627,6 +12642,11 @@ function collectCastingInput(): UniversalStackInput {
     secondaryMachiningOps: secondary?.ops,
     secondaryMachiningToolingCost: secondary?.toolingCost,
     ...(surfaceFinishing ? { surfaceFinishing } : {}),
+    fettlingMinutes: num('cast-fettle-min') || undefined,
+    heatTreatCostPerKg: num('cast-ht-cost') || undefined,
+    shotBlastCostPerPart: num('cast-shot-blast') || undefined,
+    impregnationCostPerPart: num('cast-impreg') || undefined,
+    ndtCostPerPart: num('cast-ndt') || undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -13631,6 +13651,8 @@ function collectCastAndMachineInput(): UniversalStackInput {
     shotBlastCostPerPart: num('cam-shot-blast') || undefined,
     impregnationCostPerPart: num('cam-impreg') || undefined,
     deburringCostPerPart: num('cam-fettle') || undefined,
+    fettlingMinutes: num('cam-fettle-min') || undefined,
+    ndtCostPerPart: num('cam-ndt') || undefined,
     ...subtypeExtra,
   };
 

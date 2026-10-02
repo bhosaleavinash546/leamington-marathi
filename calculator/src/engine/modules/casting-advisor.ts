@@ -6,6 +6,7 @@
  */
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
+import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
 
 // Advisor recognises megacasting as a distinct technology (giant vacuum HPDC),
 // even though the cost engine models it through the `hpdc` subtype.
@@ -90,12 +91,37 @@ export const CASTING_PROCESS_REFERENCE: Record<CastingProcess, CastingProcessRef
   },
 };
 
+/**
+ * Sand and gravity yield by alloy. One band per process ignored the largest
+ * driver of yield there is — how much the alloy shrinks as it freezes, which
+ * sets the size of the risers that feed it. Grey iron expands on graphite
+ * precipitation and needs little feeding; steel shrinks ~6% and needs big
+ * risers. A steel sand casting at the process midpoint 0.65 under-bought metal.
+ * Engineering-typical bands — replace with the foundry's own method yields.
+ */
+export const SAND_GRAVITY_YIELD_BY_ALLOY: Partial<Record<AlloyFamily, [number, number]>> = {
+  'grey-iron': [0.65, 0.80],
+  'ductile-iron': [0.55, 0.70],
+  'carbon-steel': [0.45, 0.60],
+  'stainless-steel': [0.45, 0.60],
+  aluminium: [0.50, 0.70],
+  magnesium: [0.50, 0.70],
+  copper: [0.50, 0.70],
+};
+
 // ─── Process advisor ──────────────────────────────────────────────────────────
 
 export interface CastingAdvisorInputs {
   annualVolume: number;
   partWeightKg: number;
   minWallThicknessMm: number;
+  /**
+   * The section that governs filling and freezing, mm — the casting modulus
+   * 2·V/S. The HPDC "thin wall" test used the ray-cast MINIMUM, which on real
+   * CAD is a fillet edge or a chamfer (0.45 mm on a housing whose sections are
+   * 15 mm), and so sent chunky housings to high-pressure die casting.
+   */
+  sectionMm?: number;
   complexity: ComplexityLevel;
   alloyFamily: AlloyFamily;
   /** Part must be leak-tight / pressure-rated (e.g. hydraulic, coolant, fuel). */
@@ -175,12 +201,13 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
   }
 
   // 4. Thin-wall, high-volume die-castable alloy → HPDC.
-  if (dieCastable && inputs.annualVolume >= 20000 && inputs.minWallThicknessMm <= 4 && inputs.partWeightKg <= 15) {
+  const section = inputs.sectionMm ?? inputs.minWallThicknessMm;
+  if (dieCastable && inputs.annualVolume >= 20000 && section <= 4 && inputs.partWeightKg <= 15) {
     const secondary = ['Deburr/trim', 'Shot blast'];
     if (inputs.pressureTight) secondary.push('Vacuum-assist or impregnation');
     if (inputs.safetyCritical) secondary.push('X-ray NDT');
     return build('hpdc',
-      `thin-wall ${alloy} at ${inputs.annualVolume.toLocaleString()}/yr — HPDC gives the lowest piece cost and best surface finish once the die is amortised${inputs.pressureTight ? '; specify vacuum-assist for leak-tight parts' : ''}`,
+      `thin-wall ${alloy} (${section.toFixed(1)} mm section) at ${inputs.annualVolume.toLocaleString()}/yr — HPDC gives the lowest piece cost and best surface finish once the die is amortised${inputs.pressureTight ? '; specify vacuum-assist for leak-tight parts' : ''}`,
       ['HPDC shot', 'Trim/deburr', 'Shot blast', ...(inputs.pressureTight ? ['Impregnation'] : [])],
       secondary);
   }
@@ -369,26 +396,37 @@ export interface CastingSecondaryResult {
 
 // HIP is dominated by furnace/vessel time and alloy; superalloy/steel need
 // higher temperature + pressure than light alloys.
-const HIP_COST_PER_KG: Record<AlloyFamily, number> = {
+export const HIP_COST_PER_KG: Record<AlloyFamily, number> = {
   aluminium: 3.0, magnesium: 3.5, zinc: 3.0, copper: 3.5,
   'grey-iron': 3.5, 'ductile-iron': 3.5, 'carbon-steel': 4.0,
   'stainless-steel': 4.5, superalloy: 9.0,
 };
 
-const HEAT_TREAT_COST_PER_KG: Record<'t5' | 't6' | 'stress-relieve', number> = {
+export const HEAT_TREAT_COST_PER_KG: Record<'t5' | 't6' | 'stress-relieve', number> = {
   t5: 0.55,             // age only
   t6: 1.10,             // solution + quench + age
   'stress-relieve': 0.35,
 };
 
-const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = {
+export const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = {
   xray: 5.0,            // 2D radiography, sampling/100%
   ct: 32.0,            // industrial CT, safety-critical
 };
 
-const FETTLING_COST_PER_PART: Record<'light' | 'medium' | 'heavy', number> = {
-  light: 0.60, medium: 1.80, heavy: 4.50,
+/**
+ * Fettling as bench time — gate / riser cut-off and grinding. The £/part the
+ * adder reports is these minutes at the library's foundry labour rate, so it
+ * follows a rate refresh instead of drifting from it (it was £0.60/1.80/4.50 as
+ * literals). Light: trimmed HPDC / gravity; medium: sand non-ferrous or small
+ * iron; heavy: steel risers cut by disc or torch, or a large casting.
+ */
+export const FETTLING_MINUTES: Record<'light' | 'medium' | 'heavy', number> = {
+  light: 2, medium: 6, heavy: 15,
 };
+const foundryRatePerHr = (): number =>
+  DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-foundry')!.fullyLoadedRatePerHr;
+const FETTLING_COST_PER_PART = (level: 'light' | 'medium' | 'heavy'): number =>
+  Math.round(FETTLING_MINUTES[level] / 60 * foundryRatePerHr() * 100) / 100;
 
 export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): CastingSecondaryResult {
   const adders: CastingSecondaryAdder[] = [];
@@ -432,7 +470,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   }
 
   if (inputs.fettling) {
-    const unit = FETTLING_COST_PER_PART[inputs.fettling];
+    const unit = FETTLING_COST_PER_PART(inputs.fettling);
     adders.push({
       label: `Fettling/deburring (${inputs.fettling})`,
       basis: 'per-part', unitCostGbp: unit, costPerPartGbp: unit,

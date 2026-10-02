@@ -166,6 +166,16 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   // Unmapped until 2 Oct 2026: the screen took the core into material, headless
   // costed every sand casting coreless — £1.50 apart on the Casting Bracket.
   'casting.coreCostPerPart': { to: 'casting.coreCostPerPart' },
+  // Casting review (2 Oct 2026): the press, the post-cast route and the
+  // investment consumables, each read by toCostParams.
+  'casting.hpdcMachineId': { to: 'casting.hpdcMachineId' },
+  'casting.fettlingMinutes': { to: 'casting.fettlingMinutes' },
+  'casting.heatTreatCostPerKg': { to: 'casting.heatTreatCostPerKg' },
+  'casting.shotBlastCostPerPart': { to: 'casting.shotBlastCostPerPart' },
+  'casting.impregnationCostPerPart': { to: 'casting.impregnationCostPerPart' },
+  'casting.ndtCostPerPart': { to: 'casting.ndtCostPerPart' },
+  'casting.investWaxCostPerPart': { to: 'casting.investWaxCostPerPart' },
+  'casting.investShellCostPerPart': { to: 'casting.investShellCostPerPart' },
 
   // ── forging ───────────────────────────────────────────────────────────────
   'forging.flashAndScaleKg': { to: 'forging.flashKg' },
@@ -260,6 +270,7 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
  * mapped nor listed here, so a new rule has to be wired or excused.
  */
 export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
+  'casting.labourId': 'headless takes the same id from toCostParams LABOUR (lab-uk-foundry) — pinned equal by tests/casting-review.test.ts',
   'sheetMetal.process': 'prose for the report; the die type and press line are what the costing reads',
   'machining.operationCount': 'a count for the report; the operation plan itself is mapped',
   'forging.process': 'prose for the report; the forge and die rules are what the costing reads',

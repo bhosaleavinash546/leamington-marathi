@@ -5,14 +5,19 @@
 ### context: full
 CASTING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
-  materialId=mat-adc12  [aluminium → mat-adc12 (representative casting grade — not a drawing callout) — deterministic, use verbatim]
-  subtype=hpdc  [hpdc: thin-wall aluminium at 100,000/yr — HPDC gives the lowest piece cost and best surface finish once the die is amortised [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
-  yieldFraction=0.65  [hpdc yield band 0.55–0.75, midpoint — deterministic, use verbatim]
+  materialId=mat-lm25  [aluminium gravity casting → mat-lm25 (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout) — deterministic, use verbatim]
+  subtype=gravity  [gravity: medium-volume aluminium — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
+  yieldFraction=0.6  [gravity aluminium yield band 0.5–0.7, midpoint (feeding scales with the alloy's shrinkage) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
-  cycleTimeHpdcSec=54  [45 + 3 × 3.0 mm mean wall — deterministic, use verbatim]
-  dieMouldCostGBP=118000  [OCCT parametric hpdc tooling estimate — deterministic, use verbatim]
-  dieMouldLife=150000  [hpdc tool life band — deterministic, use verbatim]
-  cavities=1  [2.80 kg > 1 kg → single cavity — deterministic, use verbatim]
+  dieMouldCostGBP=13627  [gravity toolmaker shop model: 194 toolroom hours + steel + bought-outs from a 288 cm² parting footprint, moderate (2 undercut face(s) ≈ 1 slide(s)); kernel face-count parametric said £26,400 (not used) — a quotation overrides this — deterministic, use verbatim]
+  dieMouldLife=50000  [gravity tool life band — deterministic, use verbatim]
+  cycleTimeSandGravHr=0.08  [gravity cycle band — deterministic, use verbatim]
+  labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
+  fettlingMinutes=2  [light fettling — gravity aluminium, 2.8 kg: gate / riser removal and grind at the foundry rate (engineering-typical minutes) — deterministic, use verbatim]
+  heatTreatCostPerKg=1.1  [gravity aluminium is solution treated and aged, T6 — £1.1/kg (advisor rate) — deterministic, use verbatim]
+  shotBlastCostPerPart=0.35  [gravity castings are blasted to remove sand / scale / flash — £0.35 a part (advisor rate, flat; a large casting runs more) — deterministic, use verbatim]
+  impregnationCostPerPart=0  [not pressure-tight (or ferrous) — no impregnation — deterministic, use verbatim]
+  ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
 
 ### context: degraded
 CASTING COST INPUT RULES:
@@ -27,3 +32,9 @@ CASTING COST INPUT RULES:
   dieMouldLife: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   cavities: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   cycleTimeSandGravHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
+  fettlingMinutes: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  heatTreatCostPerKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  shotBlastCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  impregnationCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)

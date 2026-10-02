@@ -5,6 +5,8 @@ import { describe, it, expect } from 'vitest';
 import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-machine.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { meltFactsFor } from '../src/engine/casting-melt.js';
+import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CastAndMachineInputs } from '../src/engine/modules/cast-and-machine.js';
 import type { MachiningOperation } from '../src/engine/modules/machining.js';
 
@@ -131,8 +133,13 @@ describe('Cast + Machine module', () => {
       SAND_INPUTS.machiningToolingCost +
       SAND_INPUTS.machiningProgrammingNRE;
     expect(drivers.tooling.totalToolingCost).toBeCloseTo(expectedTotal, 4);
-    // Core cost (£1.50/part) should appear in rawMaterial consumables, not tooling
-    expect(drivers.rawMaterial.consumablesCostPerPart).toBeCloseTo(SAND_INPUTS.sand!.coreCostPerPart, 4);
+    // Core cost appears in rawMaterial consumables, not tooling — one core per
+    // casting POURED (reject uplift), alongside the energy to melt the pour.
+    const uplift = 1 / (1 - SAND_INPUTS.rejectRate);
+    const pour = SAND_INPUTS.castPartWeightKg * uplift / SAND_INPUTS.castingYield;
+    const meltKwh = meltFactsFor(SAND_INPUTS.materialId)!.energyKwhPerKg;
+    expect(drivers.rawMaterial.consumablesCostPerPart).toBeCloseTo(
+      SAND_INPUTS.sand!.coreCostPerPart * uplift + pour * meltKwh * ukElectricityPerKwh(), 4);
   });
 
   it('full stack computeUniversalStack gives positive total for HPDC+machining input', () => {

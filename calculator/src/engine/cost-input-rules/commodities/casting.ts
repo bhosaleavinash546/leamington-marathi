@@ -16,9 +16,12 @@
  *    their true material. Only HPDC happened to agree.
  */
 import {
-  adviseCastingProcess, CASTING_PROCESS_REFERENCE,
-  type CastingProcess, type ComplexityLevel,
+  adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY,
+  FETTLING_MINUTES, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
+  type AlloyFamily, type CastingProcess, type ComplexityLevel,
 } from '../../modules/casting-advisor.js';
+import { pickHPDCMachineId } from '../../machine-sizing.js';
+import type { ToolComplexity } from '../../toolmaking.js';
 import type { CastingSubtype } from '../../modules/casting.js';
 import { answeredNumber, decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import {
@@ -70,6 +73,10 @@ interface Advice {
   subtype: CastingSubtype;
   reason: string;
   route: string[];
+  alloy: AlloyFamily;
+  pressureTight: boolean;
+  safetyCritical: boolean;
+  massKg: number;
 }
 
 /**
@@ -112,6 +119,7 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
     // The shell-wall trap: on a very sparse part the ray-cast minimum is
     // unreliable, so fall back to the surface-area estimate 2V/S.
     minWallThicknessMm: minWallMm(ctx),
+    ...(castingSectionMm(ctx) != null ? { sectionMm: castingSectionMm(ctx)! } : {}),
     complexity: complexityBand(ctx),
     alloyFamily: alloy,
     pressureTight,
@@ -134,8 +142,57 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
       reason: rec.reason
         + (assumed.length ? ` [${assumed.join(', ')} assumed — confirm before quoting]` : ''),
       route: rec.processRoute,
+      alloy,
+      pressureTight,
+      safetyCritical,
+      massKg: mat.massKg!,
     },
   };
+}
+
+/**
+ * The section that governs filling and freezing: the casting modulus 2·V/S, mm.
+ *
+ * Chvorinov: freezing time goes as (V/A)². It is also immune to the ray-cast
+ * artefacts that broke the old inputs — the MINIMUM wall reads a fillet edge
+ * (0.45 mm on PRCR002) and the MEAN wall reads across cavities on a sparse part
+ * (34 mm on the same housing, whose sections are ~15 mm).
+ */
+export function castingSectionMm(ctx: RuleContext): number | null {
+  const v = ctx.geo.volume?.mm3 ?? 0;
+  const s = ctx.geo.surfaceArea?.mm2 ?? 0;
+  return v > 0 && s > 0 ? Math.round((2 * v / s) * 10) / 10 : null;
+}
+
+/**
+ * The part's footprint in the mould, mm — the two box sides across the draw
+ * direction when the pull is along an axis, else the two largest sides.
+ */
+export function mouldFootprintMm(ctx: RuleContext): [number, number] | null {
+  const b = ctx.geo.boundingBox;
+  if (!b) return null;
+  const dims = [b.xMm, b.yMm, b.zMm];
+  const d = ctx.geo.draftAnalysis?.drawDirectionXYZ;
+  const axis = d ? d.findIndex(c => Math.abs(c) > 0.99) : -1;
+  const across = axis >= 0 ? dims.filter((_, i) => i !== axis) : [...dims].sort((a, c) => c - a).slice(0, 2);
+  return [Math.max(...across), Math.min(...across)];
+}
+
+/**
+ * The sand moulding line, stated: the library's `sand-cast-line` is costed as a
+ * semi-automatic flask line making MOULDS_PER_HR moulds an hour in a flask with
+ * FLASK_MM usable, each impression taking the part plus IMPRESSION_MARGIN_MM
+ * all round for gating and sand. Engineering-typical (jolt-squeeze / matchplate
+ * lines run 30–120 moulds/h, high-pressure automatic lines 100–300) — the low
+ * end, because the line's rate is a modest one. Replace with the foundry's line.
+ */
+export const SAND_LINE = { MOULDS_PER_HR: 30, FLASK_MM: [500, 400] as const, IMPRESSION_MARGIN_MM: 50 };
+
+export function sandImpressions(footprint: [number, number]): number {
+  const [L, W] = footprint.map(x => x + SAND_LINE.IMPRESSION_MARGIN_MM);
+  const [FL, FW] = SAND_LINE.FLASK_MM;
+  const fit = (a: number, b: number) => Math.floor(FL / a) * Math.floor(FW / b);
+  return Math.max(fit(L, W), fit(W, L));
 }
 
 /** Minimum wall, guarding the known ray-cast artefact on sparse shells. */
@@ -171,6 +228,15 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const mat = materialFacts(ctx);
         if (mat.decision) return ask(mat.decision);
+        // The aluminium grade follows the process: ADC12 is a die-casting alloy
+        // and is not solution-treatable, so a gravity or sand casting — which is
+        // T6 treated — gets the A356 / LM25 family. One grade for every route
+        // priced a T6 gravity housing in an alloy that cannot take T6.
+        const r = advise(ctx);
+        if (mat.family === 'aluminium' && !('blocked' in r) && r.advice.subtype !== 'hpdc') {
+          return decided('casting.materialId', 'mat-lm25', 'geometry',
+            `aluminium ${r.advice.subtype} casting → mat-lm25 (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout)`, 0.8);
+        }
         const id = representativeMaterialId('casting', mat.family!);
         return decided('casting.materialId', id ?? mat.family!, 'geometry',
           `${mat.family} → ${id ?? mat.family} (representative casting grade — not a drawing callout)`, 0.85);
@@ -198,9 +264,14 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const ref = CASTING_PROCESS_REFERENCE[r.advice.process];
-        const y = bandMid(ref.yieldBand);
+        const byAlloy = (r.advice.process === 'sand' || r.advice.process === 'gravity')
+          ? SAND_GRAVITY_YIELD_BY_ALLOY[r.advice.alloy] : undefined;
+        const band = byAlloy ?? ref.yieldBand;
+        const y = bandMid(band);
         return decided('casting.yieldFraction', y, 'library',
-          `${r.advice.process} yield band ${ref.yieldBand[0]}–${ref.yieldBand[1]}, midpoint`, 0.8);
+          byAlloy
+            ? `${r.advice.process} ${r.advice.alloy} yield band ${band[0]}–${band[1]}, midpoint (feeding scales with the alloy's shrinkage)`
+            : `${r.advice.process} yield band ${band[0]}–${band[1]}, midpoint`, 0.8);
       },
     },
     {
@@ -259,13 +330,15 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const wall = ctx.geo.wallThickness?.meanMm;
+        // The casting modulus, not the ray-cast mean wall: on a sparse part the
+        // mean measures across cavities (34 mm on PRCR002 → 147 s a shot).
+        const wall = castingSectionMm(ctx);
         if (wall == null) {
           return decided('casting.cycleTimeHpdcSec', 75, 'rule',
-            'no measured wall — HPDC band default', 0.3);
+            'no measured volume / surface — HPDC band default', 0.3);
         }
         return decided('casting.cycleTimeHpdcSec', Math.round(45 + 3 * wall), 'rule',
-          `45 + 3 × ${wall.toFixed(1)} mm mean wall`, 0.75);
+          `45 s dry cycle + 3 s/mm × ${wall.toFixed(1)} mm casting section (2·V/S, the modulus freezing time scales with)`, 0.7);
       },
     },
     {
@@ -287,30 +360,41 @@ export const CASTING_RULES: CommodityRuleSpec = {
           investment: undefined,
         };
         const quoted = answeredNumber(ctx.answers, 'casting.toolingCost');
-        if (quoted != null && pick[r.advice.subtype] == null) {
+        if (quoted != null) {
           return decided('casting.dieMouldCostGBP', Math.round(quoted), 'engineer',
             `${r.advice.subtype} tooling quotation supplied by the engineer`, 0.95);
         }
-        if (pick[r.advice.subtype] != null) {
-          return decided('casting.dieMouldCostGBP', Math.round(pick[r.advice.subtype]!), 'geometry',
-            `OCCT parametric ${r.advice.subtype} tooling estimate`, 0.7);
-        }
-        // Shop-model fallback (tooling deep-dive): the toolmaker build-up in
-        // casting-tooling.ts prices the tool from the parting-plane footprint —
-        // hours × toolroom rate + steel by the kilogram + bought-outs. This is
-        // what closed the investment gap (a wax tool is an aluminium/P20 mould
-        // at low pressure) and what answers the STL/manual paths that used to
-        // have to ask for every routine die.
+        // The toolmaker build-up (casting-tooling.ts) is now the primary source:
+        // hours × toolroom rate + steel by the kilogram + bought-outs, from the
+        // parting footprint, with slides / cores from the measured undercuts.
+        // The kernel's parametric figure was B-rep FACE COUNT × £150 plus
+        // £10,000 per undercut FACE — fillets multiply faces, and 20 undercut
+        // faces are a few slides, not twenty — which put a £300,000 die (its
+        // cap) on a 2.8 kg housing the shop model prices at ~£40,000. It is
+        // kept as a cross-check in the basis, not used.
         const area = projectedAreaCm2(ctx);
         if (area != null && area > 0) {
-          const est = r.advice.subtype === 'hpdc' ? estimateHPDCDieCost({ projectedAreaCm2: area })
-            : r.advice.subtype === 'gravity' ? estimateGravityMouldCost({ projectedAreaCm2: area })
-            : r.advice.subtype === 'sand' ? estimateSandPatternCost({ projectedAreaCm2: area })
-            : estimateInvestmentToolCost({ projectedAreaCm2: area });
+          const under = ctx.geo.draftAnalysis?.undercutFaceCount ?? 0;
+          const slides = Math.ceil(under / 6);
+          const complexity: ToolComplexity = slides >= 3 ? 'complex' : slides >= 1 ? 'moderate' : 'simple';
+          const cores = ctx.geo.topology?.enclosesSealedVoid ? 2 : under >= 20 ? 2 : under >= 1 ? 1 : 0;
+          // A sand pattern plate carries every impression the flask holds.
+          const imps = r.advice.subtype === 'sand' ? Math.max(1, sandImpressions(mouldFootprintMm(ctx) ?? [1e9, 1e9])) : 1;
+          const est = r.advice.subtype === 'hpdc' ? estimateHPDCDieCost({ projectedAreaCm2: area, complexity })
+            : r.advice.subtype === 'gravity' ? estimateGravityMouldCost({ projectedAreaCm2: area, complexity })
+            : r.advice.subtype === 'sand' ? estimateSandPatternCost({ projectedAreaCm2: area * imps, coreCount: cores })
+            : estimateInvestmentToolCost({ projectedAreaCm2: area, complexity, coreCount: cores });
+          const kernel = pick[r.advice.subtype];
           return decided('casting.dieMouldCostGBP', est.total, 'advisor',
             `${r.advice.subtype} toolmaker shop model: ${est.detail.labourHours.toLocaleString()} toolroom hours `
-            + `+ steel + bought-outs from a ${Math.round(area)} cm² parting footprint — a quotation overrides this`,
-            0.6);
+            + `+ steel + bought-outs from a ${Math.round(area)} cm² parting footprint${imps > 1 ? ` × ${imps} impressions on the plate` : ''}, ${complexity} `
+            + `(${under} undercut face(s) ≈ ${slides} slide(s)${r.advice.subtype === 'sand' || r.advice.subtype === 'investment' ? `, ${cores} core box(es)` : ''})`
+            + (kernel != null ? `; kernel face-count parametric said £${Math.round(kernel).toLocaleString()} (not used)` : '')
+            + ' — a quotation overrides this', 0.6);
+        }
+        if (pick[r.advice.subtype] != null) {
+          return decided('casting.dieMouldCostGBP', Math.round(pick[r.advice.subtype]!), 'geometry',
+            `kernel face-count parametric ${r.advice.subtype} tooling estimate (no footprint for the shop model) — low confidence`, 0.4);
         }
         return ask({
           id: 'casting.toolingCost',
@@ -335,6 +419,13 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const life: Record<CastingSubtype, number> = {
           hpdc: 150_000, gravity: 50_000, sand: 8_000, investment: 5_000,
         };
+        // A pattern wears per MOULD rammed on it; each mould yields every
+        // impression on the plate. The module counts life in castings.
+        if (r.advice.subtype === 'sand') {
+          const imps = Math.max(1, sandImpressions(mouldFootprintMm(ctx) ?? [1e9, 1e9]));
+          return decided('casting.dieMouldLife', life.sand * imps, 'library',
+            `sand pattern life band ${life.sand.toLocaleString()} moulds × ${imps} impression(s) a mould`, 0.55);
+        }
         return decided('casting.dieMouldLife', life[r.advice.subtype], 'library',
           `${r.advice.subtype} tool life band`, 0.6);
       },
@@ -369,10 +460,28 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         if (r.advice.subtype === 'sand') {
-          const ps = ctx.geo.processSpecificEstimates?.sandCycleTimeHr;
-          if (ps != null) {
-            return decided('casting.cycleTimeSandGravHr', ps, 'geometry',
-              'OCCT sand cycle estimate from part mass', 0.7);
+          // Moulding-line time per casting = one mould's share ÷ impressions per
+          // mould. The kernel's "0.15 + 0.04 h/kg" charged pour, solidify and
+          // knockout as line time — castings cool on the conveyor while the
+          // line keeps moulding — at aluminium density for every alloy: 11 min a
+          // part, £13 of moulding on a 2.5 kg steel bracket.
+          const fp = mouldFootprintMm(ctx);
+          if (fp) {
+            const n = sandImpressions(fp);
+            const [FL, FW] = SAND_LINE.FLASK_MM;
+            const m = SAND_LINE.IMPRESSION_MARGIN_MM;
+            const hrPerMould = 1 / SAND_LINE.MOULDS_PER_HR;
+            if (n >= 1) {
+              return decided('casting.cycleTimeSandGravHr', Math.round(hrPerMould / n * 10_000) / 10_000, 'geometry',
+                `${n} impression(s) of ${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm (+${m} mm gating) in a ${FL} × ${FW} mm flask, `
+                + `${SAND_LINE.MOULDS_PER_HR} moulds/h semi-automatic line — the line's time per casting, not the cooling time`, 0.55);
+            }
+            // Too big for the flask: floor-moulded, one per mould, time scaling
+            // with the mould area against the flask's.
+            const ratio = ((fp[0] + m) * (fp[1] + m)) / (FL * FW);
+            return decided('casting.cycleTimeSandGravHr', Math.round(hrPerMould * ratio * 10_000) / 10_000, 'geometry',
+              `${fp[0].toFixed(0)} × ${fp[1].toFixed(0)} mm does not fit a ${FL} × ${FW} mm flask — floor-moulded, `
+              + `${ratio.toFixed(1)}× a flask's moulding time at ${SAND_LINE.MOULDS_PER_HR} moulds/h`, 0.4);
           }
         }
         const band: Record<CastingSubtype, number> = {
@@ -380,6 +489,179 @@ export const CASTING_RULES: CommodityRuleSpec = {
         };
         return decided('casting.cycleTimeSandGravHr', band[r.advice.subtype], 'library',
           `${r.advice.subtype} cycle band`, 0.4);
+      },
+    },
+    {
+      // The die-casting machine, from the clamp force the part needs. It was
+      // picked from `weight × 220` read as tonnes — a mass passed where a force
+      // was expected — and only on the headless path; the screen kept the
+      // drop-down's first machine.
+      id: 'casting.hpdcMachineId',
+      path: 'casting.hpdcMachineId',
+      fieldId: 'cast-hpdc-mach',
+      label: 'hpdcMachineId',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'hpdc';
+      },
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const area = projectedAreaCm2(ctx);
+        const cav = r.advice.massKg > 1 ? 1 : 2;
+        if (area == null || area <= 0) {
+          return decided('casting.hpdcMachineId', pickHPDCMachineId(r.advice.massKg * 220), 'rule',
+            'no footprint measured — sized from mass (× 220 t/kg), low confidence', 0.3);
+        }
+        // Locking force = projected area × intensification pressure. 0.8 t/cm²
+        // is ~800 bar, mid of the 600–1,000 bar aluminium HPDC runs at; runners
+        // and overflows add ~25% to the area the die opens against.
+        const tonnes = area * cav * 1.25 * 0.8;
+        return decided('casting.hpdcMachineId', pickHPDCMachineId(tonnes), 'geometry',
+          `${Math.round(area)} cm² × ${cav} cavit${cav === 1 ? 'y' : 'ies'} × 1.25 (runners, overflows) × 0.8 t/cm² (≈800 bar) `
+          + `= ${Math.round(tonnes)} t, × 1.2 safety → the smallest machine over ${Math.round(tonnes * 1.2)} t`, 0.65);
+      },
+    },
+    {
+      // Foundry labour on the casting line. The screen kept the drop-down's
+      // first entry — a skilled machinist at £26/h — while headless used the
+      // foundry operative at £19/h: the Casting Bracket's labour differed 21%.
+      id: 'casting.labourId',
+      path: 'casting.labourId',
+      fieldId: 'cast-lab',
+      label: 'labourId',
+      evaluate: () => decided('casting.labourId', 'lab-uk-foundry', 'library',
+        'foundry operative on the moulding / die-casting line and at the fettling bench', 0.8),
+    },
+    {
+      id: 'casting.fettlingMinutes',
+      path: 'casting.fettlingMinutes',
+      fieldId: 'cast-fettle-min',
+      label: 'fettlingMinutes',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const ferrousSteel = r.advice.alloy === 'carbon-steel' || r.advice.alloy === 'stainless-steel';
+        const levels = ['light', 'medium', 'heavy'] as const;
+        // Trimmed die castings are light; sand and investment are medium; one
+        // step heavier for a big casting, or a steel sand casting over 10 kg
+        // whose risers come off by disc or torch.
+        let i = r.advice.subtype === 'hpdc' || r.advice.subtype === 'gravity' ? 0 : 1;
+        const heavySteel = ferrousSteel && r.advice.subtype === 'sand' && r.advice.massKg > 10;
+        const big = r.advice.massKg > 25;
+        if (heavySteel || big) i = Math.min(2, i + 1);
+        const level = levels[i];
+        return decided('casting.fettlingMinutes', FETTLING_MINUTES[level], 'rule',
+          `${level} fettling — ${r.advice.subtype} ${r.advice.alloy}, ${r.advice.massKg.toFixed(1)} kg`
+          + `${heavySteel ? ' (steel risers cut by disc / torch)' : big ? ' (large casting)' : ''}: `
+          + 'gate / riser removal and grind at the foundry rate (engineering-typical minutes)', 0.5);
+      },
+    },
+    {
+      id: 'casting.heatTreatCostPerKg',
+      path: 'casting.heatTreatCostPerKg',
+      fieldId: 'cast-ht-cost',
+      label: 'heatTreatCostPerKg',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const a = r.advice.alloy;
+        const steel = a === 'carbon-steel' || a === 'stainless-steel';
+        const iron = a === 'grey-iron' || a === 'ductile-iron';
+        const al = a === 'aluminium';
+        if (steel || (iron && r.advice.safetyCritical)) {
+          return decided('casting.heatTreatCostPerKg', HEAT_TREAT_COST_PER_KG['stress-relieve'], 'library',
+            `${steel ? 'cast steel is normalised to refine the as-cast grain' : 'safety-critical iron is stress-relieved'} — `
+            + `£${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg (advisor rate)`, 0.6);
+        }
+        if (al && r.advice.process !== 'hpdc') {
+          const t = r.advice.process === 'megacasting' ? 'T7 (priced at the T6 rate)' : 'T6';
+          return decided('casting.heatTreatCostPerKg', HEAT_TREAT_COST_PER_KG.t6, 'library',
+            `${r.advice.process} aluminium is solution treated and aged, ${t} — £${HEAT_TREAT_COST_PER_KG.t6}/kg (advisor rate)`, 0.55);
+        }
+        return decided('casting.heatTreatCostPerKg', 0, 'rule',
+          al ? 'conventional HPDC is not solution treated (entrapped gas blisters) — none; enter a T5 age if specified'
+            : `${a} cast as-cast — none unless the drawing calls for it`, 0.6);
+      },
+    },
+    {
+      id: 'casting.shotBlastCostPerPart',
+      path: 'casting.shotBlastCostPerPart',
+      fieldId: 'cast-shot-blast',
+      label: 'shotBlastCostPerPart',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return decided('casting.shotBlastCostPerPart', 0.35, 'library',
+          `${r.advice.subtype} castings are blasted to remove sand / scale / flash — £0.35 a part (advisor rate, flat; `
+          + 'a large casting runs more)', 0.5);
+      },
+    },
+    {
+      id: 'casting.impregnationCostPerPart',
+      path: 'casting.impregnationCostPerPart',
+      fieldId: 'cast-impreg',
+      label: 'impregnationCostPerPart',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const needs = r.advice.pressureTight && (r.advice.subtype === 'hpdc' || r.advice.alloy === 'aluminium');
+        return decided('casting.impregnationCostPerPart', needs ? 0.9 : 0, 'rule',
+          needs ? 'pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate)'
+            : 'not pressure-tight (or ferrous) — no impregnation', 0.6,
+          [PRESSURE_TIGHT_DECISION_ID]);
+      },
+    },
+    {
+      id: 'casting.ndtCostPerPart',
+      path: 'casting.ndtCostPerPart',
+      fieldId: 'cast-ndt',
+      label: 'ndtCostPerPart',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!r.advice.safetyCritical) {
+          return decided('casting.ndtCostPerPart', 0, 'rule', 'not safety-critical — no radiography', 0.6,
+            [SAFETY_CRITICAL_DECISION_ID]);
+        }
+        const kind = r.advice.alloy === 'superalloy' ? 'ct' : 'xray';
+        return decided('casting.ndtCostPerPart', NDT_COST_PER_PART[kind], 'library',
+          `safety-critical — ${kind === 'ct' ? 'industrial CT' : '2D X-ray'} at £${NDT_COST_PER_PART[kind]} a part (advisor rate)`, 0.55,
+          [SAFETY_CRITICAL_DECISION_ID]);
+      },
+    },
+    {
+      // Investment wax and shell were costed at £0 headless while the kernel
+      // computed them from the surface area on every upload.
+      id: 'casting.investWaxCostPerPart',
+      path: 'casting.investWaxCostPerPart',
+      fieldId: 'cast-inv-wax',
+      label: 'investWaxCostPerPart',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'investment';
+      },
+      evaluate: (ctx) => {
+        const sa = (ctx.geo.surfaceArea?.mm2 ?? 0) / 100;
+        const v = ctx.geo.processSpecificEstimates?.investWaxCostGBP ?? Math.round(Math.max(0.30, sa * 0.015) * 100) / 100;
+        return decided('casting.investWaxCostPerPart', v, 'geometry',
+          `wax pattern from ${Math.round(sa)} cm² surface at £0.015/cm² (min £0.30) — kernel estimate`, 0.45);
+      },
+    },
+    {
+      id: 'casting.investShellCostPerPart',
+      path: 'casting.investShellCostPerPart',
+      fieldId: 'cast-inv-shell',
+      label: 'investShellCostPerPart',
+      appliesWhen: (ctx) => {
+        const r = advise(ctx);
+        return !('blocked' in r) && r.advice.subtype === 'investment';
+      },
+      evaluate: (ctx) => {
+        const sa = (ctx.geo.surfaceArea?.mm2 ?? 0) / 100;
+        const v = ctx.geo.processSpecificEstimates?.investShellCostGBP ?? Math.round(Math.max(0.80, sa * 0.045) * 100) / 100;
+        return decided('casting.investShellCostPerPart', v, 'geometry',
+          `ceramic shell from ${Math.round(sa)} cm² surface at £0.045/cm² (min £0.80) — kernel estimate`, 0.45);
       },
     },
   ],

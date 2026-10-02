@@ -235,9 +235,13 @@ const HPDC_INPUTS: CastingInputs = {
 };
 
 describe('Casting module — HPDC', () => {
-  it('materialUtilization = castingYield', () => {
+  it('materialUtilization buys the part plus the dross lost remelting the gating', () => {
+    // Returns are remelted, so utilisation is NOT the casting yield (that sold the
+    // gating as scrap). With the melt shop switched off it is again.
     const d = computeCastingDrivers(HPDC_INPUTS);
-    expect(d.rawMaterial.materialUtilization).toBe(HPDC_INPUTS.castingYield);
+    expect(d.rawMaterial.materialUtilization).toBeGreaterThan(0.95);
+    const asScrap = computeCastingDrivers({ ...HPDC_INPUTS, melt: { lossFraction: 1, energyKwhPerKg: 0 } });
+    expect(asScrap.rawMaterial.materialUtilization).toBeCloseTo(HPDC_INPUTS.castingYield, 10);
   });
 
   it('reject uplift increases effective net weight', () => {

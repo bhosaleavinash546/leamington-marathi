@@ -228,6 +228,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   £24.79 machined bracket (2026-09 rates; it follows the library) to <0.01% — keep
   engine changes reconciling to it. Rates move only through `scripts/rate-refresh.ts`
   and a dated config in `scripts/rate-refresh/`; see `docs/rates/`.
+- Casting (`modules/casting.ts`, `cost-input-rules/commodities/casting.ts`, `casting-melt.ts`):
+  gating is remelted (only dross lost) and every kg poured is charged melt energy; the sand
+  line is timed per mould ÷ impressions; process choice and HPDC shot time read the section
+  2·V/S, never the ray-cast min/mean wall; tooling is the toolmaker build-up, not the
+  kernel's face-count figure; fettling / heat treat / blast / NDT are rules. See
+  `docs/cad/casting-review-2026-10.md` and `tests/casting-review.test.ts`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

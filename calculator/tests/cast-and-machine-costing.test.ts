@@ -25,6 +25,8 @@ import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-mac
 import { executeCalculateCost } from '../server/services/cost-executor.js';
 import { SHOP_DEFAULTS } from '../src/engine/cost-input-rules/to-cost-params.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
+import { meltFactsFor } from '../src/engine/casting-melt.js';
+import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CADAnalysisResult } from '../src/engine/ai-analysis.js';
 
 const LIB = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
@@ -95,21 +97,29 @@ describe('the commodity can be costed at all', () => {
 describe('the money reconciles by hand', () => {
   const r = { breakdown: cost.breakdown as unknown as Record<string, number> };
 
-  it('raw material is the poured weight, less what comes back as returns', () => {
+  it('raw material is the metal kept or lost, plus melting every kg poured', () => {
     // The arithmetic, in full, so a change to any step of it shows up here
     // rather than as a total that moved for no stated reason:
     //
     //   effective net = finished / (1 - rejectRate)   — cast extra to yield the target
     //   poured        = effective net / castingYield  — runners and risers
-    //   gross         = poured x price/kg
-    //   credit        = (poured - effective net) x scrapRecovery/kg
+    //   returns       = poured - effective net        — remelted in-house, not sold
+    //   lost          = returns x meltLoss            — dross / oxidation per remelt
+    //   metal         = (effective net + lost) x price - lost x scrap
+    //   melt energy   = poured x kWh/kg x £/kWh
+    //
+    // Until 2 Oct 2026 the returns were credited at the scrap price, as if sold:
+    // £3.48 here against £2.13 now (casting review).
     const mat = LIB.materials.find(m => m.id === 'mat-steel1045')!;
+    const melt = meltFactsFor('mat-steel1045')!;
     const effectiveNet = 2.512 / (1 - 0.03);
     const poured = effectiveNet / 0.65;
-    const byHand = poured * mat.pricePerKg - (poured - effectiveNet) * mat.scrapRecoveryPricePerKg;
+    const lost = (poured - effectiveNet) * melt.lossFraction;
+    const byHand = (effectiveNet + lost) * mat.pricePerKg - lost * mat.scrapRecoveryPricePerKg
+      + poured * melt.energyKwhPerKg * ukElectricityPerKwh();
 
     expect(poured).toBeCloseTo(3.98414, 4);
-    expect(byHand).toBeCloseTo(3.4782, 3);
+    expect(melt.lossFraction).toBe(0.03);
     expect(r.breakdown.rawMaterial).toBeCloseTo(byHand, 2);
   });
 

@@ -26,7 +26,10 @@ const HOUSING = {
   partName: 'housing',
   boundingBox: { xMm: 320, yMm: 240, zMm: 96 },
   volume: { mm3: 1_037_000, cm3: 1037 },
-  surfaceArea: { mm2: 122_000, cm2: 1220 },
+  // 2·V/S = 3.0 mm, the walls the fixture claims. It read 122,000 mm² until the
+  // casting review (2 Oct 2026) — a 17 mm section, which the old rules never
+  // noticed because they took the hand-written ray-cast wall instead.
+  surfaceArea: { mm2: 691_333, cm2: 6913 },
   fillRatio: 0.141,
   wallThickness: {
     minMm: 2.4, maxMm: 4.1, meanMm: 3.0, stdDevMm: 0.4,
@@ -142,9 +145,10 @@ describe('the path map', () => {
     applyRuleDecisions(analysis, runCostInputRules(COMPOSITES_RULES, compCtx));
     const c = analysis.costInputSuggestions.composites as Record<string, number>;
 
-    // The rule computes 0.061 m²; the consumer reads cm². A mechanical prefix
-    // map would have written 0.061 into a cm² field — wrong by 10,000x.
-    expect(c.areaCm2).toBe(610);
+    // The rule computes 0.346 m² (half the 6,913 cm² surface); the consumer
+    // reads cm². A mechanical prefix map would have written 0.346 into a cm²
+    // field — wrong by 10,000x.
+    expect(c.areaCm2).toBeCloseTo(3460, 0);
     // Likewise 3 hr of cure into a field read as seconds.
     expect(c.cureTimeSec).toBe(10_800);
   });
