@@ -38,7 +38,9 @@ describe('1. the wall of an ordinary moulding is its wall, not the cavity', () =
     const g = geoOf('IM_ECU_Cover.stp');
     expect(g.wallThickness?.method).toBe('volume_surface_shell');
     expect(g.wallThickness?.meanMm).toBeCloseTo(2.27, 2);
-    expect(im('IM_ECU_Cover.stp', 'mat-pa66gf30').s.wallThicknessMm).toBe(2.3);   // was 59 → 6,962 s cooling
+    // was 59 → 6,962 s cooling. Second pass: the nominal wall is the fillet-pair
+    // gauge, 2.5 mm — the modelled wall — where 2·V/S reads 2.27 (ribs are thinner).
+    expect(im('IM_ECU_Cover.stp', 'mat-pa66gf30').s.wallThicknessMm).toBe(2.5);
   });
 
   it('a solid small part is still left alone', () => {
@@ -149,5 +151,74 @@ describe('the cost, end to end', () => {
     const cycleS = d.operations[0].cycleTimeHr * 3600 / (1 / (1 - 0.02));
     expect(cycleS).toBeGreaterThan(15);
     expect(cycleS).toBeLessThan(20);
+  });
+});
+
+// ── Second pass ────────────────────────────────────────────────────────────
+import { pickIMMPressId, mouldShortSideMm, IMM_PRESSES } from '../src/engine/modules/injection-moulding.js';
+import { buildDeterministicAnalysis } from '../src/engine/cost-input-rules/deterministic.js';
+
+describe('A. the press must shoot the volume and take the mould, not only clamp it', () => {
+  it('a heavy part with a small footprint gets a press with the barrel for it', () => {
+    // 20 t of clamp, but a 600 cm³ shot: needs ≥ 750 cm³ of barrel → 350 t.
+    expect(pickIMMPressId(20)).toBe('imm-50t');
+    expect(pickIMMPressId(20, { shotCm3: 600 })).toBe('imm-350t');
+  });
+  it('a long mould must pass between the tie bars', () => {
+    // a 1,000 mm short-side mould needs ≥ 1,000 mm between the bars → 800 t
+    expect(pickIMMPressId(100, { mouldShortSideMm: 1000 })).toBe('imm-800t');
+    expect(mouldShortSideMm(40, 60, 4)).toBe(280);   // ~ a 296 mm catalogue base
+    expect(IMM_PRESSES.every((p, i, a) => i === 0 || p.tieBarMm > a[i - 1].tieBarMm)).toBe(true);
+  });
+});
+
+describe('B–D. mould change, maintenance and drying are costed', () => {
+  it('ECU cover: 1.5 h change over a 5,000 batch with 2 kg purge, 3% maintenance, PA66 dried', () => {
+    const { s } = im('IM_ECU_Cover.stp', 'mat-pa66gf30');
+    expect(s.setupHoursPerChange).toBe(1.5);
+    expect(s.batchSize).toBe(5000);
+    expect(s.purgeKg).toBe(2);
+    expect(s.mouldMaintenanceFraction).toBe(0.03);
+    expect(s.dryingKwhPerKg).toBe(0.15);
+  });
+  it('PP is not dried', () => {
+    expect(im('IM_Storage_Tray.stp', 'mat-pp-impact', 50_000).s.dryingKwhPerKg).toBe(0);
+  });
+  it('the module charges each: a setter operation, purge in the material, maintenance on the tool', () => {
+    const base = {
+      materialId: 'mat-pa66gf30', partWeightKg: 0.1591, runnerWeightKg: 0.0239, regrindFraction: 0.8, cavities: 1,
+      projectedAreaCm2: 216, cavityPressureMPa: 65, wallThicknessMm: 2.5, coolTimeFactorSPerMm2: 2, fillTimeSec: 1.5,
+      packTimeSec: 2, ejectTimeSec: 3.5, machineId: 'imm-200t', labourId: 'lab-uk-semiskilled', oee: 0.8, manning: 0.5,
+      labourEfficiency: 0.92, mouldCost: 32441, mouldLife: 1_000_000, amortizationVolume: 100_000,
+    };
+    const plain = computeInjectionMouldingDrivers(base);
+    const full = computeInjectionMouldingDrivers({ ...base,
+      setup: { hoursPerChange: 1.5, batchSize: 5000, setterLabourId: 'lab-uk-technician', purgeKg: 2 },
+      mouldMaintenanceFraction: 0.03, drying: { kwhPerKg: 0.15, energyPricePerKwh: 0.268 } });
+    expect(full.operations.some(o => /Mould change/.test(o.operationName))).toBe(true);
+    expect(full.rawMaterial.materialUtilization).toBeLessThan(plain.rawMaterial.materialUtilization);
+    expect(full.tooling.totalToolingCost).toBeCloseTo(32441 * 1.03, 6);
+    expect(full.rawMaterial.consumablesCostPerPart).toBeCloseTo((0.1591 + 0.0239) * 0.15 * 0.268, 6);
+  });
+});
+
+describe('E. the nominal wall of a shelled moulding is its fillet-pair gauge', () => {
+  it('tray: 3.0 mm (the ray cast already agreed); clip with no fillet pairs keeps 2·V/S', () => {
+    expect(im('IM_Storage_Tray.stp', 'mat-pp-impact', 50_000).s.wallThicknessMm).toBe(3);
+    expect(im('IM_Cable_Clip.stp', 'mat-pa66gf30', 1_000_000).s.wallThicknessMm).toBe(1.8);
+  });
+});
+
+describe('F. a cold runner adds its own area to the clamp', () => {
+  it('the cover’s clamp carries × 1.1', () => {
+    expect(im('IM_ECU_Cover.stp', 'mat-pa66gf30').r.provenance['imm-mach'].basis).toContain('x 1.1 (cold runner area)');
+  });
+});
+
+describe('G. a chosen resin is a confirmed material', () => {
+  it('no "confirm the material" warning after the engineer picked the resin', () => {
+    const c = ctx('IM_ECU_Cover.stp', 'mat-pa66gf30');
+    const { analysis } = buildDeterministicAnalysis(INJECTION_MOULDING_RULES, c, 'cover');
+    expect(analysis.materialAnalysis?.primarySuggestion?.confidencePct).toBe(100);
   });
 });

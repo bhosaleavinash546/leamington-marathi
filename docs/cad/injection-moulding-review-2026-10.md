@@ -51,36 +51,70 @@ every error below. Replace them with real mouldings and their quotes when availa
 | 14 | Identification | The bend detector reads a moulded shell's fillets (concentric inner / outer radii) as sheet-metal bends. | ECU cover (12 "bends") and tray (8) routed to **sheet metal with no question** | With bosses, or a file that names another process, it **asks**, leaning to moulding. The real pressing still routes outright. |
 | 15 | Packaging | A fixed 9p a part (5p box + 4p freight) whatever the size. | A 5 g clip paid nearly half its cost in handling | The fixed base scales below a 250 cm³ envelope. Unchanged for every current real part. |
 
+### Second pass — checked against a standard moulding cost build-up
+
+The first pass fixed what was wrong. The second walked a standard moulding should-cost
+element by element and found what was **missing**:
+
+| Element | What it covers | Status |
+|---|---|---|
+| Material | part, runner − regrind, purge, scrap, drying | gaps found |
+| Press selection | clamp, shot capacity, tie-bar spacing | gaps found |
+| Cycle | fill, pack, cool, dry cycle, take-out | covered |
+| Labour | manning, setter | gap found |
+| Set-up | changeover, batch | gap found |
+| Tooling | build-up, life, maintenance | gap found |
+| Secondary operations | | covered (manual entry) |
+| Packaging, overhead, region | | covered |
+
+| # | Element | Gap | Fix |
+|---|---|---|---|
+| 16 | Press capacity | The press was chosen on clamp force alone. A heavy part with a small footprint needs more barrel, and a long mould must pass between the tie bars. | Library press table with shot volume and tie-bar spacing (typical); the smallest press that clamps, shoots within 80% of its barrel and takes the mould (cavity layout + 40 mm between, 2 × 60 mm plate). Used by the cavitation optimiser too. |
+| 17 | Clamp area | Part only; a cold runner has its own projected area | × 1.1 with a cold runner |
+| 18 | Nominal wall | 2·V/S reads ~10% low on a ribbed, bossed shell (2.27 against 2.5 mm), so cooling was ~20% short | The kernel's fillet inner/outer radius-pair gauge (2.5 mm, exactly the modelled wall) when it sits within 1–1.5× of 2·V/S |
+| 19 | Mould change | Not costed | Setter + press hours per change (1.5 / 2.5 / 4 h by press) over the batch (annual ÷ 20, 50–5,000) |
+| 20 | Purge | Not costed | 2 / 5 / 10 kg of resin per change, in the material, over the batch |
+| 21 | Mould maintenance | Not costed | 3% of the tool a year (typical 2–5%) |
+| 22 | Drying | PA, PC, PBT, ABS etc. must be dried; not costed | 0.15 kWh/kg processed for hygroscopic resins, at the costing region's tariff (the executor passes it, as for casting melt) |
+| 23 | False warning | "Material only 0% confident — confirm the material" on every moulding whose resin the engineer had already picked | The resin answer counts as a confirmed material |
+
+All new values are rules with screen fields (mould change, batch, purge,
+maintenance, drying), mapped to headless.
+
 ## 2. Before and after (headless)
 
 | Part | Before | After | What moved |
 |---|---|---|---|
-| ECU cover, PA66-GF30, 100k/yr | **£30.43** (59 mm wall, 7,002 s shot, 8-up 500 t) | **£1.42** | 17.6 s shot, 1-up 200 t, cold runner, £32.4k tool |
-| Cable clip, PA66-GF30, 1M/yr | £0.73 (13.8 mm wall, 392 s shot) | **£0.20** | 12.5 s shot, 4-up hot runner 50 t |
-| Storage tray, PP, 50k/yr | £4.86 (**350 t press**, 2 s eject) | **£7.79** | 1,200 t press, 7 s dry cycle, hot runner, 2 drops |
+| ECU cover, PA66-GF30, 100k/yr | **£30.43** (59 mm wall, 7,002 s shot, 8-up 500 t) | **£1.49** | 2.5 mm wall, 19.5 s shot, 1-up 200 t, cold runner, £32.4k tool, mould change, drying |
+| Cable clip, PA66-GF30, 1M/yr | £0.73 (13.8 mm wall, 392 s shot) | **£0.13** | 12.5 s shot, 4-up hot runner 50 t |
+| Storage tray, PP, 50k/yr | £4.86 (**350 t press**, 2 s eject) | **£8.20** | 1,200 t press, 7 s dry cycle, hot runner, 2 drops, 4 h mould change |
 
-At the baseline's 50k/yr: cover £1.81, clip £0.35, tray £7.79.
+At the baseline's 50k/yr: cover £1.92, clip £0.39, tray £8.21.
 
 Two metal parts moved slightly when re-measured with the new silhouette:
 - **Casting Bracket:** tooling £0.29 → £0.36 (pattern plate sized on the real shadow).
 - **Steering knuckle:** tooling £1.21 → £1.17.
 
 Hand reconciliation of the ECU cover at 100k/yr. Every line uses library rates:
-PA66-GF30 £3.10/kg (scrap £0.05), imm-200t £27.03/h, semi-skilled £19.94/h.
+PA66-GF30 £3.10/kg (scrap £0.05), imm-200t £27.03/h, semi-skilled £19.94/h,
+technician (setter) £30.3/h, electricity £0.268/kWh.
 
 | Line | Working | £ |
 |---|---|---|
-| Material | net 0.1591 ÷ 0.98 = 0.1623 kg; gross ×(0.1591 + 0.0239 × 0.2) ÷ 0.1591 = 0.1672 kg × £3.10 − 0.0049 × £0.05 | 0.518 |
-| Cycle | fill 1.5 + pack 2.0 + cool 2.0 × 2.3² = 10.6 + eject 3.5 = 17.6 s; ÷ 0.98 | — |
-| Press | 17.6 s ÷ 3,600 ÷ 0.98 × £27.03 ÷ 0.80 OEE | 0.168 |
-| Labour | same hours × £19.94 × 0.5 manning ÷ 0.92 | 0.054 |
-| Tooling | £32,441 ÷ 100,000 (1 tool, production steel, 1M-shot life) | 0.324 |
+| Cycle | fill 1.5 + pack 2.0 + cool 2.0 × 2.5² = 12.5 + eject 3.5 = 19.5 s; ÷ 0.98 for scrap | — |
+| Resin | gross per part 0.1591 + 0.0239 × 0.2 (runner less regrind) + 2 kg ÷ 5,000 (purge) = 0.1643 kg; × 1/0.98 = 0.1676 kg × £3.10 − 0.0053 × £0.05 | 0.519 |
+| Drying | (0.1591 + 0.0239) × 1/0.98 × 0.15 kWh × £0.268 | 0.008 |
+| **Material** | | **0.527** |
+| Press | 19.5 s ÷ 3,600 ÷ 0.98 × £27.03 ÷ 0.80 = 0.187; mould change 1.5 h ÷ 5,000 × £27.03 = 0.008 | 0.195 |
+| Labour | moulding 0.00553 h × £19.94 × 0.5 ÷ 0.92 = 0.060; setter 1.5 ÷ 5,000 × £30.3 = 0.009 | 0.069 |
+| Tooling | £32,441 × 1.03 (maintenance) ÷ 100,000 | 0.334 |
 | Packaging + logistics | geometry estimators | 0.12 |
-| Overhead 12% of £1.064; margin 8% of subtotal | | 0.128 + 0.105 |
-| **Total** | | **1.42** |
+| Overhead 12% of £1.125; margin 8% of subtotal | | 0.135 + 0.110 |
+| **Total** | | **1.49** |
 
 Live in a browser, the screen fills the same wall, area, cavities, press, fill /
-pack / eject, runner, regrind, scrap, manning and tool, and costs **£1.40**.
+pack / eject, runner, regrind, scrap, manning, mould change, batch, purge,
+maintenance, drying and tool, and costs **£1.47**.
 Material and tooling match to the penny; process and labour differ by the
 shop-default OEE (0.85 against 0.80) and labour efficiency (0.95 against 0.92).
 
@@ -95,11 +129,17 @@ shop-default OEE (0.85 against 0.80) and labour efficiency (0.95 against 0.92).
   programme's shots, but its cost is amortised over **one year's** volume, as for
   every commodity here. Many OEMs pay tooling separately. This is a policy for
   the director, not a formula fix.
-- **Wall of a ribbed part.** 2·V/S reads slightly under the nominal wall when ribs
-  and bosses are thinner (2.27 against a 2.5 mm design), so cooling can be up to
-  ~20% short on rib-heavy parts.
+- **Wall of a shelled part with no fillet pairs** (sharp-cornered) still falls
+  back to 2·V/S, which reads low when ribs are thinner than the wall.
+- **Local thick sections** (a heavy boss) can govern cooling beyond the nominal
+  wall; the kernel does not yet report the thickest moulded section.
 - **Engineering-typical constants**, each printed on its rule and meant to be
   replaced with the moulder's data:
+  - press shot and tie-bar table
+  - mould layout margins
+  - mould change hours, purge kg, batch (annual ÷ 20)
+  - 3% maintenance
+  - 0.15 kWh/kg drying
   - dry-cycle and injection-rate tables
   - take-out time
   - cold runner 15% / 3 g
@@ -111,7 +151,8 @@ shop-default OEE (0.85 against 0.80) and labour efficiency (0.95 against 0.92).
 - **Form multipliers** on the tool for tolerance (×1.2–2.0) and finish (textured
   ×1.1, high-gloss ×1.4, painted ×1.6) have no source; "painted" in particular is
   questionable.
-- **Not modelled:** colour masterbatch and resin drying (the resin is taken as
-  pre-coloured and dry); inserts and secondary operations stay manual entries.
+- **Not modelled:** colour masterbatch (the resin price is taken as the
+  coloured compound); manual degating of a cold runner (a picker is assumed);
+  inserts and secondary operations stay manual entries.
 - **The test parts are modelled, not real.** None of these figures has been
   compared with a price JLR paid.

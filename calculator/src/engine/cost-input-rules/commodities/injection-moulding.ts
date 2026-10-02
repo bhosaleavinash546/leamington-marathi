@@ -26,6 +26,7 @@
 import {
   estimateClampingTonnage, pickIMMPressId, steelClassFor,
   thermodynamicCoolFactor, dryCycleSeconds, injectionRateCm3PerSec, TAKE_OUT_S,
+  mouldShortSideMm, IMM_PRESSES, SHOT_USE_MAX,
   type MouldSteelClass,
 } from '../../modules/injection-moulding.js';
 import { optimiseCavitation, type CavitationChoice } from '../../cavitation-optimiser.js';
@@ -33,6 +34,7 @@ import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcom
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { projectedAreaCm2, projectedAreaBasis, governingWallMm } from '../derive/envelope.js';
+import { standardBatchSize } from '../../routing-optimiser.js';
 
 /** Largest press in the rate library, tonnes — the hard cavitation ceiling. */
 const MAX_CLAMP_TONNES = 3500;
@@ -83,6 +85,9 @@ export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): Cavita
     programmeYears: PROGRAMME_YEARS,
     runnerSystem: runner.system,
     dropsPerCavity: runner.dropsPerCavity,
+    runnerAreaFactor: runner.system === 'cold' ? COLD_RUNNER_AREA_FACTOR : 1,
+    shotCm3For: (n) => shotCm3(ctx, resin, n),
+    mouldShortSideFor: (n) => mouldShortSideFor(ctx, n) ?? 0,
     manning: mouldManning(pickIMMPressId(estimateClampingTonnage({
       projectedAreaCm2: areaCm2, cavityPressureMPa: resin.cavityPressureMPa ?? 50 }))).n,
     rejectRate: MOULDING_REJECT,
@@ -99,8 +104,58 @@ export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): Cavita
  * and pack used the raw ray-cast mean, which on a shelled cover read 29.5 mm.
  */
 export function mouldWallMm(ctx: RuleContext): number | null {
-  return governingWallMm(ctx.geo.wallThickness)?.mm ?? null;
+  return mouldWall(ctx)?.mm ?? null;
 }
+
+/**
+ * The nominal wall, with its basis. On a shelled moulding the kernel measures
+ * the radius step between each fillet's inner and outer face — the wall itself
+ * (2.5 mm on the modelled cover, 3.0 on the tray) — where 2·V/S reads low
+ * because ribs and bosses are thinner (2.27, 2.91) and cooling, which goes as
+ * wall², came out up to ~20% short. The fillet-pair gauge is taken when it sits
+ * within 1–1.5× the bulk wall (a pair reading far off is a different feature).
+ */
+export function mouldWall(ctx: RuleContext): { mm: number; basis: string } | null {
+  const gw = governingWallMm(ctx.geo.wallThickness);
+  const sm = ctx.geo.sheetMetal;
+  const bulk = sm?.bulkWallMm ?? null;
+  if (gw && sm?.thicknessSource === 'bend-pairs' && sm.thicknessMm && bulk
+      && ctx.geo.wallThickness?.method === 'volume_surface_shell'
+      && sm.thicknessMm >= bulk && sm.thicknessMm <= 1.5 * bulk) {
+    return { mm: Math.round(sm.thicknessMm * 10) / 10,
+      basis: `nominal wall ${sm.thicknessMm} mm measured between ${sm.gaugeSamples ?? 'several'} fillet inner/outer radius pairs `
+        + `(2·V/S ${bulk} mm reads low: ribs and bosses are thinner than the wall)` };
+  }
+  return gw;
+}
+
+/** A cold runner's own projected area adds to the clamp force: ~10% (engineering-typical). */
+export const COLD_RUNNER_AREA_FACTOR = 1.1;
+
+/** The mould's short side for n cavities, from the part's footprint across the draw. */
+export function mouldShortSideFor(ctx: RuleContext, n: number): number | undefined {
+  const b = ctx.geo.boundingBox;
+  if (!b) return undefined;
+  const dims = [b.xMm, b.yMm, b.zMm];
+  const d = ctx.geo.draftAnalysis?.drawDirectionXYZ;
+  const axis = d ? d.findIndex(c => Math.abs(c) > 0.99) : -1;
+  const across = axis >= 0 ? dims.filter((_, i) => i !== axis) : [...dims].sort((x, y) => y - x).slice(0, 2);
+  return mouldShortSideMm(Math.min(...across), Math.max(...across), n);
+}
+
+/** Mould change hours by press size (engineering-typical, quick-change not assumed). */
+export function mouldChangeHours(pressId: string): number {
+  const t = Number(/(\d+)t/.exec(pressId)?.[1] ?? 0);
+  return t <= 200 ? 1.5 : t <= 800 ? 2.5 : 4;
+}
+/** Purge and start-up resin per change, kg, by press size (engineering-typical). */
+export function purgeKgPerChange(pressId: string): number {
+  const t = Number(/(\d+)t/.exec(pressId)?.[1] ?? 0);
+  return t <= 200 ? 2 : t <= 800 ? 5 : 10;
+}
+/** Resins that must be dried before moulding, and the dryer energy, kWh per kg processed. */
+const HYGROSCOPIC = /pa6|pa66|pa12|nylon|ppa|\bpc\b|pc-|lexan|pbt|\bpet|abs|asa|san|pmma|pei|peek|tpu/;
+export const DRYING_KWH_PER_KG = 0.15;
 
 /** Part depth along the draw, cm — the cavity block depth in the tool build-up. */
 export function partDepthCm(ctx: RuleContext): number | null {
@@ -256,7 +311,7 @@ function advise(ctx: RuleContext): { advice: ImAdvice } | { blocked: RuleOutcome
   const slides = sideActions(ctx);
   const n = choice.chosen.n;
   const clampTonnes = estimateClampingTonnage({
-    projectedAreaCm2: areaCm2 * n,
+    projectedAreaCm2: areaCm2 * n * (runnerChoice(ctx, resin, areaCm2).system === 'cold' ? COLD_RUNNER_AREA_FACTOR : 1),
     cavityPressureMPa: resin.cavityPressureMPa!,
   });
   const shots = (ctx.annualVolume * PROGRAMME_YEARS) / n;
@@ -284,7 +339,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       fieldId: 'imm-wall',
       label: 'wallThicknessMm',
       evaluate: (ctx) => {
-        const gw = governingWallMm(ctx.geo.wallThickness);
+        const gw = mouldWall(ctx);
         if (!gw) return ask({
           id: 'injectionMoulding.envelope', kind: 'geometry_gap',
           question: 'What is the nominal wall and the projected area?',
@@ -374,8 +429,12 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('injectionMoulding.machineId', r.advice.pressId, 'advisor',
-          `${r.advice.areaCm2} cm² x ${r.advice.cavities} cavity at `
-          + `${r.advice.resin.cavityPressureMPa} MPa = ${r.advice.clampTonnes} t clamp (1.15 safety)`, 0.85);
+          `${r.advice.areaCm2} cm² x ${r.advice.cavities} cavity`
+          + `${runnerChoice(ctx, r.advice.resin, r.advice.areaCm2).system === 'cold' ? ` x ${COLD_RUNNER_AREA_FACTOR} (cold runner area)` : ''}`
+          + ` at ${r.advice.resin.cavityPressureMPa} MPa = ${r.advice.clampTonnes} t clamp (1.15 safety); `
+          + `the smallest press that also shoots ${shotCm3(ctx, r.advice.resin, r.advice.cavities).toFixed(0)} cm³ within `
+          + `${SHOT_USE_MAX * 100}% of its barrel and takes a ${mouldShortSideFor(ctx, r.advice.cavities)?.toFixed(0) ?? '?'} mm mould `
+          + `between its tie bars (${IMM_PRESSES.find(p => p.id === r.advice.pressId)?.tieBarMm ?? '?'} mm)`, 0.8);
       },
     },
     {
@@ -583,6 +642,64 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       label: 'rejectRate',
       evaluate: () => decided('injectionMoulding.rejectRate', MOULDING_REJECT, 'rule',
         'moulding scrap (start-up, short shots, cosmetic rejects), engineering-typical 1–3% — the screen had none, headless 3%', 0.5),
+    },
+    {
+      id: 'injectionMoulding.setupHoursPerChange',
+      path: 'injectionMoulding.setupHoursPerChange',
+      fieldId: 'imm-setup-hr',
+      label: 'setupHoursPerChange',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const h = mouldChangeHours(r.advice.pressId);
+        return decided('injectionMoulding.setupHoursPerChange', h, 'rule',
+          `mould change on a ${r.advice.pressId}: ${h} h of press and setter (engineering-typical, no quick-change)`, 0.5);
+      },
+    },
+    {
+      id: 'injectionMoulding.batchSize',
+      path: 'injectionMoulding.batchSize',
+      fieldId: 'imm-batch',
+      label: 'batchSize',
+      evaluate: (ctx) => decided('injectionMoulding.batchSize', standardBatchSize(ctx.annualVolume), 'rule',
+        `${ctx.annualVolume.toLocaleString('en-GB')}/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch`, 0.5),
+    },
+    {
+      id: 'injectionMoulding.purgeKg',
+      path: 'injectionMoulding.purgeKg',
+      fieldId: 'imm-purge',
+      label: 'purgeKg',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const kg = purgeKgPerChange(r.advice.pressId);
+        return decided('injectionMoulding.purgeKg', kg, 'rule',
+          `purge and start-up shots on a ${r.advice.pressId}: ${kg} kg a change (engineering-typical)`, 0.5);
+      },
+    },
+    {
+      id: 'injectionMoulding.mouldMaintenanceFraction',
+      path: 'injectionMoulding.mouldMaintenanceFraction',
+      fieldId: 'imm-maint',
+      label: 'mouldMaintenanceFraction',
+      evaluate: () => decided('injectionMoulding.mouldMaintenanceFraction', 0.03, 'rule',
+        'mould maintenance 3% of the tool a year (engineering-typical 2–5%), on the year the tool is amortised over', 0.5),
+    },
+    {
+      id: 'injectionMoulding.dryingKwhPerKg',
+      path: 'injectionMoulding.dryingKwhPerKg',
+      fieldId: 'imm-dry-kwh',
+      label: 'dryingKwhPerKg',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        const id = (r.advice.resin.materialId ?? '').toLowerCase();
+        return HYGROSCOPIC.test(id)
+          ? decided('injectionMoulding.dryingKwhPerKg', DRYING_KWH_PER_KG, 'rule',
+            `${r.advice.resin.grade} is hygroscopic and is dried before moulding — ${DRYING_KWH_PER_KG} kWh/kg desiccant dryer (engineering-typical 0.1–0.2)`, 0.55)
+          : decided('injectionMoulding.dryingKwhPerKg', 0, 'rule',
+            `${r.advice.resin.grade} does not need drying`, 0.6);
+      },
     },
   ],
 };

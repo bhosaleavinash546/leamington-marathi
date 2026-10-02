@@ -613,6 +613,12 @@ export function toCostParams(
           steelClass: m.steelClass || undefined,
           mouldCost: num(m.mouldCostGBP),
           mouldLife: num(m.mouldLife, 1_000_000),
+          ...(num(m.setupHoursPerChange) > 0 && num(m.batchSize) > 0 ? {
+            setup: { hoursPerChange: num(m.setupHoursPerChange), batchSize: num(m.batchSize),
+                     setterLabourId: 'lab-uk-technician', purgeKg: num(m.purgeKg) },
+          } : {}),
+          ...(num(m.mouldMaintenanceFraction) > 0 ? { mouldMaintenanceFraction: num(m.mouldMaintenanceFraction) } : {}),
+          ...(num(m.dryingKwhPerKg) > 0 ? { drying: { kwhPerKg: num(m.dryingKwhPerKg) } } : {}),
         },
       };
     }

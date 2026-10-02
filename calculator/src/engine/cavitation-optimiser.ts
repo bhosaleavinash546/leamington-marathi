@@ -49,6 +49,12 @@ export interface CavitationInputs {
   runnerSystem?: 'cold' | 'hot';
   /** Hot-runner drops per cavity when hot (large parts take several). */
   dropsPerCavity?: number;
+  /** Shot volume for n cavities, cm³ — the press must shoot it within SHOT_USE_MAX of its barrel. */
+  shotCm3For?: (n: number) => number;
+  /** The mould's short side for n cavities, mm — it must pass between the tie bars. */
+  mouldShortSideFor?: (n: number) => number;
+  /** Clamp area multiplier for the runner (a cold runner adds its own projected area). */
+  runnerAreaFactor?: number;
   annualVolume: number;
   sideActionsLifters: number;
   /** turns annual volume into programme shots for the steel class. */
@@ -128,13 +134,16 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
 
   for (const n of p.candidates ?? [1, 2, 4, 8]) {
     const clampTonnes = Math.round(estimateClampingTonnage({
-      projectedAreaCm2: p.areaPerCavityCm2 * n,
+      projectedAreaCm2: p.areaPerCavityCm2 * n * (p.runnerAreaFactor ?? 1),
       cavityPressureMPa: p.cavityPressureMPa,
     }));
     const feasible = clampTonnes <= maxClamp || n === 1;
     if (!feasible) { infeasible.push({ n, clampTonnes }); continue; }
 
-    const pressId = pickIMMPressId(clampTonnes);
+    const pressId = pickIMMPressId(clampTonnes, {
+      ...(p.shotCm3For ? { shotCm3: p.shotCm3For(n) } : {}),
+      ...(p.mouldShortSideFor ? { mouldShortSideMm: p.mouldShortSideFor(n) } : {}),
+    });
     const rate = library.machines.find(m => m.id === pressId)?.computedRatePerHr ?? 0;
     const steel = steelClassFor((p.annualVolume * years) / n);
     const mouldCostGBP = Math.round(mould(n, steel.cls));

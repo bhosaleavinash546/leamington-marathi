@@ -26,6 +26,11 @@ INJECTION MOULDING COST INPUT RULES:
   regrindFraction: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
   manning: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
   rejectRate=0.02  [moulding scrap (start-up, short shots, cosmetic rejects), engineering-typical 1–3% — the screen had none, headless 3% — deterministic, use verbatim]
+  setupHoursPerChange: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
+  purgeKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  mouldMaintenanceFraction=0.03  [mould maintenance 3% of the tool a year (engineering-typical 2–5%), on the year the tool is amortised over — deterministic, use verbatim]
+  dryingKwhPerKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
 
 ### context: degraded
 INJECTION MOULDING COST INPUT RULES:
@@ -51,3 +56,8 @@ INJECTION MOULDING COST INPUT RULES:
   regrindFraction: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
   manning: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
   rejectRate=0.02  [moulding scrap (start-up, short shots, cosmetic rejects), engineering-typical 1–3% — the screen had none, headless 3% — deterministic, use verbatim]
+  setupHoursPerChange: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
+  purgeKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))
+  mouldMaintenanceFraction=0.03  [mould maintenance 3% of the tool a year (engineering-typical 2–5%), on the year the tool is amortised over — deterministic, use verbatim]
+  dryingKwhPerKg: UNDECIDED — needs "Which resin is this moulded in?" (PP Impact Copolymer (PP-B) | ABS | PC/ABS Blend (automotive grade) | PA6 GF30 | PA66 GF30 | POM / Acetal (Delrin))

@@ -4,6 +4,7 @@ import {
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
   boughtOutLine, type ToolComplexity, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
+import { ukElectricityPerKwh } from '../uk-tariff.js';
 
 export type RunnerSystem = 'cold' | 'hot';
 
@@ -48,6 +49,13 @@ export interface InjectionMouldingInputs {
   /** All-in secondary-op cost £/part: insert installation, ultrasonic welding, pad-printing,
    *  degating/trimming, over-moulding second shot, assembly. Deterministic catch-all adder. */
   secondaryOpCostPerPart?: number;
+  // ── Moulding review, second pass: elements a standard build-up carries ──
+  /** Mould change: setter hours per change, the batch it serves, purge resin per change. */
+  setup?: { hoursPerChange: number; batchSize: number; setterLabourId: string; purgeKg?: number };
+  /** Mould maintenance a year as a fraction of the tool cost (typical 0.02–0.05). */
+  mouldMaintenanceFraction?: number;
+  /** Drying a hygroscopic resin, kWh per kg processed, at a tariff (default the library's). */
+  drying?: { kwhPerKg: number; energyPricePerKwh?: number };
 }
 
 // ─── Parametric mould-cost estimator (H3) ─────────────────────────────────────
@@ -152,14 +160,60 @@ export function injectionRateCm3PerSec(pressId: string): number {
   return (INJECTION_RATE_CM3_S.find(([cap]) => t <= cap) ?? INJECTION_RATE_CM3_S[INJECTION_RATE_CM3_S.length - 1])[1];
 }
 
-export function pickIMMPressId(clampTonnes: number): string {
-  const presses: Array<[number, string]> = [
-    [50, 'imm-50t'], [100, 'imm-100t'], [200, 'imm-200t'], [350, 'imm-350t'],
-    [400, 'imm-400t'], [500, 'imm-500t'], [800, 'imm-800t'], [1200, 'imm-1200t'],
-    [2000, 'imm-2000t'], [3500, 'imm-3500t'],
-  ];
-  for (const [t, id] of presses) if (t >= clampTonnes) return id;
+/**
+ * What each press in the library can do besides clamp: the largest shot its
+ * injection unit delivers, cm³, and the clear space between its tie bars, mm.
+ * Engineering-typical for a mid-size screw and a standard platen, from press
+ * datasheets; replace with the moulder's own presses.
+ *
+ * The press used to be chosen on clamp force alone (moulding review, second
+ * pass). A heavy part with a small footprint needs more barrel than its clamp
+ * suggests, and a long part's mould must pass between the tie bars — a bumper
+ * is sized as much by its 2 m mould as by its tonnage.
+ */
+export const IMM_PRESSES: Array<{ id: string; tonnes: number; shotCm3: number; tieBarMm: number }> = [
+  { id: 'imm-50t', tonnes: 50, shotCm3: 80, tieBarMm: 320 },
+  { id: 'imm-100t', tonnes: 100, shotCm3: 180, tieBarMm: 410 },
+  { id: 'imm-200t', tonnes: 200, shotCm3: 450, tieBarMm: 560 },
+  { id: 'imm-350t', tonnes: 350, shotCm3: 900, tieBarMm: 710 },
+  { id: 'imm-400t', tonnes: 400, shotCm3: 1100, tieBarMm: 760 },
+  { id: 'imm-500t', tonnes: 500, shotCm3: 1500, tieBarMm: 810 },
+  { id: 'imm-800t', tonnes: 800, shotCm3: 2800, tieBarMm: 1000 },
+  { id: 'imm-1200t', tonnes: 1200, shotCm3: 4500, tieBarMm: 1250 },
+  { id: 'imm-2000t', tonnes: 2000, shotCm3: 8000, tieBarMm: 1550 },
+  { id: 'imm-3500t', tonnes: 3500, shotCm3: 16000, tieBarMm: 2100 },
+];
+/** A shot should use no more than this share of the barrel — the rest is cushion and melt quality. */
+export const SHOT_USE_MAX = 0.8;
+
+/**
+ * Smallest press that clamps the force, shoots the volume and takes the mould.
+ * `mouldShortSideMm` is the mould's narrower side, which passes between the tie
+ * bars. Only `clampTonnes` given → the old clamp-only choice.
+ */
+export function pickIMMPressId(clampTonnes: number, opts: { shotCm3?: number; mouldShortSideMm?: number } = {}): string {
+  for (const p of IMM_PRESSES) {
+    if (p.tonnes < clampTonnes) continue;
+    if (opts.shotCm3 && opts.shotCm3 > p.shotCm3 * SHOT_USE_MAX) continue;
+    if (opts.mouldShortSideMm && opts.mouldShortSideMm > p.tieBarMm) continue;
+    return p.id;
+  }
   return 'imm-3500t';
+}
+
+/**
+ * Mould short side, mm: n impressions laid out in rows, each the part's footprint
+ * + 40 mm of steel between cavities, + 2 × 60 mm of plate and guides — close to
+ * catalogue mould-base sizes (a 4-up 60 × 40 mm part lands at ~280 mm, against
+ * a 296 mm standard base). A real tool's drawing replaces it.
+ */
+export function mouldShortSideMm(partShortMm: number, partLongMm: number, cavities: number): number {
+  const n = Math.max(1, Math.floor(cavities));
+  const rows = Math.max(1, Math.floor(Math.sqrt(n)));
+  const cols = Math.ceil(n / rows);
+  const a = rows * (partShortMm + 40) + 120;
+  const b = cols * (partLongMm + 40) + 120;
+  return Math.min(a, b);
 }
 
 /**
@@ -477,7 +531,10 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   // Effective material: for hot runners there is no runner waste (plastic stays in manifold)
   const effectiveRunnerWeightKg = inputs.runnerSystem === 'hot' ? 0 : inputs.runnerWeightKg;
   const runnerWastePerCavity = (effectiveRunnerWeightKg / inputs.cavities) * (1 - inputs.regrindFraction);
-  const grossPerPart = inputs.partWeightKg + runnerWastePerCavity;
+  // Purge and start-up resin at each mould change, shared over the batch.
+  const purgePerPart = inputs.setup && inputs.setup.batchSize > 0
+    ? Math.max(0, inputs.setup.purgeKg ?? 0) / inputs.setup.batchSize : 0;
+  const grossPerPart = inputs.partWeightKg + runnerWastePerCavity + purgePerPart;
   const materialUtilization = inputs.partWeightKg / grossPerPart;
 
   const rawMaterial: RawMaterialInput = {
@@ -502,6 +559,18 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
     },
   ];
 
+  // Mould change: the press stands and a setter works for the change, once a batch.
+  if (inputs.setup && inputs.setup.hoursPerChange > 0 && inputs.setup.batchSize > 0) {
+    const hr = inputs.setup.hoursPerChange / inputs.setup.batchSize;
+    operations.push({
+      operationName: 'Mould change (amortised over the batch)',
+      machineId: inputs.machineId,
+      labourId: inputs.setup.setterLabourId,
+      cycleTimeHr: hr, partsPerCycle: 1, oee: 1, manning: 1,
+      labourTimeHr: hr, labourEfficiency: 1,
+    });
+  }
+
   // Base mould cost: use the manual figure if provided, else estimate it parametrically.
   const baseMouldCost = (inputs.mouldCost && inputs.mouldCost > 0)
     ? inputs.mouldCost
@@ -518,7 +587,9 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   const shotsNeeded = inputs.amortizationVolume / inputs.cavities;
   const numMoulds = inputs.mouldLife > 0 ? Math.ceil(shotsNeeded / inputs.mouldLife) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: baseMouldCost * numMoulds * toleranceFactor * finishFactor.tooling,
+    // + a year's mould maintenance (the amortisation volume is a year's).
+    totalToolingCost: baseMouldCost * numMoulds * toleranceFactor * finishFactor.tooling
+      * (1 + Math.max(0, inputs.mouldMaintenanceFraction ?? 0)),
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
@@ -528,7 +599,12 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   // reject is taken), so no reject uplift. Flow through consumablesCostPerPart, the same
   // mechanism forging uses for coining/NDT — keeps the 8-bucket stack deterministic.
   const insertsCostPerPart = Math.max(0, inputs.insertCount ?? 0) * Math.max(0, inputs.insertUnitCost ?? 0);
-  const secondaryCostPerPart = insertsCostPerPart + Math.max(0, inputs.secondaryOpCostPerPart ?? 0);
+  // Drying every kg that goes through the barrel (part + runner, rejects included).
+  const dryingPerPart = inputs.drying && inputs.drying.kwhPerKg > 0
+    ? (inputs.partWeightKg + effectiveRunnerWeightKg / inputs.cavities) * rejectUplift
+      * inputs.drying.kwhPerKg * (inputs.drying.energyPricePerKwh ?? ukElectricityPerKwh())
+    : 0;
+  const secondaryCostPerPart = insertsCostPerPart + Math.max(0, inputs.secondaryOpCostPerPart ?? 0) + dryingPerPart;
 
   return {
     rawMaterial: secondaryCostPerPart > 0

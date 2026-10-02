@@ -187,6 +187,9 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
     if (tariff != null && (commodity === 'casting' || commodity === 'cast_and_machine')) {
       const p = params as { melt?: { energyPricePerKwh?: number } };
       if (p.melt?.energyPricePerKwh == null) moduleParams = { ...p, melt: { ...p.melt, energyPricePerKwh: tariff } } as typeof params;
+    } else if (tariff != null && commodity === 'injection_moulding') {
+      const p = params as { drying?: { kwhPerKg: number; energyPricePerKwh?: number } };
+      if (p.drying && p.drying.energyPricePerKwh == null) moduleParams = { ...p, drying: { ...p.drying, energyPricePerKwh: tariff } } as typeof params;
     } else if (tariff != null && commodity === 'forging') {
       const p = params as { heatingEnergyPricePerKwh?: number };
       if (p.heatingEnergyPricePerKwh == null) moduleParams = { ...p, heatingEnergyPricePerKwh: tariff } as typeof params;

@@ -504,6 +504,11 @@ export interface CADAnalysisResult {
       regrindFraction?: number;
       manning?: number;
       rejectRate?: number;
+      setupHoursPerChange?: number;
+      batchSize?: number;
+      purgeKg?: number;
+      mouldMaintenanceFraction?: number;
+      dryingKwhPerKg?: number;
     };
     blowMoulding?: {
       /** 'ebm' | 'ibm' | 'sbm' */

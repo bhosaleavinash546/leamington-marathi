@@ -3842,6 +3842,11 @@ function renderInjectionForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Regrind Fraction <span title="Cold runner only. Hot runner = 0 waste. Max ~0.3 for unfilled resins; 0 for glass-filled.">ℹ</span></label><input type="number" id="imm-regrind" step="0.01" min="0" max="1" value="0.2"/></div>
       <div class="field-group"><label title="Moulding scrap — start-up, short shots, cosmetic rejects. Uplifts material and press time. Engine default 2% (typical 1–3%).">Reject Rate (0–1) ⓘ</label><input type="number" id="imm-reject" step="0.005" min="0" max="0.5" value="0.02"/></div>
+      <div class="field-group"><label title="Mould change: press and setter hours per change. Engine default by press: ≤200 t 1.5 h, ≤800 t 2.5 h, larger 4 h.">Mould Change (h) ⓘ</label><input type="number" id="imm-setup-hr" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Parts per production run — the mould change and purge are shared over it. Engine default: annual volume ÷ 20, 50–5,000.">Batch Size ⓘ</label><input type="number" id="imm-batch" step="50" min="0" value="0"/></div>
+      <div class="field-group"><label title="Purge and start-up resin per mould change, kg. Engine default by press: 2 / 5 / 10 kg.">Purge (kg/change) ⓘ</label><input type="number" id="imm-purge" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="Mould maintenance a year as a fraction of the tool cost (typical 0.02–0.05). Engine default 0.03.">Mould Maint. (/yr) ⓘ</label><input type="number" id="imm-maint" step="0.01" min="0" max="0.5" value="0"/></div>
+      <div class="field-group"><label title="Drying a hygroscopic resin (PA, PC, PBT, ABS…), kWh per kg processed, at the region's tariff. Engine default 0.15 for those resins, 0 otherwise.">Drying (kWh/kg) ⓘ</label><input type="number" id="imm-dry-kwh" step="0.05" min="0" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Mould &amp; Cycle</div>
     <div class="field-row">
@@ -12540,6 +12545,11 @@ function collectIMMInput(): UniversalStackInput {
     insertUnitCost: num('imm-insert-cost') || undefined,
     secondaryOpCostPerPart: num('imm-secondary-cost') || undefined,
     rejectRate: num('imm-reject') || undefined,
+    ...(num('imm-setup-hr') > 0 && num('imm-batch') > 0 ? {
+      setup: { hoursPerChange: num('imm-setup-hr'), batchSize: num('imm-batch'), setterLabourId: 'lab-uk-technician', purgeKg: num('imm-purge') },
+    } : {}),
+    mouldMaintenanceFraction: num('imm-maint') || undefined,
+    ...(num('imm-dry-kwh') > 0 ? { drying: { kwhPerKg: num('imm-dry-kwh'), energyPricePerKwh: library.energy?.[0]?.electricityPerKwh } } : {}),
   });
 
   // H5: clamping-tonnage validation — warn if the part needs more clamp than the selected machine.

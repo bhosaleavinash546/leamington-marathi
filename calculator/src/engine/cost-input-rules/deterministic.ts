@@ -156,7 +156,10 @@ export function buildDeterministicAnalysis(
       // a shape is not. But an ANSWERED material is the highest-trust source
       // this pipeline has — reporting it as 0% confident made the sanity layer
       // demand a photo for a material the engineer had just confirmed.
-      const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'];
+      // The resin answer counts too: plastics confirm a grade, not a family, and
+      // reading only the metal answer warned "confirm the material" on every
+      // moulding whose resin the engineer had just picked (moulding review).
+      const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'] ?? ctx.answers['material.resin'];
       return {
         fromMetadata: !!answered,
         primarySuggestion: answered

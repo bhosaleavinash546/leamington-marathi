@@ -106,6 +106,12 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'injectionMoulding.regrindFraction': { to: 'injectionMoulding.regrindFraction' },
   'injectionMoulding.manning': { to: 'injectionMoulding.manning' },
   'injectionMoulding.rejectRate': { to: 'injectionMoulding.rejectRate' },
+  // Second pass: mould change, purge, maintenance, drying.
+  'injectionMoulding.setupHoursPerChange': { to: 'injectionMoulding.setupHoursPerChange' },
+  'injectionMoulding.batchSize': { to: 'injectionMoulding.batchSize' },
+  'injectionMoulding.purgeKg': { to: 'injectionMoulding.purgeKg' },
+  'injectionMoulding.mouldMaintenanceFraction': { to: 'injectionMoulding.mouldMaintenanceFraction' },
+  'injectionMoulding.dryingKwhPerKg': { to: 'injectionMoulding.dryingKwhPerKg' },
   'forging.projectedAreaCm2': { to: 'forging.projectedAreaCm2' },
   'forging.dieSteel': { to: 'forging.dieSteel' },
   'forging.dieImpressions': { to: 'forging.dieImpressions' },
