@@ -106,7 +106,19 @@ Python process (semaphore-capped). `server/routes/cad.ts` builds the
 commodity-specialist AI prompt from the measured geometry, then
 `normalizeCADAnalysis` + `cad-sanity.ts` (cross-checks AI numbers vs measured
 volume/weight) + `cad-machining-guard.ts` (caps near-net cast/forged machining
-time to a finish envelope) run before the cost. **Geometry is the ground truth;
+time to a finish envelope) run before the cost. **Process and material
+identification**: `server/utils/cad-metadata.ts` reads what the file says about
+itself (STEP product names, header path, authoring system, declared material) and
+`analyzeGeometry` attaches it as `geo.cadMetadata`; `derive/part-evidence.ts` turns
+names and the face mix (free-form + toroidal share: ≥15% net-shape, ~0% machined) into
+a stated, pre-selected leaning on the process question and a material when the file
+declares or names one. With a key, Stage 1 is `server/utils/cad-identify.ts`: one
+vision call (Sonnet 5.5; Opus 5.5 under Deep analysis; structured output) over the
+photo, drawing, CAD renders, measured geometry and names — renders are shape only,
+never material; an unsourced material is forced to "unknown"; the geometry guard
+still overrules its process and its material stays a blocking confirm. The specialist
+runs on Sonnet 5.5 / Opus 5.5. Measure with `npx tsx scripts/process-material-eval.ts
+[--ai]`; see `docs/cad/process-material-identification-2026-10.md`. **Geometry is the ground truth;
 the AI only interprets — treat any AI number that contradicts the measured
 geometry as a bug.**
 

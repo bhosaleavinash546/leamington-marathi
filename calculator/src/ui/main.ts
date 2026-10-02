@@ -6502,11 +6502,11 @@ function renderCADDecisionsPanel(): string {
            </label>`
         : d.options.map(o => `
         <label style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
-          <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value ? 'checked' : ''} style="margin-top:2px"/>
+          <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value || (_cadDecisionAnswers[d.id] === undefined && o.leaning) ? 'checked' : ''} style="margin-top:2px"/>
           <span>
             <span style="font-weight:600;color:var(--text-primary)">${escHtml(o.label)}</span>
             ${o.consequence ? `<span style="color:var(--text-muted)"> &mdash; ${escHtml(o.consequence)}</span>` : ''}
-            ${o.leaning ? '<span style="color:var(--text-muted);font-style:italic"> (likely)</span>' : ''}
+            ${o.leaning ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above; confirm with Apply)</span>' : ''}
           </span>
         </label>`).join('')}
     </div>`;
@@ -6879,7 +6879,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       <div class="field-row" style="margin-bottom:8px;gap:8px">
         <div class="field-group">
           <label style="font-size:0.72rem">Process (for re-analysis)</label>
-          <select id="cad-reanalyze-commodity" style="font-size:0.8rem">
+          <select id="cad-reanalyze-commodity" style="font-size:0.8rem" data-initial="${escHtml(recommendedCommodity ?? '')}">
             ${CAD_COMMODITY_OPTIONS.filter(o => o.value).map(o =>
               `<option value="${o.value}"${o.value === recommendedCommodity ? ' selected' : ''}>${escHtml(o.label)}</option>`
             ).join('')}
@@ -7022,7 +7022,12 @@ async function reanalyzeCAD(): Promise<void> {
     return;
   }
 
-  const commOvr = (document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null)?.value ?? '';
+  // The drop-down is pre-filled with the first pass's recommendation. Send it only
+  // when the engineer changed it: sent by default it overrode their answer to the
+  // process question (a "cast then machined" answer costed as machined from solid).
+  const commSelEl = document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null;
+  const commChanged = !!commSelEl && commSelEl.value !== (commSelEl.dataset.initial ?? '');
+  const commOvr = commChanged ? commSelEl!.value : '';
   // Prefer the engineer's pin over the transient select value so a lock always wins.
   const matOvr  = (_cadMaterialLocked && _cadPinnedMaterialId) || (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value || '';
   const procOvr = (_cadProcessLocked && _cadPinnedSubtype) || (document.getElementById('cad-reanalyze-process') as HTMLSelectElement | null)?.value || '';
@@ -7048,7 +7053,7 @@ async function reanalyzeCAD(): Promise<void> {
       filename: cadFile?.name ?? 'cached_part.step',
       annualVolume: annVol || '100000',
     };
-    if (commOvr) body['commodity'] = commOvr;
+    if (commOvr) { body['commodity'] = commOvr; body['commodityExplicit'] = true; }
     if (matOvr)  body['material']  = matOvr;
     if (procOvr) body['process']   = procOvr;
     body['acknowledged'] = [..._cadSanityAcks];

@@ -29,6 +29,7 @@
 import type { Decision, RuleContext } from '../types.js';
 import { hollowVerdict } from './hollow.js';
 import { shellWallEstimateMm } from '../../geometry-sanity.js';
+import { partNames, processFromNames, netShapeSignal, hasMachinedFeatures } from './part-evidence.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
@@ -239,11 +240,56 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
       routes: ['machining', 'forging', 'cast_and_machine'],
     };
 
+  const lean = processLeaning(ctx, rung.routes);
   return {
     decision: ask(
       `${rung.why} The fill ratio narrows the field to these routes but does not choose `
       + 'between them: the same shape is cast at one volume and machined at another, and '
-      + 'nothing in the geometry says which. This is a sourcing decision, not a measurement.',
-      rung.routes),
+      + 'nothing in the geometry says which. This is a sourcing decision, not a measurement.'
+      + (lean.evidence.length ? ` Evidence: ${lean.evidence.join('; ')}.` : ''),
+      lean.routes, lean.leaning ?? undefined),
   };
+}
+
+/**
+ * Which of the rung's routes the evidence points to, and why.
+ *
+ * Names first — a designer who called it a casting knew — then the surface: a
+ * blended, free-form surface is net-shape (cast or forged), a prismatic one is
+ * cut from solid. A cast or forged part with measured holes leans to the
+ * "then machined" route, because those holes are finish operations. A route a
+ * name points to but the rung did not list is offered as well: the name is
+ * evidence enough to put it on the table, though never to answer for the
+ * engineer.
+ */
+export function processLeaning(ctx: RuleContext, routes: string[]): { routes: string[]; leaning: string | null; evidence: string[] } {
+  const g = ctx.geo;
+  const evidence: string[] = [];
+  const names = processFromNames(partNames(ctx.filename, g));
+  const shape = netShapeSignal(g);
+  const machinedAfter = hasMachinedFeatures(g);
+  const castRoute = machinedAfter && routes.includes('cast_and_machine') ? 'cast_and_machine' : 'casting';
+  let out = [...routes];
+  let leaning: string | null = null;
+
+  for (const h of names.hits) evidence.push(`${h.where} "${h.text}" reads as ${h.label}`);
+  if (names.route) {
+    const wanted = names.route === 'casting' ? castRoute : names.route;
+    if (ROUTES[wanted] && !out.includes(wanted)) out = [wanted, ...out];
+    if (ROUTES[wanted]) leaning = wanted;
+  } else if (names.hits.length > 1) {
+    evidence.push('the names point to different processes, so they settle nothing');
+  }
+
+  if (shape.kind) evidence.push(shape.basis);
+  if (!leaning && shape.kind === 'net-shape') {
+    leaning = ['cast_and_machine', 'casting', 'forging'].find(r => out.includes(r) && (r !== 'cast_and_machine' || machinedAfter))
+      ?? ['casting', 'forging'].find(r => out.includes(r)) ?? null;
+  } else if (!leaning && shape.kind === 'machined' && out.includes('machining')) {
+    leaning = 'machining';
+  } else if (leaning && shape.kind === 'machined' && leaning !== 'machining') {
+    evidence.push(`the name and the surface disagree — the surface is prismatic, which is how a ${ROUTES[leaning].label.toLowerCase()} part looks only when it is machined all over`);
+  }
+  if (leaning && machinedAfter && leaning === 'cast_and_machine') evidence.push('holes were measured, the finish machining a casting carries');
+  return { routes: out, leaning, evidence };
 }

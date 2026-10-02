@@ -14,6 +14,8 @@ import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
 import { measureBlankDxf } from '../utils/dxf-blank.js';
 import { blankHashOf, putBlank, getBlank, getBlankDxf } from '../utils/geometry-store.js';
 import { developBlankFromCad } from '../services/blank-development.js';
+import type { MaterialFamily } from '../../src/engine/material-family.js';
+import { identifyPart, IDENTIFY_MODEL, IDENTIFY_DEEP_MODEL, type Identification, type IdentifyInput } from '../utils/cad-identify.js';
 import { decimateOutline } from '../../src/engine/nesting.js';
 import type { TessellationMeta } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
@@ -27,7 +29,7 @@ import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/co
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
 import { diffAnalyses } from '../../src/engine/cost-input-rules/diff.js';
 import type { CADAnalysisResult } from '../../src/engine/ai-analysis.js';
-import { inferCommodity, looksLikeGear } from '../../src/engine/cost-input-rules/derive/commodity.js';
+import { inferCommodity, looksLikeGear, COMMODITY_DECISION_ID } from '../../src/engine/cost-input-rules/derive/commodity.js';
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
@@ -53,7 +55,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 27;   // 27: the press is a rule (sheetMetal.pressId); 26: BIW process rules (press line, blanking, presses, draw addendum); 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
+const CAD_PROMPT_VERSION = 28;   // 28: Stage 1 is the vision identification (cad-identify.ts), specialist on the 5.5 models; 27: the press is a rule (sheetMetal.pressId); 26: BIW process rules (press line, blanking, presses, draw addendum); 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -62,8 +64,10 @@ type Stage1Selection = { primary: string; conf: number; alt: Array<{ type: strin
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
 // escalates to Opus 4.8 for complex or high-value parts.
-const CAD_MODEL = 'claude-sonnet-5';
-const CAD_DEEP_MODEL = 'claude-opus-4-8';
+// The specialist read. Moved to the 5.5 generation on 2 Oct 2026 with the PCB
+// path; the identification step (utils/cad-identify.ts) runs on the same pair.
+const CAD_MODEL = 'claude-sonnet-5-5';
+const CAD_DEEP_MODEL = 'claude-opus-5-5';
 const cadModel = (deep: boolean): string => (deep ? CAD_DEEP_MODEL : CAD_MODEL);
 const isDeepReq = (req: { body?: Record<string, unknown> }): boolean =>
   req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
@@ -278,6 +282,105 @@ Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.t
 Valid commodity types: machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly, gear
 
 Return JSON only (no prose) — this is FORMAT only, choose the type from the geometry above, do NOT copy the placeholder: {"primary":"<type>","conf":0.0,"alt":[{"type":"<type>","conf":0.0}]}`;
+}
+
+// ─── The engineer's process answer ───────────────────────────────────────────
+
+/**
+ * Which process the request fixes, if any.
+ *
+ * Two inputs can name it: the re-analysis override drop-down (`commodity`) and
+ * the answer to the process question (`decisionAnswers['commodity.route']`).
+ * The screen used to send the drop-down on every re-analysis, pre-filled with
+ * the first pass's recommendation — "machining" when the process was still an
+ * open question — and that beat the answer. An engineer who answered "cast then
+ * machined" got a part costed as machined from solid (£101 against £39 for the
+ * Casting Bracket; found in the live run of 2 Oct 2026). The answered question
+ * is the more specific statement, so it wins unless the drop-down was changed
+ * on purpose (`commodityExplicit`). An answered question with no drop-down at
+ * all also fixes the process, so the AI path honours it as the rules do.
+ */
+export function effectiveForcedCommodity(body: Record<string, unknown> | undefined): string {
+  const dropDown = typeof body?.commodity === 'string' ? body.commodity.trim() : '';
+  const explicit = body?.commodityExplicit === true || body?.commodityExplicit === 'true';
+  let raw: unknown = body?.decisionAnswers;
+  if (typeof raw === 'string') { try { raw = JSON.parse(raw); } catch { raw = null; } }   // multipart sends it as text
+  const route = parseDecisionAnswers(raw)[COMMODITY_DECISION_ID];
+  const answered = typeof route === 'string' && route.trim() ? route.trim() : '';
+  if (dropDown && (explicit || !answered)) return dropDown;
+  return answered || dropDown;
+}
+
+// ─── Stage 1: identify the process and material ─────────────────────────────
+
+/**
+ * The vision identification (utils/cad-identify.ts) — the photo, the drawing,
+ * the CAD renders, the measured geometry and the file's own names in one call.
+ * It replaced a Haiku call that read a paragraph of numbers and saw no image.
+ * If it fails or returns nothing usable, that numbers-only selector still runs,
+ * so a model outage degrades the choice rather than breaking the analysis.
+ */
+async function stage1Identify(
+  anthropic: Anthropic, geo: OCCTGeometry, filename: string, deep: boolean,
+  partPhoto: IdentifyInput['partPhoto'], renderViews: string[], drawingPdfBase64: string | null, tag: string,
+): Promise<{ selection: Stage1Selection | null; identification: Identification | null }> {
+  try {
+    console.log(`${tag} Stage 1: identifying process and material (${deep ? IDENTIFY_DEEP_MODEL : IDENTIFY_MODEL}, `
+      + `${partPhoto ? 'photo, ' : ''}${drawingPdfBase64 ? 'drawing, ' : ''}${renderViews.length} render(s))…`);
+    const ident = await identifyPart(anthropic, { geo, filename, deep, partPhoto, renderViews, drawingPdfBase64 });
+    if (ident) {
+      console.log(`${tag} Stage 1 result: ${ident.process} (${ident.processConfidence.toFixed(2)}); `
+        + `material ${ident.materialFamily}${ident.materialGrade ? ` ${ident.materialGrade}` : ''} from ${ident.materialSource}`);
+      return {
+        selection: {
+          primary: ident.process, conf: ident.processConfidence,
+          alt: ident.alternatives.map(a => ({ type: a.process, conf: a.confidence })),
+        },
+        identification: ident,
+      };
+    }
+  } catch (err) {
+    console.warn(`${tag} Stage 1 identification failed, falling back to the numbers-only selector:`, (err as Error).message);
+  }
+  try {
+    const s1Msg = await anthropic.messages.create({
+      model: 'claude-haiku-4-5',
+      max_tokens: 256,
+      system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
+      messages: [{ role: 'user', content: stage1Prompt(geo) }],
+    });
+    const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
+    const parsed = JSON.parse(extractJson(s1Raw)) as Stage1Selection | null;
+    if (parsed && typeof parsed.primary === 'string') {
+      // Coerce the shape — the model can omit conf/alt, and buildPrompt
+      // used to crash on `alt.map` (hung request, unhandled rejection).
+      return {
+        selection: {
+          primary: parsed.primary,
+          conf: Number.isFinite(Number(parsed.conf)) ? Number(parsed.conf) : 0.5,
+          alt: Array.isArray(parsed.alt) ? parsed.alt : [],
+        },
+        identification: null,
+      };
+    }
+  } catch (err) {
+    console.warn(`${tag} Stage 1 fallback failed, using default commodity:`, (err as Error).message);
+  }
+  return { selection: null, identification: null };
+}
+
+/** The identification as a text block for the specialist, so it builds on it rather than starting over. */
+function identificationNote(ident: Identification | null): string | null {
+  if (!ident) return null;
+  return `STAGE 1 IDENTIFICATION (${ident.model})\n`
+    + `Process: ${ident.process} (${ident.processConfidence.toFixed(2)})`
+    + (ident.alternatives.length ? `; alternatives ${ident.alternatives.map(a => `${a.process} ${a.confidence.toFixed(2)}`).join(', ')}` : '') + '\n'
+    + (ident.processEvidence.length ? `Evidence: ${ident.processEvidence.join(' | ')}\n` : '')
+    + `Material: ${ident.materialFamily}${ident.materialGrade ? ` (${ident.materialGrade})` : ''} from ${ident.materialSource}`
+    + (ident.materialEvidence.length ? ` — ${ident.materialEvidence.join(' | ')}` : '') + '\n'
+    + (ident.materialSource === 'none'
+      ? 'No evidence shows the material. Return the materialId you think most likely; the engineer will be asked to confirm it.'
+      : 'Choose a materialId of this family, and this grade where one was read.');
 }
 
 // ─── Deterministic geometry guard on the commodity (golden rule) ─────────────
@@ -789,9 +892,10 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
 
   // --- Phase 3: Stage 1 — Fast commodity pre-selection (Haiku) OR user override ---
   let stage1Selection: Stage1Selection | null = null;
+  let identification: Identification | null = null;
   let selectedCommodity = 'machining'; // fallback
 
-  const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
+  const forcedCommodity = effectiveForcedCommodity(req.body);
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
   const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
   const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
@@ -910,30 +1014,11 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       console.log('[CAD] Deterministic commodity: undecided — asking the engineer');
     }
   } else {
-    try {
-      console.log('[CAD] Stage 1: Haiku commodity selection…');
-      const s1Msg = await anthropic!.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 256,
-        system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
-        messages: [{ role: 'user', content: stage1Prompt(geo) }],
-      });
-      const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
-      const parsed = JSON.parse(extractJson(s1Raw)) as Stage1Selection | null;
-      if (parsed && typeof parsed.primary === 'string') {
-        // Coerce the shape — the model can omit conf/alt, and buildPrompt
-        // used to crash on `alt.map` (hung request, unhandled rejection).
-        stage1Selection = {
-          primary: parsed.primary,
-          conf: Number.isFinite(Number(parsed.conf)) ? Number(parsed.conf) : 0.5,
-          alt: Array.isArray(parsed.alt) ? parsed.alt : [],
-        };
-        selectedCommodity = parsed.primary;
-        console.log(`[CAD] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
-      }
-    } catch (err) {
-      console.warn('[CAD] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
-    }
+    const s1 = await stage1Identify(anthropic!, geo, originalname, deepAnalysis,
+      partPhotoBase64 ? { data: partPhotoBase64, mediaType: partPhotoMime } : null,
+      renderViews, drawingUpload ? drawingUpload.buffer.toString('base64') : null, '[CAD]');
+    identification = s1.identification;
+    if (s1.selection) { stage1Selection = s1.selection; selectedCommodity = s1.selection.primary; }
     // Stage-1 may say 'gear' — that is a real commodity now, with its own rule
     // pack: the gear engine owns gears, machining must not silently absorb them.
     // Deterministic geometry guard — physics overrides a stochastic AI hint.
@@ -980,6 +1065,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // retries. The specialist system prompt is static per commodity, so it is
   // cache_control'd: repeat analyses read it at ~10% of input price.
   const userContent: Array<Record<string, unknown>> = [{ type: 'text', text: userPrompt }];
+  const identNote = identificationNote(identification);
+  if (identNote) userContent.push({ type: 'text', text: identNote });
   if (partPhotoBase64) {
     userContent.push({ type: 'image', source: { type: 'base64', media_type: partPhotoMime, data: partPhotoBase64 } });
   }
@@ -1088,6 +1175,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     analysis = await cadAnalyzeJSON(anthropic!, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
     normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights, selectedCommodity);
+    if (identification) (analysis as Record<string, unknown>).identification = identification;
     // Everything the rules could decide is now written over whatever the model
     // returned. Telling it "use verbatim" was a request; this is the guarantee.
     if (ruleSpec) {
@@ -1273,14 +1361,20 @@ async function cadAnalyzeJSON(
   systemPrompt: string,
   userContent: unknown,
 ): Promise<unknown> {
+  // Thinking is always on in the 5.5 models and counts toward max_tokens, so the
+  // old 8,192 could end a reply mid-JSON. Effort is set explicitly: Opus 5.5
+  // defaults to medium, and "Deep analysis" is asking for more than that.
   const create = (content: unknown) => anthropic.messages.create({
     model: cadModel(deepAnalysis),
-    max_tokens: 8192,
+    max_tokens: 16000,
+    output_config: { effort: deepAnalysis ? 'high' : 'medium' },
     system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content }],
   } as Parameters<typeof anthropic.messages.create>[0]);
 
-  const textOf = (m: unknown) => (m as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
+  // Every text block, not the first: a leading thinking block once emptied the PCB BOM.
+  const textOf = (m: unknown) => (m as { content: Array<{ type: string; text?: string }> }).content
+    .filter(b => b.type === 'text').map(b => b.text ?? '').join('');
 
   const raw = textOf(await create(userContent));
   try {
@@ -1867,10 +1961,17 @@ export function answersFromContext(
 export function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknown>): RuleContext {
   const ci = analysis.costInputSuggestions as { materialId?: unknown } | undefined;
   const materialId = typeof ci?.materialId === 'string' ? ci.materialId : '';
-  if (!materialId) return ctx;
+  // A family the identification step READ — off the photo, the drawing or the
+  // file — outranks the specialist's materialId, which is often a default for
+  // the commodity. It is still the model's answer: tagged 'ai', so the engineer
+  // is asked to confirm it with this family pre-selected.
+  const ident = analysis.identification as Identification | undefined;
+  const readFamily = ident && ident.materialSource !== 'none' && ident.materialFamily !== 'unknown'
+    ? ident.materialFamily as MaterialFamily : null;
+  if (!materialId && !readFamily) return ctx;
 
   const answers: Record<string, unknown> = { ...ctx.answers };
-  const family = familyFromMaterialId(materialId);
+  const family = readFamily ?? familyFromMaterialId(materialId);
   // THE ENGINEER'S ANSWER WINS. When a material decision has been answered
   // (re-analysis with decisionAnswers), the confirmed family must NOT be
   // clobbered by the model's guess — doing so silently reverted a cast-iron
@@ -1887,10 +1988,10 @@ export function withAIMaterial(ctx: RuleContext, analysis: Record<string, unknow
   // Grade-level answers for the plastic/rubber/composite specs: only supply
   // these when the engineer has not pinned the grade-level answer either, for
   // the same reason.
-  if (typeof ctx.answers['material.resin'] !== 'string') answers['material.resin'] = materialId;
-  if (typeof ctx.answers['material.elastomer'] !== 'string') answers['material.elastomer'] = materialId;
+  if (materialId && typeof ctx.answers['material.resin'] !== 'string') answers['material.resin'] = materialId;
+  if (materialId && typeof ctx.answers['material.elastomer'] !== 'string') answers['material.elastomer'] = materialId;
   if (typeof ctx.answers['material.laminate'] !== 'string') {
-    const laminate = systemForFibreId(materialId);
+    const laminate = materialId ? systemForFibreId(materialId) : null;
     if (laminate) answers['material.laminate'] = laminate.value;
   }
   return { ...ctx, answers };
@@ -2568,7 +2669,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   }
   const unitsDecision = unitsDecisionFor(geo);
 
-  const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
+  const forcedCommodity = effectiveForcedCommodity(req.body);
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
   const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
   const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
@@ -2627,6 +2728,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   }
 
   let stage1Selection: Stage1Selection | null = null;
+  let identification: Identification | null = null;
   let selectedCommodity = 'machining';
 
   if (forcedCommodity) {
@@ -2634,30 +2736,11 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
     console.log(`[CAD/reanalyze] User forced commodity: ${selectedCommodity}`);
   } else {
-    try {
-      console.log('[CAD/reanalyze] Stage 1: Haiku commodity selection from cached geometry…');
-      const s1Msg = await anthropic!.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 256,
-        system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
-        messages: [{ role: 'user', content: stage1Prompt(geo) }],
-      });
-      const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
-      const parsed = JSON.parse(extractJson(s1Raw)) as Stage1Selection | null;
-      if (parsed && typeof parsed.primary === 'string') {
-        // Coerce the shape — the model can omit conf/alt, and buildPrompt
-        // used to crash on `alt.map` (hung request, unhandled rejection).
-        stage1Selection = {
-          primary: parsed.primary,
-          conf: Number.isFinite(Number(parsed.conf)) ? Number(parsed.conf) : 0.5,
-          alt: Array.isArray(parsed.alt) ? parsed.alt : [],
-        };
-        selectedCommodity = parsed.primary;
-        console.log(`[CAD/reanalyze] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
-      }
-    } catch (err) {
-      console.warn('[CAD/reanalyze] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
-    }
+    const s1 = await stage1Identify(anthropic!, geo, filename, deepAnalysis,
+      partPhotoBase64 ? { data: partPhotoBase64, mediaType: partPhotoMime } : null,
+      [], null, '[CAD/reanalyze]');
+    identification = s1.identification;
+    if (s1.selection) { stage1Selection = s1.selection; selectedCommodity = s1.selection.primary; }
     // Deterministic geometry guard — physics overrides a stochastic AI hint.
     // This path was missing it entirely: a part correctly redirected to sheet
     // metal or blow moulding on upload could be silently un-redirected the
@@ -2712,6 +2795,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   const userPrompt = buildPrompt(geo, preStub as Parameters<typeof buildPrompt>[1], filename, selectedCommodity, stage1Selection, userOverrides);
 
   const userContent: Array<Record<string, unknown>> = [{ type: 'text', text: userPrompt }];
+  const identNote = identificationNote(identification);
+  if (identNote) userContent.push({ type: 'text', text: identNote });
   if (partPhotoBase64) {
     userContent.push({ type: 'image', source: { type: 'base64', media_type: partPhotoMime, data: partPhotoBase64 } });
   }
@@ -2781,6 +2866,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     analysis = await cadAnalyzeJSON(anthropic!, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
     normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights, selectedCommodity);
+    if (identification) (analysis as Record<string, unknown>).identification = identification;
     // Everything the rules could decide is now written over whatever the model
     // returned. Telling it "use verbatim" was a request; this is the guarantee.
     if (ruleSpec) {

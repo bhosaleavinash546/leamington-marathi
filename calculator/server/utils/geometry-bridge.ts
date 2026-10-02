@@ -85,6 +85,7 @@ export function _pythonActiveCount(): number { return pythonActive; }
  */
 import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
 import type { SkinMeshFile } from './blank-unfold.js';
+import { readCadMetadata } from './cad-metadata.js';
 import { applyShellWallCorrection } from '../../src/engine/geometry-sanity.js';
 export type { OCCTGeometry };
 
@@ -184,7 +185,7 @@ export async function analyzeGeometry(
         if (wc) console.log(`[geometry] thin-shell wall corrected: ${wc.fromMm} mm → ${wc.toMm} mm (2·V/S)`);
         const fc = applyShellWallCorrectionToFeatures(geo, wc?.toMm ?? null);
         if (fc) console.log(`[geometry] per-face thickness: ${fc.dropped} of ${fc.total} readings discarded as ray artefacts`);
-        return geo;
+        return withMetadata(geo, buffer, filename);
       }
     } finally {
       unlink(tmpPath).catch(() => {});
@@ -209,11 +210,18 @@ export async function analyzeGeometry(
     const fc = applyShellWallCorrectionToFeatures(geo, wc?.toMm ?? null);
     if (fc) console.log(`[geometry] per-face thickness: ${fc.dropped} of ${fc.total} readings `
       + `discarded as ray artefacts (outside ${fc.floorMm}-${fc.capMm} mm)`);
-    return geo;
+    return withMetadata(geo, buffer, filename);
   } finally {
     release();
     unlink(tmpPath).catch(() => {});
   }
+}
+
+/** Attach what the file says about itself — names, header path, declared material — to a
+ *  successful measurement, so every consumer of the geometry sees the same evidence. */
+function withMetadata(geo: OCCTGeometry, buffer: Buffer, filename: string): OCCTGeometry {
+  if (geo.status !== 'success') return geo;
+  try { return { ...geo, cadMetadata: readCadMetadata(buffer, filename) }; } catch { return geo; }
 }
 
 function _runPython(tmpPath: string, timeoutMs: number,

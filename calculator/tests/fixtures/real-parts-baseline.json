@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f0186ced91dc2735",
+      "partName": "cv-cad-58693f240c2e8155",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -703,6 +703,14 @@
       "detectedHardware": {
         "available": false,
         "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "Casting Bracket"
+        ],
+        "materialDesignations": [],
+        "headerFileName": "C:\\Users\\ussur\\Downloads\\TOOL TEST\\Casting Bracket\\Casting Braket.stp",
+        "authoringSystem": "CATIA Version 5 Release 20 GA (IN-10)"
       }
     },
     "outcome": {
@@ -734,7 +742,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6770bd3b2c4a64fa",
+      "partName": "cv-cad-c440527dd93d3064",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1727,6 +1735,14 @@
         "detected": [],
         "solidCount": 2,
         "note": "multi-solid model but no weld-nut/stud-like bodies matched"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "PRCR002"
+        ],
+        "materialDesignations": [],
+        "headerFileName": "PRCR002",
+        "authoringSystem": "CREO PARAMETRIC BY PTC INC, 2015380"
       }
     },
     "outcome": {
@@ -1755,7 +1771,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-53b16f148a93638b",
+      "partName": "cv-cad-cf1487b982be23ad",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2487,6 +2503,12 @@
       "detectedHardware": {
         "available": false,
         "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [],
+        "materialDesignations": [],
+        "headerFileName": "E:\\2025-GRABCAD-DATA\\CASTING-01\\Part1.stp",
+        "authoringSystem": "CATIA Version 5 Release 20 GA (IN-10)"
       }
     },
     "outcome": {
@@ -2515,7 +2537,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-cbbe42da642ca087",
+      "partName": "cv-cad-df602ce0d9708d9a",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -3330,6 +3352,14 @@
       "detectedHardware": {
         "available": false,
         "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "Seat Base Mount"
+        ],
+        "materialDesignations": [],
+        "headerFileName": "E:\\2025-GRABCAD-DATA\\Seat locking Bracket\\Seat Locking Bracket.stp",
+        "authoringSystem": "CATIA Version 5 Release 20 GA (IN-10)"
       },
       "blank": {
         "grossAreaMm2": 48640,
@@ -5029,7 +5059,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-0813ba14316c0b83",
+      "partName": "cv-cad-25887fb4d3061228",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -5948,6 +5978,14 @@
       "detectedHardware": {
         "available": false,
         "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "STEERING_KNUCKLE_PATTERN"
+        ],
+        "materialDesignations": [],
+        "headerFileName": "STEERING_KNUCKLE_PATTERN",
+        "authoringSystem": "CREO PARAMETRIC BY PTC INC, 2015380"
       }
     },
     "outcome": {
@@ -5978,7 +6016,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-527121e862382764",
+      "partName": "cv-cad-71650d8e54ed0b1d",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,
@@ -6368,6 +6406,11 @@
       "detectedHardware": {
         "available": false,
         "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
       }
     },
     "outcome": {

@@ -103,14 +103,18 @@ async function main(): Promise<void> {
     }
     const t0 = Date.now();
     await page.click('#cad-analyze-btn');
-    const ANSWERS: Record<string, string> = { 'commodity.route': 'sheet_metal', 'material.family': 'steel' };
+    const ANSWERS: Record<string, string> = process.env.CV_LIVE_ANSWERS
+      ? JSON.parse(process.env.CV_LIVE_ANSWERS) as Record<string, string>
+      : { 'commodity.route': 'sheet_metal', 'material.family': 'steel' };
     const rounds: string[] = [];
     for (let round = 0; round < 6; round++) {
       await page.waitForSelector('#cad-results #cad-apply-btn, #cad-results .cad-decision', { timeout: 300_000 });
       await page.waitForTimeout(400);
       const open = await page.$$eval('#cad-decisions-panel .cad-decision', ds => ds.map(d => ({
         id: (d as HTMLElement).dataset.decisionId!, typed: !!d.querySelector('input[data-decision-entry]'),
-        text: (d as HTMLElement).textContent!.replace(/\s+/g, ' ').trim().slice(0, 160) })));
+        text: (d as HTMLElement).textContent!.replace(/\s+/g, ' ').trim().slice(0, 900),
+        preselected: (d.querySelector('input[type=radio]:checked') as HTMLInputElement | null)?.value ?? null })));
+      summary[`questionsRound${round}`] = open;
       rounds.push(open.map(o => o.id).join(','));
       const toAnswer = open.filter(o => o.id in ANSWERS);
       if (!toAnswer.length) { if (open.length) summary.unansweredDecisions = open; break; }

@@ -28,6 +28,18 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
   injection moulding, blow moulding, machining, forging, thermoforming,
   rotational moulding, rubber, composites, gear cutting. Extrusion has no CAD rules
   yet (its form still costs it).
+- **Process and material suggestions** (2 Oct 2026). Where the geometry does not
+  settle the process, the question now comes with a suggested answer and the reason:
+  what the part is called (the file name, the product name and the folder inside the
+  STEP file — "Casting Bracket", "CASTING-01", "…_PATTERN"), and how its surface is
+  built (blended, free-form faces read as cast or forged; plain planes and cylinders
+  as machined from solid). The engineer confirms with one click. A material declared
+  in the CAD file, or named in it, is used; otherwise the tool asks — a CAD model
+  carries shape, not substance. With an API key, one model call reads the photo, the
+  drawing and the CAD views together, says where each answer came from, and never
+  takes a material from a grey CAD render. On the six real parts the suggestion
+  matches the recorded route on 4; the other 2 are parts whose own files contradict
+  the recorded answer.
 - **Thick-walled sparse parts** (walls over ~6 mm) are offered casting, forging,
   cast + machine or machining — never sheet metal or moulding.
 - **Sheet metal blanks:** a DXF flat pattern (e.g. from FastBlank) can be uploaded

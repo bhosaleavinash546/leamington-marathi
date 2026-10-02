@@ -17,6 +17,7 @@ import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import type { AlloyFamily } from '../../modules/casting-advisor.js';
 import type { ForgingAlloyFamily } from '../../modules/forging-advisor.js';
 import type { Decision, RuleContext } from '../types.js';
+import { materialFromFile } from './part-evidence.js';
 
 /** Density used to turn measured volume into a mass, kg/cm³. */
 const DENSITY_KG_PER_CM3: Record<MaterialFamily, number> = {
@@ -103,12 +104,17 @@ export function materialFacts(ctx: RuleContext): MaterialFacts {
     };
   }
 
-  const fromName = familyFromFilename(ctx.filename);
-  if (fromName && candidates.includes(fromName)) {
+  // The file's own word on it: a material property the designer set, or a
+  // name that says the alloy. The STEP header and product names are read as
+  // well as the upload name (derive/part-evidence.ts).
+  const fromFile = materialFromFile(ctx.filename, ctx.geo);
+  const fromName = fromFile?.family ?? familyFromFilename(ctx.filename);
+  if (fromFile && candidates.includes(fromFile.family)) {
+    const fam = fromFile.family;
     return {
-      family: fromName,
-      massKg: massFor(volumeCm3, fromName),
-      basis: `${volumeCm3.toFixed(0)} cm³ × ${DENSITY_KG_PER_CM3[fromName]} kg/cm³ (${fromName}, from the file name)`,
+      family: fam,
+      massKg: massFor(volumeCm3, fam),
+      basis: `${volumeCm3.toFixed(0)} cm³ × ${DENSITY_KG_PER_CM3[fam]} kg/cm³ (${fam}, from ${fromFile.where === 'the uploaded file name' ? 'the file name' : `${fromFile.where} "${fromFile.text}"`})`,
     };
   }
 

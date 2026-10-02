@@ -14,7 +14,8 @@ export function familyFromFilename(filename: string): MaterialFamily | null {
   const n = (filename || '').toLowerCase().replace(/[_\-.]+/g, ' ');
   if (!n.trim()) return null;
   if (/nylon|\bpa6|pa66|\babs|polycarb|\bpc\b|polyprop|\bpp\b|\bpeek|\bpom|acetal|delrin|plastic|resin|glass ?filled/.test(n)) return 'plastic';
-  if (/alumini|\balu\b|6061|7075|6082|lm25|adc12|a3\d0|silafont|aural|castasil/.test(n)) return 'aluminium';
+  // Wrought (6061, 6082, 5083, 5754, 7075), cast (LM25/LM6, A356/A357/A380, ADC12, AlSi…, EN AC-4xxxx) and trade names.
+  if (/alumini|\balu\b|\bal ?si ?\d|6061|7075|6082|\b5083|\b5754|\blm ?(25|6|24)\b|adc ?12|\ba3[5-8]\d|\ben ?ac ?4\d{4}|silafont|aural|castasil/.test(n)) return 'aluminium';
   if (/magnesium|az91|am60/.test(n)) return 'magnesium';
   if (/titanium|ti ?6al|grade ?5/.test(n)) return 'titanium';
   if (/cast ?iron|ductile|\bgjl|\bgjs|sg ?iron|nodular/.test(n)) return 'cast iron';

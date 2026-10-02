@@ -53,6 +53,15 @@ export interface ManufacturingFeatureSet {
   note?: string;
 }
 
+/** What a CAD file says about itself (see server/utils/cad-metadata.ts). */
+export interface CadMetadata {
+  productNames: string[];
+  headerFileName?: string;
+  description?: string;
+  authoringSystem?: string;
+  materialDesignations: string[];
+}
+
 export interface OCCTGeometry {
   status: 'success' | 'error';
   partName?: string;
@@ -168,6 +177,10 @@ export interface OCCTGeometry {
     /** 1-based B-rep face ids (TopTools_IndexedMapOfShape order) — the same ids the viewer's triFace uses. */
     faceIds?: number[];
   }>;
+  /** What the CAD file says about itself — product names, the header path, the authoring
+   *  system, declared materials (server/utils/cad-metadata.ts). Evidence for the process
+   *  and material questions; attached at the measurement boundary. */
+  cadMetadata?: CadMetadata;
   /** Sheet-metal forming features — geometry-measured bend count for SM Fab. */
   sheetMetal?: {
     bendCount: number; totalBendLengthMm: number; thicknessMm: number;
