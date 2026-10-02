@@ -933,6 +933,121 @@ def _compute_planar_face_area(faces) -> float:
     return total
 
 
+def _face_area_by_type(faces) -> dict:
+    """Surface area per B-rep face type, mm² — PLANE, CYLINDER, TORUS, BSPLINE…
+
+    The machining time model finishes each kind of surface at its own rate: a
+    flat at a face/wall pass, a free-form at a ball-nose surfacing step-over. A
+    face COUNT cannot tell a 2 mm fillet from a 200 cm² sculpted wall, so the
+    area is measured. Pure OCP.
+    """
+    from OCP.BRep import BRep_Tool
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+    from OCP.GeomAdaptor import GeomAdaptor_Surface
+    from OCP.GeomAbs import (
+        GeomAbs_Plane, GeomAbs_Cylinder, GeomAbs_Cone,
+        GeomAbs_Torus, GeomAbs_BSplineSurface, GeomAbs_BezierSurface,
+        GeomAbs_SurfaceOfRevolution,
+    )
+    # The same names `_classify_faces` counts under, so area and count line up.
+    NAMES = {
+        GeomAbs_Plane: "PLANE", GeomAbs_Cylinder: "CYLINDER",
+        GeomAbs_Cone: "CONE", GeomAbs_Torus: "TORUS",
+        GeomAbs_BSplineSurface: "BSPLINE", GeomAbs_BezierSurface: "BEZIER",
+        GeomAbs_SurfaceOfRevolution: "REVOLUTION",
+    }
+    out = {}
+    for face in faces:
+        try:
+            props = GProp_GProps()
+            BRepGProp.SurfaceProperties_s(face.wrapped, props)
+            t = NAMES.get(GeomAdaptor_Surface(BRep_Tool.Surface_s(face.wrapped)).GetType(), "OTHER")
+            out[t] = out.get(t, 0.0) + abs(props.Mass())
+        except Exception:
+            pass
+    return {k: round(v, 0) for k, v in out.items()}
+
+
+def _turning_signature(faces, total_area_mm2: float):
+    """How much of the part is a lathe's work: the largest coaxial family of surfaces of revolution.
+
+    A turned part is cylinders, cones, tori and spheres sharing ONE axis, plus the
+    flat shoulders square to it. Its bounding box cannot say so: a shaft is long
+    and thin, a disc is short and wide, and a square block has two equal sides
+    too. So the axes are measured: every revolved face reports its axis line;
+    faces whose lines coincide (parallel within 0.05°, offset < 0.5 mm) are one
+    family. `fraction` = (that family's area + the planes square to its axis) ÷
+    the whole surface. `maxDiaMm` is the largest diameter on that axis — the bar
+    it is turned from, before stock. Pure OCP.
+    """
+    from OCP.BRep import BRep_Tool
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+    from OCP.GeomAdaptor import GeomAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_Cylinder, GeomAbs_Cone, GeomAbs_Torus, GeomAbs_Sphere, GeomAbs_Plane
+    if total_area_mm2 <= 0:
+        return None
+    revolved, planes = [], []
+    for face in faces:
+        try:
+            ad = GeomAdaptor_Surface(BRep_Tool.Surface_s(face.wrapped))
+            t = ad.GetType()
+            props = GProp_GProps()
+            BRepGProp.SurfaceProperties_s(face.wrapped, props)
+            area = abs(props.Mass())
+            if t == GeomAbs_Cylinder:
+                ax, r = ad.Cylinder().Axis(), ad.Cylinder().Radius()
+            elif t == GeomAbs_Cone:
+                ax, r = ad.Cone().Axis(), ad.Cone().RefRadius()
+            elif t == GeomAbs_Torus:
+                ax, r = ad.Torus().Axis(), ad.Torus().MajorRadius() + ad.Torus().MinorRadius()
+            elif t == GeomAbs_Sphere:
+                planes.append(None)
+                continue
+            elif t == GeomAbs_Plane:
+                n = ad.Plane().Axis().Direction()
+                planes.append(((n.X(), n.Y(), n.Z()), area))
+                continue
+            else:
+                continue
+            o, d = ax.Location(), ax.Direction()
+            revolved.append(((o.X(), o.Y(), o.Z()), (d.X(), d.Y(), d.Z()), r, area))
+        except Exception:
+            pass
+    if not revolved:
+        return {"fraction": 0.0, "revolvedFraction": 0.0, "maxDiaMm": 0.0, "axis": None}
+
+    def same_line(a, b):
+        (o1, d1), (o2, d2) = a, b
+        dot = abs(d1[0]*d2[0] + d1[1]*d2[1] + d1[2]*d2[2])
+        if dot < 0.9999996:          # ~0.05°
+            return False
+        v = (o2[0]-o1[0], o2[1]-o1[1], o2[2]-o1[2])
+        cx = (v[1]*d1[2]-v[2]*d1[1], v[2]*d1[0]-v[0]*d1[2], v[0]*d1[1]-v[1]*d1[0])
+        return (cx[0]**2 + cx[1]**2 + cx[2]**2) ** 0.5 < 0.5
+
+    families = []   # [line, area, max_r]
+    for o, d, r, a in revolved:
+        for f in families:
+            if same_line(f[0], (o, d)):
+                f[1] += a
+                f[2] = max(f[2], r)
+                break
+        else:
+            families.append([(o, d), a, r])
+    best = max(families, key=lambda f: f[1])
+    (o, d) = best[0]
+    square = sum(a for pl in planes if pl is not None for (n, a) in [pl]
+                 if abs(n[0]*d[0] + n[1]*d[1] + n[2]*d[2]) > 0.9999)
+    return {
+        "fraction": round(min(1.0, (best[1] + square) / total_area_mm2), 3),
+        "revolvedFraction": round(min(1.0, best[1] / total_area_mm2), 3),
+        "maxDiaMm": round(2 * best[2], 2),
+        "axis": [round(d[0], 4), round(d[1], 4), round(d[2], 4)],
+    }
+
+
 # ─── CNC cycle time estimate ──────────────────────────────────────────────────
 
 def _estimate_cnc_cycle(
@@ -2013,8 +2128,16 @@ def analyze(filepath: str) -> dict:
         sa_mm2 = abs(surf_props.Mass())
 
         # ── Bounding box ──────────────────────────────────────────────────────
+        # Exact (AddOptimal, geometry only): `Add` reads a triangulation when the
+        # shape has one and pads by its deflection, so the warm pool — which has
+        # meshed the part for the viewer — measured a Ø40 shaft as 40.11 mm while
+        # a fresh process measured 40.00 (machining review, Oct 2026). The bar,
+        # plate and every envelope-sized rule read this box.
         bbox = Bnd_Box()
-        BRepBndLib.Add_s(wrapped, bbox)
+        try:
+            BRepBndLib.AddOptimal_s(wrapped, bbox, False, False)
+        except Exception:
+            BRepBndLib.Add_s(wrapped, bbox)
         xmin, ymin, zmin, xmax, ymax, zmax = bbox.Get()
         x_sz = round(xmax - xmin, 2)
         y_sz = round(ymax - ymin, 2)
@@ -2168,6 +2291,15 @@ def analyze(filepath: str) -> dict:
         except Exception:
             planar_area, cnc_time = 0.0, None
 
+        try:
+            area_by_type = _face_area_by_type(faces)
+        except Exception:
+            area_by_type = None
+        try:
+            turning = _turning_signature(faces, sa_mm2)
+        except Exception:
+            turning = None
+
         part_name = os.path.splitext(os.path.basename(filepath))[0]
 
         return {
@@ -2196,7 +2328,10 @@ def analyze(filepath: str) -> dict:
             "faces": {
                 "total": len(faces),
                 "byType": face_counts,
+                "areaByTypeMm2": area_by_type,
             },
+            # Largest coaxial family of revolved surfaces — what a lathe would cut.
+            "turning": turning,
             "edges": {
                 "total": len(edges),
                 "byType": edge_counts,

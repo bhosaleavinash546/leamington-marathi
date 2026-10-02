@@ -250,6 +250,17 @@ what is true** — nothing here has been compared with a price JLR paid.
   shells (BIW radii are beyond the bend detector). Bought-in parts use `rawMaterial.boughtIn`
   (no second overhead/margin). See `docs/sheet-metal/sheet-metal-biw-review-2026-10.md`,
   `tests/sheet-metal-review.test.ts`; modelled pressings in `cad-audit/parts/BIW_*`.
+- Machining & cast + machine (`src/engine/machining-time.ts`, `cost-input-rules/commodities/machining.ts`):
+  cutting time is a measured build-up — stock in stocked plate/bar sizes, roughing = removed
+  volume ÷ the metal's removal rate, finishing by measured area per face type (`faces.areaByTypeMm2`),
+  holes by drilling feed (+ inferred tapping), tool changes, handling per fixturing — never the
+  kernel's `cncCycleTimeEstimate` (printed "not used"). Turned parts come from the kernel's
+  `turning` signature. `machiningRuleDefs(cutFor)` is ONE rule set: from-solid for `machining`,
+  `nearNetCut` (machined faces + holes, cored bores finish-bored) for the cast + machine half —
+  crew, OEE, batch, fixtures, programming, tool wear and deburr come from it on both paths.
+  Rule-built ops carry `measured: true`; the near-net guard caps AI times only. Bench ops are
+  labour only (`cycleTimeHr` 0). See `docs/cad/machining-review-2026-10.md`,
+  `tests/machining-review.test.ts`; modelled parts in `cad-audit/parts/MACH_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

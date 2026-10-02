@@ -96,7 +96,7 @@ import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
-import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
+import { featureToOperation } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, secondaryMachiningMachineId, type StockCondition } from '../engine/feature-machining.js';
 import { familyFromFilename, familyFromDensity, resolveFormMaterialId, type MaterialFamily } from '../engine/material-family.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../engine/geometry-sanity.js';
@@ -164,7 +164,9 @@ import {
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeFeatureCosting, physicalRemovalCeilingMin } from '../engine/feature-costing.js';
+import { computeFeatureCosting } from '../engine/feature-costing.js';
+import { cuttingDataFor, CORED_ABOVE_MM } from '../engine/machining-time.js';
+import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities, CATEGORY_LABELS } from '../engine/opportunity-ranking.js';
@@ -3349,6 +3351,7 @@ function renderMachiningForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Programming NRE (£)</label><input type="number" id="mach-prog-nre" step="100" min="0" value="0"/></div>
+      <div class="field-group"><label title="Inserts, end mills and drills worn per part — not in the machine rate. A CAD upload fills it from the cutting minutes and the metal.">Cutting Tool Wear (£/part) ⓘ</label><input type="number" id="mach-tool-wear" step="0.01" min="0" value="0"/></div>
       <div class="field-group"><label title="Fraction of parts scrapped (dimensional/quality). Uplifts both material consumption and machine time. Typical: 0.5–2% for CNC turning, 1–3% for milling complex parts.">Reject Rate (0=none) ⓘ</label><input type="number" id="mach-reject" step="0.005" min="0" max="0.3" value="0" title="Machining scrap rate. CNC turning: 0.005–0.02. Milling complex: 0.01–0.03. Leave 0 if negligible."/></div>
     </div>`;
 }
@@ -3360,8 +3363,9 @@ function addMachOp(d?: Partial<MachiningOperation>): void {
   if (!c) return;
   const div = document.createElement('div');
   div.className = 'op-card'; div.dataset.opId = id;
+  if (d?.benchOperation) div.dataset.bench = '1';
   div.innerHTML = `
-    <div class="op-title">Op ${machOpCount}
+    <div class="op-title">Op ${machOpCount}${d?.benchOperation ? ' — bench task (labour only)' : ''}
       <button class="remove-op" style="float:right">✕</button>
     </div>
     <div class="field-row">
@@ -5604,7 +5608,7 @@ function renderCastAndMachineForm(): string {
     </div>
     <div class="section-title" style="margin-top:8px">Machining</div>
     <div class="field-row">
-      <div class="field-group"><label>Geometry Complexity (1–5)</label><select id="cam-complexity">
+      <div class="field-group"><label title="Suggests a machine class only. It no longer scales the setup time: the setup time already counts every fixturing, so the old factor counted them twice (machining review, Oct 2026).">Geometry Complexity (1–5) — machine hint, not a cost input ⓘ</label><select id="cam-complexity">
         <option value="1">1 — Simple 2D</option>
         <option value="2" selected>2 — 2.5D pockets/slots</option>
         <option value="3">3 — Multi-face (4+ setups)</option>
@@ -5628,10 +5632,11 @@ function renderCastAndMachineForm(): string {
     <div id="cam-mach-ops-container"></div>
     <div class="section-title" style="margin-top:8px">Tooling / NRE</div>
     <div class="field-row">
-      <div class="field-group"><label>Machining Tooling (£)</label><input type="number" id="cam-mach-tooling" step="500" min="0" value="5000"/></div>
+      <div class="field-group"><label title="Fixtures for the machining. A CAD upload fills it from the fixturings the routing needs.">Machining Fixtures (£) ⓘ</label><input type="number" id="cam-mach-tooling" step="500" min="0" value="5000"/></div>
       <div class="field-group"><label>Programming NRE (£)</label><input type="number" id="cam-mach-prog-nre" step="100" min="0" value="2000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="Inserts, end mills and drills worn per part — not in the machine rate. A CAD upload fills it from the cutting minutes and the metal.">Cutting Tool Wear (£/part) ⓘ</label><input type="number" id="cam-tool-wear" step="0.01" min="0" value="0"/></div>
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="cam-amort" step="1000" min="1" value="50000"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Post-Casting Secondary Operations</div>
@@ -5685,8 +5690,9 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
   if (!c) return;
   const div = document.createElement('div');
   div.className = 'op-card'; div.dataset.opId = id;
+  if (d?.benchOperation) div.dataset.bench = '1';
   div.innerHTML = `
-    <div class="op-title">Machining Op ${camMachOpCount}
+    <div class="op-title">Machining Op ${camMachOpCount}${d?.benchOperation ? ' — bench task (labour only)' : ''}
       <button class="remove-op" style="float:right">✕</button>
     </div>
     <div class="field-row">
@@ -10311,7 +10317,15 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
   const labourId = sel(`${prefix}-mf-lab`) || resolveLabourId('lab-uk-skilled');
   const stockCondition = (sel(`${prefix}-mf-stock`) || 'near_net') as StockCondition;
   const finishFactor = parseFloat(sel(`${prefix}-mf-finish`)) || 1.0;
-  const result = computeFeatureMachining(rows, { machineId, labourId, includeFlags, stockCondition, finishFactor });
+  // The metal's cutting-time factor and the cored bores of a casting — the same
+  // two inputs headless passes (machining review, Oct 2026).
+  const family = familyFromMaterialId(sel(`${prefix}-mat`)) ?? 'steel';
+  const castSub = prefix === 'cast' ? sel('cast-subtype') : '';
+  const result = computeFeatureMachining(rows, {
+    machineId, labourId, includeFlags, stockCondition, finishFactor,
+    materialFactor: cuttingDataFor(family).timeFactor,
+    ...(castSub && stockCondition === 'near_net' ? { coredAboveMm: CORED_ABOVE_MM[castSub] ?? 20 } : {}),
+  });
   if (result.featureCount === 0) return null;
   const toolingCost = num(`${prefix}-mf-tooling`);
   return { ops: result.operations, toolingCost, result };
@@ -10923,76 +10937,41 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 
     switch (targetCommodity) {
       case 'machining': {
+        // The form takes the analysis — the rule-decided plan headless costs —
+        // and nothing else (machining review, Oct 2026). This block used to run
+        // its own model: stock = net × 1.4, the kernel's area-rate cycle
+        // (including its per-part setup allowance) as the target, the AI or rule
+        // ops rescaled to it, a second drilling op from the kernel's flat
+        // 0.5 min/hole, and setup from the kernel's 15 min per direction.
         setMaterial(el<HTMLSelectElement>('mach-mat'), c.materialId);
         setNumericField('mach-net-wt', c.netWeightKg, 3);
-        setNumericField('mach-stock-wt', c.netWeightKg * 1.4, 3);
-        // Prefer OCCT bottom-up cycle time over Claude's AI estimate…
-        let occtCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
-        // …but cap it to a physical envelope: a tiny solid can't carry the cutting
-        // time a naive estimate implies (a 3 g servo horn was billed ~50 min).
-        {
-          const bb = cadOCCTGeometry?.boundingBox;
-          const pv = cadOCCTGeometry?.volume?.cm3;
-          if (occtCycleHrs != null && bb && pv != null) {
-            const stockCm3 = (bb.xMm * bb.yMm * bb.zMm) / 1000;
-            const holes = cadOCCTGeometry?.features?.estimatedHoleCount ?? 0;
-            const ms = (c.materialId || '').toLowerCase();
-            const mf = /ti|titan/.test(ms) ? 2.5 : /steel|stainless|iron/.test(ms) ? 1.5 : /alum/.test(ms) ? 1.0 : 1.2;
-            const ceilHr = (physicalRemovalCeilingMin(pv, stockCm3, cadOCCTGeometry?.surfaceArea?.cm2 ?? 0, mf) + holes * 0.4 * mf) / 60;
-            if (occtCycleHrs > ceilHr) occtCycleHrs = ceilHr;
-          }
-        }
-        const occtSetupCount = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? null;
-        const occtSetupMinsPerSetup = cadOCCTGeometry?.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
-        // Operations
+        if (c.machining?.stockWeightKg) setNumericField('mach-stock-wt', c.machining.stockWeightKg, 3);
+        if (c.machining?.materialUtilization) setNumericField('mach-mat-util', c.machining.materialUtilization, 3);
+        if (c.estimatedSetupTimeHr) setNumericField('mach-setup-time', c.estimatedSetupTimeHr, 3);
+        if (c.machining?.batchSize) setNumericField('mach-batch-size', c.machining.batchSize, 0);
+        if (c.machining?.rejectRate !== undefined) setNumericField('mach-reject', c.machining.rejectRate, 3);
+        if (c.machining?.toolingCost !== undefined) setNumericField('mach-tooling', c.machining.toolingCost, 0);
+        if (c.machining?.programmingNRE !== undefined) setNumericField('mach-prog-nre', c.machining.programmingNRE, 0);
+        if (c.machining?.toolWearCostPerPart !== undefined) setNumericField('mach-tool-wear', c.machining.toolWearCostPerPart, 4);
         const container = el('mach-ops-container');
         if (container && c.estimatedOperations.length > 0) {
           container.innerHTML = '';
           machOpCount = 0;
-          // Geometry Feature Table → a dedicated MEASURED drilling op. The exact
-          // hole list (Ø × depth × count from the B-rep) drives its cycle time;
-          // the AI-estimated ops are then scaled to the REMAINING OCCT cycle time
-          // so the grand total still matches the bottom-up geometry estimate.
-          const drillPlan = drillingOpFromFeatures(cadOCCTGeometry?.featureTable, cadOCCTGeometry?.cncCycleTimeEstimate?.drillBoreTimeMins);
-          const drillHrs = drillPlan?.cycleTimeHr ?? 0;
-          // Scale AI cycle times proportionally if OCCT total differs from AI total
-          const aiTotalHrs = c.estimatedOperations.reduce((s, op) => s + op.cycleTimeHr, 0);
-          const targetHrs = occtCycleHrs !== null ? Math.max(occtCycleHrs - drillHrs, occtCycleHrs * 0.2) : null;
-          const scaleFactor = (targetHrs !== null && aiTotalHrs > 0) ? targetHrs / aiTotalHrs : 1;
           for (const op of c.estimatedOperations) {
             addMachOp({
               name: op.name,
-              type: 'milling_3ax',
+              type: /^turning/i.test(op.name) ? 'turning' : /^drilling/i.test(op.name) ? 'drilling' : 'milling_3ax',
               machineId: resolveMachineIdForOp(op.machineId, op.name),
               labourId: resolveLabourId(op.labourId),
-              cycleTimeHr: op.cycleTimeHr * scaleFactor,
+              cycleTimeHr: op.cycleTimeHr,
               partsPerCycle: 1,
-              oee: op.oee,
-              manning: op.manning,
-              labourTimeHr: op.cycleTimeHr * scaleFactor,
-              labourEfficiency: op.labourEfficiency,
+              oee: op.oee ?? 0.80,
+              manning: op.manning ?? 1,
+              labourTimeHr: op.cycleTimeHr,
+              labourEfficiency: op.labourEfficiency ?? 0.92,
+              ...(op.benchOperation ? { benchOperation: true } : {}),
             });
           }
-          if (drillPlan) {
-            const firstAI = c.estimatedOperations[0];
-            addMachOp({
-              name: drillPlan.name,
-              type: 'drilling',
-              machineId: resolveMachineIdForOp(firstAI?.machineId, drillPlan.name),
-              labourId: resolveLabourId(firstAI?.labourId),
-              cycleTimeHr: drillPlan.cycleTimeHr,
-              partsPerCycle: 1,
-              oee: firstAI?.oee ?? 0.85,
-              manning: firstAI?.manning ?? 1,
-              labourTimeHr: drillPlan.cycleTimeHr,
-              labourEfficiency: firstAI?.labourEfficiency ?? 0.92,
-            });
-          }
-        }
-        // Override setup time with OCCT estimate if available
-        if (occtSetupCount !== null) {
-          const setupHrs = (occtSetupCount * occtSetupMinsPerSetup) / 60;
-          setNumericField('mach-setup-time', setupHrs, 3);
         }
         // Machined-features panel: audit + fallback costing. A billet part is
         // machined from solid, so default the stock to solid-billet (every
@@ -11051,7 +11030,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 
       case 'cast_and_machine': {
         setMaterial(el<HTMLSelectElement>('cam-mat'), c.materialId);
-        setNumericField('cam-cast-wt', c.netWeightKg * 1.15, 3);
+        // As-cast weight: the rule's (finished + drilled stock + machining stock) — set below; not net × 1.15.
         setNumericField('cam-finish-wt', c.netWeightKg, 3);
         // Casting section
         const castCAM = c.casting;
@@ -11086,61 +11065,35 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setMachineSelect('cam-inv-mach', 'invest-cast-furnace', 'Investment Casting');
           }
         }
-        // Machining section — populate ops and setup time
-        const camCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
-        const camSetupCount = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? null;
-        const camSetupMins = cadOCCTGeometry?.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
+        // Machining half — the analysis plan, as headless costs it (machining
+        // review, Oct 2026). This block scaled the ops to the kernel's
+        // from-solid total, set setup time from the kernel's direction count,
+        // and added a 0.06 h grind pass when an AI op name said "journal".
+        if (c.casting?.castPartWeightKg) setNumericField('cam-cast-wt', c.casting.castPartWeightKg, 3);
+        if (c.estimatedSetupTimeHr) setNumericField('cam-mach-setup-time', c.estimatedSetupTimeHr, 3);
+        if (c.machining?.batchSize) setNumericField('cam-mach-batch-size', c.machining.batchSize, 0);
+        if (c.machining?.toolingCost !== undefined) setNumericField('cam-mach-tooling', c.machining.toolingCost, 0);
+        if (c.machining?.programmingNRE !== undefined) setNumericField('cam-mach-prog-nre', c.machining.programmingNRE, 0);
+        if (c.machining?.toolWearCostPerPart !== undefined) setNumericField('cam-tool-wear', c.machining.toolWearCostPerPart, 4);
         const camContainer = el('cam-mach-ops-container');
         if (camContainer && c.estimatedOperations.length > 0) {
           camContainer.innerHTML = '';
           camMachOpCount = 0;
-          const aiTotalCAM = c.estimatedOperations.reduce((s, op) => s + op.cycleTimeHr, 0);
-          // The OCCT total is a machined-FROM-SOLID estimate; the server has
-          // already capped the AI ops to the near-net finish envelope. Never
-          // scale back UP to from-solid — that re-creates the over-cost the
-          // near-net machining guard exists to prevent.
-          const scaleCAM = (camCycleHrs !== null && aiTotalCAM > 0) ? Math.min(1, camCycleHrs / aiTotalCAM) : 1;
           for (const op of c.estimatedOperations) {
             // The AI sometimes lists the CASTING step (mould/pour/shakeout) inside
             // estimatedOperations; that belongs to the casting section, not the
-            // machining list — costing it here puts a foundry pour on a 5-axis mill
-            // rate and double-counts the casting. Skip those.
+            // machining list. Skip those.
             if (/\bcast|mould|mold|pour|shakeout|melt|foundry|sand cast|die cast|investment cast/i.test(op.name)) continue;
             addCAMMachOp({
-              name: op.name, type: 'milling_3ax',
+              name: op.name, type: /^drilling/i.test(op.name) ? 'drilling' : 'milling_3ax',
               machineId: resolveMachineIdForOp(op.machineId, op.name),
               labourId: resolveLabourId(op.labourId),
-              cycleTimeHr: op.cycleTimeHr * scaleCAM, partsPerCycle: 1,
-              oee: op.oee, manning: op.manning,
-              labourTimeHr: op.cycleTimeHr * scaleCAM, labourEfficiency: op.labourEfficiency,
+              cycleTimeHr: op.cycleTimeHr, partsPerCycle: 1,
+              oee: op.oee ?? 0.80, manning: op.manning ?? 1,
+              labourTimeHr: op.cycleTimeHr, labourEfficiency: op.labourEfficiency ?? 0.92,
+              ...(op.benchOperation ? { benchOperation: true } : {}),
             });
           }
-          // Turned bearing journals (a stub-axle spindle, hub seats) need a
-          // precision cylindrical GRIND after turning — the AI usually stops at
-          // turning, under-costing the finishing that defines the part. Add one
-          // grind pass when a journal/spindle turned feature is present and the
-          // AI didn't already emit a grinding op.
-          // Only grind when the AI actually identified a turned bearing journal /
-          // spindle OD / shaft diameter — NOT merely because a cast boss exists.
-          // A cast bracket has bosses but no ground journals; keying on boss count
-          // false-added a grind pass and over-costed it.
-          const hasJournal = c.estimatedOperations.some(o =>
-            /journal|bearing seat|spindle|\bOD\b|OD finish|turned (?:shaft|shank|diameter|journal)/i.test(o.name));
-          const alreadyGround = c.estimatedOperations.some(o => /grind|hone|lap/i.test(o.name));
-          if (hasJournal && !alreadyGround) {
-            addCAMMachOp({
-              name: 'Cylindrical Grinding — Bearing Journal', type: 'grinding',
-              machineId: 'mach-grind', labourId: resolveLabourId(undefined),
-              cycleTimeHr: 0.06, partsPerCycle: 1,
-              oee: 0.82, manning: 1,
-              labourTimeHr: 0.06, labourEfficiency: 0.9,
-            });
-          }
-        }
-        if (camSetupCount !== null) {
-          setNumericField('cam-mach-setup-time', (camSetupCount * camSetupMins) / 60, 3);
-        } else {
-          setNumericField('cam-mach-setup-time', c.estimatedSetupTimeHr, 3);
         }
         break;
       }
@@ -12161,6 +12114,7 @@ function collectMachiningInput(): UniversalStackInput {
       manning: parseFloat((el<HTMLInputElement>(`${id}-manning`))?.value) || 1,
       labourTimeHr: parseFloat((el<HTMLInputElement>(`${id}-lt`))?.value) || 0,
       labourEfficiency: parseFloat((el<HTMLInputElement>(`${id}-le`))?.value) || 0.92,
+      ...(card.dataset.bench === '1' ? { benchOperation: true } : {}),
     };
   });
 
@@ -12185,6 +12139,7 @@ function collectMachiningInput(): UniversalStackInput {
     toolingCost: num('mach-tooling'),
     amortizationVolume: num('mach-amort') || num('annual-volume') || 100000,
     rejectRate: num('mach-reject') || undefined,
+    toolWearCostPerPart: num('mach-tool-wear') || undefined,
   });
 
   let operations = drivers.operations;
@@ -12194,8 +12149,9 @@ function collectMachiningInput(): UniversalStackInput {
   // IS present and the toggle is off, the ops already cover the features, so we
   // skip to avoid double-counting. Tooling is intentionally NOT added here (the
   // form's own tooling/NRE fields already capture machining fixtures & programming).
-  const hasOcctCycleTotal = !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
-  if (featurePrimary || !hasOcctCycleTotal) {
+  // Only when the toggle makes the features the basis, or there is no
+  // operation list to cover them — never on top of a measured plan.
+  if (featurePrimary || ops.length === 0) {
     const secondary = collectSecondaryMachining('mach');
     if (secondary) operations = [...operations, ...secondary.ops];
   }
@@ -13535,6 +13491,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
       manning: parseFloat((el<HTMLInputElement>(`${id}-manning`))?.value) || 1,
       labourTimeHr: parseFloat((el<HTMLInputElement>(`${id}-lt`))?.value) || 0,
       labourEfficiency: parseFloat((el<HTMLInputElement>(`${id}-le`))?.value) || 0.92,
+      ...(card.dataset.bench === '1' ? { benchOperation: true } : {}),
     };
   });
 
@@ -13560,7 +13517,6 @@ function collectCastAndMachineInput(): UniversalStackInput {
     castingOee: num('cam-cast-oee'),
     castingManning: num('cam-cast-manning'),
     castingLabourEfficiency: num('cam-cast-lab-eff'),
-    geometryComplexity: (num('cam-complexity') || 2) as 1 | 2 | 3 | 4 | 5,
     machiningOps: camOps,
     machiningSetup: {
       setupTimeHr: num('cam-mach-setup-time'),
@@ -13570,6 +13526,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
     },
     machiningToolingCost: num('cam-mach-tooling'),
     machiningProgrammingNRE: num('cam-mach-prog-nre'),
+    machiningToolWearCostPerPart: num('cam-tool-wear') || undefined,
     amortizationVolume: num('cam-amort') || num('annual-volume') || 100000,
     // Post-casting secondary operations
     heatTreatmentCostPerKg: num('cam-ht-cost') || undefined,

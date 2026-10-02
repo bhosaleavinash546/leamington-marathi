@@ -20,12 +20,17 @@ CAST + MACHINE COST INPUT RULES:
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
   manning=1  [one operator to a gravity cell — deterministic, use verbatim]
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
-  castPartWeightKg=2.851  [2.800 kg finished + 18.9 cm³ of 10 hole(s) ≤ 20 mm drilled from solid; face-finish stock on milled faces not measured, not included — deterministic, use verbatim]
-  machiningCycleTimeHr=0.268  [0.268 hr, inside the 0.296 hr near-net finish envelope — deterministic, use verbatim]
-  machiningSetupTimeHr=3  [4 datum/fixture setup(s) of the split-3axis routing × 45 min — deterministic, use verbatim]
-  machiningOperations=Milling — +Z (40 faces) 0.072 hr on mach-haas-vf2; Milling — -Z (30 faces) 0.054 hr on mach-haas-vf2; Milling — +X (20 faces) 0.036 hr on mach-haas-vf2; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.105 hr on mach-drill  [sums to 0.268 hr of finish machining — deterministic, use verbatim]
+  castPartWeightKg=2.851  [2.800 kg finished + 18.9 cm³ of 10 hole(s) ≤ 20 mm drilled from solid + 0.0 cm³ machining stock (1.5 mm a side on the machined faces and cored bores, gravity — ISO 8062-3 RMA typical; the drawing's RMA replaces it) — deterministic, use verbatim]
+  estimatedCycleTimeHr=0.0783  [2.3 min cutting + 2.4 min handling (face 0 machined face(s), 0 cm² = 0.0 min; holes 2.1 min (≤ Ø20 drilled from solid, larger cored and finish-bored); 2 tools × 6 s (aluminium, ×1 on aluminium)); the kernel's planar-area rate said 16.1 min (not used) — deterministic, use verbatim]
   setupCount=4  [4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured) — deterministic, use verbatim]
-  machineId=mach-haas-vf2  [cost-ranked 2 routing(s): split-3axis £13.30 (3-direction split routing: mach-haas-vf2 £46/hr + mach-drill £31/hr, 4 setup(s) × 45 min / batch 5000 + 0.8 min handling per part per setup) vs consolidated-5axis £21.66 (single-setup 5-axis consolidation: mach-haas-umc500 £77/hr, 1 setup(s) × 45 min / batch 5000 + 0.8 min handling per part per setup) → split-3axis, £8.36/part cheaper than consolidated-5axis — deterministic, use verbatim]
+  setupTimeHr=3  [4 fixturing(s) of the split-3axis routing × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch — not the kernel's 15 min, which is a per-part allowance — deterministic, use verbatim]
+  batchSize=5000  [100,000/yr ÷ 20 runs a year, held between 50 and 5,000 — deterministic, use verbatim]
+  machineId=mach-haas-vf2  [cost-ranked 2 routing(s): split-3axis £3.12 (3-fixturing split routing: mach-haas-vf2 £46/hr + mach-drill £31/hr, 4 setup(s) × 45 min / batch 5000 + 0.6 min handling per part per setup) vs consolidated-5axis £3.73 (single-setup 5-axis consolidation: mach-haas-umc500 £77/hr, 1 setup(s) × 45 min / batch 5000 + 0.6 min handling per part per setup) → split-3axis, £0.61/part cheaper than consolidated-5axis — deterministic, use verbatim]
+  operationCount=6  [6 operation(s): cutting by approach direction, 1 measured drilling op, handling and the bench deburr — deterministic, use verbatim]
+  operations=Finish machining — +Z (40 faces) 0.002 hr on mach-haas-vf2; Finish machining — -Z (30 faces) 0.001 hr on mach-haas-vf2; Finish machining — +X (20 faces) 0.001 hr on mach-haas-vf2; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.035 hr on mach-drill; Load / clamp / unload — 4 fixturing(s) 0.040 hr on mach-haas-vf2; Deburr and gauge check (bench) 0.025 hr on mach-haas-vf2  [sums to 0.103 hr: measured cutting, handling per fixturing, bench deburr — deterministic, use verbatim]
+  fixtureCostGBP=10000  [4 dedicated fixture(s) × £2,500 (dedicated above 10,000 parts over 5 years) — deterministic, use verbatim]
+  programmingNRE=268  [CAM programming and prove-out 6.25 h (1.5 h × 4 fixturing(s) + 0.25 h × 1 feature group(s)) × £42.80/h manufacturing engineer — deterministic, use verbatim]
+  toolWearCostPerPart=0.0919  [2.3 min of cutting × £0.04/min inserts, end mills and drills (aluminium) — not in the machine rate — deterministic, use verbatim]
 
 ### context: degraded
 CAST + MACHINE COST INPUT RULES:
@@ -49,8 +54,13 @@ CAST + MACHINE COST INPUT RULES:
   manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   castPartWeightKg=0  [pending the material answer — deterministic, use verbatim]
-  machiningCycleTimeHr=0  [pending the material answer — deterministic, use verbatim]
-  machiningSetupTimeHr=0.75  [1 datum/fixture setup(s) × 45 min — deterministic, use verbatim]
-  machiningOperations: pending the material answer
+  estimatedCycleTimeHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   setupCount=1  [no setup analysis available — assuming a single setup — deterministic, use verbatim]
+  setupTimeHr=0.75  [1 fixturing(s) × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch — not the kernel's 15 min, which is a per-part allowance — deterministic, use verbatim]
+  batchSize=5000  [100,000/yr ÷ 20 runs a year, held between 50 and 5,000 — deterministic, use verbatim]
   machineId: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  operationCount: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  operations: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  fixtureCostGBP: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  programmingNRE: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  toolWearCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)

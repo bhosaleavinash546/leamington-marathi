@@ -165,11 +165,10 @@ describe('both halves survive the composition', () => {
     for (const op of params.machiningOps) expect(op.labourId).toBe('lab-uk-skilled');
   });
 
-  it('sizes the setup from the setups the geometry actually needs', () => {
-    // 4 principal directions measured -> complexity 4, and the module's setup
-    // factor table is indexed 1-5. An out-of-range index silently falls back
-    // to 1.0, so this is clamped rather than passed through.
-    expect(params.geometryComplexity).toBe(4);
+  it('does not scale the setup by a complexity factor (it counted the setups twice)', () => {
+    // The setup time is already setups × minutes per fixturing; the old
+    // 0.5–1.8 complexity factor on top counted them again (machining review).
+    expect(params.geometryComplexity).toBeUndefined();
     expect(params.machiningSetup.batchSize).toBe(2_500);   // 50,000 / 20
   });
 });

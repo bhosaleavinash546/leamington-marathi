@@ -121,7 +121,7 @@ describe('a costing with no AI in it', () => {
     expect(done.analysis.aiExplanation).toContain('No AI call was made');
     // Every filled field appears with its own basis, so the number is checkable.
     expect(done.analysis.aiExplanation).toContain('machining.netWeightKg');
-    expect(done.analysis.aiExplanation).toContain('solid billet');
+    expect(done.analysis.aiExplanation).toContain('mm plate');
     // And an empty DFM list says it means "not checked".
     expect(done.analysis.analysisLimitations.join(' ')).toContain('not checked');
   });

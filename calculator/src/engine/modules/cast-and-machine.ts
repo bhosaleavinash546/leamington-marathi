@@ -22,7 +22,10 @@ export interface CastAndMachineInputs {
   investment?: { waxCostPerPart: number; shellBuildCostPerPart: number; pourLabourId: string; pourCycleHr: number; pourMachineId: string; waxDieCost: number; };
 
   // === MACHINING ===
-  geometryComplexity: 1 | 2 | 3 | 4 | 5;
+  /** No longer used. It multiplied the setup time by 0.5–1.8 by setup count —
+   *  but the setup time is already setups × minutes per fixturing, so it counted
+   *  the setups twice (machining review, Oct 2026). Accepted and ignored. */
+  geometryComplexity?: 1 | 2 | 3 | 4 | 5;
   machiningOps: MachiningOperation[];
   machiningSetup: {
     setupTimeHr: number;
@@ -32,6 +35,8 @@ export interface CastAndMachineInputs {
   };
   machiningToolingCost: number;       // fixtures + cutting tools £
   machiningProgrammingNRE: number;    // CNC programming NRE £
+  /** Perishable cutting tools worn per part in the machining, £. */
+  machiningToolWearCostPerPart?: number;
 
   // === SHARED ===
   amortizationVolume: number;
@@ -83,9 +88,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)
-  const GEOMETRY_COMPLEXITY_SETUP_FACTOR = [0, 0.5, 0.75, 1.0, 1.4, 1.8];
-  const complexitySetupFactor = GEOMETRY_COMPLEXITY_SETUP_FACTOR[inputs.geometryComplexity] ?? 1.0;
-  const setupPerPart = (inputs.machiningSetup.setupTimeHr / Math.max(inputs.machiningSetup.batchSize, 1)) * complexitySetupFactor;
+  const setupPerPart = inputs.machiningSetup.setupTimeHr / Math.max(inputs.machiningSetup.batchSize, 1);
   const machOps: OperationInput[] = [
     {
       operationName: 'Machining Setup (amortised)',
@@ -102,12 +105,14 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
       operationName: op.name,
       machineId: op.machineId,
       labourId: op.labourId,
-      cycleTimeHr: op.cycleTimeHr,
+      // A bench task is labour only (no machine time).
+      cycleTimeHr: op.benchOperation ? 0 : op.cycleTimeHr,
       partsPerCycle: op.partsPerCycle,
       oee: op.oee,
       manning: op.manning,
-      labourTimeHr: op.labourTimeHr,
+      labourTimeHr: op.benchOperation ? Math.max(op.labourTimeHr, op.cycleTimeHr) : op.labourTimeHr,
       labourEfficiency: op.labourEfficiency,
+      ...(op.benchOperation ? { benchOperation: true } : {}),
     } satisfies OperationInput)),
   ];
 
@@ -125,7 +130,8 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     (inputs.shotBlastCostPerPart ?? 0) +
     (inputs.impregnationCostPerPart ?? 0) +
     (inputs.deburringCostPerPart ?? 0) +
-    (inputs.ndtCostPerPart ?? 0);
+    (inputs.ndtCostPerPart ?? 0) +
+    (inputs.machiningToolWearCostPerPart ?? 0);
 
   const finalRawMaterial = postCastCost > 0
     ? {

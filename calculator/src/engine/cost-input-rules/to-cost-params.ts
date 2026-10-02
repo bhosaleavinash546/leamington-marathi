@@ -37,6 +37,7 @@ import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
 import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
+import { cuttingDataFor, CORED_ABOVE_MM } from '../machining-time.js';
 import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
@@ -156,6 +157,7 @@ export interface ToCostParamsResult {
  */
 function secondaryMachining(
   geo: OCCTGeometry | undefined, labourId: string,
+  family: MaterialFamily | null | undefined, coredAboveMm?: number,
 ): ReturnType<typeof computeFeatureMachining> | null {
   const rows = geo?.featureTable as FeatureRow[] | undefined;
   if (!rows?.length) return null;
@@ -167,6 +169,11 @@ function secondaryMachining(
     machineId: secondaryMachiningMachineId(rows, 'near_net'), labourId, stockCondition: 'near_net',
     oee: SHOP_DEFAULTS.oee, manning: SHOP_DEFAULTS.manning,
     labourEfficiency: SHOP_DEFAULTS.labourEfficiency,
+    // The per-feature minutes are an aluminium baseline: a steel part's holes
+    // take twice as long. Cored bores in a casting are finish-bored, not cut
+    // from solid (machining review, Oct 2026) — the same as cast_and_machine.
+    materialFactor: cuttingDataFor(family ?? 'steel').timeFactor,
+    ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
   });
   return r.featureCount > 0 ? r : null;
 }
@@ -314,7 +321,7 @@ export function toCostParams(
         ...postCast(c),
       };
       Object.assign(params, castingSubtypeBlock(c, weight));
-      const sec = secondaryMachining(geo, 'lab-uk-skilled');
+      const sec = secondaryMachining(geo, 'lab-uk-skilled', mat.family, CORED_ABOVE_MM[c.subtype] ?? 20);
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
         // Fixture + programming NRE is derived on no machining path (machining
@@ -340,30 +347,16 @@ export function toCostParams(
         || pickMachiningCentreId({ principalDirections: 3, axisymmetric: false });
       const batchSize = standardBatchSize(annualVolume);
 
-      // Setups drive the setup factor in the module. The rules count them off
-      // the principal directions the part actually presents; clamp to the
-      // factor table's range rather than let an out-of-range index silently
-      // fall back to 1.0.
-      const setups = Math.round(num(ci.machining?.setupCount, 3));
-      const complexity = Math.min(5, Math.max(1, setups)) as 1 | 2 | 3 | 4 | 5;
-      if (!ci.machining?.setupCount) assumed.push('geometryComplexity (3 — no setup count measured)');
-
-      // NOT re-capped here. `machining` scales its operations down to the
-      // physical removal ceiling because a billet part's ops can claim more
-      // cutting than the stock can give up. This commodity's cycle already went
-      // through `capNearNetMachiningHr` inside the rules — the near-net finish
-      // envelope, which is the tighter and correct ceiling for a casting — and
-      // applying the billet ceiling on top would cap a capped number.
+      // The machining half is the shared machining rule set on a near-net cut
+      // (machining review, Oct 2026): its operations carry their own crew and
+      // OEE, and the batch, fixtures, programming and tool wear are rules.
+      const mach = ci.machining;
+      const camBatch = num(mach?.batchSize) || batchSize;
       assumed.push(
-        `batchSize=${batchSize} (annualVolume / 20)`, 'partsPerCycle=1', 'labourTimeHr=cycleTimeHr',
-        'machiningToolingCost=0, machiningProgrammingNRE=0',
-        // The STEP is the finished part, so the as-cast weight — finished plus
-        // the stock the machining removes — is not measurable from it and no
-        // rule states a machining allowance. Taking them as equal understates
-        // the material bucket by the stock removed, which for a near-net
-        // casting is small but is not nothing. Stated, not hidden.
+        ...(num(mach?.batchSize) ? [] : [`batchSize=${batchSize} (annualVolume / 20)`]),
+        'partsPerCycle=1', 'labourTimeHr=cycleTimeHr',
         num(c.castPartWeightKg) > 0
-          ? 'castPartWeightKg = finished + drilled-hole stock (face-finish stock not measured)'
+          ? 'castPartWeightKg = finished + drilled-hole stock + face machining stock'
           : 'castPartWeightKg = finishedWeightKg (no machining allowance decided)',
       );
 
@@ -388,7 +381,6 @@ export function toCostParams(
           ...(num(c.ndtCostPerPart) > 0 ? { ndtCostPerPart: num(c.ndtCostPerPart) } : {}),
           ...(num(c.leakTestSec) > 0 ? { leakTestSec: num(c.leakTestSec) } : {}),
 
-          geometryComplexity: complexity,
           machiningOps: (ops.length
             ? ops.map(o => ({
                 name: o.name,
@@ -398,6 +390,7 @@ export function toCostParams(
                 oee: num(o.oee, D.oee),
                 manning: num(o.manning, D.manning),
                 labourEfficiency: num(o.labourEfficiency, D.labourEfficiency),
+                ...(o.benchOperation ? { benchOperation: true } : {}),
               }))
             : [{
                 name: 'Finish machining', machineId, cycleTimeHr: cycleHr,
@@ -407,14 +400,15 @@ export function toCostParams(
           ).map(o => ({ ...o, type: 'milling', partsPerCycle: 1, labourTimeHr: o.cycleTimeHr })),
           machiningSetup: {
             setupTimeHr: num(ci.estimatedSetupTimeHr, 0.5),
-            batchSize,
+            batchSize: camBatch,
             machineId,
             // The cutting is done by a machinist, not the foundry labour that
             // pours the casting — `labourId` here is `lab-uk-foundry`.
             labourId: LABOUR.machining || labourId,
           },
-          machiningToolingCost: 0,
-          machiningProgrammingNRE: 0,
+          machiningToolingCost: num(mach?.toolingCost),
+          machiningProgrammingNRE: num(mach?.programmingNRE),
+          ...(num(mach?.toolWearCostPerPart) > 0 ? { machiningToolWearCostPerPart: num(mach!.toolWearCostPerPart) } : {}),
           amortizationVolume: annualVolume,
         },
       };
@@ -487,7 +481,7 @@ export function toCostParams(
       if (num(f.descaleCostPerKg) > 0) params.descaleCostPerKg = num(f.descaleCostPerKg);
       if (num(f.ndtCostPerPart) > 0) params.ndtCostPerPart = num(f.ndtCostPerPart);
       if (!f.forgeId) assumed.push('forgeId (weight-tier fallback)');
-      const sec = secondaryMachining(geo, 'lab-uk-skilled');
+      const sec = secondaryMachining(geo, 'lab-uk-skilled', mat.family);
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
         // Fixture + programming NRE is derived on no machining path (machining
@@ -532,7 +526,10 @@ export function toCostParams(
         }
       }
       if (!ci.machining?.stockWeightKg) assumed.push('stockWeightKg (net / 0.65 fallback)');
-      assumed.push(`batchSize=${batchSize} (annualVolume / 20)`, 'partsPerCycle=1', 'labourTimeHr=cycleTimeHr');
+      const mach = ci.machining;
+      const machBatch = num(mach?.batchSize) || batchSize;
+      if (!num(mach?.batchSize)) assumed.push(`batchSize=${batchSize} (annualVolume / 20)`);
+      assumed.push('partsPerCycle=1', 'labourTimeHr=cycleTimeHr');
       return {
         commodity, assumed,
         params: {
@@ -541,11 +538,12 @@ export function toCostParams(
           stockWeightKg: stock,
           materialUtilization: num(ci.machining?.materialUtilization)
             || (stock > 0 ? net / stock : 0.65),
-          rejectRate: D.rejectRate,
+          rejectRate: mach?.rejectRate !== undefined ? num(mach.rejectRate) : D.rejectRate,
           // `partsPerCycle` and `labourTimeHr` are required by the module and are
           // not on the analysis contract: one part per cycle, and the operator
           // attends the machine for the whole cut. Both are stated assumptions —
           // omitting them divides by zero and yields NaN rather than an error.
+          // Crew, OEE and labour come from the plan when it states them.
           operations: (ops.length
             ? ops.map(o => ({
                 name: o.name,
@@ -555,6 +553,7 @@ export function toCostParams(
                 oee: num(o.oee, D.oee),
                 manning: num(o.manning, D.manning),
                 labourEfficiency: num(o.labourEfficiency, D.labourEfficiency),
+                ...(o.benchOperation ? { benchOperation: true } : {}),
               }))
             : [{
                 name: 'Machining', machineId, cycleTimeHr: cycleHr,
@@ -568,10 +567,11 @@ export function toCostParams(
           setup: {
             machineId, labourId,
             setupTimeHr: num(ci.estimatedSetupTimeHr, 0.5),
-            batchSize,
+            batchSize: machBatch,
           },
-          programmingNRE: 0,
-          toolingCost: 0,
+          programmingNRE: num(mach?.programmingNRE),
+          toolingCost: num(mach?.toolingCost),
+          ...(num(mach?.toolWearCostPerPart) > 0 ? { toolWearCostPerPart: num(mach!.toolWearCostPerPart) } : {}),
           amortizationVolume: annualVolume,
         },
       };

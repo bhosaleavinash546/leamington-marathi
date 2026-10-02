@@ -124,6 +124,20 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 240 mm U-channel reinforcement, 60 x 40 mm section, 2.0 mm, R3 bends, 3 holes. Mild steel.',
     answers: { 'material.family': 'steel', 'commodity.route': 'sheet_metal', 'commodity.thinWallRoute': 'sheet_metal' },
   },
+  // ── Machined from solid (machining review, 2 Oct 2026) ────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/MACH_modelled_parts.py
+  // because nothing in the audit set is unambiguously cut from bar or plate
+  // (Part1's own STEP header calls it CASTING-01), and no turned part existed.
+  'MACH_Hydraulic_Manifold.stp': {
+    note: 'MODELLED: 120 x 80 x 60 mm 6082 manifold — R5 pocket, 4 x Ø11 through, 3 x Ø18 x 40 ports, '
+        + '2 x Ø8 cross galleries, 4 x Ø5 tapping holes. Cut from plate.',
+    answers: { 'material.family': 'aluminium', 'commodity.route': 'machining' },
+  },
+  'MACH_Stepped_Shaft.stp': {
+    note: 'MODELLED: Ø40 x 190 mm stepped shaft — Ø25 journals, Ø30 body with an 8 mm keyway, '
+        + 'Ø20 spigot with a Ø6 cross hole. Turned from steel bar.',
+    answers: { 'material.family': 'steel', 'commodity.route': 'machining' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

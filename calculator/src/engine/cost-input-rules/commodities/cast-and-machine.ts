@@ -13,18 +13,22 @@
  * silent `replace(/^cast-/, 'cam-cast-')` would have produced ids that match
  * nothing on the page and filled a form full of empty fields with no error.
  *
- * The second thing composition alone gets wrong is the machining time.
- * `cncCycleTimeEstimate` mills every planar face as if the part came from solid
- * billet — right for `machining`, badly wrong here, where a near-net casting
- * only needs its datums trued and its journals and bores finished. That is what
- * charged a 2.8 kg stub axle ~0.9 h of cutting and ~£116 against a realistic
- * ~£30. So the cycle time goes through `capNearNetMachiningHr`, the same ceiling
- * the server holds the AI path to, and the routing is scaled to match it.
+ * The second thing composition alone gets wrong is the machining time. A
+ * near-net casting only needs its machined faces trued and its holes drilled or
+ * finish-bored. That used to be the from-solid estimate capped to `0.10 h +
+ * 0.07 h/kg` — a ceiling that became the value, and disagreed with the casting
+ * route's own secondary machining for the same part (PRCR002: £50.10 here,
+ * £80.84 there). Since the machining review (Oct 2026) the machining half is
+ * the SAME rule set as `machining` (`machiningRuleDefs`) given a near-net cut
+ * (`nearNetCut`): the measured faces and holes, at the metal's cutting rate.
  */
-import { capNearNetMachiningHr } from '../../near-net-machining.js';
+import {
+  castMachiningStockMm, nearNetStockCm3, CORED_ABOVE_MM,
+} from '../../machining-time.js';
+import type { FeatureRow } from '../../feature-ops.js';
 import { decided, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
 import { CASTING_RULES, castingSubtypeFor } from './casting.js';
-import { MACHINING_RULES, cuttingHours, machiningOperationPlan, machiningRouting, principalDirections } from './machining.js';
+import { machiningRuleDefs, nearNetCut } from './machining.js';
 import { materialFacts } from '../derive/material.js';
 
 /**
@@ -61,8 +65,11 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-inv-shell': 'cam-inv-shell',
   // machining half
   'mach-setup-mach': 'cam-mach-setup-mach',
+  'mach-setup-time': 'cam-mach-setup-time',
+  'mach-batch-size': 'cam-mach-batch-size',
   'mach-tooling': 'cam-mach-tooling',
   'mach-prog-nre': 'cam-mach-prog-nre',
+  'mach-tool-wear': 'cam-tool-wear',
 };
 
 /**
@@ -71,18 +78,14 @@ const FIELD_ID_MAP: Record<string, string> = {
  * Both halves derive a material family and a weight from the same measured
  * solid, and the casting half owns them: the as-cast weight is the material
  * basis, and a from-solid stock weight is meaningless for a part that arrives
- * near-net. The cycle time and the routing are replaced by capped versions
- * below; the setup rule is replaced so its wording says "datum/fixture".
+ * near-net. The casting module's reject rate covers the part.
  */
 const DROPPED_MACHINING_RULES = new Set([
   'machining.materialId',
   'machining.netWeightKg',
   'machining.stockWeightKg',
   'machining.materialUtilization',
-  'machining.estimatedCycleTimeHr',
-  'machining.setupTimeHr',
-  'machining.operations',
-  'machining.operationCount',
+  'machining.rejectRate',
 ]);
 
 /** Re-label a rule for the combined form. */
@@ -91,122 +94,14 @@ function repath(rule: RuleDef): RuleDef {
 }
 
 /**
- * Finish-machining hours: the from-solid estimate, capped to the near-net
- * envelope. Exported so a test can show the cap binding on a real part rather
- * than sitting in the code unexercised.
- */
-export function finishMachiningHours(ctx: RuleContext): {
-  hours: number; capped: boolean; rawHours: number; ceilingHr: number; weightKg: number;
-} | null {
-  const mat = materialFacts(ctx);
-  if (!mat.family || mat.massKg === null) return null;
-  const raw = cuttingHours(ctx, mat.family).hours;
-  const cap = capNearNetMachiningHr(raw, mat.massKg, 'cast_and_machine');
-  return {
-    hours: cap.machiningHr,
-    capped: cap.capped,
-    rawHours: raw,
-    ceilingHr: cap.ceilingHr,
-    weightKg: mat.massKg,
-  };
-}
-
-/** The routing for the machining half, scaled to the capped hours. */
-export function castAndMachineOperationPlan(ctx: RuleContext) {
-  const mat = materialFacts(ctx);
-  const f = finishMachiningHours(ctx);
-  if (!mat.family || !f) return [];
-  const raw = machiningOperationPlan(ctx, mat.family);
-  const rawTotal = raw.reduce((s, o) => s + o.cycleTimeHr, 0);
-  if (!f.capped || rawTotal <= 0) return raw;
-  const scale = f.hours / rawTotal;
-  return raw.map(o => ({
-    ...o,
-    cycleTimeHr: Math.round(o.cycleTimeHr * scale * 10_000) / 10_000,
-    basis: `${o.basis}, scaled to the near-net finish envelope`,
-  }));
-}
-
-const NEAR_NET_CYCLE_RULE: RuleDef = {
-  id: 'castAndMachine.machiningCycleTimeHr',
-  path: 'machining.estimatedCycleTimeHr',
-  label: 'machiningCycleTimeHr',
-  evaluate: (ctx) => {
-    const f = finishMachiningHours(ctx);
-    if (f === null) {
-      // The casting half is already asking which metal this is; a second copy of
-      // that question here would just be noise.
-      return decided('castAndMachine.machiningCycleTimeHr', 0, 'rule',
-        'pending the material answer', 0.1);
-    }
-    return decided('castAndMachine.machiningCycleTimeHr', f.hours, 'geometry',
-      f.capped
-        ? `from-solid estimate was ${fmt(f.rawHours, 3)} hr; a ${fmt(f.weightKg, 1)} kg near-net `
-          + `casting only needs finish machining, so capped to ${fmt(f.ceilingHr, 3)} hr `
-          + '(0.10 hr setup + 0.07 hr/kg)'
-        : `${fmt(f.hours, 3)} hr, inside the ${fmt(f.ceilingHr, 3)} hr near-net finish envelope`,
-      f.capped ? 0.6 : 0.75);
-  },
-};
-
-const SETUP_RULE: RuleDef = {
-  id: 'castAndMachine.machiningSetupTimeHr',
-  path: 'machining.setupTimeHr',
-  fieldId: 'cam-mach-setup-time',
-  label: 'machiningSetupTimeHr',
-  evaluate: (ctx) => {
-    const p = principalDirections(ctx);
-    const mins = ctx.geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
-    // Setups follow the cost-chosen routing (machiningRouting caps the hours to
-    // the near-net finish envelope for this commodity before ranking). While the
-    // metal is unanswered the direction count stands in — costing is blocked
-    // then anyway.
-    const mat = materialFacts(ctx);
-    const routing = mat.family ? machiningRouting(ctx, mat.family) : null;
-    const setups = routing ? routing.chosen.setups : p.count;
-    return decided('castAndMachine.machiningSetupTimeHr',
-      Math.round(setups * mins / 60 * 1000) / 1000, 'rule',
-      routing
-        ? `${setups} datum/fixture setup(s) of the ${routing.chosen.label} routing × ${mins} min`
-        : `${p.count} datum/fixture setup(s) × ${mins} min`, 0.7);
-  },
-};
-
-const OPERATIONS_RULE: RuleDef<ReturnType<typeof castAndMachineOperationPlan>> = {
-  id: 'castAndMachine.machiningOperations',
-  path: 'machining.operations',
-  label: 'machiningOperations',
-  evaluate: (ctx) => {
-    const ops = castAndMachineOperationPlan(ctx);
-    if (ops.length === 0) {
-      return decided('castAndMachine.machiningOperations', [], 'rule',
-        'pending the material answer', 0.1);
-    }
-    const total = ops.reduce((s, o) => s + o.cycleTimeHr, 0);
-    // The VALUE must be the OperationPlan[] — this path maps to
-    // `estimatedOperations`, whose every consumer (`applyCADToForm`'s CAM loop,
-    // `printCADAnalysisPDF`) `.map()`s an array. The prose join that used to be
-    // emitted here crashed both, making cast_and_machine un-costable from CAD
-    // in the browser (live audit F7). promptLine below renders the readable
-    // summary; the data stays data.
-    return decided('castAndMachine.machiningOperations', ops, 'geometry',
-      `sums to ${fmt(total, 3)} hr of finish machining`, 0.7);
-  },
-  promptLine: (outcome) => {
-    if (!outcome.ok) return '  machiningOperations: UNDECIDED';
-    const ops = outcome.decided.value;
-    if (!Array.isArray(ops) || ops.length === 0) return '  machiningOperations: pending the material answer';
-    const summary = ops.map(o => `${o.name} ${fmt(o.cycleTimeHr, 3)} hr on ${o.machineId}`).join('; ');
-    return `  machiningOperations=${summary}  [${outcome.decided.basis} — deterministic, use verbatim]`;
-  },
-};
-
-/**
- * Drilled-hole stock: holes up to DRILLED_FROM_SOLID_MM in a sand, gravity or
- * investment casting are drilled from solid, so their volume was metal that was
- * poured and then cut away. Measured exactly from the feature table. HPDC cores
- * its holes. Face-finish stock on milled faces is not measured (the kernel
- * reports no per-face area) and is stated as not included.
+ * Metal the casting carries for machining.
+ *
+ * Holes up to DRILLED_FROM_SOLID_MM in a sand, gravity or investment casting are
+ * drilled from solid, so their volume was poured and then cut away (HPDC cores
+ * its holes). The machined faces and cored bores carry the process's per-side
+ * machining stock (`castMachiningStockMm`, ISO 8062-3 RMA typical) — measured
+ * from the feature table's face areas and bore walls, which the second casting
+ * pass stated as "not measured, not included".
  */
 export const DRILLED_FROM_SOLID_MM = 20;
 
@@ -232,16 +127,24 @@ const CAST_WEIGHT_RULE: RuleDef = {
     if (mat.decision || mat.massKg === null) return decided('castAndMachine.castPartWeightKg', 0, 'rule', 'pending the material answer', 0.1);
     const sub = castingSubtypeFor(ctx);
     const density = mat.massKg / Math.max(1e-9, ctx.geo.volume?.cm3 ?? 0);   // kg / cm³, from the confirmed metal
-    const stock = sub === 'hpdc' || sub === null ? { cm3: 0, holes: 0 } : drilledStockCm3(ctx);
-    const kg = mat.massKg + stock.cm3 * density;
+    const drilled = sub === 'hpdc' || sub === null ? { cm3: 0, holes: 0 } : drilledStockCm3(ctx);
+    const stockMm = castMachiningStockMm(sub, mat.family ?? null);
+    const faceCm3 = nearNetStockCm3((ctx.geo.featureTable ?? []) as FeatureRow[], stockMm,
+      sub === 'hpdc' ? CORED_ABOVE_MM.hpdc : DRILLED_FROM_SOLID_MM);
+    const kg = mat.massKg + (drilled.cm3 + faceCm3) * density;
     return decided('castAndMachine.castPartWeightKg', Math.round(kg * 1000) / 1000, 'geometry',
-      stock.holes > 0
-        ? `${fmt(mat.massKg, 3)} kg finished + ${fmt(stock.cm3, 1)} cm³ of ${stock.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid; `
-          + 'face-finish stock on milled faces not measured, not included'
-        : `${fmt(mat.massKg, 3)} kg finished${sub === 'hpdc' ? ' (HPDC cores its holes)' : ' — no holes drilled from solid'}; `
-          + 'face-finish stock on milled faces not measured, not included', 0.7);
+      `${fmt(mat.massKg, 3)} kg finished`
+      + (drilled.holes > 0 ? ` + ${fmt(drilled.cm3, 1)} cm³ of ${drilled.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid`
+        : sub === 'hpdc' ? ' (HPDC cores its holes)' : '')
+      + ` + ${fmt(faceCm3, 1)} cm³ machining stock (${stockMm} mm a side on the machined faces and cored bores, `
+      + `${sub ?? 'casting'} — ISO 8062-3 RMA typical; the drawing's RMA replaces it)`, 0.7);
   },
 };
+
+/** The machining half: the shared machining rules, given the casting's near-net cut. */
+const NEAR_NET_MACHINING_RULES = machiningRuleDefs(
+  (ctx, family) => nearNetCut(ctx, family, castingSubtypeFor(ctx)),
+).filter(r => !DROPPED_MACHINING_RULES.has(r.id)).map(repath);
 
 export const CAST_AND_MACHINE_RULES: CommodityRuleSpec = {
   commodity: 'cast_and_machine',
@@ -249,9 +152,6 @@ export const CAST_AND_MACHINE_RULES: CommodityRuleSpec = {
   rules: [
     ...CASTING_RULES.rules.map(repath),
     CAST_WEIGHT_RULE,
-    NEAR_NET_CYCLE_RULE,
-    SETUP_RULE,
-    OPERATIONS_RULE,
-    ...MACHINING_RULES.rules.filter(r => !DROPPED_MACHINING_RULES.has(r.id)).map(repath),
+    ...NEAR_NET_MACHINING_RULES,
   ],
 };

@@ -83,17 +83,36 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
     // Non-array fallback is [] — the old `: v` passthrough let a prose string
     // reach `estimatedOperations`, and every consumer of that field `.map()`s
     // it (the browser CAM loop, the analysis PDF), crashing both (audit F7).
+    // The plan now states each operation's crew, OEE and labour (machining
+    // review, Oct 2026) — carried through so headless and the screen cost the
+    // same crew rather than each defaulting its own.
     transform: v => Array.isArray(v)
-      ? v.map(o => ({
-          name: String((o as { name: unknown }).name),
-          machineId: String((o as { machineId: unknown }).machineId),
-          cycleTimeHr: num((o as { cycleTimeHr: unknown }).cycleTimeHr),
-          ...(Array.isArray((o as { faceIds?: unknown }).faceIds)
-            ? { faceIds: ((o as { faceIds: unknown[] }).faceIds).filter((x): x is number => typeof x === 'number') }
-            : {}),
-        }))
+      ? v.map(o => {
+          const op = o as { name: unknown; machineId: unknown; cycleTimeHr: unknown; faceIds?: unknown;
+            labourId?: unknown; manning?: unknown; oee?: unknown; benchOperation?: unknown };
+          return {
+            name: String(op.name),
+            machineId: String(op.machineId),
+            cycleTimeHr: num(op.cycleTimeHr),
+            ...(typeof op.labourId === 'string' ? { labourId: op.labourId } : {}),
+            ...(typeof op.manning === 'number' ? { manning: op.manning } : {}),
+            ...(typeof op.oee === 'number' ? { oee: op.oee } : {}),
+            ...(op.benchOperation === true ? { benchOperation: true } : {}),
+            // Built by the rules from measured geometry — the near-net guard
+            // bounds AI times, never this plan (machining review, Oct 2026).
+            measured: true,
+            ...(Array.isArray(op.faceIds)
+              ? { faceIds: (op.faceIds as unknown[]).filter((x): x is number => typeof x === 'number') }
+              : {}),
+          };
+        })
       : [],
   },
+  'machining.batchSize': { to: 'machining.batchSize' },
+  'machining.rejectRate': { to: 'machining.rejectRate' },
+  'machining.toolingCost': { to: 'machining.toolingCost' },
+  'machining.programmingNRE': { to: 'machining.programmingNRE' },
+  'machining.toolWearCostPerPart': { to: 'machining.toolWearCostPerPart' },
   'injectionMoulding.fillTimeSec': { to: 'injectionMoulding.fillTimeSec' },
   'injectionMoulding.packTimeSec': { to: 'injectionMoulding.packTimeSec' },
   'injectionMoulding.ejectTimeSec': { to: 'injectionMoulding.ejectTimeSec' },

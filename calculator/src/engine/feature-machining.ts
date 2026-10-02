@@ -13,7 +13,8 @@
  */
 import type { OperationInput } from './types.js';
 import type { FeatureRow } from './feature-ops.js';
-import { featureToOperation } from './feature-ops.js';
+import { featureToOperation, tappedThread } from './feature-ops.js';
+export { tappedThread, TAPPING_DRILL_MM } from './feature-ops.js';
 
 /**
  * How the part arrives at the machining cell:
@@ -41,6 +42,13 @@ export interface FeatureMachiningOptions {
   /** Tolerance/finish multiplier on machining time (tight bores cost more).
    *  1.0 = general; 1.3 = reamed/precision; 1.6 = ground. Default 1.0. */
   finishFactor?: number;
+  /** The metal's cutting-time factor against aluminium (`CUTTING_DATA[family].timeFactor`).
+   *  The per-feature minutes are an aluminium baseline; a steel knuckle's holes
+   *  were timed as if they were aluminium (machining review, Oct 2026). Default 1. */
+  materialFactor?: number;
+  /** Near-net only: holes above this diameter are cored in, and finish-bored
+   *  rather than drilled from solid. Omit to drill every hole from solid. */
+  coredAboveMm?: number;
 }
 
 export interface FeatureMachiningLine {
@@ -144,21 +152,56 @@ export function featureMinutesEach(row: FeatureRow): number {
   if (d >= 30 && row.depthMm > 0 && row.depthMm < 0.25 * d) {
     return 0.20 + d * 0.004;                      // spot-face / seat skim
   }
+  // Drilling feed along the hole, mm/min, in aluminium. It was 50 mm/min
+  // (L × 0.020) — 10–20× slower than a drill in aluminium runs: feed per rev ≈
+  // 0.02 × Ø at Vc ≈ 80–150 m/min gives ~500–950 mm/min whatever the diameter.
+  // DRILL_FEED is set at the conservative end with peck and retract allowed for;
+  // a deep hole (L > 5 Ø) pecks harder. Other metals scale by their cutting-time
+  // factor (machining review, Oct 2026).
+  const deep = L > 5 * Math.max(d, 1) ? DEEP_HOLE_PECK : 1;
   let t: number;
   if (d > 26) {
-    t = 0.50 + L * 0.050;                         // helical mill / large bore
+    t = 0.50 + L * 0.050;                         // helical mill / large bore (~20 mm/min axial)
   } else if (d > 13) {
-    t = 0.15 + L * 0.020 + 0.25 + L * 0.020;      // drill + ream/bore pass
+    t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep + 0.25 + L / DRILL_FEED_MM_PER_MIN;   // drill + ream/bore pass
   } else if (d > 6) {
-    t = 0.15 + L * 0.020;                         // drill
+    t = 0.15 + L / DRILL_FEED_MM_PER_MIN * deep;  // drill
   } else {
-    // Micro-drilling: a Ø2–6 mm hole is seconds, not half a minute. Twelve of
-    // these on a 3 g servo horn were a third of its whole (capped) cycle.
-    t = 0.06 + L * 0.010;
+    // Micro-drilling: a small drill feeds slower and pecks more.
+    t = 0.06 + L / MICRO_DRILL_FEED_MM_PER_MIN * deep;
   }
   if (row.through === false) t += 0.10;           // blind: bottom finishing
+  if (isTappingDrillHole(row)) t += TAP_APPROACH_MIN + 2 * L / TAP_FEED_MM_PER_MIN;   // tap in and out
   return t;
 }
+
+const isTappingDrillHole = (row: FeatureRow) => tappedThread(row) !== null;
+/** Rigid tapping in aluminium, mm/min along the hole, and the approach / reversal allowance. */
+export const TAP_FEED_MM_PER_MIN = 500;
+export const TAP_APPROACH_MIN = 0.10;
+
+/** Drilling feed along the hole in aluminium, mm/min, including peck and retract. */
+export const DRILL_FEED_MM_PER_MIN = 400;
+/** Ø ≤ 6 mm drills, mm/min. */
+export const MICRO_DRILL_FEED_MM_PER_MIN = 250;
+/** Extra pecking on a hole deeper than 5 diameters. */
+export const DEEP_HOLE_PECK = 1.5;
+
+/**
+ * Minutes for one hole. A hole above `coredAboveMm` in a casting is cast in and
+ * only finish-bored (one pass down its depth); everything else is drilled,
+ * reamed or helically milled from solid by `featureMinutesEach`.
+ */
+export function nearNetHoleMinutes(row: FeatureRow, coredAboveMm?: number): number {
+  if (coredAboveMm !== undefined && row.kind === 'hole' && row.diaMm > coredAboveMm
+      && !(row.diaMm >= 30 && row.depthMm > 0 && row.depthMm < 0.25 * row.diaMm)) {
+    return 0.25 + Math.max(row.depthMm, 1) / BORE_FINISH_MM_PER_MIN;
+  }
+  return featureMinutesEach(row);
+}
+
+/** Finish boring feed along the bore, mm/min (aluminium): ~0.15 mm/rev at ~1,000 rpm. */
+export const BORE_FINISH_MM_PER_MIN = 150;
 
 /** Metal volume removed (cm³) for ONE instance — cylinders for hole/boss,
  *  floor-area×depth for pockets/slots, ~0 (skim) for facing. */
@@ -178,13 +221,14 @@ export function computeFeatureMachining(
 ): FeatureMachiningResult {
   const stock = opts.stockCondition ?? 'near_net';
   const density = opts.densityKgPerCm3 ?? 0.0027;
-  const finish = opts.finishFactor ?? 1.0;
+  const finish = (opts.finishFactor ?? 1.0) * (opts.materialFactor ?? 1.0);
   const flags = opts.includeFlags;
 
   const lines: FeatureMachiningLine[] = (rows ?? []).map((row, i) => {
     const auto = defaultInclude(row, stock);
     const included = flags ? Boolean(flags[i]) : auto;
-    const minutesEach = featureMinutesEach(row) * finish;
+    const minutesEach = (stock === 'near_net' && opts.coredAboveMm !== undefined
+      ? nearNetHoleMinutes(row, opts.coredAboveMm) : featureMinutesEach(row)) * finish;
     return {
       faceIds: row.faceIds,
       kind: row.kind,

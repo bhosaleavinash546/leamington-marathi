@@ -13,6 +13,8 @@ export interface MachiningOperation {
   manning: number;
   labourTimeHr: number;
   labourEfficiency: number;
+  /** Labour-only bench task (deburr, gauge check): no machine time is charged. */
+  benchOperation?: boolean;
 }
 
 export interface MachiningSetup {
@@ -36,6 +38,8 @@ export interface MachiningInputs {
   programmingNRE: number;
   toolingCost: number;
   amortizationVolume: number;
+  /** Perishable cutting tools worn per part, £ (not in the machine rate). */
+  toolWearCostPerPart?: number;
 }
 
 export function getMachiningInputSchema(): Record<string, string> {
@@ -62,6 +66,7 @@ export function getMachiningInputSchema(): Record<string, string> {
     toolingCost: 'number — total fixture + tooling cost £',
     amortizationVolume: 'number — parts over which to amortize tooling',
     toleranceMm: 'number? — tightest part tolerance mm. Cycle-time multiplier: ≥0.10→×1.0, ≥0.05→×1.15, ≥0.02→×1.35, ≥0.01→×1.60, <0.01→×2.0',
+    toolWearCostPerPart: 'number? — perishable cutting tools per part £',
   };
 }
 
@@ -90,6 +95,9 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
     materialId: inputs.materialId,
     netWeightKg: inputs.netWeightKg * rejectUplift,
     materialUtilization: utilization,
+    // Inserts, end mills and drills worn per good part — scrapped parts wear tools too.
+    ...(inputs.toolWearCostPerPart && inputs.toolWearCostPerPart > 0
+      ? { consumablesCostPerPart: inputs.toolWearCostPerPart * rejectUplift } : {}),
   };
 
   const setupPerPart = inputs.setup.setupTimeHr / inputs.setup.batchSize;
@@ -114,12 +122,16 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
       operationName: op.name,
       machineId: op.machineId,
       labourId: op.labourId,
-      cycleTimeHr: op.cycleTimeHr * rejectUplift * toleranceFactor,
+      // A bench task (deburr, gauge check) is labour only: no machine time,
+      // its time is the operator's (the painting module's masking convention).
+      cycleTimeHr: op.benchOperation ? 0 : op.cycleTimeHr * rejectUplift * toleranceFactor,
       partsPerCycle: op.partsPerCycle,
       oee: op.oee,
       manning: op.manning,
-      labourTimeHr: op.labourTimeHr * rejectUplift * toleranceFactor,
+      labourTimeHr: (op.benchOperation ? Math.max(op.labourTimeHr, op.cycleTimeHr) * rejectUplift
+        : op.labourTimeHr * rejectUplift * toleranceFactor),
       labourEfficiency: op.labourEfficiency,
+      ...(op.benchOperation ? { benchOperation: true } : {}),
     })),
   ];
 

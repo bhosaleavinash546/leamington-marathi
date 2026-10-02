@@ -10,11 +10,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3b8c506657e86ea5",
+      "partName": "cv-cad-82d18fd6b09f8ad1",
       "boundingBox": {
-        "xMm": 502.4,
-        "yMm": 352.4,
-        "zMm": 72.83
+        "xMm": 500,
+        "yMm": 350,
+        "zMm": 70
       },
       "volume": {
         "mm3": 324654.6,
@@ -24,7 +24,7 @@
         "mm2": 546736.9,
         "cm2": 5467.369
       },
-      "fillRatio": 0.0252,
+      "fillRatio": 0.0265,
       "projectedArea": {
         "zMm2": 174619,
         "yMm2": 31191,
@@ -63,7 +63,23 @@
           "CYLINDER": 18,
           "BSPLINE": 4,
           "OTHER": 4
+        },
+        "areaByTypeMm2": {
+          "PLANE": 500296,
+          "CYLINDER": 44609,
+          "BSPLINE": 1020,
+          "OTHER": 812
         }
+      },
+      "turning": {
+        "fraction": 0.021,
+        "revolvedFraction": 0.019,
+        "maxDiaMm": 16,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 110,
@@ -207,7 +223,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 28.9,
+          "depthMm": 27.7,
           "through": null,
           "count": 2,
           "areaMm2": 25535,
@@ -219,7 +235,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 28.9,
+          "depthMm": 27.7,
           "through": null,
           "count": 2,
           "areaMm2": 16296,
@@ -380,12 +396,12 @@
         "assumedSetupTimeMinsPerSetup": 15
       },
       "toolingCostEstimates": {
-        "hpdcDieCostGBP": 215000,
+        "hpdcDieCostGBP": 210000,
         "gravityMouldCostGBP": 80000,
-        "sandPatternCostGBP": 16500,
+        "sandPatternCostGBP": 15500,
         "imMouldCostGBP": 200000,
         "forgeDieCostGBP": 28000,
-        "progressiveDieCostGBP": 35000
+        "progressiveDieCostGBP": 30000
       },
       "manufacturabilityScore": 42,
       "processSpecificEstimates": {
@@ -750,15 +766,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 9.88,
+      "total": 9.79,
       "breakdown": {
-        "rawMaterial": 2.33,
+        "rawMaterial": 2.3,
         "process": 0.29,
         "labour": 0.22,
-        "tooling": 4.93,
+        "tooling": 4.88,
         "packaging": 0.17,
         "logistics": 0.28,
-        "overhead": 0.93,
+        "overhead": 0.92,
         "margin": 0.73
       }
     }
@@ -774,11 +790,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8a8673161efabf24",
+      "partName": "cv-cad-860cbffbcef9f8f5",
       "boundingBox": {
-        "xMm": 1161.8,
-        "yMm": 761.8,
-        "zMm": 123.23
+        "xMm": 1160,
+        "yMm": 760,
+        "zMm": 120
       },
       "volume": {
         "mm3": 1146113.2,
@@ -788,7 +804,7 @@
         "mm2": 2556721.6,
         "cm2": 25567.216
       },
-      "fillRatio": 0.0105,
+      "fillRatio": 0.0108,
       "projectedArea": {
         "zMm2": 880140,
         "yMm2": 129430,
@@ -827,7 +843,23 @@
           "CYLINDER": 16,
           "BSPLINE": 4,
           "OTHER": 4
+        },
+        "areaByTypeMm2": {
+          "PLANE": 2336811,
+          "CYLINDER": 209293,
+          "BSPLINE": 5519,
+          "OTHER": 5099
         }
+      },
+      "turning": {
+        "fraction": 0.02,
+        "revolvedFraction": 0.019,
+        "maxDiaMm": 30,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 104,
@@ -954,7 +986,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 36.8,
+          "depthMm": 35.9,
           "through": null,
           "count": 2,
           "areaMm2": 104961,
@@ -966,7 +998,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 36.8,
+          "depthMm": 35.9,
           "through": null,
           "count": 2,
           "areaMm2": 63325,
@@ -1450,16 +1482,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 33.63,
+      "total": 33.53,
       "breakdown": {
-        "rawMaterial": 8,
+        "rawMaterial": 7.98,
         "process": 0.47,
         "labour": 0.22,
-        "tooling": 17.77,
+        "tooling": 17.72,
         "packaging": 0.56,
-        "logistics": 0.94,
-        "overhead": 3.18,
-        "margin": 2.49
+        "logistics": 0.93,
+        "overhead": 3.17,
+        "margin": 2.48
       }
     }
   },
@@ -1474,7 +1506,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-aa6cbfa80152087c",
+      "partName": "cv-cad-4269b37b4dbd6094",
       "boundingBox": {
         "xMm": 240,
         "yMm": 60,
@@ -1525,7 +1557,21 @@
         "byType": {
           "PLANE": 10,
           "CYLINDER": 7
+        },
+        "areaByTypeMm2": {
+          "PLANE": 58709,
+          "CYLINDER": 6202
         }
+      },
+      "turning": {
+        "fraction": 0.055,
+        "revolvedFraction": 0.046,
+        "maxDiaMm": 10,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 45,
@@ -2027,10 +2073,10 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-55213cf477c840af",
+      "partName": "cv-cad-84bb161e7a190b07",
       "boundingBox": {
-        "xMm": 132.62,
-        "yMm": 120.03,
+        "xMm": 132,
+        "yMm": 120,
         "zMm": 125
       },
       "volume": {
@@ -2041,10 +2087,10 @@
         "mm2": 62826.6,
         "cm2": 628.266
       },
-      "fillRatio": 0.1608,
+      "fillRatio": 0.1616,
       "projectedArea": {
         "zMm2": 10448,
-        "yMm2": 5584,
+        "yMm2": 5585,
         "xMm2": 14158,
         "alongDrawMm2": 10448,
         "method": "silhouette_raster"
@@ -2082,7 +2128,25 @@
           "TORUS": 24,
           "BSPLINE": 54,
           "OTHER": 12
+        },
+        "areaByTypeMm2": {
+          "CYLINDER": 28834,
+          "PLANE": 30093,
+          "CONE": 13,
+          "TORUS": 1542,
+          "BSPLINE": 2303,
+          "OTHER": 42
         }
+      },
+      "turning": {
+        "fraction": 0.289,
+        "revolvedFraction": 0.107,
+        "maxDiaMm": 40,
+        "axis": [
+          0,
+          0,
+          1
+        ]
       },
       "edges": {
         "total": 546,
@@ -2361,6 +2425,18 @@
           "areaMm2": 1265,
           "faceIds": [
             33
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 14,
+          "through": null,
+          "count": 2,
+          "areaMm2": 630,
+          "faceIds": [
+            152,
+            158
           ]
         }
       ],
@@ -2738,16 +2814,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 33.26,
+      "total": 45.76,
       "breakdown": {
-        "rawMaterial": 9.27,
-        "process": 9.28,
-        "labour": 8.2,
-        "tooling": 0.36,
+        "rawMaterial": 12.43,
+        "process": 15.79,
+        "labour": 8.66,
+        "tooling": 0.57,
         "packaging": 0.15,
         "logistics": 0.27,
-        "overhead": 3.25,
-        "margin": 2.46
+        "overhead": 4.49,
+        "margin": 3.39
       }
     }
   },
@@ -2762,7 +2838,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-11154756d0f18b37",
+      "partName": "cv-cad-36465e1cef246476",
       "boundingBox": {
         "xMm": 40,
         "yMm": 25,
@@ -2813,7 +2889,21 @@
         "byType": {
           "PLANE": 19,
           "CYLINDER": 1
+        },
+        "areaByTypeMm2": {
+          "PLANE": 4546,
+          "CYLINDER": 33
         }
+      },
+      "turning": {
+        "fraction": 0.442,
+        "revolvedFraction": 0.007,
+        "maxDiaMm": 5.2,
+        "axis": [
+          0,
+          0,
+          1
+        ]
       },
       "edges": {
         "total": 51,
@@ -3086,11 +3176,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1090d582c577452e",
+      "partName": "cv-cad-ea5209804c1af2c2",
       "boundingBox": {
         "xMm": 180,
         "yMm": 120,
-        "zMm": 40.05
+        "zMm": 40
       },
       "volume": {
         "mm3": 122349.8,
@@ -3100,7 +3190,7 @@
         "mm2": 107687.7,
         "cm2": 1076.877
       },
-      "fillRatio": 0.1414,
+      "fillRatio": 0.1416,
       "projectedArea": {
         "zMm2": 21618,
         "yMm2": 7002,
@@ -3138,7 +3228,22 @@
           "PLANE": 64,
           "CYLINDER": 24,
           "OTHER": 8
+        },
+        "areaByTypeMm2": {
+          "PLANE": 99787,
+          "CYLINDER": 7845,
+          "OTHER": 56
         }
+      },
+      "turning": {
+        "fraction": 0.384,
+        "revolvedFraction": 0.009,
+        "maxDiaMm": 7,
+        "axis": [
+          0,
+          0,
+          1
+        ]
       },
       "edges": {
         "total": 220,
@@ -3907,11 +4012,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-aad696c59c6c598a",
+      "partName": "cv-cad-d92232eff5a339f4",
       "boundingBox": {
-        "xMm": 600.01,
-        "yMm": 400.01,
-        "zMm": 60.1
+        "xMm": 600,
+        "yMm": 400,
+        "zMm": 60
       },
       "volume": {
         "mm3": 1075025.2,
@@ -3921,7 +4026,7 @@
         "mm2": 739605.8,
         "cm2": 7396.058
       },
-      "fillRatio": 0.0745,
+      "fillRatio": 0.0747,
       "projectedArea": {
         "zMm2": 240273,
         "yMm2": 35870,
@@ -3959,7 +4064,22 @@
           "PLANE": 23,
           "CYLINDER": 16,
           "OTHER": 8
+        },
+        "areaByTypeMm2": {
+          "PLANE": 716103,
+          "CYLINDER": 23328,
+          "OTHER": 174
         }
+      },
+      "turning": {
+        "fraction": 0.065,
+        "revolvedFraction": 0.009,
+        "maxDiaMm": 10,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 116,
@@ -4576,6 +4696,847 @@
     }
   },
   {
+    "part": "MACH_Hydraulic_Manifold.stp",
+    "sha256": "0a303b40c271ea2c",
+    "note": "MODELLED: 120 x 80 x 60 mm 6082 manifold — R5 pocket, 4 x Ø11 through, 3 x Ø18 x 40 ports, 2 x Ø8 cross galleries, 4 x Ø5 tapping holes. Cut from plate.",
+    "answers": {
+      "material.family": "aluminium",
+      "commodity.route": "machining"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-a0a45600f450711c",
+      "boundingBox": {
+        "xMm": 120,
+        "yMm": 80,
+        "zMm": 60
+      },
+      "volume": {
+        "mm3": 485848.6,
+        "cm3": 485.849
+      },
+      "surfaceArea": {
+        "mm2": 64096.3,
+        "cm2": 640.963
+      },
+      "fillRatio": 0.8435,
+      "projectedArea": {
+        "zMm2": 9235,
+        "yMm2": 7200,
+        "xMm2": 4800,
+        "alongDrawMm2": 9235,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 1.3118,
+        "steelKg": 3.8139,
+        "plasticKg": 0.5101,
+        "castIronKg": 3.4738,
+        "copperKg": 4.3532,
+        "titaniumKg": 2.1523
+      },
+      "faces": {
+        "total": 37,
+        "byType": {
+          "PLANE": 20,
+          "CYLINDER": 17
+        },
+        "areaByTypeMm2": {
+          "PLANE": 44840,
+          "CYLINDER": 19257
+        }
+      },
+      "turning": {
+        "fraction": 0.198,
+        "revolvedFraction": 0.035,
+        "maxDiaMm": 18,
+        "axis": [
+          1,
+          0,
+          0
+        ]
+      },
+      "edges": {
+        "total": 77,
+        "byType": {
+          "LINE": 41,
+          "CIRCLE": 34,
+          "BSPLINE": 2
+        },
+        "sampleCircleRadiiMm": [
+          2.5,
+          4,
+          5,
+          5.5,
+          9
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 17,
+        "cylindricalFaceRadiiMm": [
+          2.5,
+          4,
+          5,
+          5.5,
+          9
+        ],
+        "estimatedHoleCount": 13,
+        "holeRadiiMm": [
+          2.5,
+          4,
+          5.5,
+          9
+        ],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 20,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 44840
+      },
+      "featureTable": [
+        {
+          "kind": "hole",
+          "diaMm": 5,
+          "depthMm": 12,
+          "through": false,
+          "count": 4,
+          "faceIds": [
+            13,
+            15,
+            16,
+            26
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 8,
+          "depthMm": 70,
+          "through": false,
+          "count": 2,
+          "faceIds": [
+            10,
+            11
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 11,
+          "depthMm": 60,
+          "through": true,
+          "count": 4,
+          "faceIds": [
+            12,
+            14,
+            17,
+            27
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 18,
+          "depthMm": 40,
+          "through": false,
+          "count": 3,
+          "faceIds": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 9220,
+          "faceIds": [
+            4
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7663,
+          "faceIds": [
+            3
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7200,
+          "faceIds": [
+            5
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 7099,
+          "faceIds": [
+            2
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4800,
+          "faceIds": [
+            9
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 4037,
+          "faceIds": [
+            1
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1479,
+          "faceIds": [
+            36
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 800,
+          "faceIds": [
+            20,
+            23
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 20,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1479,
+          "faceIds": [
+            36
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 15.16,
+        "thicknessSource": "bulk-wall"
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 5.95,
+        "maxMm": 55.95,
+        "p95Mm": 55.95,
+        "meanMm": 28.6,
+        "stdDevMm": 16.32,
+        "sampleCount": 10,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 25,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 25,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 2
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 2
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 2
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 17,
+            "faceIds": [
+              1,
+              9,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              19,
+              24,
+              26,
+              27,
+              28,
+              29,
+              30,
+              18,
+              25
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 12,
+            "faceIds": [
+              3,
+              4,
+              6,
+              7,
+              8,
+              10,
+              11,
+              33,
+              34,
+              35,
+              36,
+              37
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 8,
+            "faceIds": [
+              2,
+              5,
+              20,
+              23,
+              31,
+              32,
+              21,
+              22
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 9,
+        "drillBoreTimeMins": 6.5,
+        "estimatedTotalMins": 60.5,
+        "estimatedTotalHrs": 1.0078,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 80000,
+        "gravityMouldCostGBP": 15000,
+        "sandPatternCostGBP": 3500,
+        "imMouldCostGBP": 55000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 84,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.2025,
+        "sandCycleTimeHrFerrous": 0.289,
+        "forgeStrokes": 7,
+        "investWaxCostGBP": 9.61,
+        "investShellCostGBP": 28.84
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "machining",
+      "total": 41.17,
+      "breakdown": {
+        "rawMaterial": 7.28,
+        "process": 19.91,
+        "labour": 6.41,
+        "tooling": 0.21,
+        "packaging": 0.1,
+        "logistics": 0.16,
+        "overhead": 4.06,
+        "margin": 3.05
+      }
+    }
+  },
+  {
+    "part": "MACH_Stepped_Shaft.stp",
+    "sha256": "35fc4ae18eda86e7",
+    "note": "MODELLED: Ø40 x 190 mm stepped shaft — Ø25 journals, Ø30 body with an 8 mm keyway, Ø20 spigot with a Ø6 cross hole. Turned from steel bar.",
+    "answers": {
+      "material.family": "steel",
+      "commodity.route": "machining"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-50d42972caf69bb7",
+      "boundingBox": {
+        "xMm": 40,
+        "yMm": 40,
+        "zMm": 190
+      },
+      "volume": {
+        "mm3": 116715.4,
+        "cm3": 116.715
+      },
+      "surfaceArea": {
+        "mm2": 19730.1,
+        "cm2": 197.301
+      },
+      "fillRatio": 0.3839,
+      "projectedArea": {
+        "zMm2": 1244,
+        "yMm2": 5242,
+        "xMm2": 5200,
+        "alongDrawMm2": 1244,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.3151,
+        "steelKg": 0.9162,
+        "plasticKg": 0.1226,
+        "castIronKg": 0.8345,
+        "copperKg": 1.0458,
+        "titaniumKg": 0.517
+      },
+      "faces": {
+        "total": 17,
+        "byType": {
+          "CYLINDER": 6,
+          "PLANE": 11
+        },
+        "areaByTypeMm2": {
+          "CYLINDER": 16559,
+          "PLANE": 3171
+        }
+      },
+      "turning": {
+        "fraction": 0.951,
+        "revolvedFraction": 0.821,
+        "maxDiaMm": 40,
+        "axis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "edges": {
+        "total": 32,
+        "byType": {
+          "CIRCLE": 12,
+          "LINE": 17,
+          "BSPLINE": 3
+        },
+        "sampleCircleRadiiMm": [
+          10,
+          12.5,
+          15,
+          20
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 6,
+        "cylindricalFaceRadiiMm": [
+          3,
+          10,
+          12.5,
+          15,
+          20
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          3
+        ],
+        "bossShaftCount": 5,
+        "bossShaftRadiiMm": [
+          10,
+          12.5,
+          15,
+          20
+        ],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 11,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 3171
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 20,
+          "depthMm": 20,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            15
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 25,
+          "depthMm": 25,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            12
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 25,
+          "depthMm": 50,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            5
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 30,
+          "depthMm": 80,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            4
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 40,
+          "depthMm": 15,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            1
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 6,
+          "depthMm": 20,
+          "through": false,
+          "count": 1,
+          "faceIds": [
+            16
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 766,
+          "faceIds": [
+            3
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 550,
+          "faceIds": [
+            2
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 491,
+          "faceIds": [
+            11
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 11.83,
+        "thicknessSource": "bulk-wall"
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 3.89,
+        "maxMm": 169.95,
+        "p95Mm": 169.95,
+        "meanMm": 64.51,
+        "stdDevMm": 62.03,
+        "sampleCount": 7,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 8,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 8,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 9,
+            "faceIds": [
+              2,
+              3,
+              6,
+              8,
+              10,
+              11,
+              14,
+              16,
+              17
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 7,
+            "faceIds": [
+              1,
+              4,
+              5,
+              7,
+              9,
+              12,
+              15
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 1,
+            "faceIds": [
+              13
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 0.6,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 46.1,
+        "estimatedTotalHrs": 0.7689,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 40000,
+        "gravityMouldCostGBP": 8000,
+        "sandPatternCostGBP": 3000,
+        "imMouldCostGBP": 30000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 92,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1626,
+        "sandCycleTimeHrFerrous": 0.1834,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 2.96,
+        "investShellCostGBP": 8.88
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "STEPPED DRIVE SHAFT TURNED EN8 2"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "machining",
+      "total": 16.84,
+      "breakdown": {
+        "rawMaterial": 2.96,
+        "process": 7.75,
+        "labour": 2.95,
+        "tooling": 0.07,
+        "packaging": 0.09,
+        "logistics": 0.12,
+        "overhead": 1.65,
+        "margin": 1.25
+      }
+    }
+  },
+  {
     "part": "PRCR002.stp",
     "sha256": "e18406b344224a0c",
     "note": "277 mm envelope at 9% fill, 15.1 mm bulk wall — a substantial cast housing. Assumed not pressure-tight; if it carries fluid, change this and the cost rises.",
@@ -4588,11 +5549,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-c3c526c510041ef7",
+      "partName": "cv-cad-dbb635b7c7072ce2",
       "boundingBox": {
-        "xMm": 276.78,
-        "yMm": 223.15,
-        "zMm": 181.86
+        "xMm": 274.51,
+        "yMm": 222.36,
+        "zMm": 177
       },
       "volume": {
         "mm3": 1037112.9,
@@ -4602,11 +5563,11 @@
         "mm2": 137005.9,
         "cm2": 1370.059
       },
-      "fillRatio": 0.0923,
+      "fillRatio": 0.096,
       "projectedArea": {
         "zMm2": 18775,
         "yMm2": 17627,
-        "xMm2": 24573,
+        "xMm2": 24572,
         "alongDrawMm2": 18775,
         "method": "silhouette_raster"
       },
@@ -4642,7 +5603,24 @@
           "CYLINDER": 132,
           "CONE": 55,
           "BSPLINE": 76
+        },
+        "areaByTypeMm2": {
+          "TORUS": 7157,
+          "PLANE": 42790,
+          "CYLINDER": 74449,
+          "CONE": 7321,
+          "BSPLINE": 5290
         }
+      },
+      "turning": {
+        "fraction": 0.35,
+        "revolvedFraction": 0.194,
+        "maxDiaMm": 120.4,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 878,
@@ -5559,7 +6537,7 @@
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 300000,
         "gravityMouldCostGBP": 80000,
-        "sandPatternCostGBP": 33000,
+        "sandPatternCostGBP": 32500,
         "imMouldCostGBP": 200000,
         "forgeDieCostGBP": 180000,
         "progressiveDieCostGBP": 30000
@@ -5601,16 +6579,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 50.1,
+      "total": 51.79,
       "breakdown": {
-        "rawMaterial": 13.09,
-        "process": 16.7,
-        "labour": 10.99,
-        "tooling": 0.22,
+        "rawMaterial": 14.54,
+        "process": 18.96,
+        "labour": 8.46,
+        "tooling": 0.43,
         "packaging": 0.18,
         "logistics": 0.3,
-        "overhead": 4.92,
-        "margin": 3.71
+        "overhead": 5.09,
+        "margin": 3.84
       }
     }
   },
@@ -5624,11 +6602,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-44081a35d73deb42",
+      "partName": "cv-cad-9cdc96c9c4882522",
       "boundingBox": {
-        "xMm": 58.23,
-        "yMm": 274.48,
-        "zMm": 114.97
+        "xMm": 58.19,
+        "yMm": 270,
+        "zMm": 110
       },
       "volume": {
         "mm3": 429433.5,
@@ -5638,10 +6616,10 @@
         "mm2": 82977.1,
         "cm2": 829.771
       },
-      "fillRatio": 0.2337,
+      "fillRatio": 0.2485,
       "projectedArea": {
         "zMm2": 9142,
-        "yMm2": 5603,
+        "yMm2": 5604,
         "xMm2": 13804,
         "alongDrawMm2": 13804,
         "method": "silhouette_raster"
@@ -5678,7 +6656,24 @@
           "TORUS": 42,
           "BSPLINE": 62,
           "CONE": 4
+        },
+        "areaByTypeMm2": {
+          "CYLINDER": 47924,
+          "PLANE": 29280,
+          "TORUS": 2854,
+          "BSPLINE": 2515,
+          "CONE": 404
         }
+      },
+      "turning": {
+        "fraction": 0.272,
+        "revolvedFraction": 0.107,
+        "maxDiaMm": 70,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 642,
@@ -5962,7 +6957,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 22.2,
+          "depthMm": 19.5,
           "through": null,
           "count": 2,
           "areaMm2": 2915,
@@ -6374,16 +7369,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 39.07,
+      "total": 91.94,
       "breakdown": {
-        "rawMaterial": 15.71,
-        "process": 9.82,
-        "labour": 6.55,
-        "tooling": 0,
+        "rawMaterial": 19.22,
+        "process": 42.99,
+        "labour": 13.36,
+        "tooling": 0.21,
         "packaging": 0.1,
         "logistics": 0.15,
-        "overhead": 3.85,
-        "margin": 2.89
+        "overhead": 9.09,
+        "margin": 6.81
       }
     }
   },
@@ -6397,11 +7392,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-367fd4e9c2e227c3",
+      "partName": "cv-cad-6c93f2ae87741ce4",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
-        "zMm": 31
+        "zMm": 19.4
       },
       "volume": {
         "mm3": 71066.4,
@@ -6411,7 +7406,7 @@
         "mm2": 91937,
         "cm2": 919.37
       },
-      "fillRatio": 0.0396,
+      "fillRatio": 0.0634,
       "projectedArea": {
         "zMm2": 42396,
         "yMm2": 1899,
@@ -6450,7 +7445,23 @@
           "PLANE": 70,
           "BSPLINE": 235,
           "CYLINDER": 50
+        },
+        "areaByTypeMm2": {
+          "OTHER": 1185,
+          "PLANE": 66301,
+          "BSPLINE": 17737,
+          "CYLINDER": 6714
         }
+      },
+      "turning": {
+        "fraction": 0.019,
+        "revolvedFraction": 0.013,
+        "maxDiaMm": 15.2,
+        "axis": [
+          0,
+          1,
+          0
+        ]
       },
       "edges": {
         "total": 1054,
@@ -6573,19 +7584,29 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 14.7,
+          "depthMm": 10.2,
           "through": null,
-          "count": 2,
+          "count": 1,
           "areaMm2": 13125,
           "faceIds": [
-            357,
+            357
+          ]
+        },
+        {
+          "kind": "pocket",
+          "diaMm": 0,
+          "depthMm": 7.6,
+          "through": null,
+          "count": 1,
+          "areaMm2": 13125,
+          "faceIds": [
             359
           ]
         },
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 17.9,
+          "depthMm": 10.8,
           "through": null,
           "count": 1,
           "areaMm2": 7909,
@@ -6596,7 +7617,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 11.5,
+          "depthMm": 7,
           "through": null,
           "count": 1,
           "areaMm2": 7909,
@@ -6607,7 +7628,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 21.9,
+          "depthMm": 14.8,
           "through": null,
           "count": 1,
           "areaMm2": 7170,
@@ -6618,40 +7639,18 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 7.5,
+          "depthMm": 9,
           "through": null,
           "count": 1,
-          "areaMm2": 7170,
+          "areaMm2": 591,
           "faceIds": [
-            416
+            3
           ]
         },
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 22.3,
-          "through": null,
-          "count": 1,
-          "areaMm2": 2951,
-          "faceIds": [
-            108
-          ]
-        },
-        {
-          "kind": "pocket",
-          "diaMm": 0,
-          "depthMm": 7.1,
-          "through": null,
-          "count": 1,
-          "areaMm2": 2951,
-          "faceIds": [
-            112
-          ]
-        },
-        {
-          "kind": "pocket",
-          "diaMm": 0,
-          "depthMm": 15.9,
+          "depthMm": 8.8,
           "through": null,
           "count": 1,
           "areaMm2": 591,
@@ -7192,9 +8191,9 @@
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 300000,
         "gravityMouldCostGBP": 80000,
-        "sandPatternCostGBP": 22500,
+        "sandPatternCostGBP": 21500,
         "imMouldCostGBP": 200000,
-        "forgeDieCostGBP": 96000,
+        "forgeDieCostGBP": 78000,
         "progressiveDieCostGBP": 25000
       },
       "manufacturabilityScore": 20,
@@ -8926,11 +9925,11 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-983386f7ae3fec36",
+      "partName": "cv-cad-c269ac84db0efde3",
       "boundingBox": {
-        "xMm": 116.49,
-        "yMm": 236.81,
-        "zMm": 210.05
+        "xMm": 114.4,
+        "yMm": 236.4,
+        "zMm": 210
       },
       "volume": {
         "mm3": 356101.1,
@@ -8940,12 +9939,12 @@
         "mm2": 78925.3,
         "cm2": 789.253
       },
-      "fillRatio": 0.0615,
+      "fillRatio": 0.0627,
       "projectedArea": {
-        "zMm2": 11202,
+        "zMm2": 11201,
         "yMm2": 10153,
         "xMm2": 12955,
-        "alongDrawMm2": 11202,
+        "alongDrawMm2": 11201,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -8981,7 +9980,25 @@
           "CONE": 17,
           "BSPLINE": 24,
           "OTHER": 6
+        },
+        "areaByTypeMm2": {
+          "PLANE": 29842,
+          "CYLINDER": 40187,
+          "TORUS": 3285,
+          "CONE": 2015,
+          "BSPLINE": 3596,
+          "OTHER": 1
         }
+      },
+      "turning": {
+        "fraction": 0.381,
+        "revolvedFraction": 0.246,
+        "maxDiaMm": 120,
+        "axis": [
+          1,
+          0,
+          0
+        ]
       },
       "edges": {
         "total": 806,
@@ -9391,7 +10408,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 6.5,
+          "depthMm": 6.1,
           "through": null,
           "count": 1,
           "areaMm2": 758,
@@ -9402,7 +10419,7 @@
         {
           "kind": "pocket",
           "diaMm": 0,
-          "depthMm": 68,
+          "depthMm": 65.9,
           "through": null,
           "count": 1,
           "areaMm2": 491,
@@ -9827,7 +10844,7 @@
         "gravityMouldCostGBP": 80000,
         "sandPatternCostGBP": 17000,
         "imMouldCostGBP": 200000,
-        "forgeDieCostGBP": 128000,
+        "forgeDieCostGBP": 126000,
         "progressiveDieCostGBP": 30000
       },
       "manufacturabilityScore": 46,
@@ -9865,16 +10882,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 42.76,
+      "total": 57.08,
       "breakdown": {
         "rawMaterial": 8.85,
-        "process": 18.09,
-        "labour": 6.81,
+        "process": 26.55,
+        "labour": 10.2,
         "tooling": 1.17,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 4.19,
-        "margin": 3.17
+        "overhead": 5.61,
+        "margin": 4.23
       }
     }
   },
@@ -9890,7 +10907,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-df1265f2f5caff22",
+      "partName": "cv-cad-55d7d8e06d1234e6",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,
@@ -9942,7 +10959,22 @@
           "OTHER": 76,
           "CYLINDER": 77,
           "PLANE": 2
+        },
+        "areaByTypeMm2": {
+          "OTHER": 15559,
+          "CYLINDER": 9678,
+          "PLANE": 17731
         }
+      },
+      "turning": {
+        "fraction": 0.561,
+        "revolvedFraction": 0.148,
+        "maxDiaMm": 120,
+        "axis": [
+          0,
+          0,
+          -1
+        ]
       },
       "edges": {
         "total": 459,

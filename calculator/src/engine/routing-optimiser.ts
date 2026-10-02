@@ -141,6 +141,16 @@ export interface RoutingInputs {
   /** minutes of load/align/unload EVERY PART pays at EVERY fixturing — the
    *  per-piece cost of a split routing that batch amortisation cannot hide. */
   perPartHandlingMinPerSetup?: number;
+  /** Cut from bar or plate (machining review, Oct 2026). Stock is left on every
+   *  face, so the face a part is clamped on must be machined too: a 3-axis split
+   *  needs at least two fixturings and a 5-axis consolidation needs a second one
+   *  (op 10 five sides, op 20 the clamped face). A near-net casting is held on
+   *  its cast datums, so one 5-axis clamping can finish it. Default false. */
+  fromSolid?: boolean;
+  /** A measured turned part: lathe hours and what the lathe cannot do (milled
+   *  flats / keyways, drilled holes) — so the turned candidate is priced on the
+   *  lathe's own cutting time, not the machining centre's. */
+  turned?: { latheHr: number; millHr: number; drillHr: number; chuckings: number } | null;
   library?: RateLibrary;
 }
 
@@ -189,7 +199,30 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
 
   const drillMachine = cheapestCapable(library, 'drill', p.bboxSortedMm);
 
-  if (p.axisymmetric) {
+  if (p.turned) {
+    // A measured turned part: the lathe turns the revolved surfaces (op 10 and
+    // op 20, one chucking per end); flats, keyways and cross holes go to a
+    // machining centre — or the drill press when there are only holes — in one
+    // more fixturing.
+    const lathe = cheapestCapable(library, 'turn', p.bboxSortedMm);
+    const second = p.turned.millHr > 0 ? cheapestCapable(library, 'mill3', p.bboxSortedMm) : drillMachine;
+    if (lathe) {
+      const secHr = p.turned.millHr + p.turned.drillHr;
+      const setups = p.turned.chuckings + (secHr > 0 ? 1 : 0);
+      const cost = p.turned.latheHr * lathe.ratePerHr + secHr * (second?.ratePerHr ?? lathe.ratePerHr)
+        + setups * setupHrEach * lathe.ratePerHr / batch + setups * handlingHrEach * lathe.ratePerHr;
+      candidates.push({
+        label: 'turned', primaryMachineId: lathe.id, drillMachineId: secHr > 0 ? (second?.id ?? lathe.id) : lathe.id,
+        setups, oversize: lathe.oversize,
+        envelopeMm: MACHINE_CATALOGUE.find(m => m.id === lathe.id)?.envelopeMm ?? null,
+        costPerPart: Math.round(cost * 10_000) / 10_000,
+        detail: `turned from bar: ${lathe.id} £${lathe.ratePerHr.toFixed(0)}/hr for ${(p.turned.latheHr * 60).toFixed(1)} min`
+          + (secHr > 0 ? ` + ${second?.id} £${(second?.ratePerHr ?? 0).toFixed(0)}/hr for ${(secHr * 60).toFixed(1)} min` : '')
+          + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
+          + ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`,
+      });
+    }
+  } else if (p.axisymmetric) {
     // A turned part: one chucking, drilling either on the lathe's station or
     // off-machine. Model the conservative case: drilling moves to the drill
     // press with its own fixturing.
@@ -198,14 +231,18 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
   }
 
   // Split: 3-axis milling refixtured once per approach direction, drilling on
-  // the drill press with its own setup.
+  // the drill press with its own setup. From solid, the clamped face is
+  // machined too, so never fewer than two milling fixturings.
+  const millFixturings = p.fromSolid ? Math.max(2, dirs) : dirs;
   push('split-3axis', cheapestCapable(library, 'mill3', p.bboxSortedMm), drillMachine,
-    dirs + (p.drillHr > 0 ? 1 : 0), `${dirs}-direction split routing`);
+    millFixturings + (p.drillHr > 0 ? 1 : 0), `${millFixturings}-fixturing split routing`);
 
   // Consolidated: one datum on a 5-axis machine reaches every direction and
-  // carries the drilling in the same clamping.
+  // carries the drilling in the same clamping — except the face it is clamped
+  // on, which a part cut from solid must have machined in a second clamping.
+  const fiveAxisSetups = p.fromSolid && dirs > 1 ? 2 : 1;
   push('consolidated-5axis', cheapestCapable(library, 'mill5', p.bboxSortedMm), null,
-    1, 'single-setup 5-axis consolidation');
+    fiveAxisSetups, fiveAxisSetups === 2 ? '5-axis: op 10 five sides, op 20 the clamped face' : 'single-setup 5-axis consolidation');
 
   candidates.sort((a, b) => a.costPerPart - b.costPerPart);
   const chosen = candidates[0];

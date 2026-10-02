@@ -71,6 +71,8 @@ export interface OCCTGeometry {
   /** Silhouette (shadow) area along each axis and the draw direction, mm² —
    *  tessellated and rasterised by the kernel. Absent on older measurements. */
   projectedArea?: { xMm2?: number; yMm2?: number; zMm2?: number; alongDrawMm2?: number | null; method?: string } | null;
+  /** Largest coaxial family of revolved surfaces (kernel `_turning_signature`): what a lathe would cut. */
+  turning?: { fraction: number; revolvedFraction?: number; maxDiaMm: number; axis: number[] | null } | null;
   fillRatio?: number;
   /** Sealed-hollow-body vs open-drape topology (distinguishes a fuel tank from a bumper). */
   topology?: {
@@ -157,7 +159,7 @@ export interface OCCTGeometry {
     aluminiumKg: number; steelKg: number; plasticKg: number;
     castIronKg: number; copperKg: number; titaniumKg: number;
   };
-  faces?: { total: number; byType: Record<string, number> };
+  faces?: { total: number; byType: Record<string, number>; /** Surface area per face type, mm² (PLANE, CYLINDER, TORUS, BSPLINE…) — the finishing model reads it. */ areaByTypeMm2?: Record<string, number> | null };
   edges?: { total: number; byType: Record<string, number>; sampleCircleRadiiMm: number[] };
   features?: {
     cylindricalFaceCount: number;
@@ -168,6 +170,8 @@ export interface OCCTGeometry {
     threadFeaturesDetected: boolean;
     planarFaceCount: number;
     freeFormFaceCount: number;
+    /** Total area of planar faces, mm² (kernel). */
+    planarFaceAreaMm2?: number;
   };
   /** Exact per-feature rows: hole/boss × Ø × depth × through, axis-deduped counts. */
   featureTable?: Array<{
@@ -347,6 +351,10 @@ export interface SuggestedOperation {
   labourEfficiency: number;
   /** B-rep faces this operation's time comes from — lets the viewer show WHERE the money is. */
   faceIds?: number[];
+  /** Labour-only bench task (deburr, gauge check). */
+  benchOperation?: boolean;
+  /** Built by the deterministic rules from measured geometry (not an AI estimate). */
+  measured?: boolean;
 }
 
 /** Per-field AI confidence score 0–1. Key = form field ID (e.g. "bm-wall", "imm-cav"). */
@@ -402,6 +410,13 @@ export interface CADAnalysisResult {
       materialUtilization?: number;
       machineId?: string;
       setupCount?: number;
+      /** Machining review (Oct 2026): rule-decided on both paths. */
+      batchSize?: number;
+      rejectRate?: number;
+      /** Fixtures, £. */
+      toolingCost?: number;
+      programmingNRE?: number;
+      toolWearCostPerPart?: number;
     };
     casting?: {
       subtype: 'hpdc' | 'sand' | 'gravity' | 'investment';

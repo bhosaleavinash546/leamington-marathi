@@ -14,16 +14,13 @@ import {
   MACHINING_RULES, machiningOperationPlan, cuttingHours, stockFacts,
   principalDirections, isAxisymmetric,
 } from '../src/engine/cost-input-rules/commodities/machining.js';
-import {
-  CAST_AND_MACHINE_RULES, finishMachiningHours, castAndMachineOperationPlan,
-} from '../src/engine/cost-input-rules/commodities/cast-and-machine.js';
+import { CAST_AND_MACHINE_RULES } from '../src/engine/cost-input-rules/commodities/cast-and-machine.js';
 import { CASTING_RULES } from '../src/engine/cost-input-rules/commodities/casting.js';
 import { MATERIAL_FAMILY_DECISION_ID } from '../src/engine/cost-input-rules/derive/material.js';
 import {
   PRESSURE_TIGHT_DECISION_ID, TOLERANCE_CLASS_DECISION_ID, SAFETY_CRITICAL_DECISION_ID,
 } from '../src/engine/cost-input-rules/derive/service-context.js';
 import { pickMachiningCentreId } from '../src/engine/machine-sizing.js';
-import { nearNetMachiningCeilingHr } from '../src/engine/near-net-machining.js';
 import { RULE_SPECS, specForCommodity } from '../src/engine/cost-input-rules/index.js';
 import type { RuleContext } from '../src/engine/cost-input-rules/types.js';
 import type { OCCTGeometry } from '../src/engine/ai-analysis.js';
@@ -129,16 +126,16 @@ const camCtx = (answers: Record<string, unknown> = {}): RuleContext => ({
 });
 
 describe('stock weight', () => {
-  it('measures the billet instead of assuming the part is 40% of it', () => {
+  it('buys a stocked plate, not the finished part\'s bounding box', () => {
     const s = stockFacts(ctx(), 'aluminium', 0.003)!;
-    // 60 x 20 x 6 mm of aluminium is 19.4 g. The browser's flat net x 1.4 says
-    // 4.2 g — it would buy a quarter of the metal this part is actually cut from.
-    expect(s.stockKg).toBe(0.019);
-    expect(s.utilisation).toBe(0.154);
+    // 60 × 20 × 6 mm part: 68 × 25 mm sawn from 8 mm plate (2.5 mm a side to
+    // square the edges, a 3 mm saw cut, 1 mm skim a face → next stocked
+    // thickness). 13.6 cm³ = 37 g. The bounding box alone (7.2 cm³) is a block
+    // nobody can buy; the old browser net × 1.4 (4.2 g) a quarter of even that.
+    expect(s.stockKg).toBe(0.037);
+    expect(s.utilisation).toBe(0.082);
     expect(s.clamped).toBe(false);
-    expect(0.003 * 1.4).toBeCloseTo(0.0042, 4);
-    expect(s.stockKg / 0.0042).toBeGreaterThan(4);
-    expect(s.basis).toContain('60×20×6 mm solid billet');
+    expect(s.basis).toContain('cut from 8 mm plate');
   });
 
   it('clamps an implausible envelope rather than buying a block nobody cuts', () => {
@@ -156,74 +153,64 @@ describe('stock weight', () => {
   });
 });
 
-describe('cutting time', () => {
-  it('caps a small part to what its stock envelope can physically give up', () => {
+describe('cutting time — the measured build-up, not the kernel\'s area rate', () => {
+  it('times a small part by the metal it removes and the area it finishes', () => {
     const c = cuttingHours(ctx(), 'aluminium');
-    // The bottom-up B-rep estimate was 0.836 hr of cutting on a 3 g part.
+    // The kernel billed 0.836 hr (50 min) on a 3 g part; the old cap 0.095 hr.
+    // Built up: rough 13 cm³ at 120 cm³/min, finish 40 cm² at 40 cm²/min,
+    // surface 10 cm² at 10 cm²/min, 12 micro-holes, 5 tools.
     expect(c.rawHours).toBeCloseTo(0.836, 3);
-    expect(c.capped).toBe(true);
-    // Ceiling with DIA-AWARE drilling: 12 × Ø2×6 micro-holes are 12 × 0.12 min,
-    // not 12 × 0.4 — the flat allowance was a third of this 3 g part's cycle.
-    expect(c.hours).toBe(0.095);
-    expect(c.hours / c.rawHours!).toBeLessThan(0.2);
+    expect(c.hours).toBe(0.0605);
+    expect(c.cut!.detail.basis).toContain('rough 13 cm³ ÷ 120 cm³/min');
   });
 
-  it('leaves a plausible estimate alone', () => {
+  it('a large part removes a lot of metal, and that takes time', () => {
+    // The 220 × 180 × 140 mm knuckle cut from solid: 5.3 dm³ of aluminium to
+    // rough out. The kernel's 0.9 hr never looked at it.
     const c = cuttingHours({ ...ctx(KNUCKLE), commodity: 'machining' }, 'aluminium');
-    expect(c.capped).toBe(false);
-    expect(c.hours).toBe(0.9);
+    expect(c.hours).toBeCloseTo(1.41, 2);
+    expect(c.cut!.detail.roughMin).toBeCloseTo(44.1, 1);
   });
 
-  it('scales the ceiling with how hard the metal is to cut', () => {
+  it('a harder metal cuts slower', () => {
     const al = cuttingHours(ctx(), 'aluminium');
     const ti = cuttingHours(ctx(), 'titanium');
-    expect(ti.ceilingHr!).toBeCloseTo(al.ceilingHr! * 2.5, 4);
+    expect(ti.hours / al.hours).toBeGreaterThan(3);
   });
 });
 
 describe('the routing', () => {
-  it('builds one operation per approach direction plus the measured drilling', () => {
+  it('one operation per approach direction, the measured drilling, handling and the bench deburr', () => {
     const ops = machiningOperationPlan(ctx(), 'aluminium');
     expect(ops.map(o => o.name)).toEqual([
       'Milling — +Z (40 faces)',
       'Milling — -Z (30 faces)',
       'Milling — +X (26 faces)',
       'Drilling — 12 holes (12×Ø2.0×6) [geometry-measured]',
+      'Load / clamp / unload — 4 fixturing(s)',
+      'Deburr and gauge check (bench)',
     ]);
     expect(ops[3].machineId).toBe('mach-drill');
+    expect(ops[5].benchOperation).toBe(true);
   });
 
-  it('apportions cutting time by face count and sums to the capped cycle', () => {
+  it('apportions milling by face count; each op states its crew', () => {
     const ops = machiningOperationPlan(ctx(), 'aluminium');
-    const total = ops.reduce((s, o) => s + o.cycleTimeHr, 0);
-    // 0.095 hr capped. Drilling uses the SAME dia-aware minutes as the ceiling
-    // (12 × Ø2×6 = 0.024 hr, not the kernel's flat 12 × 0.5 min = 0.10 hr that
-    // used to exceed the whole cycle); milling carries the remaining 0.071 hr,
-    // split 40/30/26 by face count. The ops now PARTITION the capped cycle.
-    expect(ops[0].cycleTimeHr).toBe(0.0296);
-    expect(ops[1].cycleTimeHr).toBe(0.0222);
-    expect(ops[2].cycleTimeHr).toBe(0.0192);
-    expect(ops[3].cycleTimeHr).toBe(0.024);
-    expect(total).toBeCloseTo(0.095, 3);
-    // Nothing is rescaled after the fact — the parts add up to the whole by
-    // construction, which is what the AI-op-list-then-rescale path could not say.
+    expect(ops[0].cycleTimeHr).toBe(0.0182);
+    expect(ops[1].cycleTimeHr).toBe(0.0136);
+    expect(ops[2].cycleTimeHr).toBe(0.0118);
+    expect(ops[3].cycleTimeHr).toBe(0.0168);
     expect(ops[0].basis).toContain('40 of 96 faces');
+    // One operator tends two machines while they cut; loading takes a whole one.
+    expect(ops[0].manning).toBe(0.5);
+    expect(ops[4].manning).toBe(1);
+    expect(ops[4].cycleTimeHr).toBe(0.02);              // 4 × 0.3 min for a 37 g blank
   });
 
-  it('does not let drilling swallow the whole cycle', () => {
-    const allHoles = {
-      ...SERVO_HORN,
-      cncCycleTimeEstimate: { ...SERVO_HORN.cncCycleTimeEstimate!, drillBoreTimeMins: 600 },
-    } as unknown as OCCTGeometry;
-    const ops = machiningOperationPlan(ctx(allHoles), 'aluminium');
-    const milling = ops.filter(o => o.type !== 'drilling').reduce((s, o) => s + o.cycleTimeHr, 0);
-    expect(milling).toBeGreaterThan(0);
-  });
-
-  it('falls back to a single operation when there is no setup analysis', () => {
+  it('falls back to a single milling operation when there is no setup analysis', () => {
     const noSetup = { ...SERVO_HORN, setupAnalysis: null } as unknown as OCCTGeometry;
     const ops = machiningOperationPlan(ctx(noSetup), 'aluminium');
-    expect(ops.filter(o => o.type !== 'drilling')).toHaveLength(1);
+    expect(ops.filter(o => o.type !== 'drilling' && !o.benchOperation && !o.name.startsWith('Load'))).toHaveLength(1);
     expect(ops[0].basis).toContain('no setup analysis');
   });
 });
@@ -259,26 +246,28 @@ describe('machining end to end', () => {
     expect(r.status).toBe('complete');
     const m = r.suggestions.machining as Record<string, number | string>;
     expect(m.netWeightKg).toBe(0.003);
-    expect(m.stockWeightKg).toBe(0.019);
-    expect(m.materialUtilization).toBe(0.154);
-    expect(m.estimatedCycleTimeHr).toBe(0.095);
+    expect(m.stockWeightKg).toBe(0.037);
+    expect(m.materialUtilization).toBe(0.082);
+    expect(m.estimatedCycleTimeHr).toBe(0.0804);          // cutting + handling, machine time
     // Setups follow the chosen split routing: 3 milling fixturings (one per
-    // approach direction) + 1 drill-press fixturing for the drilling op — the
-    // drill station is a real re-clamp the old direction-count missed.
+    // approach direction) + 1 drill-press fixturing for the drilling op.
     expect(m.setupCount).toBe(4);
-    expect(m.setupTimeHr).toBe(3);                       // 4 × 45 min
-    expect(m.operationCount).toBe(4);
+    expect(m.setupTimeHr).toBe(3);                       // 4 × 45 min change-over
+    expect(m.operationCount).toBe(6);
+    expect(m.batchSize).toBe(1000);                      // 20,000 / 20
+    expect(m.rejectRate).toBe(0.02);
+    expect(m.toolingCost).toBe(10_000);                  // 4 dedicated fixtures (100k parts over 5 years)
+    expect(m.programmingNRE).toBe(353);
+    expect(m.toolWearCostPerPart).toBe(0.145);
     expect(r.provenance['mach-net-wt'].source).toBe('geometry');
   });
 
-  it('says on the record when it capped the cycle', () => {
+  it('says on the record what the kernel claimed, and that it was not used', () => {
     const r = runCostInputRules(MACHINING_RULES, ctx(SERVO_HORN, AL));
     const basis = r.provenance['mach-net-wt'].basis;
     expect(basis).toContain('aluminium');
-    const cycle = r.decisions.length === 0
-      ? renderCommodityRulesPrompt(MACHINING_RULES, ctx(SERVO_HORN, AL))
-      : '';
-    expect(cycle).toContain('capped at');
+    const text = renderCommodityRulesPrompt(MACHINING_RULES, ctx(SERVO_HORN, AL));
+    expect(text).toContain("the kernel's planar-area rate said 50.2 min (not used)");
   });
 });
 
@@ -287,7 +276,7 @@ describe('cast_and_machine — the composition', () => {
     const castingIds = CASTING_RULES.rules.map(r => r.id);
     const camIds = CAST_AND_MACHINE_RULES.rules.map(r => r.id);
     for (const id of castingIds) expect(camIds, `casting rule ${id} survived`).toContain(id);
-    expect(camIds).toContain('castAndMachine.machiningCycleTimeHr');
+    expect(camIds).toContain('machining.estimatedCycleTimeHr');
     expect(camIds).toContain('machining.machineId');
     // ...and drops the machining rules the casting half already owns.
     expect(camIds).not.toContain('machining.stockWeightKg');
@@ -311,37 +300,23 @@ describe('cast_and_machine — the composition', () => {
     expect(byId['casting.cycleTimeHpdcSec']).toBe('cam-hpdc-ct');
   });
 
-  it('caps the knuckle to the near-net finish envelope', () => {
-    const f = finishMachiningHours(camCtx(CAM_ANSWERS))!;
-    // 0.10 hr setup + 0.07 hr/kg on 2.8 kg = 0.296 hr. The from-solid estimate
-    // was 0.9 hr — three times the finish machining a casting actually needs,
-    // and the reason a comparable stub axle came out at ~£116 against ~£30.
-    expect(f.rawHours).toBe(0.9);
-    expect(f.capped).toBe(true);
-    expect(f.hours).toBe(0.296);
-    expect(f.ceilingHr).toBeCloseTo(nearNetMachiningCeilingHr(2.8), 4);
-    expect(f.rawHours / f.hours).toBeCloseTo(3.04, 1);
-  });
-
-  it('scales the routing down with the cap so the two agree', () => {
-    const ops = castAndMachineOperationPlan(camCtx(CAM_ANSWERS));
-    const total = ops.reduce((s, o) => s + o.cycleTimeHr, 0);
-    expect(total).toBeCloseTo(0.296, 3);
-    expect(ops.every(o => o.basis.includes('scaled to the near-net finish envelope'))).toBe(true);
-  });
-
-  it('costs a knuckle end to end once its four questions are answered', () => {
+  it('the machining half is the machining rule set on a near-net cut', () => {
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, camCtx(CAM_ANSWERS));
     expect(r.status).toBe('complete');
     const casting = r.suggestions.casting as Record<string, number | string>;
-    const machining = r.suggestions.machining as Record<string, number | string>;
+    const machining = r.suggestions.machining as Record<string, unknown>;
     expect(casting.netWeightKg).toBe(2.8);
-    expect(machining.estimatedCycleTimeHr).toBe(0.296);
-    // 2 datum directions + the drill-press fixturing of the chosen split
-    // routing = 3 real setups; the old pin counted directions only.
-    expect(machining.setupTimeHr).toBe(2.25);           // 3 setups × 45 min
+    // Near-net: the holes (no face table on this fixture), nothing roughed —
+    // 10 × Ø12 × 30 drilled from solid, 2.3 min, not a capped from-solid cycle.
+    const ops = machining.operations as Array<{ name: string; cycleTimeHr: number }>;
+    expect(ops.find(o => o.name.startsWith('Drilling'))!.cycleTimeHr).toBe(0.0375);
+    // 2 datum directions + the drill-press fixturing of the chosen split routing.
+    expect(machining.setupCount).toBe(3);
+    expect(machining.setupTimeHr).toBe(2.25);           // 3 × 45 min
     expect(r.provenance['cam-cast-wt']).toBeDefined();
     expect(r.provenance['cam-mach-setup-time']).toBeDefined();
+    expect(r.provenance['cam-mach-tooling']).toBeDefined();
+    expect(r.provenance['cam-tool-wear']).toBeDefined();
   });
 
   it('asks the casting questions, not a second set of its own', () => {

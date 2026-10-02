@@ -57,6 +57,14 @@ export function applyNearNetMachiningCap(analysis: MachiningCapAnalysis): CADSan
   const commodity = String(ci.recommendedCommodity ?? '');
   if (!NEAR_NET_COMMODITIES.has(commodity)) return [];
 
+  // A plan the rules built from measured faces and holes is the near-net
+  // machining, not a from-solid estimate to be bounded: capping it scaled the
+  // measured cast-and-machine ops — handling and bench deburr included — to a
+  // 0.10 h + 0.07 h/kg ceiling (machining review, Oct 2026). The cap stays for
+  // AI-supplied times.
+  const ops = Array.isArray(ci.estimatedOperations) ? ci.estimatedOperations as Array<{ measured?: boolean }> : [];
+  if (ops.length > 0 && ops.every(o => o?.measured === true)) return [];
+
   const weightKg = n(ci.netWeightKg);
   const rawHr = n(ci.estimatedCycleTimeHr);
   const res = capNearNetMachiningHr(rawHr, weightKg, commodity);

@@ -232,13 +232,15 @@ describe('D. the melt shop has labour and the sand has a cost', () => {
 });
 
 describe('E. the as-cast weight carries the holes drilled from solid', () => {
-  it('Casting Bracket: finished + drilled-hole stock, measured from the feature table', () => {
+  it('Casting Bracket: finished + drilled-hole stock + face machining stock, measured from the feature table', () => {
     const stock = drilledStockCm3(ctxOf('Casting_Braket.stp', ANSWERS));
     expect(stock.holes).toBeGreaterThan(0);
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
     const cast = (r.suggestions.casting as Record<string, number>).castPartWeightKg;
-    expect(cast).toBeCloseTo(2.512 + stock.cm3 * 0.00785, 2);
-    expect(r.provenance['cam-cast-wt'].basis).toContain('face-finish stock on milled faces not measured');
+    // Machining review: the 8 machined faces (181.7 cm²) carry 3 mm a side in a
+    // sand steel casting — 54.5 cm³ the second casting pass left "not measured".
+    expect(cast).toBeCloseTo(2.512 + (stock.cm3 + 54.5) * 0.00785, 2);
+    expect(r.provenance['cam-cast-wt'].basis).toContain('3 mm a side on the machined faces');
   });
 });
 

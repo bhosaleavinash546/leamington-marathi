@@ -261,7 +261,11 @@ describe('bulk run — costing on an uploaded rate sheet (needs OCP)', () => {
     expect(withSheet.parts[0].status).toBe('costed');
     const b = base.parts[0].breakdown!, j = withSheet.parts[0].breakdown!;
 
-    expect(j.rawMaterial / b.rawMaterial).toBeCloseTo(2.0, 3);
+    // The material bucket also carries cutting-tool wear (a £/part consumable,
+    // machining review Oct 2026), which a material price does not scale.
+    const wear = Number(base.parts[0].provenance?.['mach-tool-wear']?.value ?? 0)
+      / (1 - Number(base.parts[0].provenance?.['mach-reject']?.value ?? 0));
+    expect((j.rawMaterial - wear) / (b.rawMaterial - wear)).toBeCloseTo(2.0, 3);
     expect(j.labour / b.labour).toBeCloseTo(3.0, 3);
     expect(j.process / b.process).toBeCloseTo(1.5, 3);
     expect(withSheet.parts[0].total!).toBeGreaterThan(base.parts[0].total!);
