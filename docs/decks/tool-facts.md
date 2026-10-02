@@ -41,7 +41,12 @@ you can trace to a rate. It runs on a laptop with no internet and no AI.
   and the FastBlank DXF is still the answer for the formed process. The blank is then
   nested on the coil: the orientation and pitch that use the least strip, with a
   two-up interlock reported as a tooling trade-off rather than applied, and the metal
-  bought is the strip the press feeds.
+  bought is the strip the press feeds. A drawn or stretch-formed part gets a forming
+  solve on top of the unfold (the one-step method a forming package's quick estimator
+  uses): the blank grows to put the stretched metal back, a thinning map is reported,
+  and the grade is checked against its forming limit — typical published forming
+  values until JLR's coil data replaces them. It is an estimator's answer, not a forming
+  simulation: no binder force, friction or springback.
 - **STL files have no feature table**, so a machined STL arrives with no cycle
   time; the tool blocks the costing until the engineer types one.
 

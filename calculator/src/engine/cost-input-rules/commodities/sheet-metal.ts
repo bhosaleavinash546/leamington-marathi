@@ -33,6 +33,7 @@ import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { analyticBlank } from '../derive/blank.js';
 import { nestOnCoil, type NestResult } from '../../nesting.js';
+import { formingPropertiesFor, formingLimitCheck } from '../../forming-properties.js';
 import type { MaterialFamily } from '../../material-family.js';
 
 /** Shear strength MPa by family — drives die hardness and press tonnage. */
@@ -79,6 +80,7 @@ export function blankDims(ctx: RuleContext): BlankDims | null {
     // distortion-free), so its confidence follows what the flattening found.
     const own = dev.developedFrom === 'solid';
     const strain = dev.maxStrainPct ?? 0;
+    const solved = own && !!dev.forming;
     const stretched = own && dev.developable === false && strain <= 15;
     const drawn = own && dev.developable === false && strain > 15;
     return {
@@ -87,11 +89,12 @@ export function blankDims(ctx: RuleContext): BlankDims | null {
       basis: `${own ? 'blank ' : 'developed blank from '}${dev.source} — ${(dev.grossAreaMm2 / 100).toFixed(0)} cm² profile `
         + `filling ${(dev.rectangleFill * 100).toFixed(0)}% of its ${Math.round(dev.boundingRectMm.lengthMm)}`
         + `×${Math.round(dev.boundingRectMm.widthMm)} mm rectangle`
-        + (stretched ? '. Parts of the pressing are stretch-formed, so the unfold slightly understates the blank where the '
+        + (stretched && !solved ? '. Parts of the pressing are stretch-formed, so the unfold slightly understates the blank where the '
           + 'metal thinned; upload the FASTBLANK DXF for the formed-process profile' : '')
-        + (drawn ? '. The skin stretched when flattened, so this part was drawn, not bent: the outline '
-          + 'understates the blank where the metal thinned; upload the FASTBLANK DXF for the formed-process answer' : ''),
-      confidence: drawn ? 0.6 : stretched ? 0.75 : own ? 0.85 : 0.95,
+        + (drawn && !solved ? '. The skin stretched when flattened, so this part was drawn, not bent: the outline '
+          + 'understates the blank where the metal thinned; upload the FASTBLANK DXF for the formed-process answer' : '')
+        + (solved ? formingNote(ctx, dev) : ''),
+      confidence: solved ? (drawn ? 0.75 : 0.8) : drawn ? 0.6 : stretched ? 0.75 : own ? 0.85 : 0.95,
       developed: true,
     };
   }
@@ -122,6 +125,28 @@ export function blankDims(ctx: RuleContext): BlankDims | null {
     }
   }
   return { lengthMm, widthMm, basis, confidence, developed: false };
+}
+
+/**
+ * What the forming solve found, and whether the grade survives it — the
+ * Keeler–Brazier check against the grade's n (typical published value until
+ * JLR's coil data replaces it) at the measured gauge. Advisory on the blank's
+ * basis; it moves no money.
+ */
+function formingNote(ctx: RuleContext, dev: NonNullable<RuleContext['geo']['blank']>): string {
+  const f = dev.forming!;
+  let note = `. Forming solve: ${(f.blankAreaUnfoldMm2 / 100).toFixed(0)} → ${(f.blankAreaSolvedMm2 / 100).toFixed(0)} cm² once the stretched metal is `
+    + `put back; thinning ${f.thinningP95Pct.toFixed(0)}% at the 95th percentile, ${f.maxThinningPct.toFixed(0)}% at the worst well-shaped element`;
+  const mat = materialFacts(ctx);
+  const props = formingPropertiesFor(typeof ctx.answers['material.id'] === 'string' ? ctx.answers['material.id'] : null, mat.family ?? null);
+  const t = ctx.geo.sheetMetal?.thicknessMm ?? 0;
+  if (props && t > 0 && f.strainPoints?.length) {
+    const chk = formingLimitCheck(f.strainPoints, props.nValue, t);
+    note += `. Formability (Keeler–Brazier, n = ${props.nValue}${props.gradeSpecific ? '' : ' family typical'}, t = ${t.toFixed(2)} mm, `
+      + `FLC₀ = ${chk.flc0.toFixed(2)}): worst point at ${chk.worstRatio.toFixed(2)} of the limit — `
+      + (chk.verdict === 'pass' ? 'forms' : chk.verdict === 'marginal' ? 'MARGINAL, inside the usual safety band' : 'SPLITS; expect an extra draw stage or a different grade');
+  }
+  return note;
 }
 
 /**

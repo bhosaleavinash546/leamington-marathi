@@ -36,6 +36,8 @@
  * is a disk (Tutte needs one); the caps are dropped before measuring.
  */
 
+import { inverseForm, type StrainSummary } from './forming-inverse.js';
+
 export interface SkinMesh {
   vertices: number[][];
   triangles: number[][];
@@ -78,9 +80,19 @@ export interface UnfoldedSkin {
   area3dMm2: number;
   vertexCount: number;
   triangleCount: number;
+  /** Present when asked for (`keepInternals`): the flat the forming solve starts from. */
+  internals?: FlatInternals;
 }
 
 export interface DevelopedBlank {
+  /** Present when the skin was not developable and the forming solve ran. */
+  forming?: {
+    nValue: number;
+    blankAreaUnfoldMm2: number;
+    blankAreaSolvedMm2: number;
+    iterations: number;
+    strain: StrainSummary;
+  };
   grossAreaMm2: number;
   netAreaMm2: number;
   outerPerimeterMm: number;
@@ -104,6 +116,8 @@ export interface UnfoldOptions {
   maxIterations?: number;
   /** Stop when no vertex moved more than this fraction of the mesh diagonal. */
   tolerance?: number;
+  /** Keep the flat positions and frames on the result for a forming solve. */
+  keepInternals?: boolean;
 }
 
 // ─── Sparse matrix (CSR) and a direct envelope Cholesky ──────────────────────
@@ -491,6 +505,28 @@ export function unfoldSkin(skin: SkinMesh, opts: UnfoldOptions = {}): UnfoldedSk
   }
   for (let i = 0; i < n; i++) { U[2 * i] = ux[i]; U[2 * i + 1] = uy[i]; }
 
+  const internals: FlatInternals = { U, T, X, outer, holes, mReal, nReal, area3d: skin.area3dMm2 };
+  return { ...measureFlat(internals), iterations, ...(opts.keepInternals ? { internals } : {}) };
+}
+
+/** What the unfold keeps so a forming solve can carry on from the flat it found. */
+export interface FlatInternals {
+  /** Flat positions, 2 per vertex (holes capped: n ≥ nReal). */
+  U: Float64Array;
+  /** Triangles, 3 per face; the first mReal are the real skin, the rest hole caps. */
+  T: Int32Array;
+  /** Formed (3D) local isometric frames, 6 per triangle. */
+  X: Float64Array;
+  outer: number[];
+  holes: number[][];
+  mReal: number;
+  nReal: number;
+  area3d: number;
+}
+
+/** Measure a flat pattern: strain, outline, holes, rectangle. Shared by the unfold and the forming solve. */
+export function measureFlat(f: FlatInternals): Omit<UnfoldedSkin, 'iterations' | 'internals'> {
+  const { U, T, X, outer, holes, mReal, nReal } = f;
   // 5. Strain on the real triangles (F maps flat → formed), inverted count, net area.
   //    Statistics are area-weighted: OCCT meshes a bend wall as tall slivers, and a
   //    sliver's strain says nothing about the metal around it.
@@ -554,8 +590,8 @@ export function unfoldSkin(skin: SkinMesh, opts: UnfoldOptions = {}): UnfoldedSk
     rect: { lengthMm: rect.lengthMm, widthMm: rect.widthMm, angleDeg: rect.angleDeg },
     maxStrainPct: maxStrain * 100,
     meanStrainPct: (sumStrain / Math.max(1e-12, totalArea)) * 100,
-    flipped, iterations,
-    area3dMm2: skin.area3dMm2,
+    flipped,
+    area3dMm2: f.area3d,
     vertexCount: nReal, triangleCount: mReal,
   };
 }
@@ -568,7 +604,20 @@ export const STRETCH_FORMED_STRAIN_PCT = 15;
 /** Unfold every skin the kernel exported and combine them into one blank. */
 export function developBlank(file: SkinMeshFile, opts: UnfoldOptions = {}): DevelopedBlank {
   if (!file.skins?.length) throw new Error('no skins to unfold');
-  const skins = file.skins.map(s => unfoldSkin(s, opts)).sort((a, b) => b.grossAreaMm2 - a.grossAreaMm2);
+  const unfolded = file.skins.map(s => unfoldSkin(s, { ...opts, keepInternals: true })).sort((a, b) => b.grossAreaMm2 - a.grossAreaMm2);
+  // Not developable: the metal stretched, and rigidity alone understates the
+  // blank. Minimise the plastic work instead (one-step inverse) from the flat
+  // the unfold found, on every skin, and carry the thinning map.
+  let forming: DevelopedBlank['forming'];
+  const needsSolve = Math.max(...unfolded.map(s => s.maxStrainPct)) > DEVELOPABLE_STRAIN_PCT;
+  const skins: UnfoldedSkin[] = unfolded.map(u => {
+    if (!needsSolve || !u.internals) return { ...u, internals: undefined };
+    const r = inverseForm(u.internals, { nValue: 1 });
+    if (!forming) {
+      forming = { nValue: r.nValue, blankAreaUnfoldMm2: Math.round(u.grossAreaMm2), blankAreaSolvedMm2: Math.round(r.flat.grossAreaMm2), iterations: r.iterations, strain: r.strain };
+    }
+    return { ...r.flat, iterations: u.iterations, maxStrainPct: u.maxStrainPct, meanStrainPct: u.meanStrainPct };
+  }).sort((a, b) => b.grossAreaMm2 - a.grossAreaMm2);
   const mean = (f: (s: UnfoldedSkin) => number) => skins.reduce((t, s) => t + f(s), 0) / skins.length;
   const gross = mean(s => s.grossAreaMm2);
   const net = mean(s => s.netAreaMm2);
@@ -580,13 +629,17 @@ export function developBlank(file: SkinMeshFile, opts: UnfoldOptions = {}): Deve
   const developable = maxStrain <= DEVELOPABLE_STRAIN_PCT;
   const meanStrain = Math.max(...skins.map(s => s.meanStrainPct));
   const warnings: string[] = [];
+  const solvedNote = forming
+    ? ` The forming solve (one-step inverse, plastic work minimised from that flat) put the stretched metal back: blank `
+      + `${(forming.blankAreaUnfoldMm2 / 100).toFixed(0)} → ${(forming.blankAreaSolvedMm2 / 100).toFixed(0)} cm², thinning `
+      + `${forming.strain.thinningP95Pct.toFixed(0)}% at the 95th percentile and ${forming.strain.maxThinningPct.toFixed(0)}% at the worst well-shaped element.`
+    : '';
   if (!developable && maxStrain <= STRETCH_FORMED_STRAIN_PCT) {
     warnings.push(`Parts of this pressing are stretch-formed, not just bent: flattening it took up to ${maxStrain.toFixed(1)}% stretch over `
-      + `5% of the metal (${meanStrain.toFixed(1)}% on average). The outline is a geometric unfold there and slightly understates the blank `
-      + 'where the metal thinned; the FASTBLANK profile is the formed-process answer.');
+      + `5% of the metal (${meanStrain.toFixed(1)}% on average).${solvedNote} The FASTBLANK profile remains the formed-process answer.`);
   } else if (!developable) {
     warnings.push(`The skin stretched by up to ${maxStrain.toFixed(1)}% when flattened (${meanStrain.toFixed(1)}% on average), so this is a drawn part, `
-      + 'not a bent one; the outline is a geometric unfold and understates the blank where the metal thinned. A forming solve or the FASTBLANK profile is the answer.');
+      + `not a bent one.${solvedNote} The blank is the solve's, not a geometric unfold; the FASTBLANK profile remains the formed-process answer.`);
   }
   if (agreement != null && agreement > 2) {
     warnings.push(`The two skins developed to blanks ${agreement.toFixed(1)}% apart; the mean is used.`);
@@ -600,8 +653,10 @@ export function developBlank(file: SkinMeshFile, opts: UnfoldOptions = {}): Deve
     + (agreement != null ? `, skins agree within ${agreement.toFixed(1)}%` : '')
     + (developable ? '' : maxStrain <= STRETCH_FORMED_STRAIN_PCT
       ? ` — stretch-formed in places (${maxStrain.toFixed(1)}% stretch at the 95th percentile)`
-      : ` — NOT developable (${maxStrain.toFixed(1)}% stretch)`);
+      : ` — drawn (${maxStrain.toFixed(1)}% stretch)`)
+    + (forming ? ', forming solve applied' : '');
   return {
+    ...(forming ? { forming } : {}),
     grossAreaMm2: Math.round(gross), netAreaMm2: Math.round(net),
     outerPerimeterMm: Math.round(outerP), holePerimeterMm: Math.round(holeP),
     holeCount: Math.max(...skins.map(s => s.holeCount)),

@@ -63,6 +63,16 @@ export async function developBlankFromCad(
     maxStrainPct: Math.round(developed.maxStrainPct * 10) / 10,
     blankHash,
     outline: decimateOutline(developed.skins[0].outline),
+    ...(developed.forming ? { forming: {
+      method: 'one-step inverse' as const,
+      nValue: developed.forming.nValue,
+      blankAreaUnfoldMm2: developed.forming.blankAreaUnfoldMm2,
+      blankAreaSolvedMm2: developed.forming.blankAreaSolvedMm2,
+      thinningP95Pct: Math.round(developed.forming.strain.thinningP95Pct * 10) / 10,
+      maxThinningPct: Math.round(developed.forming.strain.maxThinningPct * 10) / 10,
+      maxThickeningPct: Math.round(developed.forming.strain.maxThickeningPct * 10) / 10,
+      strainPoints: developed.forming.strain.strainPoints,
+    } } : {}),
     ...(developed.warnings.length ? { warnings: developed.warnings } : {}),
   };
   putBlank(blankHash, blank);

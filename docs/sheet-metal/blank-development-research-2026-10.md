@@ -162,7 +162,7 @@ only way to know is a quote.
 | **0 · Fix now** | (a) Pass the DXF's outline + hole perimeter into tonnage and the press pick. (b) Gauge from coaxial bend cylinders, falling back to the ray-cast. (c) Net blank area = V/t, gross = net + holes, cut length = (S − 2A)/t from the geometry JSON, with the basis stated on each field. (d) Flag when the bounding-box estimate differs from the analytic blank by more than 15% | nothing new | 3–4 days |
 | **1 · Bent-part unfold** — **done 1 Oct** | Outline and rectangle by flattening the skin mesh (ARAP), not a face-graph walk, so B-spline flanges unfold too; K = 0.5 mid-surface (mean of the two skins); DXF out; holes carried; a stretch-formed or drawn skin is flagged by its strain, never silently costed as bent | kernel skin export (built) | done |
 | **2 · Nesting** — **done 1 Oct** | 1-up / 2-up turned / 2-up mirrored on the coil, exact pitch by scanlines, coil widths and a fixed orientation as constraints; the strip cell × gauge × density is the metal bought; 2-up stated as a die trade-off, not applied. Coil widths, edge margin and web per press line are still defaults (3 mm or 2 × gauge) until JLR supplies them | Phase 1 outline or DXF | done |
-| **3 · Drawn-part solve** | ARAP start + plastic-work pass in TypeScript; thinning map; Keeler–Brazier pass/fail; forming properties added to the material library as data (n, r, yield, FLC₀) | mesh export from the kernel (exists) | 4–6 weeks |
+| **3 · Drawn-part solve** — **done 2 Oct** | `server/utils/forming-inverse.ts`: one-step inverse from the unfold's flat — plastic work of a rigid-plastic power-law material (von Mises, incompressible, Hencky) minimised by L-BFGS with an analytic gradient through the principal stretches; runs on any skin the unfold finds non-developable. Drawn cup Ø80 × 50: the unfold is >5% short, the solve within 1.5% of the area-equivalent blank. Thinning map (p50/p95/max) and the worst (major, minor) strain pairs ride on the blank; `src/engine/forming-properties.ts` holds n, r, K per sheet grade (typical published values, labelled) and the Keeler–Brazier check, and the rules print the verdict on the blank's basis | phase 1 | done |
 | **4 · BIW process** | Draw addendum and binder allowance on drawn panels; blanking-line operation (die or laser); tandem/transfer sequence (draw, trim, pierce, flange, restrike); planned scrap; tailor-welded blanks with per-zone material | Phases 0–2 | 2–3 weeks |
 
 Phase 0 is new in this form: the September plan put the analytic blank inside
@@ -180,6 +180,18 @@ stretch-formed, which is why the net flat area (441 cm²) sits 0.7% under V/t
 drops the confidence from 0.85 to 0.75; a drawn panel (over 15% strain) goes to
 0.6 and asks for the FASTBLANK profile. Phase 3 (the physics pass) is what
 would put the stretched area back.
+
+### 5.2 What phase 3 is and is not
+
+The solve uses n = 1 (a quadratic energy in Hencky strain), the setting the
+September prototype validated to 0.62% on the cup; the grade's real n is used
+for the formability verdict, not for the blank, until a JLR part proves which
+is closer. It has no binder force, no friction, no draw beads and no springback:
+it is the estimator's one-step answer, the same class of tool as FASTBLANK's
+quick mode, not a forming simulation. The thinning map is a membrane result at
+the mesh's resolution. The forming properties are typical handbook values with
+their source stated on every lookup; JLR's coil certificates replace them as
+data.
 
 ## 6. How it is proved
 

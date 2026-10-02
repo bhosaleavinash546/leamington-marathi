@@ -74,7 +74,12 @@ reproducible, and it is the invariant to preserve in any change.
   `src/engine/nesting.ts` nests on the coil (`stripLayout` in the rules: 1-up pitch and
   strip width applied, a 2-up interlock stated as a die trade-off), and with a developed
   blank the cost parameters pass the material density so the module buys the strip cell
-  × gauge × density rather than a rectangle ratio. See `docs/sheet-metal/`.
+  × gauge × density rather than a rectangle ratio. A skin the unfold finds non-developable
+  goes through `server/utils/forming-inverse.ts` (one-step inverse: plastic work of a
+  rigid-plastic power-law material minimised by L-BFGS from the unfold's flat) and the
+  blank carries `forming` (thinning map, worst strain pairs); `src/engine/
+  forming-properties.ts` holds n/r/K per sheet grade as labelled typical values plus the
+  Keeler–Brazier check the rules print on the blank's basis. See `docs/sheet-metal/`.
 - `rate-library.ts` (`DEFAULT_RATE_LIBRARY`) + `regional-rates.ts`
   (`REGIONAL_DATA`, `computeRegionalComparison`, `buildRegionalLibrary`) hold the
   real 2026-Q2 rates. Two regionalisation paths exist and must stay consistent:

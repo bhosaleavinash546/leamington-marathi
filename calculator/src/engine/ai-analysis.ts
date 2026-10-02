@@ -211,6 +211,19 @@ export interface OCCTGeometry {
     /** The outer profile in the strip frame, decimated to a few hundred points — what the
      *  coil nesting (src/engine/nesting.ts) lays out. Holes do not affect nesting. */
     outline?: Array<[number, number]>;
+    /** Present when the skin was not developable and the one-step inverse forming solve
+     *  (server/utils/forming-inverse.ts) moved the blank from the geometric unfold. */
+    forming?: {
+      method: 'one-step inverse';
+      nValue: number;
+      blankAreaUnfoldMm2: number;
+      blankAreaSolvedMm2: number;
+      thinningP95Pct: number;
+      maxThinningPct: number;
+      maxThickeningPct: number;
+      /** Worst (major, minor) true-strain pairs, for the forming-limit check against the grade. */
+      strainPoints: Array<[number, number]>;
+    };
   };
   /**
    * Gear metrology, from the B-rep: teeth counted from tip-circle cylinder
