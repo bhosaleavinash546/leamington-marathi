@@ -15,9 +15,12 @@ CAST + MACHINE COST INPUT RULES:
   labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
   fettlingMinutes=2  [light fettling — gravity aluminium, 2.8 kg: gate / riser removal and grind at the foundry rate (engineering-typical minutes) — deterministic, use verbatim]
   heatTreatCostPerKg=1.1  [gravity aluminium is solution treated and aged, T6 — £1.1/kg (advisor rate) — deterministic, use verbatim]
-  shotBlastCostPerPart=0.35  [gravity castings are blasted to remove sand / scale / flash — £0.35 a part (advisor rate, flat; a large casting runs more) — deterministic, use verbatim]
+  shotBlastCostPerPart=0.21  [gravity castings are blasted to remove sand / scale / flash — 2.80 kg ÷ 600 kg/h × (blast machine £26.71/h + operator £18.63/h), min £0.10 — deterministic, use verbatim]
   impregnationCostPerPart=0  [not pressure-tight (or ferrous) — no impregnation — deterministic, use verbatim]
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
+  manning=1  [one operator to a gravity cell — deterministic, use verbatim]
+  leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
+  castPartWeightKg=2.851  [2.800 kg finished + 18.9 cm³ of 10 hole(s) ≤ 20 mm drilled from solid; face-finish stock on milled faces not measured, not included — deterministic, use verbatim]
   machiningCycleTimeHr=0.268  [0.268 hr, inside the 0.296 hr near-net finish envelope — deterministic, use verbatim]
   machiningSetupTimeHr=3  [4 datum/fixture setup(s) of the split-3axis routing × 45 min — deterministic, use verbatim]
   machiningOperations=Milling — +Z (40 faces) 0.072 hr on mach-haas-vf2; Milling — -Z (30 faces) 0.054 hr on mach-haas-vf2; Milling — +X (20 faces) 0.036 hr on mach-haas-vf2; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.105 hr on mach-drill  [sums to 0.268 hr of finish machining — deterministic, use verbatim]
@@ -43,6 +46,9 @@ CAST + MACHINE COST INPUT RULES:
   shotBlastCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   impregnationCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
   ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  castPartWeightKg=0  [pending the material answer — deterministic, use verbatim]
   machiningCycleTimeHr=0  [pending the material answer — deterministic, use verbatim]
   machiningSetupTimeHr=0.75  [1 datum/fixture setup(s) × 45 min — deterministic, use verbatim]
   machiningOperations: pending the material answer

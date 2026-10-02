@@ -25,7 +25,7 @@ import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-mac
 import { executeCalculateCost } from '../server/services/cost-executor.js';
 import { SHOP_DEFAULTS } from '../src/engine/cost-input-rules/to-cost-params.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
-import { meltFactsFor } from '../src/engine/casting-melt.js';
+import { meltFactsFor, MELT_SHOP } from '../src/engine/casting-melt.js';
 import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CADAnalysisResult } from '../src/engine/ai-analysis.js';
 
@@ -103,9 +103,9 @@ describe('the money reconciles by hand', () => {
     //
     //   effective net = finished / (1 - rejectRate)   — cast extra to yield the target
     //   poured        = effective net / castingYield  — runners and risers
-    //   returns       = poured - effective net        — remelted in-house, not sold
+    //   returns       = poured - good part            — gating AND rejects, remelted
     //   lost          = returns x meltLoss            — dross / oxidation per remelt
-    //   metal         = (effective net + lost) x price - lost x scrap
+    //   metal         = (good part + lost) x price - lost x scrap
     //   melt energy   = poured x kWh/kg x £/kWh
     //
     // Until 2 Oct 2026 the returns were credited at the scrap price, as if sold:
@@ -114,9 +114,10 @@ describe('the money reconciles by hand', () => {
     const melt = meltFactsFor('mat-steel1045')!;
     const effectiveNet = 2.512 / (1 - 0.03);
     const poured = effectiveNet / 0.65;
-    const lost = (poured - effectiveNet) * melt.lossFraction;
-    const byHand = (effectiveNet + lost) * mat.pricePerKg - lost * mat.scrapRecoveryPricePerKg
-      + poured * melt.energyKwhPerKg * ukElectricityPerKwh();
+    const lost = (poured - 2.512) * melt.lossFraction;
+    const byHand = (2.512 + lost) * mat.pricePerKg - lost * mat.scrapRecoveryPricePerKg
+      + poured * melt.energyKwhPerKg * ukElectricityPerKwh()
+      + (params.sand ? poured * MELT_SHOP.greenSandAdditionsPerKgPoured : 0);   // green-sand additions
 
     expect(poured).toBeCloseTo(3.98414, 4);
     expect(melt.lossFraction).toBe(0.03);
@@ -174,12 +175,12 @@ describe('both halves survive the composition', () => {
 });
 
 describe('what it does not know, it says', () => {
-  it('declares that no machining allowance was measured', () => {
-    // The STEP is the finished part, so as-cast weight is not measurable from
-    // it. Taking the two as equal understates the material bucket by the stock
-    // removed. Small for a near-net casting, but it must be stated.
+  it('declares when no machining allowance was decided', () => {
+    // The STEP is the finished part. With no cast-weight rule in the analysis
+    // (the rules add drilled-hole stock — casting-review.test.ts), the two are
+    // taken as equal, and that must be stated.
     expect(params.castPartWeightKg).toBe(params.finishedWeightKg);
-    expect(mapped.assumed.join(' ')).toMatch(/no machining allowance is measured/);
+    expect(mapped.assumed.join(' ')).toMatch(/no machining allowance decided/);
   });
 
   it('refuses when there is no casting block to work from', () => {

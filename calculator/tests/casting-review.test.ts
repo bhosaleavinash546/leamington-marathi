@@ -15,9 +15,13 @@ import { meltFactsFor, castingAlloyOf } from '../src/engine/casting-melt.js';
 import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import { runCostInputRules } from '../src/engine/cost-input-rules/engine.js';
 import { CASTING_RULES, sandImpressions, castingSectionMm } from '../src/engine/cost-input-rules/commodities/casting.js';
-import { CAST_AND_MACHINE_RULES } from '../src/engine/cost-input-rules/commodities/cast-and-machine.js';
+import { CAST_AND_MACHINE_RULES, drilledStockCm3 } from '../src/engine/cost-input-rules/commodities/cast-and-machine.js';
+import { executeCalculateCost } from '../server/services/cost-executor.js';
+import { buildRegionalLibrary } from '../src/engine/regional-rates.js';
+import { MELT_SHOP } from '../src/engine/casting-melt.js';
 import { toCostParams, SHOP_DEFAULTS } from '../src/engine/cost-input-rules/to-cost-params.js';
 import { adviseCastingProcess } from '../src/engine/modules/casting-advisor.js';
+import { secondaryMachiningMachineId } from '../src/engine/feature-machining.js';
 import type { OCCTGeometry } from '../src/engine/ai-analysis.js';
 import type { RuleContext } from '../src/engine/cost-input-rules/types.js';
 
@@ -43,17 +47,19 @@ const ctxOf = (part: string, answers: Record<string, string>, commodity = 'cast_
 } as RuleContext);
 
 describe('1. runners and risers are remelted, not sold as scrap', () => {
-  it('buys the part plus the dross lost on the gating — not the whole pour less a scrap credit', () => {
+  it('buys the good part plus the dross lost remelting gating and rejects — not the whole pour less a scrap credit', () => {
     const d = computeCastingDrivers(BASE);
-    const net = 2.512 / 0.97;
-    const lost = (net / 0.65 - net) * meltFactsFor('mat-gs-c25')!.lossFraction;
-    expect(d.rawMaterial.materialUtilization).toBeCloseTo(net / (net + lost), 10);
+    const pour = 2.512 / 0.97 / 0.65;
+    const lost = (pour - 2.512) * meltFactsFor('mat-gs-c25')!.lossFraction;
+    expect(d.rawMaterial.netWeightKg).toBeCloseTo(2.512, 10);
+    expect(d.rawMaterial.materialUtilization).toBeCloseTo(2.512 / (2.512 + lost), 10);
   });
 
-  it('was £2.47 a part dearer on the Casting Bracket when the gating went to the scrap yard', () => {
+  it('was £2.62 a part dearer on the Casting Bracket when gating and rejects went to the scrap yard', () => {
     const now = stack(computeCastingDrivers({ ...BASE, melt: { energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
     const old = stack(computeCastingDrivers({ ...BASE, melt: { lossFraction: 1, energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
-    expect(old.breakdown.rawMaterial - now.breakdown.rawMaterial).toBeCloseTo(2.47, 1);
+    // Gating and the 3% rejects, both remelted: £2.62 of metal on the bracket.
+    expect(old.breakdown.rawMaterial - now.breakdown.rawMaterial).toBeCloseTo(2.62, 1);
   });
 });
 
@@ -97,7 +103,7 @@ describe('4. the route the screen printed is now the route that is costed', () =
     const c = r.suggestions.casting as Record<string, number>;
     expect(c.fettlingMinutes).toBe(6);
     expect(c.heatTreatCostPerKg).toBe(0.35);
-    expect(c.shotBlastCostPerPart).toBe(0.35);
+    expect(c.shotBlastCostPerPart).toBe(0.19);   // 2.5 kg ÷ 600 kg/h × (blast + operator)
     expect(c.ndtCostPerPart).toBe(0);
   });
 
@@ -175,5 +181,110 @@ describe('10. HPDC press from the clamp force, not mass × 220', () => {
     expect(c.subtype).toBe('hpdc');
     expect(c.hpdcMachineId).toBe('hpdc-500t');
     expect(r.provenance['cast-hpdc-mach'].basis).toContain('0.8 t/cm²');
+  });
+});
+
+// ── Second pass ────────────────────────────────────────────────────────────
+
+describe('A. rejected castings are remelted, like the gating', () => {
+  it('a higher reject rate costs melt, processing and consumables — not a whole casting of metal', () => {
+    const lo = stack(computeCastingDrivers({ ...BASE, rejectRate: 0.03 }));
+    const hi = stack(computeCastingDrivers({ ...BASE, rejectRate: 0.10 }));
+    const metalOnly = (r: typeof lo) => r.breakdown.rawMaterial;
+    // 7 points more scrap would add ~£0.38 of metal if rejects were bought
+    // outright; remelted, the metal moves by the dross alone.
+    const d = computeCastingDrivers({ ...BASE, rejectRate: 0.10 });
+    expect(d.rawMaterial.netWeightKg).toBeCloseTo(2.512, 10);
+    expect(metalOnly(hi)).toBeGreaterThan(metalOnly(lo));
+  });
+});
+
+describe('B. melt energy is priced at the region the part is costed in', () => {
+  it('a regional library melts at its own tariff, not the UK\'s', () => {
+    const cnLib = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, 'CN');
+    const cnTariff = cnLib.energy[0].electricityPerKwh;
+    const ukTariff = DEFAULT_RATE_LIBRARY.energy[0].electricityPerKwh;
+    expect(cnTariff).not.toBe(ukTariff);
+    const atRegion = executeCalculateCost({ commodity: 'casting', params: BASE, rateLibrary: cnLib } as never);
+    const atUk = executeCalculateCost({ commodity: 'casting', params: { ...BASE, melt: { energyPricePerKwh: ukTariff } }, rateLibrary: cnLib } as never);
+    const pour = 2.512 / 0.97 / 0.65;
+    const kwh = meltFactsFor('mat-gs-c25')!.energyKwhPerKg;
+    expect(atUk.breakdown.rawMaterial - atRegion.breakdown.rawMaterial).toBeCloseTo(pour * kwh * (ukTariff - cnTariff), 4);
+  });
+});
+
+describe('C. a sand line is run by a crew', () => {
+  it('manning 4 on sand, 1 on a die-casting cell', () => {
+    const sand = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
+    expect((sand.suggestions.casting as Record<string, number>).manning).toBe(4);
+    const grav = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('PRCR002.stp', { ...ANSWERS, 'material.family': 'aluminium' }));
+    expect((grav.suggestions.casting as Record<string, number>).manning).toBe(1);
+  });
+});
+
+describe('D. the melt shop has labour and the sand has a cost', () => {
+  it('melt-shop labour on every kg poured, at the furnace-operator rate', () => {
+    const d = computeCastingDrivers(BASE);
+    const op = d.operations.find(o => /Melt shop/.test(o.operationName))!;
+    expect(op.labourId).toBe('lab-uk-furnace');
+    expect(op.labourTimeHr).toBeCloseTo(2.512 / 0.97 / 0.65 / 1000 * MELT_SHOP.labourHrPerTonnePoured, 8);
+  });
+});
+
+describe('E. the as-cast weight carries the holes drilled from solid', () => {
+  it('Casting Bracket: finished + drilled-hole stock, measured from the feature table', () => {
+    const stock = drilledStockCm3(ctxOf('Casting_Braket.stp', ANSWERS));
+    expect(stock.holes).toBeGreaterThan(0);
+    const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
+    const cast = (r.suggestions.casting as Record<string, number>).castPartWeightKg;
+    expect(cast).toBeCloseTo(2.512 + stock.cm3 * 0.00785, 2);
+    expect(r.provenance['cam-cast-wt'].basis).toContain('face-finish stock on milled faces not measured');
+  });
+});
+
+describe('F. investment castings are poured as a tree', () => {
+  it('a 0.3 kg steel part shares a 20 kg tree with 30 others', () => {
+    const geo = { ...geoOf('Casting_Braket.stp'), volume: { mm3: 38_217, cm3: 38.217 } } as OCCTGeometry;
+    const r = runCostInputRules(CASTING_RULES, { ...ctxOf('Casting_Braket.stp',
+      { ...ANSWERS, 'service.toleranceClass': 'tight' }, 'casting'), geo });
+    const c = r.suggestions.casting as Record<string, unknown>;
+    expect(c.subtype).toBe('investment');
+    expect(c.cycleTimeSandGravHr).toBeCloseTo(0.40 / 30, 4);   // was 0.40 h a part
+  });
+});
+
+describe('G. shot blast scales with the casting', () => {
+  it('a heavier casting blasts for proportionally more', () => {
+    const small = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
+    const big = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('PRCR002.stp', ANSWERS));   // 8.1 kg in steel
+    const s = (small.suggestions.casting as Record<string, number>).shotBlastCostPerPart;
+    const b = (big.suggestions.casting as Record<string, number>).shotBlastCostPerPart;
+    expect(b / s).toBeGreaterThan(2.5);
+  });
+});
+
+describe('H. pressure-tight castings are leak tested', () => {
+  it('45 s on the leak rig, as an operation', () => {
+    const r = runCostInputRules(CASTING_RULES, ctxOf('PRCR002.stp',
+      { ...ANSWERS, 'material.family': 'aluminium', 'service.pressureTight': 'yes' }, 'casting'));
+    expect((r.suggestions.casting as Record<string, number>).leakTestSec).toBe(45);
+    const d = computeCastingDrivers({ ...BASE, leakTestSec: 45 });
+    expect(d.operations.some(o => /Leak test/.test(o.operationName) && o.machineId === 'extrusion-leak-test')).toBe(true);
+  });
+});
+
+describe('I. plain casting: finish machining is costed the same on screen and headless', () => {
+  it('a VMC once a face is milled (a drill cannot face-mill), a machinist, and no invented NRE', () => {
+    const g = geoOf('Casting_Braket.stp');
+    expect(secondaryMachiningMachineId(g.featureTable as never, 'near_net')).toBe('mach-vmc3');
+    expect(secondaryMachiningMachineId([{ kind: 'hole', diaMm: 8, depthMm: 10, count: 2 }] as never, 'near_net')).toBe('mach-drill');
+    const m = toCostParams('casting', {
+      materialId: 'mat-gs-c25', netWeightKg: 2.512,
+      casting: { subtype: 'sand', yieldFraction: 0.53, dieMouldCostGBP: 1, dieMouldLife: 1, cavities: 1, cycleTimeHpdcSec: 0, cycleTimeSandGravHr: 0.01 },
+    } as never, 50_000, 'steel', g)!;
+    const ops = m.params.secondaryMachiningOps as Array<{ machineId: string; labourId: string }>;
+    expect(ops.every(o => o.machineId === 'mach-vmc3' && o.labourId === 'lab-uk-skilled')).toBe(true);
+    expect(m.params.secondaryMachiningToolingCost).toBeUndefined();
+    expect(m.assumed.join(' ')).toContain('NRE not derived');
   });
 });

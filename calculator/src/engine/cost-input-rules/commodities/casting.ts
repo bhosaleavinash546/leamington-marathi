@@ -21,6 +21,8 @@ import {
   type AlloyFamily, type CastingProcess, type ComplexityLevel,
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
+import { libraryMachineRate } from '../../uk-tariff.js';
+import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import type { ToolComplexity } from '../../toolmaking.js';
 import type { CastingSubtype } from '../../modules/casting.js';
 import { answeredNumber, decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
@@ -149,6 +151,27 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
     },
   };
 }
+
+/** The advisor's process for this part, or null while a question blocks it. */
+export function castingSubtypeFor(ctx: RuleContext): CastingSubtype | null {
+  const r = advise(ctx);
+  return 'blocked' in r ? null : r.advice.subtype;
+}
+
+/**
+ * Investment castings are poured as a tree of parts, not one at a time. TREE_POUR_KG
+ * of metal a tree (engineering-typical 10–30 kg for steel shell work) at the
+ * investment yield gives the parts a tree carries; the pour / knockout band is
+ * per TREE. Charging it per part put ~£21 of furnace time on a small part.
+ */
+export const INVESTMENT_TREE = { POUR_KG: 20, HR_PER_TREE: 0.40, MAX_PARTS: 60 };
+
+/**
+ * Shot blast by mass: a tumble / hanger blast runs ~0.5–2 t/h; BLAST_KG_PER_HR
+ * is the low end. £ = kg ÷ throughput × (the library blast machine + one foundry
+ * operator). The flat £0.35 charged a 50 kg casting what it charged a 0.5 kg one.
+ */
+export const BLAST_KG_PER_HR = 600;
 
 /**
  * The section that governs filling and freezing: the casting modulus 2·V/S, mm.
@@ -484,6 +507,13 @@ export const CASTING_RULES: CommodityRuleSpec = {
               + `${ratio.toFixed(1)}× a flask's moulding time at ${SAND_LINE.MOULDS_PER_HR} moulds/h`, 0.4);
           }
         }
+        if (r.advice.subtype === 'investment') {
+          const y = bandMid(CASTING_PROCESS_REFERENCE.investment.yieldBand);
+          const n = Math.max(1, Math.min(INVESTMENT_TREE.MAX_PARTS, Math.floor(INVESTMENT_TREE.POUR_KG * y / r.advice.massKg)));
+          return decided('casting.cycleTimeSandGravHr', Math.round(INVESTMENT_TREE.HR_PER_TREE / n * 10_000) / 10_000, 'rule',
+            `${INVESTMENT_TREE.HR_PER_TREE} h pour / knockout a tree ÷ ${n} part(s) on a ${INVESTMENT_TREE.POUR_KG} kg tree `
+            + `at ${y} yield (${r.advice.massKg.toFixed(2)} kg part)`, 0.45);
+        }
         const band: Record<CastingSubtype, number> = {
           hpdc: 0.02, gravity: 0.08, sand: 0.5, investment: 0.40,
         };
@@ -592,9 +622,12 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('casting.shotBlastCostPerPart', 0.35, 'library',
-          `${r.advice.subtype} castings are blasted to remove sand / scale / flash — £0.35 a part (advisor rate, flat; `
-          + 'a large casting runs more)', 0.5);
+        const rate = libraryMachineRate('blast-machine');
+        const lab = DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-foundry')!.fullyLoadedRatePerHr;
+        const v = Math.max(0.10, Math.round(r.advice.massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
+        return decided('casting.shotBlastCostPerPart', v, 'library',
+          `${r.advice.subtype} castings are blasted to remove sand / scale / flash — ${r.advice.massKg.toFixed(2)} kg ÷ `
+          + `${BLAST_KG_PER_HR} kg/h × (blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), min £0.10`, 0.5);
       },
     },
     {
@@ -662,6 +695,39 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const v = ctx.geo.processSpecificEstimates?.investShellCostGBP ?? Math.round(Math.max(0.80, sa * 0.045) * 100) / 100;
         return decided('casting.investShellCostPerPart', v, 'geometry',
           `ceramic shell from ${Math.round(sa)} cm² surface at £0.045/cm² (min £0.80) — kernel estimate`, 0.45);
+      },
+    },
+    {
+      // A sand line is run by a crew, not one person. Manning 1 charged a
+      // moulding line's output at a single operator's time.
+      id: 'casting.manning',
+      path: 'casting.manning',
+      fieldId: 'cast-manning',
+      label: 'manning',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (r.advice.subtype === 'sand') {
+          return decided('casting.manning', 4, 'rule',
+            'semi-automatic sand line crew: moulder, core setter, pourer, knockout (engineering-typical — enter the line\'s own)', 0.5);
+        }
+        return decided('casting.manning', 1, 'rule',
+          `one operator to a ${r.advice.subtype} cell`, 0.6);
+      },
+    },
+    {
+      id: 'casting.leakTestSec',
+      path: 'casting.leakTestSec',
+      fieldId: 'cast-leak-sec',
+      label: 'leakTestSec',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return r.advice.pressureTight
+          ? decided('casting.leakTestSec', 45, 'rule',
+            'pressure-tight — 100% air-decay leak test, 45 s a part on the pressure & leak test rig (engineering-typical 30–60 s)', 0.5,
+            [PRESSURE_TIGHT_DECISION_ID])
+          : decided('casting.leakTestSec', 0, 'rule', 'not pressure-tight — no leak test', 0.6, [PRESSURE_TIGHT_DECISION_ID]);
       },
     },
   ],

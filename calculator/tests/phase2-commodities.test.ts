@@ -244,10 +244,14 @@ describe('Casting module — HPDC', () => {
     expect(asScrap.rawMaterial.materialUtilization).toBeCloseTo(HPDC_INPUTS.castingYield, 10);
   });
 
-  it('reject uplift increases effective net weight', () => {
+  it('rejects are remelted: metal buys the good part; the pour carries the rejects', () => {
+    // A rejected casting goes back in the furnace like the gating, so the metal
+    // bought is the good part plus dross. With the melt shop switched off the
+    // old model returns: rejects bought in full.
     const d = computeCastingDrivers(HPDC_INPUTS);
-    const expected = HPDC_INPUTS.partWeightKg / (1 - HPDC_INPUTS.rejectRate);
-    expect(d.rawMaterial.netWeightKg).toBeCloseTo(expected, 6);
+    expect(d.rawMaterial.netWeightKg).toBeCloseTo(HPDC_INPUTS.partWeightKg, 6);
+    const old = computeCastingDrivers({ ...HPDC_INPUTS, melt: { lossFraction: 1, energyKwhPerKg: 0 } });
+    expect(old.rawMaterial.netWeightKg).toBeCloseTo(HPDC_INPUTS.partWeightKg / (1 - HPDC_INPUTS.rejectRate), 6);
   });
 
   it('cycle time in hr = (cycleTimeSec / 3600) × rejectUplift', () => {

@@ -419,6 +419,10 @@ export interface CADAnalysisResult {
       ndtCostPerPart?: number;
       investWaxCostPerPart?: number;
       investShellCostPerPart?: number;
+      manning?: number;
+      leakTestSec?: number;
+      /** Cast-and-machine: finished + drilled-hole stock. */
+      castPartWeightKg?: number;
     };
     forging?: {
       flashKg: number;

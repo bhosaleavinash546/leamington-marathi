@@ -23,7 +23,7 @@
  */
 import { capNearNetMachiningHr } from '../../near-net-machining.js';
 import { decided, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
-import { CASTING_RULES } from './casting.js';
+import { CASTING_RULES, castingSubtypeFor } from './casting.js';
 import { MACHINING_RULES, cuttingHours, machiningOperationPlan, machiningRouting, principalDirections } from './machining.js';
 import { materialFacts } from '../derive/material.js';
 
@@ -39,7 +39,9 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-mat': 'cam-mat',
   'cast-subtype': 'cam-cast-subtype',
   'cast-yield': 'cam-cast-yield',
-  'cast-part-wt': 'cam-cast-wt',
+  // The STEP is the FINISHED part: its weight is the finished weight. The
+  // as-cast weight adds the stock the machining removes (CAST_WEIGHT_RULE).
+  'cast-part-wt': 'cam-finish-wt',
   'cast-hpdc-ct': 'cam-hpdc-ct',
   'cast-hpdc-die-cost': 'cam-hpdc-die-cost',
   'cast-hpdc-die-life': 'cam-hpdc-die-life',
@@ -47,6 +49,8 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-sand-ct': 'cam-sand-ct',
   'cast-sand-core': 'cam-sand-core',
   'cast-hpdc-mach': 'cam-hpdc-mach',
+  'cast-manning': 'cam-cast-manning',
+  'cast-leak-sec': 'cam-leak-sec',
   'cast-lab': 'cam-cast-lab',
   'cast-fettle-min': 'cam-fettle-min',
   'cast-ht-cost': 'cam-ht-cost',
@@ -197,11 +201,54 @@ const OPERATIONS_RULE: RuleDef<ReturnType<typeof castAndMachineOperationPlan>> =
   },
 };
 
+/**
+ * Drilled-hole stock: holes up to DRILLED_FROM_SOLID_MM in a sand, gravity or
+ * investment casting are drilled from solid, so their volume was metal that was
+ * poured and then cut away. Measured exactly from the feature table. HPDC cores
+ * its holes. Face-finish stock on milled faces is not measured (the kernel
+ * reports no per-face area) and is stated as not included.
+ */
+export const DRILLED_FROM_SOLID_MM = 20;
+
+export function drilledStockCm3(ctx: RuleContext): { cm3: number; holes: number } {
+  let mm3 = 0; let holes = 0;
+  for (const f of ctx.geo.featureTable ?? []) {
+    const row = f as { kind?: string; diaMm?: number; depthMm?: number; count?: number };
+    if (row.kind !== 'hole' || !row.diaMm || !row.depthMm || row.diaMm > DRILLED_FROM_SOLID_MM) continue;
+    const n = row.count ?? 1;
+    mm3 += Math.PI * row.diaMm ** 2 / 4 * row.depthMm * n;
+    holes += n;
+  }
+  return { cm3: Math.round(mm3 / 10) / 100, holes };
+}
+
+const CAST_WEIGHT_RULE: RuleDef = {
+  id: 'castAndMachine.castPartWeightKg',
+  path: 'casting.castPartWeightKg',
+  fieldId: 'cam-cast-wt',
+  label: 'castPartWeightKg',
+  evaluate: (ctx) => {
+    const mat = materialFacts(ctx);
+    if (mat.decision || mat.massKg === null) return decided('castAndMachine.castPartWeightKg', 0, 'rule', 'pending the material answer', 0.1);
+    const sub = castingSubtypeFor(ctx);
+    const density = mat.massKg / Math.max(1e-9, ctx.geo.volume?.cm3 ?? 0);   // kg / cm³, from the confirmed metal
+    const stock = sub === 'hpdc' || sub === null ? { cm3: 0, holes: 0 } : drilledStockCm3(ctx);
+    const kg = mat.massKg + stock.cm3 * density;
+    return decided('castAndMachine.castPartWeightKg', Math.round(kg * 1000) / 1000, 'geometry',
+      stock.holes > 0
+        ? `${fmt(mat.massKg, 3)} kg finished + ${fmt(stock.cm3, 1)} cm³ of ${stock.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid; `
+          + 'face-finish stock on milled faces not measured, not included'
+        : `${fmt(mat.massKg, 3)} kg finished${sub === 'hpdc' ? ' (HPDC cores its holes)' : ' — no holes drilled from solid'}; `
+          + 'face-finish stock on milled faces not measured, not included', 0.7);
+  },
+};
+
 export const CAST_AND_MACHINE_RULES: CommodityRuleSpec = {
   commodity: 'cast_and_machine',
   header: 'CAST + MACHINE COST INPUT RULES:',
   rules: [
     ...CASTING_RULES.rules.map(repath),
+    CAST_WEIGHT_RULE,
     NEAR_NET_CYCLE_RULE,
     SETUP_RULE,
     OPERATIONS_RULE,

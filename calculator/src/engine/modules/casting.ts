@@ -1,6 +1,6 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
-import { meltFactsFor } from '../casting-melt.js';
+import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
 import { ukElectricityPerKwh } from '../uk-tariff.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
@@ -55,7 +55,11 @@ export interface CastingInputs {
    * `lossFraction: 1` and `energyKwhPerKg: 0` to reproduce the old behaviour
    * (gating sold as scrap, no melt energy) for a buy-in liquid-metal price.
    */
-  melt?: { lossFraction?: number; energyKwhPerKg?: number; energyPricePerKwh?: number };
+  melt?: { lossFraction?: number; energyKwhPerKg?: number; energyPricePerKwh?: number; labourId?: string };
+  /** 100% air-decay leak test for pressure-tight castings, seconds a part. */
+  leakTestSec?: number;
+  /** The rig it runs on — the library's pressure & leak test rig by default. */
+  leakTestMachineId?: string;
   // ── Post-cast operations (casting review, 2 Oct 2026) ──
   // The advisor's route always listed fettling and, for ferrous / heat-treatable
   // alloys, heat treatment — and none of it was costed. Absent = none.
@@ -120,18 +124,22 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   const rejectUplift = 1 / (1 - inputs.rejectRate);
   const effectiveNetWeight = inputs.partWeightKg * rejectUplift;
 
-  // Pour weight = part ÷ yield. The gating (pour − part) goes back into the
-  // furnace; only `lossFraction` of it is metal lost. The core prices gross =
-  // net ÷ utilisation and credits (gross − net) at scrap, so the utilisation
-  // that buys exactly part + lost metal is part ÷ (part + lost).
+  // Pour weight = part (rejects included) ÷ yield. Everything poured that does
+  // not leave as a good casting — the gating AND the rejected castings — goes
+  // back into the furnace; only `lossFraction` of it is metal lost. The core
+  // prices gross = net ÷ utilisation and credits (gross − net) at scrap, so the
+  // utilisation that buys exactly good part + lost metal is part ÷ (part + lost).
+  // With the melt shop switched off (lossFraction 1) this is the old model:
+  // rejects bought in full and the gating sold as scrap.
   const meltDefault = meltFactsFor(inputs.materialId);
-  const lossFraction = inputs.melt?.lossFraction ?? meltDefault?.lossFraction ?? 1;
+  const lossFraction = Math.min(1, Math.max(0, inputs.melt?.lossFraction ?? meltDefault?.lossFraction ?? 1));
   const pourKg = effectiveNetWeight / inputs.castingYield;
-  const metalLostKg = (pourKg - effectiveNetWeight) * Math.min(1, Math.max(0, lossFraction));
+  const boughtNetKg = lossFraction >= 1 ? effectiveNetWeight : inputs.partWeightKg;
+  const metalLostKg = (pourKg - boughtNetKg) * lossFraction;
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: effectiveNetWeight,
-    materialUtilization: effectiveNetWeight / (effectiveNetWeight + metalLostKg),
+    netWeightKg: boughtNetKg,
+    materialUtilization: boughtNetKg / (boughtNetKg + metalLostKg),
   };
   const meltEnergyCostPerPart = pourKg
     * (inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0)
@@ -278,6 +286,32 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       labourTimeHr: hr,
       labourEfficiency: inputs.labourEfficiency,
       benchOperation: true,
+    });
+  }
+  // The melt shop's labour, on every kg poured — skipped when the melt shop is
+  // switched off (a bought-in liquid-metal price carries it).
+  if (meltDefault && lossFraction < 1 && pourKg > 0) {
+    const hr = pourKg / 1000 * MELT_SHOP.labourHrPerTonnePoured;
+    operations.push({
+      operationName: 'Melt shop (charge, melt, treat, ladle)',
+      machineId: operations[0].machineId,
+      labourId: inputs.melt?.labourId ?? MELT_SHOP.labourId,
+      cycleTimeHr: 0, partsPerCycle: 1, oee: 1, manning: 1,
+      labourTimeHr: hr, labourEfficiency: inputs.labourEfficiency,
+      benchOperation: true,
+    });
+  }
+  if (inputs.subtype === 'sand' && lossFraction < 1) {
+    consumablesCostPerPart += pourKg * MELT_SHOP.greenSandAdditionsPerKgPoured;
+  }
+  if (inputs.leakTestSec && inputs.leakTestSec > 0) {
+    const hr = inputs.leakTestSec / 3600;
+    operations.push({
+      operationName: 'Leak test (air decay, 100%)',
+      machineId: inputs.leakTestMachineId ?? 'extrusion-leak-test',
+      labourId: inputs.labourId,
+      cycleTimeHr: hr, partsPerCycle: 1, oee: inputs.oee, manning: 1,
+      labourTimeHr: hr, labourEfficiency: inputs.labourEfficiency,
     });
   }
   consumablesCostPerPart += (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg

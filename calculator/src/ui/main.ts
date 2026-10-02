@@ -97,7 +97,7 @@ import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
-import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
+import { computeFeatureMachining, defaultInclude, secondaryMachiningMachineId, type StockCondition } from '../engine/feature-machining.js';
 import { familyFromFilename, familyFromDensity, resolveFormMaterialId, type MaterialFamily } from '../engine/material-family.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../engine/geometry-sanity.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
@@ -4743,6 +4743,7 @@ function renderCastingForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label title="Vacuum resin impregnation for pressure-tight castings. Engine default £0.90/part.">Impregnation (£/part) ⓘ</label><input type="number" id="cast-impreg" step="0.1" min="0" value="0"/></div>
       <div class="field-group"><label title="Radiography for safety-critical castings. 2D X-ray £5/part, CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cast-ndt" step="0.5" min="0" value="0"/></div>
+      <div class="field-group"><label title="100% air-decay leak test for pressure-tight castings, seconds a part, on the pressure &amp; leak test rig. Engine default 45 s when pressure-tight.">Leak Test (s/part) ⓘ</label><input type="number" id="cast-leak-sec" step="5" min="0" value="0"/></div>
     </div>
     <!-- HPDC -->
     <div id="cast-hpdc" class="cast-section">
@@ -5637,6 +5638,7 @@ function renderCastAndMachineForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, costed as foundry LABOUR (not material). Engine defaults: light 2 min (trimmed HPDC / gravity), medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cam-fettle-min" step="0.5" min="0" value="0" title="Bench minutes per casting at the foundry labour rate. 0 = none."/></div>
       <div class="field-group"><label title="Radiography for safety-critical castings. Engine defaults: 2D X-ray £5/part, industrial CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cam-ndt" step="0.5" min="0" value="0" title="X-ray / CT per casting. 0 = none."/></div>
+      <div class="field-group"><label title="100% air-decay leak test for pressure-tight castings, seconds a part, on the pressure &amp; leak test rig. Engine default 45 s when pressure-tight.">Leak Test (s/part) ⓘ</label><input type="number" id="cam-leak-sec" step="5" min="0" value="0"/></div>
     </div>`;
 }
 
@@ -10246,12 +10248,17 @@ function populateMachinedFeatures(prefix: string): void {
       </select></div>
     </div>
     <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>Machining fixtures + CNC programming NRE (₹)</label><input type="number" id="${prefix}-mf-tooling" min="0" step="1000" value="150000"/></div>
+      <div class="field-group"><label title="Fixtures + CNC programming for this machining, £. Not derived from the CAD — enter a quotation. 0 = not included.">Machining fixtures + CNC programming NRE (£) ⓘ</label><input type="number" id="${prefix}-mf-tooling" min="0" step="500" value="0"/></div>
     </div>
     <div id="${prefix}-mf-readout" style="margin-top:6px;font-size:0.74rem;font-weight:600;color:var(--accent)"></div>`;
   populateSelects();
   // default machine/labour to a CNC cell
-  const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`); if (machSel) machSel.value = resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
+  // Same machine choice as headless: a drill for holes only, a VMC once a face is milled.
+  const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`);
+  if (machSel) {
+    const id = secondaryMachiningMachineId(rows as FeatureRow[], 'near_net');
+    machSel.value = resolveMachineIdForOp(id, id === 'mach-drill' ? 'CNC Drilling' : 'CNC Milling');
+  }
   const labSel = el<HTMLSelectElement>(`${prefix}-mf-lab`); if (labSel) labSel.value = resolveLabourId('lab-uk-skilled');
   const refresh = () => updateMachinedFeaturesReadout(prefix);
   // Switching stock condition re-applies the smart default: machined-from-solid
@@ -12642,6 +12649,9 @@ function collectCastingInput(): UniversalStackInput {
     secondaryMachiningOps: secondary?.ops,
     secondaryMachiningToolingCost: secondary?.toolingCost,
     ...(surfaceFinishing ? { surfaceFinishing } : {}),
+    // Melt at the selected region's tariff, as forging heats at it.
+    melt: { energyPricePerKwh: library.energy?.[0]?.electricityPerKwh },
+    leakTestSec: num('cast-leak-sec') || undefined,
     fettlingMinutes: num('cast-fettle-min') || undefined,
     heatTreatCostPerKg: num('cast-ht-cost') || undefined,
     shotBlastCostPerPart: num('cast-shot-blast') || undefined,
@@ -13652,6 +13662,8 @@ function collectCastAndMachineInput(): UniversalStackInput {
     impregnationCostPerPart: num('cam-impreg') || undefined,
     deburringCostPerPart: num('cam-fettle') || undefined,
     fettlingMinutes: num('cam-fettle-min') || undefined,
+    melt: { energyPricePerKwh: library.energy?.[0]?.electricityPerKwh },
+    leakTestSec: num('cam-leak-sec') || undefined,
     ndtCostPerPart: num('cam-ndt') || undefined,
     ...subtypeExtra,
   };

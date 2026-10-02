@@ -101,6 +101,21 @@ export function defaultInclude(row: FeatureRow, stock: StockCondition = 'near_ne
   return row.kind === 'hole' || row.kind === 'face';
 }
 
+/**
+ * The machine secondary machining runs on, from what it cuts: a drilling centre
+ * when it is holes only, a 3-axis VMC as soon as a face, pocket or slot is
+ * milled. The screen and headless used to differ — VMC on screen, a drilling
+ * machine headless even when faces were in the list (a drill cannot face-mill).
+ * One function now decides for both.
+ */
+export function secondaryMachiningMachineId(
+  rows: FeatureRow[] | undefined, stock: StockCondition = 'near_net', includeFlags?: boolean[],
+): 'mach-drill' | 'mach-vmc3' {
+  const milled = (rows ?? []).some((r, i) =>
+    (includeFlags ? includeFlags[i] : defaultInclude(r, stock)) && r.kind !== 'hole');
+  return milled ? 'mach-vmc3' : 'mach-drill';
+}
+
 /** Geometry-measured machining minutes for ONE instance of a feature.
  *  Transparent shop heuristic (approach + depth/area-driven cut + finishing). */
 export function featureMinutesEach(row: FeatureRow): number {

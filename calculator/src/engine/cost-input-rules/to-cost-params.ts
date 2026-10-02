@@ -36,7 +36,7 @@
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
-import { computeFeatureMachining } from '../feature-machining.js';
+import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
 import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
@@ -151,14 +151,6 @@ export interface ToCostParamsResult {
   logisticsPerPart?: number;
 }
 
-/**
- * Fixtures + CNC programming NRE for geometry-driven secondary machining.
- *
- * A stated parametric default, deliberately NOT the browser form's
- * `value="150000"` — that figure predates the currency cleanup and looks like
- * an INR leftover; £150k of fixturing on every casting would dwarf the die.
- */
-const SECONDARY_MACHINING_NRE_GBP = 15_000;
 
 /**
  * The machining a near-net part still needs, measured.
@@ -173,11 +165,12 @@ function secondaryMachining(
 ): ReturnType<typeof computeFeatureMachining> | null {
   const rows = geo?.featureTable as FeatureRow[] | undefined;
   if (!rows?.length) return null;
-  // Near-net secondary work is hole work by construction (`defaultInclude`
-  // costs only holes on near_net stock) — that runs on a drilling centre, not
-  // a milling VMC, and the rate difference is real money at 27 min/part.
+  // Near-net secondary work is the holes AND the machined faces
+  // (`defaultInclude`), so the machine follows what is cut — a drill for holes
+  // only, a VMC once a face is milled — the same function the screen uses. The
+  // labour is a machinist's, not the foundry operative the casting line uses.
   const r = computeFeatureMachining(rows, {
-    machineId: 'mach-drill', labourId, stockCondition: 'near_net',
+    machineId: secondaryMachiningMachineId(rows, 'near_net'), labourId, stockCondition: 'near_net',
     oee: SHOP_DEFAULTS.oee, manning: SHOP_DEFAULTS.manning,
     labourEfficiency: SHOP_DEFAULTS.labourEfficiency,
   });
@@ -305,6 +298,8 @@ export function toCostParams(
     if (num(c.shotBlastCostPerPart) > 0) out.shotBlastCostPerPart = num(c.shotBlastCostPerPart);
     if (num(c.impregnationCostPerPart) > 0) out.impregnationCostPerPart = num(c.impregnationCostPerPart);
     if (num(c.ndtCostPerPart) > 0) out.ndtCostPerPart = num(c.ndtCostPerPart);
+    if (num(c.leakTestSec) > 0) out.leakTestSec = num(c.leakTestSec);
+    if (num(c.manning) > 0) out.manning = num(c.manning);
     return out;
   }
 
@@ -325,11 +320,14 @@ export function toCostParams(
         ...postCast(c),
       };
       Object.assign(params, castingSubtypeBlock(c, weight));
-      const sec = secondaryMachining(geo, labourId);
+      const sec = secondaryMachining(geo, 'lab-uk-skilled');
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
-        params.secondaryMachiningToolingCost = SECONDARY_MACHINING_NRE_GBP;
-        assumed.push(`secondary-machining NRE £${SECONDARY_MACHINING_NRE_GBP} (fixtures + programming)`);
+        // Fixture + programming NRE is derived on no machining path (machining
+        // and cast-and-machine carry 0, and so does the screen's CAD apply). A
+        // flat £15,000 here alone made headless and screen disagree; it is
+        // stated as not included instead.
+        assumed.push('secondary-machining fixture + programming NRE not derived (0 — add a quotation)');
       }
       return { commodity, params, assumed };
     }
@@ -370,7 +368,9 @@ export function toCostParams(
         // rule states a machining allowance. Taking them as equal understates
         // the material bucket by the stock removed, which for a near-net
         // casting is small but is not nothing. Stated, not hidden.
-        'castPartWeightKg = finishedWeightKg (no machining allowance is measured)',
+        num(c.castPartWeightKg) > 0
+          ? 'castPartWeightKg = finished + drilled-hole stock (face-finish stock not measured)'
+          : 'castPartWeightKg = finishedWeightKg (no machining allowance decided)',
       );
 
       return {
@@ -378,13 +378,13 @@ export function toCostParams(
         params: {
           castingSubtype: c.subtype,
           materialId,
-          castPartWeightKg: finished,
+          castPartWeightKg: num(c.castPartWeightKg) > 0 ? num(c.castPartWeightKg) : finished,
           finishedWeightKg: finished,
           castingYield: num(c.yieldFraction, 0.65),
           rejectRate: D.rejectRate,
           castingLabourId: labourId,
           castingOee: D.oee,
-          castingManning: D.manning,
+          castingManning: num(c.manning) > 0 ? num(c.manning) : D.manning,
           castingLabourEfficiency: D.labourEfficiency,
           ...castingSubtypeBlock(c, finished),
           ...(num(c.fettlingMinutes) > 0 ? { fettlingMinutes: num(c.fettlingMinutes) } : {}),
@@ -392,6 +392,7 @@ export function toCostParams(
           ...(num(c.shotBlastCostPerPart) > 0 ? { shotBlastCostPerPart: num(c.shotBlastCostPerPart) } : {}),
           ...(num(c.impregnationCostPerPart) > 0 ? { impregnationCostPerPart: num(c.impregnationCostPerPart) } : {}),
           ...(num(c.ndtCostPerPart) > 0 ? { ndtCostPerPart: num(c.ndtCostPerPart) } : {}),
+          ...(num(c.leakTestSec) > 0 ? { leakTestSec: num(c.leakTestSec) } : {}),
 
           geometryComplexity: complexity,
           machiningOps: (ops.length
@@ -492,11 +493,14 @@ export function toCostParams(
       if (num(f.descaleCostPerKg) > 0) params.descaleCostPerKg = num(f.descaleCostPerKg);
       if (num(f.ndtCostPerPart) > 0) params.ndtCostPerPart = num(f.ndtCostPerPart);
       if (!f.forgeId) assumed.push('forgeId (weight-tier fallback)');
-      const sec = secondaryMachining(geo, labourId);
+      const sec = secondaryMachining(geo, 'lab-uk-skilled');
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
-        params.secondaryMachiningToolingCost = SECONDARY_MACHINING_NRE_GBP;
-        assumed.push(`secondary-machining NRE £${SECONDARY_MACHINING_NRE_GBP} (fixtures + programming)`);
+        // Fixture + programming NRE is derived on no machining path (machining
+        // and cast-and-machine carry 0, and so does the screen's CAD apply). A
+        // flat £15,000 here alone made headless and screen disagree; it is
+        // stated as not included instead.
+        assumed.push('secondary-machining fixture + programming NRE not derived (0 — add a quotation)');
       }
       return { commodity, params, assumed };
     }

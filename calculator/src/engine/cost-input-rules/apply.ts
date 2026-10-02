@@ -176,6 +176,9 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'casting.ndtCostPerPart': { to: 'casting.ndtCostPerPart' },
   'casting.investWaxCostPerPart': { to: 'casting.investWaxCostPerPart' },
   'casting.investShellCostPerPart': { to: 'casting.investShellCostPerPart' },
+  'casting.manning': { to: 'casting.manning' },
+  'casting.leakTestSec': { to: 'casting.leakTestSec' },
+  'casting.castPartWeightKg': { to: 'casting.castPartWeightKg' },
 
   // ── forging ───────────────────────────────────────────────────────────────
   'forging.flashAndScaleKg': { to: 'forging.flashKg' },

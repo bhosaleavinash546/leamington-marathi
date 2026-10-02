@@ -304,7 +304,10 @@ describe('cast_and_machine — the composition', () => {
     // becomes `cam-cast-wt`, and `cast-hpdc-ct` drops its prefix rather than
     // gaining one.
     const byId = Object.fromEntries(CAST_AND_MACHINE_RULES.rules.map(r => [r.id, r.fieldId]));
-    expect(byId['casting.netWeightKg']).toBe('cam-cast-wt');
+    // The STEP's weight is the FINISHED weight; the as-cast weight adds the
+    // drilled-hole stock (casting review, second pass).
+    expect(byId['casting.netWeightKg']).toBe('cam-finish-wt');
+    expect(byId['castAndMachine.castPartWeightKg']).toBe('cam-cast-wt');
     expect(byId['casting.cycleTimeHpdcSec']).toBe('cam-hpdc-ct');
   });
 

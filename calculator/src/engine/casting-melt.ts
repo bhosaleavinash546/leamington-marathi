@@ -70,3 +70,21 @@ export function meltFactsFor(materialId: string): MeltFacts | null {
   const f = MELT[alloy];
   return { alloy, lossFraction: f.loss, energyKwhPerKg: f.kwh, basis: `${f.note} (engineering-typical — replace with plant data)` };
 }
+
+/**
+ * The melt shop's labour and the moulding sand, per kg poured (casting review,
+ * second pass). Engineering-typical, stated, replace with plant data:
+ *
+ * - Melt-shop labour: charging, melting, treating and ladling run ~1–2
+ *   operator-hours per tonne poured on an induction shop; 1.5 is used, at the
+ *   library's furnace-operator rate.
+ * - Green-sand additions: a sand-to-metal ratio of ~5:1, with ~2% of the sand
+ *   renewed each cycle as new sand, bentonite and coal dust at ~£0.10/kg —
+ *   about £0.01 per kg poured. Chemically bonded (no-bake) sand runs several
+ *   times this and should be entered by the foundry.
+ */
+export const MELT_SHOP = {
+  labourHrPerTonnePoured: 1.5,
+  labourId: 'lab-uk-furnace',
+  greenSandAdditionsPerKgPoured: 0.01,
+} as const;

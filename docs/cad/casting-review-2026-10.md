@@ -59,39 +59,65 @@ STEP ──► kernel (cad-geometry-engine.py)
 | 15 | Investment | Wax and shell were costed at **£0** headless, although the kernel computed them on every upload. | Investment castings under-costed | Rules carry the kernel's area-based wax / shell |
 | 16 | Test fixture | The synthetic "3 mm wall" housing used in three test files had 1,037 cm³ over 1,220 cm²: a **17 mm** section. The old rules read a hand-written ray-cast wall and never noticed. | Tests passed on an impossible part | Surface corrected to 6,913 cm² (2V/S = 3.0 mm) |
 
+### Second pass — checked against a standard foundry cost build-up
+
+The first pass fixed what was wrong. The second walked a standard foundry build-up
+element by element — metal, melt, moulding, cores, pouring, knockout, fettling, heat
+treatment, finishing, inspection, machining stock, scrap, tooling, overhead and
+region — and found what was **missing**:
+
+| # | Element | Gap | Fix |
+|---|---|---|---|
+| 17 | Scrap | Rejected castings were charged as lost metal; they are remelted like the gating | Metal buys the good part + dross on (gating + rejects); the pour, melt, cores and line time still carry the rejects |
+| 18 | Region | Melt energy was priced at the **UK** tariff in every region. Forging billet heating had the same bug. | The cost executor passes the costing library's own tariff; the screen passes its library's |
+| 19 | Moulding labour | A sand line was charged at **one** operator | Crew of 4 (moulder, core setter, pourer, knockout), stated; 1 on a die-casting cell |
+| 20 | Melt shop | No melt-shop labour | 1.5 operator-hours per tonne poured at the furnace-operator rate |
+| 21 | Sand | No moulding-sand consumption | Green-sand additions £0.01/kg poured (no-bake sand is several times this and must be entered) |
+| 22 | Machining stock | Cast-and-machine as-cast weight = finished weight | + volume of holes ≤ 20 mm drilled from solid, measured from the feature table (HPDC cores its holes). Face-finish stock is not measured — stated |
+| 23 | Investment | Pour / knockout 0.40 h **per part** (~£21 on a small part) | Per tree: 20 kg tree × 0.45 yield ÷ part mass, capped at 60 |
+| 24 | Blast | Flat £0.35 whatever the size | kg ÷ 600 kg/h × (library blast machine + operator), min £0.10 |
+| 25 | Inspection | Pressure-tight castings had no leak test | 100% air-decay leak test, 45 s on the library pressure & leak rig |
+| 26 | Finish machining (plain casting and forging) | Headless milled faces on a **drilling machine** at foundry or forge labour, plus an unexplained £15,000 NRE. The screen used a VMC, a machinist and £0, and labelled the NRE field in **rupees (₹)** with a 150,000 default. | One shared choice: a drill for holes only, a VMC once a face is milled; machinist labour; NRE £0 and stated as not derived on every path; the field is £, default 0 |
+
 ## 3. Before and after, real parts (headless baseline, 50,000/yr)
 
 | Part | Before | After | What moved |
 |---|---|---|---|
-| Casting Bracket (steel, sand + machine) | £45.79 | **£32.30** | Moulding £13.38 → £0.53; fettling +£2.09 (labour); normalise +£0.88; melt +£0.92; returns −£2.47; yield 0.65 → 0.53; pattern £14,500 → £7,205 four-up |
-| PRCR002 (aluminium housing) | £53.38 (HPDC, £300k die, 147 s shot) | **£49.85** (gravity, £10.9k mould, A356, T6) | Process re-routed by section; tooling £6.00 → £0.22; T6 +£3.08; returns and melt |
+| Casting Bracket (steel, sand + machine) | £45.79 | **£33.17** | Moulding £13.38 → £1.05 (crew of 4); fettling +£2.09; melt energy +£0.95 and melt-shop labour +£0.18; normalise +£0.91; gating and rejects remelted; yield 0.65 → 0.53; four-up pattern £7,205; as-cast weight + 12.7 cm³ of drilled holes |
+| PRCR002 (aluminium housing) | £53.38 (HPDC, £300k die, 147 s shot) | **£50.10** (gravity, £10.9k mould, A356, T6) | Process re-routed by section; tooling £6.00 → £0.22; T6 +£3.18 |
+| Steering knuckle (forging, outside casting) | £33.89 | **£42.81** | Same finish-machining bug as #26: milled faces now on the VMC the screen already used; the £15k NRE removed |
 
 Hand reconciliation of the Casting Bracket, every line against the library
 (`calculator/tests/casting-review.test.ts` pins the pieces):
 
 | Line | Working | £ |
 |---|---|---|
-| Metal | (2.590 kg part incl. 3% reject + 0.069 kg dross) × £2.10 − 0.069 × £0.28 | 5.56 |
-| Melt energy | 4.886 kg poured (yield 0.53) × 0.70 kWh/kg × £0.268/kWh | 0.92 |
+| Metal | (2.612 kg as-cast + 0.074 kg dross on 2.469 kg of gating and rejects) × £2.10 − 0.074 × £0.28 | 5.62 |
+| Melt energy | 5.081 kg poured (2.612 ÷ 0.97 ÷ 0.53) × 0.70 kWh/kg × £0.268/kWh | 0.95 |
+| Green-sand additions | 5.081 kg × £0.01 | 0.05 |
 | Core | £1.50 × 1.031 | 1.55 |
-| Normalise | £0.35/kg × 2.512 kg | 0.88 |
-| Shot blast | flat | 0.35 |
-| **Material** | | **9.26** |
-| Moulding | 0.0083 h × 1.031 × £33.46/h ÷ 0.80 OEE | 0.36 |
+| Normalise | £0.35/kg × 2.612 kg | 0.91 |
+| Shot blast | 2.51 kg ÷ 600 kg/h × (£26.71 + £18.63) | 0.19 |
+| **Material** | | **9.27** |
+| Moulding line | 0.0083 h × 1.031 × £33.46/h ÷ 0.80 OEE | 0.36 |
 | Machining | mill 0.093 h × £46.24 ÷ 0.8 + drill 0.0905 h × £31.13 ÷ 0.8 + setup | 8.92 |
 | **Process** | | **9.28** |
-| Moulding labour | 0.0086 h × £18.63 ÷ 0.92 | 0.17 |
+| Moulding crew | 0.0086 h × 4 × £18.63 ÷ 0.92 | 0.69 |
 | Fettling | 6 min × 1.031 × £18.63/h ÷ 0.92 | 2.09 |
+| Melt shop | 5.081 kg ÷ 1000 × 1.5 h × £22.16 ÷ 0.92 | 0.18 |
 | Machining labour | 0.184 h × £26.19 ÷ 0.92 + setup | 5.24 |
-| **Labour** | | **7.50** |
+| **Labour** | | **8.20** |
 | Tooling | £7,205 four-up pattern × 2 sets ÷ 50,000 | 0.29 |
 | Packaging + logistics | geometry estimators | 0.42 |
-| Overhead 12% of £26.33 base, margin 8% of subtotal | | 3.16 + 2.39 |
-| **Total** | | **32.30** |
+| Overhead 12% of £27.04 base; margin 8% of subtotal | | 3.25 + 2.46 |
+| **Total** | | **33.17** |
 
-Live in a browser after the fix, the screen fills the same grade, yield, line
-time, fettling, heat treat, blast, labour and tooling as headless. Material
-matches to the penny on both parts.
+Live in a browser after both passes, on the cast-and-machine form and the plain
+casting form, the screen fills the same grade, yield, crew, line time, pattern,
+fettling, heat treat, blast, as-cast weight, labour and tooling as headless.
+Material and tooling match to the penny. Process and labour differ by a few
+percent, and only in the machining half: the screen's machining OEE (0.85) and
+batch size (50) against the shop defaults (0.80, annual ÷ 20).
 
 ## 4. Still open, stated rather than hidden
 
@@ -105,20 +131,26 @@ matches to the penny on both parts.
   foundry quote.
 - **Engineering-typical constants**, each printed on the basis and meant to be
   replaced with plant data:
-  - 30 moulds/h and a 500 × 400 mm flask
-  - melt kWh/kg and loss
+  - 30 moulds/h, a 500 × 400 mm flask and a crew of 4
+  - melt kWh/kg, melt loss and melt-shop hours per tonne
+  - green-sand additions
   - fettling minutes
-  - the advisor's £/kg heat treat, £0.35 blast, £0.90 impregnation, £5 X-ray
+  - the £/kg heat treat, £0.90 impregnation and £5 X-ray
+  - blast throughput
+  - leak-test seconds
+  - investment tree size
   - yield bands
   - tool lives
+  - core £ bands
 
-  None has been compared with a price JLR paid.
-- **Shot blast is flat** at £0.35 a part. A 50 kg casting blasts for more. The
-  mass-based blast machine route exists in Surface Finishing; switching it on by
-  default is a separate change.
-- **Machining allowance.** Cast-and-machine still takes the as-cast weight as the
-  finished weight, which the parameter builder states. The STEP is the finished
-  part, so the stock removed is not measured.
+  None has been compared with a price JLR paid. The model is structurally complete
+  and arithmetically reconciled; it is **not calibrated**. `calibration.ts` learns
+  from actuals once quotes are loaded.
+- **Face-finish machining stock** is not in the as-cast weight. The kernel reports no
+  per-face area, so only drilled-hole stock is added. Roughly 2–3 mm on the
+  machined faces of a sand casting is missing: about 2–4% of the bracket's metal.
+- **Machining fixtures and programming NRE** are derived on no path, so they are
+  £0 everywhere and stated. A toolmaker or machine-shop quotation should be entered.
 - **Machining half, screen vs headless.** The screen's batch size defaults to 50
   and headless to annual ÷ 20; the screen's amortisation volume defaults to
   100,000. These are shop defaults, not casting, and move the total by about 3%.

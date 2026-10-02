@@ -12,7 +12,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6c665433c63bddfd",
+      "partName": "cv-cad-bc8fdea36e581062",
       "boundingBox": {
         "xMm": 132.62,
         "yMm": 120.03,
@@ -716,16 +716,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 32.3,
+      "total": 33.17,
       "breakdown": {
-        "rawMaterial": 9.26,
+        "rawMaterial": 9.27,
         "process": 9.28,
-        "labour": 7.5,
+        "labour": 8.2,
         "tooling": 0.29,
         "packaging": 0.15,
         "logistics": 0.27,
-        "overhead": 3.16,
-        "margin": 2.39
+        "overhead": 3.25,
+        "margin": 2.46
       }
     }
   },
@@ -742,7 +742,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b667a6057c1e7593",
+      "partName": "cv-cad-d597619dc83dc9d8",
       "boundingBox": {
         "xMm": 276.78,
         "yMm": 223.15,
@@ -1748,16 +1748,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 49.85,
+      "total": 50.1,
       "breakdown": {
-        "rawMaterial": 13.06,
+        "rawMaterial": 13.09,
         "process": 16.7,
-        "labour": 10.81,
+        "labour": 10.99,
         "tooling": 0.22,
         "packaging": 0.18,
         "logistics": 0.3,
-        "overhead": 4.89,
-        "margin": 3.69
+        "overhead": 4.92,
+        "margin": 3.71
       }
     }
   },
@@ -1771,7 +1771,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9202a31ba8a9a9c4",
+      "partName": "cv-cad-235cc36b08d3345c",
       "boundingBox": {
         "xMm": 58.23,
         "yMm": 274.48,
@@ -2537,7 +2537,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-dfa638cba23ab7fa",
+      "partName": "cv-cad-75a76e3a76c01a44",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -5059,7 +5059,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8b11d6d672ade92d",
+      "partName": "cv-cad-93e1e794d97fc089",
       "boundingBox": {
         "xMm": 116.49,
         "yMm": 236.81,
@@ -5991,16 +5991,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 33.89,
+      "total": 42.81,
       "breakdown": {
         "rawMaterial": 8.85,
-        "process": 10.91,
-        "labour": 6.32,
-        "tooling": 1.51,
+        "process": 18.09,
+        "labour": 6.81,
+        "tooling": 1.21,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 3.31,
-        "margin": 2.51
+        "overhead": 4.2,
+        "margin": 3.17
       }
     }
   },
@@ -6016,7 +6016,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-118dd7d91f87ce05",
+      "partName": "cv-cad-cdaa38e953f67596",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

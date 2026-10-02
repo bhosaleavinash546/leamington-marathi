@@ -51,6 +51,7 @@ export interface CastAndMachineInputs {
   fettlingMinutes?: number;
   /** Melt shop overrides — see CastingInputs.melt. */
   melt?: CastingInputs['melt'];
+  leakTestSec?: number;
   /** Non-destructive test (X-ray/CT) cost per part — safety-critical porosity screening */
   ndtCostPerPart?: number;
   /** Post-casting labour ID (for heat treat/shot blast operations) */
@@ -78,6 +79,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     investment: inputs.investment,
     ...(inputs.fettlingMinutes ? { fettlingMinutes: inputs.fettlingMinutes } : {}),
     ...(inputs.melt ? { melt: inputs.melt } : {}),
+    ...(inputs.leakTestSec ? { leakTestSec: inputs.leakTestSec } : {}),
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)
