@@ -320,8 +320,8 @@ what is true** — nothing here has been compared with a price JLR paid.
   hollow and bend tests (a tube reads as a closed tank to the enclosure probe). Section = V/L, kg/m by density,
   wall 2·V/S; round hollow → tube (≤ Ø16, micro line) or pipe, else profile; line, screw and cooling by process
   (`EXTRUSION_LINES`), the line rate is the advisor's screw-vs-cooling minimum; start-up scrap = 0.25 h of rated
-  output over a run of at least a shift. Polymer only — the library has no aluminium press line, so a metal grade
-  is refused. Headless via `toCostParams` 'extrusion'. See `docs/cad/extrusion-build-2026-10.md`,
+  output over a run of at least a shift. Polymer only — a metal grade is refused here; aluminium
+  goes to the `aluminium_extrusion` route (below). Headless via `toCostParams` 'extrusion'. See `docs/cad/extrusion-build-2026-10.md`,
   `tests/extrusion-build.test.ts`; parts in `cad-audit/parts/EXT_*`.
 - Aluminium extrusion (`al-extrusion-data.ts`, `modules/aluminium-extrusion{,-advisor}.ts`,
   `cost-input-rules/commodities/aluminium-extrusion.ts`, `src/ui/al-extrusion-form.ts`): billet = LME + the region's
