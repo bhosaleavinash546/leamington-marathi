@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>360° PCB Should-Cost Model — 2026 · Neon</title>
+  <meta name="description" content="Parameterized should-cost model for ALL PCB types — 2026 materials, processes, labour, gold & tariffs. Monte Carlo uncertainty, quote calibration, Gerber import, landed cost, PCBA module, and an AI advisor with a verified optimizer." />
+  <style>
+/* ============================================================================
+ * style.css — NEON + BLACK theme for the 360° PCB Should-Cost Model (2026)
+ * High-contrast neon-on-black. Cyan / magenta / lime accent system.
+ * ==========================================================================*/
+
+:root {
+  --bg: #05060a;
+  --bg-2: #0a0c14;
+  --panel: #0e111c;
+  --panel-2: #121627;
+  --line: #1f2740;
+  --line-2: #2b3556;
+  --ink: #e8ecff;
+  --ink-soft: #8b95bf;
+  --ink-dim: #5a648f;
+
+  --neon-cyan: #00e5ff;
+  --neon-magenta: #ff2bd6;
+  --neon-lime: #6cff3f;
+  --neon-amber: #ffcf33;
+  --neon-red: #ff3b6b;
+  --neon-violet: #a06bff;
+  --neon-blue: #3a8bff;
+
+  --glow-cyan: 0 0 12px rgba(0, 229, 255, .55);
+  --glow-magenta: 0 0 12px rgba(255, 43, 214, .55);
+  --glow-lime: 0 0 12px rgba(108, 255, 63, .5);
+  --shadow: 0 8px 30px rgba(0, 0, 0, .55);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(0, 229, 255, .08), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(255, 43, 214, .07), transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 22px;
+  background: linear-gradient(90deg, rgba(0,229,255,.06), rgba(255,43,214,.06));
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark {
+  width: 46px; height: 46px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  display: grid; place-items: center; font-weight: 900; font-size: .8rem; color: #05060a;
+  box-shadow: var(--glow-cyan);
+}
+.brand-text h1 {
+  font-size: 1.05rem; margin: 0; font-weight: 800; letter-spacing: .3px;
+  background: linear-gradient(90deg, var(--neon-cyan), #fff 60%, var(--neon-magenta));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.subtitle { margin: 2px 0 0; font-size: .76rem; color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,229,255,.4); }
+.header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn {
+  border: 1px solid transparent; border-radius: 9px; padding: 9px 15px; font-size: .82rem;
+  font-weight: 700; cursor: pointer; transition: transform .05s, box-shadow .18s, background .18s;
+  letter-spacing: .3px;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--neon-cyan); color: #04121a; box-shadow: var(--glow-cyan); }
+.btn-primary:hover { box-shadow: 0 0 20px rgba(0,229,255,.8); }
+.btn-ghost { background: rgba(255,255,255,.04); color: var(--ink); border-color: var(--line-2); }
+.btn-ghost:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+.btn-magenta { background: var(--neon-magenta); color: #1a0416; box-shadow: var(--glow-magenta); }
+.btn-magenta:hover { box-shadow: 0 0 20px rgba(255,43,214,.8); }
+
+/* ---------- Tabs ---------- */
+.tabbar { display: flex; gap: 4px; padding: 0 22px; background: var(--bg-2); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tab {
+  background: transparent; border: 0; color: var(--ink-soft); cursor: pointer;
+  padding: 12px 16px; font-size: .85rem; font-weight: 700; border-bottom: 2px solid transparent;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--neon-cyan); border-bottom-color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,229,255,.5); }
+
+main { padding: 18px 22px 70px; max-width: 1480px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.layout { display: grid; grid-template-columns: 410px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 1040px) { .layout { grid-template-columns: 1fr; } }
+
+/* ---------- Inputs ---------- */
+.inputs { display: flex; flex-direction: column; gap: 14px; }
+.preset-bar, .group, .panel, .result-card, .metric {
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+}
+.preset-bar { padding: 14px; }
+.preset-label { font-weight: 800; font-size: .78rem; display: block; margin-bottom: 8px; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: .6px; }
+.example-presets { display: flex; flex-direction: column; gap: 6px; }
+.ex-chip {
+  text-align: left; border: 1px solid var(--line-2); background: rgba(0,229,255,.03); border-radius: 10px;
+  padding: 9px 11px; font-size: .78rem; font-weight: 700; cursor: pointer; color: var(--ink);
+}
+.ex-chip:hover { border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+.ex-chip span { display: block; font-weight: 400; color: var(--ink-soft); font-size: .72rem; margin-top: 2px; }
+.hint { font-size: .72rem; color: var(--ink-dim); margin: 8px 0 0; }
+
+.group { padding: 12px 14px 14px; }
+.group legend {
+  font-weight: 800; font-size: .74rem; color: var(--neon-magenta); padding: 0 8px;
+  text-transform: uppercase; letter-spacing: .6px; text-shadow: 0 0 8px rgba(255,43,214,.4);
+}
+.field { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; }
+.field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field label { font-size: .75rem; color: var(--ink-soft); font-weight: 600; }
+.field.check { flex-direction: row; align-items: center; }
+.field.check label { display: flex; align-items: center; gap: 7px; color: var(--ink); }
+.field input[type="number"], .field select, .field input[type="text"], .field input[type="password"] {
+  border: 1px solid var(--line-2); border-radius: 9px; padding: 8px 10px; font-size: .85rem;
+  background: #070912; color: var(--ink); font-variant-numeric: tabular-nums; width: 100%;
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+.field input[type="checkbox"] { accent-color: var(--neon-cyan); width: 16px; height: 16px; }
+.field select option { background: #070912; }
+.info {
+  display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%;
+  background: rgba(0,229,255,.12); color: var(--neon-cyan); font-size: .62rem; cursor: help; font-weight: 800;
+  vertical-align: middle;
+}
+
+/* ---------- Results ---------- */
+.results { display: flex; flex-direction: column; gap: 16px; }
+.result-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 660px) { .result-cards { grid-template-columns: 1fr; } }
+.result-card { padding: 16px 18px; }
+.result-card.primary {
+  background: linear-gradient(135deg, rgba(0,229,255,.12), rgba(255,43,214,.10));
+  border-color: var(--neon-cyan);
+}
+.rc-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-soft); }
+.rc-value { font-size: 1.9rem; font-weight: 900; margin: 6px 0 2px; font-variant-numeric: tabular-nums; color: #fff; }
+.result-card.primary .rc-value { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+.rc-value.alt { color: var(--neon-lime); text-shadow: var(--glow-lime); }
+.rc-sub { font-size: .72rem; color: var(--ink-soft); }
+
+.metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 820px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
+.metric { padding: 11px 13px; }
+.metric .m-label { font-size: .68rem; color: var(--ink-soft); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+.metric .m-value { font-size: 1.12rem; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; color: var(--neon-cyan); }
+
+.panel { padding: 16px 18px; }
+.panel h3 { margin: 0 0 12px; font-size: .95rem; color: #fff; }
+.panel h3 .sub { font-weight: 400; color: var(--ink-soft); font-size: .8rem; }
+
+.stackbar { display: flex; height: 34px; border-radius: 9px; overflow: hidden; border: 1px solid var(--line-2); }
+.stackbar .seg { height: 100%; min-width: 1px; box-shadow: inset 0 0 10px rgba(255,255,255,.15); }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 12px; }
+.legend .li { display: flex; align-items: center; gap: 7px; font-size: .76rem; color: var(--ink-soft); }
+.legend .sw { width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 0 8px currentColor; }
+.legend .li b { font-variant-numeric: tabular-nums; color: var(--ink); }
+
+table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.breakdown th, .breakdown td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; color: var(--ink); }
+.breakdown th { color: var(--ink-soft); font-weight: 600; }
+.breakdown th.num, .breakdown td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.breakdown tfoot td { font-weight: 900; border-top: 2px solid var(--neon-cyan); border-bottom: 0; color: #fff; }
+.breakdown .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; box-shadow: 0 0 6px currentColor; }
+
+.routing { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+@media (max-width: 660px) { .routing { grid-template-columns: 1fr; } }
+.routing .step { display: flex; gap: 9px; align-items: baseline; font-size: .78rem; padding: 5px 0; border-bottom: 1px dashed var(--line); }
+.routing .step .n { color: var(--neon-magenta); font-weight: 800; min-width: 22px; }
+.routing .step .nm { color: var(--ink); }
+.routing .step .mc { color: var(--ink-dim); font-size: .72rem; margin-left: auto; text-align: right; }
+
+.bandbar { position: relative; height: 30px; background: #070912; border: 1px solid var(--line-2); border-radius: 9px; margin: 10px 0 4px; overflow: hidden; }
+.bandbar .zone { position: absolute; top: 0; height: 100%; background: rgba(108,255,63,.18); border-left: 2px solid var(--neon-lime); border-right: 2px solid var(--neon-lime); }
+.bandbar .mark { position: absolute; top: -3px; width: 3px; height: 36px; background: var(--neon-red); border-radius: 2px; box-shadow: 0 0 10px var(--neon-red); }
+.band-labels { display: flex; justify-content: space-between; font-size: .72rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.band-verdict { font-size: .8rem; font-weight: 800; margin-top: 6px; }
+.band-verdict.in { color: var(--neon-lime); text-shadow: var(--glow-lime); }
+.band-verdict.out { color: var(--neon-amber); }
+
+.tornado { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.tornado .row { display: grid; grid-template-columns: 160px 1fr 62px; gap: 10px; align-items: center; font-size: .76rem; color: var(--ink-soft); }
+.tornado .bar-wrap { height: 16px; background: #070912; border-radius: 5px; overflow: hidden; border: 1px solid var(--line); }
+.tornado .bar { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta)); }
+.tornado .pct { font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
+
+.dfc { display: flex; flex-direction: column; gap: 8px; }
+.dfc .rec { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: .8rem; border: 1px solid var(--line-2); background: #070912; color: var(--ink); }
+.dfc .rec .tag { font-weight: 900; font-size: .64rem; padding: 2px 8px; border-radius: 999px; height: fit-content; white-space: nowrap; }
+.dfc .rec.high { border-color: var(--neon-red); } .dfc .rec.high .tag { background: var(--neon-red); color: #1a0410; }
+.dfc .rec.med { border-color: var(--neon-amber); } .dfc .rec.med .tag { background: var(--neon-amber); color: #1a1400; }
+.dfc .rec.low { border-color: var(--neon-blue); } .dfc .rec.low .tag { background: var(--neon-blue); color: #02101f; }
+.dfc .rec.ok  { border-color: var(--neon-lime); } .dfc .rec.ok .tag { background: var(--neon-lime); color: #04140a; }
+
+.accuracy-note { font-size: .76rem; color: var(--ink-soft); background: rgba(0,229,255,.05); border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; }
+.accuracy-note b { color: var(--neon-cyan); }
+
+/* ---------- AI panel ---------- */
+.ai-hero { border: 1px solid var(--neon-magenta); box-shadow: 0 0 24px rgba(255,43,214,.18); }
+.ai-hero h3 { display: flex; align-items: center; gap: 8px; }
+.ai-badge { font-size: .62rem; font-weight: 900; padding: 2px 8px; border-radius: 999px; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta)); color: #05060a; }
+.ai-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.ai-config { display: grid; grid-template-columns: 1fr 180px; gap: 10px; margin-top: 8px; }
+@media (max-width: 620px) { .ai-config { grid-template-columns: 1fr; } }
+.ai-output { margin-top: 14px; background: #070912; border: 1px solid var(--line-2); border-radius: 12px; padding: 14px 16px; min-height: 60px; font-size: .84rem; line-height: 1.6; white-space: pre-wrap; }
+.ai-output h4 { color: var(--neon-cyan); margin: 12px 0 6px; font-size: .9rem; }
+.ai-output ul { margin: 6px 0; padding-left: 20px; }
+.ai-output li { margin: 4px 0; }
+.ai-output strong { color: var(--neon-lime); }
+.ai-status { font-size: .74rem; color: var(--ink-soft); margin-top: 8px; }
+.ai-status.err { color: var(--neon-red); }
+.ai-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line-2); border-top-color: var(--neon-cyan); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-key-note { font-size: .7rem; color: var(--ink-dim); margin-top: 6px; }
+
+/* ---------- Scenarios ---------- */
+.scenario-head { display: flex; align-items: center; justify-content: space-between; }
+.scenario-table-wrap { overflow-x: auto; margin-top: 10px; }
+.scenario-table th, .scenario-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.scenario-table tr td:first-child, .scenario-table tr th:first-child { text-align: left; font-weight: 600; position: sticky; left: 0; background: var(--panel); }
+.scenario-table thead th { background: var(--panel-2); color: var(--ink-soft); }
+.scenario-table .row-head td:first-child { color: var(--neon-cyan); }
+.scenario-table .del { color: var(--neon-red); cursor: pointer; font-weight: 800; }
+.scenario-empty { padding: 24px; text-align: center; color: var(--ink-dim); }
+
+/* ---------- Prose / methodology ---------- */
+.prose { line-height: 1.65; }
+.prose h2 { font-size: 1.05rem; margin: 22px 0 8px; color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,229,255,.3); }
+.prose h2:first-child { margin-top: 4px; }
+.prose h3 { font-size: .92rem; margin: 16px 0 6px; color: var(--neon-magenta); }
+.prose p, .prose li { font-size: .86rem; color: var(--ink); }
+.prose code { background: #070912; padding: 1px 6px; border-radius: 5px; font-size: .82rem; color: var(--neon-lime); border: 1px solid var(--line); }
+.prose table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .8rem; }
+.prose th, .prose td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; color: var(--ink); }
+.prose th { background: var(--panel-2); color: var(--neon-cyan); }
+.prose .src { font-size: .78rem; color: var(--ink-dim); }
+.formula { background: #04060c; color: var(--neon-lime); padding: 10px 14px; border-radius: 10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .82rem; overflow-x: auto; white-space: pre-wrap; border: 1px solid var(--line-2); }
+.callout { background: rgba(255,43,214,.06); border-left: 3px solid var(--neon-magenta); padding: 10px 14px; border-radius: 8px; margin: 10px 0; font-size: .84rem; color: var(--ink); }
+
+/* ---------- Tooltip ---------- */
+/* ---------- v2 additions ---------- */
+.beta-tag { font-size: .6rem; font-weight: 900; padding: 1px 7px; border-radius: 999px; background: rgba(255,207,51,.15); color: var(--neon-amber); border: 1px solid rgba(255,207,51,.4); vertical-align: middle; }
+.import-report { font-size: .74rem; color: var(--neon-lime); margin-top: 8px; line-height: 1.5; }
+input[type="file"] { color: var(--ink-soft); font-size: .78rem; width: 100%; }
+input[type="file"]::file-selector-button { border: 1px solid var(--line-2); background: rgba(0,229,255,.06); color: var(--neon-cyan); border-radius: 8px; padding: 7px 12px; font-weight: 700; cursor: pointer; margin-right: 10px; }
+.config-alerts .config-alert { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: .8rem; border: 1px solid var(--neon-red); background: rgba(255,59,107,.08); color: var(--ink); margin-bottom: 10px; box-shadow: 0 0 14px rgba(255,59,107,.25); }
+.config-alerts .tag { font-weight: 900; font-size: .64rem; padding: 2px 8px; border-radius: 999px; background: var(--neon-red); color: #1a0410; height: fit-content; white-space: nowrap; }
+.btn-apply { border: 1px solid var(--neon-lime); background: rgba(108,255,63,.1); color: var(--neon-lime); border-radius: 7px; padding: 3px 10px; font-size: .7rem; font-weight: 800; cursor: pointer; margin-left: 8px; }
+.btn-apply:hover { background: var(--neon-lime); color: #04140a; }
+.ai-ideas { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ai-ideas h4 { color: var(--neon-lime); margin: 6px 0 2px; font-size: .88rem; }
+.ai-ideas .rec { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: .8rem; border: 1px solid var(--line-2); background: #070912; color: var(--ink); }
+.ai-ideas .rec .tag { font-weight: 900; font-size: .66rem; padding: 2px 8px; border-radius: 999px; height: fit-content; white-space: nowrap; }
+.ai-ideas .rec.ok { border-color: var(--neon-lime); } .ai-ideas .rec.ok .tag { background: var(--neon-lime); color: #04140a; }
+.ai-ideas .rec.med { border-color: var(--neon-amber); } .ai-ideas .rec.med .tag { background: var(--neon-amber); color: #1a1400; }
+.ai-chat { margin-top: 14px; }
+.chat-row { display: flex; gap: 10px; align-items: center; }
+.chat-row input[type="text"] { flex: 1; border: 1px solid var(--line-2); border-radius: 9px; padding: 9px 11px; background: #070912; color: var(--ink); font-size: .85rem; }
+.chat-row input[type="text"]:focus { outline: none; border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+.ai-table { border-collapse: collapse; margin: 8px 0; font-size: .78rem; width: 100%; }
+.ai-table td { border: 1px solid var(--line); padding: 5px 8px; color: var(--ink); }
+.ai-table tr:first-child td { background: var(--panel-2); color: var(--neon-cyan); font-weight: 700; }
+.cal-form { display: grid; grid-template-columns: 1fr 220px auto; gap: 12px; align-items: end; margin: 12px 0; }
+@media (max-width: 760px) { .cal-form { grid-template-columns: 1fr; } }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+.tooltip { position: fixed; z-index: 50; max-width: 300px; background: #04060c; color: var(--ink); padding: 9px 11px; border-radius: 9px; font-size: .76rem; line-height: 1.45; box-shadow: 0 6px 28px rgba(0,0,0,.7); border: 1px solid var(--neon-cyan); pointer-events: none; opacity: 0; transition: opacity .12s; display: none; }
+.tooltip.show { opacity: 1; display: block; }
+.app-footer { text-align: center; padding: 18px; color: var(--ink-dim); font-size: .74rem; border-top: 1px solid var(--line); }
+
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">PCB</div>
+      <div class="brand-text">
+        <h1>360° PCB Should-Cost Model</h1>
+        <p class="subtitle">2026 · all PCB types · stack-up-driven · landed cost · Monte Carlo · AI optimizer</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btnShare" class="btn btn-ghost" type="button" title="Copy a link that reopens this exact configuration">⧉ Share link</button>
+      <button id="btnExportJson" class="btn btn-ghost" type="button" title="Download the current configuration as JSON">⇩ Config</button>
+      <button id="btnExportCsv" class="btn btn-ghost" type="button" title="Download the cost breakdown as CSV">⇩ CSV</button>
+      <button id="btnReset" class="btn btn-ghost" type="button">Reset</button>
+      <button id="btnSaveScenario" class="btn btn-primary" type="button">＋ Save scenario</button>
+    </div>
+  </header>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button class="tab active" data-tab="model" type="button">Cost Model</button>
+    <button class="tab" data-tab="ai" type="button">✦ AI Advisor</button>
+    <button class="tab" data-tab="routing" type="button">Process Routing</button>
+    <button class="tab" data-tab="scenarios" type="button">Scenarios &amp; Batch</button>
+    <button class="tab" data-tab="calibration" type="button">Calibration</button>
+    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Data</button>
+  </nav>
+
+  <main>
+    <!-- ============ MODEL TAB ============ -->
+    <section id="tab-model" class="tab-panel active">
+      <div class="layout">
+        <!-- INPUTS -->
+        <div class="inputs">
+          <div class="preset-bar">
+            <label class="preset-label">Worked examples (luxury SUV)</label>
+            <div class="example-presets" id="examplePresets"></div>
+            <p class="hint">Load a pre-built example, then tweak any parameter. Number of layers &amp; stack-up drive the model.</p>
+          </div>
+
+          <div class="preset-bar">
+            <label class="preset-label">Design file import <span class="beta-tag">beta</span></label>
+            <input type="file" id="importFiles" multiple accept=".gbr,.ger,.pho,.gtl,.gbl,.gko,.gm1,.gml,.cmp,.sol,.drl,.xln,.txt,.g1,.g2,.g3,.g4,.gp1,.gp2,.in1,.in2" />
+            <p class="hint">Drop Gerber (RS-274X) + Excellon drill files — board size, layer count and hole density are extracted automatically. Zip: extract first.</p>
+            <div class="import-report" id="importReport"></div>
+          </div>
+
+          <fieldset class="group">
+            <legend>1 · Board &amp; type</legend>
+            <div class="field"><label for="pcbType">PCB type</label><select id="pcbType"></select></div>
+            <div class="field row2">
+              <div><label for="boardW">Width (mm)</label><input type="number" id="boardW" value="100" min="2" step="1" /></div>
+              <div><label for="boardH">Height (mm)</label><input type="number" id="boardH" value="80" min="2" step="1" /></div>
+            </div>
+            <div class="field"><label for="orderQty">Order quantity (boards) <span class="info" data-tip="Drives the lot-size curve (prototype ≈3–5× volume pricing, decaying to 1× by ~3k boards), NRE amortisation, and flying-probe vs ICT test.">ⓘ</span></label><input type="number" id="orderQty" value="50000" min="1" step="100" /></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>2 · Stack-up (primary driver)</legend>
+            <div class="field"><label for="layerCount">Number of layers <span class="info" data-tip="THE primary cost driver. Each added layer pair adds imaging, etch, AOI, lamination, drilling depth and yield risk. Use even counts for balanced stack-ups.">ⓘ</span></label>
+              <input type="number" id="layerCount" value="4" min="1" max="40" step="1" /></div>
+            <div class="field"><label for="material">Base material</label><select id="material"></select></div>
+            <div class="field"><label for="boardThickness">Board thickness (mm) <span class="info" data-tip="Drives aspect ratio (thickness ÷ min hole). High aspect ratio hurts plating reliability and yield.">ⓘ</span></label>
+              <input type="number" id="boardThickness" value="1.6" min="0.1" step="0.1" /></div>
+            <div class="field row2">
+              <div><label for="copperInner">Inner copper</label><select id="copperInner"></select></div>
+              <div><label for="copperOuter">Outer copper</label><select id="copperOuter"></select></div>
+            </div>
+            <div class="field"><label for="copperFoil">Copper foil profile <span class="info" data-tip="HTE standard; RTF/VLP/HVLP low-profile foils cut insertion loss for ≥28 Gbps — a premium, supply-constrained line item in 2026.">ⓘ</span></label><select id="copperFoil"></select></div>
+            <div class="field"><label for="via">Via technology <span class="info" data-tip="Buried/blind vias and HDI microvias require sequential lamination — each build-up adds a press cycle and cost. Stacked microvias cost ~30–50% more than staggered.">ⓘ</span></label><select id="via"></select></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>3 · Design rules &amp; process</legend>
+            <div class="field"><label for="fabProcess">Fine-line process <span class="info" data-tip="Subtractive etch floor ≈2 mil. mSAP enables ~1.4 mil, SAP/ultra-HDI <1 mil — each ~40–50% premium over conventional imaging.">ⓘ</span></label><select id="fabProcess"></select></div>
+            <div class="field"><label for="trace">Min trace / space</label><select id="trace"></select></div>
+            <div class="field check"><label><input type="checkbox" id="impedance" checked /> Controlled impedance (TDR coupon)</label></div>
+            <div class="field check"><label><input type="checkbox" id="backdrill" /> Back-drill (stub removal)</label> <span class="info" data-tip="Controlled-depth drilling removes via stubs for >10–25 Gbps. ~$0.10/via, ~+10–20% of board cost; cheaper than blind/buried (+30–60%).">ⓘ</span></div>
+            <div class="field check"><label><input type="checkbox" id="viafill" /> Via-fill + cap (via-in-pad)</label> <span class="info" data-tip="Resin/copper fill + planarise for via-in-pad under fine-pitch BGA. Adds up to ~20% to board cost.">ⓘ</span></div>
+            <div class="field"><label for="finish">Surface finish</label><select id="finish"></select></div>
+            <div class="field row2">
+              <div><label for="maskColor">Solder mask</label><select id="maskColor"></select></div>
+              <div><label style="display:block">Silkscreen</label><label class="check" style="margin-top:7px"><input type="checkbox" id="silkscreen" checked /> Legend</label></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>4 · Panelisation</legend>
+            <div class="field row2">
+              <div><label for="panelW">Panel W (mm)</label><input type="number" id="panelW" value="457" min="50" step="1" /></div>
+              <div><label for="panelH">Panel H (mm)</label><input type="number" id="panelH" value="305" min="50" step="1" /></div>
+            </div>
+            <div class="field"><label for="utilization">Panel utilisation (%) <span class="info" data-tip="The board pays for its true share of the panel including waste. Costed relative to the 80% calibration reference — 70% utilisation costs ~14% more panel share, 90% costs ~11% less.">ⓘ</span></label>
+              <input type="number" id="utilization" value="80" min="20" max="95" step="1" /></div>
+            <div class="field"><label for="holeDensity">Hole density (holes/dm²)</label><input type="number" id="holeDensity" value="160" min="10" step="10" /></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>5 · Quality, region &amp; 2026 market</legend>
+            <div class="field"><label for="quality">Quality / IPC class <span class="info" data-tip="Sets yield, scrap allowance, test depth, AXI/microsection, IST/CAF coupons and NRE. Automotive = IPC Class 3 / IATF flow.">ⓘ</span></label><select id="quality"></select></div>
+            <div class="field"><label for="region">Fab region <span class="info" data-tip="2026 blended fab multipliers (China=1.0) for processing, overhead and material purchasing. Raw wage index is far wider (US ~7×, DE ~9×) but labour is only 15–30% of PCB cost.">ⓘ</span></label><select id="region"></select></div>
+            <div class="field row2">
+              <div><label for="goldPrice">Gold $/oz <span class="info" data-tip="2026 gold ~$4,100/oz. Scales the gold-variable part of ENIG/ENEPIG/hard-gold (~70% of ENIG cost is gold).">ⓘ</span></label><input type="number" id="goldPrice" value="4100" min="800" step="50" /></div>
+              <div><label for="marketSurcharge">Market surcharge % <span class="info" data-tip="2026 metal/energy volatility on material+processing (copper +40%, CCL +up to 40%). Raise for escalation clauses.">ⓘ</span></label><input type="number" id="marketSurcharge" value="6" min="0" step="1" /></div>
+            </div>
+            <div class="field row2">
+              <div><label for="overheadPct">Overhead (%)</label><input type="number" id="overheadPct" value="18" min="0" step="1" /></div>
+              <div><label for="marginPct">Margin (%)</label><input type="number" id="marginPct" value="25" min="0" max="80" step="1" /></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>6 · Landed cost (optional)</legend>
+            <div class="field"><label for="destMarket">Destination market <span class="info" data-tip="Selecting a lane auto-fills an indicative 2026 duty rate for the fab region (editable). China→US reflects the post-Feb-2026 Section 301 + Section 122 stack; verify per HTS code.">ⓘ</span></label><select id="destMarket"></select></div>
+            <div class="field row2">
+              <div><label for="dutyPct">Import duty (%)</label><input type="number" id="dutyPct" value="0" min="0" step="0.5" /></div>
+              <div><label for="freightPerBoard">Freight $/board</label><input type="number" id="freightPerBoard" value="0" min="0" step="0.05" /></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>7 · PCBA assembly (optional)</legend>
+            <div class="field check"><label><input type="checkbox" id="assemblyOn" /> Include assembly (SMT/THT + BOM)</label></div>
+            <div class="field row2">
+              <div><label for="smtCount">SMT placements</label><input type="number" id="smtCount" value="250" min="0" step="10" /></div>
+              <div><label for="thtCount">THT joints</label><input type="number" id="thtCount" value="10" min="0" step="1" /></div>
+            </div>
+            <div class="field row2">
+              <div><label for="sides">Assembly sides</label><select id="sides"><option value="1">1</option><option value="2" selected>2</option></select></div>
+              <div><label for="bomCost">BOM cost $/board</label><input type="number" id="bomCost" value="18" min="0" step="0.5" /></div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="results">
+          <div class="config-alerts" id="configAlerts"></div>
+          <div class="result-cards">
+            <div class="result-card primary">
+              <div class="rc-label">Fab cost / board</div>
+              <div class="rc-value" id="outCost">$—</div>
+              <div class="rc-sub" id="outCostSub">fully loaded, incl. NRE &amp; overhead</div>
+            </div>
+            <div class="result-card primary">
+              <div class="rc-label">Quoted price / board</div>
+              <div class="rc-value" id="outPrice">$—</div>
+              <div class="rc-sub" id="outPriceSub">at target margin</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">Uncertainty (Monte Carlo)</div>
+              <div class="rc-value alt" id="outMC">$—</div>
+              <div class="rc-sub" id="outMCsub">P10 – P90 fab cost, 400 samples</div>
+            </div>
+          </div>
+          <div class="result-cards" id="extraCards" style="display:none">
+            <div class="result-card">
+              <div class="rc-label">Landed cost / board</div>
+              <div class="rc-value alt" id="outLanded">$—</div>
+              <div class="rc-sub" id="outLandedSub">price + duty + freight</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">PCBA cost / board</div>
+              <div class="rc-value alt" id="outPcba">$—</div>
+              <div class="rc-sub" id="outPcbaSub">board + BOM + assembly</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">$ / dm²</div>
+              <div class="rc-value" id="outPerArea">$—</div>
+              <div class="rc-sub">normalised bare-board cost</div>
+            </div>
+          </div>
+
+          <div class="metrics-strip" id="metricsStrip"></div>
+
+          <div class="panel">
+            <h3>Cost stack <span class="sub">per board</span></h3>
+            <div class="stackbar" id="stackBar"></div>
+            <div class="legend" id="stackLegend"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Cost breakdown</h3>
+            <table class="breakdown" id="breakdownTable">
+              <thead><tr><th>Cost element</th><th class="num">$ / board</th><th class="num">% of total</th></tr></thead>
+              <tbody></tbody><tfoot></tfoot>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h3>Benchmark sanity check <span class="sub">independent 2026 market price band</span></h3>
+            <div class="bandbar" id="bandBar"><div class="zone" id="bandZone"></div><div class="mark" id="bandMark"></div></div>
+            <div class="band-labels" id="bandLabels"></div>
+            <div class="band-verdict" id="bandVerdict"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Cost-driver sensitivity <span class="sub">±15% one-at-a-time</span></h3>
+            <div class="tornado" id="tornado"></div>
+          </div>
+
+          <div class="panel">
+            <h3>DfC — Design-for-Cost recommendations</h3>
+            <div class="dfc" id="dfc"></div>
+          </div>
+
+          <div class="accuracy-note" id="accuracyNote"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AI ADVISOR TAB ============ -->
+    <section id="tab-ai" class="tab-panel">
+      <div class="panel ai-hero">
+        <h3><span class="ai-badge">AI</span> AI Cost Advisor, Optimizer &amp; Idea Generation</h3>
+        <p class="hint">Three engines. The <b>built-in advisor</b> works instantly offline. <b>Claude review</b> streams a generative should-cost review. The <b>optimizer</b> gives Claude the live cost engine as a tool — it tests what-ifs numerically and only recommends verified savings. Ideas come back with one-click <b>Apply</b> buttons.</p>
+        <div class="ai-actions">
+          <button id="btnLocalAI" class="btn btn-primary" type="button">⚡ Built-in insights</button>
+          <button id="btnClaudeAI" class="btn btn-magenta" type="button">✦ Claude review</button>
+          <button id="btnOptimize" class="btn btn-magenta" type="button">⚙ Claude optimizer</button>
+          <button id="btnAiStop" class="btn btn-ghost" type="button" style="display:none">■ Stop</button>
+        </div>
+        <div class="ai-config">
+          <div class="field"><label for="aiKey">Anthropic API key (for Claude features) <span class="info" data-tip="Used only for direct browser calls to api.anthropic.com. Stored in this browser only if you tick save; unticking removes it. Get a key at console.anthropic.com.">ⓘ</span></label>
+            <input type="password" id="aiKey" placeholder="sk-ant-..." autocomplete="off" /></div>
+          <div class="field"><label for="aiModel">Model</label><select id="aiModel">
+            <option value="claude-opus-4-8">Claude Opus 4.8 (default)</option>
+            <option value="claude-sonnet-5">Claude Sonnet 5</option>
+            <option value="claude-haiku-4-5">Claude Haiku 4.5 (cheapest)</option>
+          </select></div>
+        </div>
+        <label class="check" style="margin-top:8px; font-size:.76rem; color:var(--ink-soft)"><input type="checkbox" id="aiSaveKey" /> Remember key in this browser</label>
+        <p class="ai-key-note">Your key never leaves your machine except to Anthropic. Requests time out after 2 minutes and can be stopped.</p>
+        <div class="ai-status" id="aiStatus"></div>
+        <div class="ai-output" id="aiOutput">Load a design on the Cost Model tab, then run an engine above. The built-in advisor needs no key.</div>
+        <div class="ai-ideas" id="aiIdeas"></div>
+        <div class="ai-chat" id="aiChatWrap" style="display:none">
+          <div class="field"><label for="aiChatInput">Follow-up question (chat is grounded in this design)</label>
+            <div class="chat-row">
+              <input type="text" id="aiChatInput" placeholder="e.g. What if we dual-source Vietnam and Mexico?" />
+              <button id="btnAiChat" class="btn btn-primary" type="button">Ask</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROUTING TAB ============ -->
+    <section id="tab-routing" class="tab-panel">
+      <div class="panel">
+        <h3 id="routingTitle">Process routing</h3>
+        <p class="hint">Ordered fab (and assembly, if enabled) process steps for the current configuration. Steps appear/disappear with layer count, via technology, fine-line process, material and PCB type.</p>
+        <div class="routing" id="routingList"></div>
+      </div>
+    </section>
+
+    <!-- ============ SCENARIOS & BATCH TAB ============ -->
+    <section id="tab-scenarios" class="tab-panel">
+      <div class="panel">
+        <div class="scenario-head"><h3>Saved scenarios</h3><button id="btnClearScenarios" class="btn btn-ghost" type="button">Clear all</button></div>
+        <p class="hint">Use “＋ Save scenario” to snapshot inputs &amp; results, then compare PCB types / layer counts / regions side-by-side.</p>
+        <div class="scenario-table-wrap"><table class="scenario-table" id="scenarioTable"><tbody></tbody></table></div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <h3>Batch costing (CSV)</h3>
+        <p class="hint">Upload a CSV with a header row of parameter names (any of: <code>name, layerCount, boardW, boardH, pcbType, material, via, trace, finish, quality, region, orderQty, …</code>). Each row is costed with unspecified parameters taken from the current configuration.</p>
+        <div class="chat-row">
+          <input type="file" id="batchFile" accept=".csv" />
+          <button id="btnBatchTemplate" class="btn btn-ghost" type="button">⇩ Template</button>
+          <button id="btnBatchExport" class="btn btn-ghost" type="button" style="display:none">⇩ Results CSV</button>
+        </div>
+        <div class="scenario-table-wrap" style="margin-top:10px"><table class="scenario-table" id="batchTable"><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ============ CALIBRATION TAB ============ -->
+    <section id="tab-calibration" class="tab-panel">
+      <div class="panel">
+        <h3>Quote calibration <span class="sub">teach the model your real prices</span></h3>
+        <p class="hint">Log actual supplier quotes against the model's prediction for the same configuration. The model learns a per-region correction factor (median ratio) and shows its live accuracy. This is how the accuracy claim is earned, not asserted.</p>
+        <div class="cal-form">
+          <div class="field"><label for="calSupplier">Supplier / note</label><input type="text" id="calSupplier" placeholder="e.g. Fab A, RFQ 2026-07" /></div>
+          <div class="field"><label for="calActual">Actual quoted price $/board</label><input type="number" id="calActual" min="0" step="0.01" /></div>
+          <button id="btnCalAdd" class="btn btn-primary" type="button">＋ Log quote for current config</button>
+        </div>
+        <div class="cal-stats" id="calStats"></div>
+        <label class="check" style="margin:10px 0; font-size:.8rem"><input type="checkbox" id="calApply" /> Apply learned correction factor to displayed results</label>
+        <div class="scenario-table-wrap"><table class="scenario-table" id="calTable"><tbody></tbody></table></div>
+        <div class="chat-row" style="margin-top:10px">
+          <button id="btnCalExport" class="btn btn-ghost" type="button">⇩ Export quotes CSV</button>
+          <button id="btnCalClear" class="btn btn-ghost" type="button">Clear all</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ METHODOLOGY TAB ============ -->
+    <section id="tab-methodology" class="tab-panel">
+      <div class="panel prose" id="methodologyProse"></div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+  <footer class="app-footer"><span>360° PCB should-cost model · 2026 v2 · engineering ranges, not supplier quotes · layer count &amp; stack-up central.</span></footer>
+
+  <script>
+/* ============================================================================
+ * data.js — Calibration data & coefficients for the 360° PCB Should-Cost Model
+ * 2026 EDITION — expanded materials, processes, latest technologies, updated
+ * labour/region rates, and market (metal/energy) surcharges.
+ *
+ * All figures are industry-aligned ENGINEERING RANGES (not supplier quotes).
+ * Number of layers and stack-up remain the PRIMARY cost drivers.
+ * Cost coefficients are per square-decimetre (dm²): 1 dm² = 10,000 mm².
+ *
+ * 2026 market context baked into defaults:
+ *  - Gold at historic highs → ENIG/ENEPIG/hard-gold finishes carry a premium.
+ *  - Copper foil & resin elevated vs 2023–24; energy costs high (esp. EU).
+ *  - Captured via the editable "market surcharge %" input (default 6%).
+ * ==========================================================================*/
+
+/* ---- PCB technology types: select routing + complexity multipliers ---- */
+const PCB_TYPES = [
+  { id: "rigid",     label: "Rigid (1–12+ layer)",         complexity: 1.00, defLayers: 4 },
+  { id: "hdi",       label: "HDI (microvia build-up)",     complexity: 1.55, defLayers: 8 },
+  { id: "anylayer",  label: "Any-layer HDI / SLP",         complexity: 1.95, defLayers: 10 },
+  { id: "flex",      label: "Flex",                        complexity: 1.40, defLayers: 2 },
+  { id: "rigidflex", label: "Rigid-Flex",                  complexity: 2.20, defLayers: 8 },
+  { id: "highspeed", label: "High-speed / High-freq (RF)", complexity: 1.30, defLayers: 8 },
+  { id: "power",     label: "Power / Heavy-copper",        complexity: 1.20, defLayers: 4 },
+];
+
+/* ---- Laminate / base materials. costDm2PerLayer = $/dm² per copper layer.
+ *      2026 relative pricing; low-loss and RF grades are the big premiums. ---- */
+const MATERIALS = [
+  { id: "fr4_std",     label: "FR-4 standard (Tg 130–140)",       costDm2PerLayer: 0.44, tg: 140, family: "fr4",  note: "Dk~4.5, lossy" },
+  { id: "fr4_midtg",   label: "FR-4 mid-Tg (150–160)",            costDm2PerLayer: 0.50, tg: 155, family: "fr4",  note: "" },
+  { id: "fr4_hightg",  label: "FR-4 High-Tg (170–180, 370HR/S1000-2)", costDm2PerLayer: 0.58, tg: 175, family: "fr4", note: "auto default" },
+  { id: "fr4_halfree", label: "Halogen-free FR-4",                costDm2PerLayer: 0.62, tg: 150, family: "fr4",  note: "" },
+  { id: "lowloss_mid", label: "Low-loss (Megtron 6 / I-Tera)",    costDm2PerLayer: 1.15, tg: 200, family: "ll",   note: "Df~0.002, 28G" },
+  { id: "lowloss_ult", label: "Ultra-low-loss (Megtron 7/8)",     costDm2PerLayer: 1.80, tg: 200, family: "ll",   note: "112G+ SerDes" },
+  { id: "rogers_4350", label: "Rogers RO4350B (hydrocarbon)",     costDm2PerLayer: 2.60, tg: 280, family: "rf",   note: "Dk 3.48" },
+  { id: "rogers_4003", label: "Rogers RO4003C",                   costDm2PerLayer: 2.50, tg: 280, family: "rf",   note: "Dk 3.38" },
+  { id: "rogers_3003", label: "Rogers RO3003 (77 GHz radar)",     costDm2PerLayer: 4.20, tg: 280, family: "rf",   note: "PTFE, radar" },
+  { id: "ptfe",        label: "PTFE / Taconic (microwave)",       costDm2PerLayer: 4.40, tg: 280, family: "rf",   note: "" },
+  { id: "polyimide",   label: "Polyimide (flex)",                 costDm2PerLayer: 1.10, tg: 250, family: "flex", note: "" },
+  { id: "lcp",         label: "LCP (mmWave flex)",                costDm2PerLayer: 2.60, tg: 300, family: "flex", note: "low-loss flex" },
+  { id: "metalcore",   label: "Metal-core / IMS (aluminium)",     costDm2PerLayer: 0.72, tg: 140, family: "mc",   note: "thermal" },
+];
+
+/* ---- Copper weight multiplier on copper-related process & material ---- */
+const COPPER_WEIGHTS = [
+  { id: "0p5", label: "0.5 oz", oz: 0.5, mult: 0.90 },
+  { id: "1",   label: "1 oz",   oz: 1.0, mult: 1.00 },
+  { id: "2",   label: "2 oz",   oz: 2.0, mult: 1.28 },
+  { id: "3",   label: "3 oz",   oz: 3.0, mult: 1.65 },
+  { id: "4",   label: "4 oz",   oz: 4.0, mult: 2.10 },
+  { id: "6",   label: "6 oz (heavy)",  oz: 6.0, mult: 3.10 },
+  { id: "10",  label: "10 oz (extreme)", oz: 10.0, mult: 5.20 },
+];
+
+/* ---- Copper foil profile — matters for high-speed insertion loss + cost ---- */
+const COPPER_FOILS = [
+  { id: "hte",  label: "HTE (standard)",        addDm2: 0.00 },
+  { id: "rtf",  label: "RTF (reverse-treat)",   addDm2: 0.03 },
+  { id: "vlp",  label: "VLP (very-low-profile)", addDm2: 0.06 },
+  { id: "hvlp", label: "HVLP / HVLP2 (28G+)",   addDm2: 0.10 },
+];
+
+/* ---- Fine-line / patterning process. Enables finer geometry, changes cost+yield. */
+const FAB_PROCESSES = [
+  { id: "subtractive", label: "Subtractive etch (standard)", imageMult: 1.00, yld: 1.00, minMil: 3 },
+  { id: "msap",        label: "mSAP (modified semi-additive)", imageMult: 1.60, yld: 0.99, minMil: 1.4 },
+  { id: "sap",         label: "SAP / ultra-HDI (<25 µm)",      imageMult: 2.30, yld: 0.96, minMil: 0.8 },
+];
+
+/* ---- Via technology: drives drilling, lamination cycles, plating, yield ---- */
+const VIA_TYPES = [
+  { id: "through", label: "Through-hole only",             lamExtra: 0, microvia: false },
+  { id: "buried",  label: "Through + buried/blind",        lamExtra: 1, microvia: false },
+  { id: "micro1",  label: "HDI 1+N+1 (microvia, 1 build)", lamExtra: 1, microvia: true, buildup: 1 },
+  { id: "micro2",  label: "HDI 2+N+2 (microvia, 2 build)", lamExtra: 2, microvia: true, buildup: 2 },
+  { id: "micro3",  label: "HDI 3+N+3 (any-layer)",         lamExtra: 3, microvia: true, buildup: 3 },
+];
+
+/* ---- Minimum trace/space classes → yield derating (imaging tech via FAB_PROCESSES) */
+const TRACE_CLASSES = [
+  { id: "8mil", label: "≥ 8 mil (standard)",      mil: 8,   fineMult: 1.00, yld: 1.00 },
+  { id: "5mil", label: "5 mil",                   mil: 5,   fineMult: 1.08, yld: 0.98 },
+  { id: "4mil", label: "4 mil",                   mil: 4,   fineMult: 1.16, yld: 0.96 },
+  { id: "3mil", label: "3 mil (LDI)",             mil: 3,   fineMult: 1.32, yld: 0.93 },
+  { id: "2mil", label: "2 mil (fine-line)",       mil: 2,   fineMult: 1.60, yld: 0.89 },
+  { id: "1mil", label: "≤ 1.5 mil (mSAP/SAP)",    mil: 1.5, fineMult: 1.95, yld: 0.84 },
+];
+
+/* ---- Surface finishes: cost/dm² at reference gold ($4,100/oz, 2026) + flat
+ *      setup. goldFrac = fraction of the finish cost that is spot-gold-variable
+ *      (research: ENIG ~70%, a 10% gold rise ≈ +6.8% ENIG). The variable part is
+ *      re-scaled by the user's gold-price input; the fixed part (process/labour)
+ *      stays put. Silver-based finishes are exposed to silver, not gold. ---- */
+const FINISHES = [
+  { id: "hasl",    label: "HASL (leaded)",         costDm2: 0.10, setup: 8,  goldFrac: 0.00 },
+  { id: "lfhasl",  label: "Lead-free HASL",        costDm2: 0.13, setup: 10, goldFrac: 0.00 },
+  { id: "osp",     label: "OSP",                   costDm2: 0.07, setup: 6,  goldFrac: 0.00 },
+  { id: "imag",    label: "Immersion silver",      costDm2: 0.26, setup: 14, goldFrac: 0.00 },
+  { id: "isn",     label: "Immersion tin",         costDm2: 0.22, setup: 14, goldFrac: 0.00 },
+  { id: "enig",    label: "ENIG (Ni/Au)",          costDm2: 0.85, setup: 24, goldFrac: 0.70 },
+  { id: "enepig",  label: "ENEPIG (Ni/Pd/Au)",     costDm2: 1.25, setup: 32, goldFrac: 0.55 },
+  { id: "epig",    label: "EPIG (Pd/Au, Ni-free)", costDm2: 1.15, setup: 30, goldFrac: 0.50 },
+  { id: "hardgold",label: "Hard gold (edge/tab)",  costDm2: 2.20, setup: 38, goldFrac: 0.85 },
+];
+const GOLD_REF = 4100; // reference gold price ($/oz) at which FINISHES costs are set
+
+/* ---- Solder-mask colour adders (green is baseline) ---- */
+const MASK_COLORS = [
+  { id: "green", label: "Green (standard)", add: 0.00 },
+  { id: "black", label: "Black",            add: 0.06 },
+  { id: "blue",  label: "Blue",             add: 0.05 },
+  { id: "red",   label: "Red",              add: 0.05 },
+  { id: "white", label: "White",            add: 0.08 },
+  { id: "matte", label: "Matte black/any",  add: 0.12 },
+];
+
+/* ---- Quality / IPC build class: yield, test, inspection, NRE, margin ---- */
+const QUALITY_LEVELS = [
+  { id: "consumer",   label: "Consumer (IPC Class 2)",      yld: 0.97, scrap: 0.02, testMult: 1.0, inspect: 0.00, nreMult: 1.0, microsection: false, axi: false, margin: 0.15 },
+  { id: "industrial", label: "Industrial (Class 2+)",       yld: 0.95, scrap: 0.03, testMult: 1.1, inspect: 0.04, nreMult: 1.2, microsection: false, axi: false, margin: 0.20 },
+  { id: "automotive", label: "Automotive (Class 3 / IATF)", yld: 0.92, scrap: 0.05, testMult: 1.3, inspect: 0.10, nreMult: 1.8, microsection: true,  axi: true,  margin: 0.25 },
+  { id: "aerospace",  label: "Aerospace/Mil (Class 3/A)",   yld: 0.88, scrap: 0.08, testMult: 1.6, inspect: 0.20, nreMult: 2.6, microsection: true,  axi: true,  margin: 0.35 },
+];
+
+/* ---- Region: 2026 processing-cost multipliers (China = 1.0). These are
+ *      BLENDED fab-processing multipliers, NOT raw wage ratios — labour is only
+ *      ~15–30% of PCB cost and low-wage regions have lower productivity, so the
+ *      total-cost spread is compressed vs the raw wage index (China=1.0):
+ *      India ~0.3, Vietnam ~0.65, Taiwan ~1.7, Korea ~3.5, USA ~7.2, DE ~8.8.
+ *      Energy costs (EU highest, China/US ~$0.08/kWh) sit in the overhead term. */
+const REGIONS = [
+  { id: "china",    label: "China",             labor: 1.00, overhead: 1.00, matFactor: 1.00 },
+  { id: "vietnam",  label: "Vietnam",           labor: 0.85, overhead: 0.94, matFactor: 1.03 },
+  { id: "thailand", label: "Thailand",          labor: 0.88, overhead: 0.96, matFactor: 1.03 },
+  { id: "india",    label: "India",             labor: 0.90, overhead: 1.00, matFactor: 1.04 },
+  { id: "taiwan",   label: "Taiwan",            labor: 1.40, overhead: 1.20, matFactor: 1.00 },
+  { id: "skorea",   label: "South Korea",       labor: 1.60, overhead: 1.25, matFactor: 1.00 },
+  { id: "japan",    label: "Japan",             labor: 1.85, overhead: 1.40, matFactor: 1.04 },
+  { id: "mexico",   label: "Mexico",            labor: 1.20, overhead: 1.20, matFactor: 1.08 },
+  { id: "na",       label: "North America",     labor: 2.60, overhead: 1.90, matFactor: 1.12 },
+  { id: "eu",       label: "Europe",            labor: 2.85, overhead: 2.10, matFactor: 1.12 },
+];
+
+/* ---- Landed-cost duty lanes (fab region → destination market). Editable 2026
+ *      defaults: cumulative import-duty stack on customs value. China→US
+ *      reflects the post-Feb-2026 Section 301 + Section 122 stack (some
+ *      categories run higher; exclusions expire Nov 2026). All others are
+ *      indicative MFN-level rates — always verify per HTS code. ---- */
+const DUTY_LANES = {
+  domestic: { label: "Domestic / none", rates: {} },                       // no duty
+  us: { label: "United States", rates: { china: 38, vietnam: 10, thailand: 10, india: 10, taiwan: 10, skorea: 0, japan: 10, mexico: 0, na: 0, eu: 10 } },
+  eu: { label: "European Union", rates: { china: 3.7, vietnam: 0, thailand: 3.7, india: 3.7, taiwan: 3.7, skorea: 0, japan: 3.7, mexico: 3.7, na: 3.7, eu: 0 } },
+};
+
+/* ---- Lot-size curve: fab quotes run 3–5× volume pricing at prototype
+ *      quantities, decaying toward 1.0 by a few thousand boards.
+ *      lotFactor = 1 + LOT_AMPL·exp(−qty/LOT_TAU): ~3.8× @10, ~3.1× @100,
+ *      ~1.5× @500, ~1.1× @1k, ~1.00 @≥3k. Applied to material+processing. ---- */
+const LOT_AMPL = 2.8;
+const LOT_TAU  = 300;
+
+/* ---- PCBA assembly module (optional add-on; region labour applies). ---- */
+const ASSEMBLY = {
+  smtPerPlacement: 0.0045,  // $/SMT placement (China volume baseline)
+  thtPerJoint:     0.08,    // $/THT insertion (wave/selective + hand)
+  sideChangeover:  0.02,    // per-board adder for double-sided reflow
+  aoiSpiPerBoard:  0.05,    // SPI + AOI per board
+  testPerComp100:  0.02,    // functional/ICT per 100 components
+  nreStencil:      80,      // laser stencil, per side handled in engine
+  nreProgramming:  300,     // line programming + first article
+  assyYield:       0.99,    // assembly yield (post-rework)
+};
+
+/* ---- Monte Carlo uncertainty (1σ, relative) on major cost groups —
+ *      reflects the calibration confidence of each block. ---- */
+const MC_SIGMA = { material: 0.08, processing: 0.11, test: 0.10, yldAbs: 0.02, gold: 0.08 };
+
+/* ---- Global cost coefficients ($/dm² unless noted). Calibrated to 2026 fab
+ *      economics. Tune here, transparently. */
+const COEFF = {
+  materialCal:     1.00,
+  procCal:         0.90,    // global processing calibration knob (v2: re-anchored
+                            // after fixing the missing-finish-in-total bug)
+  imagePerLayerDm2: 0.13,   // inner/outer imaging per copper layer
+  etchPerLayerDm2:  0.11,   // develop-etch-strip per layer
+  aoiPerLayerDm2:   0.05,   // AOI per layer
+  lamPerCycleDm2:   0.55,   // lay-up + press per lamination cycle
+  costPerHole:      0.0009, // mechanical drilled hole
+  holeDensity:      160,    // holes/dm² default
+  costPerMicrovia:  0.0011, // laser microvia
+  microviaDensity:  900,    // microvias/dm² per build-up layer
+  desmearPthDm2:    0.18,   // desmear + electroless copper
+  platingDm2:       0.26,   // electroplate (layer-normalised)
+  maskDm2:          0.10,   // solder mask per side
+  silkDm2:          0.04,   // legend per side
+  profilingDm2:     0.10,   // route/profile depanel
+  impedanceDm2:     0.06,   // impedance control process premium
+  impedanceCoupon:  18,     // TDR coupon NRE-ish
+  // advanced processes (2026)
+  backdrillFrac:    0.30,   // fraction of holes back-drilled (high-speed nets)
+  costPerBackdrill: 0.10,   // $/back-drilled hole (controlled-depth stub removal)
+  nreBackdrill:     260,    // back-drill program NRE
+  viafillDm2:       0.28,   // resin/copper via-fill + planarise, per build-up
+  msapAdderDm2:     0.05,   // extra chemistry/handling for semi-additive
+  axiDm2:           0.04,   // automated X-ray (Class 3 buried-via inspection)
+  istCoupon:        0.03,   // IST/CAF reliability coupon per board (amortised set)
+  // back-end test
+  flyingProbeRate:  0.9,    // $/board low-volume e-test
+  fixtureTestDm2:   0.03,   // fixtured/ICT marginal per board
+  // NRE (one-time, $)
+  nrePhotoTools:    120,
+  nreDrillProgram:  90,
+  nreTestFixture:   350,
+  nreLaserProgram:  180,
+  // flex / rigid-flex extras (per dm²)
+  coverlayDm2:      0.45,
+  stiffenerDm2:     0.35,
+  heavyCopperDm2:   0.22,   // etch comp per dm² per extra oz
+};
+
+/* ---- Default model state (4-layer FR-4 High-Tg automotive baseline) ---- */
+const DEFAULTS = {
+  pcbType: "rigid",
+  boardW: 100, boardH: 80,
+  layerCount: 4,
+  material: "fr4_hightg",
+  boardThickness: 1.6,
+  copperInner: "1",
+  copperOuter: "1",
+  copperFoil: "hte",
+  fabProcess: "subtractive",
+  trace: "5mil",
+  via: "through",
+  impedance: true,
+  backdrill: false,
+  viafill: false,
+  finish: "enig",
+  maskColor: "green",
+  silkscreen: true,
+  panelW: 457, panelH: 305,        // 18"×12" working panel
+  utilization: 80,
+  quality: "automotive",
+  region: "china",
+  orderQty: 50000,
+  holeDensity: 160,
+  overheadPct: 18,
+  marginPct: 25,
+  marketSurcharge: 6,              // 2026 metal/energy surcharge on material+processing
+  goldPrice: 4100,                 // spot gold $/oz — scales gold-finish variable cost
+  // landed cost (optional)
+  destMarket: "domestic",
+  dutyPct: 0,                      // auto-suggested from DUTY_LANES, editable
+  freightPerBoard: 0,
+  // PCBA assembly (optional)
+  assemblyOn: false,
+  smtCount: 250,
+  thtCount: 10,
+  sides: 2,
+  bomCost: 18,
+};
+
+/* ---- Pre-loaded worked examples (luxury SUV context) ---- */
+const EXAMPLES = [
+  {
+    name: "4-layer automotive control PCB",
+    note: "Body/chassis control module, luxury SUV",
+    input: { ...DEFAULTS, pcbType: "rigid", boardW: 100, boardH: 80, layerCount: 4,
+      material: "fr4_hightg", copperInner: "1", copperOuter: "1", trace: "5mil",
+      via: "through", impedance: true, finish: "enig", quality: "automotive",
+      region: "china", orderQty: 50000 },
+  },
+  {
+    name: "8-layer high-speed domain controller PCB",
+    note: "Central compute / ADAS domain controller, luxury SUV",
+    input: { ...DEFAULTS, pcbType: "highspeed", boardW: 160, boardH: 120, layerCount: 8,
+      material: "lowloss_mid", boardThickness: 1.6, copperInner: "1", copperOuter: "1",
+      copperFoil: "vlp", fabProcess: "subtractive", trace: "4mil", via: "buried",
+      impedance: true, backdrill: true, finish: "enig",
+      quality: "automotive", region: "china", orderQty: 20000 },
+  },
+  {
+    name: "10-layer HDI rigid-flex infotainment PCB",
+    note: "Cockpit / IVI display + main board, luxury SUV",
+    input: { ...DEFAULTS, pcbType: "rigidflex", boardW: 140, boardH: 90, layerCount: 10,
+      material: "polyimide", boardThickness: 1.2, copperInner: "0p5", copperOuter: "1",
+      copperFoil: "hte", fabProcess: "msap", trace: "3mil", via: "micro2",
+      impedance: true, viafill: true, finish: "enepig",
+      quality: "automotive", region: "china", orderQty: 8000 },
+  },
+];
+
+/* ============================================================================
+ * model.js — 360° PCB should-cost engine (all PCB types) — 2026 edition v2.
+ *
+ * Pure functions. Bottom-up, process-routed cost build with layer count and
+ * stack-up as primary drivers.
+ *
+ * v2 (review fixes + upgrades):
+ *  - Panel utilisation now enters the cost math (waste factor, normalized at
+ *    the 80% calibration reference) — material & panel-area processing scale
+ *    with real panel share.  [review B1]
+ *  - Lot-size curve: prototype quantities cost 3–5× volume pricing, decaying
+ *    to 1.0 by ~3k boards.
+ *  - Quality scrap allowance and finish setup are now consumed (were dead
+ *    parameters).  [review B6]
+ *  - Region material factor (NA/EU pay more for laminate) + expanded regions.
+ *  - Config validation: contradictory stack-ups are flagged HIGH in DfC.  [B2]
+ *  - Landed cost: duty lane + freight → landed $/board.
+ *  - Optional PCBA assembly module (SMT/THT placements, BOM, stencil NRE).
+ *  - Monte Carlo uncertainty (P10/P50/P90) via mcSimulate().
+ * ==========================================================================*/
+
+const byId = (arr, id) => arr.find((x) => x.id === id) || arr[0];
+const clampN = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+
+/* Calibration reference for panel utilisation: all $/dm² coefficients were
+ * calibrated against quotes that already embed ~80% utilisation waste, so the
+ * waste factor is normalized to 1.0 at 80%. */
+const UTIL_REF = 0.80;
+
+/* Lamination cycles — central stack-up driver. */
+function laminationCycles(p, type, via) {
+  if (p.layerCount <= 2) return type.id === "flex" ? 1 : 0;
+  let cycles = 1;
+  cycles += via.lamExtra;
+  if (type.id === "anylayer") cycles += 1;
+  if (type.id === "rigidflex") cycles += 2;
+  if (type.id === "flex" && p.layerCount > 2) cycles += 1;
+  if (p.layerCount >= 14) cycles += 1;
+  return cycles;
+}
+
+function boardsPerPanel(p) {
+  const panelArea = (p.panelW * p.panelH) / 10000;
+  const boardArea = (p.boardW * p.boardH) / 10000;
+  if (boardArea <= 0) return 1;
+  return Math.max(1, Math.floor((panelArea / boardArea) * (p.utilization / 100)));
+}
+
+/* Gold-price-adjusted surface-finish cost per dm². */
+function finishCostDm2(finish, goldPrice) {
+  const g = clampN((goldPrice || GOLD_REF) / GOLD_REF, 0.3, 4);
+  return finish.costDm2 * ((1 - finish.goldFrac) + finish.goldFrac * g);
+}
+
+/* Lot-size multiplier on material+processing (fab quote behaviour). */
+function lotFactor(qty) {
+  return 1 + LOT_AMPL * Math.exp(-Math.max(1, qty) / LOT_TAU);
+}
+
+/* Config validation — contradictory stack-ups a fab would bounce. [B2] */
+function validateConfig(p, type, mat, via, proc, trace, cuIn, cuOut) {
+  const issues = [];
+  if ((type.id === "hdi" || type.id === "anylayer") && !via.microvia)
+    issues.push(`CONFIG: ${type.label} requires microvia technology, but "${via.label}" is selected. The build as configured is not manufacturable — select an HDI via structure (1+N+1 / 2+N+2 / any-layer).`);
+  if ((type.id === "flex" || type.id === "rigidflex") && mat.family !== "flex")
+    issues.push(`CONFIG: ${type.label} needs a flex-family base material (polyimide / LCP), but "${mat.label}" is selected. Costing is unreliable until the material matches the build.`);
+  if (via.microvia && (type.id === "rigid" || type.id === "power"))
+    issues.push(`CONFIG: microvias are selected on the "${type.label}" board type — switch the type to HDI / any-layer so routing, complexity and yield reflect the actual build.`);
+  if (p.layerCount <= 2 && via.lamExtra > 0)
+    issues.push(`CONFIG: a ${p.layerCount}-layer board cannot have buried/blind or build-up vias — there is no inner stack to bury them in.`);
+  return issues;
+}
+
+function computePcb(input) {
+  const p = { ...input };
+  const type = byId(PCB_TYPES, p.pcbType);
+  const mat = byId(MATERIALS, p.material);
+  const cuIn = byId(COPPER_WEIGHTS, p.copperInner);
+  const cuOut = byId(COPPER_WEIGHTS, p.copperOuter);
+  const foil = byId(COPPER_FOILS, p.copperFoil || "hte");
+  const proc = byId(FAB_PROCESSES, p.fabProcess || "subtractive");
+  const trace = byId(TRACE_CLASSES, p.trace);
+  const via = byId(VIA_TYPES, p.via);
+  const finish = byId(FINISHES, p.finish);
+  const maskColor = byId(MASK_COLORS, p.maskColor);
+  const quality = byId(QUALITY_LEVELS, p.quality);
+  const region = byId(REGIONS, p.region);
+  const surcharge = 1 + (p.marketSurcharge || 0) / 100;
+  const mc = p._mc || {};                       // Monte Carlo perturbation hooks
+
+  const area = (p.boardW * p.boardH) / 10000;   // dm² per board
+  const L = Math.max(1, p.layerCount);
+  const innerLayers = Math.max(0, L - 2);
+  const bpp = boardsPerPanel(p);
+  const lamCycles = laminationCycles(p, type, via);
+  const cuMult = (2 * cuOut.mult + innerLayers * cuIn.mult) / L;
+
+  // Panel-waste factor: the board pays for its share of the panel including
+  // unusable area. Normalized so utilisation = 80% reproduces calibration. [B1]
+  const waste = UTIL_REF / clampN((p.utilization || 80) / 100, 0.2, 0.95);
+  // Lot-size multiplier (prototype premium → volume pricing).
+  const lot = lotFactor(p.orderQty);
+
+  // ---------------- MATERIAL ----------------
+  let material = area * mat.costDm2PerLayer * L * cuMult * COEFF.materialCal;
+  material += area * L * foil.addDm2;
+  if (type.id === "flex" || type.id === "rigidflex") material += area * COEFF.coverlayDm2;
+  if (type.id === "rigidflex") material += area * COEFF.stiffenerDm2;
+  const heavyOz = Math.max(0, Math.max(cuIn.oz, cuOut.oz) - 1);
+  if (heavyOz > 0) material += area * COEFF.heavyCopperDm2 * heavyOz;
+  // waste share, scrap allowance [B6], regional material premium, 2026 surcharge, lot curve
+  material *= waste * (1 + quality.scrap) * (region.matFactor || 1) * surcharge * lot;
+  material *= (mc.m || 1);
+
+  // ---------------- PROCESSING (per board, pre-region) ----------------
+  const fine = trace.fineMult * proc.imageMult;
+  const imaging   = area * L * COEFF.imagePerLayerDm2 * fine;
+  const etch      = area * L * COEFF.etchPerLayerDm2 * (1 + 0.15 * heavyOz);
+  const aoi       = area * L * COEFF.aoiPerLayerDm2;
+  const lamination = area * lamCycles * COEFF.lamPerCycleDm2;
+
+  const aspect = clampN(p.boardThickness / 0.2, 1, 20);
+  const aspectMult = 1 + 0.05 * Math.max(0, aspect - 6);
+  const holeCount = (p.holeDensity || COEFF.holeDensity) * area;
+  const drilling  = holeCount * COEFF.costPerHole * aspectMult * (L > 2 ? 1.1 : 1.0);
+
+  let laserDrill = 0;
+  if (via.microvia) laserDrill = COEFF.microviaDensity * area * via.buildup * COEFF.costPerMicrovia;
+
+  const backdrill = p.backdrill ? holeCount * COEFF.backdrillFrac * COEFF.costPerBackdrill : 0;
+  const viafill   = (p.viafill && via.microvia) ? area * COEFF.viafillDm2 * via.buildup : 0;
+  const msapAdder = proc.id !== "subtractive" ? area * L * COEFF.msapAdderDm2 : 0;
+
+  const desmearPth = area * COEFF.desmearPthDm2 * (L > 2 ? 1.0 : 0.6) * (mat.family === "rf" ? 1.5 : 1.0);
+  const plating    = area * COEFF.platingDm2 * (0.6 + 0.4 * L / 4) * aspectMult * cuMult;
+  const solderMask = area * COEFF.maskDm2 * 2 + area * maskColor.add;
+  const surfaceFin = area * finishCostDm2(finish, (p.goldPrice || GOLD_REF) * (mc.g || 1));
+  const silkscreen = p.silkscreen ? area * COEFF.silkDm2 * 2 : 0;
+  const profiling  = area * COEFF.profilingDm2 * (type.id === "rigidflex" ? 1.6 : 1.0);
+  const impedance  = p.impedance ? area * COEFF.impedanceDm2 : 0;
+
+  const rfMult = mat.family === "rf" ? 1.35 : mat.family === "ll" ? 1.10 : 1.0;
+  // Panel-area steps carry the waste factor; per-hole steps do not (holes are
+  // drilled only where the boards are).
+  const areaSteps = imaging + etch + aoi + lamination + viafill + msapAdder + desmearPth +
+                    plating + solderMask + surfaceFin + silkscreen + profiling + impedance;
+  const holeSteps = drilling + laserDrill + backdrill;
+  const pBase = type.complexity * rfMult * region.labor * surcharge * lot * (COEFF.procCal || 1);
+  let processing = (areaSteps * waste + holeSteps) * pBase;
+  processing *= (mc.pr || 1);
+
+  // ---------------- TEST & INSPECTION ----------------
+  const eTest = p.orderQty < 2000
+    ? COEFF.flyingProbeRate * (1 + 0.05 * L)
+    : area * COEFF.fixtureTestDm2 * (1 + 0.04 * L);
+  let inspection = area * quality.inspect + (quality.microsection ? 0.05 * area : 0);
+  if (quality.axi && (via.microvia || L >= 8)) inspection += area * COEFF.axiDm2;
+  if (quality.microsection) inspection += COEFF.istCoupon * area;
+  let testInspect = (eTest + inspection) * quality.testMult * region.labor;
+  testInspect *= (mc.t || 1);
+
+  // ---------------- TOOLING / NRE (amortised over orderQty) ----------------
+  let nre = COEFF.nrePhotoTools + COEFF.nreDrillProgram + finish.setup;   // [B6] finish setup
+  if (p.orderQty >= 2000) nre += COEFF.nreTestFixture;
+  if (via.microvia) nre += COEFF.nreLaserProgram;
+  if (p.backdrill) nre += COEFF.nreBackdrill;
+  if (p.impedance) nre += COEFF.impedanceCoupon;
+  nre *= quality.nreMult;
+  const nrePerBoard = nre / Math.max(1, p.orderQty);
+
+  // ---------------- YIELD ----------------
+  const layerYld = Math.pow(0.992, Math.max(0, L - 2));
+  let yld = clampN(quality.yld * trace.yld * proc.yld * layerYld *
+            (type.id === "rigidflex" ? 0.95 : type.id === "anylayer" ? 0.94 : type.id === "hdi" ? 0.96 : 1.0),
+            0.5, 0.999);
+  yld = clampN(yld + (mc.y || 0), 0.5, 0.999);
+
+  const mfgGood = (material + processing + testInspect) / yld;
+
+  // ---------------- OVERHEAD & MARGIN ----------------
+  const overhead = (p.overheadPct / 100) * mfgGood * region.overhead;
+  const totalCost = mfgGood + nrePerBoard + overhead;
+  const margin = p.marginPct != null ? p.marginPct / 100 : quality.margin;
+  const price = totalCost / (1 - clampN(margin, 0, 0.9));
+
+  // ---------------- PCBA ASSEMBLY (optional module) ----------------
+  let assembly = null, pcbaCost = null, pcbaPrice = null;
+  if (p.assemblyOn) {
+    const smt = (p.smtCount || 0) * ASSEMBLY.smtPerPlacement * region.labor;
+    const tht = (p.thtCount || 0) * ASSEMBLY.thtPerJoint * region.labor;
+    const sideAdd = (p.sides || 1) >= 2 ? ASSEMBLY.sideChangeover * region.labor : 0;
+    const aoiSpi = ASSEMBLY.aoiSpiPerBoard * region.labor;
+    const fct = ((p.smtCount || 0) + (p.thtCount || 0)) / 100 * ASSEMBLY.testPerComp100 * region.labor;
+    const assyNre = (ASSEMBLY.nreProgramming + ASSEMBLY.nreStencil * (p.sides || 1)) / Math.max(1, p.orderQty);
+    const assyProc = (smt + tht + sideAdd + aoiSpi + fct) / ASSEMBLY.assyYield;
+    assembly = { smt, tht, sideAdd, aoiSpi, fct, assyNre, assyProc, bom: p.bomCost || 0 };
+    pcbaCost = totalCost + (p.bomCost || 0) + assyProc + assyNre;
+    pcbaPrice = pcbaCost / (1 - clampN(margin, 0, 0.9));
+  }
+
+  // ---------------- LANDED COST (optional) ----------------
+  const priceBasis = pcbaPrice != null ? pcbaPrice : price;
+  const dutyPct = p.dutyPct || 0;
+  const freight = p.freightPerBoard || 0;
+  const landed = (p.destMarket && p.destMarket !== "domestic") || dutyPct > 0 || freight > 0
+    ? { duty: priceBasis * dutyPct / 100, freight, total: priceBasis * (1 + dutyPct / 100) + freight }
+    : null;
+
+  // ---------------- CATEGORY BREAKDOWN (sums to totalCost) ----------------
+  const yScale = mfgGood / Math.max(1e-9, material + processing + testInspect);
+  const pmA = pBase * waste * (mc.pr || 1);   // area-step multiplier
+  const pmH = pBase * (mc.pr || 1);           // per-hole multiplier
+  const components = [
+    { key: "material",  label: "Material (laminate, copper, prepreg)", value: material * yScale,   color: "#00e5ff" },
+    { key: "imaging",   label: "Imaging + etch + AOI",                 value: (imaging + etch + aoi) * pmA * yScale, color: "#3a8bff" },
+    { key: "lamination",label: "Lamination (" + lamCycles + " cycle" + (lamCycles===1?"":"s") + ")", value: lamination * pmA * yScale, color: "#a06bff" },
+    { key: "drilling",  label: "Drilling + laser µvia + back-drill",   value: holeSteps * pmH * yScale, color: "#ff2bd6" },
+    { key: "plating",   label: "Desmear / PTH / plating / via-fill",   value: (desmearPth + plating + viafill + msapAdder) * pmA * yScale, color: "#6cff3f" },
+    { key: "finish",    label: "Solder mask / finish / silk",          value: (solderMask + surfaceFin + silkscreen + profiling + impedance) * pmA * yScale, color: "#ffcf33" },
+    { key: "test",      label: "Test + inspection (AOI/AXI/e-test)",   value: testInspect * yScale,  color: "#ff7a3d" },
+    { key: "nre",       label: "Tooling / NRE (amortised)",            value: nrePerBoard,           color: "#ff3b6b" },
+    { key: "overhead",  label: "Overhead",                             value: overhead,              color: "#8b95bf" },
+  ];
+
+  const routing = buildRouting(p, type, via, L, proc);
+  const benchmark = benchmarkBand(p, type, L, area, quality, finish, mat, p.impedance, region, Math.max(cuIn.oz, cuOut.oz));
+  const configIssues = validateConfig(p, type, mat, via, proc, trace, cuIn, cuOut);
+  const dfc = dfcRecommendations(p, { type, mat, via, trace, finish, quality, proc, L, area, bpp, aspect, yld, lamCycles, cuIn, cuOut }, configIssues);
+
+  return {
+    p, type, mat, via, trace, finish, quality, region, proc, foil,
+    area, L, innerLayers, bpp, lamCycles, aspect, cuMult, holeCount,
+    waste, lot,
+    material, processing, testInspect, surfaceFin,
+    nre, nrePerBoard, yld, mfgGood, overhead, totalCost, price, margin,
+    assembly, pcbaCost, pcbaPrice, landed,
+    components, routing, benchmark, dfc, configIssues,
+    process: { imaging, etch, aoi, lamination, drilling, laserDrill, backdrill, viafill, msapAdder, desmearPth, plating, solderMask, surfaceFin, silkscreen, profiling, impedance },
+  };
+}
+
+/* ---------------- Monte Carlo uncertainty ----------------
+ * Perturbs the major cost blocks by their calibration sigmas and returns the
+ * resulting distribution of total cost (and landed/pcba where active). */
+function randn() {
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function mcSimulate(input, n = 400) {
+  const samples = [];
+  for (let i = 0; i < n; i++) {
+    const mc = {
+      m: Math.max(0.5, 1 + randn() * MC_SIGMA.material),
+      pr: Math.max(0.5, 1 + randn() * MC_SIGMA.processing),
+      t: Math.max(0.5, 1 + randn() * MC_SIGMA.test),
+      g: Math.max(0.5, 1 + randn() * MC_SIGMA.gold),
+      y: randn() * MC_SIGMA.yldAbs,
+    };
+    samples.push(computePcb({ ...input, _mc: mc }).totalCost);
+  }
+  samples.sort((a, b) => a - b);
+  const q = (f) => samples[Math.min(n - 1, Math.max(0, Math.round(f * (n - 1))))];
+  return { p10: q(0.10), p50: q(0.50), p90: q(0.90), n };
+}
+
+/* Process routing per board type. */
+function buildRouting(p, type, via, L, proc) {
+  const ml = L > 2;
+  const steps = [];
+  const add = (name, machine, on = true) => { if (on) steps.push({ name, machine }); };
+  add("Material cut / core prep", "Shearing / CNC");
+  add("Inner-layer imaging", proc.id === "subtractive" ? "LDI / DI exposure" : "mSAP/SAP patterning", ml);
+  add("Inner-layer develop-etch-strip (DES)", "Wet etch line", ml && proc.id === "subtractive");
+  add("Inner-layer pattern plate (semi-additive)", "VCP plating line", ml && proc.id !== "subtractive");
+  add("Inner-layer AOI", "Automated optical inspection", ml);
+  add("Oxide / bonding treatment", "Brown/black oxide", ml);
+  add("Lay-up & lamination", "Vacuum press", ml || type.id === "flex" || type.id === "rigidflex");
+  add("Mechanical drilling", "CNC drill");
+  add("Laser microvia drilling", "UV/CO₂ laser", via.microvia);
+  add("Desmear + electroless copper (PTH)", mp_rf(p) ? "Plasma desmear + e-less" : "Desmear + e-less line");
+  add("Electroplating (VCP / pulse)", "Cu plating line");
+  add("Via fill + planarise", "Resin/Cu fill + grind", p.viafill && via.microvia);
+  add("Outer-layer imaging", proc.id === "subtractive" ? "LDI / DI exposure" : "mSAP/SAP patterning");
+  add("Outer DES / pattern plate / strip-etch", "Wet process line");
+  add("Outer AOI", "Automated optical inspection");
+  add("Coverlay lamination", "Vacuum press", type.id === "flex" || type.id === "rigidflex");
+  add("Solder mask apply / expose / develop", "LPI mask line");
+  add("Surface finish", finishMachine(p.finish));
+  add("Silkscreen / legend", "Inkjet / screen legend", p.silkscreen);
+  add("Stiffener bonding", "Lamination / bonding", type.id === "rigidflex");
+  add("Back-drill (controlled depth)", "CDD back-drill", p.backdrill);
+  add("Profiling / routing / depanel", type.id === "rigidflex" || type.id === "flex" ? "Laser depanel" : "CNC route");
+  add("Electrical test", p.orderQty < 2000 ? "Flying probe" : "Fixture / ICT e-test");
+  add("Impedance / TDR test", "TDR + coupon", p.impedance);
+  add("AXI (X-ray) buried-joint inspection", "3D AXI", byId(QUALITY_LEVELS, p.quality).axi && (via.microvia || L >= 8));
+  add("Microsection / IST / CAF reliability", "Cross-section + lab", byId(QUALITY_LEVELS, p.quality).microsection);
+  add("Final inspection + packaging", "FQC / vacuum pack");
+  if (p.assemblyOn) {
+    add("Solder-paste print + SPI", "Stencil printer + SPI");
+    add("SMT placement", "Pick & place line");
+    add("Reflow" + ((p.sides || 1) >= 2 ? " (×2 sides)" : ""), "Reflow oven");
+    add("THT insertion + wave/selective", "Wave / selective solder", (p.thtCount || 0) > 0);
+    add("Assembly AOI + functional test", "3D AOI + FCT");
+  }
+  return steps;
+}
+function mp_rf(p) { return byId(MATERIALS, p.material).family === "rf"; }
+function finishMachine(id) {
+  if (id === "hasl" || id === "lfhasl") return "HASL line";
+  if (id === "osp") return "OSP line";
+  if (id === "imag" || id === "isn") return "Immersion line";
+  return "Chemical plating line (Ni/Pd/Au)";
+}
+
+/* Benchmark market-PRICE band ($/board) — independent of the cost engine.
+ * Includes the lot-size effect so proto-quantity comparisons stay fair. */
+function benchmarkBand(p, type, L, area, quality, finish, mat, impedance, region, maxOz) {
+  let perDm2;
+  if (L <= 2) perDm2 = 1.6;
+  else if (L <= 4) perDm2 = 2.9;
+  else if (L <= 6) perDm2 = 4.4;
+  else if (L <= 8) perDm2 = 6.5;
+  else if (L <= 10) perDm2 = 9.5;
+  else if (L <= 12) perDm2 = 13;
+  else if (L <= 16) perDm2 = 20;
+  else perDm2 = 30;
+  const typeMult = { rigid: 1, highspeed: 1.5, power: 1.3, hdi: 2.0, anylayer: 3.0, flex: 2.2, rigidflex: 3.2 }[type.id] || 1;
+  const qualMult = { consumer: 1.0, industrial: 1.15, automotive: 1.5, aerospace: 2.2 }[quality.id] || 1;
+  const finishMult = 1 + (finish.costDm2 - 0.10) * 0.5;
+  const matMult = mat.family === "rf" ? 2.6 : mat.family === "ll" ? 1.4 : mat.family === "flex" ? 1.4
+                : mat.family === "mc" ? 1.8 : (mat.id === "fr4_hightg" ? 1.1 : 1.0);
+  const cuMult = maxOz >= 3 ? (1 + 0.15 * (maxOz - 1)) : 1.0;
+  const regionMult = 1 + ((region ? region.labor : 1) - 1) * 0.45;
+  const impMult = impedance ? 1.1 : 1.0;
+  const mid = perDm2 * typeMult * qualMult * finishMult * matMult * cuMult * regionMult * impMult * area * lotFactor(p.orderQty);
+  return { lo: mid * 0.65, mid, hi: mid * 1.6 };
+}
+
+/* DfC (Design-for-Cost) recommendations. Config-validation issues rank first. */
+function dfcRecommendations(p, c, configIssues) {
+  const recs = [];
+  const push = (sev, text) => recs.push({ sev, text });
+  (configIssues || []).forEach((t) => push("high", t));
+
+  if (p.layerCount % 2 !== 0 && p.layerCount > 1)
+    push("high", `Layer count ${p.layerCount} is odd — multilayer stack-ups are built in balanced pairs. Move to ${p.layerCount + 1} layers for a symmetric, warp-free stack-up at little extra cost.`);
+  if (c.L >= 8 && p.via === "through")
+    push("med", `An ${c.L}-layer through-via board wastes routing channels and forces large drilled holes. Evaluate buried/blind vias, back-drilling, or HDI to reduce layer count.`);
+  if (c.via.microvia && c.via.buildup >= 2 && p.trace !== "1mil" && p.trace !== "2mil")
+    push("low", "Stacked microvia (2+ build-up) costs ~30–50% more than staggered. Confirm escape routing genuinely needs it; staggered microvias yield better and cost less.");
+  if (c.mat.family === "rf" && p.layerCount > 2)
+    push("high", `Full-board ${c.mat.label} is expensive (PTFE laminate is 10–20× FR-4). Use a HYBRID stack-up: RF material only on the layers carrying high-frequency nets, FR-4 High-Tg elsewhere — typically 40–60% material saving.`);
+  if (c.mat.family === "ll" && p.copperFoil === "hte")
+    push("med", "Low-loss laminate with standard HTE foil undermines the loss budget at ≥28 Gbps. Pair low-loss dielectric with VLP/HVLP foil (or you're paying for dielectric you can't use).");
+  if (c.finish.goldFrac >= 0.5 && p.quality !== "aerospace")
+    push("med", `Gold finish (${c.finish.label}) is heavily exposed to 2026 gold prices (~70% of ENIG cost is gold). Where assembly allows, OSP/immersion silver eliminate gold exposure; ENEPIG's thinner gold partly hedges vs ENIG.`);
+  if (c.aspect > 10)
+    push("high", `Aspect ratio ≈ ${c.aspect.toFixed(1)}:1 stresses through-hole plating reliability and yield. Reduce board thickness or increase minimum drill, or split into sub-laminations.`);
+  if ((p.trace === "2mil" || p.trace === "1mil") && p.fabProcess === "subtractive")
+    push("high", "Sub-2-mil lines are below the subtractive-etch floor (~2 mil, undercut-limited). This needs mSAP/SAP — the model's yield/cost won't be realistic on subtractive. Switch process or relax the geometry.");
+  if (p.fabProcess !== "subtractive" && !["1mil", "2mil"].includes(p.trace))
+    push("low", "mSAP/SAP carries a ~40–50% premium over conventional imaging. It's only justified below ~3 mil — for wider geometry, subtractive etch is cheaper.");
+  if (c.bpp <= 1)
+    push("high", `Only ${c.bpp} board fits the working panel — utilisation is poor. Re-pitch the array or pick a panel size that fits more up.`);
+  else if (p.utilization < 70)
+    push("med", `Panel utilisation ${p.utilization}% is low — you are paying for ${(UTIL_REF / (p.utilization / 100) * 100 - 100).toFixed(0)}% more panel share than the 80% reference. Improving nesting toward 80–85% directly lowers $/board.`);
+  if (Math.max(c.cuIn.oz, c.cuOut.oz) >= 3 && p.pcbType !== "power")
+    push("low", "Heavy copper (≥3 oz) adds 40–70% and needs etch compensation. If only a few nets carry high current, use stepped/mixed copper (saves 20–30% vs full-build heavy copper).");
+  if (p.orderQty < 500)
+    push("med", `Order qty ${p.orderQty} is deep in the prototype-pricing zone (~${lotFactor(p.orderQty).toFixed(1)}× volume pricing). Consolidating releases or panel-sharing moves you down the lot-size curve fast.`);
+  else if (p.orderQty < 2000)
+    push("low", `Order qty ${p.orderQty} is below the ~500–1000 ICT break-even; flying-probe test and un-amortised tooling dominate. Consolidating volume cuts NRE per board.`);
+  if (recs.length === 0) push("ok", "No major cost red-flags. Design is broadly cost-balanced for its class.");
+  return recs;
+}
+
+/* One-at-a-time ±pct sensitivity of total cost. */
+function pcbSensitivity(input, pct = 15) {
+  const base = computePcb(input).totalCost;
+  const drivers = [
+    { key: "layerCount",  label: "Layer count" },
+    { key: "boardW",      label: "Board size (W)" },
+    { key: "orderQty",    label: "Order quantity" },
+    { key: "utilization", label: "Panel utilisation" },
+    { key: "holeDensity", label: "Hole density" },
+    { key: "goldPrice",   label: "Gold price" },
+    { key: "overheadPct", label: "Overhead %" },
+    { key: "marketSurcharge", label: "Market surcharge" },
+  ];
+  return drivers.map((d) => {
+    const up = computePcb({ ...input, [d.key]: input[d.key] * (1 + pct / 100) }).totalCost;
+    const dn = computePcb({ ...input, [d.key]: input[d.key] * (1 - pct / 100) }).totalCost;
+    const swing = Math.max(Math.abs(up - base), Math.abs(dn - base)) / base * 100;
+    return { label: d.label, swing };
+  }).sort((a, b) => b.swing - a.swing);
+}
+
+/* ============================================================================
+ * ai.js — AI insights & idea generation for the PCB should-cost model — v2.
+ *
+ * Engines:
+ *  1. localInsights()   — deterministic offline advisor (no key, no network).
+ *  2. claudeReview()    — streaming should-cost review via the Claude API
+ *                         (bring-your-own key, direct browser call).
+ *  3. claudeOptimize()  — AGENTIC optimizer: Claude gets computePcb() as a
+ *                         tool and runs its own verified what-if loop.
+ *  4. claudeChat()      — follow-up conversation grounded in the design.
+ *
+ * v2 review fixes: immersion-silver (not tin) for automotive downgrades [B5];
+ * AbortController + timeout + typed HTTP errors [B4]; ideas returned as a
+ * machine-readable JSON block so the UI can render one-click Apply buttons.
+ * ==========================================================================*/
+
+const AI_TIMEOUT_MS = 120000;
+
+/* Parameters Claude / Apply-buttons are allowed to change, with validation. */
+const AI_PARAM_TABLES = {
+  pcbType: () => PCB_TYPES, material: () => MATERIALS, copperInner: () => COPPER_WEIGHTS,
+  copperOuter: () => COPPER_WEIGHTS, copperFoil: () => COPPER_FOILS, fabProcess: () => FAB_PROCESSES,
+  trace: () => TRACE_CLASSES, via: () => VIA_TYPES, finish: () => FINISHES,
+  maskColor: () => MASK_COLORS, quality: () => QUALITY_LEVELS, region: () => REGIONS,
+};
+const AI_NUM_PARAMS = ["boardW","boardH","layerCount","boardThickness","panelW","panelH",
+  "utilization","holeDensity","orderQty","overheadPct","marginPct","marketSurcharge",
+  "goldPrice","dutyPct","freightPerBoard","smtCount","thtCount","sides","bomCost"];
+const AI_BOOL_PARAMS = ["impedance","backdrill","viafill","silkscreen","assemblyOn"];
+
+function sanitizeChanges(changes) {
+  const out = {};
+  if (!changes || typeof changes !== "object") return out;
+  for (const [k, v] of Object.entries(changes)) {
+    if (AI_PARAM_TABLES[k]) {
+      if (AI_PARAM_TABLES[k]().some((x) => x.id === v)) out[k] = v;
+    } else if (AI_NUM_PARAMS.includes(k)) {
+      const n = Number(v);
+      if (isFinite(n) && n >= 0) out[k] = n;
+    } else if (AI_BOOL_PARAMS.includes(k)) {
+      out[k] = !!v;
+    }
+  }
+  return out;
+}
+
+/* ---------- 1. Deterministic insight / idea engine ---------- */
+function localInsights(input, r) {
+  const ideas = [];
+  // Each idea carries optional `changes` so the UI can render an Apply button.
+  const add = (title, body, saving, changes) => ideas.push({ title, body, saving, changes });
+  const money = (v) => "$" + v.toFixed(2);
+  const total = r.totalCost;
+  const cats = [...r.components].sort((a, b) => b.value - a.value);
+
+  if (r.L >= 6) {
+    const test = computePcb({ ...input, layerCount: r.L - 2 });
+    const save = total - test.totalCost;
+    if (save > 0.05) add(
+      `Cut ${r.L}→${r.L - 2} layers if routing allows`,
+      `Each layer pair removes imaging, etch, AOI, a share of lamination/drilling and compounds yield. Consider higher-density routing (finer lines or HDI) to collapse two signal layers into one.`,
+      save, { layerCount: r.L - 2 });
+  }
+  if (r.L >= 8 && input.via === "through") {
+    add(`Evaluate blind/buried or HDI vias`,
+      `An ${r.L}-layer through-via stack wastes routing channels and forces large drills. Blind/buried vias or a 1+N+1 HDI build can reduce layer count — trading extra lamination cost for fewer layers overall.`,
+      null, { via: "buried" });
+  }
+  const finish = byId(FINISHES, input.finish);
+  if (finish.goldFrac >= 0.5 && input.quality !== "aerospace") {
+    // Automotive downgrade target is immersion SILVER (ImSn tin-whisker risk
+    // makes immersion tin a poor automotive suggestion). [review B5]
+    const cheaper = input.quality === "automotive" ? "imag" : "osp";
+    const test = computePcb({ ...input, finish: cheaper });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Finish: ${finish.label} → ${byId(FINISHES, cheaper).label}`,
+      `Gold-bearing finishes are exposed to 2026 gold (~70% of ENIG cost is metal). If assembly, fine-pitch and reliability requirements permit, a gold-free finish removes that exposure. Verify wire-bond, shelf-life and connector-wear needs first.`,
+      save, { finish: cheaper });
+  }
+  if (input.utilization < 82) {
+    const target = Math.min(85, input.utilization + 10);
+    const test = computePcb({ ...input, utilization: target });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Improve panel utilisation ${input.utilization}%→${target}%`,
+      `Re-pitch the array, rotate the board, or pick a panel size that nests more up. Material and panel-area processing scale directly with the board's true panel share — one of the cheapest wins available.`,
+      save, { utilization: target });
+  }
+  if (byId(MATERIALS, input.material).family === "rf" && r.L > 2) {
+    add(`Hybrid RF stack-up`,
+      `Full-board ${byId(MATERIALS, input.material).label} is expensive (PTFE laminate is 10–20× FR-4). Place RF laminate only on the layers carrying high-frequency nets and FR-4 High-Tg elsewhere — typically 40–60% material saving with equal electrical performance.`, null, null);
+  }
+  if (["3mil", "2mil", "1mil"].includes(input.trace) && input.quality !== "consumer") {
+    const test = computePcb({ ...input, trace: "4mil" });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Relax min trace to 4 mil where signal integrity allows`,
+      `Sub-4-mil lines push imaging toward advanced LDI/mSAP and depress yield. Keep fine lines only on the layers/nets that truly need them.`,
+      save, { trace: "4mil" });
+  }
+  if (input.orderQty < 2000) {
+    const test = computePcb({ ...input, orderQty: input.orderQty * 3 });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Consolidate volume (${input.orderQty.toLocaleString()} → ${(input.orderQty * 3).toLocaleString()})`,
+      `You are at ${r.lot.toFixed(2)}× on the lot-size curve. Combining releases or panel-sharing moves you toward volume pricing and amortises tooling/NRE (photo tools, drill program, fixtures) over more boards.`,
+      save, { orderQty: input.orderQty * 3 });
+  }
+  if ((input.dutyPct || 0) >= 15) {
+    const alt = input.region === "china" ? "vietnam" : "mexico";
+    const lane = DUTY_LANES[input.destMarket];
+    const altDuty = lane && lane.rates[alt] != null ? lane.rates[alt] : 0;
+    const test = computePcb({ ...input, region: alt, dutyPct: altDuty });
+    if (test.landed && r.landed) {
+      const save = r.landed.total - test.landed.total;
+      if (save > 0.05) add(
+        `Re-source ${byId(REGIONS, input.region).label} → ${byId(REGIONS, alt).label} for this duty lane`,
+        `At ${input.dutyPct}% duty the landed cost dominates the fab-cost difference. Weigh qualification, logistics and lead time — but the duty math favours the move.`,
+        save, { region: alt, dutyPct: altDuty });
+    }
+  }
+  if (input.region !== "china" && input.region !== "vietnam" && (input.dutyPct || 0) === 0) {
+    const test = computePcb({ ...input, region: "china" });
+    const save = total - test.totalCost;
+    if (save > 0.05) add(
+      `Regional sourcing trade-off`,
+      `Moving fabrication to a lower-cost region cuts processing and overhead, but weigh logistics, tariffs (set the duty lane in Landed Cost), IP and automotive qualification of the fab before switching.`,
+      save, { region: "china" });
+  }
+
+  ideas.sort((a, b) => (b.saving || 0) - (a.saving || 0));
+
+  const drivers = cats.slice(0, 3).map((c) => `${c.label} (${((c.value / total) * 100).toFixed(0)}%)`).join(", ");
+  const narrative =
+    `This ${r.L}-layer ${r.type.label.split(" (")[0]} board costs ~${money(total)} to fabricate ` +
+    `(quoted ~${money(r.price)}${r.landed ? `, landed ~${money(r.landed.total)}` : ""}${r.pcbaCost != null ? `; assembled PCBA ~${money(r.pcbaCost)}` : ""}). ` +
+    `Cost is led by ${drivers}. ` +
+    (r.lot > 1.2 ? `Lot-size premium is ${r.lot.toFixed(2)}× — volume is the fastest lever. ` : "") +
+    (r.yld < 0.8 ? `Yield is low (${(r.yld * 100).toFixed(0)}%) — design-for-yield is the biggest hidden lever. ` : "") +
+    (r.nrePerBoard > total * 0.15 ? `NRE dominates at this volume (${money(r.nrePerBoard)}/board). ` : "") +
+    `Total realistic saving from the ideas below: up to ${money(ideas.reduce((s, i) => s + (i.saving || 0), 0))}/board.`;
+
+  return { ideas, narrative };
+}
+
+function renderLocalInsights(input, r) {
+  const { ideas, narrative } = localInsights(input, r);
+  let html = `<h4>Cost narrative</h4><p>${narrative}</p><h4>Cost-reduction ideas (ranked)</h4><ul>`;
+  ideas.forEach((i, n) => {
+    const s = i.saving ? ` <strong>save ~${i.saving.toFixed(2)}/bd</strong>` : "";
+    const btn = i.changes ? ` <button class="btn-apply" data-idea="${n}" type="button">Apply</button>` : "";
+    html += `<li><strong>${i.title}.</strong>${s} ${i.body}${btn}</li>`;
+  });
+  html += "</ul>";
+  return { html, ideas };
+}
+
+/* ---------- Shared Claude plumbing ---------- */
+function describeHttpError(status, apiMsg) {
+  if (status === 401) return "Invalid API key (401). Check the key in the field above.";
+  if (status === 403) return "Key lacks permission (403).";
+  if (status === 429) return "Rate limited (429) — wait a moment and retry.";
+  if (status === 529) return "Anthropic API overloaded (529) — retry shortly.";
+  if (status >= 500) return `Anthropic server error (${status}) — retry shortly.`;
+  return apiMsg || `HTTP ${status}`;
+}
+
+async function anthropicRequest(apiKey, body, signal) {
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!resp.ok) {
+    let apiMsg = "";
+    try { const j = await resp.json(); apiMsg = j.error?.message || ""; } catch (e) {}
+    throw new Error(describeHttpError(resp.status, apiMsg));
+  }
+  return resp;
+}
+
+/* Streaming call: emits text deltas via onText, resolves with full text. */
+async function claudeStreamText({ apiKey, model, system, messages, maxTokens = 2000, onText, signal }) {
+  const resp = await anthropicRequest(apiKey, {
+    model, max_tokens: maxTokens, system, messages, stream: true,
+  }, signal);
+  const reader = resp.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "", full = "", stopReason = null;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split("\n");
+    buf = lines.pop();
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue;
+      const payload = line.slice(6).trim();
+      if (payload === "[DONE]") continue;
+      let ev; try { ev = JSON.parse(payload); } catch (e) { continue; }
+      if (ev.type === "content_block_delta" && ev.delta?.type === "text_delta") {
+        full += ev.delta.text;
+        if (onText) onText(ev.delta.text, full);
+      } else if (ev.type === "message_delta" && ev.delta?.stop_reason) {
+        stopReason = ev.delta.stop_reason;
+      } else if (ev.type === "error") {
+        throw new Error(ev.error?.message || "stream error");
+      }
+    }
+  }
+  if (stopReason === "refusal") throw new Error("The model declined this request (refusal).");
+  return full;
+}
+
+/* Non-streaming call returning the full message (for the tool-use loop). */
+async function claudeComplete({ apiKey, model, system, messages, tools, maxTokens = 2000, signal }) {
+  const body = { model, max_tokens: maxTokens, system, messages };
+  if (tools) body.tools = tools;
+  const resp = await anthropicRequest(apiKey, body, signal);
+  return resp.json();
+}
+
+/* ---------- Context builders ---------- */
+function buildDesignContext(input, r) {
+  const b = r.components.map((c) => `- ${c.label}: ${c.value.toFixed(3)}/bd (${((c.value / r.totalCost) * 100).toFixed(0)}%)`).join("\n");
+  return `DESIGN:
+- Type: ${r.type.label} · ${r.L} layers · ${input.boardW}×${input.boardH} mm (${r.area.toFixed(2)} dm²)
+- Material: ${byId(MATERIALS, input.material).label}; foil ${byId(COPPER_FOILS, input.copperFoil).label}
+- Copper: ${byId(COPPER_WEIGHTS, input.copperOuter).label} outer / ${byId(COPPER_WEIGHTS, input.copperInner).label} inner
+- Vias: ${byId(VIA_TYPES, input.via).label}; process ${byId(FAB_PROCESSES, input.fabProcess).label}; trace ${byId(TRACE_CLASSES, input.trace).label}
+- Options: ${input.impedance ? "impedance " : ""}${input.backdrill ? "back-drill " : ""}${input.viafill ? "via-fill " : ""}
+- Finish: ${byId(FINISHES, input.finish).label} @ gold ${input.goldPrice}/oz
+- Quality: ${byId(QUALITY_LEVELS, input.quality).label}; region ${byId(REGIONS, input.region).label}; qty ${input.orderQty}
+- Panel utilisation ${input.utilization}% (waste ×${r.waste.toFixed(2)}); lot factor ×${r.lot.toFixed(2)}; yield ${(r.yld * 100).toFixed(0)}%
+${r.landed ? `- Landed: duty ${input.dutyPct}% + freight ${input.freightPerBoard} → ${r.landed.total.toFixed(2)}/bd\n` : ""}${r.pcbaCost != null ? `- PCBA: BOM ${input.bomCost} + assembly → ${r.pcbaCost.toFixed(2)}/bd\n` : ""}${r.configIssues.length ? "- CONFIG ISSUES: " + r.configIssues.join(" | ") + "\n" : ""}
+COMPUTED COST STACK (fab cost ${r.totalCost.toFixed(2)}/bd, quoted ${r.price.toFixed(2)}/bd):
+${b}`;
+}
+
+const IDEAS_JSON_INSTRUCTION = `
+After the Markdown review, output a fenced \`\`\`json code block containing an array of directly applicable ideas:
+[{"title": "...", "changes": {"<param>": <value>}, "note": "one line"}]
+Allowed params and values: layerCount/boardW/boardH/utilization/orderQty/holeDensity/dutyPct (numbers);
+via one of through|buried|micro1|micro2|micro3; trace one of 8mil|5mil|4mil|3mil|2mil|1mil;
+finish one of hasl|lfhasl|osp|imag|isn|enig|enepig|epig|hardgold; material/region/quality/fabProcess/copperFoil by their ids;
+impedance/backdrill/viafill (booleans). Only include changes you verified or strongly expect to save cost.`;
+
+const REVIEW_SYSTEM = "You are a senior Tier-1 automotive PCB should-cost engineer. Be concise, numeric, and practical. Output clean Markdown. Do not invent exact supplier prices; use realistic 2025-2026 ranges.";
+
+function buildReviewMessages(input, r) {
+  return [{
+    role: "user",
+    content: `${buildDesignContext(input, r)}
+
+TASK: Give an engineering-grade should-cost review with exactly these sections:
+## Cost drivers — the 3 biggest levers and why.
+## Design-for-cost ideas — 4-6 concrete, quantified-where-possible changes (stack-up / layer count / via technology first).
+## Risks & missing processes — anything a fab would flag or that's under-specified.
+## Alternative concepts — 1-2 different stack-up or technology approaches worth quoting.
+${IDEAS_JSON_INSTRUCTION}`,
+  }];
+}
+
+/* ---------- 2. Streaming review ---------- */
+async function claudeReview({ apiKey, model, input, r, onText, signal }) {
+  return claudeStreamText({
+    apiKey, model, system: REVIEW_SYSTEM,
+    messages: buildReviewMessages(input, r),
+    maxTokens: 2200, onText, signal,
+  });
+}
+
+/* ---------- 3. Agentic optimizer (tool-use loop) ---------- */
+const OPTIMIZER_TOOL = {
+  name: "evaluate_pcb_cost",
+  description: "Recompute the PCB should-cost with parameter overrides applied to the current design. Returns fab cost, price, yield, top cost components, and any config issues. Use it to numerically verify every idea before recommending it.",
+  input_schema: {
+    type: "object",
+    properties: {
+      changes: {
+        type: "object",
+        description: "Partial input overrides, e.g. {\"layerCount\": 8, \"via\": \"micro1\", \"utilization\": 88}",
+      },
+      label: { type: "string", description: "Short name for this what-if" },
+    },
+    required: ["changes"],
+  },
+};
+
+function runOptimizerTool(baseInput, rawChanges) {
+  const changes = sanitizeChanges(rawChanges);
+  const merged = { ...baseInput, ...changes };
+  const r = computePcb(merged);
+  const top = [...r.components].sort((a, b) => b.value - a.value).slice(0, 3)
+    .map((c) => `${c.key} ${c.value.toFixed(2)}`).join(", ");
+  return JSON.stringify({
+    applied: changes,
+    fabCost: +r.totalCost.toFixed(3),
+    price: +r.price.toFixed(3),
+    landed: r.landed ? +r.landed.total.toFixed(3) : null,
+    pcbaCost: r.pcbaCost != null ? +r.pcbaCost.toFixed(3) : null,
+    yieldPct: +(r.yld * 100).toFixed(1),
+    lotFactor: +r.lot.toFixed(2),
+    topComponents: top,
+    configIssues: r.configIssues,
+  });
+}
+
+async function claudeOptimize({ apiKey, model, input, r, onStatus, signal, maxIters = 8 }) {
+  const messages = [{
+    role: "user",
+    content: `${buildDesignContext(input, r)}
+
+TASK: Act as a cost optimizer. Use the evaluate_pcb_cost tool to test design/sourcing changes against the live cost model — try layer/via/stack-up moves first, then finish, utilisation, lot size, and region/duty. Test at least 4 distinct what-ifs, including at least one combination. Only recommend changes the tool confirmed. Then write a Markdown summary: baseline vs best variants (table), the recommended package of changes with verified total saving, and what to double-check with engineering.
+${IDEAS_JSON_INSTRUCTION}`,
+  }];
+  let baselineNote = `Baseline: fab ${r.totalCost.toFixed(2)}, price ${r.price.toFixed(2)}.`;
+  if (onStatus) onStatus("Optimizer running — Claude is testing what-ifs against the cost engine…");
+
+  for (let i = 0; i < maxIters; i++) {
+    const resp = await claudeComplete({
+      apiKey, model, system: REVIEW_SYSTEM + " You have a cost-evaluation tool; use it before recommending anything. " + baselineNote,
+      messages, tools: [OPTIMIZER_TOOL], maxTokens: 2400, signal,
+    });
+    if (resp.stop_reason === "refusal") throw new Error("The model declined this request (refusal).");
+    if (resp.stop_reason !== "tool_use") {
+      const text = (resp.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n");
+      return text || "(no text returned)";
+    }
+    messages.push({ role: "assistant", content: resp.content });
+    const results = [];
+    for (const block of resp.content) {
+      if (block.type !== "tool_use") continue;
+      if (onStatus) onStatus(`Testing: ${block.input?.label || JSON.stringify(block.input?.changes || {}).slice(0, 60)}…`);
+      let out;
+      try { out = runOptimizerTool(input, block.input?.changes); }
+      catch (e) { out = JSON.stringify({ error: String(e.message || e) }); }
+      results.push({ type: "tool_result", tool_use_id: block.id, content: out });
+    }
+    messages.push({ role: "user", content: results });
+  }
+  throw new Error("Optimizer exceeded the iteration cap without a final answer.");
+}
+
+/* ---------- 4. Follow-up chat ---------- */
+function newChatThread(input, r) {
+  return [{
+    role: "user",
+    content: `${buildDesignContext(input, r)}
+
+You are my PCB cost engineer for this design. Answer follow-up questions concisely and numerically; refer to the cost stack above. Reply "Ready." now.`,
+  }, { role: "assistant", content: "Ready." }];
+}
+async function claudeChat({ apiKey, model, thread, question, onText, signal }) {
+  thread.push({ role: "user", content: question });
+  const answer = await claudeStreamText({
+    apiKey, model, system: REVIEW_SYSTEM, messages: thread, maxTokens: 1200, onText, signal,
+  });
+  thread.push({ role: "assistant", content: answer });
+  return answer;
+}
+
+/* ---------- Ideas JSON extraction + Markdown rendering ---------- */
+function extractIdeasJson(text) {
+  const m = text.match(/```json\s*([\s\S]*?)```/);
+  if (!m) return { ideas: [], stripped: text };
+  let ideas = [];
+  try {
+    const raw = JSON.parse(m[1]);
+    if (Array.isArray(raw)) {
+      ideas = raw.map((i) => ({
+        title: String(i.title || "Idea").slice(0, 120),
+        note: String(i.note || "").slice(0, 200),
+        changes: sanitizeChanges(i.changes),
+      })).filter((i) => Object.keys(i.changes).length > 0);
+    }
+  } catch (e) { /* malformed block — ignore */ }
+  return { ideas, stripped: text.replace(m[0], "").trim() };
+}
+
+/* Minimal, safe Markdown → HTML (escapes first, then inline formatting). */
+function mdToHtml(md) {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const lines = md.split("\n");
+  let html = "", inList = false, inTable = false;
+  const inline = (s) => esc(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`(.+?)`/g, "<code>$1</code>");
+  const closeAll = () => { if (inList) { html += "</ul>"; inList = false; } if (inTable) { html += "</table>"; inTable = false; } };
+  for (let raw of lines) {
+    const line = raw.trimEnd();
+    if (/^\|.*\|$/.test(line.trim())) {
+      if (/^\|[\s:|-]+\|$/.test(line.trim())) continue;         // separator row
+      if (inList) { html += "</ul>"; inList = false; }
+      if (!inTable) { html += '<table class="ai-table">'; inTable = true; }
+      const cells = line.trim().slice(1, -1).split("|").map((c) => inline(c.trim()));
+      html += "<tr><td>" + cells.join("</td><td>") + "</td></tr>";
+    } else if (/^#{1,6}\s/.test(line)) {
+      closeAll();
+      html += `<h4>${inline(line.replace(/^#{1,6}\s/, ""))}</h4>`;
+    } else if (/^\s*[-*]\s+/.test(line)) {
+      if (inTable) { html += "</table>"; inTable = false; }
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += `<li>${inline(line.replace(/^\s*[-*]\s+/, ""))}</li>`;
+    } else if (/^\s*\d+\.\s+/.test(line)) {
+      if (inTable) { html += "</table>"; inTable = false; }
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += `<li>${inline(line.replace(/^\s*\d+\.\s+/, ""))}</li>`;
+    } else if (line === "") {
+      closeAll();
+    } else {
+      closeAll();
+      html += `<p>${inline(line)}</p>`;
+    }
+  }
+  closeAll();
+  return html;
+}
+
+/* ============================================================================
+ * import.js — Design-file import (beta): extract board parameters from
+ * Gerber (RS-274X) and Excellon drill files, entirely in the browser.
+ *
+ * What it extracts (honestly bounded — this is not a full CAM parser):
+ *  - Board W×H  : bounding box of coordinates in outline/copper Gerbers,
+ *                 using the file's %FS coordinate format and %MO units.
+ *  - Hole count : Excellon drill hit count → hole density from board area.
+ *  - Layer count: inferred from copper-layer filename conventions
+ *                 (KiCad F_Cu / In1_Cu / B_Cu, Protel GTL / G1… / GBL,
+ *                  Eagle cmp / lyN / sol, generic top/bottom/inner names).
+ * Zip archives are not parsed — extract and drop the individual files.
+ * ==========================================================================*/
+
+const GerberImport = (() => {
+
+  /* ---- Gerber (RS-274X): units + coordinate format + bounding box ---- */
+  function parseGerberExtents(text) {
+    let unitsMm = null;
+    if (/%MOMM\*%/i.test(text)) unitsMm = true;
+    else if (/%MOIN\*%/i.test(text)) unitsMm = false;
+    const fs = text.match(/%FS[LT][AI]X(\d)(\d)Y(\d)(\d)\*%/i);
+    const decX = fs ? parseInt(fs[2]) : 6;   // modern CAM default 4.6 / 3.6
+    const decY = fs ? parseInt(fs[4]) : 6;
+    if (unitsMm === null) unitsMm = true;    // KiCad/modern default
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, hits = 0;
+    // Only D01/D02 operations carry geometry; D03 flashes count too.
+    const re = /(?:X(-?\d+))?(?:Y(-?\d+))?(?:I-?\d+)?(?:J-?\d+)?D0?[123]\*/g;
+    let m, lastX = null, lastY = null;
+    while ((m = re.exec(text)) !== null) {
+      if (m[1] != null) lastX = parseInt(m[1]) / Math.pow(10, decX);
+      if (m[2] != null) lastY = parseInt(m[2]) / Math.pow(10, decY);
+      if (lastX == null || lastY == null) continue;
+      const x = unitsMm ? lastX : lastX * 25.4;
+      const y = unitsMm ? lastY : lastY * 25.4;
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+      hits++;
+    }
+    if (hits < 2 || !isFinite(minX)) return null;
+    return { w: +(maxX - minX).toFixed(2), h: +(maxY - minY).toFixed(2), hits };
+  }
+
+  /* ---- Excellon drill: units, tool table, hole hits, min tool ---- */
+  function parseExcellon(text) {
+    let unitsMm = /METRIC/i.test(text) || /M71/.test(text);
+    if (/INCH/i.test(text) || /M72/.test(text)) unitsMm = false;
+    let minTool = Infinity;
+    const toolRe = /^T\d+.*?C([\d.]+)/gm;
+    let t;
+    while ((t = toolRe.exec(text)) !== null) {
+      const d = parseFloat(t[1]);
+      if (isFinite(d) && d > 0) minTool = Math.min(minTool, unitsMm ? d : d * 25.4);
+    }
+    // Hole hits: coordinate lines (XnYn), excluding header/tool/format lines.
+    const holes = (text.match(/^X-?[\d.]+Y-?[\d.]+/gm) || []).length;
+    if (holes === 0) return null;
+    return { holes, minToolMm: isFinite(minTool) ? +minTool.toFixed(3) : null };
+  }
+
+  /* ---- Copper-layer counting from filenames ---- */
+  const COPPER_PATTERNS = [
+    /-F_Cu\.(gbr|g\w*)$/i, /-B_Cu\.(gbr|g\w*)$/i, /-In\d+_Cu\.(gbr|g\w*)$/i,   // KiCad
+    /\.gtl$/i, /\.gbl$/i, /\.g\d+l?$/i, /\.gp\d+$/i, /\.in\d+$/i,              // Protel/Altium
+    /\.cmp$/i, /\.sol$/i, /\.ly\d+$/i,                                          // Eagle
+    /(^|[._-])(top|bottom)([._-]?(copper|layer|cu))?\.(gbr|ger|pho)$/i,          // generic
+  ];
+  function isCopperName(name) { return COPPER_PATTERNS.some((re) => re.test(name)); }
+  function isDrillName(name) { return /\.(drl|xln|txt|drr|tap|exc)$/i.test(name) || /drill/i.test(name); }
+  function isOutlineName(name) {
+    return /-Edge_Cuts\./i.test(name) || /\.(gko|gm1|gml)$/i.test(name) || /outline|profile|boardoutline/i.test(name);
+  }
+
+  /* ---- Main: files (from an <input type=file>) → suggested parameters ---- */
+  async function importFiles(fileList) {
+    const files = Array.from(fileList || []);
+    const report = { notes: [], suggested: {} };
+    if (!files.length) { report.notes.push("No files provided."); return report; }
+    if (files.some((f) => /\.zip$/i.test(f.name))) {
+      report.notes.push("Zip archives aren't parsed — extract the archive and drop the individual Gerber/drill files.");
+    }
+
+    let copperCount = 0, outlineExtents = null, anyExtents = null, drill = null;
+    for (const f of files) {
+      if (/\.zip$/i.test(f.name) || f.size > 30 * 1024 * 1024) continue;
+      let text;
+      try { text = await f.text(); } catch (e) { continue; }
+      if (isDrillName(f.name) && /T\d+/.test(text)) {
+        const d = parseExcellon(text);
+        if (d) { drill = drill ? { holes: drill.holes + d.holes, minToolMm: Math.min(drill.minToolMm || 9, d.minToolMm || 9) } : d; }
+        continue;
+      }
+      if (/%FS|%MO|D0[123]\*/.test(text)) {                 // looks like Gerber
+        const ext = parseGerberExtents(text);
+        if (ext) {
+          if (isOutlineName(f.name)) outlineExtents = ext;   // outline wins
+          else if (!anyExtents || ext.w * ext.h > anyExtents.w * anyExtents.h) anyExtents = ext;
+        }
+        if (isCopperName(f.name)) copperCount++;
+      } else if (isCopperName(f.name)) {
+        copperCount++;
+      }
+    }
+
+    const ext = outlineExtents || anyExtents;
+    if (ext && ext.w > 5 && ext.h > 5 && ext.w < 1200 && ext.h < 1200) {
+      report.suggested.boardW = Math.round(ext.w);
+      report.suggested.boardH = Math.round(ext.h);
+      report.notes.push(`Board extents ${ext.w} × ${ext.h} mm from ${outlineExtents ? "outline layer" : "largest copper layer"}.`);
+    }
+    if (copperCount >= 2) {
+      report.suggested.layerCount = copperCount;
+      report.notes.push(`${copperCount} copper layers detected from filenames.`);
+    } else if (copperCount === 1) {
+      report.notes.push("Only one copper-layer file recognised — layer count not set (upload all copper Gerbers).");
+    }
+    if (drill && report.suggested.boardW && report.suggested.boardH) {
+      const areaDm2 = (report.suggested.boardW * report.suggested.boardH) / 10000;
+      report.suggested.holeDensity = Math.max(10, Math.round(drill.holes / areaDm2 / 10) * 10);
+      report.notes.push(`${drill.holes} drill hits → ${report.suggested.holeDensity} holes/dm²` +
+        (drill.minToolMm ? `; min tool Ø ${drill.minToolMm} mm.` : "."));
+    } else if (drill) {
+      report.notes.push(`${drill.holes} drill hits found, but no board extents — hole density not set.`);
+    }
+    if (!Object.keys(report.suggested).length) {
+      report.notes.push("Nothing recognisable found. Supported: RS-274X Gerbers (extents, layer names) and Excellon drill files.");
+    }
+    return report;
+  }
+
+  return { importFiles, parseGerberExtents, parseExcellon };
+})();
+
+/* ============================================================================
+ * methodology.js — Full documentation (2026 edition) rendered into the
+ * Methodology tab: conceptual model, parameters, routing, cost drivers, yield,
+ * 2026 market data & sources, worked examples (computed live), AI advisor, and
+ * a manager summary.
+ * ==========================================================================*/
+
+function buildMethodology() {
+  const f2 = (v) => "$" + (isFinite(v) ? v.toFixed(2) : "—");
+  const f3 = (v) => "$" + (isFinite(v) ? v.toFixed(3) : "—");
+  const pct = (v) => (v * 100).toFixed(0) + "%";
+
+  const exHtml = EXAMPLES.map((ex) => {
+    const r = computePcb(ex.input);
+    const i = ex.input;
+    const total = r.components.reduce((s, c) => s + Math.max(0, c.value), 0) || 1;
+    const rows = r.components.map((c) =>
+      `<tr><td>${c.label}</td><td>${f3(c.value)}</td><td>${((Math.max(0,c.value)/total)*100).toFixed(0)}%</td></tr>`).join("");
+    const drivers = pcbSensitivity(i, 15).slice(0, 4).map((s) => `${s.label} (±${s.swing.toFixed(0)}%)`).join(", ");
+    const dfc = r.dfc.filter((d) => d.sev !== "ok").slice(0, 3).map((d) => `<li>${d.text}</li>`).join("") || "<li>No major red flags.</li>";
+    return `
+      <h3>${ex.name}</h3>
+      <p class="src">${ex.note}</p>
+      <p><b>Inputs:</b> ${i.boardW}×${i.boardH} mm · ${i.layerCount} layer · ${byId(MATERIALS,i.material).label} ·
+        ${byId(COPPER_WEIGHTS,i.copperOuter).label}/${byId(COPPER_WEIGHTS,i.copperInner).label} Cu · ${byId(COPPER_FOILS,i.copperFoil).label} foil ·
+        ${byId(FAB_PROCESSES,i.fabProcess).label} · ${byId(VIA_TYPES,i.via).label} · ${byId(TRACE_CLASSES,i.trace).label} · ${byId(FINISHES,i.finish).label} ·
+        ${i.impedance ? "impedance · " : ""}${i.backdrill ? "back-drill · " : ""}${i.viafill ? "via-fill · " : ""}${byId(QUALITY_LEVELS,i.quality).label} · ${byId(REGIONS,i.region).label} · qty ${i.orderQty.toLocaleString()}</p>
+      <p><b>Derived:</b> ${r.area.toFixed(2)} dm² · ${r.bpp} boards/panel · ${r.lamCycles} lamination cycle(s) ·
+        aspect ${r.aspect.toFixed(1)}:1 · yield ${pct(r.yld)}</p>
+      <table>
+        <thead><tr><th>Cost element</th><th>$/board</th><th>%</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><th>Fab cost</th><th>${f2(r.totalCost)}</th><th>100%</th></tr>
+        <tr><th>Quoted price</th><th>${f2(r.price)}</th><th>—</th></tr></tfoot>
+      </table>
+      <p><b>Top cost drivers:</b> ${drivers}.</p>
+      <p><b>Benchmark:</b> price ${f2(r.price)} vs 2026 market band ${f2(r.benchmark.lo)}–${f2(r.benchmark.hi)} —
+        ${(r.price>=r.benchmark.lo&&r.price<=r.benchmark.hi)?"<b style='color:#6cff3f'>in band ✓</b>":"outside band"}.</p>
+      <p><b>DfC recommendations:</b></p><ul>${dfc}</ul>`;
+  }).join("");
+
+  $("methodologyProse").innerHTML = `
+    <h2>1 · Conceptual model</h2>
+    <p>A bottom-up, process-routed <b>should-cost model for ALL PCB types</b> — rigid (1–12+ layer),
+    HDI, any-layer/SLP, flex, rigid-flex, high-speed/RF and power/heavy-copper — built the way a Tier-1
+    automotive PCB supplier's cost engineer would. It walks the real fab process flow, costs every step
+    from raw laminate to final inspection, applies yield/scrap and tooling amortisation, and adds
+    overhead and margin. <b>Number of layers and stack-up are the primary drivers</b>: layer count
+    compounds imaging, etch, AOI, lamination, drilling and yield; via technology sets the number of
+    <b>sequential lamination cycles</b> — the biggest stack-up cost lever.</p>
+    <div class="formula">material → +processing(imaging·etch·AOI·lamination·drill·µvia·back-drill·plate·mask·finish)
+       → ÷ yield → +test/inspection(AOI·AXI·e-test) → +tooling/NRE ÷ qty → +overhead → fab cost
+       ÷ (1 − margin) → quoted price</div>
+
+    <h2>2 · What's new in the 2026 edition (v2)</h2>
+    <ul>
+      <li><b>Expanded materials:</b> FR-4 std/mid-Tg/High-Tg/halogen-free, low-loss (Megtron 6 / I-Tera),
+      ultra-low-loss (Megtron 7/8), Rogers RO4350B/RO4003C/RO3003 (77 GHz), PTFE/Taconic, polyimide, LCP, IMS.</li>
+      <li><b>Latest processes/technologies:</b> mSAP & SAP fine-line, any-layer HDI / SLP, back-drilling
+      (per-via), via-fill / via-in-pad, copper-foil profile (HTE/RTF/VLP/HVLP), VCP plating, laser depanel,
+      plasma desmear for PTFE, 3D AXI, IST/CAF reliability coupons, extreme copper.</li>
+      <li><b>2026 market data:</b> gold-price finish sensitivity (~70% of ENIG cost is gold; +10% gold ≈
+      +6.8% ENIG), CCL/copper inflation surcharge, and updated labour/region indices for 10 regions
+      (China baseline; incl. Japan, Thailand, Mexico; NA/EU material-purchasing premium).</li>
+      <li><b>AI advisor:</b> built-in insight engine, streaming Claude review, follow-up chat, and an
+      <b>agentic optimizer</b> that uses the live cost engine as a tool to numerically verify every idea.</li>
+    </ul>
+
+    <h3>v2 review fixes &amp; new modules</h3>
+    <ul>
+      <li><b>Panel utilisation now enters the cost math.</b> The board pays for its true panel share via a
+      waste factor <code>0.80 / utilisation</code>, normalized so the 80% calibration reference is
+      unchanged. (Previously utilisation was display-only — a review-caught bug.)</li>
+      <li><b>Finish cost reconciliation fixed:</b> surface finish is now correctly inside the processing
+      total, and the breakdown sums to total cost exactly; the processing calibration knob
+      (<code>COEFF.procCal</code>) was re-anchored so the validated benchmark suite still passes.</li>
+      <li><b>Lot-size curve:</b> <code>1 + 2.8·e^(−qty/300)</code> — prototype quantities run ~3–5× volume
+      pricing, decaying to 1.0 by ~3k boards (matches published proto multipliers).</li>
+      <li><b>Config validation:</b> contradictory stack-ups (HDI without microvias, flex on FR-4, buried
+      vias on 2-layer) are flagged as CONFIG alerts instead of being silently costed.</li>
+      <li><b>Scrap &amp; finish setup wired in:</b> the IPC-class scrap allowance now inflates material and
+      the finish line-setup joins NRE (both were previously dead parameters).</li>
+      <li><b>Landed cost:</b> duty lanes (indicative 2026 rates — China→US reflects the Section 301 +
+      Section 122 stack; verify per HTS code) + freight → landed $/board.</li>
+      <li><b>Monte Carlo uncertainty:</b> 400 samples over the calibration σ of each cost block →
+      P10/P50/P90 band shown next to the point estimate.</li>
+      <li><b>Quote calibration:</b> log real supplier quotes; the model reports its live MAPE and learns a
+      per-region median correction factor you can toggle on.</li>
+      <li><b>PCBA assembly module (optional):</b> SMT/THT placements, sides, BOM, stencil/programming NRE,
+      assembly yield → full PCBA cost.</li>
+      <li><b>Design-file import (beta):</b> board extents from RS-274X Gerbers, hole count/density from
+      Excellon drill files, layer count from copper-layer filename conventions.</li>
+      <li><b>Batch CSV costing, share links, JSON/CSV export.</b></li>
+    </ul>
+
+    <h2>3 · Parameter list</h2>
+    <table>
+      <thead><tr><th>Group</th><th>Parameters</th></tr></thead>
+      <tbody>
+        <tr><td>Board &amp; type</td><td>PCB type, board W×H, order quantity</td></tr>
+        <tr><td>Stack-up</td><td><b>Layer count</b>, base material, board thickness, inner/outer copper weight, copper-foil profile, via technology</td></tr>
+        <tr><td>Design rules &amp; process</td><td>fine-line process (subtractive/mSAP/SAP), min trace/space, controlled impedance, back-drill, via-fill, surface finish, mask colour, silkscreen</td></tr>
+        <tr><td>Panelisation</td><td>panel W×H, utilisation %, hole density</td></tr>
+        <tr><td>Commercial / 2026 market</td><td>quality/IPC class, region, gold price $/oz, market surcharge %, overhead %, margin %</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4 · Key formulae</h2>
+    <div class="formula">Boards/panel = floor(panelArea/boardArea × utilisation)
+Lamination cycles = 1 + buried/HDI build-ups + rigid-flex bonding
+Yield = Y_class × Y_trace × Y_process × 0.992^(layers−2) × Y_type
+Finish$/dm² = base × [(1−goldFrac) + goldFrac × (gold$ / $4,100)]   (gold sensitivity)
+Cost carried by GOOD boards only → cost ÷ yield</div>
+
+    <h2>5 · Cost-driver list</h2>
+    <ol>
+      <li><b>Layer count &amp; stack-up</b> — compounds nearly every step + lamination cycles.</li>
+      <li><b>Via technology</b> — buried/blind/microvia → sequential laminations + laser drilling; back-drill vs blind/buried trade-off.</li>
+      <li><b>Material</b> — FR-4 → High-Tg → low-loss → RF (PTFE 10–20× FR-4). Use hybrid stacks for RF.</li>
+      <li><b>Finish &amp; gold price</b> — 2026 gold (~$4,100/oz) makes ENIG/ENEPIG/hard-gold a major, volatile line item.</li>
+      <li><b>Board area &amp; panel utilisation</b> — everything scales with area; poor nesting wastes panel.</li>
+      <li><b>Fine-line process</b> — mSAP/SAP (~40–50% premium) needed below ~2 mil; subtractive elsewhere.</li>
+      <li><b>Copper weight &amp; foil</b> — heavy copper 40–70%; HVLP foil for high-speed (supply-constrained 2026).</li>
+      <li><b>Quality/IPC class</b> — yield, test depth, AXI, microsection, IST/CAF, scrap, NRE.</li>
+      <li><b>Volume</b> — amortises tooling/NRE; flying-probe vs fixtured ICT (~500–1000 unit break-even).</li>
+      <li><b>Region &amp; market surcharge</b> — labour/overhead index + 2026 metal/energy inflation.</li>
+    </ol>
+
+    <h2>6 · 2026 market benchmarks &amp; sources</h2>
+    <p>Independent $/dm² price band (China-volume, standard FR-4 ladder, 2026-inflated), adjusted for
+    type, quality, finish, material, heavy-copper and region. Reference $/dm² midpoints (China volume):</p>
+    <table>
+      <thead><tr><th>Layers</th><th>2 L</th><th>4 L</th><th>6 L</th><th>8 L</th><th>10 L</th><th>12 L</th><th>16 L</th></tr></thead>
+      <tbody><tr><td>$/dm²</td><td>1.6</td><td>2.9</td><td>4.4</td><td>6.5</td><td>9.5</td><td>13</td><td>20</td></tr></tbody>
+    </table>
+    <table>
+      <thead><tr><th>2026 driver</th><th>Figure used</th></tr></thead>
+      <tbody>
+        <tr><td>Gold price</td><td>~$4,100/oz (2024 ~$2,400); ENIG ~70% gold-variable; +10% gold ≈ +6.8% ENIG</td></tr>
+        <tr><td>Copper / CCL</td><td>copper +~40% in 2025; CCL/copper-foil +up to 40%; captured by market-surcharge input</td></tr>
+        <tr><td>Region index (China=1.0, raw wages)</td><td>India ~0.3 · Vietnam ~0.65 · Taiwan ~1.7 · Korea ~3.5 · USA ~7.2 · Germany ~8.8 → blended to fab-processing multipliers (labour is 15–30% of cost)</td></tr>
+        <tr><td>Advanced-process adders</td><td>back-drill +10–20% · via-in-pad +up to 20% · mSAP/SLP +40–50% vs HDI · heavy Cu 4 oz +40–60% · 77 GHz radar 3–10× · IMS 2–3× · stacked vs staggered µvia +30–50%</td></tr>
+        <tr><td>Cost structure</td><td>material 30–40% · processing 40–50% · test+overhead 10–20% (shifts to process-dominated for HDI)</td></tr>
+      </tbody>
+    </table>
+    <p class="src"><b>Sources (2025–2026):</b> DigiTimes (Nan Ya / Kingboard / ITEQ CCL &amp; copper-foil price
+    hikes), AtlasPCB &amp; TrendForce (CCL cost breakdown, Korea import +74.5% YoY, gold/metals), NCAB PCB
+    price index (108→~125), Prismark (PCB +15.8% to ~$85B in 2025), Rogers Corp / RayPCB (RF laminate),
+    Isola / PCBSync (Isola/Shengyi/Panasonic tiers), Hil Electronic / King Sun / TOPFAST / JLCPCB
+    ($/in² ladders, cost-structure splits), IPC-4552B/4556 (ENIG/ENEPIG), Sierra/AllPCB/Epec (HDI,
+    back-drill, via-fill, test economics), BLS/Destatis/vendor wage data (labour). All figures are
+    engineering ranges, not supplier quotes; laminate makers publish sheet prices only under NDA.</p>
+
+    <h2>7 · Worked examples (luxury SUV)</h2>
+    ${exHtml}
+
+    <h2>8 · AI advisor — insights &amp; idea generation</h2>
+    <p>The <b>AI Advisor</b> tab has two engines:</p>
+    <ul>
+      <li><b>Built-in advisor</b> (offline, no key): analyses the current design and generates a ranked,
+      quantified list of cost-reduction ideas (layer reduction, HDI vs through, finish downgrade, panel
+      utilisation, hybrid RF stack-up, trace relaxation, volume consolidation, regional trade-offs) plus a
+      cost narrative — computed deterministically from the model.</li>
+      <li><b>Claude generation</b> (your own Anthropic API key): sends the design + computed cost stack
+      directly from your browser to the Claude API and returns a generative should-cost review (drivers,
+      DfC ideas, risks/missing processes, alternative concepts). The key is used only for that direct call
+      and, if you opt in, stored only in your browser's localStorage. Model is selectable
+      (Opus 4.8 default, Sonnet 5, Haiku 4.5).</li>
+    </ul>
+
+    <h2>9 · Yield &amp; quality model</h2>
+    <table>
+      <thead><tr><th>Class</th><th>Base yield</th><th>Scrap</th><th>Test ×</th><th>AXI</th><th>Microsection/IST</th><th>NRE ×</th></tr></thead>
+      <tbody>${QUALITY_LEVELS.map((q)=>`<tr><td>${q.label}</td><td>${pct(q.yld)}</td><td>${pct(q.scrap)}</td><td>${q.testMult}</td><td>${q.axi?"yes":"no"}</td><td>${q.microsection?"yes":"no"}</td><td>${q.nreMult}</td></tr>`).join("")}</tbody>
+    </table>
+
+    <h2>10 · Manager summary — how this fixes the gaps</h2>
+    <div class="callout"><p><b>Previous feedback:</b> missing materials, manufacturing processes, latest
+    technologies; old labour rates; low accuracy. Wanted 2026 data, neon+black UI, and AI tools.</p></div>
+    <table>
+      <thead><tr><th>Gap</th><th>Now addressed</th></tr></thead>
+      <tbody>
+        <tr><td>Missing materials</td><td>13 materials incl. low-loss (Megtron 6/7/8), RF (Rogers RO4350B/RO4003C/RO3003, PTFE), LCP, IMS — with 2026 relative pricing.</td></tr>
+        <tr><td>Missing processes / latest tech</td><td>mSAP/SAP, any-layer HDI/SLP, back-drilling, via-fill/via-in-pad, copper-foil profile, VCP, laser depanel, plasma desmear, 3D AXI, IST/CAF.</td></tr>
+        <tr><td>Old labour rates</td><td>2026 blended region multipliers (China/Vietnam/India/Taiwan/Korea/NA/EU) from current wage + burden data; energy in the overhead term.</td></tr>
+        <tr><td>Low accuracy</td><td>Recalibrated to 2026 $/dm² ladders + CCL inflation + gold-price finish driver; flagship examples land inside the independent market band; cost-structure split matches published 30–40% material / 40–50% process.</td></tr>
+        <tr><td>Gold / metal volatility</td><td>Explicit gold-price input scales the gold-variable part of ENIG/ENEPIG/hard-gold; market-surcharge input for CCL/copper escalation.</td></tr>
+        <tr><td>Neon + black UI</td><td>Full high-contrast neon-on-black redesign.</td></tr>
+        <tr><td>AI tools</td><td>Built-in AI advisor + optional live Claude generation for insights and idea generation.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Missing processes a fab would still confirm</h2>
+    <p>Called out for completeness — add per RFQ: resin/copper via-fill chemistry choice &amp; capping,
+    edge plating / castellation, peelable mask &amp; carbon ink, press-fit / heavy-gold connector tabs,
+    copper coin / inlay for thermal, embedded components/die, glass-core substrate (emerging AI packaging,
+    2027+), blue-glue &amp; depanel strategy, first-article &amp; PPAP (automotive), and assembly-side
+    stencil/AOI/AXI (out of bare-board fab scope).</p>
+
+    <p class="src">All figures are industry-aligned engineering estimates for model calibration, not
+    confidential supplier pricing. Override coefficients in <code>data.js</code> with negotiated numbers
+    when implementing in a costing engine.</p>
+  `;
+}
+
+/* ============================================================================
+ * app.js — UI controller for the 360° PCB should-cost model — v2.
+ * Adds: landed cost + PCBA wiring, Monte Carlo display, config alerts,
+ * quote-calibration tab, batch CSV costing, share links, JSON/CSV export,
+ * Gerber/Excellon import, AI review/optimizer/chat with Apply-idea buttons.
+ * ==========================================================================*/
+
+const $ = (id) => document.getElementById(id);
+const NUM_FIELDS = ["boardW","boardH","orderQty","layerCount","boardThickness",
+  "panelW","panelH","utilization","holeDensity","overheadPct","marginPct",
+  "goldPrice","marketSurcharge","dutyPct","freightPerBoard","smtCount","thtCount","bomCost"];
+const SEL_FIELDS = ["pcbType","material","copperInner","copperOuter","copperFoil","fabProcess",
+  "via","trace","finish","maskColor","quality","region","destMarket"];
+const CHK_FIELDS = ["impedance","backdrill","viafill","silkscreen","assemblyOn"];
+
+let scenarios = [];
+let calQuotes = [];
+let batchResults = null;
+let aiAbort = null;
+let aiChatThread = null;
+let aiIdeaStore = [];      // ideas currently rendered with Apply buttons
+
+const fmtUSD = (v, dp = 2) => isFinite(v) ? "$" + v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp }) : "$—";
+const fmtNum = (v, dp = 0) => isFinite(v) ? v.toLocaleString("en-US", { maximumFractionDigits: dp }) : "—";
+const fmtPct = (v, dp = 1) => isFinite(v) ? (v * 100).toFixed(dp) + "%" : "—";
+
+/* ---------- inputs ---------- */
+function readInputs() {
+  const p = {};
+  NUM_FIELDS.forEach((f) => { p[f] = parseFloat($(f).value) || 0; });
+  SEL_FIELDS.forEach((f) => { p[f] = $(f).value; });
+  CHK_FIELDS.forEach((f) => { p[f] = $(f).checked; });
+  p.sides = parseInt($("sides").value) || 1;
+  return p;
+}
+function fillSelect(id, arr, valKey = "id", labelKey = "label") {
+  $(id).innerHTML = arr.map((o) => `<option value="${o[valKey]}">${o[labelKey]}</option>`).join("");
+}
+function buildSelects() {
+  fillSelect("pcbType", PCB_TYPES);
+  fillSelect("material", MATERIALS);
+  fillSelect("copperInner", COPPER_WEIGHTS);
+  fillSelect("copperOuter", COPPER_WEIGHTS);
+  fillSelect("copperFoil", COPPER_FOILS);
+  fillSelect("fabProcess", FAB_PROCESSES);
+  fillSelect("via", VIA_TYPES);
+  fillSelect("trace", TRACE_CLASSES);
+  fillSelect("finish", FINISHES);
+  fillSelect("maskColor", MASK_COLORS);
+  fillSelect("quality", QUALITY_LEVELS);
+  fillSelect("region", REGIONS);
+  $("destMarket").innerHTML = Object.entries(DUTY_LANES)
+    .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
+}
+function buildExamplePresets() {
+  $("examplePresets").innerHTML = EXAMPLES.map((ex, i) =>
+    `<button class="ex-chip" type="button" data-i="${i}">${ex.name}<span>${ex.note}</span></button>`).join("");
+  $("examplePresets").querySelectorAll(".ex-chip").forEach((b) =>
+    b.addEventListener("click", () => loadState(EXAMPLES[parseInt(b.dataset.i)].input)));
+}
+function loadState(state) {
+  Object.entries(state).forEach(([k, v]) => {
+    const el = $(k); if (!el) return;
+    if (el.type === "checkbox") el.checked = v; else el.value = v;
+  });
+  render();
+}
+
+/* Linked defaults: snap obviously-incompatible selections when TYPE changes.
+ * Remaining contradictions are flagged HIGH by validateConfig in the engine. [B2] */
+function snapCompatible() {
+  const t = $("pcbType").value;
+  const via = $("via").value;
+  const matFam = byId(MATERIALS, $("material").value).family;
+  if ((t === "hdi" || t === "anylayer") && !byId(VIA_TYPES, via).microvia)
+    $("via").value = t === "anylayer" ? "micro3" : "micro1";
+  if ((t === "flex" || t === "rigidflex") && matFam !== "flex")
+    $("material").value = "polyimide";
+}
+
+/* Duty lane auto-fill: destination or fab-region change refreshes the
+ * indicative duty rate (still editable). */
+function autofillDuty() {
+  const lane = DUTY_LANES[$("destMarket").value];
+  const rate = lane && lane.rates[$("region").value];
+  $("dutyPct").value = rate != null ? rate : 0;
+}
+
+/* ---------- calibration (quote learning) ---------- */
+function calFactorFor(region) {
+  if (!calQuotes.length) return null;
+  const ratios = (list) => list.map((q) => q.actual / q.model).sort((a, b) => a - b);
+  const median = (xs) => xs.length ? xs[Math.floor(xs.length / 2)] : null;
+  const regional = calQuotes.filter((q) => q.region === region);
+  const f = median(ratios(regional.length >= 2 ? regional : calQuotes));
+  return f && isFinite(f) ? f : null;
+}
+function calStatsHtml() {
+  if (!calQuotes.length) return `<p class="hint">No quotes logged yet — the model is running purely on its 2026 calibration.</p>`;
+  const errs = calQuotes.map((q) => Math.abs(q.actual - q.model) / q.actual * 100);
+  const mape = errs.reduce((s, e) => s + e, 0) / errs.length;
+  const within = calQuotes.filter((q) => Math.abs(q.actual - q.model) / q.actual <= 0.15).length;
+  const perRegion = {};
+  calQuotes.forEach((q) => { (perRegion[q.region] = perRegion[q.region] || []).push(q.actual / q.model); });
+  const regionBits = Object.entries(perRegion).map(([r, xs]) => {
+    xs.sort((a, b) => a - b);
+    return `${byId(REGIONS, r).label} ×${xs[Math.floor(xs.length / 2)].toFixed(2)} (n=${xs.length})`;
+  }).join(" · ");
+  return `<div class="metrics-strip" style="margin:10px 0">
+    <div class="metric"><div class="m-label">Quotes logged</div><div class="m-value">${calQuotes.length}</div></div>
+    <div class="metric"><div class="m-label">Model MAPE</div><div class="m-value">${mape.toFixed(1)}%</div></div>
+    <div class="metric"><div class="m-label">Within ±15%</div><div class="m-value">${within}/${calQuotes.length}</div></div>
+    <div class="metric"><div class="m-label">Correction factors</div><div class="m-value" style="font-size:.8rem">${regionBits}</div></div>
+  </div>`;
+}
+function renderCalibration() {
+  $("calStats").innerHTML = calStatsHtml();
+  const t = $("calTable");
+  if (!calQuotes.length) { t.innerHTML = `<tbody><tr><td class="scenario-empty">No quotes yet. Configure a board, get a real quote, log it here.</td></tr></tbody>`; return; }
+  let h = "<thead><tr><th>Config</th><th>Supplier</th><th>Region</th><th>Qty</th><th>Model $</th><th>Actual $</th><th>Δ%</th><th></th></tr></thead><tbody>";
+  calQuotes.forEach((q, i) => {
+    const d = (q.actual - q.model) / q.actual * 100;
+    h += `<tr><td>${q.name}</td><td>${q.supplier || "—"}</td><td>${byId(REGIONS, q.region).label}</td><td>${fmtNum(q.qty)}</td>
+      <td>${fmtUSD(q.model)}</td><td>${fmtUSD(q.actual)}</td><td>${d >= 0 ? "+" : ""}${d.toFixed(1)}%</td>
+      <td><span class="del" data-i="${i}">✕</span></td></tr>`;
+  });
+  t.innerHTML = h + "</tbody>";
+  t.querySelectorAll(".del").forEach((d) => d.addEventListener("click", () => {
+    calQuotes.splice(parseInt(d.dataset.i), 1); persistCal(); renderCalibration(); render();
+  }));
+}
+function addCalQuote() {
+  const actual = parseFloat($("calActual").value);
+  if (!isFinite(actual) || actual <= 0) { $("calStats").innerHTML = `<p class="hint" style="color:var(--neon-red)">Enter the actual quoted $/board first.</p>` + calStatsHtml(); return; }
+  const input = readInputs();
+  const r = computePcb(input);
+  calQuotes.push({
+    name: `${r.L}L ${r.type.label.split(" (")[0]} ${input.boardW}×${input.boardH}`,
+    supplier: $("calSupplier").value.trim(),
+    region: input.region, qty: input.orderQty,
+    model: +r.price.toFixed(3), actual: +actual.toFixed(3),
+    when: new Date().toISOString().slice(0, 10),
+  });
+  persistCal(); renderCalibration(); render();
+  $("calActual").value = "";
+}
+function persistCal() { try { localStorage.setItem("pcb_cal_quotes", JSON.stringify(calQuotes)); } catch (e) {} }
+function loadCal() {
+  try { const s = localStorage.getItem("pcb_cal_quotes"); if (s) calQuotes = JSON.parse(s); } catch (e) {}
+  try { $("calApply").checked = localStorage.getItem("pcb_cal_apply") === "1"; } catch (e) {}
+}
+
+/* ---------- main render ---------- */
+function render() {
+  const input = readInputs();
+  const r = computePcb(input);
+
+  // calibration correction (display-level, clearly disclosed)
+  const applyCal = $("calApply").checked;
+  const calF = applyCal ? calFactorFor(input.region) : null;
+  const adj = (v) => (calF ? v * calF : v);
+
+  // config alerts
+  $("configAlerts").innerHTML = r.configIssues.map((t) =>
+    `<div class="rec high config-alert"><span class="tag">CONFIG</span><span>${t}</span></div>`).join("");
+
+  $("outCost").textContent = fmtUSD(adj(r.totalCost));
+  $("outCostSub").textContent = `${r.L}-layer ${r.type.label.split(" (")[0]} · yield ${fmtPct(r.yld, 0)} · lot ×${r.lot.toFixed(2)}${calF ? ` · calibrated ×${calF.toFixed(2)}` : ""}`;
+  $("outPrice").textContent = fmtUSD(adj(r.price));
+  $("outPriceSub").textContent = `at ${input.marginPct}% margin${calF ? " · calibrated" : ""}`;
+
+  // Monte Carlo band
+  const mc = mcSimulate(input, 400);
+  $("outMC").textContent = `${fmtUSD(adj(mc.p10))} – ${fmtUSD(adj(mc.p90))}`;
+  $("outMCsub").textContent = `P50 ${fmtUSD(adj(mc.p50))} · 400 samples on calibration σ`;
+
+  // extra cards (landed / PCBA / $/dm²)
+  const showExtra = r.landed || r.pcbaCost != null;
+  $("extraCards").style.display = "grid";
+  $("outLanded").textContent = r.landed ? fmtUSD(adj(r.landed.total)) : "—";
+  $("outLandedSub").textContent = r.landed
+    ? `price + ${input.dutyPct}% duty (${fmtUSD(adj(r.landed.duty))}) + freight ${fmtUSD(r.landed.freight)}`
+    : "set a destination market / duty";
+  $("outPcba").textContent = r.pcbaCost != null ? fmtUSD(adj(r.pcbaCost)) : "—";
+  $("outPcbaSub").textContent = r.pcbaCost != null
+    ? `board + BOM ${fmtUSD(input.bomCost)} + assembly ${fmtUSD(r.assembly.assyProc + r.assembly.assyNre)}`
+    : "enable assembly in section 7";
+  $("outPerArea").textContent = fmtUSD(adj(r.totalCost) / Math.max(1e-9, r.area));
+
+  $("metricsStrip").innerHTML = [
+    ["Board area", fmtNum(r.area, 2) + " dm²"],
+    ["Boards / panel", fmtNum(r.bpp)],
+    ["Lamination cycles", fmtNum(r.lamCycles)],
+    ["Yield", fmtPct(r.yld, 0)],
+    ["Waste factor", "×" + r.waste.toFixed(2)],
+    ["Lot factor", "×" + r.lot.toFixed(2)],
+    ["Hole count", fmtNum(r.holeCount, 0)],
+    ["NRE / board", fmtUSD(r.nrePerBoard, 3)],
+  ].map(([l, v]) => `<div class="metric"><div class="m-label">${l}</div><div class="m-value">${v}</div></div>`).join("");
+
+  const total = r.components.reduce((s, c) => s + Math.max(0, c.value), 0) || 1;
+  $("stackBar").innerHTML = r.components.map((c) =>
+    `<div class="seg" style="width:${(Math.max(0, c.value) / total) * 100}%;background:${c.color}" title="${c.label}: ${fmtUSD(c.value, 3)}"></div>`).join("");
+  $("stackLegend").innerHTML = r.components.map((c) =>
+    `<span class="li"><span class="sw" style="background:${c.color}"></span>${c.label} <b>${fmtUSD(adj(c.value), 2)}</b></span>`).join("");
+
+  document.querySelector("#breakdownTable tbody").innerHTML = r.components.map((c) =>
+    `<tr><td><span class="swatch" style="background:${c.color}"></span>${c.label}</td>
+      <td class="num">${fmtUSD(adj(c.value), 3)}</td><td class="num">${((Math.max(0, c.value) / total) * 100).toFixed(1)}%</td></tr>`).join("");
+  document.querySelector("#breakdownTable tfoot").innerHTML =
+    `<tr><td>Total fab cost${calF ? " (calibrated)" : ""}</td><td class="num">${fmtUSD(adj(r.totalCost), 3)}</td><td class="num">100%</td></tr>`;
+
+  // benchmark band (compare uncalibrated price against the independent band)
+  const b = r.benchmark;
+  const axMin = b.lo * 0.6, axMax = b.hi * 1.15, span = axMax - axMin || 1;
+  $("bandZone").style.left = ((b.lo - axMin) / span) * 100 + "%";
+  $("bandZone").style.width = ((b.hi - b.lo) / span) * 100 + "%";
+  $("bandMark").style.left = Math.max(0, Math.min(100, ((r.price - axMin) / span) * 100)) + "%";
+  $("bandLabels").innerHTML = `<span>${fmtUSD(axMin)}</span><span>band ${fmtUSD(b.lo)}–${fmtUSD(b.hi)}</span><span>${fmtUSD(axMax)}</span>`;
+  const inBand = r.price >= b.lo && r.price <= b.hi;
+  $("bandVerdict").className = "band-verdict " + (inBand ? "in" : "out");
+  $("bandVerdict").textContent = inBand
+    ? `✓ Price ${fmtUSD(r.price)} sits within the independent market band.`
+    : `▲ Price ${fmtUSD(r.price)} is ${r.price > b.hi ? "above" : "below"} the typical band (${fmtUSD(b.lo)}–${fmtUSD(b.hi)}). Review the flagged drivers.`;
+
+  // tornado
+  const sens = pcbSensitivity(input, 15);
+  const maxSwing = Math.max(...sens.map((s) => s.swing), 1);
+  $("tornado").innerHTML = sens.map((s) =>
+    `<div class="row"><span>${s.label}</span><div class="bar-wrap"><div class="bar" style="width:${(s.swing / maxSwing) * 100}%"></div></div>
+      <span class="pct">±${s.swing.toFixed(1)}%</span></div>`).join("");
+
+  // DfC
+  $("dfc").innerHTML = r.dfc.map((d) => {
+    const tag = { high: "HIGH", med: "MED", low: "TIP", ok: "OK" }[d.sev];
+    return `<div class="rec ${d.sev}"><span class="tag">${tag}</span><span>${d.text}</span></div>`;
+  }).join("");
+
+  // routing
+  $("routingTitle").textContent = `Process routing — ${r.L}-layer ${r.type.label}${input.assemblyOn ? " + PCBA" : ""}`;
+  $("routingList").innerHTML = r.routing.map((s, i) =>
+    `<div class="step"><span class="n">${i + 1}</span><span class="nm">${s.name}</span><span class="mc">${s.machine}</span></div>`).join("");
+
+  $("accuracyNote").innerHTML =
+    `<b>Accuracy:</b> calibrated to 2026 $/dm² ladders, labour/region indices, gold sensitivity and CCL inflation; ` +
+    `Monte Carlo band reflects calibration σ. ` +
+    (calQuotes.length
+      ? `<b>${calQuotes.length} real quote${calQuotes.length > 1 ? "s" : ""} logged</b> (see Calibration tab)${calF ? `; correction ×${calF.toFixed(2)} applied` : "; correction available but not applied"}. `
+      : `No real quotes logged yet — use the Calibration tab to measure and correct the model against your suppliers. `) +
+    `Treat outputs as a should-cost <b>envelope</b>, not a quote.`;
+}
+
+/* ---------- AI advisor ---------- */
+function setAiBusy(busy, statusHtml) {
+  $("btnAiStop").style.display = busy ? "inline-flex" : "none";
+  ["btnLocalAI", "btnClaudeAI", "btnOptimize", "btnAiChat"].forEach((id) => { $(id).disabled = busy; });
+  if (statusHtml != null) $("aiStatus").innerHTML = statusHtml;
+}
+function renderIdeaButtons(ideas, sourceLabel) {
+  aiIdeaStore = ideas.filter((i) => i.changes && Object.keys(i.changes).length);
+  if (!aiIdeaStore.length) { $("aiIdeas").innerHTML = ""; return; }
+  const base = computePcb(readInputs()).totalCost;
+  $("aiIdeas").innerHTML = `<h4>Applicable ideas (${sourceLabel}) — verified against the engine</h4>` +
+    aiIdeaStore.map((idea, n) => {
+      const test = computePcb({ ...readInputs(), ...idea.changes });
+      const save = base - test.totalCost;
+      const chg = Object.entries(idea.changes).map(([k, v]) => `${k}→${v}`).join(", ");
+      return `<div class="rec ${save > 0 ? "ok" : "med"}"><span class="tag">${save > 0 ? "−" + fmtUSD(save) : "±" + fmtUSD(Math.abs(save))}</span>
+        <span><strong>${idea.title}</strong> <code>${chg}</code>${idea.note ? " — " + idea.note : ""}
+        <button class="btn-apply" data-apply="${n}" type="button">Apply</button></span></div>`;
+    }).join("");
+  $("aiIdeas").querySelectorAll("[data-apply]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      loadState({ ...readInputs(), ...aiIdeaStore[parseInt(btn.dataset.apply)].changes });
+      switchTab("model");
+    }));
+}
+function runLocalAI() {
+  const input = readInputs();
+  const r = computePcb(input);
+  const { html, ideas } = renderLocalInsights(input, r);
+  $("aiStatus").className = "ai-status";
+  $("aiStatus").textContent = "Built-in advisor · generated locally, no data left your browser.";
+  $("aiOutput").innerHTML = html;
+  $("aiOutput").querySelectorAll(".btn-apply").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const idea = ideas[parseInt(btn.dataset.idea)];
+      if (idea && idea.changes) { loadState({ ...readInputs(), ...idea.changes }); switchTab("model"); }
+    }));
+  $("aiIdeas").innerHTML = "";
+  $("aiChatWrap").style.display = "none";
+  switchTab("ai");
+}
+function getAiCreds() {
+  const apiKey = $("aiKey").value.trim();
+  if (!apiKey) {
+    $("aiStatus").className = "ai-status err";
+    $("aiStatus").textContent = "Enter your Anthropic API key for Claude features (the built-in advisor needs no key).";
+    switchTab("ai");
+    return null;
+  }
+  if ($("aiSaveKey").checked) { try { localStorage.setItem("pcb_ai_key", apiKey); } catch (e) {} }
+  return { apiKey, model: $("aiModel").value };
+}
+function aiFail(e) {
+  $("aiStatus").className = "ai-status err";
+  let hint = e && e.name === "AbortError" ? "Stopped." : (e.message || String(e));
+  if (/Failed to fetch|NetworkError|CORS/i.test(hint)) hint += " — the browser may be blocking the direct call (network/CORS). The built-in advisor still works offline.";
+  $("aiStatus").textContent = hint;
+}
+function startAbort() {
+  aiAbort = new AbortController();
+  const t = setTimeout(() => aiAbort.abort(), AI_TIMEOUT_MS);
+  aiAbort.signal.addEventListener("abort", () => clearTimeout(t));
+  return aiAbort.signal;
+}
+async function runClaudeReview() {
+  const creds = getAiCreds(); if (!creds) return;
+  const input = readInputs(), r = computePcb(input);
+  const signal = startAbort();
+  setAiBusy(true, `<span class="ai-spinner"></span>Streaming should-cost review from ${creds.model}…`);
+  $("aiOutput").textContent = ""; $("aiIdeas").innerHTML = "";
+  switchTab("ai");
+  try {
+    const text = await claudeReview({
+      ...creds, input, r, signal,
+      onText: (_d, full) => { $("aiOutput").innerHTML = mdToHtml(full); },
+    });
+    const { ideas, stripped } = extractIdeasJson(text);
+    $("aiOutput").innerHTML = mdToHtml(stripped);
+    renderIdeaButtons(ideas, "Claude review");
+    aiChatThread = newChatThread(input, r);
+    aiChatThread.push({ role: "user", content: "Here is your review for reference:\n" + text }, { role: "assistant", content: "Noted — ask me anything about it." });
+    $("aiChatWrap").style.display = "block";
+    setAiBusy(false, `Review generated by ${creds.model}. Ask follow-ups below.`);
+  } catch (e) { setAiBusy(false); aiFail(e); }
+}
+async function runClaudeOptimize() {
+  const creds = getAiCreds(); if (!creds) return;
+  const input = readInputs(), r = computePcb(input);
+  const signal = startAbort();
+  setAiBusy(true, `<span class="ai-spinner"></span>Optimizer starting…`);
+  $("aiOutput").innerHTML = `<p class="hint">Claude is running verified what-ifs against the live cost engine…</p>`;
+  $("aiIdeas").innerHTML = "";
+  switchTab("ai");
+  try {
+    const text = await claudeOptimize({
+      ...creds, input, r, signal,
+      onStatus: (s) => { $("aiStatus").innerHTML = `<span class="ai-spinner"></span>${s}`; },
+    });
+    const { ideas, stripped } = extractIdeasJson(text);
+    $("aiOutput").innerHTML = mdToHtml(stripped);
+    renderIdeaButtons(ideas, "optimizer — numerically verified");
+    aiChatThread = newChatThread(input, r);
+    aiChatThread.push({ role: "user", content: "Here is your optimization report for reference:\n" + text }, { role: "assistant", content: "Noted — ask me anything about it." });
+    $("aiChatWrap").style.display = "block";
+    setAiBusy(false, `Optimization complete (${creds.model}).`);
+  } catch (e) { setAiBusy(false); aiFail(e); }
+}
+async function runChat() {
+  const creds = getAiCreds(); if (!creds) return;
+  const q = $("aiChatInput").value.trim(); if (!q) return;
+  if (!aiChatThread) { const input = readInputs(); aiChatThread = newChatThread(input, computePcb(input)); }
+  const signal = startAbort();
+  setAiBusy(true, `<span class="ai-spinner"></span>Answering…`);
+  const prior = $("aiOutput").innerHTML;
+  $("aiOutput").innerHTML = prior + `<h4>You</h4><p>${q.replace(/</g, "&lt;")}</p><h4>Claude</h4><p id="aiChatLive">…</p>`;
+  $("aiChatInput").value = "";
+  try {
+    await claudeChat({
+      ...creds, thread: aiChatThread, question: q, signal,
+      onText: (_d, full) => { const el = $("aiChatLive"); if (el) el.outerHTML = `<div id="aiChatLive">${mdToHtml(full)}</div>`; },
+    });
+    setAiBusy(false, "Answered. Ask another follow-up, or re-run a review after changing inputs.");
+  } catch (e) { setAiBusy(false); aiFail(e); }
+}
+
+/* ---------- scenarios ---------- */
+function saveScenario() {
+  const input = readInputs();
+  const r = computePcb(input);
+  const name = `${r.L}L ${r.type.label.split(" (")[0]} · ${r.area.toFixed(2)}dm² · ${(input.orderQty / 1000)}k · ${byId(REGIONS, input.region).label}`;
+  scenarios.push({ name, input, r: lite(r) });
+  persist(); renderScenarios(); switchTab("scenarios");
+}
+function lite(r) {
+  return { L: r.L, typeLabel: r.type.label.split(" (")[0], area: r.area, bpp: r.bpp,
+    lamCycles: r.lamCycles, yld: r.yld, lot: r.lot, material: r.material, processing: r.processing,
+    testInspect: r.testInspect, nrePerBoard: r.nrePerBoard, overhead: r.overhead,
+    totalCost: r.totalCost, price: r.price,
+    landed: r.landed ? r.landed.total : null, pcba: r.pcbaCost };
+}
+function renderScenarios() {
+  const t = $("scenarioTable");
+  if (!scenarios.length) { t.innerHTML = `<tbody><tr><td class="scenario-empty">No scenarios saved yet.</td></tr></tbody>`; return; }
+  const rows = [
+    { l: "", g: (s, i) => `<span class="del" data-i="${i}" title="Delete">✕</span>` },
+    { l: "Config", head: true, g: (s) => s.name },
+    { l: "Layers", g: (s) => s.r.L },
+    { l: "Type", g: (s) => s.r.typeLabel },
+    { l: "Area (dm²)", g: (s) => s.r.area.toFixed(2) },
+    { l: "Lot factor", g: (s) => "×" + (s.r.lot || 1).toFixed(2) },
+    { l: "Yield", g: (s) => fmtPct(s.r.yld, 0) },
+    { l: "Material $", g: (s) => fmtUSD(s.r.material) },
+    { l: "Processing $", g: (s) => fmtUSD(s.r.processing) },
+    { l: "Test $", g: (s) => fmtUSD(s.r.testInspect) },
+    { l: "NRE/board $", g: (s) => fmtUSD(s.r.nrePerBoard, 3) },
+    { l: "Fab cost $", head: true, g: (s) => fmtUSD(s.r.totalCost) },
+    { l: "Price $", g: (s) => fmtUSD(s.r.price) },
+    { l: "Landed $", g: (s) => s.r.landed != null ? fmtUSD(s.r.landed) : "—" },
+    { l: "PCBA $", g: (s) => s.r.pcba != null ? fmtUSD(s.r.pcba) : "—" },
+  ];
+  let h = "<thead><tr><th>Metric</th>" + scenarios.map((s, i) => `<th>#${i + 1}</th>`).join("") + "</tr></thead><tbody>";
+  rows.forEach((row) => { h += `<tr class="${row.head ? "row-head" : ""}"><td>${row.l}</td>` + scenarios.map((s, i) => `<td>${row.g(s, i)}</td>`).join("") + "</tr>"; });
+  t.innerHTML = h + "</tbody>";
+  t.querySelectorAll(".del").forEach((d) => d.addEventListener("click", () => { scenarios.splice(parseInt(d.dataset.i), 1); persist(); renderScenarios(); }));
+}
+function persist() { try { localStorage.setItem("pcb_scenarios", JSON.stringify(scenarios)); } catch (e) {} }
+function loadScen() { try { const s = localStorage.getItem("pcb_scenarios"); if (s) scenarios = JSON.parse(s); } catch (e) {} }
+
+/* ---------- batch CSV ---------- */
+function parseCsv(text) {
+  const rows = [];
+  let row = [], cell = "", inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else inQ = false; }
+      else cell += ch;
+    } else if (ch === '"') inQ = true;
+    else if (ch === ",") { row.push(cell); cell = ""; }
+    else if (ch === "\n" || ch === "\r") {
+      if (cell !== "" || row.length) { row.push(cell); rows.push(row); row = []; cell = ""; }
+      if (ch === "\r" && text[i + 1] === "\n") i++;
+    } else cell += ch;
+  }
+  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter((r) => r.some((c) => c.trim() !== ""));
+}
+async function runBatch(file) {
+  const text = await file.text();
+  const rows = parseCsv(text);
+  if (rows.length < 2) { $("batchTable").innerHTML = `<tbody><tr><td class="scenario-empty">CSV needs a header row + at least one data row.</td></tr></tbody>`; return; }
+  const header = rows[0].map((h) => h.trim());
+  const base = readInputs();
+  batchResults = rows.slice(1).map((cells, idx) => {
+    const over = {};
+    let name = `row ${idx + 1}`;
+    header.forEach((h, i) => {
+      const v = (cells[i] || "").trim();
+      if (v === "") return;
+      if (h === "name") { name = v; return; }
+      const clean = sanitizeChanges({ [h]: isNaN(Number(v)) ? (v === "true" ? true : v === "false" ? false : v) : Number(v) });
+      Object.assign(over, clean);
+    });
+    const r = computePcb({ ...base, ...over });
+    return { name, over, cost: r.totalCost, price: r.price, yld: r.yld, L: r.L, issues: r.configIssues.length };
+  });
+  let h = "<thead><tr><th>Name</th><th>Overrides</th><th>Layers</th><th>Yield</th><th>Fab cost $</th><th>Price $</th><th>Config issues</th></tr></thead><tbody>";
+  batchResults.forEach((b) => {
+    h += `<tr><td>${b.name}</td><td style="white-space:normal;font-size:.72rem">${Object.entries(b.over).map(([k, v]) => k + "=" + v).join(" ") || "(current config)"}</td>
+      <td>${b.L}</td><td>${fmtPct(b.yld, 0)}</td><td>${fmtUSD(b.cost)}</td><td>${fmtUSD(b.price)}</td><td>${b.issues || ""}</td></tr>`;
+  });
+  $("batchTable").innerHTML = h + "</tbody>";
+  $("btnBatchExport").style.display = "inline-flex";
+}
+function downloadText(name, text, mime = "text/plain") {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type: mime }));
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+function batchTemplate() {
+  downloadText("pcb-batch-template.csv",
+    "name,layerCount,boardW,boardH,pcbType,material,via,trace,finish,quality,region,orderQty\n" +
+    "Control module,4,100,80,rigid,fr4_hightg,through,5mil,enig,automotive,china,50000\n" +
+    "Domain controller,8,160,120,highspeed,lowloss_mid,buried,4mil,enig,automotive,china,20000\n", "text/csv");
+}
+function exportBatch() {
+  if (!batchResults) return;
+  downloadText("pcb-batch-results.csv",
+    "name,layers,yield,fabCost,price,configIssues\n" +
+    batchResults.map((b) => `"${b.name}",${b.L},${(b.yld * 100).toFixed(1)}%,${b.cost.toFixed(3)},${b.price.toFixed(3)},${b.issues}`).join("\n"), "text/csv");
+}
+
+/* ---------- share / export ---------- */
+function shareLink() {
+  const state = readInputs();
+  const enc = btoa(encodeURIComponent(JSON.stringify(state)));
+  const url = location.origin === "null" || location.protocol === "file:"
+    ? `${location.href.split("#")[0]}#cfg=${enc}`
+    : `${location.href.split("#")[0]}#cfg=${enc}`;
+  history.replaceState(null, "", `#cfg=${enc}`);
+  const done = () => { $("btnShare").textContent = "✓ Copied"; setTimeout(() => { $("btnShare").textContent = "⧉ Share link"; }, 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, done); else done();
+}
+function loadFromHash() {
+  const m = location.hash.match(/#cfg=(.+)/);
+  if (!m) return false;
+  try {
+    const state = JSON.parse(decodeURIComponent(atob(m[1])));
+    loadState({ ...DEFAULTS, ...state });
+    return true;
+  } catch (e) { return false; }
+}
+function exportJson() {
+  downloadText("pcb-config.json", JSON.stringify(readInputs(), null, 2), "application/json");
+}
+function exportCsv() {
+  const r = computePcb(readInputs());
+  let csv = "element,usd_per_board,share\n";
+  const total = r.components.reduce((s, c) => s + c.value, 0) || 1;
+  r.components.forEach((c) => { csv += `"${c.label}",${c.value.toFixed(4)},${(c.value / total * 100).toFixed(1)}%\n`; });
+  csv += `"TOTAL fab cost",${r.totalCost.toFixed(4)},100%\n"Quoted price",${r.price.toFixed(4)},\n`;
+  if (r.landed) csv += `"Landed cost",${r.landed.total.toFixed(4)},\n`;
+  if (r.pcbaCost != null) csv += `"PCBA cost",${r.pcbaCost.toFixed(4)},\n`;
+  downloadText("pcb-cost-breakdown.csv", csv, "text/csv");
+}
+
+/* ---------- design-file import ---------- */
+async function handleImport(files) {
+  $("importReport").innerHTML = `<span class="ai-spinner"></span> parsing…`;
+  const rep = await GerberImport.importFiles(files);
+  if (Object.keys(rep.suggested).length) loadState({ ...readInputs(), ...rep.suggested });
+  $("importReport").innerHTML = rep.notes.map((n) => `<div>▹ ${n}</div>`).join("");
+}
+
+/* ---------- tabs / tooltips / reset ---------- */
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
+  document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === "tab-" + name));
+}
+function initTooltips() {
+  const tip = $("tooltip");
+  document.body.addEventListener("mouseover", (e) => {
+    const el = e.target.closest("[data-tip]"); if (!el) return;
+    tip.textContent = el.dataset.tip; tip.classList.add("show");
+    const move = (ev) => { tip.style.left = Math.min(ev.clientX + 14, window.innerWidth - 310) + "px"; tip.style.top = (ev.clientY + 16) + "px"; };
+    move(e); el._move = move; el.addEventListener("mousemove", move);
+  });
+  document.body.addEventListener("mouseout", (e) => {
+    const el = e.target.closest("[data-tip]"); if (!el) return;
+    tip.classList.remove("show"); if (el._move) el.removeEventListener("mousemove", el._move);
+  });
+}
+function resetDefaults() { loadState(DEFAULTS); }
+
+/* ---------- init ---------- */
+function init() {
+  buildSelects();
+  buildExamplePresets();
+  resetDefaults();
+  loadScen(); renderScenarios();
+  loadCal(); renderCalibration();
+  buildMethodology();
+
+  NUM_FIELDS.forEach((f) => $(f).addEventListener("input", render));
+  SEL_FIELDS.forEach((f) => $(f).addEventListener("change", render));
+  CHK_FIELDS.forEach((f) => $(f).addEventListener("change", render));
+  $("sides").addEventListener("change", render);
+  $("pcbType").addEventListener("change", () => { snapCompatible(); render(); });
+  $("destMarket").addEventListener("change", () => { autofillDuty(); render(); });
+  $("region").addEventListener("change", () => { autofillDuty(); render(); });
+
+  $("btnReset").addEventListener("click", resetDefaults);
+  $("btnSaveScenario").addEventListener("click", saveScenario);
+  $("btnClearScenarios").addEventListener("click", () => { scenarios = []; persist(); renderScenarios(); });
+  $("btnShare").addEventListener("click", shareLink);
+  $("btnExportJson").addEventListener("click", exportJson);
+  $("btnExportCsv").addEventListener("click", exportCsv);
+
+  // AI
+  $("btnLocalAI").addEventListener("click", runLocalAI);
+  $("btnClaudeAI").addEventListener("click", runClaudeReview);
+  $("btnOptimize").addEventListener("click", runClaudeOptimize);
+  $("btnAiChat").addEventListener("click", runChat);
+  $("aiChatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") runChat(); });
+  $("btnAiStop").addEventListener("click", () => { if (aiAbort) aiAbort.abort(); });
+  // Remember-key opt-in AND opt-out (unticking removes the stored key). [B3]
+  $("aiSaveKey").addEventListener("change", () => {
+    try {
+      if ($("aiSaveKey").checked) { const k = $("aiKey").value.trim(); if (k) localStorage.setItem("pcb_ai_key", k); }
+      else localStorage.removeItem("pcb_ai_key");
+    } catch (e) {}
+  });
+  try { const k = localStorage.getItem("pcb_ai_key"); if (k) { $("aiKey").value = k; $("aiSaveKey").checked = true; } } catch (e) {}
+
+  // calibration
+  $("btnCalAdd").addEventListener("click", addCalQuote);
+  $("calApply").addEventListener("change", () => {
+    try { localStorage.setItem("pcb_cal_apply", $("calApply").checked ? "1" : "0"); } catch (e) {}
+    render();
+  });
+  $("btnCalClear").addEventListener("click", () => { calQuotes = []; persistCal(); renderCalibration(); render(); });
+  $("btnCalExport").addEventListener("click", () => {
+    downloadText("pcb-quotes.csv", "config,supplier,region,qty,model,actual,date\n" +
+      calQuotes.map((q) => `"${q.name}","${q.supplier}",${q.region},${q.qty},${q.model},${q.actual},${q.when}`).join("\n"), "text/csv");
+  });
+
+  // batch
+  $("batchFile").addEventListener("change", (e) => { if (e.target.files.length) runBatch(e.target.files[0]); });
+  $("btnBatchTemplate").addEventListener("click", batchTemplate);
+  $("btnBatchExport").addEventListener("click", exportBatch);
+
+  // import
+  $("importFiles").addEventListener("change", (e) => handleImport(e.target.files));
+
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+  initTooltips();
+
+  if (!loadFromHash()) render();
+}
+document.addEventListener("DOMContentLoaded", init);
+
+  </script>
+</body>
+</html>

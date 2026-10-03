@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automotive IVI SoC — Should-Cost Model</title>
+  <meta name="description" content="Parameterized, transparent should-cost model for automotive In-Vehicle Infotainment (IVI) SoCs. Estimates $/die and total product cost for 2025–2026 production." />
+  <style>
+:root {
+  --bg: #0b1020;
+  --bg-soft: #121a31;
+  --panel: #ffffff;
+  --ink: #1a2236;
+  --ink-soft: #5b6779;
+  --line: #e3e8f0;
+  --accent: #2563eb;
+  --accent-2: #0891b2;
+  --good: #0d9488;
+  --warn: #ca8a04;
+  --bad: #dc2626;
+  --shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .06);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f4f6fb;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 22px;
+  background: linear-gradient(120deg, #0b1020, #15213f);
+  color: #fff;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: grid; place-items: center; font-weight: 800; letter-spacing: .5px;
+  box-shadow: var(--shadow);
+}
+.brand-text h1 { font-size: 1.05rem; margin: 0; font-weight: 700; }
+.subtitle { margin: 2px 0 0; font-size: .78rem; color: #aab6d4; }
+.header-actions { display: flex; gap: 10px; }
+
+.btn {
+  border: 0; border-radius: 8px; padding: 9px 14px; font-size: .82rem; font-weight: 600;
+  cursor: pointer; transition: transform .05s ease, background .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-ghost { background: rgba(255,255,255,.12); color: #fff; }
+.btn-ghost:hover { background: rgba(255,255,255,.22); }
+
+/* ---------- Tabs ---------- */
+.tabbar {
+  display: flex; gap: 4px; padding: 0 22px; background: #0b1020;
+  border-bottom: 1px solid #1d294a;
+}
+.tab {
+  background: transparent; border: 0; color: #93a0c0; cursor: pointer;
+  padding: 11px 16px; font-size: .85rem; font-weight: 600;
+  border-bottom: 2px solid transparent;
+}
+.tab:hover { color: #cdd6ee; }
+.tab.active { color: #fff; border-bottom-color: var(--accent); }
+
+main { padding: 18px 22px 60px; max-width: 1400px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ---------- Layout ---------- */
+.layout { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+
+/* ---------- Inputs ---------- */
+.inputs { display: flex; flex-direction: column; gap: 14px; }
+.preset-bar { background: var(--panel); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
+.preset-label { font-weight: 700; font-size: .8rem; display: block; margin-bottom: 8px; }
+.node-presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.node-chip {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px;
+  padding: 5px 11px; font-size: .76rem; font-weight: 600; cursor: pointer; color: var(--ink-soft);
+}
+.node-chip:hover { border-color: var(--accent); color: var(--accent); }
+.node-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.node-chip .tier { font-size: .62rem; opacity: .7; display: block; }
+.hint { font-size: .72rem; color: var(--ink-soft); margin: 8px 0 0; }
+
+.group {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 14px 14px; box-shadow: var(--shadow); margin: 0;
+}
+.group legend {
+  font-weight: 700; font-size: .78rem; color: var(--accent); padding: 0 6px;
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.field { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; }
+.field label { font-size: .76rem; color: var(--ink-soft); font-weight: 600; }
+.field.check { flex-direction: row; align-items: center; }
+.field.check label { display: flex; align-items: center; gap: 7px; color: var(--ink); }
+.field input[type="number"], .field select {
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: .85rem;
+  background: #fbfcfe; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.field input:focus, .field select:focus { outline: 2px solid #bcd0ff; border-color: var(--accent); }
+
+.info {
+  display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%;
+  background: #e7edf8; color: var(--accent); font-size: .62rem; cursor: help; font-weight: 700;
+  vertical-align: middle;
+}
+
+/* ---------- Results ---------- */
+.results { display: flex; flex-direction: column; gap: 16px; }
+.result-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 620px) { .result-cards { grid-template-columns: 1fr; } }
+.result-card {
+  background: var(--panel); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+}
+.result-card.primary { background: linear-gradient(135deg, #0b1020, #1b2a52); color: #fff; border: 0; }
+.rc-label { font-size: .74rem; text-transform: uppercase; letter-spacing: .5px; opacity: .85; }
+.rc-value { font-size: 1.9rem; font-weight: 800; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
+.rc-value.alt { color: var(--accent); }
+.rc-sub { font-size: .72rem; opacity: .8; }
+
+.metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 760px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
+.metric {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px;
+  box-shadow: var(--shadow);
+}
+.metric .m-label { font-size: .7rem; color: var(--ink-soft); font-weight: 600; }
+.metric .m-value { font-size: 1.15rem; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+.panel h3 { margin: 0 0 12px; font-size: .95rem; }
+
+/* Stack bar */
+.stackbar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+.stackbar .seg { height: 100%; min-width: 1px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 12px; }
+.legend .li { display: flex; align-items: center; gap: 7px; font-size: .76rem; }
+.legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+.legend .li b { font-variant-numeric: tabular-nums; }
+
+/* Breakdown table */
+table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.breakdown th, .breakdown td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+.breakdown th.num, .breakdown td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.breakdown tfoot td { font-weight: 800; border-top: 2px solid var(--ink); border-bottom: 0; }
+.breakdown .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; }
+
+/* Tornado */
+.tornado { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+.tornado .row { display: grid; grid-template-columns: 150px 1fr 64px; gap: 10px; align-items: center; font-size: .76rem; }
+.tornado .bar-wrap { position: relative; height: 18px; background: #f0f3f9; border-radius: 5px; }
+.tornado .bar { position: absolute; top: 0; height: 100%; background: var(--accent); opacity: .85; border-radius: 5px; }
+.tornado .pct { font-variant-numeric: tabular-nums; color: var(--ink-soft); text-align: right; }
+
+.accuracy-note {
+  font-size: .76rem; color: var(--ink-soft); background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: 10px; padding: 12px 14px;
+}
+.accuracy-note b { color: var(--ink); }
+
+/* ---------- Scenarios ---------- */
+.scenario-head { display: flex; align-items: center; justify-content: space-between; }
+.scenario-head .btn-ghost { background: #eef1f7; color: var(--ink); }
+.scenario-table-wrap { overflow-x: auto; margin-top: 10px; }
+.scenario-table th, .scenario-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: right;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.scenario-table tr td:first-child, .scenario-table tr th:first-child { text-align: left; font-weight: 600; position: sticky; left: 0; background: #fff; }
+.scenario-table thead th { background: #f7f9fd; }
+.scenario-table .row-head td:first-child { color: var(--accent); }
+.scenario-table .del { color: var(--bad); cursor: pointer; font-weight: 700; }
+.scenario-empty { padding: 24px; text-align: center; color: var(--ink-soft); }
+
+/* ---------- Prose / methodology ---------- */
+.prose { line-height: 1.65; }
+.prose h2 { font-size: 1.05rem; margin: 22px 0 8px; }
+.prose h2:first-child { margin-top: 4px; }
+.prose h3 { font-size: .9rem; margin: 16px 0 6px; }
+.prose p, .prose li { font-size: .86rem; color: #2b3550; }
+.prose code { background: #eef1f7; padding: 1px 6px; border-radius: 5px; font-size: .82rem; }
+.prose table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .82rem; }
+.prose th, .prose td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; }
+.prose th { background: #f7f9fd; }
+.prose .src { font-size: .78rem; color: var(--ink-soft); }
+.formula { background: #0b1020; color: #d6e2ff; padding: 10px 14px; border-radius: 8px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .82rem; overflow-x: auto; }
+
+/* ---------- Tooltip ---------- */
+.tooltip {
+  position: fixed; z-index: 50; max-width: 280px; background: #0b1020; color: #e7edfb;
+  padding: 9px 11px; border-radius: 8px; font-size: .76rem; line-height: 1.45;
+  box-shadow: 0 6px 24px rgba(0,0,0,.3); pointer-events: none; opacity: 0; transition: opacity .12s; display: none;
+}
+.tooltip.show { opacity: 1; display: block; }
+
+.app-footer { text-align: center; padding: 16px; color: var(--ink-soft); font-size: .74rem; }
+
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">SoC</div>
+      <div class="brand-text">
+        <h1>Automotive IVI SoC — Should-Cost Model</h1>
+        <p class="subtitle">Unit silicon cost &amp; total product cost · Fabless · 2025–2026 calibration</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btnReset" class="btn btn-ghost" type="button">Reset defaults</button>
+      <button id="btnSaveScenario" class="btn btn-primary" type="button">＋ Save as scenario</button>
+    </div>
+  </header>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button class="tab active" data-tab="model" type="button">Model</button>
+    <button class="tab" data-tab="scenarios" type="button">Scenario Compare</button>
+    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Sources</button>
+  </nav>
+
+  <main>
+    <!-- ============ MODEL TAB ============ -->
+    <section id="tab-model" class="tab-panel active">
+      <div class="layout">
+        <!-- INPUT COLUMN -->
+        <div class="inputs">
+          <div class="preset-bar">
+            <label class="preset-label">Technology node preset</label>
+            <div class="node-presets" id="nodePresets"></div>
+            <p class="hint" id="presetHint">Pick a node to auto-load 2025–2026 benchmark wafer cost, mask-set NRE, and defect density. Every value remains editable.</p>
+          </div>
+
+          <!-- Wafer & node -->
+          <fieldset class="group">
+            <legend>1 · Wafer &amp; foundry</legend>
+            <div class="field">
+              <label for="waferDiameter">Wafer diameter (mm)</label>
+              <input type="number" id="waferDiameter" value="300" min="100" step="50" />
+            </div>
+            <div class="field">
+              <label for="waferCost">Processed wafer cost ($/wafer) <span class="info" data-tip="Foundry price for a fully processed wafer at this node, automotive-qualified flow. Benchmark ranges in the Methodology tab.">ⓘ</span></label>
+              <input type="number" id="waferCost" value="3000" min="0" step="50" />
+            </div>
+            <div class="field">
+              <label for="edgeExclusion">Edge exclusion (mm)</label>
+              <input type="number" id="edgeExclusion" value="3" min="0" step="0.5" />
+            </div>
+            <div class="field">
+              <label for="scribe">Scribe / kerf per side (mm)</label>
+              <input type="number" id="scribe" value="0.1" min="0" step="0.01" />
+            </div>
+          </fieldset>
+
+          <!-- Die -->
+          <fieldset class="group">
+            <legend>2 · Die</legend>
+            <div class="field">
+              <label for="dieArea">Design die area (mm²) <span class="info" data-tip="Active silicon area of the design before scribe/ASIL overhead. IVI SoCs typically 60–180 mm² depending on node and feature set.">ⓘ</span></label>
+              <input type="number" id="dieArea" value="100" min="1" step="1" />
+            </div>
+            <div class="field">
+              <label for="asilOverhead">ASIL safety area overhead (%) <span class="info" data-tip="Extra die area for lockstep cores, ECC, redundancy, BIST and safety islands needed for ASIL-B/D. Increases effective die area.">ⓘ</span></label>
+              <input type="number" id="asilOverhead" value="8" min="0" step="1" />
+            </div>
+          </fieldset>
+
+          <!-- Yield -->
+          <fieldset class="group">
+            <legend>3 · Yield</legend>
+            <div class="field">
+              <label for="defectDensity">Defect density D₀ (defects/cm²) <span class="info" data-tip="Random defect density for a mature automotive-grade process. Lower is better. ~0.05–0.10 mature, 0.10–0.20 advanced/EUV ramp.">ⓘ</span></label>
+              <input type="number" id="defectDensity" value="0.08" min="0" step="0.01" />
+            </div>
+            <div class="field">
+              <label for="clustering">Clustering factor α <span class="info" data-tip="Negative-binomial yield model clustering parameter. Lower α = more clustered defects = higher yield for big dies. Typical 1.5–4.">ⓘ</span></label>
+              <input type="number" id="clustering" value="2.5" min="0.2" step="0.1" />
+            </div>
+            <div class="field">
+              <label for="systematicYield">Systematic / parametric yield (%) <span class="info" data-tip="Baseline yield loss not from random defects (parametric, design-process interaction). Multiplies the random-defect yield.">ⓘ</span></label>
+              <input type="number" id="systematicYield" value="95" min="1" max="100" step="0.5" />
+            </div>
+          </fieldset>
+
+          <!-- Package, assembly, test -->
+          <fieldset class="group">
+            <legend>4 · Package · Assembly · Test (OSAT)</legend>
+            <div class="field">
+              <label for="packageType">Package type</label>
+              <select id="packageType"></select>
+            </div>
+            <div class="field">
+              <label for="ballCount">Ball / pad count</label>
+              <input type="number" id="ballCount" value="600" min="50" step="10" />
+            </div>
+            <div class="field">
+              <label for="packageCost">Package + substrate cost ($) <span class="info" data-tip="Substrate + bumping + underfill + lid. Auto-estimated from package type and ball count; override as needed.">ⓘ</span></label>
+              <input type="number" id="packageCost" value="2.50" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="assemblyCost">Assembly cost ($)</label>
+              <input type="number" id="assemblyCost" value="0.45" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="testTime">Final test time (s) <span class="info" data-tip="ATE seconds per unit. Automotive parts run longer test for higher coverage (DPPM targets).">ⓘ</span></label>
+              <input type="number" id="testTime" value="12" min="0" step="1" />
+            </div>
+            <div class="field">
+              <label for="testerRate">Tester rate ($/hr)</label>
+              <input type="number" id="testerRate" value="180" min="0" step="10" />
+            </div>
+            <div class="field check">
+              <label><input type="checkbox" id="burnIn" /> Burn-in (automotive, +cost &amp; yield loss)</label>
+            </div>
+            <div class="field">
+              <label for="burnInCost">Burn-in cost / unit ($)</label>
+              <input type="number" id="burnInCost" value="0.35" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="assemblyYield">Assembly yield (%)</label>
+              <input type="number" id="assemblyYield" value="99" min="50" max="100" step="0.5" />
+            </div>
+            <div class="field">
+              <label for="testYield">Final-test yield (%)</label>
+              <input type="number" id="testYield" value="98" min="50" max="100" step="0.5" />
+            </div>
+          </fieldset>
+
+          <!-- IP -->
+          <fieldset class="group">
+            <legend>5 · IP licensing</legend>
+            <div class="field">
+              <label for="ipRoyalty">IP royalty per unit ($) <span class="info" data-tip="Running royalties for CPU/GPU/ISP/codec/connectivity IP (e.g. Arm, Imagination, Cadence, Synopsys), per shipped unit.">ⓘ</span></label>
+              <input type="number" id="ipRoyalty" value="1.80" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="ipUpfront">IP upfront license ($, one-time)</label>
+              <input type="number" id="ipUpfront" value="8000000" min="0" step="100000" />
+            </div>
+          </fieldset>
+
+          <!-- NRE -->
+          <fieldset class="group">
+            <legend>6 · NRE (amortized)</legend>
+            <div class="field">
+              <label for="maskCost">Mask set cost ($) <span class="info" data-tip="Photomask set for the node. Grows steeply with EUV: ~$1–2M at 28nm to $20–30M+ at 5nm.">ⓘ</span></label>
+              <input type="number" id="maskCost" value="1500000" min="0" step="100000" />
+            </div>
+            <div class="field">
+              <label for="designNRE">Design NRE ($) <span class="info" data-tip="Engineering, EDA, verification, prototype, packages, board bring-up. Excludes IP upfront (entered above).">ⓘ</span></label>
+              <input type="number" id="designNRE" value="25000000" min="0" step="1000000" />
+            </div>
+            <div class="field">
+              <label for="qualNRE">Automotive qualification NRE ($) <span class="info" data-tip="AEC-Q100 qualification, ISO 26262 / ASIL functional-safety work, reliability and characterization.">ⓘ</span></label>
+              <input type="number" id="qualNRE" value="6000000" min="0" step="500000" />
+            </div>
+          </fieldset>
+
+          <!-- Volume & overhead -->
+          <fieldset class="group">
+            <legend>7 · Volume &amp; overhead</legend>
+            <div class="field">
+              <label for="annualVolume">Annual volume (units/yr)</label>
+              <input type="number" id="annualVolume" value="2000000" min="1000" step="100000" />
+            </div>
+            <div class="field">
+              <label for="programYears">Program lifetime (years) <span class="info" data-tip="NRE and upfront IP are amortized over total lifetime volume = annual × years.">ⓘ</span></label>
+              <input type="number" id="programYears" value="5" min="1" step="1" />
+            </div>
+            <div class="field">
+              <label for="overheadPct">Fabless overhead / SG&amp;A (%) <span class="info" data-tip="Operating overhead applied on COGS: logistics, scrap, support, supply-chain. Not company gross margin.">ⓘ</span></label>
+              <input type="number" id="overheadPct" value="12" min="0" step="1" />
+            </div>
+            <div class="field">
+              <label for="grossMargin">Target gross margin for ASP (%) <span class="info" data-tip="Optional: derive an indicative selling price (ASP) = total cost / (1 − margin). Cost figures above are margin-free.">ⓘ</span></label>
+              <input type="number" id="grossMargin" value="45" min="0" max="95" step="1" />
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- RESULTS COLUMN -->
+        <div class="results">
+          <div class="result-cards">
+            <div class="result-card primary">
+              <div class="rc-label">Unit silicon cost</div>
+              <div class="rc-value" id="outSilicon">$—</div>
+              <div class="rc-sub" id="outSiliconSub">per good die</div>
+            </div>
+            <div class="result-card primary">
+              <div class="rc-label">Total product cost</div>
+              <div class="rc-value" id="outTotal">$—</div>
+              <div class="rc-sub">per shipped SoC (incl. NRE/IP/overhead)</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">Indicative ASP</div>
+              <div class="rc-value alt" id="outASP">$—</div>
+              <div class="rc-sub" id="outASPsub">at target margin</div>
+            </div>
+          </div>
+
+          <div class="metrics-strip" id="metricsStrip"></div>
+
+          <div class="panel">
+            <h3>Cost stack (per shipped SoC)</h3>
+            <div class="stackbar" id="stackBar"></div>
+            <div class="legend" id="stackLegend"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Cost breakdown</h3>
+            <table class="breakdown" id="breakdownTable">
+              <thead>
+                <tr><th>Cost element</th><th class="num">$ / unit</th><th class="num">% of total</th></tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h3>Sensitivity — what moves the cost</h3>
+            <p class="hint">Effect on total product cost of a ±10% change in each driver (one-at-a-time).</p>
+            <div class="tornado" id="tornado"></div>
+          </div>
+
+          <div class="accuracy-note" id="accuracyNote"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENARIOS TAB ============ -->
+    <section id="tab-scenarios" class="tab-panel">
+      <div class="panel">
+        <div class="scenario-head">
+          <h3>Saved scenarios</h3>
+          <button id="btnClearScenarios" class="btn btn-ghost" type="button">Clear all</button>
+        </div>
+        <p class="hint">Use “＋ Save as scenario” on the Model tab to snapshot the current inputs and results, then compare side-by-side here.</p>
+        <div class="scenario-table-wrap">
+          <table class="scenario-table" id="scenarioTable"><tbody></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ METHODOLOGY TAB ============ -->
+    <section id="tab-methodology" class="tab-panel">
+      <div class="panel prose" id="methodologyProse"></div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+  <footer class="app-footer">
+    <span>Should-cost model · transparent &amp; parameterized · all figures are engineering estimates, not vendor quotes.</span>
+  </footer>
+
+  <script>
+/* ============================================================================
+ * data.js — Calibration benchmarks for the Automotive IVI SoC should-cost model
+ *
+ * All figures are public/analyst-derived engineering estimates for 2025–2026
+ * automotive-grade production on a fabless business model. They are RANGES and
+ * MIDPOINTS for transparency; the model uses the midpoint as the editable
+ * default. Sources & rationale are summarised in the Methodology tab.
+ *
+ * Wafer cost = fully-processed 300mm wafer, automotive-qualified flow.
+ * Mask cost  = full photomask set for the node.
+ * D0         = mature random defect density (defects/cm²) for the node in
+ *              steady-state automotive production.
+ * ==========================================================================*/
+
+const NODES = [
+  // tier: mature | mid | advanced
+  { id: "40",  label: "40 nm",      tier: "mature",   waferCost: 2500,  waferLo: 2200,  waferHi: 2900,  mask: 1100000,  d0: 0.06, dieArea: 130, euv: false },
+  { id: "28",  label: "28 nm",      tier: "mature",   waferCost: 3000,  waferLo: 2700,  waferHi: 3400,  mask: 1500000,  d0: 0.06, dieArea: 120, euv: false },
+  { id: "22",  label: "22 nm",      tier: "mature",   waferCost: 3300,  waferLo: 3000,  waferHi: 3800,  mask: 1900000,  d0: 0.07, dieArea: 110, euv: false },
+  { id: "16",  label: "16 nm",      tier: "mid",      waferCost: 5500,  waferLo: 4900,  waferHi: 6200,  mask: 6000000,  d0: 0.08, dieArea: 100, euv: false },
+  { id: "14",  label: "14 nm",      tier: "mid",      waferCost: 5300,  waferLo: 4700,  waferHi: 6000,  mask: 5500000,  d0: 0.08, dieArea: 100, euv: false },
+  { id: "7",   label: "7 nm",       tier: "advanced", waferCost: 9800,  waferLo: 9000,  waferHi: 11000, mask: 16000000, d0: 0.10, dieArea: 90,  euv: true  },
+  { id: "6",   label: "6 nm",       tier: "advanced", waferCost: 10200, waferLo: 9300,  waferHi: 11500, mask: 17500000, d0: 0.10, dieArea: 85,  euv: true  },
+  { id: "5",   label: "5 nm",       tier: "advanced", waferCost: 14500, waferLo: 13000, waferHi: 17000, mask: 27000000, d0: 0.12, dieArea: 80,  euv: true  },
+];
+
+/* Package presets. Cost is auto-estimated as base + perBall*ballCount, then the
+ * field is editable. Defaults reflect mainstream automotive IVI packaging. */
+const PACKAGES = [
+  { id: "bga",    label: "Standard BGA (0.8 mm, 400–800 balls)", base: 0.60, perBall: 0.0028, balls: 600, assembly: 0.40 },
+  { id: "fcbga",  label: "Flip-chip BGA (advanced substrate)",    base: 1.30, perBall: 0.0045, balls: 700, assembly: 0.55 },
+  { id: "fcbga_hd", label: "FC-BGA high-density (fine-pitch)",     base: 2.20, perBall: 0.0060, balls: 900, assembly: 0.70 },
+  { id: "pop",    label: "PoP (package-on-package, +DRAM stack)",  base: 2.00, perBall: 0.0050, balls: 600, assembly: 0.90 },
+  { id: "sip",    label: "SiP (system-in-package, multi-die)",     base: 3.50, perBall: 0.0065, balls: 800, assembly: 1.40 },
+];
+
+/* Default model state (mature 28nm automotive IVI baseline). */
+const DEFAULTS = {
+  waferDiameter: 300,
+  waferCost: 3000,
+  edgeExclusion: 3,
+  scribe: 0.1,
+  dieArea: 100,
+  asilOverhead: 8,
+  defectDensity: 0.06,
+  clustering: 2.5,
+  systematicYield: 95,
+  packageType: "bga",
+  ballCount: 600,
+  packageCost: 2.50,
+  assemblyCost: 0.45,
+  testTime: 12,
+  testerRate: 180,
+  burnIn: false,
+  burnInCost: 0.35,
+  assemblyYield: 99,
+  testYield: 98,
+  ipRoyalty: 1.80,
+  ipUpfront: 8000000,
+  maskCost: 1500000,
+  designNRE: 25000000,
+  qualNRE: 6000000,
+  annualVolume: 2000000,
+  programYears: 5,
+  overheadPct: 12,
+  grossMargin: 45,
+};
+
+/* ============================================================================
+ * model.js — Should-cost engine for an automotive IVI SoC
+ *
+ * Pure functions. Given an input object `p` (all numeric, percentages as
+ * whole numbers), computes dies-per-wafer, yield, silicon $/good-die, and the
+ * fully-loaded total product cost per shipped unit.
+ *
+ * Formulae & rationale documented inline and in the Methodology tab.
+ * ==========================================================================*/
+
+/* Gross dies per wafer.
+ * De Vries / "wafer-die" formula that accounts for circular wafer edge loss:
+ *   DPW = pi*r^2 / S  -  pi*(2r) / sqrt(2*S)
+ * where r = usable radius (after edge exclusion), S = die footprint area
+ * (incl. scribe). All lengths in mm, areas in mm². */
+function diesPerWafer(p) {
+  const r = p.waferDiameter / 2 - p.edgeExclusion;        // usable radius (mm)
+  const side = Math.sqrt(p.effFootprintArea);             // mm (equivalent square)
+  const S = p.effFootprintArea;                           // mm²
+  if (r <= 0 || S <= 0) return 0;
+  const dpw = (Math.PI * r * r) / S - (Math.PI * 2 * r) / Math.sqrt(2 * S);
+  return Math.max(0, Math.floor(dpw));
+}
+
+/* Random-defect yield — negative-binomial model (industry standard, accounts
+ * for defect clustering):  Y_random = (1 + A*D0/alpha)^(-alpha)
+ *   A     = effective die area in cm²
+ *   D0    = defect density (defects/cm²)
+ *   alpha = clustering factor
+ * Total die yield = systematic/parametric yield × random yield. */
+function dieYield(p) {
+  const A_cm2 = p.effDieArea / 100;                       // mm² -> cm²
+  const yRandom = Math.pow(1 + (A_cm2 * p.defectDensity) / p.clustering, -p.clustering);
+  const ySys = clamp(p.systematicYield / 100, 0, 1);
+  return { yRandom, ySys, yTotal: yRandom * ySys };
+}
+
+/* Full computation. Returns a rich result object. */
+function computeCost(input) {
+  const p = { ...input };
+
+  // --- Effective die geometry -------------------------------------------------
+  // ASIL overhead inflates active area (lockstep, ECC, redundancy, safety island)
+  p.effDieArea = p.dieArea * (1 + p.asilOverhead / 100);
+  // Footprint adds scribe/kerf on each side of the equivalent square die.
+  const sideActive = Math.sqrt(p.effDieArea);
+  const sideFoot = sideActive + 2 * p.scribe;
+  p.effFootprintArea = sideFoot * sideFoot;
+
+  // --- Wafer-level ------------------------------------------------------------
+  const dpw = diesPerWafer(p);
+  const y = dieYield(p);
+  const goodDPW = dpw * y.yTotal;
+
+  // Silicon cost per good (bare) die
+  const siliconPerGoodDie = goodDPW > 0 ? p.waferCost / goodDPW : Infinity;
+
+  // --- Back-end: assembly, package, test (cumulative cost with yield loss) -----
+  // Each stage adds cost; units scrapped downstream carry the cost already sunk.
+  const afterDie = siliconPerGoodDie;
+  const afterAssembly = (afterDie + p.assemblyCost + p.packageCost) / clamp(p.assemblyYield / 100, 0.01, 1);
+  const testCost = (p.testTime / 3600) * p.testerRate + (p.burnIn ? p.burnInCost : 0);
+  const afterTest = (afterAssembly + testCost) / clamp(p.testYield / 100, 0.01, 1);
+
+  // Manufacturing / COGS-silicon (everything physical up to a packaged tested part)
+  const packagedTestedCost = afterTest;
+
+  // --- IP --------------------------------------------------------------------
+  const lifetimeVolume = Math.max(1, p.annualVolume * p.programYears);
+  const ipUpfrontPerUnit = p.ipUpfront / lifetimeVolume;
+  const ipPerUnit = p.ipRoyalty + ipUpfrontPerUnit;
+
+  // --- NRE (amortized over lifetime volume) ----------------------------------
+  const nreTotal = p.maskCost + p.designNRE + p.qualNRE;
+  const nrePerUnit = nreTotal / lifetimeVolume;
+
+  // --- Overhead --------------------------------------------------------------
+  const cogsBeforeOverhead = packagedTestedCost + ipPerUnit;
+  const overhead = (p.overheadPct / 100) * cogsBeforeOverhead;
+
+  // --- Total product cost ----------------------------------------------------
+  const totalCost = packagedTestedCost + ipPerUnit + nrePerUnit + overhead;
+
+  // --- Indicative ASP --------------------------------------------------------
+  const gm = clamp(p.grossMargin / 100, 0, 0.95);
+  const asp = totalCost / (1 - gm);
+
+  // --- Cost-stack components (per shipped unit, sum = totalCost) --------------
+  // Decompose packagedTestedCost into its parts for the stack/breakdown, scaled
+  // by the back-end yield uplift so the parts sum to packagedTestedCost.
+  const yScale = packagedTestedCost / (afterDie + p.assemblyCost + p.packageCost + testCost || 1);
+  const components = [
+    { key: "silicon",  label: "Silicon (good die)",     value: afterDie * yScale,        color: "#2563eb" },
+    { key: "package",  label: "Package + substrate",    value: p.packageCost * yScale,   color: "#0891b2" },
+    { key: "assembly", label: "Assembly",               value: p.assemblyCost * yScale,  color: "#0d9488" },
+    { key: "test",     label: "Test" + (p.burnIn ? " + burn-in" : ""), value: testCost * yScale, color: "#65a30d" },
+    { key: "ip",       label: "IP (royalty + upfront)", value: ipPerUnit,                color: "#ca8a04" },
+    { key: "nre",      label: "NRE amortization",       value: nrePerUnit,               color: "#dc2626" },
+    { key: "overhead", label: "Overhead / SG&A",        value: overhead,                 color: "#9333ea" },
+  ];
+
+  return {
+    p,
+    dpw,
+    yieldRandom: y.yRandom,
+    yieldSystematic: y.ySys,
+    yieldTotal: y.yTotal,
+    goodDPW,
+    effDieArea: p.effDieArea,
+    siliconPerGoodDie,
+    packagedTestedCost,
+    testCost,
+    ipPerUnit,
+    ipUpfrontPerUnit,
+    nrePerUnit,
+    nreTotal,
+    overhead,
+    lifetimeVolume,
+    totalCost,
+    asp,
+    components,
+  };
+}
+
+/* One-at-a-time ±pct sensitivity of total cost to each key driver. */
+function sensitivity(input, pct = 10) {
+  const base = computeCost(input).totalCost;
+  const drivers = [
+    { key: "waferCost",     label: "Wafer cost" },
+    { key: "dieArea",       label: "Die area" },
+    { key: "defectDensity", label: "Defect density D₀" },
+    { key: "annualVolume",  label: "Annual volume" },
+    { key: "packageCost",   label: "Package cost" },
+    { key: "ipRoyalty",     label: "IP royalty" },
+    { key: "designNRE",     label: "Design NRE" },
+    { key: "overheadPct",   label: "Overhead %" },
+  ];
+  return drivers.map((d) => {
+    const up = { ...input, [d.key]: input[d.key] * (1 + pct / 100) };
+    const dn = { ...input, [d.key]: input[d.key] * (1 - pct / 100) };
+    const cUp = computeCost(up).totalCost;
+    const cDn = computeCost(dn).totalCost;
+    // swing as % of base; magnitude only (use the larger absolute deviation)
+    const hi = ((cUp - base) / base) * 100;
+    const lo = ((cDn - base) / base) * 100;
+    return { label: d.label, hi, lo, swing: Math.abs(hi) + Math.abs(lo) };
+  }).sort((a, b) => b.swing - a.swing);
+}
+
+function clamp(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }
+
+/* ============================================================================
+ * methodology.js — Transparency: formulae, calibration tables, sources, limits.
+ * Rendered into the Methodology tab.
+ * ==========================================================================*/
+
+function buildMethodology() {
+  const nodeRows = NODES.map((n) =>
+    `<tr><td>${n.label}</td><td>${n.tier}${n.euv ? " · EUV" : ""}</td>
+      <td>${n.waferLo.toLocaleString()}–${n.waferHi.toLocaleString()}</td>
+      <td>${(n.mask/1e6).toFixed(1)}M</td><td>${n.d0}</td></tr>`
+  ).join("");
+
+  $("methodologyProse").innerHTML = `
+    <h2>What this model does</h2>
+    <p>It is a bottom-up <b>should-cost model</b> for an automotive In-Vehicle Infotainment (IVI)
+    SoC built on a fabless business model — i.e. the company pays a foundry for wafers, an OSAT for
+    assembly &amp; test, and IP vendors for licenses and royalties, and amortizes its own NRE.
+    It computes two headline numbers: the <b>unit silicon cost</b> ($/good die) and the
+    <b>total product cost</b> per shipped SoC (silicon + package + assembly + test + IP + amortized
+    NRE + overhead). Every input is editable so the model supports scenario analysis across nodes,
+    volumes, packages, and IP mixes.</p>
+
+    <h2>Cost flow</h2>
+    <div class="formula">wafer $ → ÷ (gross dies/wafer × yield) → silicon $/good die
+   + package + assembly  → ÷ assembly yield
+   + test (+ burn-in)    → ÷ test yield        = packaged & tested cost
+   + IP (royalty + upfront/volume)
+   + NRE (mask + design + qual) / lifetime volume
+   + overhead %                                = TOTAL PRODUCT COST
+   ÷ (1 − gross margin)                         = indicative ASP</div>
+
+    <h2>Key formulae</h2>
+    <h3>1 · Gross dies per wafer (De Vries edge-loss formula)</h3>
+    <div class="formula">DPW = π·r² / S  −  π·(2r) / √(2·S)</div>
+    <p><code>r</code> = wafer radius − edge exclusion; <code>S</code> = die footprint area
+    (active area inflated by ASIL overhead, plus scribe/kerf on each side). This captures the
+    partial dies lost at the round wafer edge, which matters most for large IVI dies.</p>
+
+    <h3>2 · Die yield (negative-binomial model)</h3>
+    <div class="formula">Y = Y_systematic × (1 + A·D₀ / α)^(−α)</div>
+    <p><code>A</code> = effective die area (cm²), <code>D₀</code> = defect density (defects/cm²),
+    <code>α</code> = clustering factor. The negative-binomial form is the industry standard because
+    real defects cluster; pure Poisson over-penalizes large dies. <code>Y_systematic</code> captures
+    parametric and design–process yield loss that is independent of random defects.</p>
+
+    <h3>3 · Back-end with yield loss</h3>
+    <p>Assembly, package and test costs are added in sequence, each divided by the yield of that
+    stage so that the cost sunk into units scrapped downstream is correctly carried by the survivors.</p>
+
+    <h3>4 · Amortization</h3>
+    <p>Mask set, design NRE, automotive-qualification NRE, and the upfront IP license are amortized
+    over <b>lifetime volume = annual volume × program years</b>. This is why low-volume programs on
+    advanced nodes are dominated by NRE per unit, while high-volume programs are dominated by silicon.</p>
+
+    <h2>Calibration benchmarks (2024–2026)</h2>
+    <p>Defaults below are midpoints of public/analyst ranges for automotive-qualified flows. Wafer
+    prices are 300 mm, fully processed. Replace with negotiated numbers when you have them.</p>
+    <table>
+      <thead><tr><th>Node</th><th>Tier</th><th>Wafer cost ($/wafer)</th><th>Mask set</th><th>D₀ (/cm²)</th></tr></thead>
+      <tbody>${nodeRows}</tbody>
+    </table>
+    <p class="src">Wafer-cost and mask-set ranges are consistent with publicly reported foundry
+    economics and teardown/analyst estimates: TechInsights Semiconductor Manufacturing Economics,
+    CSET foundry cost analyses, Morgan Stanley / IBS node-cost trackers, and IBS mask-cost curves.
+    Automotive flows carry a premium over consumer (~10–20%) for qualified PDKs, screening, and
+    lower defect-density targets. Figures are <b>order-of-magnitude calibrated estimates</b>, not
+    confidential vendor pricing.</p>
+
+    <h2>Automotive-specific adders</h2>
+    <ul>
+      <li><b>AEC-Q100 / extended temperature:</b> tighter screening, higher test coverage and time,
+      optional burn-in — captured in test time, burn-in toggle, and lower final-test yield.</li>
+      <li><b>Functional safety (ASIL-B/D, ISO 26262):</b> lockstep cores, ECC, BIST, redundancy and a
+      safety island add die area — captured by the ASIL area-overhead input (default 8%).</li>
+      <li><b>Qualification &amp; long lifetime:</b> separate qualification NRE line (AEC-Q100,
+      reliability, characterization) amortized over program volume.</li>
+      <li><b>Lower defect density / higher yield bar:</b> automotive parts target lower DPPM; D₀ and
+      systematic-yield inputs are set conservatively.</li>
+    </ul>
+
+    <h2>Typical IVI SoC reference points</h2>
+    <table>
+      <thead><tr><th>Class</th><th>Node</th><th>Die area</th><th>Package</th><th>Volume</th></tr></thead>
+      <tbody>
+        <tr><td>Entry IVI / digital cluster</td><td>28/22 nm</td><td>80–120 mm²</td><td>BGA 0.8 mm</td><td>0.5–3M/yr</td></tr>
+        <tr><td>Mid cockpit</td><td>16/14 nm</td><td>90–140 mm²</td><td>FC-BGA</td><td>0.3–2M/yr</td></tr>
+        <tr><td>High-end domain controller</td><td>7/6/5 nm</td><td>120–200 mm²</td><td>FC-BGA HD / SiP</td><td>0.1–1M/yr</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Accuracy &amp; limitations</h2>
+    <p>Targeted accuracy is <b>90–95%</b> when wafer cost, defect density, package and IP terms are
+    calibrated to the specific program. Residual error is dominated by:</p>
+    <ul>
+      <li>Wafer-price negotiation and foundry mix (±10–15%).</li>
+      <li>Achieved yield during ramp vs. mature steady state.</li>
+      <li>IP royalty structure (per-unit vs. tiered vs. paid-up) and DRAM/PoP content if applicable.</li>
+      <li>Test program maturity and burn-in policy.</li>
+    </ul>
+    <p>The model deliberately excludes company-level R&amp;D not tied to the program, distribution
+    margin beyond the overhead line, and tariffs/logistics, which vary by customer. Use the
+    <b>Indicative ASP</b> only as a sanity check — it applies a flat gross margin and is not a pricing
+    recommendation.</p>
+  `;
+}
+
+/* ============================================================================
+ * app.js — UI controller: wiring inputs, rendering results, scenarios, tabs.
+ * ==========================================================================*/
+
+const $ = (id) => document.getElementById(id);
+const NUM_FIELDS = [
+  "waferDiameter","waferCost","edgeExclusion","scribe","dieArea","asilOverhead",
+  "defectDensity","clustering","systematicYield","ballCount","packageCost",
+  "assemblyCost","testTime","testerRate","burnInCost","assemblyYield","testYield",
+  "ipRoyalty","ipUpfront","maskCost","designNRE","qualNRE","annualVolume",
+  "programYears","overheadPct","grossMargin",
+];
+
+let scenarios = [];
+
+/* ---------- formatting ---------- */
+const fmtUSD = (v, dp = 2) =>
+  isFinite(v) ? "$" + v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp }) : "$—";
+const fmtUSDc = (v) => isFinite(v) ? "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 }) : "$—";
+const fmtNum = (v, dp = 0) => isFinite(v) ? v.toLocaleString("en-US", { maximumFractionDigits: dp }) : "—";
+const fmtPct = (v, dp = 1) => isFinite(v) ? (v * 100).toFixed(dp) + "%" : "—";
+
+/* ---------- read inputs ---------- */
+function readInputs() {
+  const p = {};
+  NUM_FIELDS.forEach((f) => { p[f] = parseFloat($(f).value) || 0; });
+  p.packageType = $("packageType").value;
+  p.burnIn = $("burnIn").checked;
+  return p;
+}
+
+/* ---------- populate selects / presets ---------- */
+function buildPackageOptions() {
+  const sel = $("packageType");
+  sel.innerHTML = PACKAGES.map((pk) => `<option value="${pk.id}">${pk.label}</option>`).join("");
+}
+
+function buildNodePresets() {
+  const wrap = $("nodePresets");
+  wrap.innerHTML = NODES.map((n) =>
+    `<button class="node-chip" type="button" data-node="${n.id}">${n.label}<span class="tier">${n.tier}</span></button>`
+  ).join("");
+  wrap.querySelectorAll(".node-chip").forEach((chip) => {
+    chip.addEventListener("click", () => applyNode(chip.dataset.node));
+  });
+}
+
+function applyNode(id) {
+  const n = NODES.find((x) => x.id === id);
+  if (!n) return;
+  $("waferCost").value = n.waferCost;
+  $("maskCost").value = n.mask;
+  $("defectDensity").value = n.d0;
+  $("dieArea").value = n.dieArea;
+  document.querySelectorAll(".node-chip").forEach((c) => c.classList.toggle("active", c.dataset.node === id));
+  $("presetHint").textContent =
+    `${n.label} (${n.tier}${n.euv ? ", EUV" : ""}) — benchmark wafer ${n.waferLo.toLocaleString()}–${n.waferHi.toLocaleString()}, mask set ${(n.mask/1e6).toFixed(1)}M, D₀ ${n.d0}/cm². All editable.`;
+  render();
+}
+
+function applyPackage() {
+  const pk = PACKAGES.find((x) => x.id === $("packageType").value);
+  if (!pk) return;
+  const balls = parseFloat($("ballCount").value) || pk.balls;
+  $("packageCost").value = (pk.base + pk.perBall * balls).toFixed(2);
+  $("assemblyCost").value = pk.assembly.toFixed(2);
+  render();
+}
+
+/* ---------- main render ---------- */
+function render() {
+  const input = readInputs();
+  const r = computeCost(input);
+
+  $("outSilicon").textContent = fmtUSD(r.siliconPerGoodDie, 2);
+  $("outSiliconSub").textContent = `per good die · ${fmtUSD(r.packagedTestedCost,2)} packaged+tested`;
+  $("outTotal").textContent = fmtUSD(r.totalCost, 2);
+  $("outASP").textContent = fmtUSD(r.asp, 2);
+  $("outASPsub").textContent = `at ${input.grossMargin}% gross margin`;
+
+  // metrics strip
+  $("metricsStrip").innerHTML = [
+    ["Gross dies / wafer", fmtNum(r.dpw)],
+    ["Die yield", fmtPct(r.yieldTotal)],
+    ["Good dies / wafer", fmtNum(r.goodDPW, 0)],
+    ["Eff. die area", fmtNum(r.effDieArea, 1) + " mm²"],
+    ["Lifetime volume", fmtNum(r.lifetimeVolume) + " u"],
+    ["NRE / unit", fmtUSD(r.nrePerUnit, 3)],
+    ["IP / unit", fmtUSD(r.ipPerUnit, 2)],
+    ["Total NRE pool", fmtUSDc(r.nreTotal)],
+  ].map(([l, v]) => `<div class="metric"><div class="m-label">${l}</div><div class="m-value">${v}</div></div>`).join("");
+
+  // stack bar
+  const total = r.components.reduce((s, c) => s + Math.max(0, c.value), 0) || 1;
+  $("stackBar").innerHTML = r.components.map((c) =>
+    `<div class="seg" style="width:${(Math.max(0,c.value)/total)*100}%;background:${c.color}" title="${c.label}: ${fmtUSD(c.value,3)}"></div>`
+  ).join("");
+  $("stackLegend").innerHTML = r.components.map((c) =>
+    `<span class="li"><span class="sw" style="background:${c.color}"></span>${c.label} <b>${fmtUSD(c.value,2)}</b></span>`
+  ).join("");
+
+  // breakdown table
+  const tbody = document.querySelector("#breakdownTable tbody");
+  tbody.innerHTML = r.components.map((c) =>
+    `<tr><td><span class="swatch" style="background:${c.color}"></span>${c.label}</td>
+      <td class="num">${fmtUSD(c.value,3)}</td>
+      <td class="num">${((Math.max(0,c.value)/total)*100).toFixed(1)}%</td></tr>`
+  ).join("");
+  document.querySelector("#breakdownTable tfoot").innerHTML =
+    `<tr><td>Total product cost</td><td class="num">${fmtUSD(r.totalCost,3)}</td><td class="num">100%</td></tr>`;
+
+  // tornado sensitivity (single aligned row per driver: label · bar · percent)
+  const sens = sensitivity(input, 10);
+  const maxSwing = Math.max(...sens.map((s) => Math.max(Math.abs(s.hi), Math.abs(s.lo))), 1);
+  $("tornado").innerHTML = sens.map((s) => {
+    const mag = Math.max(Math.abs(s.hi), Math.abs(s.lo));
+    return `<div class="row"><span>${s.label}</span>
+      <div class="bar-wrap"><div class="bar" style="width:${(mag / maxSwing) * 100}%"></div></div>
+      <span class="pct">±${mag.toFixed(1)}%</span></div>`;
+  }).join("");
+
+  // accuracy note
+  $("accuracyNote").innerHTML =
+    `<b>Accuracy band:</b> this is a parametric model on public benchmark ranges — expect a <b>±15–25%</b>
+     envelope out of the box. The <b>90–95%</b> target is reachable only once wafer price, defect density,
+     package and IP terms are calibrated to your negotiated program data. Largest residual uncertainties:
+     wafer price negotiation (±10–15%), achieved yield during ramp, and IP royalty terms. Treat outputs as
+     a <b>cost envelope</b>, not a quote.`;
+}
+
+/* ---------- scenarios ---------- */
+function saveScenario() {
+  const input = readInputs();
+  const r = computeCost(input);
+  const node = document.querySelector(".node-chip.active");
+  const name = (node ? node.dataset.node + "nm · " : "") + Math.round(r.effDieArea) + "mm² · " + (input.annualVolume/1e6) + "M/yr";
+  scenarios.push({ name, input, r });
+  persistScenarios();
+  renderScenarios();
+  switchTab("scenarios");
+}
+
+function renderScenarios() {
+  const t = $("scenarioTable");
+  if (scenarios.length === 0) {
+    t.innerHTML = `<tbody><tr><td class="scenario-empty">No scenarios saved yet.</td></tr></tbody>`;
+    return;
+  }
+  const rows = [
+    { label: "", get: (s, i) => `<span class="del" data-i="${i}" title="Delete">✕</span>` },
+    { label: "Node / die / volume", head: true, get: (s) => s.name },
+    { label: "Wafer cost", get: (s) => fmtUSDc(s.input.waferCost) },
+    { label: "Design die area", get: (s) => fmtNum(s.input.dieArea) + " mm²" },
+    { label: "Gross dies/wafer", get: (s) => fmtNum(s.r.dpw) },
+    { label: "Die yield", get: (s) => fmtPct(s.r.yieldTotal) },
+    { label: "Silicon $/good die", get: (s) => fmtUSD(s.r.siliconPerGoodDie) },
+    { label: "Packaged+tested", get: (s) => fmtUSD(s.r.packagedTestedCost) },
+    { label: "IP / unit", get: (s) => fmtUSD(s.r.ipPerUnit) },
+    { label: "NRE / unit", get: (s) => fmtUSD(s.r.nrePerUnit, 3) },
+    { label: "Overhead / unit", get: (s) => fmtUSD(s.r.overhead) },
+    { label: "Total product cost", head: true, get: (s) => fmtUSD(s.r.totalCost) },
+    { label: "Indicative ASP", get: (s) => fmtUSD(s.r.asp) },
+  ];
+  let html = "<thead><tr><th>Metric</th>" + scenarios.map((s, i) => `<th>#${i+1}</th>`).join("") + "</tr></thead><tbody>";
+  rows.forEach((row) => {
+    html += `<tr class="${row.head ? "row-head" : ""}"><td>${row.label}</td>` +
+      scenarios.map((s, i) => `<td>${row.get(s, i)}</td>`).join("") + "</tr>";
+  });
+  html += "</tbody>";
+  t.innerHTML = html;
+  t.querySelectorAll(".del").forEach((d) => d.addEventListener("click", () => {
+    scenarios.splice(parseInt(d.dataset.i), 1); persistScenarios(); renderScenarios();
+  }));
+}
+
+function persistScenarios() {
+  try { localStorage.setItem("soc_scenarios", JSON.stringify(scenarios)); } catch (e) {}
+}
+function loadScenarios() {
+  try { const s = localStorage.getItem("soc_scenarios"); if (s) scenarios = JSON.parse(s); } catch (e) {}
+}
+
+/* ---------- tabs ---------- */
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
+  document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === "tab-" + name));
+}
+
+/* ---------- tooltips ---------- */
+function initTooltips() {
+  const tip = $("tooltip");
+  document.body.addEventListener("mouseover", (e) => {
+    const el = e.target.closest("[data-tip]");
+    if (!el) return;
+    tip.textContent = el.dataset.tip;
+    tip.classList.add("show");
+    const move = (ev) => {
+      tip.style.left = Math.min(ev.clientX + 14, window.innerWidth - 300) + "px";
+      tip.style.top = (ev.clientY + 16) + "px";
+    };
+    move(e);
+    el._move = move;
+    el.addEventListener("mousemove", move);
+  });
+  document.body.addEventListener("mouseout", (e) => {
+    const el = e.target.closest("[data-tip]");
+    if (!el) return;
+    tip.classList.remove("show");
+    if (el._move) el.removeEventListener("mousemove", el._move);
+  });
+}
+
+/* ---------- reset ---------- */
+function resetDefaults() {
+  Object.entries(DEFAULTS).forEach(([k, v]) => {
+    const el = $(k);
+    if (!el) return;
+    if (el.type === "checkbox") el.checked = v; else el.value = v;
+  });
+  document.querySelectorAll(".node-chip").forEach((c) => c.classList.remove("active"));
+  render();
+}
+
+/* ---------- init ---------- */
+function init() {
+  buildPackageOptions();
+  buildNodePresets();
+  resetDefaults();
+  loadScenarios();
+  renderScenarios();
+  buildMethodology();
+
+  NUM_FIELDS.forEach((f) => $(f).addEventListener("input", render));
+  $("burnIn").addEventListener("change", render);
+  $("packageType").addEventListener("change", applyPackage);
+  $("ballCount").addEventListener("input", () => { /* keep manual package cost unless repicked */ render(); });
+
+  $("btnReset").addEventListener("click", resetDefaults);
+  $("btnSaveScenario").addEventListener("click", saveScenario);
+  $("btnClearScenarios").addEventListener("click", () => { scenarios = []; persistScenarios(); renderScenarios(); });
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+
+  initTooltips();
+  render();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+  </script>
+</body>
+</html>
