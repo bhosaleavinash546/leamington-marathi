@@ -4539,3 +4539,44 @@ For a single part, the joining lines report the measured joint-candidate
 features (bosses, counterbores, holes) as candidates only. They add the DFA
 time model's securing seconds at the region's labour rate, and the
 photo-confirmed fastener floors.
+
+## 113. The luxury-SUV MHEV / 800V BEV idea pack: researched live, checked by concept, sources attached but unreviewed
+
+`marketplace-luxury-suv-mhev-bev-ideas.json` holds 300 ideas for a luxury SUV
+sold on one platform as a 48 V MHEV (3.0 L I6) and as an 800V BEV.
+- **Levels:** 90 assembly, 110 subassembly, 100 part.
+- **Commodity groups:** ten — body, exterior, chassis, off-road, battery, EDU,
+  HV/thermal, MHEV powertrain, E/E, interior.
+- **Powertrain:** 160 shared, 87 BEV only, 53 MHEV only.
+- **Off-road:** 76.
+
+**How it was written.** Ten research agents worked in parallel, one per
+commodity group. They searched the web for 2023–2026 launches and wrote ideas
+in a fixed schema. Every idea passed one gate before merging:
+- every field has its minimum length;
+- per-vehicle saving × 50,000 reproduces the annual value;
+- it names a benchmark vehicle and cites at least one source URL saying what
+  that source supports;
+- its system resolves to a commodity tab;
+- it is not a duplicate.
+
+**Duplicates are judged by concept, not only by title.**
+`scripts/check-idea-dupes.mjs` compares title words and the cosine of
+title+description term vectors. Its thresholds were calibrated on the 800V
+battery pack: genuine duplicates there measure 0.6 or more, and shared
+technical vocabulary alone sits near 0.38. The gate flags ideas at 0.50 and
+rejects them at 0.55.
+
+**Sources are attached but not verified.** The agents shared a search budget
+that ran out partway through, and page fetches were blocked. So every fact
+comes from search-result summaries, not from pages that were read.
+- Each source says which benchmark fact it supports, and none supports a
+  saving.
+- Sources are flagged `evidenceUnverified`, and every idea seeds `verified: 0`
+  with `confidenceLevel: 'estimated'`.
+- A spot check of 7 random sources confirmed all 7 facts. One URL had moved
+  and was replaced with its current address.
+
+Savings are estimates. Where an idea applies to only one powertrain or an
+option, the calculation basis says whether its per-vehicle figure covers each
+affected vehicle or is a fleet average (`volumeBasis`).
