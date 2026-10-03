@@ -479,10 +479,21 @@ export function isInsufficientProcessing(operations: string[] | undefined): bool
  * produces a FALSE FAIL and books duty on a part that is genuinely duty-free.
  */
 export const CUMULATION_PARTNERS: Record<string, string[]> = {
-  'UK-EU TCA': ['UK', 'GB', 'EU', 'DE', 'PL', 'CZ', 'SK', 'ES', 'IT', 'FR', 'RO', 'HU', 'PT'],
+  'UK-EU TCA': ['UK', 'GB', 'EU', 'DE', 'PL', 'CZ', 'SK', 'ES', 'IT', 'FR', 'RO', 'HU', 'PT', 'SE', 'NL', 'AT', 'BE', 'SI', 'LT', 'BG'],
   'UK-India CETA': ['UK', 'GB', 'IN'],
   'CPTPP': ['UK', 'GB', 'MX', 'VN', 'JP', 'MY', 'SG', 'AU', 'NZ', 'CA', 'CL', 'PE', 'BN'],
   'UK-Türkiye FTA': ['UK', 'GB', 'TR'],
+  // Bilateral agreements of the 2026-10 country expansion — partner + UK only (diagonal
+  // cumulation with the EU exists under some of them but is not modelled).
+  'UK-Korea FTA': ['UK', 'GB', 'KR'],
+  'UK-Japan CEPA': ['UK', 'GB', 'JP'],
+  'UK-Singapore FTA': ['UK', 'GB', 'SG'],
+  'UK-Canada TCA': ['UK', 'GB', 'CA'],
+  'UK-Serbia PTCA': ['UK', 'GB', 'RS'],
+  'UK-Morocco Association Agreement': ['UK', 'GB', 'MA'],
+  'UK-Tunisia Association Agreement': ['UK', 'GB', 'TN'],
+  'UK-Egypt Association Agreement': ['UK', 'GB', 'EG'],
+  'UK-SACUM EPA': ['UK', 'GB', 'ZA'],
 };
 
 /** Does material from `materialOrigin` count as originating under `agreement`? */

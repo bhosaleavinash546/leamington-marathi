@@ -50,7 +50,7 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-De5PKxVO.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-GcxQxHB6.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-fL0WZFAO.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
@@ -163,43 +163,15 @@
     <div class="hdr-select-wrap" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
       <svg class="ic hdr-select-ic"><use href="#i-globe"/></svg>
       <select id="mfg-region-selector" class="hdr-select" aria-label="Manufacturing region">
-        <option value="UK">UK</option>
-        <option value="DE">Germany</option>
-        <option value="FR">France</option>
-        <option value="IT">Italy</option>
-        <option value="ES">Spain</option>
-        <option value="PL">Poland</option>
-        <option value="CZ">Czech Rep.</option>
-        <option value="RO">Romania</option>
-        <option value="HU">Hungary</option>
-        <option value="SE">Sweden</option>
-        <option value="NL">Netherlands</option>
-        <option value="TR">Turkey</option>
-        <option value="CN">China</option>
-        <option value="IN">India</option>
-        <option value="MX">Mexico</option>
-        <option value="US">USA</option>
-        <option value="TH">Thailand</option>
-        <option value="VN">Vietnam</option>
-        <option value="BR">Brazil</option>
-        <option value="KR">S. Korea</option>
+        <!-- filled from the rate library by src/ui/region-options.ts -->
+        <option value="UK">United Kingdom</option>
       </select>
     </div>
     <!-- Currency -->
     <div class="hdr-select-wrap" title="Display currency">
       <select id="currency-selector" class="hdr-select" aria-label="Display currency">
+        <!-- filled from the rate library by src/ui/region-options.ts -->
         <option value="GBP">£ GBP</option>
-        <option value="EUR">€ EUR</option>
-        <option value="USD">$ USD</option>
-        <option value="CNY">¥ CNY</option>
-        <option value="INR">₹ INR</option>
-        <option value="MXN">$M MXN</option>
-        <option value="THB">฿ THB</option>
-        <option value="VND">₫ VND</option>
-        <option value="BRL">R$ BRL</option>
-        <option value="KRW">₩ KRW</option>
-        <option value="PLN">zł PLN</option>
-        <option value="CZK">Kč CZK</option>
       </select>
     </div>
     <button class="btn btn-primary hdr-primary" id="new-costing-btn" title="Start a new should-costing"><svg class="ic"><use href="#i-plus"/></svg> New Costing</button>
@@ -553,12 +525,7 @@
         </select>
         <select class="dash-smart-sel" id="filter-region" title="Filter by manufacturing region">
           <option value="">Region: All</option>
-          <option value="UK">UK</option>
-          <option value="DE">Germany</option>
-          <option value="CN">China</option>
-          <option value="IN">India</option>
-          <option value="US">USA</option>
-          <option value="MX">Mexico</option>
+          <!-- regions filled from the rate library by src/ui/region-options.ts -->
         </select>
         <select class="dash-smart-sel" id="filter-confidence" title="Filter by AI confidence level">
           <option value="">Confidence: All</option>
@@ -1190,14 +1157,8 @@
     <div class="wf-country-bar" id="wf-country-bar" style="display:none">
       <label class="wf-country-label" for="costing-country-sel"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg> Country</label>
       <select id="costing-country-sel" class="wf-country-sel">
+        <!-- filled from the rate library by src/ui/region-options.ts -->
         <option value="UK">United Kingdom</option>
-        <option value="DE">Germany</option>
-        <option value="US">USA (Midwest)</option>
-        <option value="CN">China (Tier 1)</option>
-        <option value="IN">India</option>
-        <option value="MX">Mexico</option>
-        <option value="PL">Poland</option>
-        <option value="CZ">Czech Republic</option>
       </select>
       <span class="wf-country-info" id="country-bar-info">UK base rates · £ GBP</span>
       <button class="btn btn-secondary btn-sm" id="export-rates-btn" title="Export the active country rate library to Excel — every labour, machine, material and energy rate with its full audit trail" style="font-size:0.7rem;padding:2px 10px;margin-left:auto">⬇ Rate Database</button>

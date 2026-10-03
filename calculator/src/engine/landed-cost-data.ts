@@ -325,6 +325,184 @@ export const ORIGIN_PREFERENCES: OriginPreference[] = [
     status: 'estimate',
     note: 'No comprehensive UK-US FTA. MFN applies; sector-specific arrangements change frequently.',
   },
+  // ── 2026-10 country expansion: every region in the rate library now has an entry.
+  //    Before it, France, Italy, Spain and the other EU members found no entry and
+  //    were costed at MFN as if no TCA existed.
+  {
+    region: 'FR', country: 'France',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'IT', country: 'Italy',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'ES', country: 'Spain',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'CZ', country: 'Czech Republic',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'RO', country: 'Romania',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'HU', country: 'Hungary',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'SE', country: 'Sweden',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'NL', country: 'Netherlands',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'AT', country: 'Austria',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'BE', country: 'Belgium',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'PT', country: 'Portugal',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'SK', country: 'Slovakia',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'SI', country: 'Slovenia',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'LT', country: 'Lithuania',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'BG', country: 'Bulgaria',
+    agreement: 'UK-EU TCA', preferentialDutyPct: 0,
+    status: 'corroborated',
+    note: 'EU member — as Germany: TCA preference conditional on rules of origin and a statement on origin.',
+  },
+  {
+    region: 'KR', country: 'South Korea',
+    agreement: 'UK-Korea FTA', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-South Korea FTA (in force 2021; upgrade negotiations under way). Preference for industrial goods subject to its rules of origin — confirm the line.',
+  },
+  {
+    region: 'JP', country: 'Japan',
+    agreement: 'UK-Japan CEPA', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Japan CEPA (in force 2021); CPTPP also applies. Preference subject to CEPA rules of origin — confirm the line and any staging.',
+  },
+  {
+    region: 'MY', country: 'Malaysia',
+    agreement: 'CPTPP', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'CPTPP in force between the UK and Malaysia (from Nov 2024). Preference subject to CPTPP rules of origin and staging — confirm the line.',
+  },
+  {
+    region: 'SG', country: 'Singapore',
+    agreement: 'UK-Singapore FTA', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Singapore FTA (in force 2021); CPTPP also applies. Preference subject to origin rules — confirm the line.',
+  },
+  {
+    region: 'CA', country: 'Canada',
+    agreement: 'UK-Canada TCA', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Canada Trade Continuity Agreement (2021); CPTPP also applies. Preference subject to origin rules — confirm the line.',
+  },
+  {
+    region: 'RS', country: 'Serbia',
+    agreement: 'UK-Serbia PTCA', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Serbia Partnership, Trade and Cooperation Agreement (2021). Industrial goods duty-free subject to its rules of origin — confirm the line.',
+  },
+  {
+    region: 'MA', country: 'Morocco',
+    agreement: 'UK-Morocco Association Agreement', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Morocco Association Agreement (2021). Industrial goods duty-free subject to its rules of origin — confirm the line.',
+  },
+  {
+    region: 'TN', country: 'Tunisia',
+    agreement: 'UK-Tunisia Association Agreement', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Tunisia Association Agreement (2021). Industrial goods duty-free subject to its rules of origin — confirm the line.',
+  },
+  {
+    region: 'EG', country: 'Egypt',
+    agreement: 'UK-Egypt Association Agreement', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-Egypt Association Agreement (2021). Industrial goods duty-free subject to its rules of origin — confirm the line.',
+  },
+  {
+    region: 'ZA', country: 'South Africa',
+    agreement: 'UK-SACUM EPA', preferentialDutyPct: 0,
+    status: 'estimate',
+    note: 'UK-SACU + Mozambique Economic Partnership Agreement (2021). Preference subject to its rules of origin — confirm the line.',
+  },
+  {
+    region: 'TW', country: 'Taiwan',
+    status: 'estimate',
+    note: 'No UK-Taiwan FTA. MFN applies.',
+  },
+  {
+    region: 'TH', country: 'Thailand',
+    status: 'estimate',
+    note: 'No UK-Thailand FTA (negotiations only). MFN applies.',
+  },
+  {
+    region: 'BR', country: 'Brazil',
+    status: 'estimate',
+    note: 'No UK-Brazil FTA. MFN applies.',
+  },
+  {
+    region: 'ID', country: 'Indonesia',
+    status: 'estimate',
+    note: 'No UK-Indonesia FTA. Indonesia is in the UK DCTS Standard Preferences tier, which REDUCES some MFN rates on application — not modelled; MFN shown.',
+  },
+  {
+    region: 'PH', country: 'Philippines',
+    status: 'estimate',
+    note: 'No UK-Philippines FTA. The Philippines is in the UK DCTS Enhanced Preferences tier, which can remove duty on many industrial lines with a DCTS origin declaration — not modelled; MFN shown, confirm the line.',
+  },
 ];
 
 /* ─── CBAM ────────────────────────────────────────────────────────────────── */
@@ -518,6 +696,13 @@ export const ORIGIN_CARBON_PRICE_GBP_PER_TONNE: Record<string, number> = {
   KR: 12,
   JP: 5,
   US: 0, MX: 0, VN: 0, TH: 0, MY: 0, ID: 0, BR: 0, MA: 0,
+  // 2026-10 expansion — EU members at the EU ETS like the rest; the others indicative.
+  SE: 55, NL: 55, AT: 55, BE: 55, SI: 55, LT: 55, BG: 55,
+  CA: 30,    // federal output-based pricing — effective industrial price well under the headline
+  SG: 25,    // carbon tax S$45/t from 2026
+  ZA: 2,     // carbon tax after allowances — low effective rate
+  TW: 3,     // carbon fee on large emitters from 2026
+  RS: 0, TN: 0, EG: 0, PH: 0,
 };
 
 /**
@@ -598,6 +783,8 @@ export const ORIGIN_INLAND_GBP_PER_KG: Record<string, number> = {
   MX: 0.055, BR: 0.060, US: 0.050, JP: 0.040, KR: 0.040,
   DE: 0.030, PL: 0.030, CZ: 0.030, SK: 0.030, RO: 0.035, HU: 0.030,
   ES: 0.035, IT: 0.035, FR: 0.030, TR: 0.040, PT: 0.035, MA: 0.040,
+  NL: 0.025, BE: 0.025, AT: 0.030, SE: 0.035, SI: 0.030, LT: 0.035, BG: 0.035, RS: 0.035,
+  TN: 0.040, EG: 0.045, ZA: 0.055, TW: 0.040, PH: 0.050, SG: 0.030, CA: 0.050,
 };
 
 /* ─── Duty relief regimes ─────────────────────────────────────────────────── */

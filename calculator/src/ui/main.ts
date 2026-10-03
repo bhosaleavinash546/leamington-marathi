@@ -138,6 +138,7 @@ async function ensurePdfLibs(): Promise<void> {
 import { exportToExcelBlob } from '../export/excel.js';
 import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
 import { currencySymbol } from '../engine/insights.js';
+import { populateRegionPickers } from './region-options.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -19170,6 +19171,8 @@ async function init(): Promise<void> {
   if (shareId) { renderShareView(shareId); return; }
   // Install runtime error observability before anything else can throw.
   initObservability();
+  // Country and currency pickers come from the rate library, before anything reads them.
+  populateRegionPickers();
   breadcrumb('app:init');
 
   // Load the organisation's active rate library (company rates when an admin has

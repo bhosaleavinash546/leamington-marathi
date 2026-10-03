@@ -84,6 +84,12 @@ const PROCESS_KWH_PER_KG: Record<string, number> = {
 const GRID_KG_PER_KWH: Record<string, number> = {
   UK: 0.21, DE: 0.35, FR: 0.06, PL: 0.62, CN: 0.55, IN: 0.63, US: 0.37,
   MX: 0.42, VN: 0.47, TH: 0.51, JP: 0.47, KR: 0.44, IT: 0.30, ES: 0.19, TR: 0.44, BR: 0.10,
+  // The rest of the rate library's countries (2026-10 expansion) — approximate 2024
+  // generation intensities (Ember / IEA country profiles), to the nearest 0.01; an
+  // estimate like the rows above, not a sourced figure per country.
+  CZ: 0.41, RO: 0.24, HU: 0.19, SE: 0.04, NL: 0.27, AT: 0.10, BE: 0.14, PT: 0.13, SK: 0.10,
+  SI: 0.22, LT: 0.15, BG: 0.38, RS: 0.70, MA: 0.63, TN: 0.46, EG: 0.47, ZA: 0.71, TW: 0.56,
+  MY: 0.55, ID: 0.68, PH: 0.61, SG: 0.47, CA: 0.13,
 };
 export function gridCarbon(region: string | undefined): number {
   return GRID_KG_PER_KWH[(region ?? 'UK').toUpperCase()] ?? 0.40;
@@ -94,6 +100,10 @@ export function gridCarbon(region: string | undefined): number {
 const LOGISTICS_KG_PER_KG: Record<string, number> = {
   UK: 0.02, DE: 0.04, FR: 0.04, PL: 0.06, IT: 0.05, ES: 0.06,
   CN: 0.16, IN: 0.17, VN: 0.16, TH: 0.16, US: 0.10, MX: 0.09,
+  // By the same road + sea logic: near Europe low, North Africa short-sea, Asia long-haul.
+  NL: 0.04, BE: 0.04, AT: 0.05, CZ: 0.06, SK: 0.06, SI: 0.06, HU: 0.06, PT: 0.06, LT: 0.06, SE: 0.05,
+  RO: 0.07, BG: 0.07, RS: 0.07, TR: 0.08, MA: 0.07, TN: 0.07, EG: 0.09, ZA: 0.15, BR: 0.12, CA: 0.10,
+  JP: 0.17, KR: 0.17, TW: 0.17, MY: 0.16, ID: 0.17, PH: 0.17, SG: 0.16,
 };
 
 export interface CarbonInputs {

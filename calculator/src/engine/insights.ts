@@ -176,6 +176,8 @@ export const FX_TO_GBP: Record<string, number> = {
   MXN: 0.04195, THB: 0.02246, VND: 0.00002911, BRL: 0.1446, KRW: 0.0005562,
   PLN: 0.1962, CZK: 0.03517,
   TRY: 0.01542, SEK: 0.07570, RON: 0.1626, HUF: 0.002335,
+  // 2026-10 country expansion (29 Sep 2026 snapshot, scripts/rate-refresh/2026-10-countries.json)
+  CAD: 0.5324, JPY: 0.004797, TWD: 0.02372, MYR: 0.1850, IDR: 0.00004193, PHP: 0.01208, SGD: 0.5908, ZAR: 0.04595, EGP: 0.01451, MAD: 0.0783, TND: 0.2544, RSD: 0.007303,
 };
 
 // Canonical display symbol for every supported currency — the single source of
@@ -186,6 +188,8 @@ export const CURRENCY_SYMBOL: Record<string, string> = {
   GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
   MXN: '$M', THB: '฿', VND: '₫', BRL: 'R$', KRW: '₩',
   PLN: 'zł', CZK: 'Kč', TRY: '₺', SEK: 'kr', RON: 'lei', HUF: 'Ft',
+  CAD: 'C$', JPY: 'JP¥', TWD: 'NT$', MYR: 'RM', IDR: 'Rp', PHP: '₱', SGD: 'S$',
+  ZAR: 'R', EGP: 'E£', MAD: 'DH', TND: 'DT', RSD: 'din',
 };
 
 /** Display symbol for a currency code, falling back to "CODE " when unknown. */

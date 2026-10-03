@@ -359,6 +359,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   `RULE_PATHS_NOT_COSTED_HEADLESS` (`tests/rule-path-coverage.test.ts`). A grade a rule
   picks must be one its form's drop-down offers (`src/ui/material-scope.ts`,
   `tests/material-scope-parity.test.ts`).
+- Countries (Oct 2026): 39 manufacturing regions. The 19 added from public statistics live in
+  `scripts/rate-refresh/2026-10-countries.json` (each figure with its source) and are written into
+  `regional-rates.ts` / `al-extrusion-data.ts` between `⟪region-expand⟫` markers by `scripts/region-expand.ts`
+  (`--check` in review): labour = analogue country × a same-source wage ratio, energy = published tariff,
+  multipliers held from the analogue. Edit the config, never the generated lines. The country, currency and
+  region-filter pickers are filled from `REGIONAL_DATA` / `CURRENCY_SYMBOL` by `src/ui/region-options.ts` —
+  never hand-list countries in index.html. A new region needs an origin entry (`ORIGIN_PREFERENCES`), a freight
+  lane, carbon factors and a `ccyOf` currency in rate-refresh.ts (`tests/region-expansion.test.ts`). See
+  `docs/rates/2026-10-country-expansion.md`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

@@ -194,7 +194,11 @@ lib = lib.replace(/(function makeMachine[\s\S]*?effectiveDate: )'[^']*'/, `$1'${
 
 // ── Library labour (lab-<region>-<grade>) ────────────────────────────────────
 const regionOfLab: Record<string, string> = { uk: 'UK', in: 'IN', cn: 'CN', mx: 'MX', pl: 'PL', de: 'DE', tr: 'TR', vn: 'VN', th: 'TH', br: 'BR', kr: 'KR', cz: 'CZ', ro: 'RO', hu: 'HU', us: 'US', fr: 'FR', it: 'IT', es: 'ES', se: 'SE', nl: 'NL' };
-const ccyOf: Record<string, string> = { UK: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', PL: 'PLN', CZ: 'CZK', RO: 'RON', HU: 'HUF', SE: 'SEK', TR: 'TRY', CN: 'CNY', IN: 'INR', MX: 'MXN', US: 'USD', TH: 'THB', VN: 'VND', BR: 'BRL', KR: 'KRW' };
+const ccyOf: Record<string, string> = { UK: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', PL: 'PLN', CZ: 'CZK', RO: 'RON', HU: 'HUF', SE: 'SEK', TR: 'TRY', CN: 'CNY', IN: 'INR', MX: 'MXN', US: 'USD', TH: 'THB', VN: 'VND', BR: 'BRL', KR: 'KRW',
+  // 2026-10 country expansion (scripts/region-expand.ts). The next refresh must carry their wage growth and FX —
+  // labourFactor throws for a country its config does not cover, so none of them can be left at last quarter's rates.
+  AT: 'EUR', BE: 'EUR', PT: 'EUR', SK: 'EUR', SI: 'EUR', LT: 'EUR', BG: 'EUR', RS: 'RSD', MA: 'MAD', TN: 'TND', EG: 'EGP',
+  ZA: 'ZAR', JP: 'JPY', TW: 'TWD', MY: 'MYR', ID: 'IDR', PH: 'PHP', SG: 'SGD', CA: 'CAD' };
 function labourFactor(region: string, grade?: string): { f: number; why: string } {
   const g = region === 'UK' ? { growth: cfg.labour.ukGrowth, source: cfg.labour.ukSource } : cfg.labour.regions[region];
   if (!g) throw new Error(`no labour growth for ${region}`);

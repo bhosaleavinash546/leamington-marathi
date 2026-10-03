@@ -249,6 +249,9 @@ const FREIGHT_GBP_PER_KG: Record<string, number> = {
   MX: 0.28, BR: 0.30, US: 0.26,
   DE: 0.09, PL: 0.10, CZ: 0.10, SK: 0.10, RO: 0.11, HU: 0.10, ES: 0.11, IT: 0.11,
   FR: 0.08, TR: 0.13, MA: 0.14, PT: 0.12,
+  // 2026-10 country expansion — by lane, like their neighbours (the 0.22 default is an Asia lane).
+  NL: 0.08, BE: 0.08, AT: 0.10, SE: 0.10, SI: 0.11, LT: 0.11, BG: 0.12, RS: 0.12,
+  TN: 0.14, EG: 0.16, ZA: 0.28, TW: 0.24, PH: 0.24, SG: 0.23, CA: 0.24,
   UK: 0,
 };
 
