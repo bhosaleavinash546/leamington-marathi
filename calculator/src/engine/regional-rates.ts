@@ -1,5 +1,6 @@
 import type { RateLibrary, MaterialRate, Breakdown8Bucket } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
+import { AL_ALLOYS, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
 
@@ -624,6 +625,16 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     // tracks the local resin value. Everything else uses the resin family-aware
     // factor (metals/other flat).
     materials: baseLibrary.materials.map(m => {
+      // Aluminium extrusion billet: LME + THIS region's all-in billet premium + the
+      // alloy adder (al-extrusion-data.ts) — a US billet carries the Midwest premium,
+      // a Chinese one sits under LME. The scrap value is LME-based, so it stays.
+      const alAlloy = m.id.startsWith('mat-al-billet-')
+        ? (Object.keys(AL_ALLOYS) as AlAlloy[]).find(a => `mat-al-billet-${a.toLowerCase()}` === m.id) : undefined;
+      if (alAlloy) {
+        const p = billetPriceGbpPerKg(alAlloy, region);
+        return { ...m, pricePerKg: p, region: rd.name, confidence: 'Medium' as const,
+          sourceNote: `${m.sourceNote} | ${rd.name}: billet premium $${BILLET_PREMIUM_USD_PER_T[region].usdPerT}/t → £${p.toFixed(3)}/kg (${BILLET_PREMIUM_USD_PER_T[region].basis})` };
+      }
       const authentic = EXTRUSION_COUNTRY_PRICES[m.id]?.[region] ?? THERMOFORMING_COUNTRY_PRICES[m.id]?.[region];
       if (authentic !== undefined) {
         const ratio = m.pricePerKg > 0 ? authentic / m.pricePerKg : 1;
@@ -740,7 +751,12 @@ const DEFAULT_RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL',
 
 export function computeRegionalComparison(
   bkd: Breakdown8Bucket,
-  opts: { regions?: ManufacturingRegion[]; baseRegion?: ManufacturingRegion; landed?: boolean; sourceRegion?: ManufacturingRegion } = {},
+  opts: {
+    regions?: ManufacturingRegion[]; baseRegion?: ManufacturingRegion; landed?: boolean; sourceRegion?: ManufacturingRegion;
+    /** Per-region material factor vs UK, overriding `materialMultiplier` — the aluminium
+     *  billet's own regional prices (`alBilletMaterialFactors`). */
+    materialFactorByRegion?: Partial<Record<ManufacturingRegion, number>>;
+  } = {},
 ): RegionalComparisonRow[] {
   const regions = opts.regions ?? DEFAULT_RC_REGIONS;
   const ukSemi = REGIONAL_DATA['UK'].labour.semiskilled;
@@ -755,7 +771,7 @@ export function computeRegionalComparison(
   const srcRD = REGIONAL_DATA[source] ?? REGIONAL_DATA['UK'];
   const srcLab = (srcRD.labour.semiskilled / ukSemi) || 1;
   const uk: Breakdown8Bucket = {
-    rawMaterial: bkd.rawMaterial / (srcRD.materialMultiplier || 1),
+    rawMaterial: bkd.rawMaterial / ((opts.materialFactorByRegion?.[source] ?? srcRD.materialMultiplier) || 1),
     process: bkd.process / (srcRD.machineRateMultiplier || 1),
     labour: bkd.labour / srcLab,
     tooling: bkd.tooling / (srcRD.machineRateMultiplier || 1),
@@ -775,7 +791,7 @@ export function computeRegionalComparison(
       const tot = exW + bkd.packaging + bkd.logistics + bkd.margin + exW * add.duty + exW * add.shipping;
       return { code, name: rd.name, currency: rd.currency, material: bkd.rawMaterial, process: bkd.process, labour: bkd.labour, tooling: bkd.tooling, overhead: bkd.overhead, exWorks: exW, packaging: bkd.packaging, logistics: bkd.logistics, margin: bkd.margin, total: tot, vsBasePct: 0, isBase: code === base };
     }
-    const material = uk.rawMaterial * rd.materialMultiplier;
+    const material = uk.rawMaterial * (opts.materialFactorByRegion?.[code] ?? rd.materialMultiplier);
     const process = uk.process * rd.machineRateMultiplier;
     const labour = uk.labour * (rd.labour.semiskilled / ukSemi);
     // Tooling is bought where the parts are made — scale by the machine-rate
@@ -800,4 +816,16 @@ export function computeRegionalComparison(
   const baseTotal = rows.find(r => r.code === base)?.total ?? rows[0]?.total ?? 0;
   rows.forEach(r => { r.vsBasePct = baseTotal > 0 ? ((baseTotal - r.total) / baseTotal) * 100 : 0; });
   return rows;
+}
+
+/**
+ * Aluminium billet price in each region relative to the UK, for the comparison
+ * table — so a US row carries the Midwest premium and a Chinese row the SHFE
+ * discount rather than the flat "globally traded" factor.
+ */
+export function alBilletMaterialFactors(alloy: AlAlloy): Partial<Record<ManufacturingRegion, number>> {
+  const uk = billetPriceGbpPerKg(alloy, 'UK');
+  const out: Partial<Record<ManufacturingRegion, number>> = {};
+  for (const r of Object.keys(REGIONAL_DATA) as ManufacturingRegion[]) out[r] = billetPriceGbpPerKg(alloy, r) / uk;
+  return out;
 }

@@ -17,6 +17,7 @@ import { computeInjectionMouldingDrivers } from '../../src/engine/modules/inject
 import { computeBlowMouldingDrivers }      from '../../src/engine/modules/blow-moulding.js';
 import { computeExtrusionDrivers }         from '../../src/engine/modules/extrusion.js';
 import { computeThermoformingDrivers }     from '../../src/engine/modules/thermoforming.js';
+import { computeAluminiumExtrusionDrivers } from '../../src/engine/modules/aluminium-extrusion.js';
 import { computeRotationalMouldingDrivers } from '../../src/engine/modules/rotational-moulding.js';
 import { computeCastingDrivers }           from '../../src/engine/modules/casting.js';
 import { computeForgingDrivers }           from '../../src/engine/modules/forging.js';
@@ -96,6 +97,7 @@ const COMMODITY_MAP: Record<string, ComputeFn> = {
   cast_and_machine:     computeCastAndMachineDrivers    as unknown as ComputeFn,
   rubber:               computeRubberDrivers            as unknown as ComputeFn,
   composites:           computeCompositeDrivers         as unknown as ComputeFn,
+  aluminium_extrusion:  computeAluminiumExtrusionDrivers as unknown as ComputeFn,
   wiring_harness:       computeWiringHarnessDrivers     as unknown as ComputeFn,
   gear:                 computeGearDrivers              as unknown as ComputeFn,
 };

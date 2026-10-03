@@ -122,6 +122,12 @@ export interface OCCTGeometry {
   /** Share of 96 rays from the envelope centre that meet the part (kernel `_enclosure`):
    *  ~1 inside a closed tank, ~0.5 over an open tray or a pressing. */
   enclosure?: { centreIn: 'void' | 'material' | null; rays: number; hitShare: number | null } | null;
+  /** Cross-section of a long part, cut at 25 / 50 / 75 % of its length (kernel `_profile_section`). */
+  profileSection?: {
+    axis: string; lengthMm: number; areaMm2: number; perimeterMm: number; outerLoops: number; voids: number;
+    ccdMm: number; minWallMm: number | null; meanWallMm: number | null; sectionBoxMm: number[];
+    stationAreasMm2: number[]; volumeShare: number | null;
+  } | { error: string } | null;
   wallThickness?: {
     minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
     /** 95th-percentile ray-cast wall (mm) — the thickest section governs cooling/ejection. */
@@ -589,6 +595,13 @@ export interface CADAnalysisResult {
       deflashLabourId?: string;
       deflashCycleSec?: number;
       deflashManning?: number;
+    };
+    /** Aluminium extrusion, from the rules (aluminium-extrusion build, Oct 2026). */
+    alExtrusion?: {
+      alloy?: string; route?: string; areaMm2?: number; perimeterMm?: number; ccdMm?: number; voids?: number;
+      minWallMm?: number; partLengthMm?: number; partWeightKg?: number; temper?: string; finish?: string;
+      finishAreaM2?: number; bends?: number; cncMinutes?: number; cncFixturings?: number; fabFeatureRows?: number;
+      impactOuterDiaMm?: number;
     };
     /** Polymer extrusion, from the rules (extrusion build, Oct 2026). */
     extrusion?: {

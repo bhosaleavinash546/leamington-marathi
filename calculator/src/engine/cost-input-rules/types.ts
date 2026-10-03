@@ -78,7 +78,9 @@ export interface Decision<V = string> {
     /** The file's magnitudes look like inches saved as millimetres. Confirm before anything is scaled. */
     | 'units'
     /** No machine in the library holds the part; the engineer picks one or accepts the largest. */
-    | 'machine_envelope';
+    | 'machine_envelope'
+    /** A process option the shape cannot settle (route, temper, finish) — usually advisory. */
+    | 'process_choice';
   question: string;
   /** Why geometry cannot answer this. Shown to the engineer so the ask reads as
    *  a limit of physics rather than a limit of the software. */

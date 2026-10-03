@@ -98,6 +98,13 @@ export function processFromNames(names: NameSource[]): ProcessNameEvidence {
       }
     }
   }
+  // An extrusion named with an aluminium alloy (or "impact extruded") is an
+  // aluminium extrusion, not a polymer line (aluminium-extrusion build).
+  for (const h of hits) {
+    if (h.route === 'extrusion' && /\b(alu|aluminium|aluminum|impact|[1-7]0\d\d[a-z]?)\b/i.test(h.text)) {
+      h.route = 'aluminium_extrusion'; h.label = 'an aluminium extrusion';
+    }
+  }
   const routes = [...new Set(hits.map(h => h.route))];
   return { route: routes.length === 1 ? routes[0] : null, hits };
 }

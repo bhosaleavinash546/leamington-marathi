@@ -37,7 +37,7 @@ const check = process.argv.includes('--check');
 const COMMODITIES = [
   'machining', 'casting', 'cast_and_machine', 'forging',
   'sheet_metal', 'sheet_metal_fab', 'injection_moulding', 'blow_moulding',
-  'thermoforming', 'rotational_moulding', 'rubber', 'composites', 'extrusion',
+  'thermoforming', 'rotational_moulding', 'rubber', 'composites', 'extrusion', 'aluminium_extrusion',
   '__default__',
 ] as const;
 

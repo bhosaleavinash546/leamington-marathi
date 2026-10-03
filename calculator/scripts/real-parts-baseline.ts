@@ -230,6 +230,40 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 40 × 25 mm twin-chamber rigid PVC conduit / trim profile, 2 mm walls, 2 m.',
     answers: { 'material.resin': 'mat-upvc-pipe', 'commodity.route': 'extrusion' },
   },
+  // ── Aluminium extrusion (aluminium-extrusion build, 3 Oct 2026) ─────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/AL_modelled_parts.py.
+  'AL_Crash_Box.stp': {
+    note: 'MODELLED: 150 × 74 mm two-chamber 6082 crash box, 3 mm walls, 400 mm, 4 bolt holes.',
+    answers: { 'material.alAlloy': '6082', 'commodity.route': 'aluminium_extrusion' },
+  },
+  'AL_Battery_Rail.stp': {
+    note: 'MODELLED: four-chamber 6063 battery-tray side rail, 1.8 m.',
+    answers: { 'material.alAlloy': '6063', 'commodity.route': 'aluminium_extrusion' },
+  },
+  'AL_Trim_Channel.stp': {
+    note: 'MODELLED: open 6060 trim channel, 2 mm, 1.2 m, anodised.',
+    answers: { 'material.alAlloy': '6060', 'commodity.route': 'aluminium_extrusion', 'al.finish': 'anodise' },
+  },
+  'AL_Bumper_Beam.stp': {
+    note: 'MODELLED: two-chamber 7003 bumper beam, 1.3 m, one stretch bend stated.',
+    answers: { 'material.alAlloy': '7003', 'commodity.route': 'aluminium_extrusion', 'al.bends': '1' },
+  },
+  'AL_Heat_Sink.stp': {
+    note: 'MODELLED: finned 6063 heat sink cut 150 mm long — short, routed by section intricacy.',
+    answers: { 'material.alAlloy': '6063', 'commodity.route': 'aluminium_extrusion', 'al.finish': 'anodise' },
+  },
+  'AL_Machined_Bracket.stp': {
+    note: 'MODELLED: 6082 T-section 400 mm with a notch and two holes machined — extrusion + CNC.',
+    answers: { 'material.alAlloy': '6082', 'commodity.route': 'aluminium_extrusion' },
+  },
+  'AL_Busbar.stp': {
+    note: 'MODELLED: 40 × 10 mm 1050 busbar, 400 mm, two holes — Conform from rod.',
+    answers: { 'material.alAlloy': '1050', 'commodity.route': 'aluminium_extrusion', 'al.route': 'conform' },
+  },
+  'AL_Battery_Can.stp': {
+    note: 'MODELLED: Ø46 × 80 mm 1050 cell can, 0.95 mm wall — cold impact extruded.',
+    answers: { 'material.alAlloy': '1050', 'commodity.route': 'aluminium_extrusion', 'al.route': 'impact' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

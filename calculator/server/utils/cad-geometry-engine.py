@@ -450,6 +450,246 @@ def _classify_faces(faces):
     return counts, cyl_radii
 
 
+def _profile_section(wrapped, bbox6, volume_mm3: float):
+    """
+    The cross-section of a long part, measured (aluminium-extrusion build, Oct 2026).
+
+    Only for a part at least 4x longer than its next dimension. The solid is cut
+    across its long axis at 25 / 50 / 75 % of its length; each cut is chained
+    into closed loops (outer outlines and the holes inside them). From the mid
+    cut: section area, outline length, number of enclosed voids, the minimum
+    circle that encloses the section (the extrusion "circumscribing circle"),
+    and the wall — rays from the outline inward across the section, the
+    10th-percentile chord being the thinnest wall worth the name.
+
+    The three cuts tell a constant section (extruded as is) from one that was
+    extruded and then machined (pockets, cut-outs): the area varies along the
+    part, and the volume falls short of section x length. Pure OCP + Python —
+    no numpy — so the Windows package keeps working.
+
+    Cuts a deep copy: a boolean section can widen the tolerances of the shape it
+    cuts, and the feature table measured after it then read two of the casting
+    bracket's through holes as blind.
+    """
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_Copy
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Section
+    wrapped = BRepBuilderAPI_Copy(wrapped, True, False).Shape()
+    from OCP.gp import gp_Pln, gp_Pnt, gp_Dir
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.GCPnts import GCPnts_QuasiUniformDeflection
+
+    xmin, ymin, zmin, xmax, ymax, zmax = bbox6
+    dims = [xmax - xmin, ymax - ymin, zmax - zmin]
+    order = sorted(range(3), key=lambda k: -dims[k])
+    long_ok = dims[order[0]] >= 4 * dims[order[1]]
+    # Try each axis, longest first: the extrusion axis is the one along which the
+    # section is constant — not always the longest (a heat sink is cut short).
+    for ax in order:
+        res = _section_along(wrapped, bbox6, volume_mm3, ax)
+        if res and res.get("constant"):
+            return res
+        if ax == order[0] and not long_ok:
+            continue
+    if long_ok:
+        res = _section_along(wrapped, bbox6, volume_mm3, order[0])
+        return res
+    return None
+
+
+def _section_along(wrapped, bbox6, volume_mm3, ax):
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Section
+    from OCP.gp import gp_Pln, gp_Pnt, gp_Dir
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.GCPnts import GCPnts_QuasiUniformDeflection
+    xmin, ymin, zmin, xmax, ymax, zmax = bbox6
+    dims = [xmax - xmin, ymax - ymin, zmax - zmin]
+    u_ax, v_ax = [k for k in range(3) if k != ax]
+    L = dims[ax]
+    lo = [xmin, ymin, zmin][ax]
+    dirv = [0.0, 0.0, 0.0]; dirv[ax] = 1.0
+
+    def loops_at(frac):
+        c = [(xmin + xmax) / 2, (ymin + ymax) / 2, (zmin + zmax) / 2]
+        c[ax] = lo + frac * L
+        sec = BRepAlgoAPI_Section(wrapped, gp_Pln(gp_Pnt(*c), gp_Dir(*dirv)))
+        sec.Build()
+        polys = []
+        ex = TopExp_Explorer(sec.Shape(), TopAbs_EDGE)
+        while ex.More():
+            e = TopoDS.Edge_s(ex.Current())
+            try:
+                cv = BRepAdaptor_Curve(e)
+                d = GCPnts_QuasiUniformDeflection(cv, 0.02)
+                pts = []
+                if d.IsDone():
+                    for i in range(1, d.NbPoints() + 1):
+                        q = d.Value(i)
+                        xyz = (q.X(), q.Y(), q.Z())
+                        pts.append((xyz[u_ax], xyz[v_ax]))
+                if len(pts) >= 2:
+                    polys.append(pts)
+            except Exception:
+                pass
+            ex.Next()
+        # Chain edge polylines into closed loops by matching end points.
+        tol = 1e-3 * max(1.0, max(dims))
+        loops = []
+        pool = polys[:]
+        while pool:
+            cur = pool.pop()
+            changed = True
+            while changed and pool:
+                changed = False
+                for i, pl in enumerate(pool):
+                    if math.dist(cur[-1], pl[0]) < tol:
+                        cur = cur + pl[1:]; pool.pop(i); changed = True; break
+                    if math.dist(cur[-1], pl[-1]) < tol:
+                        cur = cur + pl[::-1][1:]; pool.pop(i); changed = True; break
+                    if math.dist(cur[0], pl[-1]) < tol:
+                        cur = pl + cur[1:]; pool.pop(i); changed = True; break
+                    if math.dist(cur[0], pl[0]) < tol:
+                        cur = pl[::-1] + cur[1:]; pool.pop(i); changed = True; break
+            if len(cur) >= 3:
+                loops.append(cur)
+        return loops
+
+    def signed_area(lp):
+        a = 0.0
+        for i in range(len(lp)):
+            x1, y1 = lp[i]; x2, y2 = lp[(i + 1) % len(lp)]
+            a += x1 * y2 - x2 * y1
+        return a / 2
+
+    def inside(pt, lp):
+        x, y = pt; c = False
+        n = len(lp)
+        for i in range(n):
+            x1, y1 = lp[i]; x2, y2 = lp[(i + 1) % n]
+            if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1 + 1e-300) + x1:
+                c = not c
+        return c
+
+    def describe(loops):
+        if not loops:
+            return None
+        depth = []
+        for i, lp in enumerate(loops):
+            probe = lp[0]
+            depth.append(sum(1 for j, other in enumerate(loops) if j != i and inside(probe, other)))
+        area = 0.0; perim = 0.0; voids = 0; outers = 0
+        oriented = []
+        for lp, dpt in zip(loops, depth):
+            a = signed_area(lp)
+            hole = dpt % 2 == 1
+            area += -abs(a) if hole else abs(a)
+            perim += sum(math.dist(lp[i], lp[(i + 1) % len(lp)]) for i in range(len(lp)))
+            if hole: voids += 1
+            else: outers += 1
+            # Material on the left: outer loops CCW, holes CW.
+            want_ccw = not hole
+            oriented.append(lp if (a > 0) == want_ccw else lp[::-1])
+        return {"area": area, "perim": perim, "voids": voids, "outers": outers, "loops": oriented}
+
+    mid = describe(loops_at(0.5))
+    if not mid or mid["area"] <= 0:
+        return None
+    others = [describe(loops_at(f)) for f in (0.25, 0.75)]
+    areas = [mid["area"]] + [o["area"] for o in others if o and o["area"] > 0]
+
+    pts = [p for lp in mid["loops"] for p in lp]
+    # Minimum enclosing circle (Welzl, iterative, shuffled deterministically).
+    rnd = random.Random(20261003)
+    P = pts[:]
+    if len(P) > 4000:
+        P = P[::max(1, len(P) // 4000)]
+    rnd.shuffle(P)
+
+    def circ2(a, b):
+        cx, cy = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+        return (cx, cy, math.dist(a, b) / 2)
+
+    def circ3(a, b, c):
+        ax_, ay = a; bx, by = b; cx_, cy_ = c
+        d = 2 * (ax_ * (by - cy_) + bx * (cy_ - ay) + cx_ * (ay - by))
+        if abs(d) < 1e-12:
+            return max((circ2(a, b), circ2(a, c), circ2(b, c)), key=lambda t: t[2])
+        ux = ((ax_ * ax_ + ay * ay) * (by - cy_) + (bx * bx + by * by) * (cy_ - ay) + (cx_ * cx_ + cy_ * cy_) * (ay - by)) / d
+        uy = ((ax_ * ax_ + ay * ay) * (cx_ - bx) + (bx * bx + by * by) * (ax_ - cx_) + (cx_ * cx_ + cy_ * cy_) * (bx - ax_)) / d
+        return (ux, uy, math.dist((ux, uy), a))
+
+    def incirc(c, p):
+        return math.dist((c[0], c[1]), p) <= c[2] + 1e-7
+
+    c = (P[0][0], P[0][1], 0.0)
+    for i in range(1, len(P)):
+        if incirc(c, P[i]):
+            continue
+        c = (P[i][0], P[i][1], 0.0)
+        for j in range(i):
+            if incirc(c, P[j]):
+                continue
+            c = circ2(P[i], P[j])
+            for k in range(j):
+                if not incirc(c, P[k]):
+                    c = circ3(P[i], P[j], P[k])
+    ccd = 2 * c[2]
+
+    # Wall: inward rays from points along the outline to the far side.
+    segs = []
+    for lp in mid["loops"]:
+        for i in range(len(lp)):
+            segs.append((lp[i], lp[(i + 1) % len(lp)]))
+    step = max(1, len(segs) // 400)
+    chords = []
+    for si in range(0, len(segs), step):
+        (x1, y1), (x2, y2) = segs[si]
+        dx, dy = x2 - x1, y2 - y1
+        ln = math.hypot(dx, dy)
+        if ln < 1e-9:
+            continue
+        nx, ny = -dy / ln, dx / ln          # left normal = into the material
+        ox, oy = (x1 + x2) / 2 + nx * 1e-4, (y1 + y2) / 2 + ny * 1e-4
+        best = None
+        for sj, ((ax_, ay), (bx, by)) in enumerate(segs):
+            if sj == si:
+                continue
+            ex_, ey = bx - ax_, by - ay
+            den = nx * ey - ny * ex_
+            if abs(den) < 1e-12:
+                continue
+            t = ((ax_ - ox) * ey - (ay - oy) * ex_) / den
+            u = ((ax_ - ox) * ny - (ay - oy) * nx) / den
+            if t > 1e-6 and -1e-9 <= u <= 1 + 1e-9 and (best is None or t < best):
+                best = t
+        if best is not None:
+            chords.append(best)
+    chords.sort()
+    min_wall = chords[max(0, int(len(chords) * 0.10) - 1)] if chords else None
+    mean_wall = 2 * mid["area"] / mid["perim"] if mid["perim"] > 0 else None
+    return {
+        "axis": "xyz"[ax],
+        "lengthMm": round(L, 2),
+        "areaMm2": round(mid["area"], 2),
+        "perimeterMm": round(mid["perim"], 2),
+        "outerLoops": mid["outers"],
+        "voids": mid["voids"],
+        "ccdMm": round(ccd, 2),
+        "minWallMm": round(min_wall, 3) if min_wall else None,
+        "meanWallMm": round(mean_wall, 3) if mean_wall else None,
+        "sectionBoxMm": [round(dims[u_ax], 2), round(dims[v_ax], 2)],
+        "stationAreasMm2": [round(a, 2) for a in areas],
+        "volumeShare": round(volume_mm3 / (mid["area"] * L), 4) if mid["area"] * L > 0 else None,
+        "constant": bool(len(areas) == 3 and max(areas) <= 1.01 * min(areas)
+                         and mid["area"] * L > 0 and 0.98 <= volume_mm3 / (mid["area"] * L) <= 1.02),
+    }
+
+
 def _enclosure(wrapped, bbox6, n_rays: int = 96) -> dict:
     """
     How much of the part surrounds the middle of its envelope.
@@ -2246,6 +2486,11 @@ def analyze(filepath: str) -> dict:
             enclosure = _enclosure(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax))
         except Exception as _ee:
             enclosure = {"centreIn": None, "rays": 0, "hitShare": None, "note": str(_ee)[:120]}
+        profile_section = None
+        try:
+            profile_section = _profile_section(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax), volume_mm3)
+        except Exception as _pe:
+            profile_section = {"error": str(_pe)[:160]}
 
         # ── Refuse before you estimate ────────────────────────────────────────
         # An open surface model measured as if it were a solid gave a plausible
@@ -2398,6 +2643,7 @@ def analyze(filepath: str) -> dict:
             "projectedArea": projected_area,
             "topology": topology,
             "enclosure": enclosure,
+            "profileSection": profile_section,
             "weights": {
                 "aluminiumKg": round(volume_mm3 * 2.70e-6, 4),
                 "steelKg":     round(volume_mm3 * 7.85e-6, 4),

@@ -113,6 +113,8 @@ const ROUTES: Record<string, Route> = {
   composites: { value: 'composites', label: 'Composite laminate', consequence: 'fibre and resin, layup hours, a cure cycle and a layup tool' },
   // Extrusion build: a constant-section polymer part — tube, pipe or profile.
   extrusion: { value: 'extrusion', label: 'Extruded (polymer) and cut to length', consequence: 'resin by the kg/m, a line rate and a die — polymer lines only' },
+  // Aluminium extrusion build: billet, press, quench, stretch, age, fabricate, finish.
+  aluminium_extrusion: { value: 'aluminium_extrusion', label: 'Aluminium extrusion', consequence: 'billet at LME + regional premium, a press plan by section, ageing and a die by the tonne' },
 };
 
 function ask(why: string, routes: string[], leaning?: string): Decision {
@@ -163,15 +165,18 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   // tube's bore makes it read as a closed tank to the enclosure probe, and its
   // round faces as bends (extrusion build). Extruded if polymer; a rubber seal
   // is extruded rubber; a metal one is bar or extrusion stock machined.
-  const prof = extrusionProfile({ ...ctx, geo: g } as RuleContext);
+  const prof = extrusionProfile({ ...ctx, geo: g } as RuleContext) ?? kernelProfile(g);
   if (prof) {
-    const named = processFromNames(partNames(ctx.filename, g)).route;
-    const lean = named && ROUTES[named] ? named : 'extrusion';
+    const names = partNames(ctx.filename, g);
+    const named = processFromNames(names).route;
+    const alu = /\b(alu|aluminium|aluminum|al ?\d{4}|[1-7]0\d\d[a-z]?)\b/i.test(names.map(n => n.text).join(' '));
+    const lean = named && ROUTES[named] ? (named === 'extrusion' && alu ? 'aluminium_extrusion' : named)
+      : alu ? 'aluminium_extrusion' : polymerFromNames(names) ? 'extrusion' : undefined;
     return {
       decision: ask(
-        `${prof.basis} — extruded and cut to length, if it is a polymer. A rubber profile is extruded `
-        + 'rubber; a metal one is bar or extruded stock, machined.',
-        [...new Set(['extrusion', 'rubber', 'machining', ...(named && ROUTES[named] ? [named] : [])])], lean),
+        `${prof.basis} — extruded and cut to length. Aluminium on an extrusion press; a polymer on a screw `
+        + 'line; a rubber profile is extruded rubber; or bar machined to shape.',
+        [...new Set(['aluminium_extrusion', 'extrusion', 'rubber', 'machining', ...(named && ROUTES[named] ? [named] : [])])], lean),
     };
   }
 
@@ -187,12 +192,17 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   //    cheap tools win; blow above, where its minute-long cycle does.
   if (enclosedShell(g)) {
     const mx = Math.max(g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm);
+    // A revolved cup up to 200 mm across may be an impact extrusion (cell cans,
+    // capacitor and aerosol cans) — offered, never leaned (aluminium-extrusion build).
+    const t = g.turning as { fraction?: number; maxDiaMm?: number } | undefined;
+    const impactCup = (t?.fraction ?? 0) >= 0.9 && (t?.maxDiaMm ?? 0) > 0 && (t?.maxDiaMm ?? 0) <= 200;
     return {
       decision: ask(
         `A closed ${mx.toFixed(0)} mm shell (${Math.round((g.enclosure!.hitShare ?? 0) * 100)}% of rays from its centre `
         + `meet a wall) — a tank or container. It cannot come out of a solid process; blow and rotational moulding `
-        + 'both make it, and the annual volume decides which.',
-        ['blow_moulding', 'rotational_moulding', 'sheet_metal'],
+        + 'both make it, and the annual volume decides which.'
+        + (impactCup ? ` Fully revolved and ${g.turning!.maxDiaMm!.toFixed(0)} mm across: a metal can or cup is impact extruded.` : ''),
+        ['blow_moulding', 'rotational_moulding', 'sheet_metal', ...(impactCup ? ['aluminium_extrusion'] : [])],
         ctx.annualVolume < 10_000 ? 'rotational_moulding' : 'blow_moulding'),
     };
   }
@@ -390,4 +400,29 @@ export function processLeaning(ctx: RuleContext, routes: string[]): { routes: st
   }
   if (leaning && machinedAfter && leaning === 'cast_and_machine') evidence.push('holes were measured, the finish machining a casting carries');
   return { routes: out, leaning, evidence };
+}
+
+/**
+ * A profile by the kernel's cross-section probe (aluminium-extrusion build):
+ * a constant section that is long (≥ 3 × its section) or intricate (outline
+ * long for its area — fins, chambers: a heat sink is cut short), or a long
+ * section with material machined away (volume 60–98% of section × length).
+ * The silhouette test above needs 8:1 and misses all three.
+ */
+function kernelProfile(g: RuleContext['geo']): { basis: string } | null {
+  const ps = g.profileSection as Record<string, unknown> | null | undefined;
+  if (!ps || typeof ps.areaMm2 !== 'number' || !(ps.areaMm2 > 0)) return null;
+  const A = ps.areaMm2 as number; const P = ps.perimeterMm as number; const L = ps.lengthMm as number;
+  const box = (ps.sectionBoxMm as number[] | undefined) ?? [];
+  const cross = Math.max(...box, 1);
+  const intricacy = P * P / (4 * Math.PI * A);
+  const share = (ps.volumeShare as number | null) ?? 1;
+  const long = L >= 3 * cross;
+  if (ps.constant === true && (long || intricacy >= 6)) {
+    return { basis: `a constant ${A.toFixed(0)} mm² section ${L.toFixed(0)} mm long (${ps.voids} void${ps.voids === 1 ? '' : 's'}, measured across the ${ps.axis} axis)` };
+  }
+  if (ps.constant !== true && L >= 4 * cross && share >= 0.6 && share < 0.98) {
+    return { basis: `a ${A.toFixed(0)} mm² section ${L.toFixed(0)} mm long with ${((1 - share) * 100).toFixed(1)}% machined away — an extrusion, machined` };
+  }
+  return null;
 }

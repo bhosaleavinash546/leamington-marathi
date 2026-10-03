@@ -323,6 +323,16 @@ what is true** — nothing here has been compared with a price JLR paid.
   output over a run of at least a shift. Polymer only — the library has no aluminium press line, so a metal grade
   is refused. Headless via `toCostParams` 'extrusion'. See `docs/cad/extrusion-build-2026-10.md`,
   `tests/extrusion-build.test.ts`; parts in `cad-audit/parts/EXT_*`.
+- Aluminium extrusion (`al-extrusion-data.ts`, `modules/aluminium-extrusion{,-advisor}.ts`,
+  `cost-input-rules/commodities/aluminium-extrusion.ts`, `src/ui/al-extrusion-form.ts`): billet = LME + the region's
+  all-in premium (`BILLET_PREMIUM_USD_PER_T`, sourced or labelled estimate) + alloy adder — both regional paths read it
+  (`buildRegionalLibrary`, `alBilletMaterialFactors`). The kernel's `profileSection` (cut on a COPY — a section on the
+  original turned through holes blind) gives area, outline, voids, circumscribing circle, wall and constant / machined;
+  `planAlExtrusion` picks die type, press (circle, ratio, 90% force), holes, Johnson force, exit speed, billet for whole
+  parts a strand, recovery. Routes direct / indirect / hydrostatic / Conform / impact; alloy is blocking, route / temper /
+  finish / bends advisory. Fabrication takes HOLES from the feature table (chamber walls read as pockets) plus the measured
+  machined volume. Screen and headless share `buildAlExtrusionInputs`. See `docs/cad/aluminium-extrusion-build-2026-10.md`,
+  `tests/aluminium-extrusion-build.test.ts`; parts in `cad-audit/parts/AL_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

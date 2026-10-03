@@ -1,4 +1,8 @@
-import type { RateLibrary, MachineRate, MachineRateBuildup } from './types.js';
+import type { RateLibrary, MachineRate, MachineRateBuildup, MaterialRate } from './types.js';
+import {
+  AL_PRESSES, AL_CONFORM, AL_IMPACT, AL_DOWNSTREAM, AL_ALLOYS, AL_ALLOY_LIST, AL_MARKET, AL_LINE,
+  BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, alScrapGbpPerKg, alBilletId,
+} from './al-extrusion-data.js';
 
 export function computeMachineRateFromBuildup(b: MachineRateBuildup): number {
   const totalAnnual =
@@ -24,6 +28,74 @@ function makeMachine(
     confidence: 'Medium',
   };
 }
+
+// ─── Aluminium extrusion (built Oct 2026; data and sources in al-extrusion-data.ts) ──
+
+/**
+ * A machine-rate build-up from line capex: 15-year straight line, maintenance
+ * 3.5% of capex, energy at the UK tariff for the line's running load, floor at
+ * £110/m²/yr, indirect support 5% and finance 4% of half the capex. ESTIMATE —
+ * the capex is the figure that carries the evidence (al-extrusion-data.ts).
+ */
+function alBuildup(capexGbp: number, runningKw: number, floorM2: number, hours = AL_LINE.hoursPerYear, util = 0.80): MachineRateBuildup {
+  return {
+    annualDepreciation: Math.round(capexGbp / 15),
+    maintenance: Math.round(capexGbp * 0.035),
+    energy: Math.round(runningKw * hours * util * 0.268),
+    floorSpace: Math.round(floorM2 * 110),
+    indirectSupport: Math.round(capexGbp * 0.05),
+    financeCost: Math.round(capexGbp / 2 * 0.04),
+    annualAvailableHours: hours,
+    machineUtilization: util,
+  };
+}
+/** Nominal line throughput, kg/h, for the running-load energy (press electricity only; billet heat is a consumable). */
+const AL_PRESS_KG_PER_HR: Record<string, number> = {
+  'al-ext-press-800t': 500, 'al-ext-press-1450t': 900, 'al-ext-press-1800t': 1200, 'al-ext-press-2500t': 1700,
+  'al-ext-press-3600t': 2300, 'al-ext-press-5500t': 3000, 'al-ext-press-8000t': 4000,
+  'al-ext-indirect-2800t': 1200, 'al-ext-hydrostatic-1600t': 600,
+};
+const AL_MACHINES: MachineRate[] = [
+  ...AL_PRESSES.map(p => makeMachine(p.id, `Aluminium extrusion line — ${p.label}`,
+    alBuildup(p.capexGbp, (AL_PRESS_KG_PER_HR[p.id] ?? 1000) * AL_LINE.pressKwhPerKg, 1200 + p.forceT * 0.6),
+    'UK', `Aluminium extrusion build 2026-10. Line = press + billet log heater + puller + cooling table + stretcher + finish saw. `
+      + `Capex £${(p.capexGbp / 1e6).toFixed(1)} M ESTIMATE (bare Chinese press $0.8–1.8 M at 1,450–1,800 t, $1.5–3 M at 2,000–2,500 t; full line +40–70%; European-built line costed). `
+      + `Container ${p.containerMm} mm, ${p.forceT} t.`)),
+  makeMachine(AL_CONFORM.id, AL_CONFORM.label, alBuildup(AL_CONFORM.capexGbp, 350, 500), 'UK',
+    'Aluminium extrusion build 2026-10. Continuous rotary extrusion from rod (busbar, MPE tube, small sections). Capex ESTIMATE.'),
+  makeMachine(AL_IMPACT.id, AL_IMPACT.label, alBuildup(AL_IMPACT.capexGbp, 180, 400), 'UK',
+    'Aluminium extrusion build 2026-10. Cold impact extrusion of cups, cans and housings from slugs. Capex ESTIMATE.'),
+  makeMachine(AL_DOWNSTREAM.ageOven.id, AL_DOWNSTREAM.ageOven.label, alBuildup(AL_DOWNSTREAM.ageOven.capexGbp, 15, 250), 'UK',
+    'Aluminium extrusion build 2026-10. Batch ageing oven, ~8 t a load, 175–185 °C. Gas charged per kg as a consumable. Capex ESTIMATE.'),
+  makeMachine(AL_DOWNSTREAM.sht.id, AL_DOWNSTREAM.sht.label, alBuildup(AL_DOWNSTREAM.sht.capexGbp, 60, 300), 'UK',
+    'Aluminium extrusion build 2026-10. Off-line solution heat treatment and drop quench for 2xxx / 7xxx and heavy 6xxx. Capex ESTIMATE.'),
+  makeMachine(AL_DOWNSTREAM.cnc.id, AL_DOWNSTREAM.cnc.label, alBuildup(AL_DOWNSTREAM.cnc.capexGbp, 30, 120, 4000), 'UK',
+    'Aluminium extrusion build 2026-10. 5-axis long-bed profile machining centre — holes, slots, end machining on profiles up to 7 m. Capex ESTIMATE.'),
+  makeMachine(AL_DOWNSTREAM.bender.id, AL_DOWNSTREAM.bender.label, alBuildup(AL_DOWNSTREAM.bender.capexGbp, 40, 200, 4000), 'UK',
+    'Aluminium extrusion build 2026-10. CNC stretch bender for swept bumper beams and roof rails. Capex ESTIMATE.'),
+  makeMachine(AL_DOWNSTREAM.anodise.id, AL_DOWNSTREAM.anodise.label, alBuildup(AL_DOWNSTREAM.anodise.capexGbp, 400, 1500), 'UK',
+    `Aluminium extrusion build 2026-10. ~${AL_DOWNSTREAM.anodise.m2PerHr} m²/h. Capex ESTIMATE; published UK anodised finish £100–130/m² on cladding is a finished-product price, not the line cost.`),
+  makeMachine(AL_DOWNSTREAM.powder.id, AL_DOWNSTREAM.powder.label, alBuildup(AL_DOWNSTREAM.powder.capexGbp, 300, 1200), 'UK',
+    `Aluminium extrusion build 2026-10. ~${AL_DOWNSTREAM.powder.m2PerHr} m²/h incl. chrome-free pretreatment and cure. Capex ESTIMATE.`),
+  makeMachine(AL_DOWNSTREAM.ecoat.id, AL_DOWNSTREAM.ecoat.label, alBuildup(AL_DOWNSTREAM.ecoat.capexGbp, 350, 1200), 'UK',
+    `Aluminium extrusion build 2026-10. ~${AL_DOWNSTREAM.ecoat.m2PerHr} m²/h. Capex ESTIMATE.`),
+];
+
+/** One billet grade per alloy, at the UK price built from the market block. */
+const AL_BILLETS: MaterialRate[] = AL_ALLOY_LIST.map(a => ({
+  id: alBilletId(a),
+  grade: `${AL_ALLOYS[a].label} extrusion billet`,
+  category: 'Aluminium Extrusion Billet',
+  pricePerKg: billetPriceGbpPerKg(a, 'UK'),
+  scrapRecoveryPricePerKg: alScrapGbpPerKg(a),
+  densityKgPerM3: AL_ALLOYS[a].densityKgPerM3,
+  region: 'UK',
+  effectiveDate: '2026-09',
+  sourceNote: `LME $${AL_MARKET.lmeUsdPerT}/t + UK all-in billet premium $${BILLET_PREMIUM_USD_PER_T.UK.usdPerT}/t `
+    + `+ alloy adder $${AL_ALLOYS[a].billetAdderUsdPerT}/t at $${AL_MARKET.usdPerGbp}/£ (${AL_MARKET.asOf}). `
+    + `Scrap at ${Math.round(AL_ALLOYS[a].scrapShareOfLme * 100)}% of LME. ${BILLET_PREMIUM_USD_PER_T.UK.basis}`,
+  confidence: 'Medium' as const,
+}));
 
 /** The month the built-in rates are indexed to. scripts/rate-refresh.ts moves it;
  *  tests assert every indexed rate carries it, so a partial refresh cannot pass. */
@@ -447,6 +519,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-ss15-5ph-bar', grade: '15-5PH (PH Stainless Bar)', category: 'Stainless Steel Billet', pricePerKg: 9.90, scrapRecoveryPricePerKg: 1.62, densityKgPerM3: 7800, region: 'UK', effectiveDate: '2026-09', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Transverse-toughness PH stainless — aerospace structural, landing-gear fittings; cleaner than 17-4. | Refresh 2026-09: +£0.101/kg from 0.6kg ss_sur £2.037→£2.164/kg, 0.035kg cu £10.070→£10.768/kg; premiums held', confidence: 'Low' },
     // ── Aluminium forging stock ────────────────────────────────────────────
     { id: 'mat-al6061-forge', grade: '6061 (Al Forging Stock)', category: 'Aluminium Forging Billet', pricePerKg: 3.34, scrapRecoveryPricePerKg: 0.54, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2026-09', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). General-purpose forged aluminium — brackets, fittings, structural; T6 heat-treatable, weldable. | Refresh 2026-09: −£0.060/kg from 0.97kg al £2.910→£2.849/kg; premiums held', confidence: 'Medium' },
+    ...AL_BILLETS,
     { id: 'mat-al6082-forge', grade: '6082 (Al Forging Stock)', category: 'Aluminium Forging Billet', pricePerKg: 3.24, scrapRecoveryPricePerKg: 0.54, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2026-09', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). European structural forging alloy — suspension arms, chassis brackets; higher strength than 6061. | Refresh 2026-09: −£0.060/kg from 0.97kg al £2.910→£2.849/kg; premiums held', confidence: 'Medium' },
     { id: 'mat-al7075-forge', grade: '7075 (Al Forging Stock)', category: 'Aluminium Forging Billet', pricePerKg: 4.60, scrapRecoveryPricePerKg: 0.55, densityKgPerM3: 2810, region: 'UK', effectiveDate: '2026-09', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). High-strength Al-Zn — aerospace/defence structural forgings, motorsport uprights; T73 for SCC resistance. | Refresh 2026-09: +£0.004/kg from 0.89kg al £2.910→£2.849/kg, 0.06kg zn £2.164→£2.913/kg, 0.02kg cu £10.070→£10.768/kg; premiums held', confidence: 'Medium' },
     { id: 'mat-al2618-forge', grade: '2618 (Al-Cu Piston/Aero)', category: 'Aluminium Forging Billet', pricePerKg: 5.18, scrapRecoveryPricePerKg: 0.55, densityKgPerM3: 2760, region: 'UK', effectiveDate: '2026-09', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Elevated-temperature Al-Cu — forged pistons, compressor/turbo wheels; creep-resistant to ~200°C. | Refresh 2026-09: −£0.022/kg from 0.93kg al £2.910→£2.849/kg, 0.05kg cu £10.070→£10.768/kg; premiums held', confidence: 'Low' },
@@ -1326,6 +1399,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('oven-composite-cure', 'Composite Cure Oven (Fan-Assisted)',
       { annualDepreciation: 18216, maintenance: 6058, energy: 34957, floorSpace: 12115, indirectSupport: 5036, financeCost: 2250, annualAvailableHours: 5000, machineUtilization: 0.75 },
       'UK', 'UK composites benchmark Jun 2026. Fan-assisted oven cure — prepreg (no autoclave pressure), wet layup post-cure.'),
+    ...AL_MACHINES,
     makeMachine('rtm-press-std', 'RTM / VARTM Injection Press',
       { annualDepreciation: 22264, maintenance: 9086, energy: 13983, floorSpace: 8077, indirectSupport: 6043, financeCost: 2750, annualAvailableHours: 3500, machineUtilization: 0.78 },
       'UK', 'UK composites benchmark Jun 2026. Resin Transfer Moulding injection press. Structural automotive CFRP/GFRP.'),
@@ -1945,6 +2019,9 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'oh-pcba-t2',              commodityType: 'pcba',               supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
     { id: 'oh-cast-and-machine-t2',  commodityType: 'cast_and_machine',   supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.09, sourceNote: 'Industry benchmark' },
     { id: 'oh-blow-moulding-t2',    commodityType: 'blow_moulding',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-aluminium_extrusion-t1', commodityType: 'aluminium_extrusion', supplierTier: 'Tier 1', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Aluminium extrusion build 2026-10 — integrated extruder with fabrication and finishing' },
+    { id: 'oh-aluminium_extrusion-t2', commodityType: 'aluminium_extrusion', supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Aluminium extrusion build 2026-10 — profile extruder' },
+    { id: 'oh-aluminium_extrusion-t3', commodityType: 'aluminium_extrusion', supplierTier: 'Tier 3', overheadPct: 0.08, marginPct: 0.05, sourceNote: 'Aluminium extrusion build 2026-10 — commodity profile mill' },
     { id: 'oh-extrusion-t1',        commodityType: 'extrusion',           supplierTier: 'Tier 1', overheadPct: 0.12, marginPct: 0.10, sourceNote: 'Industry benchmark — Tier-1/OEM in-house extrusion (higher overhead, full validation)' },
     { id: 'oh-extrusion-t2',        commodityType: 'extrusion',           supplierTier: 'Tier 2', overheadPct: 0.09, marginPct: 0.07, sourceNote: 'Industry benchmark' },
     { id: 'oh-extrusion-t3',        commodityType: 'extrusion',           supplierTier: 'Tier 3', overheadPct: 0.07, marginPct: 0.05, sourceNote: 'Industry benchmark — high-volume commodity extruder (lean overhead/margin)' },

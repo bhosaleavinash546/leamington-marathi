@@ -8,6 +8,7 @@ export type CommodityType =
   | 'injection_moulding'
   | 'blow_moulding'
   | 'extrusion'
+  | 'aluminium_extrusion'
   | 'thermoforming'
   | 'rotational_moulding'
   | 'casting'

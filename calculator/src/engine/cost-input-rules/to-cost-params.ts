@@ -36,6 +36,8 @@
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
+import { buildAlExtrusionInputs, type AlTemper } from '../modules/aluminium-extrusion.js';
+import type { AlAlloy, AlExtrusionRoute, AlFinish } from '../al-extrusion-data.js';
 import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
 import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell } from '../machining-time.js';
 import { CUTTING_MANNING } from './commodities/machining.js';
@@ -133,6 +135,7 @@ const LABOUR: Record<string, string> = {
   composites: 'lab-uk-skilled',
   gear: 'lab-uk-skilled',
   extrusion: 'lab-uk-semiskilled',
+  aluminium_extrusion: 'lab-uk-semiskilled',
 };
 
 const num = (v: unknown, fallback = 0): number =>
@@ -259,6 +262,27 @@ export function toCostParams(
   // take down a whole comparison run for one bad part.
   if (!ci) return null;
   // Composites had no headless costing at all (composites review).
+  // Aluminium extrusion (built Oct 2026): the shared builder plans the press from
+  // the measured section — the same function the screen form calls.
+  if (commodity === 'aluminium_extrusion') {
+    const e = ci.alExtrusion;
+    if (!e || !e.alloy || !e.route) return null;
+    const build = buildAlExtrusionInputs({
+      alloy: e.alloy as AlAlloy, route: e.route as AlExtrusionRoute,
+      section: { areaMm2: num(e.areaMm2), perimeterMm: num(e.perimeterMm), ccdMm: num(e.ccdMm), voids: Math.round(Number(e.voids) || 0),
+        minWallMm: num(e.minWallMm), partLengthMm: num(e.partLengthMm) },
+      partWeightKg: num(e.partWeightKg) || num(ci.netWeightKg), annualVolume,
+      temper: (e.temper ?? 'T6') as AlTemper, finish: (e.finish ?? 'mill') as AlFinish, finishAreaM2: num(e.finishAreaM2),
+      bends: Math.round(Number(e.bends) || 0), cncMinutes: Number(e.cncMinutes) || 0, cncFixturings: Math.round(Number(e.cncFixturings) || 0),
+      fabFeatureRows: Math.round(Number(e.fabFeatureRows) || 0),
+      ...(num(e.impactOuterDiaMm) ? { impactOuterDiaMm: num(e.impactOuterDiaMm) } : {}),
+    });
+    const bb0 = geo?.boundingBox;
+    const v = bb0 ? (bb0.xMm * bb0.yMm * bb0.zMm) / 1000 : 0;
+    return { commodity, assumed: [...build.warnings], params: build.inputs as unknown as Record<string, unknown>,
+      ...(bb0 ? { packagingPerPart: estimatePackagingPerPart(v, build.inputs.partWeightKg),
+        logisticsPerPart: estimateLogisticsPerPart(build.inputs.partWeightKg, v) } : {}) };
+  }
   if (commodity === 'composites') {
     const r = compositesParams(ci, annualVolume, assumed, D, commodity);
     const bb0 = geo?.boundingBox;
@@ -1022,5 +1046,5 @@ export function toCostParams(
 export const COSTABLE_COMMODITIES = [
   'casting', 'cast_and_machine', 'forging', 'machining', 'injection_moulding',
   'sheet_metal', 'sheet_metal_fab', 'blow_moulding', 'gear', 'rubber', 'rotational_moulding',
-  'thermoforming', 'composites', 'extrusion',
+  'thermoforming', 'composites', 'extrusion', 'aluminium_extrusion',
 ];

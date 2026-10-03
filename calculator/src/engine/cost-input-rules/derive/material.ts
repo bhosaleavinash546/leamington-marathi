@@ -43,6 +43,7 @@ const COMMODITY_FAMILIES: Record<string, MaterialFamily[]> = {
   thermoforming: ['plastic'],
   rotational_moulding: ['plastic'],
   extrusion: ['plastic'],
+  aluminium_extrusion: ['aluminium'],
 };
 
 export const MATERIAL_FAMILY_DECISION_ID = 'material.family';

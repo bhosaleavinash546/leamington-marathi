@@ -77,6 +77,8 @@ function looksAluminiumMaterial(name: string): boolean {
 const BULK_SOLID_METAL_PROCESSES = new Set([
   'casting', 'forging', 'cast_and_machine', 'machining', 'extrusion', 'biw_assembly',
 ]);
+// Not aluminium_extrusion: a hollow or open profile IS a thin wall at low fill
+// of its envelope — the crash box (3 mm, 22%) was refused as a misrun casting.
 const PLASTIC_MOULDING_PROCESSES = new Set([
   'injection_moulding', 'blow_moulding', 'rotational_moulding', 'thermoforming',
 ]);
@@ -84,7 +86,7 @@ const THIN_WALL_PROCESSES = new Set([
   ...PLASTIC_MOULDING_PROCESSES, 'sheet_metal', 'sheet_metal_fab',
 ]);
 const METAL_PROCESSES = new Set([
-  'casting', 'forging', 'cast_and_machine', 'machining', 'extrusion',
+  'casting', 'forging', 'cast_and_machine', 'machining', 'extrusion', 'aluminium_extrusion',
   'sheet_metal', 'sheet_metal_fab', 'biw_assembly', 'stamping',
 ]);
 

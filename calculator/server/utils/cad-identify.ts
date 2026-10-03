@@ -42,7 +42,7 @@ export const IDENTIFY_DEEP_MODEL = 'claude-opus-5-5';
 
 export const IDENTIFY_PROCESSES = [
   'machining', 'casting', 'cast_and_machine', 'forging', 'sheet_metal', 'sheet_metal_fab',
-  'injection_moulding', 'blow_moulding', 'thermoforming', 'rotational_moulding', 'extrusion',
+  'injection_moulding', 'blow_moulding', 'thermoforming', 'rotational_moulding', 'extrusion', 'aluminium_extrusion',
   'rubber', 'composites', 'gear', 'wiring_harness', 'pcb_fab', 'pcba', 'biw_assembly', 'painting', 'assembly',
 ] as const;
 export const IDENTIFY_FAMILIES = ['steel', 'aluminium', 'cast iron', 'magnesium', 'titanium', 'copper alloy', 'plastic', 'unknown'] as const;

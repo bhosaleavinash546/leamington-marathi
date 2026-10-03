@@ -9,7 +9,8 @@ import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeRegionalComparison, type ManufacturingRegion } from '../engine/regional-rates.js';
+import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion } from '../engine/regional-rates.js';
+import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { exportFilename } from './filename.js';
 import { brandRgb } from '../brand/index.js';
@@ -1362,7 +1363,11 @@ export function renderShouldCostSections(
   {
     // Re-base to the region the part was costed in, so the source-region row
     // equals the headline should-cost (not a UK breakdown scaled the wrong way).
-    const rc = computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion });
+    // Aluminium extrusion: the billet's own regional prices, by the alloy in the material id.
+    const alAlloy = commodityType === 'aluminium_extrusion'
+      ? AL_ALLOY_LIST.find(a => `mat-al-billet-${a.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
+    const rc = computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion,
+      ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy) } : {}) });
     const cheapest = Math.min(...rc.map(r => r.total));
     const baseName = rc.find(r => r.isBase)?.name ?? 'base';
     doc.addPage(); y = 18;

@@ -1,0 +1,262 @@
+/**
+ * Aluminium extrusion — market, alloy, press and process data (built Oct 2026).
+ *
+ * Everything the aluminium-extrusion should-cost reads that is not measured from
+ * the CAD lives here, as DATA, each figure carrying its basis. Two kinds:
+ *
+ *   SOURCED   — read from a published assessment on the date stated (LME, the
+ *               regional premiums, the billet premiums, FX).
+ *   ESTIMATE  — engineering-typical, anchored to the published ranges quoted in
+ *               the note, and printed as an estimate wherever it reaches a cost.
+ *
+ * The market block moves with the market. It is the one place to update when
+ * LME or a premium moves; nothing else in the chain holds a metal price.
+ */
+import type { ManufacturingRegion } from './regional-rates.js';
+
+// ─── Market ───────────────────────────────────────────────────────────────────
+
+export const AL_MARKET = {
+  asOf: '2026-09-30',
+  /** LME aluminium, US$/t. Cash $3,253 (25 Sep), 3-month $3,213.5 (29 Sep): mid-point. */
+  lmeUsdPerT: 3_240,
+  /** Bank of England spot, 30 Sep 2026: $1.3285 per £. */
+  usdPerGbp: 1.3285,
+  sources: [
+    'LME cash $3,253/t 25 Sep 2026 (alcircle.com); LME 3M $3,213.5/t 29 Sep 2026 (discoveryalert.com)',
+    'Bank of England USD/GBP 1.3285, 30 Sep 2026 (poundsterlinglive.com BoE reference rates)',
+  ],
+} as const;
+
+/**
+ * All-in billet premium over LME, US$/t, for 6063 delivered to an extruder in
+ * each manufacturing region — the regional duty-paid ingot premium AND the
+ * casthouse billet conversion, as the market quotes billet ("6063 extrusion
+ * billet premium, DDP …" is an all-in premium over LME).
+ */
+export interface BilletPremium {
+  usdPerT: number;
+  sourced: boolean;
+  basis: string;
+}
+
+const EU_BILLET = 1_100;   // DE Ruhr $1,070–1,135 and IT Brescia $1,075–1,150, 28 Aug 2026
+export const BILLET_PREMIUM_USD_PER_T: Record<ManufacturingRegion, BilletPremium> = {
+  DE: { usdPerT: 1_100, sourced: true, basis: 'Fastmarkets 6063 billet premium DDP North Germany (Ruhr) $1,070–1,135/t, 28 Aug 2026 — mid-point' },
+  IT: { usdPerT: 1_110, sourced: true, basis: 'Fastmarkets 6063 billet premium DDP Italy (Brescia) $1,075–1,150/t, 28 Aug 2026 — mid-point' },
+  FR: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026 (no French assessment)' },
+  NL: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026' },
+  ES: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026 (DDP Spain assessed fortnightly)' },
+  SE: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026' },
+  PL: { usdPerT: 1_080, sourced: false, basis: 'EU duty-paid billet less ~$20/t for Central European casthouse supply — estimate' },
+  CZ: { usdPerT: 1_080, sourced: false, basis: 'EU duty-paid billet less ~$20/t — estimate' },
+  HU: { usdPerT: 1_080, sourced: false, basis: 'EU duty-paid billet less ~$20/t — estimate' },
+  RO: { usdPerT: 1_060, sourced: false, basis: 'EU duty-paid billet less ~$40/t (Alro domestic casthouse) — estimate' },
+  UK: { usdPerT: 1_100, sourced: false, basis: 'UK imports billet from the EU and Norway at EU duty-paid levels (Ruhr / Brescia, 28 Aug 2026) — estimate' },
+  TR: { usdPerT: 675, sourced: true, basis: 'Fastmarkets 6063 billet premium CIF Turkey (Marmara) $650–700/t — mid-point' },
+  US: { usdPerT: 2_960, sourced: false, basis: 'US Midwest duty-paid premium $2,410/t (30 Sep 2026, cbonds Midwest index; Section 232 tariff) + billet upcharge ~$550/t (20–30 c/lb) — premium sourced, upcharge estimate' },
+  MX: { usdPerT: 395, sourced: true, basis: 'Fastmarkets 6063 billet premium CIF Mexico $370–420/t, 9 Sep 2026 — mid-point' },
+  BR: { usdPerT: 725, sourced: true, basis: 'Fastmarkets 6063/6060 billet premium CIF Brazilian main ports $700–750/t — mid-point' },
+  CN: { usdPerT: -186, sourced: false, basis: 'SHFE ~RMB 23,800/t incl. 13% VAT → RMB 21,060 ex-VAT ≈ $2,966/t at RMB 7.10 ($274 under LME) + 6063 bar processing fee ~RMB 625 ≈ $88 (Mysteel, Jul 2026) — derived' },
+  IN: { usdPerT: 550, sourced: false, basis: 'India CIF primary ~$3,603/t mid-2026 (≈ LME + $350) + domestic billet conversion ~$200 — estimate' },
+  TH: { usdPerT: 420, sourced: false, basis: 'Asian P1020 premium ~$200–395/t + Thai 6063 billet processing fee $100–250 (alcircle, 2026) — estimate' },
+  VN: { usdPerT: 450, sourced: false, basis: 'Asian P1020 premium + Vietnamese 6063 billet fee ~$200/t mid-June 2026 (alcircle) — estimate' },
+  KR: { usdPerT: 420, sourced: false, basis: 'P1020A premium CIF South Korea $155–165/t + billet conversion ~$260 — estimate' },
+};
+
+// ─── Alloys ───────────────────────────────────────────────────────────────────
+
+export type AlAlloy =
+  | '1050' | '3003' | '5083' | '6060' | '6063' | '6101' | '6005A' | '6061' | '6082'
+  | '7003' | '7108' | '7020' | '7075' | '2024';
+
+export type QuenchKind = 'none' | 'air' | 'mist' | 'water' | 'offline-sht';
+
+export interface AlloyData {
+  label: string;
+  densityKgPerM3: number;
+  /** Billet premium over 6063, US$/t — alloying additions, casthouse yield, homogenising. ESTIMATE. */
+  billetAdderUsdPerT: number;
+  /** Mean flow stress at the extrusion temperature, MPa (Johnson / Sheppard typical). ESTIMATE. */
+  flowStressMPa: number;
+  /** Exit speed on a plain solid section, m/min (6xxx 20–100, 7075 0.8–5.5 m/min, published). */
+  baseExitSpeedMPerMin: number;
+  /** Largest practical extrusion ratio (6063 ~100, 7075 6–30, published). */
+  maxRatio: number;
+  /** Butt discard left in the container, mm (soft alloys 20–35 mm, published). */
+  buttMm: number;
+  quench: QuenchKind;
+  heatTreatable: boolean;
+  defaultTemper: string;
+  /** Artificial ageing at the oven, hours incl. ramp (6xxx T5/T6 6–10 h, published; 7xxx two-step). */
+  ageHours: number;
+  /** Process scrap value as a share of LME (clean 6063 70–93% of LME, published). */
+  scrapShareOfLme: number;
+  /** Hollow high-strength sections are extruded seamless on an indirect press, not porthole-welded. */
+  prefersIndirect: boolean;
+  uses: string;
+}
+
+export const AL_ALLOYS: Record<AlAlloy, AlloyData> = {
+  '1050': { label: 'EN AW-1050A (99.5% Al)', densityKgPerM3: 2705, billetAdderUsdPerT: -40, flowStressMPa: 18, baseExitSpeedMPerMin: 70, maxRatio: 300, buttMm: 20, quench: 'none', heatTreatable: false, defaultTemper: 'H112', ageHours: 0, scrapShareOfLme: 0.90, prefersIndirect: false, uses: 'busbar, heat-exchanger tube, electrical' },
+  '3003': { label: 'EN AW-3003 (Al-Mn)', densityKgPerM3: 2730, billetAdderUsdPerT: 40, flowStressMPa: 26, baseExitSpeedMPerMin: 40, maxRatio: 150, buttMm: 25, quench: 'none', heatTreatable: false, defaultTemper: 'H112', ageHours: 0, scrapShareOfLme: 0.86, prefersIndirect: false, uses: 'HVAC / radiator tube, multi-port tube' },
+  '5083': { label: 'EN AW-5083 (Al-Mg4.5Mn)', densityKgPerM3: 2660, billetAdderUsdPerT: 300, flowStressMPa: 55, baseExitSpeedMPerMin: 4, maxRatio: 40, buttMm: 40, quench: 'none', heatTreatable: false, defaultTemper: 'H112', ageHours: 0, scrapShareOfLme: 0.82, prefersIndirect: false, uses: 'marine, rail, cryogenic' },
+  '6060': { label: 'EN AW-6060 (Al-MgSi)', densityKgPerM3: 2700, billetAdderUsdPerT: -20, flowStressMPa: 24, baseExitSpeedMPerMin: 60, maxRatio: 120, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T66', ageHours: 6, scrapShareOfLme: 0.88, prefersIndirect: false, uses: 'architectural, trim, low-load profiles' },
+  '6063': { label: 'EN AW-6063 (Al-Mg0.7Si)', densityKgPerM3: 2700, billetAdderUsdPerT: 0, flowStressMPa: 26, baseExitSpeedMPerMin: 50, maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 6, scrapShareOfLme: 0.88, prefersIndirect: false, uses: 'general profiles, trim, heat sinks' },
+  '6101': { label: 'EN AW-6101 (electrical)', densityKgPerM3: 2700, billetAdderUsdPerT: 60, flowStressMPa: 26, baseExitSpeedMPerMin: 40, maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 6, scrapShareOfLme: 0.88, prefersIndirect: false, uses: 'busbar, EV conductor' },
+  '6005A': { label: 'EN AW-6005A (Al-SiMg)', densityKgPerM3: 2710, billetAdderUsdPerT: 80, flowStressMPa: 32, baseExitSpeedMPerMin: 25, maxRatio: 80, buttMm: 30, quench: 'mist', heatTreatable: true, defaultTemper: 'T6', ageHours: 8, scrapShareOfLme: 0.86, prefersIndirect: false, uses: 'rail, battery tray, structural hollows' },
+  '6061': { label: 'EN AW-6061 (Al-Mg1SiCu)', densityKgPerM3: 2700, billetAdderUsdPerT: 150, flowStressMPa: 38, baseExitSpeedMPerMin: 15, maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', ageHours: 8, scrapShareOfLme: 0.85, prefersIndirect: false, uses: 'structural, machined parts' },
+  '6082': { label: 'EN AW-6082 (Al-Si1MgMn)', densityKgPerM3: 2710, billetAdderUsdPerT: 150, flowStressMPa: 40, baseExitSpeedMPerMin: 12, maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', ageHours: 8, scrapShareOfLme: 0.85, prefersIndirect: false, uses: 'structural, crash, chassis' },
+  '7003': { label: 'EN AW-7003 (Al-Zn6Mg)', densityKgPerM3: 2780, billetAdderUsdPerT: 350, flowStressMPa: 50, baseExitSpeedMPerMin: 10, maxRatio: 50, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 20, scrapShareOfLme: 0.78, prefersIndirect: false, uses: 'bumper beams, crash management' },
+  '7108': { label: 'EN AW-7108 (Al-Zn5Mg)', densityKgPerM3: 2770, billetAdderUsdPerT: 350, flowStressMPa: 48, baseExitSpeedMPerMin: 10, maxRatio: 50, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 20, scrapShareOfLme: 0.78, prefersIndirect: false, uses: 'bumper beams, side-impact' },
+  '7020': { label: 'EN AW-7020 (Al-Zn4.5Mg1)', densityKgPerM3: 2780, billetAdderUsdPerT: 380, flowStressMPa: 52, baseExitSpeedMPerMin: 8, maxRatio: 45, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 22, scrapShareOfLme: 0.78, prefersIndirect: false, uses: 'rail, defence, structural' },
+  '7075': { label: 'EN AW-7075 (Al-Zn5.5MgCu)', densityKgPerM3: 2810, billetAdderUsdPerT: 1_200, flowStressMPa: 65, baseExitSpeedMPerMin: 2, maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T6', ageHours: 24, scrapShareOfLme: 0.70, prefersIndirect: true, uses: 'aerospace, high-strength' },
+  '2024': { label: 'EN AW-2024 (Al-Cu4Mg1)', densityKgPerM3: 2780, billetAdderUsdPerT: 1_400, flowStressMPa: 62, baseExitSpeedMPerMin: 2.5, maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T3511', ageHours: 0, scrapShareOfLme: 0.68, prefersIndirect: true, uses: 'aerospace, fasteners' },
+};
+
+/** Billet price for an alloy in a region, £/kg: (LME + all-in premium + alloy adder) ÷ FX ÷ 1000. */
+export function billetPriceGbpPerKg(alloy: AlAlloy, region: ManufacturingRegion): number {
+  const usd = AL_MARKET.lmeUsdPerT + BILLET_PREMIUM_USD_PER_T[region].usdPerT + AL_ALLOYS[alloy].billetAdderUsdPerT;
+  return Math.round(usd / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
+}
+
+/** Process-scrap value, £/kg: a share of LME (scrap is sold on LME terms, not regional premium). */
+export function alScrapGbpPerKg(alloy: AlAlloy): number {
+  return Math.round(AL_MARKET.lmeUsdPerT * AL_ALLOYS[alloy].scrapShareOfLme / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
+}
+
+/** The library material id for an alloy's billet. */
+export const alBilletId = (alloy: AlAlloy): string => `mat-al-billet-${alloy.toLowerCase()}`;
+export const AL_ALLOY_LIST = Object.keys(AL_ALLOYS) as AlAlloy[];
+
+// ─── Presses ──────────────────────────────────────────────────────────────────
+
+export type AlExtrusionRoute = 'direct' | 'indirect' | 'hydrostatic' | 'conform' | 'impact';
+
+export interface AlPress {
+  id: string;
+  route: AlExtrusionRoute;
+  label: string;
+  forceT: number;
+  /** Container bore, mm (≈ billet Ø + 6). 1,800 t ↔ 178 mm and 2,500 t ↔ 230–254 mm billet, published. */
+  containerMm: number;
+  /** Largest circumscribing circle a die on this press takes: solid / hollow. */
+  maxCcdSolidMm: number;
+  maxCcdHollowMm: number;
+  /** Dead cycle: billet load, upset, butt shear, s. */
+  deadCycleSec: number;
+  maxBilletMm: number;
+  /** Run-out table: the longest strand the puller and cooling table take, m. */
+  runoutM: number;
+  /** Ram speed ceiling, mm/s. */
+  maxRamMmPerSec: number;
+  /** Line capex (press + log heater + puller + cooling table + stretcher + saw), £. ESTIMATE. */
+  capexGbp: number;
+  /** Line crew. */
+  crew: number;
+}
+
+/**
+ * Press classes, smallest first. Capex: bare Chinese press $0.8–1.8 M (1,450–1,800 t)
+ * and $1.5–3 M (2,000–2,500 t), full line +40–70% (slxextrusionpress.com 2026); a
+ * European-built line is costed here, so the figures sit above those — ESTIMATE.
+ */
+export const AL_PRESSES: AlPress[] = [
+  { id: 'al-ext-press-800t', route: 'direct', label: '800 t direct press, 4" container', forceT: 800, containerMm: 107, maxCcdSolidMm: 85, maxCcdHollowMm: 70, deadCycleSec: 16, maxBilletMm: 500, runoutM: 36, maxRamMmPerSec: 18, capexGbp: 1_800_000, crew: 2 },
+  { id: 'al-ext-press-1450t', route: 'direct', label: '1,450 t direct press, 6" container', forceT: 1450, containerMm: 158, maxCcdSolidMm: 130, maxCcdHollowMm: 110, deadCycleSec: 18, maxBilletMm: 650, runoutM: 42, maxRamMmPerSec: 18, capexGbp: 3_200_000, crew: 3 },
+  { id: 'al-ext-press-1800t', route: 'direct', label: '1,800 t direct press, 7" container', forceT: 1800, containerMm: 184, maxCcdSolidMm: 155, maxCcdHollowMm: 130, deadCycleSec: 20, maxBilletMm: 750, runoutM: 45, maxRamMmPerSec: 17, capexGbp: 4_000_000, crew: 3 },
+  { id: 'al-ext-press-2500t', route: 'direct', label: '2,500 t direct press, 9" container', forceT: 2500, containerMm: 236, maxCcdSolidMm: 200, maxCcdHollowMm: 170, deadCycleSec: 24, maxBilletMm: 1000, runoutM: 50, maxRamMmPerSec: 16, capexGbp: 6_000_000, crew: 4 },
+  { id: 'al-ext-press-3600t', route: 'direct', label: '3,600 t direct press, 10" container', forceT: 3600, containerMm: 260, maxCcdSolidMm: 230, maxCcdHollowMm: 200, deadCycleSec: 28, maxBilletMm: 1100, runoutM: 55, maxRamMmPerSec: 15, capexGbp: 9_000_000, crew: 4 },
+  { id: 'al-ext-press-5500t', route: 'direct', label: '5,500 t direct press, 12" container', forceT: 5500, containerMm: 318, maxCcdSolidMm: 290, maxCcdHollowMm: 250, deadCycleSec: 32, maxBilletMm: 1300, runoutM: 60, maxRamMmPerSec: 14, capexGbp: 15_000_000, crew: 5 },
+  { id: 'al-ext-press-8000t', route: 'direct', label: '8,000 t direct press, 14" round / flat container (wide panels)', forceT: 8000, containerMm: 365, maxCcdSolidMm: 600, maxCcdHollowMm: 500, deadCycleSec: 40, maxBilletMm: 1500, runoutM: 65, maxRamMmPerSec: 12, capexGbp: 26_000_000, crew: 6 },
+  { id: 'al-ext-indirect-2800t', route: 'indirect', label: '2,800 t indirect press, 9" container (2xxx / 7xxx, seamless tube)', forceT: 2800, containerMm: 236, maxCcdSolidMm: 180, maxCcdHollowMm: 160, deadCycleSec: 32, maxBilletMm: 1100, runoutM: 50, maxRamMmPerSec: 14, capexGbp: 8_500_000, crew: 4 },
+  { id: 'al-ext-hydrostatic-1600t', route: 'hydrostatic', label: '1,600 t hydrostatic press (high ratio, clad wire / fine sections)', forceT: 1600, containerMm: 150, maxCcdSolidMm: 60, maxCcdHollowMm: 50, deadCycleSec: 90, maxBilletMm: 900, runoutM: 40, maxRamMmPerSec: 20, capexGbp: 9_500_000, crew: 4 },
+];
+
+/** Continuous rotary (Conform) extrusion from rod — small sections, busbar, MPE tube. ESTIMATE. */
+export const AL_CONFORM = {
+  id: 'al-conform-c400', label: 'Conform C400 continuous extrusion line (9.5–25 mm rod feed)',
+  maxCcdMm: 100, outputKgPerHr: 900, capexGbp: 2_600_000, crew: 2,
+  /** Rod premium over billet, US$/t (redraw rod). */
+  rodAdderUsdPerT: 250,
+  alloys: ['1050', '3003', '6060', '6063', '6101'] as AlAlloy[],
+};
+
+/** Cold impact extrusion — cups, cans, housings from a slug. ESTIMATE. */
+export const AL_IMPACT = {
+  id: 'al-impact-press-800t', label: '800 t mechanical impact-extrusion press', strokesPerMin: 30,
+  capexGbp: 3_200_000, crew: 1,
+  /** Slug prep: sawn / punched slug + anneal + lubricate (phosphate / zinc stearate), £/kg. */
+  slugPrepGbpPerKg: 0.42,
+  /** Trim allowance on the cup mouth. */
+  trimAllowance: 0.08,
+  /** Tool set (punch + die + ejector) cost by part Ø, £: base + per mm. */
+  toolBaseGbp: 6_000, toolPerMmGbp: 120, toolLifeHits: 150_000,
+};
+
+// ─── Downstream ───────────────────────────────────────────────────────────────
+
+export const AL_DOWNSTREAM = {
+  ageOven: { id: 'al-age-oven-batch', label: 'Batch ageing oven (T5 / T6)', loadKg: 8_000, handlingHr: 0.75, capexGbp: 650_000, gasKwhPerKg: 0.10 },
+  sht: { id: 'al-sht-drop-furnace', label: 'Vertical drop-quench solution heat-treatment furnace', loadKg: 3_000, cycleHr: 2.5, capexGbp: 2_400_000, gasKwhPerKg: 0.25 },
+  cnc: { id: 'al-cnc-profile-centre', label: '5-axis long-bed profile machining centre (7 m)', capexGbp: 650_000 },
+  bender: { id: 'al-stretch-bender', label: 'CNC stretch-bending machine (3D, sweep)', capexGbp: 1_100_000, secPerBend: 45 },
+  anodise: { id: 'al-anodise-line', label: 'Anodising line (sulphuric, 10–25 µm, seal)', capexGbp: 4_200_000, m2PerHr: 70, crew: 4 },
+  powder: { id: 'al-powder-line', label: 'Vertical powder-coating line (pretreat + cure)', capexGbp: 2_800_000, m2PerHr: 140, crew: 4 },
+  ecoat: { id: 'al-ecoat-line', label: 'E-coat / conversion-coat line (chrome-free, for bonding)', capexGbp: 3_500_000, m2PerHr: 160, crew: 3 },
+  /** Billet log heater, gas: cp·ΔT ≈ 0.115 kWh/kg to 480 °C at ~40% efficiency. DERIVED. */
+  billetHeatGasKwhPerKg: 0.29,
+  /** Induction heating, electricity: ~0.18 kWh/kg at ~65% efficiency. DERIVED. */
+  billetHeatInductionKwhPerKg: 0.18,
+};
+
+export type AlFinish = 'mill' | 'anodise' | 'powder' | 'ecoat';
+
+// ─── Dies ─────────────────────────────────────────────────────────────────────
+
+export type AlDieType = 'solid' | 'semi-hollow' | 'hollow-porthole' | 'hollow-bridge' | 'seamless-mandrel' | 'multi-port';
+
+/**
+ * UK die-maker prices, £: base + per mm of circumscribing circle. Published
+ * anchors are Asian prices — solid $300–3,000, porthole $3,000–10,000+, porthole
+ * 3–5× a solid, CCD > 10" pushes $2,000–5,000 (2026 supplier guides). A European
+ * die costs more; these are ESTIMATES above the Asian anchors.
+ * Life in tonnes extruded: H13 30–80 t, H13 ESR 60–150 t (published).
+ */
+export const AL_DIES: Record<AlDieType, { baseGbp: number; perMmGbp: number; lifeT: number; label: string }> = {
+  solid: { baseGbp: 700, perMmGbp: 9, lifeT: 70, label: 'solid (flat) die' },
+  'semi-hollow': { baseGbp: 1_300, perMmGbp: 18, lifeT: 50, label: 'semi-hollow die (tongue)' },
+  'hollow-porthole': { baseGbp: 2_200, perMmGbp: 34, lifeT: 40, label: 'porthole (spider) hollow die' },
+  'hollow-bridge': { baseGbp: 3_500, perMmGbp: 40, lifeT: 50, label: 'bridge hollow die (large sections)' },
+  'seamless-mandrel': { baseGbp: 3_000, perMmGbp: 30, lifeT: 60, label: 'die + piercing mandrel (seamless tube)' },
+  'multi-port': { baseGbp: 4_500, perMmGbp: 60, lifeT: 25, label: 'micro multi-port (MPE) die' },
+};
+/** Die nitriding every 30–50 t (published), £ a treatment incl. correction. ESTIMATE. */
+export const AL_DIE_NITRIDE = { everyT: 40, gbp: 180 };
+
+// ─── Line constants (ESTIMATES unless stated) ─────────────────────────────────
+
+export const AL_LINE = {
+  /** Front (puller grip) + back (stretcher grip) end scrap per strand, m. */
+  endScrapM: 1.2,
+  /** Finish-saw kerf, mm. */
+  sawKerfMm: 4,
+  /** Die change + heat-up per run, hr. */
+  dieChangeHr: 0.5,
+  /** Runs a year per part number (monthly), and the shortest run worth a die change. */
+  runsPerYear: 12,
+  minRunHr: 4,
+  /** Press electricity: hydraulics, puller, stretcher, saw — kWh per kg extruded (whole-plant 1,200–1,350 kWh/t, published, incl. heating and ageing). */
+  pressKwhPerKg: 0.20,
+  /** Extrusion ratio below which the section is not worked enough (properties, surface). */
+  minRatio: 10,
+  /** Friction share of the direct-extrusion force (container wall); indirect has none. */
+  directFrictionFactor: 1.35,
+  /** Johnson: p / σ = a + b·ln R. */
+  johnsonA: 0.8, johnsonB: 1.5,
+  /** A press runs to this share of its rated force. */
+  forceUse: 0.90,
+  oee: 0.78,
+  rejectRate: 0.02,
+  hoursPerYear: 6000,
+};

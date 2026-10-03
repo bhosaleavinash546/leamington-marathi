@@ -21,12 +21,13 @@ import { RUBBER_RULES } from './commodities/rubber.js';
 import { COMPOSITES_RULES } from './commodities/composites.js';
 import { GEAR_RULES } from './commodities/gear.js';
 import { EXTRUSION_RULES } from './commodities/extrusion.js';
+import { ALUMINIUM_EXTRUSION_RULES } from './commodities/aluminium-extrusion.js';
 
 export {
   CASTING_RULES, SHEET_METAL_RULES, INJECTION_MOULDING_RULES, BLOW_MOULDING_RULES,
   MACHINING_RULES, FORGING_RULES, CAST_AND_MACHINE_RULES,
   THERMOFORMING_RULES, ROTATIONAL_MOULDING_RULES, RUBBER_RULES, COMPOSITES_RULES,
-  GEAR_RULES, EXTRUSION_RULES,
+  GEAR_RULES, EXTRUSION_RULES, ALUMINIUM_EXTRUSION_RULES,
 };
 
 /**
@@ -51,6 +52,7 @@ export const RULE_SPECS: Record<string, CommodityRuleSpec> = {
   composites: COMPOSITES_RULES,
   gear: GEAR_RULES,
   extrusion: EXTRUSION_RULES,
+  aluminium_extrusion: ALUMINIUM_EXTRUSION_RULES,
 };
 
 /** Commodities that can be costed with no AI call today. */

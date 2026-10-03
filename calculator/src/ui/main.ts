@@ -95,7 +95,8 @@ import {
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
-import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
+import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison, alBilletMaterialFactors } from '../engine/regional-rates.js';
+import type { AlAlloy } from '../engine/al-extrusion-data.js';
 import { featureToOperation } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, secondaryMachiningMachineId, type StockCondition } from '../engine/feature-machining.js';
 import { familyFromFilename, familyFromDensity, resolveFormMaterialId, type MaterialFamily } from '../engine/material-family.js';
@@ -190,6 +191,7 @@ import { escHtml } from './toast.js';
 import { buildGeometricDFMPanel, dfmHighlightHint } from './dfm-geometry-panel.js';
 import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
+import { renderAlExtrusionForm, collectAlExtrusionDrivers, wireAlExtrusionForm } from './al-extrusion-form.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
 import { COMMODITY_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/commodity-meta.js';
 import { renderSTLViews } from './cad-views.js';
@@ -1696,7 +1698,7 @@ function renderNegotiationPanel(): void {
   const preShould = haveLast ? lastResult!.total : 0;
   const preCommodity = haveLast ? activeCommodity : 'machining';
   const preVol = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '') || 5000;
-  const commodities = ['machining','casting','cast_and_machine','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','thermoforming','rotational_moulding','forging','rubber','composites','pcb_fab','pcba','wiring_harness','assembly'];
+  const commodities = ['machining','casting','cast_and_machine','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','aluminium_extrusion','thermoforming','rotational_moulding','forging','rubber','composites','pcb_fab','pcba','wiring_harness','assembly'];
 
   host.innerHTML = `
     <div style="border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);overflow:hidden">
@@ -6642,7 +6644,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     cast_and_machine: 'Cast+Machine', rubber: 'Rubber', composites: 'Composites',
     blow_moulding: 'Blow Moulding', thermoforming: 'Thermoforming',
     rotational_moulding: 'Rotomoulding', wiring_harness: 'Harness',
-    extrusion: 'Extrusion', pcb_fab: 'PCB Fab', pcba: 'PCBA',
+    extrusion: 'Extrusion', aluminium_extrusion: 'Al Extrusion', pcb_fab: 'PCB Fab', pcba: 'PCBA',
     biw_assembly: 'BIW Assembly', painting: 'Painting', assembly: 'Assembly',
   };
 
@@ -10620,7 +10622,7 @@ function setNumericField(id: string, value: number | null | undefined, decimals 
 // reuses the CAD-to-Cost OCCT pipeline and applyCADToForm() mapping.
 const CAD_INLINE_COMMODITIES = new Set<CommodityType>([
   'machining', 'casting', 'cast_and_machine', 'forging', 'gear', 'sheet_metal', 'sheet_metal_fab',
-  'injection_moulding', 'blow_moulding', 'extrusion', 'thermoforming', 'rotational_moulding', 'rubber', 'composites',
+  'injection_moulding', 'blow_moulding', 'extrusion', 'aluminium_extrusion', 'thermoforming', 'rotational_moulding', 'rubber', 'composites',
 ]);
 
 /**
@@ -10830,7 +10832,7 @@ function _fallbackMaterialIdForFamily(fam: MaterialFamily | null, commodity: Com
 const COMMODITY_AMORT_FIELD: Record<string, string> = {
   machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
   injection_moulding: 'imm-amort', forging: 'forge-amort', gear: 'gear-amort', sheet_metal: 'sm-amort',
-  sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', thermoforming: 'tf-amort',
+  sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', aluminium_extrusion: 'alx-amort', thermoforming: 'tf-amort',
   rotational_moulding: 'rm-amort', composites: 'comp-amort', blow_moulding: 'bm-amort',
   rubber: 'rub-amort', wiring_harness: 'harn-amort', painting: 'paint-amort',
   biw_assembly: 'biw-amort', pcb_fab: 'pcbf-amort', pcba: 'pcba-amort',
@@ -10962,10 +10964,13 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     // default is wrong for a bulky bumper and for a 3 g part alike).
     {
       const pbb = cadOCCTGeometry?.boundingBox;
+      // Aluminium extrusion keeps its weight in its own sub-object — headless
+      // reads that one, so the screen must too (live crash box: £9.90 v £10.11).
+      const pkgKg = c.netWeightKg || Number((c as { alExtrusion?: { partWeightKg?: number } }).alExtrusion?.partWeightKg) || 0;
       const pkgEl = el<HTMLInputElement>('packaging');
       if (pbb && pkgEl) {
         const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
-        pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, c.netWeightKg || 0));
+        pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, pkgKg));
         pkgEl.dispatchEvent(new Event('input', { bubbles: false }));
         pkgEl.setAttribute('data-prov', 'estimated');
         pkgEl.addEventListener('input', () => pkgEl.removeAttribute('data-prov'), { once: true });
@@ -10975,7 +10980,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       const logEl = el<HTMLInputElement>('logistics');
       if (pbb && logEl) {
         const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
-        logEl.value = String(estimateLogisticsPerPart(c.netWeightKg || 0, bboxVolCm3));
+        logEl.value = String(estimateLogisticsPerPart(pkgKg, bboxVolCm3));
         logEl.dispatchEvent(new Event('input', { bubbles: false }));
         logEl.setAttribute('data-prov', 'estimated');
         logEl.addEventListener('input', () => logEl.removeAttribute('data-prov'), { once: true });
@@ -11818,6 +11823,13 @@ function switchCommodity(type: CommodityType): void {
         wireBlowMouldingProcessChange();
         wireBlowDFM();
       }, 0);
+      break;
+
+    case 'aluminium_extrusion':
+      // Aluminium extrusion (built Oct 2026) — the form and its collector live in
+      // al-extrusion-form.ts and call the engine's shared builder.
+      area.innerHTML = renderAlExtrusionForm();
+      setTimeout(() => wireAlExtrusionForm({ num, sel }, () => num('annual-volume') || 50_000), 0);
       break;
 
     case 'extrusion':
@@ -14191,6 +14203,10 @@ function collectInput(): UniversalStackInput {
     case 'injection_moulding':   return collectIMMInput();
     case 'blow_moulding':        return collectBlowMouldingInput();
     case 'extrusion':            return collectExtrusionInput();
+    case 'aluminium_extrusion': {
+      const { drivers } = collectAlExtrusionDrivers({ num, sel }, num('annual-volume') || 50_000);
+      return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+    }
     case 'thermoforming':        return collectThermoformingInput();
     case 'rotational_moulding':  return collectRotationalMouldingInput();
     case 'casting':              return collectCastingInput();
@@ -14700,7 +14716,7 @@ function handleAIAutofill(): void {
             machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
             cast_and_machine:'cam-cast-wt', forging:'forge-part-wt', gear:'gear-net-wt', sheet_metal_fab:'smf-part-wt',
             sheet_metal:'sm-net-wt', blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt',
-            rotational_moulding:'rm-part-wt', rubber:'rub-part-wt', composites:'comp-part-wt',
+            rotational_moulding:'rm-part-wt', rubber:'rub-part-wt', composites:'comp-part-wt', aluminium_extrusion:'alx-part-wt',
           };
           const wtId = wtMap[activeCommodity];
           if (wtId) setF(wtId, p.weightKg);
@@ -14958,7 +14974,7 @@ function getWeightInputId(commodity: string): string | null {
     machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
     forging:'forge-part-wt', gear:'gear-net-wt', sheet_metal_fab:'smf-part-wt', sheet_metal:'sm-net-wt',
     blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt', rotational_moulding:'rm-part-wt',
-    rubber:'rub-part-wt', composites:'comp-part-wt',
+    rubber:'rub-part-wt', composites:'comp-part-wt', aluminium_extrusion:'alx-part-wt',
   };
   return wt[commodity] ?? null;
 }
@@ -15905,7 +15921,10 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
   // Pass the region the part was actually costed in so the table re-bases from it
   // (the source-region row then equals the headline exactly, instead of the whole
   // table being read as a UK breakdown and the source region double-discounted).
-  const rcRows = computeRegionalComparison(result.breakdown, { landed: _landedCostMode, sourceRegion: _mfgRegion });
+  // Aluminium extrusion: the billet's own regional prices (US Midwest premium,
+  // SHFE China…) rather than the flat material multiplier.
+  const rcRows = computeRegionalComparison(result.breakdown, { landed: _landedCostMode, sourceRegion: _mfgRegion,
+    ...(activeCommodity === 'aluminium_extrusion' ? { materialFactorByRegion: alBilletMaterialFactors((sel('alx-alloy') || '6063') as AlAlloy) } : {}) });
 
   type RCCol = 'material' | 'process' | 'labour' | 'overhead' | 'exWorks' | 'total';
   const rcCols: RCCol[] = ['material', 'process', 'labour', 'overhead', 'exWorks', 'total'];
