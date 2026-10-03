@@ -25,35 +25,36 @@ export const CAD_COMMODITY_OPTIONS: Array<{ value: string; label: string }> = [
   { value: 'biw_assembly', label: 'BIW Assembly' },
 ];
 
+import { DEFAULT_RATE_LIBRARY } from '../../engine/rate-library.js';
+import { MATERIAL_SCOPE_BY_SELECT } from '../material-scope.js';
+
+/**
+ * Casting, cast + machine and forging list the library's own grades in their form's
+ * scope (casting & forging materials review, Oct 2026). The hand-written lists
+ * pointed "LM25 / A356 (Gravity/Sand)" at wrought 6061 bar, "ADC12 (HPDC)" at 5052
+ * sheet and every forging at machining bar — ids the casting and forging forms
+ * cannot show, so a pinned grade left the form on its first option.
+ */
+function gradesInScope(selectId: string): Array<{ id: string; label: string }> {
+  const scope = MATERIAL_SCOPE_BY_SELECT[selectId];
+  return DEFAULT_RATE_LIBRARY.materials
+    .filter(m => scope.test(m.category))
+    .sort((a, b) => a.category.localeCompare(b.category) || a.pricePerKg - b.pricePerKg)
+    .map(m => ({ id: m.id, label: `${m.grade} — ${m.category}` }));
+}
+
 export const CAD_MATERIALS_BY_COMMODITY: Record<string, Array<{ id: string; label: string }>> = {
   '': [],
   machining: [
     { id: 'mat-al6061', label: 'Aluminium 6061-T6' },
-    { id: 'mat-al5052', label: 'Aluminium 5052-H32' },
     { id: 'mat-steel1045', label: 'Carbon Steel 1045' },
     { id: 'mat-steel4140', label: 'Alloy Steel 4140 / 4340' },
     { id: 'mat-ss316l', label: 'Stainless Steel 316L' },
     { id: 'mat-ti6al4v', label: 'Titanium Ti-6Al-4V' },
   ],
-  casting: [
-    { id: 'mat-al6061', label: 'LM25 / A356 Aluminium (Gravity/Sand)' },
-    { id: 'mat-al5052', label: 'ADC12 / A380 Aluminium (HPDC)' },
-    { id: 'mat-steel1045', label: 'Carbon Steel (Sand Casting)' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316 (Investment)' },
-  ],
-  cast_and_machine: [
-    { id: 'mat-al6061', label: 'Aluminium 6061 (Cast then Machine)' },
-    { id: 'mat-al5052', label: 'ADC12 Aluminium HPDC + Machine' },
-    { id: 'mat-steel1045', label: 'Carbon Steel (Sand Cast + Machine)' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316 (Cast + Machine)' },
-  ],
-  forging: [
-    { id: 'mat-steel1045', label: 'Carbon Steel 1045' },
-    { id: 'mat-steel4140', label: 'Alloy Steel 4140 (High Strength)' },
-    { id: 'mat-al6061', label: 'Aluminium 6061 Forging' },
-    { id: 'mat-ti6al4v', label: 'Titanium Ti-6Al-4V' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316' },
-  ],
+  casting: gradesInScope('cast-mat'),
+  cast_and_machine: gradesInScope('cam-mat'),
+  forging: gradesInScope('forge-mat'),
   sheet_metal: [
     { id: 'mat-dc01', label: 'Mild Steel DC01' },
     { id: 'mat-dp600', label: 'DP600 (Advanced High Strength)' },
@@ -116,13 +117,19 @@ export const CAD_MATERIALS_BY_COMMODITY: Record<string, Array<{ id: string; labe
     { id: 'mat-pp', label: 'PP Profile' },
     { id: 'mat-hdpe', label: 'HDPE Pipe/Profile' },
   ],
+  // Real library grades (materials review, Oct 2026): these pointed at 6061 bar,
+  // a missing 5052 id, PP labelled EPDM and HDPE labelled silicone.
   composites: [
-    { id: 'mat-al6061', label: 'CFRP (equiv. Al ref for weight)' },
-    { id: 'mat-al5052', label: 'GFRP (equiv. Al ref for weight)' },
+    { id: 'mat-cfrp-prepreg-t700', label: 'CFRP — T700 carbon / epoxy prepreg' },
+    { id: 'mat-gfrp-prepreg-e', label: 'GFRP — E-glass / epoxy prepreg' },
+    { id: 'mat-smc-gf', label: 'SMC — glass sheet moulding compound' },
   ],
   rubber: [
+    { id: 'mat-epdm', label: 'EPDM 70 Shore A' },
+    { id: 'mat-nbr', label: 'NBR 70 Shore A' },
+    { id: 'mat-silicone-hcr', label: 'HCR Silicone 60 Shore A' },
+    { id: 'mat-lsr', label: 'LSR 40 Shore A' },
+    { id: 'mat-viton-fkm', label: 'FKM Viton 75 Shore A' },
     { id: 'mat-tpu-shore85', label: 'TPU Shore 85A' },
-    { id: 'mat-pp', label: 'EPDM (natural rubber equiv.)' },
-    { id: 'mat-hdpe', label: 'Silicone (medical/food grade)' },
   ],
 };

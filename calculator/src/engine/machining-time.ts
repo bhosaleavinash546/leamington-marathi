@@ -62,6 +62,10 @@ export const CUTTING_DATA: Record<MaterialFamily, CuttingData> = {
   'cast iron':    { timeFactor: 1.6, millRoughCm3PerMin: 50,  turnRoughCm3PerMin: 100, toolCostPerCutMin: 0.10 },
   steel:          { timeFactor: 2.0, millRoughCm3PerMin: 35,  turnRoughCm3PerMin: 80,  toolCostPerCutMin: 0.12 },
   titanium:       { timeFactor: 4.0, millRoughCm3PerMin: 10,  turnRoughCm3PerMin: 20,  toolCostPerCutMin: 0.35 },
+  // Zinc die castings machine like brass; nickel superalloys slower than titanium
+  // (Inconel 718 ~6x carbon-steel cutting time at like tool life) — engineering-typical.
+  zinc:           { timeFactor: 1.0, millRoughCm3PerMin: 80,  turnRoughCm3PerMin: 180, toolCostPerCutMin: 0.04 },
+  'nickel alloy': { timeFactor: 6.0, millRoughCm3PerMin: 6,   turnRoughCm3PerMin: 12,  toolCostPerCutMin: 0.50 },
 };
 
 /**

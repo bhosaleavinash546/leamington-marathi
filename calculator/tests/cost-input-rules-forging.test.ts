@@ -314,7 +314,8 @@ describe('the prompt cannot say anything the engine would not compute', () => {
   it('renders every forging value with its own basis attached', () => {
     const c = ctx(STUB_AXLE, STEEL_ANSWERED);
     const text = renderCommodityRulesPrompt(FORGING_RULES, c);
-    for (const rule of FORGING_RULES.rules) {
+    // `.q.` rules hold an advisory QUESTION (the grade, materials review), not a value.
+    for (const rule of FORGING_RULES.rules.filter(r => !r.id.includes('.q.'))) {
       const out = rule.evaluate(c);
       expect(out.ok, `${rule.id} should be decided`).toBe(true);
       if (!out.ok) continue;

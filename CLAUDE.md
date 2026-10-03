@@ -339,6 +339,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   part. Re-route questions must use id `commodity.route` — nothing else re-routes. See `docs/cad/aluminium-extrusion-build-2026-10.md`,
   `docs/cad/extrusion-review-2026-10.md`, `tests/aluminium-extrusion-build.test.ts`, `tests/extrusion-review.test.ts`;
   parts in `cad-audit/parts/AL_*`.
+- Casting & forging materials (review, Oct 2026): the GRADE is an advisory question `material.grade`
+  (`derive/grade.ts`) — the representative grade is costed until it is answered; an answered, pinned (CAD panel →
+  `answersFromContext`) or DECLARED (STEP material designation) grade sets the £/kg, the mass (its density) and the
+  advisor alloy (`castingAlloyForGrade` / `forgingAlloyForGrade`); drawing-read and name grades only lean. Families
+  include `zinc` and `nickel alloy`. New grades are priced as their library SIBLING + alloy content at the refresh's
+  metal prices, arithmetic in the note. `GRADE_SCOPE` must equal the forms' scopes (forge excludes extrusion logs).
+  4340 is under 4130 in the library — fix in the next rate refresh. See `docs/cad/casting-forging-materials-review-2026-10.md`,
+  `tests/casting-forging-materials.test.ts`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

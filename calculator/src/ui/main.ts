@@ -10819,8 +10819,8 @@ function _fallbackMaterialIdForFamily(fam: MaterialFamily | null, commodity: Com
   if (!fam) return '';
   const cast = /cast|forg/.test(commodity);
   const map: Record<MaterialFamily, string> = cast
-    ? { aluminium: 'mat-lm25', magnesium: 'mat-mag-am60', titanium: '', 'cast iron': 'mat-gjs500', steel: 'mat-steel1045', 'copper alloy': '', plastic: '' }
-    : { aluminium: 'mat-al6061', magnesium: 'mat-mag-am60', titanium: 'mat-ti6al4v', 'cast iron': 'mat-steel1045', steel: 'mat-steel1045', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pa6' };
+    ? { aluminium: 'mat-lm25', magnesium: 'mat-mag-am60', titanium: '', 'cast iron': 'mat-gjs500', steel: 'mat-steel1045', 'copper alloy': '', plastic: '', zinc: 'mat-zamak3', 'nickel alloy': 'mat-inconel718-cast' }
+    : { aluminium: 'mat-al6061', magnesium: 'mat-mag-am60', titanium: 'mat-ti6al4v', 'cast iron': 'mat-steel1045', steel: 'mat-steel1045', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pa6', zinc: '', 'nickel alloy': '' };
   const id = map[fam] || '';
   return id && library.materials.some(m => m.id === id) ? id : '';
 }

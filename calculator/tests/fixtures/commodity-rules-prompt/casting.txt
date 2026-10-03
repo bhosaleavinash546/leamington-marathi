@@ -5,7 +5,9 @@
 ### context: full
 CASTING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   materialId=mat-lm25  [aluminium gravity casting → mat-lm25 (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout) — deterministic, use verbatim]
+  grade: UNDECIDED — needs "Which aluminium grade?" (LM4 / AlSi5Cu3 (secondary, sand / gravity) | LM6 / EN AC-44100 (AlSi12, gravity / sand) | LM25 / A356 | EN AC-51300 (AlMg5, marine sand / gravity) | A357 / AlSi7Mg0.6 (Premium T6) | A206 / AlCu4.5MgTi (high-strength premium casting))
   subtype=gravity  [gravity: medium-volume aluminium — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
   yieldFraction=0.6  [gravity aluminium yield band 0.5–0.7, midpoint (feeding scales with the alloy's shrinkage) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
@@ -25,20 +27,21 @@ CASTING COST INPUT RULES:
 CASTING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  materialId: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  subtype: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  yieldFraction: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  netWeightKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  cycleTimeHpdcSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  dieMouldCostGBP: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  dieMouldLife: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  cavities: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  cycleTimeSandGravHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  materialId: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  grade: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  subtype: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  yieldFraction: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  netWeightKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  cycleTimeHpdcSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  dieMouldCostGBP: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  dieMouldLife: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  cavities: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  cycleTimeSandGravHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
-  fettlingMinutes: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  heatTreatCostPerKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  shotBlastCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  impregnationCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
-  leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Cast iron | Steel | Copper alloy)
+  fettlingMinutes: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  heatTreatCostPerKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  shotBlastCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  impregnationCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)

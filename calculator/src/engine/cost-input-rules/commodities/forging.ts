@@ -46,7 +46,8 @@ import { pickForgePressId, pickStampingPressId } from '../../machine-sizing.js';
 import { nearNetStockCm3, CORED_ABOVE_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
-import { materialFacts, toForgingAlloyFamily } from '../derive/material.js';
+import { toForgingAlloyFamily } from '../derive/material.js';
+import { gradedMaterialFacts as materialFacts, forgingAlloyForGrade, gradeDecision, GRADE_DECISION_ID } from '../derive/grade.js';
 import { projectedAreaCm2, projectedAreaBasis, isRingShape } from '../derive/envelope.js';
 import { isAxisymmetric } from './machining.js';
 import {
@@ -312,7 +313,9 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
   const mat = materialFacts(ctx);
   if (mat.decision) return { blocked: ask(mat.decision) };
 
-  const alloy = toForgingAlloyFamily(mat.family!);
+  // An answered or declared GRADE sets the forging alloy (alloy v carbon steel,
+  // stainless, superalloy); the family alone falls back to its default.
+  const alloy = forgingAlloyForGrade(mat.gradeId) ?? toForgingAlloyFamily(mat.family!);
   if (!alloy) {
     return {
       blocked: ask({
@@ -449,9 +452,23 @@ export const FORGING_RULES: CommodityRuleSpec = {
         // A GRADE, not the family word: the form's drop-down lists grade ids and
         // refused "steel", keeping its first billet while the headless path
         // priced the representative grade — two numbers for one part.
+        const g = materialFacts(ctx).gradeId;
+        if (g) return decided('forging.materialId', g, 'engineer', `${r.advice.massBasis}; grade ${g}`, 1);
         const id = representativeMaterialId('forging', r.advice.familyLabel as MaterialFamily);
         return decided('forging.materialId', id ?? r.advice.familyLabel, 'engineer',
           `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ?? r.advice.familyLabel} (representative forging billet — not a drawing callout)`, 1);
+      },
+    },
+    {
+      // The grade question (casting & forging materials review): advisory.
+      id: 'forging.q.grade', path: 'forging.q.grade', label: 'grade',
+      evaluate: (ctx) => {
+        const mat = materialFacts(ctx);
+        if (mat.decision) return ask(mat.decision);
+        if (ctx.answers[GRADE_DECISION_ID] !== undefined) return decided('forging.q.grade', String(ctx.answers[GRADE_DECISION_ID]), 'engineer', 'answered', 1);
+        const def = mat.gradeId ?? representativeMaterialId('forging', mat.family!) ?? '';
+        const d = gradeDecision(ctx, mat.family!, def);
+        return d ? ask(d) : decided('forging.q.grade', def, 'rule', 'one grade for this family', 1);
       },
     },
     {

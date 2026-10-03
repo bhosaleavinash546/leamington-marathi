@@ -28,13 +28,15 @@ const DENSITY_KG_PER_CM3: Record<MaterialFamily, number> = {
   'cast iron': 0.00715,
   steel: 0.00785,
   'copper alloy': 0.00896,
+  zinc: 0.00660,            // Zamak 3 / 5
+  'nickel alloy': 0.00819,  // Inconel 718
 };
 
 /** Families a given commodity can physically be made from. */
 const COMMODITY_FAMILIES: Record<string, MaterialFamily[]> = {
-  casting: ['aluminium', 'magnesium', 'cast iron', 'steel', 'copper alloy'],
-  cast_and_machine: ['aluminium', 'magnesium', 'cast iron', 'steel', 'copper alloy'],
-  forging: ['aluminium', 'steel', 'titanium', 'copper alloy'],
+  casting: ['aluminium', 'magnesium', 'zinc', 'cast iron', 'steel', 'copper alloy', 'nickel alloy'],
+  cast_and_machine: ['aluminium', 'magnesium', 'zinc', 'cast iron', 'steel', 'copper alloy', 'nickel alloy'],
+  forging: ['aluminium', 'magnesium', 'steel', 'titanium', 'copper alloy', 'nickel alloy'],
   machining: ['aluminium', 'steel', 'cast iron', 'titanium', 'copper alloy', 'plastic'],
   sheet_metal: ['steel', 'aluminium'],
   sheet_metal_fab: ['steel', 'aluminium'],
@@ -153,6 +155,8 @@ export function toCastingAlloyFamily(fam: MaterialFamily): AlloyFamily | null {
     case 'aluminium': return 'aluminium';
     case 'magnesium': return 'magnesium';
     case 'copper alloy': return 'copper';
+    case 'zinc': return 'zinc';
+    case 'nickel alloy': return 'superalloy';
     // Grey vs ductile iron is a GRADE decision, not a family one. Ductile is the
     // safe default: grey iron is brittle, and choosing it for a structural part
     // is the error the existing safety redirect in cad.ts already corrects.
@@ -178,6 +182,8 @@ export function familyFromMaterialId(materialId: string): MaterialFamily | null 
   const cat = (DEFAULT_RATE_LIBRARY.materials.find(m => m.id === materialId)?.category ?? '').toLowerCase();
   if (cat) {
     if (cat.includes('titanium')) return 'titanium';
+    if (cat.includes('nickel')) return 'nickel alloy';
+    if (cat.includes('zinc')) return 'zinc';
     if (cat.includes('stainless') || cat.includes('steel')) return 'steel';
     if (cat.includes('cast iron') || cat.includes('iron')) return 'cast iron';
     if (cat.includes('aluminium')) return 'aluminium';
@@ -208,7 +214,8 @@ export function toForgingAlloyFamily(fam: MaterialFamily): ForgingAlloyFamily | 
     case 'titanium': return 'titanium';
     case 'copper alloy': return 'copper';
     case 'steel': return 'carbon-steel';
-    default: return null;   // cast iron and plastic cannot be forged
+    case 'nickel alloy': return 'superalloy';
+    default: return null;   // cast iron, zinc and plastic are not forged
   }
 }
 
@@ -238,14 +245,17 @@ const REPRESENTATIVE_GRADE: Record<string, Partial<Record<MaterialFamily, string
   // Forging buys billet, not bar: 38MnVS6 is the microalloyed steel automotive
   // knuckles, conrods and crankshafts are forged from.
   forging:            { aluminium: 'mat-al6082-forge', steel: 'mat-steel-38mnvs6', titanium: 'mat-ti-6al4v-forge',
-                        'copper alloy': 'mat-brass-cz122-forge', magnesium: 'mat-mg-az31-forge' },
+                        'copper alloy': 'mat-brass-cz122-forge', magnesium: 'mat-mg-az31-forge',
+                        'nickel alloy': 'mat-inconel718-forge' },
   // A steel casting is cast steel (GS-C25), not the wrought 1045 bar it used to
   // be priced as — which the casting forms could not even show, so the screen
   // kept ADC12 and priced steel weight at an aluminium rate (2 Oct 2026).
   casting:            { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-gs-c25',
-                        'copper alloy': 'mat-bronze-c905', magnesium: 'mat-mag-az91' },
+                        'copper alloy': 'mat-bronze-c905', magnesium: 'mat-mag-az91', zinc: 'mat-zamak3',
+                        'nickel alloy': 'mat-inconel718-cast' },
   cast_and_machine:   { aluminium: 'mat-adc12', 'cast iron': 'mat-gjl250', steel: 'mat-gs-c25',
-                        'copper alloy': 'mat-bronze-c905', magnesium: 'mat-mag-az91' },
+                        'copper alloy': 'mat-bronze-c905', magnesium: 'mat-mag-az91', zinc: 'mat-zamak3',
+                        'nickel alloy': 'mat-inconel718-cast' },
   sheet_metal:        { steel: 'mat-dc04', aluminium: 'mat-aa5754-sheet' },
   sheet_metal_fab:    { steel: 'mat-dc04', aluminium: 'mat-aa5754-sheet' },
 };

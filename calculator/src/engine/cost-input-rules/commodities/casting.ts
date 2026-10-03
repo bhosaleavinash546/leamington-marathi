@@ -30,7 +30,8 @@ import {
   estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost,
 } from '../../casting-tooling.js';
 import { projectedAreaCm2 } from '../derive/envelope.js';
-import { materialFacts, toCastingAlloyFamily, representativeMaterialId } from '../derive/material.js';
+import { toCastingAlloyFamily, representativeMaterialId } from '../derive/material.js';
+import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID } from '../derive/grade.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
   answeredBool, answeredToleranceClass, assumedNote,
@@ -92,7 +93,9 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
   const mat = materialFacts(ctx);
   if (mat.decision) return { blocked: ask(mat.decision) };
 
-  const alloy = toCastingAlloyFamily(mat.family!);
+  // An answered or declared GRADE names the alloy exactly (grey v ductile iron,
+  // stainless, superalloy); the family alone falls back to its default alloy.
+  const alloy = castingAlloyForGrade(mat.gradeId) ?? toCastingAlloyFamily(mat.family!);
   if (!alloy) {
     return {
       blocked: ask({
@@ -251,6 +254,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const mat = materialFacts(ctx);
         if (mat.decision) return ask(mat.decision);
+        // The engineer's grade, or one the file declares, is the grade (review, Oct 2026).
+        if (mat.gradeId) return decided('casting.materialId', mat.gradeId, 'engineer', `${mat.gradeId}: ${mat.basis}`, 1);
         // The aluminium grade follows the process: ADC12 is a die-casting alloy
         // and is not solution-treatable, so a gravity or sand casting — which is
         // T6 treated — gets the A356 / LM25 family. One grade for every route
@@ -263,6 +268,22 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const id = representativeMaterialId('casting', mat.family!);
         return decided('casting.materialId', id ?? mat.family!, 'geometry',
           `${mat.family} → ${id ?? mat.family} (representative casting grade — not a drawing callout)`, 0.85);
+      },
+    },
+    {
+      // The grade question (casting & forging materials review): advisory — the
+      // representative grade is costed until it is answered.
+      id: 'casting.q.grade', path: 'casting.q.grade', label: 'grade',
+      evaluate: (ctx) => {
+        const mat = materialFacts(ctx);
+        if (mat.decision) return ask(mat.decision);
+        if (ctx.answers[GRADE_DECISION_ID] !== undefined) return decided('casting.q.grade', String(ctx.answers[GRADE_DECISION_ID]), 'engineer', 'answered', 1);
+        const r = advise(ctx);
+        const subtype = 'blocked' in r ? null : r.advice.subtype;
+        const def = mat.gradeId
+          ?? (mat.family === 'aluminium' && subtype && subtype !== 'hpdc' ? 'mat-lm25' : representativeMaterialId('casting', mat.family!) ?? '');
+        const d = gradeDecision(ctx, mat.family!, def, subtype);
+        return d ? ask(d) : decided('casting.q.grade', def, 'rule', 'one grade for this route', 1);
       },
     },
     {

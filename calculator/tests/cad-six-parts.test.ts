@@ -225,8 +225,11 @@ describe('the six parts with independent manual costs', () => {
       let materialQuestion;
       for (let i = 0; i < 6; i++) {
         const r = runCostInputRules(spec, ctx(p, { ...given }));
-        if (r.status === 'complete') break;
-        const d = r.decisions[0];
+        // Advisory questions (the grade, since the materials review) cost at their
+        // default — only a BLOCKING question stops the chain.
+        const blocking = r.decisions.filter(d => d.severity !== 'advisory');
+        if (r.status === 'complete' || !blocking.length) break;
+        const d = blocking[0];
         asked.push(d.id);
         if (d.id === p.mustAsk) materialQuestion = d;
         given[d.id] = p.answers[d.id];

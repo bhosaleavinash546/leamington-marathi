@@ -457,6 +457,8 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'alExtrusion.recovery': 'report — the cost re-plans the yield from the section on both paths',
   'alExtrusion.labour': 'report — the builder sets the press crew on both paths',
   'alExtrusion.ageOven': 'report — the builder sets the oven from the temper on both paths',
+  'casting.q.grade': 'advisory question — its answer reaches both paths through casting.materialId',
+  'forging.q.grade': 'advisory question — its answer reaches both paths through forging.materialId',
   'alExtrusion.q.al.route': 'advisory question — its answer reaches both paths through alExtrusion.route',
   'alExtrusion.q.al.temper': 'advisory question — its answer reaches both paths through alExtrusion.temper',
   'alExtrusion.q.al.finish': 'advisory question — its answer reaches both paths through alExtrusion.finish',

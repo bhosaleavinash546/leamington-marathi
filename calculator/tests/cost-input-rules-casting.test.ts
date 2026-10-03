@@ -108,8 +108,10 @@ describe('casting cost-input rules', () => {
       const answers: Record<string, unknown> = {};
       for (let i = 0; i < 6; i++) {
         const r = runCostInputRules(CASTING_RULES, ctx({ ...answers }));
-        if (r.status === 'complete') break;
-        const d = r.decisions[0];
+        // The grade question (materials review) is advisory — it costs at its default.
+        const blocking = r.decisions.filter(x => x.severity !== 'advisory');
+        if (r.status === 'complete' || !blocking.length) break;
+        const d = blocking[0];
         seq.push(d.id);
         answers[d.id] = d.id === 'service.toleranceClass' ? 'standard'
           : d.id === 'material.family' ? 'aluminium' : 'no';

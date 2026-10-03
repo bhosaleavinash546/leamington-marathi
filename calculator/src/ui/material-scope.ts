@@ -12,7 +12,7 @@
  * against the drop-down it lands in.
  */
 export const MATERIAL_SCOPE_BY_SELECT: Record<string, RegExp> = {
-  'forge-mat': /Billet/i,                                                                    // closed-die forging → wrought billets
+  'forge-mat': /^(?!.*Extrusion).*Billet/i,                                                  // closed-die forging → wrought billets, not the aluminium extrusion logs (materials review, Oct 2026)
   'mach-mat':  /Billet|^Carbon Steel$|^Alloy Steel$|^Stainless Steel$|^Aluminium$|^Titanium$|Copper Alloy|Magnesium Alloy|Spring Steel|Engineering Plastic|Grey Cast Iron|Ductile Cast Iron/i, // machined from bar/billet, incl. continuous-cast iron bar
   'cast-mat':  /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy|^Copper Alloy$/i, // foundry alloys (cast bronze sits under Copper Alloy)
   'cam-mat':   /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy|^Copper Alloy$/i, // cast-and-machine = cast alloys
