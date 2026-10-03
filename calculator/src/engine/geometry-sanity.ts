@@ -108,10 +108,31 @@ export function correctShellWallMm(
  * @returns the before/after pair when it changed something, else null.
  */
 export function applyShellWallCorrection(
-  geo: { wallThickness?: { meanMm?: number | null; minMm?: number | null; maxMm?: number | null; p95Mm?: number | null; method?: string } | null;
+  geo: { wallThickness?: { meanMm?: number | null; minMm?: number | null; maxMm?: number | null; p95Mm?: number | null; method?: string;
+                            stdDevMm?: number; sampleCount?: number; uniformity?: string } | null;
          volume?: { cm3: number } | null; surfaceArea?: { cm2: number } | null; fillRatio?: number | null } | null,
 ): { fromMm: number; toMm: number } | null {
-  if (!geo?.wallThickness || !geo.volume || !geo.surfaceArea) return null;
+  if (!geo?.volume || !geo.surfaceArea) return null;
+  // No ray-cast reading at all (a thin tube: every ray left through an open
+  // end) is the same overshoot taken to its limit — the guard below treats a
+  // missing mean as 0 and fires. It used to return here, so the shell kept no
+  // wall and every rule that needs one blocked (blow-moulding review: an air
+  // duct could not be costed).
+  // Only on a genuinely sparse shell (fill < 10%): a small solid with no ray
+  // reading — a rubber grommet at 34% fill — is not a shell whose rays escaped,
+  // and filling its wall moved the grommet's cure section (rubber review).
+  if (!geo.wallThickness) {
+    if ((geo.fillRatio ?? 1) >= 0.10) return null;
+    const wc0 = correctShellWallMm(0, geo.volume.cm3, geo.surfaceArea.cm2, geo.fillRatio ?? 1);
+    if (!wc0.corrected) return null;
+    // Every field a kernel reading has: /analyze prints min / max / σ / n and
+    // a partial object crashed it (a 500 on the live duct run).
+    geo.wallThickness = {
+      meanMm: wc0.meanMm, minMm: wc0.meanMm, maxMm: Math.round(wc0.meanMm * 1.4 * 100) / 100, p95Mm: null,
+      stdDevMm: 0, sampleCount: 0, uniformity: 'uniform (2·V/S — no ray reading)', method: wc0.method,
+    };
+    return { fromMm: 0, toMm: wc0.meanMm };
+  }
   const before = geo.wallThickness.meanMm ?? 0;
   const wc = correctShellWallMm(before, geo.volume.cm3, geo.surfaceArea.cm2, geo.fillRatio ?? 1);
   if (!wc.corrected) return null;

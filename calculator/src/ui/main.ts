@@ -3995,6 +3995,7 @@ function renderBlowMouldingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Reject Rate <span title="Fraction of parts scrapped (wall failure, leak, flash defect). Uplifts material and cycle cost. Typical EBM 2–3%, IBM &lt;1.5%.">ℹ</span></label><input type="number" id="bm-reject" step="0.005" min="0" max="0.5" value="0.025"/></div>
+      <div class="field-group"><label>Flash Reground (0–1) <span title="Share of the pinch-off flash granulated at the machine and fed back into the wall, so not bought again. EBM practice: all of it (1).">ℹ</span></label><input type="number" id="bm-flash-regrind" step="0.05" min="0" max="1" value="1"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Cycle Time</div>
     <div id="bm-parison-section">
@@ -4045,7 +4046,8 @@ function renderBlowMouldingForm(): string {
       <div class="field-group"><label>Deflash Labour</label><select id="bm-deflash-lab" class="labour-select"><option value="">None</option></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Deflash Cycle (s, 0=none) <span title="Time per part for automated deflash. Typical 6–15s for EBM parts with pinch-off flash.">ℹ</span></label><input type="number" id="bm-deflash-ct" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Deflash Cycle (s, 0=none) <span title="Time the trim station is occupied per part. In line with the blow machine it is the blow cycle ÷ cavities.">ℹ</span></label><input type="number" id="bm-deflash-ct" step="0.1" min="0" value="0"/></div>
+      <div class="field-group"><label>Deflash Manning <span title="Operators on the trim station. 0 when the blow-machine crew tends an in-line trimmer.">ℹ</span></label><input type="number" id="bm-deflash-man" step="0.25" min="0" value="1"/></div>
     </div>
     <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Blow DFM check — BUR / wall / corners / weld line</summary>
@@ -13651,8 +13653,10 @@ function collectBlowMouldingInput(): UniversalStackInput {
     deflashMachineId: deflashCt > 0 ? deflashMach : undefined,
     deflashLabourId: deflashCt > 0 ? deflashLab : undefined,
     deflashCycleTimeSec: deflashCt > 0 ? deflashCt : undefined,
-    parisonExtrusionTimeSec: parisonT > 0 ? parisonT : undefined,
+    parisonExtrusionTimeSec: parisonT > 0 ? parisonT : 0,
     rejectRate: rejectR > 0 ? rejectR : undefined,
+    flashRegrindFraction: num('bm-flash-regrind'),
+    deflashManning: num('bm-deflash-man'),
   });
 
   // Surface the mould-cost estimate when auto-derived.

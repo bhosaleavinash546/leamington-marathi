@@ -167,6 +167,20 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 1 m EPDM door-seal profile (hollow bulb on a foot) — an extrusion.',
     answers: { 'material.elastomer': 'mat-epdm', 'commodity.route': 'rubber' },
   },
+  // ── Blow moulding (blow-moulding review, 3 Oct 2026) ─────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/BM_modelled_parts.py.
+  // The real fuel tank's STEP is not in the repo; its measured geometry is
+  // pinned in tests/blow-moulding-review.test.ts instead.
+  'BM_Washer_Reservoir.stp': {
+    note: 'MODELLED: 220 × 160 × 130 mm HDPE washer reservoir, 2.5 mm wall, Ø40 filler neck (~3.8 L).',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-hdpe',
+               'commodity.route': 'blow_moulding', 'blow.capacityL': '2_20' },
+  },
+  'BM_Air_Duct.stp': {
+    note: 'MODELLED: Ø70 × 2 mm PP air duct with a 90° elbow, open both ends (2.5 L inside).',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-pp-homo',
+               'commodity.route': 'blow_moulding', 'blow.capacityL': 'exact', 'blow.capacityExactL': '2.5' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

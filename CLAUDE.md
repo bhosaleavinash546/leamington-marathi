@@ -283,6 +283,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`cavitiesFor`); press, crew, OEE, scrap, deflash (bench), post-cure, mould change are rules;
   `rubber` is a commodity route. `_setSelectOpts` keeps an optional select's "— None —". See
   `docs/cad/rubber-review-2026-10.md`, `tests/rubber-review.test.ts`; parts in `cad-audit/parts/RUB_*`.
+- Blow moulding (`cost-input-rules/commodities/blow-moulding.ts`, `modules/blow-moulding.ts`): the wall is
+  2·V/S (`derive/shell-wall.ts`), never the ray mean; capacity is the engineer's band capped at the envelope,
+  or typed (`blow.capacityExactL`); machine by head and shot (`blowMachineFor`), parison in series only on an
+  accumulator push or a slow extruder (`EBM_HEADS`); crew, OEE, scrap, flash regrind and the in-line trim
+  station (an `untended` op — no crew of its own) are rules on both paths; moulds are fractional. Any hollow
+  thin shell gets the hollow-route question; `applyShellWallCorrection` fills a missing wall on a sparse
+  shell (a complete reading — a partial one crashed `/analyze`). See `docs/cad/blow-moulding-review-2026-10.md`,
+  `tests/blow-moulding-review.test.ts`; parts in `cad-audit/parts/BM_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

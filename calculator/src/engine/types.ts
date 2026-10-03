@@ -205,6 +205,9 @@ export interface OperationInput {
    * keeps the guard everywhere else.
    */
   benchOperation?: boolean;
+  /** A machine that runs with no crew of its own — an in-line station the
+   *  upstream machine's crew tends, counted there. Labour time may be 0. */
+  untended?: boolean;
 }
 
 export interface ToolingInput {

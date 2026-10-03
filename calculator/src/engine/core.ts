@@ -63,7 +63,12 @@ export function validateStackInput(
     if (!(op.partsPerCycle >= 1)) errors.push({ field: `${p}.partsPerCycle`, message: 'Must be ≥ 1' });
     if (!(op.oee > 0 && op.oee <= 1)) errors.push({ field: `${p}.oee`, message: 'Must be in (0, 1]' });
     if (!(Number.isFinite(op.manning) && op.manning > 0)) errors.push({ field: `${p}.manning`, message: 'Must be a positive finite number' });
-    if (!(Number.isFinite(op.labourTimeHr) && op.labourTimeHr > 0)) errors.push({ field: `${p}.labourTimeHr`, message: 'Must be a positive finite number' });
+    if (op.untended) {
+      if (!(Number.isFinite(op.labourTimeHr) && op.labourTimeHr >= 0))
+        errors.push({ field: `${p}.labourTimeHr`, message: 'Must be a finite non-negative number' });
+    } else if (!(Number.isFinite(op.labourTimeHr) && op.labourTimeHr > 0)) {
+      errors.push({ field: `${p}.labourTimeHr`, message: 'Must be a positive finite number' });
+    }
     if (!(op.labourEfficiency > 0 && op.labourEfficiency <= 1))
       errors.push({ field: `${p}.labourEfficiency`, message: 'Must be in (0, 1]' });
 

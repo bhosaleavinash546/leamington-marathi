@@ -34,6 +34,11 @@ export interface BlowMouldingInputs {
   preformCostPerPart?: number;
   /** Colour/UV/barrier masterbatch premium £/kg of part. */
   masterbatchCostPerKg?: number;
+  /** Fraction 0–1 of the flash granulated in line and fed back into the wall
+   *  (not bought again). EBM practice is all of it. Default 0. */
+  flashRegrindFraction?: number;
+  /** Operators on the deflash station. Default 1; 0 when the blow crew tends an in-line trimmer. */
+  deflashManning?: number;
 }
 
 export function getBlowMouldingInputSchema(): Record<string, string> {
@@ -59,6 +64,8 @@ export function getBlowMouldingInputSchema(): Record<string, string> {
     deflashCycleTimeSec: 'number (optional) — deflash/trimming cycle time per part s',
     parisonExtrusionTimeSec: 'number (optional) — parison extrusion time s before mould close (typical 3–12s, default 6s)',
     rejectRate: 'number 0–1 (optional) — scrap fraction (wall thickness failure, leak, flash); uplifts material and cycle time',
+    flashRegrindFraction: 'number 0–1 (optional) — share of the flash granulated in line and fed back (EBM: 1)',
+    deflashManning: 'number (optional) — operators on the deflash station; 0 when the blow crew tends it',
   };
 }
 
@@ -93,7 +100,10 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
   const cycleTimeSec = parisonTimeSec + inputs.blowTimeSec + coolingTimeSec + inputs.openCloseSec;
   const cycleTimeHr = cycleTimeSec / 3600;
 
-  const grossWeightKg = inputs.partWeightKg + inputs.flashWeightKg;
+  // Reground flash goes back into the wall, so only the flash NOT reground is
+  // bought and lost (the injection runner's regrind, applied to the pinch-off).
+  const regrind = Math.min(1, Math.max(0, inputs.flashRegrindFraction ?? 0));
+  const grossWeightKg = inputs.partWeightKg + inputs.flashWeightKg * (1 - regrind);
   const materialUtilization = inputs.partWeightKg / grossWeightKg;
 
   // Per-part material consumables: bought-in SBM preform + colour/barrier masterbatch.
@@ -144,15 +154,20 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
       cycleTimeHr: deflashCycleTimeHr,
       partsPerCycle: 1,
       oee: 1.0,
-      manning: 1,
-      labourTimeHr: deflashCycleTimeHr,
+      // A crew of 0 (tended by the blow crew, counted there) is no labour time
+      // on this op rather than a zero crew, which the validator rejects.
+      manning: inputs.deflashManning && inputs.deflashManning > 0 ? inputs.deflashManning : 1,
+      labourTimeHr: inputs.deflashManning === 0 ? 0 : deflashCycleTimeHr,
+      ...(inputs.deflashManning === 0 ? { untended: true } : {}),
       labourEfficiency: 1.0,
     });
   }
 
-  // mouldLife is in cycles; one cycle produces `cavities` parts
+  // mouldLife is in cycles; one cycle produces `cavities` parts. Fractional
+  // above one mould: the mould wears into the next year's parts, it is not
+  // bought twice inside the amortisation (as forging die sets).
   const numMoulds = inputs.mouldLife > 0
-    ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
+    ? Math.max(1, inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
     : 1;
 
   // Mould cost: manual figure, else estimate parametrically from process/cavities/size.

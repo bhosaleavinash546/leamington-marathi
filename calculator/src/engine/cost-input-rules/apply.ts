@@ -288,6 +288,19 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'blowMoulding.mouldLife': { to: 'blowMoulding.mouldLife' },
   'blowMoulding.blowTimeSec': { to: 'blowMoulding.blowTimeSec' },
   'blowMoulding.openCloseSec': { to: 'blowMoulding.openCloseSec' },
+  'blowMoulding.machineId': { to: 'blowMoulding.machineId' },
+  'blowMoulding.coolTimeFactorSPerMm2': { to: 'blowMoulding.coolTimeFactorSPerMm2' },
+  'blowMoulding.parisonExtrusionTimeSec': { to: 'blowMoulding.parisonExtrusionTimeSec' },
+  'blowMoulding.flashRegrindFraction': { to: 'blowMoulding.flashRegrindFraction' },
+  'blowMoulding.labourId': { to: 'blowMoulding.labourId' },
+  'blowMoulding.manning': { to: 'blowMoulding.manning' },
+  'blowMoulding.oee': { to: 'blowMoulding.oee' },
+  'blowMoulding.labourEfficiency': { to: 'blowMoulding.labourEfficiency' },
+  'blowMoulding.rejectRate': { to: 'blowMoulding.rejectRate' },
+  'blowMoulding.deflashMachineId': { to: 'blowMoulding.deflashMachineId' },
+  'blowMoulding.deflashLabourId': { to: 'blowMoulding.deflashLabourId' },
+  'blowMoulding.deflashCycleSec': { to: 'blowMoulding.deflashCycleSec' },
+  'blowMoulding.deflashManning': { to: 'blowMoulding.deflashManning' },
 
   // ── thermoforming ─────────────────────────────────────────────────────────
   'thermoforming.method': { to: 'thermoforming.method' },
@@ -357,14 +370,12 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'machining.operationCount': 'a count for the report; the operation plan itself is mapped',
   'forging.shapeComplexity': 'screen-only input to the forging advisor; headless takes strokes and die cost from their own rules',
   'injectionMoulding.sideActionsLifters': 'screen-only tooling adder; headless takes the mould cost rule, which already counts side actions',
-  'blowMoulding.process': 'prose for the report; headless picks the machine from the subtype',
+  'blowMoulding.process': 'prose for the report; headless takes the machine rule',
   'blowMoulding.partVolumeL': 'screen-only display; weight is what the costing reads',
   'blowMoulding.mouldMaterial': 'screen-only; headless takes the mould cost rule',
   // Known parity gaps, not yet closed: headless picks the machine from the
   // subtype (SBM / IBM / EBM) and a fixed 2.5 s/mm² cool factor, the screen
   // takes these rules. Closing them needs the rule to choose by subtype first.
-  'blowMoulding.machineId': 'PARITY GAP: the rule picks an EBM machine by shot weight; headless picks by subtype',
-  'blowMoulding.coolTimeFactorSPerMm2': 'PARITY GAP: headless uses a fixed 2.5 s/mm²',
   // Thermoforming, rotational moulding and rubber: the screen runs a fuller
   // module input than `toCostParams` builds (cool time from gauge, mould type,
   // cure time). Headless costs from the times the rules decided directly.

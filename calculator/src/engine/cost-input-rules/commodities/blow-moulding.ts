@@ -28,19 +28,21 @@ import {
 } from '../../modules/blow-advisor.js';
 import { pickEBMMachineId, barrierMaterialId } from '../../modules/blow-moulding.js';
 import { thermodynamicCoolFactor } from '../../modules/injection-moulding.js';
-import { decided, ask, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
+import { decided, ask, answeredNumber, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { hollowVerdict } from '../derive/hollow.js';
+import { shellWallMm } from '../derive/shell-wall.js';
 
 export const CAPACITY_DECISION_ID = 'blow.capacityL';
+export const EXACT_CAPACITY_DECISION_ID = 'blow.capacityExactL';
 export const BARRIER_DECISION_ID = 'blow.barrierWall';
 
 /** Nominal-capacity bands, and the litre figure each one costs at. */
-const CAPACITY_BANDS: Array<{ value: string; label: string; litres: number }> = [
-  { value: 'under_0p25', label: 'Under 250 ml', litres: 0.15 },
-  { value: '0p25_2', label: '250 ml – 2 L', litres: 1.1 },
-  { value: '2_20', label: '2 – 20 L', litres: 10 },
-  { value: 'over_20', label: 'Over 20 L', litres: 60 },
+const CAPACITY_BANDS: Array<{ value: string; label: string; litres: number; lo: number }> = [
+  { value: 'under_0p25', label: 'Under 250 ml', litres: 0.15, lo: 0 },
+  { value: '0p25_2', label: '250 ml – 2 L', litres: 1.1, lo: 0.25 },
+  { value: '2_20', label: '2 – 20 L', litres: 10, lo: 2 },
+  { value: 'over_20', label: 'Over 20 L', litres: 60, lo: 20 },
 ];
 
 /**
@@ -71,16 +73,61 @@ export function capacityDecision(ctx: RuleContext): Decision {
       + (bound !== null
         ? ` The measured envelope could not hold more than about ${bound.toFixed(1)} L.`
         : ''),
-    options: CAPACITY_BANDS.map(b => ({
-      value: b.value,
-      label: b.label,
-      consequence: `costed at ${b.litres} L`,
-      leaning: leaningValue === b.value,
-    })),
+    options: [
+      ...CAPACITY_BANDS.map(b => ({
+        value: b.value,
+        label: b.label,
+        consequence: `costed at ${b.litres} L, or less if the measured envelope cannot hold that`,
+        leaning: leaningValue === b.value,
+      })),
+      { value: 'exact', label: 'I know the exact capacity', consequence: 'asked next, costed at that figure' },
+    ],
     blockedFieldIds: [],
     blockedRuleIds: [],
     severity: 'blocking',
   };
+}
+
+function exactCapacityDecision(): Decision {
+  return {
+    id: EXACT_CAPACITY_DECISION_ID,
+    kind: 'capacity',
+    question: 'What is the nominal capacity, in litres?',
+    why: 'The capacity sizes the blow mould, which is charged per litre per cavity.',
+    options: [{ value: 'enter', label: 'Capacity' }],
+    entry: { kind: 'number', unit: 'L', placeholder: 'e.g. 3.8' },
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
+  };
+}
+
+/**
+ * The litres the tool is costed at, or the question that settles it.
+ *
+ * A band used to be costed at its one figure whatever the part: a 3.8 L washer
+ * reservoir answered "2 – 20 L" was tooled as a 10 L container. The envelope is
+ * a true upper bound on what the part can hold, so the band's figure is capped
+ * at it (never below the band's floor — the engineer's band stands).
+ */
+export function capacityOf(ctx: RuleContext):
+  { litres: number; label: string; basis: string } | { decision: Decision } {
+  const answered = ctx.answers[CAPACITY_DECISION_ID];
+  if (answered === 'exact') {
+    const typed = answeredNumber(ctx.answers, EXACT_CAPACITY_DECISION_ID);
+    if (typed === null) return { decision: exactCapacityDecision() };
+    return { litres: typed, label: `${typed} L`, basis: `${typed} L, entered by the engineer` };
+  }
+  const band = CAPACITY_BANDS.find(b => b.value === answered);
+  if (!band) return { decision: capacityDecision(ctx) };
+  const bound = envelopeCapacityL(ctx);
+  if (bound !== null && bound < band.litres) {
+    const litres = Math.round(Math.max(band.lo, bound) * 100) / 100;
+    return { litres, label: band.label,
+      basis: `${band.label} confirmed by the engineer; costed at ${litres} L, the most the measured envelope can hold `
+        + `(the band's ${band.litres} L would not fit)` };
+  }
+  return { litres: band.litres, label: band.label,
+    basis: `${band.label} confirmed by the engineer, costed at ${band.litres} L`
+      + (bound !== null ? `; the measured envelope holds at most ${bound.toFixed(1)} L` : '') };
 }
 
 /**
@@ -146,13 +193,55 @@ const MOULD_LIFE: Record<BlowMouldMaterial, number> = {
   'steel-h13': 2_000_000,
 };
 
+/**
+ * The extrusion head on each EBM machine in the library, engineering-typical.
+ *
+ * A **continuous** head extrudes the next parison while the mould is closed, so
+ * the parison costs no cycle time unless the extruder cannot keep up. An
+ * **accumulator** head fills a ram while the mould cools, then pushes the whole
+ * parison out in one stroke — that push is in series. Before this the cycle
+ * carried a flat 6 s "parison" in series on every machine (headless), or the
+ * form's 6–20 s per process (screen).
+ */
+export const EBM_HEADS: Record<string, { head: 'continuous' | 'accumulator'; extruderKgPerH: number; pushKgPerS?: number }> = {
+  'blow-ebm-2head': { head: 'continuous', extruderKgPerH: 90 },
+  'blow-ebm-100l': { head: 'continuous', extruderKgPerH: 120 },
+  'blow-ebm-coex3': { head: 'continuous', extruderKgPerH: 300 },
+  'blow-ebm-500l': { head: 'accumulator', extruderKgPerH: 250, pushKgPerS: 1.5 },
+  'blow-ebm-large': { head: 'accumulator', extruderKgPerH: 450, pushKgPerS: 2.5 },
+  'blow-ebm-coex5': { head: 'accumulator', extruderKgPerH: 500, pushKgPerS: 2 },
+};
+
+/** Preform injection / reheat in series on IBM and SBM — the form's process defaults. */
+const PREFORM_SERIAL_SEC: Record<string, number> = {
+  ibm_rotary: 2, ibm_linear: 2, sbm_1stage: 15, sbm_2stage: 4,
+};
+const PREFORM_MACHINE: Record<string, string> = {
+  ibm_rotary: 'blow-ibm-rotary', ibm_linear: 'blow-ibm-linear',
+  sbm_1stage: 'blow-sbm-1stage', sbm_2stage: 'blow-sbm-2stage',
+};
+
+/** Blow machine, from the process and the shot per cycle (part + flash × cavities). */
+export function blowMachineFor(formValue: string, shotKg: number, barrier: boolean): { id: string; basis: string } {
+  if (PREFORM_MACHINE[formValue]) return { id: PREFORM_MACHINE[formValue], basis: `${formValue.replace('_', ' ').toUpperCase()} — preform process` };
+  if (barrier) return { id: 'blow-ebm-coex5', basis: 'co-extruded EVOH barrier wall — multi-layer head' };
+  return { id: pickEBMMachineId(shotKg), basis: `${shotKg.toFixed(3)} kg shot a cycle (part + flash × cavities)` };
+}
+
+/** Operators per machine. */
+export const BLOW_CREW = { continuous: 0.5, accumulator: 1, preform: 0.5 } as const;
+/** Scrap after leak / wall-thickness checks. */
+export const BLOW_REJECT = { ebm: 0.025, barrier: 0.03, preform: 0.015 } as const;
+
 interface BmAdvice {
   resin: ResinFacts;
   materialId: string;
   barrier: boolean;
   capacityL: number;
   capacityLabel: string;
+  capacityBasis: string;
   wallMm: number;
+  wallBasis: string;
   partKg: number;
   flashKg: number;
   grossKg: number;
@@ -161,6 +250,37 @@ interface BmAdvice {
   process: BlowProcess;
   processReason: string;
   mouldMaterial: BlowMouldMaterial;
+  machineId: string;
+  machineBasis: string;
+  coolFactor: number;
+  coolBasis: string;
+  blowSec: number;
+  openCloseSec: number;
+  parisonSec: number;
+  parisonBasis: string;
+  cycleSec: number;
+  crew: number;
+  crewBasis: string;
+  reject: number;
+}
+
+function wallQuestion(): RuleOutcome<never> {
+  return ask({
+    id: 'blow.wall', kind: 'geometry_gap',
+    question: 'What is the nominal wall thickness?',
+    why: 'No wall was measured, and cooling — most of the blow cycle — goes as wall squared.',
+    options: [{ value: 'enter', label: 'Enter the nominal wall' }],
+    entry: { kind: 'number', unit: 'mm' },
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
+  });
+}
+
+/** Wall: 2·V/S, else the ray mean, else the engineer's figure. */
+function blowWall(ctx: RuleContext): { mm: number; basis: string } | null {
+  const w = shellWallMm(ctx.geo);
+  if (w) return { mm: w.mm, basis: w.basis };
+  const typed = answeredNumber(ctx.answers, 'blow.wall');
+  return typed !== null ? { mm: typed, basis: `${typed} mm, entered by the engineer` } : null;
 }
 
 function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome<never> } {
@@ -194,13 +314,12 @@ function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome
   const resin = resinFacts(ctx);
   if (resin.decision) return { blocked: ask(resin.decision) };
 
-  const answeredBand = ctx.answers[CAPACITY_DECISION_ID];
-  const band = CAPACITY_BANDS.find(b => b.value === answeredBand);
-  if (!band) return { blocked: ask(capacityDecision(ctx)) };
+  const cap = capacityOf(ctx);
+  if ('decision' in cap) return { blocked: ask(cap.decision) };
 
   // Only a large polyethylene container can be a barrier tank; anywhere else the
   // question is noise and the answer is mono.
-  const barrierApplies = band.litres > 20 && /hdpe|lldpe|pe-bm|pe100/i.test(resin.materialId!);
+  const barrierApplies = cap.litres > 20 && /hdpe|lldpe|pe-bm|pe100/i.test(resin.materialId!);
   let barrier = false;
   if (barrierApplies) {
     const ans = ctx.answers[BARRIER_DECISION_ID];
@@ -210,38 +329,92 @@ function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome
     barrier = ans === 'barrier';
   }
 
-  const wallMm = ctx.geo.wallThickness?.meanMm ?? 0;
-  if (!wallMm) {
-    return {
-      blocked: ask({
-        id: 'blow.wall', kind: 'geometry_gap',
-        question: 'What is the nominal wall thickness?',
-        why: 'No wall was measured, and cooling — most of the blow cycle — goes as wall squared.',
-        options: [{ value: 'enter', label: 'Enter the nominal wall' }],
-        entry: { kind: 'number' },
-        blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
-      }),
-    };
-  }
+  const wall = blowWall(ctx);
+  if (!wall) return { blocked: wallQuestion() };
+  const wallMm = Math.round(wall.mm * 100) / 100;
 
   const materialId = barrierMaterialId(resin.materialId!, barrier);
   const partKg = resin.massKg!;
-  const proc = processFor(band.litres, resin.materialId!, barrier, ctx.annualVolume);
+  const proc = processFor(cap.litres, resin.materialId!, barrier, ctx.annualVolume);
   // Only extrusion blow has a pinch-off. IBM and SBM start from an injected
   // preform, which is the whole reason they are chosen for small precision
   // containers — the prompt's flat 12% charged them for flash they never make.
   const flashFrac = proc.process !== 'ebm' ? 0 : partKg > 3 ? 0.22 : 0.12;
   const flashKg = Math.round(partKg * flashFrac * 10_000) / 10_000;
+  const grossKg = partKg + flashKg;
   const mouldMaterial: BlowMouldMaterial = proc.process === 'ebm' ? 'aluminium' : 'steel-p20';
+  const cavities = cap.litres < 0.25 ? 4 : cap.litres <= 2 ? 2 : 1;
+  const machine = blowMachineFor(proc.formValue, grossKg * cavities, barrier);
+
+  // Cooling: transient conduction where the resin has a thermal reference.
+  const thermo = thermodynamicCoolFactor(resin.materialId ?? '');
+  const coolFactor = thermo ? thermo.factorSPerMm2 : resin.coolFactorSPerMm2!;
+  const coolBasis = thermo
+    ? `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: `
+      + `α_eff ${thermo.alphaEffMm2S} mm²/s, melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
+      + `→ ${coolFactor} s/mm²; cool ≈ ${(coolFactor * wallMm ** 2).toFixed(1)} s at ${wallMm.toFixed(2)} mm`
+    : `${resin.grade}: curated ${coolFactor} s/mm² (no thermal reference for this resin); `
+      + `cool = ${(coolFactor * wallMm ** 2).toFixed(1)} s at ${wallMm.toFixed(2)} mm`;
+  const blowSec = Math.round(Math.min(20, Math.max(3, 3 + cap.litres * 0.8)) * 10) / 10;
+  const openCloseSec = Math.round(Math.min(8, Math.max(4, 4 + cap.litres * 0.1)) * 10) / 10;
+  const mouldSeq = blowSec + coolFactor * wallMm ** 2 + openCloseSec;
+
+  // Parison time in series with the mould.
+  let parisonSec: number;
+  let parisonBasis: string;
+  let crew: number;
+  let crewBasis: string;
+  const head = EBM_HEADS[machine.id];
+  if (proc.process !== 'ebm' || !head) {
+    parisonSec = PREFORM_SERIAL_SEC[proc.formValue] ?? 0;
+    parisonBasis = `${proc.process.toUpperCase()}: preform injection / reheat ${parisonSec} s in series (process default)`;
+    crew = BLOW_CREW.preform;
+    crewBasis = 'one operator across two preform blow machines';
+  } else {
+    const shotKg = grossKg * cavities;
+    const extrudeSec = shotKg / head.extruderKgPerH * 3600;
+    const pushSec = head.head === 'accumulator' ? shotKg / head.pushKgPerS! : 0;
+    parisonSec = Math.round(Math.max(pushSec, extrudeSec - mouldSeq) * 10) / 10;
+    parisonBasis = head.head === 'accumulator'
+      ? `accumulator head: ${shotKg.toFixed(2)} kg pushed out at ${head.pushKgPerS} kg/s = ${pushSec.toFixed(1)} s in series; `
+        + `the ${head.extruderKgPerH} kg/h extruder refills it in ${extrudeSec.toFixed(0)} s while the mould runs (${mouldSeq.toFixed(0)} s)`
+        + (extrudeSec - mouldSeq > pushSec ? ' — the extruder sets the pace' : '')
+      : `continuous head: the next ${shotKg.toFixed(2)} kg parison extrudes in ${extrudeSec.toFixed(0)} s at ${head.extruderKgPerH} kg/h `
+        + `while the mould runs (${mouldSeq.toFixed(0)} s)`
+        + (parisonSec > 0 ? ` — the extruder sets the pace, +${parisonSec} s` : ' — nothing in series');
+    crew = head.head === 'accumulator' ? BLOW_CREW.accumulator : BLOW_CREW.continuous;
+    crewBasis = head.head === 'accumulator'
+      ? 'one operator on a large-part line (take-out, trim and check)'
+      : 'one operator across two automatic machines with in-line trim';
+  }
+  const cycleSec = Math.round((mouldSeq + parisonSec) * 10) / 10;
+  const reject = proc.process !== 'ebm' ? BLOW_REJECT.preform : barrier ? BLOW_REJECT.barrier : BLOW_REJECT.ebm;
 
   return {
     advice: {
       resin, materialId, barrier,
-      capacityL: band.litres, capacityLabel: band.label,
-      wallMm, partKg, flashKg, grossKg: partKg + flashKg,
-      cavities: band.litres < 0.25 ? 4 : band.litres <= 2 ? 2 : 1,
+      capacityL: cap.litres, capacityLabel: cap.label, capacityBasis: cap.basis,
+      wallMm, wallBasis: wall.basis, partKg, flashKg, grossKg, cavities,
       formValue: proc.formValue, process: proc.process, processReason: proc.reason,
-      mouldMaterial,
+      mouldMaterial, machineId: machine.id, machineBasis: machine.basis,
+      coolFactor, coolBasis, blowSec, openCloseSec, parisonSec, parisonBasis, cycleSec,
+      crew, crewBasis, reject,
+    },
+  };
+}
+
+/** A rule that reads one value off the advice. */
+function fromAdvice<T extends string | number | boolean>(
+  id: string, fieldId: string | undefined, label: string,
+  pick: (a: BmAdvice) => { value: T; source: 'geometry' | 'rule' | 'library' | 'advisor' | 'engineer'; basis: string; confidence: number },
+) {
+  return {
+    id, path: id, ...(fieldId ? { fieldId } : {}), label,
+    evaluate: (ctx: RuleContext) => {
+      const r = advise(ctx);
+      if ('blocked' in r) return r.blocked;
+      const v = pick(r.advice);
+      return decided(id, v.value, v.source, v.basis, v.confidence);
     },
   };
 }
@@ -256,248 +429,130 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       fieldId: 'bm-wall',
       label: 'wallThicknessMm',
       evaluate: (ctx) => {
-        // AVERAGE wall on purpose — not the p95 governing wall that injection
-        // uses. An EBM wall is programmed at the parison, and the thick tail of
-        // a ray-cast on a blown part is dominated by the pinch-off weld, where
-        // two parison walls fuse and the ray reads one doubled wall. The cycle
-        // model is calibrated on average wall (see the module input schema);
-        // costing the whole tank at the weld seam read as +19% on the real one.
-        const wt = ctx.geo.wallThickness;
-        const wall = wt?.meanMm;
-        if (!wall) return ask({
-          id: 'blow.wall', kind: 'geometry_gap',
-          question: 'What is the nominal wall thickness?',
-          why: 'No wall was measured, and cooling goes as wall squared.',
-          options: [{ value: 'enter', label: 'Enter the nominal wall' }],
-          entry: { kind: 'number' },
-          blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
-        });
-        const how = wt!.method === 'volume_surface_shell'
-          ? 'thin-shell wall from 2·V/S (ray-cast overshot the cavity)'
-          : `ray-cast mean wall over ${wt!.sampleCount ?? 0} samples (average governs the programmed EBM cycle; thick reads are pinch welds)`;
-        return decided('blowMoulding.wallThicknessMm', Math.round(wall * 10) / 10, 'geometry', how, 0.85);
+        // The AREA-MEAN wall, 2·V/S — the wall a programmed EBM parison sets,
+        // and measured rather than sampled. The ray-cast mean overshoots on a
+        // hollow part (rays cross the cavity: a 2.5 mm reservoir read 25.3 mm)
+        // and is used only when the solid has no volume or area.
+        const w = blowWall(ctx);
+        if (!w) return wallQuestion();
+        return decided('blowMoulding.wallThicknessMm', Math.round(w.mm * 100) / 100, 'geometry', w.basis, 0.85);
       },
     },
-    {
-      id: 'blowMoulding.materialId',
-      path: 'blowMoulding.materialId',
-      fieldId: 'bm-mat',
-      label: 'materialId',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.materialId', r.advice.materialId, 'engineer',
-          r.advice.barrier
-            ? `${r.advice.resin.grade} upgraded to the 6-layer EVOH barrier grade`
-            : r.advice.resin.basis, 1);
-      },
-    },
-    {
-      id: 'blowMoulding.partVolumeL',
-      path: 'blowMoulding.partVolumeL',
-      fieldId: 'bm-part-vol',
-      label: 'partVolumeL',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        const bound = envelopeCapacityL(ctx);
-        return decided('blowMoulding.partVolumeL', r.advice.capacityL, 'engineer',
-          `${r.advice.capacityLabel} confirmed by the engineer`
-          + (bound !== null ? `; the measured envelope holds at most ${bound.toFixed(1)} L` : ''), 0.7);
-      },
-    },
-    {
-      id: 'blowMoulding.partWeightKg',
-      path: 'blowMoulding.partWeightKg',
-      fieldId: 'bm-part-wt',
-      label: 'partWeightKg',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.partWeightKg', r.advice.partKg, 'geometry',
-          r.advice.resin.basis, 0.95);
-      },
-    },
-    {
-      id: 'blowMoulding.flashWeightKg',
-      path: 'blowMoulding.flashWeightKg',
-      fieldId: 'bm-flash-wt',
-      label: 'flashWeightKg',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        if (r.advice.process !== 'ebm') {
-          return decided('blowMoulding.flashWeightKg', 0, 'rule',
-            `${r.advice.process.toUpperCase()} blows an injected preform — there is no pinch-off to trim`, 0.8);
-        }
-        const pct = r.advice.partKg > 3 ? 22 : 12;
-        return decided('blowMoulding.flashWeightKg', r.advice.flashKg, 'rule',
-          `${pct}% of part weight — pinch-off and neck trim`
-          + (pct === 22 ? '; a large accumulator parison sheds more than a bottle' : ''), 0.6);
-      },
-    },
-    {
-      id: 'blowMoulding.process',
-      path: 'blowMoulding.process',
-      fieldId: 'bm-process',
-      label: 'process',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.process', r.advice.formValue, 'rule',
-          r.advice.processReason, 0.8);
-      },
-    },
-    {
-      // The coarse route, which is what the costing reads — `process` above is
-      // the granular machine choice the form's select carries.
-      id: 'blowMoulding.subtype',
-      path: 'blowMoulding.subtype',
-      label: 'subtype',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.subtype', r.advice.process, 'rule',
-          r.advice.processReason, 0.8);
-      },
-    },
-    {
-      // Answered by the engineer where it can matter, and a plain false where it
-      // cannot — a mono-layer bottle is not "undecided", it is mono-layer.
-      id: 'blowMoulding.barrierMultilayer',
-      path: 'blowMoulding.barrierMultilayer',
-      label: 'barrierMultilayer',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.barrierMultilayer', r.advice.barrier,
-          r.advice.barrier ? 'engineer' : 'rule',
-          r.advice.barrier
-            ? 'confirmed as a co-extruded EVOH barrier wall'
-            : 'mono-layer — no permeation spec on this part', 0.85);
-      },
-    },
-    {
-      id: 'blowMoulding.cavities',
-      path: 'blowMoulding.cavities',
-      fieldId: 'bm-cav',
-      label: 'cavities',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.cavities', r.advice.cavities, 'rule',
-          `${r.advice.capacityLabel}: under 250 ml -> 4, up to 2 L -> 2, above -> 1`, 0.7);
-      },
-    },
-    {
-      id: 'blowMoulding.machineId',
-      path: 'blowMoulding.machineId',
-      fieldId: 'bm-mach',
-      label: 'machineId',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.machineId', pickEBMMachineId(r.advice.grossKg), 'advisor',
-          `${r.advice.grossKg.toFixed(3)} kg gross shot (part + flash)`, 0.85);
-      },
-    },
-    {
-      id: 'blowMoulding.coolTimeFactorSPerMm2',
-      path: 'blowMoulding.coolTimeFactorSPerMm2',
-      fieldId: 'bm-cool-f',
-      label: 'coolTimeFactorSPerMm2',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        const wall = r.advice.wallMm;   // average wall — see the wallThicknessMm rule
-        const thermo = thermodynamicCoolFactor(r.advice.resin.materialId ?? '');
-        if (thermo) {
-          const f = thermo.factorSPerMm2;
-          return decided('blowMoulding.coolTimeFactorSPerMm2', f, 'library',
-            `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: `
-            + `α_eff ${thermo.alphaEffMm2S} mm²/s, melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
-            + `→ ${f} s/mm²; cool ≈ ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
-        }
-        const f = r.advice.resin.coolFactorSPerMm2!;
-        return decided('blowMoulding.coolTimeFactorSPerMm2', f, 'library',
-          `${r.advice.resin.grade}: curated ${f} s/mm² (no thermal reference for this resin); `
-          + `cool = ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
-      },
-    },
-    {
-      // Pressurise-and-hold scales with the volume of air to move and the wall to
-      // set against the mould. The prompt gave "3–8 s for bottles, 8–20 s for
-      // large industrial parts"; this is that range made continuous.
-      id: 'blowMoulding.blowTimeSec',
-      path: 'blowMoulding.blowTimeSec',
-      fieldId: 'bm-blow-t',
-      label: 'blowTimeSec',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        const v = Math.round(Math.min(20, Math.max(3, 3 + r.advice.capacityL * 0.8)) * 10) / 10;
-        return decided('blowMoulding.blowTimeSec', v, 'rule',
-          `3 s + 0.8 s per litre at ${r.advice.capacityL} L, capped at 20 s`, 0.6);
-      },
-    },
-    {
-      id: 'blowMoulding.openCloseSec',
-      path: 'blowMoulding.openCloseSec',
-      fieldId: 'bm-open-close',
-      label: 'openCloseSec',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        const v = Math.round(Math.min(8, Math.max(4, 4 + r.advice.capacityL * 0.1)) * 10) / 10;
-        return decided('blowMoulding.openCloseSec', v, 'rule',
-          `4 s + 0.1 s per litre at ${r.advice.capacityL} L, capped at 8 s`, 0.6);
-      },
-    },
-    {
-      id: 'blowMoulding.mouldMaterial',
-      path: 'blowMoulding.mouldMaterial',
-      fieldId: 'bm-mould-mat',
-      label: 'mouldMaterial',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.mouldMaterial', r.advice.mouldMaterial, 'rule',
-          r.advice.process === 'ebm'
-            ? 'cast/CNC aluminium — the EBM workhorse, and it conducts heat out faster than steel'
-            : `${r.advice.process.toUpperCase()} injects the preform, so the tool carries injection pressure — P20 steel`,
-          0.75);
-      },
-    },
-    {
-      id: 'blowMoulding.mouldLife',
-      path: 'blowMoulding.mouldLife',
-      fieldId: 'bm-mould-life',
-      label: 'mouldLife',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        return decided('blowMoulding.mouldLife', MOULD_LIFE[r.advice.mouldMaterial], 'library',
-          `documented cycle life for a ${r.advice.mouldMaterial} blow mould`, 0.7);
-      },
-    },
-    {
-      id: 'blowMoulding.mouldCostGBP',
-      path: 'blowMoulding.mouldCostGBP',
-      fieldId: 'bm-mould-cost',
-      label: 'mouldCostGBP',
-      evaluate: (ctx) => {
-        const r = advise(ctx);
-        if ('blocked' in r) return r.blocked;
-        const est = estimateBlowMouldCost({
-          process: r.advice.process,
-          cavities: r.advice.cavities,
-          partVolumeL: r.advice.capacityL,
-          mouldMaterial: r.advice.mouldMaterial,
-        });
-        return decided('blowMoulding.mouldCostGBP', est.total, 'advisor',
-          `${r.advice.cavities}-cavity ${r.advice.process.toUpperCase()} ${r.advice.mouldMaterial} `
-          + `tool at ${r.advice.capacityL} L`, 0.6);
-      },
-    },
+    fromAdvice('blowMoulding.materialId', 'bm-mat', 'materialId', a => ({
+      value: a.materialId, source: 'engineer', confidence: 1,
+      basis: a.barrier ? `${a.resin.grade} upgraded to the 6-layer EVOH barrier grade` : a.resin.basis,
+    })),
+    fromAdvice('blowMoulding.partVolumeL', 'bm-part-vol', 'partVolumeL', a => ({
+      value: a.capacityL, source: 'engineer', confidence: 0.7, basis: a.capacityBasis,
+    })),
+    fromAdvice('blowMoulding.partWeightKg', 'bm-part-wt', 'partWeightKg', a => ({
+      value: a.partKg, source: 'geometry', confidence: 0.95, basis: a.resin.basis,
+    })),
+    fromAdvice('blowMoulding.flashWeightKg', 'bm-flash-wt', 'flashWeightKg', a => a.process !== 'ebm'
+      ? { value: 0, source: 'rule', confidence: 0.8,
+          basis: `${a.process.toUpperCase()} blows an injected preform — there is no pinch-off to trim` }
+      : { value: a.flashKg, source: 'rule', confidence: 0.6,
+          basis: `${a.partKg > 3 ? 22 : 12}% of part weight — pinch-off and neck trim`
+            + (a.partKg > 3 ? '; a large accumulator parison sheds more than a bottle' : '') }),
+    // Extrusion-blow flash is granulated at the machine and fed back into the
+    // wall (into the regrind layer of a co-ex tank). It was bought as virgin
+    // resin and credited at scrap value — £3.20 of resin on every fuel tank.
+    fromAdvice('blowMoulding.flashRegrindFraction', 'bm-flash-regrind', 'flashRegrindFraction', a => a.process !== 'ebm'
+      ? { value: 0, source: 'rule', confidence: 0.8, basis: 'no flash' }
+      : { value: 1, source: 'rule', confidence: 0.75,
+          basis: `all pinch-off flash granulated in line and fed back — ${a.partKg > 3 ? 22 : 12}% of the shot is within the ~30% a blown wall takes`
+            + (a.barrier ? ' (into the co-ex regrind layer)' : '') }),
+    fromAdvice('blowMoulding.process', 'bm-process', 'process', a => ({
+      value: a.formValue, source: 'rule', confidence: 0.8, basis: a.processReason,
+    })),
+    // The coarse route, which is what the costing reads — `process` above is
+    // the granular machine choice the form's select carries.
+    fromAdvice('blowMoulding.subtype', undefined, 'subtype', a => ({
+      value: a.process, source: 'rule', confidence: 0.8, basis: a.processReason,
+    })),
+    // Answered by the engineer where it can matter, and a plain false where it
+    // cannot — a mono-layer bottle is not "undecided", it is mono-layer.
+    fromAdvice('blowMoulding.barrierMultilayer', undefined, 'barrierMultilayer', a => ({
+      value: a.barrier, source: a.barrier ? 'engineer' : 'rule', confidence: 0.85,
+      basis: a.barrier ? 'confirmed as a co-extruded EVOH barrier wall' : 'mono-layer — no permeation spec on this part',
+    })),
+    fromAdvice('blowMoulding.cavities', 'bm-cav', 'cavities', a => ({
+      value: a.cavities, source: 'rule', confidence: 0.7,
+      basis: `${a.capacityL} L: under 250 ml -> 4, up to 2 L -> 2, above -> 1`,
+    })),
+    fromAdvice('blowMoulding.machineId', 'bm-mach', 'machineId', a => ({
+      value: a.machineId, source: 'advisor', confidence: 0.85, basis: a.machineBasis,
+    })),
+    fromAdvice('blowMoulding.coolTimeFactorSPerMm2', 'bm-cool-f', 'coolTimeFactorSPerMm2', a => ({
+      value: a.coolFactor, source: 'library', confidence: 0.8, basis: a.coolBasis,
+    })),
+    // Pressurise-and-hold scales with the volume of air to move and the wall to
+    // set against the mould: "3–8 s for bottles, 8–20 s for large industrial
+    // parts", made continuous.
+    fromAdvice('blowMoulding.blowTimeSec', 'bm-blow-t', 'blowTimeSec', a => ({
+      value: a.blowSec, source: 'rule', confidence: 0.6, basis: `3 s + 0.8 s per litre at ${a.capacityL} L, capped at 20 s`,
+    })),
+    fromAdvice('blowMoulding.openCloseSec', 'bm-open-close', 'openCloseSec', a => ({
+      value: a.openCloseSec, source: 'rule', confidence: 0.6, basis: `4 s + 0.1 s per litre at ${a.capacityL} L, capped at 8 s`,
+    })),
+    fromAdvice('blowMoulding.parisonExtrusionTimeSec', 'bm-parison-t', 'parisonExtrusionTimeSec', a => ({
+      value: a.parisonSec, source: 'rule', confidence: 0.6,
+      basis: `${a.parisonBasis}; cycle ${a.cycleSec} s`,
+    })),
+    fromAdvice('blowMoulding.labourId', 'bm-lab', 'labourId', () => ({
+      value: 'lab-uk-blow', source: 'library', confidence: 0.8, basis: 'blow-moulding machine operator',
+    })),
+    fromAdvice('blowMoulding.manning', 'bm-manning', 'manning', a => ({
+      value: a.crew, source: 'rule', confidence: 0.6, basis: a.crewBasis,
+    })),
+    fromAdvice('blowMoulding.oee', 'bm-oee', 'oee', () => ({
+      value: 0.80, source: 'rule', confidence: 0.6, basis: 'shop OEE, as every moulding route',
+    })),
+    fromAdvice('blowMoulding.labourEfficiency', 'bm-lab-eff', 'labourEfficiency', () => ({
+      value: 0.92, source: 'rule', confidence: 0.6, basis: 'shop labour efficiency, as every route',
+    })),
+    fromAdvice('blowMoulding.rejectRate', 'bm-reject', 'rejectRate', a => ({
+      value: a.reject, source: 'rule', confidence: 0.6,
+      basis: a.process !== 'ebm' ? 'preform process: 1.5% (no pinch-off, tool-formed neck)'
+        : a.barrier ? 'co-ex barrier tank: 3% after leak and layer checks' : 'extrusion blow: 2.5% after leak and wall checks',
+    })),
+    // Trimming: every EBM part leaves the mould with its pinch-off, neck and
+    // tail flash on. The station runs in line, dedicated to the blow machine,
+    // so it is occupied for the machine's whole cycle per set of cavities; the
+    // line's own crew tends it. Before this neither path trimmed anything.
+    fromAdvice('blowMoulding.deflashMachineId', 'bm-deflash-mach', 'deflashMachineId', a => ({
+      value: a.process === 'ebm' ? 'blow-deflash-trimmer' : '', source: 'rule', confidence: 0.7,
+      basis: a.process === 'ebm' ? 'in-line deflash / trim station' : 'no flash to trim',
+    })),
+    fromAdvice('blowMoulding.deflashLabourId', 'bm-deflash-lab', 'deflashLabourId', a => ({
+      value: a.process === 'ebm' ? 'lab-uk-blow' : '', source: 'rule', confidence: 0.7,
+      basis: a.process === 'ebm' ? 'tended by the blow-machine operator' : 'no flash to trim',
+    })),
+    fromAdvice('blowMoulding.deflashCycleSec', 'bm-deflash-ct', 'deflashCycleSec', a => {
+      const v = a.process === 'ebm' ? Math.round(a.cycleSec / a.cavities * 10) / 10 : 0;
+      return { value: v, source: 'rule', confidence: 0.6,
+        basis: a.process === 'ebm' ? `in line at the blow takt: ${a.cycleSec} s ÷ ${a.cavities} cavit${a.cavities === 1 ? 'y' : 'ies'}` : 'no flash to trim' };
+    }),
+    fromAdvice('blowMoulding.deflashManning', 'bm-deflash-man', 'deflashManning', a => ({
+      value: 0, source: 'rule', confidence: 0.6,
+      basis: a.process === 'ebm' ? 'no crew of its own — the blow crew tends the station (counted on the machine)' : 'no flash to trim',
+    })),
+    fromAdvice('blowMoulding.mouldMaterial', 'bm-mould-mat', 'mouldMaterial', a => ({
+      value: a.mouldMaterial, source: 'rule', confidence: 0.75,
+      basis: a.process === 'ebm'
+        ? 'cast/CNC aluminium — the EBM workhorse, and it conducts heat out faster than steel'
+        : `${a.process.toUpperCase()} injects the preform, so the tool carries injection pressure — P20 steel`,
+    })),
+    fromAdvice('blowMoulding.mouldLife', 'bm-mould-life', 'mouldLife', a => ({
+      value: MOULD_LIFE[a.mouldMaterial], source: 'library', confidence: 0.7,
+      basis: `documented cycle life for a ${a.mouldMaterial} blow mould`,
+    })),
+    fromAdvice('blowMoulding.mouldCostGBP', 'bm-mould-cost', 'mouldCostGBP', a => {
+      const est = estimateBlowMouldCost({
+        process: a.process, cavities: a.cavities, partVolumeL: a.capacityL, mouldMaterial: a.mouldMaterial,
+      });
+      return { value: est.total, source: 'advisor', confidence: 0.6,
+        basis: `${a.cavities}-cavity ${a.process.toUpperCase()} ${a.mouldMaterial} tool at ${a.capacityL} L` };
+    }),
   ],
 };

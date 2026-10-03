@@ -118,12 +118,17 @@ async function main(): Promise<void> {
         preselected: (d.querySelector('input[type=radio]:checked') as HTMLInputElement | null)?.value ?? null })));
       summary[`questionsRound${round}`] = open;
       rounds.push(open.map(o => o.id).join(','));
+      log(`round ${round}: ${open.map(o => o.id).join(', ') || '(none)'}`);
       const toAnswer = open.filter(o => o.id in ANSWERS);
       if (!toAnswer.length) { if (open.length) summary.unansweredDecisions = open; break; }
       for (const o of toAnswer) {
         const sel = `.cad-decision[data-decision-id="${o.id}"]`;
         if (o.typed) await page.fill(`${sel} input[data-decision-entry]`, ANSWERS[o.id]);
-        else await page.check(`${sel} input[type=radio][value="${ANSWERS[o.id]}"]`);
+        else {
+          const offered = await page.$$eval(`${sel} input[type=radio]`, rs => rs.map(r => (r as HTMLInputElement).value));
+          if (!offered.includes(ANSWERS[o.id])) throw new Error(`${o.id}: "${ANSWERS[o.id]}" is not offered (${offered.join(', ')})`);
+          await page.check(`${sel} input[type=radio][value="${ANSWERS[o.id]}"]`);
+        }
       }
       const before = await page.evaluate(() => document.getElementById('cad-results')!.innerHTML.length);
       await page.click('#cad-decisions-apply');

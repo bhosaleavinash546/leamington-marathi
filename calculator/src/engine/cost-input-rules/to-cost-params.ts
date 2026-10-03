@@ -864,24 +864,40 @@ export function toCostParams(
     case 'blow_moulding': {
       const b = ci.blowMoulding;
       if (!b) return null;
+      // Every value is the rules' — the same the screen is filled with. This
+      // used to fix the cool factor at 2.5 s/mm², the parison at 6 s, pick the
+      // machine from the subtype, and leave crew, scrap and trim to the shop.
+      const deflash = num(b.deflashCycleSec) > 0 && b.deflashMachineId;
       return {
-        commodity, assumed: [...assumed, 'machineId', 'coolTimeFactor', 'parisonExtrusionTime'],
+        commodity, assumed,
         params: {
           ...shop,
+          ...(b.labourId ? { labourId: b.labourId } : {}),
+          ...(b.manning != null ? { manning: num(b.manning) } : {}),
+          ...(b.oee != null ? { oee: num(b.oee) } : {}),
+          ...(b.labourEfficiency != null ? { labourEfficiency: num(b.labourEfficiency) } : {}),
+          ...(b.rejectRate != null ? { rejectRate: num(b.rejectRate) } : {}),
           materialId,
           partWeightKg: num(ci.netWeightKg),
           flashWeightKg: num(b.flashWeightKg),
+          flashRegrindFraction: num(b.flashRegrindFraction),
           wallThicknessMm: num(b.wallThicknessMm, 3),
-          coolTimeFactorSPerMm2: 2.5,
+          coolTimeFactorSPerMm2: num(b.coolTimeFactorSPerMm2, 3.5),
           blowTimeSec: num(b.blowTimeSec, 8),
           openCloseSec: num(b.openCloseSec, 4),
-          machineId: b.subtype === 'sbm' ? 'blow-sbm-2stage'
+          parisonExtrusionTimeSec: num(b.parisonExtrusionTimeSec),
+          machineId: b.machineId || (b.subtype === 'sbm' ? 'blow-sbm-2stage'
             : b.subtype === 'ibm' ? 'blow-ibm-linear'
-            : b.barrierMultilayer ? 'blow-ebm-coex5' : 'blow-ebm-500l',
+            : b.barrierMultilayer ? 'blow-ebm-coex5' : 'blow-ebm-500l'),
           cavities: num(b.cavities, 1),
           mouldCost: num(b.mouldCostGBP),
           mouldLife: num(b.mouldLife, 1_000_000),
-          parisonExtrusionTimeSec: 6,
+          ...(deflash ? {
+            deflashMachineId: b.deflashMachineId,
+            deflashLabourId: b.deflashLabourId || 'lab-uk-blow',
+            deflashCycleTimeSec: num(b.deflashCycleSec),
+            deflashManning: num(b.deflashManning),
+          } : {}),
         },
       };
     }

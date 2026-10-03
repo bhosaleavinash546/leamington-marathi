@@ -6,11 +6,12 @@
 BLOW MOULDING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  wallThicknessMm=3  [ray-cast mean wall over 400 samples (average governs the programmed EBM cycle; thick reads are pinch welds) — deterministic, use verbatim]
+  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² = 17.00 mm, the area-mean wall of a shell (the ray-cast mean reads 3.00 mm: rays cross the cavity and read pinch welds) — deterministic, use verbatim]
   materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   partVolumeL: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   flashWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  flashRegrindFraction: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   process: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   subtype: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   barrierMultilayer: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
@@ -19,6 +20,16 @@ BLOW MOULDING COST INPUT RULES:
   coolTimeFactorSPerMm2: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   blowTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   openCloseSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  parisonExtrusionTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  labourId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  manning: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  oee: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  labourEfficiency: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  rejectRate: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashMachineId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashLabourId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashCycleSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashManning: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
@@ -27,11 +38,12 @@ BLOW MOULDING COST INPUT RULES:
 BLOW MOULDING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  wallThicknessMm: UNDECIDED — needs "What is the nominal wall thickness?" (Enter the nominal wall)
+  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² = 17.00 mm, the area-mean wall of a shell (the ray-cast found no wall) — deterministic, use verbatim]
   materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   partVolumeL: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   flashWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  flashRegrindFraction: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   process: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   subtype: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   barrierMultilayer: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
@@ -40,6 +52,16 @@ BLOW MOULDING COST INPUT RULES:
   coolTimeFactorSPerMm2: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   blowTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   openCloseSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  parisonExtrusionTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  labourId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  manning: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  oee: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  labourEfficiency: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  rejectRate: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashMachineId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashLabourId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashCycleSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
+  deflashManning: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))
   mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12) | PET Bottle Grade (1101))

@@ -301,7 +301,7 @@ describe('blow moulding', () => {
     expect(seq).toEqual([RESIN_DECISION_ID, CAPACITY_DECISION_ID, BARRIER_DECISION_ID]);
   });
 
-  it('costs a coex tank on the barrier grade and the accumulator machine', () => {
+  it('costs a coex tank on the barrier grade and the multi-layer co-ex head', () => {
     const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(FUEL_TANK, {
       [RESIN_DECISION_ID]: 'mat-hdpe',
       [CAPACITY_DECISION_ID]: 'over_20',
@@ -314,7 +314,10 @@ describe('blow moulding', () => {
     expect(bm.process).toBe('ebm_coex5');
     expect(bm.partWeightKg).toBe(12);                 // 12,500 cm³ x 960 kg/m³
     expect(bm.flashWeightKg).toBe(2.64);              // 22% above 3 kg
-    expect(bm.machineId).toBe('blow-ebm-large');      // 14.64 kg gross shot
+    // The barrier wall needs the multi-layer head, as the process and headless
+    // already said (blow-moulding review: the rule used to pick the mono-layer
+    // accumulator by shot weight, headless the co-ex head).
+    expect(bm.machineId).toBe('blow-ebm-coex5');
     expect(bm.cavities).toBe(1);
     expect(bm.mouldMaterial).toBe('aluminium');
     expect(bm.mouldLife).toBe(500_000);

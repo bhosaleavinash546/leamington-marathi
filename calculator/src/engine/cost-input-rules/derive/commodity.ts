@@ -211,7 +211,15 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
     ? (hv === 'near-enclosed' ? true : (g.topology.enclosesSealedVoid ?? null))
     : null;
 
-  if (largeThinShell && sealed === true) {
+  // A hollow thin shell is a hollow route whatever its size. The branch used
+  // to need ≥ 250 mm and < 3% fill, so a 220 mm washer reservoir at 6.5% fill
+  // fell to the sparse-thin-wall rung and was offered sheet metal, injection
+  // moulding and machining — blow moulding was not on the list (blow-moulding
+  // review, 3 Oct 2026). The bulk wall 2·V/S keeps cored castings out.
+  const bulkWall0 = (g.volume?.cm3 ?? 0) > 0 && (g.surfaceArea?.cm2 ?? 0) > 0
+    ? shellWallEstimateMm(g.volume!.cm3, g.surfaceArea!.cm2) : wall;
+  const hollowThinShell = fill < 0.20 && (bulkWall0 == null || bulkWall0 <= 10);
+  if ((largeThinShell || hollowThinShell) && sealed === true) {
     // A sealed cavity rules out every solid process — no core comes out. Which
     // hollow route it is depends on size and volume, which the shape does not say.
     return {
