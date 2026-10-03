@@ -78,6 +78,12 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
         {idea.powertrain && (
           <span className="px-2 py-0.5 rounded-full border border-hairline bg-tint text-slate-300 text-xs font-medium">{idea.powertrain}</span>
         )}
+        {idea.architectureAssumed && (
+          <span className="px-2 py-0.5 rounded-full border border-hairline bg-tint text-slate-300 text-xs font-medium" title="The 48 V architecture this idea assumes. Ideas assuming different architectures are alternatives, not additive.">48 V: {idea.architectureAssumed}</span>
+        )}
+        {idea.reviewOpenPoints && idea.reviewOpenPoints.length > 0 && (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-medium" title={idea.reviewOpenPoints.join('\n\n')}><AlertTriangle size={10} /> {idea.reviewOpenPoints.length} open review point{idea.reviewOpenPoints.length === 1 ? '' : 's'}</span>
+        )}
         {idea.offRoad && (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-hairline bg-tint text-slate-300 text-xs font-medium"><Mountain size={10} /> Off-road</span>
         )}

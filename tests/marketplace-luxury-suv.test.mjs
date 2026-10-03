@@ -21,26 +21,29 @@ function money(s) {
   return [Number(m[1]) * mul(m[2] || m[4]), Number(m[3]) * mul(m[4] || m[2])];
 }
 
+// Counts are AFTER the 3 Oct 2026 engineering review, which removed 17 ideas
+// whose case did not survive (impossible physics, negative savings, or not
+// feasible as described — see DECISIONS 116).
 // One contract, two researched packs. Each pack pins its own size, split and
 // mix; everything else (anchors, sources, dedupe, arithmetic, facets,
 // honesty) is shared.
 const PACKS = [
   {
     file: 'marketplace-luxury-suv-mhev-bev-ideas.json', name: 'luxury-SUV MHEV / 800V BEV',
-    total: 300, levels: { assembly: 90, subassembly: 110, part: 100 },
+    total: 288, levels: { assembly: 84, subassembly: 107, part: 97 },
     mix: (pt, offRoad) => pt.MHEV >= 40 && pt['800V BEV'] >= 60 && pt['MHEV & 800V BEV'] >= 100 && offRoad >= 60,
     commodities: ['Battery', 'EDU', 'Chassis', 'Driveline', 'BIW', 'Interior', 'Exterior', 'Electrical', 'Powertrain'],
   },
   {
     file: 'marketplace-mhev-48v-ideas.json', name: '48 V MHEV',
-    total: 100, levels: { assembly: 30, subassembly: 35, part: 35 },
+    total: 99, levels: { assembly: 30, subassembly: 35, part: 34 },
     // Every idea is a 48 V MHEV idea (a few shared with the BEV sister model).
     mix: (pt) => !pt['800V BEV'] && (pt.MHEV ?? 0) >= 85,
     commodities: ['Powertrain', 'Electrical', 'Battery'],
   },
   {
     file: 'marketplace-mhev-48v-deep-ideas.json', name: '48 V MHEV deep (second wave)',
-    total: 100, levels: { assembly: 30, subassembly: 35, part: 35 },
+    total: 96, levels: { assembly: 30, subassembly: 32, part: 34 },
     mix: (pt) => !pt['800V BEV'] && (pt.MHEV ?? 0) >= 85,
     commodities: ['Powertrain', 'Electrical', 'Battery'],
     deep: true,
@@ -148,6 +151,10 @@ describe(`${name} marketplace library`, () => {
     }
   });
 
+  it('states that savings across ideas are not additive', () => {
+    for (const x of pack) assert.match(x.ideaData.volumeBasis, /not additive/, `${x.title}: non-additivity note missing`);
+  });
+
   it('is seeded UNVERIFIED with estimated savings and sources flagged unreviewed', () => {
     for (const x of pack) {
       assert.equal(x.verified, 0, `${x.title} claims verification it never earned`);
@@ -163,3 +170,24 @@ describe(`${name} marketplace library`, () => {
   });
 });
 }
+
+// Ideas removed by the review are retired on boot (the seeder only upserts, so
+// a database seeded before the review would otherwise keep showing them).
+describe('retired ideas', () => {
+  const retired = JSON.parse(readFileSync(new URL('../marketplace-retired-ideas.json', import.meta.url), 'utf8'));
+  it('each names its reason, and none is still in a pack', () => {
+    const live = new Set(PACKS.flatMap(P => JSON.parse(readFileSync(new URL(`../${P.file}`, import.meta.url), 'utf8')).map(x => x.id)));
+    assert.equal(retired.length, 17);
+    for (const r of retired) {
+      assert.match(r.id, /^(lux|m48|m48d)-[0-9a-f]{12}$/);
+      assert.ok(r.reason && r.reason.length >= 20, `${r.title}: retired without a reason`);
+      assert.ok(!live.has(r.id), `${r.title} is retired but still in a pack`);
+    }
+  });
+  it('the server retires them after seeding', () => {
+    const src = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+    assert.match(src, /marketplace-retired-ideas\.json/);
+    assert.match(src, /SET status='retired'/);
+    assert.ok(src.indexOf('marketplace-retired-ideas.json') > src.indexOf("seedMarketplaceIdeasFromFile('marketplace-mhev-48v-deep-ideas.json'"), 'retire must run after the last seed');
+  });
+});

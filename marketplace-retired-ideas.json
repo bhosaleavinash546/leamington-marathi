@@ -1,0 +1,138 @@
+[
+ {
+  "id": "lux-39829d2d2300",
+  "title": "One wheel casting for both powertrains; BEV range gained by snap-in PA6 face disc",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "per-wheel premium unsupported by its own components; saving close to zero",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-5c2c68ccfee2",
+  "title": "Double-wishbone front axle replaces five-link front on shared platform",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "bush-count error: real saving ~€4-8 per vehicle cannot pay for a new axle programme",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-b430f72e2b88",
+  "title": "Ribbed thick-wall skid face moulded into MHEV tank; separate tank guard deleted",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "using the fuel tank as a skid surface is a safety concern the idea does not resolve",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-d32b3da27987",
+  "title": "In-house cell-to-module assembly beside the vehicle plant instead of buying finished modules",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "platform builds ~25k packs/yr, below the idea’s own 35k break-even",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-24cdd90ab4e7",
+  "title": "Dual-output 48V battery with internal 12V tap removes the 12V AGM battery",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "30-day park drain (~300 Wh) exceeds the whole ~200 Wh battery",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-926f23688fbc",
+  "title": "Dealer-level repair of one faulty cell block instead of whole-pack warranty replacement",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "dealer tooling is €30/vehicle, not €3 — the saving turns negative",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-f7f3012e32f4",
+  "title": "In-house battery shop also builds MHEV 48V batteries on shared weld and EOL cells",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "depreciation spread over twice the real MHEV volume; the case vanishes",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-4f91a2918282",
+  "title": "Route DC fast charging through main contactors, deleting the separate charge contactor pair",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "keeps the inlet contactor pair it claims to delete",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-b17a8bcdc211",
+  "title": "Shift-by-wire park actuator shared between MHEV 8-speed and BEV EDU",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "the bought-in 8-speed’s park lock is integral to the gearbox and cannot be commonised as described",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-bc2da34313a4",
+  "title": "Fine-blanked park-lock pawl shared by MHEV 8-speed and BEV EDU",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "the bought-in 8-speed’s park pawl cannot be commonised as described",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-8d5aebb2beb4",
+  "title": "Predictive tow-and-climb thermal pre-cooling downsizes fan and cooling pack",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "a 60-80 s thermal buffer cannot cover the sustained SAE J2807 climb it claims",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "lux-2c6900d38d83",
+  "title": "Three-way catalyst washcoat: Pt-rich tri-metal formulation replaces Pd-dominant loading",
+  "pack": "marketplace-luxury-suv-mhev-bev-ideas.json",
+  "reason": "platinum has been dearer than palladium since 2024 — a 1:1 swap adds cost",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "m48-4d363268ce27",
+  "title": "As-cast pin-fin cooling face replaces machined cold-plate face on inverter housing",
+  "pack": "marketplace-mhev-48v-ideas.json",
+  "reason": "extra 0.3 mm pad adds ~35 K, not 4-6 K — the as-cast contact face is infeasible as stated",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "m48d-ee7fc4f778a2",
+  "title": "Thirteen 48 V busbars stamped as one lead-frame, insert-moulded, tie-bars punched out",
+  "pack": "marketplace-mhev-48v-deep-ideas.json",
+  "reason": "€530k for €1.15/vehicle: 111-month payback, beyond the programme",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "m48d-74ba6dc3310d",
+  "title": "Boost-pressure wastegate capsule replaces electric actuator once 48 V EHC heats the catalyst",
+  "pack": "marketplace-mhev-48v-deep-ideas.json",
+  "reason": "excluded CO2 penalty (~€48-95/vehicle at €95 per g/km) exceeds the €26 saving",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "m48d-dfca2bed6d64",
+  "title": "Converter bridging clutch: one friction disc instead of two as BSG trims slip heat",
+  "pack": "marketplace-mhev-48v-deep-ideas.json",
+  "reason": "torque capacity falls ~24% by its own formula; 89-month payback",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ },
+ {
+  "id": "m48d-f9b0417e078c",
+  "title": "Roll actuator housing flow-formed in 16MnCr5 with integral first-stage ring-gear teeth, wade-sealed",
+  "pack": "marketplace-mhev-48v-deep-ideas.json",
+  "reason": "first-stage ring torque understated ~4×; tooth stress exceeds the endurance limit",
+  "retiredOn": "2026-10-03",
+  "by": "engineering review of the 2026-10-03 packs (DECISIONS 116)"
+ }
+]

@@ -4643,3 +4643,30 @@ engineering block, the cost-bridge table, the investment, the structured
 benchmark anchor and clickable sources. These existed in the data but were
 invisible. Table figures go through `<Money>`, so they follow the display
 currency, while prose figures stay in the euros they were written in.
+
+## 116. Ideas that fail review are retired, not deleted; open points stay visible on the idea
+
+The engineering review of the 500 ideas added on 3 October
+(`docs/IDEA-LIBRARY-REVIEW-2026-10-03.md`) changed the packs in three ways.
+
+**Fixes applied.** 456 verbatim fixes were applied, each only where its
+exact text was found.
+
+**Ideas removed and retired.** 17 ideas whose case did not survive were
+taken out of their packs. Removing an idea from a pack is not enough,
+because `seedMarketplaceIdeasFromFile` only inserts and updates: a database
+seeded earlier would keep showing it. So `marketplace-retired-ideas.json`
+lists each removed id with its reason, and the server sets
+`status='retired'` on boot.
+- Every marketplace and retrieval query already filters
+  `status='approved'`, so a retired idea disappears everywhere.
+- Votes and pipeline links that reference its id survive.
+
+**Open points kept with the idea.** Findings that need an engineer's
+judgement were not resolved by guessing. They are written into the idea's
+`riskNotes` and `reviewOpenPoints`, and shown as a tag. A reader sees the
+caveat with the idea, not in a separate report.
+
+**Two library-wide rules made explicit.** Single-powertrain savings are
+fleet averages at the stated mix. Savings across ideas are not additive:
+each idea says so, and 48 V ideas carry the architecture they assume.

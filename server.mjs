@@ -777,6 +777,19 @@ seedMarketplaceIdeasFromFile('marketplace-mhev-48v-ideas.json', '48 V MHEV resea
 // stated saving, and tooling/capex/validation with a reconciled payback.
 seedMarketplaceIdeasFromFile('marketplace-mhev-48v-deep-ideas.json', '48 V MHEV deep ideas');
 
+// Retired ideas: removed from their pack after review (impossible physics, a
+// negative saving, or not feasible as described). The seeder only inserts and
+// updates, so a database seeded earlier would keep showing them; retiring
+// sets status='retired', which every marketplace and retrieval query already
+// excludes, while votes and pipeline links that point at the id survive.
+try {
+  const retired = JSON.parse(fs.readFileSync(path.join(__dirname, 'marketplace-retired-ideas.json'), 'utf-8'));
+  const ret = db.prepare("UPDATE marketplace_ideas SET status='retired' WHERE id = ? AND status != 'retired'");
+  let n = 0;
+  for (const r of retired) n += ret.run(r.id).changes;
+  if (n) console.log(`[Marketplace] Retired ${n} reviewed-out ideas`);
+} catch (e) { if (e.code !== 'ENOENT') console.log('[Marketplace] retire warning:', e.message); }
+
 // Provenance backfill must ALSO run after seeding: on a fresh DB the seed
 // inserts happen after the migration block above, so their origin is NULL here.
 try {

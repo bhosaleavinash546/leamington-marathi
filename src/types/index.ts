@@ -175,6 +175,10 @@ export interface CostReductionIdea {
   volumeBasis?: string;
   powertrain?: string;
   offRoad?: boolean;
+  /** 48 V ideas: the machine architecture the idea assumes (auto-tagged from its text). */
+  architectureAssumed?: string;
+  /** Engineering-review points left open on this idea (also written into riskNotes). */
+  reviewOpenPoints?: string[];
 }
 
 /** Server-side pipeline summary returned with every analysis (honest tallies, never inferred client-side). */
