@@ -770,6 +770,12 @@ seedMarketplaceIdeasFromFile('marketplace-luxury-suv-mhev-bev-ideas.json', 'luxu
 // and belt drive, power electronics, battery and board net, electrified
 // consumers, and system strategy — same research, dedupe and honesty contract.
 seedMarketplaceIdeasFromFile('marketplace-mhev-48v-ideas.json', '48 V MHEV researched ideas');
+// 100 DEEP 48 V MHEV ideas (second wave): e-machine internals, power-electronics
+// build, battery and distribution, engine/gearbox parts, consumer internals and
+// plant/lifecycle. Each carries the engineering block (physics, spec deltas,
+// validation plan, DFM, cost walk), a per-vehicle cost bridge that nets to the
+// stated saving, and tooling/capex/validation with a reconciled payback.
+seedMarketplaceIdeasFromFile('marketplace-mhev-48v-deep-ideas.json', '48 V MHEV deep ideas');
 
 // Provenance backfill must ALSO run after seeding: on a fresh DB the seed
 // inserts happen after the migration block above, so their origin is NULL here.
