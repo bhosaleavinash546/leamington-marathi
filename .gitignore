@@ -13,3 +13,4 @@ __pycache__/
 dist-site
 .brainspark-local.env
 /data/
+exports/
