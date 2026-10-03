@@ -43,8 +43,9 @@ describe('analysis mode', () => {
 });
 
 describe('the commodities the flip must not break', () => {
-  it('has no rule spec for the seven not yet converted', () => {
-    for (const c of ['extrusion', 'painting', 'biw', 'pcb_fab', 'pcba', 'wiring_harness', 'assembly']) {
+  it('has no rule spec for the six not yet converted', () => {
+    // Extrusion was converted in the extrusion build (Oct 2026).
+    for (const c of ['painting', 'biw', 'pcb_fab', 'pcba', 'wiring_harness', 'assembly']) {
       expect(specForCommodity(c)).toBeNull();
       expect(DETERMINISTIC_COMMODITIES).not.toContain(c);
     }

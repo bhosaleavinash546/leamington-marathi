@@ -329,14 +329,15 @@ describe('cast_and_machine — the composition', () => {
 describe('the registry', () => {
   it('resolves every converted commodity, and nothing else', () => {
     expect(Object.keys(RULE_SPECS).sort()).toEqual([
-      'blow_moulding', 'cast_and_machine', 'casting', 'composites', 'forging',
+      'blow_moulding', 'cast_and_machine', 'casting', 'composites', 'extrusion', 'forging',
       'gear', 'injection_moulding', 'machining', 'rotational_moulding', 'rubber',
       'sheet_metal', 'sheet_metal_fab', 'thermoforming',
     ]);
     expect(specForCommodity('machining')).toBe(MACHINING_RULES);
-    // Extrusion, painting, BIW, PCB and harness still take their inputs from
-    // the model — the registry says so rather than pretending otherwise.
-    expect(specForCommodity('extrusion')).toBeNull();
+    // Painting, BIW, PCB and harness still take their inputs from the model —
+    // the registry says so rather than pretending otherwise. (Extrusion was
+    // converted in the extrusion build.)
+    expect(specForCommodity('painting')).toBeNull();
   });
 
   it('gives sheet-metal fabrication the same measured blank', () => {

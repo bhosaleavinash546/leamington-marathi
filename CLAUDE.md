@@ -315,6 +315,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   (layup + cure + turnaround), worn out fractionally; waterjet trim, NDI on structural carbon, crew, OEE, scrap are rules.
   A measured enclosure (≥ 30% of rays hit) outranks the fill-based "sealed" verdict in routing. See
   `docs/cad/composites-review-2026-10.md`, `tests/composites-review.test.ts`; parts in `cad-audit/parts/COMP_*`.
+- Polymer extrusion (`cost-input-rules/commodities/extrusion.ts`, built Oct 2026): a constant-section part
+  (`derive/profile.ts::extrusionProfile`, shared with rubber) is asked extrusion / rubber / machining BEFORE the
+  hollow and bend tests (a tube reads as a closed tank to the enclosure probe). Section = V/L, kg/m by density,
+  wall 2·V/S; round hollow → tube (≤ Ø16, micro line) or pipe, else profile; line, screw and cooling by process
+  (`EXTRUSION_LINES`), the line rate is the advisor's screw-vs-cooling minimum; start-up scrap = 0.25 h of rated
+  output over a run of at least a shift. Polymer only — the library has no aluminium press line, so a metal grade
+  is refused. Headless via `toCostParams` 'extrusion'. See `docs/cad/extrusion-build-2026-10.md`,
+  `tests/extrusion-build.test.ts`; parts in `cad-audit/parts/EXT_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

@@ -590,6 +590,29 @@ export interface CADAnalysisResult {
       deflashCycleSec?: number;
       deflashManning?: number;
     };
+    /** Polymer extrusion, from the rules (extrusion build, Oct 2026). */
+    extrusion?: {
+      process?: string;
+      partLengthM?: number;
+      profileWeightKgPerM?: number;
+      wallThicknessMm?: number;
+      machineId?: string;
+      screwDiameterMm?: number;
+      cooling?: string;
+      lineRateKgPerHr?: number;
+      startupScrapFraction?: number;
+      steadyScrapFraction?: number;
+      dieSizeMm?: number;
+      dieLayers?: number;
+      dieComplexity?: string;
+      dieCostGBP?: number;
+      energyPricePerKwh?: number;
+      labourId?: string;
+      manning?: number;
+      oee?: number;
+      labourEfficiency?: number;
+      leakTest?: boolean;
+    };
     thermoforming?: {
       /** 'vacuum' | 'pressure' | 'twin_sheet' */
       method: string;

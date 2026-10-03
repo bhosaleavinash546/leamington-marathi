@@ -22,8 +22,8 @@ const DIR = 'tests/fixtures/commodity-rules-prompt';
 describe('commodity cost-input rules — prompt baseline', () => {
   it('has a baseline for every commodity with an explicit rule block', () => {
     const files = readdirSync(DIR).filter(f => f.endsWith('.txt')).sort();
-    // 12 commodity cases + the default branch.
-    expect(files.length).toBe(13);
+    // 13 commodity cases (extrusion added in the extrusion build) + the default branch.
+    expect(files.length).toBe(14);
     for (const must of ['casting.txt', 'forging.txt', 'machining.txt',
                         'injection_moulding.txt', 'sheet_metal.txt', '__default__.txt']) {
       expect(files).toContain(must);

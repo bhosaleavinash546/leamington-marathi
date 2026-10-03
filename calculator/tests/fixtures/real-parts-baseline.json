@@ -10,7 +10,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1a3fb86b6f83a5fe",
+      "partName": "cv-cad-0d938f64b1a5da33",
       "boundingBox": {
         "xMm": 500,
         "yMm": 350,
@@ -795,7 +795,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-357f83f1339fc5f0",
+      "partName": "cv-cad-501db643ffc3a583",
       "boundingBox": {
         "xMm": 1160,
         "yMm": 760,
@@ -1516,7 +1516,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-86b1f853c38e2480",
+      "partName": "cv-cad-1907066e53b18d51",
       "boundingBox": {
         "xMm": 240,
         "yMm": 60,
@@ -2088,7 +2088,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-41e7eef4c370e3ef",
+      "partName": "cv-cad-3e4d0ec57ca03846",
       "boundingBox": {
         "xMm": 405,
         "yMm": 455,
@@ -3428,7 +3428,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bb548f163f812a39",
+      "partName": "cv-cad-f7712ea2d6271043",
       "boundingBox": {
         "xMm": 220,
         "yMm": 160,
@@ -4490,7 +4490,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-10727ca3966588b6",
+      "partName": "cv-cad-691a2d6d5390a91c",
       "boundingBox": {
         "xMm": 700,
         "yMm": 500,
@@ -5093,7 +5093,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d79c6b21f9908382",
+      "partName": "cv-cad-100e133c15f8479a",
       "boundingBox": {
         "xMm": 398.29,
         "yMm": 120,
@@ -5866,7 +5866,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1dc7649452e320b2",
+      "partName": "cv-cad-29e62ce9bcf8c052",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 900,
@@ -6253,7 +6253,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8f2e9251d10cacb0",
+      "partName": "cv-cad-2e4f733f9d01dd68",
       "boundingBox": {
         "xMm": 132,
         "yMm": 120,
@@ -7013,6 +7013,1292 @@
     }
   },
   {
+    "part": "EXT_Fuel_Line_Tube.stp",
+    "sha256": "5d24d59c9ea60a3d",
+    "note": "MODELLED: Ø8 × 1 mm PA12 fuel / brake line tube, 600 mm.",
+    "answers": {
+      "material.resin": "mat-pa12-ext-tube",
+      "commodity.route": "extrusion"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-f576a25c2688ccd2",
+      "boundingBox": {
+        "xMm": 600,
+        "yMm": 8,
+        "zMm": 8
+      },
+      "volume": {
+        "mm3": 13194.7,
+        "cm3": 13.195
+      },
+      "surfaceArea": {
+        "mm2": 26433.4,
+        "cm2": 264.334
+      },
+      "fillRatio": 0.3436,
+      "projectedArea": {
+        "zMm2": 4500,
+        "yMm2": 4500,
+        "xMm2": 22,
+        "alongDrawMm2": 4500,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "enclosure": {
+        "centreIn": "void",
+        "rays": 96,
+        "hitShare": 1
+      },
+      "weights": {
+        "aluminiumKg": 0.0356,
+        "steelKg": 0.1036,
+        "plasticKg": 0.0139,
+        "castIronKg": 0.0943,
+        "copperKg": 0.1182,
+        "titaniumKg": 0.0585
+      },
+      "faces": {
+        "total": 4,
+        "byType": {
+          "CYLINDER": 2,
+          "PLANE": 2
+        },
+        "areaByTypeMm2": {
+          "CYLINDER": 26389,
+          "PLANE": 44
+        }
+      },
+      "turning": {
+        "fraction": 1,
+        "revolvedFraction": 0.998,
+        "maxDiaMm": 8,
+        "axis": [
+          1,
+          0,
+          0
+        ]
+      },
+      "edges": {
+        "total": 6,
+        "byType": {
+          "CIRCLE": 4,
+          "LINE": 2
+        },
+        "sampleCircleRadiiMm": [
+          3,
+          4
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 2,
+        "cylindricalFaceRadiiMm": [
+          3,
+          4
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          3
+        ],
+        "bossShaftCount": 1,
+        "bossShaftRadiiMm": [
+          4
+        ],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 2,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 44
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 8,
+          "depthMm": 600,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            1
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 6,
+          "depthMm": 600,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            4
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 1,
+        "totalBendLengthMm": 600,
+        "thicknessMm": 1,
+        "thicknessSource": "bend-pairs",
+        "bulkWallMm": 1,
+        "gaugeSamples": 1
+      },
+      "gear": null,
+      "wallThickness": null,
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 2,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 2,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 2,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 2,
+            "faceIds": [
+              1,
+              4
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 2,
+            "faceIds": [
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 30,
+        "planarMillingTimeMins": 0,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 30.5,
+        "estimatedTotalHrs": 0.5085,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 40000,
+        "gravityMouldCostGBP": 8000,
+        "sandPatternCostGBP": 2000,
+        "imMouldCostGBP": 15000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 100,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1514,
+        "sandCycleTimeHrFerrous": 0.1538,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 3.97,
+        "investShellCostGBP": 11.9
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "FUEL LINE TUBE PA12 EXTRUDED 1"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      },
+      "blank": {
+        "grossAreaMm2": 0,
+        "netAreaMm2": 0,
+        "outerPerimeterMm": 0,
+        "holePerimeterMm": 0,
+        "holeCount": 1,
+        "boundingRectMm": {
+          "lengthMm": 0,
+          "widthMm": 0
+        },
+        "rectangleFill": 0.593,
+        "source": "developed from the solid — 2 skins unfolded at K = 0.5 (mid-surface), 168 triangles, 1 bend(s), 1.00 mm gauge, skins agree within 34.4% — drawn (1474.1% stretch), forming solve applied",
+        "developedFrom": "solid",
+        "developable": false,
+        "maxStrainPct": 1474.1,
+        "blankHash": "6dd5a08fa4a5500d5d7856c5e118b04138bfd52f93c8c1ad961d703fe23f16cf",
+        "outline": [
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ],
+          [
+            0.01,
+            0
+          ]
+        ],
+        "forming": {
+          "method": "one-step inverse",
+          "nValue": 1,
+          "blankAreaUnfoldMm2": 0,
+          "blankAreaSolvedMm2": 0,
+          "thinningP95Pct": 100,
+          "maxThinningPct": 100,
+          "maxThickeningPct": -100,
+          "strainPoints": []
+        },
+        "warnings": [
+          "The skin stretched by up to 1474.1% when flattened (1284.5% on average), so this is a drawn part, not a bent one. The forming solve (one-step inverse, plastic work minimised from that flat) put the stretched metal back: blank 0 → 0 cm², thinning 100% at the 95th percentile and 100% at the worst well-shaped element. The blank is the solve's, not a geometric unfold; the FASTBLANK profile remains the formed-process answer.",
+          "The two skins developed to blanks 34.4% apart; the mean is used.",
+          "73 triangle(s) inverted in the flat pattern — check the outline."
+        ]
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "extrusion",
+      "total": 0.41,
+      "breakdown": {
+        "rawMaterial": 0.09,
+        "process": 0.03,
+        "labour": 0.04,
+        "tooling": 0.17,
+        "packaging": 0.01,
+        "logistics": 0.01,
+        "overhead": 0.04,
+        "margin": 0.03
+      }
+    }
+  },
+  {
+    "part": "EXT_Twin_Chamber_Profile.stp",
+    "sha256": "a0fa9c64a318b6da",
+    "note": "MODELLED: 40 × 25 mm twin-chamber rigid PVC conduit / trim profile, 2 mm walls, 2 m.",
+    "answers": {
+      "material.resin": "mat-upvc-pipe",
+      "commodity.route": "extrusion"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-55ecca9596162d89",
+      "boundingBox": {
+        "xMm": 2000,
+        "yMm": 40,
+        "zMm": 25
+      },
+      "volume": {
+        "mm3": 572000,
+        "cm3": 572
+      },
+      "surfaceArea": {
+        "mm2": 564572,
+        "cm2": 5645.72
+      },
+      "fillRatio": 0.286,
+      "projectedArea": {
+        "zMm2": 80000,
+        "yMm2": 50000,
+        "xMm2": 286,
+        "alongDrawMm2": 80000,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "enclosure": {
+        "centreIn": "material",
+        "rays": 0,
+        "hitShare": null
+      },
+      "weights": {
+        "aluminiumKg": 1.5444,
+        "steelKg": 4.4902,
+        "plasticKg": 0.6006,
+        "castIronKg": 4.0898,
+        "copperKg": 5.1251,
+        "titaniumKg": 2.534
+      },
+      "faces": {
+        "total": 14,
+        "byType": {
+          "PLANE": 14
+        },
+        "areaByTypeMm2": {
+          "PLANE": 564572
+        }
+      },
+      "turning": {
+        "fraction": 0,
+        "revolvedFraction": 0,
+        "maxDiaMm": 0,
+        "axis": null
+      },
+      "edges": {
+        "total": 36,
+        "byType": {
+          "LINE": 36
+        },
+        "sampleCircleRadiiMm": []
+      },
+      "features": {
+        "cylindricalFaceCount": 0,
+        "cylindricalFaceRadiiMm": [],
+        "estimatedHoleCount": 0,
+        "holeRadiiMm": [],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 14,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 564572
+      },
+      "featureTable": [
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 80000,
+          "faceIds": [
+            3,
+            4
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 50000,
+          "faceIds": [
+            2,
+            5
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 42000,
+          "faceIds": [
+            7,
+            9,
+            11,
+            12
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 34000,
+          "faceIds": [
+            6,
+            8,
+            10,
+            13
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 2.03,
+        "thicknessSource": "bulk-wall",
+        "bulkWallMm": 2.03
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 1.95,
+        "maxMm": 24.95,
+        "p95Mm": 24.95,
+        "meanMm": 5.78,
+        "stdDevMm": 8.57,
+        "sampleCount": 6,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 8,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 8,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Y",
+            "faceCount": 6,
+            "faceIds": [
+              2,
+              5,
+              7,
+              9,
+              11,
+              12
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 6,
+            "faceIds": [
+              3,
+              4,
+              6,
+              8,
+              10,
+              13
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 2,
+            "faceIds": [
+              1,
+              14
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 112.9,
+        "drillBoreTimeMins": 0,
+        "estimatedTotalMins": 157.9,
+        "estimatedTotalHrs": 2.6319,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 80000,
+        "gravityMouldCostGBP": 15000,
+        "sandPatternCostGBP": 4500,
+        "imMouldCostGBP": 55000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 84,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.2118,
+        "sandCycleTimeHrFerrous": 0.3136,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 84.69,
+        "investShellCostGBP": 254.06
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "TWIN CHAMBER CONDUIT PROFILE PVC EXTRUDED 3"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "extrusion",
+      "total": 2.02,
+      "breakdown": {
+        "rawMaterial": 0.78,
+        "process": 0.17,
+        "labour": 0.09,
+        "tooling": 0.44,
+        "packaging": 0.09,
+        "logistics": 0.11,
+        "overhead": 0.18,
+        "margin": 0.15
+      }
+    }
+  },
+  {
+    "part": "EXT_Vent_Pipe.stp",
+    "sha256": "04f3c478b4094a5d",
+    "note": "MODELLED: Ø32 × 3 mm HDPE vent / coolant pipe, 1 m.",
+    "answers": {
+      "material.resin": "mat-pe100-pipe",
+      "commodity.route": "extrusion"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-d4705e97375d488c",
+      "boundingBox": {
+        "xMm": 1000,
+        "yMm": 32,
+        "zMm": 32
+      },
+      "volume": {
+        "mm3": 273318.6,
+        "cm3": 273.319
+      },
+      "surfaceArea": {
+        "mm2": 182759,
+        "cm2": 1827.59
+      },
+      "fillRatio": 0.2669,
+      "projectedArea": {
+        "zMm2": 32500,
+        "yMm2": 32500,
+        "xMm2": 271,
+        "alongDrawMm2": 32500,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "enclosure": {
+        "centreIn": "void",
+        "rays": 96,
+        "hitShare": 1
+      },
+      "weights": {
+        "aluminiumKg": 0.738,
+        "steelKg": 2.1456,
+        "plasticKg": 0.287,
+        "castIronKg": 1.9542,
+        "copperKg": 2.4489,
+        "titaniumKg": 1.2108
+      },
+      "faces": {
+        "total": 4,
+        "byType": {
+          "CYLINDER": 2,
+          "PLANE": 2
+        },
+        "areaByTypeMm2": {
+          "CYLINDER": 182212,
+          "PLANE": 547
+        }
+      },
+      "turning": {
+        "fraction": 1,
+        "revolvedFraction": 0.997,
+        "maxDiaMm": 32,
+        "axis": [
+          1,
+          0,
+          0
+        ]
+      },
+      "edges": {
+        "total": 6,
+        "byType": {
+          "CIRCLE": 4,
+          "LINE": 2
+        },
+        "sampleCircleRadiiMm": [
+          13,
+          16
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 2,
+        "cylindricalFaceRadiiMm": [
+          13,
+          16
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          13
+        ],
+        "bossShaftCount": 1,
+        "bossShaftRadiiMm": [
+          16
+        ],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 2,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 547
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 32,
+          "depthMm": 1000,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            1
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 26,
+          "depthMm": 1000,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            4
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 1,
+        "totalBendLengthMm": 1000,
+        "thicknessMm": 3,
+        "thicknessSource": "bend-pairs",
+        "bulkWallMm": 2.99,
+        "gaugeSamples": 1
+      },
+      "gear": null,
+      "wallThickness": null,
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 2,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 2,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 2,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 2,
+            "faceIds": [
+              1,
+              4
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 2,
+            "faceIds": [
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 30,
+        "planarMillingTimeMins": 0.1,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 30.6,
+        "estimatedTotalHrs": 0.5102,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 80000,
+        "gravityMouldCostGBP": 15000,
+        "sandPatternCostGBP": 3000,
+        "imMouldCostGBP": 55000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 100,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1795,
+        "sandCycleTimeHrFerrous": 0.2282,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 27.41,
+        "investShellCostGBP": 82.24
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "VENT PIPE HDPE EXTRUDED 2"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      },
+      "blank": {
+        "grossAreaMm2": 36,
+        "netAreaMm2": 6122,
+        "outerPerimeterMm": 16,
+        "holePerimeterMm": 14,
+        "holeCount": 1,
+        "boundingRectMm": {
+          "lengthMm": 6.3,
+          "widthMm": 3.7
+        },
+        "rectangleFill": 1.542,
+        "source": "developed from the solid — 2 skins unfolded at K = 0.5 (mid-surface), 168 triangles, 1 bend(s), 3.00 mm gauge, skins agree within 200.0% — drawn (1298.1% stretch), forming solve applied",
+        "developedFrom": "solid",
+        "developable": false,
+        "maxStrainPct": 1298.1,
+        "blankHash": "00207f7f0a80cdae5ee80a27293c7d37f197f6dc63096f6daa07a3f1222a2da0",
+        "outline": [
+          [
+            0.38,
+            2.91
+          ],
+          [
+            0.58,
+            2.64
+          ],
+          [
+            0.82,
+            2.38
+          ],
+          [
+            1.11,
+            2.12
+          ],
+          [
+            1.44,
+            1.86
+          ],
+          [
+            1.82,
+            1.6
+          ],
+          [
+            2.23,
+            1.36
+          ],
+          [
+            2.71,
+            1.11
+          ],
+          [
+            3.24,
+            0.88
+          ],
+          [
+            3.84,
+            0.65
+          ],
+          [
+            4.52,
+            0.44
+          ],
+          [
+            5.29,
+            0.26
+          ],
+          [
+            6.16,
+            0.1
+          ],
+          [
+            7.18,
+            0
+          ],
+          [
+            8.43,
+            0
+          ],
+          [
+            10.08,
+            0.26
+          ],
+          [
+            12.52,
+            1.64
+          ],
+          [
+            11.51,
+            5.87
+          ],
+          [
+            9.56,
+            6.88
+          ],
+          [
+            8.16,
+            7.21
+          ],
+          [
+            7.03,
+            7.32
+          ],
+          [
+            6.08,
+            7.34
+          ],
+          [
+            5.26,
+            7.29
+          ],
+          [
+            4.52,
+            7.2
+          ],
+          [
+            3.88,
+            7.08
+          ],
+          [
+            3.29,
+            6.94
+          ],
+          [
+            2.76,
+            6.77
+          ],
+          [
+            2.29,
+            6.6
+          ],
+          [
+            1.86,
+            6.41
+          ],
+          [
+            1.49,
+            6.2
+          ],
+          [
+            1.16,
+            5.98
+          ],
+          [
+            0.88,
+            5.76
+          ],
+          [
+            0.63,
+            5.52
+          ],
+          [
+            0.43,
+            5.28
+          ],
+          [
+            0.26,
+            5.03
+          ],
+          [
+            0.14,
+            4.77
+          ],
+          [
+            0.05,
+            4.51
+          ],
+          [
+            0.01,
+            4.25
+          ],
+          [
+            0,
+            3.99
+          ],
+          [
+            0.04,
+            3.72
+          ],
+          [
+            0.12,
+            3.45
+          ],
+          [
+            0.23,
+            3.18
+          ]
+        ],
+        "forming": {
+          "method": "one-step inverse",
+          "nValue": 1,
+          "blankAreaUnfoldMm2": 72,
+          "blankAreaSolvedMm2": 72,
+          "thinningP95Pct": 97.6,
+          "maxThinningPct": 99,
+          "maxThickeningPct": 54.5,
+          "strainPoints": []
+        },
+        "warnings": [
+          "The skin stretched by up to 1298.1% when flattened (1060.6% on average), so this is a drawn part, not a bent one. The forming solve (one-step inverse, plastic work minimised from that flat) put the stretched metal back: blank 1 → 1 cm², thinning 98% at the 95th percentile and 99% at the worst well-shaped element. The blank is the solve's, not a geometric unfold; the FASTBLANK profile remains the formed-process answer.",
+          "The two skins developed to blanks 200.0% apart; the mean is used.",
+          "52 triangle(s) inverted in the flat pattern — check the outline."
+        ]
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "extrusion",
+      "total": 1.06,
+      "breakdown": {
+        "rawMaterial": 0.43,
+        "process": 0.12,
+        "labour": 0.07,
+        "tooling": 0.15,
+        "packaging": 0.06,
+        "logistics": 0.06,
+        "overhead": 0.09,
+        "margin": 0.08
+      }
+    }
+  },
+  {
     "part": "FORGE_Control_Arm_Yoke.stp",
     "sha256": "e8356c0f2db8c6cf",
     "note": "MODELLED: control-arm yoke, two Ø50 eyes 200 mm apart, I-section arm, Ø22 bores. Closed-die steel, safety-critical (suspension).",
@@ -7024,7 +8310,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b4646502a7ed693f",
+      "partName": "cv-cad-6a1b1273e4450f63",
       "boundingBox": {
         "xMm": 250,
         "yMm": 50,
@@ -7439,7 +8725,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b58f32ee200fd380",
+      "partName": "cv-cad-e3c98646a180f52c",
       "boundingBox": {
         "xMm": 140,
         "yMm": 140,
@@ -7791,7 +9077,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a1c06dedfe774eb8",
+      "partName": "cv-cad-2dfbaaf26c286f32",
       "boundingBox": {
         "xMm": 40,
         "yMm": 25,
@@ -8134,7 +9420,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-fcb19d7e0dbe4af6",
+      "partName": "cv-cad-b56810351f3735e0",
       "boundingBox": {
         "xMm": 180,
         "yMm": 120,
@@ -8975,7 +10261,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3cc2512842f0dd01",
+      "partName": "cv-cad-326b6e799ce1e762",
       "boundingBox": {
         "xMm": 600,
         "yMm": 400,
@@ -9673,7 +10959,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-378f79335c246af6",
+      "partName": "cv-cad-d51759abd4c38e22",
       "boundingBox": {
         "xMm": 120,
         "yMm": 80,
@@ -10135,7 +11421,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-18c1b4ba9cd6bf00",
+      "partName": "cv-cad-442c66f50aef363d",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -10527,7 +11813,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f93535b4ad9132aa",
+      "partName": "cv-cad-998ca7bd78addc9e",
       "boundingBox": {
         "xMm": 274.51,
         "yMm": 222.36,
@@ -11585,7 +12871,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-22b8c60d824c29c1",
+      "partName": "cv-cad-2b011be7159a0ad6",
       "boundingBox": {
         "xMm": 58.19,
         "yMm": 270,
@@ -12381,7 +13667,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1cd0a135ba6334b6",
+      "partName": "cv-cad-0e8ffaf04360301e",
       "boundingBox": {
         "xMm": 450,
         "yMm": 320,
@@ -12816,7 +14102,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7a27c62dfb4cb4c2",
+      "partName": "cv-cad-aec578a96ebff010",
       "boundingBox": {
         "xMm": 240,
         "yMm": 160,
@@ -13841,7 +15127,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bded67771ca65864",
+      "partName": "cv-cad-cf3c2dd4240057e3",
       "boundingBox": {
         "xMm": 60,
         "yMm": 60,
@@ -14178,7 +15464,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ca89b3f9bb734333",
+      "partName": "cv-cad-d070fde442020d39",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 18,
@@ -14581,7 +15867,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bc097ce97c1481b1",
+      "partName": "cv-cad-efd5d9f6e23a5cb3",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -14937,7 +16223,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-0af9302a8958d3c5",
+      "partName": "cv-cad-22fd6ec7c06d6fca",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -17474,7 +18760,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-993701fb2e237975",
+      "partName": "cv-cad-ec0de87ad5e60d45",
       "boundingBox": {
         "xMm": 900,
         "yMm": 600,
@@ -17856,7 +19142,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3c71c6117365e326",
+      "partName": "cv-cad-71886f1f9d696b13",
       "boundingBox": {
         "xMm": 300,
         "yMm": 200,
@@ -18746,7 +20032,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-49ef2bd6468903c3",
+      "partName": "cv-cad-bae94bf13a739d17",
       "boundingBox": {
         "xMm": 114.4,
         "yMm": 236.4,
@@ -19733,7 +21019,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-30b89f35296d39ca",
+      "partName": "cv-cad-b9dd7f12fbd0dea6",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

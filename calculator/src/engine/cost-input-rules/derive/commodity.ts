@@ -28,6 +28,7 @@
  */
 import type { Decision, RuleContext } from '../types.js';
 import { hollowVerdict, enclosedShell } from './hollow.js';
+import { extrusionProfile } from './profile.js';
 import { shellWallEstimateMm } from '../../geometry-sanity.js';
 import { partNames, processFromNames, polymerFromNames, netShapeSignal, hasMachinedFeatures } from './part-evidence.js';
 
@@ -110,6 +111,8 @@ const ROUTES: Record<string, Route> = {
   // Composites review: a laminate could not be answered into its own
   // commodity either. Offered when the name says composite (part-evidence).
   composites: { value: 'composites', label: 'Composite laminate', consequence: 'fibre and resin, layup hours, a cure cycle and a layup tool' },
+  // Extrusion build: a constant-section polymer part — tube, pipe or profile.
+  extrusion: { value: 'extrusion', label: 'Extruded (polymer) and cut to length', consequence: 'resin by the kg/m, a line rate and a die — polymer lines only' },
 };
 
 function ask(why: string, routes: string[], leaning?: string): Decision {
@@ -155,6 +158,22 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   // on it.
   const gear = looksLikeGear(g as { gear?: { likelyGear?: boolean; teeth?: number } }, ctx.filename);
   if (gear.gear) return { commodity: 'gear', basis: gear.basis };
+
+  // A constant section, cut to length, is a profile before anything else: a
+  // tube's bore makes it read as a closed tank to the enclosure probe, and its
+  // round faces as bends (extrusion build). Extruded if polymer; a rubber seal
+  // is extruded rubber; a metal one is bar or extrusion stock machined.
+  const prof = extrusionProfile({ ...ctx, geo: g } as RuleContext);
+  if (prof) {
+    const named = processFromNames(partNames(ctx.filename, g)).route;
+    const lean = named && ROUTES[named] ? named : 'extrusion';
+    return {
+      decision: ask(
+        `${prof.basis} — extruded and cut to length, if it is a polymer. A rubber profile is extruded `
+        + 'rubber; a metal one is bar or extruded stock, machined.',
+        [...new Set(['extrusion', 'rubber', 'machining', ...(named && ROUTES[named] ? [named] : [])])], lean),
+    };
+  }
 
   const fill = g.fillRatio;
   const wall = g.wallThickness?.meanMm ?? null;

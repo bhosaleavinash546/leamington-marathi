@@ -1,0 +1,63 @@
+# extrusion
+# Baseline of buildCommodityRules — DO NOT hand-edit.
+# Regenerate: npx tsx scripts/snapshot-commodity-rules.ts
+
+### context: full
+EXTRUSION COST INPUT RULES:
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  partWeightKg: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  process: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  partLengthM: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  profileWeightKgPerM: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  wallThicknessMm: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  machineId: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  screwDiameterMm: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  cooling: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  lineRateKgPerHr: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  startupScrapFraction: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  steadyScrapFraction: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  colourChangesPerDay: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieChangesPerDay: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieSizeMm: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieLayers: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieComplexity: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieCostGBP: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  energyPricePerKwh: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  specificEnergyKwhPerKg: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  labourId: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  manning: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  oee: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  labourEfficiency: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  leakTest: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+
+### context: degraded
+EXTRUSION COST INPUT RULES:
+  Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
+  materialId: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  partWeightKg: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  process: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  partLengthM: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  profileWeightKgPerM: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  wallThicknessMm: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  machineId: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  screwDiameterMm: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  cooling: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  lineRateKgPerHr: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  startupScrapFraction: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  steadyScrapFraction: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  colourChangesPerDay: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieChangesPerDay: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieSizeMm: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieLayers: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieComplexity: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  dieCostGBP: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  energyPricePerKwh: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  specificEnergyKwhPerKg: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  labourId: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  manning: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  oee: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  labourEfficiency: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  leakTest: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)

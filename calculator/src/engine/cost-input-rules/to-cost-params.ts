@@ -132,6 +132,7 @@ const LABOUR: Record<string, string> = {
   rubber: 'lab-uk-semiskilled',
   composites: 'lab-uk-skilled',
   gear: 'lab-uk-skilled',
+  extrusion: 'lab-uk-semiskilled',
 };
 
 const num = (v: unknown, fallback = 0): number =>
@@ -886,6 +887,43 @@ export function toCostParams(
       };
     }
 
+    case 'extrusion': {
+      // Extrusion had no headless costing (extrusion build). Every value is the
+      // rules' — the same the screen is filled with.
+      const e = ci.extrusion;
+      if (!e || !e.profileWeightKgPerM || !e.partLengthM || !e.machineId) return null;
+      return {
+        commodity, assumed,
+        params: {
+          ...shop,
+          ...(e.labourId ? { labourId: e.labourId } : {}),
+          ...(e.manning != null ? { manning: num(e.manning) } : {}),
+          ...(e.oee != null ? { oee: num(e.oee) } : {}),
+          ...(e.labourEfficiency != null ? { labourEfficiency: num(e.labourEfficiency) } : {}),
+          materialId,
+          profileWeightKgPerM: num(e.profileWeightKgPerM),
+          partLengthM: num(e.partLengthM),
+          lineRateKgPerHr: num(e.lineRateKgPerHr),
+          extruderId: e.machineId,
+          startupScrapFraction: num(e.startupScrapFraction),
+          steadyScrapFraction: num(e.steadyScrapFraction),
+          colourChangesPerDay: 0,
+          dieChangesPerDay: 0,
+          dieCost: num(e.dieCostGBP),
+          process: e.process,
+          screwType: 'single',
+          screwDiameterMm: num(e.screwDiameterMm),
+          wallThicknessMm: num(e.wallThicknessMm),
+          cooling: e.cooling,
+          ...(e.energyPricePerKwh ? { energyPricePerKwh: num(e.energyPricePerKwh) } : {}),
+          dieSizeMm: num(e.dieSizeMm),
+          dieLayers: num(e.dieLayers, 1),
+          dieComplexity: e.dieComplexity,
+          includeLeakTest: e.leakTest === true,
+        },
+      };
+    }
+
     case 'thermoforming': {
       const tf = ci.thermoforming;
       if (!tf) return null;
@@ -984,5 +1022,5 @@ export function toCostParams(
 export const COSTABLE_COMMODITIES = [
   'casting', 'cast_and_machine', 'forging', 'machining', 'injection_moulding',
   'sheet_metal', 'sheet_metal_fab', 'blow_moulding', 'gear', 'rubber', 'rotational_moulding',
-  'thermoforming', 'composites',
+  'thermoforming', 'composites', 'extrusion',
 ];

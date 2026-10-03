@@ -92,6 +92,15 @@ const RESIN_MENUS: Record<string, ResinCandidate[]> = {
   ],
   // Rotational moulding is overwhelmingly polyethylene; a short menu is the
   // honest one rather than a long list of grades nobody rotomoulds.
+  // Extrusion grades (extrusion build): pipe, tube and profile compounds.
+  extrusion: [
+    { id: 'mat-pa12-ext-tube', grade: /pa12|pa 12|nylon/, application: /fuel|brake|line|tube/ },
+    { id: 'mat-pe100-pipe', grade: /hdpe|\bpe\b|pe100/, application: /pipe|vent|coolant|drain/ },
+    { id: 'mat-upvc-pipe', grade: /pvc/, application: /conduit|profile|trim|channel/ },
+    { id: 'mat-tpe-profile', grade: /tpe|tpv|tps/, application: /seal|gasket/ },
+    { id: 'mat-pp-ext-sheet', grade: /\bpp\b|polyprop/ },
+    { id: 'mat-pvc-foam', grade: /foam/ },
+  ],
   // Powder grades, not pellets: the menu offered pellet HDPE (£1.05/kg) while
   // the library holds the roto powders (LLDPE roto £1.47/kg) and the form lists
   // only those (rotational-moulding review).

@@ -216,6 +216,20 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 400 × 120 × 40 mm hat-section stiffener, 2.5 mm laminate — carbon prepreg.',
     answers: { 'material.laminate': 'prepreg-cf', 'commodity.route': 'composites' },
   },
+  // ── Polymer extrusion (extrusion build, 3 Oct 2026) ──────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/EXT_modelled_parts.py.
+  'EXT_Fuel_Line_Tube.stp': {
+    note: 'MODELLED: Ø8 × 1 mm PA12 fuel / brake line tube, 600 mm.',
+    answers: { 'material.resin': 'mat-pa12-ext-tube', 'commodity.route': 'extrusion' },
+  },
+  'EXT_Vent_Pipe.stp': {
+    note: 'MODELLED: Ø32 × 3 mm HDPE vent / coolant pipe, 1 m.',
+    answers: { 'material.resin': 'mat-pe100-pipe', 'commodity.route': 'extrusion' },
+  },
+  'EXT_Twin_Chamber_Profile.stp': {
+    note: 'MODELLED: 40 × 25 mm twin-chamber rigid PVC conduit / trim profile, 2 mm walls, 2 m.',
+    answers: { 'material.resin': 'mat-upvc-pipe', 'commodity.route': 'extrusion' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and
