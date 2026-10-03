@@ -93,7 +93,26 @@ The modelled STEP files, a real server and a browser, every field identical:
 
 The steering-knuckle forging still lands at £44.02 live after the drop-down fix.
 
-## 5. Still open, stated rather than hidden
+## 5. Second pass — a standard rubber should-cost, line by line
+
+| Element | Status |
+|---|---|
+| Compound weight from part + flash / spew + scrap | Done (flash 3% moulded, 0 extruded; 3% scrap) |
+| Compound mixing (masterbatch, final mix) | **Open** — in the library's compound price, not built up |
+| Preform / blank prep (cut, weigh) | **Open** — not a separate step |
+| Process choice: compression / transfer / injection / LSR / extrusion / die cut | Done (#1, #2); HCR injection is proxied by transfer |
+| Cure time from section and compound | Done (#3, #4) |
+| Cavitation | Done (#5) |
+| Press, crew, OEE | Done (#9) |
+| Deflash / trim | Done (#10), as a bench task; cryogenic deflash not offered |
+| Post-cure | Done (#10) |
+| Mould change | Done (#10) |
+| Bonded inserts: insert, blast, primer, bonding | **Open** — count asked (#7), the inserts' cost is not |
+| Mould cost (toolmaker build-up) and life | Existing build-up kept; sets fractional (#11) |
+| Extrusion: line, cure tunnel, cut to length, joining | Line and tunnel done (#2); cutting waste and joining **open** |
+| Inspection / packing | Visual check in deflash; packaging from the library |
+
+## 6. Still open, stated rather than hidden
 
 - **Every constant is engineering-typical:**
   - cure base times, diffusivity, handling
