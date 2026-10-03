@@ -119,7 +119,8 @@ describe('assembly evidence and lenses', () => {
   });
 
   it('every lens targets a real level and only real sections', () => {
-    const ids = new Set(assemblyEvidence({ assemblyName: 'x', rollUp: r }).map(s => s.id).concat('assembly-context'));
+    // 'dfa' exists only when the DFA engine ran (the consolidation lens is then offered).
+    const ids = new Set(assemblyEvidence({ assemblyName: 'x', rollUp: r }).map(s => s.id).concat(['assembly-context', 'dfa']));
     const levels = new Set(['Assembly', 'Subassembly', 'Part']);
     for (const l of ASSEMBLY_LENSES) {
       assert.ok(levels.has(l.level), `${l.id} has no valid systemLevel`);

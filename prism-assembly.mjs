@@ -199,7 +199,7 @@ export function rollUpBom(rows) {
 }
 
 /** Evidence sections for the assembly dossier: three levels, numbered. */
-export function assemblyEvidence({ assemblyName, rollUp, bom = [], contextLines = null } = {}) {
+export function assemblyEvidence({ assemblyName, rollUp, bom = [], contextLines = null, dfaLines = null } = {}) {
   if (!rollUp) return [];
   const sections = [];
   sections.push({
@@ -231,10 +231,50 @@ export function assemblyEvidence({ assemblyName, rollUp, bom = [], contextLines 
       lines: rollUp.uncosted.map(u => `${u.name} [${u.subassembly}] × ${u.qty} — ${u.reason}. Any idea touching this row must say its saving is unpriced.`),
     });
   }
+  if (Array.isArray(dfaLines) && dfaLines.length) {
+    sections.push({ id: 'dfa', title: 'Design for assembly (deterministic DFA engine on the measured solids; necessity answered by the engineer)', lines: dfaLines });
+  }
   if (Array.isArray(contextLines) && contextLines.length) {
     sections.push({ id: 'assembly-context', title: 'Assembly function & specification (user-stated — treat as the requirement)', lines: contextLines });
   }
   return sections;
+}
+
+/**
+ * DFA evidence for the assembly dossier (Prism R4): the deterministic DFA
+ * engine's result as citable lines. Times are the time model's (versioned,
+ * calibratable); the theoretical minimum and design efficiency appear ONLY
+ * when the engineer answered the three Boothroyd questions for every part —
+ * otherwise the completeness note says what is missing. Assembly labour is
+ * stated separately: it is not part of the BOM roll-up.
+ */
+export function dfaEvidenceLines(dfa, { max = 6 } = {}) {
+  if (!dfa || typeof dfa !== 'object' || !Array.isArray(dfa.rows)) return [];
+  const out = [];
+  out.push(`DFA (${dfa.timeModel?.version ?? 'time model'}, calibratable): ${dfa.totalParts} parts, ${dfa.distinctPartTypes ?? '?'} distinct types, ${dfa.totalAssemblyTimeSec} s total handling + insertion${dfa.assemblyCostEur != null ? ` = €${dfa.assemblyCostEur} assembly labour per unit at €${dfa.labourRateEurPerHr}/h` : ''} — assembly labour is NOT in the BOM total.`);
+  if (dfa.completeness?.indexAvailable) {
+    out.push(`Theoretical minimum ${dfa.theoreticalMinParts} parts against ${dfa.totalParts} actual (from the answers the engineer gave to the three DFA questions) — design efficiency ${dfa.designEfficiencyPct}% (ideal ${dfa.idealAssemblyTimeSec} s).`);
+  } else if (dfa.completeness?.note) {
+    out.push(`Design efficiency withheld: ${dfa.completeness.note}`);
+  }
+  for (const c of (dfa.consolidationCandidates ?? []).slice(0, max)) {
+    out.push(`Consolidation candidate: "${c.name}" — the engineer answered NO to moves / different material / must separate; it costs ${c.timeSec} s to assemble.`);
+  }
+  const fast = dfa.suspectedFasteners ?? [];
+  if (fast.length) {
+    // Every suspect is listed (up to 12, then a stated remainder) with its
+    // confidence — a silently truncated list reads as a complete one.
+    const shown = fast.slice(0, 12).map(f => `"${f.name}" (${f.confidence})`);
+    out.push(`Suspected fasteners (geometry: small slender bodies of revolution; confidence rises when repeated — unconfirmed): ${fast.length} — ${shown.join(', ')}${fast.length > 12 ? `, and ${fast.length - 12} more` : ''}.`);
+  }
+  const slow = dfa.rows.filter(r => !r.skipped && r.time).sort((a, b) => b.time.totalSec - a.time.totalSec).slice(0, max);
+  for (const r of slow) {
+    const reasons = [...(r.time.handlingReasons ?? []), ...(r.time.insertionReasons ?? [])]
+      .filter(x => x.sec > 0 && !/^base /.test(x.factor)).map(x => `${x.factor} +${x.sec} s`);
+    out.push(`"${r.name}": ${r.time.totalSec} s (handling ${r.time.handlingSec} s, insertion ${r.time.insertionSec} s)${reasons.length ? ` — ${reasons.join(', ')}` : ''}.`);
+  }
+  if (dfa.massAssumptions?.assumedParts) out.push(dfa.massAssumptions.note);
+  return out;
 }
 
 /** Generation lenses that attack the three levels. */
@@ -245,6 +285,9 @@ export const ASSEMBLY_LENSES = [
   { id: 'subassembly-block', name: 'Subassembly cost blocks', level: 'Subassembly',
     sections: ['assembly-context', 'subassembly', 'parts', 'assembly'],
     directive: 'Attack the LARGEST COST BLOCKS as blocks: rotor, stator, windings, housing. Process-route changes and material changes that move a whole subassembly, with the tooling and validation consequence stated. Set systemLevel to "Subassembly".' },
+  { id: 'consolidation', name: 'Part consolidation (DFA)', level: 'Assembly',
+    sections: ['assembly-context', 'dfa', 'assembly', 'parts'],
+    directive: 'Attack PART COUNT and ASSEMBLY TIME using the DFA evidence: merge the consolidation candidates into their neighbours, replace fasteners with integral features (snap-fits, heat stakes, clinching) where the joint need not separate, and remove the slowest handling/insertion causes listed. Every idea must name the parts it removes or merges and the seconds it releases from the DFA lines; parts the engineer marked necessary stay unless the idea removes the reason. Set systemLevel to "Assembly".' },
   { id: 'part-line', name: 'Part-line attack', level: 'Part',
     sections: ['assembly-context', 'parts', 'subassembly', 'uncosted'],
     directive: 'Attack INDIVIDUAL part lines in cost order: grade substitution (name the exact grade), gauge/section reduction, net-shape routes, buy-to-fly. Set systemLevel to "Part".' },

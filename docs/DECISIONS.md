@@ -4503,3 +4503,39 @@ then recomputes the FAST matrix against the engine's should-cost
 questions are deterministic. A draft whose rows do not sum to 100% is refused
 with that reason, never silently rescaled. A function model the client
 computed is no longer accepted.
+
+## 112. Photos give teardown facts, the marking is decoded by a table, and DFA in Prism runs on the solids the server measured
+
+**R3, photos.** `/api/part360/photo-read` reads photos of our part or a
+competitor's into teardown facts. A fastener count is what is visible, so
+every line says "at least N" and calls it a visible floor. A moulded material
+marking is copied verbatim by the model and decoded in `part360-photo.mjs` by
+an ISO 1043 symbol table. A symbol that is not in the table is reported as
+unrecognised; the decoder never guesses.
+
+The engineer ticks the observations they agree with. The server then rebuilds
+the comparison attributes from the ticked items: counts are re-validated and
+markings re-decoded. It runs the existing deterministic `teardownDelta` core
+on them. When our own photos show no marking, our side of the material
+comparison uses the stated material, and the line says so. A benchmark read
+can be saved to the teardown library, so later runs on similar parts get it
+as evidence.
+
+**R4, DFA.** The assembly job now keeps the OCCT decomposition server-side.
+The assembly dossier runs `analyseDfa` on it, together with:
+- the engineer's answers, one choice per part, mapped onto the three
+  questions;
+- the securing method for each part;
+- densities from the confirmed BOM materials;
+- the region's labour rate.
+
+The client never sends geometry for DFA. Design efficiency appears only when
+every part is answered. The "Part consolidation (DFA)" lens is offered only
+when DFA evidence exists. Analyze's lens-coverage stamp counts only the
+lenses that were offered, so a lens that was never available is not reported
+as "skipped".
+
+For a single part, the joining lines report the measured joint-candidate
+features (bosses, counterbores, holes) as candidates only. They add the DFA
+time model's securing seconds at the region's labour rate, and the
+photo-confirmed fastener floors.

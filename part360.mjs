@@ -529,6 +529,7 @@ export function buildDossier({
   // sources the summaries dropped (Prism review, 3 Oct 2026).
   geometryLines = null, dfmLines = null, routeLines = null, drawingLines = null,
   visionLines = null, functionModelError = null,
+  photoLines = null, teardownDeltaLines = null, joiningLines = null,
 } = {}) {
   let e = 0;
   const ref = () => `E${++e}`;
@@ -665,6 +666,20 @@ export function buildDossier({
     add('vision', 'Rendered-view observations', 'No AI vision read confirmed — the part\'s interfaces and functional surfaces are known only from the stated context.');
   }
 
+  // Photos of the physical part / a benchmark (R3): ticked observations only.
+  if (Array.isArray(photoLines) && photoLines.length) {
+    add('photo', 'Observed in photos (AI-read, confirmed by the engineer — observations, not measurements; counts are visible floors)', photoLines);
+  } else {
+    add('photo', 'Photo observations', 'No photos read — fasteners, joining, coatings and markings of the physical part (or a competitor\'s) are unobserved.');
+  }
+  if (Array.isArray(teardownDeltaLines) && teardownDeltaLines.length) {
+    add('teardown-delta', 'Teardown comparison — our part vs a photographed benchmark (deterministic delta on confirmed observations)', teardownDeltaLines);
+  }
+  // Joining (R4): measured joint candidates and DFA-model seconds per joint.
+  if (Array.isArray(joiningLines) && joiningLines.length) {
+    add('joining', 'Joining & assembly (DFA time model; geometry shows joint candidates, photos confirm fasteners)', joiningLines);
+  }
+
   // ── Engine catalogue grades (data, citable) ───────────────────────────────
   // The material lens demands a SPECIFIC grade and half the live ideas still
   // answered with a family. Listing what the engine can actually price — the
@@ -700,12 +715,12 @@ export function buildDossier({
 // ── Lenses and the prompt block ──────────────────────────────────────────────
 
 export const LENSES = [
-  { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'vision', 'part', 'function', 'drawing', 'dfm', 'geometry', 'cost', 'fleet', 'teardown'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Trimming questions in the evidence are open engineering questions — answer them with specific design moves. Where the rendered-view observations mark a surface NON-functional or a feature as possible over-design, that is where mass, finish and tolerance can come out; where they mark it FUNCTIONAL, any change must say what keeps the function.' },
-  { id: 'process', name: 'Process shift', sections: ['context', 'vision', 'part', 'geometry', 'routes', 'waterfall', 'dfm', 'volume', 'fleet'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
-  { id: 'material', name: 'Material & mass', sections: ['context', 'vision', 'part', 'drawing', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown', 'catalogue'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
+  { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'vision', 'photo', 'part', 'function', 'joining', 'drawing', 'dfm', 'geometry', 'cost', 'fleet', 'teardown'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Joints are cost: where the joining evidence shows fastener joints, ask whether each must separate — a snap-fit, heat stake or integral feature releases the seconds stated. Trimming questions in the evidence are open engineering questions — answer them with specific design moves. Where the rendered-view observations mark a surface NON-functional or a feature as possible over-design, that is where mass, finish and tolerance can come out; where they mark it FUNCTIONAL, any change must say what keeps the function.' },
+  { id: 'process', name: 'Process shift', sections: ['context', 'vision', 'photo', 'part', 'geometry', 'routes', 'waterfall', 'dfm', 'volume', 'fleet'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
+  { id: 'material', name: 'Material & mass', sections: ['context', 'vision', 'photo', 'teardown-delta', 'part', 'drawing', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown', 'catalogue'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
   { id: 'spec', name: 'Specification & tolerance', sections: ['context', 'vision', 'function', 'part', 'drawing', 'geometry', 'spec', 'forensics', 'cost'], directive: 'Convert the CALCULATED relaxation steps into concrete drawing changes — name the callouts to relax and the functional justification required. Target surfaces the rendered-view observations mark NON-functional first; a callout on a FUNCTIONAL (mating, sealing, locating) surface needs its validation stated. Never propose relaxing a critical characteristic without saying what validates it.' },
   { id: 'commercial', name: 'Supplier & commercial', sections: ['context', 'part', 'forensics', 'waterfall', 'regions', 'volume', 'quote'], directive: 'Close the COMMERCIAL GAP and FOOTPRINT steps: negotiation arguments anchored on the forensics verdicts (quote lines above the model band), amortisation corrections, and resourcing options with their stated ex-works caveat.' },
-  { id: 'benchmark', name: 'Benchmark transfer', sections: ['context', 'part', 'cost', 'dfm', 'waterfall', 'fleet', 'teardown'], directive: 'Transfer PROVEN levers from the marketplace precedents in your context to THIS part\'s measured gaps. Say which precedent, and which evidence line it lands on.' },
+  { id: 'benchmark', name: 'Benchmark transfer', sections: ['context', 'part', 'teardown-delta', 'photo', 'joining', 'cost', 'dfm', 'waterfall', 'fleet', 'teardown'], directive: 'Transfer PROVEN levers to THIS part\'s measured gaps — from the photographed benchmark first (its confirmed material, joining and fastener counts are in production, so they are proven), then the recorded teardowns and the marketplace precedents in your context. Say which benchmark or precedent, and which evidence line it lands on; a photo count is a visible floor, never a total.' },
 ];
 
 /**

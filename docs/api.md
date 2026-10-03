@@ -157,9 +157,10 @@ form) — everything that reads or writes user data requires a token.
 | POST | `/api/part360/dossier` | yes | the evidence dossier, entitlement waterfall and quote forensics |
 | POST | `/api/part360/batch` | yes | the same across a folder of parts |
 | POST | `/api/part360/assembly` | yes | decompose a STEP assembly into a suggested BOM |
-| POST | `/api/part360/assembly-dossier` | yes | roll a confirmed BOM up to an assembly dossier |
+| POST | `/api/part360/assembly-dossier` | yes | roll a confirmed BOM up to an assembly dossier; with `dfa: { jobId, answers, securing }` it also runs the DFA engine on the measured solids and offers the part-consolidation lens |
 | POST | `/api/part360/draft-functions` | yes | first-draft function-cost model (functions, components, allocation) seeded by description, confirmed vision observations and measured geometry |
 | POST | `/api/part360/vision-read` | yes | AI vision read of 4 rendered views (measured faces painted on) → view-cited observations the engineer confirms; no numbers |
+| POST | `/api/part360/photo-read` | yes | AI vision read of photos of our part or a competitor's → teardown facts (visible fastener floors, joining, verbatim material markings decoded by the ISO 1043 table, finish, process marks) the engineer confirms |
 | POST | `/api/part360/quote-extract` | yes | read a supplier quote PDF into engine buckets |
 | GET | `/api/part360/teardowns` | yes | the caller's private teardown evidence |
 | POST | `/api/part360/teardowns` | yes | add one |

@@ -238,7 +238,9 @@ describe('dossier', () => {
     assert.match(spec, /entitlement waterfall/i, 'every lens keeps the waterfall in view');
     assert.doesNotMatch(spec, /Process alternatives/, 'sections outside the lens are sliced away');
     // Every declared lens must reference only real section ids.
-    const ids = new Set(d.sections.map(s => s.id));
+    // 'teardown-delta' and 'joining' exist only when there is evidence for them
+    // (a photographed benchmark; joint features or confirmed fasteners).
+    const ids = new Set(d.sections.map(s => s.id).concat(['teardown-delta', 'joining']));
     for (const l of LENSES) for (const sid of l.sections) assert.ok(ids.has(sid), `${l.id} references unknown section ${sid}`);
   });
 });

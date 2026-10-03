@@ -36,6 +36,8 @@ import { useFx, useDisplayCurrency } from '../hooks/useFx';
 import { fmtMoney } from '../lib/money';
 import PartVisionPanel from '../components/prism/PartVisionPanel';
 import FunctionModelPanel, { type FunctionDraft } from '../components/prism/FunctionModelPanel';
+import PhotoReadPanel, { type ConfirmedPhotoRead } from '../components/prism/PhotoReadPanel';
+import DfaPanel, { type DfaHint, type DfaInput, type DfaResult } from '../components/prism/DfaPanel';
 import './dfm.css';
 
 // ── Types mirrored from the server contracts ─────────────────────────────────
@@ -75,6 +77,7 @@ interface BomRow {
   qty: number; volumeMm3?: number | null; massKg?: number | null; suggestedMassKg?: number | null;
   boughtPart?: boolean; boughtPriceEur?: number | null; suggestionBasis?: string;
   costEur?: number | null; massBasis?: string; uncostedReason?: string;
+  dfaHint?: DfaHint | null;
 }
 interface RollUp {
   totalEur: number; totalMassKg: number; partCount: number; costedPct: number;
@@ -87,6 +90,7 @@ interface AssemblyDossier {
   dossier: { sections: Array<{ id: string; title: string; lines: Array<{ ref: string; text: string }> }>; evidenceCount: number };
   lensBlocks: Array<{ lensId: string; name: string; level: string; text: string }>;
   basis: string;
+  dfa?: DfaResult | null; dfaError?: string | null;
 }
 
 interface CounterRow { label: string; kind: string; quotedEur: number; targetEur: number | null; askEur: number | null; argument: string }
@@ -210,6 +214,8 @@ export default function Part360Page() {
   // dossier as evidence; neither carries a number the engines did not compute.
   const [visionObs, setVisionObs] = useState<string[]>([]);
   const [functionDraft, setFunctionDraft] = useState<FunctionDraft | null>(null);
+  // Photos of our part / a benchmark — ticked observations only (R3).
+  const [photoReads, setPhotoReads] = useState<ConfirmedPhotoRead[]>([]);
   const [material, setMaterial] = useState('');
   const [processName, setProcessName] = useState('');
   const [region, setRegion] = useState('Germany');
@@ -278,6 +284,10 @@ export default function Part360Page() {
   const [asmContext, setAsmContext] = useState('');
   const [asmRows, setAsmRows] = useState<BomRow[]>([]);
   const [asmBusy, setAsmBusy] = useState('');
+  // DFA (R4): the decomposition job holds the measured solids server-side;
+  // the engineer's answers travel with the costing request.
+  const [asmJobId, setAsmJobId] = useState<string | null>(null);
+  const [dfaInput, setDfaInput] = useState<DfaInput>({ answers: {}, securing: {} });
   const [asmDossier, setAsmDossier] = useState<AssemblyDossier | null>(null);
   const [asmLenses, setAsmLenses] = useState<Set<string>>(new Set(['assembly-architecture', 'subassembly-block', 'part-line']));
   const [asmGenerating, setAsmGenerating] = useState(false);
@@ -509,6 +519,7 @@ export default function Part360Page() {
         geo: dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : undefined,
         visionObservations: visionObs.length ? visionObs : undefined,
         functionDraft: functionDraft ?? undefined,
+        photoReads: photoReads.length ? photoReads : undefined,
         drawingExtract: drawingExtract ? {
           titleBlock: drawingExtract.titleBlock, readability: drawingExtract.readability,
           dimensions: Array.isArray(drawingExtract.dimensions) ? (drawingExtract.dimensions as unknown[]).slice(0, 80) : undefined,
@@ -711,7 +722,7 @@ export default function Part360Page() {
   }
 
   async function decomposeAssemblyFile(f: File) {
-    setAsmBusy('Uploading…'); setAsmRows([]); setAsmDossier(null);
+    setAsmBusy('Uploading…'); setAsmRows([]); setAsmDossier(null); setAsmJobId(null); setDfaInput({ answers: {}, securing: {} });
     try {
       const fd = new FormData();
       fd.append('cadFile', f);
@@ -725,6 +736,7 @@ export default function Part360Page() {
         if (job.status === 'done') {
           const result = typeof job.result === 'string' ? JSON.parse(job.result) : job.result;
           setAsmRows(result.rows ?? []);
+          setAsmJobId(d.jobId);
           setAsmName(result.assemblyName ?? f.name);
           toast(result.basis, 'info');
           break;
@@ -746,7 +758,9 @@ export default function Part360Page() {
         body: JSON.stringify({
           assemblyName: asmName || 'Assembly', partContext: asmContext.trim() || undefined,
           annualVolume: Number(annualVolume) || 80000, region,
+          dfa: asmJobId ? { jobId: asmJobId, answers: dfaInput.answers, securing: dfaInput.securing } : undefined,
           rows: asmRows.map(r2 => ({
+            index: r2.index,
             name: r2.name, subassembly: r2.subassembly, material: r2.material, process: r2.process,
             qty: r2.qty, volumeMm3: r2.volumeMm3, massKg: r2.massKg ?? r2.suggestedMassKg,
             boughtPriceEur: r2.boughtPart ? r2.boughtPriceEur : undefined,
@@ -756,6 +770,8 @@ export default function Part360Page() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Costing failed');
       setAsmDossier(d);
+      // Select every lens the dossier offers (the DFA lens appears only with DFA evidence).
+      setAsmLenses(new Set((d.lensBlocks ?? []).map((l: { lensId: string }) => l.lensId)));
     } catch (e) {
       toast(e instanceof Error ? e.message : 'Costing failed', 'error');
     } finally { setAsmBusy(''); }
@@ -777,7 +793,7 @@ export default function Part360Page() {
       const { ideas, sources, resultId, onServer, validation } = await generateCostReductionIdeas(
         config, 'Prism', asmName || 'Assembly', asmName || 'Assembly', false, undefined,
         (ev: ProgressEvent) => { if (ev.message) setAsmGenLog(prev => [...prev.slice(-14), ev.message as string]); },
-        { partEvidence: { blocks } },
+        { partEvidence: { blocks, offered: asmDossier.lensBlocks.map(l => l.lensId) } },
       );
       const result: AnalysisResult = {
         id: resultId, onServer, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [], validation,
@@ -982,6 +998,11 @@ export default function Part360Page() {
                   ))}
                 </div>
               </motion.div>
+            )}
+
+            {/* DFA — which parts must exist (R4) */}
+            {asmRows.length > 0 && (
+              <DfaPanel rows={asmRows} value={dfaInput} onChange={setDfaInput} result={asmDossier?.dfa ?? null} error={asmDossier?.dfaError ?? null} onRun={costAssembly} busy={!!asmBusy} />
             )}
 
             {/* Roll-up */}
@@ -1433,11 +1454,14 @@ export default function Part360Page() {
                 />
               )}
 
+              {/* PHOTOS — our physical part or a competitor's teardown (R3). */}
+              <PhotoReadPanel token={token} apiKey={apiKey} partName={partName} material={material} process={processName} onChange={setPhotoReads} />
+
               {/* WHAT IS IT FOR — the function-cost model, AI-drafted, engineer-edited. */}
               {shouldCost && (
                 <FunctionModelPanel
                   token={token} apiKey={apiKey} partName={partName} partContext={partContext}
-                  observations={visionObs}
+                  observations={[...visionObs, ...photoReads.filter(r => r.subject === 'ours').flatMap(r => r.observations.map(o => o.text))]}
                   geo={dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : null}
                   onChange={setFunctionDraft}
                 />

@@ -38,12 +38,15 @@ import {
 import { geoSignature, rankSimilarRuns, rankTeardowns } from '../prism-memory.mjs';
 import {
   suggestForName, rollUpBom, assemblyEvidence, numberSections,
-  assemblyPromptBlock, ASSEMBLY_LENSES,
+  assemblyPromptBlock, ASSEMBLY_LENSES, dfaEvidenceLines,
 } from '../prism-assembly.mjs';
+import { analyseDfa, proposeNecessity, looksLikeFastener } from '../dfa-engine.mjs';
+import { TIME_MODEL } from '../dfa-time-model.mjs';
 import { computeShouldCost as engineShouldCost } from '../costing-engine.mjs';
 import { familyOfMaterial, familyForSelection } from '../dfm-process-registry.mjs';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
-import { geometryEvidenceLines, dfmFindingLines, routeEvidenceLines, drawingEvidenceLines } from '../part360-evidence.mjs';
+import { geometryEvidenceLines, dfmFindingLines, routeEvidenceLines, drawingEvidenceLines, joiningEvidenceLines } from '../part360-evidence.mjs';
+import { PHOTO_SCHEMA, PHOTO_SYSTEM, parsePhotos, buildPhotoContent, normalisePhotoRead, photoObservations, teardownComparison, SUBJECTS } from '../part360-photo.mjs';
 import { compareRoutes, recommendableRoutes } from '../dfm-routing.mjs';
 import { VISION_SCHEMA, VISION_SYSTEM, buildVisionContent, parseVisionImages, normaliseVisionRead, visionObservationLines, functionModelFromDraft } from '../part360-vision.mjs';
 
@@ -465,6 +468,38 @@ Rules:
       const visionLines = Array.isArray(b.visionObservations)
         ? clean(b.visionObservations.slice(0, 24).map(v => String(v).slice(0, 400)))
         : null;
+      // Confirmed PHOTO observations (ours and/or a benchmark), each read
+      // object carrying only the ticked items. Attributes for the teardown
+      // comparison are rebuilt here from the ticked items' attrs — a marking
+      // is re-decoded server-side, a count re-validated.
+      const photoReads = (Array.isArray(b.photoReads) ? b.photoReads : []).slice(0, 4)
+        .filter(r => r && SUBJECTS.includes(r.subject) && Array.isArray(r.observations))
+        .map(r => ({
+          subject: r.subject,
+          label: sanitize(String(r.label || (r.subject === 'ours' ? 'our part' : 'benchmark')), 80),
+          observations: r.observations.slice(0, 30).map(o => ({
+            kind: sanitize(String(o?.kind || ''), 20), text: sanitize(String(o?.text || ''), 400),
+            attr: o?.attr && typeof o.attr === 'object' ? {
+              type: String(o.attr.type || ''), count: Number.isInteger(o.attr.count) ? o.attr.count : null,
+              fastener: String(o.attr.fastener || ''), method: String(o.attr.method || ''), verbatim: o.attr.verbatim == null ? null : String(o.attr.verbatim).slice(0, 60),
+            } : null,
+          })).filter(o => o.text),
+        }));
+      const photoLines = photoReads.flatMap(r => r.observations.map(o => `[${r.subject === 'ours' ? 'our part' : `benchmark: ${r.label}`}] ${o.text}`));
+      const oursTicked = photoReads.filter(r => r.subject === 'ours').flatMap(r => r.observations);
+      const benches = photoReads.filter(r => r.subject === 'benchmark');
+      const teardownDeltaLines = benches.length
+        ? clean(benches.flatMap(bn => teardownComparison({ oursTicked, benchTicked: bn.observations, benchLabel: bn.label, statedMaterial: material }).lines))
+        : null;
+      // Joining evidence: measured joint candidates + photo-confirmed fastener
+      // floors, timed by the DFA model at the region's labour rate.
+      const photoFasteners = oursTicked.filter(o => o.attr?.type === 'fasteners' && Number.isInteger(o.attr.count))
+        .map(o => ({ fastener: o.attr.fastener, count: o.attr.count }));
+      const joiningLines = clean(joiningEvidenceLines({
+        counts: geoFull?.dfm?.features?.counts ?? null, photoFasteners,
+        labourEurPerHr: REGIONS[region]?.labour ?? null, region, timeModel: TIME_MODEL,
+      }));
+
       const fnModel = b.functionDraft && typeof b.functionDraft === 'object'
         ? functionModelFromDraft(b.functionDraft, asSpec.totalShouldCost)
         : null;
@@ -511,6 +546,9 @@ Rules:
         functionModel: fnModel?.functionModel ?? null,
         functionModelError: fnModel?.error ?? null,
         visionLines,
+        photoLines: photoLines.length ? clean(photoLines) : null,
+        teardownDeltaLines,
+        joiningLines: joiningLines.length ? joiningLines : null,
         // The grade dictionary: what the engine can price, so the material
         // lens names grades the validator can resolve.
         materials: library?.MATERIALS ?? null,
@@ -680,6 +718,12 @@ Rules:
       const dec = await decomposeAssembly(req.file.buffer, req.file.originalname, BATCH_GEO_TIMEOUT_MS);
       if (dec.status !== 'success') throw new Error(dec.error || 'decomposition failed');
       const parts = Array.isArray(dec.parts) ? dec.parts : [];
+      // DFA hints per solid: the geometry's PROPOSALS for the three questions
+      // and its fastener suspicion. Never answers — the engineer answers.
+      const groupSizeOf = new Map();
+      for (const g of dec.instanceGroups || []) for (const i of g.partIndices || []) groupSizeOf.set(i, g.count ?? 1);
+      const contactsOf = new Map();
+      for (const [a, z] of dec.contacts || []) { contactsOf.set(a, (contactsOf.get(a) || 0) + 1); contactsOf.set(z, (contactsOf.get(z) || 0) + 1); }
       const rows = parts.map((p, i) => {
         const sug = suggestForName(p.name, { materials: library?.MATERIALS, processes: library?.PROCESSES });
         const volMm3 = Number(p.volumeMm3);
@@ -697,6 +741,17 @@ Rules:
           suggestedMassKg: (Number.isFinite(volMm3) && Number.isFinite(density))
             ? Number(((volMm3 / 1000) * density / 1000).toFixed(4)) : null,
           suggestionBasis: sug?.basis ?? 'No naming convention matched this solid — assign its material and process by hand, or mark it a bought part.',
+          dfaHint: p.error ? null : (() => {
+            const idx = Number.isFinite(p.index) ? p.index : i;
+            const fast = looksLikeFastener(p, groupSizeOf.get(idx) ?? 1);
+            const props = proposeNecessity(p, { contactCount: contactsOf.get(idx) || 0, groupSize: groupSizeOf.get(idx) ?? 1 });
+            const sep = props.find(x => x.question === 'mustSeparate');
+            return {
+              suspectedFastener: fast?.isFastener === true, fastenerConfidence: fast?.confidence ?? null,
+              proposedMustSeparate: sep?.proposed === true, reason: sep?.proposed === true ? sep.reason : (props.find(x => x.question === 'moves')?.reason ?? null),
+              contacts: contactsOf.get(idx) || 0,
+            };
+          })(),
         };
       });
       const unmatched = rows.filter(r => !r.material && !r.boughtPart).length;
@@ -705,6 +760,9 @@ Rules:
         result: {
           assemblyName: req.file.originalname.replace(/\.(step|stp|igs|iges)$/i, ''),
           rows,
+          // Kept server-side with the job so the assembly dossier can run the
+          // DFA engine on the MEASURED solids, not on anything the client sends.
+          decomposition: dec,
           basis: `${rows.length} child solids measured by OCCT. Material and process are SUGGESTIONS from CAD naming conventions, each with its basis — confirm or overrule every row before any cost is computed. ${unmatched} row${unmatched === 1 ? '' : 's'} matched no convention and must be assigned by hand.`,
         },
       });
@@ -770,7 +828,43 @@ Rules:
     const contextLines = typeof b.partContext === 'string' && b.partContext.trim()
       ? sanitize(String(b.partContext), 2000).split(/(?<=[.;!?])\s+|\n+/).map(x => x.trim()).filter(Boolean).slice(0, 10)
       : null;
-    const sections = numberSections(assemblyEvidence({ assemblyName, rollUp, bom: costed, contextLines }));
+
+    // DFA (Prism R4): the deterministic engine runs on the decomposition the
+    // SERVER measured (held with the job), with the engineer's answers to the
+    // three questions, the securing method per part, densities from the
+    // CONFIRMED materials and the region's labour rate.
+    let dfa = null, dfaError = null;
+    if (b.dfa && typeof b.dfa === 'object' && typeof b.dfa.jobId === 'string') {
+      try {
+        const job = jobsApi?.get(String(b.dfa.jobId).slice(0, 64), req.user.id);
+        const result = job && job.status === 'done' ? JSON.parse(job.result || '{}') : null;
+        const dec = result?.decomposition;
+        if (!dec || dec.status !== 'success') throw new Error('the assembly decomposition for this BOM is no longer available — decompose the file again');
+        const YES = new Set(['moves', 'differentMaterial', 'mustSeparate']);
+        const answers = {}, securingByIndex = {}, densityByIndex = {};
+        for (const [k, v] of Object.entries(b.dfa.answers && typeof b.dfa.answers === 'object' ? b.dfa.answers : {}).slice(0, 500)) {
+          const idx = Number(k);
+          if (!Number.isInteger(idx)) continue;
+          if (v === 'necessary-none') answers[idx] = { moves: false, differentMaterial: false, mustSeparate: false };
+          else if (YES.has(v)) answers[idx] = { moves: v === 'moves', differentMaterial: v === 'differentMaterial', mustSeparate: v === 'mustSeparate' };
+        }
+        const SECURING = Object.keys(TIME_MODEL.securing);
+        for (const [k, v] of Object.entries(b.dfa.securing && typeof b.dfa.securing === 'object' ? b.dfa.securing : {}).slice(0, 500)) {
+          if (Number.isInteger(Number(k)) && SECURING.includes(v)) securingByIndex[Number(k)] = v;
+        }
+        for (const r of inRows) {
+          const idx = Number(r.index);
+          const mk = Number.isInteger(idx) && r.material ? resolveMaterial(String(r.material), library?.MATERIALS)?.key : null;
+          const dens = mk ? Number(library?.MATERIALS?.[mk]?.density) : NaN;
+          if (Number.isFinite(dens) && dens > 0) densityByIndex[idx] = dens;
+        }
+        dfa = analyseDfa(dec, { answers, securingByIndex, densityByIndex, labourRateEurPerHr: REGIONS[region]?.labour });
+      } catch (e) { dfaError = String(e?.message || e).slice(0, 200); }
+    }
+    const dfaLines = dfa ? dfaEvidenceLines(dfa).map(l => sanitize(l, 500)) : null;
+    const sections = numberSections(assemblyEvidence({ assemblyName, rollUp, bom: costed, contextLines, dfaLines }));
+    // The consolidation lens exists only when there is DFA evidence to attack.
+    const lensesHere = ASSEMBLY_LENSES.filter(l => l.id !== 'consolidation' || dfaLines?.length);
 
     res.json({
       assemblyName,
@@ -778,8 +872,16 @@ Rules:
       rows: costed,
       dossier: { sections, evidenceCount: sections.reduce((n, s2) => n + s2.lines.length, 0) },
       promptBlock: assemblyPromptBlock(sections),
-      lensBlocks: ASSEMBLY_LENSES.map(l => ({ lensId: l.id, name: l.name, level: l.level, text: assemblyPromptBlock(sections, l) })),
-      lenses: ASSEMBLY_LENSES.map(l => ({ id: l.id, name: l.name, level: l.level })),
+      lensBlocks: lensesHere.map(l => ({ lensId: l.id, name: l.name, level: l.level, text: assemblyPromptBlock(sections, l) })),
+      lenses: lensesHere.map(l => ({ id: l.id, name: l.name, level: l.level })),
+      dfa: dfa ? {
+        totalParts: dfa.totalParts, distinctPartTypes: dfa.distinctPartTypes,
+        totalAssemblyTimeSec: dfa.totalAssemblyTimeSec, assemblyCostEur: dfa.assemblyCostEur, labourRateEurPerHr: dfa.labourRateEurPerHr,
+        theoreticalMinParts: dfa.theoreticalMinParts, designEfficiencyPct: dfa.designEfficiencyPct,
+        consolidationCandidates: dfa.consolidationCandidates, suspectedFasteners: dfa.suspectedFasteners,
+        completeness: dfa.completeness, massAssumptions: dfa.massAssumptions, timeModel: dfa.timeModel,
+      } : null,
+      dfaError,
       basis: `Every costed row is a deterministic should-cost at ${annualVolume.toLocaleString()}/yr in ${region}, calibrated to your own quote corpus. Bought-part prices are yours, not the engine's. ${rollUp.caveat}`,
     });
   });
@@ -830,6 +932,54 @@ Rules:
       if (run.signal.aborted) return;
       const status = e?.status || e?.response?.status;
       res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? describeLlmError(e) : `Vision read failed — ${e.message}` });
+    }
+  });
+
+  // ── PHOTO READ (Prism R3) ──────────────────────────────────────────────────
+  // Photos of OUR physical part or a COMPETITOR's, read into teardown facts:
+  // visible fasteners (floors), joining, verbatim material markings (decoded
+  // by the ISO 1043 table, not the model), finish and process witness marks.
+  app.post('/api/part360/photo-read', requireAuth, checkUsageQuota, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
+    const b = req.body || {};
+    const parsed = parsePhotos(b.photos);
+    if (parsed.error) return res.status(400).json({ error: parsed.error });
+    const subject = SUBJECTS.includes(b.subject) ? b.subject : 'ours';
+    const apiKey = resolveApiKey(req);
+    if (!apiKey) return res.status(400).json({ error: 'No API key configured — add one in Settings.' });
+    const run = runAbort(res, 'Prism photo read');
+    try {
+      const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/part360/photo-read', signal: run.signal });
+      const out = await messagesJson(client, {
+        model: 'claude-opus-4-8',
+        maxTokens: 4000,
+        toolName: 'emit_photo_read',
+        toolDescription: 'Return the teardown facts the photos show: fasteners, joining, markings, finish, process evidence.',
+        system: PHOTO_SYSTEM,
+        schema: PHOTO_SCHEMA,
+        messages: [{ role: 'user', content: buildPhotoContent({
+          images: parsed.images, subject,
+          subjectLabel: sanitize(String(b.label || ''), 80),
+          partName: sanitize(String(b.partName || ''), 120),
+          material: sanitize(String(b.material || ''), 80),
+          process: sanitize(String(b.process || ''), 80),
+          notes: b.notes ? sanitize(String(b.notes), 800) : '',
+        }) }],
+        requestOptions: { timeout: 180_000, maxRetries: 1 },
+      });
+      const read = normalisePhotoRead(out);
+      res.json({
+        subject,
+        read,
+        observations: photoObservations(read).map(o => ({ ...o, text: sanitize(o.text, 400) })),
+        photos: parsed.images.map(i => i.label),
+        caution: subject === 'benchmark'
+          ? 'AI-read from photos of the benchmark — observed, not measured; counts are what is visible. Tick only what you agree with.'
+          : 'AI-read from photos of our part — observed, not measured; counts are what is visible. Tick only what you agree with.',
+      });
+    } catch (e) {
+      if (run.signal.aborted) return;
+      const status = e?.status || e?.response?.status;
+      res.status(typeof status === 'number' ? 502 : 500).json({ error: typeof status === 'number' ? describeLlmError(e) : `Photo read failed — ${e.message}` });
     }
   });
 

@@ -110,7 +110,7 @@ app.use(cors({ origin: ALLOWED_ORIGINS }));
 const jsonBig = express.json({ limit: '12mb' });
 const jsonSmall = express.json({ limit: '1mb' });
 app.use((req, res, next) => {
-  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract' || req.path === '/api/part360/quote-extract' || req.path === '/api/part360/dossier' || req.path === '/api/part360/vision-read';
+  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract' || req.path === '/api/part360/quote-extract' || req.path === '/api/part360/dossier' || req.path === '/api/part360/vision-read' || req.path === '/api/part360/photo-read';
   return (big ? jsonBig : jsonSmall)(req, res, next);
 });
 
@@ -3369,7 +3369,12 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       .filter(b => b && typeof b.text === 'string' && b.text.trim())
       .slice(0, 6)
       .map(b => ({ lensId: sanitize(String(b.lensId ?? 'all'), 24), text: sanitize(String(b.text), 20000) }));
-    if (blocks.length) partEvidence = { blocks };
+    // Which lenses the dossier OFFERED (a lens such as DFA consolidation exists
+    // only with its evidence) — so the coverage stamp never reports a lens as
+    // "skipped" that was never on offer.
+    const offered = Array.isArray(req.body.partEvidence.offered)
+      ? req.body.partEvidence.offered.slice(0, 12).map(x => sanitize(String(x), 24)) : null;
+    if (blocks.length) partEvidence = { blocks, offered };
   }
   // Prism memory back-link: the dossier run that produced this evidence, so
   // the generated project (and later its tracker outcomes) join the fleet.
@@ -3559,7 +3564,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       try {
         const ran = [...new Set(partEvidence.blocks.map(b => b.lensId))];
         const catalogue = ran.every(id => ASSEMBLY_LENSES.some(l => l.id === id)) ? ASSEMBLY_LENSES : PRISM_LENSES;
-        const available = catalogue.map(l => l.id);
+        const available = catalogue.map(l => l.id).filter(id => !partEvidence.offered || partEvidence.offered.includes(id) || ran.includes(id));
         const ideasByLens = {};
         for (const id of ran) ideasByLens[id] = ideas.filter(i => i.lensId === id).length;
         validationSummary.lenses = {

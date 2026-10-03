@@ -100,6 +100,33 @@ const SYNTH_VISION = (p) => {
     cannotTell: ['the mating part and the loads'],
   };
 };
+// Photo read: our part shows four screws and an as-cast finish; a BENCHMARK
+// (the prompt says COMPETITOR) shows one screw, snap-fits and a moulded
+// PA66-GF30 marking — enough to exercise the teardown comparison end to end.
+const SYNTH_PHOTO = (p) => {
+  const imgs = JSON.stringify(p.messages || []).match(/"type":"image"/g)?.length ?? 0;
+  stats.imagesSeen = (stats.imagesSeen || 0) + imgs;
+  const bench = /COMPETITOR/.test(JSON.stringify(p.messages || []));
+  return bench ? {
+    identity: { name: 'SYNTHETIC competitor side cover', confidence: 'medium', basis: `stub saw ${imgs} photo(s)` },
+    fasteners: [{ type: 'screw', detail: 'Torx pan head', visibleCount: 1, photo: 'photo 1', confidence: 'clear' }],
+    joining: [{ method: 'snap-fit', where: 'four hooks on the rim', photo: 'photo 1', confidence: 'clear' }, { method: 'screwed', where: 'one screw at the hinge corner', photo: 'photo 1', confidence: 'clear' }],
+    materialMarks: [{ verbatim: '>PA66-GF30<', photo: 'photo 1' }],
+    surfaceFinish: [{ observation: 'as-moulded textured surface', photo: 'photo 1', confidence: 'clear' }],
+    processEvidence: [{ observation: 'pin-point gate vestige at the centre', suggests: 'injection moulded', photo: 'photo 1', confidence: 'clear' }],
+    otherObservations: [],
+    cannotTell: ['the hidden underside fasteners'],
+  } : {
+    identity: { name: 'SYNTHETIC gearbox side cover', confidence: 'medium', basis: `stub saw ${imgs} photo(s)` },
+    fasteners: [{ type: 'screw', detail: 'hex flange head', visibleCount: 4, photo: 'photo 1', confidence: 'clear' }],
+    joining: [{ method: 'screwed', where: 'flange to housing', photo: 'photo 1', confidence: 'clear' }],
+    materialMarks: [],
+    surfaceFinish: [{ observation: 'as-cast surface, machined flange face', photo: 'photo 1', confidence: 'probable' }],
+    processEvidence: [{ observation: 'ejector-pin witness marks on the inner face', suggests: 'high-pressure die cast', photo: 'photo 1', confidence: 'probable' }],
+    otherObservations: [],
+    cannotTell: ['whether the flange carries a gasket'],
+  };
+};
 const SYNTH_FUNCTIONS = {
   components: [{ name: 'SYNTHETIC shell body', costSharePct: 60 }, { name: 'bearing bosses', costSharePct: 15 }, { name: 'sealing flange', costSharePct: 25 }],
   functions: [{ name: 'enclose gears', worthPct: 40 }, { name: 'locate shaft', worthPct: 35 }, { name: 'seal oil', worthPct: 25 }],
@@ -155,6 +182,7 @@ http.createServer(async (req, res) => {
     : tool?.name === 'map_contradiction' ? { improvingParamId: mi, worseningParamId: mw, restatement: 'SYNTHETIC mapping from the test stub.' }
     : tool?.name === 'emit_vision_read' ? SYNTH_VISION(p)
     : tool?.name === 'emit_function_model' ? SYNTH_FUNCTIONS
+    : tool?.name === 'emit_photo_read' ? SYNTH_PHOTO(p)
     : {};
   const json = JSON.stringify(input);
   const inTok = Math.round(JSON.stringify(p.messages || '').length / 3.7), outTok = Math.round(json.length / 3.7);

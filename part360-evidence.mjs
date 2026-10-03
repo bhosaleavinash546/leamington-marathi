@@ -108,3 +108,36 @@ export function drawingEvidenceLines(drawing) {
   if (drawing.readability && drawing.readability !== 'good') out.push(`Drawing legibility was "${drawing.readability}" — callouts may be missing.`);
   return out;
 }
+
+// ── Joining evidence for a single part (Prism R4) ────────────────────────────
+// A single part has no assembly to run DFA on, but its geometry shows where it
+// is JOINED: bosses, counterbores and countersinks are where fasteners go. The
+// geometry cannot say how many are fitted, so the lines say "candidates". The
+// per-joint times are the DFA time model's own coefficients (calibratable,
+// cited by version) and the money is those seconds at the region's labour
+// rate — arithmetic, never an estimate. Photo-confirmed fastener counts, when
+// the engineer ticked them, turn candidates into a floor.
+const SECURING_FOR = { screw: 'screw', bolt: 'boltNut', rivet: 'rivet' };
+
+export function joiningEvidenceLines({ counts = null, photoFasteners = [], labourEurPerHr = null, region = null, timeModel } = {}) {
+  if (!timeModel) return [];
+  const c = counts && typeof counts === 'object' ? counts : {};
+  const joints = ['boss', 'counterbore', 'countersink', 'through-hole', 'blind-hole']
+    .map(k => [k, n(c[k])]).filter(([, v]) => v > 0);
+  const photo = (Array.isArray(photoFasteners) ? photoFasteners : []).filter(f => Number.isInteger(f?.count) && f.count > 0);
+  if (!joints.length && !photo.length) return [];
+  const out = [];
+  if (joints.length) {
+    out.push(`Joint-candidate features measured on the 3D model: ${joints.map(([k, v]) => `${v} × ${k}`).join(', ')} — the geometry shows where fasteners COULD go, not how many are fitted.`);
+  }
+  const sec = timeModel.securing;
+  const rate = n(labourEurPerHr);
+  const eur = (s) => (rate ? `€${((s / 3600) * rate).toFixed(3)}` : null);
+  out.push(`DFA time model (${timeModel.version}, calibratable): securing per joint — screw ${sec.screw} s, bolt + nut ${sec.boltNut} s, rivet ${sec.rivet} s, snap-fit ${sec.snapFit} s${rate ? `; at ${region ?? 'the stated region'} labour €${rate}/h securing one screw joint costs ${eur(sec.screw)} against ${eur(sec.snapFit)} for one snap-fit, before handling the fastener itself` : ''}.`);
+  const timed = photo.filter(f => SECURING_FOR[f.fastener]);
+  if (timed.length) {
+    const s = timed.reduce((acc, f) => acc + f.count * sec[SECURING_FOR[f.fastener]], 0);
+    out.push(`Photos of our part show at least ${timed.map(f => `${f.count} ${f.fastener}${f.count === 1 ? '' : 's'}`).join(' and ')} (engineer-confirmed): at least ${Math.round(s * 10) / 10} s of securing time${rate ? ` = ${eur(s)} per assembly at the time-model rates` : ''} — each joint deleted or turned into a snap-fit releases its share.`);
+  }
+  return out;
+}

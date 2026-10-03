@@ -82,7 +82,7 @@ export async function generateCostReductionIdeas(
   onProgress?: (event: ProgressEvent) => void,
   /** Part 360 grounded mode: per-lens evidence blocks from /api/part360/dossier. */
   extra?: {
-    partEvidence?: { blocks: Array<{ lensId: string; text: string }> };
+    partEvidence?: { blocks: Array<{ lensId: string; text: string }>; offered?: string[] };
     prismRunId?: string;
     /**
      * Cancel. Aborting closes the SSE response, and the server aborts its
