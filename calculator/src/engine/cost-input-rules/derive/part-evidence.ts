@@ -53,6 +53,9 @@ const PROCESS_WORDS: Array<{ re: RegExp; route: string; label: string }> = [
   { re: / (inj(ection)? ?mou?ld(ed|ing)?|mou?lded|mou?ldings?) /, route: 'injection_moulding', label: 'moulding' },
   { re: / (machined|billet|cnc) /, route: 'machining', label: 'machining' },
   { re: / (extru(ded|sion|sions)) /, route: 'extrusion', label: 'extrusion' },
+  // Rubber (rubber review): the compound or an unambiguous rubber part. Not
+  // "seal", "mount" or "bush" alone — metal parts carry those names too.
+  { re: / (epdm|nbr|hnbr|fkm|viton|silicone|rubber|elastomer|grommets?|gaskets?|o ?rings?|weather ?strip|anti ?vibration) /, route: 'rubber', label: 'rubber' },
 ];
 
 export interface ProcessNameEvidence {

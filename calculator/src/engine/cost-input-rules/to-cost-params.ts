@@ -760,19 +760,32 @@ export function toCostParams(
       const machineId = RUBBER_MACHINE[proc];
       assumed.push(`${machineId} (from the ${proc.replace(/_/g, ' ')} route)`);
       assumed.push('oee/manning/labourEfficiency from shop defaults');
+      const rubLab = rb.labourId || 'lab-uk-semiskilled';
       return {
         commodity, assumed,
         params: {
           ...shop,
+          ...(num(rb.manning) > 0 ? { manning: num(rb.manning) } : {}),
+          ...(num(rb.oee) > 0 ? { oee: num(rb.oee) } : {}),
+          ...(num(rb.labourEfficiency) > 0 ? { labourEfficiency: num(rb.labourEfficiency) } : {}),
+          ...(rb.rejectRate !== undefined ? { rejectRate: num(rb.rejectRate) } : {}),
+          labourId: rubLab,
           materialId,
           partWeightKg: num(ci.netWeightKg),
           flashAndRunnerWeightKg: num(rb.flashWeightKg),
           process: proc,
-          machineId,
+          machineId: rb.machineId || machineId,
           cycleTimeSec: num(rb.cycleTimeSec),
           cavities: Math.max(1, Math.round(num(rb.cavities, 1))),
           mouldCost: num(rb.mouldCostGBP),
           mouldLife: num(rb.mouldLife, 200_000),
+          ...(rb.cureOvenMachineId && num(rb.cureTimeSec) > 0
+            ? { cureOvenMachineId: rb.cureOvenMachineId, cureTimeSec: num(rb.cureTimeSec) } : {}),
+          ...(num(rb.deflashCycleSec) > 0 ? { deflashCycleSec: num(rb.deflashCycleSec), deflashLabourId: rubLab } : {}),
+          ...(num(rb.postCureHours) > 0 ? { postCure: { hours: num(rb.postCureHours), loadKg: 100, machineId: 'cure-oven-rubber' } } : {}),
+          ...(num(rb.setupHoursPerChange) > 0 ? { setup: { hoursPerChange: num(rb.setupHoursPerChange),
+            batchSize: num(rb.batchSize) || standardBatchSize(annualVolume), labourId: 'lab-uk-technician' } } : {}),
+          ...(num(rb.metalInserts) > 0 ? { metalInserts: num(rb.metalInserts) } : {}),
         },
       };
     }

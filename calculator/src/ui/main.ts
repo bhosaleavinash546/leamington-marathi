@@ -3262,8 +3262,13 @@ function _currentLibSig(): string {
 function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void {
   if (sel.dataset.libSig === sig) return;
   const current = sel.value;
-  sel.innerHTML = html;
-  if (current) sel.value = current;
+  // An OPTIONAL select carries a leading "— None —" (value ""). Filling it with
+  // the library used to wipe that option, so the select fell to the first
+  // machine in the library — the rubber deflash ran on a CNC lathe, and the
+  // forging preform / trim selects did the same (rubber review, Oct 2026).
+  const none = Array.from(sel.options).find(o => o.value === '');
+  sel.innerHTML = (none ? none.outerHTML : '') + html;
+  if (current || none) sel.value = current;
   sel.dataset.libSig = sig;
 }
 
@@ -4529,6 +4534,9 @@ function renderRubberForm(): string {
   <div class="field-row" style="margin-top:4px">
     <div class="field-group"><label title="Deflash/trim time per part s (0 = none).">Deflash Cycle (s, 0=none)</label><input type="number" id="rub-deflash-sec" step="1" min="0" value="0"/></div>
     <div class="field-group"><label title="Visual + dimensional / leak-test cost per part £ (seals, hoses).">Inspection (£/part)</label><input type="number" id="rub-inspect" step="0.01" min="0" value="0"/></div>
+    <div class="field-group"><label title="Post-cure in a batch oven, hours at temperature (FKM, silicone, ACM, AEM, HNBR). 0 = none.">Post-cure (h)</label><input type="number" id="rub-postcure-hr" step="0.5" min="0" value="0"/></div>
+    <div class="field-group"><label title="Mould or die change and heat-up, hours a batch.">Mould Change (h)</label><input type="number" id="rub-setup-hr" step="0.25" min="0" value="1.5"/></div>
+    <div class="field-group"><label>Batch Size</label><input type="number" id="rub-batch" step="50" min="1" value="2500"/></div>
   </div>
   <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
     <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
@@ -14017,8 +14025,11 @@ function collectRubberInput(): UniversalStackInput {
     bondingPrimerCostPerPart: num('rub-primer') || undefined,
     inspectionCostPerPart: num('rub-inspect') || undefined,
     deflashMachineId: deflashSec > 0 ? (sel('rub-deflash-mach') || undefined) : undefined,
-    deflashLabourId: deflashSec > 0 ? (sel('rub-deflash-lab') || undefined) : undefined,
+    // No deflash machine → a bench task by the press labour, as headless.
+    deflashLabourId: deflashSec > 0 ? (sel('rub-deflash-lab') || sel('rub-lab') || undefined) : undefined,
     deflashCycleSec: deflashSec > 0 ? deflashSec : undefined,
+    ...(num('rub-postcure-hr') > 0 ? { postCure: { hours: num('rub-postcure-hr'), loadKg: 100, machineId: 'cure-oven-rubber' } } : {}),
+    ...(num('rub-setup-hr') > 0 ? { setup: { hoursPerChange: num('rub-setup-hr'), batchSize: num('rub-batch') || 2500, labourId: 'lab-uk-technician' } } : {}),
   });
 
   if (manualCycleSec <= 0) {

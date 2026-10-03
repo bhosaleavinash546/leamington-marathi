@@ -103,6 +103,10 @@ const ROUTES: Record<string, Route> = {
   blow_moulding: { value: 'blow_moulding', label: 'Blow moulded', consequence: 'blow mould and resin; hollow by construction' },
   rotational_moulding: { value: 'rotational_moulding', label: 'Rotomoulded', consequence: 'cheap tool, very long cycle' },
   thermoforming: { value: 'thermoforming', label: 'Thermoformed', consequence: 'cheap tool, sheet stock, high trim waste' },
+  // Rubber review: an elastomer part could not be answered into its own
+  // commodity — only forced from the drop-down. Offered when the name says
+  // rubber (part-evidence), and accepted as an answer always.
+  rubber: { value: 'rubber', label: 'Moulded or extruded rubber', consequence: 'compound, cure time and a rubber mould or die' },
 };
 
 function ask(why: string, routes: string[], leaning?: string): Decision {

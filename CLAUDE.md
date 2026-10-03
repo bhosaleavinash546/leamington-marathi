@@ -276,6 +276,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   `CUTTING_DATA`. `/reanalyze` chooses the commodity exactly as `/analyze` (forced/answered route →
   gear metrology → `inferCommodity`) — it used to fall to 'machining' in deterministic mode. See
   `docs/cad/gear-review-2026-10.md`, `tests/gear-review.test.ts` (includes a live HTTP routing test).
+- Rubber (`cost-input-rules/commodities/rubber.ts`, `modules/rubber.ts`): LSR injection is for liquid
+  silicone ONLY (HCR at volume → transfer, stated proxy — no rubber injection press in the library);
+  a constant-section profile (`extrusionProfile`) is extruded with an in-line cure tunnel; the cure
+  section is `cureSectionMm` (p95 capped 2×2·V/S), the heat term t²/(4α); cavities are cost-chosen
+  (`cavitiesFor`); press, crew, OEE, scrap, deflash (bench), post-cure, mould change are rules;
+  `rubber` is a commodity route. `_setSelectOpts` keeps an optional select's "— None —". See
+  `docs/cad/rubber-review-2026-10.md`, `tests/rubber-review.test.ts`; parts in `cad-audit/parts/RUB_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

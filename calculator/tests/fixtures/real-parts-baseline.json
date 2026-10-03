@@ -10,7 +10,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-cabbee860e5c9adc",
+      "partName": "cv-cad-9f8eeddb8a862250",
       "boundingBox": {
         "xMm": 500,
         "yMm": 350,
@@ -790,7 +790,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-968202688b04ce0b",
+      "partName": "cv-cad-0a08d68cd7ba9324",
       "boundingBox": {
         "xMm": 1160,
         "yMm": 760,
@@ -1506,7 +1506,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a14f814a92f06d91",
+      "partName": "cv-cad-6576a28632450571",
       "boundingBox": {
         "xMm": 240,
         "yMm": 60,
@@ -2073,7 +2073,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-46923f6fb2a43094",
+      "partName": "cv-cad-3b673d85f5395907",
       "boundingBox": {
         "xMm": 132,
         "yMm": 120,
@@ -2839,7 +2839,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-39434c5d2e05ec2f",
+      "partName": "cv-cad-e30ef83be2e70359",
       "boundingBox": {
         "xMm": 250,
         "yMm": 50,
@@ -3249,7 +3249,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-53959b9c9567cb70",
+      "partName": "cv-cad-a9072064a486c04a",
       "boundingBox": {
         "xMm": 140,
         "yMm": 140,
@@ -3596,7 +3596,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-685f0f0a9dd5572d",
+      "partName": "cv-cad-46ad67246573d3e5",
       "boundingBox": {
         "xMm": 40,
         "yMm": 25,
@@ -3934,7 +3934,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d63b5b0c18a45eaa",
+      "partName": "cv-cad-6753cb7086a2ab63",
       "boundingBox": {
         "xMm": 180,
         "yMm": 120,
@@ -4770,7 +4770,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-873637ab0297904b",
+      "partName": "cv-cad-8f5f0a66daf63f1b",
       "boundingBox": {
         "xMm": 600,
         "yMm": 400,
@@ -5463,7 +5463,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7306f671bf96d9d3",
+      "partName": "cv-cad-521e2d651582b897",
       "boundingBox": {
         "xMm": 120,
         "yMm": 80,
@@ -5920,7 +5920,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f1ca09bc22f291c5",
+      "partName": "cv-cad-c7aaf7f41bf77064",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -6307,7 +6307,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a6da3ba498b19305",
+      "partName": "cv-cad-d585dbfa8742049f",
       "boundingBox": {
         "xMm": 274.51,
         "yMm": 222.36,
@@ -7360,7 +7360,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-28003ad49e10885e",
+      "partName": "cv-cad-a6aef91a4f466d5a",
       "boundingBox": {
         "xMm": 58.19,
         "yMm": 270,
@@ -8141,6 +8141,1087 @@
     }
   },
   {
+    "part": "RUB_AV_Mount.stp",
+    "sha256": "81d025cad7072c5d",
+    "note": "MODELLED: 60 × 60 × 35 mm natural-rubber mount block, Ø10 bore — the thick-section cure case.",
+    "answers": {
+      "material.elastomer": "mat-nr",
+      "commodity.route": "rubber"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-c0ea88fd92da1ff4",
+      "boundingBox": {
+        "xMm": 60,
+        "yMm": 60,
+        "zMm": 35
+      },
+      "volume": {
+        "mm3": 118750.5,
+        "cm3": 118.75
+      },
+      "surfaceArea": {
+        "mm2": 14905.1,
+        "cm2": 149.051
+      },
+      "fillRatio": 0.9425,
+      "projectedArea": {
+        "zMm2": 3491,
+        "yMm2": 2066,
+        "xMm2": 2066,
+        "alongDrawMm2": 3491,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 8,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.3206,
+        "steelKg": 0.9322,
+        "plasticKg": 0.1247,
+        "castIronKg": 0.8491,
+        "copperKg": 1.064,
+        "titaniumKg": 0.5261
+      },
+      "faces": {
+        "total": 27,
+        "byType": {
+          "PLANE": 6,
+          "CYLINDER": 13,
+          "OTHER": 8
+        },
+        "areaByTypeMm2": {
+          "PLANE": 8867,
+          "CYLINDER": 5586,
+          "OTHER": 452
+        }
+      },
+      "turning": {
+        "fraction": 0.372,
+        "revolvedFraction": 0.074,
+        "maxDiaMm": 10,
+        "axis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "edges": {
+        "total": 59,
+        "byType": {
+          "LINE": 25,
+          "CIRCLE": 26,
+          "OTHER": 8
+        },
+        "sampleCircleRadiiMm": [
+          5,
+          6
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 13,
+        "cylindricalFaceRadiiMm": [
+          5,
+          6
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          5
+        ],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 6,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 8867
+      },
+      "featureTable": [
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 35,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            19
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 2225,
+          "faceIds": [
+            9,
+            11
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 4,
+          "areaMm2": 1104,
+          "faceIds": [
+            1,
+            8,
+            13,
+            25
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 15.93,
+        "thicknessSource": "bulk-wall"
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 24.95,
+        "maxMm": 24.95,
+        "p95Mm": 24.95,
+        "meanMm": 24.95,
+        "stdDevMm": 0,
+        "sampleCount": 2,
+        "method": "ray_cast",
+        "uniformity": "uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 4,
+        "zeroDraftFaceCount": 9,
+        "adequateDraftFaceCount": 4,
+        "minPositiveDraftDeg": 45,
+        "maxPositiveDraftDeg": 45,
+        "analyzedFaceCount": 17,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 4
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 4
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 4
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 4
+          },
+          "ambiguous": true
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 16,
+            "faceIds": [
+              3,
+              21,
+              4,
+              18,
+              6,
+              27,
+              7,
+              26,
+              9,
+              11,
+              10,
+              24,
+              14,
+              20,
+              15,
+              17
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 8,
+            "faceIds": [
+              2,
+              22,
+              5,
+              16,
+              8,
+              13,
+              12,
+              23
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 3,
+            "faceIds": [
+              1,
+              19,
+              25
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 1.8,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 47.3,
+        "estimatedTotalHrs": 0.7879,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 45000,
+        "gravityMouldCostGBP": 26000,
+        "sandPatternCostGBP": 3000,
+        "imMouldCostGBP": 36000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 63,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1628,
+        "sandCycleTimeHrFerrous": 0.184,
+        "forgeStrokes": 6,
+        "investWaxCostGBP": 2.24,
+        "investShellCostGBP": 6.71
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "ANTI VIBRATION MOUNT NR 55 SHORE A 2"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "rubber",
+      "total": 2.28,
+      "breakdown": {
+        "rawMaterial": 0.21,
+        "process": 0.8,
+        "labour": 0.36,
+        "tooling": 0.46,
+        "packaging": 0.03,
+        "logistics": 0.03,
+        "overhead": 0.22,
+        "margin": 0.17
+      },
+      "warnings": [
+        "material_low_confidence"
+      ]
+    }
+  },
+  {
+    "part": "RUB_Door_Seal.stp",
+    "sha256": "2f0708937ff03368",
+    "note": "MODELLED: 1 m EPDM door-seal profile (hollow bulb on a foot) — an extrusion.",
+    "answers": {
+      "material.elastomer": "mat-epdm",
+      "commodity.route": "rubber"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-2572b5cb9554dd8c",
+      "boundingBox": {
+        "xMm": 1000,
+        "yMm": 18,
+        "zMm": 17
+      },
+      "volume": {
+        "mm3": 129560.1,
+        "cm3": 129.56
+      },
+      "surfaceArea": {
+        "mm2": 111959.1,
+        "cm2": 1119.591
+      },
+      "fillRatio": 0.4234,
+      "projectedArea": {
+        "zMm2": 17500,
+        "yMm2": 17500,
+        "xMm2": 129,
+        "alongDrawMm2": 17500,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.3498,
+        "steelKg": 1.017,
+        "plasticKg": 0.136,
+        "castIronKg": 0.9264,
+        "copperKg": 1.1609,
+        "titaniumKg": 0.574
+      },
+      "faces": {
+        "total": 21,
+        "byType": {
+          "PLANE": 17,
+          "CYLINDER": 4
+        },
+        "areaByTypeMm2": {
+          "PLANE": 39584,
+          "CYLINDER": 72375
+        }
+      },
+      "turning": {
+        "fraction": 0.649,
+        "revolvedFraction": 0.646,
+        "maxDiaMm": 14,
+        "axis": [
+          1,
+          0,
+          0
+        ]
+      },
+      "edges": {
+        "total": 49,
+        "byType": {
+          "LINE": 37,
+          "CIRCLE": 12
+        },
+        "sampleCircleRadiiMm": [
+          5,
+          7
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 4,
+        "cylindricalFaceRadiiMm": [
+          5,
+          7
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          5
+        ],
+        "bossShaftCount": 1,
+        "bossShaftRadiiMm": [
+          7
+        ],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 17,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 39584
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 14,
+          "depthMm": 1000,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            6,
+            17
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 10,
+          "depthMm": 1000,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            18,
+            19
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 18000,
+          "faceIds": [
+            13
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 7500,
+          "faceIds": [
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 3000,
+          "faceIds": [
+            10,
+            12
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 1,
+        "totalBendLengthMm": 1000,
+        "thicknessMm": 2,
+        "thicknessSource": "bend-pairs",
+        "bulkWallMm": 2.31,
+        "gaugeSamples": 4
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 2.95,
+        "maxMm": 17.95,
+        "p95Mm": 17.95,
+        "meanMm": 6.7,
+        "stdDevMm": 6.5,
+        "sampleCount": 4,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 16,
+        "adequateDraftFaceCount": 2,
+        "minPositiveDraftDeg": 6.19,
+        "maxPositiveDraftDeg": 6.19,
+        "analyzedFaceCount": 18,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 10,
+            "faceIds": [
+              1,
+              3,
+              4,
+              5,
+              8,
+              9,
+              14,
+              15,
+              16,
+              21
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 8,
+            "faceIds": [
+              2,
+              6,
+              10,
+              12,
+              17,
+              18,
+              19,
+              20
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 3,
+            "faceIds": [
+              7,
+              11,
+              13
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 7.9,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 53.4,
+        "estimatedTotalHrs": 0.8903,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 40000,
+        "gravityMouldCostGBP": 8000,
+        "sandPatternCostGBP": 3000,
+        "imMouldCostGBP": 30000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 92,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.164,
+        "sandCycleTimeHrFerrous": 0.1871,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 16.79,
+        "investShellCostGBP": 50.38
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "DOOR SEAL PROFILE EPDM SPONGE 3"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      },
+      "blank": {
+        "grossAreaMm2": 9000,
+        "netAreaMm2": 9000,
+        "outerPerimeterMm": 1018,
+        "holePerimeterMm": 0,
+        "holeCount": 1,
+        "boundingRectMm": {
+          "lengthMm": 500,
+          "widthMm": 9
+        },
+        "rectangleFill": 2,
+        "source": "developed from the solid — 2 skins unfolded at K = 0.5 (mid-surface), 86 triangles, 1 bend(s), 2.00 mm gauge, skins agree within 200.0% — drawn (1420.5% stretch), forming solve applied",
+        "developedFrom": "solid",
+        "developable": false,
+        "maxStrainPct": 1420.5,
+        "blankHash": "551d5b39e133c68c073219f920aa2fa2457560836e0e6d8b49d7ddb097c2946c",
+        "outline": [
+          [
+            1000,
+            0
+          ],
+          [
+            1000,
+            18
+          ],
+          [
+            0,
+            18
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "forming": {
+          "method": "one-step inverse",
+          "nValue": 1,
+          "blankAreaUnfoldMm2": 18000,
+          "blankAreaSolvedMm2": 18000,
+          "thinningP95Pct": 0,
+          "maxThinningPct": 0,
+          "maxThickeningPct": 0,
+          "strainPoints": []
+        },
+        "warnings": [
+          "The skin stretched by up to 1420.5% when flattened (1236.3% on average), so this is a drawn part, not a bent one. The forming solve (one-step inverse, plastic work minimised from that flat) put the stretched metal back: blank 180 → 180 cm², thinning 0% at the 95th percentile and 0% at the worst well-shaped element. The blank is the solve's, not a geometric unfold; the FASTBLANK profile remains the formed-process answer.",
+          "The two skins developed to blanks 200.0% apart; the mean is used.",
+          "37 triangle(s) inverted in the flat pattern — check the outline."
+        ]
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "rubber",
+      "total": 0.75,
+      "breakdown": {
+        "rawMaterial": 0.29,
+        "process": 0.05,
+        "labour": 0.14,
+        "tooling": 0.05,
+        "packaging": 0.06,
+        "logistics": 0.05,
+        "overhead": 0.06,
+        "margin": 0.06
+      },
+      "warnings": [
+        "material_low_confidence"
+      ]
+    }
+  },
+  {
+    "part": "RUB_Grommet.stp",
+    "sha256": "5e891249642a870d",
+    "note": "MODELLED: Ø40 flange, Ø26 body, Ø12 bore EPDM grommet — the commonest moulded rubber part.",
+    "answers": {
+      "material.elastomer": "mat-epdm",
+      "commodity.route": "rubber"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-651e5f420d455f8e",
+      "boundingBox": {
+        "xMm": 40,
+        "yMm": 40,
+        "zMm": 20
+      },
+      "volume": {
+        "mm3": 10957.9,
+        "cm3": 10.958
+      },
+      "surfaceArea": {
+        "mm2": 5127.1,
+        "cm2": 51.271
+      },
+      "fillRatio": 0.3424,
+      "projectedArea": {
+        "zMm2": 1139,
+        "yMm2": 567,
+        "xMm2": 564,
+        "alongDrawMm2": 1139,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "weights": {
+        "aluminiumKg": 0.0296,
+        "steelKg": 0.086,
+        "plasticKg": 0.0115,
+        "castIronKg": 0.0783,
+        "copperKg": 0.0982,
+        "titaniumKg": 0.0485
+      },
+      "faces": {
+        "total": 10,
+        "byType": {
+          "CYLINDER": 5,
+          "PLANE": 5
+        },
+        "areaByTypeMm2": {
+          "CYLINDER": 2538,
+          "PLANE": 2589
+        }
+      },
+      "turning": {
+        "fraction": 1,
+        "revolvedFraction": 0.495,
+        "maxDiaMm": 40,
+        "axis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "edges": {
+        "total": 15,
+        "byType": {
+          "CIRCLE": 10,
+          "LINE": 5
+        },
+        "sampleCircleRadiiMm": [
+          6,
+          11,
+          13,
+          20
+        ]
+      },
+      "features": {
+        "cylindricalFaceCount": 5,
+        "cylindricalFaceRadiiMm": [
+          6,
+          11,
+          13,
+          20
+        ],
+        "estimatedHoleCount": 1,
+        "holeRadiiMm": [
+          6
+        ],
+        "bossShaftCount": 4,
+        "bossShaftRadiiMm": [
+          11,
+          13,
+          20
+        ],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 5,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 2589
+      },
+      "featureTable": [
+        {
+          "kind": "boss",
+          "diaMm": 22,
+          "depthMm": 2,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            8
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 26,
+          "depthMm": 4,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            4
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 26,
+          "depthMm": 10,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            9
+          ]
+        },
+        {
+          "kind": "boss",
+          "diaMm": 40,
+          "depthMm": 4,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            1
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 12,
+          "depthMm": 20,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            5
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 1144,
+          "faceIds": [
+            3
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 726,
+          "faceIds": [
+            2
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 418,
+          "faceIds": [
+            7
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 4.27,
+        "thicknessSource": "bulk-wall",
+        "bulkWallMm": 4.27
+      },
+      "gear": null,
+      "wallThickness": null,
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 5,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 5,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 2,
+        "principalDirections": [
+          {
+            "directionLabel": "+X",
+            "faceCount": 5,
+            "faceIds": [
+              1,
+              4,
+              5,
+              8,
+              9
+            ]
+          },
+          {
+            "directionLabel": "+Z",
+            "faceCount": 5,
+            "faceIds": [
+              2,
+              3,
+              6,
+              7,
+              10
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 30,
+        "planarMillingTimeMins": 0.5,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 31,
+        "estimatedTotalHrs": 0.517,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 40000,
+        "gravityMouldCostGBP": 8000,
+        "sandPatternCostGBP": 2500,
+        "imMouldCostGBP": 15000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 20000
+      },
+      "manufacturabilityScore": 100,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1512,
+        "sandCycleTimeHrFerrous": 0.1531,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 0.77,
+        "investShellCostGBP": 2.31
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "rubber",
+      "total": 0.68,
+      "breakdown": {
+        "rawMaterial": 0.03,
+        "process": 0.14,
+        "labour": 0.1,
+        "tooling": 0.29,
+        "packaging": 0.01,
+        "logistics": 0.01,
+        "overhead": 0.07,
+        "margin": 0.05
+      },
+      "warnings": [
+        "material_low_confidence"
+      ]
+    }
+  },
+  {
     "part": "Seat_Locking_Bracket.stp",
     "sha256": "594fb07fcb259021",
     "note": "The one genuine pressing: 1.55 mm wall throughout, 15 measured bends, 4% fill.",
@@ -8150,7 +9231,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2387ddab7c030ca1",
+      "partName": "cv-cad-734fa1925049538e",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -10683,7 +11764,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-97e80069803fdf8a",
+      "partName": "cv-cad-2282d212c710e6a8",
       "boundingBox": {
         "xMm": 114.4,
         "yMm": 236.4,
@@ -11665,7 +12746,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f02482882a7a5e2b",
+      "partName": "cv-cad-b3d562b3e2c8ec06",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

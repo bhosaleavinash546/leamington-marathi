@@ -152,6 +152,21 @@ export const ANSWERS: Record<string, {
     answers: { 'material.family': 'steel', 'commodity.route': 'forging',
                'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' },
   },
+  // ── Rubber (rubber review, 2 Oct 2026) ────────────────────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/RUB_modelled_parts.py
+  // because the audit set held no rubber part.
+  'RUB_Grommet.stp': {
+    note: 'MODELLED: Ø40 flange, Ø26 body, Ø12 bore EPDM grommet — the commonest moulded rubber part.',
+    answers: { 'material.elastomer': 'mat-epdm', 'commodity.route': 'rubber' },
+  },
+  'RUB_AV_Mount.stp': {
+    note: 'MODELLED: 60 × 60 × 35 mm natural-rubber mount block, Ø10 bore — the thick-section cure case.',
+    answers: { 'material.elastomer': 'mat-nr', 'commodity.route': 'rubber' },
+  },
+  'RUB_Door_Seal.stp': {
+    note: 'MODELLED: 1 m EPDM door-seal profile (hollow bulb on a foot) — an extrusion.',
+    answers: { 'material.elastomer': 'mat-epdm', 'commodity.route': 'rubber' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

@@ -599,6 +599,20 @@ export interface CADAnalysisResult {
       cycleTimeSec: number;
       mouldCostGBP: number;
       mouldLife: number;
+      /** Rubber review (Oct 2026): rule-decided on both paths. */
+      cureTimeSec?: number;
+      cureOvenMachineId?: string;
+      machineId?: string;
+      labourId?: string;
+      manning?: number;
+      labourEfficiency?: number;
+      rejectRate?: number;
+      deflashCycleSec?: number;
+      postCureHours?: number;
+      setupHoursPerChange?: number;
+      batchSize?: number;
+      metalInserts?: number;
+      oee?: number;
     };
     composites?: {
       /** 'hand_layup' | 'prepreg_autoclave' | 'rtm' | 'infusion' | 'smc' | 'wet_layup' */

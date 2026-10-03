@@ -11,13 +11,25 @@ RUBBER MOULDING COST INPUT RULES:
   sectionThicknessMm: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   process: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cureTimeSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  cureOvenMachineId: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cycleTimeSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cavities: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
-  projectedAreaCm2=288.4  [two largest bounding-box dimensions — deterministic, use verbatim]
+  projectedAreaCm2=288.4  [estimated: bbox face × √fill for a solid, bbox face for a shell below 5% fill (no measured silhouette) — deterministic, use verbatim]
   flashWeightKg: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldSteel: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldCostGBP: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldLife: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  machineId: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  labourId=lab-uk-semiskilled  [press / line operative — deterministic, use verbatim]
+  manning: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  labourEfficiency=0.92  [the shop convention (the form defaulted 0.90) — deterministic, use verbatim]
+  rejectRate=0.03  [3% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground — deterministic, use verbatim]
+  deflashCycleSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  postCureHours: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  setupHoursPerChange: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  batchSize=5000  [100,000/yr ÷ 20 runs, held between 50 and 5,000 — deterministic, use verbatim]
+  metalInserts: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  oee=0.8  [the shop convention (the form defaulted 0.78) — deterministic, use verbatim]
 
 ### context: degraded
 RUBBER MOULDING COST INPUT RULES:
@@ -28,10 +40,22 @@ RUBBER MOULDING COST INPUT RULES:
   sectionThicknessMm: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   process: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cureTimeSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  cureOvenMachineId: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cycleTimeSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   cavities: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
-  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
+  projectedAreaCm2=768  [estimated: bbox face × √fill for a solid, bbox face for a shell below 5% fill (no measured silhouette) — deterministic, use verbatim]
   flashWeightKg: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldSteel: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldCostGBP: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   mouldLife: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  machineId: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  labourId=lab-uk-semiskilled  [press / line operative — deterministic, use verbatim]
+  manning: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  labourEfficiency=0.92  [the shop convention (the form defaulted 0.90) — deterministic, use verbatim]
+  rejectRate=0.03  [3% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground — deterministic, use verbatim]
+  deflashCycleSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  postCureHours: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  setupHoursPerChange: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  batchSize=5000  [100,000/yr ÷ 20 runs, held between 50 and 5,000 — deterministic, use verbatim]
+  metalInserts: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
+  oee=0.8  [the shop convention (the form defaulted 0.78) — deterministic, use verbatim]

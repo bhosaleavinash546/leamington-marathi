@@ -98,13 +98,21 @@ export interface RubberCureInputs {
  * penetration term (∝ thickness²) + process handling overhead. Arrhenius-style
  * rule of thumb: cure rate roughly doubles per +10°C.
  */
+/** Thermal diffusivity of a filled elastomer compound, mm²/s (typical 0.08–0.12). */
+export const RUBBER_THERMAL_DIFFUSIVITY_MM2_S = 0.1;
+
 export function estimateRubberCureTimeSec(inputs: RubberCureInputs): number {
   const base = RUBBER_CURE_BASE_SEC[inputs.compoundFamily];
   const refT = 170;
   const T = inputs.moldTempC ?? defaultCureTempC(inputs.compoundFamily);
   const tempFactor = Math.pow(2, (refT - T) / 10);            // hotter → faster
   const thickness = Math.max(0.3, inputs.thicknessMm);
-  const heatPenetrationSec = 4 * thickness * thickness;        // ~4 s/mm² to fully cure the centre
+  // Heat reaching the centre of a section heated from both faces: slab
+  // conduction, centre at 90% of the mould temperature at Fourier number ≈ 1 on
+  // the HALF thickness — t = (thickness/2)² / α. With α ≈ 0.1 mm²/s (filled
+  // elastomers 0.08–0.12) that is 2.5 s/mm² × thickness². It was an unsourced
+  // 4 s/mm², which put a 25 mm mount at 42 minutes (rubber review, Oct 2026).
+  const heatPenetrationSec = thickness * thickness / (4 * RUBBER_THERMAL_DIFFUSIVITY_MM2_S);
   const cureSec = base * tempFactor + heatPenetrationSec;
 
   // Handling overhead (load/close/open/eject) by process.

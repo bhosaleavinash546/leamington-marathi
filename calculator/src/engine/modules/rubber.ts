@@ -48,6 +48,11 @@ export interface RubberInputs {
   deflashLabourId?: string;
   deflashCycleSec?: number;   // cryo/tumble deflash or manual trim time per part s
   inspectionCostPerPart?: number; // visual + dimensional / leak-test £/part
+  /** Post-cure in a batch oven (FKM, silicone, ACM, AEM, HNBR): hours at
+   *  temperature, kg of parts a load, the oven. Absent = no post-cure. */
+  postCure?: { hours: number; loadKg: number; machineId: string };
+  /** Mould or die change and heat-up, shared over the batch. */
+  setup?: { hoursPerChange: number; batchSize: number; labourId?: string };
 }
 
 export function getRubberInputSchema(): Record<string, string> {
@@ -146,24 +151,58 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
     });
   }
 
-  // Optional deflash / trim operation (cryo-tumble or manual).
-  if (
-    inputs.deflashMachineId &&
-    inputs.deflashLabourId &&
-    inputs.deflashCycleSec !== undefined &&
-    inputs.deflashCycleSec > 0
-  ) {
+  // Optional deflash / trim operation (cryo-tumble or manual). With no machine
+  // it is a bench task — an operator trimming and checking at a bench, labour
+  // only, one person (rubber review, Oct 2026).
+  if (inputs.deflashCycleSec !== undefined && inputs.deflashCycleSec > 0
+      && (inputs.deflashMachineId || inputs.deflashLabourId)) {
     const deflashHr = (inputs.deflashCycleSec / 3600) * rejectUplift;
+    const bench = !inputs.deflashMachineId;
     operations.push({
-      operationName: 'Deflash / Trim',
-      machineId: inputs.deflashMachineId,
-      labourId: inputs.deflashLabourId,
-      cycleTimeHr: deflashHr,
+      operationName: bench ? 'Deflash / trim and visual check (bench)' : 'Deflash / Trim',
+      machineId: inputs.deflashMachineId ?? inputs.machineId,
+      labourId: inputs.deflashLabourId ?? inputs.labourId,
+      cycleTimeHr: bench ? 0 : deflashHr,
       partsPerCycle: 1,
-      oee: inputs.oee,
-      manning: inputs.manning,
+      oee: bench ? 1 : inputs.oee,
+      manning: bench ? 1 : inputs.manning,
       labourTimeHr: deflashHr,
       labourEfficiency: inputs.labourEfficiency,
+      ...(bench ? { benchOperation: true } : {}),
+    });
+  }
+
+  // Post-cure: a batch oven holds a load of parts for hours; each part pays its
+  // share of the load. The oven is loaded and unloaded, not tended.
+  if (inputs.postCure && inputs.postCure.hours > 0 && inputs.postCure.loadKg > 0 && inputs.partWeightKg > 0) {
+    const perLoad = Math.max(1, Math.floor(inputs.postCure.loadKg / inputs.partWeightKg));
+    const hr = inputs.postCure.hours * rejectUplift;
+    operations.push({
+      operationName: `Post-cure ${inputs.postCure.hours} h (${perLoad} parts a ${inputs.postCure.loadKg} kg load)`,
+      machineId: inputs.postCure.machineId,
+      labourId: inputs.labourId,
+      cycleTimeHr: hr,
+      partsPerCycle: perLoad,
+      oee: 1,
+      manning: 0.1,
+      labourTimeHr: hr,
+      labourEfficiency: inputs.labourEfficiency,
+    });
+  }
+
+  // Mould / die change and heat-up, shared over the batch.
+  if (inputs.setup && inputs.setup.hoursPerChange > 0 && inputs.setup.batchSize > 0) {
+    const hr = inputs.setup.hoursPerChange / inputs.setup.batchSize;
+    operations.push({
+      operationName: `Mould change + heat-up (${inputs.setup.hoursPerChange} h ÷ ${inputs.setup.batchSize} batch)`,
+      machineId: inputs.machineId,
+      labourId: inputs.setup.labourId ?? inputs.labourId,
+      cycleTimeHr: hr,
+      partsPerCycle: 1,
+      oee: 1,
+      manning: 1,
+      labourTimeHr: hr,
+      labourEfficiency: 1,
     });
   }
 
@@ -180,8 +219,11 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
       }).total;
 
   // Mould life accounting
+  // Fractional above one: a worn mould's successor carries on into the next
+  // year — rounding up inside a one-year amortisation over-charges (as the
+  // forging review found for die sets).
   const numMoulds = inputs.mouldLife > 0
-    ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
+    ? Math.max(1, inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
     : 1;
 
   const tooling: ToolingInput = {

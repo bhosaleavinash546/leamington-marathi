@@ -18,7 +18,7 @@ import {
   ROTATIONAL_MOULDING_RULES, partsPerArm, rotoFamilyOf, mouldTypeFor,
 } from '../src/engine/cost-input-rules/commodities/rotational-moulding.js';
 import {
-  RUBBER_RULES, processFor, cavitiesFor, mouldSteelFor,
+  RUBBER_RULES, processFor, cureSectionMm, cavitiesFor, mouldSteelFor,
 } from '../src/engine/cost-input-rules/commodities/rubber.js';
 import {
   COMPOSITES_RULES, plyCount, laminateAreaM2,
@@ -226,24 +226,29 @@ describe('rubber', () => {
   it('cures on the thickest section, not the mean wall', () => {
     const r = runCostInputRules(RUBBER_RULES, rubCtx(EPDM));
     const rub = r.suggestions.rubber as Record<string, number | string>;
-    // 28 mm max section, not the 18 mm mean — heat has to reach the centre of
-    // the thickest part, and that term goes as thickness².
-    expect(rub.thicknessMm).toBe(28);   // the `sectionThicknessMm` label, at path rubber.thicknessMm
-    expect(rub.cureTimeSec).toBe(estimateRubberCureTimeSec({
-      compoundFamily: 'epdm-sulphur', thicknessMm: 28, process: 'transfer_mould',
+    // The governing section (rubber review): the ray-cast 95th percentile — here
+    // the 28 mm max — capped at twice the solid's mean section 2·V/S.
+    const sec = cureSectionMm(rubCtx(EPDM))!;
+    expect(rub.thicknessMm).toBe(sec.mm);
+    expect(sec.mm).toBeGreaterThan(18);                   // not the mean wall
+    // The cure IS the moulding cycle; there is no separate cure.
+    expect(rub.cycleTimeSec).toBe(estimateRubberCureTimeSec({
+      compoundFamily: 'epdm-sulphur', thicknessMm: sec.mm, process: 'transfer_mould',
     }));
-    // The mean wall would have understated the cure by minutes.
+    expect(rub.cureTimeSec).toBe(0);
     const atMean = estimateRubberCureTimeSec({
       compoundFamily: 'epdm-sulphur', thicknessMm: 18, process: 'transfer_mould',
     });
-    expect((rub.cureTimeSec as number) - atMean).toBeGreaterThan(120);
+    expect((rub.cycleTimeSec as number) - atMean).toBeGreaterThan(60);
   });
 
   it('routes by compound, flatness and volume', () => {
     expect(processFor(rubCtx(), 'silicone-lsr', 5).process).toBe('injection_mould_lsr');
     expect(processFor(rubCtx({}, { annualVolume: 10_000 }), 'epdm-sulphur', 28).process).toBe('compression_mould');
     expect(processFor(rubCtx({}, { annualVolume: 80_000 }), 'epdm-sulphur', 28).process).toBe('transfer_mould');
-    expect(processFor(rubCtx({}, { annualVolume: 400_000 }), 'epdm-sulphur', 28).process).toBe('injection_mould_lsr');
+    // A solid-rubber compound never goes to the LIQUID silicone machine (rubber
+    // review): transfer is the costed proxy for a rubber injection press.
+    expect(processFor(rubCtx({}, { annualVolume: 400_000 }), 'epdm-sulphur', 28).process).toBe('transfer_mould');
 
     const gasket = { ...MOUNT, boundingBox: { xMm: 200, yMm: 150, zMm: 2 } } as unknown as OCCTGeometry;
     expect(processFor(rubCtx({}, { geo: gasket }), 'nbr', 2).process).toBe('die_cut');
@@ -262,8 +267,11 @@ describe('rubber', () => {
   });
 
   it('sizes cavitation and tool steel to the part and the run', () => {
+    // Platen-limited without a volume: 1,800 cm² usable ÷ (area × 2.5).
     expect(cavitiesFor('compression_mould', 500).n).toBe(1);
-    expect(cavitiesFor('compression_mould', 20).n).toBe(8);
+    expect(cavitiesFor('compression_mould', 20).n).toBe(32);   // 36 fit, capped at 32
+    // Volume-limited: 100k/yr × 300 s ÷ (4,000 h × 3,600 × 0.8) = 2.6 → 3
+    expect(cavitiesFor('compression_mould', 20, 300, 100_000).n).toBe(3);
     expect(cavitiesFor('die_cut', 500).n).toBe(8);
     expect(mouldSteelFor('compression_mould', 10_000)).toBe('aluminium');
     expect(mouldSteelFor('compression_mould', 200_000)).toBe('p20');
