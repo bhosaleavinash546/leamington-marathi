@@ -79,12 +79,16 @@ const RESIN_MENUS: Record<string, ResinCandidate[]> = {
     { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
     { id: 'mat-pet-bg', grade: /\bpet\b/, application: /bottle/ },
   ],
+  // Sheet grades, not pellets: the extruded sheet is what a former buys, and
+  // the form lists only those (thermoforming review).
   thermoforming: [
-    { id: 'mat-hips', grade: /hips|\bps\b|polystyr/, application: /tray|liner|pack/ },
-    { id: 'mat-abs', grade: /\babs\b/, application: /cover|housing|panel/ },
-    { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
-    { id: 'mat-upvc', grade: /pvc/ },
-    { id: 'mat-pc', grade: /\bpc\b|polycarb|lexan/, application: /glazing|guard|shield/ },
+    { id: 'mat-abs-tf', grade: /\babs\b/, application: /cover|housing|panel|trim|fascia/ },
+    { id: 'mat-hdpe-tf', grade: /hdpe|\bpe\b/, application: /lid|box|liner|tank|tray/ },
+    { id: 'mat-pp-tf', grade: /\bpp\b|polyprop/ },
+    { id: 'mat-pp-tpo-tf', grade: /tpo/ },
+    { id: 'mat-hips-tf', grade: /hips|\bps\b|polystyr/, application: /pack/ },
+    { id: 'mat-rpvc-tf', grade: /pvc/ },
+    { id: 'mat-pc-tf', grade: /\bpc\b|polycarb|lexan/, application: /glazing|guard|shield/ },
   ],
   // Rotational moulding is overwhelmingly polyethylene; a short menu is the
   // honest one rather than a long list of grades nobody rotomoulds.

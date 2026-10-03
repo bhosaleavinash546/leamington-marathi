@@ -840,21 +840,29 @@ export function toCostParams(
     case 'thermoforming': {
       const tf = ci.thermoforming;
       if (!tf) return null;
-      // Sheet weight over part weight is how many parts the sheet yields — the
-      // rules measure both, so this is arithmetic rather than an assumption.
       const partKg = num(tf.partWeightKg) || num(ci.netWeightKg);
       const sheetKg = num(tf.sheetWeightKg);
-      const perSheet = partKg > 0 && sheetKg > 0 ? Math.max(1, Math.round(sheetKg / partKg)) : 1;
+      // Parts per sheet is the rules' nest. It used to be sheet weight ÷ part
+      // weight — and the rules' sheet is the blank for ONE part, so a part was
+      // charged no web at all and half the forming time; on a sheet lighter
+      // than the part, the costing failed outright (thermoforming review).
+      const perSheet = tf.partsPerSheet != null ? Math.max(1, Math.round(num(tf.partsPerSheet)))
+        : partKg > 0 && sheetKg > 0 ? Math.max(1, Math.round(sheetKg / partKg)) : 1;
       const areaCm2 = geo?.surfaceArea?.cm2 ?? 0;
-      // A cut-sheet former for a small part, an inline machine for a large one.
-      const machineId = tf.method === 'pressure' ? 'thermoform-pressure'
-        : areaCm2 > 5_000 ? 'thermoform-large' : 'thermoform-small';
-      assumed.push(`${machineId} (${tf.method ?? 'vacuum'} forming at ${areaCm2.toFixed(0)} cm² surface)`);
-      assumed.push('indexTimeSec=6', `partsPerSheet=${perSheet} (sheet weight / part weight)`);
+      const machineId = tf.machineId || (tf.method === 'pressure' ? 'thermoform-pressure'
+        : areaCm2 > 5_000 ? 'thermoform-large' : 'thermoform-small');
+      if (!tf.machineId) assumed.push(`${machineId} (${tf.method ?? 'vacuum'} forming at ${areaCm2.toFixed(0)} cm² surface)`);
+      if (tf.indexTimeSec == null) assumed.push('indexTimeSec=6');
+      if (tf.partsPerSheet == null) assumed.push(`partsPerSheet=${perSheet} (sheet weight / part weight)`);
       return {
         commodity, assumed,
         params: {
           ...shop,
+          ...(tf.labourId ? { labourId: tf.labourId } : {}),
+          ...(tf.manning != null ? { manning: num(tf.manning) } : {}),
+          ...(tf.oee != null ? { oee: num(tf.oee) } : {}),
+          ...(tf.labourEfficiency != null ? { labourEfficiency: num(tf.labourEfficiency) } : {}),
+          ...(tf.rejectRatePct != null ? { rejectRate: num(tf.rejectRatePct) / 100 } : {}),
           materialId,
           sheetWeightKg: sheetKg,
           partsPerSheet: perSheet,
@@ -863,8 +871,13 @@ export function toCostParams(
           machineId,
           heatTimeSec: num(tf.heatTimeSec),
           formTimeSec: num(tf.formTimeSec),
+          coolTimeSec: num(tf.coolTimeSec),
           trimTimeSec: num(tf.trimTimeSec),
-          indexTimeSec: 6,
+          indexTimeSec: tf.indexTimeSec != null ? num(tf.indexTimeSec) : 6,
+          ...(tf.sheetThicknessMm ? { sheetThicknessMm: num(tf.sheetThicknessMm) } : {}),
+          ...(tf.rotaryIndex ? { rotary: true } : {}),
+          ...(tf.trimMachineId ? { trimMachineId: tf.trimMachineId } : {}),
+          ...(tf.energyPricePerKwh ? { energyPricePerKwh: num(tf.energyPricePerKwh) } : {}),
           toolCost: num(tf.toolCostGBP),
         },
       };

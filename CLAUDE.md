@@ -299,6 +299,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   centre; `enclosedShell` in derive/hollow.ts) and get the hollow-route question before the bend test. See
   `docs/cad/rotational-moulding-review-2026-10.md`, `tests/rotational-moulding-review.test.ts`; parts in
   `cad-audit/parts/ROTO_*`.
+- Thermoforming (`cost-input-rules/commodities/thermoforming.ts`, `modules/thermoforming.ts`): the plan is the
+  LARGEST measured silhouette (`planAreaCm2` — the "along draw" one can be a side view); the sheet gauge is mass
+  balance (part volume ÷ plan), the formed wall 2·V/S; the blank is outline + clamp margin, nested on the former's
+  window (`nestOnSheet`, `TF_MACHINES`); a rotary former is station-paced (`rotary`), heavy-gauge trim runs off the
+  former on the router (`trimMachineId`); parts per sheet, machine, crew, OEE, scrap, index time and the electricity
+  price are rules on both paths (a rule's `fieldId` must be the field that holds that quantity — the draw ratio was
+  written into the index time). The name reader knows forming / blow / roto words and polymers as routing evidence.
+  See `docs/cad/thermoforming-review-2026-10.md`, `tests/thermoforming-review.test.ts`; parts in `cad-audit/parts/TF_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

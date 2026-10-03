@@ -51,6 +51,12 @@ export interface ThermoformingInputs {
   includeInspection?: boolean;
   inspectionMachineId?: string;
   inspectionTimeSec?: number;
+  /** Rotary former: the oven is its own station, so the slowest of heat /
+   *  form + cool / load paces the machine (+5 s index), not their sum. */
+  rotary?: boolean;
+  /** Trim off the former on this machine (a 5-axis router), per part, with
+   *  one operator. Unset: the trim time sits inside the forming cycle. */
+  trimMachineId?: string;
 }
 
 export function getThermoformingInputSchema(): Record<string, string> {
@@ -100,7 +106,11 @@ export function computeThermoformingDrivers(inputs: ThermoformingInputs): Commod
   const trimSec = Math.max(0, inputs.trimTimeSec);
   const indexSec = Math.max(0, inputs.indexTimeSec);
 
-  const cycleTimeHr = (heatSec + formSec + coolSec + trimSec + indexSec) / 3600;
+  const offlineTrim = !!inputs.trimMachineId && trimSec > 0;
+  const cycleSec = inputs.rotary
+    ? Math.max(heatSec, formSec + coolSec, indexSec) + 5 + (offlineTrim ? 0 : trimSec)
+    : heatSec + formSec + coolSec + indexSec + (offlineTrim ? 0 : trimSec);
+  const cycleTimeHr = cycleSec / 3600;
   const effectiveCycleTimeHr = cycleTimeHr * rejectUplift;
 
   // ── Part-level oven + forming energy (the biggest, previously invisible term) ──
@@ -138,6 +148,21 @@ export function computeThermoformingDrivers(inputs: ThermoformingInputs): Commod
       labourEfficiency: inputs.labourEfficiency,
     },
   ];
+
+  if (offlineTrim) {
+    const trimHr = trimSec / 3600 * rejectUplift;
+    operations.push({
+      operationName: 'CNC Trim (5-axis router)',
+      machineId: inputs.trimMachineId!,
+      labourId: inputs.labourId,
+      cycleTimeHr: trimHr,
+      partsPerCycle: 1,
+      oee: inputs.oee,
+      manning: 1,
+      labourTimeHr: trimHr,
+      labourEfficiency: inputs.labourEfficiency,
+    });
+  }
 
   if (inputs.includeInspection) {
     const qaSec = inputs.inspectionTimeSec ?? 8;

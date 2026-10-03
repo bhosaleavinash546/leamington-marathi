@@ -599,6 +599,20 @@ export interface CADAnalysisResult {
       heatTimeSec: number;
       formTimeSec: number;
       trimTimeSec: number;
+      // ── rule-derived (thermoforming review, Oct 2026) ──
+      partsPerSheet?: number;
+      machineId?: string;
+      coolTimeSec?: number;
+      indexTimeSec?: number;
+      sheetThicknessMm?: number;
+      rotaryIndex?: boolean;
+      trimMachineId?: string;
+      energyPricePerKwh?: number;
+      labourId?: string;
+      manning?: number;
+      oee?: number;
+      labourEfficiency?: number;
+      rejectRatePct?: number;
     };
     rotationalMoulding?: {
       numArms: number;

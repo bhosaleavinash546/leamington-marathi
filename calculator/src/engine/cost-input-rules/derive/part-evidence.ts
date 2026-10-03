@@ -50,6 +50,12 @@ const PROCESS_WORDS: Array<{ re: RegExp; route: string; label: string }> = [
   { re: /(?<!(hole|bolt|drill|pcd) )patterns? /, route: 'casting', label: 'a casting pattern' },
   { re: / (forg(e|ed|ing|ings)|drop ?forg(ed|ing)) /, route: 'forging', label: 'forging' },
   { re: / (stamp(ed|ing|ings)?|pressed|pressings?|press ?part|sheet ?metal|blanked) /, route: 'sheet_metal', label: 'pressing' },
+  // The forming and hollow processes, ahead of the generic "moulded"
+  // (thermoforming review: a file named "… ABS VACUUM FORMED" was routed to
+  // sheet metal without a question, because no word here knew the process).
+  { re: / (thermo ?form(ed|ing|ings)?|vacuum ?form(ed|ing|ings)?|pressure ?form(ed|ing)?|twin ?sheet) /, route: 'thermoforming', label: 'thermoforming' },
+  { re: / (blow ?mou?ld(ed|ing|ings)?) /, route: 'blow_moulding', label: 'blow moulding' },
+  { re: / (roto ?mou?ld(ed|ing|ings)?|rotational(ly)? ?mou?ld(ed|ing)?) /, route: 'rotational_moulding', label: 'rotational moulding' },
   { re: / (inj(ection)? ?mou?ld(ed|ing)?|mou?lded|mou?ldings?) /, route: 'injection_moulding', label: 'moulding' },
   { re: / (machined|billet|cnc) /, route: 'machining', label: 'machining' },
   { re: / (extru(ded|sion|sions)) /, route: 'extrusion', label: 'extrusion' },
@@ -63,6 +69,19 @@ export interface ProcessNameEvidence {
   route: string | null;
   /** Every hit, for the basis line. */
   hits: Array<{ route: string; label: string; text: string; where: string }>;
+}
+
+/**
+ * A polymer named in the file — evidence the part is not a pressing, though
+ * not of which plastics process. A sheet steel part is never called HDPE.
+ */
+const POLYMER_WORDS = / (hdpe|ldpe|lldpe|abs|pp|pc|pvc|hips|petg|pmma|tpo|asa|polypropylene|polyethylene|polycarbonate|polystyrene|acrylic|nylon|pa6|pa66|pa12|pom|acetal) /;
+export function polymerFromNames(names: NameSource[]): { word: string; text: string; where: string } | null {
+  for (const n of names) {
+    const m = norm(n.text).match(POLYMER_WORDS);
+    if (m) return { word: m[1].toUpperCase(), text: n.text, where: n.where };
+  }
+  return null;
 }
 
 export function processFromNames(names: NameSource[]): ProcessNameEvidence {

@@ -4189,6 +4189,8 @@ function renderThermoformingForm(): string {
     </div>
     <div class="section-title" style="margin-top:8px">Energy, Additives &amp; Scrap</div>
     <div class="field-row">
+      <div class="field-group"><label><input type="checkbox" id="tf-rotary"/> Rotary former <span title="Oven at its own station: the slowest of heat / form + cool / load paces the machine, not their sum.">ℹ</span></label></div>
+      <div class="field-group"><label>Trim Machine <span title="Heavy-gauge parts are trimmed off the former on a 5-axis router, per part. None = the trim time sits inside the forming cycle.">ℹ</span></label><select id="tf-trim-mach" class="machine-select"><option value="">— None (in the cycle) —</option></select></div>
       <div class="field-group"><label>Electricity (£/kWh)</label><input type="number" id="tf-kwh" step="0.01" min="0" value="0.20"/></div>
       <div class="field-group"><label>Reject Rate (%)</label><input type="number" id="tf-reject" step="0.5" min="0" max="49" value="3"/></div>
     </div>
@@ -13851,6 +13853,8 @@ function collectThermoformingInput(): UniversalStackInput {
     complexity: validSel<FormComplexity>('tf-cx', ['simple','moderate','complex'], 'moderate'),
     trimType: validSel('tf-trim-type', ['cnc-router','steel-rule','in-machine'] as const, 'cnc-router'),
     includeInspection: (el<HTMLInputElement>('tf-inspect')?.checked) ?? false,
+    rotary: (el<HTMLInputElement>('tf-rotary')?.checked) ?? false,
+    trimMachineId: sel('tf-trim-mach') || undefined,
   });
 
   // Surface auto-estimated cycle elements and tooling when left at 0.

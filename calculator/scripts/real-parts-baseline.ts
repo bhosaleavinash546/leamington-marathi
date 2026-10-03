@@ -192,6 +192,16 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 240 × 160 × 140 mm LLDPE header tank, 4 mm wall, Ø40 neck (~4 L) — shares an arm.',
     answers: { 'material.family': 'plastic', 'material.resin': 'mat-lldpe-roto', 'commodity.route': 'rotational_moulding' },
   },
+  // ── Thermoforming (thermoforming review, 3 Oct 2026) ─────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/TF_modelled_parts.py.
+  'TF_Battery_Box_Lid.stp': {
+    note: 'MODELLED: 900 × 600 × 250 mm HDPE battery-box lid, 4 mm formed wall — a deep heavy-gauge form.',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-hdpe-tf', 'commodity.route': 'thermoforming' },
+  },
+  'TF_Trim_Cover.stp': {
+    note: 'MODELLED: 300 × 200 × 40 mm ABS trim cover, 2.5 mm formed wall — a shallow vacuum form.',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-abs-tf', 'commodity.route': 'thermoforming' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

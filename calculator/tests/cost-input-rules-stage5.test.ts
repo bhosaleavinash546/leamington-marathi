@@ -27,7 +27,7 @@ import { RESIN_DECISION_ID } from '../src/engine/cost-input-rules/derive/resin.j
 import { ELASTOMER_DECISION_ID } from '../src/engine/cost-input-rules/derive/elastomer.js';
 import { LAMINATE_DECISION_ID, LAMINATE_SYSTEMS } from '../src/engine/cost-input-rules/derive/laminate.js';
 import {
-  estimateHeatTimeSec, estimateWallThinning, thermoformFamilyOf,
+  estimateHeatTimeSec, thermoformFamilyOf,
 } from '../src/engine/modules/thermoforming-advisor.js';
 import { estimateRotoCycle } from '../src/engine/modules/roto-advisor.js';
 import { estimateRubberCureTimeSec, RUBBER_CURE_BASE_SEC } from '../src/engine/modules/rubber-advisor.js';
@@ -112,36 +112,33 @@ const EPDM = { [ELASTOMER_DECISION_ID]: 'mat-epdm' };
 const CF = { [LAMINATE_DECISION_ID]: 'prepreg-cf' };
 
 describe('thermoforming', () => {
-  it('works the sheet gauge back through the draw, because the sheet is not the part', () => {
+  it('buys the sheet the part\'s plastic came from: gauge = volume ÷ plan area', () => {
     const d = drawGeometry(tfCtx())!;
-    // 100 mm deep into a 200 mm opening: areal draw 1 + 2 x 0.5 = 2.0.
     expect(d.ratio).toBe(0.5);
-    expect(d.arealDraw).toBe(2);
-
+    // Mass balance (thermoforming review): 90 cm³ of part over a 300 × 200 mm
+    // plan is a 1.5 mm sheet. The old areal-draw formula took the 0.6 mm ray
+    // wall × 2.0 = 1.2 mm — and on a real deep lid it under-bought the sheet.
     const r = runCostInputRules(THERMOFORMING_RULES, tfCtx(HIPS));
     const t = r.suggestions.thermoforming as Record<string, number | string>;
-    expect(t.formedWallMm).toBe(0.6);
-    expect(t.sheetThicknessMm).toBe(1.2);        // 0.6 x 2.0 — buy twice the formed wall
-    expect(r.provenance['tf-thk'].basis).toContain('the sheet is thicker than the part it becomes');
+    expect(t.formedWallMm).toBe(1.2);            // 2·V/S = 2 × 90 ÷ 1,500
+    expect(t.sheetThicknessMm).toBe(1.5);        // 90 cm³ ÷ 600 cm²
+    expect(r.provenance['tf-thk'].basis).toContain('mass balance');
   });
 
-  it('inverts the advisor exactly — the gauge it buys forms back to the wall measured', () => {
+  it('never buys less sheet than the part weighs — the web is on top', () => {
     const r = runCostInputRules(THERMOFORMING_RULES, tfCtx(HIPS));
     const t = r.suggestions.thermoforming as Record<string, number>;
-    const back = estimateWallThinning({
-      sheetThicknessMm: t.sheetThicknessMm, depthMm: 100, minOpeningMm: 200, method: 'vacuum',
-    });
-    expect(back.avgWallMm).toBeCloseTo(0.6, 2);
+    expect(t.sheetWeightKg).toBeGreaterThan(t.partWeightKg * t.partsPerSheet);
   });
 
   it('takes heat and cool time from the physics, not from a 30-90 s range', () => {
     const r = runCostInputRules(THERMOFORMING_RULES, tfCtx(HIPS));
     const t = r.suggestions.thermoforming as Record<string, number>;
-    expect(t.heatTimeSec).toBe(estimateHeatTimeSec(thermoformFamilyOf('HIPS (High Impact PS)'), 1.2));
+    expect(t.heatTimeSec).toBe(estimateHeatTimeSec(thermoformFamilyOf('HIPS Thermoforming Sheet'), t.sheetThicknessMm));
     expect(t.coolTimeSec).toBeGreaterThan(0);
     // Gauge drives it: doubling the sheet roughly triples the soak (t^1.6).
-    const thick = estimateHeatTimeSec(thermoformFamilyOf('HIPS (High Impact PS)'), 2.4);
-    expect(thick / t.heatTimeSec).toBeCloseTo(3.0, 0);
+    const fam = thermoformFamilyOf('HIPS Thermoforming Sheet');
+    expect(estimateHeatTimeSec(fam, 2 * t.sheetThicknessMm) / t.heatTimeSec).toBeCloseTo(3.0, 0);
   });
 
   it('picks the method from the draw the tool has to hold', () => {

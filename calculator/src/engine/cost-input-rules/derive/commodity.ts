@@ -29,7 +29,7 @@
 import type { Decision, RuleContext } from '../types.js';
 import { hollowVerdict, enclosedShell } from './hollow.js';
 import { shellWallEstimateMm } from '../../geometry-sanity.js';
-import { partNames, processFromNames, netShapeSignal, hasMachinedFeatures } from './part-evidence.js';
+import { partNames, processFromNames, polymerFromNames, netShapeSignal, hasMachinedFeatures } from './part-evidence.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
@@ -199,12 +199,17 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
     const bosses = (g.featureTable ?? []).filter(r => r.kind === 'boss').reduce((n, r) => n + (r.count ?? 1), 0);
     const named = processFromNames(partNames(ctx.filename, g));
     const namedOther = named.route && named.route !== 'sheet_metal' ? named : null;
-    if (bosses > 0 || namedOther) {
-      const lean = namedOther && ['injection_moulding', 'thermoforming', 'sheet_metal'].includes(namedOther.route!)
-        ? namedOther.route! : 'injection_moulding';
+    // A polymer in the name is evidence against a pressing too (thermoforming
+    // review: "… HDPE THERMOFORMED" and "… ABS" parts went to sheet metal).
+    const polymer = polymerFromNames(partNames(ctx.filename, g));
+    if (bosses > 0 || namedOther || polymer) {
+      const lean = namedOther ? namedOther.route!
+        : bosses > 0 ? 'injection_moulding'
+        : ctx.annualVolume >= 50_000 ? 'injection_moulding' : 'thermoforming';
       const evidence = [
         bosses > 0 ? `${bosses} boss(es), which a pressing does not have` : '',
         namedOther ? `the file calls it ${namedOther.hits[0].label} ("${namedOther.hits[0].text}", ${namedOther.hits[0].where})` : '',
+        polymer && !namedOther ? `the file names a polymer (${polymer.word}, "${polymer.text}", ${polymer.where})` : '',
       ].filter(Boolean).join('; ');
       // Geometry measured before the enclosure probe cannot say whether the
       // shell is closed; if it may be hollow, the hollow routes are offered
@@ -214,8 +219,9 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
         decision: ask(
           `${sm.bendCount} bend-like radius pairs at a ${gauge.toFixed(1)} mm wall — a pressing, or a moulded shell `
           + `whose fillets read the same way. Against a pressing: ${evidence}.`,
-          ['injection_moulding', 'sheet_metal', 'thermoforming',
-            ...(mayBeHollow ? ['blow_moulding', 'rotational_moulding'] : [])], lean),
+          [...new Set(['injection_moulding', 'sheet_metal', 'thermoforming',
+            ...(mayBeHollow ? ['blow_moulding', 'rotational_moulding'] : []),
+            ...(namedOther ? [namedOther.route!] : [])])], lean),
       };
     }
     return {
