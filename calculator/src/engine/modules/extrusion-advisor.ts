@@ -10,7 +10,7 @@ import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 export type ExtrusionFamily =
   | 'pe' | 'pp' | 'rigid-pvc' | 'flex-pvc' | 'ps' | 'abs'
-  | 'pa' | 'pc' | 'pet' | 'tpe' | 'filled';
+  | 'pa' | 'pc' | 'pet' | 'tpe' | 'filled' | 'high-temp';
 export type ExtrusionProcess =
   | 'pipe' | 'profile' | 'profile-complex' | 'sheet' | 'cable' | 'tube-medical' | 'coex';
 export type ScrewType = 'single' | 'twin';
@@ -19,11 +19,19 @@ export type ExtrusionCooling = 'water-bath' | 'vacuum-tank' | 'air' | 'water-spr
 /** Map a rate-library material id / grade to an extrusion family. */
 export function extrusionFamilyOf(idOrGrade: string): ExtrusionFamily {
   const s = idOrGrade.toLowerCase();
-  if (s.includes('pvc') && (s.includes('flex') || s.includes('fpvc') || s.includes('cable') || s.includes('plasticis'))) return 'flex-pvc';
+  // High-temperature and fluoropolymers first: 'pvdf' / 'peek' fell through to PE
+  // (aluminium-extrusion review, Oct 2026).
+  if (/peek|pvdf|\bpps\b|\bpei\b|ultem|\bfep\b|\bpfa\b|etfe/.test(s)) return 'high-temp';
+  // PVC-P and medical tube compounds are plasticised (the medical grade read as rigid).
+  if (s.includes('pvc') && (s.includes('flex') || s.includes('fpvc') || s.includes('cable') || s.includes('plasticis')
+    || /pvc-?p\b/.test(s) || s.includes('medical'))) return 'flex-pvc';
   if (s.includes('pvc') || s.includes('upvc')) return 'rigid-pvc';
   if (s.includes('gf') || s.includes('glass') || s.includes('talc') || s.includes('mineral') || s.includes('lgf')) return 'filled';
   if (s.includes('hips') || s.includes('gpps') || s.includes(' ps') || s.startsWith('ps')) return 'ps';
   if (s.includes('abs')) return 'abs';
+  // Amorphous acrylic / styrenics extrude like ABS; acetal like the polyamides (were PE).
+  if (/pmma|acrylic|\basa\b|-asa-|\bsan\b/.test(s)) return 'abs';
+  if (/\bpom\b|-pom-|acetal|delrin/.test(s)) return 'pa';
   if (s.includes('nylon') || s.includes('ppa') || /\bpa\s?\d/.test(s)) return 'pa';  // PA6/PA66/PA12/PA11…
   if (s.includes('pc') || s.includes('lexan')) return 'pc';
   if (s.includes('pet') || s.includes('petg')) return 'pet';
@@ -40,6 +48,8 @@ const OUTPUT_COEF = 0.0533;
 const OUTPUT_FACTOR: Record<ExtrusionFamily, number> = {
   pe: 1.00, pp: 0.95, 'rigid-pvc': 0.52, 'flex-pvc': 0.62, ps: 0.90, abs: 0.85,
   pa: 0.85, pc: 0.78, pet: 0.85, tpe: 0.72, filled: 0.80,
+  // PVDF / PEEK / PPS: narrow processing window, low screw speed — ESTIMATE.
+  'high-temp': 0.55,
 };
 /** Co-rotating twin-screw compounding lines push far more mass than a single screw of the same Ø. */
 const SCREW_TYPE_FACTOR: Record<ScrewType, number> = { single: 1.0, twin: 2.6 };
@@ -98,7 +108,7 @@ export function estimateExtrusionLineRate(inp: LineRateInputs): LineRatePredicti
 /** Melt + drive specific energy by family; higher melt-temp polymers cost more. */
 const SPECIFIC_ENERGY_KWH_KG: Record<ExtrusionFamily, number> = {
   pe: 0.34, pp: 0.36, 'rigid-pvc': 0.30, 'flex-pvc': 0.32, ps: 0.33, abs: 0.40,
-  pa: 0.48, pc: 0.50, pet: 0.45, tpe: 0.40, filled: 0.42,
+  pa: 0.48, pc: 0.50, pet: 0.45, tpe: 0.40, filled: 0.42, 'high-temp': 0.65,
 };
 const CHILL_ENERGY_KWH_KG = 0.08;   // downstream water chilling / vacuum
 const TWIN_ENERGY_ADDER = 0.15;     // extra shear/venting on compounding lines
@@ -114,7 +124,7 @@ export function estimateExtrusionSpecificEnergy(family: ExtrusionFamily, screwTy
 /** Extrudate swell (% increase over die-gap) — viscoelastic PE/PP high, amorphous/filled low. */
 const DIE_SWELL_PCT: Record<ExtrusionFamily, number> = {
   pe: 15, pp: 12, 'rigid-pvc': 5, 'flex-pvc': 8, ps: 6, abs: 7,
-  pa: 5, pc: 4, pet: 4, tpe: 10, filled: 3,
+  pa: 5, pc: 4, pet: 4, tpe: 10, filled: 3, 'high-temp': 4,
 };
 export function estimateDieSwellPct(family: ExtrusionFamily): number {
   return DIE_SWELL_PCT[family];

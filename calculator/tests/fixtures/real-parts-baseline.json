@@ -10,7 +10,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-0430659882ececaf",
+      "partName": "cv-cad-fb851b8ebba0bac4",
       "boundingBox": {
         "xMm": 46,
         "yMm": 46,
@@ -580,7 +580,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d08451490f9fbb96",
+      "partName": "cv-cad-f2c9f0efdf2cd47b",
       "boundingBox": {
         "xMm": 1800,
         "yMm": 150,
@@ -628,7 +628,10 @@
         "lengthMm": 1800,
         "areaMm2": 1437.5,
         "perimeterMm": 1135,
+        "outerPerimeterMm": 420,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 4,
         "ccdMm": 161.55,
         "minWallMm": 2.5,
@@ -939,16 +942,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 33.86,
+      "total": 34.01,
       "breakdown": {
-        "rawMaterial": 24.12,
-        "process": 0.97,
-        "labour": 0.24,
+        "rawMaterial": 23.99,
+        "process": 1.11,
+        "labour": 0.36,
         "tooling": 1.75,
         "packaging": 0.35,
         "logistics": 0.68,
-        "overhead": 3.25,
-        "margin": 2.51
+        "overhead": 3.26,
+        "margin": 2.52
       },
       "warnings": [
         "material_low_confidence"
@@ -966,7 +969,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ca7ea28f3c883c57",
+      "partName": "cv-cad-7bf0261bf3c0509e",
       "boundingBox": {
         "xMm": 1300,
         "yMm": 140,
@@ -1014,7 +1017,10 @@
         "lengthMm": 1300,
         "areaMm2": 1146,
         "perimeterMm": 758,
+        "outerPerimeterMm": 360,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 2,
         "ccdMm": 145.6,
         "minWallMm": 3,
@@ -1297,16 +1303,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 26.39,
+      "total": 27.94,
       "breakdown": {
-        "rawMaterial": 15.61,
-        "process": 4.05,
-        "labour": 0.84,
-        "tooling": 0.74,
+        "rawMaterial": 16.11,
+        "process": 4.39,
+        "labour": 0.98,
+        "tooling": 1.04,
         "packaging": 0.23,
         "logistics": 0.42,
-        "overhead": 2.55,
-        "margin": 1.96
+        "overhead": 2.7,
+        "margin": 2.07
       },
       "warnings": [
         "material_low_confidence"
@@ -1324,7 +1330,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9260724af36af096",
+      "partName": "cv-cad-b18a8d9270d34025",
       "boundingBox": {
         "xMm": 400,
         "yMm": 40,
@@ -1372,7 +1378,10 @@
         "lengthMm": 400,
         "areaMm2": 400,
         "perimeterMm": 100,
+        "outerPerimeterMm": 100,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 0,
         "ccdMm": 41.23,
         "minWallMm": 10,
@@ -1633,7 +1642,7 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 3.42,
+      "total": 3.41,
       "breakdown": {
         "rawMaterial": 1.53,
         "process": 0.82,
@@ -1659,7 +1668,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d897e63bcd26617e",
+      "partName": "cv-cad-9143209fc9730175",
       "boundingBox": {
         "xMm": 400,
         "yMm": 120,
@@ -1707,7 +1716,10 @@
         "lengthMm": 400,
         "areaMm2": 1386,
         "perimeterMm": 918,
+        "outerPerimeterMm": 400,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 2,
         "ccdMm": 144.22,
         "minWallMm": 3,
@@ -2040,15 +2052,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 10.11,
+      "total": 10.16,
       "breakdown": {
-        "rawMaterial": 5.43,
-        "process": 1.76,
-        "labour": 0.59,
+        "rawMaterial": 5.44,
+        "process": 1.73,
+        "labour": 0.65,
         "tooling": 0.32,
         "packaging": 0.12,
         "logistics": 0.18,
-        "overhead": 0.97,
+        "overhead": 0.98,
         "margin": 0.75
       },
       "warnings": [
@@ -2067,7 +2079,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1a0b96707b455ce0",
+      "partName": "cv-cad-c5b47e968e482117",
       "boundingBox": {
         "xMm": 150,
         "yMm": 120,
@@ -2115,7 +2127,10 @@
         "lengthMm": 150,
         "areaMm2": 1420,
         "perimeterMm": 952,
+        "outerPerimeterMm": 952,
         "outerLoops": 1,
+        "tongueRatio": 3.37,
+        "tongueGapMm": 10.4,
         "voids": 0,
         "ccdMm": 124.76,
         "minWallMm": 2,
@@ -2547,16 +2562,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 4.14,
+      "total": 4.33,
       "breakdown": {
-        "rawMaterial": 2.1,
-        "process": 0.9,
-        "labour": 0.25,
-        "tooling": 0.04,
+        "rawMaterial": 2.11,
+        "process": 0.96,
+        "labour": 0.3,
+        "tooling": 0.07,
         "packaging": 0.07,
         "logistics": 0.09,
-        "overhead": 0.39,
-        "margin": 0.31
+        "overhead": 0.41,
+        "margin": 0.32
       },
       "warnings": [
         "material_low_confidence"
@@ -2573,7 +2588,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ee09fc8e7bc9117a",
+      "partName": "cv-cad-fccf9b508a466948",
       "boundingBox": {
         "xMm": 400,
         "yMm": 80,
@@ -2621,7 +2636,10 @@
         "lengthMm": 400,
         "areaMm2": 804,
         "perimeterMm": 280,
+        "outerPerimeterMm": 280,
         "outerLoops": 1,
+        "tongueRatio": 0.24,
+        "tongueGapMm": 91.61,
         "voids": 0,
         "ccdMm": 100,
         "minWallMm": 6,
@@ -2927,16 +2945,394 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 7.12,
+      "total": 7.06,
       "breakdown": {
-        "rawMaterial": 3.2,
-        "process": 1.79,
-        "labour": 0.62,
+        "rawMaterial": 3.14,
+        "process": 1.77,
+        "labour": 0.65,
         "tooling": 0.08,
         "packaging": 0.09,
         "logistics": 0.12,
         "overhead": 0.68,
-        "margin": 0.53
+        "margin": 0.52
+      },
+      "warnings": [
+        "material_low_confidence"
+      ]
+    }
+  },
+  {
+    "part": "AL_Seal_Carrier.stp",
+    "sha256": "9ac13627f0fa454a",
+    "note": "MODELLED (extrusion review): 30 × 20 × 1.5 mm 6060 C-channel, lips turned in to a 6 mm gap — a 13:1 tongue, semi-hollow die. 2 m.",
+    "answers": {
+      "material.alAlloy": "6060",
+      "commodity.route": "aluminium_extrusion"
+    },
+    "geometry": {
+      "status": "success",
+      "partName": "cv-cad-714559848f0a019b",
+      "boundingBox": {
+        "xMm": 2000,
+        "yMm": 30,
+        "zMm": 20
+      },
+      "volume": {
+        "mm3": 264000,
+        "cm3": 264
+      },
+      "surfaceArea": {
+        "mm2": 358264,
+        "cm2": 3582.64
+      },
+      "fillRatio": 0.22,
+      "projectedArea": {
+        "zMm2": 60000,
+        "yMm2": 40000,
+        "xMm2": 132,
+        "alongDrawMm2": 60000,
+        "method": "silhouette_raster"
+      },
+      "topology": {
+        "available": true,
+        "valid": true,
+        "solidCount": 1,
+        "shellCount": 1,
+        "voidCount": 0,
+        "freeEdgeCount": 0,
+        "degenerateEdgeCount": 0,
+        "seamEdgeCount": 0,
+        "freeEdgeRatio": 0,
+        "freeBoundaryWires": 0,
+        "isClosedSolid": true,
+        "enclosesInternalVoid": false,
+        "enclosesSealedVoid": false,
+        "openShell": false
+      },
+      "enclosure": {
+        "centreIn": "void",
+        "rays": 96,
+        "hitShare": 0.896
+      },
+      "profileSection": {
+        "axis": "x",
+        "lengthMm": 2000,
+        "areaMm2": 132,
+        "perimeterMm": 179,
+        "outerPerimeterMm": 179,
+        "outerLoops": 1,
+        "tongueRatio": 13,
+        "tongueGapMm": 6,
+        "voids": 0,
+        "ccdMm": 36.06,
+        "minWallMm": 1.5,
+        "meanWallMm": 1.475,
+        "sectionBoxMm": [
+          30,
+          20
+        ],
+        "stationAreasMm2": [
+          132,
+          132,
+          132
+        ],
+        "volumeShare": 1,
+        "constant": true
+      },
+      "weights": {
+        "aluminiumKg": 0.7128,
+        "steelKg": 2.0724,
+        "plasticKg": 0.2772,
+        "castIronKg": 1.8876,
+        "copperKg": 2.3654,
+        "titaniumKg": 1.1695
+      },
+      "faces": {
+        "total": 14,
+        "byType": {
+          "PLANE": 14
+        },
+        "areaByTypeMm2": {
+          "PLANE": 358264
+        }
+      },
+      "turning": {
+        "fraction": 0,
+        "revolvedFraction": 0,
+        "maxDiaMm": 0,
+        "axis": null
+      },
+      "edges": {
+        "total": 36,
+        "byType": {
+          "LINE": 36
+        },
+        "sampleCircleRadiiMm": []
+      },
+      "features": {
+        "cylindricalFaceCount": 0,
+        "cylindricalFaceRadiiMm": [],
+        "estimatedHoleCount": 0,
+        "holeRadiiMm": [],
+        "bossShaftCount": 0,
+        "bossShaftRadiiMm": [],
+        "threadFeaturesDetected": false,
+        "planarFaceCount": 14,
+        "freeFormFaceCount": 0,
+        "planarFaceAreaMm2": 358264
+      },
+      "featureTable": [
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 60000,
+          "faceIds": [
+            12
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 1,
+          "areaMm2": 54000,
+          "faceIds": [
+            6
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 40000,
+          "faceIds": [
+            11,
+            13
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 34000,
+          "faceIds": [
+            5,
+            7
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 24000,
+          "faceIds": [
+            2,
+            10
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 21000,
+          "faceIds": [
+            4,
+            8
+          ]
+        },
+        {
+          "kind": "face",
+          "diaMm": 0,
+          "depthMm": 0,
+          "through": null,
+          "count": 2,
+          "areaMm2": 3000,
+          "faceIds": [
+            3,
+            9
+          ]
+        }
+      ],
+      "sheetMetal": {
+        "bendCount": 0,
+        "totalBendLengthMm": 0,
+        "thicknessMm": 1.47,
+        "thicknessSource": "bulk-wall",
+        "bulkWallMm": 1.47
+      },
+      "gear": null,
+      "wallThickness": {
+        "minMm": 1.45,
+        "maxMm": 11.95,
+        "p95Mm": 11.95,
+        "meanMm": 3.2,
+        "stdDevMm": 3.91,
+        "sampleCount": 6,
+        "method": "ray_cast",
+        "uniformity": "non-uniform"
+      },
+      "draftAnalysis": {
+        "drawDirectionXYZ": [
+          0,
+          0,
+          1
+        ],
+        "undercutFaceCount": 0,
+        "zeroDraftFaceCount": 8,
+        "adequateDraftFaceCount": 0,
+        "minPositiveDraftDeg": null,
+        "maxPositiveDraftDeg": null,
+        "analyzedFaceCount": 8,
+        "pullDirectionSearch": {
+          "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            }
+          ],
+          "runnerUp": {
+            "drawDirectionXYZ": [
+              0,
+              1,
+              0
+            ],
+            "undercutFaceCount": 0
+          },
+          "ambiguous": false
+        }
+      },
+      "manufacturingFeatures": null,
+      "setupAnalysis": {
+        "estimatedSetupCount": 3,
+        "principalDirections": [
+          {
+            "directionLabel": "+Z",
+            "faceCount": 6,
+            "faceIds": [
+              2,
+              4,
+              6,
+              8,
+              10,
+              12
+            ]
+          },
+          {
+            "directionLabel": "+Y",
+            "faceCount": 6,
+            "faceIds": [
+              3,
+              5,
+              7,
+              9,
+              11,
+              13
+            ]
+          },
+          {
+            "directionLabel": "+X",
+            "faceCount": 2,
+            "faceIds": [
+              1,
+              14
+            ]
+          }
+        ]
+      },
+      "cncCycleTimeEstimate": {
+        "setupTimeMins": 45,
+        "planarMillingTimeMins": 71.7,
+        "drillBoreTimeMins": 0,
+        "estimatedTotalMins": 116.7,
+        "estimatedTotalHrs": 1.9442,
+        "assumedFeedRateMm2PerMin": 5000,
+        "assumedDrillBoreMinPerFeature": 0.5,
+        "assumedSetupTimeMinsPerSetup": 15
+      },
+      "toolingCostEstimates": {
+        "hpdcDieCostGBP": 80000,
+        "gravityMouldCostGBP": 15000,
+        "sandPatternCostGBP": 3500,
+        "imMouldCostGBP": 55000,
+        "forgeDieCostGBP": 15000,
+        "progressiveDieCostGBP": 25000
+      },
+      "manufacturabilityScore": 84,
+      "processSpecificEstimates": {
+        "sandCycleTimeHr": 0.1785,
+        "sandCycleTimeHrFerrous": 0.2255,
+        "forgeStrokes": 4,
+        "investWaxCostGBP": 53.74,
+        "investShellCostGBP": 161.22
+      },
+      "assemblyWarning": null,
+      "unitWarning": null,
+      "unitCheck": null,
+      "load": {
+        "fileUnits": [
+          "millimetre"
+        ],
+        "repaired": null,
+        "unitScale": 1,
+        "format": "stp"
+      },
+      "detectedHardware": {
+        "available": false,
+        "note": "single merged solid — hardware bodies not separable; add hardware manually"
+      },
+      "cadMetadata": {
+        "productNames": [
+          "SEAL CARRIER 6060 T66 EXTRUDED 9"
+        ],
+        "materialDesignations": [],
+        "authoringSystem": "Open CASCADE"
+      }
+    },
+    "outcome": {
+      "status": "costed",
+      "commodity": "aluminium_extrusion",
+      "total": 3.7,
+      "breakdown": {
+        "rawMaterial": 2.45,
+        "process": 0.24,
+        "labour": 0.16,
+        "tooling": 0.04,
+        "packaging": 0.08,
+        "logistics": 0.11,
+        "overhead": 0.35,
+        "margin": 0.27
       },
       "warnings": [
         "material_low_confidence"
@@ -2954,7 +3350,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3e9dbe8d474697d7",
+      "partName": "cv-cad-b2adc75d046ec56b",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 40,
@@ -3002,7 +3398,10 @@
         "lengthMm": 1200,
         "areaMm2": 132,
         "perimeterMm": 136,
+        "outerPerimeterMm": 136,
         "outerLoops": 1,
+        "tongueRatio": 0.36,
+        "tongueGapMm": 36,
         "voids": 0,
         "ccdMm": 42.72,
         "minWallMm": 2,
@@ -3275,16 +3674,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 3.55,
+      "total": 3.68,
       "breakdown": {
-        "rawMaterial": 1.48,
-        "process": 1,
-        "labour": 0.3,
+        "rawMaterial": 1.53,
+        "process": 1.03,
+        "labour": 0.33,
         "tooling": 0.02,
         "packaging": 0.07,
         "logistics": 0.08,
-        "overhead": 0.34,
-        "margin": 0.26
+        "overhead": 0.35,
+        "margin": 0.27
       },
       "warnings": [
         "material_low_confidence"
@@ -3302,7 +3701,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-617a3982632bad7f",
+      "partName": "cv-cad-bd981cd2296fcc2d",
       "boundingBox": {
         "xMm": 500,
         "yMm": 350,
@@ -4088,7 +4487,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d96b76c085982b67",
+      "partName": "cv-cad-41123233dc1f13ae",
       "boundingBox": {
         "xMm": 1160,
         "yMm": 760,
@@ -4810,7 +5209,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ea2658c92418477f",
+      "partName": "cv-cad-f557a012b46adb3b",
       "boundingBox": {
         "xMm": 240,
         "yMm": 60,
@@ -4858,7 +5257,10 @@
         "lengthMm": 240,
         "areaMm2": 247.05,
         "perimeterMm": 255.09,
+        "outerPerimeterMm": 255.09,
         "outerLoops": 2,
+        "tongueRatio": 0.22,
+        "tongueGapMm": 44.68,
         "voids": 0,
         "ccdMm": 70.2,
         "minWallMm": 1.985,
@@ -5404,7 +5806,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-52570970d37d2009",
+      "partName": "cv-cad-0af93d6c41d27e33",
       "boundingBox": {
         "xMm": 405,
         "yMm": 455,
@@ -6745,7 +7147,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-36728a465233815a",
+      "partName": "cv-cad-0cad4b0f8c64eb61",
       "boundingBox": {
         "xMm": 220,
         "yMm": 160,
@@ -7808,7 +8210,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-4144539e33f47600",
+      "partName": "cv-cad-daf23aca6f754581",
       "boundingBox": {
         "xMm": 700,
         "yMm": 500,
@@ -8412,7 +8814,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-941fef3cb5be2e1e",
+      "partName": "cv-cad-680639b2a3af8e79",
       "boundingBox": {
         "xMm": 398.29,
         "yMm": 120,
@@ -8460,7 +8862,10 @@
         "lengthMm": 398.29,
         "areaMm2": 494.49,
         "perimeterMm": 404.57,
+        "outerPerimeterMm": 404.57,
         "outerLoops": 1,
+        "tongueRatio": 0.38,
+        "tongueGapMm": 114.18,
         "voids": 0,
         "ccdMm": 125.22,
         "minWallMm": 0.597,
@@ -9207,7 +9612,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7241f9583d5816b5",
+      "partName": "cv-cad-bb71d5a29ee04b05",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 900,
@@ -9595,7 +10000,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f6a9594b918ffcf2",
+      "partName": "cv-cad-fa5edc3e110f3eeb",
       "boundingBox": {
         "xMm": 132,
         "yMm": 120,
@@ -10365,7 +10770,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7d7fe4821b84d9e6",
+      "partName": "cv-cad-96118d2fe3fdc575",
       "boundingBox": {
         "xMm": 600,
         "yMm": 8,
@@ -10413,7 +10818,10 @@
         "lengthMm": 600,
         "areaMm2": 21.91,
         "perimeterMm": 43.9,
+        "outerPerimeterMm": 25.09,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 1,
         "ccdMm": 8,
         "minWallMm": 0.985,
@@ -10870,7 +11278,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-80b8f0e7e48c028d",
+      "partName": "cv-cad-e5014a03d6543ae0",
       "boundingBox": {
         "xMm": 2000,
         "yMm": 40,
@@ -10918,7 +11326,10 @@
         "lengthMm": 2000,
         "areaMm2": 286,
         "perimeterMm": 282,
+        "outerPerimeterMm": 130,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 2,
         "ccdMm": 47.17,
         "minWallMm": 2,
@@ -11212,7 +11623,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6a2b6202188c00bc",
+      "partName": "cv-cad-2afa802c53b35037",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 32,
@@ -11260,7 +11671,10 @@
         "lengthMm": 1000,
         "areaMm2": 273.06,
         "perimeterMm": 182.13,
+        "outerPerimeterMm": 100.49,
         "outerLoops": 1,
+        "tongueRatio": 0,
+        "tongueGapMm": null,
         "voids": 1,
         "ccdMm": 32,
         "minWallMm": 2.985,
@@ -11719,7 +12133,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8943b7f3599f48b5",
+      "partName": "cv-cad-0d1388eb7a536a66",
       "boundingBox": {
         "xMm": 250,
         "yMm": 50,
@@ -11767,7 +12181,10 @@
         "lengthMm": 250,
         "areaMm2": 608.63,
         "perimeterMm": 174.98,
+        "outerPerimeterMm": 174.98,
         "outerLoops": 1,
+        "tongueRatio": 0.64,
+        "tongueGapMm": 18,
         "voids": 0,
         "ccdMm": 44.88,
         "minWallMm": 6,
@@ -12156,7 +12573,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d6d42e12df324e78",
+      "partName": "cv-cad-e23ea9f2892e3b55",
       "boundingBox": {
         "xMm": 140,
         "yMm": 140,
@@ -12509,7 +12926,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b229b06f955e339c",
+      "partName": "cv-cad-da22308ad32a9cd1",
       "boundingBox": {
         "xMm": 40,
         "yMm": 25,
@@ -12853,7 +13270,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-159a085283ca90ba",
+      "partName": "cv-cad-eae092fc06126646",
       "boundingBox": {
         "xMm": 180,
         "yMm": 120,
@@ -13695,7 +14112,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-be8c82576de9c6c6",
+      "partName": "cv-cad-2c1602fa8b03a673",
       "boundingBox": {
         "xMm": 600,
         "yMm": 400,
@@ -14394,7 +14811,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-4bdeca1740c79cd7",
+      "partName": "cv-cad-e53d30d7a6db0bde",
       "boundingBox": {
         "xMm": 120,
         "yMm": 80,
@@ -14857,7 +15274,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a3452a898671defb",
+      "partName": "cv-cad-3fafcac85fa06a06",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -14905,7 +15322,10 @@
         "lengthMm": 190,
         "areaMm2": 675.2,
         "perimeterMm": 101.03,
+        "outerPerimeterMm": 101.03,
         "outerLoops": 1,
+        "tongueRatio": 0.43,
+        "tongueGapMm": 8,
         "voids": 0,
         "ccdMm": 30,
         "minWallMm": 25.981,
@@ -15271,7 +15691,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-29a90077156f202a",
+      "partName": "cv-cad-ee34e76c0c0a70ee",
       "boundingBox": {
         "xMm": 274.51,
         "yMm": 222.36,
@@ -16330,7 +16750,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-de0ded3d9e156b34",
+      "partName": "cv-cad-41be8106f495372e",
       "boundingBox": {
         "xMm": 58.19,
         "yMm": 270,
@@ -17127,7 +17547,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b5b35bd2d7508238",
+      "partName": "cv-cad-d99bb6d584f61095",
       "boundingBox": {
         "xMm": 450,
         "yMm": 320,
@@ -17563,7 +17983,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9ff3b372c92db2f2",
+      "partName": "cv-cad-9351c02aeb1957fe",
       "boundingBox": {
         "xMm": 240,
         "yMm": 160,
@@ -18589,7 +19009,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6819a6d182959b9e",
+      "partName": "cv-cad-ef4c8b7c3b33dd8b",
       "boundingBox": {
         "xMm": 60,
         "yMm": 60,
@@ -18927,7 +19347,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-eb9bf62ce422508f",
+      "partName": "cv-cad-2f7f401fdd027740",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 18,
@@ -18973,23 +19393,26 @@
       "profileSection": {
         "axis": "x",
         "lengthMm": 1000,
-        "areaMm2": 130.14,
-        "perimeterMm": 111.36,
+        "areaMm2": 129.45,
+        "perimeterMm": 111.62,
+        "outerPerimeterMm": 80.25,
         "outerLoops": 1,
+        "tongueRatio": 0.54,
+        "tongueGapMm": 4.7,
         "voids": 1,
         "ccdMm": 21.76,
         "minWallMm": 1.988,
-        "meanWallMm": 2.337,
+        "meanWallMm": 2.319,
         "sectionBoxMm": [
           18,
           17
         ],
         "stationAreasMm2": [
-          130.14,
-          130.14,
-          130.14
+          129.45,
+          129.45,
+          129.45
         ],
-        "volumeShare": 0.9956,
+        "volumeShare": 1.0009,
         "constant": true
       },
       "weights": {
@@ -19352,7 +19775,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-61d2cfb479456dbf",
+      "partName": "cv-cad-764911601c46c6e6",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -19709,7 +20132,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-74bafccc7aa06e39",
+      "partName": "cv-cad-9d5e000ec585d20d",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -22247,7 +22670,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-13b3a04de6d38c7c",
+      "partName": "cv-cad-5f137a64c7cb32be",
       "boundingBox": {
         "xMm": 900,
         "yMm": 600,
@@ -22630,7 +23053,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-36c3c2b8356340a8",
+      "partName": "cv-cad-a4b64e4964bf8fbf",
       "boundingBox": {
         "xMm": 300,
         "yMm": 200,
@@ -23521,7 +23944,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3f68a6fcac65273d",
+      "partName": "cv-cad-26509a1375a49333",
       "boundingBox": {
         "xMm": 114.4,
         "yMm": 236.4,
@@ -24509,7 +24932,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2749814514a4e50a",
+      "partName": "cv-cad-d98a604df8257b57",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,
@@ -24557,10 +24980,13 @@
         "lengthMm": 30,
         "areaMm2": 8867.8,
         "perimeterMm": 841.01,
+        "outerPerimeterMm": 715.38,
         "outerLoops": 1,
+        "tongueRatio": 0.57,
+        "tongueGapMm": 5.1,
         "voids": 1,
         "ccdMm": 120,
-        "minWallMm": 3.815,
+        "minWallMm": 3.81,
         "meanWallMm": 21.089,
         "sectionBoxMm": [
           120,

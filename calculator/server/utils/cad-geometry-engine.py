@@ -537,24 +537,32 @@ def _section_along(wrapped, bbox6, volume_mm3, ax):
             except Exception:
                 pass
             ex.Next()
-        # Chain edge polylines into closed loops by matching end points.
-        tol = 1e-3 * max(1.0, max(dims))
+        # Chain edge polylines into closed loops by matching end points — the
+        # NEAREST end within a tolerance set by the SECTION, not the part. It was
+        # 0.1% of the longest dimension: 2 mm on a 2 m profile, wider than its
+        # 1.5 mm wall, so a lip's inner corner joined its outer one and the seal
+        # carrier's section lost 9 mm² (aluminium-extrusion review, Oct 2026).
+        # The section's own edges share their vertices to OCCT precision.
+        tol = max(1e-4, 1e-4 * max(dims[u_ax], dims[v_ax]))
         loops = []
         pool = polys[:]
         while pool:
             cur = pool.pop()
-            changed = True
-            while changed and pool:
-                changed = False
+            while pool:
+                best = None
                 for i, pl in enumerate(pool):
-                    if math.dist(cur[-1], pl[0]) < tol:
-                        cur = cur + pl[1:]; pool.pop(i); changed = True; break
-                    if math.dist(cur[-1], pl[-1]) < tol:
-                        cur = cur + pl[::-1][1:]; pool.pop(i); changed = True; break
-                    if math.dist(cur[0], pl[-1]) < tol:
-                        cur = pl + cur[1:]; pool.pop(i); changed = True; break
-                    if math.dist(cur[0], pl[0]) < tol:
-                        cur = pl[::-1] + cur[1:]; pool.pop(i); changed = True; break
+                    for mode, d in ((0, math.dist(cur[-1], pl[0])), (1, math.dist(cur[-1], pl[-1])),
+                                    (2, math.dist(cur[0], pl[-1])), (3, math.dist(cur[0], pl[0]))):
+                        if d < tol and (best is None or d < best[0]):
+                            best = (d, i, mode)
+                if best is None:
+                    break
+                _, i, mode = best
+                pl = pool.pop(i)
+                if mode == 0: cur = cur + pl[1:]
+                elif mode == 1: cur = cur + pl[::-1][1:]
+                elif mode == 2: cur = pl + cur[1:]
+                else: cur = pl[::-1] + cur[1:]
             if len(cur) >= 3:
                 loops.append(cur)
         return loops
@@ -582,19 +590,82 @@ def _section_along(wrapped, bbox6, volume_mm3, ax):
         for i, lp in enumerate(loops):
             probe = lp[0]
             depth.append(sum(1 for j, other in enumerate(loops) if j != i and inside(probe, other)))
-        area = 0.0; perim = 0.0; voids = 0; outers = 0
-        oriented = []
+        area = 0.0; perim = 0.0; voids = 0; outers = 0; outer_perim = 0.0
+        oriented = []; outer_loops = []
         for lp, dpt in zip(loops, depth):
             a = signed_area(lp)
             hole = dpt % 2 == 1
             area += -abs(a) if hole else abs(a)
-            perim += sum(math.dist(lp[i], lp[(i + 1) % len(lp)]) for i in range(len(lp)))
+            lp_perim = sum(math.dist(lp[i], lp[(i + 1) % len(lp)]) for i in range(len(lp)))
+            perim += lp_perim
             if hole: voids += 1
-            else: outers += 1
+            else:
+                outers += 1; outer_perim += lp_perim; outer_loops.append(lp)
             # Material on the left: outer loops CCW, holes CW.
             want_ccw = not hole
             oriented.append(lp if (a > 0) == want_ccw else lp[::-1])
-        return {"area": area, "perim": perim, "voids": voids, "outers": outers, "loops": oriented}
+        return {"area": area, "perim": perim, "voids": voids, "outers": outers, "loops": oriented,
+                "outerPerim": outer_perim, "outerLoops": outer_loops}
+
+    def tongue(outer_loops):
+        """
+        The semi-hollow test (aluminium-extrusion review, Oct 2026): a space the
+        section nearly encloses, reached through a gap, puts a TONGUE of die
+        steel into the section. Tongue ratio = that space's area ÷ gap². Each
+        concavity of the outer outline is the region between the outline and
+        one edge of its convex hull; the hull edge is the gap across the
+        opening. Returns the largest ratio and its gap.
+        """
+        best = (0.0, None)
+        for lp in outer_loops:
+            n = len(lp)
+            if n < 4:
+                continue
+            idx = sorted(range(n), key=lambda i: (lp[i][0], lp[i][1]))
+            def cross(o, a, b):
+                return (lp[a][0] - lp[o][0]) * (lp[b][1] - lp[o][1]) - (lp[a][1] - lp[o][1]) * (lp[b][0] - lp[o][0])
+            lower, upper = [], []
+            for i in idx:
+                while len(lower) >= 2 and cross(lower[-2], lower[-1], i) <= 0:
+                    lower.pop()
+                lower.append(i)
+            for i in reversed(idx):
+                while len(upper) >= 2 and cross(upper[-2], upper[-1], i) <= 0:
+                    upper.pop()
+                upper.append(i)
+            hull = set(lower[:-1] + upper[:-1])
+            hv = sorted(hull)
+            for k in range(len(hv)):
+                i, j = hv[k], hv[(k + 1) % len(hv)]
+                run = (j - i) % n
+                if run < 2:
+                    continue
+                q = [lp[(i + t) % n] for t in range(run + 1)]
+                if len(q) > 300:                      # bound the O(m²) search
+                    st = len(q) // 300 + 1
+                    q = q[::st] + ([q[-1]] if (len(q) - 1) % st else [])
+                m = len(q)
+                # Prefix shoelace sums: area of q[a..b] closed by the chord is O(1).
+                pre = [0.0] * m
+                for t in range(1, m):
+                    pre[t] = pre[t - 1] + (q[t - 1][0] * q[t][1] - q[t][0] * q[t - 1][1])
+                # The mouth is the narrowest chord across the concavity that encloses
+                # space beyond it: max of enclosed area / chord² over the chords whose
+                # midpoint is outside the material (a chord through a wall is not a gap).
+                for a in range(m - 2):
+                    for b in range(a + 2, m):
+                        gap = math.dist(q[a], q[b])
+                        if gap < 0.3:
+                            continue
+                        enc = abs(pre[b] - pre[a] + (q[b][0] * q[a][1] - q[a][0] * q[b][1])) / 2
+                        r = enc / (gap * gap)
+                        if r <= best[0]:
+                            continue
+                        mid_pt = ((q[a][0] + q[b][0]) / 2, (q[a][1] + q[b][1]) / 2)
+                        if inside(mid_pt, lp):
+                            continue
+                        best = (r, gap)
+        return best
 
     mid = describe(loops_at(0.5))
     if not mid or mid["area"] <= 0:
@@ -672,12 +743,16 @@ def _section_along(wrapped, bbox6, volume_mm3, ax):
     chords.sort()
     min_wall = chords[max(0, int(len(chords) * 0.10) - 1)] if chords else None
     mean_wall = 2 * mid["area"] / mid["perim"] if mid["perim"] > 0 else None
+    tongue_r, tongue_gap = tongue(mid["outerLoops"])
     return {
         "axis": "xyz"[ax],
         "lengthMm": round(L, 2),
         "areaMm2": round(mid["area"], 2),
         "perimeterMm": round(mid["perim"], 2),
+        "outerPerimeterMm": round(mid["outerPerim"], 2),
         "outerLoops": mid["outers"],
+        "tongueRatio": round(tongue_r, 2),
+        "tongueGapMm": round(tongue_gap, 2) if tongue_gap else None,
         "voids": mid["voids"],
         "ccdMm": round(ccd, 2),
         "minWallMm": round(min_wall, 3) if min_wall else None,

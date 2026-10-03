@@ -1,8 +1,9 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import {
   AL_ALLOYS, AL_CONFORM, AL_IMPACT, AL_DOWNSTREAM, AL_LINE, AL_DIE_NITRIDE, AL_MARKET, AL_DIES,
-  alBilletId, type AlAlloy, type AlExtrusionRoute, type AlFinish, type AlDieType,
+  alBilletId, type AlAlloy, type AlExtrusionRoute, type AlFinish, type AlDieType, type AlTemper,
 } from '../al-extrusion-data.js';
+export type { AlTemper } from '../al-extrusion-data.js';
 import { planAlExtrusion, planImpact, planConform, type AlSection, type AlPressPlan } from './aluminium-extrusion-advisor.js';
 import { REGIONAL_DATA } from '../regional-rates.js';
 import { secondaryMachiningCell } from '../machining-time.js';
@@ -15,9 +16,13 @@ import { secondaryMachiningCell } from '../machining-time.js';
  *   billet (LME + regional premium + alloy) → log heating (gas or induction)
  *   → press: direct / indirect / hydrostatic, or Conform from rod, or impact from a slug
  *   → press quench (air / mist / water) → stretch → finish saw (all in the line rate)
- *   → off-line solution heat treatment (2xxx / 7xxx) → ageing oven (T5 / T6)
- *   → fabrication (CNC, stretch bending) → finishing (anodise / powder / e-coat)
- *   → inspect and pack
+ *   → mill lengths → off-line solution heat treatment (2xxx / 7075) → ageing oven (T5 / T6 / T7)
+ *   → precision cut-to-length (cold saw, end trims) → fabrication (CNC, stretch bending)
+ *   → finishing (anodise / powder / e-coat) → inspect and pack
+ *
+ * Energy (billet heating, solution treatment, ageing) is passed as kWh and priced
+ * by the core at the rate library's own tariff, so a regional library prices it
+ * at that region's gas and power.
  *
  * The process plan (press, openings, speed, billet, yield, die) comes from
  * `aluminium-extrusion-advisor.ts`; this module only multiplies it by the rate
@@ -47,9 +52,10 @@ export interface AluminiumExtrusionInputs {
   labourEfficiency: number;
   rejectRate?: number;
 
-  /** Billet heating energy, kWh per kg of billet, and its price (gas or electricity) £/kWh. */
+  /** Billet heating energy, kWh per kg of billet (gas log furnace). */
   billetHeatKwhPerKg: number;
-  billetHeatPricePerKwh: number;
+  /** @deprecated ignored — energy is priced at the rate library's tariff. */
+  billetHeatPricePerKwh?: number;
   /** Rod (Conform) or slug-prep (impact) adder, £ per kg of feed. */
   feedAdderGbpPerKg?: number;
 
@@ -61,9 +67,16 @@ export interface AluminiumExtrusionInputs {
   ageHours?: number;
   ageLoadKg?: number;
   ageHandlingHr?: number;
-  /** Furnace gas, kWh per kg treated, and the gas price. */
+  /** Furnace gas, kWh per kg: ageing, and solution treatment. */
   heatTreatKwhPerKg?: number;
+  shtKwhPerKg?: number;
+  /** @deprecated ignored — energy is priced at the rate library's tariff. */
   gasPricePerKwh?: number;
+
+  // ── precision cut-to-length (cold saw) ──
+  ctlSawId?: string;
+  /** Saw time per part, s (cuts per part ÷ bundle + handling). */
+  ctlSecPerPart?: number;
 
   // ── fabrication ──
   bends?: number;
@@ -78,6 +91,8 @@ export interface AluminiumExtrusionInputs {
   finishAreaM2?: number;
   finishM2PerHr?: number;
   finishCrew?: number;
+  /** Coating consumables, £ per m² (powder, chemicals, paint). */
+  finishConsumablesGbpPerM2?: number;
 
   /** Inspect and pack, s a part (bench). */
   packSecPerPart?: number;
@@ -90,6 +105,8 @@ export interface AluminiumExtrusionInputs {
   nitrideEveryKg?: number;
   /** Fabrication fixtures and programming, £ (one-off). */
   fabToolingGbp?: number;
+  /** Stretch-bend form tooling, £ (one-off). */
+  bendToolingGbp?: number;
   /** Fabrication tool wear, £ a part. */
   fabConsumablesGbp?: number;
   amortizationVolume: number;
@@ -101,15 +118,20 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   const billetKg = Math.max(i.billetKgPerPart, i.partWeightKg);
 
   // ── Material: the billet bought; every kg not in the part is scrap credit ──
-  const heat = i.billetHeatKwhPerKg * billetKg * i.billetHeatPricePerKwh;
   const feedAdder = (i.feedAdderGbpPerKg ?? 0) * billetKg;
   const nitride = i.nitrideGbp && i.nitrideEveryKg ? i.nitrideGbp / i.nitrideEveryKg * i.extrudedKgPerPart : 0;
-  const consumables = (heat + feedAdder + nitride + (i.fabConsumablesGbp ?? 0)) * up;
+  const finishCons = i.finish && i.finish !== 'mill' && i.finishAreaM2 ? (i.finishConsumablesGbpPerM2 ?? 0) * i.finishAreaM2 : 0;
+  const consumables = (feedAdder + nitride + finishCons + (i.fabConsumablesGbp ?? 0)) * up;
+  // Gas: billet heating on the billet bought, solution treatment and ageing on the profile.
+  const gasKwh = (i.billetHeatKwhPerKg * billetKg
+    + (i.shtFurnaceId ? (i.shtKwhPerKg ?? 0) * i.extrudedKgPerPart : 0)
+    + (i.ageOvenId && i.ageHours ? (i.heatTreatKwhPerKg ?? 0) * i.extrudedKgPerPart : 0)) * up;
   const rawMaterial: RawMaterialInput = {
     materialId: i.materialId,
     netWeightKg: i.partWeightKg * up,
     materialUtilization: Math.min(1, i.partWeightKg / billetKg),
     ...(consumables > 0 ? { consumablesCostPerPart: consumables } : {}),
+    ...(gasKwh > 0 ? { energyKwh: { gas: gasKwh, basis: 'billet log heating, solution treatment and ageing furnaces' } } : {}),
   };
 
   const ops: OperationInput[] = [];
@@ -131,15 +153,12 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
     });
   }
 
-  const gas = i.gasPricePerKwh ?? 0;
-  let htEnergy = 0;
   if (i.shtFurnaceId && i.shtCycleHr && i.shtLoadKg) {
     const n = Math.max(1, Math.floor(i.shtLoadKg / i.extrudedKgPerPart));
     ops.push({
       operationName: 'Solution heat treatment and quench (off-line)', machineId: i.shtFurnaceId, labourId: i.inspectLabourId ?? i.labourId,
       cycleTimeHr: i.shtCycleHr * up, partsPerCycle: n, oee: i.oee, manning: 1, labourTimeHr: 0.5 * up, labourEfficiency: i.labourEfficiency,
     });
-    htEnergy += (i.heatTreatKwhPerKg ?? 0) * 2.5 * i.extrudedKgPerPart * gas;
   }
   if (i.ageOvenId && i.ageHours && i.ageHours > 0 && i.ageLoadKg) {
     const n = Math.max(1, Math.floor(i.ageLoadKg / i.extrudedKgPerPart));
@@ -148,12 +167,17 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
       operationName: `Artificial ageing (${i.ageHours} h a load)`, machineId: i.ageOvenId, labourId: i.labourId,
       cycleTimeHr: (i.ageHours + handling) * up, partsPerCycle: n, oee: 1, manning: 1, labourTimeHr: handling * up, labourEfficiency: i.labourEfficiency,
     });
-    htEnergy += (i.heatTreatKwhPerKg ?? 0) * i.extrudedKgPerPart * gas;
   }
-  if (htEnergy > 0) rawMaterial.consumablesCostPerPart = (rawMaterial.consumablesCostPerPart ?? 0) + htEnergy * up;
+  if (i.ctlSawId && i.ctlSecPerPart && i.ctlSecPerPart > 0) {
+    const hr = i.ctlSecPerPart / 3600 * up;
+    ops.push({
+      operationName: 'Precision cut-to-length and deburr (cold saw, end trims)', machineId: i.ctlSawId, labourId: i.labourId,
+      cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee, manning: 1, labourTimeHr: hr, labourEfficiency: i.labourEfficiency,
+    });
+  }
 
   if (i.bends && i.bends > 0 && i.benderId) {
-    const hr = (30 + i.bends * (i.secPerBend ?? 45)) / 3600 * up;
+    const hr = (AL_DOWNSTREAM.bender.loadSec + i.bends * (i.secPerBend ?? AL_DOWNSTREAM.bender.secPerBend)) / 3600 * up;
     ops.push({
       operationName: `Stretch bending (${i.bends} bend${i.bends === 1 ? '' : 's'})`, machineId: i.benderId, labourId: i.labourId,
       cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee, manning: 1, labourTimeHr: hr, labourEfficiency: i.labourEfficiency,
@@ -182,7 +206,7 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   const annualKg = i.amortizationVolume * i.extrudedKgPerPart;
   const sets = i.dieLifeKg > 0 ? Math.max(1, annualKg / i.dieLifeKg) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: i.dieCostGbp * sets + (i.fabToolingGbp ?? 0),
+    totalToolingCost: i.dieCostGbp * sets + (i.fabToolingGbp ?? 0) + (i.bendToolingGbp ?? 0),
     amortizationVolume: i.amortizationVolume,
     mode: 'amortized',
   };
@@ -191,8 +215,6 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
 }
 
 // ─── One builder for the screen and headless ──────────────────────────────────
-
-export type AlTemper = 'F' | 'O' | 'H112' | 'T4' | 'T5' | 'T6' | 'T64' | 'T66' | 'T73' | 'T3511';
 
 /** What the CAD rules (or the engineer, on the form) state; the builder plans the rest. */
 export interface AlExtrusionSpec {
@@ -205,8 +227,10 @@ export interface AlExtrusionSpec {
   annualVolume: number;
   temper: AlTemper;
   finish: AlFinish;
-  /** Area finished, m² (the part's surface). */
+  /** Area finished, m² (the part's whole surface — anodise and e-coat coat every face). */
   finishAreaM2: number;
+  /** The outside surface only, m² (outer outline × length) — what powder coats. */
+  finishOutsideAreaM2?: number;
   bends: number;
   /** Fabrication, measured from the CAD: cutting minutes, fixturings and feature rows. */
   cncMinutes: number;
@@ -214,8 +238,8 @@ export interface AlExtrusionSpec {
   fabFeatureRows: number;
   /** Impact extrusion: outer Ø of the cup, mm. */
   impactOuterDiaMm?: number;
-  gasPricePerKwh?: number;
-  electricityPricePerKwh?: number;
+  /** Engineer rate for CNC programming, £/h (the region's; UK when not given). */
+  engineerRatePerHr?: number;
   oee?: number;
   labourEfficiency?: number;
   rejectRate?: number;
@@ -232,17 +256,27 @@ export interface AlExtrusionBuild {
 export function temperNeeds(alloy: AlAlloy, temper: AlTemper): { age: boolean; sht: boolean } {
   const a = AL_ALLOYS[alloy];
   if (!a.heatTreatable || temper === 'F' || temper === 'O' || temper === 'H112') return { age: false, sht: false };
-  const age = ['T5', 'T6', 'T64', 'T66', 'T73'].includes(temper);
-  // Off-line SHT where the alloy cannot be press-quenched, or a T6 is asked of an
-  // alloy whose press quench gives only T5-level properties is NOT modelled — a
+  // EN 515: T5 / T6 / T64 / T66 / T7x / T8 are artificially aged; T3x and T4 age naturally.
+  const age = ['T5', 'T6', 'T64', 'T66', 'T7', 'T73', 'T76', 'T8'].includes(temper);
+  // Solution treatment is off-line where the alloy cannot be press-quenched
+  // (2xxx, 7075) and the temper is a solution-treated one (all but T5). A
   // press-quenchable alloy is solutionised on the press.
   const sht = a.quench === 'offline-sht' && temper !== 'T5';
   return { age, sht };
 }
 
+/** Cold-saw time per part, s: (parts + 1) cuts a mill length, a bundle cut at once, plus handling. */
+export function ctlSecPerPart(ccdMm: number, partsPerMill: number): { sec: number; bundle: number; basis: string } {
+  const c = AL_DOWNSTREAM.ctlSaw;
+  const secPerCut = c.secPerCutBase + c.secPerCutPerMmCcd * ccdMm;
+  const bundle = Math.max(1, Math.min(c.bundleMaxPieces, Math.floor(c.bundleWidthMm / Math.max(ccdMm, 1))));
+  const sec = (partsPerMill + 1) / partsPerMill * secPerCut / bundle + c.handlingSecPerPart;
+  return { sec: Math.round(sec * 100) / 100, bundle,
+    basis: `${secPerCut.toFixed(1)} s a cut × ${partsPerMill + 1} cuts per ${partsPerMill} part${partsPerMill === 1 ? '' : 's'} ÷ ${bundle} in the bundle + ${c.handlingSecPerPart} s handling` };
+}
+
 export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild {
   const a = AL_ALLOYS[spec.alloy];
-  const gas = spec.gasPricePerKwh ?? REGIONAL_DATA.UK.energy.gasPerKwh;
   const oee = spec.oee ?? AL_LINE.oee;
   const eff = spec.labourEfficiency ?? 0.92;
   const notes: string[] = [];
@@ -252,7 +286,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   let plan: AlPressPlan | null = null;
   let pressId: string; let crew: number; let cycleSec: number; let perPush: number;
   let billetKgPerPart: number; let dieGbp: number; let dieLifeKg: number; let runs: number;
-  let heatKwh = AL_DOWNSTREAM.billetHeatGasKwhPerKg; const heatPrice = gas; let feedAdder = 0; let dieChangeHr = AL_LINE.dieChangeHr;
+  let heatKwh = AL_DOWNSTREAM.billetHeatGasKwhPerKg; let feedAdder = 0; let dieChangeHr = AL_LINE.dieChangeHr;
 
   if (spec.route === 'impact') {
     const ip = planImpact(spec.partWeightKg, spec.impactOuterDiaMm ?? s.ccdMm);
@@ -290,7 +324,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   if (spec.cncMinutes > 0) {
     const cell = secondaryMachiningCell({
       fixturings: spec.cncFixturings, weightKg: partKg, annualVolume: spec.annualVolume, family: 'aluminium',
-      featureRows: spec.fabFeatureRows, cuttingMin: spec.cncMinutes, engineerRatePerHr: REGIONAL_DATA.UK.labour.engineer,
+      featureRows: spec.fabFeatureRows, cuttingMin: spec.cncMinutes, engineerRatePerHr: spec.engineerRatePerHr ?? REGIONAL_DATA.UK.labour.engineer,
     });
     fabTooling = cell.toolingGBP; fabWear = cell.toolWearPerPart;
     const cut = spec.cncMinutes / 60;
@@ -306,20 +340,32 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
 
   const finishLine = spec.finish === 'anodise' ? AL_DOWNSTREAM.anodise : spec.finish === 'powder' ? AL_DOWNSTREAM.powder
     : spec.finish === 'ecoat' ? AL_DOWNSTREAM.ecoat : null;
+  const finishArea = finishLine?.outsideOnly && spec.finishOutsideAreaM2 ? spec.finishOutsideAreaM2 : spec.finishAreaM2;
+  if (finishLine) {
+    notes.push(`finish: ${spec.finish} over ${finishArea.toFixed(3)} m² (${finishLine.outsideOnly ? (spec.finishOutsideAreaM2 ? 'outside only' : 'whole surface — outside not measured') : 'every surface, chambers included'}) `
+      + `at ${finishLine.m2PerHr} m²/h + £${finishLine.consumablesGbpPerM2}/m² consumables`);
+  }
+  // Cold cut-to-length: every profile route but Conform (cut in line) and impact.
+  const ctl = plan ? ctlSecPerPart(s.ccdMm, plan.partsPerMillLength) : null;
+  if (ctl) notes.push(`cut to length: ${ctl.basis}`);
+  const bendTool = spec.bends > 0 ? AL_DOWNSTREAM.bender.toolFirstGbp + (spec.bends - 1) * AL_DOWNSTREAM.bender.toolPerExtraBendGbp : 0;
+  if (bendTool) notes.push(`stretch-bend form tooling £${bendTool.toLocaleString('en-GB')} for ${spec.bends} bend${spec.bends === 1 ? '' : 's'}`);
 
   const inputs: AluminiumExtrusionInputs = {
     materialId: alBilletId(spec.alloy), alloy: spec.alloy, route: spec.route,
     partWeightKg: partKg, extrudedKgPerPart: spec.route === 'impact' ? partKg : extrudedKg, billetKgPerPart,
     pressId, labourId: 'lab-uk-semiskilled', crew, cycleSecPerPush: cycleSec, partsPerPush: perPush,
     runsPerYear: runs, dieChangeHr, oee, labourEfficiency: eff, rejectRate: spec.rejectRate ?? AL_LINE.rejectRate,
-    billetHeatKwhPerKg: heatKwh, billetHeatPricePerKwh: heatPrice, feedAdderGbpPerKg: feedAdder,
+    billetHeatKwhPerKg: heatKwh, feedAdderGbpPerKg: feedAdder,
     ...(need.sht ? { shtFurnaceId: AL_DOWNSTREAM.sht.id, shtCycleHr: AL_DOWNSTREAM.sht.cycleHr, shtLoadKg: AL_DOWNSTREAM.sht.loadKg } : {}),
     ...(need.age ? { ageOvenId: AL_DOWNSTREAM.ageOven.id, ageHours: a.ageHours, ageLoadKg: AL_DOWNSTREAM.ageOven.loadKg, ageHandlingHr: AL_DOWNSTREAM.ageOven.handlingHr } : {}),
-    heatTreatKwhPerKg: AL_DOWNSTREAM.ageOven.gasKwhPerKg, gasPricePerKwh: gas,
-    ...(spec.bends > 0 ? { bends: spec.bends, benderId: AL_DOWNSTREAM.bender.id, secPerBend: AL_DOWNSTREAM.bender.secPerBend } : {}),
+    heatTreatKwhPerKg: AL_DOWNSTREAM.ageOven.gasKwhPerKg, shtKwhPerKg: AL_DOWNSTREAM.sht.gasKwhPerKg,
+    ...(ctl ? { ctlSawId: AL_DOWNSTREAM.ctlSaw.id, ctlSecPerPart: ctl.sec } : {}),
+    ...(spec.bends > 0 ? { bends: spec.bends, benderId: AL_DOWNSTREAM.bender.id, secPerBend: AL_DOWNSTREAM.bender.secPerBend, bendToolingGbp: bendTool } : {}),
     fabOps, fabToolingGbp: fabTooling, fabConsumablesGbp: fabWear,
     finish: spec.finish,
-    ...(finishLine ? { finishLineId: finishLine.id, finishAreaM2: spec.finishAreaM2, finishM2PerHr: finishLine.m2PerHr, finishCrew: finishLine.crew } : {}),
+    ...(finishLine ? { finishLineId: finishLine.id, finishAreaM2: finishArea, finishM2PerHr: finishLine.m2PerHr, finishCrew: finishLine.crew,
+      finishConsumablesGbpPerM2: finishLine.consumablesGbpPerM2 } : {}),
     packSecPerPart: Math.round((6 + 4 * s.partLengthMm / 1000) * 10) / 10, inspectLabourId: 'lab-uk-semiskilled',
     dieCostGbp: dieGbp, dieLifeKg, nitrideGbp: spec.route === 'impact' ? 0 : AL_DIE_NITRIDE.gbp, nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
     amortizationVolume: spec.annualVolume,

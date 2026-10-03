@@ -157,6 +157,14 @@ export interface RawMaterialInput {
    */
   boughtIn?: { cost: number; handlingPct: number };
   /**
+   * Process energy bought per part, kWh, priced at the rate library's own energy
+   * tariff — so a regional library prices it at that region's gas and power
+   * (aluminium-extrusion review, Oct 2026: billet heating and ageing gas were a
+   * fixed UK £ figure in every region). Added to the material line, with a
+   * traceability record each.
+   */
+  energyKwh?: { gas?: number; electricity?: number; basis?: string };
+  /**
    * Optional itemisation behind `directCost` — the BOM for a PCBA, the wire and
    * connector schedule for a harness, the sub-part list for a BIW assembly.
    *

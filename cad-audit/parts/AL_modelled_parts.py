@@ -11,6 +11,9 @@ shape class the model must handle:
   AL_Machined_Bracket  6082  80 x 60 x 6 L-angle, 400 mm, 2 x Ø12 holes + an end notch
   AL_Busbar            6101  40 x 10 flat, 400 mm, 2 x Ø11 holes (Conform candidate)
   AL_Battery_Can       3003  Ø46 x 80 mm cup, 0.8 mm wall, 1 mm base (impact extrusion)
+  AL_Seal_Carrier      6060  30 x 20 x 1.5 mm C with in-turned lips, 6 mm gap, 2,000 mm
+                             (semi-hollow: the lips nearly close the channel — added in the
+                             aluminium-extrusion review, Oct 2026)
 
 Exported as STEP AP214. Run: python3 AL_modelled_parts.py <out-dir>
 """
@@ -64,3 +67,7 @@ for x in (30, 370):
 write(bb, f'{out}/AL_Busbar.stp', 'BUSBAR 6101 EXTRUDED')
 can = cut(cyl((0, 0, 0), (0, 0, 1), 23, 80), cyl((0, 0, 1.0), (0, 0, 1), 22.2, 80))
 write(can, f'{out}/AL_Battery_Can.stp', 'BATTERY CAN 3003 IMPACT EXTRUDED')
+# Semi-hollow (review, Oct 2026): a 30 x 20 channel, 1.5 mm, lips turned in to a 6 mm gap.
+sc = cut(box(0, 0, 0, 2000, 30, 20), box(-1, 1.5, 1.5, 2002, 27, 17))
+sc = cut(sc, box(-1, 12, 18, 2002, 6, 3))        # the 6 mm gap through the top wall
+write(sc, f'{out}/AL_Seal_Carrier.stp', 'SEAL CARRIER 6060 T66 EXTRUDED')

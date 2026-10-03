@@ -1,5 +1,7 @@
 # Aluminium extrusion should-cost model, built October 2026
 
+> **Superseded in part by the review** (`docs/cad/extrusion-review-2026-10.md`, same month). The review added 16 alloys and 14 polymer grades, put container friction on the billet length, added cut-to-length, priced energy regionally and credited scrap at the market. Costs below are as built; the review gives the current figures.
+
 The cost-engineering director asked for an aluminium extrusion should-cost model
 that runs end to end, follows the standard process steps, and covers every
 extrusion process in use, every section type, global billet prices and process

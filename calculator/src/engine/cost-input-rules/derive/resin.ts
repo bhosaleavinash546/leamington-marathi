@@ -93,11 +93,20 @@ const RESIN_MENUS: Record<string, ResinCandidate[]> = {
   // Rotational moulding is overwhelmingly polyethylene; a short menu is the
   // honest one rather than a long list of grades nobody rotomoulds.
   // Extrusion grades (extrusion build): pipe, tube and profile compounds.
+  // Specific grades before their generic family (review, Oct 2026: window and
+  // seal PVC, PP-R and PE-X pipe, PA11 / PVDF tube, TPV weatherseal were missing).
   extrusion: [
+    { id: 'mat-pa11-tube', grade: /pa11|pa 11|rilsan/, application: /air ?brake|umbilical/ },
     { id: 'mat-pa12-ext-tube', grade: /pa12|pa 12|nylon/, application: /fuel|brake|line|tube/ },
+    { id: 'mat-pex-pipe', grade: /pe-?x|pex/, application: /underfloor|heating pipe/ },
+    { id: 'mat-ppr-pipe', grade: /pp-?r\b|ppr|pp-?rct/, application: /hot.?water|plumbing/ },
     { id: 'mat-pe100-pipe', grade: /hdpe|\bpe\b|pe100/, application: /pipe|vent|coolant|drain/ },
+    { id: 'mat-upvc-window-profile', grade: /window|upvc|pvc-?u\b/, application: /window|door|frame|sash|cladding/ },
     { id: 'mat-upvc-pipe', grade: /pvc/, application: /conduit|profile|trim|channel/ },
-    { id: 'mat-tpe-profile', grade: /tpe|tpv|tps/, application: /seal|gasket/ },
+    { id: 'mat-pvcp-profile', grade: /pvc-?p\b|flexible pvc|soft pvc/, application: /gasket|edge ?trim|glazing/ },
+    { id: 'mat-tpv-profile', grade: /tpv|santoprene/, application: /weather ?seal|glass ?run|door seal|belt ?line/ },
+    { id: 'mat-tpe-profile', grade: /tpe|tps/, application: /seal|gasket/ },
+    { id: 'mat-pvdf-ext', grade: /pvdf|kynar/ },
     { id: 'mat-pp-ext-sheet', grade: /\bpp\b|polyprop/ },
     { id: 'mat-pvc-foam', grade: /foam/ },
   ],
@@ -180,7 +189,7 @@ export function resinFacts(ctx: RuleContext): ResinFacts {
     decision: {
       id: RESIN_DECISION_ID,
       kind: 'material_grade',
-      question: 'Which resin is this moulded in?',
+      question: ctx.commodity === 'extrusion' ? 'Which polymer grade is this extruded in?' : 'Which resin is this moulded in?',
       why: 'The geometry is the same whichever resin fills it, but the resin sets the '
         + 'weight, the £/kg and the cooling time — and cooling is most of the cycle. '
         + `The ${volumeCm3.toFixed(0)} cm³ measured here weighs `

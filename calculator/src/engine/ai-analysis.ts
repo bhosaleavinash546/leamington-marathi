@@ -601,7 +601,7 @@ export interface CADAnalysisResult {
       alloy?: string; route?: string; areaMm2?: number; perimeterMm?: number; ccdMm?: number; voids?: number;
       minWallMm?: number; partLengthMm?: number; partWeightKg?: number; temper?: string; finish?: string;
       finishAreaM2?: number; bends?: number; cncMinutes?: number; cncFixturings?: number; fabFeatureRows?: number;
-      impactOuterDiaMm?: number;
+      impactOuterDiaMm?: number; tongueRatio?: number; finishOutsideAreaM2?: number;
     };
     /** Polymer extrusion, from the rules (extrusion build, Oct 2026). */
     extrusion?: {

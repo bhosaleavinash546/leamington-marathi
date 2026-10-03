@@ -270,9 +270,11 @@ export function toCostParams(
     const build = buildAlExtrusionInputs({
       alloy: e.alloy as AlAlloy, route: e.route as AlExtrusionRoute,
       section: { areaMm2: num(e.areaMm2), perimeterMm: num(e.perimeterMm), ccdMm: num(e.ccdMm), voids: Math.round(Number(e.voids) || 0),
-        minWallMm: num(e.minWallMm), partLengthMm: num(e.partLengthMm) },
+        minWallMm: num(e.minWallMm), partLengthMm: num(e.partLengthMm),
+        ...(num(e.tongueRatio) ? { tongueRatio: num(e.tongueRatio) } : {}) },
       partWeightKg: num(e.partWeightKg) || num(ci.netWeightKg), annualVolume,
       temper: (e.temper ?? 'T6') as AlTemper, finish: (e.finish ?? 'mill') as AlFinish, finishAreaM2: num(e.finishAreaM2),
+      ...(num(e.finishOutsideAreaM2) ? { finishOutsideAreaM2: num(e.finishOutsideAreaM2) } : {}),
       bends: Math.round(Number(e.bends) || 0), cncMinutes: Number(e.cncMinutes) || 0, cncFixturings: Math.round(Number(e.cncFixturings) || 0),
       fabFeatureRows: Math.round(Number(e.fabFeatureRows) || 0),
       ...(num(e.impactOuterDiaMm) ? { impactOuterDiaMm: num(e.impactOuterDiaMm) } : {}),

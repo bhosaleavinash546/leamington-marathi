@@ -66,52 +66,125 @@ export const BILLET_PREMIUM_USD_PER_T: Record<ManufacturingRegion, BilletPremium
 
 // ─── Alloys ───────────────────────────────────────────────────────────────────
 
+/**
+ * Every wrought alloy extruded in volume — 30, by series (aluminium-extrusion review,
+ * Oct 2026: the build carried 14; the review adds the rest of the EN 573 /
+ * Aluminum Association extrusion range — EC conductor, 3103, 5754 / 5086, the
+ * architectural and automotive 6xxx (6063A, 6106, 6008, 6351), free-machining
+ * 6026 / 2011, 2014 / 2017A and the transport 7xxx 7005 / 7046).
+ */
 export type AlAlloy =
-  | '1050' | '3003' | '5083' | '6060' | '6063' | '6101' | '6005A' | '6061' | '6082'
-  | '7003' | '7108' | '7020' | '7075' | '2024';
+  | '1050' | '1070A' | '1100' | '1350'
+  | '3003' | '3103'
+  | '5754' | '5083' | '5086'
+  | '6060' | '6063' | '6063A' | '6106' | '6101' | '6005A' | '6008' | '6061' | '6351' | '6082' | '6026'
+  | '2011' | '2014' | '2017A' | '2024'
+  | '7003' | '7005' | '7046' | '7108' | '7020' | '7075';
+
+/** Every temper an extrusion is supplied in (EN 515). */
+export type AlTemper =
+  | 'F' | 'O' | 'H112'
+  | 'T3' | 'T3510' | 'T3511' | 'T4' | 'T5' | 'T6' | 'T64' | 'T66' | 'T7' | 'T73' | 'T76' | 'T8';
 
 export type QuenchKind = 'none' | 'air' | 'mist' | 'water' | 'offline-sht';
+export type AlSeries = '1xxx' | '2xxx' | '3xxx' | '5xxx' | '6xxx' | '7xxx';
 
 export interface AlloyData {
   label: string;
+  series: AlSeries;
   densityKgPerM3: number;
   /** Billet premium over 6063, US$/t — alloying additions, casthouse yield, homogenising. ESTIMATE. */
   billetAdderUsdPerT: number;
-  /** Mean flow stress at the extrusion temperature, MPa (Johnson / Sheppard typical). ESTIMATE. */
+  /**
+   * Mean flow stress at the alloy's billet temperature and an extrusion strain
+   * rate of a few s⁻¹, MPa. 6063 is the anchor: Sellars–Tegart with Sheppard &
+   * Jackson's constants (α 0.04 MPa⁻¹, n 5.385, ln A 22.5, Q 141.5 kJ/mol) at
+   * 480 °C and ε̇ ≈ 3 s⁻¹ gives 26 MPa. The others are scaled from it by relative
+   * hot strength — ESTIMATE. The press-quenchable 7xxx (7003, 7108) sit with 6082:
+   * they are chosen for bumper beams because they extrude like a hard 6xxx.
+   */
   flowStressMPa: number;
-  /** Exit speed on a plain solid section, m/min (6xxx 20–100, 7075 0.8–5.5 m/min, published). */
+  /**
+   * Exit speed on a plain solid section, m/min. Soft and medium alloys: 6063 at
+   * 50 m/min (ESTIMATE, inside the published "economic to 100 m/min") times the
+   * published relative extrudability where it exists (6063 = 100: 1350 160,
+   * 1100 135, 3003 120, 6061 60, 2011 35, 5086 25, 2014 20, 5083 20, 2024 15,
+   * 7075 9). Hard alloys take the middle of the published exit-speed band
+   * instead (2014–2024 1.5–3.5, 5083 / 5086 / 5456 2–6, 7075 0.8–2 m/min).
+   */
   baseExitSpeedMPerMin: number;
+  speedBasis: string;
   /** Largest practical extrusion ratio (6063 ~100, 7075 6–30, published). */
   maxRatio: number;
   /** Butt discard left in the container, mm (soft alloys 20–35 mm, published). */
   buttMm: number;
   quench: QuenchKind;
   heatTreatable: boolean;
-  defaultTemper: string;
+  defaultTemper: AlTemper;
+  /** The tempers the alloy is supplied in. */
+  tempers: AlTemper[];
   /** Artificial ageing at the oven, hours incl. ramp (6xxx T5/T6 6–10 h, published; 7xxx two-step). */
   ageHours: number;
-  /** Process scrap value as a share of LME (clean 6063 70–93% of LME, published). */
-  scrapShareOfLme: number;
+  /**
+   * Process scrap value: LME + this differential, US$/t. 6xxx is SOURCED:
+   * Fastmarkets "clean production extrusions (6063), delivered consumer Europe"
+   * averaged LME + €48/t in 2026 (MB-AL-0404) = +$56/t at $1.165/€. Other series
+   * carry a discount for segregation and alloy (Cu, Zn, Mg, Pb/Bi) — ESTIMATE.
+   */
+  scrapDiffUsdPerT: number;
   /** Hollow high-strength sections are extruded seamless on an indirect press, not porthole-welded. */
   prefersIndirect: boolean;
   uses: string;
 }
 
+const T_NONHT: AlTemper[] = ['H112', 'O', 'F'];
+const T_6XXX: AlTemper[] = ['T4', 'T5', 'T6', 'T64', 'T66', 'T7', 'O', 'F'];
+const T_2XXX: AlTemper[] = ['T3', 'T3510', 'T3511', 'T4', 'T6', 'T8', 'O', 'F'];
+const T_7XXX: AlTemper[] = ['T5', 'T6', 'T7', 'T73', 'T76', 'O', 'F'];
+/** Clean 6063 production scrap, LME + €48/t (Fastmarkets MB-AL-0404, 2026 average) at $1.165/€. */
+export const SCRAP_DIFF_6XXX_USD = 56;
+
+const idx = (n: number, i: string) => `${n} m/min — 6063's 50 × the published relative extrudability ${i}`;
+const est = (n: number, why: string) => `${n} m/min — ESTIMATE: ${why}`;
+const band = (n: number, b: string) => `${n} m/min — middle of the published ${b} m/min band`;
+
 export const AL_ALLOYS: Record<AlAlloy, AlloyData> = {
-  '1050': { label: 'EN AW-1050A (99.5% Al)', densityKgPerM3: 2705, billetAdderUsdPerT: -40, flowStressMPa: 18, baseExitSpeedMPerMin: 70, maxRatio: 300, buttMm: 20, quench: 'none', heatTreatable: false, defaultTemper: 'H112', ageHours: 0, scrapShareOfLme: 0.90, prefersIndirect: false, uses: 'busbar, heat-exchanger tube, electrical' },
-  '3003': { label: 'EN AW-3003 (Al-Mn)', densityKgPerM3: 2730, billetAdderUsdPerT: 40, flowStressMPa: 26, baseExitSpeedMPerMin: 40, maxRatio: 150, buttMm: 25, quench: 'none', heatTreatable: false, defaultTemper: 'H112', ageHours: 0, scrapShareOfLme: 0.86, prefersIndirect: false, uses: 'HVAC / radiator tube, multi-port tube' },
-  '5083': { label: 'EN AW-5083 (Al-Mg4.5Mn)', densityKgPerM3: 2660, billetAdderUsdPerT: 300, flowStressMPa: 55, baseExitSpeedMPerMin: 4, maxRatio: 40, buttMm: 40, quench: 'none', heatTreatable: false, defaultTemper: 'H112', ageHours: 0, scrapShareOfLme: 0.82, prefersIndirect: false, uses: 'marine, rail, cryogenic' },
-  '6060': { label: 'EN AW-6060 (Al-MgSi)', densityKgPerM3: 2700, billetAdderUsdPerT: -20, flowStressMPa: 24, baseExitSpeedMPerMin: 60, maxRatio: 120, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T66', ageHours: 6, scrapShareOfLme: 0.88, prefersIndirect: false, uses: 'architectural, trim, low-load profiles' },
-  '6063': { label: 'EN AW-6063 (Al-Mg0.7Si)', densityKgPerM3: 2700, billetAdderUsdPerT: 0, flowStressMPa: 26, baseExitSpeedMPerMin: 50, maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 6, scrapShareOfLme: 0.88, prefersIndirect: false, uses: 'general profiles, trim, heat sinks' },
-  '6101': { label: 'EN AW-6101 (electrical)', densityKgPerM3: 2700, billetAdderUsdPerT: 60, flowStressMPa: 26, baseExitSpeedMPerMin: 40, maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 6, scrapShareOfLme: 0.88, prefersIndirect: false, uses: 'busbar, EV conductor' },
-  '6005A': { label: 'EN AW-6005A (Al-SiMg)', densityKgPerM3: 2710, billetAdderUsdPerT: 80, flowStressMPa: 32, baseExitSpeedMPerMin: 25, maxRatio: 80, buttMm: 30, quench: 'mist', heatTreatable: true, defaultTemper: 'T6', ageHours: 8, scrapShareOfLme: 0.86, prefersIndirect: false, uses: 'rail, battery tray, structural hollows' },
-  '6061': { label: 'EN AW-6061 (Al-Mg1SiCu)', densityKgPerM3: 2700, billetAdderUsdPerT: 150, flowStressMPa: 38, baseExitSpeedMPerMin: 15, maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', ageHours: 8, scrapShareOfLme: 0.85, prefersIndirect: false, uses: 'structural, machined parts' },
-  '6082': { label: 'EN AW-6082 (Al-Si1MgMn)', densityKgPerM3: 2710, billetAdderUsdPerT: 150, flowStressMPa: 40, baseExitSpeedMPerMin: 12, maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', ageHours: 8, scrapShareOfLme: 0.85, prefersIndirect: false, uses: 'structural, crash, chassis' },
-  '7003': { label: 'EN AW-7003 (Al-Zn6Mg)', densityKgPerM3: 2780, billetAdderUsdPerT: 350, flowStressMPa: 50, baseExitSpeedMPerMin: 10, maxRatio: 50, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 20, scrapShareOfLme: 0.78, prefersIndirect: false, uses: 'bumper beams, crash management' },
-  '7108': { label: 'EN AW-7108 (Al-Zn5Mg)', densityKgPerM3: 2770, billetAdderUsdPerT: 350, flowStressMPa: 48, baseExitSpeedMPerMin: 10, maxRatio: 50, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 20, scrapShareOfLme: 0.78, prefersIndirect: false, uses: 'bumper beams, side-impact' },
-  '7020': { label: 'EN AW-7020 (Al-Zn4.5Mg1)', densityKgPerM3: 2780, billetAdderUsdPerT: 380, flowStressMPa: 52, baseExitSpeedMPerMin: 8, maxRatio: 45, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', ageHours: 22, scrapShareOfLme: 0.78, prefersIndirect: false, uses: 'rail, defence, structural' },
-  '7075': { label: 'EN AW-7075 (Al-Zn5.5MgCu)', densityKgPerM3: 2810, billetAdderUsdPerT: 1_200, flowStressMPa: 65, baseExitSpeedMPerMin: 2, maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T6', ageHours: 24, scrapShareOfLme: 0.70, prefersIndirect: true, uses: 'aerospace, high-strength' },
-  '2024': { label: 'EN AW-2024 (Al-Cu4Mg1)', densityKgPerM3: 2780, billetAdderUsdPerT: 1_400, flowStressMPa: 62, baseExitSpeedMPerMin: 2.5, maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T3511', ageHours: 0, scrapShareOfLme: 0.68, prefersIndirect: true, uses: 'aerospace, fasteners' },
+  // ── 1xxx: commercially pure ──
+  '1050': { label: 'EN AW-1050A (99.5% Al)', series: '1xxx', densityKgPerM3: 2705, billetAdderUsdPerT: -40, flowStressMPa: 18, baseExitSpeedMPerMin: 67, speedBasis: idx(67, '135 (1060 / 1100)'), maxRatio: 300, buttMm: 20, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'busbar, heat-exchanger tube, electrical' },
+  '1070A': { label: 'EN AW-1070A (99.7% Al)', series: '1xxx', densityKgPerM3: 2700, billetAdderUsdPerT: -30, flowStressMPa: 17, baseExitSpeedMPerMin: 67, speedBasis: idx(67, '135 (1060 / 1100)'), maxRatio: 300, buttMm: 20, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'conductor, reflector, heat exchanger' },
+  '1100': { label: 'AA 1100 (99.0% Al)', series: '1xxx', densityKgPerM3: 2710, billetAdderUsdPerT: -20, flowStressMPa: 20, baseExitSpeedMPerMin: 67, speedBasis: idx(67, '135'), maxRatio: 250, buttMm: 20, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'general pure-aluminium tube and shapes (US)' },
+  '1350': { label: 'EN AW-1350 (EC, electrical conductor)', series: '1xxx', densityKgPerM3: 2705, billetAdderUsdPerT: 20, flowStressMPa: 16, baseExitSpeedMPerMin: 80, speedBasis: idx(80, '160'), maxRatio: 300, buttMm: 20, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'busbar, conductor, EV power distribution' },
+  // ── 3xxx: Al-Mn ──
+  '3003': { label: 'EN AW-3003 (Al-Mn1Cu)', series: '3xxx', densityKgPerM3: 2730, billetAdderUsdPerT: 40, flowStressMPa: 24, baseExitSpeedMPerMin: 60, speedBasis: idx(60, '120'), maxRatio: 150, buttMm: 25, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: -150, prefersIndirect: false, uses: 'HVAC / radiator tube, multi-port tube' },
+  '3103': { label: 'EN AW-3103 (Al-Mn1)', series: '3xxx', densityKgPerM3: 2730, billetAdderUsdPerT: 40, flowStressMPa: 24, baseExitSpeedMPerMin: 60, speedBasis: idx(60, '120 (as 3003)'), maxRatio: 150, buttMm: 25, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: -150, prefersIndirect: false, uses: 'heat-exchanger and condenser tube (EU)' },
+  // ── 5xxx: Al-Mg, non-heat-treatable, hard to extrude ──
+  '5754': { label: 'EN AW-5754 (Al-Mg3)', series: '5xxx', densityKgPerM3: 2670, billetAdderUsdPerT: 200, flowStressMPa: 42, baseExitSpeedMPerMin: 8, speedBasis: est(8, 'Mg 3% — between 5052 and the 5083 / 5086 band'), maxRatio: 50, buttMm: 35, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: -150, prefersIndirect: false, uses: 'marine, tanks, welded structures' },
+  '5083': { label: 'EN AW-5083 (Al-Mg4.5Mn)', series: '5xxx', densityKgPerM3: 2660, billetAdderUsdPerT: 300, flowStressMPa: 52, baseExitSpeedMPerMin: 4, speedBasis: band(4, '5083 / 5086 / 5456 2–6'), maxRatio: 40, buttMm: 40, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: -200, prefersIndirect: false, uses: 'marine, rail, cryogenic' },
+  '5086': { label: 'EN AW-5086 (Al-Mg4)', series: '5xxx', densityKgPerM3: 2660, billetAdderUsdPerT: 280, flowStressMPa: 50, baseExitSpeedMPerMin: 5, speedBasis: band(5, '5083 / 5086 / 5456 2–6 (5086 relative extrudability 25 > 5083 20)'), maxRatio: 40, buttMm: 40, quench: 'none', heatTreatable: false, defaultTemper: 'H112', tempers: T_NONHT, ageHours: 0, scrapDiffUsdPerT: -200, prefersIndirect: false, uses: 'marine, vehicle bodies' },
+  // ── 6xxx: Al-Mg-Si, the extrusion family ──
+  '6060': { label: 'EN AW-6060 (Al-MgSi)', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: -20, flowStressMPa: 24, baseExitSpeedMPerMin: 55, speedBasis: est(55, 'leaner than 6063, extrudes a little faster'), maxRatio: 120, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T66', tempers: T_6XXX, ageHours: 6, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'architectural, trim, low-load profiles' },
+  '6063': { label: 'EN AW-6063 (Al-Mg0.7Si)', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: 0, flowStressMPa: 26, baseExitSpeedMPerMin: 50, speedBasis: '50 m/min — the reference (ESTIMATE inside the published "economic up to 100 m/min")', maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 6, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'general profiles, trim, heat sinks' },
+  '6063A': { label: 'EN AW-6063A (Al-Mg0.7Si(A))', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: 20, flowStressMPa: 28, baseExitSpeedMPerMin: 45, speedBasis: est(45, 'higher Mg/Si than 6063'), maxRatio: 90, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 6, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'architectural and structural profiles' },
+  '6106': { label: 'EN AW-6106 (Al-MgSiMn)', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: 10, flowStressMPa: 26, baseExitSpeedMPerMin: 50, speedBasis: est(50, 'extrudes as 6063'), maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 6, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'thin structural profiles, frames' },
+  '6101': { label: 'EN AW-6101B (electrical)', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: 60, flowStressMPa: 26, baseExitSpeedMPerMin: 45, speedBasis: est(45, 'conductivity-controlled chemistry, close to 6063'), maxRatio: 100, buttMm: 25, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 6, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'busbar, EV conductor' },
+  '6005A': { label: 'EN AW-6005A (Al-SiMg(A))', series: '6xxx', densityKgPerM3: 2710, billetAdderUsdPerT: 80, flowStressMPa: 30, baseExitSpeedMPerMin: 35, speedBasis: est(35, 'between 6063 and 6061 (60)'), maxRatio: 80, buttMm: 30, quench: 'mist', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 8, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'rail, battery tray, structural hollows' },
+  '6008': { label: 'EN AW-6008 (Al-SiMgV)', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: 120, flowStressMPa: 30, baseExitSpeedMPerMin: 35, speedBasis: est(35, 'as 6005A'), maxRatio: 80, buttMm: 30, quench: 'mist', heatTreatable: true, defaultTemper: 'T7', tempers: T_6XXX, ageHours: 8, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'automotive crash management, sills (over-aged T7)' },
+  '6061': { label: 'EN AW-6061 (Al-Mg1SiCu)', series: '6xxx', densityKgPerM3: 2700, billetAdderUsdPerT: 150, flowStressMPa: 34, baseExitSpeedMPerMin: 30, speedBasis: idx(30, '60 (published 20–80 m/min)'), maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 8, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'structural, machined parts' },
+  '6351': { label: 'EN AW-6351 (Al-Si1Mg0.5Mn)', series: '6xxx', densityKgPerM3: 2710, billetAdderUsdPerT: 150, flowStressMPa: 35, baseExitSpeedMPerMin: 25, speedBasis: est(25, 'Mn-bearing, between 6061 and 6082'), maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 8, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'structural, truck and trailer' },
+  '6082': { label: 'EN AW-6082 (Al-Si1MgMn)', series: '6xxx', densityKgPerM3: 2710, billetAdderUsdPerT: 150, flowStressMPa: 36, baseExitSpeedMPerMin: 20, speedBasis: est(20, 'Mn dispersoids — below 6061 (60)'), maxRatio: 60, buttMm: 35, quench: 'water', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 8, scrapDiffUsdPerT: SCRAP_DIFF_6XXX_USD, prefersIndirect: false, uses: 'structural, crash, chassis' },
+  '6026': { label: 'EN AW-6026 (free-machining, lead-free)', series: '6xxx', densityKgPerM3: 2720, billetAdderUsdPerT: 400, flowStressMPa: 36, baseExitSpeedMPerMin: 15, speedBasis: est(15, 'Bi/Sn free-machining — hot-short, run slow'), maxRatio: 50, buttMm: 40, quench: 'water', heatTreatable: true, defaultTemper: 'T6', tempers: T_6XXX, ageHours: 8, scrapDiffUsdPerT: -450, prefersIndirect: false, uses: 'screw-machine bar, hydraulic fittings' },
+  // ── 2xxx: Al-Cu, extruded slowly, solution-treated off the press ──
+  '2011': { label: 'EN AW-2011 (Al-Cu6BiPb, free-machining)', series: '2xxx', densityKgPerM3: 2830, billetAdderUsdPerT: 1_000, flowStressMPa: 50, baseExitSpeedMPerMin: 6, speedBasis: est(6, 'relative extrudability 35, but hot-short Bi/Pb — run well under 6063 × 0.35'), maxRatio: 40, buttMm: 45, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T3', tempers: T_2XXX, ageHours: 0, scrapDiffUsdPerT: -450, prefersIndirect: true, uses: 'screw-machine parts' },
+  '2014': { label: 'EN AW-2014 (Al-Cu4SiMg)', series: '2xxx', densityKgPerM3: 2800, billetAdderUsdPerT: 1_200, flowStressMPa: 60, baseExitSpeedMPerMin: 2.5, speedBasis: band(2.5, '2014–2024 1.5–3.5'), maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T6', tempers: T_2XXX, ageHours: 18, scrapDiffUsdPerT: -400, prefersIndirect: true, uses: 'aerospace, high-stressed fittings' },
+  '2017A': { label: 'EN AW-2017A (Al-Cu4MgSi)', series: '2xxx', densityKgPerM3: 2790, billetAdderUsdPerT: 1_200, flowStressMPa: 58, baseExitSpeedMPerMin: 2.5, speedBasis: band(2.5, '2014–2024 1.5–3.5'), maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T4', tempers: T_2XXX, ageHours: 0, scrapDiffUsdPerT: -400, prefersIndirect: true, uses: 'machined fittings, rivets' },
+  '2024': { label: 'EN AW-2024 (Al-Cu4Mg1)', series: '2xxx', densityKgPerM3: 2780, billetAdderUsdPerT: 1_400, flowStressMPa: 62, baseExitSpeedMPerMin: 2.5, speedBasis: band(2.5, '2014–2024 1.5–3.5'), maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T3511', tempers: T_2XXX, ageHours: 0, scrapDiffUsdPerT: -400, prefersIndirect: true, uses: 'aerospace, fasteners' },
+  // ── 7xxx: Al-Zn-Mg; the medium-strength weldable ones press-quench ──
+  '7003': { label: 'EN AW-7003 (Al-Zn6Mg0.8Zr)', series: '7xxx', densityKgPerM3: 2780, billetAdderUsdPerT: 350, flowStressMPa: 40, baseExitSpeedMPerMin: 10, speedBasis: est(10, 'press-quenchable medium-strength 7xxx'), maxRatio: 50, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_7XXX, ageHours: 20, scrapDiffUsdPerT: -300, prefersIndirect: false, uses: 'bumper beams, crash management' },
+  '7005': { label: 'EN AW-7005 (Al-Zn4.5Mg1.5Mn)', series: '7xxx', densityKgPerM3: 2780, billetAdderUsdPerT: 380, flowStressMPa: 44, baseExitSpeedMPerMin: 8, speedBasis: est(8, 'as 7020'), maxRatio: 45, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_7XXX, ageHours: 22, scrapDiffUsdPerT: -300, prefersIndirect: false, uses: 'bicycle frames, transport structures' },
+  '7046': { label: 'EN AW-7046 (Al-Zn7Mg1.2)', series: '7xxx', densityKgPerM3: 2790, billetAdderUsdPerT: 420, flowStressMPa: 44, baseExitSpeedMPerMin: 8, speedBasis: est(8, 'as 7020'), maxRatio: 45, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_7XXX, ageHours: 22, scrapDiffUsdPerT: -300, prefersIndirect: false, uses: 'automotive bumper and crash beams' },
+  '7108': { label: 'EN AW-7108 (Al-Zn5Mg1Zr)', series: '7xxx', densityKgPerM3: 2770, billetAdderUsdPerT: 350, flowStressMPa: 40, baseExitSpeedMPerMin: 10, speedBasis: est(10, 'as 7003'), maxRatio: 50, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_7XXX, ageHours: 20, scrapDiffUsdPerT: -300, prefersIndirect: false, uses: 'bumper beams, side-impact' },
+  '7020': { label: 'EN AW-7020 (Al-Zn4.5Mg1)', series: '7xxx', densityKgPerM3: 2780, billetAdderUsdPerT: 380, flowStressMPa: 44, baseExitSpeedMPerMin: 8, speedBasis: est(8, 'medium-strength 7xxx, slower than 7003'), maxRatio: 45, buttMm: 40, quench: 'air', heatTreatable: true, defaultTemper: 'T6', tempers: T_7XXX, ageHours: 22, scrapDiffUsdPerT: -300, prefersIndirect: false, uses: 'rail, defence, structural' },
+  '7075': { label: 'EN AW-7075 (Al-Zn5.5MgCu)', series: '7xxx', densityKgPerM3: 2810, billetAdderUsdPerT: 1_200, flowStressMPa: 65, baseExitSpeedMPerMin: 1.4, speedBasis: band(1.4, '7075 / 7079 0.8–2'), maxRatio: 30, buttMm: 50, quench: 'offline-sht', heatTreatable: true, defaultTemper: 'T6', tempers: T_7XXX, ageHours: 24, scrapDiffUsdPerT: -400, prefersIndirect: true, uses: 'aerospace, high-strength' },
 };
 
 /** Billet price for an alloy in a region, £/kg: (LME + all-in premium + alloy adder) ÷ FX ÷ 1000. */
@@ -120,9 +193,12 @@ export function billetPriceGbpPerKg(alloy: AlAlloy, region: ManufacturingRegion)
   return Math.round(usd / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
 }
 
-/** Process-scrap value, £/kg: a share of LME (scrap is sold on LME terms, not regional premium). */
+/**
+ * Process-scrap value, £/kg: LME + the alloy's differential. Scrap is sold on
+ * LME terms, not at the regional billet premium, so it is the same in every region.
+ */
 export function alScrapGbpPerKg(alloy: AlAlloy): number {
-  return Math.round(AL_MARKET.lmeUsdPerT * AL_ALLOYS[alloy].scrapShareOfLme / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
+  return Math.round((AL_MARKET.lmeUsdPerT + AL_ALLOYS[alloy].scrapDiffUsdPerT) / AL_MARKET.usdPerGbp / 1000 * 10_000) / 10_000;
 }
 
 /** The library material id for an alloy's billet. */
@@ -179,7 +255,7 @@ export const AL_CONFORM = {
   maxCcdMm: 100, outputKgPerHr: 900, capexGbp: 2_600_000, crew: 2,
   /** Rod premium over billet, US$/t (redraw rod). */
   rodAdderUsdPerT: 250,
-  alloys: ['1050', '3003', '6060', '6063', '6101'] as AlAlloy[],
+  alloys: ['1050', '1070A', '1100', '1350', '3003', '3103', '6060', '6063', '6101'] as AlAlloy[],
 };
 
 /** Cold impact extrusion — cups, cans, housings from a slug. ESTIMATE. */
@@ -200,10 +276,30 @@ export const AL_DOWNSTREAM = {
   ageOven: { id: 'al-age-oven-batch', label: 'Batch ageing oven (T5 / T6)', loadKg: 8_000, handlingHr: 0.75, capexGbp: 650_000, gasKwhPerKg: 0.10 },
   sht: { id: 'al-sht-drop-furnace', label: 'Vertical drop-quench solution heat-treatment furnace', loadKg: 3_000, cycleHr: 2.5, capexGbp: 2_400_000, gasKwhPerKg: 0.25 },
   cnc: { id: 'al-cnc-profile-centre', label: '5-axis long-bed profile machining centre (7 m)', capexGbp: 650_000 },
-  bender: { id: 'al-stretch-bender', label: 'CNC stretch-bending machine (3D, sweep)', capexGbp: 1_100_000, secPerBend: 45 },
-  anodise: { id: 'al-anodise-line', label: 'Anodising line (sulphuric, 10–25 µm, seal)', capexGbp: 4_200_000, m2PerHr: 70, crew: 4 },
-  powder: { id: 'al-powder-line', label: 'Vertical powder-coating line (pretreat + cure)', capexGbp: 2_800_000, m2PerHr: 140, crew: 4 },
-  ecoat: { id: 'al-ecoat-line', label: 'E-coat / conversion-coat line (chrome-free, for bonding)', capexGbp: 3_500_000, m2PerHr: 160, crew: 3 },
+  /**
+   * Bender and its tooling. A stretch-bend form block is made for the part: £15k
+   * for the first sweep and £5k for each further bend form — ESTIMATE (review, Oct
+   * 2026: the build charged no bending tool at all).
+   */
+  bender: { id: 'al-stretch-bender', label: 'CNC stretch-bending machine (3D, sweep)', capexGbp: 1_100_000, secPerBend: 45, loadSec: 30, toolFirstGbp: 15_000, toolPerExtraBendGbp: 5_000 },
+  /**
+   * Precision cut-to-length (review, Oct 2026). The press saw cuts the strand into
+   * MILL LENGTHS that go through ageing; the part is cut to length cold, with a
+   * trim at each end of each mill length, on an automatic saw that cuts a bundle
+   * of profiles at once. Capex, cut time and bundle are ESTIMATES.
+   */
+  ctlSaw: { id: 'al-ctl-saw', label: 'Automatic precision cut-to-length saw (bundle cutting, deburr)', capexGbp: 220_000, secPerCutBase: 6, secPerCutPerMmCcd: 0.04, bundleMaxPieces: 6, bundleWidthMm: 250, handlingSecPerPart: 2 },
+  /**
+   * Finishing lines. Coating consumables are per m² — ESTIMATES, stated:
+   *   anodise  £0.35/m²: acid, etch, seal and rack loss (rectifier power is in the line's running load);
+   *   powder   £0.72/m²: 0.12 kg/m² (60–80 µm at 1.5 g/cm³ + overspray) × £6/kg polyester powder;
+   *   e-coat   £0.28/m²: 0.035 kg/m² × £8/kg.
+   * Powder coats the OUTSIDE only (outer outline × length); anodise and e-coat are
+   * immersion processes and coat every surface, chambers included.
+   */
+  anodise: { id: 'al-anodise-line', label: 'Anodising line (sulphuric, 10–25 µm, seal)', capexGbp: 4_200_000, m2PerHr: 70, crew: 4, consumablesGbpPerM2: 0.35, outsideOnly: false },
+  powder: { id: 'al-powder-line', label: 'Vertical powder-coating line (pretreat + cure)', capexGbp: 2_800_000, m2PerHr: 140, crew: 4, consumablesGbpPerM2: 0.72, outsideOnly: true },
+  ecoat: { id: 'al-ecoat-line', label: 'E-coat / conversion-coat line (chrome-free, for bonding)', capexGbp: 3_500_000, m2PerHr: 160, crew: 3, consumablesGbpPerM2: 0.28, outsideOnly: false },
   /** Billet log heater, gas: cp·ΔT ≈ 0.115 kWh/kg to 480 °C at ~40% efficiency. DERIVED. */
   billetHeatGasKwhPerKg: 0.29,
   /** Induction heating, electricity: ~0.18 kWh/kg at ~65% efficiency. DERIVED. */
@@ -239,6 +335,12 @@ export const AL_DIE_NITRIDE = { everyT: 40, gbp: 180 };
 export const AL_LINE = {
   /** Front (puller grip) + back (stretcher grip) end scrap per strand, m. */
   endScrapM: 1.2,
+  /** Longest mill length the press saw cuts for the ageing baskets, mm. ESTIMATE (6–7.5 m baskets). */
+  millLengthMaxMm: 7_000,
+  /** Shortest mill length worth stacking and ageing, mm — shorter only for a part longer than it. ESTIMATE. */
+  millLengthMinMm: 2_500,
+  /** Cold-saw trim at each end of a mill length before cutting parts, mm. ESTIMATE. */
+  millEndTrimMm: 25,
   /** Finish-saw kerf, mm. */
   sawKerfMm: 4,
   /** Die change + heat-up per run, hr. */
@@ -250,8 +352,20 @@ export const AL_LINE = {
   pressKwhPerKg: 0.20,
   /** Extrusion ratio below which the section is not worked enough (properties, surface). */
   minRatio: 10,
-  /** Friction share of the direct-extrusion force (container wall); indirect has none. */
-  directFrictionFactor: 1.35,
+  /**
+   * Container friction on a DIRECT press (review, Oct 2026). Hot aluminium sticks
+   * to the container, so the billet is sheared along its length: friction
+   * pressure = 4 · m · (σ/√3) · L / D, with m = 1 (sticking). It is what limits
+   * the billet length on a hard alloy, and it is zero on indirect and hydrostatic
+   * presses. It used to be a flat ×1.35 that never let force bind on a 6xxx part.
+   */
+  containerFrictionM: 1.0,
+  /** A billet shorter than this many container diameters is uneconomic (dead cycle per kg). */
+  minBilletDiameters: 2.0,
+  /** Hollow dies: the extra pressure to split and re-weld the metal in the chambers. */
+  weldChamberFactor: 1.15,
+  /** Semi-hollow when the tongue ratio (space ÷ gap²) reaches this — AA practice puts the solid-die limit at 2–4:1. ESTIMATE. */
+  semiHollowTongueRatio: 3.0,
   /** Johnson: p / σ = a + b·ln R. */
   johnsonA: 0.8, johnsonB: 1.5,
   /** A press runs to this share of its rated force. */

@@ -80,7 +80,11 @@ describe('3. the line, its rate and its scrap', () => {
 describe('4. aluminium is refused, not priced on a polymer line', () => {
   it('a metal grade answered into extrusion is asked to re-route, with the reason', () => {
     const r = runCostInputRules(EXTRUSION_RULES, { ...ctx(PROF, 'mat-al6082-bar') } as RuleContext);
-    expect(r.decisions.map(d => d.id)).toContain('extrusion.metal');
+    // Asked AS the process question (extrusion review, Oct 2026), so the answer
+    // re-routes — 'extrusion.metal' was a dead end that suggested machining.
+    const q = r.decisions.find(d => d.id === 'commodity.route')!;
+    expect(q).toBeDefined();
+    expect(q.options.find(o => o.leaning)?.value).toBe('aluminium_extrusion');
   });
 });
 

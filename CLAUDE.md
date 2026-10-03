@@ -331,8 +331,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   `planAlExtrusion` picks die type, press (circle, ratio, 90% force), holes, Johnson force, exit speed, billet for whole
   parts a strand, recovery. Routes direct / indirect / hydrostatic / Conform / impact; alloy is blocking, route / temper /
   finish / bends advisory. Fabrication takes HOLES from the feature table (chamber walls read as pockets) plus the measured
-  machined volume. Screen and headless share `buildAlExtrusionInputs`. See `docs/cad/aluminium-extrusion-build-2026-10.md`,
-  `tests/aluminium-extrusion-build.test.ts`; parts in `cad-audit/parts/AL_*`.
+  machined volume. Screen and headless share `buildAlExtrusionInputs`. Review (Oct 2026): 30 alloys with tempers per alloy;
+  breakthrough = Johnson × weld + sticking container friction 4(σ/√3)L/D on a DIRECT press, so force caps the billet
+  length; strand → mill lengths (2.5–7 m, optimised) → cold cut-to-length (`al-ctl-saw`); scrap at LME + Fastmarkets
+  differential; process energy is `rawMaterial.energyKwh`, priced by the CORE at the library's tariff (regional); tongue
+  ratio ≥ 3 → semi-hollow; powder on the outside area only; the section chaining tolerance follows the SECTION, not the
+  part. Re-route questions must use id `commodity.route` — nothing else re-routes. See `docs/cad/aluminium-extrusion-build-2026-10.md`,
+  `docs/cad/extrusion-review-2026-10.md`, `tests/aluminium-extrusion-build.test.ts`, `tests/extrusion-review.test.ts`;
+  parts in `cad-audit/parts/AL_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

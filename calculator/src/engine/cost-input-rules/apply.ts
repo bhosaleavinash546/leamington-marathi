@@ -297,6 +297,8 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'alExtrusion.cncFixturings': { to: 'alExtrusion.cncFixturings' },
   'alExtrusion.fabFeatureRows': { to: 'alExtrusion.fabFeatureRows' },
   'alExtrusion.impactOuterDiaMm': { to: 'alExtrusion.impactOuterDiaMm' },
+  'alExtrusion.tongueRatio': { to: 'alExtrusion.tongueRatio' },
+  'alExtrusion.finishOutsideAreaM2': { to: 'alExtrusion.finishOutsideAreaM2' },
   // ── extrusion (extrusion build) ─────────────────────────────────────────
   'extrusion.materialId': { to: 'materialId' },
   'extrusion.partWeightKg': { to: 'netWeightKg' },

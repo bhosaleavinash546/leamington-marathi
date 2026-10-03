@@ -260,6 +260,10 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 40 × 10 mm 1050 busbar, 400 mm, two holes — Conform from rod.',
     answers: { 'material.alAlloy': '1050', 'commodity.route': 'aluminium_extrusion', 'al.route': 'conform' },
   },
+  'AL_Seal_Carrier.stp': {
+    note: 'MODELLED (extrusion review): 30 × 20 × 1.5 mm 6060 C-channel, lips turned in to a 6 mm gap — a 13:1 tongue, semi-hollow die. 2 m.',
+    answers: { 'material.alAlloy': '6060', 'commodity.route': 'aluminium_extrusion' },
+  },
   'AL_Battery_Can.stp': {
     note: 'MODELLED: Ø46 × 80 mm 1050 cell can, 0.95 mm wall — cold impact extruded.',
     answers: { 'material.alAlloy': '1050', 'commodity.route': 'aluminium_extrusion', 'al.route': 'impact' },

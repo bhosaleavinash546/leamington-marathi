@@ -20,7 +20,7 @@ export const MATERIAL_SCOPE_BY_SELECT: Record<string, RegExp> = {
   'bm-mat':    /Blow Moulding|Thermoplastic Elastomer/i,                                      // blow-moulding grades
   'rm-mat':    /Rotational Moulding/i,
   'tf-mat':    /Thermoforming/i,
-  'ext-mat':   /Extrusion/i,
+  'ext-mat':   /^Extrusion$/i,                                                                 // polymer grades only — /Extrusion/ also offered the aluminium billets (review, Oct 2026)
   'rub-mat':   /Rubber|Thermoplastic Elastomer/i,
   'sm-mat':    /Sheet|Spring Steel Strip/i,                                                   // sheet-metal grades
   'smf-mat':   /Sheet|Spring Steel Strip/i,

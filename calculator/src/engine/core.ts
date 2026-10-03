@@ -176,6 +176,22 @@ export function computeUniversalStack(
     });
   }
 
+  // Process energy, at the library's tariff (a regional library carries its region's).
+  const en = input.rawMaterial.energyKwh;
+  if (en && ((en.gas ?? 0) > 0 || (en.electricity ?? 0) > 0)) {
+    const tariff = library.energy[0];
+    if (!tariff) throw new Error('energyKwh given but the rate library has no energy tariff');
+    for (const [kind, kwh, price] of [['gas', en.gas ?? 0, tariff.gasPerKwh], ['electricity', en.electricity ?? 0, tariff.electricityPerKwh]] as const) {
+      if (kwh <= 0) continue;
+      rawMaterialCost += kwh * price;
+      traceability.push({
+        field: `rawMaterial.energyKwh.${kind}`, value: kwh * price, unit: '£',
+        rateSource: `${kwh.toFixed(4)} kWh × £${price}/kWh ${kind} (${tariff.region} tariff)${en.basis ? ` — ${en.basis}` : ''}`,
+        rateId: tariff.id, confidence: tariff.confidence,
+      });
+    }
+  }
+
   // Bought-in components: in the material line, outside the overhead and margin base.
   const boughtInCost = Math.max(0, input.rawMaterial.boughtIn?.cost ?? 0);
   const boughtInHandling = boughtInCost * Math.max(0, input.rawMaterial.boughtIn?.handlingPct ?? 0);

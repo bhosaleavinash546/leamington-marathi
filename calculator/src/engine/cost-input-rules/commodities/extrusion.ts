@@ -21,9 +21,9 @@
  * profile, a complex one when its outline is long for its area), the line,
  * its screw, the cooling-limited line rate, the die and the scrap.
  *
- * Aluminium extrusion is NOT here: the library has no extrusion press, billet
- * heater, stretcher or ageing oven. A metal grade answered into this route is
- * refused with that reason rather than priced on a polymer line.
+ * Aluminium extrusion is NOT here — it is its own route, `aluminium_extrusion`
+ * (press lines, billet, ageing; built Oct 2026). A metal grade answered into
+ * this route is asked to move there rather than priced on a polymer line.
  */
 import {
   extrusionFamilyOf, estimateExtrusionLineRate, estimateExtrusionDieCost, estimateExtrusionSpecificEnergy,
@@ -34,6 +34,7 @@ import { ukElectricityPerKwh } from '../../uk-tariff.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { extrusionProfile } from '../derive/profile.js';
+import { COMMODITY_DECISION_ID } from '../derive/commodity.js';
 
 /** The line for each process, and the screw it runs (the library's lines). */
 export const EXTRUSION_LINES: Record<string, { machineId: string; screwMm: number; cooling: ExtrusionCooling; label: string }> = {
@@ -93,13 +94,17 @@ function notAProfile(): RuleOutcome<never> {
 
 function metalRefused(grade: string): RuleOutcome<never> {
   return ask({
-    id: 'extrusion.metal', kind: 'commodity',
-    question: `${grade} is a metal — aluminium extrusion is not modelled here`,
-    why: 'This route prices POLYMER extrusion lines (screw, die, calibration, haul-off). The rate '
-      + 'library has no aluminium extrusion press, billet heater, stretcher or ageing oven, so a '
-      + 'metal profile cannot be priced as extruded without inventing those rates. Cost it as '
-      + 'bought-in bar machined to shape, or add the press line to the library first.',
-    options: [{ value: 'machining', label: 'Re-route to machining' }],
+    // Asked as the process question, so the answer re-routes the part ('extrusion.metal'
+    // was a dead end that told the engineer to machine it — aluminium-extrusion review).
+    id: COMMODITY_DECISION_ID, kind: 'commodity',
+    question: `${grade} is a metal — which process makes this profile?`,
+    why: 'This route prices POLYMER extrusion lines (screw, die, calibration, haul-off). A metal profile is '
+      + 'extruded on a billet press — the aluminium extrusion route prices the billet, the press plan, '
+      + 'ageing and the die.',
+    options: [
+      { value: 'aluminium_extrusion', label: 'Aluminium extrusion (billet press)', leaning: true },
+      { value: 'machining', label: 'Machined from bar' },
+    ],
     blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
   });
 }
