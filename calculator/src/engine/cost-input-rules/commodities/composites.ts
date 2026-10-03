@@ -29,7 +29,8 @@
 import type { CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { laminateFacts, type LaminateSystem } from '../derive/laminate.js';
-import { projectedAreaCm2 } from '../derive/envelope.js';
+import { planAreaCm2, bboxSortedMm } from '../derive/envelope.js';
+import { shellWallMm } from '../derive/shell-wall.js';
 
 /** Tool cost per m² of moulding surface, by process — the ranges the prompt carried. */
 const TOOL_RATE_PER_M2: Record<CompositeProcess, { base: number; perM2: number; life: number }> = {
@@ -66,6 +67,39 @@ export function laminateAreaM2(ctx: RuleContext): number | null {
   return Math.round(cm2 / 2 / 10_000 * 1000) / 1000;
 }
 
+/**
+ * Where each system cures, and the bed it cures on (usable length × width, m).
+ * An autoclave or oven cures a LOAD of tools; an RTM part cures in its die on
+ * the press, one at a time. The screen used to batch 4 to a cure and headless
+ * did not cost composites at all.
+ */
+export const CURE_CELLS: Record<string, { machineId: string; bedM: [number, number] | null; label: string }> = {
+  'prepreg-cf': { machineId: 'autoclave-1200mm', bedM: [2.8, 1.0], label: '1200 mm autoclave' },
+  'prepreg-gf': { machineId: 'oven-composite-cure', bedM: [3.0, 2.0], label: 'cure oven' },
+  'infusion-gf': { machineId: 'oven-composite-cure', bedM: [3.0, 2.0], label: 'cure oven (post-cure on the tool)' },
+  'rtm-gf': { machineId: 'rtm-press-std', bedM: null, label: 'RTM press — cures in the die' },
+};
+/** Tool flange around the part on a layup tool, each side, m. */
+const TOOL_MARGIN_M = 0.05;
+/** Hours a year a layup tool can work: two shifts. */
+export const COMP_TOOL_HOURS = 4000;
+export const COMP_OEE = 0.80;
+/** Debag, demould, clean and release-coat a tool between parts, hr. */
+const TOOL_TURNAROUND_HR = 0.5;
+/** Waterjet trim: load and fixture, then the outline at a cutting speed. */
+const TRIM_LOAD_HR = 0.1;
+const TRIM_M_PER_MIN = 1.5;
+
+/** Parts on one cure load: tools (plan + flange) across the bed. */
+export function partsPerCure(lM: number, wM: number, bed: [number, number] | null): { n: number; basis: string } {
+  if (!bed) return { n: 1, basis: 'cures in its own die, one part a press cycle' };
+  const a = lM + 2 * TOOL_MARGIN_M, b = wM + 2 * TOOL_MARGIN_M;
+  const fit = (x: number, y: number) => Math.floor(bed[0] / x) * Math.floor(bed[1] / y);
+  const n = Math.min(20, Math.max(fit(a, b), fit(b, a)));
+  if (n < 1) return { n: 1, basis: `a ${a.toFixed(2)} × ${b.toFixed(2)} m tool does not fit the ${bed[0]} × ${bed[1]} m bed — costed one to a load; a larger cure cell is needed` };
+  return { n, basis: `${n} tools of ${a.toFixed(2)} × ${b.toFixed(2)} m on the ${bed[0]} × ${bed[1]} m bed — each part carries 1/${n} of the cure` };
+}
+
 interface CompAdvice {
   system: LaminateSystem;
   massKg: number;
@@ -73,42 +107,98 @@ interface CompAdvice {
   resinPrice: number;
   basis: string;
   wallMm: number;
+  wallBasis: string;
   plies: number;
   pliesBasis: string;
   areaM2: number;
   layupHr: number;
+  planM2: number;
+  planBasis: string;
+  cureMachineId: string;
+  cureLabel: string;
+  perCure: number;
+  perCureBasis: string;
+  tools: number;
+  toolsBasis: string;
+  trimHr: number;
+  trimBasis: string;
+  ndi: number;
+}
+
+function envelopeAsk(): RuleOutcome<never> {
+  return ask({
+    id: 'composites.envelope', kind: 'geometry_gap',
+    question: 'What is the laminate thickness and the moulded area?',
+    why: 'No wall thickness or surface area was measured, so the ply count and the '
+      + 'layup hours cannot be derived — and layup is most of the labour.',
+    options: [{ value: 'enter', label: 'Enter laminate thickness and area' }],
+    entry: { kind: 'number' },
+    blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
+  });
 }
 
 function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutcome<never> } {
   const lam = laminateFacts(ctx);
   if (lam.decision) return { blocked: ask(lam.decision) };
 
-  const wallMm = ctx.geo.wallThickness?.meanMm ?? 0;
+  // 2·V/S, the area-mean laminate thickness: the ray mean reads across an
+  // open shell's cavity (the same fault the moulding reviews found).
+  const w = shellWallMm(ctx.geo);
   const areaM2 = laminateAreaM2(ctx);
-  if (!wallMm || !areaM2) {
-    return {
-      blocked: ask({
-        id: 'composites.envelope', kind: 'geometry_gap',
-        question: 'What is the laminate thickness and the moulded area?',
-        why: 'No wall thickness or surface area was measured, so the ply count and the '
-          + 'layup hours cannot be derived — and layup is most of the labour.',
-        options: [{ value: 'enter', label: 'Enter laminate thickness and area' }],
-        entry: { kind: 'number' },
-        blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
-      }),
-    };
-  }
+  const plan = planAreaCm2(ctx);
+  const d = bboxSortedMm(ctx);
+  if (!w || !areaM2 || !plan || !d) return { blocked: envelopeAsk() };
+  const wallMm = Math.round(w.mm * 100) / 100;
 
   const s = lam.system!;
   const p = plyCount(wallMm, s);
+  const layupHr = Math.round(areaM2 * p.n * s.layupHrPerM2PerPly * 1000) / 1000;
+  const cell = CURE_CELLS[s.value];
+  const cure = partsPerCure(d[0] / 1000, d[1] / 1000, cell.bedM);
+
+  // Layup tools the volume needs: a tool is tied up through layup, cure and
+  // turnaround, so the year's parts need volume × that ÷ the hours a tool can
+  // work. The module bought only as many as tool LIFE demanded.
+  const toolCycleHr = layupHr + s.cureHr + TOOL_TURNAROUND_HR;
+  const needed = ctx.annualVolume * toolCycleHr / (COMP_TOOL_HOURS * COMP_OEE);
+  const tools = Math.max(1, Math.ceil(needed));
+  const toolsBasis = `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${toolCycleHr.toFixed(2)} h a tool is tied up `
+    + `(layup ${layupHr.toFixed(2)} + cure ${s.cureHr} + turnaround ${TOOL_TURNAROUND_HR}) ÷ ${COMP_TOOL_HOURS} h × ${COMP_OEE} OEE `
+    + `= ${needed.toFixed(2)} → ${tools} tool${tools === 1 ? '' : 's'}`;
+
+  const perimM = 2 * (d[0] + d[1]) / 1000;
+  const trimHr = Math.round((TRIM_LOAD_HR + perimM / TRIM_M_PER_MIN / 60) * 1000) / 1000;
+  const trimBasis = `5-axis waterjet: ${TRIM_LOAD_HR} h load and fixture + ${perimM.toFixed(2)} m of edge at ${TRIM_M_PER_MIN} m/min`;
+
   return {
     advice: {
       system: s, massKg: lam.massKg!,
       fibrePrice: lam.fibrePricePerKg!, resinPrice: lam.resinPricePerKg!,
-      basis: lam.basis, wallMm,
+      basis: lam.basis, wallMm, wallBasis: w.basis,
       plies: p.n, pliesBasis: p.basis,
-      areaM2,
-      layupHr: Math.round(areaM2 * p.n * s.layupHrPerM2PerPly * 1000) / 1000,
+      areaM2, layupHr,
+      planM2: plan.cm2 / 10_000, planBasis: plan.basis,
+      cureMachineId: cell.machineId, cureLabel: cell.label,
+      perCure: cure.n, perCureBasis: cure.basis,
+      tools, toolsBasis, trimHr, trimBasis,
+      // Structural carbon is ultrasonically scanned; glass covers are not.
+      ndi: s.value === 'prepreg-cf' ? 25 : 0,
+    },
+  };
+}
+
+type Src = 'geometry' | 'rule' | 'library' | 'advisor' | 'engineer';
+function fromAdvice<T extends string | number | boolean>(
+  id: string, fieldId: string | undefined, label: string,
+  pick: (a: CompAdvice) => { value: T; source: Src; basis: string; confidence: number },
+) {
+  return {
+    id, path: id, ...(fieldId ? { fieldId } : {}), label,
+    evaluate: (ctx: RuleContext) => {
+      const r = advise(ctx);
+      if ('blocked' in r) return r.blocked;
+      const v = pick(r.advice);
+      return decided(id, v.value, v.source, v.basis, v.confidence);
     },
   };
 }
@@ -261,11 +351,11 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const rate = TOOL_RATE_PER_M2[a.system.process];
         // The tool is sized to the part's footprint, not its laminated area — a
         // deep part covers more cloth than it occupies on the shop floor.
-        const footprintM2 = (projectedAreaCm2(ctx) ?? 0) / 10_000;
+        const footprintM2 = a.planM2;
         const total = Math.round(rate.base + footprintM2 * rate.perM2);
         return decided('composites.toolingCost', total, 'rule',
           `${a.system.process} tool: £${rate.base.toLocaleString('en-GB')} base + `
-          + `${fmt(footprintM2, 3)} m² footprint × £${rate.perM2.toLocaleString('en-GB')}/m²`, 0.55);
+          + `${fmt(footprintM2, 3)} m² plan (${a.planBasis}) × £${rate.perM2.toLocaleString('en-GB')}/m²`, 0.55);
       },
     },
     {
@@ -284,5 +374,32 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
           0.6);
       },
     },
+    fromAdvice('composites.cureMachineId', 'comp-cure-mach', 'cureMachineId', a => ({
+      value: a.cureMachineId, source: 'rule', confidence: 0.7, basis: `${a.system.label} cures in the ${a.cureLabel}` })),
+    fromAdvice('composites.partsPerCureCycle', 'comp-cure-batch', 'partsPerCureCycle', a => ({
+      value: a.perCure, source: 'rule', confidence: 0.6, basis: a.perCureBasis })),
+    fromAdvice('composites.toolsInService', 'comp-tools', 'toolsInService', a => ({
+      value: a.tools, source: 'rule', confidence: 0.6, basis: a.toolsBasis })),
+    fromAdvice('composites.trimMachineId', 'comp-trim-mach', 'trimMachineId', () => ({
+      value: 'waterjet-5ax-composite', source: 'rule', confidence: 0.7, basis: 'laminates are trimmed and drilled on a 5-axis waterjet — no delamination, no tool wear' })),
+    fromAdvice('composites.trimTimeHr', 'comp-trim-time', 'trimTimeHr', a => ({
+      value: a.trimHr, source: 'rule', confidence: 0.55, basis: a.trimBasis })),
+    fromAdvice('composites.ndiCostPerPart', 'comp-ndi', 'ndiCostPerPart', a => ({
+      value: a.ndi, source: 'rule', confidence: 0.5,
+      basis: a.ndi > 0 ? 'structural carbon: ultrasonic C-scan, £25 a part' : 'glass laminate: visual and tap test, no scan' })),
+    fromAdvice('composites.layupLabourId', 'comp-layup-lab', 'layupLabourId', () => ({
+      value: 'lab-uk-skilled', source: 'library', confidence: 0.7, basis: 'skilled laminator' })),
+    fromAdvice('composites.cureLabourId', 'comp-cure-lab', 'cureLabourId', () => ({
+      value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'loads, bags and monitors the cure' })),
+    fromAdvice('composites.trimLabourId', 'comp-trim-lab', 'trimLabourId', () => ({
+      value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'waterjet operator' })),
+    fromAdvice('composites.manning', 'comp-manning', 'manning', () => ({
+      value: 1, source: 'rule', confidence: 0.6, basis: 'the layup hours are laminator-hours — one laminator per hour of them' })),
+    fromAdvice('composites.oee', 'comp-oee', 'oee', () => ({
+      value: COMP_OEE, source: 'rule', confidence: 0.6, basis: 'shop OEE, as every route' })),
+    fromAdvice('composites.labourEfficiency', 'comp-lab-eff', 'labourEfficiency', () => ({
+      value: 0.92, source: 'rule', confidence: 0.6, basis: 'shop labour efficiency, as every route' })),
+    fromAdvice('composites.rejectRate', 'comp-reject', 'rejectRate', () => ({
+      value: 0.04, source: 'rule', confidence: 0.55, basis: 'porosity, delamination, dimensional: 4%' })),
   ],
 };

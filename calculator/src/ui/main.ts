@@ -4637,6 +4637,7 @@ function renderCompositesForm(): string {
   <div class="field-row">
     <div class="field-group"><label>Mould / Mandrel Cost (£)</label><input type="number" id="comp-tool-cost" step="500" min="500" value="18000" title="Mould/mandrel cost £. Al tool: £8k–50k; CFRP mould: £15k–150k; invar: £100k–500k"/></div>
     <div class="field-group"><label>Tool Life (parts)</label><input type="number" id="comp-tool-life" step="50" min="10" value="400" title="Parts per tool life. Al mould: 500–2000, CFRP mould: 100–400, invar: 2000–5000"/></div>
+    <div class="field-group"><label>Tools in Service</label><input type="number" id="comp-tools" step="1" min="1" value="1" title="Layup tools the annual volume needs — each is tied up through layup, cure and turnaround. Tool cost = tools × max(1, volume ÷ (life × tools))."/></div>
   </div>
   <div class="field-row">
     <div class="field-group"><label>Amortisation Volume (parts)</label><input type="number" id="comp-amort" step="100" min="10" value="2000"/></div>
@@ -11441,11 +11442,12 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         if (comp) {
           setNumericField('comp-fibre-frac', comp.fibreFraction, 2);
           setNumericField('comp-waste-frac', comp.wasteFraction, 2);
-          setNumericField('comp-area', comp.areaCm2 ?? compSA ?? 0, 0);
+          // m², not cm² (composites review: the cm² figure went into a m² field).
+          setNumericField('comp-area', (comp.areaCm2 ?? (compSA ?? 0) / 2) / 10_000, 3);
           setNumericField('comp-plies', comp.plies, 0);
           setNumericField('comp-tool-cost', comp.toolCostGBP, 0);
           setNumericField('comp-tool-life', comp.toolLife, 0);
-          setNumericField('comp-cure-time', comp.cureTimeSec, 0);
+          setNumericField('comp-cure-time', comp.cureTimeSec / 3600, 2);   // hours, not seconds
           const compProcEl = el<HTMLSelectElement>('comp-process');
           if (compProcEl && comp.process) {
             const procMap: Record<string, string> = {
@@ -11458,7 +11460,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             }
           }
         } else if (compSA) {
-          setNumericField('comp-area', compSA, 0);
+          setNumericField('comp-area', compSA / 2 / 10_000, 3);   // mould side, m²
           setNumericField('comp-plies', 4, 0);
           setNumericField('comp-fibre-frac', 0.45, 2);
           setNumericField('comp-waste-frac', 0.20, 2);
@@ -14125,12 +14127,13 @@ function collectCompositesInput(): UniversalStackInput {
     partsPerCureCycle: num('comp-cure-batch') || 4,
     trimMachineId: sel('comp-trim-mach') || undefined,
     trimLabourId: sel('comp-trim-lab'),
-    trimTimeHr: num('comp-trim-time') || 0.50,
+    trimTimeHr: num('comp-trim-time'),
     ndiCostPerPart: num('comp-ndi') || undefined,
     rejectRate: num('comp-reject') || 0.04,
     toolingCost: num('comp-tool-cost') || 18000,
     toolingLife: num('comp-tool-life') || 400,
     amortizationVolume: num('comp-amort') || 2000,
+    toolsInService: num('comp-tools') || 1,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }

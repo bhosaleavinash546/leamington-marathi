@@ -307,6 +307,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   price are rules on both paths (a rule's `fieldId` must be the field that holds that quantity — the draw ratio was
   written into the index time). The name reader knows forming / blow / roto words and polymers as routing evidence.
   See `docs/cad/thermoforming-review-2026-10.md`, `tests/thermoforming-review.test.ts`; parts in `cad-audit/parts/TF_*`.
+- Composites (`cost-input-rules/commodities/composites.ts`, `derive/laminate.ts`, `modules/composites.ts`): `composites`
+  is a route and laminate words (CFRP, GFRP, prepreg, RTM, infusion, carbon fibre — not "carbon" alone) are routing
+  evidence; headless costing is `compositesParams` in to-cost-params.ts, BEFORE the single-grade material check (fibre
+  + resin are priced per kg). Laminate thickness 2·V/S → plies; the cure cell is by system (`CURE_CELLS`: autoclave /
+  oven / RTM press) with parts per load = tools that fit the bed (`partsPerCure`); tools in service by volume ×
+  (layup + cure + turnaround), worn out fractionally; waterjet trim, NDI on structural carbon, crew, OEE, scrap are rules.
+  A measured enclosure (≥ 30% of rays hit) outranks the fill-based "sealed" verdict in routing. See
+  `docs/cad/composites-review-2026-10.md`, `tests/composites-review.test.ts`; parts in `cad-audit/parts/COMP_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

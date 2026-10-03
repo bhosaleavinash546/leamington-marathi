@@ -377,6 +377,22 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   'composites.cureTimeHr': { to: 'composites.cureTimeSec', transform: v => num(v) * 3600 },
   'composites.toolingCost': { to: 'composites.toolCostGBP' },
   'composites.toolingLife': { to: 'composites.toolLife' },
+  'composites.fibrePricePerKg': { to: 'composites.fibrePricePerKg' },
+  'composites.resinPricePerKg': { to: 'composites.resinPricePerKg' },
+  'composites.layupTimeHrPerPart': { to: 'composites.layupTimeHrPerPart' },
+  'composites.cureMachineId': { to: 'composites.cureMachineId' },
+  'composites.partsPerCureCycle': { to: 'composites.partsPerCureCycle' },
+  'composites.toolsInService': { to: 'composites.toolsInService' },
+  'composites.trimMachineId': { to: 'composites.trimMachineId' },
+  'composites.trimTimeHr': { to: 'composites.trimTimeHr' },
+  'composites.ndiCostPerPart': { to: 'composites.ndiCostPerPart' },
+  'composites.layupLabourId': { to: 'composites.layupLabourId' },
+  'composites.cureLabourId': { to: 'composites.cureLabourId' },
+  'composites.trimLabourId': { to: 'composites.trimLabourId' },
+  'composites.manning': { to: 'composites.manning' },
+  'composites.oee': { to: 'composites.oee' },
+  'composites.labourEfficiency': { to: 'composites.labourEfficiency' },
+  'composites.rejectRate': { to: 'composites.rejectRate' },
 };
 
 /**
@@ -421,9 +437,6 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'rubber.thicknessMm': 'PARITY GAP: screen-only; headless takes the cycle-time rule',
   'rubber.projectedAreaCm2': 'PARITY GAP: screen-only press sizing',
   'rubber.mouldSteel': 'PARITY GAP: screen-only; headless takes the mould cost rule',
-  'composites.fibrePricePerKg': 'composites has no headless costing (toCostParams returns null)',
-  'composites.resinPricePerKg': 'composites has no headless costing (toCostParams returns null)',
-  'composites.layupTimeHrPerPart': 'composites has no headless costing (toCostParams returns null)',
 };
 
 /** Flatten `{a: {b: 1}}` to `{'a.b': 1}` so rule paths can be looked up directly. */

@@ -107,6 +107,9 @@ const ROUTES: Record<string, Route> = {
   // commodity — only forced from the drop-down. Offered when the name says
   // rubber (part-evidence), and accepted as an answer always.
   rubber: { value: 'rubber', label: 'Moulded or extruded rubber', consequence: 'compound, cure time and a rubber mould or die' },
+  // Composites review: a laminate could not be answered into its own
+  // commodity either. Offered when the name says composite (part-evidence).
+  composites: { value: 'composites', label: 'Composite laminate', consequence: 'fibre and resin, layup hours, a cure cycle and a layup tool' },
 };
 
 function ask(why: string, routes: string[], leaning?: string): Decision {
@@ -236,9 +239,21 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   // "no sealed void" for it, and routing a tank to injection/thermoform on that
   // technicality is the exact £216.97-sand-casting error class this exists for.
   const hv = hollowVerdict(g);
+  // Measured enclosure outranks the fill-based verdict: a probe that found an
+  // OPEN shell (the composites roof panel, the BIW inner panel) means it is no
+  // container, whatever its fill (composites review).
   const sealed = g.topology?.available
-    ? (hv === 'near-enclosed' ? true : (g.topology.enclosesSealedVoid ?? null))
+    ? (g.topology.enclosesSealedVoid === true || enclosedShell(g) ? true
+      // Conclusive only when the centre sits over the part (≥ 30% of rays
+      // meet it): from beside a bent tube almost every ray misses (the blow
+      // duct reads 8%), which says nothing about whether it is closed.
+      : g.enclosure?.hitShare != null && g.enclosure.hitShare >= 0.3 ? false
+      : hv === 'near-enclosed' ? true : (g.topology.enclosesSealedVoid ?? null))
     : null;
+  // A process the file names is put on the table in the shell branches too.
+  const namedRoute = processFromNames(partNames(ctx.filename, g)).route;
+  const withNamed = (routes: string[], lean: string): [string[], string] =>
+    namedRoute && ROUTES[namedRoute] ? [[...new Set([...routes, namedRoute])], namedRoute] : [routes, lean];
 
   // A hollow thin shell is a hollow route whatever its size. The branch used
   // to need ≥ 250 mm and < 3% fill, so a 220 mm washer reservoir at 6.5% fill
@@ -256,8 +271,8 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
         `A ${maxDim.toFixed(0)} mm shell at ${(fill * 100).toFixed(1)}% fill enclosing a sealed `
         + 'void cannot come out of a solid process — there is no way to extract a core. '
         + 'Which hollow route depends on the size and the annual volume, not the shape.',
-        ['blow_moulding', 'rotational_moulding', 'sheet_metal'],
-        maxDim > 900 ? 'rotational_moulding' : 'blow_moulding'),
+        ...withNamed(['blow_moulding', 'rotational_moulding', 'sheet_metal'],
+          maxDim > 900 ? 'rotational_moulding' : 'blow_moulding')),
     };
   }
 
@@ -269,8 +284,8 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
         `A ${maxDim.toFixed(0)} mm open drape at ${(fill * 100).toFixed(1)}% fill encloses no `
         + 'cavity, so it is neither a solid process nor a blown one. Injection moulding and '
         + 'thermoforming both make this shape; the volume and the surface finish decide.',
-        ['injection_moulding', 'thermoforming', 'sheet_metal'],
-        ctx.annualVolume >= 50_000 ? 'injection_moulding' : 'thermoforming'),
+        ...withNamed(['injection_moulding', 'thermoforming', 'sheet_metal'],
+          ctx.annualVolume >= 50_000 ? 'injection_moulding' : 'thermoforming')),
     };
   }
 

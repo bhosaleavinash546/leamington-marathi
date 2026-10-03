@@ -123,3 +123,19 @@ export function isRingShape(ctx: RuleContext): boolean {
 
 /** Share of its ring envelope a rolled ring fills — below it, a stepped part. */
 export const RING_PROFILE_FILL = 0.6;
+
+/**
+ * The plan area a sheet or laminate covers, cm²: the largest of the kernel's three
+ * measured silhouettes. The "along draw" silhouette is chosen by a moulding
+ * draft test, which on an open cover picked the SIDE view — 300 × 47 mm =
+ * 139 cm² against a 300 × 200 mm plan — and the rules then bought a sheet
+ * lighter than the part (thermoforming review).
+ */
+export function planAreaCm2(ctx: RuleContext): { cm2: number; basis: string } | null {
+  const p = ctx.geo.projectedArea as { xMm2?: number; yMm2?: number; zMm2?: number } | undefined;
+  const sil = p ? Math.max(p.xMm2 ?? 0, p.yMm2 ?? 0, p.zMm2 ?? 0) : 0;
+  if (sil > 0) return { cm2: Math.round(sil / 100 * 10) / 10, basis: 'largest measured silhouette (the plan)' };
+  const d = bboxSortedMm(ctx);
+  if (!d) return null;
+  return { cm2: Math.round(d[0] * d[1] / 100 * 10) / 10, basis: 'two largest bounding-box dimensions (no measured silhouette)' };
+}

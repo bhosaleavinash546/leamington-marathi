@@ -192,6 +192,46 @@ function secondaryMachining(
 }
 
 /**
+ * Composites: fibre + resin priced per kg by the rules, so there is no single
+ * grade to resolve — handled before the material check that would refuse it.
+ */
+function compositesParams(ci: CostInputs, annualVolume: number, assumed: string[], D: typeof SHOP_DEFAULTS, commodity: string): ToCostParamsResult | null {
+  const c = ci.composites;
+  if (!c || c.fibrePricePerKg == null || c.layupTimeHrPerPart == null || !c.cureMachineId) return null;
+  return {
+    commodity, assumed,
+    params: {
+      fibrePricePerKg: num(c.fibrePricePerKg),
+      resinPricePerKg: num(c.resinPricePerKg),
+      fibreWeightFraction: num(c.fibreFraction),
+      partWeightKg: num(ci.netWeightKg),
+      wasteFraction: num(c.wasteFraction),
+      process: c.process,
+      areaM2: num(c.areaCm2) / 10_000,
+      plies: num(c.plies),
+      layupLabourId: c.layupLabourId || 'lab-uk-skilled',
+      layupTimeHrPerPart: num(c.layupTimeHrPerPart),
+      oee: num(c.oee, D.oee),
+      manning: num(c.manning, 1),
+      labourEfficiency: num(c.labourEfficiency, D.labourEfficiency),
+      cureMachineId: c.cureMachineId,
+      cureLabourId: c.cureLabourId || 'lab-uk-semiskilled',
+      cureTimeHr: num(c.cureTimeSec) / 3600,
+      partsPerCureCycle: num(c.partsPerCureCycle, 1),
+      ...(c.trimMachineId ? { trimMachineId: c.trimMachineId } : {}),
+      trimLabourId: c.trimLabourId || 'lab-uk-semiskilled',
+      trimTimeHr: num(c.trimTimeHr),
+      ndiCostPerPart: num(c.ndiCostPerPart),
+      rejectRate: num(c.rejectRate, D.rejectRate),
+      toolingCost: num(c.toolCostGBP),
+      toolingLife: num(c.toolLife),
+      amortizationVolume: annualVolume,
+      toolsInService: num(c.toolsInService, 1),
+    },
+  };
+}
+
+/**
  * Build the `params` object `executeCalculateCost` feeds to `compute<X>Drivers`.
  *
  * Returns `null` for a commodity with no mapping yet rather than costing it
@@ -217,6 +257,15 @@ export function toCostParams(
   // that omitted the block). Returning null is the contract; throwing here would
   // take down a whole comparison run for one bad part.
   if (!ci) return null;
+  // Composites had no headless costing at all (composites review).
+  if (commodity === 'composites') {
+    const r = compositesParams(ci, annualVolume, assumed, D, commodity);
+    const bb0 = geo?.boundingBox;
+    if (!r || !bb0) return r;
+    const v = (bb0.xMm * bb0.yMm * bb0.zMm) / 1000;
+    return { ...r, packagingPerPart: estimatePackagingPerPart(v, num(ci.netWeightKg)),
+      logisticsPerPart: estimateLogisticsPerPart(num(ci.netWeightKg), v) };
+  }
   const mat = resolveMaterialId(commodity, ci.materialId, familyHint);
   if (!mat.id) return null;     // no grade, no honest price
   const materialId = mat.id;
@@ -935,5 +984,5 @@ export function toCostParams(
 export const COSTABLE_COMMODITIES = [
   'casting', 'cast_and_machine', 'forging', 'machining', 'injection_moulding',
   'sheet_metal', 'sheet_metal_fab', 'blow_moulding', 'gear', 'rubber', 'rotational_moulding',
-  'thermoforming',
+  'thermoforming', 'composites',
 ];

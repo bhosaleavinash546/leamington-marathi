@@ -666,6 +666,23 @@ export interface CADAnalysisResult {
       toolCostGBP: number;
       toolLife: number;
       cureTimeSec: number;
+      // ── rule-derived (composites review, Oct 2026) ──
+      fibrePricePerKg?: number;
+      resinPricePerKg?: number;
+      layupTimeHrPerPart?: number;
+      cureMachineId?: string;
+      partsPerCureCycle?: number;
+      toolsInService?: number;
+      trimMachineId?: string;
+      trimTimeHr?: number;
+      ndiCostPerPart?: number;
+      layupLabourId?: string;
+      cureLabourId?: string;
+      trimLabourId?: string;
+      manning?: number;
+      oee?: number;
+      labourEfficiency?: number;
+      rejectRate?: number;
     };
     fieldConfidences?: FieldConfidences;
     dfmIssues?: DFMIssue[];

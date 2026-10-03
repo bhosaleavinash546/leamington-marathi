@@ -32,7 +32,8 @@ import {
 } from '../../modules/thermoforming-advisor.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
-import { bboxSortedMm } from '../derive/envelope.js';
+import { bboxSortedMm, planAreaCm2 } from '../derive/envelope.js';
+export { planAreaCm2 } from '../derive/envelope.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 import { enclosedShell } from '../derive/hollow.js';
 import { ukElectricityPerKwh } from '../../uk-tariff.js';
@@ -89,22 +90,6 @@ export function mouldMaterialFor(annualVolume: number, method: ThermoformMethod)
   if (method === 'pressure') return 'cnc-al';   // pressure box needs a machined tool
   if (annualVolume < 2_000) return 'epoxy';
   return annualVolume >= 200_000 ? 'cnc-al' : 'cast-al';
-}
-
-/**
- * The plan area the sheet forms over, cm²: the largest of the kernel's three
- * measured silhouettes. The "along draw" silhouette is chosen by a moulding
- * draft test, which on an open cover picked the SIDE view — 300 × 47 mm =
- * 139 cm² against a 300 × 200 mm plan — and the rules then bought a sheet
- * lighter than the part (thermoforming review).
- */
-export function planAreaCm2(ctx: RuleContext): { cm2: number; basis: string } | null {
-  const p = ctx.geo.projectedArea as { xMm2?: number; yMm2?: number; zMm2?: number } | undefined;
-  const sil = p ? Math.max(p.xMm2 ?? 0, p.yMm2 ?? 0, p.zMm2 ?? 0) : 0;
-  if (sil > 0) return { cm2: Math.round(sil / 100 * 10) / 10, basis: 'largest measured silhouette (the plan)' };
-  const d = bboxSortedMm(ctx);
-  if (!d) return null;
-  return { cm2: Math.round(d[0] * d[1] / 100 * 10) / 10, basis: 'two largest bounding-box dimensions (no measured silhouette)' };
 }
 
 /** Sheet window of each former, mm, and whether its oven is a separate station. */

@@ -53,6 +53,9 @@ const PROCESS_WORDS: Array<{ re: RegExp; route: string; label: string }> = [
   // The forming and hollow processes, ahead of the generic "moulded"
   // (thermoforming review: a file named "… ABS VACUUM FORMED" was routed to
   // sheet metal without a question, because no word here knew the process).
+  // Composites (composites review): a laminate named as one. Not "carbon"
+  // alone — carbon steel is a steel.
+  { re: / (cfrp|gfrp|frp|prepreg|composites?|laminate|carbon ?fib(re|er)|glass ?fib(re|er)|fibreglass|fiberglass|rtm|vartm|resin ?infus(ed|ion)|infused) /, route: 'composites', label: 'a composite laminate' },
   { re: / (thermo ?form(ed|ing|ings)?|vacuum ?form(ed|ing|ings)?|pressure ?form(ed|ing)?|twin ?sheet) /, route: 'thermoforming', label: 'thermoforming' },
   { re: / (blow ?mou?ld(ed|ing|ings)?) /, route: 'blow_moulding', label: 'blow moulding' },
   { re: / (roto ?mou?ld(ed|ing|ings)?|rotational(ly)? ?mou?ld(ed|ing)?) /, route: 'rotational_moulding', label: 'rotational moulding' },

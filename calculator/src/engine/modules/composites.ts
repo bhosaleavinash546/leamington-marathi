@@ -52,6 +52,9 @@ export interface CompositeInputs {
   toolingCost: number;           // mould/mandrel cost £
   toolingLife: number;           // parts per tool life
   amortizationVolume: number;
+  /** Layup tools the volume needs (each is tied up through layup + cure).
+   *  Default: as many as tool life demands, which is never fewer than 1. */
+  toolsInService?: number;
 }
 
 export function getCompositeInputSchema(): Record<string, string> {
@@ -156,9 +159,12 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   }
 
   // ── Tooling ──────────────────────────────────────────────────────────────
+  // Tools in service for throughput, replaced as they wear out — fractional
+  // above that, not rounded up inside the amortisation (composites review).
+  const inService = Math.max(1, inputs.toolsInService ?? 1);
   const numTools = inputs.toolingLife > 0
-    ? Math.ceil(inputs.amortizationVolume / inputs.toolingLife)
-    : 1;
+    ? Math.max(inService, inputs.amortizationVolume / inputs.toolingLife)
+    : inService;
 
   const tooling: ToolingInput = {
     totalToolingCost: inputs.toolingCost * numTools,

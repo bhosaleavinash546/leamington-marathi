@@ -202,6 +202,20 @@ export const ANSWERS: Record<string, {
     note: 'MODELLED: 300 × 200 × 40 mm ABS trim cover, 2.5 mm formed wall — a shallow vacuum form.',
     answers: { 'material.family': 'plastic', 'material.resin': 'mat-abs-tf', 'commodity.route': 'thermoforming' },
   },
+  // ── Composites (composites review, 3 Oct 2026) ───────────────────────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/COMP_modelled_parts.py.
+  'COMP_Roof_Panel.stp': {
+    note: 'MODELLED: 1200 × 900 × 80 mm roof panel, 2 mm laminate — carbon prepreg, autoclave.',
+    answers: { 'material.laminate': 'prepreg-cf', 'commodity.route': 'composites' },
+  },
+  'COMP_Battery_Lid.stp': {
+    note: 'MODELLED: 700 × 500 × 60 mm battery-enclosure lid, 3 mm laminate — glass / vinyl ester RTM.',
+    answers: { 'material.laminate': 'rtm-gf', 'commodity.route': 'composites' },
+  },
+  'COMP_Hat_Stiffener.stp': {
+    note: 'MODELLED: 400 × 120 × 40 mm hat-section stiffener, 2.5 mm laminate — carbon prepreg.',
+    answers: { 'material.laminate': 'prepreg-cf', 'commodity.route': 'composites' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and
