@@ -110,7 +110,7 @@ app.use(cors({ origin: ALLOWED_ORIGINS }));
 const jsonBig = express.json({ limit: '12mb' });
 const jsonSmall = express.json({ limit: '1mb' });
 app.use((req, res, next) => {
-  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract' || req.path === '/api/part360/quote-extract' || req.path === '/api/part360/dossier';
+  const big = req.path === '/api/cad-analyze' || req.path === '/api/cad-step' || req.path === '/api/teardown-vision' || req.path === '/api/pcb-bom-cost' || req.path === '/api/pcb-bom-import' || req.path === '/api/cad-diff' || req.path === '/api/dfm/drawing-extract' || req.path === '/api/part360/quote-extract' || req.path === '/api/part360/dossier' || req.path === '/api/part360/vision-read';
   return (big ? jsonBig : jsonSmall)(req, res, next);
 });
 

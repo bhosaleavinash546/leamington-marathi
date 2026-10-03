@@ -158,7 +158,8 @@ form) — everything that reads or writes user data requires a token.
 | POST | `/api/part360/batch` | yes | the same across a folder of parts |
 | POST | `/api/part360/assembly` | yes | decompose a STEP assembly into a suggested BOM |
 | POST | `/api/part360/assembly-dossier` | yes | roll a confirmed BOM up to an assembly dossier |
-| POST | `/api/part360/draft-functions` | yes | first-draft function list for value analysis |
+| POST | `/api/part360/draft-functions` | yes | first-draft function-cost model (functions, components, allocation) seeded by description, confirmed vision observations and measured geometry |
+| POST | `/api/part360/vision-read` | yes | AI vision read of 4 rendered views (measured faces painted on) → view-cited observations the engineer confirms; no numbers |
 | POST | `/api/part360/quote-extract` | yes | read a supplier quote PDF into engine buckets |
 | GET | `/api/part360/teardowns` | yes | the caller's private teardown evidence |
 | POST | `/api/part360/teardowns` | yes | add one |

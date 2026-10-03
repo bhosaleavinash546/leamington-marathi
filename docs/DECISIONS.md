@@ -4478,3 +4478,28 @@ judge processes on the full rule set. An unpriced finding is never printed as
 "€0.00". Engine checks on Prism ideas use the part's own mass
 (`config.partWeightKg`). Next steps, chiefly rendered views for AI vision, are
 in docs/PRISM-360-REVIEW-2026-10-03.md.
+
+## 111. Prism lets the AI see the part, rendered in the browser; the engineer confirms what it saw
+
+Claude reads images, not STEP files, so the part is rendered first. The
+roadmap suggested a z-buffer rasteriser in Node. Instead, the 3D viewer the
+engineer already looks at takes the four snapshots (iso, reverse iso from
+below, top, bottom). That viewer already tessellates the part and already
+paints faces, so the images show exactly what the engineer sees. The faces
+the draft analysis measured are painted on: red for undercut, amber for zero
+draft. A front or right view of a box-like part showed a blank wall, which is
+why the set covers both corners and both caps instead.
+
+`/api/part360/vision-read` returns view-cited observations. No dimension is
+estimated. Anything the model cannot see goes in "cannot tell". Every
+observation arrives ticked, and only the ticked ones enter the dossier, as a
+section labelled "AI-observed, confirmed by the engineer — observations, not
+measurements".
+
+The function stage follows the same pattern. The AI drafts functions,
+components and allocations, and the engineer edits every cell. The dossier
+then recomputes the FAST matrix against the engine's should-cost
+(`functionModelFromDraft`): value indices, poor-value functions and trimming
+questions are deterministic. A draft whose rows do not sum to 100% is refused
+with that reason, never silently rescaled. A function model the client
+computed is no longer accepted.

@@ -84,6 +84,28 @@ if (process.env.FAKE_LLM_IDEAS_FILE) {
   console.log(`[fake-llm] replaying ${ideas.length} saved ideas from ${process.env.FAKE_LLM_IDEAS_FILE}`);
 }
 
+// Prism vision read and function draft — synthetic, labelled, and shaped like
+// the real schemas. The vision answer reports how many images it was sent, so
+// a test can prove the views actually reached the model.
+const SYNTH_VISION = (p) => {
+  const imgs = JSON.stringify(p.messages || []).match(/"type":"image"/g)?.length ?? 0;
+  stats.imagesSeen = (stats.imagesSeen || 0) + imgs;
+  return {
+    partIdentity: { name: 'SYNTHETIC gearbox side cover', category: 'housing', confidence: 'medium', basis: `stub saw ${imgs} image(s); flanged shell with bosses [iso]` },
+    functionSummary: 'SYNTHETIC: probably encloses a gear set and locates a shaft.',
+    functions: [{ verbNoun: 'enclose gears', evidence: 'closed shell [iso]', confidence: 'medium' }, { verbNoun: 'locate shaft', evidence: 'two bosses on one axis [front]', confidence: 'medium' }],
+    interfaces: [{ feature: 'flat flange face with bolt holes', role: 'sealing', functional: true, view: 'top', evidence: 'continuous planar rim [top]' }, { feature: 'outer side walls', role: 'cosmetic', functional: false, view: 'right', evidence: 'no mating features [right]' }],
+    overDesign: [{ observation: 'ribs run the full height of the side walls', view: 'right', costLever: 'mass-out' }],
+    manufacturingObservations: [{ observation: 'red undercut faces sit on the side windows', view: 'iso' }],
+    cannotTell: ['the mating part and the loads'],
+  };
+};
+const SYNTH_FUNCTIONS = {
+  components: [{ name: 'SYNTHETIC shell body', costSharePct: 60 }, { name: 'bearing bosses', costSharePct: 15 }, { name: 'sealing flange', costSharePct: 25 }],
+  functions: [{ name: 'enclose gears', worthPct: 40 }, { name: 'locate shaft', worthPct: 35 }, { name: 'seal oil', worthPct: 25 }],
+  alloc: [[70, 20, 10], [0, 100, 0], [0, 0, 100]],
+};
+
 const write = (res, ev, data) => { if (!res.destroyed) res.write(`event: ${ev}\ndata: ${JSON.stringify(data)}\n\n`); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -131,6 +153,8 @@ http.createServer(async (req, res) => {
   const IDEA_TOOLS = ['emit_ideas', 'emit_triz_ideas', 'emit_separation_ideas'];
   const input = IDEA_TOOLS.includes(tool?.name) ? { ideas }
     : tool?.name === 'map_contradiction' ? { improvingParamId: mi, worseningParamId: mw, restatement: 'SYNTHETIC mapping from the test stub.' }
+    : tool?.name === 'emit_vision_read' ? SYNTH_VISION(p)
+    : tool?.name === 'emit_function_model' ? SYNTH_FUNCTIONS
     : {};
   const json = JSON.stringify(input);
   const inTok = Math.round(JSON.stringify(p.messages || '').length / 3.7), outTok = Math.round(json.length / 3.7);

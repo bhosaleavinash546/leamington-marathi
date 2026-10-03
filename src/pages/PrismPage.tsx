@@ -34,6 +34,8 @@ import ScoreRing from '../components/dfm/ScoreRing';
 import { Money, FxNote } from '../components/ui/Money';
 import { useFx, useDisplayCurrency } from '../hooks/useFx';
 import { fmtMoney } from '../lib/money';
+import PartVisionPanel from '../components/prism/PartVisionPanel';
+import FunctionModelPanel, { type FunctionDraft } from '../components/prism/FunctionModelPanel';
 import './dfm.css';
 
 // ── Types mirrored from the server contracts ─────────────────────────────────
@@ -203,6 +205,11 @@ export default function Part360Page() {
   const [catalogue, setCatalogue] = useState<{ materials: string[]; processes: string[]; materialDensities?: Record<string, number> } | null>(null);
   const [partName, setPartName] = useState('');
   const [partContext, setPartContext] = useState('');
+  // What AI vision saw in the rendered views — only the lines the engineer
+  // ticked — and the engineer-confirmed function-cost draft. Both reach the
+  // dossier as evidence; neither carries a number the engines did not compute.
+  const [visionObs, setVisionObs] = useState<string[]>([]);
+  const [functionDraft, setFunctionDraft] = useState<FunctionDraft | null>(null);
   const [material, setMaterial] = useState('');
   const [processName, setProcessName] = useState('');
   const [region, setRegion] = useState('Germany');
@@ -500,6 +507,8 @@ export default function Part360Page() {
         // left the waterfall's route comparison judging every process on 5 of
         // 17 rules instead of 13 (Prism review, 3 Oct 2026).
         geo: dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : undefined,
+        visionObservations: visionObs.length ? visionObs : undefined,
+        functionDraft: functionDraft ?? undefined,
         drawingExtract: drawingExtract ? {
           titleBlock: drawingExtract.titleBlock, readability: drawingExtract.readability,
           dimensions: Array.isArray(drawingExtract.dimensions) ? (drawingExtract.dimensions as unknown[]).slice(0, 80) : undefined,
@@ -1409,6 +1418,30 @@ export default function Part360Page() {
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* SEE THE PART — the measured faces painted on, read by AI vision. */}
+              {cadFile && dfmResult && (
+                <PartVisionPanel
+                  file={cadFile} token={token} apiKey={apiKey}
+                  geo={dfmResult.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : null}
+                  partName={partName} material={material} process={processName} partContext={partContext}
+                  onConfirmedChange={setVisionObs}
+                  onUseDescription={(text) => {
+                    setPartContext(prev => (prev.trim() ? `${prev.trim()}\n(AI vision, confirmed) ${text}` : text));
+                    toast('Added to the part description — edit it on the first step if needed.', 'info');
+                  }}
+                />
+              )}
+
+              {/* WHAT IS IT FOR — the function-cost model, AI-drafted, engineer-edited. */}
+              {shouldCost && (
+                <FunctionModelPanel
+                  token={token} apiKey={apiKey} partName={partName} partContext={partContext}
+                  observations={visionObs}
+                  geo={dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : null}
+                  onChange={setFunctionDraft}
+                />
+              )}
 
               <div className="flex justify-between">
                 <button onClick={() => setStep(0)} className="text-slate-400 hover:text-white text-sm flex items-center gap-1"><ChevronLeft size={15} /> Back</button>
