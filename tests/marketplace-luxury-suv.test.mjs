@@ -10,8 +10,6 @@ import { loadLibrary, checkAgainst } from '../scripts/check-idea-dupes.mjs';
 import { inferCommodityKey } from '../src/data/commodity-classify.mjs';
 import { classifyIdea } from '../src/data/idea-classify.mjs';
 
-const FILE = 'marketplace-luxury-suv-mhev-bev-ideas.json';
-const pack = JSON.parse(readFileSync(new URL(`../${FILE}`, import.meta.url), 'utf8'));
 const VOL = 50_000;
 
 // "€22-€30" / "€1.1M-€1.5M" → [lo, hi] in €
@@ -23,27 +21,47 @@ function money(s) {
   return [Number(m[1]) * mul(m[2] || m[4]), Number(m[3]) * mul(m[4] || m[2])];
 }
 
-describe('luxury-SUV MHEV / 800V BEV marketplace library', () => {
-  it('holds exactly the commissioned 90/110/100 split, both powertrains and off-road', () => {
+// One contract, two researched packs. Each pack pins its own size, split and
+// mix; everything else (anchors, sources, dedupe, arithmetic, facets,
+// honesty) is shared.
+const PACKS = [
+  {
+    file: 'marketplace-luxury-suv-mhev-bev-ideas.json', name: 'luxury-SUV MHEV / 800V BEV',
+    total: 300, levels: { assembly: 90, subassembly: 110, part: 100 },
+    mix: (pt, offRoad) => pt.MHEV >= 40 && pt['800V BEV'] >= 60 && pt['MHEV & 800V BEV'] >= 100 && offRoad >= 60,
+    commodities: ['Battery', 'EDU', 'Chassis', 'Driveline', 'BIW', 'Interior', 'Exterior', 'Electrical', 'Powertrain'],
+  },
+  {
+    file: 'marketplace-mhev-48v-ideas.json', name: '48 V MHEV',
+    total: 100, levels: { assembly: 30, subassembly: 35, part: 35 },
+    // Every idea is a 48 V MHEV idea (a few shared with the BEV sister model).
+    mix: (pt) => !pt['800V BEV'] && (pt.MHEV ?? 0) >= 85,
+    commodities: ['Powertrain', 'Electrical', 'Battery'],
+  },
+];
+
+for (const P of PACKS) describePack(P);
+
+function describePack({ file: FILE, name, total, levels, mix, commodities }) {
+const pack = JSON.parse(readFileSync(new URL(`../${FILE}`, import.meta.url), 'utf8'));
+describe(`${name} marketplace library`, () => {
+  it(`holds exactly the commissioned ${Object.values(levels).join('/')} split and its powertrain mix`, () => {
     const lv = pack.reduce((m, x) => ({ ...m, [x.level]: (m[x.level] || 0) + 1 }), {});
-    assert.equal(pack.length, 300);
-    assert.deepEqual(lv, { assembly: 90, subassembly: 110, part: 100 });
+    assert.equal(pack.length, total);
+    assert.deepEqual(lv, levels);
     const pt = pack.reduce((m, x) => ({ ...m, [x.ideaData.powertrain]: (m[x.ideaData.powertrain] || 0) + 1 }), {});
-    assert.ok(pt.MHEV >= 40 && pt['800V BEV'] >= 60 && pt['MHEV & 800V BEV'] >= 100, JSON.stringify(pt));
-    assert.ok(pack.filter(x => x.ideaData.offRoad).length >= 60, 'off-road capability under-covered');
-    assert.equal(new Set(pack.map(x => x.id)).size, 300, 'ids must be unique');
+    assert.ok(mix(pt, pack.filter(x => x.ideaData.offRoad).length), JSON.stringify(pt));
+    assert.equal(new Set(pack.map(x => x.id)).size, total, 'ids must be unique');
   });
 
-  it('covers every commodity tab, and every system resolves to one', () => {
+  it('covers its commodity tabs, and every system resolves to one', () => {
     const keys = new Set();
     for (const x of pack) {
       const k = inferCommodityKey(x.system);
       assert.ok(k, `${x.title}: system "${x.system}" resolves to no commodity`);
       keys.add(k);
     }
-    for (const k of ['Battery', 'EDU', 'Chassis', 'Driveline', 'BIW', 'Interior', 'Exterior', 'Electrical', 'Powertrain']) {
-      assert.ok(keys.has(k), `commodity ${k} has no idea`);
-    }
+    for (const k of commodities) assert.ok(keys.has(k), `commodity ${k} has no idea`);
   });
 
   it('every idea names its benchmark vehicle AND the web source behind that fact', () => {
@@ -115,3 +133,4 @@ describe('luxury-SUV MHEV / 800V BEV marketplace library', () => {
     assert.ok(readdirSync(new URL('..', import.meta.url)).includes(FILE));
   });
 });
+}

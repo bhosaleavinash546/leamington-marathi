@@ -4580,3 +4580,31 @@ comes from search-result summaries, not from pages that were read.
 Savings are estimates. Where an idea applies to only one powertrain or an
 option, the calculation basis says whether its per-vehicle figure covers each
 affected vehicle or is a fleet average (`volumeBasis`).
+
+## 114. A dedicated 48 V MHEV pack, and why "starter-free" ideas carry their precondition
+
+`marketplace-mhev-48v-ideas.json` adds 100 ideas on the 48 V system itself:
+- **Levels:** 30 technology, 35 subassembly, 35 part.
+- **Five research groups:**
+  - the e-machine and belt drive;
+  - power electronics;
+  - the battery and board net;
+  - the electrified loads;
+  - system strategy.
+- **Process:** the same research brief, merge gate and tests as decision 113,
+  plus a cap of 15 searches per agent so the shared budget lasted.
+
+**How the starter-free ideas are written.** Two groups each dropped the
+idea "delete the 12 V starter", each believing the other kept it. Four part
+ideas (bell-housing, 12 V cable, pre-fuse box, ground strap) depend on that
+deletion. Rather than add an architecture claim the research had not
+confirmed for every system, each of these ideas now states its precondition:
+it applies only where the 48 V machine makes every start, including cold
+starts. That is in practice a crank-integrated starter-generator (Mercedes
+M256 ISG, confirmed to replace the starter).
+
+**Corrected wording.** Two ideas said JLR's belt starter-generator
+"replaces the starter". The source supports only that it replaces the
+alternator, so those ideas were re-anchored on Mercedes. Volvo's belt unit
+does replace the starter, which is why the text says belt systems
+*commonly* keep a cold-start starter, not *always*.
