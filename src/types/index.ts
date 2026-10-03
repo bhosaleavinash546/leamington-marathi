@@ -85,6 +85,8 @@ export interface EvidenceSource {
   url?: string;
   year?: number;
   confidence: 'high' | 'medium' | 'low';
+  /** Library packs: the exact benchmark fact this source supports (never the saving). */
+  supports?: string;
 }
 
 export interface CostReductionIdea {
@@ -159,6 +161,20 @@ export interface CostReductionIdea {
   engineering?: { mechanism?: string; specDeltas?: string; validationPlan?: string; dfmImplications?: string; costBridge?: string };
   /** A specific grade named in the idea, and whether the engine catalogue can resolve it. */
   grade?: { named: string; catalogueKey: string | null; approx: boolean | null };
+  // ── Curated library depth (marketplace packs) ──────────────────────────────
+  /** Where the money comes from, in one paragraph. */
+  costReductionMechanism?: string;
+  dfmDfa?: string;
+  /** Baseline → proposed process route. */
+  manufacturingProcess?: string;
+  benchmarkAnchor?: { platform: string; borrowedFeature: string; difference: string };
+  /** Per-vehicle cost walk, baseline → proposed, line by line (estimates). */
+  costBridgeLines?: { item: string; baselineEur: number; proposedEur: number; basis?: string }[];
+  investment?: { toolingEur: number; capexEur: number; validationEur: number; paybackMonths: number };
+  /** How the annual figure scales with volume and variant mix. */
+  volumeBasis?: string;
+  powertrain?: string;
+  offRoad?: boolean;
 }
 
 /** Server-side pipeline summary returned with every analysis (honest tallies, never inferred client-side). */

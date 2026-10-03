@@ -1,8 +1,9 @@
 import {
   TrendingDown, DollarSign, Calculator, Clock, BarChart3, Tag,
   AlertTriangle, CheckCircle, Scale, Link2, ShieldCheck, BookOpen,
-  FlaskConical,
+  FlaskConical, Factory, Wrench, Cog, ExternalLink, Mountain,
 } from 'lucide-react';
+import { Money } from './ui/Money';
 import type { CostReductionIdea, CostSavingType } from '../types';
 import IdeaProvenanceBadges from './IdeaProvenanceBadges';
 
@@ -74,6 +75,12 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
         <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-semibold ${diff.bg} ${diff.color} ${diff.border}`}>
           <DiffIcon size={10} /> {idea.implementationDifficulty}
         </span>
+        {idea.powertrain && (
+          <span className="px-2 py-0.5 rounded-full border border-hairline bg-tint text-slate-300 text-xs font-medium">{idea.powertrain}</span>
+        )}
+        {idea.offRoad && (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-hairline bg-tint text-slate-300 text-xs font-medium"><Mountain size={10} /> Off-road</span>
+        )}
         {idea.confidenceLevel && (() => {
           const conf = CONFIDENCE_CONFIG[idea.confidenceLevel];
           const ConfIcon = conf.icon;
@@ -105,6 +112,8 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
         </div>
       </div>
 
+      {idea.volumeBasis && <p className="text-2xs text-slate-500 -mt-2">{idea.volumeBasis}</p>}
+
       {/* The same provenance the results page shows. Until Sept 2026 this
           renderer showed none of it, so one idea read as verified here and
           honestly caveated there. */}
@@ -116,6 +125,15 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
           <FlaskConical size={14} className="text-teal-400 flex-shrink-0" />
           <span className="text-teal-400 text-xs font-semibold uppercase tracking-wider">Material Grade:</span>
           <span className="text-slate-200 text-sm font-medium">{idea.materialGrade}</span>
+        </div>
+      )}
+
+      {/* Process route */}
+      {idea.manufacturingProcess && (
+        <div className="flex items-start gap-2 p-2.5 rounded-xl bg-tint border border-hairline">
+          <Factory size={14} className="text-slate-400 flex-shrink-0 mt-0.5" />
+          <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider shrink-0">Process:</span>
+          <span className="text-slate-200 text-sm">{idea.manufacturingProcess}</span>
         </div>
       )}
 
@@ -135,6 +153,91 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
               <p className="text-slate-400 text-sm leading-relaxed">{idea.manufacturingImpact}</p>
             </div>
           )}
+
+          {/* Where the money comes from, and what it does to the build */}
+          {(idea.costReductionMechanism || idea.dfmDfa) && (
+            <div className="grid md:grid-cols-2 gap-4">
+              {idea.costReductionMechanism && (
+                <div>
+                  <h4 className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><TrendingDown size={11} /> Where the saving comes from</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">{idea.costReductionMechanism}</p>
+                </div>
+              )}
+              {idea.dfmDfa && (
+                <div>
+                  <h4 className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Wrench size={11} /> DFM / DFA</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed">{idea.dfmDfa}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Engineering depth: physics, spec, validation, DFM, cost walk */}
+          {idea.engineering && Object.values(idea.engineering).some(Boolean) && (
+            <div className="rounded-xl border border-hairline p-3 space-y-3" aria-label="Engineering detail">
+              <h4 className="text-slate-300 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"><Cog size={11} /> Engineering detail</h4>
+              {([
+                ['mechanism', 'Why it works'],
+                ['specDeltas', 'Drawing & spec changes'],
+                ['validationPlan', 'Validation plan'],
+                ['dfmImplications', 'Manufacturing implications'],
+                ['costBridge', 'Cost walk'],
+              ] as const).map(([k, label]) => idea.engineering?.[k] ? (
+                <div key={k}>
+                  <div className="text-slate-500 text-2xs font-semibold uppercase tracking-wider mb-0.5">{label}</div>
+                  <p className="text-slate-300 text-sm leading-relaxed measure">{idea.engineering[k]}</p>
+                </div>
+              ) : null)}
+            </div>
+          )}
+
+          {/* Line-by-line cost bridge (estimates) + investment */}
+          {idea.costBridgeLines && idea.costBridgeLines.length > 0 && (() => {
+            const lines = idea.costBridgeLines;
+            const tb = lines.reduce((a, l) => a + l.baselineEur, 0);
+            const tp = lines.reduce((a, l) => a + l.proposedEur, 0);
+            return (
+              <div className="rounded-xl border border-hairline p-3">
+                <h4 className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5"><Calculator size={11} /> Cost bridge per vehicle <span className="normal-case tracking-normal text-slate-500 font-normal">— estimates</span></h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs" aria-label="Cost bridge per vehicle">
+                    <thead>
+                      <tr className="text-slate-500 text-left">
+                        <th className="py-1 pr-2 font-medium">Line</th>
+                        <th className="py-1 px-2 font-medium text-right">Baseline</th>
+                        <th className="py-1 px-2 font-medium text-right">Proposed</th>
+                        <th className="py-1 pl-2 font-medium text-right">Saving</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lines.map((l, i) => (
+                        <tr key={i} className="border-t border-hairline align-top" title={l.basis}>
+                          <td className="py-1 pr-2 text-slate-300">{l.item}{l.basis && <div className="text-2xs text-slate-500">{l.basis}</div>}</td>
+                          <td className="py-1 px-2 text-right font-mono text-slate-400"><Money eur={l.baselineEur} /></td>
+                          <td className="py-1 px-2 text-right font-mono text-slate-400"><Money eur={l.proposedEur} /></td>
+                          <td className={`py-1 pl-2 text-right font-mono ${l.baselineEur - l.proposedEur >= 0 ? 'text-success-400' : 'text-danger-400'}`}><Money eur={l.baselineEur - l.proposedEur} /></td>
+                        </tr>
+                      ))}
+                      <tr className="border-t border-hairline font-semibold">
+                        <td className="py-1 pr-2 text-slate-200">Net per vehicle</td>
+                        <td className="py-1 px-2 text-right font-mono text-slate-300"><Money eur={tb} /></td>
+                        <td className="py-1 px-2 text-right font-mono text-slate-300"><Money eur={tp} /></td>
+                        <td className="py-1 pl-2 text-right font-mono text-success-400"><Money eur={tb - tp} /></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                {idea.investment && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-xs">
+                    <div><div className="text-slate-500 text-2xs uppercase tracking-wider">Tooling</div><div className="text-slate-200 font-mono"><Money eur={idea.investment.toolingEur} decimals={0} /></div></div>
+                    <div><div className="text-slate-500 text-2xs uppercase tracking-wider">Capex</div><div className="text-slate-200 font-mono"><Money eur={idea.investment.capexEur} decimals={0} /></div></div>
+                    <div><div className="text-slate-500 text-2xs uppercase tracking-wider">Validation</div><div className="text-slate-200 font-mono"><Money eur={idea.investment.validationEur} decimals={0} /></div></div>
+                    <div><div className="text-slate-500 text-2xs uppercase tracking-wider">Payback</div><div className="text-slate-200 font-mono">{idea.investment.paybackMonths} months</div></div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           <div className="grid md:grid-cols-2 gap-4">
             {/* DFMA Principles */}
@@ -163,7 +266,13 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
           </div>
 
           {/* Benchmark reference */}
-          {idea.benchmarkReference && (
+          {idea.benchmarkAnchor ? (
+            <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15 space-y-1">
+              <div><span className="text-blue-400 text-xs font-semibold uppercase tracking-wider">Benchmark: </span><span className="text-slate-200 text-sm font-medium">{idea.benchmarkAnchor.platform}</span></div>
+              <div className="text-slate-300 text-sm"><span className="text-slate-500">What it does: </span>{idea.benchmarkAnchor.borrowedFeature}</div>
+              <div className="text-slate-300 text-sm"><span className="text-slate-500">How this idea differs: </span>{idea.benchmarkAnchor.difference}</div>
+            </div>
+          ) : idea.benchmarkReference && (
             <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
               <span className="text-blue-400 text-xs font-semibold uppercase tracking-wider">Industry Benchmark: </span>
               <span className="text-slate-300 text-sm">{idea.benchmarkReference}</span>
@@ -194,8 +303,14 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
                     <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs ${cfg.bg}`}>
                       <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${EVIDENCE_DOT[src.confidence] ?? 'bg-slate-400'}`} title={`${src.confidence} confidence`} />
                       <div>
-                        <div className={`font-medium ${cfg.color}`}>{src.title}{src.year ? ` (${src.year})` : ''}</div>
-                        <div className="text-slate-500 text-xs">{cfg.label}</div>
+                        {src.url ? (
+                          <a href={src.url} target="_blank" rel="noopener noreferrer" className={`font-medium ${cfg.color} hover:underline inline-flex items-center gap-1`}>
+                            {src.title}{src.year ? ` (${src.year})` : ''}<ExternalLink size={10} aria-hidden="true" />
+                          </a>
+                        ) : (
+                          <div className={`font-medium ${cfg.color}`}>{src.title}{src.year ? ` (${src.year})` : ''}</div>
+                        )}
+                        <div className="text-slate-500 text-xs">{cfg.label}{src.supports ? ` — supports: ${src.supports}` : ''}</div>
                       </div>
                     </div>
                   );
