@@ -38,11 +38,18 @@ const PACKS = [
     mix: (pt) => !pt['800V BEV'] && (pt.MHEV ?? 0) >= 85,
     commodities: ['Powertrain', 'Electrical', 'Battery'],
   },
+  {
+    file: 'marketplace-mhev-48v-deep-ideas.json', name: '48 V MHEV deep (second wave)',
+    total: 100, levels: { assembly: 30, subassembly: 35, part: 35 },
+    mix: (pt) => !pt['800V BEV'] && (pt.MHEV ?? 0) >= 85,
+    commodities: ['Powertrain', 'Electrical', 'Battery'],
+    deep: true,
+  },
 ];
 
 for (const P of PACKS) describePack(P);
 
-function describePack({ file: FILE, name, total, levels, mix, commodities }) {
+function describePack({ file: FILE, name, total, levels, mix, commodities, deep = false }) {
 const pack = JSON.parse(readFileSync(new URL(`../${FILE}`, import.meta.url), 'utf8'));
 describe(`${name} marketplace library`, () => {
   it(`holds exactly the commissioned ${Object.values(levels).join('/')} split and its powertrain mix`, () => {
@@ -108,6 +115,28 @@ describe(`${name} marketplace library`, () => {
       }
       assert.match(`${d.costSavingPotential.annualValue} ${d.costSavingPotential.calculationBasis}`, /50[,.]?000/);
       assert.ok(d.volumeBasis && /variant mix/.test(d.volumeBasis), 'volume basis must be stated');
+    }
+  });
+
+  if (deep) it('carries the full engineering block, a cost bridge that adds up, and a payback that reconciles', () => {
+    for (const x of pack) {
+      const d = x.ideaData;
+      assert.ok(d.technicalDescription.length >= 720, `${x.title}: technicalDescription ${d.technicalDescription.length} ch`);
+      const e = d.engineering || {};
+      for (const [k, n] of [['mechanism', 315], ['specDeltas', 270], ['validationPlan', 270], ['dfmImplications', 180], ['costBridge', 180]]) {
+        assert.ok(String(e[k] || '').length >= n, `${x.title}: engineering.${k} too thin`);
+      }
+      const lines = d.costBridgeLines || [];
+      assert.ok(lines.length >= 4, `${x.title}: cost bridge has ${lines.length} lines`);
+      const net = lines.reduce((a, l) => a + (l.baselineEur - l.proposedEur), 0);
+      const pv = money(d.costSavingPotential.perVehicle);
+      assert.ok(net >= pv[0] * 0.9 && net <= pv[1] * 1.1, `${x.title}: bridge nets €${net.toFixed(2)} vs ${d.costSavingPotential.perVehicle}`);
+      const inv = d.investment;
+      assert.ok(inv && ['toolingEur', 'capexEur', 'validationEur', 'paybackMonths'].every(k => Number.isFinite(inv[k])), `${x.title}: investment incomplete`);
+      const av = money(d.costSavingPotential.annualValue);
+      const total = inv.toolingEur + inv.capexEur + inv.validationEur;
+      const expect = total / (((av[0] + av[1]) / 2) / 12);
+      if (total > 0) assert.ok(Math.abs(inv.paybackMonths - expect) <= Math.max(1, expect * 0.2), `${x.title}: payback ${inv.paybackMonths} vs ${expect.toFixed(1)} months`);
     }
   });
 

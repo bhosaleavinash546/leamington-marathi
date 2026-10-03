@@ -4608,3 +4608,38 @@ M256 ISG, confirmed to replace the starter).
 alternator, so those ideas were re-anchored on Mercedes. Volvo's belt unit
 does replace the starter, which is why the text says belt systems
 *commonly* keep a cold-start starter, not *always*.
+
+## 115. Deep ideas must reconcile: a cost bridge that nets to the saving, and a payback derived from the investment
+
+`marketplace-mhev-48v-deep-ideas.json` is the second wave of 48 V MHEV
+ideas: 100 ideas (30 / 35 / 35) going below the first pack. It covers:
+- e-machine internals (field coil, slip rings, laminations, enamel, resin,
+  bearings);
+- the inverter and DC-DC build (embedded dies, laser-welded lid,
+  boundary-scan instead of ICT, burn-in retired through PAT);
+- battery and distribution;
+- engine and 8HP parts whose specification changes because of 48 V;
+- consumer internals, plant and lifecycle.
+
+**What the depth adds.** Each idea carries:
+- the engineering block (mechanism with numbers, spec deltas, validation
+  plan, DFM, cost walk);
+- a per-vehicle cost bridge of at least 4 lines;
+- tooling, capex, validation and payback.
+
+**How the numbers are gated.** Long figures only help if they agree with
+each other, so the merge gate and `tests/marketplace-luxury-suv.test.mjs`
+require:
+- the cost-bridge lines net to the stated per-vehicle range (±10%);
+- payback = (tooling + capex + validation) ÷ (mid annual saving ÷ 12)
+  (±20%).
+
+A scan of all 100 found no idea whose prose payback disagrees with its
+number. Small savings and long paybacks (21 ideas pay back in more than 48
+months) are left as estimated, not tuned.
+
+**What the detail panel shows.** `IdeaDetailPanel` now renders the
+engineering block, the cost-bridge table, the investment, the structured
+benchmark anchor and clickable sources. These existed in the data but were
+invisible. Table figures go through `<Money>`, so they follow the display
+currency, while prose figures stay in the euros they were written in.
