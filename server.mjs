@@ -759,6 +759,13 @@ seedMarketplaceIdeasFromFile('marketplace-missing-commodity-ideas.json', 'missin
 // differs; all are seeded UNVERIFIED with estimated savings — the tests pin the
 // 60/80/60 split, 100% anchor coverage, corpus-wide uniqueness and honesty.
 seedMarketplaceIdeasFromFile('marketplace-battery-800v-ideas.json', '800V battery benchmark-anchored ideas');
+// 300 luxury-SUV ideas for a shared MHEV (48 V, 3.0 L I6) / 800V BEV platform,
+// researched live against 2023–2026 launches across ten commodity groups
+// (90 assembly / 110 subassembly / 100 part). Every entry names its benchmark
+// vehicle and carries the web sources found for that benchmark fact — sources
+// support the BENCHMARK, never the saving, and are flagged unreviewed
+// (evidenceUnverified). Seeded UNVERIFIED with estimated savings at 50,000/yr.
+seedMarketplaceIdeasFromFile('marketplace-luxury-suv-mhev-bev-ideas.json', 'luxury-SUV MHEV/800V BEV researched ideas');
 
 // Provenance backfill must ALSO run after seeding: on a fresh DB the seed
 // inserts happen after the migration block above, so their origin is NULL here.
