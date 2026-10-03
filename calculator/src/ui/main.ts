@@ -4270,6 +4270,7 @@ function renderRotationalMouldingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Load/Unload (s) <span title="Demould + charge load. Typically 120–300s.">ℹ</span></label><input type="number" id="rm-load" step="30" min="30" value="180"/></div>
+      <div class="field-group"><label>Index Time (s, 0=stations in series) <span title="Time between arm-loads off the machine. On a carousel the oven, cooling and load stations run at once, so the slowest one paces it. 0 = heat + cool + load spread over every arm.">ℹ</span></label><input type="number" id="rm-index" step="30" min="0" value="0"/></div>
       <div class="field-group"><label>Masterbatch (£/kg, 0=none) <span title="Colour / UV / FR masterbatch premium per kg of part.">ℹ</span></label><input type="number" id="rm-masterbatch" step="0.05" min="0" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
@@ -4287,7 +4288,9 @@ function renderRotationalMouldingForm(): string {
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
       <div class="field-group"><label>Mould Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from footprint, type and complexity.">ℹ</span></label><input type="number" id="rm-mould-cost" step="500" min="0" value="8000" title="0 = auto-estimate parametrically"/></div>
-      <div class="field-group"><label>Mould Life (cycles) <span title="Rotomould Al tools: 50k–200k cycles">ℹ</span></label><input type="number" id="rm-mould-life" step="10000" min="0" value="100000"/></div>
+      <div class="field-group"><label>Mould Life (cycles) <span title="Cycles one mould lasts before it is replaced.">ℹ</span></label><input type="number" id="rm-mould-life" step="1000" min="0" value="100000"/></div>
+      <div class="field-group"><label>Moulds in Service (0=one per arm position) <span title="Moulds the annual volume needs. 0 = one on every position of every arm.">ℹ</span></label><input type="number" id="rm-moulds" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Reject Rate <span title="Scrap fraction (under-cure, bubbles, warp, wall). Uplifts material and machine time.">ℹ</span></label><input type="number" id="rm-reject" step="0.005" min="0" max="0.5" value="0.03"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Projected Area (cm²) <span title="Part footprint — drives the mould-cost estimate when Mould Cost=0.">ℹ</span></label><input type="number" id="rm-proj-area" step="10" min="0" value="600"/></div>
@@ -13897,6 +13900,9 @@ function collectRotationalMouldingInput(): UniversalStackInput {
     mouldType,
     mouldComplexity: 'moderate',
     masterbatchCostPerKg: num('rm-masterbatch') || undefined,
+    indexTimeSec: num('rm-index') || undefined,
+    mouldsInService: num('rm-moulds') || undefined,
+    rejectRate: num('rm-reject') || undefined,
   });
 
   // Surface predicted cycle times when auto-derived.

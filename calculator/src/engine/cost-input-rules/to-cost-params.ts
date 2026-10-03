@@ -795,32 +795,41 @@ export function toCostParams(
       if (!rm) return null;
       const arms = Math.max(1, Math.round(num(rm.numArms, 1)));
       // The machine follows the arm count the rules derived, not a default.
-      const machineId = arms >= 4 ? 'rotomould-carousel-4arm'
+      const machineId = rm.machineId || (arms >= 4 ? 'rotomould-carousel-4arm'
         : arms >= 3 ? 'rotomould-biaxial'
-        : arms === 2 ? 'rotomould-shuttle' : 'rotomould-lab-1arm';
+        : arms === 2 ? 'rotomould-shuttle' : 'rotomould-lab-1arm');
       const perArm = Math.max(1, Math.round(num(rm.partsPerArm, 1)));
-      assumed.push(`${machineId} (from ${arms} arm${arms === 1 ? '' : 's'})`);
-      assumed.push('loadUnloadTimeSec=60', 'powderCostAdderPerKg=0 (no grinding premium stated)');
-      // Say the tool count out loud. `mouldCostGBP` prices ONE tool, and roto
-      // needs one per station, so the module charges arms x partsPerArm of them.
-      // On a 4-arm carousel at 8 parts an arm that is 32 tools, and the tooling
-      // bucket then dominates a small part — which is the model being
-      // consistent, not a fault, but it is not obvious from a total.
-      assumed.push(`${arms * perArm} moulds (${arms} arms x ${perArm} per arm) at the stated per-mould cost`);
+      // A pack without the review's rule values (an AI analysis, an old cache)
+      // falls back as before — and says so.
+      if (!rm.machineId) assumed.push(`${machineId} (from ${arms} arm${arms === 1 ? '' : 's'})`);
+      if (rm.loadUnloadTimeSec == null) assumed.push('loadUnloadTimeSec=60');
+      if (rm.powderCostAdderPerKg == null) assumed.push('powderCostAdderPerKg=0 (no grinding premium stated)');
+      // `mouldCostGBP` prices ONE tool; with no moulds-in-service figure the
+      // module charges one per position on every arm. Say the count out loud.
+      if (!rm.mouldsInService) assumed.push(`${arms * perArm} moulds (${arms} arms x ${perArm} per arm) at the stated per-mould cost`);
+      // Every value is the rules' — the same the screen is filled with. This
+      // used to fix load / unload at 60 s and the grinding adder at 0, take the
+      // shop's crew of 1, charge a mould on every arm, and add the stations in
+      // series (rotational-moulding review).
       return {
         commodity, assumed,
         params: {
           ...shop,
+          ...(rm.labourId ? { labourId: rm.labourId } : {}),
+          ...(rm.manning != null ? { manning: num(rm.manning) } : {}),
+          ...(rm.oee != null ? { oee: num(rm.oee) } : {}),
+          ...(rm.labourEfficiency != null ? { labourEfficiency: num(rm.labourEfficiency) } : {}),
+          ...(rm.rejectRate != null ? { rejectRate: num(rm.rejectRate) } : {}),
           materialId,
           partWeightKg: num(ci.netWeightKg),
-          // Grinding pellet to powder is a real adder, but no rule states one and
-          // inventing a figure would move the material bucket silently.
-          powderCostAdderPerKg: 0,
+          powderCostAdderPerKg: num(rm.powderCostAdderPerKg),
           numArms: arms,
           partsPerArm: perArm,
           heatingTimeSec: num(rm.heatTimeSec),
           coolingTimeSec: num(rm.coolTimeSec),
-          loadUnloadTimeSec: 60,
+          loadUnloadTimeSec: num(rm.loadUnloadTimeSec, 60),
+          indexTimeSec: num(rm.indexTimeSec),
+          mouldsInService: num(rm.mouldsInService),
           machineId,
           mouldCost: num(rm.mouldCostGBP),
           mouldLife: num(rm.mouldLife, 10_000),

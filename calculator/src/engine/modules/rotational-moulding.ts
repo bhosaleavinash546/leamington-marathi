@@ -35,6 +35,15 @@ export interface RotationalMouldingInputs {
   ventsAndInserts?: number;
   // ── Additive ──
   masterbatchCostPerKg?: number;   // colour/UV/FR masterbatch premium £/kg of part
+  /** Time between arm-loads off the machine, s — the slowest station on a
+   *  carousel. When > 0 one arm-load (partsPerArm) is charged per index, instead
+   *  of heat + cool + load spread over every arm. */
+  indexTimeSec?: number;
+  /** Moulds the annual volume needs. When > 0 the tooling buys these, instead
+   *  of one per position on every arm. */
+  mouldsInService?: number;
+  /** Scrap fraction 0–1; uplifts material and machine time. */
+  rejectRate?: number;
 }
 
 export function getRotationalMouldingInputSchema(): Record<string, string> {
@@ -76,8 +85,13 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
   const heatingTimeSec = inputs.heatingTimeSec > 0 ? inputs.heatingTimeSec : (predicted?.heatingSec ?? 900);
   const coolingTimeSec = inputs.coolingTimeSec > 0 ? inputs.coolingTimeSec : (predicted?.coolingSec ?? 1200);
 
-  const cycleTimeSec = heatingTimeSec + coolingTimeSec + inputs.loadUnloadTimeSec;
-  const cycleTimeHr = cycleTimeSec / 3600;
+  const reject = inputs.rejectRate && inputs.rejectRate > 0 ? inputs.rejectRate : 0;
+  const rejectUplift = 1 / (1 - reject);
+  // Station-paced: one arm-load per index. Legacy: the stations in series,
+  // spread over every arm.
+  const indexed = (inputs.indexTimeSec ?? 0) > 0;
+  const cycleTimeSec = indexed ? inputs.indexTimeSec! : heatingTimeSec + coolingTimeSec + inputs.loadUnloadTimeSec;
+  const cycleTimeHr = cycleTimeSec / 3600 * rejectUplift;
 
   // Virtually no material waste in rotomoulding; all powder sinters onto mould walls
   const materialUtilization = 0.99;
@@ -88,7 +102,7 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.partWeightKg,
+    netWeightKg: inputs.partWeightKg * rejectUplift,
     materialUtilization,
     consumablesCostPerPart,
   };
@@ -102,7 +116,7 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
       machineId: inputs.machineId,
       labourId: inputs.labourId,
       cycleTimeHr,
-      partsPerCycle: inputs.numArms * inputs.partsPerArm,
+      partsPerCycle: indexed ? inputs.partsPerArm : inputs.numArms * inputs.partsPerArm,
       oee: inputs.oee,
       manning: inputs.manning,
       labourTimeHr: cycleTimeHr,
@@ -110,9 +124,12 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
     },
   ];
 
-  // mouldLife is cycles per individual mould; total parts per full mould set = mouldLife × totalMouldCount
+  // mouldLife is cycles per individual mould. The moulds the volume needs when
+  // stated, else one per position on every arm (legacy). Fractional above one
+  // set: a mould wears into next year's parts, it is not bought twice.
+  const moulds = (inputs.mouldsInService ?? 0) > 0 ? inputs.mouldsInService! : totalMouldCount;
   const numMouldSets = inputs.mouldLife > 0
-    ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * totalMouldCount))
+    ? Math.max(1, inputs.amortizationVolume / (inputs.mouldLife * moulds))
     : 1;
 
   // Per-mould cost: manual figure, else estimated parametrically.
@@ -126,7 +143,7 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
       }).total;
 
   const tooling: ToolingInput = {
-    totalToolingCost: perMouldCost * totalMouldCount * numMouldSets,
+    totalToolingCost: perMouldCost * moulds * numMouldSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

@@ -24,6 +24,7 @@
  *  - everything else → genuinely solid; hollow processes are wrong for it.
  */
 import type { OCCTGeometry } from '../../ai-analysis.js';
+import { shellWallEstimateMm } from '../../geometry-sanity.js';
 
 export type HollowVerdict =
   /** Topology found a mathematically sealed internal cavity. */
@@ -42,6 +43,25 @@ const NEAR_ENCLOSED_MAX_FILL = 0.08;
 /** Wall above this is not a blown/rotomoulded shell whatever the fill says. */
 const NEAR_ENCLOSED_MAX_WALL_MM = 12;
 
+/**
+ * A closed shell, measured: the envelope centre is in the void, ≥ 90% of the
+ * kernel's rays from it meet the part, and the part is a thin, sparse shell.
+ *
+ * Fill and wall cannot tell a tank from an open tray: a 4 L header tank at
+ * 10.5% fill read as a solid, and the real fuel tank and an open storage tray
+ * overlap on every fill test (rotational-moulding review, 3 Oct 2026). Tanks
+ * read 1.00; the tray 0.56, pressings 0.53–0.68, the knuckle 0.44. False when
+ * the geometry predates the measurement.
+ */
+export function enclosedShell(geo: OCCTGeometry): boolean {
+  const e = geo.enclosure;
+  if (!e || e.centreIn !== 'void' || e.hitShare == null) return false;
+  const wall = geo.volume && geo.surfaceArea ? shellWallEstimateMm(geo.volume.cm3, geo.surfaceArea.cm2) : null;
+  return e.hitShare >= ENCLOSED_MIN_HIT_SHARE && (geo.fillRatio ?? 1) < 0.3
+    && wall != null && wall > 0 && wall <= NEAR_ENCLOSED_MAX_WALL_MM;
+}
+const ENCLOSED_MIN_HIT_SHARE = 0.9;
+
 export function hollowVerdict(geo: OCCTGeometry): HollowVerdict {
   const t = geo.topology;
   if (!t?.available) return 'unknown';
@@ -50,6 +70,7 @@ export function hollowVerdict(geo: OCCTGeometry): HollowVerdict {
   // solid, or a minimal fixture with no topology detail would silently pass.
   const isSolidModel = (t.solidCount ?? 0) >= 1;
   if (!isSolidModel) return 'open-surface';
+  if (enclosedShell(geo)) return 'near-enclosed';
   const fill = geo.fillRatio ?? 1;
   const wall = geo.wallThickness?.meanMm ?? null;
   if (fill < NEAR_ENCLOSED_MAX_FILL && (wall == null || wall <= NEAR_ENCLOSED_MAX_WALL_MM)) {

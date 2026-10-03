@@ -119,6 +119,9 @@ export interface OCCTGeometry {
   measuredVolumeCm3?: number;
   /** 'exact' from the B-rep (default); 'mesh' when the volume was integrated over an STL. */
   volumeConfidence?: 'exact' | 'mesh';
+  /** Share of 96 rays from the envelope centre that meet the part (kernel `_enclosure`):
+   *  ~1 inside a closed tank, ~0.5 over an open tray or a pressing. */
+  enclosure?: { centreIn: 'void' | 'material' | null; rays: number; hitShare: number | null } | null;
   wallThickness?: {
     minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
     /** 95th-percentile ray-cast wall (mm) — the thickest section governs cooling/ejection. */
@@ -604,6 +607,17 @@ export interface CADAnalysisResult {
       coolTimeSec: number;
       mouldCostGBP: number;
       mouldLife: number;
+      // ── rule-derived (rotational-moulding review, Oct 2026) ──
+      machineId?: string;
+      indexTimeSec?: number;
+      loadUnloadTimeSec?: number;
+      mouldsInService?: number;
+      powderCostAdderPerKg?: number;
+      labourId?: string;
+      manning?: number;
+      oee?: number;
+      labourEfficiency?: number;
+      rejectRate?: number;
     };
     rubber?: {
       /** 'compression' | 'transfer' | 'injection' | 'extrusion' | 'calendering' | 'die_cut' */

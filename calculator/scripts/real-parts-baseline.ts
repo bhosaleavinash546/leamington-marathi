@@ -181,6 +181,17 @@ export const ANSWERS: Record<string, {
     answers: { 'material.family': 'plastic', 'material.resin': 'mat-pp-homo',
                'commodity.route': 'blow_moulding', 'blow.capacityL': 'exact', 'blow.capacityExactL': '2.5' },
   },
+  // ── Rotational moulding (rotational-moulding review, 3 Oct 2026) ─────────
+  // NOT customer parts: modelled in OCP by cad-audit/parts/ROTO_modelled_parts.py.
+  // Recorded at the baseline's 50,000/yr; the review test pins them at 5,000.
+  'ROTO_Coolant_Tank.stp': {
+    note: 'MODELLED: 450 × 320 × 260 mm LLDPE coolant / AdBlue tank, 5 mm wall, Ø60 filler neck (~30 L).',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-lldpe-roto', 'commodity.route': 'rotational_moulding' },
+  },
+  'ROTO_Header_Tank.stp': {
+    note: 'MODELLED: 240 × 160 × 140 mm LLDPE header tank, 4 mm wall, Ø40 neck (~4 L) — shares an arm.',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-lldpe-roto', 'commodity.route': 'rotational_moulding' },
+  },
   'test-gear-m3-z38.step': {
     // No commodity stated: `looksLikeGear` routes this off the counted teeth.
     // It used to need stating, because the gear test lived inline in cad.ts and

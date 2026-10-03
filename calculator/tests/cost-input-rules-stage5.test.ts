@@ -171,11 +171,13 @@ describe('rotational moulding', () => {
   it('takes oven and cooling time from wall thickness, not a 15-40 min range', () => {
     const r = runCostInputRules(ROTATIONAL_MOULDING_RULES, rmCtx(PE));
     const rm = r.suggestions.rotationalMoulding as Record<string, number | string>;
-    const cycle = estimateRotoCycle({ wallThicknessMm: 6, material: 'pe', coolingMethod: 'forced-air' });
-    expect(rm.heatTimeSec).toBe(cycle.heatingSec);   // 240 + 6 x 210 = 1500 s = 25 min
-    expect(rm.heatTimeSec).toBe(1500);
+    // The wall is the area-mean 2·V/S = 2 × 15,000 ÷ 44,000 = 6.82 mm, not the
+    // 6 mm ray mean (rotational-moulding review: the ray reads across a tank).
+    const cycle = estimateRotoCycle({ wallThicknessMm: 6.82, material: 'pe', coolingMethod: 'forced-air' });
+    expect(rm.heatTimeSec).toBe(cycle.heatingSec);   // 240 + 6.82 x 210 = 1672 s = 27.9 min
+    expect(rm.heatTimeSec).toBe(1672);
     expect(rm.coolTimeSec).toBe(cycle.coolingSec);
-    expect(r.provenance['rm-heat'].basis).toContain('25.0 min in the oven');
+    expect(r.provenance['rm-heat'].basis).toContain('27.9 min in the oven');
   });
 
   it('shares the oven between the parts that fit an arm', () => {

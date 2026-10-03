@@ -88,9 +88,15 @@ const RESIN_MENUS: Record<string, ResinCandidate[]> = {
   ],
   // Rotational moulding is overwhelmingly polyethylene; a short menu is the
   // honest one rather than a long list of grades nobody rotomoulds.
+  // Powder grades, not pellets: the menu offered pellet HDPE (£1.05/kg) while
+  // the library holds the roto powders (LLDPE roto £1.47/kg) and the form lists
+  // only those (rotational-moulding review).
   rotational_moulding: [
-    { id: 'mat-hdpe', grade: /hdpe|\bpe\b/, application: /tank|bin|kayak|planter|reservoir/ },
-    { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
+    { id: 'mat-lldpe-roto', grade: /lldpe|mdpe|\bpe\b|polyeth/, application: /tank|bin|kayak|planter|reservoir|duct/ },
+    { id: 'mat-hdpe-roto', grade: /hdpe/ },
+    { id: 'mat-xlpe-roto', grade: /xlpe|cross.?link/ },
+    { id: 'mat-pp-roto', grade: /\bpp\b|polyprop/ },
+    { id: 'mat-pa12-roto', grade: /pa12|nylon/ },
   ],
 };
 

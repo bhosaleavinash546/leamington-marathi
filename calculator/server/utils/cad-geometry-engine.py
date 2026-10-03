@@ -450,6 +450,46 @@ def _classify_faces(faces):
     return counts, cyl_radii
 
 
+def _enclosure(wrapped, bbox6, n_rays: int = 96) -> dict:
+    """
+    How much of the part surrounds the middle of its envelope.
+
+    Fire n rays from the envelope centre (a Fibonacci sphere, deterministic) and
+    count the share that meet the part. From inside a tank — even one with a
+    filler neck — almost every direction hits a wall; from above the floor of an
+    open tray the upper half escapes; around a pressing most rays leave. Fill
+    ratio and wall cannot tell a closed tank from an open tray (rotational-
+    moulding review: a 4 L header tank at 10% fill read as a solid, and the real
+    fuel tank and an open storage tray overlap on every fill test). If the
+    centre is inside material the share means nothing, and says so.
+    """
+    from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+    from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+    from OCP.TopAbs import TopAbs_IN, TopAbs_ON
+    from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
+    xmin, ymin, zmin, xmax, ymax, zmax = bbox6
+    c = gp_Pnt((xmin + xmax) / 2, (ymin + ymax) / 2, (zmin + zmax) / 2)
+    state = BRepClass3d_SolidClassifier(wrapped, c, 1e-6).State()
+    if state in (TopAbs_IN, TopAbs_ON):
+        return {"centreIn": "material", "rays": 0, "hitShare": None}
+    reach = math.sqrt((xmax - xmin) ** 2 + (ymax - ymin) ** 2 + (zmax - zmin) ** 2)
+    inter = IntCurvesFace_ShapeIntersector()
+    inter.Load(wrapped, 1e-4)
+    hits = 0
+    golden = math.pi * (3 - math.sqrt(5))
+    for i in range(n_rays):
+        z = 1 - 2 * (i + 0.5) / n_rays
+        r = math.sqrt(max(0.0, 1 - z * z))
+        th = golden * i
+        try:
+            inter.PerformNearest(gp_Lin(c, gp_Dir(r * math.cos(th), r * math.sin(th), z)), 0.0, reach)
+            if inter.IsDone() and inter.NbPnt() > 0:
+                hits += 1
+        except Exception:
+            continue
+    return {"centreIn": "void", "rays": n_rays, "hitShare": round(hits / n_rays, 3)}
+
+
 def _topology_report(shape):
     """Is this a closed solid we can honestly measure? — plus the void signal.
 
@@ -2201,6 +2241,11 @@ def analyze(filepath: str) -> dict:
             topology = _topology_report(shape)
         except Exception as _te:  # never let topology break the pipeline
             topology = {"available": False, "note": str(_te)[:120]}
+        enclosure = None
+        try:
+            enclosure = _enclosure(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax))
+        except Exception as _ee:
+            enclosure = {"centreIn": None, "rays": 0, "hitShare": None, "note": str(_ee)[:120]}
 
         # ── Refuse before you estimate ────────────────────────────────────────
         # An open surface model measured as if it were a solid gave a plausible
@@ -2352,6 +2397,7 @@ def analyze(filepath: str) -> dict:
             "fillRatio": fill_ratio,
             "projectedArea": projected_area,
             "topology": topology,
+            "enclosure": enclosure,
             "weights": {
                 "aluminiumKg": round(volume_mm3 * 2.70e-6, 4),
                 "steelKg":     round(volume_mm3 * 7.85e-6, 4),

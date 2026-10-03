@@ -6,34 +6,54 @@
 ROTATIONAL MOULDING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  wallThicknessMm=3  [ray-cast mean wall over 400 samples — deterministic, use verbatim]
-  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  numArms: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  projectedAreaCm2=288.4  [two largest bounding-box dimensions — deterministic, use verbatim]
-  mouldType: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² = 17.00 mm, the area-mean wall of a shell (the ray-cast mean reads 3.00 mm: rays cross the cavity and read pinch welds) — deterministic, use verbatim]
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  numArms: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  projectedAreaCm2=288.4  [estimated from the two largest bounding-box dimensions (no measured silhouette) — deterministic, use verbatim]
+  mouldType: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  machineId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  indexTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  loadUnloadTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  mouldsInService: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  powderCostAdderPerKg: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  labourId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  manning: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  oee: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  labourEfficiency: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  rejectRate: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
 
 ### context: degraded
 ROTATIONAL MOULDING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
-  materialId: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  wallThicknessMm: UNDECIDED — needs "What is the wall thickness and the part footprint?" (Enter wall thickness and footprint)
-  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  numArms: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  projectedAreaCm2=768  [two largest bounding-box dimensions — deterministic, use verbatim]
-  mouldType: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
-  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE | PP Homopolymer (MFI 12))
+  materialId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² = 17.00 mm, the area-mean wall of a shell (the ray-cast found no wall) — deterministic, use verbatim]
+  partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  coolingMethod: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  numArms: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  partsPerArm: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  projectedAreaCm2=768  [estimated from the two largest bounding-box dimensions (no measured silhouette) — deterministic, use verbatim]
+  mouldType: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  machineId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  indexTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  loadUnloadTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  mouldsInService: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  powderCostAdderPerKg: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  labourId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  manning: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  oee: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  labourEfficiency: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
+  rejectRate: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)

@@ -291,6 +291,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   thin shell gets the hollow-route question; `applyShellWallCorrection` fills a missing wall on a sparse
   shell (a complete reading — a partial one crashed `/analyze`). See `docs/cad/blow-moulding-review-2026-10.md`,
   `tests/blow-moulding-review.test.ts`; parts in `cad-audit/parts/BM_*`.
+- Rotational moulding (`cost-input-rules/commodities/rotational-moulding.ts`, `modules/rotational-moulding.ts`):
+  a carousel is paced by its SLOWEST station (`rotoIndexSec`; the module charges one arm-load per
+  `indexTimeSec`), moulds are what the volume needs (`rotoMoulds` → `mouldsInService`), never one per arm
+  position; the menu is the library's roto powders + a grinding adder; crew, OEE, load, scrap and machine are
+  rules on both paths. Closed tanks are found by the kernel's `enclosure` probe (rays from the envelope
+  centre; `enclosedShell` in derive/hollow.ts) and get the hollow-route question before the bend test. See
+  `docs/cad/rotational-moulding-review-2026-10.md`, `tests/rotational-moulding-review.test.ts`; parts in
+  `cad-audit/parts/ROTO_*`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

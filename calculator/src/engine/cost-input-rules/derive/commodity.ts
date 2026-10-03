@@ -27,7 +27,7 @@
  * override a model with.
  */
 import type { Decision, RuleContext } from '../types.js';
-import { hollowVerdict } from './hollow.js';
+import { hollowVerdict, enclosedShell } from './hollow.js';
 import { shellWallEstimateMm } from '../../geometry-sanity.js';
 import { partNames, processFromNames, netShapeSignal, hasMachinedFeatures } from './part-evidence.js';
 
@@ -157,6 +157,24 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   const wall = g.wallThickness?.meanMm ?? null;
   const maxDim = Math.max(g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm);
 
+  // 0. A closed shell, measured by the kernel's enclosure probe, is a hollow
+  //    route before anything else: a tank's rounded corners read as bend pairs,
+  //    and step 1 used to send every tank — the real fuel tank included — to a
+  //    pressing-or-moulding question with no blow or roto option on it
+  //    (rotational-moulding review). Roto leans below 10,000 a year, where its
+  //    cheap tools win; blow above, where its minute-long cycle does.
+  if (enclosedShell(g)) {
+    const mx = Math.max(g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm);
+    return {
+      decision: ask(
+        `A closed ${mx.toFixed(0)} mm shell (${Math.round((g.enclosure!.hitShare ?? 0) * 100)}% of rays from its centre `
+        + `meet a wall) — a tank or container. It cannot come out of a solid process; blow and rotational moulding `
+        + 'both make it, and the annual volume decides which.',
+        ['blow_moulding', 'rotational_moulding', 'sheet_metal'],
+        ctx.annualVolume < 10_000 ? 'rotational_moulding' : 'blow_moulding'),
+    };
+  }
+
   // 1. Bends at a sheet gauge. A moulding has no measurable bend radius on a
   //    1.5 mm wall — this is the one thin-shell signal that is not ambiguous.
   //
@@ -188,11 +206,16 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
         bosses > 0 ? `${bosses} boss(es), which a pressing does not have` : '',
         namedOther ? `the file calls it ${namedOther.hits[0].label} ("${namedOther.hits[0].text}", ${namedOther.hits[0].where})` : '',
       ].filter(Boolean).join('; ');
+      // Geometry measured before the enclosure probe cannot say whether the
+      // shell is closed; if it may be hollow, the hollow routes are offered
+      // too (the real fuel tank is in this position), never leaned on.
+      const mayBeHollow = !g.enclosure && hollowVerdict(g) === 'near-enclosed';
       return {
         decision: ask(
           `${sm.bendCount} bend-like radius pairs at a ${gauge.toFixed(1)} mm wall — a pressing, or a moulded shell `
           + `whose fillets read the same way. Against a pressing: ${evidence}.`,
-          ['injection_moulding', 'sheet_metal', 'thermoforming'], lean),
+          ['injection_moulding', 'sheet_metal', 'thermoforming',
+            ...(mayBeHollow ? ['blow_moulding', 'rotational_moulding'] : [])], lean),
       };
     }
     return {
