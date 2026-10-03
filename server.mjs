@@ -766,6 +766,10 @@ seedMarketplaceIdeasFromFile('marketplace-battery-800v-ideas.json', '800V batter
 // support the BENCHMARK, never the saving, and are flagged unreviewed
 // (evidenceUnverified). Seeded UNVERIFIED with estimated savings at 50,000/yr.
 seedMarketplaceIdeasFromFile('marketplace-luxury-suv-mhev-bev-ideas.json', 'luxury-SUV MHEV/800V BEV researched ideas');
+// 100 48 V MHEV ideas (30 technology / 35 subassembly / 35 part): the e-machine
+// and belt drive, power electronics, battery and board net, electrified
+// consumers, and system strategy — same research, dedupe and honesty contract.
+seedMarketplaceIdeasFromFile('marketplace-mhev-48v-ideas.json', '48 V MHEV researched ideas');
 
 // Provenance backfill must ALSO run after seeding: on a fresh DB the seed
 // inserts happen after the migration block above, so their origin is NULL here.
