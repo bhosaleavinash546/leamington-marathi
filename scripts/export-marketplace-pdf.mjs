@@ -2,7 +2,12 @@
 // Export the whole Idea Marketplace to one professional, light-theme PDF,
 // segregated by commodity, carrying every detail the marketplace holds.
 //
-//   node scripts/export-marketplace-pdf.mjs [out.pdf]
+//   node scripts/export-marketplace-pdf.mjs [out.pdf] [--volumes]
+//
+// --volumes also writes the report as two volumes split at the commodity
+// boundary nearest the middle (Chromium page ranges of the same document, so
+// page numbers, contents and index stay valid across both) — for channels
+// with a file-size limit.
 //
 // The ideas come from a REAL server boot on a throwaway database, so the PDF
 // holds exactly what the marketplace shows: every seed pack, upserts applied,
@@ -20,7 +25,9 @@ import { chromium } from 'playwright-core';
 import { inferCommodityKey } from '../src/data/commodity-classify.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = resolve(process.argv[2] || join(ROOT, 'exports', 'BrainSpark-Marketplace-Idea-Library.pdf'));
+const ARGS = process.argv.slice(2);
+const VOLUMES = ARGS.includes('--volumes');
+const OUT = resolve(ARGS.find(a => !a.startsWith('--')) || join(ROOT, 'exports', 'BrainSpark-Marketplace-Idea-Library.pdf'));
 const CHROME = process.env.CHROME_PATH || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium'].find(existsSync);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -326,7 +333,7 @@ ${groups.map((g, gi) => `
 }
 
 // ── 4. Render (two passes) ───────────────────────────────────────────────────
-async function render(browser, htmlText, file) {
+async function render(browser, htmlText, file, pageRanges = '') {
   const tmpHtml = file.replace(/\.pdf$/, '.html');
   writeFileSync(tmpHtml, htmlText);
   const page = await browser.newPage();
@@ -334,7 +341,7 @@ async function render(browser, htmlText, file) {
   await page.evaluate(() => document.fonts.ready);
   const stamp = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   await page.pdf({
-    path: file, format: 'A4', printBackground: true, preferCSSPageSize: true, timeout: 0,
+    path: file, format: 'A4', printBackground: true, preferCSSPageSize: true, timeout: 0, pageRanges,
     displayHeaderFooter: true,
     headerTemplate: `<div style="width:100%;font-family:Helvetica,Arial;font-size:7px;color:#8a94a3;padding:0 16mm;display:flex;justify-content:space-between"><span>BrainSpark · Idea Marketplace Library Report</span><span>${stamp}</span></div>`,
     footerTemplate: `<div style="width:100%;font-family:Helvetica,Arial;font-size:7px;color:#8a94a3;padding:0 16mm;display:flex;justify-content:space-between"><span>Estimates — savings are not additive across ideas</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>`,
@@ -369,6 +376,21 @@ try {
   const check = locate(OUT, groups);
   const moved = Object.keys(pages).filter(k => pages[k] !== check.pages[k]).length;
   console.log(`pass 2: ${check.count} pages → ${OUT}${moved ? ` (${moved} anchors moved between passes)` : ''}`);
-  // Keep only the final PDF.
+  if (VOLUMES) {
+    // Split at the commodity opener nearest the middle of the report.
+    const starts = groups.map(g => ({ g, p: check.pages['c:' + g.key] })).filter(z => z.p);
+    const mid = check.count / 2;
+    const cut = starts.slice(1).reduce((b, z) => (Math.abs(z.p - mid) < Math.abs(b.p - mid) ? z : b), starts[1]);
+    const v1 = groups.slice(0, groups.indexOf(cut.g)).map(g => g.key).join('-');
+    const v2 = groups.slice(groups.indexOf(cut.g)).map(g => g.key).join('-');
+    const finalHtml = html({ groups, total: ideas.length, pages });
+    for (const [n, range, keys] of [[1, `1-${cut.p - 1}`, v1], [2, `${cut.p}-${check.count}`, `${v2}-Index`]]) {
+      const f = OUT.replace(/\.pdf$/, `-Vol${n}-of-2-${keys}.pdf`);
+      await render(browser, finalHtml, f, range);
+      try { (await import('node:fs')).unlinkSync(f.replace(/\.pdf$/, '.html')); } catch { /* already gone */ }
+      console.log(`volume ${n}: pages ${range} → ${f}`);
+    }
+  }
+  // Keep only the final PDF(s).
   for (const f of [pass1, pass1.replace(/\.pdf$/, '.html'), OUT.replace(/\.pdf$/, '.html')]) { try { (await import('node:fs')).unlinkSync(f); } catch { /* already gone */ } }
 } finally { await browser.close(); }
