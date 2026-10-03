@@ -524,6 +524,10 @@ export function buildDossier({
   specSteps = null, functionModel = null,
   fleet = null, teardowns = null, anomalies = null,
   materials = null,
+  // Measured evidence lines (part360-evidence.mjs), preferred over the
+  // summaries above when present: they carry the numbers, thresholds and
+  // sources the summaries dropped (Prism review, 3 Oct 2026).
+  geometryLines = null, dfmLines = null, routeLines = null, drawingLines = null,
 } = {}) {
   let e = 0;
   const ref = () => `E${++e}`;
@@ -565,16 +569,26 @@ export function buildDossier({
     ...((Array.isArray(anomalies) ? anomalies : []).map(a => `INPUT CAUTION: ${a.message}`)),
   ]);
 
-  add('geometry', '3D geometry (measured)', geometry ? [
+  if (Array.isArray(drawingLines) && drawingLines.length) {
+    add('drawing', '2D drawing (read by AI from the drawing — verify against it)', drawingLines);
+  } else {
+    add('drawing', '2D drawing', 'No 2D drawing supplied (or nothing legible on it) — tolerances, GD&T and notes are unknown, so specification ideas rest on the engine classes only.');
+  }
+
+  add('geometry', '3D geometry (measured)', Array.isArray(geometryLines) && geometryLines.length ? geometryLines : geometry ? [
     geometry.bbox ? `Bounding box ${geometry.bbox}` : null,
     Number.isFinite(geometry.solidity) ? `Solidity ${(geometry.solidity * 100).toFixed(0)}% — ${geometry.solidity > 0.75 ? 'largely solid; ribbed/shelled redesign is a mass lever' : 'already shell-like'}` : null,
     Number.isFinite(geometry.charThicknessMm) ? `Characteristic wall ${geometry.charThicknessMm} mm` : null,
     geometry.featureNote ?? null,
   ] : 'No 3D model supplied — geometry-driven evidence (mass levers, process alternatives) unavailable.');
 
-  add('dfm', 'Manufacturability findings (deterministic rules)', dfm ? [
+  add('dfm', 'Manufacturability findings (deterministic rules)', Array.isArray(dfmLines) && dfmLines.length ? [
+    ...(dfm ? [`${dfm.pricedCount ?? 0} findings priced by the engine (${fmtEur(dfm.perPartEur)}/part, ${fmtEur(dfm.annualEur)}/yr), ${dfm.unpricedCount ?? 0} not priceable — each line says which.`] : []),
+    ...dfmLines,
+    dfm?.caveat ?? null,
+  ] : dfm ? [
     `${dfm.pricedCount ?? 0} findings priced by the engine (${fmtEur(dfm.perPartEur)}/part, ${fmtEur(dfm.annualEur)}/yr), ${dfm.unpricedCount ?? 0} findings honestly unpriced.`,
-    ...(dfm.topFindings ?? []).slice(0, 5).map(f => `[${f.severity}] ${f.title}${Number.isFinite(f.deltaEur) ? ` — engine-priced ${fmtEur(f.deltaEur)}/part` : ' — not engine-priceable'}`),
+    ...(dfm.topFindings ?? []).slice(0, 5).map(f => `[${f.severity}] ${f.title}${Number.isFinite(f.deltaEur) && f.deltaEur !== 0 ? ` — engine-priced ${fmtEur(f.deltaEur)}/part` : ' — not engine-priceable'}`),
     dfm.caveat ?? null,
   ] : 'DFM analysis not run — no 3D model.');
 
@@ -615,7 +629,7 @@ export function buildDossier({
     add('waterfall', 'Cost entitlement waterfall', 'Waterfall needs the should-cost inputs to resolve.');
   }
 
-  add('routes', 'Process alternatives (same geometry, every viable process)', routes ? [
+  add('routes', 'Process alternatives (same geometry, every viable process)', Array.isArray(routeLines) && routeLines.length ? routeLines : routes ? [
     ...(routes.top ?? []).map(r => `${r.process}: ${fmtEur(r.piecePriceEur)}/part (Δ ${fmtEur(r.deltaPieceEur)}), DFM ${r.score ?? '—'} @ ${r.coveragePct ?? '—'}% coverage, tooling ${fmtEur(r.toolingEur)} up-front${Number.isFinite(r.kgCo2e) ? `, ${r.kgCo2e} kgCO2e` : ''}`),
     routes.skippedNote ?? null,
   ] : 'Route comparison needs the 3D geometry.');
@@ -674,10 +688,10 @@ export function buildDossier({
 // ── Lenses and the prompt block ──────────────────────────────────────────────
 
 export const LENSES = [
-  { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'part', 'function', 'dfm', 'geometry', 'cost', 'fleet', 'teardown'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Trimming questions in the evidence are open engineering questions — answer them with specific design moves.' },
-  { id: 'process', name: 'Process shift', sections: ['context', 'part', 'routes', 'waterfall', 'dfm', 'volume', 'fleet'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
-  { id: 'material', name: 'Material & mass', sections: ['context', 'part', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown', 'catalogue'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
-  { id: 'spec', name: 'Specification & tolerance', sections: ['context', 'part', 'spec', 'forensics', 'cost'], directive: 'Convert the CALCULATED relaxation steps into concrete drawing changes — name the callouts to relax and the functional justification required. Never propose relaxing a critical characteristic without saying what validates it.' },
+  { id: 'vave', name: 'VA/VE function attack', sections: ['context', 'part', 'function', 'drawing', 'dfm', 'geometry', 'cost', 'fleet', 'teardown'], directive: 'Attack functions with poor value indices and parts/features that can be deleted, combined, or simplified. Trimming questions in the evidence are open engineering questions — answer them with specific design moves.' },
+  { id: 'process', name: 'Process shift', sections: ['context', 'part', 'geometry', 'routes', 'waterfall', 'dfm', 'volume', 'fleet'], directive: 'Close the PROCESS PREMIUM step of the waterfall. Use only the DFM-viable alternatives listed; spell out the full alternative route (forming + secondary ops + finishing), address their top findings and the up-front tooling cheque in the idea itself, and state why the route satisfies the stated part function.' },
+  { id: 'material', name: 'Material & mass', sections: ['context', 'part', 'drawing', 'geometry', 'cost', 'spec', 'dfm', 'fleet', 'teardown', 'catalogue'], directive: 'Cut material cost: substitution to a cheaper compatible grade, buy-to-fly reduction, and mass-out moves the solidity/wall evidence supports. Name the SPECIFIC alternative grade (never a family), its decisive properties versus the stated part function, and why it survives the duty the context lines describe — a substitution the stated function rules out is a DEFECT, not an idea. Include an engineCheckRequest for every substitution or mass change.' },
+  { id: 'spec', name: 'Specification & tolerance', sections: ['context', 'part', 'drawing', 'geometry', 'spec', 'forensics', 'cost'], directive: 'Convert the CALCULATED relaxation steps into concrete drawing changes — name the callouts to relax and the functional justification required. Never propose relaxing a critical characteristic without saying what validates it.' },
   { id: 'commercial', name: 'Supplier & commercial', sections: ['context', 'part', 'forensics', 'waterfall', 'regions', 'volume', 'quote'], directive: 'Close the COMMERCIAL GAP and FOOTPRINT steps: negotiation arguments anchored on the forensics verdicts (quote lines above the model band), amortisation corrections, and resourcing options with their stated ex-works caveat.' },
   { id: 'benchmark', name: 'Benchmark transfer', sections: ['context', 'part', 'cost', 'dfm', 'waterfall', 'fleet', 'teardown'], directive: 'Transfer PROVEN levers from the marketplace precedents in your context to THIS part\'s measured gaps. Say which precedent, and which evidence line it lands on.' },
 ];

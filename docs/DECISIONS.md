@@ -4467,3 +4467,14 @@ idea whose object closed is salvaged (`salvageIdeasFromPartialJson`); the
 re-run happens only when nothing survived. The prompt caps the list at 12
 ideas (it said "do not stop at 8 — generate all"), and the output budget is
 32k tokens.
+
+## 110. Prism's evidence carries the measurement, not a summary of it
+
+The DFM measurement, the rule findings (measured value, limit, fix, source),
+the route comparison and the whole drawing extraction now reach the
+generation prompt through `part360-evidence.mjs`. The page sends the geometry
+*with* its `dfm` block, so the waterfall's route step and the route evidence
+judge processes on the full rule set. An unpriced finding is never printed as
+"€0.00". Engine checks on Prism ideas use the part's own mass
+(`config.partWeightKg`). Next steps, chiefly rendered views for AI vision, are
+in docs/PRISM-360-REVIEW-2026-10-03.md.

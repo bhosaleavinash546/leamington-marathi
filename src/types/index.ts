@@ -193,6 +193,8 @@ export interface AnalysisConfig {
   systemId: string;
   subassemblyId: string;
   partId?: string;
+  /** The part's mass (kg) — the engine check's reference weight when an idea states none (Prism). */
+  partWeightKg?: number;
   vehicleType: string;
   bodyStyle?: BodyStyle;
   annualVolume?: number;

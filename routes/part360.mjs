@@ -42,6 +42,8 @@ import {
 import { computeShouldCost as engineShouldCost } from '../costing-engine.mjs';
 import { familyOfMaterial, familyForSelection } from '../dfm-process-registry.mjs';
 import { analyzeGeometry, decomposeAssembly } from '../cad-engine/cad-geometry-bridge.mjs';
+import { geometryEvidenceLines, dfmFindingLines, routeEvidenceLines, drawingEvidenceLines } from '../part360-evidence.mjs';
+import { compareRoutes, recommendableRoutes } from '../dfm-routing.mjs';
 
 // Zero-touch batch: bounded so one request cannot pin the OCCT workers all day.
 const batchUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 12, fields: 24, parts: 40 } });
@@ -402,10 +404,17 @@ Rules:
         perPartEur: Number(dfmIn.perPartEur) || null,
         annualEur: Number(dfmIn.annualEur) || null,
         caveat: dfmIn.caveat ? sanitize(String(dfmIn.caveat), 200) : null,
-        topFindings: (Array.isArray(dfmIn.topFindings) ? dfmIn.topFindings : []).slice(0, 8).map(f => ({
+        topFindings: (Array.isArray(dfmIn.topFindings) ? dfmIn.topFindings : []).slice(0, 12).map(f => ({
           severity: ['high', 'medium', 'low'].includes(f.severity) ? f.severity : 'medium',
           title: sanitize(String(f.title ?? ''), 160),
-          deltaEur: Number.isFinite(Number(f.deltaEur)) ? Number(f.deltaEur) : null,
+          // null is "not priced" — Number(null) is 0, and every unpriced
+          // finding reached the model as "engine-priced €0.00/part".
+          deltaEur: f.deltaEur == null || f.deltaEur === '' || !Number.isFinite(Number(f.deltaEur)) ? null : Number(f.deltaEur),
+          measured: f.measured == null ? null : sanitize(String(f.measured), 40),
+          unit: f.unit ? sanitize(String(f.unit), 40) : null,
+          thresholdText: f.thresholdText ? sanitize(String(f.thresholdText), 80) : null,
+          fix: f.fix ? sanitize(String(f.fix), 240) : null,
+          source: f.source ? sanitize(String(f.source), 120) : null,
         })),
       } : null;
 
@@ -435,7 +444,24 @@ Rules:
         cadDerivedMassKg: b.geo ? cadMassKg(b.geo, material, library?.MATERIALS) : null,
       });
 
+      // Measured evidence with its numbers (part360-evidence.mjs). The geometry
+      // arrives with its `dfm` measurement block attached; the route comparison
+      // runs on that same object. Every line is sanitized on its way in.
+      const geoFull = b.geo && typeof b.geo === 'object' ? b.geo : null;
+      const clean = (lines) => lines.map(l => sanitize(String(l), 500)).filter(Boolean);
+      const geometryLines = geoFull ? clean(geometryEvidenceLines(geoFull)) : null;
+      const dfmLines = dfm?.topFindings?.length ? clean(dfmFindingLines(dfm.topFindings)) : null;
+      let routeLines = null;
+      if (geoFull?.dfm) {
+        try {
+          const cmp = compareRoutes(geoFull, { material: resolveMaterial(material, library.MATERIALS)?.key ?? material, region, annualVolume, weightKg, chosenProcess: resolveRoute(processName, library.PROCESSES)?.keys?.[0] ?? processName, library });
+          routeLines = clean(routeEvidenceLines(cmp.routes, recommendableRoutes(cmp.routes)));
+        } catch { /* stays null — the section states its absence */ }
+      }
+      const drawingLines = b.drawingExtract && typeof b.drawingExtract === 'object' ? clean(drawingEvidenceLines(b.drawingExtract)) : null;
+
       const dossier = buildDossier({
+        geometryLines, dfmLines, routeLines, drawingLines,
         part: { partName, material, process: processName, weightKg, annualVolume, region },
         // The user's own statement of what the part is and does — the
         // requirement every alternative is judged against. User text entering

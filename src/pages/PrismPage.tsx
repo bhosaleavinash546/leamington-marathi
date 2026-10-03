@@ -220,6 +220,9 @@ export default function Part360Page() {
   const [dfmResult, setDfmResult] = useState<DfmResponse | null>(null);
   const [dfmFailed, setDfmFailed] = useState(false);
   const [drawingRead, setDrawingRead] = useState<{ dims: number; toleranced: number } | null>(null);
+  // The whole drawing extraction (title block, dimensions, GD&T, finish,
+  // notes) — it reaches the dossier as evidence, not just two spec numbers.
+  const [drawingExtract, setDrawingExtract] = useState<Record<string, unknown> | null>(null);
   // Drawing-derived spec inputs — PREFILL the user can overrule (absent stays absent).
   const [tightestTolMm, setTightestTolMm] = useState('');
   const [roughnessRaUm, setRoughnessRaUm] = useState('');
@@ -342,6 +345,7 @@ export default function Part360Page() {
         const tightest = toleranced.length ? Math.min(...toleranced.map(x => Number(x.bandMm))) : null;
         const ras: number[] = (d.drawing?.roughness ?? []).map((x: { raUm?: number }) => Number(x.raUm)).filter((n: number) => Number.isFinite(n) && n > 0);
         setDrawingRead({ dims: dims.length, toleranced: toleranced.length });
+        setDrawingExtract(d.drawing ?? null);
         if (tightest != null) setTightestTolMm(String(tightest));
         if (ras.length) setRoughnessRaUm(String(Math.min(...ras)));
         log(`Drawing read: ${dims.length} dimensions, ${toleranced.length} toleranced${tightest != null ? `, tightest band ${tightest} mm` : ''}. Confirm the spec fields below.`);
@@ -492,7 +496,15 @@ export default function Part360Page() {
           total: Number(quoteTotal), currency: quoteCurrency, supplier: supplier || undefined,
           lines: quoteLines.filter(l => Number(l.amount) > 0).map(l => ({ label: l.label, kind: l.kind, amount: Number(l.amount) })),
         } : undefined,
-        geo: dfmResult?.geometry ?? undefined,
+        // The geometry WITH its DFM measurement block. Sending geometry alone
+        // left the waterfall's route comparison judging every process on 5 of
+        // 17 rules instead of 13 (Prism review, 3 Oct 2026).
+        geo: dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : undefined,
+        drawingExtract: drawingExtract ? {
+          titleBlock: drawingExtract.titleBlock, readability: drawingExtract.readability,
+          dimensions: Array.isArray(drawingExtract.dimensions) ? (drawingExtract.dimensions as unknown[]).slice(0, 80) : undefined,
+          gdt: drawingExtract.gdt, roughness: drawingExtract.roughness, notes: drawingExtract.notes,
+        } : undefined,
         // Human-readable geometry section for the dossier, derived from the
         // SAME measured object that feeds compareRoutes above.
         geometrySummary: dfmResult?.geometry ? (() => {
@@ -512,7 +524,12 @@ export default function Part360Page() {
         })() : undefined,
         dfmSummary: best?.impact ? {
           ...best.impact,
-          topFindings: best.findings.slice(0, 8).map(f => ({ severity: f.severity, title: f.title, deltaEur: f.cost?.deltaEur ?? null })),
+          // With the measurement, the limit, the rule's fix and its source:
+          // titles alone gave the model nothing to size an idea against.
+          topFindings: best.findings.slice(0, 12).map(f => {
+            const x = f as typeof f & { measured?: unknown; unit?: string; thresholdText?: string; fix?: string; source?: string };
+            return { severity: f.severity, title: f.title, deltaEur: f.cost?.deltaEur ?? null, measured: x.measured ?? null, unit: x.unit, thresholdText: x.thresholdText, fix: x.fix, source: x.source };
+          }),
         } : undefined,
       };
       const r = await fetch('/api/part360/dossier', {
@@ -545,6 +562,7 @@ export default function Part360Page() {
         systemId: 'part360', subassemblyId: 'part360',
         vehicleType: 'Platform-agnostic component',
         annualVolume: Number(annualVolume),
+        partWeightKg: Number(weightKg) > 0 ? Number(weightKg) : undefined,
         plantRegion: REGION_TO_PLANT[region] ?? 'germany',
         currency: 'EUR',
         additionalContext: `Prism review of "${partName || 'the part'}" (${material}, ${processName}, ${weightKg} kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}).${partContext.trim() ? ` Part function as stated by the user: ${partContext.trim().slice(0, 500)}` : ''}`,
@@ -1200,7 +1218,7 @@ export default function Part360Page() {
                     <div className="text-2xs text-slate-500 mt-1 pl-6">{cadFile ? 'Will be measured by the DFM engines and priced down every viable process route.' : 'Without it, the waterfall’s process step is honestly skipped ("geometry absent").'}</div>
                   </motion.button>
                   <input ref={drawingInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden"
-                    onChange={e => { setDrawingFile(e.target.files?.[0] ?? null); setDrawingRead(null); }} />
+                    onChange={e => { setDrawingFile(e.target.files?.[0] ?? null); setDrawingRead(null); setDrawingExtract(null); }} />
                   <motion.button {...m.press} onClick={() => drawingInputRef.current?.click()}
                     className={`dfm-lift w-full border-2 border-dashed rounded-xl p-4 text-left ${drawingFile ? 'border-teal-500/40 bg-teal-500/5' : 'border-white/15 hover:border-white/30'}`}>
                     <div className="flex items-center gap-2 text-sm text-white font-medium">

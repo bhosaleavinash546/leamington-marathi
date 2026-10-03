@@ -118,6 +118,11 @@ http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ type: 'error', error }));
   }
   let p = {}; try { p = JSON.parse(body); } catch {}
+  // FAKE_LLM_CAPTURE_DIR: save every request body — what the app actually
+  // sent the model — so a review can read the evidence, not infer it.
+  if (process.env.FAKE_LLM_CAPTURE_DIR) {
+    try { (await import('node:fs')).writeFileSync(`${process.env.FAKE_LLM_CAPTURE_DIR}/req-${String(stats.requests).padStart(3, '0')}.json`, body); } catch { /* capture is best-effort */ }
+  }
   const tool = (p.tools || []).find(t => t.name === 'emit_ideas') || (p.tools || [])[0];
   // TRIZ's first step maps the contradiction onto two of the 39 parameters.
   // A synthetic pair (weight of moving object vs strength) by default;

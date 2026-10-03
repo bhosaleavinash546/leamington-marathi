@@ -3529,7 +3529,11 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         region,
         annualVolume: effectiveVolume,
         library: lib,
-        defaultWeightKg: Number(cadGeometry?.estimatedMass) > 0 ? Number(cadGeometry.estimatedMass) : 1.0,
+        // The part's own mass: CAD-estimated, else the one Prism measured or the
+        // user stated (config.partWeightKg). Prism sent neither, so every check
+        // without a stated mass was priced on a 1 kg part (Prism review, 3 Oct 2026).
+        defaultWeightKg: Number(cadGeometry?.estimatedMass) > 0 ? Number(cadGeometry.estimatedMass)
+          : Number(config.partWeightKg) > 0 && Number(config.partWeightKg) <= 500 ? Number(config.partWeightKg) : 1.0,
       });
       validationSummary.engineChecks = ecSummary;
       if (ecSummary.checked > 0) emit({ type: 'progress', message: `Engine-verified ${ecSummary.checked} idea${ecSummary.checked === 1 ? '' : 's'} (${ecSummary.confirmed} confirmed, ${ecSummary.contradicted} contradicted).` });
