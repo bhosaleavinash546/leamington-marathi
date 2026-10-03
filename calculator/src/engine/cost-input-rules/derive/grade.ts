@@ -24,6 +24,7 @@
  * alloy v carbon steel), which the family alone could not.
  */
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
+import { MATERIAL_SCOPE_BY_COMMODITY } from '../../material-scope.js';
 import type { MaterialRate } from '../../types.js';
 import type { MaterialFamily } from '../../material-family.js';
 import type { ForgingAlloyFamily } from '../../modules/forging-advisor.js';
@@ -35,15 +36,11 @@ import { partNames } from './part-evidence.js';
 
 export const GRADE_DECISION_ID = 'material.grade';
 
-/**
- * Which library categories each route buys. Kept equal to the forms' drop-down
- * scopes (src/ui/material-scope.ts; tests/casting-forging-materials.test.ts holds
- * them together) — the engine does not import the UI.
- */
+/** Which library categories each route buys — the engine's one scope table (src/engine/material-scope.ts). */
 export const GRADE_SCOPE: Record<string, RegExp> = {
-  casting: /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy|^Copper Alloy$/i,
-  cast_and_machine: /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy|^Copper Alloy$/i,
-  forging: /^(?!.*Extrusion).*Billet/i,
+  casting: MATERIAL_SCOPE_BY_COMMODITY.casting,
+  cast_and_machine: MATERIAL_SCOPE_BY_COMMODITY.cast_and_machine,
+  forging: MATERIAL_SCOPE_BY_COMMODITY.forging,
 };
 
 /** The grades a route offers for a family; aluminium castings by route (die v gravity / sand). */

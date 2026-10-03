@@ -106,8 +106,9 @@ const rmCtx = mk('rotational_moulding', WATER_TANK, 'water-tank-300l.step', 3_00
 const rubCtx = mk('rubber', MOUNT, 'engine-mount-bush.step', 80_000);
 const compCtx = mk('composites', PANEL, 'cfrp-floor-panel.step', 500);
 
-const HIPS = { [RESIN_DECISION_ID]: 'mat-hips' };
-const PE = { [RESIN_DECISION_ID]: 'mat-hdpe' };
+// In-scope grades (material scope review): thermoforming buys SHEET, rotomoulding POWDER.
+const HIPS = { [RESIN_DECISION_ID]: 'mat-hips-tf' };
+const PE = { [RESIN_DECISION_ID]: 'mat-hdpe-roto' };
 const EPDM = { [ELASTOMER_DECISION_ID]: 'mat-epdm' };
 const CF = { [LAMINATE_DECISION_ID]: 'prepreg-cf' };
 

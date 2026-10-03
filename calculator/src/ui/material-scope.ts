@@ -1,8 +1,8 @@
 /**
  * Which library grades each commodity form's material drop-down offers, keyed
  * by the <select> id and matched (case-insensitive) against a material's
- * `category`. Keeps a forging picker on billets and a moulding picker on resins
- * instead of all ~320 grades. A select id not listed offers the full catalogue.
+ * `category`. The scopes are the engine's own (material scope review). Keeps a forging picker on billets and a moulding picker on resins
+ * instead of all ~430 grades. Every material drop-down is listed here (tests/material-scope-review.test.ts).
  *
  * Kept out of main.ts because the rules must never pick a grade the form
  * cannot show: the form only accepts a value its list offers, and a rejected
@@ -11,17 +11,20 @@
  * tests/material-scope-parity.test.ts checks every representative grade
  * against the drop-down it lands in.
  */
-export const MATERIAL_SCOPE_BY_SELECT: Record<string, RegExp> = {
-  'forge-mat': /^(?!.*Extrusion).*Billet/i,                                                  // closed-die forging → wrought billets, not the aluminium extrusion logs (materials review, Oct 2026)
-  'mach-mat':  /Billet|^Carbon Steel$|^Alloy Steel$|^Stainless Steel$|^Aluminium$|^Titanium$|Copper Alloy|Magnesium Alloy|Spring Steel|Engineering Plastic|Grey Cast Iron|Ductile Cast Iron/i, // machined from bar/billet, incl. continuous-cast iron bar
-  'cast-mat':  /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy|^Copper Alloy$/i, // foundry alloys (cast bronze sits under Copper Alloy)
-  'cam-mat':   /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy|^Copper Alloy$/i, // cast-and-machine = cast alloys
-  'imm-mat':   /Thermoplastic|Engineering Plastic|Additive|Masterbatch/i,                    // injection-moulding resins
-  'bm-mat':    /Blow Moulding|Thermoplastic Elastomer/i,                                      // blow-moulding grades
-  'rm-mat':    /Rotational Moulding/i,
-  'tf-mat':    /Thermoforming/i,
-  'ext-mat':   /^Extrusion$/i,                                                                 // polymer grades only — /Extrusion/ also offered the aluminium billets (review, Oct 2026)
-  'rub-mat':   /Rubber|Thermoplastic Elastomer/i,
-  'sm-mat':    /Sheet|Spring Steel Strip/i,                                                   // sheet-metal grades
-  'smf-mat':   /Sheet|Spring Steel Strip/i,
+import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
+
+/** Each form's material drop-down → the commodity whose scope it shows. */
+export const SELECT_COMMODITY: Record<string, string> = {
+  'mach-mat': 'machining', 'cast-mat': 'casting', 'cam-mat': 'cast_and_machine', 'forge-mat': 'forging',
+  'gear-mat': 'gear', 'sm-mat': 'sheet_metal', 'smf-mat': 'sheet_metal_fab', 'imm-mat': 'injection_moulding',
+  'bm-mat': 'blow_moulding', 'rm-mat': 'rotational_moulding', 'tf-mat': 'thermoforming', 'ext-mat': 'extrusion',
+  'rub-mat': 'rubber',
 };
+
+/**
+ * The scope of each drop-down, from the ENGINE's table (src/engine/material-scope.ts)
+ * — the screen offers exactly what the engine costs (material scope review, Oct 2026).
+ */
+export const MATERIAL_SCOPE_BY_SELECT: Record<string, RegExp> = Object.fromEntries(
+  Object.entries(SELECT_COMMODITY).map(([sel, com]) => [sel, MATERIAL_SCOPE_BY_COMMODITY[com]]),
+);

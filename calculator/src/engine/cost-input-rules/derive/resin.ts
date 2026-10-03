@@ -19,6 +19,7 @@
  * owns is cavity pressure, which no other module carries.
  */
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
+import { inMaterialScope } from '../../material-scope.js';
 import { autoCoolFactorForMaterial } from '../../modules/injection-moulding.js';
 import type { Decision, RuleContext } from '../types.js';
 
@@ -74,10 +75,14 @@ const RESIN_MENUS: Record<string, ResinCandidate[]> = {
     { id: 'mat-pa66gf30', grade: /pa66|nylon.?66/ },
     { id: 'mat-pom', grade: /\bpom\b|acetal|delrin/ },
   ],
+  // Blow GRADES, not pellets (material scope review, Oct 2026): the menu offered
+  // the injection pellets, which the blow-moulding drop-down never listed.
   blow_moulding: [
-    { id: 'mat-hdpe', grade: /hdpe|\bpe\b/, application: /tank|jerrican|drum|duct/ },
-    { id: 'mat-pp-homo', grade: /\bpp\b|polyprop/ },
-    { id: 'mat-pet-bg', grade: /\bpet\b/, application: /bottle/ },
+    { id: 'mat-hdpe-bm', grade: /hdpe|\bpe\b/, application: /tank|jerrican|drum|duct|reservoir|bottle/ },
+    { id: 'mat-pp-bm', grade: /\bpp\b|polyprop/ },
+    { id: 'mat-pet-preform', grade: /\bpet\b/, application: /bottle/ },
+    { id: 'mat-pa6-bm', grade: /\bpa6\b|nylon/, application: /charge.?air|turbo/ },
+    { id: 'mat-ldpe-bm', grade: /ldpe/ },
   ],
   // Sheet grades, not pellets: the extruded sheet is what a former buys, and
   // the form lists only those (thermoforming review).
@@ -165,7 +170,9 @@ export function resinFacts(ctx: RuleContext): ResinFacts {
   // particular answers with whatever grade it picked, which is routinely a
   // sensible resin outside a six-item shortlist.
   const answered = ctx.answers[RESIN_DECISION_ID];
-  if (typeof answered === 'string' && lookup(answered)) {
+  // Any grade IN THIS COMMODITY'S SCOPE is a valid answer (material scope review):
+  // a blow-moulding grade answered into injection moulding is asked again.
+  if (typeof answered === 'string' && lookup(answered) && inMaterialScope(ctx.commodity, lookup(answered)!.category)) {
     return factsFor(answered, volumeCm3,
       menu.some(c => c.id === answered) ? 'chosen by the engineer' : 'chosen off-menu');
   }

@@ -134,7 +134,8 @@ describe('the resin question', () => {
 
   it('offers blow-moulding resins to a blow-moulded part', () => {
     const d = resinFacts(bmCtx()).decision!;
-    expect(d.options.map(o => o.value)).toEqual(['mat-hdpe', 'mat-pp-homo', 'mat-pet-bg']);
+    // Blow GRADES since the material scope review (the pellets were never in the blow drop-down).
+    expect(d.options.map(o => o.value)).toEqual(['mat-hdpe-bm', 'mat-pp-bm', 'mat-pet-preform', 'mat-pa6-bm', 'mat-ldpe-bm']);
   });
 
   it('raises cavity pressure for glass fill', () => {
@@ -281,7 +282,7 @@ describe('blow moulding', () => {
   it('bounds the capacity from the envelope but refuses to answer for the engineer', () => {
     // 201.6 L of bounding box, 6.2% of it plastic.
     expect(envelopeCapacityL(bmCtx())).toBeCloseTo(189.1, 0);
-    const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(FUEL_TANK, { [RESIN_DECISION_ID]: 'mat-hdpe' }));
+    const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(FUEL_TANK, { [RESIN_DECISION_ID]: 'mat-hdpe-bm' }));
     const d = r.decisions.find(x => x.id === CAPACITY_DECISION_ID)!;
     expect(d.severity).toBe('blocking');
     expect(d.why).toContain('a void is not a solid');
@@ -296,14 +297,14 @@ describe('blow moulding', () => {
       if (r.status === 'complete') break;
       const d = r.decisions[0];
       seq.push(d.id);
-      answers[d.id] = { [RESIN_DECISION_ID]: 'mat-hdpe', [CAPACITY_DECISION_ID]: 'over_20', [BARRIER_DECISION_ID]: 'barrier' }[d.id];
+      answers[d.id] = { [RESIN_DECISION_ID]: 'mat-hdpe-bm', [CAPACITY_DECISION_ID]: 'over_20', [BARRIER_DECISION_ID]: 'barrier' }[d.id];
     }
     expect(seq).toEqual([RESIN_DECISION_ID, CAPACITY_DECISION_ID, BARRIER_DECISION_ID]);
   });
 
   it('costs a coex tank on the barrier grade and the multi-layer co-ex head', () => {
     const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(FUEL_TANK, {
-      [RESIN_DECISION_ID]: 'mat-hdpe',
+      [RESIN_DECISION_ID]: 'mat-hdpe-bm',
       [CAPACITY_DECISION_ID]: 'over_20',
       [BARRIER_DECISION_ID]: 'barrier',
     }));
@@ -312,8 +313,8 @@ describe('blow moulding', () => {
 
     expect(bm.materialId).toBe('mat-hdpe-fuel-coex');
     expect(bm.process).toBe('ebm_coex5');
-    expect(bm.partWeightKg).toBe(12);                 // 12,500 cm³ x 960 kg/m³
-    expect(bm.flashWeightKg).toBe(2.64);              // 22% above 3 kg
+    expect(bm.partWeightKg).toBe(11.875);             // 12,500 cm³ x 950 kg/m³ (HDPE blow grade)
+    expect(bm.flashWeightKg).toBe(2.6125);            // 22% above 3 kg (of the 11.875 kg blow-grade part)
     // The barrier wall needs the multi-layer head, as the process and headless
     // already said (blow-moulding review: the rule used to pick the mono-layer
     // accumulator by shot weight, headless the co-ex head).
@@ -330,19 +331,19 @@ describe('blow moulding', () => {
 
   it('keeps a mono-layer tank on its own grade', () => {
     const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(FUEL_TANK, {
-      [RESIN_DECISION_ID]: 'mat-hdpe',
+      [RESIN_DECISION_ID]: 'mat-hdpe-bm',
       [CAPACITY_DECISION_ID]: 'over_20',
       [BARRIER_DECISION_ID]: 'mono',
     }));
     const bm = r.suggestions.blowMoulding as Record<string, string>;
-    expect(bm.materialId).toBe('mat-hdpe');
+    expect(bm.materialId).toBe('mat-hdpe-bm');
     expect(bm.process).toBe('ebm_large');
   });
 
   it('never asks the barrier question where it cannot change anything', () => {
     // A PET bottle has no EVOH decision to make.
     const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(BOTTLE, {
-      [RESIN_DECISION_ID]: 'mat-pet-bg', [CAPACITY_DECISION_ID]: '0p25_2',
+      [RESIN_DECISION_ID]: 'mat-pet-preform', [CAPACITY_DECISION_ID]: '0p25_2',
     }, { filename: 'bottle.step', annualVolume: 20_000_000 }));
     expect(r.status).toBe('complete');
     expect(r.decisions).toHaveLength(0);
@@ -350,7 +351,7 @@ describe('blow moulding', () => {
 
   it('charges no pinch-off flash to a process that makes none', () => {
     const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(BOTTLE, {
-      [RESIN_DECISION_ID]: 'mat-pet-bg', [CAPACITY_DECISION_ID]: '0p25_2',
+      [RESIN_DECISION_ID]: 'mat-pet-preform', [CAPACITY_DECISION_ID]: '0p25_2',
     }, { filename: 'bottle.step', annualVolume: 20_000_000 }));
     const bm = r.suggestions.blowMoulding as Record<string, number | string>;
     expect(bm.process).toBe('sbm_2stage');
@@ -375,7 +376,7 @@ describe('blow moulding', () => {
       ...FUEL_TANK,
       topology: { available: true, openShell: true, enclosesSealedVoid: false },
     } as unknown as OCCTGeometry;
-    const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(open, { [RESIN_DECISION_ID]: 'mat-hdpe' }));
+    const r = runCostInputRules(BLOW_MOULDING_RULES, bmCtx(open, { [RESIN_DECISION_ID]: 'mat-hdpe-bm' }));
     const d = r.decisions.find(x => x.id === 'blow.notHollow');
     expect(d).toBeDefined();
     expect(d!.options.map(o => o.value)).toContain('injection_moulding');
@@ -386,7 +387,7 @@ describe('the prompt cannot say anything the engine would not compute', () => {
   const cases: Array<[string, typeof INJECTION_MOULDING_RULES, RuleContext]> = [
     ['injection moulding', INJECTION_MOULDING_RULES, imCtx(BUMPER, PP)],
     ['blow moulding', BLOW_MOULDING_RULES, bmCtx(FUEL_TANK, {
-      [RESIN_DECISION_ID]: 'mat-hdpe',
+      [RESIN_DECISION_ID]: 'mat-hdpe-bm',
       [CAPACITY_DECISION_ID]: 'over_20',
       [BARRIER_DECISION_ID]: 'barrier',
     })],

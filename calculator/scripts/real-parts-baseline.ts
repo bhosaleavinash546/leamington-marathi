@@ -173,12 +173,12 @@ export const ANSWERS: Record<string, {
   // pinned in tests/blow-moulding-review.test.ts instead.
   'BM_Washer_Reservoir.stp': {
     note: 'MODELLED: 220 × 160 × 130 mm HDPE washer reservoir, 2.5 mm wall, Ø40 filler neck (~3.8 L).',
-    answers: { 'material.family': 'plastic', 'material.resin': 'mat-hdpe',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-hdpe-bm',
                'commodity.route': 'blow_moulding', 'blow.capacityL': '2_20' },
   },
   'BM_Air_Duct.stp': {
     note: 'MODELLED: Ø70 × 2 mm PP air duct with a 90° elbow, open both ends (2.5 L inside).',
-    answers: { 'material.family': 'plastic', 'material.resin': 'mat-pp-homo',
+    answers: { 'material.family': 'plastic', 'material.resin': 'mat-pp-bm',
                'commodity.route': 'blow_moulding', 'blow.capacityL': 'exact', 'blow.capacityExactL': '2.5' },
   },
   // ── Rotational moulding (rotational-moulding review, 3 Oct 2026) ─────────

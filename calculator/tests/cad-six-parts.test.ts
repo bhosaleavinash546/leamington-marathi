@@ -180,7 +180,7 @@ const PARTS: Part[] = [
     aiMassKg: 83, aiMaterialId: 'mat-lm25',
     manualGBP: [20, 30], aiFirstAnswerGBP: 216.97,
     answers: {
-      [RESIN_DECISION_ID]: 'mat-hdpe',
+      [RESIN_DECISION_ID]: 'mat-hdpe-bm',
       [CAPACITY_DECISION_ID]: 'over_20',
       [BARRIER_DECISION_ID]: 'barrier',
     },

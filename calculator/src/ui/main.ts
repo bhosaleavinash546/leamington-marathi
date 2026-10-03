@@ -2,6 +2,7 @@
 import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
 import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
+import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
@@ -11577,18 +11578,10 @@ function switchCommodity(type: CommodityType): void {
       populateSelects();
       wireSheetMetalFabAdvisor();
       setTimeout(() => {
-        // ── Material — filter to sheet metal categories only ──────────────────
-        const smfMatCats = new Set([
-          'Mild Steel Sheet', 'Galvanised Steel Sheet', 'Electrogalvanised Steel Sheet',
-          'AHSS Sheet', 'High Strength Steel Sheet', 'Ultra-High Strength Steel',
-          'Aluminium Sheet', 'Stainless Steel Sheet', 'Copper & Brass Sheet',
-        ]);
+        // ── Material — scoped to sheet grades (src/engine/material-scope.ts); this
+        //    form's own shorter list dropped the IF, coated and hot-stamping grades.
         const matEl = el<HTMLSelectElement>('smf-mat');
-        if (matEl) {
-          const smfMats = library.materials.filter(m => smfMatCats.has(m.category));
-          matEl.innerHTML = smfMats.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.grade)} — £${m.pricePerKg.toFixed(2)}/kg</option>`).join('');
-          if (Array.from(matEl.options).some(o => o.value === 'mat-dc01')) matEl.value = 'mat-dc01';
-        }
+        if (matEl && Array.from(matEl.options).some(o => o.value === 'mat-dc01')) matEl.value = 'mat-dc01';
         // ── Blanking machine — filter to laser/plasma/waterjet/punch/shear ────
         const blankMachIds = new Set([
           'laser-trumpf-3030', 'laser-trumpf-5030', 'laser-amada-ensis-3015', 'laser-bystronic-3015',
@@ -11796,14 +11789,10 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderBlowMouldingForm();
       populateSelects();
       setTimeout(() => {
-        // Filter material select to blow-moulding-relevant materials only
+        // The picker is scoped to blow grades (src/engine/material-scope.ts); it used to
+        // add the injection pellets back and default to one of them.
         const matEl = el<HTMLSelectElement>('bm-mat');
-        if (matEl) {
-          const bmMatIds = new Set(['mat-hdpe', 'mat-ldpe', 'mat-pet-bg']);
-          const bmMats = library.materials.filter(m => m.category === 'Blow Moulding' || bmMatIds.has(m.id));
-          matEl.innerHTML = bmMats.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.grade)} — £${m.pricePerKg.toFixed(2)}/kg</option>`).join('');
-          if (Array.from(matEl.options).some(o => o.value === 'mat-hdpe')) matEl.value = 'mat-hdpe';
-        }
+        if (matEl && Array.from(matEl.options).some(o => o.value === 'mat-hdpe-bm')) matEl.value = 'mat-hdpe-bm';
         // Filter machine select to blow-moulding machines only
         const bmMachIds = new Set(['blow-ebm-100l','blow-ebm-500l','blow-ebm-2head','blow-ebm-coex3','blow-ebm-coex5','blow-ebm-large','blow-ibm-rotary','blow-ibm-linear','blow-sbm-1stage','blow-sbm-2stage','blow-deflash-trimmer']);
         const machEl = el<HTMLSelectElement>('bm-mach');
@@ -11836,19 +11825,16 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderExtrusionForm();
       populateSelects();
       setTimeout(() => {
-        // Filter the material picker to polymer/extrusion families (not metals/castings/forgings).
-        const allowMat = new Set(['Extrusion', 'Thermoplastic', 'Blow Moulding', 'Thermoplastic Elastomer', 'High-Performance Thermoplastic', 'Rubber']);
+        // The picker is already scoped to extrusion grades (src/engine/material-scope.ts).
         const matEl = el<HTMLSelectElement>('ext-mat');
         if (matEl) {
-          const catOf = (id: string) => library.materials.find(m => m.id === id)?.category ?? '';
-          Array.from(matEl.options).forEach(o => { if (!allowMat.has(catOf(o.value))) o.remove(); });
           const pref = Array.from(matEl.options).find(o => o.value === 'mat-pe100-pipe') || Array.from(matEl.options).find(o => o.value.includes('mat-hdpe'));
           if (pref) matEl.value = pref.value;
         }
         // Populate the additive/masterbatch picker.
         const addEl = el<HTMLSelectElement>('ext-additive');
         if (addEl) {
-          const adds = library.materials.filter(m => m.category === 'Additive / Masterbatch');
+          const adds = library.materials.filter(m => MATERIAL_SCOPE_BY_COMMODITY.additive.test(m.category));
           addEl.innerHTML = '<option value="">None</option>' + adds.map(a => `<option value="${a.id}">${a.grade} — ${_currFmt(a.pricePerKg)}/kg</option>`).join('');
         }
         const machEl = el<HTMLSelectElement>('ext-mach');
@@ -11861,19 +11847,16 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderThermoformingForm();
       populateSelects();
       setTimeout(() => {
-        // Filter the material picker to formable sheet grades (not metals/castings/forgings).
-        const allowMat = new Set(['Thermoforming Sheet', 'Thermoplastic', 'Extrusion', 'High-Performance Thermoplastic']);
+        // The picker is already scoped to thermoforming sheet (src/engine/material-scope.ts).
         const matEl = el<HTMLSelectElement>('tf-mat');
         if (matEl) {
-          const catOf = (id: string) => library.materials.find(m => m.id === id)?.category ?? '';
-          Array.from(matEl.options).forEach(o => { if (!allowMat.has(catOf(o.value))) o.remove(); });
           const pref = Array.from(matEl.options).find(o => o.value === 'mat-hips-tf') || Array.from(matEl.options).find(o => o.value.includes('mat-hips'));
           if (pref) matEl.value = pref.value;
         }
         // Populate the additive/masterbatch picker.
         const addEl = el<HTMLSelectElement>('tf-additive');
         if (addEl) {
-          const adds = library.materials.filter(m => m.category === 'Additive / Masterbatch');
+          const adds = library.materials.filter(m => MATERIAL_SCOPE_BY_COMMODITY.additive.test(m.category));
           addEl.innerHTML = '<option value="">None</option>' + adds.map(a => `<option value="${a.id}">${a.grade} — ${_currFmt(a.pricePerKg)}/kg</option>`).join('');
         }
         // Filter the machine picker to thermoformers only.
@@ -11901,13 +11884,9 @@ function switchCommodity(type: CommodityType): void {
           if (rmMachs.length) rmMachEl.innerHTML = rmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
           if (Array.from(rmMachEl.options).some(o => o.value === 'rotomould-biaxial')) rmMachEl.value = 'rotomould-biaxial';
         }
-        // Filter material select to roto grades (+ generic LLDPE fallback)
+        // Scoped to roto powders (src/engine/material-scope.ts) — no pellet fallback.
         const matEl = el<HTMLSelectElement>('rm-mat');
-        if (matEl) {
-          const rmMats = library.materials.filter(m => m.category === 'Rotational Moulding' || m.id === 'mat-lldpe');
-          if (rmMats.length) matEl.innerHTML = rmMats.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.grade)} — £${m.pricePerKg.toFixed(2)}/kg</option>`).join('');
-          if (Array.from(matEl.options).some(o => o.value === 'mat-lldpe-roto')) matEl.value = 'mat-lldpe-roto';
-        }
+        if (matEl && Array.from(matEl.options).some(o => o.value === 'mat-lldpe-roto')) matEl.value = 'mat-lldpe-roto';
         const labEl = el<HTMLSelectElement>('rm-lab');
         if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-roto') ?? Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = opt.value; }
         wireRotoDFM();
@@ -11918,15 +11897,9 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderRubberForm();
       populateSelects();
       setTimeout(() => {
-        // Filter material select to rubber compounds only
+        // Scoped to rubber compounds and TPEs (src/engine/material-scope.ts).
         const matEl = el<HTMLSelectElement>('rub-mat');
-        if (matEl) {
-          const rubberMats = library.materials.filter(m => m.category === 'Rubber');
-          matEl.innerHTML = rubberMats.map(m =>
-            `<option value="${m.id}">${m.grade} — £${m.pricePerKg.toFixed(2)}/kg</option>`
-          ).join('');
-          if (Array.from(matEl.options).some(o => o.value === 'mat-epdm')) matEl.value = 'mat-epdm';
-        }
+        if (matEl && Array.from(matEl.options).some(o => o.value === 'mat-epdm')) matEl.value = 'mat-epdm';
         // Filter main machine select to rubber-specific machines only
         const rubberMachIds = new Set(['compression-mould-std','transfer-mould-std','lsr-injection-machine','extruder-rubber-60mm','die-cut-press-rubber']);
         const machEl = el<HTMLSelectElement>('rub-mach');

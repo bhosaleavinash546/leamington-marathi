@@ -32,7 +32,7 @@ import {
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { ukElectricityPerKwh } from '../../uk-tariff.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
-import { resinFacts, type ResinFacts } from '../derive/resin.js';
+import { resinFacts, RESIN_DECISION_ID, type ResinFacts } from '../derive/resin.js';
 import { extrusionProfile } from '../derive/profile.js';
 import { COMMODITY_DECISION_ID } from '../derive/commodity.js';
 
@@ -115,12 +115,15 @@ function advise(ctx: RuleContext): { advice: ExtAdvice } | { blocked: RuleOutcom
   const s = ctx.geo.surfaceArea?.mm2 ?? 0;
   if (!prof || !v || !s) return { blocked: notAProfile() };
 
-  const resin = resinFacts(ctx);
-  if (resin.decision) return { blocked: ask(resin.decision) };
-  const mat = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === resin.materialId);
+  // A METAL answered as the grade is asked to re-route — before the scope check
+  // in resinFacts would simply ask for a polymer again (material scope review).
+  const answeredId = ctx.answers[RESIN_DECISION_ID];
+  const mat = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === answeredId);
   if (mat && METAL.test(`${mat.category} ${mat.grade}`) && !/polymer|plastic/i.test(mat.category)) {
     return { blocked: metalRefused(mat.grade) };
   }
+  const resin = resinFacts(ctx);
+  if (resin.decision) return { blocked: ask(resin.decision) };
 
   const lengthMm = prof.lengthMm;
   const sectionMm2 = v / lengthMm;

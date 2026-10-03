@@ -12,6 +12,7 @@
  * densities come from `DEFAULT_RATE_LIBRARY`; nothing is duplicated here.
  */
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
+import { inMaterialScope } from '../../material-scope.js';
 import { RUBBER_CURE_BASE_SEC, type RubberCompoundFamily } from '../../modules/rubber-advisor.js';
 import type { Decision, RuleContext } from '../types.js';
 
@@ -95,7 +96,7 @@ export function elastomerFacts(ctx: RuleContext): ElastomerFacts {
   // As with resins: the menu shortens the question, it does not reject an
   // answer. A compound outside it still has a library price and a cure family.
   const answered = ctx.answers[ELASTOMER_DECISION_ID];
-  const chosen = typeof answered === 'string' && lookup(answered)
+  const chosen = typeof answered === 'string' && lookup(answered) && inMaterialScope('rubber', lookup(answered)!.category)
     ? (menu.find(c => c.id === answered)
       ?? { id: answered, family: compoundFamilyOf(answered, lookup(answered)!.grade), use: '' })
     : undefined;

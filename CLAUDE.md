@@ -347,6 +347,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   metal prices, arithmetic in the note. `GRADE_SCOPE` must equal the forms' scopes (forge excludes extrusion logs).
   4340 is under 4130 in the library — fix in the next rate refresh. See `docs/cad/casting-forging-materials-review-2026-10.md`,
   `tests/casting-forging-materials.test.ts`.
+- Material scope (review, Oct 2026): `src/engine/material-scope.ts` is the ONE table of which library categories each
+  commodity buys (exact category match). The forms' drop-downs (`src/ui/material-scope.ts` → `SELECT_COMMODITY`), the
+  CAD panel lists (`cad-options.ts`), the grade / resin / compound questions and `toCostParams::resolveMaterialId` all
+  read it — an out-of-scope id is re-asked, or replaced by the commodity's own grade with an `assumed` note. Never
+  re-filter a material drop-down by hand in main.ts. A new category must be added to a scope
+  (`tests/material-scope-review.test.ts` lists the only orphans). See `docs/cad/material-scope-review-2026-10.md`.
 - Screen and headless must cost alike. A rule reaches the form by its `fieldId`, but
   reaches headless (`costMeasuredPart`) only through `RULE_PATH_MAP` in
   `cost-input-rules/apply.ts`. A new rule must be mapped there or excused in

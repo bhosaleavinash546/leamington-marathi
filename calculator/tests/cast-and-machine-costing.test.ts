@@ -36,7 +36,7 @@ const VOLUME = 50_000;
 const SUGGESTIONS = {
   recommendedCommodity: 'cast_and_machine',
   netWeightKg: 2.512,
-  materialId: 'mat-steel1045',
+  materialId: 'mat-gs-c25',
   estimatedCycleTimeHr: 0.1836,
   estimatedSetupTimeHr: 1,
   estimatedOperations: [
@@ -110,8 +110,8 @@ describe('the money reconciles by hand', () => {
     //
     // Until 2 Oct 2026 the returns were credited at the scrap price, as if sold:
     // £3.48 here against £2.13 now (casting review).
-    const mat = LIB.materials.find(m => m.id === 'mat-steel1045')!;
-    const melt = meltFactsFor('mat-steel1045')!;
+    const mat = LIB.materials.find(m => m.id === 'mat-gs-c25')!;
+    const melt = meltFactsFor('mat-gs-c25')!;
     const effectiveNet = 2.512 / (1 - 0.03);
     const poured = effectiveNet / 0.65;
     const lost = (poured - 2.512) * melt.lossFraction;

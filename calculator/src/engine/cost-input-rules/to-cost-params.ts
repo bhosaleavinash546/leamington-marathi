@@ -36,6 +36,7 @@
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
+import { inMaterialScope } from '../material-scope.js';
 import { buildAlExtrusionInputs, type AlTemper } from '../modules/aluminium-extrusion.js';
 import type { AlAlloy, AlExtrusionRoute, AlFinish } from '../al-extrusion-data.js';
 import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
@@ -72,7 +73,15 @@ function resolveMaterialId(
   commodity: string, carried: string, familyHint?: MaterialFamily | null,
 ): { id: string | null; assumed: string | null; family: MaterialFamily | null } {
   if (isLibraryMaterialId(carried)) {
-    return { id: carried, assumed: null, family: familyFromMaterialId(carried) ?? familyHint ?? null };
+    const cat = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === carried)!.category;
+    const fam = familyFromMaterialId(carried) ?? familyHint ?? null;
+    if (inMaterialScope(commodity, cat)) return { id: carried, assumed: null, family: fam };
+    // A grade this commodity does not buy (material scope review, Oct 2026): the
+    // engine used to price whatever id arrived. Use the commodity's own grade for
+    // the family, and say so; with none, keep it and say it is out of scope.
+    const rep = fam ? representativeMaterialId(commodity, fam) : null;
+    if (rep) return { id: rep, family: fam, assumed: `materialId ('${carried}' is a ${cat} grade, not one ${commodity} buys → ${rep})` };
+    return { id: carried, family: fam, assumed: `materialId '${carried}' (${cat}) is outside ${commodity}'s material scope — confirm the grade` };
   }
   // The model invents ids: round 1 of the A/B returned `mat-hss`, which is in
   // no library, and the whole part became uncostable. An invented id usually

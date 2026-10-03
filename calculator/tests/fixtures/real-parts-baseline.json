@@ -10,7 +10,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-fb851b8ebba0bac4",
+      "partName": "cv-cad-3b6769469f4b4e32",
       "boundingBox": {
         "xMm": 46,
         "yMm": 46,
@@ -580,7 +580,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f2c9f0efdf2cd47b",
+      "partName": "cv-cad-8d9680b45f492d5d",
       "boundingBox": {
         "xMm": 1800,
         "yMm": 150,
@@ -969,7 +969,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7bf0261bf3c0509e",
+      "partName": "cv-cad-96113627c9e3f0fb",
       "boundingBox": {
         "xMm": 1300,
         "yMm": 140,
@@ -1330,7 +1330,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b18a8d9270d34025",
+      "partName": "cv-cad-f5ebfc78cac0f63b",
       "boundingBox": {
         "xMm": 400,
         "yMm": 40,
@@ -1668,7 +1668,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9143209fc9730175",
+      "partName": "cv-cad-59158739c1724806",
       "boundingBox": {
         "xMm": 400,
         "yMm": 120,
@@ -2079,7 +2079,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-c5b47e968e482117",
+      "partName": "cv-cad-a8706566fa7b4257",
       "boundingBox": {
         "xMm": 150,
         "yMm": 120,
@@ -2588,7 +2588,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-fccf9b508a466948",
+      "partName": "cv-cad-6fd10b67e3fcf336",
       "boundingBox": {
         "xMm": 400,
         "yMm": 80,
@@ -2971,7 +2971,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-714559848f0a019b",
+      "partName": "cv-cad-8db089d5a6a1e94b",
       "boundingBox": {
         "xMm": 2000,
         "yMm": 30,
@@ -3350,7 +3350,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b2adc75d046ec56b",
+      "partName": "cv-cad-2b2b9f5e61b04a22",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 40,
@@ -3701,7 +3701,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bd981cd2296fcc2d",
+      "partName": "cv-cad-aeb93c6955230234",
       "boundingBox": {
         "xMm": 500,
         "yMm": 350,
@@ -4487,7 +4487,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-41123233dc1f13ae",
+      "partName": "cv-cad-f1bef17bb6d286af",
       "boundingBox": {
         "xMm": 1160,
         "yMm": 760,
@@ -5209,7 +5209,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f557a012b46adb3b",
+      "partName": "cv-cad-1290b352092c8281",
       "boundingBox": {
         "xMm": 240,
         "yMm": 60,
@@ -5799,14 +5799,14 @@
     "note": "MODELLED: Ø70 × 2 mm PP air duct with a 90° elbow, open both ends (2.5 L inside).",
     "answers": {
       "material.family": "plastic",
-      "material.resin": "mat-pp-homo",
+      "material.resin": "mat-pp-bm",
       "commodity.route": "blow_moulding",
       "blow.capacityL": "exact",
       "blow.capacityExactL": "2.5"
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-0af93d6c41d27e33",
+      "partName": "cv-cad-9ee5274df1f609fe",
       "boundingBox": {
         "xMm": 405,
         "yMm": 455,
@@ -7122,15 +7122,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "blow_moulding",
-      "total": 1.2,
+      "total": 1.24,
       "breakdown": {
-        "rawMaterial": 0.29,
+        "rawMaterial": 0.33,
         "process": 0.25,
         "labour": 0.07,
         "tooling": 0.24,
         "packaging": 0.08,
         "logistics": 0.08,
-        "overhead": 0.1,
+        "overhead": 0.11,
         "margin": 0.09
       }
     }
@@ -7141,13 +7141,13 @@
     "note": "MODELLED: 220 × 160 × 130 mm HDPE washer reservoir, 2.5 mm wall, Ø40 filler neck (~3.8 L).",
     "answers": {
       "material.family": "plastic",
-      "material.resin": "mat-hdpe",
+      "material.resin": "mat-hdpe-bm",
       "commodity.route": "blow_moulding",
       "blow.capacityL": "2_20"
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-0cad4b0f8c64eb61",
+      "partName": "cv-cad-d1f83b41b41fd3c5",
       "boundingBox": {
         "xMm": 220,
         "yMm": 160,
@@ -8187,15 +8187,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "blow_moulding",
-      "total": 1.59,
+      "total": 1.62,
       "breakdown": {
-        "rawMaterial": 0.39,
+        "rawMaterial": 0.42,
         "process": 0.39,
         "labour": 0.11,
         "tooling": 0.3,
         "packaging": 0.07,
         "logistics": 0.08,
-        "overhead": 0.14,
+        "overhead": 0.15,
         "margin": 0.12
       }
     }
@@ -8210,7 +8210,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-daf23aca6f754581",
+      "partName": "cv-cad-3f4cc9bf76468a70",
       "boundingBox": {
         "xMm": 700,
         "yMm": 500,
@@ -8814,7 +8814,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-680639b2a3af8e79",
+      "partName": "cv-cad-ae10f9185e36df92",
       "boundingBox": {
         "xMm": 398.29,
         "yMm": 120,
@@ -9612,7 +9612,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bb71d5a29ee04b05",
+      "partName": "cv-cad-62b5d769eab92164",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 900,
@@ -10000,7 +10000,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-fa5edc3e110f3eeb",
+      "partName": "cv-cad-d2fc56354f20270c",
       "boundingBox": {
         "xMm": 132,
         "yMm": 120,
@@ -10770,7 +10770,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-96118d2fe3fdc575",
+      "partName": "cv-cad-989b8fc9311aafb2",
       "boundingBox": {
         "xMm": 600,
         "yMm": 8,
@@ -11278,7 +11278,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-e5014a03d6543ae0",
+      "partName": "cv-cad-2b2c156c4f64f2e2",
       "boundingBox": {
         "xMm": 2000,
         "yMm": 40,
@@ -11623,7 +11623,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2afa802c53b35037",
+      "partName": "cv-cad-6fbcb0ce2007d701",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 32,
@@ -12133,7 +12133,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-0d1388eb7a536a66",
+      "partName": "cv-cad-bc9ecb018692bd6c",
       "boundingBox": {
         "xMm": 250,
         "yMm": 50,
@@ -12573,7 +12573,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-e23ea9f2892e3b55",
+      "partName": "cv-cad-c00c1ec9b165cc8a",
       "boundingBox": {
         "xMm": 140,
         "yMm": 140,
@@ -12926,7 +12926,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-da22308ad32a9cd1",
+      "partName": "cv-cad-6ab756b59d75b706",
       "boundingBox": {
         "xMm": 40,
         "yMm": 25,
@@ -13270,7 +13270,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-eae092fc06126646",
+      "partName": "cv-cad-4c0a1797bc181e41",
       "boundingBox": {
         "xMm": 180,
         "yMm": 120,
@@ -14112,7 +14112,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2c1602fa8b03a673",
+      "partName": "cv-cad-b51acbeeff529b36",
       "boundingBox": {
         "xMm": 600,
         "yMm": 400,
@@ -14811,7 +14811,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-e53d30d7a6db0bde",
+      "partName": "cv-cad-1db4b788711ea221",
       "boundingBox": {
         "xMm": 120,
         "yMm": 80,
@@ -15274,7 +15274,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3fafcac85fa06a06",
+      "partName": "cv-cad-efd87f7178216a83",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -15691,7 +15691,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ee34e76c0c0a70ee",
+      "partName": "cv-cad-a4981f98214be3bc",
       "boundingBox": {
         "xMm": 274.51,
         "yMm": 222.36,
@@ -16750,7 +16750,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-41be8106f495372e",
+      "partName": "cv-cad-e27a1b36a1655f74",
       "boundingBox": {
         "xMm": 58.19,
         "yMm": 270,
@@ -17547,7 +17547,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d99bb6d584f61095",
+      "partName": "cv-cad-5e9e68f50af63d23",
       "boundingBox": {
         "xMm": 450,
         "yMm": 320,
@@ -17983,7 +17983,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9351c02aeb1957fe",
+      "partName": "cv-cad-989a6385310437ef",
       "boundingBox": {
         "xMm": 240,
         "yMm": 160,
@@ -19009,7 +19009,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ef4c8b7c3b33dd8b",
+      "partName": "cv-cad-4c540551b6444b48",
       "boundingBox": {
         "xMm": 60,
         "yMm": 60,
@@ -19347,7 +19347,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2f7f401fdd027740",
+      "partName": "cv-cad-7baf335997f7875f",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 18,
@@ -19775,7 +19775,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-764911601c46c6e6",
+      "partName": "cv-cad-41b68277d934971d",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -20132,7 +20132,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9d5e000ec585d20d",
+      "partName": "cv-cad-bd7771f4289ec547",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -22670,7 +22670,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-5f137a64c7cb32be",
+      "partName": "cv-cad-8f9279e99a95cb30",
       "boundingBox": {
         "xMm": 900,
         "yMm": 600,
@@ -23053,7 +23053,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a4b64e4964bf8fbf",
+      "partName": "cv-cad-e8a4ed9c5466b6b8",
       "boundingBox": {
         "xMm": 300,
         "yMm": 200,
@@ -23944,7 +23944,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-26509a1375a49333",
+      "partName": "cv-cad-7b86649824d0872b",
       "boundingBox": {
         "xMm": 114.4,
         "yMm": 236.4,
@@ -24932,7 +24932,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d98a604df8257b57",
+      "partName": "cv-cad-b2a6f7b36ef69d17",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,

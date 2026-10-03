@@ -34,10 +34,10 @@ const geoOf = (p: string) => structuredClone(baseline.find(b => b.part === p)!.g
 const TANK = (JSON.parse(readFileSync(new URL('../../cad-audit/final/runs/FINAL-Fuel_tank-api.json', import.meta.url), 'utf8'))
   .response.occtGeometry) as OCCTGeometry;
 
-const RESERVOIR = { 'material.family': 'plastic', [RESIN_DECISION_ID]: 'mat-hdpe', 'commodity.route': 'blow_moulding', [CAPACITY_DECISION_ID]: '2_20' };
-const DUCT = { 'material.family': 'plastic', [RESIN_DECISION_ID]: 'mat-pp-homo', 'commodity.route': 'blow_moulding',
+const RESERVOIR = { 'material.family': 'plastic', [RESIN_DECISION_ID]: 'mat-hdpe-bm', 'commodity.route': 'blow_moulding', [CAPACITY_DECISION_ID]: '2_20' };
+const DUCT = { 'material.family': 'plastic', [RESIN_DECISION_ID]: 'mat-pp-bm', 'commodity.route': 'blow_moulding',
   [CAPACITY_DECISION_ID]: 'exact', [EXACT_CAPACITY_DECISION_ID]: '2.5' };
-const TANK_ANS = { 'material.family': 'plastic', [RESIN_DECISION_ID]: 'mat-hdpe', 'commodity.route': 'blow_moulding',
+const TANK_ANS = { 'material.family': 'plastic', [RESIN_DECISION_ID]: 'mat-hdpe-bm', 'commodity.route': 'blow_moulding',
   [CAPACITY_DECISION_ID]: 'over_20', [BARRIER_DECISION_ID]: 'barrier' };
 
 const ctx = (geo: OCCTGeometry, answers: Record<string, string>, filename = 'part.stp'): RuleContext => ({
@@ -122,8 +122,9 @@ describe('5. the parison is in series only when the head makes it so', () => {
     expect(EBM_HEADS['blow-ebm-100l'].head).toBe('continuous');
     expect(bm(geoOf('BM_Washer_Reservoir.stp'), RESERVOIR).s.parisonExtrusionTimeSec).toBe(0);
   });
-  it('accumulator head: 12.41 kg pushed out at 2 kg/s = 6.2 s in series', () => {
-    expect(bm(structuredClone(TANK), TANK_ANS).s.parisonExtrusionTimeSec).toBe(6.2);
+  it('accumulator head: 12.28 kg pushed out at 2 kg/s = 6.1 s in series', () => {
+    // 12.41 kg at the pellet's 960 kg/m³ until the scope review moved blow moulding onto its blow grade (950).
+    expect(bm(structuredClone(TANK), TANK_ANS).s.parisonExtrusionTimeSec).toBe(6.1);
   });
   it('an extruder that cannot keep up sets the pace', () => {
     // 0.45 kg twin-cavity bottles on the 90 kg/h 2-head: 36 s to extrude.
@@ -187,17 +188,17 @@ describe('8. moulds wear fractionally', () => {
 });
 
 describe('9. the parts reconcile', () => {
-  it('reservoir £1.59 and duct £1.20 at 50,000/yr (both blocked before)', () => {
-    expect(baseline.find(b => b.part === 'BM_Washer_Reservoir.stp')!.outcome.total).toBe(1.59);
-    expect(baseline.find(b => b.part === 'BM_Air_Duct.stp')!.outcome.total).toBe(1.2);
+  it('reservoir £1.62 and duct £1.24 at 50,000/yr (both blocked before; £1.59 / £1.20 on pellet grades before the scope review)', () => {
+    expect(baseline.find(b => b.part === 'BM_Washer_Reservoir.stp')!.outcome.total).toBe(1.62);
+    expect(baseline.find(b => b.part === 'BM_Air_Duct.stp')!.outcome.total).toBe(1.24);
   });
-  it('the real fuel tank: £29.12 (was £32.41)', async () => {
+  it('the real fuel tank: £28.91 (was £32.41; £29.12 on the pellet grade before the scope review)', async () => {
     const t = structuredClone(TANK);
     const r = await costMeasuredPart(t, 'Fuel_tank.STEP',
       { partNumber: 'Fuel_tank', file: 'Fuel_tank.STEP', annualVolume: 50_000, commodity: 'blow_moulding' } as never,
       TANK_ANS, 'UK', { annualVolume: 50_000 } as never, recomputeMachineRates(DEFAULT_RATE_LIBRARY),
       { partNumber: 'Fuel_tank', file: 'Fuel_tank.STEP', status: 'error' } as never) as { status: string; total: number };
     expect(r.status).toBe('costed');
-    expect(r.total).toBeCloseTo(29.12, 2);
+    expect(r.total).toBeCloseTo(28.91, 2);
   });
 });
