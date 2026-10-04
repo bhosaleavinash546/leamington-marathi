@@ -16,7 +16,7 @@ CAST + MACHINE COST INPUT RULES:
   cycleTimeSandGravHr=0.08  [gravity cycle band — deterministic, use verbatim]
   labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
   fettlingMinutes=2  [light fettling — gravity aluminium, 2.8 kg: gate / riser removal and grind at the foundry rate (engineering-typical minutes) — deterministic, use verbatim]
-  heatTreatCostPerKg=1.1  [gravity aluminium is solution treated and aged, T6 — £1.1/kg (advisor rate) — deterministic, use verbatim]
+  heatTreatCostPerKg=1.1  [gravity aluminium is solution treated and aged, T6 — £1.1/kg (advisor rate, UK) — deterministic, use verbatim]
   shotBlastCostPerPart=0.21  [gravity castings are blasted to remove sand / scale / flash — 2.80 kg ÷ 600 kg/h × (blast machine £26.71/h + operator £18.63/h), min £0.10 — deterministic, use verbatim]
   impregnationCostPerPart=0  [not pressure-tight (or ferrous) — no impregnation — deterministic, use verbatim]
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]

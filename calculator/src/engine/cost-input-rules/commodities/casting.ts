@@ -15,6 +15,7 @@
  *    under-charges metal — investment castings were being costed at roughly half
  *    their true material. Only HPDC happened to agree.
  */
+import { heatTreatServiceFactor, ndtServiceFactor } from '../../regional-services.js';
 import { activeLabourRate } from '../../rate-context.js';
 import {
   adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY,
@@ -620,15 +621,19 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const steel = a === 'carbon-steel' || a === 'stainless-steel';
         const iron = a === 'grey-iron' || a === 'ductile-iron';
         const al = a === 'aluminium';
+        // UK £/kg × the costed country's heat-treat factor (regional-services.ts) — it was the UK's everywhere.
+        const hf = heatTreatServiceFactor();
+        const inCountry = (v: number) => Math.round(v * hf * 10_000) / 10_000;
+        const fNote = hf !== 1 ? ` × country heat-treat factor ${hf}` : '';
         if (steel || (iron && r.advice.safetyCritical)) {
-          return decided('casting.heatTreatCostPerKg', HEAT_TREAT_COST_PER_KG['stress-relieve'], 'library',
+          return decided('casting.heatTreatCostPerKg', inCountry(HEAT_TREAT_COST_PER_KG['stress-relieve']), 'library',
             `${steel ? 'cast steel is normalised to refine the as-cast grain' : 'safety-critical iron is stress-relieved'} — `
-            + `£${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg (advisor rate)`, 0.6);
+            + `£${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg (advisor rate, UK)${fNote}`, 0.6);
         }
         if (al && r.advice.process !== 'hpdc') {
           const t = r.advice.process === 'megacasting' ? 'T7 (priced at the T6 rate)' : 'T6';
-          return decided('casting.heatTreatCostPerKg', HEAT_TREAT_COST_PER_KG.t6, 'library',
-            `${r.advice.process} aluminium is solution treated and aged, ${t} — £${HEAT_TREAT_COST_PER_KG.t6}/kg (advisor rate)`, 0.55);
+          return decided('casting.heatTreatCostPerKg', inCountry(HEAT_TREAT_COST_PER_KG.t6), 'library',
+            `${r.advice.process} aluminium is solution treated and aged, ${t} — £${HEAT_TREAT_COST_PER_KG.t6}/kg (advisor rate, UK)${fNote}`, 0.55);
         }
         return decided('casting.heatTreatCostPerKg', 0, 'rule',
           al ? 'conventional HPDC is not solution treated (entrapped gas blisters) — none; enter a T5 age if specified'
@@ -660,8 +665,9 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const needs = r.advice.pressureTight && (r.advice.subtype === 'hpdc' || r.advice.alloy === 'aluminium');
-        return decided('casting.impregnationCostPerPart', needs ? 0.9 : 0, 'rule',
-          needs ? 'pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate)'
+        const sf = ndtServiceFactor();   // a process cell: labour + equipment, in the costed country
+        return decided('casting.impregnationCostPerPart', needs ? Math.round(0.9 * sf * 100) / 100 : 0, 'rule',
+          needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK)${sf !== 1 ? ` × country service factor ${sf}` : ''}`
             : 'not pressure-tight (or ferrous) — no impregnation', 0.6,
           [PRESSURE_TIGHT_DECISION_ID]);
       },
@@ -679,8 +685,9 @@ export const CASTING_RULES: CommodityRuleSpec = {
             [SAFETY_CRITICAL_DECISION_ID]);
         }
         const kind = r.advice.alloy === 'superalloy' ? 'ct' : 'xray';
-        return decided('casting.ndtCostPerPart', NDT_COST_PER_PART[kind], 'library',
-          `safety-critical — ${kind === 'ct' ? 'industrial CT' : '2D X-ray'} at £${NDT_COST_PER_PART[kind]} a part (advisor rate)`, 0.55,
+        const nf = ndtServiceFactor();   // inspector + X-ray / CT cell, in the costed country
+        return decided('casting.ndtCostPerPart', Math.round(NDT_COST_PER_PART[kind] * nf * 100) / 100, 'library',
+          `safety-critical — ${kind === 'ct' ? 'industrial CT' : '2D X-ray'} at £${NDT_COST_PER_PART[kind]} a part (advisor rate, UK)${nf !== 1 ? ` × country service factor ${nf}` : ''}`, 0.55,
           [SAFETY_CRITICAL_DECISION_ID]);
       },
     },

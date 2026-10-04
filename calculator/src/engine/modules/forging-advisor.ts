@@ -4,6 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
+import { heatTreatServiceFactor, ndtServiceFactor } from '../regional-services.js';
 import {
   TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
@@ -357,7 +358,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   const wt = Math.max(inputs.partWeightKg, 0);
 
   if (inputs.heatTreat && inputs.heatTreat !== 'none') {
-    const unit = HEAT_TREAT_COST_PER_KG[inputs.heatTreat];
+    const unit = Math.round(HEAT_TREAT_COST_PER_KG[inputs.heatTreat] * heatTreatServiceFactor() * 10_000) / 10_000;   // in the costed country (regional-services.ts)
     const label = inputs.heatTreat === 'quench-temper' ? 'Q&T'
       : inputs.heatTreat === 'solution-age' ? 'Solution + age'
       : inputs.heatTreat.charAt(0).toUpperCase() + inputs.heatTreat.slice(1);
@@ -372,10 +373,12 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
     });
   }
 
+  // UK £ service prices × the costed country's service factor (regional-services.ts).
+  const svc = (gbpUk: number) => Math.round(gbpUk * ndtServiceFactor() * 10_000) / 10_000;
   if (inputs.descale) {
     adders.push({
       label: 'Descale / pickle',
-      basis: 'per-kg', unitCostGbp: 0.12, costPerPartGbp: 0.12 * wt,
+      basis: 'per-kg', unitCostGbp: svc(0.12), costPerPartGbp: svc(0.12) * wt,
       note: 'Remove forge scale before machining/inspection; per kg of forging.',
     });
   }
@@ -383,7 +386,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   if (inputs.shotBlast) {
     adders.push({
       label: 'Shot blast / surface prep',
-      basis: 'per-part', unitCostGbp: 0.35, costPerPartGbp: 0.35,
+      basis: 'per-part', unitCostGbp: svc(0.35), costPerPartGbp: svc(0.35),
       note: 'Cleans scale and keys the surface for coating/inspection.',
     });
   }
@@ -391,13 +394,13 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   if (inputs.coining) {
     adders.push({
       label: 'Coining / sizing / straighten',
-      basis: 'per-part', unitCostGbp: 0.55, costPerPartGbp: 0.55,
+      basis: 'per-part', unitCostGbp: svc(0.55), costPerPartGbp: svc(0.55),
       note: 'Cold restrike to hit tight flatness/thickness tolerance after forging.',
     });
   }
 
   if (inputs.ndt && inputs.ndt !== 'none') {
-    const unit = NDT_COST_PER_PART[inputs.ndt];
+    const unit = Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 100) / 100;   // in the costed country (regional-services.ts)
     adders.push({
       label: `NDT (${inputs.ndt.toUpperCase()})`,
       basis: 'per-part', unitCostGbp: unit, costPerPartGbp: unit,

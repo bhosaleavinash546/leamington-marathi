@@ -381,3 +381,37 @@ describe('9. flow review (Oct 2026, fourth pass): the country survives every ste
     expect(readFileSync('server/services/cost-executor.ts', 'utf8')).not.toMatch(/energyPricePerKwh: tariff/);
   });
 });
+
+describe('10. errors the LIVE India run of the PRCR002 aluminium housing exposed (Oct 2026)', () => {
+  const IN = buildRegionalLibrary(UK, 'IN');
+  it('the machining route is chosen on the costed country\'s machine rates (it read the UK book: VF2 £46/hr in India)', async () => {
+    const src = readFileSync('src/engine/routing-optimiser.ts', 'utf8');
+    expect(src).toContain('p.library ?? activeRates()');
+    expect(readFileSync('src/engine/cavitation-optimiser.ts', 'utf8')).toContain('p.library ?? activeRates()');
+    expect(withRates(IN, () => activeMachineRate('mach-haas-vf2'))).toBeCloseTo(IN.machines.find(m => m.id === 'mach-haas-vf2')!.computedRatePerHr, 9);
+  });
+  it('casting / forging heat treatment, NDT and finishing services are priced in the country (T6 was £1.10/kg everywhere)', async () => {
+    const { estimateCastingSecondaryAdders } = await import('../src/engine/modules/casting-advisor.js');
+    const { heatTreatServiceFactor, ndtServiceFactor } = await import('../src/engine/regional-services.js');
+    const inp = { alloyFamily: 'aluminium', partWeightKg: 2, heatTreat: 't6', ndt: 'xray', impregnation: true, shotBlast: true } as never;
+    const uk = estimateCastingSecondaryAdders(inp).adders, ind = withRates(IN, () => estimateCastingSecondaryAdders(inp)).adders;
+    const by = (a: typeof uk, re: RegExp) => a.find(x => re.test(x.label))!.unitCostGbp;
+    expect(by(uk, /heat/i)).toBe(1.1);
+    expect(by(ind, /heat/i)).toBeCloseTo(1.1 * heatTreatServiceFactor('IN'), 3);
+    expect(by(ind, /x-ray|ndt|radiograph/i)).toBeCloseTo(5 * ndtServiceFactor('IN'), 2);
+    expect(heatTreatServiceFactor('UK')).toBe(1);
+    expect(heatTreatServiceFactor('IN')).toBeLessThan(0.6);
+  });
+  it('the casting tool\'s plausible band moves with the country (an India die was floored at the UK £8,000)', async () => {
+    const src = readFileSync('src/engine/casting-tooling.ts', 'utf8');
+    expect(src).toContain('Math.min(hi * tf, Math.max(lo * tf, detail.total))');
+  });
+  it('every CAD analysis response says which country\'s book its rules priced in', () => {
+    const src = readFileSync('server/routes/cad.ts', 'utf8');
+    expect(src.match(/ratesRegion: ruleCtx\.rates\?\.regional\?\.code \?\? 'UK'/g)).toHaveLength(4);
+  });
+  it('the AI agent is grounded on the selected country\'s rates (it was always the UK book)', () => {
+    const src = readFileSync('server/routes/agent.ts', 'utf8');
+    expect(src).toContain('groundingBlock(message, ragCorpusFor(region), 6)');
+  });
+});

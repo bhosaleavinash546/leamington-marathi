@@ -125,7 +125,15 @@ const AgentResponseSchema = z.object({
 
 // RAG grounding corpus — built once from the rate library so the agent answers
 // from real rates (with citable [kind:id] tags), not parametric memory.
-const _ragCorpus = buildRateCorpus(DEFAULT_RATE_LIBRARY);
+/** Rate grounding per country — the rates the agent quotes are the selected country's
+ *  (it was always the UK book, so an India conversation was grounded on UK rates). */
+const _ragCorpusByRegion = new Map<string, ReturnType<typeof buildRateCorpus>>();
+function ragCorpusFor(region: string | undefined): ReturnType<typeof buildRateCorpus> {
+  const r = regionOf(region);
+  let c = _ragCorpusByRegion.get(r);
+  if (!c) { c = buildRateCorpus(rateBookForRegion(r)); _ragCorpusByRegion.set(r, c); }
+  return c;
+}
 
 const VALID_MATERIAL_IDS = new Set(DEFAULT_RATE_LIBRARY.materials.map(m => m.id));
 const VALID_MACHINE_IDS  = new Set(DEFAULT_RATE_LIBRARY.machines.map(m => m.id));
@@ -957,7 +965,7 @@ function buildMessages(
   // RAG grounding: retrieve the most relevant rates for this query and prepend them
   // so the model quotes real library figures (and cites the [kind:id] tag).
   try {
-    const grounding = groundingBlock(message, _ragCorpus, 6);
+    const grounding = groundingBlock(message, ragCorpusFor(region), 6);
     if (grounding) msgText = `${grounding}\n\n${msgText}`;
   } catch { /* grounding is best-effort */ }
 

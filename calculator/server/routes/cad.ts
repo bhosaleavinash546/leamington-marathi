@@ -1124,6 +1124,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       statedFromAnswers(decisionAnswers));
     const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions];
     const detPayload = {
+    // The country whose rate book the rules priced in — read off the book itself,
+    // so a reviewer can see it was the requested country (and not the UK).
+    ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
@@ -1239,6 +1242,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
 
   const aiDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
+    // The country whose rate book the rules priced in — read off the book itself,
+    // so a reviewer can see it was the requested country (and not the UK).
+    ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
     success: true,
     analysis,
     sanityWarnings,
@@ -2887,6 +2893,9 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers));
     const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecisionRe ? [commodityDecisionRe] : []), ...det.result.decisions];
     const detPayload = {
+    // The country whose rate book the rules priced in — read off the book itself,
+    // so a reviewer can see it was the requested country (and not the UK).
+    ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
@@ -2975,6 +2984,9 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers));
   const reDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
+    // The country whose rate book the rules priced in — read off the book itself,
+    // so a reviewer can see it was the requested country (and not the UK).
+    ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
     success: true,
     analysis,
     sanityWarnings,

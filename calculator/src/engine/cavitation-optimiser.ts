@@ -25,11 +25,11 @@
  * estimate's pounds still come from the regional engine run. Deterministic:
  * same inputs, same choice, same words.
  */
+import { activeRates } from './rate-context.js';
 import {
   estimateClampingTonnage, estimateMouldCost, pickIMMPressId, steelClassFor,
   type MouldSteelClass,
 } from './modules/injection-moulding.js';
-import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
 import type { RateLibrary } from './types.js';
 
 export interface CavitationInputs {
@@ -107,7 +107,7 @@ const fmtGBP = (v: number, dp = 2) => `£${v.toFixed(dp)}`;
  * to cost the part at all would be worse than the shipped honest answer.
  */
 export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
-  const library = p.library ?? DEFAULT_RATE_LIBRARY;
+  const library = p.library ?? activeRates();   // the costed country's book (rate-context.ts) — it was the UK's
   const years = p.programmeYears ?? 5;
   const amortVol = Math.max(1, p.amortizationVolume ?? p.annualVolume);
   const maxClamp = p.maxClampTonnes ?? 3500;

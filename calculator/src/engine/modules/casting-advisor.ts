@@ -4,6 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
+import { heatTreatServiceFactor, ndtServiceFactor } from '../regional-services.js';
 import { activeLabourRate } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
@@ -429,11 +430,13 @@ const FETTLING_COST_PER_PART = (level: 'light' | 'medium' | 'heavy'): number =>
   Math.round(FETTLING_MINUTES[level] / 60 * foundryRatePerHr() * 100) / 100;
 
 export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): CastingSecondaryResult {
+  // UK £ service prices × the costed country's service factor (regional-services.ts).
+  const svc = (gbpUk: number) => Math.round(gbpUk * ndtServiceFactor() * 100) / 100;
   const adders: CastingSecondaryAdder[] = [];
   const wt = Math.max(inputs.partWeightKg, 0);
 
   if (inputs.heatTreat && inputs.heatTreat !== 'none') {
-    const unit = HEAT_TREAT_COST_PER_KG[inputs.heatTreat];
+    const unit = Math.round(HEAT_TREAT_COST_PER_KG[inputs.heatTreat] * heatTreatServiceFactor() * 10_000) / 10_000;   // in the costed country (regional-services.ts)
     adders.push({
       label: `Heat treat (${inputs.heatTreat.toUpperCase()})`,
       basis: 'per-kg', unitCostGbp: unit, costPerPartGbp: unit * wt,
@@ -445,7 +448,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   }
 
   if (inputs.hip) {
-    const unit = HIP_COST_PER_KG[inputs.alloyFamily];
+    const unit = Math.round(HIP_COST_PER_KG[inputs.alloyFamily] * heatTreatServiceFactor() * 10_000) / 10_000;   // batch furnace, in the costed country
     adders.push({
       label: 'HIP (hot isostatic pressing)',
       basis: 'per-kg', unitCostGbp: unit, costPerPartGbp: unit * wt,
@@ -456,7 +459,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   if (inputs.impregnation) {
     adders.push({
       label: 'Vacuum resin impregnation',
-      basis: 'per-part', unitCostGbp: 0.90, costPerPartGbp: 0.90,
+      basis: 'per-part', unitCostGbp: svc(0.90), costPerPartGbp: svc(0.90),
       note: 'Seals interconnected porosity for leak-tight/pressure parts; ~£0.3–1.2/part depending on size.',
     });
   }
@@ -464,7 +467,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   if (inputs.shotBlast) {
     adders.push({
       label: 'Shot blast / surface prep',
-      basis: 'per-part', unitCostGbp: 0.35, costPerPartGbp: 0.35,
+      basis: 'per-part', unitCostGbp: svc(0.35), costPerPartGbp: svc(0.35),
       note: 'Removes scale/oxide and keys the surface for coating.',
     });
   }
@@ -479,7 +482,7 @@ export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): 
   }
 
   if (inputs.ndt && inputs.ndt !== 'none') {
-    const unit = NDT_COST_PER_PART[inputs.ndt];
+    const unit = Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 100) / 100;   // in the costed country (regional-services.ts)
     adders.push({
       label: `NDT (${inputs.ndt.toUpperCase()})`,
       basis: 'per-part', unitCostGbp: unit, costPerPartGbp: unit,

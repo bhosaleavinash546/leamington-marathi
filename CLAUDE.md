@@ -389,6 +389,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   Scenarios carry `region` and are compared each in its own book; the country persists (`cv-region`) and a draft
   applies its country before its fields (`DRAFT_SKIP`); a rate book's own `lab-<cc>-*` / `energy-<cc>` entries win
   over `REGIONAL_DATA` in `buildRegionalLibrary`; agent requests send `region`.
+  Live check (`npm run test:e2e:country`, `e2e/country-live.ts`): a real STEP in a chosen country through a real
+  server + browser, capturing each call's `ratesRegion` (CAD responses state the country book their rules priced in),
+  the Excel trace and the Rate Database export. UK £ service prices (heat treat, HIP, NDT, impregnation, blast, descale,
+  coining) move by `regional-services.ts`; tool £ bands (`casting-tooling.ts` clampTotal) by the toolroom factor; the
+  routing and cavitation optimisers default to `activeRates()`. See `docs/rates/live-run-india-aluminium-casting-2026-10.md`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

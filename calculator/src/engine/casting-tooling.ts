@@ -17,6 +17,7 @@
  * the kilogram, bought-outs each, 22% shop overhead) and return the same
  * `detail` a dedicated tooling tool would print.
  */
+import { activeToolroomFactor } from './rate-context.js';
 import {
   TOOLROOM_RATES, EDM_FRACTION, FITTING_FRACTION,
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
@@ -36,10 +37,16 @@ export interface CastingToolEstimate {
   detail: ToolCostDetail;
 }
 
-const clampTotal = (detail: ToolCostDetail, lo: number, hi: number): CastingToolEstimate => ({
-  total: Math.min(hi, Math.max(lo, detail.total)),
-  detail,
-});
+/**
+ * The plausible band for a tool is a UK market range; in another country it moves
+ * by that country's toolroom factor, like the build-up it bounds. It used to stay
+ * at UK £: the live India run of PRCR002 built a gravity die below £8,000 and the
+ * UK floor pushed it back up to £8,000.
+ */
+const clampTotal = (detail: ToolCostDetail, lo: number, hi: number): CastingToolEstimate => {
+  const tf = activeToolroomFactor();
+  return { total: Math.min(hi * tf, Math.max(lo * tf, detail.total)), detail };
+};
 
 /**
  * High-pressure die-casting die. Structurally an injection mould's harder

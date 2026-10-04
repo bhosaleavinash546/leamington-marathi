@@ -25,7 +25,7 @@
  * family together, so the RANKING is region-stable while the absolute pounds
  * on the estimate still come from the regional engine run.
  */
-import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
+import { activeRates } from './rate-context.js';
 import type { RateLibrary } from './types.js';
 
 export type MachiningCapability = 'turn' | 'mill3' | 'mill5' | 'drill' | 'grind';
@@ -161,7 +161,7 @@ const fmtGBP = (v: number) => `£${v.toFixed(2)}`;
  * in the trace. Deterministic; same inputs, same routing, same words.
  */
 export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
-  const library = p.library ?? DEFAULT_RATE_LIBRARY;
+  const library = p.library ?? activeRates()   // the costed country's book (rate-context.ts) — it was the UK's;
   const setupHrEach = (p.setupMinsPerSetup ?? 45) / 60;
   const handlingHrEach = (p.perPartHandlingMinPerSetup ?? 0.8) / 60;
   const dirs = Math.max(1, Math.round(p.principalDirections) || 1);
@@ -268,7 +268,7 @@ export function costRoutingAsGiven(
   batchSize: number,
   setupMinsPerSetup = 45,
   perPartHandlingMinPerSetup = 0.8,
-  library: RateLibrary = DEFAULT_RATE_LIBRARY,
+  library: RateLibrary = activeRates(),   // the costed country's book — it was the UK's
 ): { costPerPart: number; setups: number } | null {
   if (ops.length === 0) return null;
   let cutting = 0;
