@@ -6,7 +6,7 @@ import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-mac
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { meltFactsFor, MELT_SHOP } from '../src/engine/casting-melt.js';
-import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
+import { tariffElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CastAndMachineInputs } from '../src/engine/modules/cast-and-machine.js';
 import type { MachiningOperation } from '../src/engine/modules/machining.js';
 
@@ -139,7 +139,7 @@ describe('Cast + Machine module', () => {
     const pour = SAND_INPUTS.castPartWeightKg * uplift / SAND_INPUTS.castingYield;
     const meltKwh = meltFactsFor(SAND_INPUTS.materialId)!.energyKwhPerKg;
     expect(drivers.rawMaterial.consumablesCostPerPart).toBeCloseTo(
-      SAND_INPUTS.sand!.coreCostPerPart * uplift + pour * meltKwh * ukElectricityPerKwh()
+      SAND_INPUTS.sand!.coreCostPerPart * uplift + pour * meltKwh * tariffElectricityPerKwh()
       + pour * MELT_SHOP.greenSandAdditionsPerKgPoured, 4);
   });
 

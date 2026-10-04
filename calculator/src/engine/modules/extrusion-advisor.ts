@@ -1,3 +1,4 @@
+import { activeToolroomFactor } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 /**
@@ -172,8 +173,10 @@ export function estimateExtrusionDieCost(inp: ExtrusionDieInputs): ExtrusionDieB
   const calibration = r.calBase + size * r.calPerMm;
   const layerAdder = (layers - 1) * 3500;  // each extra co-ex layer = feed manifold + extruder tooling
 
-  const total = Math.round(die + calibration + layerAdder);
-  return { die: Math.round(die), calibration: Math.round(calibration), layers: Math.round(layerAdder), total };
+  // Built where the part is made: × the country's toolroom factor (1 in the UK).
+  const tf = activeToolroomFactor();
+  const total = Math.round((die + calibration + layerAdder) * tf);
+  return { die: Math.round(die * tf), calibration: Math.round(calibration * tf), layers: Math.round(layerAdder * tf), total };
 }
 
 // ─── DFM analyser ─────────────────────────────────────────────────────────────

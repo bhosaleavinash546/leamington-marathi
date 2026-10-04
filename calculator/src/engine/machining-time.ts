@@ -28,6 +28,7 @@
  * CNC lathe with carbide tooling — stated, not measured, and the first thing a
  * supplier's actual cycle should replace. AI never sets any of them.
  */
+import { activeToolroomFactor } from './rate-context.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
 import { featureMinutesEach, nearNetHoleMinutes } from './feature-machining.js';
@@ -362,12 +363,15 @@ export const FIXTURE_GBP = { modular: 500, dedicated: 2_500, softJaws: 300, thre
 export function fixtureCostGBP(millFixturings: number, latheChuckings: number, annualVolume: number): { gbp: number; basis: string } {
   const dedicated = annualVolume * 5 > FIXTURE_GBP.threshold5yParts;
   const each = dedicated ? FIXTURE_GBP.dedicated : FIXTURE_GBP.modular;
-  const gbp = millFixturings * each + latheChuckings * FIXTURE_GBP.softJaws;
+  // Fixtures are toolroom-built where the part is made (× the country's toolroom factor, 1 in the UK).
+  const tf = activeToolroomFactor();
+  const gbp = Math.round((millFixturings * each + latheChuckings * FIXTURE_GBP.softJaws) * tf);
   return {
     gbp,
     basis: `${millFixturings} ${dedicated ? 'dedicated' : 'modular'} fixture(s) × £${each.toLocaleString('en-GB')}`
       + (latheChuckings ? ` + ${latheChuckings} set(s) of soft jaws × £${FIXTURE_GBP.softJaws}` : '')
-      + ` (${dedicated ? 'dedicated above' : 'modular up to'} ${FIXTURE_GBP.threshold5yParts.toLocaleString('en-GB')} parts over 5 years)`,
+      + ` (${dedicated ? 'dedicated above' : 'modular up to'} ${FIXTURE_GBP.threshold5yParts.toLocaleString('en-GB')} parts over 5 years)`
+      + (tf !== 1 ? ` × toolroom factor ${tf}` : ''),
   };
 }
 

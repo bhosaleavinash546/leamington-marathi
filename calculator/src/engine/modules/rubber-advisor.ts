@@ -1,3 +1,4 @@
+import { activeToolroomFactor } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 /**
@@ -210,8 +211,10 @@ export function estimateRubberMouldCost(inputs: RubberMouldCostInputs): RubberMo
   const cavityBlock = perCavity * Math.pow(cavities, 0.9);   // mild multi-cavity economy
   const inserts = Math.max(0, Math.floor(inputs.metalInserts ?? 0)) * 1200;
 
-  const total = Math.round(base + cavityBlock + inserts);
-  return { base: Math.round(base), cavityBlock: Math.round(cavityBlock), inserts, total };
+  // Built where the part is made: × the country's toolroom factor (1 in the UK).
+  const tf = activeToolroomFactor();
+  const total = Math.round((base + cavityBlock + inserts) * tf);
+  return { base: Math.round(base * tf), cavityBlock: Math.round(cavityBlock * tf), inserts: Math.round(inserts * tf), total };
 }
 
 // ─── DFM analyser (RB1) ───────────────────────────────────────────────────────

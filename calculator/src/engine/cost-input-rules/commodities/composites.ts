@@ -26,6 +26,7 @@
  * obediently answered "infusion" was returning a value nothing downstream could
  * use. See `derive/laminate.ts`.
  */
+import { activeToolroomFactor } from '../../rate-context.js';
 import type { CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { laminateFacts, type LaminateSystem } from '../derive/laminate.js';
@@ -352,10 +353,13 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         // The tool is sized to the part's footprint, not its laminated area — a
         // deep part covers more cloth than it occupies on the shop floor.
         const footprintM2 = a.planM2;
-        const total = Math.round(rate.base + footprintM2 * rate.perM2);
+        // Built where the part is made: × the country's toolroom factor (1 in the UK).
+        const tf = activeToolroomFactor();
+        const total = Math.round((rate.base + footprintM2 * rate.perM2) * tf);
         return decided('composites.toolingCost', total, 'rule',
           `${a.system.process} tool: £${rate.base.toLocaleString('en-GB')} base + `
-          + `${fmt(footprintM2, 3)} m² plan (${a.planBasis}) × £${rate.perM2.toLocaleString('en-GB')}/m²`, 0.55);
+          + `${fmt(footprintM2, 3)} m² plan (${a.planBasis}) × £${rate.perM2.toLocaleString('en-GB')}/m²`
+          + (tf !== 1 ? ` × toolroom factor ${tf}` : ''), 0.55);
       },
     },
     {

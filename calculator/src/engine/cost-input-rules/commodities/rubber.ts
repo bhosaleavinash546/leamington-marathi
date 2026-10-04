@@ -23,6 +23,7 @@
  *    720 s. Guessing that is not an estimate, it is a coin toss with two orders
  *    of magnitude on it.
  */
+import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
 import {
   estimateRubberCureTimeSec, estimateRubberMouldCost, RUBBER_CURE_BASE_SEC,
   type RubberProc, type RubberMouldSteel, type RubberComplexity, type RubberCompoundFamily,
@@ -31,7 +32,6 @@ import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleO
 import { elastomerFacts, type ElastomerFacts } from '../derive/elastomer.js';
 import { projectedAreaCm2, projectedAreaBasis, bboxSortedMm } from '../derive/envelope.js';
 import { standardBatchSize } from '../../routing-optimiser.js';
-import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 
 export { extrusionProfile } from '../derive/profile.js';
 import { extrusionProfile } from '../derive/profile.js';
@@ -235,9 +235,8 @@ function advise(ctx: RuleContext): { advice: RubAdvice } | { blocked: RuleOutcom
   const p = processFor(ctx, family, thicknessMm);
   const cureForCav = estimateRubberCureTimeSec({ compoundFamily: family, thicknessMm, process: p.process });
   const steelForCav = mouldSteelFor(p.process, ctx.annualVolume);
-  const lib = DEFAULT_RATE_LIBRARY;
-  const pressRate = (lib.machines.find(m => m.id === RUBBER_MACHINE_FOR[p.process])?.computedRatePerHr ?? 20)
-    + (lib.labour.find(l => l.id === 'lab-uk-semiskilled')?.fullyLoadedRatePerHr ?? 20) * RUBBER_CREW[p.process];
+  // Cavities are chosen on the costed country's press and crew rates.
+  const pressRate = activeMachineRate(RUBBER_MACHINE_FOR[p.process]) + activeLabourRate('lab-uk-semiskilled') * RUBBER_CREW[p.process];
   const cav = p.process === 'extrusion_vulcanise'
     ? { n: 1, basis: 'one profile through the die' }
     : cavitiesFor(p.process, areaCm2, cureForCav, ctx.annualVolume, {

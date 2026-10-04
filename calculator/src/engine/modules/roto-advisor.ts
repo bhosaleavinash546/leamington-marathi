@@ -1,3 +1,4 @@
+import { activeToolroomFactor } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 /**
@@ -97,8 +98,10 @@ export function estimateRotoMouldCost(inputs: RotoMouldCostInputs): RotoMouldCos
   const size = area * rates.perCm2 * complexityFactor;
   const details = Math.max(0, Math.floor(inputs.ventsAndInserts ?? 0)) * 250 + 500; // insulation + vents
 
-  const total = Math.round(base + size + details);
-  return { base, size: Math.round(size), details: Math.round(details), total };
+  // Built where the part is made: × the country's toolroom factor (1 in the UK).
+  const tf = activeToolroomFactor();
+  const total = Math.round((base + size + details) * tf);
+  return { base: Math.round(base * tf), size: Math.round(size * tf), details: Math.round(details * tf), total };
 }
 
 // ─── DFM analyser (BR3) ───────────────────────────────────────────────────────

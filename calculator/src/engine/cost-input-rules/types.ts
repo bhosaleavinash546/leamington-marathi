@@ -145,6 +145,13 @@ export interface RuleContext {
   filename: string;
   /** Answers already given, keyed by Decision id. */
   answers: Readonly<Record<string, unknown>>;
+  /**
+   * The rate book of the country being costed (`buildRegionalLibrary`). Every
+   * rule is evaluated with it as the active book (rate-context.ts), so a rule
+   * that prices something — shot blast, the stamping-vs-laser route, a tool
+   * build-up, a tariff — prices it in that country. Absent: the UK library.
+   */
+  rates?: import('../types.js').RateLibrary;
 }
 
 /**

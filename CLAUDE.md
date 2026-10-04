@@ -368,6 +368,16 @@ what is true** — nothing here has been compared with a price JLR paid.
   never hand-list countries in index.html. A new region needs an origin entry (`ORIGIN_PREFERENCES`), a freight
   lane, carbon factors and a `ccyOf` currency in rate-refresh.ts (`tests/region-expansion.test.ts`). See
   `docs/rates/2026-10-country-expansion.md`.
+- Country rates (review, Oct 2026): a costing in a country uses that country's rates for EVERYTHING. Rates used
+  before the stack (toolroom £/hr behind every tool build-up and parametric tool, rule-priced items, module energy
+  fallbacks) read the ACTIVE book via `src/engine/rate-context.ts` (`withRates` / `setActiveRates`) — never
+  `DEFAULT_RATE_LIBRARY` for a rate. Rules run in `ctx.rates` (the CAD route builds it from the request's region and
+  the deployment's active book; the region is in the cache key); headless runs toCostParams and the module in the
+  region's book; the screen keeps a BASE book (company or local) and rebuilds the active one per country
+  (`_rebuildActiveLibrary`). Both country pickers share one `_applyCountry`; overhead / packaging / logistics come from
+  `regionalShopDefaults` on screen and headless. The comparison table re-costs the part per country
+  (`computeRegionalComparisonExact`). A £ figure typed into a form is a quote and is not rescaled. See
+  `docs/rates/2026-10-country-rates-review.md`, `tests/country-rates.test.ts`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

@@ -5,7 +5,7 @@ import {
   type ThermoformFamily, type ThermoformMethod, type MouldMaterial,
   type ToolCooling, type FormComplexity,
 } from './thermoforming-advisor.js';
-import { ukElectricityPerKwh } from '../uk-tariff.js';
+import { tariffElectricityPerKwh } from '../uk-tariff.js';
 
 export type { ThermoformMethod, ThermoformMethod as ThermoformingMethod } from './thermoforming-advisor.js';
 
@@ -117,7 +117,7 @@ export function computeThermoformingDrivers(inputs: ThermoformingInputs): Commod
   // The whole sheet is heated to yield partsPerSheet parts, so energy/part scales
   // with sheet mass ÷ parts, driven by material cp·ΔT and the forming method.
   const specificEnergy = estimateThermoformSpecificEnergy(family, method);   // kWh/kg of sheet
-  const energyPerSheet = specificEnergy * inputs.sheetWeightKg * Math.max(0, inputs.energyPricePerKwh ?? ukElectricityPerKwh());
+  const energyPerSheet = specificEnergy * inputs.sheetWeightKg * Math.max(0, inputs.energyPricePerKwh ?? tariffElectricityPerKwh());
   const energyCostPerPart = (energyPerSheet / Math.max(1, inputs.partsPerSheet)) * rejectUplift;
 
   // ── Additive / masterbatch (UV, anti-static, FR, impact modifier) ──

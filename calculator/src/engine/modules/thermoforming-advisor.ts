@@ -1,3 +1,4 @@
+import { activeToolroomFactor } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 /**
@@ -209,9 +210,11 @@ export function estimateThermoformToolCost(inp: ThermoformToolInputs): Thermofor
     : trimType === 'in-machine' ? Math.round(1200 + area * 0.6 * cavities) // matched trim-in-place tooling
     : 0; // CNC router / robot needs no part-specific trim die
 
-  const total = Math.round(mould + vacuumHoles + trim);
+  // Built where the part is made: × the country's toolroom factor (1 in the UK).
+  const tf = activeToolroomFactor();
+  const total = Math.round((mould + vacuumHoles + trim) * tf);
   return {
-    mould: Math.round(mould), vacuumHoles, trim, total,
+    mould: Math.round(mould * tf), vacuumHoles: Math.round(vacuumHoles * tf), trim: Math.round(trim * tf), total,
     lifeCycles: r.life, maintenancePerCycle: r.maint,
   };
 }

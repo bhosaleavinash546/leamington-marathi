@@ -139,6 +139,9 @@ import { exportToExcelBlob } from '../export/excel.js';
 import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
 import { currencySymbol } from '../engine/insights.js';
 import { populateRegionPickers } from './region-options.js';
+import { setActiveRates } from '../engine/rate-context.js';
+import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
+import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor } from './country-fields.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -285,7 +288,13 @@ function loadRateLibrary(): RateLibrary {
   }
   return stored;
 }
-let library: RateLibrary = recomputeMachineRates(loadRateLibrary());
+// Two books: the BASE (the saved local book, or the company book when an admin
+// loaded one — UK basis) and the ACTIVE one costings use (the base rebuilt for the
+// selected country). The country switch used to rebuild from local storage, which
+// silently dropped company rates the moment a country was picked.
+let _baseLibrary: RateLibrary = recomputeMachineRates(loadRateLibrary());
+let library: RateLibrary = _baseLibrary;
+setActiveRates(library);
 // Commodity-specific advisory warnings surfaced by a collector (e.g. sheet-metal
 // press-tonnage adequacy). Reset each compute(); merged into the warnings box.
 let _smExtraWarnings: string[] = [];
@@ -308,7 +317,8 @@ async function syncActiveRateLibrary(): Promise<void> {
     // active — company policy wins. When the server is on built-in defaults we
     // keep the user's local library so their manual rate edits aren't discarded.
     if (data.source === 'company' && data.library && Array.isArray(data.library.materials) && data.library.materials.length) {
-      library = recomputeMachineRates(data.library);
+      _baseLibrary = recomputeMachineRates(data.library);
+      _rebuildActiveLibrary();
     }
   } catch { /* offline / not authed — keep the local library */ }
 }
@@ -433,6 +443,13 @@ let _activeScenarioId: string | null = null; // set when a scenario is saved; us
 let partPhotoDataUrl: string | null = null;
 let partPhotoName: string | null = null;
 let _mfgRegion: ManufacturingRegion = 'UK';
+/** Rebuild the active book from the base for the selected country, and make it the engine's. */
+function _rebuildActiveLibrary(): void {
+  library = _mfgRegion === 'UK' ? _baseLibrary : buildRegionalLibrary(_baseLibrary, _mfgRegion);
+  setActiveRates(library);
+}
+/** The commodity a CAD analysis was last applied to — re-applied when the country changes. */
+let _cadAppliedTo: CommodityType | null = null;
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
@@ -4130,7 +4147,7 @@ function renderExtrusionForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="ext-lab-eff" step="0.01" min="0.01" max="1" value="0.95"/></div>
-      <div class="field-group"><label>Energy £/kWh <span title="Electricity price for the variable melt+chill process energy (regional).">ℹ</span></label><input type="number" id="ext-kwh" step="0.01" min="0" value="0.20"/></div>
+      <div class="field-group"><label>Energy £/kWh <span title="Electricity price for the variable melt+chill process energy. Blank = the selected country&#39;s industrial tariff.">ℹ</span></label><input type="number" id="ext-kwh" step="0.001" min="0" value="" placeholder="country tariff"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label><input type="checkbox" id="ext-leak" style="width:auto;margin-right:5px"/>Pressure / Leak test (pipe/tube)</label></div>
@@ -4195,7 +4212,7 @@ function renderThermoformingForm(): string {
     <div class="field-row">
       <div class="field-group"><label><input type="checkbox" id="tf-rotary"/> Rotary former <span title="Oven at its own station: the slowest of heat / form + cool / load paces the machine, not their sum.">ℹ</span></label></div>
       <div class="field-group"><label>Trim Machine <span title="Heavy-gauge parts are trimmed off the former on a 5-axis router, per part. None = the trim time sits inside the forming cycle.">ℹ</span></label><select id="tf-trim-mach" class="machine-select"><option value="">— None (in the cycle) —</option></select></div>
-      <div class="field-group"><label>Electricity (£/kWh)</label><input type="number" id="tf-kwh" step="0.01" min="0" value="0.20"/></div>
+      <div class="field-group"><label>Electricity (£/kWh)</label><input type="number" id="tf-kwh" step="0.001" min="0" value="" placeholder="country tariff"/></div>
       <div class="field-group"><label>Reject Rate (%)</label><input type="number" id="tf-reject" step="0.5" min="0" max="49" value="3"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -6347,7 +6364,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     if (commOvr) formData.append('commodity', commOvr);
     if (matOvr)  formData.append('material', matOvr);
     formData.append('annualVolume', annVol || '100000');
-    formData.append('region', (document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK');
+    formData.append('region', _mfgRegion);
     if (ovrWt)   formData.append('weightKg', ovrWt);
     if (ovrVol)  formData.append('volumeCm3', ovrVol);
     if (ovrLen)  formData.append('lengthMm', ovrLen);
@@ -7094,6 +7111,9 @@ async function reanalyzeCAD(): Promise<void> {
       geometryHash: cadGeometryHash,
       filename: cadFile?.name ?? 'cached_part.step',
       annualVolume: annVol || '100000',
+      // The rules price in this country (shot blast, route, tools, tariff) — it
+      // used to be sent on the first analysis only.
+      region: _mfgRegion,
     };
     if (commOvr) { body['commodity'] = commOvr; body['commodityExplicit'] = true; }
     if (matOvr)  body['material']  = matOvr;
@@ -10698,6 +10718,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     // no decisions block, so anything the rules cannot settle is reported in
     // the status line instead of being quietly filled.
     fd.append('mode', selectedAnalysisMode());
+    fd.append('region', _mfgRegion);   // the rules price in the selected country
     if (cadPartPhotoBase64) { fd.append('partPhotoBase64', cadPartPhotoBase64); fd.append('partPhotoMime', cadPartPhotoMime); }
     const apiKey = sessionStorage.getItem('cad-api-key') ?? '';
     const headers: Record<string, string> = { ...authHeader() };
@@ -10909,6 +10930,7 @@ function applyDetectedHardware(prefix: 'sm' | 'smf', weightFieldId: string, mate
 
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
+  _cadAppliedTo = targetCommodity;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
@@ -10972,7 +10994,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       const pkgEl = el<HTMLInputElement>('packaging');
       if (pbb && pkgEl) {
         const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
-        pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, pkgKg));
+        // UK-basis estimate, shown in the selected country (country-fields.ts).
+        setShopBasisUK({ packagingPerPart: estimatePackagingPerPart(bboxVolCm3, pkgKg) });
+        pkgEl.value = String(shopFieldsFor(_mfgRegion).packagingPerPart);
         pkgEl.dispatchEvent(new Event('input', { bubbles: false }));
         pkgEl.setAttribute('data-prov', 'estimated');
         pkgEl.addEventListener('input', () => pkgEl.removeAttribute('data-prov'), { once: true });
@@ -10982,7 +11006,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       const logEl = el<HTMLInputElement>('logistics');
       if (pbb && logEl) {
         const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
-        logEl.value = String(estimateLogisticsPerPart(pkgKg, bboxVolCm3));
+        setShopBasisUK({ logisticsPerPart: estimateLogisticsPerPart(pkgKg, bboxVolCm3) });
+        logEl.value = String(shopFieldsFor(_mfgRegion).logisticsPerPart);
         logEl.dispatchEvent(new Event('input', { bubbles: false }));
         logEl.setAttribute('data-prov', 'estimated');
         logEl.addEventListener('input', () => logEl.removeAttribute('data-prov'), { once: true });
@@ -12231,7 +12256,7 @@ function collectSheetMetalInput(): UniversalStackInput {
       partWeightKg: num('sm-net-wt'),
       stressReliefAnneal: sel('sm-lam-anneal') === 'yes',
       reCoat: sel('sm-lam-coat') === 'yes',
-      annealEnergyPricePerKwh: library.energy?.[0]?.electricityPerKwh ?? 0.23,
+      annealEnergyPricePerKwh: library.energy[0].electricityPerKwh,
     });
     extraConsumablesPerPart = fin.totalPerPart;
     _smExtraWarnings.push(
@@ -12310,7 +12335,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     ].filter(op => op.machineId && op.labourId && op.cycleTimeHr > 0),
     hotStamping,
     austenitiseEnergyKwhPerKg: hotStamping ? (num('sm-hs-energy') || 0.30) : undefined,
-    hotStampingEnergyPricePerKwh: hotStamping ? (library.energy?.[0]?.electricityPerKwh ?? 0.23) : undefined,
+    hotStampingEnergyPricePerKwh: hotStamping ? library.energy[0].electricityPerKwh : undefined,
     quenchDwellSec: hotStamping ? (num('sm-hs-dwell') || undefined) : undefined,
     furnaceMachineId: hotStamping ? (sel('sm-hs-furn-mach') || undefined) : undefined,
     furnaceLabourId: hotStamping ? (sel('sm-hs-furn-lab') || undefined) : undefined,
@@ -13729,7 +13754,8 @@ function collectExtrusionInput(): UniversalStackInput {
     screwDiameterMm: num('ext-screw') || undefined,
     wallThicknessMm: num('ext-wall') || undefined,
     cooling: (sel('ext-cooling') || 'water-bath') as ExtrusionCooling,
-    energyPricePerKwh: num('ext-kwh') || 0.20,
+    // Blank = the selected country's tariff (the library's), never a fixed UK-ish £0.20.
+    energyPricePerKwh: num('ext-kwh') || library.energy[0].electricityPerKwh,
     additiveFraction: (num('ext-add-pct') || 0) / 100,
     additivePricePerKg,
     steadyScrapFraction: num('ext-steady-scrap'),
@@ -13833,7 +13859,8 @@ function collectThermoformingInput(): UniversalStackInput {
     sheetThicknessMm: num('tf-thk') || undefined,
     coolTimeSec: num('tf-cool') || undefined,
     toolCooling: validSel<ToolCooling>('tf-tool-cool', ['water','air','ambient'], 'water'),
-    energyPricePerKwh: num('tf-kwh') || 0.20,
+    // Blank = the selected country's tariff (the library's), never a fixed UK-ish £0.20.
+    energyPricePerKwh: num('tf-kwh') || library.energy[0].electricityPerKwh,
     additiveFraction: (num('tf-add-pct') || 0) / 100,
     additivePricePerKg,
     projectedAreaCm2: num('tf-area') || undefined,
@@ -15897,8 +15924,12 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
   // table being read as a UK breakdown and the source region double-discounted).
   // Aluminium extrusion: the billet's own regional prices (US Midwest premium,
   // SHFE China…) rather than the flat material multiplier.
-  const rcRows = computeRegionalComparison(result.breakdown, { landed: _landedCostMode, sourceRegion: _mfgRegion,
-    ...(activeCommodity === 'aluminium_extrusion' ? { materialFactorByRegion: alBilletMaterialFactors((sel('alx-alloy') || '6063') as AlAlloy) } : {}) });
+  // Each row is the part RE-COSTED in that country's book (regional-comparison.ts) —
+  // the old multiplier estimate disagreed with what selecting the country gives.
+  const rcRows = input
+    ? computeRegionalComparisonExact(input, _baseLibrary, { landed: _landedCostMode, sourceRegion: _mfgRegion, sourceResult: result })
+    : computeRegionalComparison(result.breakdown, { landed: _landedCostMode, sourceRegion: _mfgRegion,
+      ...(activeCommodity === 'aluminium_extrusion' ? { materialFactorByRegion: alBilletMaterialFactors((sel('alx-alloy') || '6063') as AlAlloy) } : {}) });
 
   type RCCol = 'material' | 'process' | 'labour' | 'overhead' | 'exWorks' | 'total';
   const rcCols: RCCol[] = ['material', 'process', 'labour', 'overhead', 'exWorks', 'total'];
@@ -16702,6 +16733,7 @@ async function printMasterPDF(): Promise<void> {
       result: lastResult,
       input: lastInput,
       library,
+      baseLibrary: _baseLibrary,
       currency: _displayCurrency,
       fxRate: _displayFxRate,
       commodityType: activeCommodity,
@@ -17313,7 +17345,7 @@ async function openPDF(): Promise<void> {
   if (notFromPhoto) {
     showToast(`This report costs the ${activeCommodity === 'pcba' ? 'PCBA' : 'PCB fab'} form as it stands, not your photo board — the photos and ASIL are left out. To report the photo board, use "Apply to ${activeCommodity === 'pcba' ? 'PCBA' : 'Fab'}" first, or Export PDF on the photo results.`, 'warning');
   }
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta());
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta(), _baseLibrary);
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
@@ -19151,15 +19183,24 @@ function applyRateLibraryEdits(): void {
     }
   });
   library = recomputeMachineRates(library);
-  saveLibraryToStorage(library);
+  setActiveRates(library);
+  if (_mfgRegion === 'UK') {
+    _baseLibrary = library;
+    saveLibraryToStorage(_baseLibrary);
+  } else {
+    // The saved book is the UK basis every country is rebuilt from. Writing this
+    // country's rebuilt book over it compounded the next country on top of this one.
+    showToast(`Rate edits apply to this ${REGIONAL_DATA[_mfgRegion]?.name ?? _mfgRegion} costing only — switch to the UK to change the saved base rates.`, 'info');
+  }
   populateSelects();
   el('rate-modal').style.display = 'none';
 }
 
 function resetRateLibrary(): void {
   if (!confirm('Reset rate library to factory defaults?')) return;
-  library = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
-  saveLibraryToStorage(library);
+  _baseLibrary = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+  saveLibraryToStorage(_baseLibrary);
+  _rebuildActiveLibrary();   // still in the selected country — a reset used to drop to UK rates under a China label
   populateSelects();
   el('rate-modal').style.display = 'none';
 }
@@ -19310,65 +19351,63 @@ async function init(): Promise<void> {
     }
   } catch { /* ignore */ }
 
-  // Country for Costing bar — rebuilds library, updates currency, overhead default, auto-recalculates
+  // ONE country switch for both pickers (header and the "Country" bar). They used to
+  // run different code: the header rebuilt the rates but left overhead, packaging and
+  // logistics at the old country's values and did not refresh the rate drop-downs;
+  // the bar did those but wrote packaging/logistics to field ids that do not exist.
+  // Both rebuilt from local storage, dropping company rates. Now: one path.
   const _applyCountry = (code: string) => {
-    const region = code as ManufacturingRegion;
+    const region = (REGIONAL_DATA[code as ManufacturingRegion] ? code : 'UK') as ManufacturingRegion;
     _mfgRegion = region;
-    if (region === 'UK') {
-      library = recomputeMachineRates(getLibraryFromStorage());
-    } else {
-      library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
-    }
+    _rebuildActiveLibrary();
     const rd = REGIONAL_DATA[region];
-    if (rd) {
-      // Update overhead-pct to country-scaled default (base 12% × overheadMultiplier)
-      const ohPct = Math.round(12 * rd.overheadMultiplier);
-      const ohEl = el<HTMLInputElement>('overhead-pct');
-      if (ohEl) {
-        const prevOh = Number(ohEl.value);
-        ohEl.value = String(ohPct);
-        if (Math.abs(prevOh - ohPct) >= 1) {
-          showToast(`Overhead updated to ${ohPct}% (${rd.name} regional default). Adjust if needed.`, 'info');
-        }
-      }
-      // Scale packaging and logistics to regional defaults
-      const pkgEl = el<HTMLInputElement>('packaging-cost');
-      const logEl = el<HTMLInputElement>('logistics-cost');
-      if (pkgEl) pkgEl.value = (0.15 * rd.packagingMultiplier).toFixed(2);
-      if (logEl) logEl.value = (0.25 * rd.logisticsMultiplier).toFixed(2);
-      // Update display currency to the region's native currency — unless the
-      // user has pinned a currency (e.g. China rates but keep the headline in GBP).
-      const cur = _currencyUserPinned ? _displayCurrency : rd.currency;
-      const curSel = el<HTMLSelectElement>('currency-selector');
-      if (curSel && Array.from(curSel.options).some(o => o.value === cur)) {
-        curSel.value = cur;
-      }
-      _applyCurrency(cur);
-      // Sync header region selector (without triggering its 'change' event)
-      const regionSel = el<HTMLSelectElement>('mfg-region-selector');
-      if (regionSel && Array.from(regionSel.options).some(o => o.value === code)) {
-        regionSel.value = code;
-      }
-      // Update info label
-      const infoEl = document.getElementById('country-bar-info');
-      if (infoEl) {
-        const sym = CURRENCY_SYMBOL[cur] ?? cur;
-        const labRatio = rd.labour.semiskilled / REGIONAL_DATA['UK'].labour.semiskilled;
-        const labDelta = (labRatio - 1) * 100;
-        const sign = (n: number) => n >= 0 ? '+' : '';
-        // Word this as what it IS — the country's own rate tables active — not a
-        // bare multiplier readout (which made it look factor-based end to end).
-        infoEl.textContent = `${rd.name} · ${sym} ${cur} · ${code} labour, energy & material rates active (labour ${sign(labDelta)}${labDelta.toFixed(0)}% vs UK)`;
-      }
+    // Overhead, packaging and logistics for the country — the engine function the
+    // bulk path uses too (regionalShopDefaults), so screen and headless agree.
+    const shop = applyCountryShopFields(region);
+    if (shop.changedOverhead) showToast(`Overhead ${shop.overheadPct}% · packaging and logistics set for ${rd.name}. Adjust if needed.`, 'info');
+    // Display currency follows the country unless the user pinned one.
+    const cur = _currencyUserPinned ? _displayCurrency : rd.currency;
+    const curSel = el<HTMLSelectElement>('currency-selector');
+    if (curSel && Array.from(curSel.options).some(o => o.value === cur)) curSel.value = cur;
+    _applyCurrency(cur);
+    // Both pickers show the country (set without firing their change events).
+    for (const id of ['mfg-region-selector', 'costing-country-sel']) {
+      const sel = el<HTMLSelectElement>(id);
+      if (sel && Array.from(sel.options).some(o => o.value === region)) sel.value = region;
     }
-    // Refresh select option labels to reflect new regional rates
+    const infoEl = document.getElementById('country-bar-info');
+    if (infoEl) {
+      const sym = CURRENCY_SYMBOL[cur] ?? cur;
+      const labDelta = (rd.labour.semiskilled / REGIONAL_DATA['UK'].labour.semiskilled - 1) * 100;
+      infoEl.textContent = `${rd.name} · ${sym} ${cur} · ${region} labour, machine, material, energy & toolroom rates active (labour ${labDelta >= 0 ? '+' : ''}${labDelta.toFixed(0)}% vs UK)`;
+    }
     populateSelects();
-    // Auto-recalculate if results exist
+    if (document.getElementById('home-view')?.style.display !== 'none') renderDashboard();
+    // A CAD part's rule values (tools, shot blast, route, tariff) were priced in the
+    // country of the analysis — re-run the rules in this one before re-costing.
+    if (cadAnalysisResult && _cadAppliedTo) {
+      if (selectedAnalysisMode() === 'deterministic') {
+        const target = _cadAppliedTo;
+        void reanalyzeCAD().then(() => { if (cadAnalysisResult) applyCADToForm(target, true); });
+        return;
+      }
+      showToast(`Rates now ${rd.name}. Press "Re-analyse" to re-price the CAD rule values (tools, finishing) in ${rd.name} — it calls the AI again.`, 'warning');
+    }
     if (lastResult && lastInput) el('calc-btn')?.click();
   };
   el<HTMLSelectElement>('costing-country-sel')?.addEventListener('change', e => {
     _applyCountry((e.target as HTMLSelectElement).value);
   });
+  el<HTMLSelectElement>('mfg-region-selector')?.addEventListener('change', e => {
+    _applyCountry((e.target as HTMLSelectElement).value);
+  });
+  // A packaging / logistics figure typed in is kept as its UK basis, so the next
+  // country switch scales the engineer's figure, not a default.
+  for (const f of ['packaging', 'logistics'] as const) {
+    el<HTMLInputElement>(f)?.addEventListener('input', e => {
+      shopBasisFromTyped(_mfgRegion, f, Number((e.target as HTMLInputElement).value));
+    });
+  }
 
   // Rate-database transparency export: dump the ACTIVE library (all rates with
   // their audit-trail source notes) + the full multi-country reference table.
@@ -19380,42 +19419,6 @@ async function init(): Promise<void> {
       .catch(err => showToast(`Rate export failed: ${err instanceof Error ? err.message : err}`, 'error'));
   });
 
-  // Manufacturing region selector — rebuilds rate library and auto-switches display currency
-  const _regionSel = el<HTMLSelectElement>('mfg-region-selector');
-  if (_regionSel) _regionSel.value = _mfgRegion;
-  _regionSel?.addEventListener('change', e => {
-    const region = (e.target as HTMLSelectElement).value as ManufacturingRegion;
-    _mfgRegion = region;
-    if (region === 'UK') {
-      library = recomputeMachineRates(getLibraryFromStorage());
-    } else {
-      library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
-    }
-    // Auto-switch display currency to region's native currency — unless the user
-    // has pinned a currency (source from China but keep the headline in GBP).
-    const nativeCur = REGIONAL_DATA[region]?.currency;
-    const curSel = el<HTMLSelectElement>('currency-selector');
-    if (!_currencyUserPinned && nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
-      curSel.value = nativeCur;
-      _applyCurrency(nativeCur);
-    }
-    // Sync country bar selector to match region (best-effort, only when code matches)
-    const countrySel = el<HTMLSelectElement>('costing-country-sel');
-    if (countrySel && Array.from(countrySel.options).some(o => o.value === region)) {
-      countrySel.value = region;
-      const infoEl = document.getElementById('country-bar-info');
-      if (infoEl) {
-        const rd = REGIONAL_DATA[region];
-        if (rd) infoEl.textContent = `${rd.name} · ${_currencyUserPinned ? _displayCurrency : (nativeCur ?? region)}`;
-      }
-    }
-    // Auto-recalculate so results reflect new regional rates
-    if (lastResult && lastInput) el('calc-btn')?.click();
-    // Refresh dashboard if it's visible
-    if (document.getElementById('home-view')?.style.display !== 'none') renderDashboard();
-    // Refresh populateSelects in case UI is open
-    if (typeof populateSelects === 'function') populateSelects();
-  });
 
   // Part photo upload
   el<HTMLInputElement>('part-photo-input')?.addEventListener('change', () => {

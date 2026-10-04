@@ -12,7 +12,7 @@ import { computeCastingDrivers, type CastingInputs } from '../src/engine/modules
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { meltFactsFor, castingAlloyOf } from '../src/engine/casting-melt.js';
-import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
+import { tariffElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import { runCostInputRules } from '../src/engine/cost-input-rules/engine.js';
 import { CASTING_RULES, sandImpressions, castingSectionMm } from '../src/engine/cost-input-rules/commodities/casting.js';
 import { CAST_AND_MACHINE_RULES, drilledStockCm3 } from '../src/engine/cost-input-rules/commodities/cast-and-machine.js';
@@ -69,7 +69,7 @@ describe('2. melting is charged on every kg poured', () => {
     const off = computeCastingDrivers({ ...BASE, melt: { energyKwhPerKg: 0 } });
     const pour = 2.512 / 0.97 / 0.65;
     expect((on.rawMaterial.consumablesCostPerPart ?? 0) - (off.rawMaterial.consumablesCostPerPart ?? 0))
-      .toBeCloseTo(pour * 0.70 * ukElectricityPerKwh(), 6);
+      .toBeCloseTo(pour * 0.70 * tariffElectricityPerKwh(), 6);
   });
 
   it('knows the alloy behind every casting grade the rules pick', () => {

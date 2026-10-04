@@ -10,6 +10,7 @@ import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion } from '../engine/regional-rates.js';
+import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { exportFilename } from './filename.js';
@@ -701,9 +702,11 @@ export function renderShouldCostSections(
     region: ManufacturingRegion;
     scenarios: Scenario[];
     cadMeta: CADReportMeta;
+    /** The UK-basis book the country was rebuilt from (§9 re-costs the part in each country). */
+    baseLibrary?: RateLibrary;
   },
 ): number {
-  const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta } = ctx;
+  const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary } = ctx;
   y = renderSourcePhotographs(doc, y, cadMeta.photos ?? []);
   const sym  = currencySymbol(currency);
   const c    = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
@@ -1366,8 +1369,10 @@ export function renderShouldCostSections(
     // Aluminium extrusion: the billet's own regional prices, by the alloy in the material id.
     const alAlloy = commodityType === 'aluminium_extrusion'
       ? AL_ALLOY_LIST.find(a => `mat-al-billet-${a.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
-    const rc = computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion,
-      ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy) } : {}) });
+    const rc = baseLibrary
+      ? computeRegionalComparisonExact(input, baseLibrary, { landed: false, sourceRegion: region as ManufacturingRegion, sourceResult: result })
+      : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion,
+        ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy) } : {}) });
     const cheapest = Math.min(...rc.map(r => r.total));
     const baseName = rc.find(r => r.isBase)?.name ?? 'base';
     doc.addPage(); y = 18;
@@ -1663,7 +1668,9 @@ export function printPDF(
   partPhotoDataUrl?: string | null,
   region: ManufacturingRegion = 'UK',
   scenarios: Scenario[] = [],
-  cadMeta: CADReportMeta = {}
+  cadMeta: CADReportMeta = {},
+  /** The UK-basis book the country was rebuilt from — the comparison re-costs the part in each country. */
+  baseLibrary?: RateLibrary,
 ): void {
 
   const sym  = currencySymbol(currency);
@@ -1887,7 +1894,7 @@ export function printPDF(
   ], NAVY, HDR);
 
 
-  y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta });
+  y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary });
 
   addFooters();
 

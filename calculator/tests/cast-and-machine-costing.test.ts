@@ -26,7 +26,7 @@ import { executeCalculateCost } from '../server/services/cost-executor.js';
 import { SHOP_DEFAULTS } from '../src/engine/cost-input-rules/to-cost-params.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
 import { meltFactsFor, MELT_SHOP } from '../src/engine/casting-melt.js';
-import { ukElectricityPerKwh } from '../src/engine/uk-tariff.js';
+import { tariffElectricityPerKwh } from '../src/engine/uk-tariff.js';
 import type { CADAnalysisResult } from '../src/engine/ai-analysis.js';
 
 const LIB = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
@@ -116,7 +116,7 @@ describe('the money reconciles by hand', () => {
     const poured = effectiveNet / 0.65;
     const lost = (poured - 2.512) * melt.lossFraction;
     const byHand = (2.512 + lost) * mat.pricePerKg - lost * mat.scrapRecoveryPricePerKg
-      + poured * melt.energyKwhPerKg * ukElectricityPerKwh()
+      + poured * melt.energyKwhPerKg * tariffElectricityPerKwh()
       + (params.sand ? poured * MELT_SHOP.greenSandAdditionsPerKgPoured : 0);   // green-sand additions
 
     expect(poured).toBeCloseTo(3.98414, 4);

@@ -53,7 +53,7 @@ export const REGION_NAMES: Record<ManufacturingRegion, string> = {
   // ⟪/region-expand⟫
 };
 
-interface RegionalData {
+export interface RegionalData {
   /** Display name */
   name: string;
   /** ISO currency code */
@@ -899,6 +899,48 @@ export function supportedRegions(): string[] {
     .map(c => `${c} (${REGION_NAMES[c]})`);
 }
 
+/** Labour category each process grade moves with (the ids whose suffix is not a category). */
+const PROCESS_LABOUR_CATEGORY: Record<string, keyof RegionalData['labour']> = {
+  forge: 'foundry', furnace: 'foundry',
+  blow: 'semiskilled', roto: 'semiskilled', thermoform: 'semiskilled', 'trim-router': 'semiskilled',
+};
+
+/**
+ * Toolroom £/hr in a region vs the UK. A toolroom hour is about half skilled
+ * labour (toolmaker, fitter, polisher) and half machine (CNC, EDM, spotting
+ * press), so the factor is the mean of the skilled-labour ratio and the
+ * machine-rate multiplier. China: ½ × 8.08/26.19 + ½ × 0.55 = 0.43. The
+ * comparison table scales tooling by the same factor, so the two regional
+ * paths agree. An estimate — a toolmaker's quote replaces it.
+ */
+export function toolroomFactorFor(region: ManufacturingRegion): number {
+  const rd = REGIONAL_DATA[region];
+  if (!rd || region === 'UK') return 1;
+  return Math.round((0.5 * rd.labour.skilled / REGIONAL_DATA.UK.labour.skilled + 0.5 * rd.machineRateMultiplier) * 10_000) / 10_000;
+}
+
+/**
+ * Overhead %, packaging and logistics £/part for a region — the screen's country
+ * switch and headless costing both read this, so the same part costs the same
+ * in China on either path. Overhead 12 % × the region's multiplier. Packaging and
+ * logistics are the UK-basis figure × the region's multipliers (logistics is
+ * delivery to the UK): the size-aware estimate when the part's geometry gave one
+ * (`estimatePackagingPerPart` / `estimateLogisticsPerPart`), else £0.15 / £0.25.
+ * The screen used to overwrite a size-aware estimate with the flat £0.15 × factor.
+ */
+export function regionalShopDefaults(
+  region: ManufacturingRegion,
+  ukBasis: { packagingPerPart?: number; logisticsPerPart?: number } = {},
+): { overheadPct: number; packagingPerPart: number; logisticsPerPart: number } {
+  const rd = REGIONAL_DATA[region] ?? REGIONAL_DATA.UK;
+  const r4 = (n: number) => Math.round(n * 10_000) / 10_000;
+  return {
+    overheadPct: Math.round(12 * rd.overheadMultiplier) / 100,
+    packagingPerPart: r4((ukBasis.packagingPerPart ?? 0.15) * rd.packagingMultiplier),
+    logisticsPerPart: r4((ukBasis.logisticsPerPart ?? 0.25) * rd.logisticsMultiplier),
+  };
+}
+
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
 
@@ -935,16 +977,28 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     ...baseLibrary,
     version: `${baseLibrary.version}-${region}`,
     lastModified: new Date().toISOString().slice(0, 10),
+    regional: { code: region, name: rd.name, toolroomFactor: toolroomFactorFor(region) },
 
-    // Adjust labour rates: extract category suffix from ID (lab-{region}-{category})
-    // and map to the target region's rate for that category.
-    labour: baseLibrary.labour.map(l => ({
-      ...l,
-      fullyLoadedRatePerHr: labourCategoryRates[l.id.split('-').at(-1) ?? ''] ?? l.fullyLoadedRatePerHr * (rd.labour.skilled / REGIONAL_DATA.UK.labour.skilled),
-      region: rd.name,
-      sourceNote: `Regional benchmark ${rd.name} — 2026-09`,
-      confidence: 'Low' as const,
-    })),
+    // Labour: a grade named by its category (lab-{region}-{category}) takes the
+    // region's rate for that category. A process grade (lab-uk-forge, -blow, ...)
+    // keeps its premium over its category and moves by that category's ratio —
+    // it used to move by the SKILLED ratio whatever it was, and an operator grade
+    // is not a skilled one.
+    labour: baseLibrary.labour.map(l => {
+      const suffix = l.id.replace(/^lab-[a-z]+-/, '');
+      const direct = labourCategoryRates[suffix];
+      const cat = PROCESS_LABOUR_CATEGORY[suffix] ?? 'skilled';
+      const rate = direct ?? Math.round(l.fullyLoadedRatePerHr * (rd.labour[cat] / REGIONAL_DATA.UK.labour[cat]) * 100) / 100;
+      return {
+        ...l,
+        fullyLoadedRatePerHr: rate,
+        region: rd.name,
+        sourceNote: direct !== undefined
+          ? `${rd.name} ${suffix} rate (regional-rates.ts, 2026-09)`
+          : `UK ${suffix} grade × ${rd.name}/UK ${cat} ratio ${(rd.labour[cat] / REGIONAL_DATA.UK.labour[cat]).toFixed(4)}`,
+        confidence: 'Low' as const,
+      };
+    }),
 
     // Adjust material prices. Extrusion grades with an authentic per-country
     // price use it directly (a real regional quote, not "UK × factor"); scrap
@@ -1068,7 +1122,7 @@ export interface RegionalComparisonRow {
 }
 
 /** Import duty + international shipping as a fraction of Ex-Works, for landed cost. */
-const LANDED_ADDERS: Partial<Record<ManufacturingRegion, { duty: number; shipping: number }>> = {
+export const LANDED_ADDERS: Partial<Record<ManufacturingRegion, { duty: number; shipping: number }>> = {
   UK: { duty: 0, shipping: 0 },     DE: { duty: 0, shipping: 0.020 }, FR: { duty: 0, shipping: 0.022 },
   ES: { duty: 0, shipping: 0.025 }, PL: { duty: 0, shipping: 0.030 }, TR: { duty: 0.035, shipping: 0.040 },
   CN: { duty: 0.065, shipping: 0.070 }, IN: { duty: 0.065, shipping: 0.065 }, MX: { duty: 0.050, shipping: 0.060 }, US: { duty: 0, shipping: 0.045 },
@@ -1087,7 +1141,7 @@ const LANDED_ADDERS: Partial<Record<ManufacturingRegion, { duty: number; shippin
   BR: { duty: 0.050, shipping: 0.065 }, CA: { duty: 0.020, shipping: 0.050 },
 };
 
-const DEFAULT_RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL', 'TR', 'CN', 'IN', 'MX', 'US'];
+export const DEFAULT_RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL', 'TR', 'CN', 'IN', 'MX', 'US'];
 
 export function computeRegionalComparison(
   bkd: Breakdown8Bucket,
@@ -1114,7 +1168,7 @@ export function computeRegionalComparison(
     rawMaterial: bkd.rawMaterial / ((opts.materialFactorByRegion?.[source] ?? srcRD.materialMultiplier) || 1),
     process: bkd.process / (srcRD.machineRateMultiplier || 1),
     labour: bkd.labour / srcLab,
-    tooling: bkd.tooling / (srcRD.machineRateMultiplier || 1),
+    tooling: bkd.tooling / (toolroomFactorFor(source) || 1),
     overhead: bkd.overhead / (srcRD.overheadMultiplier || 1),
     packaging: bkd.packaging / (srcRD.packagingMultiplier || 1),
     logistics: bkd.logistics / (srcRD.logisticsMultiplier || 1),
@@ -1134,9 +1188,9 @@ export function computeRegionalComparison(
     const material = uk.rawMaterial * (opts.materialFactorByRegion?.[code] ?? rd.materialMultiplier);
     const process = uk.process * rd.machineRateMultiplier;
     const labour = uk.labour * (rd.labour.semiskilled / ukSemi);
-    // Tooling is bought where the parts are made — scale by the machine-rate
-    // multiplier as a regional capex proxy instead of exporting UK tooling £.
-    const tooling = uk.tooling * rd.machineRateMultiplier;
+    // Tooling is built where the parts are made — at the region's toolroom
+    // factor, the same one the full rebuild gives the tool build-ups.
+    const tooling = uk.tooling * toolroomFactorFor(code);
     // Overhead and margin are PERCENTAGES in the core stack. Carrying the UK
     // absolute £ into a cheaper region overstates both — re-base them on the
     // region's own costs so each row stays internally consistent.

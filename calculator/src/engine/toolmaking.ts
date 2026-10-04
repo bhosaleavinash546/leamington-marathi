@@ -16,6 +16,8 @@
  * same tool). Constants here change only with a source and a code review.
  */
 
+import { activeToolroomFactor } from './rate-context.js';
+
 export type ToolLineKind =
   | 'design' | 'material' | 'machining' | 'edm' | 'polish' | 'fitting'
   | 'boughtOut' | 'heatTreat' | 'tryout' | 'overheadProfit';
@@ -42,7 +44,7 @@ export interface ToolCostDetail {
 /** UK toolroom fully-loaded rates, £/hr. Jun 2026 benchmarks (58/52/58/48/45/85)
  *  moved to Sep 2026 by one quarter of UK manufacturing wage growth (ONS AWE +2.9%
  *  y/y → ×1.0072) — toolroom hours are labour-dominated. */
-export const TOOLROOM_RATES = {
+export const TOOLROOM_RATES_UK = {
   design: 58.42,
   cnc: 52.37,
   edm: 58.42,
@@ -50,6 +52,24 @@ export const TOOLROOM_RATES = {
   polish: 45.32,
   tryoutPress: 85.61,
 } as const;
+
+const tr = (k: keyof typeof TOOLROOM_RATES_UK) => Math.round(TOOLROOM_RATES_UK[k] * activeToolroomFactor() * 100) / 100;
+/**
+ * Toolroom £/hr in the country being costed: the UK rates × the active rate
+ * book's toolroom factor (`buildRegionalLibrary` sets it from the country's
+ * skilled labour and machine-rate multiplier; 1 in the UK). A tool is costed
+ * where the part is made — before this, every mould, die and pattern in a China
+ * costing was built at UK toolroom rates. Tool steel and bought-out parts are
+ * globally traded and stay at their £ prices.
+ */
+export const TOOLROOM_RATES: { readonly [K in keyof typeof TOOLROOM_RATES_UK]: number } = {
+  get design() { return tr('design'); },
+  get cnc() { return tr('cnc'); },
+  get edm() { return tr('edm'); },
+  get fitting() { return tr('fitting'); },
+  get polish() { return tr('polish'); },
+  get tryoutPress() { return tr('tryoutPress'); },
+};
 
 /** Tool materials, £/kg delivered (Jun 2026). Held at the Sep 2026 refresh: no
  *  public tool-steel (P20/H13) price index was sourced — refresh by supplier quote. */

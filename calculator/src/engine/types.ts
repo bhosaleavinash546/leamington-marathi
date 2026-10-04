@@ -135,6 +135,12 @@ export interface RateLibrary {
   aliases?: RateAlias[];
   version: string;
   lastModified: string;
+  /**
+   * Set by `buildRegionalLibrary`: the country this book was rebuilt for, and the
+   * factors applied to rates that live outside the library (the toolroom £/hr).
+   * Absent on the UK base library and on an uploaded company library.
+   */
+  regional?: { code: string; name: string; toolroomFactor: number };
 }
 
 // ─── Universal Stack Inputs ──────────────────────────────────────────────────

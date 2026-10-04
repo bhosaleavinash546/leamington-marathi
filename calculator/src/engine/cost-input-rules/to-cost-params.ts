@@ -33,6 +33,7 @@
  * measurements, and any number that moves because of them is attributable to
  * this block.
  */
+import { activeLabourRate } from '../rate-context.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
@@ -198,7 +199,7 @@ function secondaryMachining(
     weightKg, annualVolume, family: fam,
     featureRows: cut.lines.filter(l => l.included).length,
     cuttingMin: cut.totalCycleHr * 60,
-    engineerRatePerHr: DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-engineer')?.fullyLoadedRatePerHr ?? 42.8,
+    engineerRatePerHr: activeLabourRate('lab-uk-engineer'),   // the costed country's (rate-context.ts)
   });
   const r = computeFeatureMachining(rows, { ...base, cell: c.cell });
   return { ...r, toolingGBP: c.toolingGBP, toolWearPerPart: c.toolWearPerPart };

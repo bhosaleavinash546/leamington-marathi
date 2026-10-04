@@ -22,6 +22,7 @@
  *    and the gauge. `estimateStampingDieLife` already models both and was only
  *    ever reachable from a hand-typed form.
  */
+import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
 import {
   adviseSheetMetalProcess, classifyVolume,
   estimateStampingDieCost, estimateStampingDieLife,
@@ -35,7 +36,7 @@ import { analyticBlank } from '../derive/blank.js';
 import { nestOnCoil, offsetOutline, type NestResult } from '../../nesting.js';
 import { formingPropertiesFor, formingLimitCheck } from '../../forming-properties.js';
 import { pickStampingPressId, stampingPressFacts } from '../../machine-sizing.js';
-import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../rate-library.js';
+import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { estimateBlankingCycleSec } from '../../modules/sheet-metal-fab.js';
 import { standardBatchSize } from '../../routing-optimiser.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -652,8 +653,10 @@ export interface FabPlan {
   perPartGBP: number;
 }
 
-const machineRate = (id: string) => recomputeMachineRates(DEFAULT_RATE_LIBRARY).machines.find(m => m.id === id)?.computedRatePerHr ?? 0;
-const labourRate = (id: string) => DEFAULT_RATE_LIBRARY.labour.find(l => l.id === id)?.fullyLoadedRatePerHr ?? 0;
+// The route price (stamping v laser + brake) in the costed country — it used to be
+// priced at UK rates whatever the country, so the route could flip on the wrong economics.
+const machineRate = (id: string) => activeMachineRate(id);
+const labourRate = (id: string) => activeLabourRate(id);
 
 export function fabPlan(ctx: RuleContext): FabPlan | null {
   const r = advise(ctx);

@@ -28,6 +28,9 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildCommodityRules, ruleContextFor } from '../server/routes/cad.js';
+import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
+
+const BUILT_IN_UK = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 import type { OCCTGeometry } from '../src/engine/ai-analysis.js';
 
 const OUT_DIR = 'tests/fixtures/commodity-rules-prompt';
@@ -127,12 +130,17 @@ const CONTEXTS: Array<{ name: string; geo: OCCTGeometry; filename: string }> = [
  * prompt says something else.
  */
 function render(commodity: string, c: (typeof CONTEXTS)[number]): string {
-  return buildCommodityRules(ruleContextFor(
-    commodity === '__default__' ? 'not_a_real_commodity' : commodity,
-    c.geo,
-    c.filename,
-    { annualVolume: 100_000, forcedCommodity: commodity, forcedMaterial: '' },
-  ));
+  return buildCommodityRules({
+    ...ruleContextFor(
+      commodity === '__default__' ? 'not_a_real_commodity' : commodity,
+      c.geo,
+      c.filename,
+      { annualVolume: 100_000, forcedCommodity: commodity, forcedMaterial: '' },
+    ),
+    // The built-in UK book, not whatever company book this machine's database
+    // holds — the route prices in the deployment's active book, the baseline must not.
+    rates: BUILT_IN_UK,
+  });
 }
 
 mkdirSync(OUT_DIR, { recursive: true });

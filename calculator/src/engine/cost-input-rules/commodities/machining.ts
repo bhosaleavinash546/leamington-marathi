@@ -29,6 +29,7 @@
  * guard is what took the servo horn from 50 minutes of cutting to something a
  * 3 g part can physically absorb.
  */
+import { activeLabourRate } from '../../rate-context.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import type { MachiningOpType } from '../../modules/machining.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -37,7 +38,6 @@ import {
   fixtureCostGBP, programmingHours, toolWearPerPart, cuttingDataFor,
   handlingMinPerFixturing, SETUP_MIN_PER_FIXTURING, PROGRAMMING_HR, type CuttingTime,
 } from '../../machining-time.js';
-import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import {
   optimiseMachiningRouting, standardBatchSize, type RoutingChoice,
 } from '../../routing-optimiser.js';
@@ -362,7 +362,7 @@ export function machiningNRE(ctx: RuleContext, cut: MachiningCut, routing: Routi
   const fx = fixtureCostGBP(Math.max(0, routing.chosen.setups - chuckings), chuckings, ctx.annualVolume);
   const rows = (ctx.geo.featureTable ?? []).length;
   const hrs = programmingHours(routing.chosen.setups, rows, cut.surfaced);
-  const rate = DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-engineer')?.fullyLoadedRatePerHr ?? 42.8;
+  const rate = activeLabourRate('lab-uk-engineer');   // the costed country's engineer
   return {
     fixtureGBP: fx.gbp, fixtureBasis: fx.basis,
     programmingGBP: Math.round(hrs * rate),

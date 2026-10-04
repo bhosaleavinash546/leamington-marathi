@@ -6,6 +6,7 @@
  * for the `calculate_cost` Anthropic tool_use block.
  */
 
+import { withRates } from '../../src/engine/rate-context.js';
 import { computeUniversalStack, validateStackInput } from '../../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import type { RateLibrary } from '../../src/engine/types.js';
@@ -204,8 +205,10 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       }
     }
 
-    // Call the commodity-specific driver function
-    const drivers = computeFn(moduleParams);
+    // Call the commodity-specific driver function — in the costed country's rate
+    // book, so a module's own fallbacks (an energy tariff, a tool build-up) are
+    // that country's and not the UK's (rate-context.ts).
+    const drivers = withRates(input.rateLibrary, () => computeFn(moduleParams));
 
     const stackInput = {
       partName,

@@ -11,6 +11,7 @@
  *   DELETE /api/rate-library/overrides  remove one cell override (?table&id&field)   (admin)
  *   POST /api/rate-library/reset      remove company library + overrides (back to built-in) (admin)
  */
+import type { RateLibrary } from '../../src/engine/types.js';
 import { Router, type Response } from 'express';
 import multer from 'multer';
 import db from '../db.js';
@@ -57,6 +58,11 @@ const upload = multer({
     else cb(new Error('Only .xlsx workbooks are accepted'));
   },
 });
+
+/** The deployment's active rate book (company rates when loaded, else built-in), for other routes. */
+export function resolveActiveRateBook(): RateLibrary {
+  return resolve().library;
+}
 
 function resolve() {
   return resolveActiveLibrary({

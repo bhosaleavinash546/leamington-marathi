@@ -1,7 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
-import { ukElectricityPerKwh } from '../uk-tariff.js';
+import { tariffElectricityPerKwh } from '../uk-tariff.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -145,7 +145,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   };
   const meltEnergyCostPerPart = pourKg
     * (inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0)
-    * (inputs.melt?.energyPricePerKwh ?? ukElectricityPerKwh());
+    * (inputs.melt?.energyPricePerKwh ?? tariffElectricityPerKwh());
 
   const operations: OperationInput[] = [];
   let tooling: ToolingInput;

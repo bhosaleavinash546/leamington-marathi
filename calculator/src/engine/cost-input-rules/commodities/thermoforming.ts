@@ -36,7 +36,7 @@ import { bboxSortedMm, planAreaCm2 } from '../derive/envelope.js';
 export { planAreaCm2 } from '../derive/envelope.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 import { enclosedShell } from '../derive/hollow.js';
-import { ukElectricityPerKwh } from '../../uk-tariff.js';
+import { tariffElectricityPerKwh } from '../../uk-tariff.js';
 
 /** Forming complexity from what the kernel can see of the shape. */
 export function formComplexity(ctx: RuleContext): FormComplexity {
@@ -343,7 +343,7 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
     // The electricity price — the field the energy figure above used to be
     // written into (kWh/kg read as £/kWh).
     fromAdvice('thermoforming.energyPricePerKwh', 'tf-kwh', 'energyPricePerKwh', () => ({
-      value: Math.round(ukElectricityPerKwh() * 10_000) / 10_000, source: 'library', confidence: 0.8, basis: 'UK industrial electricity tariff' })),
+      value: Math.round(tariffElectricityPerKwh() * 10_000) / 10_000, source: 'library', confidence: 0.8, basis: 'UK industrial electricity tariff' })),
     fromAdvice('thermoforming.labourId', 'tf-lab', 'labourId', () => ({
       value: 'lab-uk-thermoform', source: 'library', confidence: 0.8, basis: 'thermoforming operator' })),
     fromAdvice('thermoforming.manning', 'tf-manning', 'manning', () => ({

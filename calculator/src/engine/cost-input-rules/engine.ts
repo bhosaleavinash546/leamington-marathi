@@ -11,6 +11,7 @@ import type {
   CommodityRuleSpec, CostInputRuleResult, Decided, Decision, RuleContext, RuleDef, RuleOutcome,
 } from './types.js';
 import { RULE_ENGINE_VERSION } from './types.js';
+import { withRates } from '../rate-context.js';
 
 /** Write `value` into `obj` at a dot path, creating intermediate objects. */
 function setPath(obj: Record<string, unknown>, path: string, value: unknown): void {
@@ -50,7 +51,8 @@ export function runCostInputRules(
   for (const rule of applicable(spec.rules, ctx)) {
     let outcome: RuleOutcome<unknown>;
     try {
-      outcome = rule.evaluate(ctx);
+      // In the country being costed: a rule that prices reads ctx.rates.
+      outcome = withRates(ctx.rates, () => rule.evaluate(ctx));
     } catch (e) {
       // A throwing rule must not take the whole costing down — record it and
       // leave the field empty, which the caller surfaces as "not filled".
@@ -121,7 +123,8 @@ export function renderCommodityRulesPrompt(
   for (const rule of applicable(spec.rules, ctx)) {
     let outcome: RuleOutcome<string | number | boolean>;
     try {
-      outcome = rule.evaluate(ctx);
+      // In the country being costed: a rule that prices reads ctx.rates.
+      outcome = withRates(ctx.rates, () => rule.evaluate(ctx));
     } catch {
       continue;
     }

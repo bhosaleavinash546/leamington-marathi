@@ -15,6 +15,7 @@
  *    under-charges metal — investment castings were being costed at roughly half
  *    their true material. Only HPDC happened to agree.
  */
+import { activeLabourRate } from '../../rate-context.js';
 import {
   adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY,
   FETTLING_MINUTES, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
@@ -22,7 +23,6 @@ import {
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
-import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import type { ToolComplexity } from '../../toolmaking.js';
 import type { CastingSubtype } from '../../modules/casting.js';
 import { answeredNumber, decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
@@ -644,7 +644,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const rate = libraryMachineRate('blast-machine');
-        const lab = DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-foundry')!.fullyLoadedRatePerHr;
+        const lab = activeLabourRate('lab-uk-foundry');   // the costed country's (rate-context.ts)
         const v = Math.max(0.10, Math.round(r.advice.massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
         return decided('casting.shotBlastCostPerPart', v, 'library',
           `${r.advice.subtype} castings are blasted to remove sand / scale / flash — ${r.advice.massKg.toFixed(2)} kg ÷ `

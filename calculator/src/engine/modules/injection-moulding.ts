@@ -4,7 +4,7 @@ import {
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
   boughtOutLine, type ToolComplexity, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
-import { ukElectricityPerKwh } from '../uk-tariff.js';
+import { tariffElectricityPerKwh } from '../uk-tariff.js';
 
 export type RunnerSystem = 'cold' | 'hot';
 
@@ -602,7 +602,7 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   // Drying every kg that goes through the barrel (part + runner, rejects included).
   const dryingPerPart = inputs.drying && inputs.drying.kwhPerKg > 0
     ? (inputs.partWeightKg + effectiveRunnerWeightKg / inputs.cavities) * rejectUplift
-      * inputs.drying.kwhPerKg * (inputs.drying.energyPricePerKwh ?? ukElectricityPerKwh())
+      * inputs.drying.kwhPerKg * (inputs.drying.energyPricePerKwh ?? tariffElectricityPerKwh())
     : 0;
   const secondaryCostPerPart = insertsCostPerPart + Math.max(0, inputs.secondaryOpCostPerPart ?? 0) + dryingPerPart;
 

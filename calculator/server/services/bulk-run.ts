@@ -38,6 +38,7 @@
  * input and every answer, so a run can be reproduced and explained later. That
  * is the "record of every costing" the business case lists as a prerequisite.
  */
+import { withRates } from '../../src/engine/rate-context.js';
 import { readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
@@ -56,7 +57,7 @@ import { RULE_ENGINE_VERSION } from '../../src/engine/cost-input-rules/types.js'
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { fingerprintRateLibrary } from '../utils/rate-library-fingerprint.js';
 import {
-  buildRegionalLibrary, resolveManufacturingRegion, supportedRegions,
+  buildRegionalLibrary, resolveManufacturingRegion, supportedRegions, regionalShopDefaults,
 } from '../../src/engine/regional-rates.js';
 import { recomputeMachineRates } from '../../src/engine/rate-library.js';
 import type { RateLibrary } from '../../src/engine/types.js';
@@ -289,9 +290,12 @@ export async function costMeasuredPart(
   base: BulkPartResult,
 ): Promise<BulkPartResult> {
   const annualVolume = part.annualVolume ?? opts.annualVolume ?? SHOP_DEFAULTS.annualVolume;
+  // The country's book, built once: the rules price in it (ctx.rates), the
+  // parameters are built in it, and the part is costed in it.
+  const book = regionalBook(baseBook, region, opts._regionCache ?? new Map());
   const ctxFor = (commodity: string): RuleContext => ({
     geo, geometryQuality: 'occt', commodity, commoditySource: 'engineer',
-    annualVolume, filename: name, answers,
+    annualVolume, filename: name, answers, rates: book,
   } as RuleContext);
 
   const geometry = {
@@ -350,8 +354,8 @@ export async function costMeasuredPart(
                   + blocking.map(w => w.message).join(' | ') };
   }
 
-  const mapped = toCostParams(commodity, analysis.costInputSuggestions, annualVolume,
-                              materialFacts(ctx).family, geo);
+  const mapped = withRates(book, () => toCostParams(commodity!, analysis.costInputSuggestions, annualVolume,
+                              materialFacts(ctx).family, geo));
   if (!mapped) {
     // Warnings ride along even here: a part that was acknowledged past a
     // blocking check and then failed for another reason must still show that
@@ -364,12 +368,16 @@ export async function costMeasuredPart(
   // The parameter builder can re-route — a pressing the rules price cheaper as
   // laser + press brake comes back as sheet_metal_fab — so cost on ITS commodity.
   if (mapped.commodity !== commodity) commodity = mapped.commodity;
+  // Overhead, packaging and logistics for the country — the same function the
+  // screen's country switch uses (it used to be the UK's 12 % / £0.15 / £0.25 here
+  // whatever the region, while the screen scaled them).
+  const shop = regionalShopDefaults(region, { packagingPerPart: mapped.packagingPerPart, logisticsPerPart: mapped.logisticsPerPart });
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
-    rateLibrary: regionalBook(baseBook, region, opts._regionCache ?? new Map()),
-    overheadPct: SHOP_DEFAULTS.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
-    packagingPerPart: mapped.packagingPerPart ?? SHOP_DEFAULTS.packagingPerPart,
-    logisticsPerPart: mapped.logisticsPerPart ?? SHOP_DEFAULTS.logisticsPerPart,
+    rateLibrary: book,
+    overheadPct: shop.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
+    packagingPerPart: shop.packagingPerPart,
+    logisticsPerPart: shop.logisticsPerPart,
   });
   if (!cost.success) {
     return { ...base, status: 'error', commodity, commoditySource, geometry, code: 'costing_failed',
