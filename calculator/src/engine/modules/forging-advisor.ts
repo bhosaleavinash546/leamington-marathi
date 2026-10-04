@@ -4,7 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
-import { heatTreatServiceFactor, ndtServiceFactor } from '../regional-services.js';
+import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor, countryNote } from '../regional-services.js';
 import {
   TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
@@ -374,7 +374,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   }
 
   // UK £ service prices × the costed country's service factor (regional-services.ts).
-  const svc = (gbpUk: number) => Math.round(gbpUk * ndtServiceFactor() * 10_000) / 10_000;
+  const svc = (gbpUk: number) => Math.round(gbpUk * processServiceFactor() * 10_000) / 10_000;   // descale, blast, coining: bought-in process services
   if (inputs.descale) {
     adders.push({
       label: 'Descale / pickle',
@@ -558,7 +558,7 @@ export function estimateForgingDieCost(inputs: ForgingDieCostInputs): ForgingDie
     labourLine('EDM (deep ribs, tight radii)', 'edm', 0.25 * sinkHrs * complexityFactor, TOOLROOM_RATES.edm,
       `${complexity}: 25% of sinking hours × complexity`),
     { item: 'Harden + temper the blocks', kind: 'heatTreat',
-      cost: Math.round(2500 + steelKg * 2.2), basis: '£2,500 + £2.20/kg of die steel' },
+      cost: Math.round((2500 + steelKg * 2.2) * countryFactor('heatTreat')), basis: `£2,500 + £2.20/kg of die steel (UK)${countryNote('heatTreat')}` },
     labourLine(`Impression polishing × ${impressions}`, 'polish', impressions * 16 * complexityFactor,
       TOOLROOM_RATES.polish, '16 h per impression × complexity'),
     labourLine('Die tryout — 3 sessions', 'tryout', 18, TOOLROOM_RATES.tryoutPress, 'press strokes + first-offs'),

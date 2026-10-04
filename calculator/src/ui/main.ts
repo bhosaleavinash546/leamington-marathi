@@ -144,6 +144,8 @@ import { computeRegionalComparisonExact } from '../engine/regional-comparison.js
 import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
 import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
 import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor } from './country-fields.js';
+import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
+import { countryFactor } from '../engine/regional-services.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -3242,7 +3244,7 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
       setVal('imm-runner-wt', params.runnerWeightKg ?? 0.01);
       setVal('imm-wall', params.wallThicknessMm ?? 2.0);
       setVal('imm-cav', params.cavities ?? 4);
-      setVal('imm-mould-cost', params.mouldCost ?? 25000);
+      setVal('imm-mould-cost', params.mouldCost ?? Math.round(25000 * countryFactor({ globalShare: 0.2, rest: 'toolroom' })));
       setVal('imm-mould-life', params.mouldLife ?? 500000);
       setVal('imm-amort', params.amortizationVolume);
       setVal('imm-tolerance', params.toleranceMm ?? 0.2);
@@ -3261,7 +3263,7 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
       setVal('cast-amort', params.amortizationVolume);
       if ((params.subtype ?? 'hpdc') === 'hpdc') {
         setVal('cast-hpdc-cav', params.cavitiesPerMould ?? 2);
-        setVal('cast-hpdc-die-cost', params.toolingCost ?? 80000);
+        setVal('cast-hpdc-die-cost', params.toolingCost ?? Math.round(80000 * countryFactor({ globalShare: 0.2, rest: 'toolroom' })));
       }
       break;
     }
@@ -3990,7 +3992,7 @@ function wireBlowMouldingProcessChange(): void {
     setV('bm-oee', def.oee);
     setV('bm-manning', def.manning);
     setV('bm-reject', def.reject);
-    setV('bm-mould-cost', def.mouldCost);
+    setCountryDefault(document.getElementById('bm-mould-cost') as HTMLInputElement | null, def.mouldCost, _mfgRegion);   // UK default, in the country
     setV('bm-mould-life', def.mouldLife);
     const partWt = parseFloat((document.getElementById('bm-part-wt') as HTMLInputElement)?.value ?? '0') || 0.050;
     setV('bm-flash-wt', parseFloat((partWt * def.flashFraction).toFixed(4)));
@@ -4418,7 +4420,7 @@ function wireRubberProcessChange(): void {
     setVal('rub-oee', def.oee);
     setVal('rub-manning', def.manning);
     setVal('rub-reject', def.reject);
-    setVal('rub-mould-cost', def.mouldCost);
+    setCountryDefault(document.getElementById('rub-mould-cost') as HTMLInputElement | null, def.mouldCost, _mfgRegion);   // UK default, in the country
     setVal('rub-mould-life', def.mouldLife);
 
     // Flash weight derived from current part weight × flash fraction
@@ -12035,7 +12037,11 @@ function switchCommodity(type: CommodityType): void {
   }
 
   followAmortDefaults(area);
+  // £ defaults (tools, NRE, services, cores) in the selected country — country-money-defaults.ts.
+  applyCountryMoneyDefaults(area, _mfgRegion);
+  if (!_moneyDefaultsWatched) { watchCountryMoneyDefaults(area, () => _mfgRegion); _moneyDefaultsWatched = true; }
 }
+let _moneyDefaultsWatched = false;
 
 /**
  * PCB fabrication is priced from fabricators' price tables, which already hold
@@ -14135,7 +14141,7 @@ function wireRubberDFM(): void {
 
 function collectCompositesInput(): UniversalStackInput {
   const drivers = computeCompositeDrivers({
-    fibrePricePerKg: num('comp-fibre-price') || 32.00,
+    fibrePricePerKg: num('comp-fibre-price') || Math.round(32 * countryFactor({ material: 'mat-cf-dry-3k' }) * 100) / 100,
     resinPricePerKg: num('comp-resin-price') || 0,
     fibreWeightFraction: num('comp-fibre-frac') || 0.60,
     partWeightKg: num('comp-part-wt') || 1.80,
@@ -14157,7 +14163,7 @@ function collectCompositesInput(): UniversalStackInput {
     trimTimeHr: num('comp-trim-time'),
     ndiCostPerPart: num('comp-ndi') || undefined,
     rejectRate: num('comp-reject') || 0.04,
-    toolingCost: num('comp-tool-cost') || 18000,
+    toolingCost: num('comp-tool-cost') || Math.round(18000 * countryFactor({ globalShare: 0.2, rest: 'toolroom' })),
     toolingLife: num('comp-tool-life') || 400,
     amortizationVolume: num('comp-amort') || 2000,
     toolsInService: num('comp-tools') || 1,
@@ -14203,7 +14209,7 @@ function collectWiringHarnessInput(): UniversalStackInput {
     testLabourId: sel('harn-test-lab'),
     testTimeHr: num('harn-test-time') || 0.05,
     rejectRate: num('harn-reject') || 0.02,
-    boardingBoardCost: num('harn-board-cost') || 800,
+    boardingBoardCost: num('harn-board-cost') || Math.round(800 * countryFactor({ globalShare: 0.2, rest: 'toolroom' })),
     boardingBoardLife: num('harn-board-life') || 20000,
     amortizationVolume: num('harn-amort') || 10000,
   });
@@ -19397,6 +19403,9 @@ async function init(): Promise<void> {
     try { localStorage.setItem('cv-region', region); } catch { /* storage blocked — the session still works */ }
     _rebuildActiveLibrary();
     const rd = REGIONAL_DATA[region];
+    // The form's £ defaults (tools, NRE, services) follow the country; typed figures stay.
+    const formArea = document.getElementById('commodity-form-area');
+    if (formArea) applyCountryMoneyDefaults(formArea, region);
     // Overhead, packaging and logistics for the country — the engine function the
     // bulk path uses too (regionalShopDefaults), so screen and headless agree.
     const shop = applyCountryShopFields(region);

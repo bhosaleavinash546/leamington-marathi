@@ -394,6 +394,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   the Excel trace and the Rate Database export. UK £ service prices (heat treat, HIP, NDT, impregnation, blast, descale,
   coining) move by `regional-services.ts`; tool £ bands (`casting-tooling.ts` clampTotal) by the toolroom factor; the
   routing and cavitation optimisers default to `activeRates()`. See `docs/rates/live-run-india-aluminium-casting-2026-10.md`.
+  All-commodity audit (Oct 2026): every £ CONSTANT states its COUNTRY BASIS (`regional-services.ts`: toolroom, engineer,
+  heatTreat, inspection, process, chemical, a library material, a `globalShare` mix, or 'global' for traded goods) and is
+  multiplied by `countryFactor(basis)` — never a bare UK £ in a module, rule or advisor. The forms' £ defaults follow the
+  country by the same table (`src/ui/country-money-defaults.ts`; a typed / restored / CAD value is a quote and stays).
+  `tests/country-rates.test.ts` §11 replays every real part in a "twice the UK" country: labour and process must double
+  exactly, and no material, consumable or tool £ may stay at ×1 unless listed as traded. §12 fails on a new £ form field
+  with no basis. Cost traces carry `drivers`. Live: `e2e/country-forms.ts` (every form, defaults, per country). See
+  `docs/rates/all-commodity-country-audit-2026-10.md`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

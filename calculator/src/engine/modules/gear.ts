@@ -32,6 +32,7 @@
  * reader to tell — which is the same reason the CAD path refuses to guess a
  * material grade.
  */
+import { activeRegion, countryFactor, inCountry } from '../regional-services.js';
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import {
   adviseGearRoute, GEAR_PROCESS_REFERENCE, HARDENING_ROUTE_UNSUITABLE, resolveHardeningRoute,
@@ -534,7 +535,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   const byWeight = (step: GearProcess, processKey: string): number => {
     let r: HeatTreatRateBreakdown;
     try {
-      r = computeHeatTreatRate(processKey, inputs.region ?? 'UK', {
+      r = computeHeatTreatRate(processKey, inputs.region ?? activeRegion(), {   // the costed country — it defaulted to the UK headless
         effectiveCaseDepthMm: inputs.effectiveCaseDepthMm,
         netLoadKg: inputs.heatTreatLoadKg,
         sourcing: inputs.heatTreatSourcing,
@@ -587,7 +588,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         toolingPerPart += toolCostPerPart({
           toolCostGBP: T.hobCostGBP.value,
           partsBetweenRegrinds: T.hobPartsBetweenRegrinds.value,
-          regrindCostGBP: T.hobRegrindCostGBP.value,
+          regrindCostGBP: inCountry(T.hobRegrindCostGBP.value, 'process'),   // regrind: a bought-in service; the cutter itself is a traded tool
           regrindsBeforeScrap: T.hobRegrindsBeforeScrap.value,
         }).perPart;
         break;
@@ -605,7 +606,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         toolingPerPart += toolCostPerPart({
           toolCostGBP: T.shaperCutterCostGBP.value,
           partsBetweenRegrinds: T.shaperCutterPartsBetweenRegrinds.value,
-          regrindCostGBP: T.shaperCutterRegrindCostGBP.value,
+          regrindCostGBP: inCountry(T.shaperCutterRegrindCostGBP.value, 'process'),   // regrind: a bought-in service; the cutter itself is a traded tool
           regrindsBeforeScrap: T.shaperCutterRegrindsBeforeScrap.value,
         }).perPart;
         break;
@@ -626,7 +627,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         toolingPerPart += toolCostPerPart({
           toolCostGBP: T.skivingCutterCostGBP.value,
           partsBetweenRegrinds: T.skivingCutterPartsBetweenRegrinds.value,
-          regrindCostGBP: T.skivingCutterRegrindCostGBP.value,
+          regrindCostGBP: inCountry(T.skivingCutterRegrindCostGBP.value, 'process'),   // regrind: a bought-in service; the cutter itself is a traded tool
           regrindsBeforeScrap: T.skivingCutterRegrindsBeforeScrap.value,
         }).perPart;
         break;
@@ -776,9 +777,9 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   // cost more per part than a 1,000,000/yr gear — without them the model was
   // completely volume-insensitive.
   nreLines.push(
-    { item: 'Dedicated fixture', costGBP: N.fixtureCostGBP.value,
+    { item: 'Dedicated fixture', costGBP: Math.round(N.fixtureCostGBP.value * countryFactor('toolroom')),
       reason: 'Work-holding for the gear cutting operation.' },
-    { item: 'Programming & first article', costGBP: N.programmingAndPPAPGBP.value,
+    { item: 'Programming & first article', costGBP: Math.round(N.programmingAndPPAPGBP.value * countryFactor('engineer')),
       reason: 'CNC programming, trial cuts and PPAP approval before production.' },
     { item: 'Inspection master', costGBP: N.inspectionMasterGBP.value,
       reason: `Master gear / checking fixture for ISO class ${inputs.qualityClass} metrology.` },

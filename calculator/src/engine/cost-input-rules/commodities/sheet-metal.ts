@@ -22,6 +22,7 @@
  *    and the gauge. `estimateStampingDieLife` already models both and was only
  *    ever reachable from a hand-typed form.
  */
+import { countryFactor, countryNote } from '../../regional-services.js';
 import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
 import {
   adviseSheetMetalProcess, classifyVolume,
@@ -643,6 +644,9 @@ export const FAB = {
   laserLabourId: 'lab-uk-semiskilled', brakeLabourId: 'lab-uk-skilled',
 } as const;
 
+/** Nest + brake programming and first-off in the costed country: engineering time (regional-services.ts). */
+export function fabToolingGBP(): number { return Math.round(FAB.toolingGBP * countryFactor('engineer')); }
+
 export interface FabPlan {
   feasible: boolean;
   why: string;
@@ -687,7 +691,7 @@ export function fabPlan(ctx: RuleContext): FabPlan | null {
   const gas = fam === 'aluminium' ? 9.0 : 1.8;
   const perPart = laserCycleSec / 3600 * (machineRate(FAB.laserId) / oee + gas + labourRate(FAB.laserLabourId) / 0.92)
     + brakeSec / 3600 * (machineRate(brakeId) / oee + labourRate(FAB.brakeLabourId) / 0.92)
-    + FAB.toolingGBP / Math.max(1, ctx.annualVolume);
+    + fabToolingGBP() / Math.max(1, ctx.annualVolume);
   return { feasible, why, laserCycleSec, bends, brakeId, batch, perPartGBP: Math.round(perPart * 10_000) / 10_000 };
 }
 
@@ -739,7 +743,7 @@ export function routeChoice(ctx: RuleContext): RouteChoice | null {
     basis: `${ctx.commodity === 'sheet_metal_fab' ? 'fabrication chosen by the engineer; ' : ''}`
       + `at ${ctx.annualVolume.toLocaleString('en-GB')}/yr: stamping £${stamp.toFixed(3)}/part `
       + `(${plan.dieType.replace('_', '-')} die £${Math.round(plan.dieCostGBP).toLocaleString()} amortised over the year) `
-      + `vs laser + brake £${fab.perPartGBP.toFixed(3)}/part (${fab.laserCycleSec} s laser, ${fab.bends} bend(s), £${FAB.toolingGBP} programming) `
+      + `vs laser + brake £${fab.perPartGBP.toFixed(3)}/part (${fab.laserCycleSec} s laser, ${fab.bends} bend(s), £${fabToolingGBP()} programming) `
       + `— machine + labour + tooling; material is taken as equal` };
 }
 
@@ -1214,8 +1218,8 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       label: 'fabToolingGBP',
       appliesWhen: (ctx) => routeChoice(ctx)?.route === 'fab',
       evaluate: () => {
-        return decided('sheetMetal.fabToolingGBP', FAB.toolingGBP, 'rule',
-          `nest + brake programming and first-off, £${FAB.toolingGBP} (advisor band £500–3k) — no die; it was set to the stamping die cost`, 0.5);
+        return decided('sheetMetal.fabToolingGBP', fabToolingGBP(), 'rule',
+          `nest + brake programming and first-off, £${FAB.toolingGBP} UK (advisor band £500–3k)${countryNote('engineer')} — no die; it was set to the stamping die cost`, 0.5);
       },
     },
     {

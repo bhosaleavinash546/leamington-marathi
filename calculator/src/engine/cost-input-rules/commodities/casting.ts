@@ -15,7 +15,12 @@
  *    under-charges metal — investment castings were being costed at roughly half
  *    their true material. Only HPDC happened to agree.
  */
-import { heatTreatServiceFactor, ndtServiceFactor } from '../../regional-services.js';
+import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, inCountry as countryGbp, countryNote, type CountryBasis } from '../../regional-services.js';
+
+/** A sand core: ~30% sand and binder (traded, held), the rest core-shop labour and machine time. ESTIMATE split. */
+const CORE_BASIS: CountryBasis = { globalShare: 0.3, rest: 'process' };
+/** Investment wax pattern and ceramic shell: ~35% wax and slurry materials (traded), the rest dipping / injection labour. ESTIMATE split. */
+const INVEST_BASIS: CountryBasis = { globalShare: 0.35, rest: 'process' };
 import { activeLabourRate } from '../../rate-context.js';
 import {
   adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY,
@@ -339,8 +344,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const under = d?.undercutFaceCount ?? null;
         const sealed = ctx.geo.topology?.available && ctx.geo.topology.enclosesSealedVoid === true;
         if (under === null && !sealed) {
-          return decided('casting.coreCostPerPart', 1.5, 'rule',
-            'no draft analysis measured — the mid simple-core figure (£0.50–2) stands until someone checks the pattern', 0.4);
+          return decided('casting.coreCostPerPart', countryGbp(1.5, CORE_BASIS), 'rule',
+            `no draft analysis measured — the mid simple-core figure (£0.50–2, UK)${countryNote(CORE_BASIS)} stands until someone checks the pattern`, 0.4);
         }
         const n = under ?? 0;
         const [cost, band] = sealed ? [6, 'an enclosed cavity — a complex core (£2–8)']
@@ -348,8 +353,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
           : n >= 6 ? [1.5, `${n} undercut faces — a simple cavity core (£0.50–2)`]
           : n >= 1 ? [0.75, `${n} undercut face(s) — a small core or loose piece (£0.50–2)`]
           : [0, 'no undercut along the best pull — the pattern draws cleanly, no core'];
-        return decided('casting.coreCostPerPart', cost, 'geometry',
-          `${band}; per-part core (sand, binder, labour), material consumable — a default band, not a core-shop quote`, 0.55);
+        return decided('casting.coreCostPerPart', countryGbp(cost, CORE_BASIS), 'geometry',
+          `${band}; per-part core (sand, binder, labour), material consumable — a default band (UK)${countryNote(CORE_BASIS)}, not a core-shop quote`, 0.55);
       },
     },
     {
@@ -665,9 +670,9 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const needs = r.advice.pressureTight && (r.advice.subtype === 'hpdc' || r.advice.alloy === 'aluminium');
-        const sf = ndtServiceFactor();   // a process cell: labour + equipment, in the costed country
+        const sf = processServiceFactor();   // a bought-in process service: labour + equipment, in the costed country
         return decided('casting.impregnationCostPerPart', needs ? Math.round(0.9 * sf * 100) / 100 : 0, 'rule',
-          needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK)${sf !== 1 ? ` × country service factor ${sf}` : ''}`
+          needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`
             : 'not pressure-tight (or ferrous) — no impregnation', 0.6,
           [PRESSURE_TIGHT_DECISION_ID]);
       },
@@ -705,8 +710,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const sa = (ctx.geo.surfaceArea?.mm2 ?? 0) / 100;
         const v = ctx.geo.processSpecificEstimates?.investWaxCostGBP ?? Math.round(Math.max(0.30, sa * 0.015) * 100) / 100;
-        return decided('casting.investWaxCostPerPart', v, 'geometry',
-          `wax pattern from ${Math.round(sa)} cm² surface at £0.015/cm² (min £0.30) — kernel estimate`, 0.45);
+        return decided('casting.investWaxCostPerPart', countryGbp(v, INVEST_BASIS), 'geometry',
+          `wax pattern from ${Math.round(sa)} cm² surface at £0.015/cm² (min £0.30), UK basis${countryNote(INVEST_BASIS)} — kernel estimate`, 0.45);
       },
     },
     {
@@ -721,8 +726,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const sa = (ctx.geo.surfaceArea?.mm2 ?? 0) / 100;
         const v = ctx.geo.processSpecificEstimates?.investShellCostGBP ?? Math.round(Math.max(0.80, sa * 0.045) * 100) / 100;
-        return decided('casting.investShellCostPerPart', v, 'geometry',
-          `ceramic shell from ${Math.round(sa)} cm² surface at £0.045/cm² (min £0.80) — kernel estimate`, 0.45);
+        return decided('casting.investShellCostPerPart', countryGbp(v, INVEST_BASIS), 'geometry',
+          `ceramic shell from ${Math.round(sa)} cm² surface at £0.045/cm² (min £0.80), UK basis${countryNote(INVEST_BASIS)} — kernel estimate`, 0.45);
       },
     },
     {

@@ -1,5 +1,7 @@
 
 import { Router } from 'express';
+import { countryFactor } from '../../src/engine/regional-services.js';
+import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
@@ -285,8 +287,8 @@ export function applyAutomotiveGrade(
   domain: string,
 ): { assembly: AutomotiveAssemblyCost; fab: AutomotiveFabAdjustment } | null {
   if (domain !== 'automotive_adas') return null;
-  const assembly = computeAutomotiveAssemblyCost(assemblyData, asil, orderQty, bd.assemblyPerBoard);
-  const fab = computeAutomotiveFabAdjustment(boardSpec, bd.pcbFabPerBoard, domain, bd.panelInfo?.boardsPerPanel ?? 1);
+  const assembly = computeAutomotiveAssemblyCost(assemblyData, asil, orderQty, bd.assemblyPerBoard, bd.countryId);
+  const fab = computeAutomotiveFabAdjustment(boardSpec, bd.pcbFabPerBoard, domain, bd.panelInfo?.boardsPerPanel ?? 1, bd.countryId);
   const asmPremium = Math.max(0, assembly.totalAutomotiveAssemblyGBP - assembly.standardAssemblyGBP);
   const fabPremium = Math.max(0, fab.totalAutomotiveFabGBP - fab.standardFabGBP);
   const duty = PCB_COUNTRY_RATES[bd.countryId]?.logistics.importDutyFraction ?? 0;
@@ -304,12 +306,12 @@ export function applyAutomotiveGrade(
 }
 
 /** The same premiums on a volume-curve point (which carries no breakdown). */
-export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<string, unknown>, assemblyData: Record<string, unknown>, asil: ASILLevel, domain: string, boardsPerPanel: number): VolumeCurvePoint[] {
+export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<string, unknown>, assemblyData: Record<string, unknown>, asil: ASILLevel, domain: string, boardsPerPanel: number, countryId = 'gb'): VolumeCurvePoint[] {
   if (domain !== 'automotive_adas') return points;
   const r = (n: number) => Math.round(n * 100) / 100;
   return points.map(pt => {
-    const a = computeAutomotiveAssemblyCost(assemblyData, asil, pt.qty, pt.assemblyPerBoard);
-    const f = computeAutomotiveFabAdjustment(boardSpec, pt.pcbFabPerBoard, domain, boardsPerPanel);
+    const a = computeAutomotiveAssemblyCost(assemblyData, asil, pt.qty, pt.assemblyPerBoard, countryId);
+    const f = computeAutomotiveFabAdjustment(boardSpec, pt.pcbFabPerBoard, domain, boardsPerPanel, countryId);
     const asmP = Math.max(0, a.totalAutomotiveAssemblyGBP - a.standardAssemblyGBP);
     const fabP = Math.max(0, f.totalAutomotiveFabGBP - f.standardFabGBP);
     return { ...pt, assemblyPerBoard: r(pt.assemblyPerBoard + asmP), pcbFabPerBoard: r(pt.pcbFabPerBoard + fabP), totalPerBoard: r(pt.totalPerBoard + asmP + fabP) };
@@ -660,11 +662,14 @@ interface AutomotiveNRE {
   totalNRE: number;
   asilLevel: ASILLevel;
 }
-function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number): AutomotiveNRE {
+function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number, countryId = 'gb'): AutomotiveNRE {
+  // PPAP, FMEA, DVP&R and the ASIL audit are the supplier's engineering — UK £ figures
+  // priced at the board country's engineer rate (regional-services.ts).
+  const eng = countryFactor('engineer', pcbRegionOf(countryId));
   const tier = asilLevel === 'ASIL-D' ? 4 : asilLevel === 'ASIL-C' ? 3 : asilLevel === 'ASIL-B' ? 2 : asilLevel === 'ASIL-A' ? 1 : 0;
   if (tier === 0) {
     // QM / Unknown — minimal automotive paperwork
-    const ppap = 1500; const fmea = 2500; const dvpr = 3000; const audit = 0;
+    const ppap = Math.round(1500 * eng); const fmea = Math.round(2500 * eng); const dvpr = Math.round(3000 * eng); const audit = 0;
     return { ppapCost: ppap, fmeaCost: fmea, dvprCost: dvpr, asilAuditCost: audit, totalNRE: ppap + fmea + dvpr + audit, asilLevel };
   }
   const ppapCost  = [0, 3000,  6000, 10000, 18000][tier];
@@ -674,7 +679,7 @@ function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number): Automotiv
   // Scale gently with BOM complexity: +1% per £8 of BOM, capped at +50%. The
   // old bomTotal/50 with a 2.0 cap saturated to a silent 2x for any board over
   // £100 BOM — doubling PPAP/FMEA/DVP&R for essentially every real board.
-  const scale     = 1 + Math.min(0.5, bomTotal / 800);
+  const scale     = (1 + Math.min(0.5, bomTotal / 800)) * eng;
   const r = (n: number) => Math.round(n * scale / 100) * 100;
   return {
     ppapCost: r(ppapCost), fmeaCost: r(fmeaCost),
@@ -728,6 +733,7 @@ function computeConformalCoatingCost(
   boardSpec: Record<string, unknown>,
   domain: string,
   asilLevel: ASILLevel,
+  countryId = 'gb',
 ): number {
   if (domain !== 'automotive_adas') return 0;
   // Only a board that IS coated pays for coating. This used to charge every
@@ -740,10 +746,18 @@ function computeConformalCoatingCost(
   // Base coating cost: selective UV acrylic £0.08–0.15/cm², polyurethane £0.12–0.22/cm²
   // ASIL-D requires conformal + edge seal; ASIL-A/B selective is fine
   const ratePerCm2 = asilLevel === 'ASIL-D' || asilLevel === 'ASIL-C' ? 0.20 : 0.12;
-  const coatingCost = areaCm2 * ratePerCm2;
+  // UK £/cm² (material + selective-coat line) priced in the board's country.
+  const coatingCost = areaCm2 * ratePerCm2 * countryFactor('process', pcbRegionOf(countryId));
   // Capped at £280/board. (The old £18 floor was a per-BATCH setup charge applied
   // per board.)
   return Math.min(280, Math.round(coatingCost * 100) / 100);
+}
+
+/** The manufacturing region of a PCB country id (cn → CN, gb → UK) — for the flat £ premiums
+ *  below, which are UK figures priced in the board's country (regional-services.ts). */
+function pcbRegionOf(countryId: string): ManufacturingRegion {
+  const code = (countryId === 'gb' ? 'UK' : countryId.toUpperCase()) as ManufacturingRegion;
+  return REGIONAL_DATA[code] ? code : 'UK';
 }
 
 // ── Automotive Assembly Cost Model (IATF 16949) ───────────────────────────────
@@ -763,7 +777,12 @@ export function computeAutomotiveAssemblyCost(
   asilLevel: ASILLevel,
   orderQty: number,
   countryAssemblyPerBoard: number,
+  countryId = 'gb',
 ): AutomotiveAssemblyCost {
+  // The flat £ items (X-ray fallback, serialisation, burn-in chamber) are UK figures,
+  // priced in the board's country; the % premiums ride on the country's own figure.
+  const proc = countryFactor('process', pcbRegionOf(countryId));
+  const insp = countryFactor('inspection', pcbRegionOf(countryId));
   const smtPlacements = Number(assemblyData.smtPlacements) || 0;
   const bgaCount = Number(assemblyData.bgaCount) || 0;
   const thJoints = Number(assemblyData.throughHoleJoints) || 0;
@@ -778,16 +797,16 @@ export function computeAutomotiveAssemblyCost(
   const standardAssemblyGBP = baseAssemblyGBP;
   const iatfPremiumGBP = standardAssemblyGBP * 0.20;              // IATF 16949 process control / traceability
   // Separate X-ray only when there is no country figure that already carries it.
-  const axiCostGBP = !haveCountry && bgaCount > 0 ? Math.min(15, 8 + bgaCount * 1.2) : 0;
+  const axiCostGBP = !haveCountry && bgaCount > 0 ? Math.min(15, 8 + bgaCount * 1.2) * insp : 0;
   // Laser-mark + scan: ~6 s at a ~£30/hr station at volume; setup-dominated below 1,000.
-  const serialisationGBP = orderQty >= 1000 ? 0.05 : 0.80;
+  const serialisationGBP = (orderQty >= 1000 ? 0.05 : 0.80) * proc;
   // IPC Class 3 workmanship: ~5% more inspection time on the assembly.
   const ipcClass3GBP = standardAssemblyGBP * 0.05;
   // Burn-in / ESS is an ASIL-C/D practice; ASIL-B modules take an end-of-line test
   // (in ICT). Chamber ~£180/shift; racks hold ~500 small modules at volume.
   const burnInShifts = asilLevel === 'ASIL-D' ? 6 : asilLevel === 'ASIL-C' ? 4 : 0;
   const boardsPerShift = orderQty >= 1000 ? 500 : Math.max(1, Math.min(200, orderQty));
-  const burnInGBP = burnInShifts > 0 ? Math.round((180 * burnInShifts / boardsPerShift) * 100) / 100 : 0;
+  const burnInGBP = burnInShifts > 0 ? Math.round((180 * insp * burnInShifts / boardsPerShift) * 100) / 100 : 0;
   const totalAutomotiveAssemblyGBP = standardAssemblyGBP + iatfPremiumGBP + axiCostGBP + serialisationGBP + ipcClass3GBP + burnInGBP;
   const premiumPctOverStandard = standardAssemblyGBP > 0 ? Math.round((totalAutomotiveAssemblyGBP / standardAssemblyGBP - 1) * 100) : 0;
   const r = (n: number) => Math.round(n * 100) / 100;
@@ -815,6 +834,7 @@ function computeAutomotiveFabAdjustment(
   fabCostMid: number,
   domain: string,
   boardsPerPanel = 1,
+  countryId = 'gb',
 ): AutomotiveFabAdjustment {
   if (domain !== 'automotive_adas' || fabCostMid <= 0) {
     return { standardFabGBP: fabCostMid, iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0, totalAutomotiveFabGBP: fabCostMid, premiumPctOverStandard: 0 };
@@ -829,8 +849,10 @@ function computeAutomotiveFabAdjustment(
   // Class-3 microsection inspection and coupon testing are done per PANEL (the
   // coupons are cut from the panel rails), so they are shared by its boards.
   const perPanel = Math.max(1, boardsPerPanel);
-  const ipcClass3InspectionGBP = Math.min(45, Math.max(8, areaCm2 * 0.08)) / perPanel;
-  const couponTestingGBP = Math.min(35, Math.max(5, layers * 2.5)) / perPanel;
+  // UK lab prices — microsection and coupon testing — in the board's country.
+  const insp = countryFactor('inspection', pcbRegionOf(countryId));
+  const ipcClass3InspectionGBP = Math.min(45, Math.max(8, areaCm2 * 0.08)) * insp / perPanel;
+  const couponTestingGBP = Math.min(35, Math.max(5, layers * 2.5)) * insp / perPanel;
   const totalAutomotiveFabGBP = fabCostMid + iatfFabPremiumGBP + automotiveLaminatePremiumGBP + ipcClass3InspectionGBP + couponTestingGBP;
   const premiumPctOverStandard = Math.round((totalAutomotiveFabGBP / fabCostMid - 1) * 100);
   const r = (n: number) => Math.round(n * 100) / 100;
@@ -1722,14 +1744,14 @@ ${userPromptText}`;
       singleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
       // Automotive NRE (PPAP/FMEA/DVP&R)
       const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      automotiveNRE = computeAutomotiveNRE(asilClassification.asilLevel, bomTotalForNRE);
+      automotiveNRE = computeAutomotiveNRE(asilClassification.asilLevel, bomTotalForNRE, selectedCountry);
       // Conformal coating
-      conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilClassification.asilLevel);
+      conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilClassification.asilLevel, selectedCountry);
       // Automotive assembly cost model
       const countryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, countryAssemblyPerBoard);
+      automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, countryAssemblyPerBoard, selectedCountry);
       // Automotive fab adjustment
-      automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
+      automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain, 1, selectedCountry);
     }
 
     a.bom = enrichedBOM;
@@ -1825,7 +1847,7 @@ ${userPromptText}`;
     const cheapestId = sorted[0]?.countryId ?? 'cn';
     const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
     const bpp = selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1;
-    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, asilClassification.asilLevel, domain, bpp);
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, asilClassification.asilLevel, domain, bpp, id);
     volumeCurves = { [cheapestId]: curve(cheapestId), [resolvedCountry]: curve(resolvedCountry), gb: curve('gb') };
 
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
@@ -2122,13 +2144,13 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
       reanalAutomotiveGradeEnforcedCount = gradeResult.forcedCount;
       reanalSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
       const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      reanalAutomotiveNRE = computeAutomotiveNRE(reanalAsil, bomTotalForNRE);
-      reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, reanalAsil);
+      reanalAutomotiveNRE = computeAutomotiveNRE(reanalAsil, bomTotalForNRE, selectedCountry);
+      reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, reanalAsil, selectedCountry);
       // Automotive assembly cost model
       const reanalCountryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, reanalAsil, orderQty, reanalCountryAssemblyPerBoard);
+      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, reanalAsil, orderQty, reanalCountryAssemblyPerBoard, selectedCountry);
       // Automotive fab adjustment
-      reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
+      reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain, 1, selectedCountry);
     }
 
     // User-corrected lines are AUTHORITATIVE: restore their qty/price verbatim.
@@ -2229,7 +2251,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     const cheapestId = sorted[0]?.countryId ?? 'cn';
     const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
     const bpp = selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1;
-    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, reanalAsil, domain, bpp);
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, reanalAsil, domain, bpp, id);
     volumeCurves = { [cheapestId]: curve(cheapestId), [resolvedCountry]: curve(resolvedCountry), gb: curve('gb') };
 
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
@@ -2649,13 +2671,13 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       streamAutomotiveGradeEnforcedCount = gr2.forcedCount;
       streamSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM2);
       const bomTotNRE = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      streamAutomotiveNRE = computeAutomotiveNRE(streamAsilClassification.asilLevel, bomTotNRE);
-      streamConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, streamAsilClassification.asilLevel);
+      streamAutomotiveNRE = computeAutomotiveNRE(streamAsilClassification.asilLevel, bomTotNRE, selectedCountry2);
+      streamConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, streamAsilClassification.asilLevel, selectedCountry2);
       // Automotive assembly cost model
       const streamCountryAssemblyPerBoard = (selectedCountryBreakdown2 as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, streamCountryAssemblyPerBoard);
+      streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, streamCountryAssemblyPerBoard, selectedCountry2);
       // Automotive fab adjustment
-      streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid2, domain);
+      streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid2, domain, 1, selectedCountry2);
     }
     // Catalogue grounding (audit fix): the streaming path — the one the UI
     // actually uses — previously hardcoded livePriceHits: 0 and never called
@@ -2731,7 +2753,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     const cheapestId2 = sorted2[0]?.countryId ?? 'cn';
     const volQtys2 = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
     const bpp2 = selectedCountryBreakdown2.panelInfo?.boardsPerPanel ?? 1;
-    const curve2 = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput2, id, volQtys2), boardSpec, assemblyData, streamAsilClassification.asilLevel, domain, bpp2);
+    const curve2 = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput2, id, volQtys2), boardSpec, assemblyData, streamAsilClassification.asilLevel, domain, bpp2, id);
     volumeCurves2 = { [cheapestId2]: curve2(cheapestId2), [resolvedCountry2]: curve2(resolvedCountry2), gb: curve2('gb') };
     complexityScore2 = computeComplexityScore(boardSpec, assemblyData);
   } catch (err) {

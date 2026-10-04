@@ -1,11 +1,12 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { inCountry, countryFactor, countryNote } from '../regional-services.js';
+import { activeLabourRate } from '../rate-context.js';
 import {
   AL_ALLOYS, AL_CONFORM, AL_IMPACT, AL_DOWNSTREAM, AL_LINE, AL_DIE_NITRIDE, AL_MARKET, AL_DIES,
   alBilletId, type AlAlloy, type AlExtrusionRoute, type AlFinish, type AlDieType, type AlTemper,
 } from '../al-extrusion-data.js';
 export type { AlTemper } from '../al-extrusion-data.js';
-import { planAlExtrusion, planImpact, planConform, type AlSection, type AlPressPlan } from './aluminium-extrusion-advisor.js';
-import { REGIONAL_DATA } from '../regional-rates.js';
+import { planAlExtrusion, planImpact, planConform, AL_TOOL_BASIS, type AlSection, type AlPressPlan } from './aluminium-extrusion-advisor.js';
 import { secondaryMachiningCell } from '../machining-time.js';
 
 /**
@@ -292,8 +293,8 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     const ip = planImpact(spec.partWeightKg, spec.impactOuterDiaMm ?? s.ccdMm);
     pressId = AL_IMPACT.id; crew = AL_IMPACT.crew; cycleSec = ip.secPerPart; perPush = 1;
     billetKgPerPart = ip.slugKg; dieGbp = ip.toolGbp; dieLifeKg = ip.toolLifeHits * extrudedKg;
-    heatKwh = 0; feedAdder = AL_IMPACT.slugPrepGbpPerKg; runs = 12; dieChangeHr = 1;
-    notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_IMPACT.slugPrepGbpPerKg}/kg; tool £${ip.toolGbp} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits`);
+    heatKwh = 0; feedAdder = inCountry(AL_IMPACT.slugPrepGbpPerKg, 'process'); runs = 12; dieChangeHr = 1;   // slug prep: a process service
+    notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_IMPACT.slugPrepGbpPerKg}/kg UK${countryNote('process')}; tool £${ip.toolGbp} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits`);
   } else if (spec.route === 'conform') {
     const cp = planConform(s, spec.alloy);
     if (!cp.feasible) warnings.push(cp.basis);
@@ -302,7 +303,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     billetKgPerPart = extrudedKg * 1.03;
     heatKwh = 0; feedAdder = AL_CONFORM.rodAdderUsdPerT / AL_MARKET.usdPerGbp / 1000;
     const d = AL_DIES[s.voids > 0 ? 'hollow-porthole' : 'solid'];
-    dieGbp = Math.round((d.baseGbp + d.perMmGbp * s.ccdMm) * 0.6); dieLifeKg = 30_000; runs = 12;
+    dieGbp = Math.round((d.baseGbp + d.perMmGbp * s.ccdMm) * 0.6 * countryFactor(AL_TOOL_BASIS)); dieLifeKg = 30_000; runs = 12;
     notes.push(`${cp.basis}; 3% start and cut-off scrap; rod premium $${AL_CONFORM.rodAdderUsdPerT}/t over billet`);
   } else {
     plan = planAlExtrusion({ ...s, alloy: spec.alloy, annualVolume: spec.annualVolume, route: spec.route, dieType: spec.dieType });
@@ -324,7 +325,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   if (spec.cncMinutes > 0) {
     const cell = secondaryMachiningCell({
       fixturings: spec.cncFixturings, weightKg: partKg, annualVolume: spec.annualVolume, family: 'aluminium',
-      featureRows: spec.fabFeatureRows, cuttingMin: spec.cncMinutes, engineerRatePerHr: spec.engineerRatePerHr ?? REGIONAL_DATA.UK.labour.engineer,
+      featureRows: spec.fabFeatureRows, cuttingMin: spec.cncMinutes, engineerRatePerHr: spec.engineerRatePerHr ?? activeLabourRate('lab-uk-engineer'),   // the costed country's engineer — it was the UK's
     });
     fabTooling = cell.toolingGBP; fabWear = cell.toolWearPerPart;
     const cut = spec.cncMinutes / 60;
@@ -348,7 +349,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   // Cold cut-to-length: every profile route but Conform (cut in line) and impact.
   const ctl = plan ? ctlSecPerPart(s.ccdMm, plan.partsPerMillLength) : null;
   if (ctl) notes.push(`cut to length: ${ctl.basis}`);
-  const bendTool = spec.bends > 0 ? AL_DOWNSTREAM.bender.toolFirstGbp + (spec.bends - 1) * AL_DOWNSTREAM.bender.toolPerExtraBendGbp : 0;
+  const bendTool = spec.bends > 0 ? Math.round((AL_DOWNSTREAM.bender.toolFirstGbp + (spec.bends - 1) * AL_DOWNSTREAM.bender.toolPerExtraBendGbp) * countryFactor(AL_TOOL_BASIS)) : 0;
   if (bendTool) notes.push(`stretch-bend form tooling £${bendTool.toLocaleString('en-GB')} for ${spec.bends} bend${spec.bends === 1 ? '' : 's'}`);
 
   const inputs: AluminiumExtrusionInputs = {
@@ -367,7 +368,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     ...(finishLine ? { finishLineId: finishLine.id, finishAreaM2: finishArea, finishM2PerHr: finishLine.m2PerHr, finishCrew: finishLine.crew,
       finishConsumablesGbpPerM2: finishLine.consumablesGbpPerM2 } : {}),
     packSecPerPart: Math.round((6 + 4 * s.partLengthMm / 1000) * 10) / 10, inspectLabourId: 'lab-uk-semiskilled',
-    dieCostGbp: dieGbp, dieLifeKg, nitrideGbp: spec.route === 'impact' ? 0 : AL_DIE_NITRIDE.gbp, nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
+    dieCostGbp: dieGbp, dieLifeKg, nitrideGbp: spec.route === 'impact' ? 0 : inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat'), nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
     amortizationVolume: spec.annualVolume,
   };
   return { inputs, plan, notes, warnings };

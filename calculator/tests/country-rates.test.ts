@@ -415,3 +415,161 @@ describe('10. errors the LIVE India run of the PRCR002 aluminium housing exposed
     expect(src).toContain('groundingBlock(message, ragCorpusFor(region), 6)');
   });
 });
+
+/**
+ * The all-commodity audit (Oct 2026). A test country whose every labour rate, tariff, machine
+ * multiplier and material factor is EXACTLY 2× the UK's must cost every country-made £ at 2×.
+ * Every real part in cad-audit/ is replayed through the product's own chain in the UK and in it;
+ * a driver that stays at ×1 is a fixed UK £ — allowed only where it is a traded good, stated here.
+ */
+describe('11. all commodities: no fixed UK £ survives a country change ("twice the UK" probe)', async () => {
+  const RR = await import('../src/engine/regional-rates.js');
+  const AL = await import('../src/engine/al-extrusion-data.js');
+  const parts = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{
+    part: string; answers: Record<string, string>; commodity?: string; geometry: never; outcome: { status: string } }>;
+  const K = 2;
+  const dbl = (o: Record<string, number>) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v * K]));
+  const UKD = RR.REGIONAL_DATA.UK;
+  const inject = () => {
+    (RR.REGIONAL_DATA as Record<string, unknown>).ZZ = { ...UKD, name: 'Twice-UK', labour: dbl(UKD.labour), energy: dbl(UKD.energy),
+      materialFactors: dbl(UKD.materialFactors), materialMultiplier: K, machineRateMultiplier: K,
+      overheadMultiplier: 1, packagingMultiplier: 1, logisticsMultiplier: 1 };
+    (RR.REGION_NAMES as Record<string, unknown>).ZZ = 'Twice-UK';
+    (RR.SURFACE_REGIONAL_FACTORS as Record<string, unknown>).ZZ = { effluent: K, chemical: K };
+    (AL.BILLET_PREMIUM_USD_PER_T as Record<string, unknown>).ZZ = AL.BILLET_PREMIUM_USD_PER_T.UK;
+  };
+  const remove = () => {
+    for (const t of [RR.REGIONAL_DATA, RR.REGION_NAMES, RR.SURFACE_REGIONAL_FACTORS, AL.BILLET_PREMIUM_USD_PER_T]) delete (t as Record<string, unknown>).ZZ;
+  };
+  /** Drivers allowed to stay at ×1, and why: traded goods priced the same everywhere. */
+  const GLOBAL_OK: Record<string, string[]> = {
+    machining: ['consumablesCostPerPart'],            // cutting-insert wear (£/min of cut) — a traded consumable
+    aluminium_extrusion: ['material'],                // billet = LME + the region's premium (held at the UK's in this probe)
+  };
+  it('every costed real part: labour and process double exactly; no material, consumable or tool £ stays at the UK figure', async () => {
+    inject();
+    try {
+      const base = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+      let checked = 0;
+      for (const p of parts) {
+        if (p.outcome.status !== 'costed') continue;
+        const run = (reg: string) => costMeasuredPart(p.geometry, p.part,
+          { partNumber: p.part, file: p.part, annualVolume: 50_000, ...(p.commodity ? { commodity: p.commodity } : {}) },
+          p.answers, reg as never, { annualVolume: 50_000 }, base, { partNumber: p.part, file: p.part, status: 'error' } as never);
+        const a = await run('UK'), b = await run('ZZ');
+        expect(b.commodity, p.part).toBe(a.commodity);
+        const c = a.commodity!;
+        for (const k of ['process', 'labour'] as const) {
+          // ×2 to the 4-dp rounding of the breakdown
+          if (a.breakdown![k] > 0.001) expect(Math.abs(b.breakdown![k] - K * a.breakdown![k]), `${p.part} ${k}`).toBeLessThan(2.5e-4);
+        }
+        const da = a.trace!.drivers!, db = b.trace!.drivers!;
+        const unchanged: string[] = [];
+        const same = (x?: number, y?: number) => (x ?? 0) > 0 && Math.abs((y ?? 0) / (x ?? 1) - 1) < 1e-6;
+        if (same(da.rawMaterial.directCost, db.rawMaterial.directCost)) unchanged.push('directCost');
+        if (same(da.rawMaterial.consumablesCostPerPart, db.rawMaterial.consumablesCostPerPart)) unchanged.push('consumablesCostPerPart');
+        if (same(da.tooling.totalToolingCost, db.tooling.totalToolingCost)) unchanged.push('tooling');
+        const pa = a.trace!.traceability.find(t => t.field === 'material.pricePerKg')?.value;
+        const pb = b.trace!.traceability.find(t => t.field === 'material.pricePerKg')?.value;
+        if (same(pa, pb)) unchanged.push('material');
+        expect(unchanged.filter(u => !(GLOBAL_OK[c] ?? []).includes(u)), `${p.part} (${c}) keeps a UK £`).toEqual([]);
+        checked++;
+      }
+      expect(checked).toBeGreaterThanOrEqual(35);
+    } finally { remove(); }
+  }, 600_000);
+
+  it('each leak the audit found now moves with the country', async () => {
+    const IN = buildRegionalLibrary(UK, 'IN');
+    const S = await import('../src/engine/regional-services.js');
+    expect(S.countryFactor('toolroom', 'UK')).toBe(1);
+    expect(S.countryFactor({ globalShare: 0.2, rest: 'toolroom' }, 'IN')).toBeCloseTo(0.2 + 0.8 * S.countryFactor('toolroom', 'IN'), 4);
+    // Al-extrusion die (UK die-maker prices) and the fab programmer
+    const { dieCost } = await import('../src/engine/modules/aluminium-extrusion-advisor.js');
+    const sec = { areaMm2: 400, perimeterMm: 120, minWallMm: 2, voids: 0 } as never;
+    const dUK = dieCost('solid', 100, 1, sec).gbp, dIN = withRates(IN, () => dieCost('solid', 100, 1, sec).gbp);
+    expect(dIN / dUK).toBeCloseTo(withRates(IN, () => S.countryFactor({ globalShare: 0.2, rest: 'toolroom' })), 2);
+    expect(readFileSync('src/engine/modules/aluminium-extrusion.ts', 'utf8')).toContain("activeLabourRate('lab-uk-engineer')");
+    // stamping die design: hours from the UK rate, priced at the country's (the factor cancelled)
+    expect(readFileSync('src/engine/modules/sheet-metal-advisor.ts', 'utf8')).toContain('nre / TOOLROOM_RATES_UK.design, TOOLROOM_RATES.design');
+    // gear: heat treat in the costed country headless; bar from the country's book
+    expect(readFileSync('src/engine/modules/gear.ts', 'utf8')).toContain("inputs.region ?? activeRegion()");
+    expect(readFileSync('src/engine/cost-input-rules/commodities/gear.ts', 'utf8')).toContain('activeRates().materials.find(m => m.id === grade.id)');
+    // composites: laminate prices from the country's book, NDI at the inspection factor
+    expect(readFileSync('src/engine/cost-input-rules/derive/laminate.ts', 'utf8')).not.toContain('DEFAULT_RATE_LIBRARY');
+    // PCB fab: adders in the panel's market
+    const { computePCBFabDrivers } = await import('../src/engine/modules/pcb-fab.js');
+    expect(readFileSync('src/engine/modules/pcb-fab.ts', 'utf8')).toContain('const market = BASE_PANEL_PRICE_2L[inputs.region] / BASE_PANEL_PRICE_2L.uk');
+    expect(typeof computePCBFabDrivers).toBe('function');
+    // lamination stack joining
+    const { estimateLaminationJoinCostPerStack } = await import('../src/engine/modules/lamination-advisor.js');
+    const j = { stackMethod: 'laser-weld', laminationCount: 100, stackHeightMm: 35 } as never;
+    expect(withRates(IN, () => estimateLaminationJoinCostPerStack(j)) / estimateLaminationJoinCostPerStack(j))
+      .toBeCloseTo(S.processServiceFactor('IN'), 3);
+  });
+
+  it('PCB automotive flat premiums (burn-in, serialisation, class-3 lab, coupons, NRE) are priced in the board\'s country', async () => {
+    const { computeAutomotiveAssemblyCost } = await import('../server/routes/pcb.js');
+    const S = await import('../src/engine/regional-services.js');
+    const asm = { smtPlacements: 400, bgaCount: 2 };
+    const gb = computeAutomotiveAssemblyCost(asm, 'ASIL-D', 50_000, 10, 'gb');
+    const ind = computeAutomotiveAssemblyCost(asm, 'ASIL-D', 50_000, 10, 'in');
+    expect(ind.burnInGBP / gb.burnInGBP).toBeCloseTo(S.ndtServiceFactor('IN'), 1);
+    const gbSmall = computeAutomotiveAssemblyCost(asm, 'ASIL-D', 500, 10, 'gb'), inSmall = computeAutomotiveAssemblyCost(asm, 'ASIL-D', 500, 10, 'in');
+    expect(inSmall.serialisationGBP / gbSmall.serialisationGBP).toBeCloseTo(S.processServiceFactor('IN'), 1);
+    expect(readFileSync('server/routes/pcb.ts', 'utf8').match(/selectedCountry2?\)/g)!.length).toBeGreaterThanOrEqual(9);
+  });
+
+  it('heat-treat load QC follows the country (it was a UK £ per load)', async () => {
+    const { computeHeatTreatRate } = await import('../src/engine/gear-heat-treat-rate.js');
+    expect(computeHeatTreatRate('quench_temper', 'UK').basis).toContain('QC');
+    expect(readFileSync('src/engine/gear-heat-treat-rate.ts', 'utf8')).toContain('proc.qcGBPPerLoad.value * f.qcMult / netLoad');
+  });
+});
+
+describe('12. the forms\' £ defaults follow the country; a typed figure is a quote', async () => {
+  const M = await import('../src/ui/country-money-defaults.js');
+  const S = await import('../src/engine/regional-services.js');
+  /** A stand-in for the form: the module needs inputs with id, value and attributes. */
+  const fakeInput = (id: string, value: string) => {
+    const attrs = new Map<string, string>();
+    return { id, value, title: '', type: 'number',
+      hasAttribute: (k: string) => attrs.has(k), getAttribute: (k: string) => attrs.get(k) ?? null,
+      setAttribute: (k: string, v: string) => { attrs.set(k, v); } };
+  };
+  const form = (inputs: ReturnType<typeof fakeInput>[]) => ({ querySelectorAll: () => inputs }) as unknown as ParentNode;
+
+  it('a default moves with every switch; a typed figure never does', () => {
+    const die = fakeInput('cast-hpdc-die-cost', '120000'), nre = fakeInput('cam-mach-prog-nre', '2000');
+    const insert = fakeInput('imm-insert-cost', '0.05'), typed = fakeInput('forge-die-cost', '80000');
+    const root = form([die, nre, insert, typed]);
+    M.applyCountryMoneyDefaults(root, 'UK');
+    expect(die.value).toBe('120000');
+    typed.value = '65000';                                     // the engineer's quote
+    M.applyCountryMoneyDefaults(root, 'IN');
+    expect(Number(die.value)).toBe(Math.round(120000 * S.countryFactor({ globalShare: 0.2, rest: 'toolroom' }, 'IN')));
+    expect(Number(nre.value)).toBe(Math.round(2000 * S.engineerFactor('IN')));
+    expect(insert.value).toBe('0.05');                         // brass inserts are traded
+    expect(typed.value).toBe('65000');
+    M.applyCountryMoneyDefaults(root, 'DE');
+    expect(Number(die.value)).toBe(Math.round(120000 * S.countryFactor({ globalShare: 0.2, rest: 'toolroom' }, 'DE')));
+    M.applyCountryMoneyDefaults(root, 'UK');
+    expect(die.value).toBe('120000');                          // back to the UK basis exactly
+  });
+
+  it('every £ input on every form has a stated country basis', () => {
+    const src = ['src/ui/main.ts', ...['al-extrusion-form.ts'].map(f => `src/ui/${f}`)].map(f => readFileSync(f, 'utf8')).join('\n');
+    const re = /<label>((?:[^<]|<span[^>]*>[^<]*<\/span>)*)<\/label>\s*<input[^>]*id="([^"$]+)"/g;
+    const missing: string[] = [];
+    let n = 0;
+    for (const m of src.matchAll(re)) {
+      if (!/£/.test(m[1].replace(/<span[^>]*>[^<]*<\/span>/g, ''))) continue;
+      if (/kwh/i.test(m[1])) continue;                         // a typed tariff overrides the book's
+      n++;
+      if (!M.basisFor(m[2])) missing.push(`${m[2]} (${m[1].replace(/<[^>]+>/g, '').trim()})`);
+    }
+    expect(n).toBeGreaterThan(40);
+    expect(missing).toEqual([]);
+    for (const row of ['coat3-price', 'bom4-price', 'join2-cost', 'sm-hw2-cost']) expect(M.basisFor(row), row).toBeDefined();
+  });
+});

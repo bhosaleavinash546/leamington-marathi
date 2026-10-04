@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { inCountry, countryNote } from '../regional-services.js';
 import {
   TOOLROOM_RATES, BOUGHT_OUT_GBP, EDM_FRACTION, POLISH_FRACTION, FITTING_FRACTION,
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
@@ -283,10 +284,10 @@ export function estimateMouldCost(inputs: MouldCostInputs): MouldCostBreakdown {
     lines.push(boughtOutLine('Hot-runner controller', 1, BOUGHT_OUT_GBP.hotRunnerController, 'multi-zone controller'));
   }
   if (finish === 'textured') {
-    lines.push(boughtOutLine('Texturing (photo-etch)', 1, BOUGHT_OUT_GBP.texturingPerTool, 'etch house, per tool'));
+    lines.push(boughtOutLine('Texturing (photo-etch)', 1, inCountry(BOUGHT_OUT_GBP.texturingPerTool, 'process'), `etch house, per tool — £${BOUGHT_OUT_GBP.texturingPerTool} UK${countryNote('process')}`));
   }
   if (steel.coating > 0) {
-    lines.push(boughtOutLine('Wear coating (high-volume tool)', 1, steel.coating, 'nitride/PVD on gate + shut-off faces'));
+    lines.push(boughtOutLine('Wear coating (high-volume tool)', 1, inCountry(steel.coating, 'heatTreat'), `nitride/PVD on gate + shut-off faces — £${steel.coating} UK${countryNote('heatTreat')}`));
   }
 
   const detail = composeTool(lines);

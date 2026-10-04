@@ -16,7 +16,7 @@
  * published characteristics of the system. So this asks ONE question and derives
  * the rest, rather than handing over a blank form.
  */
-import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
+import { activeRates } from '../../rate-context.js';
 import type { CompositeProcess } from '../../modules/composites.js';
 import type { Decision, RuleContext } from '../types.js';
 
@@ -111,7 +111,8 @@ export interface LaminateFacts {
 
 function price(id: string | null): number {
   if (!id) return 0;
-  return DEFAULT_RATE_LIBRARY.materials.find(m => m.id === id)?.pricePerKg ?? 0;
+  // The costed country's book (rate-context.ts) — it read the UK book in every country.
+  return activeRates().materials.find(m => m.id === id)?.pricePerKg ?? 0;
 }
 
 function massFor(volumeCm3: number, s: LaminateSystem): number {

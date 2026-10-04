@@ -1,4 +1,5 @@
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
+import { inCountry } from '../regional-services.js';
 import { tariffElectricityPerKwh } from '../uk-tariff.js';
 
 /**
@@ -26,6 +27,11 @@ export interface LaminationJoinInputs {
  * scales with stack height / lamination count.
  */
 export function estimateLaminationJoinCostPerStack(inputs: LaminationJoinInputs): number {
+  // UK £ per stack (processing: handling, welding, cure) — priced in the costed country.
+  return inCountry(joinCostUK(inputs), 'process');
+}
+
+function joinCostUK(inputs: LaminationJoinInputs): number {
   const n = Math.max(1, Math.floor(inputs.laminationCount || 1));
   const h = Math.max(1, inputs.stackHeightMm ?? n * 0.35);
   switch (inputs.stackMethod) {

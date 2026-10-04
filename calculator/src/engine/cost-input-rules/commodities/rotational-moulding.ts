@@ -19,6 +19,7 @@
  * wrong is the difference between one part carrying a 25-minute bake and four
  * parts sharing it.
  */
+import { inCountry, countryNote } from '../../regional-services.js';
 import {
   estimateRotoCycle, estimateRotoMouldCost,
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
@@ -478,8 +479,9 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('roto.powderCostAdderPerKg', ROTO_GRINDING_GBP_PER_KG, 'rule',
-          'grinding to ~35 mesh powder (£0.15–0.40/kg; the library grades are pellet-priced and say to add it)', 0.6);
+        // Toll grinding is a bought-in process service — in the costed country (regional-services.ts).
+        return decided('roto.powderCostAdderPerKg', inCountry(ROTO_GRINDING_GBP_PER_KG, 'process'), 'rule',
+          `grinding to ~35 mesh powder, £${ROTO_GRINDING_GBP_PER_KG}/kg UK (£0.15–0.40/kg)${countryNote('process')}; the library grades are pellet-priced and say to add it`, 0.6);
       },
     },
     {

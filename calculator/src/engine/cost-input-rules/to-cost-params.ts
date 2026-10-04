@@ -34,6 +34,7 @@
  * this block.
  */
 import { activeLabourRate } from '../rate-context.js';
+import { countryFactor } from '../regional-services.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
 import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
@@ -777,7 +778,7 @@ export function toCostParams(
             bendLabourId: s.fabBrakeLabourId || 'lab-uk-skilled',
             oee: D.oee, manning: 1, labourEfficiency: D.labourEfficiency,
             rejectRate: s.fabRejectRate !== undefined ? num(s.fabRejectRate) : D.rejectRate,
-            toolingCost: num(s.fabToolingGBP, 1500),
+            toolingCost: num(s.fabToolingGBP, Math.round(1500 * countryFactor('engineer'))),   // programming + first-off, UK £1,500
             amortizationVolume: annualVolume,
             ...hardware,
           },

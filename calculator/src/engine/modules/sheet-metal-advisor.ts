@@ -1,5 +1,5 @@
 import {
-  TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine,
+  TOOLROOM_RATES, TOOLROOM_RATES_UK, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine,
 } from '../toolmaking.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
@@ -301,8 +301,8 @@ export function estimateStampingDieCost(inputs: StampingDieCostInputs): Stamping
   const stationHrs = (70 + 0.11 * blank) * hardnessFactor * typeF;
 
   const lines: ToolCostLine[] = [
-    labourLine('Strip layout & die design', 'design', nre / TOOLROOM_RATES.design, TOOLROOM_RATES.design,
-      `${inputs.dieType} method design NRE`),
+    labourLine('Strip layout & die design', 'design', nre / TOOLROOM_RATES_UK.design, TOOLROOM_RATES.design,
+      `${inputs.dieType} method design: £${nre.toLocaleString('en-GB')} of UK design time at the country's design rate`),
     { item: 'Die set (plates, guides, bolster)', kind: 'boughtOut',
       cost: Math.round(2900 + 3.2 * blank), basis: `£2,900 + £3.20/cm² of blank footprint` },
     labourLine('Die-set machining & fitting', 'machining', 25 + 0.02 * blank, TOOLROOM_RATES.cnc,

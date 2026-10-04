@@ -26,6 +26,10 @@
  * Every constant is in al-extrusion-data.ts with its basis. Nothing here sets a
  * price: it decides quantities the cost module multiplies by library rates.
  */
+import { countryFactor, countryNote, type CountryBasis } from '../regional-services.js';
+
+/** An extrusion / impact die or bend tool: ~20% H13 steel (traded), the rest die-shop labour and machining. ESTIMATE split. */
+export const AL_TOOL_BASIS: CountryBasis = { globalShare: 0.2, rest: 'toolroom' };
 import {
   AL_ALLOYS, AL_PRESSES, AL_CONFORM, AL_IMPACT, AL_DIES, AL_DIE_NITRIDE, AL_LINE,
   type AlAlloy, type AlExtrusionRoute, type AlDieType, type AlPress,
@@ -142,8 +146,11 @@ export function exitSpeed(alloy: AlAlloy, s: AlSection, dieType: AlDieType, pres
 
 export function dieCost(type: AlDieType, ccdMm: number, holes: number, s: AlSection): { gbp: number; lifeKg: number; basis: string } {
   const d = AL_DIES[type];
-  let gbp = (d.baseGbp + d.perMmGbp * ccdMm) * (1 + 0.45 * (holes - 1));
-  const notes = [`£${d.baseGbp} + £${d.perMmGbp}/mm × ${ccdMm.toFixed(0)} mm circle`];
+  // UK die-maker prices; in the costed country the die shop's labour and machining move
+  // with its toolroom economics, the H13 steel (~20%) is traded (regional-services.ts).
+  const cf = countryFactor(AL_TOOL_BASIS);
+  let gbp = (d.baseGbp + d.perMmGbp * ccdMm) * (1 + 0.45 * (holes - 1)) * cf;
+  const notes = [`£${d.baseGbp} + £${d.perMmGbp}/mm × ${ccdMm.toFixed(0)} mm circle (UK)${countryNote(AL_TOOL_BASIS)}`];
   if (holes > 1) notes.push(`× ${(1 + 0.45 * (holes - 1)).toFixed(2)} for ${holes} openings`);
   if (s.voids > 2) { gbp *= 1.3; notes.push('×1.3 multi-void'); }
   const intricacy = s.perimeterMm * Math.max(0.5, s.minWallMm) / (2 * s.areaMm2);
@@ -300,7 +307,7 @@ export function planImpact(partKg: number, outerDiaMm: number): { slugKg: number
   const slugKg = partKg * (1 + AL_IMPACT.trimAllowance);
   return {
     slugKg, secPerPart: 60 / AL_IMPACT.strokesPerMin,
-    toolGbp: Math.round(AL_IMPACT.toolBaseGbp + AL_IMPACT.toolPerMmGbp * outerDiaMm), toolLifeHits: AL_IMPACT.toolLifeHits,
+    toolGbp: Math.round((AL_IMPACT.toolBaseGbp + AL_IMPACT.toolPerMmGbp * outerDiaMm) * countryFactor(AL_TOOL_BASIS)), toolLifeHits: AL_IMPACT.toolLifeHits,
     basis: `slug ${slugKg.toFixed(3)} kg (+${AL_IMPACT.trimAllowance * 100}% trim), ${AL_IMPACT.strokesPerMin} strokes/min`,
   };
 }

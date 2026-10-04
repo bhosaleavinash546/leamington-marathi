@@ -18,6 +18,7 @@
  * `detail` a dedicated tooling tool would print.
  */
 import { activeToolroomFactor } from './rate-context.js';
+import { countryFactor, countryNote } from './regional-services.js';
 import {
   TOOLROOM_RATES, EDM_FRACTION, FITTING_FRACTION,
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
@@ -72,7 +73,7 @@ export function estimateHPDCDieCost(p: CastingToolInputs): CastingToolEstimate {
     labourLine('Cooling-line drilling', 'machining', 0.10 * H * nEcon, TOOLROOM_RATES.cnc, 'intensive conformal-ish cooling, 10% of cavity hours'),
     labourLine('Bench fitting & spotting', 'fitting', FITTING_FRACTION * H * nEcon, TOOLROOM_RATES.fitting, '25% of cavity hours'),
     boughtOutLine('Shot sleeve + biscuit block', 1, 4500, 'wear set, catalogue'),
-    { item: 'Stress-relief + nitride heat treat', kind: 'heatTreat', cost: Math.round(2500 + area * 4), basis: '£2,500 + £4/cm² against heat checking' },
+    { item: 'Stress-relief + nitride heat treat', kind: 'heatTreat', cost: Math.round((2500 + area * 4) * countryFactor('heatTreat')), basis: `£2,500 + £4/cm² against heat checking (UK)${countryNote('heatTreat')}` },
     labourLine('Die tryout — 4 shots sessions', 'tryout', 32, TOOLROOM_RATES.tryoutPress, 'press time + first-offs'),
   ];
   return clampTotal(composeTool(lines), 35_000, 320_000);
@@ -128,7 +129,7 @@ export function estimateInvestmentToolCost(p: CastingToolInputs & { coreCount?: 
       cost: Math.round(wax.total * 0.8),
       basis: `low-pressure aluminium/P20 wax tool — mould model £${wax.total.toLocaleString()} × 0.8` },
     ...(cores > 0
-      ? [boughtOutLine(`Soluble-core boxes × ${cores}`, cores, 1200, 'per core box, catalogue-typical')]
+      ? [boughtOutLine(`Soluble-core boxes × ${cores}`, cores, Math.round(1200 * countryFactor('toolroom')), `per core box, £1,200 UK${countryNote('toolroom')} — made in a toolroom`)]
       : []),
   ];
   // wax.total already carries the shop overhead — compose without doubling it.

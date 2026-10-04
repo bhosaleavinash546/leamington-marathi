@@ -4,7 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
-import { heatTreatServiceFactor, ndtServiceFactor } from '../regional-services.js';
+import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor } from '../regional-services.js';
 import { activeLabourRate } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
@@ -431,7 +431,7 @@ const FETTLING_COST_PER_PART = (level: 'light' | 'medium' | 'heavy'): number =>
 
 export function estimateCastingSecondaryAdders(inputs: CastingSecondaryInputs): CastingSecondaryResult {
   // UK £ service prices × the costed country's service factor (regional-services.ts).
-  const svc = (gbpUk: number) => Math.round(gbpUk * ndtServiceFactor() * 100) / 100;
+  const svc = (gbpUk: number) => Math.round(gbpUk * processServiceFactor() * 100) / 100;   // blast, impregnation: bought-in process services
   const adders: CastingSecondaryAdder[] = [];
   const wt = Math.max(inputs.partWeightKg, 0);
 

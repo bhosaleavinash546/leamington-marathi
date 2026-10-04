@@ -284,12 +284,17 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
     (inputs.copperWeightOz - 1) * 0.07 +
     (inputs.outerCopperWeightOz - 1) * 0.05;
 
+  // The per-board adders (vias, silkscreen, finish, test) are UK fabricator prices.
+  // They are priced in the SAME market as the panel: × that market's panel-price
+  // ratio to the UK (country audit, Oct 2026 — they were UK £ in every market).
+  const market = BASE_PANEL_PRICE_2L[inputs.region] / BASE_PANEL_PRICE_2L.uk;
+
   // 7. Via complexity adder per panel
-  const viaAdderPerPanel =
+  const viaAdderPerPanel = market * (
     inputs.throughViaCount  * 0.002 * boardsPerPanel +
     inputs.blindViaCount    * 0.008 * boardsPerPanel +
     inputs.buriedViaCount   * 0.015 * boardsPerPanel +
-    inputs.microViaCount    * 0.012 * boardsPerPanel;
+    inputs.microViaCount    * 0.012 * boardsPerPanel);
 
   // 8. HDI structure multiplier
   const hdiMult = HDI_STRUCTURE_MULTIPLIER[inputs.hdiStructure];
@@ -307,7 +312,7 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   const smPremium = 1 + SOLDER_MASK_PREMIUM[inputs.solderMaskColor];
 
   // 12. Silkscreen adder per board
-  const silkAdder = inputs.silkscreenSides * 0.06;
+  const silkAdder = inputs.silkscreenSides * 0.06 * market;
 
   // 13. Base panel price from region (scaled to actual panel size)
   const basePanelPrice = BASE_PANEL_PRICE_2L[inputs.region] * panelSizeFactor;
@@ -341,8 +346,8 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   const costPerBoardPanel = rawPanelCost / boardsPerPanel / fabYield;
 
   // 17. Per-board adders
-  const finishAdder = FINISH_ADDER_GBP[inputs.surfaceFinish];
-  const testAdder   = TEST_COST_PER_BOARD[inputs.testMethod];
+  const finishAdder = FINISH_ADDER_GBP[inputs.surfaceFinish] * market;
+  const testAdder   = TEST_COST_PER_BOARD[inputs.testMethod] * market;
   const qualMult    = PCB_QUALITY_MULTIPLIER[inputs.qualityGrade];
 
   // 18. Final per-board cost

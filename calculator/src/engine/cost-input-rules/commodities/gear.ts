@@ -22,6 +22,7 @@
  * deliberately takes `blankCostPerPart` as an input rather than owning a second
  * material model.
  */
+import { activeRates } from '../../rate-context.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { CUTTING_DATA } from '../../machining-time.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -397,7 +398,8 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
   const bore = g?.boreDiameterMm ?? 0;
 
   const grade = GRADE_BY_CLASS[matClass];
-  const mat = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === grade.id);
+  // The costed country's book (rate-context.ts) — it read the UK book in every country.
+  const mat = activeRates().materials.find(m => m.id === grade.id);
   if (!mat) return null;
   const rho = mat.densityKgPerM3; // kg/m³
 

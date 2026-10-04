@@ -138,7 +138,7 @@ function shopFor(region: string, override?: HeatTreatShopEconomics): HeatTreatSh
 /** Energy, labour and the capital/overhead multipliers come from CostVision's own
  *  regional layer — one country model, not a second one for heat treat. */
 function regionFacts(region: string): {
-  elec: number; gas: number; labour: number; capMult: number; ovhMult: number; consMult: number;
+  elec: number; gas: number; labour: number; capMult: number; ovhMult: number; consMult: number; qcMult: number;
 } {
   const r = REGIONAL_DATA[region as ManufacturingRegion] ?? REGIONAL_DATA.UK;
   return {
@@ -149,6 +149,9 @@ function regionFacts(region: string): {
     capMult: r.machineRateMultiplier,
     ovhMult: r.overheadMultiplier,
     consMult: r.materialMultiplier,
+    // Load QC (hardness, case-depth sections) is inspector + lab time: ½ inspector-pay
+    // ratio + ½ capital multiplier — the NDT service factor (regional-services.ts). It was UK £.
+    qcMult: 0.5 * r.labour.inspector / REGIONAL_DATA.UK.labour.inspector + 0.5 * r.machineRateMultiplier,
   };
 }
 
@@ -193,7 +196,7 @@ export function computeHeatTreatRate(
   const consumables = proc.consumablesGBPPerKg.value * f.consMult;
   const fixtures = proc.fixturesGBPPerKg.value * f.consMult;
   const overhead = (shop.overheadPerFurnacePerYearGBP.value * f.ovhMult) / throughput;
-  const qc = proc.qcGBPPerLoad.value / netLoad;
+  const qc = proc.qcGBPPerLoad.value * f.qcMult / netLoad;
 
   const conversion = energy + labour + capital + maintenance
     + consumables + fixtures + overhead + qc;

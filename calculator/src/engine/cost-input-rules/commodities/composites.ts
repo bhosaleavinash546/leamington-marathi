@@ -26,6 +26,7 @@
  * obediently answered "infusion" was returning a value nothing downstream could
  * use. See `derive/laminate.ts`.
  */
+import { inCountry, countryNote } from '../../regional-services.js';
 import { activeToolroomFactor } from '../../rate-context.js';
 import type { CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
@@ -183,7 +184,7 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
       perCure: cure.n, perCureBasis: cure.basis,
       tools, toolsBasis, trimHr, trimBasis,
       // Structural carbon is ultrasonically scanned; glass covers are not.
-      ndi: s.value === 'prepreg-cf' ? 25 : 0,
+      ndi: s.value === 'prepreg-cf' ? inCountry(25, 'inspection') : 0,   // £25 UK C-scan, in the costed country
     },
   };
 }
@@ -390,7 +391,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
       value: a.trimHr, source: 'rule', confidence: 0.55, basis: a.trimBasis })),
     fromAdvice('composites.ndiCostPerPart', 'comp-ndi', 'ndiCostPerPart', a => ({
       value: a.ndi, source: 'rule', confidence: 0.5,
-      basis: a.ndi > 0 ? 'structural carbon: ultrasonic C-scan, £25 a part' : 'glass laminate: visual and tap test, no scan' })),
+      basis: a.ndi > 0 ? `structural carbon: ultrasonic C-scan, £25 a part (UK)${countryNote('inspection')}` : 'glass laminate: visual and tap test, no scan' })),
     fromAdvice('composites.layupLabourId', 'comp-layup-lab', 'layupLabourId', () => ({
       value: 'lab-uk-skilled', source: 'library', confidence: 0.7, basis: 'skilled laminator' })),
     fromAdvice('composites.cureLabourId', 'comp-cure-lab', 'cureLabourId', () => ({
