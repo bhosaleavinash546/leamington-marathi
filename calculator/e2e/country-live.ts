@@ -72,10 +72,13 @@ async function main(): Promise<void> {
     });
     await page.addInitScript(t => { localStorage.setItem('auth_token', t); localStorage.setItem('cv-tour-v41-seen', '1'); localStorage.setItem('cv-wizard-off', '1'); }, token);
     await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('html[data-country-ready="1"]', { timeout: 60_000 });
 
     // 1. The country, chosen first — the way an engineer does it.
     await page.selectOption('#mfg-region-selector', REGION);
     await page.waitForTimeout(600);
+    // The run is only valid if the whole screen took the country (both pickers, rates, currency).
+    await page.waitForFunction(r => (document.getElementById('costing-country-sel') as HTMLSelectElement)?.value === r, REGION, { timeout: 30_000 });
     out.afterCountrySwitch = await page.evaluate(() => ({
       header: (document.getElementById('mfg-region-selector') as HTMLSelectElement).value,
       bar: (document.getElementById('costing-country-sel') as HTMLSelectElement).value,

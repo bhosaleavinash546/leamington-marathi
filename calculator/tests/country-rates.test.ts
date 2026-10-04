@@ -649,3 +649,11 @@ describe('13. all 39 countries × every real part: each costing is priced in its
     expect(src.match(/system: systemPromptFor\(region\)/g)).toHaveLength(3);
   });
 });
+
+describe('14. a country picked while the page is still loading is applied (seen live under load)', () => {
+  it('after the listeners are wired, the country the picker shows is the one costed in', () => {
+    const src = readFileSync('src/ui/main.ts', 'utf8');
+    expect(src).toContain("if (shown && shown !== _mfgRegion && REGIONAL_DATA[shown as ManufacturingRegion]) _applyCountry(shown);");
+    expect(src).toContain("document.documentElement.dataset.countryReady = '1'");
+  });
+});

@@ -19458,6 +19458,14 @@ async function init(): Promise<void> {
     const savedRegion = localStorage.getItem('cv-region');
     if (savedRegion && savedRegion !== 'UK' && REGIONAL_DATA[savedRegion as ManufacturingRegion]) _applyCountry(savedRegion);
   } catch { /* storage blocked */ }
+  // A country picked BEFORE these listeners were wired (the page still loading) changed the
+  // picker but never the rates: the header said Vietnam while the costing ran in the UK
+  // (country audit, Oct 2026 — seen live under load). Whatever the picker shows now is applied.
+  {
+    const shown = el<HTMLSelectElement>('mfg-region-selector')?.value;
+    if (shown && shown !== _mfgRegion && REGIONAL_DATA[shown as ManufacturingRegion]) _applyCountry(shown);
+  }
+  document.documentElement.dataset.countryReady = '1';   // the country switch is live
   // A packaging / logistics figure typed in is kept as its UK basis, so the next
   // country switch scales the engineer's figure, not a default.
   for (const f of ['packaging', 'logistics'] as const) {

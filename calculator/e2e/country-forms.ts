@@ -50,7 +50,9 @@ async function main(): Promise<void> {
       page.on('dialog', d => { errors.push(`dialog: ${d.message()}`); void d.dismiss(); });
       await page.addInitScript(t => { localStorage.setItem('auth_token', t); localStorage.setItem('cv-tour-v41-seen', '1'); localStorage.setItem('cv-wizard-off', '1'); }, token);
       await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
+      await page.waitForSelector('html[data-country-ready="1"]', { timeout: 60_000 });
       await page.selectOption('#mfg-region-selector', region);
+      await page.waitForFunction(r => (document.getElementById('costing-country-sel') as HTMLSelectElement)?.value === r, region, { timeout: 30_000 });
       await page.waitForTimeout(500);
       await page.click('#new-costing-btn');
       const commodities = (await page.$$eval('#commodity-picker-view .cpicker-tile[data-commodity]:not(.cpicker-tile--ai)',
