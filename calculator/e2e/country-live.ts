@@ -95,12 +95,18 @@ async function main(): Promise<void> {
       await page.waitForSelector('#cad-results #cad-apply-btn, #cad-results .cad-decision', { timeout: 300_000 });
       await page.waitForTimeout(400);
       const open = await page.$$eval('#cad-decisions-panel .cad-decision', ds => ds.map(d => ({ id: (d as HTMLElement).dataset.decisionId!,
-        preselected: (d.querySelector('input[type=radio]:checked') as HTMLInputElement | null)?.value ?? null })));
+        preselected: (d.querySelector('input[type=radio]:checked') as HTMLInputElement | null)?.value ?? null,
+        options: Array.from(d.querySelectorAll('input[type=radio]')).map(r => (r as HTMLInputElement).value) })));
       rounds.push(open);
       const toAnswer = open.filter(o => o.id in ANSWERS);
-      log(`round ${round}: ${open.map(o => o.id).join(', ') || '(none)'}`);
+      log(`round ${round}: ${open.map(o => `${o.id} [${o.options.join('|')}]`).join(', ') || '(none)'}`);
       if (!toAnswer.length) break;
-      for (const o of toAnswer) await page.check(`.cad-decision[data-decision-id="${o.id}"] input[type=radio][value="${ANSWERS[o.id]}"]`);
+      for (const o of toAnswer) {
+        const sel = `.cad-decision[data-decision-id="${o.id}"]`;
+        // A figure the engineer types (quality class, helix angle off the drawing) or a choice.
+        if (o.options.length === 0) await page.fill(`${sel} input[data-decision-entry]`, ANSWERS[o.id]);
+        else await page.check(`${sel} input[type=radio][value="${ANSWERS[o.id]}"]`);
+      }
       const before = await page.evaluate(() => document.getElementById('cad-results')!.innerHTML.length);
       await page.click('#cad-decisions-apply');
       await page.waitForFunction(b => document.getElementById('cad-results')!.innerHTML.length !== b, before, { timeout: 300_000 });
