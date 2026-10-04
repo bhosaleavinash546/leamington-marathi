@@ -75,7 +75,24 @@ This is now a permanent test: `tests/country-rates.test.ts` §11 fails if any ma
 
 ### CAD path: one real STEP per commodity, India, real server and browser
 
-INDIA_TABLE
+| Commodity | Real part | India | UK (same part, UK selected) | Charged rate lines | Server calls | Rate DB differences |
+|---|---|---|---|---|---|---|
+| Aluminium extrusion | `AL_Heat_Sink` | ₹365.77 (≈ £2.88) | £4.29 | 13/13 IN | 4/4 IN | 0 |
+| Sheet metal / BIW pressing | `BIW_Reinf_Channel` | ₹108.43 (≈ £0.85) | £1.18 | 5/5 IN | 2/2 IN | 0 |
+| Blow moulding | `BM_Washer_Reservoir` | ₹118.48 (≈ £0.93) | £1.45 | 5/5 IN | 4/4 IN | 0 |
+| Composites (CFRP) | `COMP_Hat_Stiffener` | ₹5,186.34 (≈ £40.78) | £99.63 | 6/6 IN | 3/3 IN | 0 |
+| Polymer extrusion | `EXT_Vent_Pipe` | ₹81.46 (≈ £0.64) | £0.94 | 6/6 IN | 3/3 IN | 0 |
+| Forging | `FORGE_Hub_Flange` | ₹1,714.84 (≈ £13.48) | £27.07 | 7/7 IN | 4/4 IN | 0 |
+| Injection moulding | `IM_ECU_Cover` | ₹123.59 (≈ £0.97) | £1.47 | 6/6 IN | 3/3 IN | 0 |
+| Machining | `MACH_Hydraulic_Manifold` | ₹2,732.05 (≈ £21.48) | £40.99 | 14/14 IN | 2/2 IN | 0 |
+| Cast + machine (Al) | `PRCR002` | ₹3,192.65 (≈ £25.10) | £48.72 | 19/19 IN | 5/5 IN | 0 |
+| Rotational moulding | `ROTO_Header_Tank` | ₹982.29 (≈ £7.72) | £20.82 | 3/3 IN | 3/3 IN | 0 |
+| Rubber | `RUB_AV_Mount` | ₹121.33 (≈ £0.95) | £2.10 | 6/6 IN | 3/3 IN | 0 |
+| Sheet metal / BIW pressing | `Seat_Locking_Bracket` | ₹173.39 (≈ £1.36) | £2.18 | 5/5 IN | 2/2 IN | 0 |
+| Thermoforming | `TF_Trim_Cover` | ₹170.02 (≈ £1.34) | £2.27 | 6/6 IN | 3/3 IN | 0 |
+| Gear | `test-gear-m3-z38` | ₹1,524.60 (≈ £11.99) | £21.46 | 10/10 IN | 2/2 IN | 0 |
+
+The 14 UK runs were checked the same way: every charged rate line came from the UK book.
 
 What the columns mean:
 - **Charged rate lines:** every labour, machine, material and energy rate in the tool's own Excel trace, matched against all 39 country books. "IN" means it is India's figure.
@@ -89,7 +106,33 @@ Rule-priced £ in these runs carry their country in the basis text. Examples:
 
 ### Forms: every commodity on its defaults, UK and India
 
-FORMS_TABLE
+| Commodity form | UK (unchanged) | India before this audit | India now | Charged rate lines that are India's |
+|---|---|---|---|---|
+| Injection moulding | £3.66 | ₹452.98 | ₹260.77 | 3/3 |
+| Sheet metal (fab) | £9.79 | ₹622.20 | ₹606.83 | 5/5 |
+| Sheet metal (stamping) | £6.19 | ₹772.74 | ₹426.75 | 3/3 |
+| Casting | £20.44 | ₹2,411.82 | ₹1,489.17 | 5/5 |
+| Cast + machine | £28.29 | ₹2,922.42 | ₹1,939.82 | 9/9 |
+| Machining | £10.86 | ₹919.66 | ₹804.34 | 5/5 |
+| Forging | £13.67 | ₹1,539.80 | ₹924.70 | 4/4 |
+| Gear | £26.12 | ₹2,032.78 | ₹1,782.42 | 10/10 |
+| Rubber | £1.92 | ₹185.74 | ₹147.30 | 5/5 |
+| Composites | £570.25 | ₹32,393.84 | ₹25,697.16 | 6/6 |
+| PCB fabrication | £83.08 | ₹4,803.24 | ₹3,913.53 | market price (no rate lines); adders now in the panel's market |
+| PCBA | £7.42 | ₹903.70 | ₹887.77 | 4/4 |
+| Wiring harness | £32.00 | ₹2,455.25 | ₹2,449.09 | 4/4 |
+| Polymer extrusion | £9.02 | ₹760.85 | ₹760.85 | 6/6 (no £ default on this form) |
+| Blow moulding | £1.70 | ₹201.65 | ₹140.14 | 3/3 |
+| Thermoforming | £2.75 | ₹201.76 | ₹201.76 | 4/4 (no £ default on this form) |
+| Rotational moulding | £47.46 | ₹2,918.61 | ₹2,612.05 | 3/3 |
+| BIW assembly | £80.62 | ₹10,058.59 | ₹8,520.83 | 2/2 |
+| Painting | £5.82 | ₹498.65 | ₹446.57 | 2/2 |
+
+What this table shows:
+- **"India before":** the same form and the same defaults, costed before this audit. The difference is the UK £ defaults (tools, NRE, services, cores) that stayed UK.
+- **£ inputs that still read the same in India:** only traded goods and supplier quotes. These are brass inserts, MIG and TIG wire, catalogue hardware, electronic components, splices, conduit and tape, rivets and adhesive, the bare PCB and the BIW sub-parts. Each is listed with its basis in `src/ui/country-money-defaults.ts`.
+- **Every UK headline is identical before and after.**
+- **Assembly** only rolls up parts already costed (each in its own country) plus the country's overhead, so it has no rates of its own.
 
 ## 5. What stays a stated estimate
 
