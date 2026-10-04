@@ -4,9 +4,9 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
+import { activeLabourRate } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
-import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
 
 // Advisor recognises megacasting as a distinct technology (giant vacuum HPDC),
 // even though the cost engine models it through the `hpdc` subtype.
@@ -423,8 +423,8 @@ export const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = {
 export const FETTLING_MINUTES: Record<'light' | 'medium' | 'heavy', number> = {
   light: 2, medium: 6, heavy: 15,
 };
-const foundryRatePerHr = (): number =>
-  DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-foundry')!.fullyLoadedRatePerHr;
+// The costed country's foundry rate (rate-context.ts) — it was the UK's in every country.
+const foundryRatePerHr = (): number => activeLabourRate('lab-uk-foundry');
 const FETTLING_COST_PER_PART = (level: 'light' | 'medium' | 'heavy'): number =>
   Math.round(FETTLING_MINUTES[level] / 60 * foundryRatePerHr() * 100) / 100;
 

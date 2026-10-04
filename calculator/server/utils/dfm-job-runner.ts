@@ -11,6 +11,7 @@
  * Python spawn. There is no external broker, because adding one would be the
  * largest operational change in the repo for a workload of one job per upload.
  */
+import { regionOf, rateBookForRegion } from '../services/rate-book.js';
 import { randomUUID } from 'node:crypto';
 import db from '../db.js';
 import { analyzeGeometry } from './geometry-bridge.js';
@@ -22,7 +23,6 @@ import {
   type GeometricAnalysis, type PartContext, type CostContext,
 } from '../../src/engine/dfm-geometry/index.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
-import { buildRegionalLibrary, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import type { CommodityType } from '../../src/engine/types.js';
 
 export type DFMJobStatus = 'queued' | 'running' | 'done' | 'error';
@@ -218,11 +218,11 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
 function resolveCostContext(req: DFMJobRequest): CostContext {
   // An unrecognised region falls back to the default library rather than
   // throwing — a bad region code must not lose the whole DFM report.
+  // The deployment's active book (company rates when loaded) in the requested
+  // country — services/rate-book.ts, the same book the CAD rules price in.
   let lib = DEFAULT_RATE_LIBRARY;
-  if (req.region) {
-    try { lib = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, req.region as ManufacturingRegion); }
-    catch { /* keep the default */ }
-  }
+  try { lib = rateBookForRegion(regionOf(req.region)); }
+  catch { /* keep the default */ }
   const machine = lib.machines.find(m => /vmc|machining/i.test(m.id))
     ?? lib.machines[0];
   const labour = lib.labour.find(l => /semiskilled|semi-skilled/i.test(l.id))

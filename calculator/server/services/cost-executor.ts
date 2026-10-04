@@ -6,6 +6,7 @@
  * for the `calculate_cost` Anthropic tool_use block.
  */
 
+import type { OperationResult, TraceabilityRecord } from '../../src/engine/types.js';
 import { withRates } from '../../src/engine/rate-context.js';
 import { computeUniversalStack, validateStackInput } from '../../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
@@ -74,6 +75,12 @@ export interface CostToolResult {
   topDrivers: Array<{ bucket: string; cost: number; pct: number }>;
   dfmOpportunities: string[];
   error?: string;
+  /**
+   * Which rate each line was charged at — every operation's machine and labour
+   * £/hr and the traceability records (material £/kg, energy tariff, rate ids).
+   * The audit trail that proves a costing in a country used that country's book.
+   */
+  trace?: { operations: OperationResult[]; traceability: TraceabilityRecord[]; rateBook: string };
 }
 
 // ─── Commodity dispatch map ───────────────────────────────────────────────────
@@ -297,6 +304,7 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       },
       total:       Math.round(total           * 10000) / 10000,
       factoryCost: Math.round(result.factoryCost * 10000) / 10000,
+      trace: { operations: result.operationDetails, traceability: result.traceability, rateBook: rates.version },
       topDrivers,
       dfmOpportunities,
     };

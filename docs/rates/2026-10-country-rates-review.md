@@ -66,3 +66,38 @@ Tool-heavy parts move most. A pressing used to come out only 5–6 % cheaper in 
 - **The toolroom factor is an estimate.** It is half the skilled-labour ratio plus half the machine multiplier, which puts China at 0.43 × the UK. A toolmaker's quote from the region should replace it.
 - **Eight labour entries were aligned to the regional table.** The library's own sourced benchmarks were higher for Germany foundry, Poland foundry, Turkey skilled and semi-skilled, Vietnam skilled, Korea electronics, and Romania skilled and semi-skilled. Costings in those countries already used the regional value. Confirm which benchmark is right at the next rate refresh.
 - **The dev database holds an uploaded company book** (version `company-upload`, Sep 2026), so CAD rules now price in it on this machine. That is the intended behaviour, but the book is older than the 2026-09 refresh.
+
+## 5. Re-check in India (second pass)
+
+The China pass was repeated for India and made stricter. Every costing now carries a per-line **rate trace** (`trace` on the cost-executor and bulk results): each operation's machine and labour £/hr, plus the material £/kg and energy tariff it was charged at. The audit compared every one of those lines against India's rate book.
+
+**Result: 40 of 40 real parts costed; 435 rate lines checked; none at a UK rate.**
+
+The second pass found **four more places** still using UK rates. All are fixed:
+
+| # | Where | Error | Fix |
+|---|---|---|---|
+| 13 | **AI cost agent** (`server/routes/agent.ts`) | When a user named India, the region reached the model only as text. Its `calculate_cost` tool ran on the **built-in UK book**. The prompt told the model to *"factor in lower labour/machine rates"* itself, which means the AI was adjusting a price, and it read from a typed table of country factors that had drifted (India 0.12 against the library's 0.18). | The tool takes a `region` (else the user's selected region) and costs in that country's book, with the country's overhead, packaging and logistics. The prompt now forbids scaling a tool result, and its country table is generated from `REGIONAL_DATA`. |
+| 14 | Casting fettling adder (`casting-advisor.ts`) | Charged at the UK foundry rate in every country. | The costed country's foundry rate. |
+| 15 | Audit check "machine larger than needed" (`should-cost-audit.ts`) | Quoted its £/part saving at UK machine rates. | The active book's rates. |
+| 16 | Geometric DFM job (`dfm-job-runner.ts`) | Rebuilt the country from the built-in book, ignoring company rates. | The shared `services/rate-book.ts`, the same book the CAD rules use. |
+
+**India against the UK** (headless; all lines India's):
+
+| Commodity | Part | UK | India |
+|---|---|---|---|
+| Machining | Hydraulic manifold | £41.17 | £21.54 (52 %) |
+| Cast + machine | Casting bracket | £41.35 | £22.26 (54 %) |
+| Forging | Steering knuckle | £44.02 | £25.20 (57 %) |
+| Sheet metal | BIW inner panel | £33.53 | £24.20 (72 %) |
+| Injection moulding | Storage tray | £8.21 | £4.36 (53 %) |
+| Rotomoulding | Coolant tank | £55.89 | £22.55 (40 %) |
+| Composites | Roof panel | £443.36 | £268.96 (61 %) |
+| Aluminium extrusion | Bumper beam | £27.94 | £21.14 (76 %) |
+| Gear | Spur gear m3 z38 | £21.74 | £15.62 (72 %) |
+
+**Tooling** moves by India's toolroom factor, 0.36. Where a part's tooling ratio is higher, the difference is the globally-priced share: tool steel and bought-out parts. Aluminium-extrusion dies and gear cutters stay at £ by design.
+
+**On the screen**, both pickers set India together: rupee display, 9 % overhead, packaging × 0.65, logistics × 1.50. A machined part costs ₹919.66 (about £7.23) against £10.86 in the UK, and switching back gives £10.86 exactly.
+
+`tests/country-rates.test.ts` §7 re-runs the India line audit on every recorded part, and pins the fettling and agent fixes.

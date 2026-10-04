@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { buildRateCorpus, groundingBlock } from '../../src/engine/rag-retrieval.js';
 import { executeCalculateCost, type CostToolInput } from '../services/cost-executor.js';
+import { regionOf, rateBookForRegion, regionalShopDefaults } from '../services/rate-book.js';
+import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
 
 const router = Router();
 
@@ -38,10 +40,36 @@ Always call this before interpreting costs or making recommendations.`,
       marginPct:        { type: 'number', description: 'Default 0.08' },
       packagingPerPart: { type: 'number', description: 'Default 0.15' },
       logisticsPerPart: { type: 'number', description: 'Default 0.25' },
+      region: {
+        type: 'string',
+        description: 'Manufacturing country (code or name, e.g. "IN" or "India"). The engine prices every rate — material, labour, machines, energy, tooling, overhead, packaging, logistics — in that country. Defaults to the region the user selected.',
+      },
     },
     required: ['commodity', 'params'],
   },
 };
+
+
+/**
+ * Run the costing tool in the country asked for: the tool's own `region`, else the
+ * region the user selected. The book is the deployment's active one rebuilt for
+ * that country, and overhead / packaging / logistics default to the country's —
+ * the same as the screen. It used to run on the built-in UK book whatever the
+ * region, while the prompt told the model to "factor in lower rates" itself.
+ */
+export function costInRegion(input: CostToolInput & { region?: string }, sessionRegion: string | undefined): Omit<ReturnType<typeof executeCalculateCost>, 'trace'> & { region: string } {
+  const region = regionOf(input.region ?? sessionRegion);
+  const shop = regionalShopDefaults(region);
+  const r = executeCalculateCost({
+    ...input,
+    overheadPct: input.overheadPct ?? shop.overheadPct,
+    packagingPerPart: input.packagingPerPart ?? shop.packagingPerPart,
+    logisticsPerPart: input.logisticsPerPart ?? shop.logisticsPerPart,
+    rateLibrary: rateBookForRegion(region),
+  });
+  const { trace: _trace, ...rest } = r;   // the per-line trace is for audits, not the model's context
+  return { ...rest, region };
+}
 
 // ─── Robust JSON extractor ───────────────────────────────────────────────────
 
@@ -81,7 +109,7 @@ function extractJSON(text: string): Record<string, unknown> {
 const AgentActionSchema = z.object({
   type: z.literal('populate_form'),
   commodity: z.string(),
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
 }).nullable();
 
 const AgentResponseSchema = z.object({
@@ -186,6 +214,23 @@ function withLibraryRates(text: string): string {
     rate.has(id) ? `${id} (£${rate.get(id)!.toFixed(2)}/hr` : m);
 }
 
+/**
+ * The regions the agent may cost in, generated from REGIONAL_DATA. It used to be a
+ * typed table of "factors" (Vietnam labour 0.10, India 0.12 …) that had drifted
+ * from the library, and the agent was told to "factor in lower rates" itself —
+ * the model adjusting a price. Now the costing tool takes the region and prices
+ * in that country's book; the table is only for orientation.
+ */
+const REGION_PROMPT_BLOCK = `## Manufacturing Regions (${Object.keys(REGIONAL_DATA).length})
+${Object.entries(REGIONAL_DATA).map(([c, r]) => `${c} ${r.name}`).join(' · ')}
+
+### Regional labour index (semi-skilled £/hr vs UK, from the rate library)
+${Object.entries(REGIONAL_DATA).map(([c, r]) => `${c} ${(r.labour.semiskilled / REGIONAL_DATA.UK.labour.semiskilled).toFixed(2)}`).join(' · ')}
+
+When the user names a manufacturing country, pass it as \`region\` to calculate_cost. The engine then prices material, labour,
+machines, energy, tooling, overhead, packaging and logistics in that country. NEVER scale, discount or adjust a cost the
+tool returns for a region yourself — quote the tool's numbers. The machine and labour £/hr quoted below are the UK book.`;
+
 const SYSTEM_PROMPT = withLibraryRates(`You are the Unified Should-Cost Orchestrator AI Agent for an advanced manufacturing cost estimation platform.
 
 ## Primary Objective
@@ -194,27 +239,7 @@ Provide accurate, transparent, engineering-grade should-cost estimates for manuf
 ## Supported Commodities (18 total)
 machining, sheet_metal, sheet_metal_fab, injection_moulding, blow_moulding, extrusion, thermoforming, rotational_moulding, casting, forging, painting, biw_assembly, pcb_fab, pcba, cast_and_machine, rubber, composites, wiring_harness
 
-## Manufacturing Regions (20)
-UK, DE, FR, IT, ES, PL, CZ, RO, HU, SE, NL, TR, CN, IN, MX, US, TH, VN, BR, KR
-
-### Regional Cost Index (UK = 100 baseline)
-| Region | Labour Factor | Machine Factor | Typical Use |
-|--------|-------------|----------------|-------------|
-| UK     | 1.00 | 1.00 | Baseline |
-| DE     | 1.58 | 1.05 | Precision engineering |
-| US     | 1.05 | 1.02 | North America |
-| PL     | 0.46 | 0.72 | EU nearshore |
-| CZ     | 0.44 | 0.70 | EU nearshore |
-| CN     | 0.18 | 0.52 | High-volume |
-| IN     | 0.12 | 0.50 | High-volume machining |
-| MX     | 0.22 | 0.60 | North America nearshore |
-| VN     | 0.10 | 0.52 | Lowest cost |
-| TH     | 0.18 | 0.58 | SE Asia |
-| BR     | 0.28 | 0.68 | South America |
-| KR     | 0.65 | 0.80 | Electronics/precision |
-| TR     | 0.32 | 0.65 | EU proximity |
-
-When a user specifies a manufacturing region, factor in lower labour/machine rates and adjust DFM recommendations accordingly.
+${REGION_PROMPT_BLOCK}
 
 ## Input Handling Rules
 1. Validate commodity from description or photo — report your confidence (0.0–1.0).
@@ -886,7 +911,7 @@ When the user message contains [Cost Engine Result: ...], interpret as follows:
 1. **Summary**: Is this cost reasonable? Benchmark against industry norms for the commodity and volume.
 2. **Key Cost Drivers**: Which of the 8 buckets dominate, and why? Use specific £ values.
 3. **DFM/DFC Recommendations**: Top 3 concrete actions to reduce cost (cite specific buckets and expected savings %).
-4. **Regional What-If**: If manufacturing in [region], estimate the cost delta — quantify using regional labour and machine multipliers.
+4. **Regional What-If**: Never estimate another country's cost yourself — call calculate_cost with \`region\` set to that country; the engine re-prices every rate in its book.
 5. **What-If Scenarios**: 2–3 parameter changes with estimated impact.
 6. **Confidence Assessment**: Flag assumptions and their impact.
 
@@ -1004,7 +1029,7 @@ router.post('/chat', async (req, res): Promise<void> => {
         const toolResults: Anthropic.ToolResultBlockParam[] = [];
         for (const block of apiResp.content) {
           if (block.type === 'tool_use' && block.name === 'calculate_cost') {
-            const toolResult = executeCalculateCost(block.input as CostToolInput);
+            const toolResult = costInRegion(block.input as CostToolInput & { region?: string }, region);
             console.log(
               `[agent] tool_use calculate_cost → commodity=${(block.input as CostToolInput).commodity}`,
               `success=${toolResult.success} total=${toolResult.total}`,
@@ -1097,7 +1122,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
         const toolResults: Anthropic.ToolResultBlockParam[] = [];
         for (const block of apiResp.content) {
           if (block.type === 'tool_use' && block.name === 'calculate_cost') {
-            const toolResult = executeCalculateCost(block.input as CostToolInput);
+            const toolResult = costInRegion(block.input as CostToolInput & { region?: string }, region);
             console.log(
               `[agent/stream] tool_use calculate_cost → commodity=${(block.input as CostToolInput).commodity}`,
               `success=${toolResult.success} total=${toolResult.total}`,

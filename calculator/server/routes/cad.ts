@@ -31,10 +31,9 @@ import { diffAnalyses } from '../../src/engine/cost-input-rules/diff.js';
 import type { CADAnalysisResult } from '../../src/engine/ai-analysis.js';
 import { inferCommodity, looksLikeGear, COMMODITY_DECISION_ID } from '../../src/engine/cost-input-rules/derive/commodity.js';
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
-import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
-import { buildRegionalLibrary, resolveManufacturingRegion, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
-import type { RateLibrary } from '../../src/engine/types.js';
-import { resolveActiveRateBook } from './rate-library.js';
+import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
+import { regionOf, rateBookForRegion } from '../services/rate-book.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
 import { applyRuleDecisions, toRuleFields, suppressAIForUndecided, type AISuppression } from '../../src/engine/cost-input-rules/apply.js';
@@ -2207,19 +2206,9 @@ export function parseDecisionAnswers(raw: unknown): Record<string, unknown> {
 
 /** Assemble the rule context from what `buildPrompt` already has in scope. */
 /** The region code a request's costing is in — 'UK' when absent or unknown. */
-function rateRegionOf(raw: string): ManufacturingRegion {
-  return (raw && resolveManufacturingRegion(raw)) || 'UK';
-}
-
-/**
- * The rate book the rules price in for a region: the deployment's active book
- * (company rates when an admin has loaded them), rebuilt for the country exactly
- * as the screen and the bulk path rebuild it.
- */
-function rateBookFor(region: ManufacturingRegion | undefined): RateLibrary {
-  const base = recomputeMachineRates(resolveActiveRateBook());
-  return !region || region === 'UK' ? base : buildRegionalLibrary(base, region);
-}
+const rateRegionOf = regionOf;
+/** The rate book the rules price in for a region (services/rate-book.ts). */
+const rateBookFor = rateBookForRegion;
 
 export function ruleContextFor(
   commodity: string,

@@ -91,6 +91,8 @@ export interface BulkOpenQuestion {
 }
 
 export interface BulkPartResult {
+  /** Rate per line, from the costing (cost-executor `trace`) — the rate audit reads it. */
+  trace?: import('./cost-executor.js').CostToolResult['trace'];
   partNumber: string;
   file: string;
   status: BulkPartStatus;
@@ -399,6 +401,7 @@ export async function costMeasuredPart(
     provenance,
     ...(warnings.length ? { warnings } : {}),
     answersUsed: answers,
+    ...(cost.trace ? { trace: cost.trace } : {}),
   };
 }
 

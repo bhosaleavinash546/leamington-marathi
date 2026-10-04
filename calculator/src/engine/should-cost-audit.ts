@@ -12,8 +12,8 @@
  * the safe cases) proposes a bounded correction the caller may apply — a machine id
  * from the rate library or the annual amortisation volume, never a £.
  */
+import { activeRates } from './rate-context.js';
 import { sizeProcessMachine, SIZE_TIERED_COMMODITIES, type MachineSizingParams } from './machine-sizing.js';
-import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
 import { physicalRemovalCeilingMin } from './feature-costing.js';
 import type { UniversalStackInput, RateLibrary, PartCostResult } from './types.js';
 
@@ -109,8 +109,9 @@ const checkMachineOversized: Check = (ctx) => {
   const ecap = machineCapacityTonnes(expected);
   const acap = machineCapacityTonnes(ctx.selectedMachineId);
   if (ecap == null || acap == null || acap <= ecap) return null;   // undersize is the check above
+  // In the costed country's book — the per-part delta was quoted at UK rates in every country.
   const rateOf = (id: string) =>
-    DEFAULT_RATE_LIBRARY.machines.find(m => m.id === id)?.computedRatePerHr ?? null;
+    activeRates().machines.find(m => m.id === id)?.computedRatePerHr ?? null;
   const actualRate = rateOf(ctx.selectedMachineId);
   const expectedRate = rateOf(expected);
   if (actualRate == null || expectedRate == null || actualRate <= expectedRate) return null;

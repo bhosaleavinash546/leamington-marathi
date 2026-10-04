@@ -182,3 +182,58 @@ describe('6. the CAD route prices its rules in the requested country', () => {
     expect(ruleContextFor('casting', geo, 'p.stp', ov).rates?.regional).toBeUndefined();
   });
 });
+
+describe('7. India re-check (Oct 2026): every rate line of every real part is India\'s', () => {
+  const IN = buildRegionalLibrary(UK, 'IN');
+  it('every machine, labour, material and energy line of every costed part — none at a UK rate', async () => {
+    const baseline = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as
+      { part: string; answers: Record<string, string>; geometry: never; outcome: { commodity?: string } }[];
+    const bad: string[] = [];
+    let lines = 0, costed = 0;
+    for (const p of baseline) {
+      const r = await costMeasuredPart(p.geometry, p.part, { partNumber: p.part, file: p.part, annualVolume: 50_000,
+        ...(p.outcome.commodity ? { commodity: p.outcome.commodity } : {}) },
+      p.answers, 'IN', { annualVolume: 50_000 }, UK, { partNumber: p.part, file: p.part, status: 'error' });
+      if (r.status !== 'costed') continue;
+      costed++;
+      expect(r.trace!.rateBook, p.part).toMatch(/-IN$/);
+      for (const o of r.trace!.operations) {
+        lines += 2;
+        const m = IN.machines.find(x => x.id === o.machineId)!, l = IN.labour.find(x => x.id === o.labourId)!;
+        if (Math.abs(o.machineRateUsed - m.computedRatePerHr) > 1e-6) bad.push(`${p.part} ${o.operationName} machine`);
+        if (Math.abs(o.labourRateUsed - l.fullyLoadedRatePerHr) > 1e-6) bad.push(`${p.part} ${o.operationName} labour`);
+      }
+      for (const t of r.trace!.traceability) {
+        if (t.field === 'material.pricePerKg') { lines++; if (Math.abs(t.value - IN.materials.find(m => m.id === t.rateId)!.pricePerKg) > 1e-6) bad.push(`${p.part} material`); }
+        if (t.field.startsWith('rawMaterial.energyKwh')) { lines++; if (t.rateId !== 'energy-in') bad.push(`${p.part} energy`); }
+      }
+    }
+    expect(bad).toEqual([]);
+    expect(costed).toBeGreaterThanOrEqual(35);
+    expect(lines).toBeGreaterThan(300);
+  }, 120_000);
+  it('casting fettling is charged at India\'s foundry rate (it was the UK\'s)', async () => {
+    const { estimateCastingSecondaryAdders } = await import('../src/engine/modules/casting-advisor.js');
+    const at = (lib?: typeof IN) => withRates(lib, () => estimateCastingSecondaryAdders({ alloyFamily: 'aluminium', partWeightKg: 2, fettling: 'heavy' } as never))
+      .adders.find(a => /fettl/i.test(a.label))!.costPerPartGbp;
+    expect(at(IN) / at()).toBeCloseTo(R.IN.labour.foundry / R.UK.labour.foundry, 1);
+  });
+  it('the AI agent\'s costing tool prices in the region asked for — it ran on the UK book whatever the region', async () => {
+    const { costInRegion } = await import('../server/routes/agent.js');
+    const p = {
+      materialId: 'mat-pe100-pipe', profileWeightKgPerM: 0.5, partLengthM: 6, lineRateKgPerHr: 200,
+      extruderId: 'extruder-pipe-line', labourId: 'lab-uk-semiskilled', oee: 0.85, manning: 1, labourEfficiency: 0.95,
+      startupScrapFraction: 0.03, dieCost: 1000, amortizationVolume: 100000,
+      family: 'pe', process: 'pipe', screwDiameterMm: 90, wallThicknessMm: 3, cooling: 'water-bath',
+    };
+    const uk = costInRegion({ commodity: 'extrusion', params: p }, undefined);
+    const india = costInRegion({ commodity: 'extrusion', params: p }, 'India');
+    const named = costInRegion({ commodity: 'extrusion', params: p, region: 'IN' }, 'UK');
+    expect(uk.region).toBe('UK');
+    expect(india.region).toBe('IN');
+    expect(named.total).toBeCloseTo(india.total, 6);
+    expect(india.total).toBeLessThan(uk.total);
+    expect(india.breakdown.labour / uk.breakdown.labour).toBeCloseTo(R.IN.labour.semiskilled / R.UK.labour.semiskilled, 2);
+    expect('trace' in india).toBe(false);
+  });
+});
