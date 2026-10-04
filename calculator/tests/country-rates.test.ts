@@ -573,3 +573,79 @@ describe('12. the forms\' £ defaults follow the country; a typed figure is a qu
     for (const row of ['coat3-price', 'bom4-price', 'join2-cost', 'sm-hw2-cost']) expect(M.basisFor(row), row).toBeDefined();
   });
 });
+
+/**
+ * Every country, not just India (Oct 2026): every real part in cad-audit/ is costed in all
+ * 39 countries through the product's own chain; every charged rate must be THAT country's,
+ * the book must name it, and the total vs the UK must sit inside the country's own factor
+ * envelope (a wrong formula lands outside it).
+ */
+describe('13. all 39 countries × every real part: each costing is priced in its own country', async () => {
+  const RR = await import('../src/engine/regional-rates.js');
+  const S = await import('../src/engine/regional-services.js');
+  const parts = (JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{
+    part: string; answers: Record<string, string>; commodity?: string; geometry: never; outcome: { status: string } }>)
+    .filter(p => p.outcome.status === 'costed');
+  const ALL = Object.keys(RR.REGIONAL_DATA) as Array<keyof typeof RR.REGIONAL_DATA>;
+  it('every charged machine, labour, material and energy rate is the selected country\'s', async () => {
+    const base = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+    const close = (a: number, b: number) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(b));
+    const bad: string[] = []; const ukTotal: Record<string, number> = {};
+    for (const X of ['UK', ...ALL.filter(c => c !== 'UK')] as Array<typeof ALL[number]>) {
+      const B = X === 'UK' ? base : RR.buildRegionalLibrary(base, X);
+      const rd = RR.REGIONAL_DATA[X], uk = RR.REGIONAL_DATA.UK;
+      const f = [rd.labour.semiskilled / uk.labour.semiskilled, rd.labour.skilled / uk.labour.skilled, rd.machineRateMultiplier, rd.materialMultiplier,
+        rd.materialFactors.commodityResin, rd.materialFactors.engineeringResin, rd.materialFactors.highPerfResin,
+        rd.energy.electricityPerKwh / uk.energy.electricityPerKwh, S.countryFactor('toolroom', X), S.countryFactor('process', X),
+        S.countryFactor('heatTreat', X), rd.logisticsMultiplier, rd.packagingMultiplier, 1];
+      const lo = Math.min(...f) * 0.9, hi = Math.max(...f) * 1.1;
+      for (const p of parts) {
+        const r = await costMeasuredPart(p.geometry, p.part,
+          { partNumber: p.part, file: p.part, annualVolume: 50_000, ...(p.commodity ? { commodity: p.commodity } : {}) },
+          p.answers, X, { annualVolume: 50_000 }, base, { partNumber: p.part, file: p.part, status: 'error' } as never);
+        if (r.status !== 'costed') { bad.push(`${X} ${p.part}: ${r.status}`); continue; }
+        if (r.trace!.rateBook !== B.version) bad.push(`${X} ${p.part}: book ${r.trace!.rateBook}`);
+        for (const o of r.trace!.operations) {
+          const m = B.machines.find(x => x.id === o.machineId), l = B.labour.find(x => x.id === o.labourId);
+          if (o.machineRateUsed && !close(o.machineRateUsed, m?.computedRatePerHr ?? NaN)) bad.push(`${X} ${p.part} ${o.machineId}`);
+          if (o.labourRateUsed && !close(o.labourRateUsed, l?.fullyLoadedRatePerHr ?? NaN)) bad.push(`${X} ${p.part} ${o.labourId}`);
+        }
+        for (const t of r.trace!.traceability) {
+          if (t.field === 'material.pricePerKg' && !close(t.value, B.materials.find(m => m.id === t.rateId)?.pricePerKg ?? NaN)) bad.push(`${X} ${p.part} ${t.rateId}`);
+          if (t.field.startsWith('rawMaterial.energyKwh') && t.rateId !== B.energy[0].id) bad.push(`${X} ${p.part} energy ${t.rateId}`);
+        }
+        if (X === 'UK') ukTotal[p.part] = r.total!;
+        else { const q = r.total! / ukTotal[p.part]; if (q < lo || q > hi) bad.push(`${X} ${p.part} ×${q.toFixed(3)} outside [${lo.toFixed(2)}, ${hi.toFixed(2)}]`); }
+      }
+    }
+    expect(bad).toEqual([]);
+  }, 1_200_000);
+
+  it('heat treatment counts the country once (own-shop countries were cut twice by the overhead factor)', () => {
+    const src = readFileSync('src/engine/gear-heat-treat-rate.ts', 'utf8');
+    expect(src).toContain('(ownShop ? 1 : f.ovhMult)');
+    expect(src).toContain('(ownShop ? 1 : f.freightMult)');
+  });
+
+  it('the sourcing insight compares against the country costed in, for every country', async () => {
+    const { generateInsights } = await import('../src/engine/insights.js');
+    expect(typeof generateInsights).toBe('function');
+    const src = readFileSync('src/engine/insights.ts', 'utf8');
+    expect(src).toContain('resolveManufacturingRegion(ctx?.region');
+    expect(src).not.toContain("REGIONAL_COST_INDEX['China']");
+  });
+
+  it('software should-cost follows the country to its nearest engineering hub, for every country', async () => {
+    const { swRegionFor } = await import('../src/engine/sw-should-cost.js');
+    for (const c of ALL) expect(swRegionFor(c).region, c).toBeTruthy();
+    expect(swRegionFor('IN').region).toBe('India');
+    expect(swRegionFor('PL').region).toBe('Eastern_Europe');
+    expect(swRegionFor('VN').basis).toContain('nearest');
+    expect(readFileSync('src/ui/main.ts', 'utf8')).toContain("swSel.value = swRegionFor(region).region");
+  });
+
+  it('the AI agent quotes the request country\'s £/hr (it quoted the UK\'s in every country)', () => {
+    const src = readFileSync('server/routes/agent.ts', 'utf8');
+    expect(src.match(/system: systemPromptFor\(region\)/g)).toHaveLength(3);
+  });
+});

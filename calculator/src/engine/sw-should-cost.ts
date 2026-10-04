@@ -31,6 +31,32 @@ export type SWCategory      = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type SWRegion        = 'UK' | 'EU' | 'USA_Detroit' | 'USA_SV' | 'China' | 'India' | 'Mexico' | 'Eastern_Europe' | 'Japan';
 export type DevSource       = 'OEM_Internal' | 'Tier1_Supplier' | 'Startup_OSS';
 
+/**
+ * The software-engineering rate hub a manufacturing country is costed in. Software
+ * has 9 assessed engineering hubs, not 39 factory countries; a country without its own
+ * hub takes the nearest one in cost and geography, and the screen SAYS so (country
+ * audit, Oct 2026 — the panel used to sit on the UK whatever country was selected).
+ */
+export function swRegionFor(country: string): { region: SWRegion; basis?: string } {
+  const c = country.toUpperCase();
+  if (c === 'UK' || c === 'GB') return { region: 'UK' };
+  if (c === 'IN') return { region: 'India' };
+  if (c === 'CN') return { region: 'China' };
+  if (c === 'MX') return { region: 'Mexico' };
+  if (c === 'JP') return { region: 'Japan' };
+  if (c === 'US') return { region: 'USA_Detroit' };
+  if (c === 'DE') return { region: 'EU' };
+  const near = (region: SWRegion, why: string) => ({ region, basis: why });
+  if (['FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'SE', 'PT'].includes(c)) return near('EU', 'Western European engineering — the EU hub');
+  if (['PL', 'CZ', 'SK', 'SI', 'HU', 'RO', 'BG', 'RS', 'LT'].includes(c)) return near('Eastern_Europe', 'Central / Eastern European engineering hub');
+  if (['TR', 'MA', 'TN', 'EG'].includes(c)) return near('Eastern_Europe', 'Europe-facing low-cost engineering — Eastern Europe is the nearest assessed hub');
+  if (c === 'CA') return near('USA_Detroit', 'North American automotive engineering — Detroit is the nearest assessed hub');
+  if (c === 'BR') return near('Mexico', 'Latin American engineering — Mexico is the nearest assessed hub');
+  if (['KR', 'SG'].includes(c)) return near('Japan', 'high-cost Asian engineering — Japan is the nearest assessed hub');
+  if (c === 'TW') return near('China', 'Greater China engineering hub');
+  return near('India', 'low-cost Asian / African engineering — India is the nearest assessed hub');
+}
+
 export interface SWModuleDef {
   id:                        string;
   name:                      string;

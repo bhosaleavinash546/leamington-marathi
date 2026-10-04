@@ -138,7 +138,7 @@ function shopFor(region: string, override?: HeatTreatShopEconomics): HeatTreatSh
 /** Energy, labour and the capital/overhead multipliers come from CostVision's own
  *  regional layer — one country model, not a second one for heat treat. */
 function regionFacts(region: string): {
-  elec: number; gas: number; labour: number; capMult: number; ovhMult: number; consMult: number; qcMult: number;
+  elec: number; gas: number; labour: number; capMult: number; ovhMult: number; consMult: number; qcMult: number; freightMult: number;
 } {
   const r = REGIONAL_DATA[region as ManufacturingRegion] ?? REGIONAL_DATA.UK;
   return {
@@ -152,6 +152,7 @@ function regionFacts(region: string): {
     // Load QC (hardness, case-depth sections) is inspector + lab time: ½ inspector-pay
     // ratio + ½ capital multiplier — the NDT service factor (regional-services.ts). It was UK £.
     qcMult: 0.5 * r.labour.inspector / REGIONAL_DATA.UK.labour.inspector + 0.5 * r.machineRateMultiplier,
+    freightMult: 0.5 * r.labour.semiskilled / REGIONAL_DATA.UK.labour.semiskilled + 0.5 * r.machineRateMultiplier,
   };
 }
 
@@ -195,7 +196,13 @@ export function computeHeatTreatRate(
 
   const consumables = proc.consumablesGBPPerKg.value * f.consMult;
   const fixtures = proc.fixturesGBPPerKg.value * f.consMult;
-  const overhead = (shop.overheadPerFurnacePerYearGBP.value * f.ovhMult) / throughput;
+  // A country with its OWN shop economics (HT_SHOP_BY_REGION: CN, IN, DE) states a local
+  // overhead already — multiplying it by the country's overhead factor counted the country
+  // twice (India's $30k furnace overhead was cut a further 28%). The default shop is the
+  // UK's and is moved to the country once. Its subcontract freight likewise (local trucking:
+  // the process-service mix of semi-skilled pay and machine cost). Country audit, Oct 2026.
+  const ownShop = !opts.shop && region !== 'UK' && region in HT_SHOP_BY_REGION;
+  const overhead = (shop.overheadPerFurnacePerYearGBP.value * (ownShop ? 1 : f.ovhMult)) / throughput;
   const qc = proc.qcGBPPerLoad.value * f.qcMult / netLoad;
 
   const conversion = energy + labour + capital + maintenance
@@ -208,7 +215,7 @@ export function computeHeatTreatRate(
   const subcontracted = (opts.sourcing ?? 'subcontract') === 'subcontract';
   const sga = subcontracted ? inHouse * shop.subcontractSgaPct.value : 0;
   const margin = subcontracted ? (inHouse + sga) * shop.subcontractMarginPct.value : 0;
-  const logistics = subcontracted ? shop.subcontractLogisticsGBPPerKg.value : 0;
+  const logistics = subcontracted ? shop.subcontractLogisticsGBPPerKg.value * (ownShop ? 1 : f.freightMult) : 0;
 
   let ratePerKg = inHouse + sga + margin + logistics;
 

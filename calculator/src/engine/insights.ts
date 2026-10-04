@@ -4,6 +4,7 @@
  * All logic is deterministic and testable — no AI API required.
  */
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from './types.js';
+import { REGIONAL_DATA, resolveManufacturingRegion, type ManufacturingRegion } from './regional-rates.js';
 
 export type InsightType = 'critical' | 'warning' | 'opportunity' | 'benchmark' | 'info';
 export type InsightCategory = 'material' | 'process' | 'labour' | 'tooling' | 'commercial' | 'regional' | 'design';
@@ -538,30 +539,35 @@ export function generateInsights(
   }
 
   // ── Regional arbitrage opportunity ───────────────────────────────────────
+  // Compared against the country the part is COSTED in, from the country table
+  // (REGIONAL_DATA) — conversion cost ≈ ½ labour + ½ machine-hour multiplier. It
+  // used to quote a fixed 8-country index against the UK whatever the country, so a
+  // part costed in Egypt was told China is "62% cheaper". Country audit, Oct 2026.
   const labourIntensity = pcts.lab + pcts.proc; // Combined conversion cost
-  // Recommending China to a part costed in China was a shipped defect: the rule
-  // never knew the region. With no context it keeps its old behaviour.
-  const LOW_COST_REGIONS = new Set(['cn', 'china', 'in', 'india', 'mx', 'mexico',
-    'pl', 'poland', 'cz', 'czechia', 'czech republic', 'tr', 'turkey', 'th', 'thailand', 'vn', 'vietnam']);
-  const alreadyLowCost = LOW_COST_REGIONS.has((ctx?.region ?? '').trim().toLowerCase());
-  if (labourIntensity > 25 && !alreadyLowCost) {
-    const chinaIdx = REGIONAL_COST_INDEX['China'];
-    const indiaIdx = REGIONAL_COST_INDEX['India'];
-    const ukIdx = REGIONAL_COST_INDEX['UK'];
-    const potentialSavingChina = (1 - chinaIdx.index / ukIdx.index) * (labourIntensity / 100) * 100;
+  const here = resolveManufacturingRegion(ctx?.region ?? 'UK') ?? 'UK';
+  const conv = (c: ManufacturingRegion) => 0.5 * REGIONAL_DATA[c].labour.semiskilled / REGIONAL_DATA.UK.labour.semiskilled
+    + 0.5 * REGIONAL_DATA[c].machineRateMultiplier;
+  const cheaper = (Object.keys(REGIONAL_DATA) as ManufacturingRegion[])
+    .filter(c => c !== here && conv(c) <= 0.7 * conv(here))
+    .sort((x, y) => conv(x) - conv(y));
+  if (labourIntensity > 25 && cheaper.length) {
+    const pick = [...new Set([...cheaper.slice(0, 2), ...cheaper.filter(c => ['PL', 'CZ', 'MX', 'TR', 'MA'].includes(c)).slice(0, 2)])];
+    const cut = (c: ManufacturingRegion) => Math.round((1 - conv(c) / conv(here)) * 100);
+    const best = pick[0];
+    const saving = cut(best) * (labourIntensity / 100);
     insights.push({
       type: 'opportunity',
       category: 'regional',
       lever: 'sourcing',
       title: 'Regional sourcing opportunity — high conversion cost',
-      finding: `Conversion (process + labour) represents ${labourIntensity.toFixed(0)}% of total cost. Low-cost manufacturing regions offer significant savings on this component.`,
+      finding: `Conversion (process + labour) is ${labourIntensity.toFixed(0)}% of the cost in ${REGIONAL_DATA[here].name}. `
+        + 'Countries with lower labour and machine-hour costs would cost that share for less.',
       impact: 'High',
-      potentialSavingPct: Math.min(20, potentialSavingChina * 0.7),
+      potentialSavingPct: Math.min(20, saving * 0.7),
       actions: [
-        `China (tier-1): ~${Math.round((1 - chinaIdx.index / ukIdx.index) * 100)}% lower labour rates — estimated total part saving ${Math.round(potentialSavingChina * 0.6)}%`,
-        `India: ~${Math.round((1 - indiaIdx.index / ukIdx.index) * 100)}% lower labour rates — strong for machined aluminium components`,
-        'Poland/Czech Republic: ~40-45% labour cost reduction with EU supply chain proximity',
-        'Mexico: nearshore to North America with 50-55% labour cost advantage',
+        ...pick.map(c => `${REGIONAL_DATA[c].name}: conversion ~${cut(c)}% below ${REGIONAL_DATA[here].name} (½ labour + ½ machine-hour, country table) — `
+          + `about ${Math.round(cut(c) * labourIntensity / 100)}% on this part before logistics and duty`),
+        'Re-cost the part in each candidate with the country picker or the comparison table — that prices materials, energy, tools and logistics too',
         'Offset: logistics, quality risk, IP protection, lead time, and working capital',
         'Recommend pilot batch from 2 alternative regions before full transition',
       ],

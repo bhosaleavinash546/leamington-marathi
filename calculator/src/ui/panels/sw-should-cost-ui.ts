@@ -19,7 +19,7 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor,
 } from '../../engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
 import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
@@ -702,7 +702,7 @@ function renderSWPanelHTML(): string {
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
       <div class="sw-field-group">
         <label class="sw-label">Development Region</label>
-        <select id="sw-region" class="sw-config-sel">${regionOpts}</select>
+        <select id="sw-region" class="sw-config-sel">${regionOpts}</select>${_swHubBasis ? `<div style="font-size:0.66rem;color:var(--text-muted);margin-top:3px">${esc(_swHubBasis)}</div>` : ''}
       </div>
       <div class="sw-field-group">
         <label class="sw-label">Development Source</label>
@@ -2553,8 +2553,14 @@ function updateCatCounts(): void {
  * Render the SW Should-Cost panel into containerEl, wire all events.
  * Call this from switchCommodity('automotive_software').
  */
+let _swHubBasis = '';
 export function initSWPanel(containerEl: HTMLElement): void {
   _swInputs = defaultSWProgramInputs();
+  // The engineering hub follows the selected manufacturing country (nearest hub, stated).
+  const mfg = (document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK';
+  const hub = swRegionFor(mfg);
+  _swInputs.region = hub.region;
+  _swHubBasis = hub.basis ? `${mfg}: ${hub.basis}` : '';
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();
   wireSWPanel();

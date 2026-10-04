@@ -7,6 +7,7 @@ import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { buildRateCorpus, groundingBlock } from '../../src/engine/rag-retrieval.js';
 import { executeCalculateCost, type CostToolInput } from '../services/cost-executor.js';
 import { regionOf, rateBookForRegion, regionalShopDefaults } from '../services/rate-book.js';
+import type { RateLibrary } from '../../src/engine/types.js';
 import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
 
 const router = Router();
@@ -213,10 +214,12 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
  * numbers used to be typed in and had drifted (lab-uk-skilled £24 against the
  * library's rate). Every "<id> (£N/hr" is now rewritten from the library at load.
  */
-function withLibraryRates(text: string): string {
+function withLibraryRates(text: string, book: RateLibrary = DEFAULT_RATE_LIBRARY): string {
+  // In the request's country (country audit, Oct 2026): the prompt quoted UK £/hr in
+  // every country, so the agent's narrative could cite UK rates for an India costing.
   const rate = new Map<string, number>([
-    ...DEFAULT_RATE_LIBRARY.machines.map(m => [m.id, m.computedRatePerHr] as [string, number]),
-    ...DEFAULT_RATE_LIBRARY.labour.map(l => [l.id, l.fullyLoadedRatePerHr] as [string, number]),
+    ...book.machines.map(m => [m.id, m.computedRatePerHr] as [string, number]),
+    ...book.labour.map(l => [l.id, l.fullyLoadedRatePerHr] as [string, number]),
   ]);
   return text.replace(/\b([a-z0-9]+(?:-[a-z0-9]+)+) \(£([0-9.]+)\/hr/g, (m, id: string) =>
     rate.has(id) ? `${id} (£${rate.get(id)!.toFixed(2)}/hr` : m);
@@ -239,7 +242,7 @@ When the user names a manufacturing country, pass it as \`region\` to calculate_
 machines, energy, tooling, overhead, packaging and logistics in that country. NEVER scale, discount or adjust a cost the
 tool returns for a region yourself — quote the tool's numbers. The machine and labour £/hr quoted below are the UK book.`;
 
-const SYSTEM_PROMPT = withLibraryRates(`You are the Unified Should-Cost Orchestrator AI Agent for an advanced manufacturing cost estimation platform.
+const SYSTEM_PROMPT_TEMPLATE = (`You are the Unified Should-Cost Orchestrator AI Agent for an advanced manufacturing cost estimation platform.
 
 ## Primary Objective
 Provide accurate, transparent, engineering-grade should-cost estimates for manufactured parts across all commodities using structured reasoning, geometry analysis, cost-driver extraction, and Design-for-Cost (DFM/DFC) recommendations.
@@ -932,6 +935,15 @@ When the user message contains [Cost Engine Result: ...], interpret as follows:
 
 Always be technically precise. Never invent material prices or machine rates.`);
 
+/** The system prompt with the machine and labour £/hr of the request's country, built once per country. */
+const _promptByRegion = new Map<string, string>();
+function systemPromptFor(region: string | undefined): string {
+  const r = regionOf(region);
+  let p = _promptByRegion.get(r);
+  if (!p) { p = withLibraryRates(SYSTEM_PROMPT_TEMPLATE, rateBookForRegion(r)); _promptByRegion.set(r, p); }
+  return p;
+}
+
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
 interface AgentRequest {
@@ -1023,7 +1035,7 @@ router.post('/chat', async (req, res): Promise<void> => {
           max_tokens: 8192,
           tools: [CALCULATE_COST_TOOL],
           tool_choice: { type: 'auto' },
-          system: SYSTEM_PROMPT,
+          system: systemPromptFor(region),
           messages,
         }),
         45_000,
@@ -1118,7 +1130,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
           max_tokens: 8192,
           tools: [CALCULATE_COST_TOOL],
           tool_choice: { type: 'auto' },
-          system: SYSTEM_PROMPT,
+          system: systemPromptFor(region),
           messages,
         }),
         45_000,
@@ -1170,7 +1182,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
       const stream = anthropic.messages.stream({
         model: 'claude-opus-4-8',
         max_tokens: 8192,
-        system: SYSTEM_PROMPT,
+        system: systemPromptFor(region),
         messages,
       });
 

@@ -146,6 +146,7 @@ import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
 import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor } from './country-fields.js';
 import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
 import { countryFactor } from '../engine/regional-services.js';
+import { swRegionFor } from '../engine/sw-should-cost.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -19428,6 +19429,9 @@ async function init(): Promise<void> {
     }
     populateSelects();
     syncPcbPickers(region);   // PCB photo picker + PCB fab form follow the country
+    // Software should-cost: the engineering hub follows the country (nearest hub — sw-should-cost.ts).
+    const swSel = document.getElementById('sw-region') as HTMLSelectElement | null;
+    if (swSel) swSel.value = swRegionFor(region).region;
     if (document.getElementById('home-view')?.style.display !== 'none') renderDashboard();
     // A CAD part's rule values (tools, shot blast, route, tariff) were priced in the
     // country of the analysis — re-run the rules in this one before re-costing.
