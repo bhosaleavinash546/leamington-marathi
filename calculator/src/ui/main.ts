@@ -141,6 +141,8 @@ import { currencySymbol } from '../engine/insights.js';
 import { populateRegionPickers } from './region-options.js';
 import { setActiveRates } from '../engine/rate-context.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
+import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
+import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
 import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor } from './country-fields.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
@@ -453,6 +455,13 @@ let _cadAppliedTo: CommodityType | null = null;
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
+/** The rate before the last currency change — converts a typed target price. */
+let _prevDisplayFxRate = 1.0;
+/** The target price typed (in the display currency), in £ — 0 when none. */
+function _targetPriceGbp(): number {
+  const v = parseFloat((document.getElementById('target-price') as HTMLInputElement | null)?.value ?? '');
+  return v > 0 ? v / (_displayFxRate || 1) : 0;
+}
 // Once the user picks a display currency by hand, keep it across region changes
 // (e.g. source from China but keep the headline in GBP). Until then, changing
 // region auto-follows that region's native currency as a helpful default.
@@ -1487,9 +1496,9 @@ async function renderDriftPanel(): Promise<void> {
             <div class="pi-card-title">Autonomous findings <span class="pi-card-tag">· the drift monitor opened these on its own</span></div>
           </div>
           <div style="text-align:right">
-            ${data.totalImpactGBP > 0 ? `<div style="font-size:0.82rem;font-weight:800;font-family:var(--font-mono);color:var(--danger)">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
-            ${(data.expectedRealizableGBP ?? 0) > 0 ? `<div style="font-size:0.68rem;color:var(--success);font-weight:600" title="Impact weighted by learned conversion rates">≈ £${Math.round(data.expectedRealizableGBP!).toLocaleString()}/yr realizable</div>` : ''}
-            ${(data.realizedToDateGBP ?? 0) > 0 ? `<div style="font-size:0.66rem;color:var(--text-muted)">£${Math.round(data.realizedToDateGBP!).toLocaleString()} saved to date</div>` : ''}
+            ${data.totalImpactGBP > 0 ? `<div style="font-size:0.82rem;font-weight:800;font-family:var(--font-mono);color:var(--danger)">≈ ${_moneyG(data.totalImpactGBP, 0)}/yr at stake</div>` : ''}
+            ${(data.expectedRealizableGBP ?? 0) > 0 ? `<div style="font-size:0.68rem;color:var(--success);font-weight:600" title="Impact weighted by learned conversion rates">≈ ${_moneyG(data.expectedRealizableGBP!, 0)}/yr realizable</div>` : ''}
+            ${(data.realizedToDateGBP ?? 0) > 0 ? `<div style="font-size:0.66rem;color:var(--text-muted)">${_moneyG(data.realizedToDateGBP!, 0)} saved to date</div>` : ''}
           </div>
         </div>
         <div>${rows}</div>
@@ -1517,7 +1526,7 @@ async function renderDriftPanel(): Promise<void> {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ partName: btn.dataset.part, commodity: btn.dataset.commodity, kind: btn.dataset.kind, actioned: true, realizedGBP }),
         }).catch(() => { /* offline */ });
-        showToast(`Logged — agent learned this ${btn.dataset.commodity} finding converted${realizedGBP ? ` (£${realizedGBP.toLocaleString()}/yr saved)` : ''}`, 'info');
+        showToast(`Logged — agent learned this ${btn.dataset.commodity} finding converted${realizedGBP ? ` (${_moneyG(realizedGBP, 0)}/yr saved)` : ''}`, 'info');
         void renderDriftPanel();
       });
     });
@@ -3302,6 +3311,7 @@ function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void
 // The table lives in ./material-scope.ts so the engine's grade choices can be tested against it.
 
 function populateSelects(): void {
+  syncPcbPickers(_mfgRegion);   // a newly drawn PCB form starts on the selected country's market
   const sig = _currentLibSig();
   if (sig === _libSig) {
     // Library unchanged — only populate selects that are new (no sig yet)
@@ -3318,7 +3328,9 @@ function populateSelects(): void {
   const machOpts = library.machines.map(m =>
     `<option value="${m.id}">${m.machineClass} — ${_currFmt(m.computedRatePerHr)}/hr</option>`
   ).join('');
-  const labOpts = library.labour.map(l =>
+  // Roles only, priced in the selected country (labour-roles.ts) — the old
+  // country-pinned grades duplicated every role ("Skilled Machinist (Vietnam)" ×10).
+  const labOpts = labourRoles(library).map(l =>
     `<option value="${l.id}">${l.skillLevel} (${l.region}) — ${_currFmt(l.fullyLoadedRatePerHr)}/hr</option>`
   ).join('');
 
@@ -5260,12 +5272,12 @@ function renderPCBFabForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Sourcing Region</label><select id="pcbf-region">
-        <option value="uk" selected>UK</option>
+        <option value="uk">UK</option>
         <option value="eu">EU</option>
         <option value="china">China</option>
         <option value="india">India</option>
         <option value="na">North America</option>
-      </select></div>
+      </select><span id="pcbf-region-note" style="font-size:0.66rem;color:var(--text-muted)"></span></div>
       <div class="field-group"><label>Layer Count</label><select id="pcbf-layers">
         <option value="1">1 Layer</option>
         <option value="2">2 Layers</option>
@@ -6833,15 +6845,15 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       <div style="display:flex;gap:8px;align-items:stretch">
         <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:6px">
           <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Optimistic</div>
-          <div style="font-weight:700;font-size:0.9rem;color:var(--green)">£${r.costInputSuggestions.costRange.low.toFixed(2)}</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--green)">${_currFmt(r.costInputSuggestions.costRange.low)}</div>
         </div>
         <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.25);border-radius:6px">
           <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Most Likely</div>
-          <div style="font-weight:700;font-size:0.9rem;color:var(--accent)">£${r.costInputSuggestions.costRange.mid.toFixed(2)}</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--accent)">${_currFmt(r.costInputSuggestions.costRange.mid)}</div>
         </div>
         <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:6px">
           <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Conservative</div>
-          <div style="font-weight:700;font-size:0.9rem;color:var(--red)">£${r.costInputSuggestions.costRange.high.toFixed(2)}</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--red)">${_currFmt(r.costInputSuggestions.costRange.high)}</div>
         </div>
       </div>
     </div>` : ''}
@@ -6883,9 +6895,9 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         <tr><td>Est. cycle time</td><td>${numOr(r.costInputSuggestions.estimatedCycleTimeHr, 4, ' hr/part')}${confBadge('estimatedCycleTimeHr', 'mach-cycle', 'cast-hpdc-ct')}</td></tr>
         <tr><td>Setup time</td><td>${numOr(r.costInputSuggestions.estimatedSetupTimeHr, 2, ' hr')}${confBadge('estimatedSetupTimeHr', 'mach-setup-time')}</td></tr>
         <tr><td>Operations</td><td>${(r.costInputSuggestions.estimatedOperations ?? []).map(o => escHtml(o.name)).join(', ')}</td></tr>
-        ${toolingCost > 0 ? `<tr><td>${escHtml(toolingLabel)} (OCCT est.)</td><td>£${toolingCost.toLocaleString('en-GB', { maximumFractionDigits: 0 })}</td></tr>
-        <tr><td>Tooling/part @ ${annualVolume.toLocaleString()} pcs</td><td style="color:var(--accent)"><strong>£${toolingPerPart.toFixed(3)}</strong></td></tr>` : ''}
-        ${totalMidWithTooling !== null && toolingCost > 0 ? `<tr style="border-top:1px solid var(--border)"><td><strong>Est. total/part (incl. tooling)</strong></td><td><strong style="color:var(--accent)">£${totalMidWithTooling.toFixed(2)}</strong></td></tr>` : ''}
+        ${toolingCost > 0 ? `<tr><td>${escHtml(toolingLabel)} (OCCT est.)</td><td>${_moneyG(toolingCost, 0)}</td></tr>
+        <tr><td>Tooling/part @ ${annualVolume.toLocaleString()} pcs</td><td style="color:var(--accent)"><strong>${_moneyG(toolingPerPart, 3)}</strong></td></tr>` : ''}
+        ${totalMidWithTooling !== null && toolingCost > 0 ? `<tr style="border-top:1px solid var(--border)"><td><strong>Est. total/part (incl. tooling)</strong></td><td><strong style="color:var(--accent)">${_currFmt(totalMidWithTooling)}</strong></td></tr>` : ''}
       </table>
     </div>`;
     })()}
@@ -7512,8 +7524,8 @@ function buildPCBDemoSection(): string {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
             <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>14</strong></div>
             <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£48.50</strong></div>
-            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">£${ecuCN.totalPerBoard.toFixed(2)}</strong></div>
-            <div><span style="color:var(--text-muted)">UK total:</span> <strong>£${(PCB_DEMO_ECU._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0).toFixed(2)}</strong></div>
+            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">${_moneyG(ecuCN.totalPerBoard, 2)}</strong></div>
+            <div><span style="color:var(--text-muted)">UK total:</span> <strong>${_moneyG(PCB_DEMO_ECU._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0, 2)}</strong></div>
           </div>
           <div style="margin-top:8px;text-align:center">
             <span style="font-size:0.68rem;color:var(--accent);font-weight:600">▶ Try this demo</span>
@@ -7531,8 +7543,8 @@ function buildPCBDemoSection(): string {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
             <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>14</strong></div>
             <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£62.30</strong></div>
-            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">£${adasCN.totalPerBoard.toFixed(2)}</strong></div>
-            <div><span style="color:var(--text-muted)">UK total:</span> <strong>£${(PCB_DEMO_ADAS._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0).toFixed(2)}</strong></div>
+            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">${_moneyG(adasCN.totalPerBoard, 2)}</strong></div>
+            <div><span style="color:var(--text-muted)">UK total:</span> <strong>${_moneyG(PCB_DEMO_ADAS._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0, 2)}</strong></div>
           </div>
           <div style="margin-top:8px;text-align:center">
             <span style="font-size:0.68rem;color:#7c3aed;font-weight:600">▶ Try this demo</span>
@@ -7550,8 +7562,8 @@ function buildPCBDemoSection(): string {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
             <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>16</strong></div>
             <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£79.44</strong></div>
-            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">£${radarCN.totalPerBoard.toFixed(2)}</strong></div>
-            <div><span style="color:var(--text-muted)">UK total:</span> <strong>£${(PCB_DEMO_BOSCH_RADAR._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0).toFixed(2)}</strong></div>
+            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">${_moneyG(radarCN.totalPerBoard, 2)}</strong></div>
+            <div><span style="color:var(--text-muted)">UK total:</span> <strong>${_moneyG(PCB_DEMO_BOSCH_RADAR._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0, 2)}</strong></div>
           </div>
           <div style="margin-top:8px;text-align:center">
             <span style="font-size:0.68rem;color:#dc2626;font-weight:600">▶ Try this demo</span>
@@ -7579,7 +7591,7 @@ function buildPCBImageUploadZone(): string {
           <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);white-space:nowrap">Manufacturing Country:</label>
           <select id="pcb-mfg-country" style="font-size:0.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
             <optgroup label="Asia — Low Cost">
-              <option value="cn" selected>China (Shenzhen) — Default</option>
+              <option value="cn">China (Shenzhen)</option>
               <option value="vn">Vietnam (Ho Chi Minh City)</option>
               <option value="in">India (Pune / Bengaluru)</option>
             </optgroup>
@@ -7605,6 +7617,7 @@ function buildPCBImageUploadZone(): string {
               <option value="jp">Japan (Nagano) — Ultra-precision</option>
             </optgroup>
           </select>
+          <span id="pcb-market-note" style="flex-basis:100%;font-size:0.66rem;color:var(--text-muted);text-align:center">${escHtml(pcbMarketNote(_mfgRegion))}</span>
           <input type="number" id="pcb-order-qty" value="10000" min="1" step="1000"
             style="width:80px;font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"
             title="Annual production volume — boards per year. Drives component price breaks, setup and freight. Not the teardown sample quantity."/>
@@ -8801,7 +8814,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           <li style="margin:3px 0;line-height:1.45">
             <span style="font-family:var(--font-mono);font-weight:700;background:rgba(220,38,38,0.12);color:#dc2626;padding:0 5px;border-radius:4px">${b.refDes || '?'}</span>
             <span style="color:var(--text-primary)">${b.description || b.componentType || 'component'}</span>
-            <span style="color:var(--text-muted)">${b.pkg ? `· ${b.pkg}` : ''}${b.lineTotalGBP ? ` · est. £${b.lineTotalGBP.toFixed(2)}/board` : ''}</span>
+            <span style="color:var(--text-muted)">${b.pkg ? `· ${b.pkg}` : ''}${b.lineTotalGBP ? ` · est. ${_moneyG(b.lineTotalGBP, 2)}/board` : ''}</span>
           </li>`).join('');
         return `<div id="pcb-recapture-panel" style="margin-top:8px;padding:11px 13px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.3);border-left:3px solid #dc2626;border-radius:8px">
           <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">Improve accuracy — ${uc.length} component${uc.length > 1 ? 's' : ''} need${uc.length > 1 ? '' : 's'} a close-up</div>
@@ -8926,7 +8939,7 @@ function drawVolumeCurveChart(r: PCBImageAnalysis): void {
       maintainAspectRatio: false,
       plugins: {
         legend: { labels: { boxWidth: 12, font: { size: 11 } } },
-        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: £${Number(ctx.parsed.y).toFixed(2)}/board` } },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${_moneyG(Number(ctx.parsed.y), 2)}/board` } },
       },
       scales: {
         x: { title: { display: true, text: 'Order quantity', font: { size: 10 } } },
@@ -9063,7 +9076,7 @@ function wireScenarioBuilder(r: PCBImageAnalysis): void {
       const totalRun = delta * qty;
       const sign = delta >= 0 ? '+' : '−';
       const colour = delta > 0 ? '#ef4444' : delta < 0 ? '#16a34a' : 'var(--text-muted)';
-      resultEl.innerHTML = `New total: <strong style="color:var(--accent)">£${nt.toFixed(2)}/board</strong> · Delta vs baseline (£${baseTotal.toFixed(2)}): <strong style="color:${colour}">${sign}£${Math.abs(delta).toFixed(2)} (${sign}${Math.abs(pct).toFixed(1)}%)</strong>. At ${qty.toLocaleString()} units, that is ${sign}£${Math.abs(totalRun).toLocaleString(undefined, { maximumFractionDigits: 0 })} total.`;
+      resultEl.innerHTML = `New total: <strong style="color:var(--accent)">${_moneyG(nt, 2)}/board</strong> · Delta vs baseline (${_moneyG(baseTotal, 2)}): <strong style="color:${colour}">${sign}${_moneyG(Math.abs(delta), 2)} (${sign}${Math.abs(pct).toFixed(1)}%)</strong>. At ${qty.toLocaleString()} units, that is ${sign}${_moneyG(Math.abs(totalRun), 0)} total.`;
     } catch (err) {
       resultEl.textContent = `⚠ Scenario error: ${(err instanceof Error ? err.message : String(err)).slice(0, 100)}`;
     }
@@ -9108,7 +9121,7 @@ function buildRFQTrackerSection(r: PCBImageAnalysis): string {
         </label>
         <button class="btn btn-primary btn-sm" id="pcb-rfq-log-btn" style="font-size:0.68rem">Log Quote</button>
       </div>
-      <div style="margin-top:4px;font-size:0.66rem;color:var(--text-muted)">Estimated baseline: ${countryName} £${estimated.toFixed(2)}/board</div>
+      <div style="margin-top:4px;font-size:0.66rem;color:var(--text-muted)">Estimated baseline: ${countryName} ${_moneyG(estimated, 2)}/board</div>
       <div id="pcb-rfq-table-wrap" style="margin-top:8px"></div>
     </details>`;
 }
@@ -9124,8 +9137,8 @@ function renderRFQTable(): void {
       <td style="white-space:nowrap">${new Date(e.date).toLocaleDateString()}</td>
       <td>${escHtml(e.emsName)}</td>
       <td>${escHtml(e.country)}</td>
-      <td>£${e.quotedTotalPerBoard.toFixed(2)}</td>
-      <td>£${e.estimatedTotalPerBoard.toFixed(2)}</td>
+      <td>${_moneyG(e.quotedTotalPerBoard, 2)}</td>
+      <td>${_moneyG(e.estimatedTotalPerBoard, 2)}</td>
       <td style="color:${colour};font-weight:700">${sign}${e.variancePct.toFixed(1)}%</td>
       <td style="max-width:200px;white-space:normal">${escHtml(e.notes)}</td>
     </tr>`;
@@ -9821,7 +9834,7 @@ function savePCBResultToLibrary(): void {
     },
   });
   savePartsLibrary(existing);
-  showToast(`Saved "${r.partName}" to Parts Library (£${total.toFixed(2)}/board)`, 'info');
+  showToast(`Saved "${r.partName}" to Parts Library (${_moneyG(total, 2)}/board)`, 'info');
 }
 
 /**
@@ -10777,8 +10790,9 @@ function resolveMachineIdForOp(rawId: string | undefined, opName: string): strin
 
 /** Same guarantee for labourId — unknown ids fall back to the skilled rate. */
 function resolveLabourId(rawId: string | undefined): string {
-  const ids = library.labour.map(l => l.id);
-  if (rawId && ids.includes(rawId)) return rawId;
+  const ids = labourRoles(library).map(l => l.id);
+  // An old country-pinned grade (lab-cn-skilled) is its role in the selected country.
+  if (rawId && ids.includes(labourRoleId(rawId))) return labourRoleId(rawId);
   return ids.find(id => id.endsWith('-skilled')) ?? ids[0] ?? '';
 }
 
@@ -10830,7 +10844,7 @@ function selMachineHealed(selectId: string, opName: string): string {
 function selLabourHealed(selectId: string): string {
   const s = el<HTMLSelectElement>(selectId);
   if (!s) return '';
-  if (s.value && library.labour.some(l => l.id === s.value)) return s.value;
+  if (s.value && labourRoles(library).some(l => l.id === s.value)) return s.value;
   const healed = resolveLabourId(s.value || undefined);
   if (healed) { s.value = healed; _notifyRateHeal('labour', selectId, healed); }
   return healed;
@@ -11619,7 +11633,7 @@ function switchCommodity(type: CommodityType): void {
         const blankMachEl = el<HTMLSelectElement>('smf-blank-mach');
         if (blankMachEl) {
           const blankMachs = library.machines.filter(m => blankMachIds.has(m.id));
-          blankMachEl.innerHTML = blankMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+          blankMachEl.innerHTML = blankMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('');
         }
         // ── Brake machine — filter to press brake machines ────────────────────
         const brakeMachIds = new Set([
@@ -11629,25 +11643,25 @@ function switchCommodity(type: CommodityType): void {
         const brakeMachEl = el<HTMLSelectElement>('smf-brake-mach');
         if (brakeMachEl) {
           const brakeMachs = library.machines.filter(m => brakeMachIds.has(m.id));
-          brakeMachEl.innerHTML = brakeMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+          brakeMachEl.innerHTML = brakeMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('');
         }
         // ── Spot weld machine — pedestal + robotic ────────────────────────────
         const swMachEl = el<HTMLSelectElement>('smf-sw-mach');
         if (swMachEl) {
           const swMachs = library.machines.filter(m => ['spotweld-gun-manual','robot-spotweld-kuka'].includes(m.id));
-          swMachEl.innerHTML = `<option value="">None</option>${swMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('')}`;
+          swMachEl.innerHTML = `<option value="">None</option>${swMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('')}`;
         }
         // ── MIG machine — manual station + robotic cell ───────────────────────
         const migMachEl = el<HTMLSelectElement>('smf-mig-mach');
         if (migMachEl) {
           const migMachs = library.machines.filter(m => ['mig-welder-manual','robot-mig-cell'].includes(m.id));
-          migMachEl.innerHTML = `<option value="">None</option>${migMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('')}`;
+          migMachEl.innerHTML = `<option value="">None</option>${migMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('')}`;
         }
         // ── TIG machine ───────────────────────────────────────────────────────
         const tigMachEl = el<HTMLSelectElement>('smf-tig-mach');
         if (tigMachEl) {
           const tigM = library.machines.find(m => m.id === 'tig-welder-manual');
-          tigMachEl.innerHTML = `<option value="">None</option>${tigM ? `<option value="${tigM.id}">${escHtml(tigM.machineClass)} — £${tigM.computedRatePerHr.toFixed(2)}/hr</option>` : ''}`;
+          tigMachEl.innerHTML = `<option value="">None</option>${tigM ? `<option value="${tigM.id}">${escHtml(tigM.machineClass)} — ${_currFmt(tigM.computedRatePerHr)}/hr</option>` : ''}`;
         }
         // ── Labour defaults ───────────────────────────────────────────────────
         for (const id of ['smf-blank-lab', 'smf-brake-lab']) {
@@ -11824,13 +11838,13 @@ function switchCommodity(type: CommodityType): void {
         const machEl = el<HTMLSelectElement>('bm-mach');
         if (machEl) {
           const bmMachs = library.machines.filter(m => bmMachIds.has(m.id));
-          machEl.innerHTML = bmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+          machEl.innerHTML = bmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('');
         }
         // Deflash machine select — only the deflash trimmer
         const deflashEl = el<HTMLSelectElement>('bm-deflash-mach');
         if (deflashEl) {
           const deflashMach = library.machines.find(m => m.id === 'blow-deflash-trimmer');
-          deflashEl.innerHTML = `<option value="">None</option>${deflashMach ? `<option value="${deflashMach.id}">${escHtml(deflashMach.machineClass)} — £${deflashMach.computedRatePerHr.toFixed(2)}/hr</option>` : ''}`;
+          deflashEl.innerHTML = `<option value="">None</option>${deflashMach ? `<option value="${deflashMach.id}">${escHtml(deflashMach.machineClass)} — ${_currFmt(deflashMach.computedRatePerHr)}/hr</option>` : ''}`;
         }
         // Labour default to semiskilled
         const labEl = el<HTMLSelectElement>('bm-lab');
@@ -11907,7 +11921,7 @@ function switchCommodity(type: CommodityType): void {
         const rmMachEl = el<HTMLSelectElement>('rm-mach');
         if (rmMachEl) {
           const rmMachs = library.machines.filter(m => m.id.startsWith('rotomould'));
-          if (rmMachs.length) rmMachEl.innerHTML = rmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+          if (rmMachs.length) rmMachEl.innerHTML = rmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('');
           if (Array.from(rmMachEl.options).some(o => o.value === 'rotomould-biaxial')) rmMachEl.value = 'rotomould-biaxial';
         }
         // Scoped to roto powders (src/engine/material-scope.ts) — no pellet fallback.
@@ -11932,14 +11946,14 @@ function switchCommodity(type: CommodityType): void {
         if (machEl) {
           const rubberMachs = library.machines.filter(m => rubberMachIds.has(m.id));
           machEl.innerHTML = rubberMachs.map(m =>
-            `<option value="${m.id}">${m.machineClass} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`
+            `<option value="${m.id}">${m.machineClass} — ${_currFmt(m.computedRatePerHr)}/hr</option>`
           ).join('');
         }
         // Filter cure oven select to only the rubber cure oven
         const cureMachEl = el<HTMLSelectElement>('rub-cure-mach');
         if (cureMachEl) {
           const cureOven = library.machines.find(m => m.id === 'cure-oven-rubber');
-          cureMachEl.innerHTML = `<option value="">— none —</option>${cureOven ? `<option value="${cureOven.id}">${cureOven.machineClass} — £${cureOven.computedRatePerHr.toFixed(2)}/hr</option>` : ''}`;
+          cureMachEl.innerHTML = `<option value="">— none —</option>${cureOven ? `<option value="${cureOven.id}">${cureOven.machineClass} — ${_currFmt(cureOven.computedRatePerHr)}/hr</option>` : ''}`;
         }
         // Labour — default semi-skilled operator
         const labEl = el<HTMLSelectElement>('rub-lab');
@@ -14889,7 +14903,7 @@ function exportCostCard(): void {
   const r = lastResult;
   const pcts = breakdownPercentages(r);
   const commodity = activeCommodity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  const targetPrice = parseFloat((document.getElementById('target-price') as HTMLInputElement)?.value) || 0;
+  const targetPrice = _targetPriceGbp();   // typed in the display currency, compared in £
   const gap = targetPrice > 0 ? r.total - targetPrice : null;
   const gapPct = gap !== null && targetPrice > 0 ? (gap / targetPrice) * 100 : null;
   const ragColor = gap === null ? '#3b82f6' : Math.abs(gapPct!) <= 5 ? '#10b981' : gap > 0 ? '#e63b3b' : '#f59e0b';
@@ -15440,8 +15454,7 @@ function renderBreakdown(result: PartCostResult): void {
     </div>` : '';
 
   // Target Price RAG banner
-  const _tpEl = document.getElementById('target-price') as HTMLInputElement | null;
-  const _tp = parseFloat(_tpEl?.value ?? '');
+  const _tp = _targetPriceGbp();   // typed in the display currency, compared in £
   let targetBannerHtml = '';
   if (!isNaN(_tp) && _tp > 0) {
     const _gap = result.total - _tp;
@@ -19041,6 +19054,13 @@ function renderSavedAssemblies(): void {
 
 // ─── Rate Library Editor ──────────────────────────────────────────────────────
 
+/** Rate-library cells that are money (shown in the display currency, stored in £). */
+const MONEY_RATE_FIELDS = new Set(['pricePerKg', 'scrapRecoveryPricePerKg', 'annualDepreciation', 'maintenance', 'energy', 'fullyLoadedRatePerHr']);
+/** A £ value in the display currency, for an editable cell. */
+function _inCur(gbp: number, dp = 4): number {
+  return Math.round(gbp * (_displayFxRate || 1) * 10 ** dp) / 10 ** dp;
+}
+
 function openRateLibrary(): void {
   el('rate-modal').style.display = 'flex';
   renderRateLibraryTable();
@@ -19055,20 +19075,20 @@ function renderRateLibraryTable(): void {
       <thead><tr><th>ID</th><th>Grade</th><th>${_displayCurrency}/kg</th><th>Scrap ${_displayCurrency}/kg</th><th>Region</th><th>Conf.</th></tr></thead>
       <tbody>${library.materials.map(m => `<tr>
         <td style="font-family:monospace">${m.id}</td><td>${m.grade}</td>
-        <td><input type="number" step="0.01" value="${m.pricePerKg}" data-update="material.${m.id}.pricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="0.01" value="${m.scrapRecoveryPricePerKg}" data-update="material.${m.id}.scrapRecoveryPricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td><input type="number" step="0.01" value="${_inCur(m.pricePerKg)}" data-update="material.${m.id}.pricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td><input type="number" step="0.01" value="${_inCur(m.scrapRecoveryPricePerKg)}" data-update="material.${m.id}.scrapRecoveryPricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
         <td>${m.region}</td><td><span class="badge ${m.confidence}">${m.confidence}</span></td>
       </tr>`).join('')}</tbody>
     </table>
     <div class="panel-title" style="margin-bottom:8px">Machine Rates</div>
     <table class="breakdown-table" style="margin-bottom:16px;font-size:0.76rem">
-      <thead><tr><th>ID</th><th>Class</th><th>Rate (${_displayCurrency}/hr)</th><th>Deprec.</th><th>Maint.</th><th>Energy</th><th>Hrs/yr</th><th>Util.</th></tr></thead>
+      <thead><tr><th>ID</th><th>Class</th><th>Rate (${_displayCurrency}/hr)</th><th>Deprec. (${_displayCurrency}/yr)</th><th>Maint. (${_displayCurrency}/yr)</th><th>Energy (${_displayCurrency}/yr)</th><th>Hrs/yr</th><th>Util.</th></tr></thead>
       <tbody>${library.machines.map(m => `<tr>
         <td style="font-family:monospace">${m.id}</td><td>${m.machineClass}</td>
         <td style="font-weight:700">${_currFmt(m.computedRatePerHr)}</td>
-        <td><input type="number" step="100" value="${m.buildup.annualDepreciation}" data-update="machine.${m.id}.annualDepreciation" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="100" value="${m.buildup.maintenance}" data-update="machine.${m.id}.maintenance" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
-        <td><input type="number" step="100" value="${m.buildup.energy}" data-update="machine.${m.id}.energy" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td><input type="number" step="100" value="${_inCur(m.buildup.annualDepreciation, 0)}" data-update="machine.${m.id}.annualDepreciation" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td><input type="number" step="100" value="${_inCur(m.buildup.maintenance, 0)}" data-update="machine.${m.id}.maintenance" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td><input type="number" step="100" value="${_inCur(m.buildup.energy, 0)}" data-update="machine.${m.id}.energy" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
         <td><input type="number" step="100" value="${m.buildup.annualAvailableHours}" data-update="machine.${m.id}.annualAvailableHours" style="width:55px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
         <td><input type="number" step="0.01" max="1" value="${m.buildup.machineUtilization}" data-update="machine.${m.id}.machineUtilization" style="width:50px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
       </tr>`).join('')}</tbody>
@@ -19076,9 +19096,9 @@ function renderRateLibraryTable(): void {
     <div class="panel-title" style="margin-bottom:8px">Labour Rates</div>
     <table class="breakdown-table" style="font-size:0.76rem">
       <thead><tr><th>ID</th><th>Region</th><th>Skill</th><th>${_displayCurrency}/hr</th><th>Conf.</th></tr></thead>
-      <tbody>${library.labour.map(l => `<tr>
+      <tbody>${labourRoles(library).map(l => `<tr>
         <td style="font-family:monospace">${l.id}</td><td>${l.region}</td><td>${l.skillLevel}</td>
-        <td><input type="number" step="0.5" value="${l.fullyLoadedRatePerHr}" data-update="labour.${l.id}.fullyLoadedRatePerHr" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
+        <td><input type="number" step="0.5" value="${_inCur(l.fullyLoadedRatePerHr)}" data-update="labour.${l.id}.fullyLoadedRatePerHr" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
         <td><span class="badge ${l.confidence}">${l.confidence}</span></td>
       </tr>`).join('')}</tbody>
     </table>`;
@@ -19169,8 +19189,11 @@ async function renderCompanyRateAdmin(): Promise<void> {
 function applyRateLibraryEdits(): void {
   el('rate-library-content').querySelectorAll<HTMLInputElement>('input[data-update]').forEach(input => {
     const [type, id, field] = input.dataset.update!.split('.');
-    const value = parseFloat(input.value);
-    if (isNaN(value)) return;
+    const typed = parseFloat(input.value);
+    if (isNaN(typed)) return;
+    // The table shows money in the display currency (renderRateLibraryTable) —
+    // store it in £. Hours and utilisation are not money.
+    const value = MONEY_RATE_FIELDS.has(field) ? typed / (_displayFxRate || 1) : typed;
     if (type === 'material') {
       const m = library.materials.find(x => x.id === id);
       if (m) (m as unknown as Record<string, unknown>)[field] = value;
@@ -19307,15 +19330,26 @@ async function init(): Promise<void> {
 
   // Currency selector
   const _applyCurrency = (cur: string) => {
+    _prevDisplayFxRate = _displayFxRate;
     _displayCurrency = cur;
     _displayFxRate = FX_TO_GBP[cur] !== undefined ? 1 / FX_TO_GBP[cur] : 1;
     const sym = CURRENCY_SYMBOL[cur] ?? cur;
+    // Form inputs hold £ (the engine's currency); only results are converted. The
+    // packaging / logistics labels used to switch to the display symbol over a £
+    // value — "Packaging (¥/part)" over £0.105.
     const pkgLabel = document.getElementById('lbl-packaging');
     const logLabel = document.getElementById('lbl-logistics');
-    if (pkgLabel) pkgLabel.textContent = `Packaging (${sym}/part)`;
-    if (logLabel) logLabel.textContent = `Logistics (${sym}/part)`;
+    if (pkgLabel) pkgLabel.textContent = 'Packaging (£/part)';
+    if (logLabel) logLabel.textContent = 'Logistics (£/part)';
+    // The target price IS typed in the display currency (its label says so): keep
+    // the figure the same money when the currency changes, and convert it to £
+    // wherever it is compared with a cost (_targetPriceGbp).
     const tpSym = document.getElementById('target-price-sym');
     if (tpSym) tpSym.textContent = sym;
+    const tpEl = document.getElementById('target-price') as HTMLInputElement | null;
+    const tpVal = parseFloat(tpEl?.value ?? '');
+    if (tpEl && tpVal > 0 && _prevDisplayFxRate > 0) tpEl.value = String(Math.round(tpVal / _prevDisplayFxRate * _displayFxRate * 100) / 100);
+    _prevDisplayFxRate = _displayFxRate;
     // Update smart filter cost-range labels (thresholds remain in GBP; labels show display-currency equivalent)
     const costRangeEl = el<HTMLSelectElement>('filter-cost-range');
     if (costRangeEl) {
@@ -19382,6 +19416,7 @@ async function init(): Promise<void> {
       infoEl.textContent = `${rd.name} · ${sym} ${cur} · ${region} labour, machine, material, energy & toolroom rates active (labour ${labDelta >= 0 ? '+' : ''}${labDelta.toFixed(0)}% vs UK)`;
     }
     populateSelects();
+    syncPcbPickers(region);   // PCB photo picker + PCB fab form follow the country
     if (document.getElementById('home-view')?.style.display !== 'none') renderDashboard();
     // A CAD part's rule values (tools, shot blast, route, tariff) were priced in the
     // country of the analysis — re-run the rules in this one before re-costing.

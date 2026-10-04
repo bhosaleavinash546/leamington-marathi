@@ -1,3 +1,4 @@
+import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/regional-rates.js';
 /**
  * PCB Manufacturing Country Rates Database — 2026 Edition
  *
@@ -889,6 +890,18 @@ for (const id of Object.keys(PCB_COUNTRY_RATES)) {
   if (ENERGY_PACKAGING[id]) {
     rate.energyCostPerKWh = ENERGY_PACKAGING[id].kwh;
     rate.packagingCostPerBoard = ENERGY_PACKAGING[id].pack;
+  }
+  // ONE country table (country-rates review, Oct 2026). This table's EMS PRICES
+  // (fab £/dm², placement, joint and test prices) are its own market data, but
+  // the country's electricity tariff, exchange rate and operator labour rate are
+  // the same facts the rest of the tool costs on — they come from REGIONAL_DATA.
+  // They used to be typed separately and disagreed: UK electronics labour £29.59
+  // here against £17.63 there, Taiwan power £0.086 against £0.161.
+  const rd = REGIONAL_DATA[(id === 'gb' ? 'UK' : id.toUpperCase()) as ManufacturingRegion];
+  if (rd) {
+    rate.energyCostPerKWh = rd.energy.electricityPerKwh;
+    rate.fxToGBP = rd.fxToGBP;
+    rate.assembly.labourRatePerHr = rd.labour.electronics;
   }
 }
 

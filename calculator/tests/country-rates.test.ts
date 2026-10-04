@@ -237,3 +237,83 @@ describe('7. India re-check (Oct 2026): every rate line of every real part is In
     expect('trace' in india).toBe(false);
   });
 });
+
+describe('8. root cause: ONE country source for every country (Oct 2026, third pass)', () => {
+  const ALL = Object.keys(REGIONAL_DATA) as ManufacturingRegion[];
+  it('every country: labour is one entry per role, priced in that country — no duplicates, no other country', async () => {
+    const { labourRoles, labourRoleId, isCountryPinnedLabour } = await import('../src/engine/labour-roles.js');
+    for (const c of ALL) {
+      const book = c === 'UK' ? UK : buildRegionalLibrary(UK, c);
+      const roles = labourRoles(book);
+      const names = roles.map(l => l.skillLevel);
+      expect(new Set(names).size, `${c} duplicate roles`).toBe(names.length);
+      for (const l of roles) expect(l.region, `${c} ${l.id}`).toBe(REGIONAL_DATA[c].name === 'United Kingdom' && c === 'UK' ? l.region : REGIONAL_DATA[c].name);
+    }
+    expect(isCountryPinnedLabour('lab-cn-skilled')).toBe(true);
+    expect(isCountryPinnedLabour('lab-uk-trim-router')).toBe(false);
+    expect(labourRoleId('lab-de-foundry')).toBe('lab-uk-foundry');
+  });
+  it('every country\'s data is internally consistent (labour order, gas below power, machine cost vs labour cost)', () => {
+    for (const c of ALL) {
+      const r = REGIONAL_DATA[c], L = r.labour, ratio = L.semiskilled / REGIONAL_DATA.UK.labour.semiskilled;
+      expect(L.engineer > L.skilled && L.skilled > L.semiskilled, `${c} labour order`).toBe(true);
+      expect(r.energy.gasPerKwh, `${c} gas`).toBeLessThan(r.energy.electricityPerKwh);
+      expect(ratio < 0.6 && r.machineRateMultiplier >= 0.95, `${c} machine vs labour`).toBe(false);
+      expect(ratio > 0.9 && r.machineRateMultiplier < 0.7, `${c} machine vs labour (Singapore carried Thailand's 0.58)`).toBe(false);
+    }
+  });
+  it('the PCB country table takes power, FX and operator labour from the main table (they disagreed)', async () => {
+    const { PCB_COUNTRY_RATES } = await import('../server/data/pcb-country-rates.js');
+    for (const [id, p] of Object.entries(PCB_COUNTRY_RATES)) {
+      const rd = REGIONAL_DATA[(id === 'gb' ? 'UK' : id.toUpperCase()) as ManufacturingRegion];
+      expect(rd, id).toBeDefined();
+      expect(p.energyCostPerKWh, id).toBe(rd.energy.electricityPerKwh);
+      expect(p.fxToGBP, id).toBe(rd.fxToGBP);
+      expect(p.assembly.labourRatePerHr, id).toBe(rd.labour.electronics);
+    }
+  });
+  it('every country maps to a PCB market — its own where the data exists, else the nearest, stated', async () => {
+    const { pcbMarketFor, pcbFabRegionFor } = await import('../src/engine/pcb-market.js');
+    const { PCB_COUNTRY_RATES } = await import('../server/data/pcb-country-rates.js');
+    for (const c of ALL) {
+      const m = pcbMarketFor(c);
+      expect(PCB_COUNTRY_RATES[m.id], `${c} → ${m.id}`).toBeDefined();
+      if (!m.own) expect(m.basis, c).toBeTruthy();
+      expect(['uk', 'eu', 'china', 'india', 'na']).toContain(pcbFabRegionFor(c).region);
+    }
+    expect(Object.keys(PCB_COUNTRY_RATES).every(id => ALL.some(c => pcbMarketFor(c).id === id && pcbMarketFor(c).own))).toBe(true);
+  });
+  it('the screen: money inputs hold £ or say what they hold; rates are shown in the display currency', () => {
+    const main = readFileSync('src/ui/main.ts', 'utf8');
+    expect(main).not.toMatch(/£\$\{\w+\.computedRatePerHr\.toFixed/);               // machine drop-downs in display currency
+    expect(main).not.toMatch(/Packaging \(\$\{sym\}\/part\)/);                        // the £ input is labelled £
+    expect(main).toContain('_targetPriceGbp()');                                       // a ¥ target is compared in £
+    expect(main).toMatch(/value="\$\{_inCur\(m\.pricePerKg\)\}"/);                     // rate table in the display currency…
+    expect(main).toContain('typed / (_displayFxRate || 1)');                          // …and saved back in £
+    expect(main).toContain('labourRoles(library).map');                               // labour drop-down: roles only
+    expect(main).toContain('syncPcbPickers(region)');                                 // PCB pickers follow the country
+  });
+  it('the line audit, every country: all machine, labour, material and energy lines are that country\'s', async () => {
+    const baseline = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as
+      { part: string; answers: Record<string, string>; geometry: never; outcome: { commodity?: string } }[];
+    const bad: string[] = [];
+    for (const c of ALL.filter(x => x !== 'UK')) {
+      const book = buildRegionalLibrary(UK, c);
+      for (const p of baseline) {
+        const r = await costMeasuredPart(p.geometry, p.part, { partNumber: p.part, file: p.part, annualVolume: 50_000,
+          ...(p.outcome.commodity ? { commodity: p.outcome.commodity } : {}) },
+        p.answers, c, { annualVolume: 50_000 }, UK, { partNumber: p.part, file: p.part, status: 'error' });
+        if (r.status !== 'costed') continue;
+        for (const o of r.trace!.operations) {
+          if (Math.abs(o.machineRateUsed - book.machines.find(x => x.id === o.machineId)!.computedRatePerHr) > 1e-6) bad.push(`${c} ${p.part} machine`);
+          if (Math.abs(o.labourRateUsed - book.labour.find(x => x.id === o.labourId)!.fullyLoadedRatePerHr) > 1e-6) bad.push(`${c} ${p.part} labour`);
+        }
+        for (const t of r.trace!.traceability) {
+          if (t.field === 'material.pricePerKg' && Math.abs(t.value - book.materials.find(m => m.id === t.rateId)!.pricePerKg) > 1e-6) bad.push(`${c} ${p.part} material`);
+          if (t.field.startsWith('rawMaterial.energyKwh') && t.rateId !== `energy-${c.toLowerCase()}`) bad.push(`${c} ${p.part} energy`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  }, 600_000);
+});

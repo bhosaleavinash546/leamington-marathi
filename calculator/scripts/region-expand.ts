@@ -73,6 +73,8 @@ const entries: string[] = [], names: string[] = [], surf: string[] = [], billet:
 for (const c of countries) {
   const an = REGIONAL_DATA[c.analogue as keyof typeof REGIONAL_DATA] as RD;
   if (!an) throw new Error(`${c.code}: analogue ${c.analogue} is not a region`);
+  // Multipliers from a better-matched country where the labour analogue's would contradict the country (Singapore).
+  const mx = REGIONAL_DATA[(c.multipliersFrom ?? c.analogue) as keyof typeof REGIONAL_DATA] as RD;
   const k = labourRatio(c);
   const lab = Object.fromEntries(Object.entries(an.labour).map(([g, v]) => [g, r2((v as number) * k)]));
   const elec = r3(energyGbp(c.electricity.value, c.electricity.unit));
@@ -85,19 +87,19 @@ for (const c of countries) {
     `  // ${c.name}: labour = ${c.analogue} × ${k.toFixed(4)} (${shown(l.value, l.valueCcy)} ÷ ${shown(l.analogueValue, l.analogueCcy)}, ${l.measure}); `
       + `electricity ${c.electricity.value} ${c.electricity.unit} (${c.electricity.source}); `
       + (c.gas.heldFrom ? `gas held from ${c.gas.heldFrom} (not sourced); ` : `gas ${c.gas.value} ${c.gas.unit} (${c.gas.source}${c.gas.note ? ', ' + c.gas.note : ''}); `)
-      + `multipliers held from ${c.analogue} (estimate). scripts/rate-refresh/2026-10-countries.json`,
+      + `multipliers held from ${c.multipliersFrom ?? c.analogue} (estimate). scripts/rate-refresh/2026-10-countries.json`,
     `  ${c.code}: {`,
     `    name: '${c.name}',`,
     `    currency: '${c.currency}',`,
     `    fxToGBP: ${sig4(fx(c.currency))},`,
     `    labour: { ${Object.entries(lab).map(([g, v]) => `${g}: ${(v as number).toFixed(2)}`).join(', ')} },`,
     `    energy: { electricityPerKwh: ${elec}, gasPerKwh: ${gas} },`,
-    `    materialFactors: { commodityResin: ${an.materialFactors.commodityResin.toFixed(3)}, engineeringResin: ${an.materialFactors.engineeringResin.toFixed(2)}, highPerfResin: ${an.materialFactors.highPerfResin.toFixed(3)} },`,
-    `    materialMultiplier: ${an.materialMultiplier},`,
-    `    machineRateMultiplier: ${an.machineRateMultiplier},`,
-    `    overheadMultiplier: ${an.overheadMultiplier},`,
-    `    packagingMultiplier: ${an.packagingMultiplier},`,
-    `    logisticsMultiplier: ${an.logisticsMultiplier},`,
+    `    materialFactors: { commodityResin: ${mx.materialFactors.commodityResin.toFixed(3)}, engineeringResin: ${mx.materialFactors.engineeringResin.toFixed(2)}, highPerfResin: ${mx.materialFactors.highPerfResin.toFixed(3)} },`,
+    `    materialMultiplier: ${mx.materialMultiplier},`,
+    `    machineRateMultiplier: ${mx.machineRateMultiplier},`,
+    `    overheadMultiplier: ${mx.overheadMultiplier},`,
+    `    packagingMultiplier: ${mx.packagingMultiplier},`,
+    `    logisticsMultiplier: ${mx.logisticsMultiplier},`,
     `  },`,
   ];
   entries.push(lines.join('\n'));

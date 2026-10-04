@@ -62,9 +62,10 @@ describe('2. the arithmetic is the config\'s, and nothing else', () => {
       expect(REGIONAL_DATA[c.code as ManufacturingRegion].energy.electricityPerKwh, c.code).toBeCloseTo(gbp, 3);
     }
   });
-  it('the multipliers are the analogue\'s, held', () => {
+  it('the multipliers are the analogue\'s (or the stated multipliersFrom country\'s), held', () => {
     for (const c of CFG.countries) {
-      const a = REGIONAL_DATA[c.analogue as ManufacturingRegion], me = REGIONAL_DATA[c.code as ManufacturingRegion];
+      const a = REGIONAL_DATA[(c.multipliersFrom ?? c.analogue) as ManufacturingRegion], me = REGIONAL_DATA[c.code as ManufacturingRegion];
+      if (c.multipliersFrom) expect(c.multipliersNote, c.code).toBeTruthy();
       expect(me.machineRateMultiplier).toBe(a.machineRateMultiplier);
       expect(me.materialMultiplier).toBe(a.materialMultiplier);
       expect(me.overheadMultiplier).toBe(a.overheadMultiplier);

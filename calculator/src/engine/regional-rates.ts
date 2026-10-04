@@ -503,13 +503,13 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.8,
     logisticsMultiplier: 1.3,
   },
-  // Egypt: labour = TR × 0.2158 (EGP 33.654 ÷ TRY 146.8, min-wage-hourly-2026); electricity 0.037 USD/kWh (gpp-business); gas held from TR (not sourced); multipliers held from TR (estimate). scripts/rate-refresh/2026-10-countries.json
+  // Egypt: labour = TR × 0.2158 (EGP 33.654 ÷ TRY 146.8, min-wage-hourly-2026); electricity 0.037 USD/kWh (gpp-business); gas 0.02303 USD/kWh (egypt-decree-1306-2026); multipliers held from TR (estimate). scripts/rate-refresh/2026-10-countries.json
   EG: {
     name: 'Egypt',
     currency: 'EGP',
     fxToGBP: 68.91,
     labour: { skilled: 1.43, semiskilled: 1.10, engineer: 2.64, foundry: 1.06, electronics: 0.99, inspector: 1.54, technician: 1.57, supervisor: 1.93 },
-    energy: { electricityPerKwh: 0.028, gasPerKwh: 0.038 },
+    energy: { electricityPerKwh: 0.028, gasPerKwh: 0.017 },
     materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.9,
     machineRateMultiplier: 0.6,
@@ -531,13 +531,13 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.85,
     logisticsMultiplier: 1.45,
   },
-  // Japan: labour = KR × 0.7625 (JPY 451381 ÷ KRW 5105463, te-mfg-2026); electricity 0.181 USD/kWh (gpp-business); gas held from KR (not sourced); multipliers held from KR (estimate). scripts/rate-refresh/2026-10-countries.json
+  // Japan: labour = KR × 0.7625 (JPY 451381 ÷ KRW 5105463, te-mfg-2026); electricity 25.64 JPY/kWh (meti-large-business-2026); gas held from KR (not sourced); multipliers held from KR (estimate). scripts/rate-refresh/2026-10-countries.json
   JP: {
     name: 'Japan',
     currency: 'JPY',
     fxToGBP: 208.5,
     labour: { skilled: 19.40, semiskilled: 14.99, engineer: 33.51, foundry: 14.11, electronics: 14.99, inspector: 21.16, technician: 21.34, supervisor: 26.18 },
-    energy: { electricityPerKwh: 0.137, gasPerKwh: 0.068 },
+    energy: { electricityPerKwh: 0.123, gasPerKwh: 0.068 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.8,
@@ -545,13 +545,13 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.92,
     logisticsMultiplier: 1.35,
   },
-  // Taiwan: labour = KR × 0.5095 (TWD 61000 ÷ KRW 5105463, te-mfg-2026); electricity 0.213 USD/kWh (gpp-business); gas held from KR (not sourced); multipliers held from KR (estimate). scripts/rate-refresh/2026-10-countries.json
+  // Taiwan: labour = KR × 0.5095 (TWD 61000 ÷ KRW 5105463, te-mfg-2026); electricity 4.27 TWD/kWh (taipower-industrial-2026); gas held from KR (not sourced); multipliers held from KR (estimate). scripts/rate-refresh/2026-10-countries.json
   TW: {
     name: 'Taiwan',
     currency: 'TWD',
     fxToGBP: 42.17,
     labour: { skilled: 12.96, semiskilled: 10.02, engineer: 22.39, foundry: 9.43, electronics: 10.02, inspector: 14.14, technician: 14.25, supervisor: 17.49 },
-    energy: { electricityPerKwh: 0.161, gasPerKwh: 0.068 },
+    energy: { electricityPerKwh: 0.101, gasPerKwh: 0.068 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.8,
@@ -601,19 +601,19 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.68,
     logisticsMultiplier: 1.5,
   },
-  // Singapore: labour = TH × 5.0229 (2195 USD/month ÷ 437 USD/month, jetro-worker-2024); electricity 0.21 USD/kWh (gpp-business); gas held from TH (not sourced); multipliers held from TH (estimate). scripts/rate-refresh/2026-10-countries.json
+  // Singapore: labour = TH × 5.0229 (2195 USD/month ÷ 437 USD/month, jetro-worker-2024); electricity 0.21 USD/kWh (gpp-business); gas held from TH (not sourced); multipliers held from KR (estimate). scripts/rate-refresh/2026-10-countries.json
   SG: {
     name: 'Singapore',
     currency: 'SGD',
     fxToGBP: 1.693,
     labour: { skilled: 28.83, semiskilled: 20.84, engineer: 49.68, foundry: 18.89, electronics: 19.89, inspector: 29.79, technician: 31.69, supervisor: 38.88 },
     energy: { electricityPerKwh: 0.159, gasPerKwh: 0.04 },
-    materialFactors: { commodityResin: 0.902, engineeringResin: 0.93, highPerfResin: 0.983 },
-    materialMultiplier: 0.93,
-    machineRateMultiplier: 0.58,
-    overheadMultiplier: 0.75,
-    packagingMultiplier: 0.72,
-    logisticsMultiplier: 1.4,
+    materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
+    materialMultiplier: 1,
+    machineRateMultiplier: 0.8,
+    overheadMultiplier: 0.9,
+    packagingMultiplier: 0.92,
+    logisticsMultiplier: 1.35,
   },
   // Canada: labour = US × 0.7535 (CAD 32.47 ÷ USD 30.37, mfg-hourly-2026); electricity 0.108 USD/kWh (gpp-business); gas held from US (not sourced); multipliers held from US (estimate). scripts/rate-refresh/2026-10-countries.json
   CA: {

@@ -378,6 +378,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   `regionalShopDefaults` on screen and headless. The comparison table re-costs the part per country
   (`computeRegionalComparisonExact`). A £ figure typed into a form is a quote and is not rescaled. See
   `docs/rates/2026-10-country-rates-review.md`, `tests/country-rates.test.ts`.
+  ONE country source: labour on screens is ROLES only (`labour-roles.ts`; `lab-<cc>-*` pinned grades resolve to
+  their role); the PCB table takes power / FX / operator labour from `REGIONAL_DATA` and every region maps to a PCB
+  market (`pcb-market.ts`, own or nearest with the reason shown); PCB pickers follow the country (`pcb-country-sync.ts`).
+  Money rule: a form input holds £ and says £ (the target price is the one display-currency input, converted by
+  `_targetPriceGbp`); rate tables and drop-downs show the display currency (`_currFmt`, `_inCur`) — never a literal "£"
+  on a rate or result.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

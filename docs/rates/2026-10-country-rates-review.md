@@ -101,3 +101,43 @@ The second pass found **four more places** still using UK rates. All are fixed:
 **On the screen**, both pickers set India together: rupee display, 9 % overhead, packaging × 0.65, logistics × 1.50. A machined part costs ₹919.66 (about £7.23) against £10.86 in the UK, and switching back gives £10.86 exactly.
 
 `tests/country-rates.test.ts` §7 re-runs the India line audit on every recorded part, and pins the fettling and agent fixes.
+
+## 6. Root cause, all 39 countries (third pass)
+
+**The root cause.** Country information lived in several independent places, and the screen did not keep one rule for money. Each place was right for some countries and wrong for others:
+
+1. **Labour was two concepts in one list.** There were roles (`lab-uk-skilled` …) and older *country-pinned* grades (`lab-de-skilled`, `lab-cn-skilled` …). In a country book, every pinned grade collapsed onto that country's rate, so the Vietnam drop-down listed "Skilled Machinist (Vietnam)" ten times among 42 entries. In the UK book they let an operation use another country's labour.
+2. **The PCB costing had its own country database and its own pickers.** It defaulted to China, ignored the selected country, and its electricity tariff, exchange rate and operator labour were typed separately and disagreed with the main table. For example, UK electronics labour was £29.59 in one table and £17.63 in the other; Taiwan power was £0.086 in one and £0.161 in the other.
+3. **Money inputs were labelled in the display currency but held pounds.**
+   - The Rate Library window showed £ values under a "CNY/kg" heading.
+   - Packaging read "(¥/part)" over a £ value.
+   - A target price typed in ¥ was compared with a £ cost.
+   - Ten machine drop-downs and several result panels printed a hard-coded "£".
+4. **Copying an analogue country's multipliers contradicted some countries.** Singapore's labour costs more than the UK's, but its machines carried Thailand's 0.58 multiplier. Egypt's gas, borrowed from Turkey, cost more than its electricity. Taiwan and Japan were on business tariffs, not industrial ones.
+
+**The fixes, one source each.**
+
+| # | Fix | Where |
+|---|---|---|
+| 1 | Screens offer labour **roles only**, priced in the selected country. A pinned id resolves to its role. The rate export lists roles too. | `src/engine/labour-roles.ts` |
+| 2 | The PCB table takes electricity, FX and operator labour from `REGIONAL_DATA`. Its EMS prices (fab £/dm², placement, joint and test) stay its own market data. Every country maps to a PCB market: its own for the 14 with data; for the other 25 the nearest assessed market, **with the reason shown on screen**. Inventing EMS prices for those 25 would be fabrication. The PCB photo picker and the PCB fab form follow the selected country. | `src/engine/pcb-market.ts`, `src/ui/pcb-country-sync.ts` |
+| 3 | One money rule: **a form input holds £ and says £.** The target price is typed in the display currency and converted to £ before it is compared. The Rate Library shows values in the display currency and saves £. Rate drop-downs and result panels use the display currency. | `src/ui/main.ts` |
+| 4 | Data corrections, each sourced in `2026-10-countries.json`. | See below |
+
+The data corrections:
+- **Singapore** multipliers come from Korea; machine multiplier 0.58 → 0.80.
+- **Egypt** gas is $6.75/MMBtu (Decree 1306/2026), £0.017/kWh.
+- **Taiwan** industrial power is NT$4.27/kWh (Taipower), £0.101.
+- **Japan** large-industry power is ¥25.64/kWh (METI: small business pays 111.19 % of large), £0.123.
+
+**Proof, every country.**
+- **Line audit.** All 38 non-UK countries × 40 real parts were costed headless. Every machine-hour, labour, material and energy line was checked against that country's book: 16,530 lines, **0 errors**. `tests/country-rates.test.ts` §8 re-runs this on every test run.
+- **Screen sweep.** A browser switched through all 39 countries and found **0 issues**. It checked for:
+  - duplicate labour roles, or labour from another country;
+  - rates or headline shown in a currency other than the selected one;
+  - the country pickers out of step;
+  - wrongly labelled inputs.
+- **Data.** Every country's data is internally consistent: labour order, gas below power, and machine cost consistent with labour cost.
+
+**Deliberately separate.** The software should-cost model's "Development region" is where the software engineers sit, which is not where the parts are made. It keeps its own region list.
+

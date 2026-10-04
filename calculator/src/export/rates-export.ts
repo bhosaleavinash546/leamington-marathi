@@ -8,6 +8,7 @@
  * calculator actually uses.
  */
 
+import { labourRoles } from '../engine/labour-roles.js';
 import type { RateLibrary } from '../engine/types.js';
 import {
   REGIONAL_DATA,
@@ -72,7 +73,8 @@ export async function exportActiveRates(library: RateLibrary, region: Manufactur
   // ── Sheet 2: labour ──
   const labour: unknown[][] = [
     ['ID', 'Skill level', 'Region', 'Fully-loaded £/hr', 'Effective', 'Confidence', 'Source / audit trail'],
-    ...library.labour.map(l => [l.id, l.skillLevel, l.region, l.fullyLoadedRatePerHr, l.effectiveDate, l.confidence, l.sourceNote]),
+    // Roles only — the country-pinned grades are duplicates of them in a country book (labour-roles.ts).
+    ...labourRoles(library).map(l => [l.id, l.skillLevel, l.region, l.fullyLoadedRatePerHr, l.effectiveDate, l.confidence, l.sourceNote]),
   ];
 
   // ── Sheet 3: machines (with full build-up so the £/hr is reproducible) ──
