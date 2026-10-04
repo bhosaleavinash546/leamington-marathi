@@ -98,9 +98,13 @@ describe('2. rates used BEFORE the stack follow the country (rate-context.ts)', 
       startupScrapFraction: 0.03, dieCost: 1000, amortizationVolume: 100000,
       family: 'pe' as const, process: 'pipe' as const, screwDiameterMm: 90, wallThicknessMm: 3, cooling: 'water-bath' as const,
     };
-    const uk = computeExtrusionDrivers(p).rawMaterial.consumablesCostPerPart!;
-    const cn = withRates(CN, () => computeExtrusionDrivers(p)).rawMaterial.consumablesCostPerPart!;
-    expect(cn / uk).toBeCloseTo(R.CN.energy.electricityPerKwh / R.UK.energy.electricityPerKwh, 3);
+    // The module hands the core kWh; the core prices them at the costing book's tariff.
+    const d = computeExtrusionDrivers(p);
+    const kwh = d.rawMaterial.energyKwh!.electricity!;
+    const priced = (lib: typeof UK) => computeUniversalStack({ partName: 'p', ...d, packagingPerPart: 0, logisticsPerPart: 0, overheadPct: 0, marginPct: 0 }, lib)
+      .traceability.find(t => t.field === 'rawMaterial.energyKwh.electricity')!.value;
+    expect(priced(UK)).toBeCloseTo(kwh * R.UK.energy.electricityPerKwh, 6);
+    expect(priced(CN)).toBeCloseTo(kwh * R.CN.energy.electricityPerKwh, 6);
     // and the headless executor runs the module in the book it is given
     const viaExec = executeCalculateCost({ commodity: 'extrusion', params: p, rateLibrary: CN } as never);
     const ukExec = executeCalculateCost({ commodity: 'extrusion', params: p, rateLibrary: UK } as never);
@@ -316,4 +320,64 @@ describe('8. root cause: ONE country source for every country (Oct 2026, third p
     }
     expect(bad).toEqual([]);
   }, 600_000);
+});
+
+describe('9. flow review (Oct 2026, fourth pass): the country survives every step of the workflow', () => {
+  it('a casting re-costed for another country re-prices its melt energy (energy is kWh, not £ fixed at the first country)', async () => {
+    const { computeCastingDrivers } = await import('../src/engine/modules/casting.js');
+    const d = computeCastingDrivers({
+      subtype: 'sand', materialId: 'mat-gs-c25', partWeightKg: 2.512, castingYield: 0.65, rejectRate: 0.03,
+      labourId: 'lab-uk-foundry', oee: 0.8, manning: 1, labourEfficiency: 0.92, amortizationVolume: 50_000,
+      sand: { mouldLineId: 'sand-cast-line', cycleTimeHr: 0.0083, patternCost: 4253, patternLife: 8000, coreCostPerPart: 1.5 },
+    } as never);
+    expect(d.rawMaterial.energyKwh?.electricity).toBeGreaterThan(0);
+    const input = { partName: 'c', ...d, packagingPerPart: 0.15, logisticsPerPart: 0.25, overheadPct: 0.12, marginPct: 0.08 } as UniversalStackInput;
+    const row = computeRegionalComparisonExact(input, UK, { regions: ['UK', 'CN'] }).find(r => r.code === 'CN')!;
+    const direct = computeUniversalStack({ ...input,
+      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * toolroomFactorFor('CN') },
+      overheadPct: 0.12 * R.CN.overheadMultiplier, packagingPerPart: 0.15 * R.CN.packagingMultiplier, logisticsPerPart: 0.25 * R.CN.logisticsMultiplier,
+    }, CN);
+    expect(row.material).toBeCloseTo(direct.breakdown.rawMaterial, 6);
+    expect(direct.traceability.find(t => t.field === 'rawMaterial.energyKwh.electricity')!.rateId).toBe('energy-cn');
+  });
+  it('a saved scenario keeps its country and is compared in it (both used to be re-costed in the selected country)', async () => {
+    const { saveScenario, compareScenarios } = await import('../src/engine/scenario.js');
+    const cnRes = computeUniversalStack(BRACKET, CN), ukRes = computeUniversalStack(BRACKET, UK);
+    const a = saveScenario('China', '', BRACKET, cnRes, 'CN');
+    const b = saveScenario('UK', '', BRACKET, ukRes, 'UK');
+    expect(a.region).toBe('CN');
+    const cmp = compareScenarios(a.id, b.id, UK, r => (r === 'UK' ? UK : buildRegionalLibrary(UK, r as ManufacturingRegion)));
+    expect(cmp.delta.total).toBeCloseTo(ukRes.total - cnRes.total, 6);
+  });
+  it('a rate book\'s OWN rate for a country wins over the regional table (company lab-cn-skilled, energy-cn)', () => {
+    const company = {
+      ...UK,
+      labour: UK.labour.map(l => (l.id === 'lab-cn-skilled' ? { ...l, fullyLoadedRatePerHr: 9.99 } : l)),
+      energy: [...UK.energy.filter(e => e.id !== 'energy-cn'), { ...UK.energy.find(e => e.id === 'energy-cn')!, electricityPerKwh: 0.0555 }],
+    };
+    const book = buildRegionalLibrary(company, 'CN');
+    expect(book.labour.find(l => l.id === 'lab-uk-skilled')!.fullyLoadedRatePerHr).toBe(9.99);
+    expect(book.energy[0].electricityPerKwh).toBe(0.0555);
+    expect(book.machines[0].sourceNote).toContain('0.0555');
+    // the built-in book's own entries equal the regional table, so built-in costs do not move
+    expect(CN.labour.find(l => l.id === 'lab-uk-skilled')!.fullyLoadedRatePerHr).toBe(R.CN.labour.skilled);
+  });
+  it('the screen: the country persists, a draft APPLIES its country, history compares like with like, the agent and Excel know the country', () => {
+    const main = readFileSync('src/ui/main.ts', 'utf8');
+    expect(main).toContain("localStorage.setItem('cv-region', region)");
+    expect(main).toContain("const DRAFT_SKIP = new Set(['costing-country-sel', 'mfg-region-selector', 'pcb-mfg-country', 'pcbf-region'])");
+    expect(main).toContain('region: _mfgRegion, fields: collectDraft()');
+    expect(main).toContain("(h.region ?? 'UK') === region");
+    expect(main.match(/region: _mfgRegion,\s+\/\/ the agent's costing tool/g)).toHaveLength(2);
+    expect(main).toContain('saveScenario(name, desc, lastInput, lastResult, _mfgRegion)');
+    const xl = readFileSync('src/export/excel.ts', 'utf8');
+    expect(xl).toContain("'Manufacturing Country'");
+    expect(xl).toContain('labourRoles(library)');
+  });
+  it('no module turns energy into £ at a fixed tariff any more (the screen and the executor pass none)', () => {
+    const main = readFileSync('src/ui/main.ts', 'utf8');
+    expect(main).not.toMatch(/energyPricePerKwh: library\.energy/);
+    expect(main).not.toMatch(/heatingEnergyPricePerKwh,/);
+    expect(readFileSync('server/services/cost-executor.ts', 'utf8')).not.toMatch(/energyPricePerKwh: tariff/);
+  });
 });

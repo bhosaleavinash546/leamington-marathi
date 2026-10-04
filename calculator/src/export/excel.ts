@@ -1,3 +1,4 @@
+import { labourRoles } from '../engine/labour-roles.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
@@ -32,6 +33,8 @@ export async function exportToExcelBlob(
   const sum: unknown[][] = [
     ['SHOULD-COST ANALYSIS REPORT'],
     ['Part Name', result.partName],
+    // The country the rates are from — the workbook used to name only the display currency.
+    ['Manufacturing Country', library.regional ? `${library.regional.name} (${library.regional.code}) — rates rebuilt for this country` : 'United Kingdom — base rate book'],
     ['Report Date', new Date().toLocaleDateString('en-GB')],
     ['Currency', `${currency} (FX: ${fxRate.toFixed(4)} to GBP)`],
     [],
@@ -188,7 +191,7 @@ export async function exportToExcelBlob(
   }
   labRows.push([], ['ALL AVAILABLE LABOUR RATES IN LIBRARY:']);
   labRows.push(labHdr);
-  for (const lab of library.labour) {
+  for (const lab of labourRoles(library)) {   // roles, one per job (labour-roles.ts)
     labRows.push([lab.id, lab.region, lab.skillLevel, c(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
   }
 

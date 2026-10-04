@@ -28,12 +28,11 @@ describe('F-C1 — billet heating energy is costed', () => {
   it('heating adds a per-part consumable that scales with kWh/kg and tariff', () => {
     const cold = computeForgingDrivers({ ...BASE, heatingEnergyKwhPerKg: 0 });
     const hot = computeForgingDrivers({ ...BASE, heatingEnergyKwhPerKg: 0.4 });
-    const coldC = cold.rawMaterial.consumablesCostPerPart ?? 0;
-    const hotC = hot.rawMaterial.consumablesCostPerPart ?? 0;
-    expect(hotC).toBeGreaterThan(coldC);
-    // billet = (1.5+0.4)/0.92 = 2.0652 kg; heating = 0.4 × 2.0652 × UK tariff (library energy-uk)
+    // billet = (1.5+0.4)/0.92 = 2.0652 kg; heating = 0.4 kWh/kg × billet, as induction kWh (country-rates review: module energy is handed to the core as kWh — module-energy.ts — and priced at the costing book's tariff)
     const billet = (BASE.partWeightKg + BASE.flashAndScaleKg) / BASE.yieldFraction;
-    expect(hotC - coldC).toBeCloseTo(0.4 * billet * tariffElectricityPerKwh(), 4);
+    expect(cold.rawMaterial.energyKwh).toBeUndefined();
+    expect(hot.rawMaterial.energyKwh?.electricity).toBeCloseTo(0.4 * billet, 6);
+    expect(tariffElectricityPerKwh()).toBeGreaterThan(0);
   });
 
   it('a higher fuel tariff raises the heating cost proportionally', () => {

@@ -30,7 +30,6 @@ import {
   type ExtrusionProcess, type ExtrusionCooling, type DieComplexity,
 } from '../../modules/extrusion-advisor.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
-import { tariffElectricityPerKwh } from '../../uk-tariff.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, RESIN_DECISION_ID, type ResinFacts } from '../derive/resin.js';
 import { extrusionProfile } from '../derive/profile.js';
@@ -255,8 +254,9 @@ export const EXTRUSION_RULES: CommodityRuleSpec = {
       value: a.die.total, source: 'advisor', confidence: 0.6,
       basis: `${a.process} die £${a.die.die.toLocaleString('en-GB')} + calibration £${a.die.calibration.toLocaleString('en-GB')} `
         + `at ${a.dieSizeMm} mm, ${a.complexity}` })),
-    fromAdvice('extrusion.energyPricePerKwh', 'ext-kwh', 'energyPricePerKwh', () => ({
-      value: Math.round(tariffElectricityPerKwh() * 10_000) / 10_000, source: 'library', confidence: 0.8, basis: 'UK industrial electricity tariff' })),
+    // No tariff rule: the line's kWh go to the engine, which prices them at the
+    // costing country's tariff (module-energy.ts). Copying the tariff into the
+    // form fixed it at the country of the analysis.
     fromAdvice('extrusion.specificEnergyKwhPerKg', undefined, 'specificEnergyKwhPerKg', a => ({
       value: estimateExtrusionSpecificEnergy(a.family, 'single'), source: 'advisor', confidence: 0.7,
       basis: `melt + drive + chilling for ${a.family} (the module derives it)` })),

@@ -139,8 +139,10 @@ describe('Cast + Machine module', () => {
     const pour = SAND_INPUTS.castPartWeightKg * uplift / SAND_INPUTS.castingYield;
     const meltKwh = meltFactsFor(SAND_INPUTS.materialId)!.energyKwhPerKg;
     expect(drivers.rawMaterial.consumablesCostPerPart).toBeCloseTo(
-      SAND_INPUTS.sand!.coreCostPerPart * uplift + pour * meltKwh * tariffElectricityPerKwh()
-      + pour * MELT_SHOP.greenSandAdditionsPerKgPoured, 4);
+      SAND_INPUTS.sand!.coreCostPerPart * uplift + pour * MELT_SHOP.greenSandAdditionsPerKgPoured, 4);
+    // the melt energy, as kWh (country-rates review: module energy is handed to the core as kWh — module-energy.ts — and priced at the costing book's tariff)
+    expect(drivers.rawMaterial.energyKwh?.electricity).toBeCloseTo(pour * meltKwh, 6);
+    expect(tariffElectricityPerKwh()).toBeGreaterThan(0);
   });
 
   it('full stack computeUniversalStack gives positive total for HPDC+machining input', () => {

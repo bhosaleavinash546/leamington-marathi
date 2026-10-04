@@ -141,3 +141,26 @@ The data corrections:
 
 **Deliberately separate.** The software should-cost model's "Development region" is where the software engineers sit, which is not where the parts are made. It keeps its own region list.
 
+## 7. Workflow review, all countries (fourth pass)
+
+This pass re-reviewed the flow end to end: the places a country choice has to survive (reload, drafts, saved scenarios, CAD apply, company rate books, the comparison table, the AI agent, the exports). It found **seven errors**. All are fixed and pinned in `tests/country-rates.test.ts` §9.
+
+| # | Where | Error | Fix |
+|---|---|---|---|
+| 1 | Module energy: casting melt, forging billet heating, polymer extrusion, thermoforming, resin drying, hot-stamping furnace | Each module turned kWh into **£ at the tariff it was handed** and put the £ in the material consumables. Anything that re-costs the same part in another country kept the first country's energy £: the comparison table, the PDF's country section, a scenario. Two CAD rules also copied the tariff into the extrusion and thermoforming forms, which fixed it at the country of the analysis. | Modules hand the core **kWh** (`rawMaterial.energyKwh`, `src/engine/module-energy.ts`), and the core prices them at the tariff of whichever book costs the part. The two copy-the-tariff rules are removed. A tariff the engineer types is still a £ override. Same bucket, and the same £ in the same country: no recorded cost moved. |
+| 2 | Saved scenarios | A scenario did not record its country. Comparing two scenarios re-costed **both in the currently selected country**, so a China scenario compared while the UK was selected was priced at UK rates. | A scenario keeps its country. A comparison re-costs each in its own country's book. The scenario list and the PDF show the country. |
+| 3 | Reload and drafts | The country reset to the UK on every reload, although the currency choice survived. The "Country" bar sits inside the form, so the autosaved draft **set the picker's value without applying the country**: "China" over UK rates. | The country persists (`cv-region`) and is applied on load. A draft stores its country and applies it before restoring its fields; country pickers are never restored by value. |
+| 4 | "vs previous run" chip | Compared with the last run of the part **in any country**, so a country switch read as a change to the part. | Compares only runs in the same country. |
+| 5 | Company rate books | A company book's own rate for a country (for example `lab-cn-skilled` from a supplier audit, or `energy-cn`) was **ignored**; the generic regional table was used. | The book's own country rate wins, for labour, energy and machine-energy re-tariffing. The regional table is the fallback. The built-in book's entries equal the table, so built-in costs do not move. |
+| 6 | AI agent | The server costed in the requested country, but **the screen never sent the selected country**, so the agent costed in the UK. | Both agent requests send the selected country. |
+| 7 | Excel export | The workbook named the display currency, not the **manufacturing country**, and its "all labour" sheet listed 42 rows with duplicates. | It names the country the rates were rebuilt for, and lists labour roles. |
+
+**Proof.**
+- **Reload:** pick China, edit the overhead, reload. The country, currency, edited overhead, China packaging and China labour all come back.
+- **Repeated Calculate:** the headline is the same on every click (UK £10.86, China ¥66.78). An apparent drift in an early check was the headline's count-up animation being read mid-way; the breakdown table was identical throughout.
+- **Screen sweep:** all 39 countries, 0 issues.
+- **Line audit:** every machine, labour, material and energy line of every real part is that country's, in all 38 non-UK countries.
+- **Tests:** all 3,005 pass.
+
+**Still £ by design.** Lamination finishing (anneal energy) is a small £ adder passed into sheet metal at the selected country's tariff when the form is collected. It is correct on the costing itself, but it is not re-priced in the comparison table.
+

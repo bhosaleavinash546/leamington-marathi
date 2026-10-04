@@ -4,7 +4,7 @@ import {
   extrusionFamilyOf,
   type ExtrusionFamily, type ExtrusionProcess, type ScrewType, type ExtrusionCooling, type DieComplexity,
 } from './extrusion-advisor.js';
-import { tariffElectricityPerKwh } from '../uk-tariff.js';
+import { moduleEnergy } from '../module-energy.js';
 
 export interface ExtrusionInputs {
   materialId: string;
@@ -105,7 +105,9 @@ export function computeExtrusionDrivers(inputs: ExtrusionInputs): CommodityDrive
 
   // ── Variable process energy (melt + drive + chill) and additive/masterbatch ──
   const specificEnergy = estimateExtrusionSpecificEnergy(family, screwType); // kWh/kg
-  const energyCostPerPart = specificEnergy * grossWeightKg * Math.max(0, inputs.energyPricePerKwh ?? tariffElectricityPerKwh());
+  // kWh for the core to price at the costing book's tariff; £ only when a tariff was typed (module-energy.ts).
+  const lineEnergy = moduleEnergy(specificEnergy * grossWeightKg, 'electricity', inputs.energyPricePerKwh, 'extrusion melt, drive and chill energy');
+  const energyCostPerPart = lineEnergy.gbp;
   const additiveFrac = Math.max(0, Math.min(0.3, inputs.additiveFraction ?? 0));
   const additiveCostPerPart = additiveFrac * grossWeightKg * Math.max(0, inputs.additivePricePerKg ?? 0);
   const consumablesCostPerPart = energyCostPerPart + additiveCostPerPart;
@@ -115,6 +117,7 @@ export function computeExtrusionDrivers(inputs: ExtrusionInputs): CommodityDrive
     netWeightKg: partWeightKg,
     materialUtilization,
     ...(consumablesCostPerPart > 0 ? { consumablesCostPerPart } : {}),
+    ...(lineEnergy.kwh ? { energyKwh: lineEnergy.kwh } : {}),
   };
 
   // ── Operations: extrude (gross mass on the line) + finishing/QA + optional leak test ──

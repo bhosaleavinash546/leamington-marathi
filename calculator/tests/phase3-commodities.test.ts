@@ -74,8 +74,11 @@ describe('Forging module', () => {
     expect(r.breakdown.tooling).toBeCloseTo(((FORGE_INPUTS.dieCost ?? 0) * numSets) / withHT.amortizationVolume, 3);
     // Heat treat + billet heating are per-part recurring costs → appear in rawMaterial, not tooling
     const billetWt = (withHT.partWeightKg + withHT.flashAndScaleKg) / withHT.yieldFraction;
-    const heating = withHT.heatingEnergyKwhPerKg * billetWt * tariffElectricityPerKwh();   // default UK tariff (library)
-    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.80 * withHT.partWeightKg + heating, 4);
+    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.80 * withHT.partWeightKg, 4);
+    // billet heating as kWh (country-rates review: module energy is handed to the core as kWh — module-energy.ts — and priced at the costing book's tariff); the stack prices it at the library tariff
+    expect(d.rawMaterial.energyKwh?.electricity).toBeCloseTo(withHT.heatingEnergyKwhPerKg * billetWt, 6);
+    expect(r.traceability.some(t => t.field === 'rawMaterial.energyKwh.electricity'
+      && Math.abs(t.value - withHT.heatingEnergyKwhPerKg * billetWt * tariffElectricityPerKwh()) < 1e-6)).toBe(true);
   });
 });
 

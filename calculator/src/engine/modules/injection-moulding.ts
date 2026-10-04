@@ -4,7 +4,7 @@ import {
   cavityCncHours, cavitySteelKg, toolBaseCost, composeTool, labourLine, materialLine,
   boughtOutLine, type ToolComplexity, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
-import { tariffElectricityPerKwh } from '../uk-tariff.js';
+import { moduleEnergy } from '../module-energy.js';
 
 export type RunnerSystem = 'cold' | 'hot';
 
@@ -600,16 +600,19 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   // mechanism forging uses for coining/NDT — keeps the 8-bucket stack deterministic.
   const insertsCostPerPart = Math.max(0, inputs.insertCount ?? 0) * Math.max(0, inputs.insertUnitCost ?? 0);
   // Drying every kg that goes through the barrel (part + runner, rejects included).
-  const dryingPerPart = inputs.drying && inputs.drying.kwhPerKg > 0
-    ? (inputs.partWeightKg + effectiveRunnerWeightKg / inputs.cavities) * rejectUplift
-      * inputs.drying.kwhPerKg * (inputs.drying.energyPricePerKwh ?? tariffElectricityPerKwh())
-    : 0;
+  // kWh for the core to price at the costing book's tariff; £ only when a tariff was typed (module-energy.ts).
+  const drying = moduleEnergy(inputs.drying && inputs.drying.kwhPerKg > 0
+    ? (inputs.partWeightKg + effectiveRunnerWeightKg / inputs.cavities) * rejectUplift * inputs.drying.kwhPerKg : 0,
+    'electricity', inputs.drying?.energyPricePerKwh, 'resin drying energy');
+  const dryingPerPart = drying.gbp;
   const secondaryCostPerPart = insertsCostPerPart + Math.max(0, inputs.secondaryOpCostPerPart ?? 0) + dryingPerPart;
 
   return {
-    rawMaterial: secondaryCostPerPart > 0
-      ? { ...rawMaterial, consumablesCostPerPart: secondaryCostPerPart }
-      : rawMaterial,
+    rawMaterial: {
+      ...rawMaterial,
+      ...(secondaryCostPerPart > 0 ? { consumablesCostPerPart: secondaryCostPerPart } : {}),
+      ...(drying.kwh ? { energyKwh: drying.kwh } : {}),
+    },
     operations,
     tooling,
   };

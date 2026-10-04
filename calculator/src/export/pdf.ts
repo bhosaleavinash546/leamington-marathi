@@ -1639,11 +1639,11 @@ export function renderShouldCostSections(
     y = secBar(doc, y, '§16 — Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
-      head: [['Scenario', 'Total', 'vs this costing', 'Saved']],
+      head: [['Scenario', 'Country', 'Total', 'vs this costing', 'Saved']],
       body: scenarios.map(s => {
         const delta = result.total > 0 ? ((s.result.total - result.total) / result.total) * 100 : 0;
         return [
-          s.name + (s.description ? ` — ${s.description}` : ''), c(s.result.total),
+          s.name + (s.description ? ` — ${s.description}` : ''), s.region ?? 'UK', c(s.result.total),
           Math.abs(delta) < 0.05 ? '—' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`,
           new Date(s.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
         ];
@@ -1651,7 +1651,7 @@ export function renderShouldCostSections(
       headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 7.5 },
       bodyStyles: { fontSize: 8, cellPadding: 2.5 },
       alternateRowStyles: { fillColor: LIGHT as RGB },
-      columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right', fontStyle: 'bold' }, 3: { halign: 'right', textColor: GREY as RGB } },
+      columnStyles: { 0: { fontStyle: 'bold' }, 2: { halign: 'right' }, 3: { halign: 'right', fontStyle: 'bold' }, 4: { halign: 'right', textColor: GREY as RGB } },
     });
   }
 

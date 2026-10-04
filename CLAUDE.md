@@ -384,6 +384,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   Money rule: a form input holds £ and says £ (the target price is the one display-currency input, converted by
   `_targetPriceGbp`); rate tables and drop-downs show the display currency (`_currFmt`, `_inCur`) — never a literal "£"
   on a rate or result.
+  Workflow (fourth pass): module energy is handed to the core as kWh (`module-energy.ts`, `rawMaterial.energyKwh`) —
+  never £ at a passed tariff — so any re-costing prices it in its own country; a typed tariff stays a £ override.
+  Scenarios carry `region` and are compared each in its own book; the country persists (`cv-region`) and a draft
+  applies its country before its fields (`DRAFT_SKIP`); a rate book's own `lab-<cc>-*` / `energy-<cc>` entries win
+  over `REGIONAL_DATA` in `buildRegionalLibrary`; agent requests send `region`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

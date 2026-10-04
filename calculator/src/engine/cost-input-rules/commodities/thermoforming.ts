@@ -36,7 +36,6 @@ import { bboxSortedMm, planAreaCm2 } from '../derive/envelope.js';
 export { planAreaCm2 } from '../derive/envelope.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 import { enclosedShell } from '../derive/hollow.js';
-import { tariffElectricityPerKwh } from '../../uk-tariff.js';
 
 /** Forming complexity from what the kernel can see of the shape. */
 export function formComplexity(ctx: RuleContext): FormComplexity {
@@ -340,10 +339,9 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
     fromAdvice('thermoforming.energyKwhPerKg', undefined, 'energyKwhPerKg', a => ({
       value: estimateThermoformSpecificEnergy(a.family, a.method), source: 'advisor', confidence: 0.7,
       basis: `cp·ΔT to forming temperature for ${a.family}, plus ${a.method} air work` })),
-    // The electricity price — the field the energy figure above used to be
-    // written into (kWh/kg read as £/kWh).
-    fromAdvice('thermoforming.energyPricePerKwh', 'tf-kwh', 'energyPricePerKwh', () => ({
-      value: Math.round(tariffElectricityPerKwh() * 10_000) / 10_000, source: 'library', confidence: 0.8, basis: 'UK industrial electricity tariff' })),
+    // No tariff rule: the forming kWh go to the engine, which prices them at the
+    // costing country's tariff (module-energy.ts). Copying the tariff into the
+    // form fixed it at the country of the analysis. The field stays an override.
     fromAdvice('thermoforming.labourId', 'tf-lab', 'labourId', () => ({
       value: 'lab-uk-thermoform', source: 'library', confidence: 0.8, basis: 'thermoforming operator' })),
     fromAdvice('thermoforming.manning', 'tf-manning', 'manning', () => ({

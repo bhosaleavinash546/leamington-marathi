@@ -7,7 +7,7 @@ import {
   hardwareInstallOperation,
   hardwarePurchaseCostPerPart,
 } from './sheet-metal-hardware.js';
-import { tariffElectricityPerKwh } from '../uk-tariff.js';
+import { moduleEnergy } from '../module-energy.js';
 
 export type DieType = 'single_stage' | 'progressive' | 'transfer' | 'fine_blanking';
 
@@ -187,9 +187,10 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
 
   // Hot stamping / press-hardening: austenitising furnace heat is a per-part
   // energy consumable (dominant, part-size driven), priced at the fuel tariff.
-  const furnaceEnergyPerPart = inputs.hotStamping
-    ? (inputs.austenitiseEnergyKwhPerKg ?? 0.30) * grossBlankKg * (inputs.hotStampingEnergyPricePerKwh ?? tariffElectricityPerKwh())
-    : 0;
+  // kWh for the core to price at the costing book's tariff; £ only when a tariff was typed (module-energy.ts).
+  const furnace = moduleEnergy(inputs.hotStamping ? (inputs.austenitiseEnergyKwhPerKg ?? 0.30) * grossBlankKg : 0,
+    'electricity', inputs.hotStampingEnergyPricePerKwh, 'austenitising furnace energy');
+  const furnaceEnergyPerPart = furnace.gbp;
 
   // Purchased fastening hardware (weld nuts/studs, PEM, rivnuts): piece price +
   // install consumables (electrode wear…). Hardware on a scrapped part is lost
@@ -215,6 +216,7 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     netWeightKg: inputs.netWeightKg * rejectUplift,
     materialUtilization,
     ...(consumablesCostPerPart > 0 ? { consumablesCostPerPart } : {}),
+    ...(furnace.kwh ? { energyKwh: furnace.kwh } : {}),
   };
 
   // Cycle time per STROKE: 1 stroke takes 1/SPM minutes = 1/(SPM*60) hours.

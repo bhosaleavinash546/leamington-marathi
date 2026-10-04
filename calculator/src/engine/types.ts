@@ -376,6 +376,10 @@ export interface Scenario {
   input: UniversalStackInput;
   result: PartCostResult;
   createdAt: string;
+  /** Manufacturing country the scenario was costed in (absent on older saves = UK). A
+   *  comparison re-costs each scenario in ITS country — it used to re-cost both in
+   *  whatever country was selected, so a China scenario was priced at UK rates. */
+  region?: string;
 }
 
 export interface ScenarioDelta {

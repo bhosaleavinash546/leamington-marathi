@@ -68,8 +68,11 @@ describe('2. melting is charged on every kg poured', () => {
     const on = computeCastingDrivers(BASE);
     const off = computeCastingDrivers({ ...BASE, melt: { energyKwhPerKg: 0 } });
     const pour = 2.512 / 0.97 / 0.65;
-    expect((on.rawMaterial.consumablesCostPerPart ?? 0) - (off.rawMaterial.consumablesCostPerPart ?? 0))
-      .toBeCloseTo(pour * 0.70 * tariffElectricityPerKwh(), 6);
+    // kWh to the core (country-rates review: module energy is handed to the core as kWh — module-energy.ts — and priced at the costing book's tariff); priced in the material line at the book's tariff
+    expect(on.rawMaterial.energyKwh?.electricity).toBeCloseTo(pour * 0.70, 6);
+    expect(off.rawMaterial.energyKwh).toBeUndefined();
+    const stack = (d: typeof on) => computeUniversalStack({ partName: 'p', ...d, packagingPerPart: 0, logisticsPerPart: 0, overheadPct: 0, marginPct: 0 }, DEFAULT_RATE_LIBRARY).breakdown.rawMaterial;
+    expect(stack(on) - stack(off)).toBeCloseTo(pour * 0.70 * tariffElectricityPerKwh(), 6);
   });
 
   it('knows the alloy behind every casting grade the rules pick', () => {

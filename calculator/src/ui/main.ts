@@ -33,7 +33,7 @@ import type { GearMaterialClass } from '../engine/gear-shop-data.js';
 import { HARDENING_ROUTE_UNSUITABLE, HARDENING_ROUTE_SPEC } from '../engine/modules/gear-advisor.js';
 import type { GearProcess, HardeningRoute } from '../engine/modules/gear-advisor.js';
 import {
-  estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
+  estimateForgingTonnage, estimateForgingDieCost,
   estimateForgingDieLife, adviseForgingProcess, analyseForgingDFM,
   type FurnaceType, type ShapeComplexity, type DieSteel, type ForgingAlloyFamily,
   type ForgingProcess, type ComplexityLevel, type ToleranceClass,
@@ -3001,6 +3001,7 @@ async function sendAgentMessage(): Promise<void> {
     history: agentHistory.slice(0, -1), // prior turns only
     ...(photoBase64 ? { photoBase64, photoMime } : {}),
     ...(agentLastResult ? { costResult: agentLastResult } : {}),
+    region: _mfgRegion,   // the agent's costing tool prices in the selected country
   };
 
   const apiKey = (el<HTMLInputElement>('agent-api-key')?.value ?? '').trim();
@@ -3135,6 +3136,7 @@ async function sendAgentInterpretation(): Promise<void> {
         message: interpretMsg,
         history: agentHistory.slice(0, -1),
         costResult: agentLastResult,
+        region: _mfgRegion,   // the agent's costing tool prices in the selected country
       }),
       signal: AbortSignal.timeout(90_000),
     });
@@ -12349,7 +12351,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     ].filter(op => op.machineId && op.labourId && op.cycleTimeHr > 0),
     hotStamping,
     austenitiseEnergyKwhPerKg: hotStamping ? (num('sm-hs-energy') || 0.30) : undefined,
-    hotStampingEnergyPricePerKwh: hotStamping ? library.energy[0].electricityPerKwh : undefined,
+    // No tariff passed: the furnace kWh are priced by the engine at the selected country's tariff (module-energy.ts).
     quenchDwellSec: hotStamping ? (num('sm-hs-dwell') || undefined) : undefined,
     furnaceMachineId: hotStamping ? (sel('sm-hs-furn-mach') || undefined) : undefined,
     furnaceLabourId: hotStamping ? (sel('sm-hs-furn-lab') || undefined) : undefined,
@@ -12468,7 +12470,7 @@ function collectIMMInput(): UniversalStackInput {
       setup: { hoursPerChange: num('imm-setup-hr'), batchSize: num('imm-batch'), setterLabourId: 'lab-uk-technician', purgeKg: num('imm-purge') },
     } : {}),
     mouldMaintenanceFraction: num('imm-maint') || undefined,
-    ...(num('imm-dry-kwh') > 0 ? { drying: { kwhPerKg: num('imm-dry-kwh'), energyPricePerKwh: library.energy?.[0]?.electricityPerKwh } } : {}),
+    ...(num('imm-dry-kwh') > 0 ? { drying: { kwhPerKg: num('imm-dry-kwh') } } : {}),   // kWh, priced in the selected country
   });
 
   // H5: clamping-tonnage validation — warn if the part needs more clamp than the selected machine.
@@ -12558,7 +12560,7 @@ function collectCastingInput(): UniversalStackInput {
     secondaryMachiningConsumablesPerPart: secondary?.toolWearPerPart || undefined,
     ...(surfaceFinishing ? { surfaceFinishing } : {}),
     // Melt at the selected region's tariff, as forging heats at it.
-    melt: { energyPricePerKwh: library.energy?.[0]?.electricityPerKwh },
+    melt: {},   // melt kWh are priced by the engine at the selected country's tariff (module-energy.ts)
     leakTestSec: num('cast-leak-sec') || undefined,
     fettlingMinutes: num('cast-fettle-min') || undefined,
     heatTreatCostPerKg: num('cast-ht-cost') || undefined,
@@ -12586,10 +12588,8 @@ function collectForgingInput(): UniversalStackInput {
   const manualDieCost = num('forge-die-cost');
   const furnaceType = validSel<FurnaceType>('forge-furnace', ['induction','gas','electric-resistance'], 'induction');
 
-  // F-C1: resolve the region's heating tariff for the selected fuel from the active library.
-  const elecPerKwh = library.energy?.[0]?.electricityPerKwh ?? 0.23;
-  const gasPerKwh = library.energy?.[0]?.gasPerKwh ?? 0.065;
-  const heatingEnergyPricePerKwh = resolveFurnaceEnergyPricePerKwh(furnaceType, elecPerKwh, gasPerKwh);
+  // The furnace's fuel kWh go to the engine, which prices them at the selected
+  // country's gas / electricity tariff (module-energy.ts FURNACE_FUEL).
 
   const alloyFamily = forgingAlloyFamilyFor(materialId);
 
@@ -12622,7 +12622,7 @@ function collectForgingInput(): UniversalStackInput {
     manning: num('forge-manning'),
     labourEfficiency: num('forge-lab-eff'),
     heatingEnergyKwhPerKg: num('forge-heat-energy'),
-    heatingEnergyPricePerKwh,
+    furnaceType,
     dieLife,
     // 0 / blank → estimate parametrically from area, steel, impressions and complexity.
     dieCost: manualDieCost > 0 ? manualDieCost : undefined,
@@ -13574,7 +13574,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
     impregnationCostPerPart: num('cam-impreg') || undefined,
     deburringCostPerPart: num('cam-fettle') || undefined,
     fettlingMinutes: num('cam-fettle-min') || undefined,
-    melt: { energyPricePerKwh: library.energy?.[0]?.electricityPerKwh },
+    melt: {},   // melt kWh are priced by the engine at the selected country's tariff (module-energy.ts)
     leakTestSec: num('cam-leak-sec') || undefined,
     ndtCostPerPart: num('cam-ndt') || undefined,
     ...subtypeExtra,
@@ -13769,7 +13769,7 @@ function collectExtrusionInput(): UniversalStackInput {
     wallThicknessMm: num('ext-wall') || undefined,
     cooling: (sel('ext-cooling') || 'water-bath') as ExtrusionCooling,
     // Blank = the selected country's tariff (the library's), never a fixed UK-ish £0.20.
-    energyPricePerKwh: num('ext-kwh') || library.energy[0].electricityPerKwh,
+    energyPricePerKwh: num('ext-kwh') || undefined,   // blank = kWh priced at the selected country's tariff
     additiveFraction: (num('ext-add-pct') || 0) / 100,
     additivePricePerKg,
     steadyScrapFraction: num('ext-steady-scrap'),
@@ -13874,7 +13874,7 @@ function collectThermoformingInput(): UniversalStackInput {
     coolTimeSec: num('tf-cool') || undefined,
     toolCooling: validSel<ToolCooling>('tf-tool-cool', ['water','air','ambient'], 'water'),
     // Blank = the selected country's tariff (the library's), never a fixed UK-ish £0.20.
-    energyPricePerKwh: num('tf-kwh') || library.energy[0].electricityPerKwh,
+    energyPricePerKwh: num('tf-kwh') || undefined,   // blank = kWh priced at the selected country's tariff
     additiveFraction: (num('tf-add-pct') || 0) / 100,
     additivePricePerKg,
     projectedAreaCm2: num('tf-area') || undefined,
@@ -16412,7 +16412,7 @@ function renderScenarios(): void {
         ${scenarios.map(s => `
           <div class="scenario-card">
             <div class="sc-name">${s.name}</div>
-            <div class="sc-meta">${s.description ? s.description + ' · ' : ''}${new Date(s.createdAt).toLocaleDateString()}</div>
+            <div class="sc-meta">${escHtml(REGIONAL_DATA[(s.region ?? 'UK') as ManufacturingRegion]?.name ?? s.region ?? 'United Kingdom')} · ${s.description ? escHtml(s.description) + ' · ' : ''}${new Date(s.createdAt).toLocaleDateString()}</div>
             <div class="sc-total">${fmt(s.result.total)}</div>
             <button class="btn btn-secondary btn-sm del-sc-btn" data-sc-id="${s.id}">Delete</button>
           </div>`).join('')}
@@ -16448,7 +16448,8 @@ function renderScenarios(): void {
     if (!id1 || !id2) { showToast('Select two scenarios to compare.', 'warning'); return; }
     if (id1 === id2) { showToast('Select two different scenarios to compare.', 'warning'); return; }
     try {
-      const comp = compareScenarios(id1, id2, library);
+      // Each scenario re-costed in its OWN country's book (a China scenario used to be re-priced at the selected country's rates).
+      const comp = compareScenarios(id1, id2, library, r => (r === 'UK' || !REGIONAL_DATA[r as ManufacturingRegion]) ? _baseLibrary : buildRegionalLibrary(_baseLibrary, r as ManufacturingRegion));
       renderCompareResult(comp);
     } catch (err) {
       el('compare-result').innerHTML = `<span style="color:var(--red)">${escHtml(err instanceof Error ? err.message : String(err))}</span>`;
@@ -17372,7 +17373,7 @@ function saveScenarioFromModal(): void {
   if (!lastResult || !lastInput) return;
   const name = val('sc-name') || 'Scenario';
   const desc = val('sc-desc');
-  const saved = saveScenario(name, desc, lastInput, lastResult);
+  const saved = saveScenario(name, desc, lastInput, lastResult, _mfgRegion);   // the scenario keeps its country
   _activeScenarioId = saved.id;
   el('scenario-modal').style.display = 'none';
   // If scenarios tab is active, refresh
@@ -19393,6 +19394,7 @@ async function init(): Promise<void> {
   const _applyCountry = (code: string) => {
     const region = (REGIONAL_DATA[code as ManufacturingRegion] ? code : 'UK') as ManufacturingRegion;
     _mfgRegion = region;
+    try { localStorage.setItem('cv-region', region); } catch { /* storage blocked — the session still works */ }
     _rebuildActiveLibrary();
     const rd = REGIONAL_DATA[region];
     // Overhead, packaging and logistics for the country — the engine function the
@@ -19436,6 +19438,13 @@ async function init(): Promise<void> {
   el<HTMLSelectElement>('mfg-region-selector')?.addEventListener('change', e => {
     _applyCountry((e.target as HTMLSelectElement).value);
   });
+  _applyCountryHook = _applyCountry;
+  // The country survives a reload (it used to reset to the UK while the currency
+  // pin survived — a "China" draft then sat on UK rates).
+  try {
+    const savedRegion = localStorage.getItem('cv-region');
+    if (savedRegion && savedRegion !== 'UK' && REGIONAL_DATA[savedRegion as ManufacturingRegion]) _applyCountry(savedRegion);
+  } catch { /* storage blocked */ }
   // A packaging / logistics figure typed in is kept as its UK basis, so the next
   // country switch scales the engineer's figure, not a default.
   for (const f of ['packaging', 'logistics'] as const) {
@@ -20094,10 +20103,18 @@ function initBenchmarkHints(): void {
 let _draftTimer: number | null = null;
 function draftKey(): string { return `cv-draft-${activeCommodity}`; }
 
+/** Pickers a draft must not set by value — the country is APPLIED (rates, shop
+ *  fields, currency, PCB market), never just shown. Restoring the Country bar's
+ *  value used to show "China" over UK rates after a reload. */
+const DRAFT_SKIP = new Set(['costing-country-sel', 'mfg-region-selector', 'pcb-mfg-country', 'pcbf-region']);
+/** Set by init once the country switch exists — a draft restore applies its country through it. */
+let _applyCountryHook: ((code: string) => void) | null = null;
+
 function collectDraft(): Record<string, string> {
   const out: Record<string, string> = {};
   document.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
     '#costing-view input[id], #costing-view select[id], #costing-view textarea[id]').forEach(elm => {
+    if (DRAFT_SKIP.has(elm.id)) return;
     if (elm instanceof HTMLInputElement && (elm.type === 'file' || elm.type === 'button')) return;
     if (elm instanceof HTMLInputElement && elm.type === 'checkbox') { out[elm.id] = elm.checked ? '1' : ''; return; }
     out[elm.id] = elm.value;
@@ -20108,7 +20125,7 @@ function collectDraft(): Record<string, string> {
 function saveDraftSoon(): void {
   if (_draftTimer) window.clearTimeout(_draftTimer);
   _draftTimer = window.setTimeout(() => {
-    try { localStorage.setItem(draftKey(), JSON.stringify({ ts: Date.now(), fields: collectDraft() })); } catch { /* quota */ }
+    try { localStorage.setItem(draftKey(), JSON.stringify({ ts: Date.now(), region: _mfgRegion, fields: collectDraft() })); } catch { /* quota */ }
   }, 800);
 }
 
@@ -20116,9 +20133,13 @@ function restoreDraft(): void {
   try {
     const raw = localStorage.getItem(draftKey());
     if (!raw) return;
-    const draft = JSON.parse(raw) as { ts: number; fields: Record<string, string> };
+    const draft = JSON.parse(raw) as { ts: number; region?: string; fields: Record<string, string> };
     if (!draft?.fields) return;
+    // The draft's fields (overhead, packaging…) were entered in its country — apply
+    // that country FIRST, then restore the fields over its defaults.
+    if (draft.region && draft.region !== _mfgRegion && REGIONAL_DATA[draft.region as ManufacturingRegion]) _applyCountryHook?.(draft.region);
     Object.entries(draft.fields).forEach(([id, val]) => {
+      if (DRAFT_SKIP.has(id)) return;
       const elm = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
       if (!elm) return;
       if (elm instanceof HTMLInputElement && elm.type === 'checkbox') elm.checked = val === '1';
@@ -20170,7 +20191,8 @@ function renderResultHero(): void {
   let deltaHtml = '';
   try {
     const runs = getCostingHistory()
-      .filter(h => h.partName === r.partName && h.commodity === activeCommodity)
+      // Same part, same commodity, SAME COUNTRY — a country switch is not a change to the part.
+      .filter(h => h.partName === r.partName && h.commodity === activeCommodity && (h.region ?? 'UK') === region)
       .sort((a, b) => b.timestamp - a.timestamp);
     const prev = runs.find(h => Math.abs(h.totalCost - r.total) > 0.005);
     if (prev) {

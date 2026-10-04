@@ -1,7 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { estimateForgingDieCost, type DieSteel, type ShapeComplexity } from './forging-advisor.js';
-import { tariffElectricityPerKwh } from '../uk-tariff.js';
+import { moduleEnergy, FURNACE_FUEL } from '../module-energy.js';
 
 export interface ForgingInputs {
   materialId: string;
@@ -198,8 +198,13 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
 
   // Billet heating energy — a real per-part cost (furnace/induction), previously
   // collected but never costed. Priced on the whole billet at the fuel tariff.
-  const heatingCostPerPart =
-    (inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * (inputs.heatingEnergyPricePerKwh ?? tariffElectricityPerKwh());
+  // kWh of the furnace's fuel for the core to price at the costing book's tariff
+  // (module-energy.ts); £ only when a tariff was typed.
+  const furnace = FURNACE_FUEL[inputs.furnaceType ?? 'induction'] ?? FURNACE_FUEL.induction;
+  const heating = moduleEnergy((inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * furnace.perKwhDelivered,
+    furnace.fuel, inputs.heatingEnergyPricePerKwh != null ? inputs.heatingEnergyPricePerKwh / furnace.perKwhDelivered : undefined,
+    `billet heating (${inputs.furnaceType ?? 'induction'} furnace)`);
+  const heatingCostPerPart = heating.gbp;
 
   // Heat treat and descale are recurring per-part costs → rawMaterial.consumablesCostPerPart
   const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;
@@ -246,7 +251,11 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
 
   return {
-    rawMaterial: totalConsumables > 0 ? { ...rawMaterial, consumablesCostPerPart: totalConsumables } : rawMaterial,
+    rawMaterial: {
+      ...rawMaterial,
+      ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables } : {}),
+      ...(heating.kwh ? { energyKwh: heating.kwh } : {}),
+    },
     operations,
     tooling: finalTooling,
   };

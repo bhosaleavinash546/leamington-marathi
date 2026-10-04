@@ -943,6 +943,8 @@ export function regionalShopDefaults(
 
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
+  const ownEnergy = baseLibrary.energy.find(e => e.id === `energy-${region.toLowerCase()}`);
+  const elecTariff = ownEnergy?.electricityPerKwh ?? rd.energy.electricityPerKwh;
 
   // Derive labour rates from the ID suffix (lab-{region}-{category} → rd.labour[category]).
   // Any ID whose suffix matches a known category gets the target region's rate for that category;
@@ -986,6 +988,14 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     // is not a skilled one.
     labour: baseLibrary.labour.map(l => {
       const suffix = l.id.replace(/^lab-[a-z]+-/, '');
+      // The book's OWN rate for this role in this country wins (a company book's
+      // lab-cn-skilled from a supplier audit) — the regional table is the default
+      // where the book has none. It used to be ignored.
+      const own = region !== 'UK' ? baseLibrary.labour.find(x => x.id === `lab-${region.toLowerCase()}-${suffix}`) : undefined;
+      if (own) {
+        return { ...l, fullyLoadedRatePerHr: own.fullyLoadedRatePerHr, region: rd.name,
+          sourceNote: `${own.id} — the rate book's own ${rd.name} rate (${own.sourceNote ?? ''})`.trim(), confidence: own.confidence };
+      }
       const direct = labourCategoryRates[suffix];
       const cat = PROCESS_LABOUR_CATEGORY[suffix] ?? 'skilled';
       const rate = direct ?? Math.round(l.fullyLoadedRatePerHr * (rd.labour[cat] / REGIONAL_DATA.UK.labour[cat]) * 100) / 100;
@@ -1055,7 +1065,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       }
       const b = m.buildup;
       const annualKwh = b.energy / UK_ELECTRICITY_BASIS_PER_KWH;      // back out kWh from UK-basis £
-      const regionalEnergy = annualKwh * rd.energy.electricityPerKwh; // re-tariff at region £/kWh
+      const regionalEnergy = annualKwh * elecTariff; // re-tariff at the country's £/kWh
       const rebuilt = {
         ...b,
         annualDepreciation: b.annualDepreciation * rd.machineRateMultiplier,
@@ -1070,18 +1080,18 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         buildup: rebuilt,
         computedRatePerHr: computeMachineRatePerHr(rebuilt),
         region: rd.name,
-        sourceNote: `${m.sourceNote} | Regional: capex/overhead ×${rd.machineRateMultiplier}, energy re-tariffed @£${rd.energy.electricityPerKwh}/kWh`,
+        sourceNote: `${m.sourceNote} | Regional: capex/overhead ×${rd.machineRateMultiplier}, energy re-tariffed @£${elecTariff}/kWh`,
         confidence: 'Low' as const,
       };
     }),
 
-    // Adjust energy rates
+    // Energy: the book's own tariff for this country wins (energy-<cc>), else the regional table.
     energy: [
       {
         id: `energy-${region.toLowerCase()}`,
         region: rd.name,
-        electricityPerKwh: rd.energy.electricityPerKwh,
-        gasPerKwh: rd.energy.gasPerKwh,
+        electricityPerKwh: ownEnergy?.electricityPerKwh ?? rd.energy.electricityPerKwh,
+        gasPerKwh: ownEnergy?.gasPerKwh ?? rd.energy.gasPerKwh,
         effectiveDate: new Date().toISOString().slice(0, 10),
         sourceNote: `${rd.name} industrial energy benchmark 2026-09`,
         confidence: 'Low' as const,

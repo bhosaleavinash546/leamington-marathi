@@ -129,12 +129,13 @@ const base = () => ({
 describe('thermoforming engine — physics wiring', () => {
   it('adds a part-level oven-energy consumable', () => {
     const d = computeThermoformingDrivers(base());
-    expect(d.rawMaterial.consumablesCostPerPart ?? 0).toBeGreaterThan(0);
+    // oven energy as kWh for the core to price at the book's tariff (module-energy.ts)
+    expect(d.rawMaterial.energyKwh?.electricity ?? 0).toBeGreaterThan(0);
   });
   it('twin-sheet consumes more heating energy than vacuum', () => {
     const vac = computeThermoformingDrivers({ ...base(), method: 'vacuum' });
     const twin = computeThermoformingDrivers({ ...base(), method: 'twin_sheet' });
-    expect(twin.rawMaterial.consumablesCostPerPart!).toBeGreaterThan(vac.rawMaterial.consumablesCostPerPart!);
+    expect(twin.rawMaterial.energyKwh!.electricity!).toBeGreaterThan(vac.rawMaterial.energyKwh!.electricity!);
   });
   it('auto-fills heat + cool from thickness when left at 0 (cycle > pure trim/index)', () => {
     const d = computeThermoformingDrivers(base());

@@ -23,7 +23,6 @@ import { computeAluminiumExtrusionDrivers } from '../../src/engine/modules/alumi
 import { computeRotationalMouldingDrivers } from '../../src/engine/modules/rotational-moulding.js';
 import { computeCastingDrivers }           from '../../src/engine/modules/casting.js';
 import { computeForgingDrivers }           from '../../src/engine/modules/forging.js';
-import { resolveFurnaceEnergyPricePerKwh, type FurnaceType } from '../../src/engine/modules/forging-advisor.js';
 import { computePaintingDrivers }          from '../../src/engine/modules/painting.js';
 import { computeBIWDrivers }               from '../../src/engine/modules/biw-assembly.js';
 import { computePCBFabDrivers }            from '../../src/engine/modules/pcb-fab.js';
@@ -190,27 +189,10 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       };
     }
 
-    // Energy priced inside a module (casting melt, forging billet heating) is at
-    // the library's tariff unless the caller set one — so a regional library
-    // melts at its own region's price, not the UK's (casting review).
-    const tariff = (input.rateLibrary ?? DEFAULT_RATE_LIBRARY).energy?.[0]?.electricityPerKwh;
-    let moduleParams = params;
-    if (tariff != null && (commodity === 'casting' || commodity === 'cast_and_machine')) {
-      const p = params as { melt?: { energyPricePerKwh?: number } };
-      if (p.melt?.energyPricePerKwh == null) moduleParams = { ...p, melt: { ...p.melt, energyPricePerKwh: tariff } } as typeof params;
-    } else if (tariff != null && commodity === 'injection_moulding') {
-      const p = params as { drying?: { kwhPerKg: number; energyPricePerKwh?: number } };
-      if (p.drying && p.drying.energyPricePerKwh == null) moduleParams = { ...p, drying: { ...p.drying, energyPricePerKwh: tariff } } as typeof params;
-    } else if (tariff != null && commodity === 'forging') {
-      // Priced for the furnace the rules chose — the screen resolves the same
-      // way from its furnace drop-down (forging review: the screen's default was
-      // electric resistance, ×1.35, headless plain electricity).
-      const p = params as { heatingEnergyPricePerKwh?: number; furnaceType?: FurnaceType };
-      const gas = (input.rateLibrary ?? DEFAULT_RATE_LIBRARY).energy?.[0]?.gasPerKwh ?? 0.065;
-      if (p.heatingEnergyPricePerKwh == null) {
-        moduleParams = { ...p, heatingEnergyPricePerKwh: resolveFurnaceEnergyPricePerKwh(p.furnaceType ?? 'induction', tariff, gas) } as typeof params;
-      }
-    }
+    // Module energy (melt, billet heating, drying, extrusion, forming, furnace)
+    // comes out as kWh and the core prices it at THIS book's tariff
+    // (module-energy.ts) — no tariff is injected here any more.
+    const moduleParams = params;
 
     // Call the commodity-specific driver function — in the costed country's rate
     // book, so a module's own fallbacks (an energy tariff, a tool build-up) are

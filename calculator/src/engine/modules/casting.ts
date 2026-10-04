@@ -1,7 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
-import { tariffElectricityPerKwh } from '../uk-tariff.js';
+import { moduleEnergy } from '../module-energy.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -143,9 +143,11 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     netWeightKg: boughtNetKg,
     materialUtilization: boughtNetKg / (boughtNetKg + metalLostKg),
   };
-  const meltEnergyCostPerPart = pourKg
-    * (inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0)
-    * (inputs.melt?.energyPricePerKwh ?? tariffElectricityPerKwh());
+  // Melt energy on every kg poured — kWh for the core to price at the costing
+  // book's tariff (module-energy.ts); £ only when a tariff was typed.
+  const meltEnergy = moduleEnergy(pourKg * (inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0),
+    'electricity', inputs.melt?.energyPricePerKwh, 'melt energy on every kg poured');
+  const meltEnergyCostPerPart = meltEnergy.gbp;
 
   const operations: OperationInput[] = [];
   let tooling: ToolingInput;
@@ -346,9 +348,11 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
 
   return {
-    rawMaterial: totalConsumables > 0
-      ? { ...rawMaterial, consumablesCostPerPart: totalConsumables }
-      : rawMaterial,
+    rawMaterial: {
+      ...rawMaterial,
+      ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables } : {}),
+      ...(meltEnergy.kwh ? { energyKwh: meltEnergy.kwh } : {}),
+    },
     operations,
     tooling,
   };

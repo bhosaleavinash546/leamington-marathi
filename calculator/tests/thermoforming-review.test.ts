@@ -84,7 +84,9 @@ describe('4. the screen fields carry what they say', () => {
   it('index time is a time (the draw ratio was written into it) and electricity is £/kWh (kWh/kg was)', () => {
     const r = tf(COVER, 'mat-abs-tf').r;
     expect(r.provenance['tf-index'].ruleId).toBe('thermoforming.indexTimeSec');
-    expect(r.provenance['tf-kwh'].ruleId).toBe('thermoforming.energyPricePerKwh');
+    // No tariff rule any more: copying the tariff into tf-kwh fixed it at the analysis
+    // country. The forming kWh are priced by the core in the costing country (module-energy.ts).
+    expect(r.provenance['tf-kwh']).toBeUndefined();
     expect(THERMOFORMING_RULES.rules.find(x => x.id === 'thermoforming.drawRatio')!.fieldId).toBeUndefined();
   });
   it('parts per sheet, machine, crew, OEE, scrap, tool cooling and trim are set (the screen kept 4 up, its defaults)', () => {

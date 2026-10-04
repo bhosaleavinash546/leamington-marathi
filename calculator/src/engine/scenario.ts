@@ -1,3 +1,4 @@
+import { withRates } from './rate-context.js';
 import type { Scenario, ScenarioDelta, UniversalStackInput, PartCostResult } from './types.js';
 import { computeUniversalStack } from './core.js';
 import type { RateLibrary } from './types.js';
@@ -65,7 +66,8 @@ export function saveScenario(
   name: string,
   description: string,
   input: UniversalStackInput,
-  result: PartCostResult
+  result: PartCostResult,
+  region?: string,
 ): Scenario {
   const scenario: Scenario = {
     id: `sc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -74,6 +76,7 @@ export function saveScenario(
     input,
     result,
     createdAt: new Date().toISOString(),
+    ...(region ? { region } : {}),
   };
   _scenarios.push(scenario);
   _persist(scenario);
@@ -104,15 +107,19 @@ export function clearScenarios(): void {
 export function compareScenarios(
   baselineId: string,
   targetId: string,
-  library: RateLibrary
+  library: RateLibrary,
+  /** The rate book of a scenario's country. Given, each scenario is re-costed in
+   *  its own country; absent, both in `library` (the old behaviour). */
+  bookFor?: (region: string) => RateLibrary,
 ): { baseline: Scenario; target: Scenario; delta: ScenarioDelta } {
   const baseline = getScenario(baselineId);
   const target = getScenario(targetId);
   if (!baseline) throw new Error(`Scenario '${baselineId}' not found`);
   if (!target) throw new Error(`Scenario '${targetId}' not found`);
 
-  const bResult = computeUniversalStack(baseline.input, library);
-  const tResult = computeUniversalStack(target.input, library);
+  const bookOf = (s: Scenario) => (bookFor ? bookFor(s.region ?? 'UK') : library);
+  const bResult = withRates(bookOf(baseline), () => computeUniversalStack(baseline.input, bookOf(baseline)));
+  const tResult = withRates(bookOf(target), () => computeUniversalStack(target.input, bookOf(target)));
 
   const b = bResult.breakdown;
   const t = tResult.breakdown;
