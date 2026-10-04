@@ -85,6 +85,7 @@ async function main(): Promise<void> {
       }
       out[region]._errors = errors as unknown as Record<string, unknown>;
       await context.close();
+      writeFileSync(join(OUT, 'forms.json'), JSON.stringify(out, null, 1));   // after every country — a long run survives an interruption
     }
     writeFileSync(join(OUT, 'forms.json'), JSON.stringify(out, null, 1));
   } finally {
