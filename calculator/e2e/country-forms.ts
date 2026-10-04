@@ -7,7 +7,7 @@
  *   CV_FORMS_REGIONS=UK,IN CV_LIVE_OUT=/dir npx tsx e2e/country-forms.ts
  */
 import { spawn, type ChildProcess } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync, readFileSync, renameSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -85,7 +85,8 @@ async function main(): Promise<void> {
       }
       out[region]._errors = errors as unknown as Record<string, unknown>;
       await context.close();
-      writeFileSync(join(OUT, 'forms.json'), JSON.stringify(out, null, 1));   // after every country — a long run survives an interruption
+      // After every country, atomically (write + rename) — a long run survives an interruption.
+      writeFileSync(join(OUT, 'forms.json.tmp'), JSON.stringify(out, null, 1)); renameSync(join(OUT, 'forms.json.tmp'), join(OUT, 'forms.json'));
     }
     writeFileSync(join(OUT, 'forms.json'), JSON.stringify(out, null, 1));
   } finally {
