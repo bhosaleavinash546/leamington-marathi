@@ -407,6 +407,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   are NOT moved again by the overhead factor). The page applies whatever country its picker shows once wired
   (`data-country-ready`); the software hub (`swRegionFor`) and the agent prompt (`systemPromptFor(region)`) follow the
   country. See `docs/rates/all-39-countries-audit-2026-10.md`.
+  Comparison table rows are the part costed with that country SELECTED: the CAD response carries `analysisByRegion`
+  (rules-only), CAD apply fills the form once per comparison country (`captureCountryFills`), and each row re-collects
+  the form in that country's book (`src/ui/country-recost.ts`: CAD fills, £ defaults, shop fields, country + PCB
+  pickers follow; typed figures stay). Never re-price a stack input for another country — tools, services and
+  consumables would ride along. The PDF prints the screen's rows. Tests §15.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

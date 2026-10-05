@@ -170,3 +170,36 @@ npx vitest run tests/country-rates.test.ts           # §13: 40 parts × 39 coun
 CV_FORMS_REGIONS=DE,CN,US npx tsx e2e/country-forms.ts
 CV_LIVE_REGION=DE CV_LIVE_PART=../cad-audit/parts/<part> CV_LIVE_ANSWERS='{...}' npm run test:e2e:country
 ```
+
+## 8. Follow-up: the country comparison table (fixed)
+
+**What was wrong.** The headline costing was right in every country, but the comparison table's other rows were not. Each row re-priced only the rate lines (labour, machine-hours, materials, energy) in that country's book and moved tooling by the toolroom factor. Everything else the costed country had decided rode into every other row unchanged:
+- heat treatment, cores, NDT and other services;
+- a composite's fibre and resin price;
+- a CAD rule's die or mould cost;
+- the forms' £ defaults;
+- the PCB market;
+- the country that the gear heat treat and the paint line read off the page.
+
+A whole die was also scaled as if it were all toolroom labour. Against the true per-country costing of the 40 real parts the rows were up to 68% off (median 0.8%, worst decile 16%).
+
+**What a row is now.** Each row is the part costed with that country selected:
+- **Server (rules-only mode).** Every CAD response carries the part's analysis in each comparison country (`analysisByRegion`), built with the same rules and guards as the costed country.
+- **Screen.** CAD apply draws and fills the form once per comparison country and records the result. Each row then re-collects the form in that country, where:
+  - CAD fills, £ defaults and shop fields follow that country;
+  - both country pickers and the PCB market pickers are set to that country;
+  - a figure the engineer typed stays.
+
+  The row is costed in that country's book (`src/ui/country-recost.ts`), and the form and active book are restored exactly afterwards.
+- **PDF.** The report prints the same rows.
+
+**Proof (live, India selected, each row compared with that country costed live):**
+
+| Path | Rows checked | Median error | Worst |
+|---|---|---|---|
+| CAD, 14 real parts | 98 | 0.007% | 0.38% — the reference is rounded to the penny on a £0.94 part |
+| Commodity forms on defaults | 171 | 0.005% | £0.03 on a £750 composite (rounding of the exported total and FX) |
+
+Before the fix: PCB fab rows were 57–63% off, gear and paint rows 4–12% off, and die-heavy pressings up to 68% off.
+
+**AI-led and Compare modes** do not carry per-country analyses. Their other rows fall back to the stack re-price; Rules-only is the default and the mode the screen sends.
