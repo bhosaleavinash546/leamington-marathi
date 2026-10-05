@@ -136,6 +136,8 @@ async function main(): Promise<void> {
       const codes = api.sanityWarnings.map(w => w.code);
       if (!codes.includes('OCR_MATCHED_BY_FUNCTION')) fail('chip markings read by OCR were not attached to the BOM');
       log(`headline £${headline} = China row = server total; ${api.analysis.bom.length} lines, ${api.analysis.assembly.smtPlacements} placements, ${bd.automotiveGrade?.asil}`);
+      log(`breakdown ${JSON.stringify({ fab: bd.pcbFabPerBoard, asm: bd.assemblyPerBoard, bom: bd.bomCostPerBoard, log: bd.logisticsPerBoard, energy: bd.breakdown.energy, pack: bd.breakdown.packaging, yield: bd.breakdown.yieldLoss, autoFab: bd.breakdown.automotiveFab, autoAsm: bd.breakdown.automotiveAssembly })}`);
+      log(`lines ${JSON.stringify(api.analysis.bom.map(l => [(l as { refDes?: string }).refDes, l.priceSource, Math.round(l.unitPriceGBP * 10000) / 10000]))}`);
     }
     // ── The screen says where each price came from ────────────────────────
     const badges = await results.locator('.pcb-badge').allTextContents();

@@ -170,6 +170,18 @@ thinking block once caused empty BOMs); the board spec is stabilised
 parts under shields — stays an estimate until the files are attached; the screen's
 "to verify" bucket is the £1+ lines with no quote behind them.
 
+**PCB review (Oct 2026, `docs/pcb/pcb-review-2026-10.md`):** Stage 4 is ONE function, `runStage4` in
+`server/routes/pcb.ts`, used by `/analyze-image`, `/analyze-image-stream` (the screen's route), `/reanalyze` and
+`/reprice` (Stage 4 only, no AI — "Fetch Live Prices", a new country/qty) — never add a step to one route. Every
+line without a catalogue/distributor hit is priced from the class/named range (no `ai-estimate` survives;
+`capUnconfirmedPrices`); `livePriced` means a distributor was called THIS run (offline catalogue = CAT / CAT est.);
+ranges and catalogue breaks follow parts bought (qty × boards, `line.volumeMultiplier`). `consolidateBom` dedups
+designators across the 8 photos; `verifyOcrClaims` keeps "read off the chip" only when an OCR marking agrees; Stage 3b
+never asks for a price. The response carries `stage1Classification` / `ocrExtraction` / `orderQty` from the server
+(the client's `attachPcbPayload`), `analysis.rawBom` (so a re-price never applies volume or grading twice). Catalogue
+family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
+the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
+
 ### Frontend & server shell
 - `src/ui/main.ts` is a ~20.3k-line monolith holding most of the SPA (forms per
   commodity, results, CAD viewer wiring, exports). Cost inputs are collected by

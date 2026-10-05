@@ -130,11 +130,14 @@ describe('capUnconfirmedPrices — magnitude / no-match guard', () => {
     expect(out[0].needsVerification).not.toBe(true);
   });
 
-  it('does not touch a low-value confident line', () => {
+  // PCB review, Oct 2026: this test used to pin the breach — a "confident" unmatched
+  // line kept the model's price. Every non-catalogue line is now priced from the table.
+  it('a low-value confident line is held to its table range, not the model price', () => {
     const bom = [{ refDes: 'R1', partNumber: 'RC0402', componentType: 'passive_0402',
                    qty: 1, unitPriceGBP: 0.01, lineTotalGBP: 0.01, ocrExtracted: true }];
-    const { bom: out, capped } = capUnconfirmedPrices(bom);
-    expect(capped).toBe(0);
-    expect(out[0].unitPriceGBP).toBe(0.01);
+    const { bom: out } = capUnconfirmedPrices(bom);
+    expect(out[0].unitPriceGBP).toBe(0.003);          // 0402 resistor table ceiling at 100K
+    expect(out[0].aiEstimatedPriceGBP).toBe(0.01);    // kept for audit only
+    expect(out[0].priceSource).toBe('class-range');
   });
 });

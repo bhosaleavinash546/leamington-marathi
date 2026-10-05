@@ -133,3 +133,26 @@ export function reconcileOcrMarkings(
   }
   return { bom: out, attached, missing };
 }
+
+/**
+ * `ocrExtracted` is the model's claim that it read a part number off the chip, and
+ * it was trusted as such: it raised confidence to "identity confirmed" (a named
+ * price range) and showed "OCR extracted ✓" on screen. The model set it on its own
+ * word, and the second-look stage set it for any part number it returned (PCB review,
+ * Oct 2026). The claim now stands only when the part number agrees with a marking
+ * the OCR stage actually read; otherwise it is withdrawn (kept as `ocrClaimed`).
+ */
+export function verifyOcrClaims(bom: BomLine[], markings: string[]): { bom: BomLine[]; revoked: string[] } {
+  const marks = markings.map(m => squash(m)).filter(m => m.length >= 4);
+  const revoked: string[] = [];
+  const out = bom.map(l => {
+    if (l.ocrExtracted !== true) return l;
+    const pn = squash(String(l.partNumber ?? ''));
+    const core = coreToken(String(l.partNumber ?? ''));
+    const agrees = pn.length >= 4 && marks.some(m => m.includes(core.length >= 4 ? core : pn) || (m.length >= 5 && pn.includes(m)));
+    if (agrees) return l;
+    revoked.push(String(l.refDes ?? l.partNumber ?? '?'));
+    return { ...l, ocrExtracted: false, ocrClaimed: true, lineConf: Math.min(Number(l.lineConf) || 0, 0.8) };
+  });
+  return { bom: out, revoked };
+}

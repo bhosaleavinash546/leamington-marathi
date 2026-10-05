@@ -141,7 +141,7 @@ export interface PCBImageAnalysis {
   optimisationSuggestions: string[];
   confidenceLevel: 'High' | 'Medium' | 'Low';
   analysisLimitations: string[];
-  stage1Classification?: { domain: string; conf: number; hints: string[] };
+  stage1Classification?: { domain: string; conf: number; hints: string[]; failed?: boolean };
   ocrExtraction?: { icMarkings: string[]; extractionQuality: string };
   complexityScore?: PCBComplexityScore;
   // Country-aware cost data (added by server Stage 4)
@@ -171,6 +171,10 @@ export interface PCBImageAnalysis {
   _automotiveFabAdjustment?: AutomotiveFabAdjustment;
   _bomCompleteness?: BOMCompletenessResult;
   _programPricing?: ProgramPricingResult;
+  /** The order quantity the server costed at (the page field can change afterwards). */
+  _orderQty?: number;
+  /** Stage 4 did not complete: the figures are incomplete. */
+  _costingFailed?: boolean;
   /** Server returned the stored result for this exact photo+qty+country (repeatable). */
   fromCache?: boolean;
 }

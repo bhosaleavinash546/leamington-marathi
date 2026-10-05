@@ -517,7 +517,13 @@ describe('11. all commodities: no fixed UK £ survives a country change ("twice 
     expect(ind.burnInGBP / gb.burnInGBP).toBeCloseTo(S.ndtServiceFactor('IN'), 1);
     const gbSmall = computeAutomotiveAssemblyCost(asm, 'ASIL-D', 500, 10, 'gb'), inSmall = computeAutomotiveAssemblyCost(asm, 'ASIL-D', 500, 10, 'in');
     expect(inSmall.serialisationGBP / gbSmall.serialisationGBP).toBeCloseTo(S.processServiceFactor('IN'), 1);
-    expect(readFileSync('server/routes/pcb.ts', 'utf8').match(/selectedCountry2?\)/g)!.length).toBeGreaterThanOrEqual(9);
+    // Every premium is priced in the board's country. Stage 4 was three copies (9 call
+    // sites); it is one shared runStage4 now (PCB review, Oct 2026), so check the calls themselves.
+    const src = readFileSync('server/routes/pcb.ts', 'utf8');
+    expect(src).toMatch(/computeAutomotiveNRE\(asilLevel, bomTotal, selectedCountry\)/);
+    expect(src).toMatch(/computeConformalCoatingCost\(boardSpec, domain, asilLevel, selectedCountry\)/);
+    expect(src).toMatch(/computeAutomotiveAssemblyCost\(assemblyData, asil, orderQty, bd\.assemblyPerBoard, bd\.countryId\)/);
+    expect(src).toMatch(/computeAutomotiveFabAdjustment\(boardSpec, bd\.pcbFabPerBoard, domain, bd\.panelInfo\?\.boardsPerPanel \?\? 1, bd\.countryId\)/);
   });
 
   it('heat-treat load QC follows the country (it was a UK £ per load)', async () => {

@@ -208,7 +208,10 @@ export async function fetchOctopartPrices(
           if (!eligible.length) continue;
           // highest break qty that is still <= requested qty = best applicable price
           const pick = eligible.sort((a, b) => b.quantity - a.quantity)[0];
-          if (!best || pick.price < best.price) {
+          const stock = offer.inventoryLevel ?? 0;
+          // Prefer an offer that is in stock: the cheapest offer from a seller with none is not a price anyone can buy at.
+          const better = !best || (stock > 0 && best.stock <= 0) || ((stock > 0) === (best.stock > 0) && pick.price < best.price);
+          if (better) {
             best = { price: pick.price, currency: pick.currency, qty: pick.quantity, stock: offer.inventoryLevel ?? 0, sku: offer.sku ?? '' };
           }
         }
@@ -228,6 +231,7 @@ export async function fetchOctopartPrices(
         distPartNumber: best.sku,
         rawCurrency: best.currency,
         rawUnitPrice: best.price,
+        sourceNote: `Octopart/Nexar offer ${best.sku || ''} at the ${best.qty.toLocaleString('en-GB')} break (${best.currency} ${best.price}), ${best.stock > 0 ? `${best.stock.toLocaleString('en-GB')} in stock` : 'no stock shown'}, fetched ${new Date().toISOString().slice(0, 10)}`,
       });
     }
     return results;
@@ -242,6 +246,8 @@ export async function fetchOctopartPrices(
 const RS_ENDPOINT = 'https://api.rs-online.com/searchProducts/v3/products/search';
 
 interface RSProduct {
+  /** RS's manufacturer part number field (name as documented by RS; checked when present). */
+  manufacturerPartNumber?: string;
   title?: string;
   description?: string;
   brandName?: string;
@@ -281,7 +287,13 @@ export async function fetchRSPrices(
       }
 
       const data = await resp.json() as RSResponse;
-      const product = data.stockProducts?.[0];
+      // The product whose OWN part number (or title) contains the query — a keyword
+      // search's first hit can be a different part (PCB review, Oct 2026).
+      const sq = (t: string) => t.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const want = sq(mpn);
+      const product = (data.stockProducts ?? []).find(p =>
+        typeof p.unitPrice === 'number' && want.length >= 4 &&
+        (sq(p.manufacturerPartNumber ?? '').startsWith(want) || sq(p.title ?? '').includes(want)));
       if (!product || typeof product.unitPrice !== 'number') continue;
 
       results.push({
@@ -294,9 +306,10 @@ export async function fetchRSPrices(
         leadTimeWeeks: null,
         provider: 'rs',
         automotiveGrade: isAutomotiveGrade(mpn, product.title ?? '', product.description ?? ''),
-        distPartNumber: '',
+        distPartNumber: product.manufacturerPartNumber ?? '',
         rawCurrency: 'GBP',
         rawUnitPrice: product.unitPrice,
+        sourceNote: `RS Components, single-unit price (no volume breaks), fetched ${new Date().toISOString().slice(0, 10)} — overstates a volume buy; confirm with a quote`,
       });
     } catch (err) {
       console.warn(`[LivePricing/RS] ${mpn}:`, (err as Error).message);

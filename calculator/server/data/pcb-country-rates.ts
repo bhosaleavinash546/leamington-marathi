@@ -1275,9 +1275,12 @@ export function computeVolumeCurve(
   baseInput: PCBCostInput,
   countryId: string,
   qtys: number[] = [100, 250, 500, 1000, 2500, 5000, 10000, 25000],
+  /** The BOM at another order quantity (component price breaks). Without it the BOM
+   *  stayed at the analysed quantity's prices at every point of the curve. */
+  bomAt?: (qty: number) => number,
 ): VolumeCurvePoint[] {
   return qtys.map(qty => {
-    const result = computePCBCountryCost({ ...baseInput, orderQuantity: qty }, countryId);
+    const result = computePCBCountryCost({ ...baseInput, orderQuantity: qty, ...(bomAt ? { totalBOMCostGBP: bomAt(qty) } : {}) }, countryId);
     return {
       qty,
       totalPerBoard: result.totalPerBoard,

@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted } from './pcb-price-catalogue.js';
+import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, normaliseMPN } from './pcb-price-catalogue.js';
 import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
 
 export type BomLine = Record<string, unknown>;
@@ -55,14 +55,28 @@ export function reconcileBomWithCatalogue(
     if (hit) {
       matched++;
       const aiPrice = num(line.unitPriceGBP);
+      const offline = hit.provider === 'catalogue';
+      const entry = offline ? catalogueEntry(pn) : null;
       return {
         ...line,
         aiEstimatedPriceGBP: round(aiPrice, 4),
-        unitPriceGBP: round(hit.unitPriceGBP, 4),
-        lineTotalGBP: round(hit.unitPriceGBP * qty, 2),
+        unitPriceGBP: round(hit.unitPriceGBP, 5),
+        lineTotalGBP: round(hit.unitPriceGBP * qty, 4),
         priceSource: 'catalogue',
-        livePriced: true,
+        // LIVE means a distributor was asked during this run. The offline catalogue is
+        // a dated table (most entries are engineering estimates) — it was badged LIVE.
+        livePriced: !offline,
+        catalogueConfidence: offline ? (entry?.confidence ?? 'estimate') : 'distributor',
         liveProvider: hit.provider,
+        // Specifications from the source that priced the line, not the model's reading.
+        specSource: offline ? 'catalogue' : hit.provider,
+        catalogueMpn: hit.distPartNumber ?? hit.mpn,
+        catalogueMfr: hit.manufacturer ?? entry?.mfr,
+        catalogueDesc: hit.description ?? entry?.desc,
+        cataloguePkg: entry?.pkg,
+        catalogueAsOf: entry?.asOf,
+        // The catalogue matched a FAMILY entry, not this exact part — say which part priced it.
+        catalogueExact: entry ? [entry.mpn, ...(entry.aliases ?? [])].some(k => normaliseMPN(k) === normaliseMPN(pn)) : true,
         stockQty: hit.stockQty,
         leadTimeWeeks: hit.leadTimeWeeks,
         automotiveGrade: hit.automotiveGrade,
@@ -70,18 +84,24 @@ export function reconcileBomWithCatalogue(
         // A catalogue ESTIMATE is a price with a stated basis, not a quote: it
         // stays in the headline (identity is confirmed) but is listed to verify
         // when the line is worth it.
-        needsVerification: hit.provider === 'catalogue' && /engineering estimate/.test(hit.sourceNote ?? '') && hit.unitPriceGBP * qty >= 1,
+        // A catalogue ESTIMATE, and a live single-unit price (RS) for a volume buy, are
+        // prices with a stated basis, not quotes: listed to verify when the line matters.
+        needsVerification: hit.unitPriceGBP * qty >= 1 && (
+          (hit.provider === 'catalogue' && /engineering estimate/.test(hit.sourceNote ?? ''))
+          || (hit.provider !== 'catalogue' && (hit.priceBreakQty ?? 0) <= 1 && num(line.partsBought) > 100)),
         priceNote: hit.sourceNote ?? (line.priceNote as string | undefined),
       };
     }
 
-    // No catalogue match — keep the AI estimate, flag if low-confidence or unidentified.
+    // No catalogue match. The line is priced from the tool's own tables in
+    // capUnconfirmedPrices; here it is only flagged when its identity is weak.
     const conf = num(line.lineConf);
     const flag = pn.length === 0 || conf < VERIFY_CONFIDENCE_THRESHOLD;
     if (flag) needsVerification++;
     return {
       ...line,
       priceSource: (line.priceSource as string) ?? 'ai-estimate',
+      specSource: 'photo',
       needsVerification: flag,
     };
   });
@@ -148,7 +168,13 @@ const HIGH_VALUE_UNMATCHED_GBP = 10;
  *  NXP S32R294 → £22–48 at 100K). Supplied by the route, which owns the ranges. */
 export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string; generic?: boolean } | null;
 
-export interface CapOptions { automotive?: boolean }
+export interface CapOptions {
+  automotive?: boolean;
+  /** The order's price factor relative to the 100K basis of the class table (pcb.ts
+   *  getVolumeMultiplier). Model estimates arrive already scaled by it; the table
+   *  must be too, or a 100-board order is clamped back to 100K prices. Default 1. */
+  volumeMultiplier?: number;
+}
 
 export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, opts: CapOptions = {}): { bom: BomLine[]; capped: number } {
   let capped = 0;
@@ -191,7 +217,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
         ...line,
         aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
         unitPriceGBP: round(inRange, 4),
-        lineTotalGBP: round(inRange * qty0, 2),
+        lineTotalGBP: round(inRange * qty0, 4),
         priceSource: range.generic ? 'function-range' : 'known-range',
         priceCapped: inRange < unit - 1e-6,
         priceRaised: inRange > unit + 1e-6,
@@ -200,15 +226,12 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
         needsVerification: true,
       };
     }
-    const unconfirmed = line.needsVerification === true
-      || line.unconfirmedHighValue === true
-      || line.bomSource === 'file'                    // a file names the part; the table prices it
-      || !(unit > 0)                                  // no estimate at all
-      || pn.length === 0
-      || /\b(class|est|unknown|generic)\b/i.test(pn)
-      // Magnitude / no-match guard — the fix for confident misreads.
-      || unit > HIGH_VALUE_UNMATCHED_GBP;
-    if (!unconfirmed) return line;
+    // EVERY line without a catalogue or live hit is priced from the tool's own
+    // table — the model's estimate never reaches the total on its own. A line
+    // used to keep the model's price whenever it carried a part number, lineConf
+    // ≥ 0.6 and a price ≤ £10, and was then counted as CONFIRMED (PCB review,
+    // Oct 2026: the golden rule "AI never sets a price" was broken for most of a
+    // typical BOM).
     const qty = qty0;
     // Every other unconfirmed line is priced INSIDE its class range (the tool's
     // own table, pcb-class-pricing.ts). The model's estimate only chooses the
@@ -216,20 +239,22 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     // midpoint. Ceilings: the class median for an unidentified part (a guessed
     // "AURIX-class" BGA must not enter at £60) and the description caps (an
     // inductor, an electrolytic, a SOT-23 diode) where they are tighter.
-    const cls = classRange({ ...line, description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}` }, opts.automotive === true);
+    const k = num(line.volumeMultiplier) > 0 ? num(line.volumeMultiplier) : opts.volumeMultiplier && opts.volumeMultiplier > 0 ? opts.volumeMultiplier : 1;
+    const cls0 = classRange({ ...line, description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}` }, opts.automotive === true);
+    const cls = k === 1 ? cls0 : { ...cls0, lo: round(cls0.lo * k, 5), hi: round(cls0.hi * k, 5) };
     const dCap = descriptionCap(String(line.description ?? ''));
     // The class median is a guard for an UNIDENTIFIED part ("some BGA"); a line
     // whose description names its kind (inductor, PMIC, electrolytic) is bounded
     // by that kind's own range instead.
     const unidentified = /\.any(\.|$)/.test(cls.key) || /\b(class|est|unknown|generic)\b/i.test(pn);
-    const ceiling = Math.min(unidentified ? classMedianCap(String(line.componentType ?? ''), Infinity) : Infinity, cls.hi, dCap ?? Infinity);
+    const ceiling = Math.min(unidentified ? classMedianCap(String(line.componentType ?? ''), Infinity) * k : Infinity, cls.hi, dCap != null ? dCap * k : Infinity);
     const lo = Math.min(cls.lo, ceiling);
-    const priced = unit > 0 ? Math.min(Math.max(unit, lo), ceiling) : Math.min(classDefaultPrice(cls), ceiling);
+    const priced = unit > 0 ? Math.min(Math.max(unit, lo), ceiling) : Math.min(classDefaultPrice(cls0) * k, ceiling);
     const lowered = priced < unit - 1e-6;
     // Counted as a cap only when it moved the price by a margin (a 0402 guessed
     // £0.001 over its ceiling is a rounding, not a caught misread).
     if (lowered && (unit - priced) / unit > 0.10) capped++;
-    const lineTotal = round(priced * qty, 2);
+    const lineTotal = round(priced * qty, 4);
     return {
       ...line,
       aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? (unit > 0 ? round(unit, 4) : undefined),
@@ -239,7 +264,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       priceBasis: cls.key,
       priceCapped: lowered,
       priceRaised: priced > unit + 1e-6 && unit > 0,
-      priceNote: `${cls.label}: table range £${cls.lo}–£${cls.hi} at 100K${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}${unit > 0 ? `; AI estimate £${round(unit, 4)}` : '; no estimate — lower-half midpoint'}`,
+      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}${unit > 0 ? `; AI estimate £${round(unit, 4)}` : '; no estimate — lower-half midpoint'}`,
       // A table price is a class average, not a quote: worth an engineer's minute
       // only where the line moves the board (≥ £1). Passives priced by count from
       // the table are the best anyone can do without an order, and stay in the
@@ -258,7 +283,8 @@ export function splitConfirmedUnverified(bom: BomLine[]): { confirmed: number; u
     const t = num(l.lineTotalGBP);
     if (l.needsVerification === true) unverified += t; else confirmed += t;
   }
-  return { confirmed: round(confirmed, 2), unverified: round(unverified, 2) };
+  const c = round(confirmed, 2);
+  return { confirmed: c, unverified: round(round(confirmed + unverified, 2) - c, 2) };
 }
 
 export interface GroundingOutcome {
@@ -286,7 +312,9 @@ export function groundAndSplit(bom: BomLine[], livePrices: LivePriceResult[], kn
     confirmedTotal: split.confirmed,
     unverifiedTotal: split.unverified,
     matched: reconciled.matched,
-    needsVerification: reconciled.needsVerification,
+    // Counted on the FINAL lines: the cap step flags lines too, and the count shown
+    // on screen must equal the rows marked "to verify" (it counted reconcile only).
+    needsVerification: capResult.bom.filter(l => l.needsVerification === true).length,
     capped: capResult.capped,
   };
 }

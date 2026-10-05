@@ -1,0 +1,105 @@
+/**
+ * PCB Image → BOM → Cost review (Oct 2026) — docs/pcb/pcb-review-2026-10.md.
+ * Each test pins one defect found by the review so it cannot return.
+ */
+import { describe, it, expect } from 'vitest';
+import { groundAndSplit, offlineCataloguePrices } from '../server/utils/pcb-bom-grounding.js';
+
+describe('golden rule: the model never sets a price', () => {
+  it('a confident, part-numbered, sub-£10 line NOT in the catalogue is priced from the table and is not "confirmed"', () => {
+    // Before: kept £9.50, priceSource ai-estimate, needsVerification false → counted as confirmed.
+    const bom = [{ refDes: 'U7', partNumber: 'XYZ9921', componentType: 'ic_qfn', description: 'buck regulator', qty: 1, unitPriceGBP: 9.5, lineConf: 0.8 }];
+    const g = groundAndSplit(bom, []);
+    const l = g.bom[0]!;
+    expect(l.priceSource).not.toBe('ai-estimate');
+    expect(['class-range', 'known-range', 'function-range']).toContain(l.priceSource);
+    expect(l.aiEstimatedPriceGBP).toBe(9.5);
+    // No line priced by the model alone counts toward the confirmed subtotal.
+    expect(g.bom.filter(x => x.priceSource === 'ai-estimate' && x.needsVerification !== true)).toHaveLength(0);
+  });
+});
+
+describe('offline catalogue is not "live"', () => {
+  it('a catalogue hit is badged catalogue, not live; specs come from the catalogue', () => {
+    const prices = offlineCataloguePrices(['TJA1044GT'], 10_000);
+    const g = groundAndSplit([{ refDes: 'U2', partNumber: 'TJA1044GT', componentType: 'ic_soic', qty: 1, unitPriceGBP: 3 }], prices);
+    const l = g.bom[0]!;
+    expect(l.priceSource).toBe('catalogue');
+    expect(l.livePriced).toBe(false);
+    expect(l.specSource).toBe('catalogue');
+    expect(l.catalogueMfr).toBe('NXP');
+    expect(l.cataloguePkg).toBe('SOIC-8');
+    expect(l.catalogueExact).toBe(true);
+  });
+});
+
+describe('arithmetic', () => {
+  it('cheap passives are not rounded away: 200 × £0.002 lines sum to £0.40, not £0', () => {
+    const bom = Array.from({ length: 200 }, (_, i) => ({ refDes: `R${i + 1}`, partNumber: '', componentType: 'passive_0402', description: 'resistor', qty: 1, unitPriceGBP: 0.002 }));
+    const g = groundAndSplit(bom, []);
+    expect(g.bomTotal).toBeCloseTo(0.4, 2);
+  });
+  it('the class range follows the order volume (a 100-board order is not clamped to 100K prices)', () => {
+    const line = { refDes: 'L1', partNumber: '', componentType: 'inductor_smd', description: 'power inductor', qty: 1, unitPriceGBP: 0 };
+    const at100k = groundAndSplit([line], [], undefined, { volumeMultiplier: 1 }).bom[0]!.unitPriceGBP as number;
+    const at100 = groundAndSplit([line], [], undefined, { volumeMultiplier: 6 }).bom[0]!.unitPriceGBP as number;
+    expect(at100).toBeCloseTo(at100k * 6, 4);
+  });
+  it('the "to verify" count equals the lines flagged', () => {
+    const bom = [
+      { refDes: 'U1', partNumber: '', componentType: 'ic_bga', description: 'processor', qty: 1, unitPriceGBP: 30, lineConf: 0.9 },
+      { refDes: 'U2', partNumber: 'QQ123', componentType: 'ic_qfn', description: 'sensor', qty: 1, unitPriceGBP: 4, lineConf: 0.9 },
+      { refDes: 'C1', partNumber: '', componentType: 'passive_0402', description: 'capacitor', qty: 1, unitPriceGBP: 0.002, lineConf: 0.9 },
+    ];
+    const g = groundAndSplit(bom, []);
+    expect(g.needsVerification).toBe(g.bom.filter(l => l.needsVerification === true).length);
+  });
+});
+
+import { catalogueEntry } from '../server/utils/pcb-price-catalogue.js';
+describe('catalogue matching does not price a different variant', () => {
+  it.each(['MT53E1G32D2FW', 'MB85RS4MTPF', 'DF40C-100DS', '43045-2400', '744043471', 'GCM155R71H103', 'FS2600'])(
+    '%s (a value / density / pin-count code after the family) is not matched', mpn => {
+      expect(catalogueEntry(mpn)).toBeNull();
+    });
+  it.each([['TJA1044GT/3', 'TJA1044GT'], ['STM32F407VGT6', 'STM32F407'], ['TJA1044GTK', 'TJA1044GT']])(
+    '%s (an ordering suffix) still resolves to %s', (mpn, want) => {
+      expect(catalogueEntry(mpn)?.mpn).toBe(want);
+    });
+});
+
+import { consolidateBom } from '../server/utils/pcb-bom-consolidate.js';
+describe('8 views of one board: a part is counted once', () => {
+  it('a line repeating a designator from another photo is removed', () => {
+    const r = consolidateBom([
+      { refDes: 'U1', partNumber: 'TJA1044GT', qty: 1 },
+      { refDes: 'U1', partNumber: 'TJA1044GT', qty: 1, description: 'seen again in close-up 2' },
+    ]);
+    expect(r.bom).toHaveLength(1);
+    expect(r.warnings.map(w => w.code)).toContain('BOM_DUPLICATE_VIEWS');
+  });
+  it('overlapping ranges count each designator once', () => {
+    const r = consolidateBom([{ refDes: 'C1-C10', qty: 10 }, { refDes: 'C8-C12', qty: 5 }]);
+    expect(r.bom.reduce((s, l) => s + Number(l.qty), 0)).toBe(12);
+  });
+  it('quantity follows the designators and is a whole number', () => {
+    const r = consolidateBom([{ refDes: 'R1-R10', qty: 12 }, { refDes: 'L1', qty: 1.5 }, { refDes: 'D1', qty: -2 }]);
+    expect(r.bom.map(l => l.qty)).toEqual([10, 2, 1]);
+    expect(r.warnings.map(w => w.code)).toEqual(expect.arrayContaining(['BOM_QTY_FROM_REFDES', 'BOM_QTY_NOT_WHOLE']));
+  });
+  it('a clean BOM is returned unchanged with no warnings', () => {
+    const bom = [{ refDes: 'U1', qty: 1 }, { refDes: 'R1, R2', qty: 2 }, { refDes: '', partNumber: 'X', qty: 3 }];
+    const r = consolidateBom(bom);
+    expect(r.bom).toEqual(bom);
+    expect(r.warnings).toHaveLength(0);
+  });
+});
+
+import { parseBOMFile } from '../server/utils/pcb-bom-parser.js';
+describe('BOM file quantities', () => {
+  it('reads "1,000", "2 pcs" and "1.5" as whole part counts (1.5 was read as 15)', () => {
+    const csv = 'RefDes,PartNumber,Description,Qty\nJ1,ABC123,connector,"1,000"\nU1,XYZ9,ic,2 pcs\nL1,IND1,inductor,1.5\n';
+    const q = Object.fromEntries(parseBOMFile(csv, 'bom.csv').map(l => [l.refDes, l.qty]));
+    expect(q).toEqual({ J1: 1000, U1: 2, L1: 2 });
+  });
+});

@@ -62,8 +62,23 @@ export function catalogueEntry(mpn: string): CatalogueEntry | null {
     if (t.length >= 4) cands.add(t);
   }
   for (const c of cands) { const e = EXACT.get(c); if (e) return e; }
-  for (const c of cands) for (const [pre, e] of PREFIX) if (c.startsWith(pre)) return e;
+  for (const c of cands) for (const [pre, e] of PREFIX) if (c.startsWith(pre) && orderingSuffix(c.slice(pre.length))) return e;
   return null;
+}
+
+/**
+ * A family entry may price a longer part number only when what follows the family
+ * is an ordering suffix — package, temperature grade, tape-and-reel (STM32F407 + VGT6,
+ * TJA1044 + GT). When it starts with a digit it is a value, density or pin-count code,
+ * and a different part: MT53E + 1G32… is 32 Gb, not the 8 Gb entry; 744043 + 471 is
+ * 470 µH; DF40C + 100DS is 100 ways (PCB review, Oct 2026). Those lines fall to the
+ * class range and are flagged instead of being priced as the wrong part at 0.95.
+ */
+function orderingSuffix(rest: string): boolean {
+  if (rest === '') return true;
+  if (rest.length > 6) return false;
+  if (!/^[A-Z]/.test(rest)) return false;
+  return (rest.match(/\d/g) ?? []).length <= 1;
 }
 
 /** Catalogue unit price at the ~10k break (GBP), or null. */

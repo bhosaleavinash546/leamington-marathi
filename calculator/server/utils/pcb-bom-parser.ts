@@ -98,7 +98,10 @@ function emitLine(
   out: ParsedBOMLine[],
 ): void {
   const refs = expandRefDes(refDesRaw);
-  const parsedQty = parseInt(qtyRaw.replace(/[^\d]/g, ''), 10);
+  // The first number in the cell ("1,000" → 1000, "2 pcs" → 2). Stripping every
+  // non-digit read "1.5" as 15 (PCB review, Oct 2026); a part count is whole.
+  const qm = qtyRaw.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+  const parsedQty = qm ? Math.round(parseFloat(qm[0])) : NaN;
   const pn = cleanPN(partNumber);
   const mfr = manufacturer.trim() || undefined;
 

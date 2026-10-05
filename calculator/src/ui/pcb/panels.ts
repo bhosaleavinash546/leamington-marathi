@@ -8,6 +8,15 @@ import type { PCBImageAnalysis, VolumeCurvePoint } from './types.js';
 import { escHtml } from '../toast.js';
 import { PCB_COUNTRY_META } from '../data/pcb-country-meta.js';
 
+/**
+ * The part of a country's total that is not fab, assembly, logistics or BOM: energy,
+ * packaging and yield loss. The tables showed four columns that did not add up to the
+ * total (China radar: £69.79 visible vs £70.89). As the residual, a row always adds up.
+ */
+export function otherPerBoard(c: { totalPerBoard: number; pcbFabPerBoard: number; assemblyPerBoard: number; logisticsPerBoard: number; bomCostPerBoard: number }): number {
+  return Math.round((c.totalPerBoard - c.pcbFabPerBoard - c.assemblyPerBoard - c.logisticsPerBoard - c.bomCostPerBoard) * 100) / 100;
+}
+
 export function buildCostDriverChart(r: PCBImageAnalysis): string {
   if (!r.bom || r.bom.length === 0) return '';
   const groups = new Map<string, number>();
@@ -53,7 +62,7 @@ export function buildNPISection(r: PCBImageAnalysis): string {
         <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">Production (this volume)</div>
         <div style="font-size:1rem;font-weight:700;color:var(--green)">£${n.unitCostProd.toFixed(2)}</div>
         <div style="font-size:0.6rem;color:var(--text-muted)">per unit</div>
-        <div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px">${((n.unitCostNPI/n.unitCostProd-1)*100).toFixed(0)}% saving vs NPI rate</div>
+        <div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px">${n.unitCostNPI > 0 ? ((1 - n.unitCostProd / n.unitCostNPI) * 100).toFixed(0) : '0'}% below the NPI rate · the headline total</div>
       </div>
       <div style="padding:8px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)">
         <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">One-time NRE Costs</div>
@@ -128,9 +137,11 @@ export function buildAutomotiveNRESection(r: PCBImageAnalysis): string {
         ⚠ ${enforced} component${enforced > 1 ? 's' : ''} had pricing enforced to AEC-Q automotive grade
       </div>`
     : '';
+  // Coating is a PER-BOARD cost and is already in the headline (country rate × area).
+  // It used to be added to this ONE-TIME total, from a second coating model ~80× apart.
   const coating = r._conformalCoatingCost ?? 0;
-  const coatingRow = coating > 0
-    ? `<tr><td style="padding:3px 6px;font-size:0.68rem">Conformal coating</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(coating)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Selective UV acrylic / polyurethane</td></tr>`
+  const coatingNote = coating > 0
+    ? `<div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">Conformal coating is a per-board cost (£${coating.toFixed(2)}/board), included in the headline — not in this one-time total.</div>`
     : '';
   return `<div style="margin-top:8px;padding:10px 12px;background:rgba(234,88,12,0.06);border:1px solid rgba(234,88,12,0.25);border-radius:8px">
     <div style="font-size:0.72rem;font-weight:600;color:#ea580c;margin-bottom:8px">Automotive NRE Qualification Costs (${nre.asilLevel})</div>
@@ -145,10 +156,10 @@ export function buildAutomotiveNRESection(r: PCBImageAnalysis): string {
         <tr><td style="padding:3px 6px;font-size:0.68rem">FMEA (Failure Mode Analysis)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.fmeaCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">D-FMEA + P-FMEA per AIAG-VDA</td></tr>
         <tr><td style="padding:3px 6px;font-size:0.68rem">DVP&R (Validation & Reporting)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.dvprCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Environmental, EMC, vibration tests</td></tr>
         ${nre.asilAuditCost > 0 ? `<tr><td style="padding:3px 6px;font-size:0.68rem">ISO 26262 Safety Audit</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.asilAuditCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">ASIL classification, safety case review</td></tr>` : ''}
-        ${coatingRow}
-        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total Automotive NRE</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#ea580c">${fmt(nre.totalNRE + coating)}</td><td></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total Automotive NRE (one-time)</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#ea580c">${fmt(nre.totalNRE)}</td><td></td></tr>
       </tbody>
     </table>
+    ${coatingNote}
     ${enforcedBadge}
   </div>`;
 }
@@ -288,7 +299,7 @@ export function buildProgramPricingSection(r: PCBImageAnalysis): string {
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
       <div style="text-align:center;padding:8px;background:rgba(0,0,0,0.04);border-radius:4px">
-        <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:2px">Distributor spot BOM</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:2px">BOM in the headline</div>
         <div style="font-size:0.85rem;font-weight:700;text-decoration:line-through;color:var(--text-muted)">£${pp.spotBOMTotal.toFixed(2)}</div>
       </div>
       <div style="text-align:center;padding:8px;background:${color}15;border-radius:4px;border:1px solid ${color}30">
@@ -300,7 +311,7 @@ export function buildProgramPricingSection(r: PCBImageAnalysis): string {
         <div style="font-size:0.85rem;font-weight:700;color:var(--green)">−£${pp.savingsGBP.toFixed(2)}</div>
       </div>
     </div>
-    <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">Assumes ~${Math.round(pp.annualProgramVolume/1000)}K annual program volume (${pp.multiplier.toFixed(2)}× spot multiplier). Actual contract terms vary.</div>
+    <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">A negotiation lever, <strong>not in the headline</strong>: starts from the BOM as costed in the selected country (volume and sourcing factors already applied) and assumes ~${Math.round(pp.annualProgramVolume/1000)}K annual program volume (${pp.multiplier.toFixed(2)}× further). Actual contract terms vary.</div>
   </div>`;
 }
 
@@ -449,6 +460,8 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
       <td>£${c.pcbFabPerBoard.toFixed(2)}</td>
       <td>£${c.assemblyPerBoard.toFixed(2)}</td>
       <td>£${c.logisticsPerBoard.toFixed(2)}</td>
+      <td>£${c.bomCostPerBoard.toFixed(2)}</td>
+      <td title="Energy, ESD packaging and yield loss">£${otherPerBoard(c).toFixed(2)}</td>
       <td style="color:var(--accent);font-weight:700" data-country-total="${c.countryId}">£${c.totalPerBoard.toFixed(2)}</td>
       ${deltaCell}
       <td>
@@ -477,6 +490,8 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
               <th>PCB Fab</th>
               <th>Assembly</th>
               <th>Logistics</th>
+              <th>BOM</th>
+              <th title="Energy, ESD packaging and yield loss — part of the total, not in the four columns">Energy/pack/yield</th>
               <th>Total/Board</th>
               ${r._costDeltas ? '<th>&#916; vs orig</th>' : ''}
               <th style="min-width:60px">Cost bar</th>

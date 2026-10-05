@@ -21,7 +21,9 @@ import {
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
-import { reconcileOcrMarkings } from '../utils/pcb-ocr-reconcile.js';
+import { reconcileOcrMarkings, verifyOcrClaims } from '../utils/pcb-ocr-reconcile.js';
+import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
+import { isNotFitted } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
 import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
@@ -151,8 +153,12 @@ export function prepareBOMFromOCR(
   icMarkings: string[],
   assemblyData: Record<string, unknown>,
 ): { bom: Array<Record<string, unknown>>; warnings: SanityWarning[] } {
-  const rec = reconcileOcrMarkings(rawBOM, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
+  // The model's own "read off the chip" flag stands only where a real OCR marking agrees.
+  const claims = verifyOcrClaims(rawBOM, icMarkings ?? []);
+  const rec = reconcileOcrMarkings(claims.bom, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
   const warnings: SanityWarning[] = [];
+  if (claims.revoked.length) warnings.push({ code: 'OCR_CLAIM_NOT_CONFIRMED', severity: 'warn',
+    message: `${claims.revoked.length} line(s) were marked as read off the chip, but no marking the OCR stage read agrees: ${claims.revoked.slice(0, 10).join(', ')}${claims.revoked.length > 10 ? ', …' : ''}. Their part numbers are kept as readings to confirm.` });
   if (rec.attached.length) warnings.push({ code: 'OCR_MATCHED_BY_FUNCTION', severity: 'warn',
     message: `${rec.attached.length} chip marking(s) read in the photos were missing from the AI's BOM and were attached by function: ${rec.attached.map(a => `${a.marking} → ${a.refDes}`).join(', ')}. Confirm the RefDes.` });
   if (rec.missing.length) warnings.push({ code: 'OCR_PART_NOT_IN_BOM', severity: 'warn',
@@ -246,7 +252,8 @@ async function stage3Message(anthropic: Anthropic, params: Stage3Params, tag: st
 export function derivePlacementsFromBOM(bom: Array<Record<string, unknown>>, assemblyData: Record<string, unknown>): SanityWarning[] {
   let smt = 0, th = 0, bga = 0;
   for (const l of bom) {
-    if (l.notFitted === true || l.priceSource === 'not-fitted') continue;
+    // Checked directly: placements are now counted BEFORE pricing marks a line not-fitted.
+    if (l.notFitted === true || l.priceSource === 'not-fitted' || isNotFitted(l)) continue;
     const qty = Math.max(0, Number(l.qty) || 0);
     const ct = String(l.componentType ?? '');
     if (ct === 'through_hole') th += qty;
@@ -314,7 +321,11 @@ export function gradeVolumeCurve(points: VolumeCurvePoint[], boardSpec: Record<s
     const f = computeAutomotiveFabAdjustment(boardSpec, pt.pcbFabPerBoard, domain, boardsPerPanel, countryId);
     const asmP = Math.max(0, a.totalAutomotiveAssemblyGBP - a.standardAssemblyGBP);
     const fabP = Math.max(0, f.totalAutomotiveFabGBP - f.standardFabGBP);
-    return { ...pt, assemblyPerBoard: r(pt.assemblyPerBoard + asmP), pcbFabPerBoard: r(pt.pcbFabPerBoard + fabP), totalPerBoard: r(pt.totalPerBoard + asmP + fabP) };
+    // Duty on the premiums, as the headline charges it (applyAutomotiveGrade) — the
+    // curve was £0.10 under the headline at its own quantity.
+    const dutyP = (asmP + fabP) * (PCB_COUNTRY_RATES[countryId]?.logistics.importDutyFraction ?? 0);
+    return { ...pt, assemblyPerBoard: r(pt.assemblyPerBoard + asmP), pcbFabPerBoard: r(pt.pcbFabPerBoard + fabP),
+      logisticsPerBoard: r(pt.logisticsPerBoard + dutyP), totalPerBoard: r(pt.totalPerBoard + asmP + fabP + dutyP) };
   });
 }
 
@@ -342,20 +353,27 @@ export function setDeterministicCostEstimates(a: Record<string, unknown>, bd: PC
 function flagAndEnrichBOM(
   bom: Array<Record<string, unknown>>,
   volumeMultiplier: number,
+  orderQty?: number,
 ): Array<Record<string, unknown>> {
   return bom.map(line => {
     const unitPrice = Number(line.unitPriceGBP ?? 0);
     const qty = Number(line.qty ?? 1);
-    const adj = unitPrice * volumeMultiplier;
+    // A part's price break follows the parts bought — qty per board × boards —
+    // not the board count: 40 × 0402 on 1,000 boards is a 40,000-part buy
+    // (PCB review, Oct 2026). Without an order quantity, the board-level factor.
+    const k = orderQty && orderQty > 0 ? getVolumeMultiplier(Math.max(1, qty) * orderQty) : volumeMultiplier;
+    const adj = unitPrice * k;
     const lineTotal = adj * qty;
     const isHighValue = HIGH_VALUE_COMP_TYPES.has(String(line.componentType ?? ''));
     const hasPN = String(line.partNumber ?? '').trim().length > 0;
     const isOCR = Boolean(line.ocrExtracted);
     return {
       ...line,
-      unitPriceGBP: Math.round(adj * 10000) / 10000,
-      lineTotalGBP: Math.round(lineTotal * 100) / 100,
-      volumeAdjusted: volumeMultiplier !== 1.0,
+      unitPriceGBP: Math.round(adj * 100000) / 100000,
+      lineTotalGBP: Math.round(lineTotal * 10000) / 10000,
+      volumeMultiplier: k,
+      partsBought: orderQty && orderQty > 0 ? Math.max(1, qty) * orderQty : undefined,
+      volumeAdjusted: k !== 1.0,
       unconfirmedHighValue: isHighValue && !isOCR && !hasPN && lineTotal > 2.0,
     };
   });
@@ -486,11 +504,11 @@ async function refineUnconfirmedICs(
   imageLabels: string[],
   domain: string,
   unconfirmedLines: Array<Record<string, unknown>>,
-): Promise<Map<string, { partNumber: string; unitPriceGBP: number; lineConf: number }>> {
+): Promise<Map<string, { partNumber: string; markingRead: string; lineConf: number }>> {
   if (unconfirmedLines.length === 0) return new Map();
   const specialistSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
   const lineDesc = unconfirmedLines.map((l, i) =>
-    `Line ${i+1}: ${l.refDes ?? '?'} — ${l.description ?? ''} (${l.pkg ?? ''}) — current AI price £${Number(l.unitPriceGBP).toFixed(2)}`
+    `Line ${i+1}: ${l.refDes ?? '?'} — ${l.description ?? ''} (${l.pkg ?? ''})`
   ).join('\n');
   const prompt = `SECOND-PASS IC IDENTIFICATION — ${unconfirmedLines.length} unconfirmed high-value component(s)
 
@@ -498,10 +516,14 @@ The initial analysis could not confirm part numbers for these components. Please
 
 ${lineDesc}
 
-Look for chip top markings, silk screen labels, and any visible logos. Price each using the domain-appropriate pricing.
+Look for chip top markings, silk screen labels and maker logos in every photo, close-ups first.
+Do NOT price anything — the tool prices from its own tables.
 Return ONLY a JSON array (same order as the list above):
-[{"refDes":"U1","identifiedPartNumber":"STM32F407","unitPriceGBP":3.20,"lineConf":0.85}]
-If still unreadable, set identifiedPartNumber to "" and adjust lineConf downward.`;
+[{"refDes":"U1","markingRead":"<the exact characters you can read on the package>","identifiedPartNumber":"<part number those characters spell, or empty>","lineConf":0.0}]
+Rules:
+- identifiedPartNumber must come from characters you can actually read on that package. Never infer a part number from the board's function, the package size or what such a board usually carries.
+- If the marking is unreadable, partly hidden or blurred, set markingRead and identifiedPartNumber to "" — an empty answer is correct and expected.
+- lineConf is how sure you are of the reading (0–1).`;
   try {
     const msg = await anthropic.messages.create({
       model: DEEP_EXTRACT_MODEL, max_tokens: 2048, system: specialistSystem,
@@ -511,17 +533,17 @@ If still unreadable, set identifiedPartNumber to "" and adjust lineConf downward
       ]}],
     });
     const raw = textOf(msg) || '[]';
-    let arr: Array<{ refDes: string; identifiedPartNumber: string; unitPriceGBP: number; lineConf: number }> = [];
+    let arr: Array<{ refDes: string; identifiedPartNumber: string; markingRead?: string; lineConf: number }> = [];
     try {
       const start = raw.indexOf('['), end = raw.lastIndexOf(']');
       if (start !== -1 && end > start) arr = JSON.parse(raw.slice(start, end + 1)) as typeof arr;
     } catch { /* ignore */ }
-    const out = new Map<string, { partNumber: string; unitPriceGBP: number; lineConf: number }>();
+    const out = new Map<string, { partNumber: string; markingRead: string; lineConf: number }>();
     for (const r of arr) {
       if (r.refDes) out.set(String(r.refDes), {
-        partNumber: r.identifiedPartNumber ?? '',
-        unitPriceGBP: Number(r.unitPriceGBP) || 0,
-        lineConf: Math.min(1, Math.max(0, Number(r.lineConf) || 0.6)),
+        partNumber: String(r.identifiedPartNumber ?? '').trim(),
+        markingRead: String(r.markingRead ?? '').trim(),
+        lineConf: Math.min(1, Math.max(0, Number(r.lineConf) || 0.5)),
       });
     }
     return out;
@@ -540,12 +562,14 @@ interface NPIBreakdown {
   unitCostProd: number;   // cost at orderQty
   setupPerUnit50: number; // NRE amortised over 50 units
 }
-function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, _orderQty: number): NPIBreakdown {
+function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, _orderQty: number, headlinePerBoard?: number): NPIBreakdown {
   const stencilCost = smtPlacements > 300 ? 220 : smtPlacements > 100 ? 160 : 120;
   const firstArticleCost = 280; // first-article inspection
   const toolingTotal = stencilCost + firstArticleCost;
   const prototypeSurcharge = 0.38; // fab and assembly premium for small runs
-  const unitCostBase = bomTotal + fabMid;
+  // "Production" is the headline (BOM, fab, assembly, logistics, energy, yield for the
+  // selected country). It was BOM + a fab estimate — £72.93 next to a £70.89 headline.
+  const unitCostBase = headlinePerBoard && headlinePerBoard > 0 ? headlinePerBoard : bomTotal + fabMid;
   const unitCostProd = unitCostBase;
   const unitCostNPI = unitCostBase * (1 + prototypeSurcharge) + toolingTotal / 50;
   const setupPerUnit50 = toolingTotal / 50;
@@ -987,17 +1011,12 @@ function buildImageContentBlocks(
   // cached client) could still send large buffers. Rather than hard-fail with a
   // 413, admit images in priority order (Top, Bottom, Close-ups…) up to a safe
   // base64 budget and drop the rest with a warning — a partial analysis beats none.
-  const MAX_TOTAL_BASE64_BYTES = 24 * 1024 * 1024; // ~24 MB of base64, leaving headroom under 32 MB
-  let usedBytes = 0;
+  const skip = new Set(photosOverBudget(files));
   let dropped = 0;
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
+    if (skip.has(i)) { dropped++; continue; }   // keep the first image; skip further ones that would blow the budget
     const base64 = f.buffer.toString('base64');
-    if (usedBytes + base64.length > MAX_TOTAL_BASE64_BYTES && out.some(b => b.type === 'image')) {
-      dropped++;
-      continue; // keep at least the first image; skip further ones that would blow the budget
-    }
-    usedBytes += base64.length;
     const mtype = f.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
     if (includeLabels) out.push({ type: 'text', text: `**${labels[i] ?? `Image ${i + 1}`}:**` });
     out.push({ type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } });
@@ -1005,6 +1024,21 @@ function buildImageContentBlocks(
   if (dropped > 0) {
     console.warn(`[PCB] Image payload over budget — included ${files.length - dropped}/${files.length} image(s), dropped ${dropped} to stay under the API request limit. Client should downscale before upload.`);
   }
+  return out;
+}
+
+/** Indexes of the photos left out to stay under the API request limit (priority order:
+ *  top, bottom, close-ups). Shared by the prompt builder and the warning the user sees —
+ *  dropped photos were only logged on the server. */
+function photosOverBudget(files: Express.Multer.File[]): number[] {
+  const MAX_TOTAL_BASE64_BYTES = 24 * 1024 * 1024; // ~24 MB of base64, leaving headroom under 32 MB
+  let used = 0;
+  const out: number[] = [];
+  files.forEach((f, i) => {
+    const len = Math.ceil(f.buffer.length / 3) * 4;
+    if (i > 0 && used + len > MAX_TOTAL_BASE64_BYTES) { out.push(i); return; }
+    used += len;
+  });
   return out;
 }
 
@@ -1041,7 +1075,7 @@ function extractJSON(text: string): string {
 
 // ── Stage 1: Board domain classification prompt ────────────────────────────
 function stage1Prompt(): string {
-  return `Classify this PCB image into one application domain and return JSON only:
+  return `Classify this PCB (all photos are views of the same board) into one application domain and return JSON only:
 {"domain":"automotive_adas"|"rf_microwave"|"industrial_power"|"industrial_control"|"consumer_iot"|"medical"|"general","conf":0.0-1.0,"hints":["visual clue 1","visual clue 2"]}
 
 Clues per domain:
@@ -1055,8 +1089,10 @@ Clues per domain:
 }
 
 // ── Stage 2: OCR text extraction prompt ───────────────────────────────────
-const stage2Prompt = `Examine this PCB image carefully. Extract every piece of readable text you can see:
-- IC chip markings (manufacturer + part number, e.g. "STM32F407VGT6", "TJA1044GT/3", "AURIX TC297")
+const stage2Prompt = `Examine EVERY photo of this PCB (top, bottom and each close-up) and extract the readable text:
+- IC chip markings: the characters printed on each package, exactly as printed (maker logo/prefix + part number line, e.g. "<maker> <part number as printed>"). Read close-ups first — they are there for the markings.
+  Write only characters you can actually read; put "?" for an illegible character and leave out a marking you cannot read at all. Never complete a marking from what such a board usually carries.
+  List each physical chip once even if it appears in several photos.
 - Reference designators visible on silkscreen (e.g. "U1", "R1-R10", "C47")
 - Connector labels or markings (e.g. "J1 CAN", "P2 PWR")
 - Board text (revision, title, manufacturer, date codes)
@@ -1066,7 +1102,7 @@ Return JSON only:
 
 // ── Specialist system prompts ──────────────────────────────────────────────
 const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
-  automotive_adas: 'You are a senior Tier-1 automotive PCB cost engineer with 20+ years in ASIL-rated PCBA design. MANDATORY PRICING RULES — NO EXCEPTIONS: (1) Price EVERY component at AEC-Q qualified automotive grade — ICs: 3–8× consumer, passives/MLCCs: 3–6×, crystals/oscillators: 3×. (2) Set automotive=true on ALL components. (3) Sealed IP67 automotive connectors (Amphenol, TE AMP, Molex MX150, Kostal): £3–35 each. FAKRA SMB £4–18, HSD £5–22, MATEnet £6–25. (4) AEC-Q200 MLCC only — X7R/C0G grade: 0402 resistors £0.003–0.012, 0402 caps £0.008–0.025, 0603 caps £0.015–0.06. (5) KNOWN AUTOMOTIVE IC PRICES (100K volume): AURIX TC2xx £18–55, TC3xx £35–90, TC39x/TC4xx £65–130; NXP S32K1xx £4.50–15, S32K3xx £12–45, S32G2/G3 £40–90; TI TDA4VM £85–220, TDA4AL £120–280; NXP SJA1105 £8–22, SJA1110 £15–40; TJA1101/1103 100BASE-T1 PHY £3–9; TJA1044/1042 CAN xcvr £0.80–2.80; NXP FS65/FS85 SBC £2.50–7; Infineon TLF35584 safety PMIC £3.50–9; Renesas RH850/V4H £18–80; NXP MPC5748G £22–65. AUTOMOTIVE RADAR: NXP S32R294/S32R274 radar MCU £22–48, NXP S32R45/S32R41 £45–95; 77/79GHz FMCW transceiver MMIC (NXP MR3003/TEF810x, TI AWR1243/AWR1642/AWR2944) £9–22 each — a radar board ALWAYS has at least one transceiver MMIC near the antenna feed, price it even if the die is under a glob-top/epoxy or shield. Return ONLY valid JSON.',
+  automotive_adas: 'You are a senior Tier-1 automotive PCB cost engineer with 20+ years in ASIL-rated PCBA design. MANDATORY PRICING RULES — NO EXCEPTIONS: (1) Price EVERY component at AEC-Q qualified automotive grade — ICs: 3–8× consumer, passives/MLCCs: 3–6×, crystals/oscillators: 3×. (2) Set automotive=true on ALL components. (3) Sealed IP67 automotive connectors (Amphenol, TE AMP, Molex MX150, Kostal): £3–35 each. FAKRA SMB £4–18, HSD £5–22, MATEnet £6–25. (4) AEC-Q200 MLCC only — X7R/C0G grade: 0402 resistors £0.003–0.012, 0402 caps £0.008–0.025, 0603 caps £0.015–0.06. (5) KNOWN AUTOMOTIVE IC PRICES (100K volume): AURIX TC2xx £18–55, TC3xx £35–90, TC39x/TC4xx £65–130; NXP S32K1xx £4.50–15, S32K3xx £12–45, S32G2/G3 £40–90; TI TDA4VM £85–220, TDA4AL £120–280; NXP SJA1105 £8–22, SJA1110 £15–40; TJA1101/1103 100BASE-T1 PHY £3–9; TJA1044/1042 CAN xcvr £0.80–2.80; NXP FS65/FS85 SBC £2.50–7; Infineon TLF35584 safety PMIC £3.50–9; Renesas RH850/V4H £18–80; NXP MPC5748G £22–65. AUTOMOTIVE RADAR: NXP S32R294/S32R274 radar MCU £22–48, NXP S32R45/S32R41 £45–95; 77/79GHz FMCW transceiver MMIC (NXP MR3003/TEF810x, TI AWR1243/AWR1642/AWR2944) £9–22 each. A radar board usually carries a transceiver MMIC near the antenna feed: if one is visible but its marking is hidden (glob-top, epoxy, shield), list it as \"radar transceiver MMIC (marking not readable)\" with an EMPTY partNumber — the tool prices it by function. Never write a part number you did not read. Return ONLY valid JSON.',
   rf_microwave: 'You are an RF/microwave PCB design and cost engineer with expertise in Rogers/PTFE substrates, impedance-controlled layouts, and RF component selection. You understand PA/LNA/PLL/filter/balun component pricing, the cost premium of RF substrates (Rogers 4350B: 8–12×), controlled-impedance PCB fab, and RF module pricing from suppliers like Mini-Circuits, Würth, and Murata. Return ONLY valid JSON.',
   industrial_power: 'You are a power electronics PCB cost engineer specialising in motor drives, power converters, UPS, and industrial power supplies. You know IGBT/SiC MOSFET pricing, gate driver ICs, isolated DC-DC converter modules, high-capacitance bulk capacitors, current sensor ICs, and thermal management components. You understand that industrial-grade components cost 2–4× consumer parts. Return ONLY valid JSON.',
   industrial_control: 'You are an industrial control and automation PCB cost engineer with expertise in PLCs, motion controllers, fieldbus nodes (EtherCAT, PROFIBUS, CANopen, Modbus), and industrial Ethernet switches. You know Siemens/Beckhoff/Rockwell component choices, ruggedised connector pricing, industrial-grade MCU/DSP costs, and conformal coating requirements. Return ONLY valid JSON.',
@@ -1194,7 +1230,7 @@ export function knownRangeAtVolume(volumeMultiplier: number) {
   return (line: Record<string, unknown>) => {
     const r = icKnownRange(line);
     if (!r) return null;
-    const k = volumeMultiplier;
+    const k = Number(line.volumeMultiplier) > 0 ? Number(line.volumeMultiplier) : volumeMultiplier;
     return { ...r, lo: Math.round(r.lo * k * 100) / 100, hi: Math.round(r.hi * k * 100) / 100 };
   };
 }
@@ -1213,7 +1249,7 @@ function buildICPriceHints(markings: string[], domain: string): string {
 }
 
 // ── Stage 3: Build user prompt for specialist analysis ─────────────────────
-interface Stage1Result { domain: string; conf: number; hints: string[] }
+interface Stage1Result { domain: string; conf: number; hints: string[]; failed?: boolean }
 interface OCRResult { icMarkings: string[]; refDesGroups: string[]; connectors: string[]; boardText: string[]; extractionQuality: string }
 
 function buildUserPrompt(ocr: OCRResult, stage1: Stage1Result, domain: string, orderQty?: number): string {
@@ -1253,7 +1289,7 @@ qualityGrade: consumer | industrial | auto_grade2 | auto_grade1 | aerospace
 complexity: low | medium | high | very_high
 confidenceLevel: High | Medium | Low
 
-Analyse this PCB image thoroughly. Group identical components. Return ONLY this JSON structure (replace all example values with actual values from the image):
+Analyse the photos of this PCB thoroughly (all are views of the same board). Group identical components. Return ONLY this JSON structure (replace all example values with actual values from the image):
 {
   "partName": "descriptive board name",
   "boardSpec": {
@@ -1325,7 +1361,9 @@ INSTRUCTIONS:
 - unitPriceGBP: your ESTIMATE only, inside the COMPONENT PRICING REFERENCE range for the part's class (100K volume; lower half for standard/generic parts). The server prices every line from its own table, catalogue and part ranges — your figure only picks the point within the range
 - For IC components identified from OCR markings, set partNumber to the exact marking, lineConf to 1.0, and ocrExtracted to true. EVERY IC marking listed above must be the partNumber of exactly one BOM line — never describe an OCR-read part generically (e.g. write TEF8105, not \"radar transceiver MMIC\")
 - Pads, test points and unfitted footprints are NOT components: leave them out of the BOM
-- For other components, set partNumber to best-guess part number or empty string, lineConf to 0.5–0.9, ocrExtracted to false
+- For every other component, partNumber is ONLY a part number you can read on the package in the photos. If you cannot read it, leave partNumber EMPTY and say what the part is in description (function, value, package) — the tool prices an unread part from its class table, and an invented part number is worse than none. Never infer a part number from the board's function, the package or what such boards usually carry. ocrExtracted false; lineConf = how sure you are of what the part IS (0–1)
+- refDes: write the designators as printed (\"R1-R10\" or \"R1, R2, R5\") — the tool counts them against qty
+- Each physical part once: the photos are views of the SAME board; a part seen in the top photo and in a close-up is ONE part
 - smtPlacements = total qty of all SMT components
 - throughHoleJoints = sum of qty x pins for through_hole components
 - Estimate board dimensions from component sizes, connector pitch, or visible rulers
@@ -1348,7 +1386,7 @@ function bomIsEmpty(analysis: unknown): boolean {
 
 const EMPTY_BOM_RETRY_NOTE = `
 
-CRITICAL: Your previous response contained ZERO usable BOM lines (it was empty or ran past the output limit before the BOM closed). Enumerate EVERY visible component (ICs, passive groups, connectors, magnetics, crystals) as BOM lines even at low confidence. To keep the whole BOM within the response limit: GROUP identical passives into a single line with a combined quantity (e.g. one "C1-C40, 100nF 0402, qty 40" line, not 40 lines), keep every field terse, and emit ONLY the JSON object — no prose before or after. If the board is truly bare/unpopulated, say so in analysisLimitations but still return the visible connector/board-level lines.`;
+CRITICAL: Your previous response contained ZERO usable BOM lines (it was empty or ran past the output limit before the BOM closed). Enumerate EVERY visible component (ICs, passive groups, connectors, magnetics, crystals) as BOM lines — a part you can see but not identify is listed by function with an EMPTY partNumber and a low lineConf; never invent a part number. To keep the whole BOM within the response limit: GROUP identical passives into a single line with a combined quantity (e.g. one "C1-C40, 100nF 0402, qty 40" line, not 40 lines), keep every field terse, and emit ONLY the JSON object — no prose before or after. If the board is truly bare/unpopulated, return an empty bom and say so in analysisLimitations.`;
 
 function buildRepairPrompt(raw: string): string {
   return `The following text was supposed to be a valid JSON object but it may be malformed, truncated, or wrapped in code fences. Extract and return ONLY the valid JSON object. Fix any syntax errors. Start your response with { and end with }. Do not add any other text.
@@ -1358,6 +1396,347 @@ ${raw}`;
 }
 
 // POST /api/pcb/analyze-image
+// ── Shared Stage 3b + Stage 4 (PCB review, Oct 2026) ─────────────────────────
+// /analyze-image, /analyze-image-stream (the one the screen uses) and /reanalyze
+// each carried their own copy of Stage 4, and the copies had drifted: the stream
+// route never ran Stage 3b, /reanalyze priced from the offline catalogue only and
+// hard-coded OCR quality 'high'. One implementation now serves all three.
+
+/**
+ * Stage 3b — a second, focused look at high-value IC lines that have no part
+ * number. It asks for the part number and the marking text it read — never a
+ * price — and the line is marked as read off the chip only when that marking
+ * agrees with what the OCR stage read (verifyOcrClaims, in prepareBOMFromOCR).
+ */
+async function applyStage3b(
+  anthropic: Anthropic, analysis: Record<string, unknown>, imageFiles: Express.Multer.File[],
+  imageLabels: string[], domain: string, tag: string,
+): Promise<number> {
+  const bom = Array.isArray(analysis.bom) ? (analysis.bom as Array<Record<string, unknown>>) : [];
+  const unconfirmed = bom.filter(l =>
+    HIGH_VALUE_COMP_TYPES.has(String(l.componentType ?? '')) &&
+    !String(l.partNumber ?? '').trim());
+  if (unconfirmed.length === 0 || unconfirmed.length > 12) return 0;
+  console.log(`[PCB${tag}] Stage 3b: second look at ${unconfirmed.length} unidentified high-value IC(s)`);
+  const refinements = await refineUnconfirmedICs(anthropic, imageFiles, imageLabels, domain, unconfirmed);
+  if (refinements.size === 0) return 0;
+  let applied = 0;
+  analysis.bom = bom.map(line => {
+    const r = refinements.get(String(line.refDes ?? ''));
+    if (!r || !r.partNumber) return line;
+    applied++;
+    return {
+      ...line,
+      partNumber: r.partNumber,
+      lineConf: Math.min(r.lineConf, 0.9),
+      // A claim, checked against the OCR stage's markings before pricing.
+      ocrExtracted: r.markingRead.length > 0,
+      secondLookMarking: r.markingRead || undefined,
+      identifiedBy: 'second-look',
+    };
+  });
+  return applied;
+}
+
+interface Stage4Input {
+  analysis: Record<string, unknown>;
+  domain: string;
+  asilLevel: ASILLevel;
+  ocrResult: OCRResult;
+  country: string;
+  orderQty: number;
+  /** Ground truth: a parsed BOM file and the uploaded fab files (first analysis only). */
+  parsedBOM?: ParsedBOMLine[];
+  files?: Record<string, Express.Multer.File[]>;
+  /** /reanalyze: the engineer's edited lines, authoritative. */
+  correctedBOM?: Array<Record<string, unknown>> | null;
+  onProgress?: (label: string) => void;
+  /** Stage 1 failed and the domain fell back to "general". */
+  classificationFailed?: boolean;
+  /** A distributor key supplied by the user for this run (Fetch Live Prices). */
+  live?: { provider: LivePricingProvider; key: string };
+  tag: string;
+}
+
+/** Everything Stage 4 adds to the response. `failed` results must not be cached. */
+interface Stage4Output {
+  selectedCountry: string;
+  orderQty: number;
+  volumeMultiplier: number;
+  selectedCountryBreakdown: PCBCountryCostBreakdown | null;
+  countryComparison: ReturnType<typeof computeAllCountryCosts>;
+  volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>>;
+  complexityScore: ReturnType<typeof computeComplexityScore> | null;
+  confidenceBand: PCBConfidenceBand | null;
+  sanityWarnings: SanityWarning[];
+  npiBreakdown: NPIBreakdown | null;
+  livePriceHits: number;
+  catalogueVerifiedCount: number;
+  needsVerificationCount: number;
+  automotiveNRE: AutomotiveNRE | null;
+  automotiveGradeEnforcedCount: number;
+  singleSourceWarnings: SingleSourceWarning[];
+  conformalCoatingCost: number;
+  automotiveAssemblyCost: AutomotiveAssemblyCost | null;
+  automotiveFabAdjustment: AutomotiveFabAdjustment | null;
+  bomCompleteness: BOMCompletenessResult | null;
+  programPricing: ProgramPricingResult | null;
+  failed: boolean;
+}
+
+export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
+  const { analysis: a, domain, asilLevel, ocrResult, orderQty, tag } = inp;
+  const selectedCountry = inp.country;
+  const volumeMultiplier = getVolumeMultiplier(orderQty);
+  const auto = domain === 'automotive_adas';
+  const out: Stage4Output = {
+    selectedCountry, orderQty, volumeMultiplier, selectedCountryBreakdown: null, countryComparison: [], volumeCurves: {},
+    complexityScore: null, confidenceBand: null, sanityWarnings: [], npiBreakdown: null, livePriceHits: 0,
+    catalogueVerifiedCount: 0, needsVerificationCount: 0, automotiveNRE: null, automotiveGradeEnforcedCount: 0,
+    singleSourceWarnings: [], conformalCoatingCost: 0, automotiveAssemblyCost: null, automotiveFabAdjustment: null,
+    bomCompleteness: null, programPricing: null, failed: false,
+  };
+  try {
+    const boardSpec = (a.boardSpec ?? (a.boardSpec = {})) as Record<string, unknown>;
+    const assemblyData = (a.assembly ?? (a.assembly = {})) as Record<string, unknown>;
+    const costEst = (a.costEstimates ?? (a.costEstimates = {})) as Record<string, unknown>;
+    const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    const warnings: SanityWarning[] = [];
+
+    if (a._salvaged === true) warnings.push({ code: 'BOM_TRUNCATED', severity: 'error',
+      message: `The AI's answer was cut off before the whole board was listed: this BOM (${Array.isArray(a.bom) ? (a.bom as unknown[]).length : 0} lines) is PARTIAL, so the cost is too low. Run again, or attach the BOM file.` });
+    {
+      const photos = inp.files?.pcbImages ?? [];
+      const over = photosOverBudget(photos);
+      if (over.length) warnings.push({ code: 'PHOTOS_NOT_READ', severity: 'error',
+        message: `${over.length} of ${photos.length} photo(s) were too large to send together and were NOT read: ${over.map(i => DEFAULT_IMAGE_LABELS[i] ?? `photo ${i + 1}`).join(', ')}. Re-upload them smaller (the app's uploader resizes automatically).` });
+    }
+    if (inp.classificationFailed) warnings.push({ code: 'CLASSIFICATION_FAILED', severity: 'warn',
+      message: 'The board-type classification failed, so the board was costed as "general" (no automotive grade). If this is an automotive board, run again.' });
+    if (ocrResult.extractionQuality === 'failed') warnings.push({ code: 'OCR_STAGE_FAILED', severity: 'warn',
+      message: 'The chip-marking (OCR) stage failed, so no marking was read separately: part numbers come only from the BOM stage and more lines are priced from class tables. Run again for a full read.' });
+    // 1. Ground truth (a BOM file, measured fab data) before anything the model said.
+    if (inp.parsedBOM || inp.files) warnings.push(...applyGroundTruth(a, inp.parsedBOM ?? [], measureUploadedFabData(inp.files), domain));
+    // The BOM as read (after any BOM file), kept so a re-price (/reprice) starts from it
+    // and never applies the volume factor or the grading twice.
+    if (Array.isArray(a.rawBom)) a.bom = JSON.parse(JSON.stringify(a.rawBom));
+    else a.rawBom = JSON.parse(JSON.stringify(Array.isArray(a.bom) ? a.bom : []));
+    // 2. One part, one line, whole-number quantities — across all the photos.
+    const cons = consolidateBom(Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : []);
+    warnings.push(...cons.warnings);
+    // 3. OCR markings into the BOM; the model's "read off the chip" claims checked.
+    const prepared = prepareBOMFromOCR(cons.bom, ocrResult.icMarkings, assemblyData);
+    warnings.push(...prepared.warnings);
+    // 4. Placements from the list BEFORE the board is sized from them — the fab
+    //    stabiliser and the assembly cost used to read two different counts.
+    warnings.push(...derivePlacementsFromBOM(prepared.bom, assemblyData));
+    stabiliseBoardSpec(boardSpec, assemblyData, domain);
+    {
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', auto);
+      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
+    }
+    const fabCostMid = Number(pcbFabGBP?.mid) || 0;
+
+    // 5. Volume (per line: parts bought), automotive grade.
+    let bom = flagAndEnrichBOM(prepared.bom, volumeMultiplier, orderQty);
+    if (auto) {
+      const gr = enforceAutomotiveGrading(bom, domain);
+      bom = gr.bom;
+      out.automotiveGradeEnforcedCount = gr.forcedCount;
+      out.singleSourceWarnings = flagSingleSourceRisks(bom);
+      out.conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilLevel, selectedCountry);
+    }
+
+    // 6. The engineer's corrections (re-analysis) are authoritative — including a line
+    //    the model dropped or renamed this time (it used to be lost).
+    if (inp.correctedBOM && inp.correctedBOM.length) {
+      const corr = new Map<string, Record<string, unknown>>();
+      for (const l of inp.correctedBOM) { const rd = String(l?.refDes ?? '').trim(); if (rd) corr.set(rd, l); }
+      const used = new Set<string>();
+      const fromCorr = (c: Record<string, unknown>, base: Record<string, unknown>) => {
+        const price = Number(c.unitPriceGBP);
+        const qtyRaw = Number(c.qty);
+        const qty = Number.isFinite(qtyRaw) && qtyRaw > 0 ? Math.round(qtyRaw) : Number(base.qty) || 1;
+        if (!Number.isFinite(price) || price < 0) return null;
+        return { ...base, ...c, qty, unitPriceGBP: Math.round(price * 100000) / 100000, lineTotalGBP: Math.round(price * qty * 10000) / 10000,
+          volumeAdjusted: false, automotiveGradeForced: false, userCorrected: true };
+      };
+      bom = bom.map(line => {
+        const rd = String(line.refDes ?? '').trim();
+        const c = corr.get(rd);
+        if (!c) return line;
+        used.add(rd);
+        return fromCorr(c, line) ?? line;
+      });
+      for (const [rd, c] of corr) if (!used.has(rd)) { const l = fromCorr(c, {}); if (l) bom.push(l); }
+    }
+
+    // 7. Prices: live distributor (if keyed) then the offline catalogue for EVERY
+    //    candidate (it has no rate limit — it was capped at 20), at the parts bought.
+    const editable = bom.filter(l => l.userCorrected !== true);
+    const candidates = groundingCandidates(editable, 500);
+    let prices: LivePriceResult[] = [];
+    if (candidates.length) {
+      const octoKey = inp.live ? '' : await resolveNexarAccessToken();
+      const rsKey = inp.live ? '' : process.env.RS_API_KEY ?? '';
+      const provider: LivePricingProvider | null = inp.live?.provider ?? (octoKey ? 'octopart' : rsKey ? 'rs' : null);
+      const key = inp.live?.key ?? (provider === 'octopart' ? octoKey : rsKey);
+      if (provider && key) {
+        inp.onProgress?.('Stage 4 — grounding prices against distributor catalogue');
+        try {
+          prices = await fetchLivePricesWithAECQ(candidates.slice(0, 20), provider, key, orderQty, auto);
+          console.log(`[PCB${tag}] Catalogue grounding: ${prices.length}/${Math.min(20, candidates.length)} parts priced via ${provider}`);
+        } catch (e) { console.warn(`[PCB${tag}] Live pricing failed (non-fatal):`, (e as Error).message); }
+      }
+      const hit = new Set(prices.map(p => p.mpn.toUpperCase()));
+      for (const pn of candidates) {
+        if (hit.has(pn.toUpperCase())) continue;
+        const parts = Math.max(...editable.filter(l => String(l.partNumber ?? '').trim() === pn).map(l => Number(l.partsBought) || orderQty));
+        prices.push(...offlineCataloguePrices([pn], parts));
+      }
+    }
+    const grounded = groundAndSplit(bom, prices, knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier });
+    bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false } : l)) as Array<Record<string, unknown>>;
+    a.bom = bom;
+    const sum = (f: (l: Record<string, unknown>) => boolean) => Math.round(bom.filter(f).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100;
+    const bomTotal = sum(() => true);
+    costEst.totalBOMCostGBP = bomTotal;
+    costEst.confirmedBOMCostGBP = sum(l => l.needsVerification !== true);
+    // The remainder, so "priced" + "to verify" always equals the BOM total on screen
+    // (rounded separately they were a penny out).
+    costEst.unverifiedBOMCostGBP = Math.round((bomTotal - Number(costEst.confirmedBOMCostGBP)) * 100) / 100;
+    out.livePriceHits = bom.filter(l => l.livePriced === true).length;
+    out.catalogueVerifiedCount = grounded.matched;
+    out.needsVerificationCount = bom.filter(l => l.needsVerification === true).length;
+    a.catalogueVerifiedCount = out.catalogueVerifiedCount;
+    a.needsVerificationCount = out.needsVerificationCount;
+    a.pricesCappedCount = grounded.capped;
+    if (auto) out.automotiveNRE = computeAutomotiveNRE(asilLevel, bomTotal, selectedCountry);
+
+    // 8. Missing board facts default — and every default is said out loud.
+    const dflt = (label: string, v: unknown, d: number | string) => {
+      const ok = typeof d === 'number' ? Number(v) > 0 : Boolean(v);
+      if (!ok) warnings.push({ code: 'BOARD_DEFAULT_USED', severity: 'warn', message: `${label} was not read from the photos or files; ${d} was assumed. Measure it or attach the fab data.` });
+      return ok ? v : d;
+    };
+    const widthMm = Number(dflt('Board width (mm)', boardSpec.widthMm, 100));
+    const heightMm = Number(dflt('Board height (mm)', boardSpec.heightMm, 80));
+    const layers = Number(dflt('Layer count', boardSpec.estimatedLayers, 2));
+    const throughVias = Number(boardSpec.throughVias) >= 0 && boardSpec.throughVias !== undefined && boardSpec.throughVias !== null && boardSpec.throughVias !== ''
+      ? Number(boardSpec.throughVias) : Number(dflt('Through-via count', undefined, 50));
+    if (!(bomTotal > 0)) warnings.push({ code: 'BOM_TOTAL_ZERO', severity: 'error', message: 'No component on the BOM carries a price, so the board is costed without parts. Check the BOM.' });
+
+    const costInput: PCBCostInput = {
+      widthMm, heightMm, layers,
+      surfaceFinish: String(boardSpec.surfaceFinish || 'enig'), throughVias,
+      blindVias: Number(boardSpec.blindVias) || 0, microVias: Number(boardSpec.microVias) || 0, hdiStructure: String(boardSpec.hdiStructure || 'none'),
+      impedanceControlled: Boolean(boardSpec.impedanceControlRequired), smtPlacements: Number(assemblyData.smtPlacements) || 0,
+      throughHoleJoints: Number(assemblyData.throughHoleJoints) || 0, manualJoints: Number(assemblyData.manualJoints) || 0,
+      bgaCount: Number(assemblyData.bgaCount) || 0, aoiRequired: Boolean(assemblyData.aoiRequired), ictTimeSec: Number(assemblyData.ictTimeSec) || 0,
+      conformalCoatAreaCm2: out.conformalCoatingCost > 0 ? widthMm * heightMm / 100 : 0,
+      // The BOM is the BOM: it used to fall back to the fab estimate, costing the board twice.
+      totalBOMCostGBP: bomTotal, orderQuantity: orderQty,
+      copperOzByLayer: copperLayersFromSpec(boardSpec), weightKg: weightKgFromSpec(boardSpec),
+    };
+    out.countryComparison = computeAllCountryCosts(costInput);
+    const resolved = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
+    const bd = computePCBCountryCost(costInput, resolved);
+    for (const c of out.countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, asilLevel, orderQty, domain);
+    const graded = applyAutomotiveGrade(bd, boardSpec, assemblyData, asilLevel, orderQty, domain);
+    if (graded) { out.automotiveAssemblyCost = graded.assembly; out.automotiveFabAdjustment = graded.fab; }
+    out.selectedCountryBreakdown = bd;
+    // Panel: a board bigger than every panel had zero waste charged, and a poor fit was
+    // clamped to 40 % utilisation — both silently (PCB review, Oct 2026).
+    if (bd.panelInfo) {
+      const u = bd.panelInfo.utilisation;
+      if (u <= 0) warnings.push({ code: 'BOARD_LARGER_THAN_PANEL', severity: 'warn',
+        message: `A ${widthMm}×${heightMm} mm board does not fit the standard production panels; it is costed one per panel with no panel waste. Check the board size, or quote it as a special.` });
+      else if (u < 0.4) warnings.push({ code: 'PANEL_UTILISATION_LOW', severity: 'warn',
+        message: `Panel utilisation is ${Math.round(u * 100)} % (${bd.panelInfo.boardsPerPanel}-up on ${bd.panelInfo.panelW}×${bd.panelInfo.panelH} mm); the fab cost assumes at least 40 %, so it may be low.` });
+    }
+    // The coating the headline charges (country rate × area), not a second model of it.
+    if (auto) out.conformalCoatingCost = Math.round(costInput.conformalCoatAreaCm2 * (PCB_COUNTRY_RATES[resolved]?.assembly.conformalCoatPerCm2 ?? 0) * 100) / 100;
+
+    out.confidenceBand = computeConfidenceBand(bom as unknown as BOMLineForBand[], fabCostMid, ocrResult.extractionQuality, volumeMultiplier);
+    out.confidenceBand = anchorBandToHeadline(out.confidenceBand, bd) ?? out.confidenceBand;
+    setDeterministicCostEstimates(a, bd, bomTotal);
+    // Panels that quote a "production" or "programme" figure start from the headline.
+    out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0);
+    out.programPricing = computeProgramPricing(bd.bomCostPerBoard, orderQty, domain);
+    out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard);
+
+    // Volume curves: include the analysed quantity, so the curve passes through the headline.
+    const sorted = [...out.countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
+    const cheapestId = sorted[0]?.countryId ?? 'cn';
+    const qtys = [...new Set([100, 250, 500, 1000, 2500, 5000, 10000, 25000, 100000, orderQty])].sort((x, y) => x - y);
+    const bpp = bd.panelInfo?.boardsPerPanel ?? 1;
+    // Component prices follow each point's quantity (parts bought per line); edited lines stay as typed.
+    const bomAt = (q: number) => bomAtQty(bom, q, orderQty);
+    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, qtys, bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id);
+    out.volumeCurves = { [cheapestId]: curve(cheapestId), [resolved]: curve(resolved), gb: curve('gb') };
+    out.complexityScore = computeComplexityScore(boardSpec, assemblyData);
+
+    out.sanityWarnings = [...runSanityChecks(boardSpec, assemblyData, bom, Number((a.aiFirstPass as Record<string, unknown> | undefined)?.totalBOMCostGBP ?? 0), orderQty), ...warnings];
+    console.log(`[PCB${tag}] Stage 4: qty=${orderQty} BOM=${bomTotal.toFixed(2)} headline=${bd.totalPerBoard.toFixed(2)} lines=${bom.length} verify=${out.needsVerificationCount}${auto ? ` asil=${asilLevel}` : ''}`);
+  } catch (err) {
+    out.failed = true;
+    console.warn(`[PCB${tag}] Stage 4 failed:`, (err as Error).message);
+    out.sanityWarnings.push({ code: 'COSTING_FAILED', severity: 'error',
+      message: `The cost build-up could not be completed (${(err as Error).message}). The figures shown are incomplete — re-run the analysis.` });
+  }
+  return out;
+}
+
+/**
+ * Cache key over EVERY input that changes the result. The keys left out the fab
+ * files (and the stream key the image labels): attach Gerbers after a photo-only
+ * run and the cache replayed the old result, ignoring the measured board.
+ * v8: Oct 2026 review pricing — results priced under the old rules must not replay.
+ */
+function pcbCacheKey(req: import('express').Request, files: Record<string, Express.Multer.File[]> | undefined, deep: boolean, labels: string[]): string {
+  return buildCacheKey([
+    ...(files?.pcbImages ?? []).map(f => f.buffer),
+    Buffer.from(JSON.stringify({
+      country: req.body?.country ?? 'cn', orderQty: req.body?.orderQty ?? '100',
+      nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
+      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 8,
+    })),
+    ...(files?.bomFile ?? []).map(f => f.buffer),
+    ...(files?.fabFiles ?? []).flatMap(f => [Buffer.from(f.originalname), f.buffer]),
+  ]);
+}
+
+/**
+ * The BOM total at another board quantity: each line's price moves by the volume
+ * table at its own parts-bought quantity; lines the engineer typed stay as typed.
+ * At the analysed quantity it is exactly the BOM total. Shared by the volume curve
+ * and the what-if scenario so both agree with the headline.
+ */
+export function bomAtQty(lines: Array<Record<string, unknown>>, q: number, analysedQty: number): number {
+  return Math.round(lines.reduce((t, l) => {
+    const lt = Number(l.lineTotalGBP) || 0;
+    if (l.userCorrected === true || q === analysedQty) return t + lt;
+    const n = Math.max(1, Number(l.qty) || 1);
+    return t + lt * getVolumeMultiplier(n * q) / getVolumeMultiplier(n * analysedQty);
+  }, 0) * 100) / 100;
+}
+
+/** The response fields Stage 4 contributes, identical for every route. */
+function stage4Payload(s4: Stage4Output) {
+  return {
+    selectedCountry: s4.selectedCountry, selectedCountryBreakdown: s4.selectedCountryBreakdown,
+    countryComparison: s4.countryComparison, volumeCurves: s4.volumeCurves, complexityScore: s4.complexityScore,
+    confidenceBand: s4.confidenceBand, volumeMultiplier: s4.volumeMultiplier, sanityWarnings: s4.sanityWarnings,
+    npiBreakdown: s4.npiBreakdown, livePriceHits: s4.livePriceHits,
+    catalogueVerifiedCount: s4.catalogueVerifiedCount, needsVerificationCount: s4.needsVerificationCount,
+    automotiveNRE: s4.automotiveNRE, automotiveGradeEnforcedCount: s4.automotiveGradeEnforcedCount,
+    singleSourceWarnings: s4.singleSourceWarnings, conformalCoatingCost: s4.conformalCoatingCost,
+    automotiveAssemblyCost: s4.automotiveAssemblyCost, automotiveFabAdjustment: s4.automotiveFabAdjustment,
+    bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing,
+    orderQty: s4.orderQty, costingFailed: s4.failed,
+  };
+}
+
 router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
   { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },   // up to 8 images: top, bottom, + 6 close-ups
   { name: 'bomFile', maxCount: 1 },
@@ -1380,12 +1759,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
 
   // Check cache — keyed by SHA-256 of all uploaded images + body params
   const deepAnalysis = isDeep(req);
-  const cacheKey = buildCacheKey([
-    ...imageFiles.map(f => f.buffer),
-    // v2: payload-shape version — bumped when the response contract changes so
-    // stale cached payloads (e.g. pre-`assembly`-normalization) never replay.
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 7 })),
-  ]);
+  const cacheKey = pcbCacheKey(req, files, deepAnalysis, imageLabels);
   const cached = getCached(cacheKey);
   if (cached) {
     console.log(`[PCB] Cache HIT: ${cacheKey.slice(0,12)}`);
@@ -1411,8 +1785,6 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
     return;
   }
 
-  const mediaType = primaryImage.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
-  const base64Data = primaryImage.buffer.toString('base64');
   const anthropic = createAnthropic(apiKey);
   console.log(`[PCB] ${imageFiles.length} image(s) received: ${imageLabels.slice(0, imageFiles.length).join(', ')}`);
 
@@ -1426,7 +1798,9 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
       messages: [{
         role: 'user',
         content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+          // Every photo, not just the first: an industrial or medical cue on the bottom side
+          // or in a close-up was never seen (PCB review, Oct 2026). Haiku — cheap.
+          ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
           { type: 'text', text: stage1Prompt() },
         ],
       }],
@@ -1442,6 +1816,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
     console.log(`[PCB] Stage 1: ${stage1Result.domain} (conf=${stage1Result.conf})`);
   } catch (err) {
     console.warn('[PCB] Stage 1 failed, using defaults:', err instanceof Error ? err.message : String(err));
+    stage1Result.failed = true;
   }
 
   let domain = stage1Result.domain;
@@ -1484,6 +1859,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
     console.log(`[PCB] Stage 2: ${ocrResult.icMarkings.length} IC markings, extraction quality=${ocrResult.extractionQuality}`);
   } catch (err) {
     console.warn('[PCB] Stage 2 failed, using defaults:', err instanceof Error ? err.message : String(err));
+    ocrResult.extractionQuality = 'failed';
   }
 
   // ── Deterministic automotive promotion from IC markings ─────────────────
@@ -1579,7 +1955,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
             analysis = salvaged2;
           } else {
             // ── Attempt 3: Minimal fallback prompt ───────────────────────────
-            const fallbackPrompt = `A PCB image was analysed and the result should have been JSON. The analysis failed. Return a valid JSON object with these exact fields, set confidenceLevel to "Low", and include an analysisLimitation explaining the parse failure. You MUST still enumerate every visible component as bom lines — an empty bom array is not acceptable for a populated board. Group identical passives into one line with a combined quantity to keep the response compact.
+            const fallbackPrompt = `A PCB image was analysed and the result should have been JSON. The analysis failed. Return a valid JSON object with these exact fields, set confidenceLevel to "Low", and include an analysisLimitation explaining the parse failure. List every component you can see as bom lines; a part whose marking you cannot read gets an EMPTY partNumber and is described by function — never invent one. Group identical passives into one line with a combined quantity to keep the response compact.
 
 ${userPromptText}`;
 
@@ -1656,217 +2032,16 @@ ${userPromptText}`;
     return;
   }
 
-  // ── Stage 3b: Focused refinement of unconfirmed high-value ICs ────────────
-  {
-    const a3 = analysis as Record<string, unknown>;
-    const bom3 = Array.isArray(a3?.bom) ? (a3.bom as Array<Record<string, unknown>>) : [];
-    const unconfirmedLines = bom3.filter(l =>
-      HIGH_VALUE_COMP_TYPES.has(String(l.componentType ?? '')) &&
-      !Boolean(l.ocrExtracted) &&
-      !String(l.partNumber ?? '').trim() &&
-      Number(l.qty ?? 1) * Number(l.unitPriceGBP ?? 0) > 2.0
-    );
-    if (unconfirmedLines.length > 0 && unconfirmedLines.length <= 12) {
-      console.log(`[PCB] Stage 3b: refining ${unconfirmedLines.length} unconfirmed high-value IC(s)...`);
-      const refinements = await refineUnconfirmedICs(anthropic, imageFiles, imageLabels, domain, unconfirmedLines);
-      if (refinements.size > 0) {
-        a3.bom = bom3.map(line => {
-          const ref = String(line.refDes ?? '');
-          const r = refinements.get(ref);
-          if (!r) return line;
-          return {
-            ...line,
-            partNumber: r.partNumber || line.partNumber,
-            unitPriceGBP: r.unitPriceGBP > 0 ? r.unitPriceGBP : line.unitPriceGBP,
-            lineConf: r.lineConf,
-            ocrExtracted: r.partNumber.length > 0 ? true : line.ocrExtracted,
-            unconfirmedHighValue: r.partNumber.length === 0,
-          };
-        });
-        console.log(`[PCB] Stage 3b: applied ${refinements.size} refinement(s)`);
-      }
-    }
-  }
+  // ── Stage 3b: a second look at unidentified high-value ICs ────────────────
+  await applyStage3b(anthropic, analysis as Record<string, unknown>, imageFiles, imageLabels, domain, '');
 
-  // ── Stage 4: Volume correction + confidence band + country costs ──────────
-  const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
-  const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
-
-  let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
-  let selectedCountryBreakdown: PCBCountryCostBreakdown | null = null;
-  let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
-  let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
-  let confidenceBand: PCBConfidenceBand | null = null;
-  let sanityWarnings: SanityWarning[] = [];
-  let npiBreakdown: NPIBreakdown | null = null;
-  let livePriceHits = 0;
-  let automotiveNRE: AutomotiveNRE | null = null;
-  let automotiveGradeEnforcedCount = 0;
-  let singleSourceWarnings: SingleSourceWarning[] = [];
-  let conformalCoatingCost = 0;
-  let automotiveAssemblyCost: AutomotiveAssemblyCost | null = null;
-  let automotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
-  let bomCompleteness: BOMCompletenessResult | null = null;
-  let programPricing: ProgramPricingResult | null = null;
-  const volumeMultiplier = getVolumeMultiplier(orderQty);
-
-  try {
-    const a = analysis as Record<string, unknown>;
-    const boardSpec = a?.boardSpec as Record<string, unknown> ?? {};
-    const assemblyData = a?.assembly as Record<string, unknown> ?? {};
-    const costEst = a?.costEstimates as Record<string, unknown> ?? {};
-    const pcbFabGBP = costEst?.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
-    // Stabilise the fab-driving board spec (area/layers/vias/tech), then replace
-    // the model's noisy fab guess with a deterministic fab from those stable
-    // features — stops the headline swinging run-to-run on the same board.
-    const groundTruthWarnings = applyGroundTruth(a, parsedBOM, measureUploadedFabData(files), domain);
-    stabiliseBoardSpec(boardSpec, assemblyData, domain);
-    {
-      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', domain === 'automotive_adas');
-      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
-    }
-    const fabCostMid = Number(pcbFabGBP?.mid) || 0;
-
-    // Apply volume correction to BOM, flag unconfirmed high-value ICs
-    const prepared = prepareBOMFromOCR(Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [], ocrResult.icMarkings, assemblyData);
-    const rawBOM = prepared.bom;
-    let enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
-
-    // Automotive: enforce AEC-Q grading on any lines the AI priced at consumer grade
-    if (domain === 'automotive_adas') {
-      const gradeResult = enforceAutomotiveGrading(enrichedBOM, domain);
-      enrichedBOM = gradeResult.bom;
-      automotiveGradeEnforcedCount = gradeResult.forcedCount;
-      if (automotiveGradeEnforcedCount > 0) {
-        console.log(`[PCB] Automotive grade enforcement: ${automotiveGradeEnforcedCount} component(s) repriced to AEC-Q`);
-      }
-      // Single-source risk flags
-      singleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
-      // Automotive NRE (PPAP/FMEA/DVP&R)
-      const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      automotiveNRE = computeAutomotiveNRE(asilClassification.asilLevel, bomTotalForNRE, selectedCountry);
-      // Conformal coating
-      conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilClassification.asilLevel, selectedCountry);
-      // Automotive assembly cost model
-      const countryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, countryAssemblyPerBoard, selectedCountry);
-      // Automotive fab adjustment
-      automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain, 1, selectedCountry);
-    }
-
-    a.bom = enrichedBOM;
-
-    // Ground BEFORE totals (live provider if keyed, else offline catalogue), cap the
-    // unconfirmed high-value guesses to a class median, and split confirmed vs
-    // needs-verification. (Grounding used to run AFTER the total was summed, so real
-    // prices never reached the headline.)
-    {
-      const candidatePNs = groundingCandidates(enrichedBOM, 20);
-      let livePrices: LivePriceResult[] = [];
-      if (candidatePNs.length > 0) {
-        const octoKey = await resolveNexarAccessToken();
-        const rsKey = process.env.RS_API_KEY ?? '';
-        const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
-        if (liveProvider) {
-          try {
-            livePrices = await fetchLivePricesWithAECQ(candidatePNs, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty, domain === 'automotive_adas');
-          } catch (lpErr) { console.warn('[PCB] Live pricing fetch failed (non-fatal):', (lpErr as Error).message); }
-        }
-        const liveHit = new Set(livePrices.map(p => p.mpn.toUpperCase()));
-        livePrices = [...livePrices, ...offlineCataloguePrices(candidatePNs.filter(pn => !liveHit.has(pn.toUpperCase())), orderQty)];
-      }
-      const grounded = groundAndSplit(enrichedBOM, livePrices, knownRangeAtVolume(volumeMultiplier), { automotive: domain === 'automotive_adas' });
-      enrichedBOM = grounded.bom as Array<Record<string, unknown>>;
-      a.bom = enrichedBOM;
-      livePriceHits = grounded.matched;
-      if (a.costEstimates && typeof a.costEstimates === 'object') {
-        const ce = a.costEstimates as Record<string, unknown>;
-        ce.confirmedBOMCostGBP = grounded.confirmedTotal;
-        ce.unverifiedBOMCostGBP = grounded.unverifiedTotal;
-      }
-      (a as Record<string, unknown>).catalogueVerifiedCount = grounded.matched;
-      (a as Record<string, unknown>).needsVerificationCount = grounded.needsVerification;
-      (a as Record<string, unknown>).pricesCappedCount = grounded.capped;
-    }
-
-    // Re-sum BOM from grounded + capped prices
-    const placementWarnings = derivePlacementsFromBOM(enrichedBOM, assemblyData);
-    const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
-    if (a.costEstimates && typeof a.costEstimates === 'object') {
-      (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
-    }
-
-    // BOM completeness (all domains)
-    bomCompleteness = estimateMissingPassives(enrichedBOM, Number(assemblyData.smtPlacements) || 0);
-    // Program pricing (automotive only, or show discount potential)
-    programPricing = computeProgramPricing(correctedBOMTotal, orderQty, domain);
-
-    // Compute confidence band from enriched BOM + fab cost
-    confidenceBand = computeConfidenceBand(
-      enrichedBOM as unknown as BOMLineForBand[],
-      fabCostMid,
-      ocrResult.extractionQuality,
-      volumeMultiplier,
-    );
-
-    const costInput: PCBCostInput = {
-      widthMm:              Number(boardSpec.widthMm)             || 100,
-      heightMm:             Number(boardSpec.heightMm)            || 80,
-      layers:               Number(boardSpec.estimatedLayers)     || 2,
-      surfaceFinish:        String(boardSpec.surfaceFinish        || 'enig'),
-      throughVias:          Number(boardSpec.throughVias)         || 50,
-      blindVias:            Number(boardSpec.blindVias)           || 0,
-      microVias:            Number(boardSpec.microVias)           || 0,
-      hdiStructure:         String(boardSpec.hdiStructure         || 'none'),
-      impedanceControlled:  Boolean(boardSpec.impedanceControlRequired),
-      smtPlacements:        Number(assemblyData.smtPlacements)    || 0,
-      throughHoleJoints:    Number(assemblyData.throughHoleJoints)|| 0,
-      manualJoints:         Number(assemblyData.manualJoints)     || 0,
-      bgaCount:             Number(assemblyData.bgaCount)         || 0,
-      aoiRequired:          Boolean(assemblyData.aoiRequired),
-      ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
-      conformalCoatAreaCm2: conformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
-      totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
-      orderQuantity:        orderQty,
-      copperOzByLayer:      copperLayersFromSpec(boardSpec),
-      weightKg:             weightKgFromSpec(boardSpec),
-    };
-
-    countryComparison = computeAllCountryCosts(costInput);
-    const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
-    selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
-    // Automotive grade into the headline (and every country), then the band on it.
-    for (const c of countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, asilClassification.asilLevel, orderQty, domain);
-    const graded = applyAutomotiveGrade(selectedCountryBreakdown, boardSpec, assemblyData, asilClassification.asilLevel, orderQty, domain);
-    if (graded) { automotiveAssemblyCost = graded.assembly; automotiveFabAdjustment = graded.fab; }
-    confidenceBand = anchorBandToHeadline(confidenceBand, selectedCountryBreakdown) ?? confidenceBand!;
-    setDeterministicCostEstimates(a, selectedCountryBreakdown, correctedBOMTotal);
-
-    // Volume sensitivity curves for cheapest, selected, and UK.
-    const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
-    const cheapestId = sorted[0]?.countryId ?? 'cn';
-    const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-    const bpp = selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1;
-    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, asilClassification.asilLevel, domain, bpp, id);
-    volumeCurves = { [cheapestId]: curve(cheapestId), [resolvedCountry]: curve(resolvedCountry), gb: curve('gb') };
-
-    complexityScore = computeComplexityScore(boardSpec, assemblyData);
-
-    // Sanity checks on AI output
-    const aiStatedBOMTotal = Number((costEst as Record<string, unknown>).totalBOMCostGBP ?? 0);
-    sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal, orderQty);
-    sanityWarnings.push(...groundTruthWarnings, ...prepared.warnings, ...placementWarnings);
-
-    // NPI vs production breakdown
-    npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
-
-    // (Catalogue grounding + capping + confirmed/unverified split now runs earlier,
-    //  BEFORE the BOM total is summed — see the grounding block above.)
-
-    console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings${domain === 'automotive_adas' ? ` asil=${asilClassification.asilLevel} forced=${automotiveGradeEnforcedCount}` : ''}`);
-  } catch (err) {
-    console.warn('[PCB] Stage 4 failed:', (err as Error).message);
-  }
+  // ── Stage 4: one implementation for every route (runStage4) ───────────────
+  const s4 = await runStage4({
+    analysis: analysis as Record<string, unknown>, domain, asilLevel: asilClassification.asilLevel, ocrResult,
+    country: (req.body?.country as string | undefined) ?? 'cn',
+    orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
+    parsedBOM, files, tag: '', classificationFailed: stage1Result.failed === true,
+  });
 
   // ── Structural guarantee for the client ─────────────────────────────────
   // The model can omit sections OR individual numerics from the Stage 3 JSON
@@ -1878,33 +2053,19 @@ ${userPromptText}`;
   const finalPayload = {
     success: true,
     analysis,
-    selectedCountry,
-    selectedCountryBreakdown,
-    countryComparison,
-    volumeCurves,
-    complexityScore,
-    confidenceBand,
-    volumeMultiplier,
-    sanityWarnings,
-    npiBreakdown,
-    livePriceHits,
-    catalogueVerifiedCount: (analysis as Record<string, unknown>).catalogueVerifiedCount ?? 0,
-    needsVerificationCount: (analysis as Record<string, unknown>).needsVerificationCount ?? 0,
+    ...stage4Payload(s4),
+    // What the earlier stages found, for /reanalyze and the screen: the domain and the
+    // markings used to come back only if the MODEL echoed them, which structured output
+    // never does — a re-analysis then costed an automotive board as "general".
+    stage1Classification: { domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true },
+    ocrExtraction: { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality },
     asilLevel: asilClassification.asilLevel,
     asilRationale: asilClassification.asilRationale,
     asilSafetyFunctions: asilClassification.safetyFunctions,
-    automotiveNRE,
-    automotiveGradeEnforcedCount,
-    singleSourceWarnings,
-    conformalCoatingCost,
-    automotiveAssemblyCost,
-    automotiveFabAdjustment,
-    bomCompleteness,
-    programPricing,
     fromCache: false,
   };
-  // never cache a hollow result — it would replay deterministically forever
-  if (!bomIsEmpty(analysis)) setCached(cacheKey, { ...finalPayload, fromCache: true });
+  // Never cache a hollow, salvaged or half-costed result — it would replay forever.
+  if (!bomIsEmpty(analysis) && !s4.failed && !(analysis as Record<string, unknown>)._salvaged) setCached(cacheKey, { ...finalPayload, fromCache: true });
   res.json(finalPayload);
 });
 
@@ -1984,7 +2145,9 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     refDesGroups: [],
     connectors: [],
     boardText: [],
-    extractionQuality: 'high',
+    // The first analysis's OCR quality (the UI sends it back); 'high' was hard-coded,
+    // which narrowed the confidence band on every re-analysis.
+    extractionQuality: /^(high|medium|low|none)$/.test(String(req.body?.ocrQuality ?? '')) ? String(req.body?.ocrQuality) : 'medium',
   };
 
   const anthropic = createAnthropic(apiKey);
@@ -2098,192 +2261,62 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     return;
   }
 
-  // ── Stage 4: Volume correction + confidence band + country costs ──────────
-  const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
-  const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  // ── Stage 4: the same implementation as a first analysis (runStage4) ─────
   // The ASIL from the first analysis (the UI sends it back): burn-in and the NRE
   // tier depend on it, and a re-analysis used to reset it to Unknown.
   const reanalAsil = (/^(ASIL-[ABCD]|QM)$/.test(String(req.body?.asilLevel ?? '')) ? String(req.body?.asilLevel) : 'Unknown') as ASILLevel;
-
-  let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
-  let selectedCountryBreakdown: PCBCountryCostBreakdown | null = null;
-  let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
-  let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
-  let confidenceBand: PCBConfidenceBand | null = null;
-  let reanalAutomotiveNRE: AutomotiveNRE | null = null;
-  let reanalAutomotiveGradeEnforcedCount = 0;
-  let reanalSingleSourceWarnings: SingleSourceWarning[] = [];
-  let reanalConformalCoatingCost = 0;
-  let reanalAutomotiveAssemblyCost: AutomotiveAssemblyCost | null = null;
-  let reanalAutomotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
-  let reanalBomCompleteness: BOMCompletenessResult | null = null;
-  let reanalProgramPricing: ProgramPricingResult | null = null;
-  let reanalSanityWarnings: SanityWarning[] = [];
-  const volumeMultiplier = getVolumeMultiplier(orderQty);
-
-  try {
-    const a = analysis as Record<string, unknown>;
-    const boardSpec = a?.boardSpec as Record<string, unknown> ?? {};
-    const assemblyData = a?.assembly as Record<string, unknown> ?? {};
-    const costEst = a?.costEstimates as Record<string, unknown> ?? {};
-    const pcbFabGBP = costEst?.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
-    // Stabilise the board spec + derive a deterministic fab (see analyze path).
-    stabiliseBoardSpec(boardSpec, assemblyData, domain);
-    {
-      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', domain === 'automotive_adas');
-      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
-    }
-    const fabCostMid = Number(pcbFabGBP?.mid) || 0;
-
-    const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
-    let enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
-
-    if (domain === 'automotive_adas') {
-      const gradeResult = enforceAutomotiveGrading(enrichedBOM, domain);
-      enrichedBOM = gradeResult.bom;
-      reanalAutomotiveGradeEnforcedCount = gradeResult.forcedCount;
-      reanalSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
-      const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      reanalAutomotiveNRE = computeAutomotiveNRE(reanalAsil, bomTotalForNRE, selectedCountry);
-      reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, reanalAsil, selectedCountry);
-      // Automotive assembly cost model
-      const reanalCountryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, reanalAsil, orderQty, reanalCountryAssemblyPerBoard, selectedCountry);
-      // Automotive fab adjustment
-      reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain, 1, selectedCountry);
-    }
-
-    // User-corrected lines are AUTHORITATIVE: restore their qty/price verbatim.
-    // The corrected prices were read from the UI, which displays volume-ADJUSTED
-    // (and automotive-graded) prices — running them through flagAndEnrichBOM/
-    // enforceAutomotiveGrading again multiplied them a second time, inflating
-    // the BOM total on every re-analysis (×8 at qty 100).
-    if (Array.isArray(correctedBOM) && correctedBOM.length > 0) {
-      const corr = new Map<string, Record<string, unknown>>();
-      for (const l of correctedBOM as Array<Record<string, unknown>>) {
-        const rd = String(l?.refDes ?? '').trim();
-        if (rd) corr.set(rd, l);
-      }
-      enrichedBOM = enrichedBOM.map(line => {
-        const c = corr.get(String(line.refDes ?? '').trim());
-        if (!c) return line;
-        const price = Number(c.unitPriceGBP);
-        if (!Number.isFinite(price) || price < 0) return line;
-        const qtyRaw = Number(c.qty);
-        const qty = Number.isFinite(qtyRaw) && qtyRaw > 0 ? Math.round(qtyRaw) : Number(line.qty) || 1;
-        return {
-          ...line,
-          qty,
-          unitPriceGBP: Math.round(price * 10000) / 10000,
-          lineTotalGBP: Math.round(price * qty * 100) / 100,
-          volumeAdjusted: false,
-          automotiveGradeForced: false,
-          userCorrected: true,
-        };
-      });
-    }
-
-    // Lines the user did not edit are priced like a first analysis (catalogue →
-    // named range → class table); an edited line is the user's and is kept.
-    {
-      const candidatePNs = groundingCandidates(enrichedBOM.filter(l => l.userCorrected !== true), 20);
-      const grounded = groundAndSplit(enrichedBOM, offlineCataloguePrices(candidatePNs, orderQty), knownRangeAtVolume(volumeMultiplier), { automotive: domain === 'automotive_adas' });
-      enrichedBOM = grounded.bom.map((l, i) => (enrichedBOM[i].userCorrected === true ? { ...enrichedBOM[i], priceSource: 'user', needsVerification: false } : l)) as Array<Record<string, unknown>>;
-      if (a.costEstimates && typeof a.costEstimates === 'object') {
-        const ce = a.costEstimates as Record<string, unknown>;
-        const split = enrichedBOM.reduce<{ c: number; u: number }>((t, l) => { const v = Number(l.lineTotalGBP) || 0; if (l.needsVerification === true) t.u += v; else t.c += v; return t; }, { c: 0, u: 0 });
-        ce.confirmedBOMCostGBP = Math.round(split.c * 100) / 100; ce.unverifiedBOMCostGBP = Math.round(split.u * 100) / 100;
-      }
-    }
-    a.bom = enrichedBOM;
-    reanalSanityWarnings = derivePlacementsFromBOM(enrichedBOM, assemblyData);
-
-    const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
-    if (a.costEstimates && typeof a.costEstimates === 'object') {
-      (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
-    }
-
-    // BOM completeness (all domains)
-    reanalBomCompleteness = estimateMissingPassives(enrichedBOM, Number(assemblyData.smtPlacements) || 0);
-    // Program pricing (automotive only, or show discount potential)
-    reanalProgramPricing = computeProgramPricing(correctedBOMTotal, orderQty, domain);
-
-    confidenceBand = computeConfidenceBand(
-      enrichedBOM as unknown as BOMLineForBand[],
-      fabCostMid,
-      'high', // reanalyze always uses high OCR quality (user corrections applied)
-      volumeMultiplier,
-    );
-
-    const costInput: PCBCostInput = {
-      widthMm:              Number(boardSpec.widthMm)             || 100,
-      heightMm:             Number(boardSpec.heightMm)            || 80,
-      layers:               Number(boardSpec.estimatedLayers)     || 2,
-      surfaceFinish:        String(boardSpec.surfaceFinish        || 'enig'),
-      throughVias:          Number(boardSpec.throughVias)         || 50,
-      blindVias:            Number(boardSpec.blindVias)           || 0,
-      microVias:            Number(boardSpec.microVias)           || 0,
-      hdiStructure:         String(boardSpec.hdiStructure         || 'none'),
-      impedanceControlled:  Boolean(boardSpec.impedanceControlRequired),
-      smtPlacements:        Number(assemblyData.smtPlacements)    || 0,
-      throughHoleJoints:    Number(assemblyData.throughHoleJoints)|| 0,
-      manualJoints:         Number(assemblyData.manualJoints)     || 0,
-      bgaCount:             Number(assemblyData.bgaCount)         || 0,
-      aoiRequired:          Boolean(assemblyData.aoiRequired),
-      ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
-      conformalCoatAreaCm2: reanalConformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
-      totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
-      orderQuantity:        orderQty,
-      copperOzByLayer:      copperLayersFromSpec(boardSpec),
-      weightKg:             weightKgFromSpec(boardSpec),
-    };
-
-    countryComparison = computeAllCountryCosts(costInput);
-    const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
-    selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
-    for (const c of countryComparison) applyAutomotiveGrade(c, boardSpec, assemblyData, reanalAsil, orderQty, domain);
-    const graded = applyAutomotiveGrade(selectedCountryBreakdown, boardSpec, assemblyData, reanalAsil, orderQty, domain);
-    if (graded) { reanalAutomotiveAssemblyCost = graded.assembly; reanalAutomotiveFabAdjustment = graded.fab; }
-    confidenceBand = anchorBandToHeadline(confidenceBand, selectedCountryBreakdown) ?? confidenceBand!;
-    setDeterministicCostEstimates(a, selectedCountryBreakdown, correctedBOMTotal);
-
-    const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
-    const cheapestId = sorted[0]?.countryId ?? 'cn';
-    const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-    const bpp = selectedCountryBreakdown.panelInfo?.boardsPerPanel ?? 1;
-    const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, volumeQtys), boardSpec, assemblyData, reanalAsil, domain, bpp, id);
-    volumeCurves = { [cheapestId]: curve(cheapestId), [resolvedCountry]: curve(resolvedCountry), gb: curve('gb') };
-
-    complexityScore = computeComplexityScore(boardSpec, assemblyData);
-
-    console.log(`[PCB/reanalyze] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel}`);
-  } catch (err) {
-    console.warn('[PCB/reanalyze] Stage 4 failed:', (err as Error).message);
-  }
+  const s4 = await runStage4({
+    analysis: analysis as Record<string, unknown>, domain, asilLevel: reanalAsil, ocrResult,
+    country: (req.body?.country as string | undefined) ?? 'cn',
+    orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
+    correctedBOM: Array.isArray(correctedBOM) ? (correctedBOM as Array<Record<string, unknown>>) : null,
+    tag: '/reanalyze',
+  });
+  normalizePCBAnalysis(analysis as Record<string, unknown>);
 
   res.json({
     success: true,
     analysis,
-    selectedCountry,
-    selectedCountryBreakdown,
-    countryComparison,
-    volumeCurves,
-    complexityScore,
-    confidenceBand,
-    volumeMultiplier,
-    automotiveNRE: reanalAutomotiveNRE,
-    automotiveGradeEnforcedCount: reanalAutomotiveGradeEnforcedCount,
-    singleSourceWarnings: reanalSingleSourceWarnings,
-    conformalCoatingCost: reanalConformalCoatingCost,
-    automotiveAssemblyCost: reanalAutomotiveAssemblyCost,
-    automotiveFabAdjustment: reanalAutomotiveFabAdjustment,
-    bomCompleteness: reanalBomCompleteness,
-    programPricing: reanalProgramPricing,
-    sanityWarnings: reanalSanityWarnings,
+    ...stage4Payload(s4),
+    stage1Classification: { domain, conf: 1, hints: [] },
+    ocrExtraction: { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality },
+    asilLevel: reanalAsil,
   });
 });
 
 // POST /api/pcb/live-pricing  — optional live component pricing
+/**
+ * POST /api/pcb/reprice — Stage 4 again on the current analysis, no AI call: a new
+ * country, quantity or distributor key. "Fetch Live Prices" used to overwrite line
+ * prices in the browser (at a fixed qty of 100), mark them "OCR extracted" and leave
+ * the BOM total and the headline unchanged. Now every figure moves together.
+ */
+router.post('/reprice', async (req, res): Promise<void> => {
+  const b = (req.body ?? {}) as {
+    analysis?: Record<string, unknown>; domain?: string; asilLevel?: string; ocrMarkings?: string[]; ocrQuality?: string;
+    country?: string; orderQty?: number | string; provider?: string; apiKey?: string;
+  };
+  if (!b.analysis || typeof b.analysis !== 'object' || !Array.isArray(b.analysis.rawBom ?? b.analysis.bom)) {
+    res.status(400).json({ error: 'analysis with a BOM is required' }); return;
+  }
+  const analysis = JSON.parse(JSON.stringify(b.analysis)) as Record<string, unknown>;
+  const provider = ['octopart', 'rs'].includes(String(b.provider)) ? (b.provider as LivePricingProvider) : null;
+  const domain = String(b.domain ?? 'general');
+  const asil = (/^(ASIL-[ABCD]|QM)$/.test(String(b.asilLevel ?? '')) ? String(b.asilLevel) : 'Unknown') as ASILLevel;
+  const s4 = await runStage4({
+    analysis, domain, asilLevel: asil,
+    ocrResult: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings.map(String) : [], refDesGroups: [], connectors: [], boardText: [],
+      extractionQuality: /^(high|medium|low|none|failed)$/.test(String(b.ocrQuality ?? '')) ? String(b.ocrQuality) : 'medium' },
+    country: String(b.country ?? 'cn'), orderQty: parseInt(String(b.orderQty ?? '100'), 10) || 100,
+    live: provider && b.apiKey ? { provider, key: String(b.apiKey) } : undefined,
+    tag: '/reprice',
+  });
+  normalizePCBAnalysis(analysis);
+  res.json({ success: true, analysis, ...stage4Payload(s4), asilLevel: asil,
+    stage1Classification: { domain, conf: 1, hints: [] },
+    ocrExtraction: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings : [], extractionQuality: String(b.ocrQuality ?? 'medium') } });
+});
+
 router.post('/live-pricing', async (req, res): Promise<void> => {
   const { partNumbers, provider, apiKey, qty } = req.body as {
     partNumbers?: string[];
@@ -2351,7 +2384,11 @@ router.get('/countries', (_req, res) => {
 
 // POST /api/pcb/scenario  — what-if recompute for the scenario builder (Feature 10)
 router.post('/scenario', (req, res): void => {
-  const b = (req.body ?? {}) as Partial<PCBCostInput> & { country?: string };
+  const b = (req.body ?? {}) as Partial<PCBCostInput> & {
+    country?: string; domain?: string; asilLevel?: string;
+    boardSpec?: Record<string, unknown>; assembly?: Record<string, unknown>;
+    bomLines?: Array<Record<string, unknown>>; analysedQty?: number;
+  };
   const countryId = PCB_COUNTRY_RATES[b.country ?? ''] ? (b.country as string) : 'cn';
 
   const input: PCBCostInput = {
@@ -2359,7 +2396,7 @@ router.post('/scenario', (req, res): void => {
     heightMm:             Number(b.heightMm)            || 80,
     layers:               Number(b.layers)              || 2,
     surfaceFinish:        String(b.surfaceFinish        || 'enig'),
-    throughVias:          Number(b.throughVias)         || 0,
+    throughVias:          Number(b.throughVias)         >= 0 && b.throughVias != null ? Number(b.throughVias) : 50,
     blindVias:            Number(b.blindVias)           || 0,
     microVias:            Number(b.microVias)           || 0,
     hdiStructure:         String(b.hdiStructure         || 'none'),
@@ -2377,8 +2414,17 @@ router.post('/scenario', (req, res): void => {
     weightKg:             Number(b.weightKg) > 0 ? Number(b.weightKg) : undefined,
   };
 
+  // Copper and weight exactly as the headline derives them from the board spec.
+  if (b.boardSpec) { input.copperOzByLayer = copperLayersFromSpec(b.boardSpec); input.weightKg = weightKgFromSpec(b.boardSpec); }
+  // Components at the scenario's quantity (price breaks), from the priced lines.
+  const analysedQty = Number(b.analysedQty) || input.orderQuantity;
+  if (Array.isArray(b.bomLines) && b.bomLines.length) input.totalBOMCostGBP = bomAtQty(b.bomLines, input.orderQuantity, analysedQty);
   try {
     const breakdown = computePCBCountryCost(input, countryId);
+    // The baseline on screen is the automotive-graded headline; a scenario without the
+    // grade showed a false "saving" of the premiums on any change (−£2.70 on the radar).
+    const asil = (/^(ASIL-[ABCD]|QM)$/.test(String(b.asilLevel ?? '')) ? String(b.asilLevel) : 'Unknown') as ASILLevel;
+    applyAutomotiveGrade(breakdown, b.boardSpec ?? {}, b.assembly ?? {}, asil, input.orderQuantity, String(b.domain ?? 'general'));
     res.json({ success: true, breakdown });
   } catch (err) {
     res.status(400).json({ error: `Scenario compute failed: ${(err as Error).message}` });
@@ -2417,8 +2463,6 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   let imageLabels: string[] = DEFAULT_IMAGE_LABELS;
   try { const raw = req.body?.pcbImageLabels as string; if (raw) imageLabels = JSON.parse(raw) as string[]; } catch { /* use defaults */ }
   const multiImage = imageFiles.length > 1;
-  const mediaType = primaryImage.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
-  const base64Data = primaryImage.buffer.toString('base64');
   const anthropic = createAnthropic(apiKey);
 
   // ── Result cache ────────────────────────────────────────────────────────────
@@ -2426,19 +2470,8 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   // output varies (batching / MoE routing), so the same board produced different
   // BOMs and totals each run. Cache the finished analysis keyed by the exact image
   // bytes + cost params; an identical re-run replays the stored result verbatim.
-  const bomFileForKey = files?.bomFile?.[0];
   const deepAnalysis = isDeep(req);
-  const streamCacheKey = buildCacheKey([
-    ...imageFiles.map(f => f.buffer),
-    Buffer.from(JSON.stringify({
-      country: req.body?.country ?? 'cn',
-      orderQty: req.body?.orderQty ?? '100',
-      nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
-      deep: deepAnalysis,
-      v: 3, // payload-shape version — bump when the response contract changes
-    })),
-    ...(bomFileForKey ? [bomFileForKey.buffer] : []),
-  ]);
+  const streamCacheKey = pcbCacheKey(req, files, deepAnalysis, imageLabels);
   const streamCached = getCached(streamCacheKey) as Record<string, unknown> | null;
   if (streamCached) {
     console.log(`[PCB/stream] Cache HIT ${streamCacheKey.slice(0, 12)} — replaying stored result (deterministic)`);
@@ -2458,7 +2491,8 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       model: 'claude-haiku-4-5-20251001', max_tokens: 512,
       system: 'You are a PCB classification expert. Return ONLY JSON.',
       messages: [{ role: 'user', content: [
-        { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+        // Every photo, not just the first (PCB review, Oct 2026).
+        ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
         { type: 'text', text: stage1Prompt() },
       ]}],
     });
@@ -2467,7 +2501,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     stage1Result = { domain: s1P.domain ?? 'general', conf: s1P.conf ?? 0.5, hints: s1P.hints ?? [] };
     gateAutomotive(stage1Result, 'PCB/stream');
     emit('stage1', { domain: stage1Result.domain, conf: stage1Result.conf, hints: stage1Result.hints });
-  } catch { emit('progress', { stage: 1, label: 'Stage 1 — using defaults', pct: 20 }); }
+  } catch { stage1Result.failed = true; emit('progress', { stage: 1, label: 'Stage 1 — classification failed, using "general"', pct: 20 }); }
 
   // Stage 1b: ASIL classification for automotive_adas
   let streamAsilClassification: Stage1bASIL = { asilLevel: 'Unknown', asilRationale: '', safetyFunctions: [] };
@@ -2495,7 +2529,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     const s2P = JSON.parse(extractJSON(s2Raw)) as OCRResult;
     ocrResult = { icMarkings: s2P.icMarkings ?? [], refDesGroups: s2P.refDesGroups ?? [], connectors: s2P.connectors ?? [], boardText: s2P.boardText ?? [], extractionQuality: s2P.extractionQuality ?? 'low' };
     emit('stage2', { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality });
-  } catch { emit('progress', { stage: 2, label: 'Stage 2 — OCR skipped', pct: 40 }); }
+  } catch { ocrResult.extractionQuality = 'failed'; emit('progress', { stage: 2, label: 'Stage 2 — OCR failed, continuing without chip markings', pct: 40 }); }
 
   // Stage 3
   emit('progress', { stage: 3, label: 'Stage 3 — Full BOM analysis (this takes ~20s)', pct: 50 });
@@ -2540,7 +2574,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     const raw = (err as Error).message ?? '';
     const tooLarge = /413|request_too_large|maximum size|too large/i.test(raw);
     emit('error', { message: tooLarge
-      ? 'Images are too large for the AI service even after compression. Please retry with fewer images (2–3), or attach a BOM file to reduce reliance on the photos.'
+      ? 'Images are too large for the AI service even after compression. Please retry (the uploader in the app resizes photos automatically), or attach a BOM file to reduce reliance on the photos.'
       : `Stage 3 AI service error: ${raw}` });
     res.end();
     return;
@@ -2571,7 +2605,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
           if (salvaged2) analysis = salvaged2; else throw repErr;
         }
       } catch (repairErr) {
-        emit('error', { message: `Stage 3 could not produce valid JSON after repair: ${(repairErr as Error).message}. The response was likely truncated — try fewer images or attach a BOM file.` });
+        emit('error', { message: `Stage 3 could not produce valid JSON after repair: ${(repairErr as Error).message}. The response was likely truncated — run again, or attach a BOM file.` });
         res.end();
         return;
       }
@@ -2624,164 +2658,33 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   }
   emit('stage3', { partName: (analysis as Record<string, unknown>).partName, confidence: (analysis as Record<string, unknown>).confidenceLevel });
 
+  // Stage 3b — the stream route (the one the screen uses) never ran it.
+  emit('progress', { stage: 3, label: 'Stage 3b — second look at unidentified chips', pct: 80 });
+  await applyStage3b(anthropic, analysis as Record<string, unknown>, imageFiles, imageLabels, domain, '/stream');
+
   emit('progress', { stage: 4, label: 'Stage 4 — Cost breakdown & country comparison', pct: 85 });
-
-  // Stage 4
-  const selectedCountry2 = (req.body?.country as string | undefined) ?? 'cn';
-  const orderQty2 = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
-  const volumeMultiplier2 = getVolumeMultiplier(orderQty2);
-  let countryComparison2: ReturnType<typeof computeAllCountryCosts> = [];
-  let selectedCountryBreakdown2: PCBCountryCostBreakdown | null = null;
-  let volumeCurves2: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
-  let complexityScore2: ReturnType<typeof computeComplexityScore> | null = null;
-  let confidenceBand2: PCBConfidenceBand | null = null;
-  let sanityWarnings2: SanityWarning[] = [];
-  let npiBreakdown2: NPIBreakdown | null = null;
-  let streamAutomotiveNRE: AutomotiveNRE | null = null;
-  let streamAutomotiveGradeEnforcedCount = 0;
-  let streamSingleSourceWarnings: SingleSourceWarning[] = [];
-  let streamConformalCoatingCost = 0;
-  let streamAutomotiveAssemblyCost: AutomotiveAssemblyCost | null = null;
-  let streamAutomotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
-  let streamBomCompleteness: BOMCompletenessResult | null = null;
-  let streamProgramPricing: ProgramPricingResult | null = null;
-  let streamLivePriceHits = 0;
-  let streamNeedsVerification = 0;
-
-  try {
-    const a = analysis as Record<string, unknown>;
-    const boardSpec = a.boardSpec as Record<string, unknown> ?? {};
-    const assemblyData = a.assembly as Record<string, unknown> ?? {};
-    const costEst = a.costEstimates as Record<string, unknown> ?? {};
-    const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
-    // Stabilise the board spec + derive a deterministic fab (see analyze path).
-    const groundTruthWarnings2 = applyGroundTruth(a, parsedBOM2, measureUploadedFabData(files), domain);
-    stabiliseBoardSpec(boardSpec, assemblyData, domain);
-    {
-      const sf = stableFabMid(boardSpec, assemblyData, orderQty2, PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn', domain === 'automotive_adas');
-      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
-    }
-    const fabCostMid2 = Number(pcbFabGBP?.mid) || 0;
-    const prepared2 = prepareBOMFromOCR(Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [], ocrResult.icMarkings, assemblyData);
-    const rawBOM2 = prepared2.bom;
-    let enrichedBOM2 = flagAndEnrichBOM(rawBOM2, volumeMultiplier2);
-    if (domain === 'automotive_adas') {
-      const gr2 = enforceAutomotiveGrading(enrichedBOM2, domain);
-      enrichedBOM2 = gr2.bom;
-      streamAutomotiveGradeEnforcedCount = gr2.forcedCount;
-      streamSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM2);
-      const bomTotNRE = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-      streamAutomotiveNRE = computeAutomotiveNRE(streamAsilClassification.asilLevel, bomTotNRE, selectedCountry2);
-      streamConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, streamAsilClassification.asilLevel, selectedCountry2);
-      // Automotive assembly cost model
-      const streamCountryAssemblyPerBoard = (selectedCountryBreakdown2 as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
-      streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, streamCountryAssemblyPerBoard, selectedCountry2);
-      // Automotive fab adjustment
-      streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid2, domain, 1, selectedCountry2);
-    }
-    // Catalogue grounding (audit fix): the streaming path — the one the UI
-    // actually uses — previously hardcoded livePriceHits: 0 and never called
-    // the distributor APIs. Ground BEFORE totals so real prices flow into the
-    // BOM total and the country comparison. Offline (no key) it still runs
-    // reconcile for the needs-verification flags.
-    const candidatePNs2 = groundingCandidates(enrichedBOM2, 20);
-    let livePrices2: LivePriceResult[] = [];
-    if (candidatePNs2.length > 0) {
-      const octoKey2 = await resolveNexarAccessToken();
-      const rsKey2 = process.env.RS_API_KEY ?? '';
-      const liveProvider2: LivePricingProvider | null = octoKey2 ? 'octopart' : rsKey2 ? 'rs' : null;
-      if (liveProvider2) {
-        emit('progress', { stage: 4, label: 'Stage 4 — grounding prices against distributor catalogue', pct: 90 });
-        try {
-          livePrices2 = await fetchLivePricesWithAECQ(candidatePNs2, liveProvider2, liveProvider2 === 'octopart' ? octoKey2 : rsKey2, orderQty2, domain === 'automotive_adas');
-          console.log(`[PCB/stream] Catalogue grounding: ${livePrices2.length}/${candidatePNs2.length} parts priced via ${liveProvider2}`);
-        } catch (lpErr) {
-          console.warn('[PCB/stream] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
-        }
-      }
-      // Offline catalogue fills any MPN the live provider didn't price — works
-      // air-gapped, so confirmed lines snap to market even with no distributor key.
-      const liveHit2 = new Set(livePrices2.map(p => p.mpn.toUpperCase()));
-      livePrices2 = [...livePrices2, ...offlineCataloguePrices(candidatePNs2.filter(pn => !liveHit2.has(pn.toUpperCase())), orderQty2)];
-    }
-    // Ground + class-median-cap the unconfirmed guesses + split confirmed/unverified.
-    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2, knownRangeAtVolume(volumeMultiplier2), { automotive: domain === 'automotive_adas' });
-    enrichedBOM2 = grounded2.bom as Array<Record<string, unknown>>;
-    streamLivePriceHits = grounded2.matched;
-    streamNeedsVerification = grounded2.needsVerification;
-    a.bom = enrichedBOM2;
-    const placementWarnings2 = derivePlacementsFromBOM(enrichedBOM2, assemblyData);
-    const correctedBOMTotal2 = grounded2.bomTotal;
-    if (a.costEstimates && typeof a.costEstimates === 'object') {
-      const ce = a.costEstimates as Record<string, unknown>;
-      ce.totalBOMCostGBP = grounded2.bomTotal;
-      ce.confirmedBOMCostGBP = grounded2.confirmedTotal;
-      ce.unverifiedBOMCostGBP = grounded2.unverifiedTotal;
-    }
-    (a as Record<string, unknown>).catalogueVerifiedCount = grounded2.matched;
-    (a as Record<string, unknown>).needsVerificationCount = grounded2.needsVerification;
-    (a as Record<string, unknown>).pricesCappedCount = grounded2.capped;
-    // BOM completeness (all domains)
-    streamBomCompleteness = estimateMissingPassives(enrichedBOM2, Number(assemblyData.smtPlacements) || 0);
-    // Program pricing (automotive only, or show discount potential)
-    streamProgramPricing = computeProgramPricing(correctedBOMTotal2, orderQty2, domain);
-    confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
-    sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0), orderQty2);
-    sanityWarnings2.push(...groundTruthWarnings2, ...prepared2.warnings, ...placementWarnings2);
-    npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
-    const costInput2: PCBCostInput = {
-      widthMm: Number(boardSpec.widthMm) || 100, heightMm: Number(boardSpec.heightMm) || 80, layers: Number(boardSpec.estimatedLayers) || 2,
-      surfaceFinish: String(boardSpec.surfaceFinish || 'enig'), throughVias: Number(boardSpec.throughVias) || 50,
-      blindVias: Number(boardSpec.blindVias) || 0, microVias: Number(boardSpec.microVias) || 0, hdiStructure: String(boardSpec.hdiStructure || 'none'),
-      impedanceControlled: Boolean(boardSpec.impedanceControlRequired), smtPlacements: Number(assemblyData.smtPlacements) || 0,
-      throughHoleJoints: Number(assemblyData.throughHoleJoints) || 0, manualJoints: Number(assemblyData.manualJoints) || 0,
-      bgaCount: Number(assemblyData.bgaCount) || 0, aoiRequired: Boolean(assemblyData.aoiRequired), ictTimeSec: Number(assemblyData.ictTimeSec) || 0,
-      conformalCoatAreaCm2: streamConformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
-      totalBOMCostGBP: correctedBOMTotal2 || Number(costEst.totalBOMCostGBP) || fabCostMid2 || 0, orderQuantity: orderQty2,
-      copperOzByLayer: copperLayersFromSpec(boardSpec), weightKg: weightKgFromSpec(boardSpec),
-    };
-    countryComparison2 = computeAllCountryCosts(costInput2);
-    const resolvedCountry2 = PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn';
-    selectedCountryBreakdown2 = computePCBCountryCost(costInput2, resolvedCountry2);
-    // Automotive grade into the headline (and every country), then the band on it.
-    for (const c of countryComparison2) applyAutomotiveGrade(c, boardSpec, assemblyData, streamAsilClassification.asilLevel, orderQty2, domain);
-    const graded2 = applyAutomotiveGrade(selectedCountryBreakdown2, boardSpec, assemblyData, streamAsilClassification.asilLevel, orderQty2, domain);
-    if (graded2) { streamAutomotiveAssemblyCost = graded2.assembly; streamAutomotiveFabAdjustment = graded2.fab; }
-    confidenceBand2 = anchorBandToHeadline(confidenceBand2, selectedCountryBreakdown2) ?? confidenceBand2!;
-    setDeterministicCostEstimates(a, selectedCountryBreakdown2, correctedBOMTotal2);
-    const sorted2 = [...countryComparison2].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
-    const cheapestId2 = sorted2[0]?.countryId ?? 'cn';
-    const volQtys2 = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-    const bpp2 = selectedCountryBreakdown2.panelInfo?.boardsPerPanel ?? 1;
-    const curve2 = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput2, id, volQtys2), boardSpec, assemblyData, streamAsilClassification.asilLevel, domain, bpp2, id);
-    volumeCurves2 = { [cheapestId2]: curve2(cheapestId2), [resolvedCountry2]: curve2(resolvedCountry2), gb: curve2('gb') };
-    complexityScore2 = computeComplexityScore(boardSpec, assemblyData);
-  } catch (err) {
-    console.warn('[PCB/stream] Stage 4 failed:', (err as Error).message);
-  }
+  const s4 = await runStage4({
+    analysis: analysis as Record<string, unknown>, domain, asilLevel: streamAsilClassification.asilLevel, ocrResult,
+    country: (req.body?.country as string | undefined) ?? 'cn',
+    orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
+    parsedBOM: parsedBOM2, files, tag: '/stream', classificationFailed: stage1Result.failed === true,
+    onProgress: label => emit('progress', { stage: 4, label, pct: 90 }),
+  });
+  normalizePCBAnalysis(analysis as Record<string, unknown>);
 
   emit('progress', { stage: 5, label: 'Complete', pct: 100 });
   const streamComplete = {
-    analysis, selectedCountry: selectedCountry2, selectedCountryBreakdown: selectedCountryBreakdown2,
-    countryComparison: countryComparison2, volumeCurves: volumeCurves2, complexityScore: complexityScore2,
-    confidenceBand: confidenceBand2, volumeMultiplier: volumeMultiplier2, sanityWarnings: sanityWarnings2,
-    npiBreakdown: npiBreakdown2, livePriceHits: streamLivePriceHits,
-    catalogueVerifiedCount: streamLivePriceHits, needsVerificationCount: streamNeedsVerification,
+    analysis,
+    ...stage4Payload(s4),
+    stage1Classification: { domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true },
+    ocrExtraction: { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality },
     fromCache: false,
     asilLevel: streamAsilClassification.asilLevel,
     asilRationale: streamAsilClassification.asilRationale,
     asilSafetyFunctions: streamAsilClassification.safetyFunctions,
-    automotiveNRE: streamAutomotiveNRE,
-    automotiveGradeEnforcedCount: streamAutomotiveGradeEnforcedCount,
-    singleSourceWarnings: streamSingleSourceWarnings,
-    conformalCoatingCost: streamConformalCoatingCost,
-    automotiveAssemblyCost: streamAutomotiveAssemblyCost,
-    automotiveFabAdjustment: streamAutomotiveFabAdjustment,
-    bomCompleteness: streamBomCompleteness,
-    programPricing: streamProgramPricing,
   };
-  // Store so an identical re-run replays this exact result instead of re-invoking the LLM.
-  if (!bomIsEmpty(analysis)) setCached(streamCacheKey, streamComplete);
+  // Store so an identical re-run replays this exact result — never a hollow, salvaged or half-costed one.
+  if (!bomIsEmpty(analysis) && !s4.failed && !(analysis as Record<string, unknown>)._salvaged) setCached(streamCacheKey, streamComplete);
   emit('complete', streamComplete);
   res.end();
 });

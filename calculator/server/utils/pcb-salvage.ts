@@ -76,8 +76,10 @@ export function salvageAnalysisFromRaw(raw: string): Record<string, unknown> | n
     partName,
     bom,
     confidenceLevel: 'Low',
+    // A partial list prices a partial board: never cached, and said on screen (runStage4).
+    _salvaged: true,
     analysisLimitations: [
-      `The AI response was truncated before the whole board could be listed — showing the ${bom.length} component${bom.length === 1 ? '' : 's'} recovered before the cutoff. For the complete BOM, attach a BOM file, reduce to 1–2 photos, or turn off Deep analysis.`,
+      `The AI response was truncated before the whole board could be listed — showing the ${bom.length} component${bom.length === 1 ? '' : 's'} recovered before the cutoff. For the complete BOM, attach a BOM file or run again; close-ups of dense areas help more than whole-board photos.`,
     ],
   };
 }
