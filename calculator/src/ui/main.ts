@@ -3611,7 +3611,7 @@ function renderSheetMetalForm(): string {
       <div class="field-group"><label>Min Tooth/Slot (mm) <span title="DFM: narrowest tooth/slot — punch breakage below ~1×thickness.">ℹ</span></label><input type="number" id="sm-lam-tooth" step="0.1" min="0" value="2"/></div>
     </div>
     <details style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Stamping Advisor — process route + DFM check</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:color-mix(in srgb, var(--warning) 70%, var(--text-primary))">⚙ Stamping Advisor — process route + DFM check</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Annual Volume</label><input type="number" id="sm-adv-vol" step="1000" min="1" value="200000"/></div>
@@ -3682,7 +3682,7 @@ function wireSheetMetalBlankingChange(): void {
 function renderSheetMetalFabAdvisor(): string {
   return `
     <details style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:6px 8px;margin-bottom:6px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">Process Advisor — Laser vs Punch vs Stamp</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:color-mix(in srgb, var(--warning) 70%, var(--text-primary))">Process Advisor — Laser vs Punch vs Stamp</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Annual Volume</label><input type="number" id="smf-adv-vol" step="100" min="1" value="5000"/></div>
@@ -3852,7 +3852,7 @@ function wireSheetMetalFabAdvisor(): void {
     if (!resultEl) return;
     resultEl.innerHTML = `
       <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px">
-        <div style="font-weight:700;color:#b34700">${rec.primaryProcess} → ${rec.formingProcess}</div>
+        <div style="font-weight:700;color:color-mix(in srgb, var(--warning) 70%, var(--text-primary))">${rec.primaryProcess} → ${rec.formingProcess}</div>
         <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.join(' → ')}</div>
         <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
           <span><strong>Volume band:</strong> ${volLabel}/yr</span>
@@ -4108,7 +4108,7 @@ function renderBlowMouldingForm(): string {
       <div class="field-group"><label>Deflash Manning <span title="Operators on the trim station. 0 when the blow-machine crew tends an in-line trimmer.">ℹ</span></label><input type="number" id="bm-deflash-man" step="0.25" min="0" value="1"/></div>
     </div>
     <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Blow DFM check — BUR / wall / corners / weld line</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:var(--accent-ink)">Blow DFM check — BUR / wall / corners / weld line</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Blow-Up Ratio</label><input type="number" id="bm-dfm-bur" step="0.1" min="0" value="2.5"/></div>
@@ -4360,7 +4360,7 @@ function renderRotationalMouldingForm(): string {
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="rm-amort" step="1000" min="1" value="5000"/></div>
     </div>
     <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Roto DFM check — wall / radii / draft / warpage / venting</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:var(--accent-ink)">Roto DFM check — wall / radii / draft / warpage / venting</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Min Internal R (mm)</label><input type="number" id="rm-dfm-radius" step="1" min="0" value="12"/></div>
@@ -4604,7 +4604,7 @@ function renderRubberForm(): string {
     <div class="field-group"><label>Batch Size</label><input type="number" id="rub-batch" step="50" min="1" value="2500"/></div>
   </div>
   <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
-    <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
+    <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:var(--accent-ink)">Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
     <div style="margin-top:6px">
       <div class="field-row">
         <div class="field-group"><label>Min Wall (mm)</label><input type="number" id="rub-dfm-minwall" step="0.5" min="0" value="2"/></div>
@@ -4910,7 +4910,7 @@ function updateCastingSubtype(): void {
 function renderForgingForm(): string {
   return `
     <details style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:6px 8px;margin-bottom:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Forging Advisor — Process route + DFM check</summary>
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:color-mix(in srgb, var(--warning) 70%, var(--text-primary))">⚙ Forging Advisor — Process route + DFM check</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Annual Volume</label><input type="number" id="forge-adv-vol" step="1000" min="1" value="100000"/></div>
@@ -12513,12 +12513,12 @@ function wireStampingAdvisor(): void {
         stressReliefAnneal: sel('sm-lam-anneal') === 'yes',
         thinGauge: thicknessMm > 0 && thicknessMm <= 0.27,
       });
-      lamHtml = `<div style="margin-top:6px;font-weight:600;color:#0059b3">Lamination DFM</div>${renderDFMPanel(lamDfm.score, lamDfm.issues, lamDfm.summary)}`;
+      lamHtml = `<div style="margin-top:6px;font-weight:600;color:var(--accent-ink)">Lamination DFM</div>${renderDFMPanel(lamDfm.score, lamDfm.issues, lamDfm.summary)}`;
     }
 
     out.innerHTML = `
       <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px;margin-bottom:6px">
-        <div style="font-weight:700;color:#b34700">${escHtml(rec.primaryProcess)} → ${escHtml(rec.formingProcess)}</div>
+        <div style="font-weight:700;color:color-mix(in srgb, var(--warning) 70%, var(--text-primary))">${escHtml(rec.primaryProcess)} → ${escHtml(rec.formingProcess)}</div>
         <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.map(escHtml).join(' → ')}</div>
         <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
           <span><strong>Volume:</strong> ${volLabel}/yr</span>
@@ -13024,7 +13024,7 @@ function wireForgingAdvisor(): void {
     if (!resultEl) return;
     resultEl.innerHTML = `
       <div style="background:var(--surface);color:var(--text-primary);border:1px solid var(--border);border-radius:4px;padding:8px">
-        <div style="font-weight:700;color:#b34700">${escHtml(rec.processLabel)}</div>
+        <div style="font-weight:700;color:color-mix(in srgb, var(--warning) 70%, var(--text-primary))">${escHtml(rec.processLabel)}</div>
         <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.map(escHtml).join(' → ')}</div>
         <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
           <span><strong>Yield:</strong> ${(rec.reference.yieldBand[0] * 100).toFixed(0)}–${(rec.reference.yieldBand[1] * 100).toFixed(0)}%</span>
