@@ -145,3 +145,6 @@ html:not([data-theme="light"]) { --accent-ink: var(--accent); }
   body.cv-new-costing .results-tabs .results-focus-btn { margin-left: auto; flex: 0 0 auto; }
   body.cv-new-costing .results-tabs .results-focus-btn .rfb-label { display: none; }
 }
+
+/* ── F11  Header menus open above the costing workspace ──────────────────────── */
+body.cv-header-menu-open header, body.cv-header-menu-open .header { z-index: 70; }

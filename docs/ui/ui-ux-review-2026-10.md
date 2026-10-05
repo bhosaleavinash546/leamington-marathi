@@ -90,7 +90,8 @@ Severity:
 | P2-5 | The sign-in tagline and footer used low-contrast translucent grey over the hero image. | ✅ Solid colours at AA contrast. |
 | P2-6 | Keyboard focus was invisible on many custom controls. | ✅ One `:focus-visible` ring (2 px accent) on every interactive element. |
 | P2-7 | Phone: the AI Insights summary bar squeezed three columns into 390 px. | ✅ It stacks. |
-| P2-8 | In the narrower result pane the result tabs wrapped to two rows. | ✅ One row, scrolls sideways; Focus stays pinned right. |
+| P2-8 | In the narrower result pane the result tabs wrapped to two rows. | ✅ One row, scrolls sideways; Focus is icon-only. |
+| P2-9 | Found while capturing these screenshots: the new account menu opened *under* the fixed costing workspace (header z 50, workspace z 55); the header said "Hi, Priya" beside the avatar; the self-audit and model-learning banners stayed light in dark mode. | ✅ The header lifts while its menu is open; the greeting is hidden once the account menu names the user; the banners use theme colours. Screens: `after-account-menu-desktop-light.png`, `after-more-menu-desktop-light.png`, `after-results-desktop-dark.png`. |
 
 ### P3: structural debt (recommended, not done here)
 

@@ -15467,7 +15467,7 @@ function _modelLearningStrip(result: PartCostResult): string {
   const driftLine = drift.drifting
     ? `<div style="margin-top:4px;color:#8a5300"><strong>⚠ Drift</strong> — recent quotes for this segment run ${drift.deltaPct > 0 ? '+' : ''}${drift.deltaPct}% vs the older ones (${drift.n} actuals). Re-calibrate.</div>`
     : '';
-  return `<div style="background:#eef4fb;border:1px solid #cfe0f2;border-radius:6px;padding:8px 12px;margin-top:6px;font-size:0.75rem;color:#274b6d"><span style="font-size:0.62rem;font-weight:700;letter-spacing:0.04em">MODEL LEARNING</span> ${body}${driftLine}</div>`;
+  return `<div style="background:color-mix(in srgb, var(--accent) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 25%, transparent);border-radius:6px;padding:8px 12px;margin-top:6px;font-size:0.75rem;color:var(--text-secondary)"><span style="font-size:0.62rem;font-weight:700;letter-spacing:0.04em">MODEL LEARNING</span> ${body}${driftLine}</div>`;
 }
 
 /** Run the deterministic lessons layer + the learned-calibration status on the
@@ -15514,7 +15514,7 @@ function renderSelfAudit(result: PartCostResult, input: UniversalStackInput): vo
       <span style="background:#c2410c;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
       ${findings.length} check${findings.length > 1 ? 's' : ''} to review — the deterministic lessons layer flagged these automatically.</div>${rows}`;
   } else {
-    div.innerHTML = `<div style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:6px;padding:8px 12px;font-size:0.78rem;color:#1b6b3a"><strong>✓ Self-audit</strong> — no physics/geometry inconsistencies detected on this estimate.</div>`;
+    div.innerHTML = `<div style="background:color-mix(in srgb, var(--green) 9%, var(--surface));border:1px solid color-mix(in srgb, var(--green) 35%, transparent);border-radius:6px;padding:8px 12px;font-size:0.78rem;color:color-mix(in srgb, var(--green) 75%, var(--text-primary))"><strong>✓ Self-audit</strong> — no physics/geometry inconsistencies detected on this estimate.</div>`;
   }
   if (strip) div.insertAdjacentHTML('beforeend', strip);
   panel.prepend(div);

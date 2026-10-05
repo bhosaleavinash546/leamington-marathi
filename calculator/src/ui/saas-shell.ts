@@ -100,9 +100,16 @@ export function initAccountMenu(signOut: () => void, doc: Document = document): 
       <button type="button" role="menuitem" data-act="signout">Sign out</button>
     </div>`;
   old.replaceWith(wrap);
+  // The menu names the user; the separate "Hi, <name>" greeting would say it twice.
+  doc.getElementById('user-greeting')?.style.setProperty('display', 'none');
   const btn = wrap.querySelector<HTMLButtonElement>('#cv-account-btn')!;
   const menu = wrap.querySelector<HTMLElement>('#cv-account-menu')!;
-  const open = (v: boolean) => { menu.dataset.open = String(v); btn.setAttribute('aria-expanded', String(v)); if (v) menu.querySelector<HTMLElement>('[role="menuitem"]')?.focus(); };
+  // The header (z 50) sits under the fixed costing workspace (z 55): lift it while its menu is open.
+  const open = (v: boolean) => {
+    menu.dataset.open = String(v); btn.setAttribute('aria-expanded', String(v));
+    doc.body.classList.toggle('cv-header-menu-open', v);
+    if (v) menu.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+  };
   btn.addEventListener('click', e => { e.stopPropagation(); open(menu.dataset.open !== 'true'); });
   doc.addEventListener('click', e => { if (!wrap.contains(e.target as Node)) open(false); });
   menu.addEventListener('keydown', e => { if (e.key === 'Escape') { open(false); btn.focus(); } });
