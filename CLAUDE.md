@@ -402,6 +402,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   exactly, and no material, consumable or tool £ may stay at ×1 unless listed as traded. §12 fails on a new £ form field
   with no basis. Cost traces carry `drivers`. Live: `e2e/country-forms.ts` (every form, defaults, per country). See
   `docs/rates/all-commodity-country-audit-2026-10.md`.
+  All 39 countries (Oct 2026): §13 costs every real part in every country (rates must be that country's book; totals
+  inside its factor envelope). A per-country table must cover all 39 or state its fallback (own-shop heat-treat economics
+  are NOT moved again by the overhead factor). The page applies whatever country its picker shows once wired
+  (`data-country-ready`); the software hub (`swRegionFor`) and the agent prompt (`systemPromptFor(region)`) follow the
+  country. See `docs/rates/all-39-countries-audit-2026-10.md`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

@@ -8,10 +8,10 @@ This extends `all-commodity-country-audit-2026-10.md`, which proved it for India
 
 | Step | What | Scale | Result |
 |---|---|---|---|
-| A | **Every per-country table** checked for all 39 countries, and every code path that falls back to the UK when a country is missing searched out. | All tables | 4 problems, fixed (§2) |
+| A | **Every per-country table** checked for all 39 countries, and every code path that falls back to the UK when a country is missing searched out. | All tables | 4 problems, fixed (§2); a 5th (page-load race) found live |
 | B | **Every real part in every country.** The 40 real parts in `cad-audit/` were costed in all 39 countries through the product's own chain (`costMeasuredPart`). Every charged machine, labour, material and energy rate was checked against that country's book. Each total vs the UK was checked against the country's own factor envelope, so a wrong formula lands outside it. | 1,560 costings, 14,313 rate lines | **0 mismatches, 0 outside the envelope** |
-| C | **Every commodity form, live in a browser**, on its defaults, in all 39 countries. The tool's own Excel trace for each costing was checked against all 39 country books. | Every form × 39 countries | §5 |
-| D | **Live CAD.** 14 real parts (one per commodity) through a real server and browser, from upload to Calculate, in 10 representative countries (plus India and the UK, done earlier). | 140 live runs | §5 |
+| C | **Every commodity form, live in a browser**, on its defaults, in all 39 countries. The tool's own Excel trace for each costing was checked against all 39 country books. | 741 form costings | **0 problems** (§5) |
+| D | **Live CAD.** 14 real parts (one per commodity) through a real server and browser, from upload to Calculate, in 10 representative countries plus India and the UK. | 168 live runs | **0 rate lines from another country** (§5) |
 | E | **Formula review** of every country's derived factors (§4). | 39 countries | 1 formula error found (heat treatment), fixed |
 
 Step B is now a permanent test (`tests/country-rates.test.ts` §13) and runs on every build in about 20 seconds.
@@ -118,7 +118,42 @@ The last column is the measured outcome: the 40 real parts costed in the country
 
 ## 5. Live results
 
-LIVE_SECTION
+### CAD path: 14 real parts × 12 countries, real server and browser
+
+Each costing was taken from upload through the engineering questions to Calculate, in the country selected first. Every charged rate in the tool's own Excel trace was checked against all 39 country books. The exported Rate Database was compared with an independently built book for that country: **0 differences in every run**.
+
+| Part (commodity) | UK | IN | CN | DE | US | MX | JP | VN | PL | TR | BR | ZA |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `AL_Heat_Sink` (aluminium extrusion) | £4.29 | ₹365.78 | ¥21.80 | €5.26 | $6.98 | $M68.75 | JP¥703.58 | ₫94,998.08 | zł18.41 | ₺198.89 | R$22.71 | R69.49 |
+| `BIW_Reinf_Channel` (sheet metal) | £1.18 | ₹108.43 | ¥7.57 | €1.58 | $1.63 | $M21.69 | JP¥229.99 | ₫29,652.27 | zł5.02 | ₺56.95 | R$6.90 | R22.18 |
+| `BM_Washer_Reservoir` (blow moulding) | £1.45 | ₹118.48 | ¥8.30 | €1.86 | $1.82 | $M24.19 | JP¥263.66 | ₫32,429.44 | zł5.81 | ₺63.40 | R$7.94 | R25.07 |
+| `COMP_Hat_Stiffener` (composites) | £99.63 | ₹5,186.34 | ¥402.79 | €137.45 | $128.39 | $M1,145.54 | JP¥16,071.89 | ₫1,350,403.60 | zł313.86 | ₺3,048.33 | R$390.19 | R1,291.37 |
+| `EXT_Vent_Pipe` (extrusion) | £0.94 | ₹81.46 | ¥5.52 | €1.22 | $1.10 | $M15.57 | JP¥174.61 | ₫22,108.04 | zł3.83 | ₺43.49 | R$5.33 | R16.82 |
+| `FORGE_Hub_Flange` (forging) | £27.07 | ₹1,716.80 | ¥126.27 | €34.62 | $31.79 | $M365.66 | JP¥4,425.15 | ₫457,139.10 | zł95.54 | ₺983.55 | R$122.41 | R386.41 |
+| `IM_ECU_Cover` (injection moulding) | £1.47 | ₹123.59 | ¥8.84 | €1.92 | $1.90 | $M24.98 | JP¥270.50 | ₫33,550.52 | zł5.96 | ₺65.71 | R$8.04 | R25.56 |
+| `MACH_Hydraulic_Manifold` (machining) | £40.99 | ₹2,732.05 | ¥203.48 | €53.55 | $50.02 | $M570.75 | JP¥6,816.75 | ₫718,607.22 | zł146.24 | ₺1,538.29 | R$187.05 | R596.11 |
+| `PRCR002` (cast and machine) | £48.72 | ₹3,201.17 | ¥237.02 | €63.64 | $59.84 | $M676.57 | JP¥8,155.92 | ₫854,486.33 | zł174.90 | ₺1,826.95 | R$221.54 | R706.60 |
+| `ROTO_Header_Tank` (rotational moulding) | £20.82 | ₹982.29 | ¥77.79 | €29.59 | $26.42 | $M222.09 | JP¥3,207.21 | ₫252,151.21 | zł63.05 | ₺589.39 | R$76.15 | R248.76 |
+| `RUB_AV_Mount` (rubber) | £2.10 | ₹121.33 | ¥9.30 | €2.90 | $2.65 | $M26.15 | JP¥340.18 | ₫31,634.42 | zł6.96 | ₺70.16 | R$8.70 | R28.12 |
+| `Seat_Locking_Bracket` (sheet metal) | £2.18 | ₹173.39 | ¥12.40 | €3.00 | $2.99 | $M35.53 | JP¥402.00 | ₫46,911.17 | zł8.54 | ₺93.27 | R$11.41 | R37.03 |
+| `TF_Trim_Cover` (thermoforming) | £2.27 | ₹170.02 | ¥11.89 | €3.23 | $2.89 | $M33.83 | JP¥404.07 | ₫45,403.57 | zł8.58 | ₺90.71 | R$11.28 | R36.42 |
+| `test-gear-m3-z38` (gear) | £21.46 | ₹1,532.62 | ¥107.18 | €26.61 | $25.45 | $M327.71 | JP¥3,710.51 | ₫425,264.63 | zł82.58 | ₺870.82 | R$108.10 | R339.91 |
+
+Live runs: 168. Charged rate lines checked: 1332, from another country: 0. Server calls: 516/516 priced in the selected country.
+
+India was re-run after the heat-treat fix. Only its heat-treated parts moved, slightly upwards (housing ₹3,192.65 → ₹3,201.17), because India's furnace overhead is no longer cut twice.
+
+### Forms: every commodity on its defaults, all 39 countries
+
+| Countries | Forms each | Charged rate lines each | £ defaults checked each | Result |
+|---|---|---|---|---|
+| All 39: UK, DE, FR, IT, ES, PL, CZ, AT, BE, BG, BR, CA, CN, EG, HU, ID, IN, JP, KR, LT, MA, MX, MY, NL, PH, PT, RO, RS, SE, SG, SI, SK, TH, TN, TR, TW, US, VN, ZA | 19 | 83 | 48 | Every charged rate is that country's book; every £ default = UK default × that country's factor; traded and quote fields unchanged |
+
+Total: 39 countries, 3,237 charged rate lines, 1,872 £ defaults — **0 problems**. (Assembly rolls up parts already costed and has no rates of its own.)
+
+### What the live runs caught that the code review did not
+
+A country picked while the page is still loading changed the picker but not the rates: the header said Vietnam while the costing ran in the UK. After the listeners are wired, the shown country is now applied, and a test guards it (§14).
 
 ## 6. Stated assumptions the director should know
 
