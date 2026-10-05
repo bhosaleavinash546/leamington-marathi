@@ -412,6 +412,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   the form in that country's book (`src/ui/country-recost.ts`: CAD fills, £ defaults, shop fields, country + PCB
   pickers follow; typed figures stay). Never re-price a stack input for another country — tools, services and
   consumables would ride along. The PDF prints the screen's rows. Tests §15.
+- UI/UX (review, Oct 2026): `src/ui/styles/saas-polish.css` is loaded LAST and holds the review's layout and polish
+  (≥1280 px the costing workspace is two panes — inputs left, result right, each scrolling; note calculator.css
+  sets `grid-template-columns: unset !important` on it). `src/ui/saas-shell.ts` MOVES the action bar's secondary
+  buttons into a "More" menu by id (`ACTION_GROUPS`; ids and handlers unchanged — harnesses click them via the DOM)
+  and replaces Sign Out with an account menu. The sign-in page's counts are tested against the code
+  (`tests/ui-shell.test.ts`). Measure with `e2e/ui-audit.ts` (axe WCAG 2.1 AA on 65 screen states — 0 at review
+  close). three.js is a lazy chunk (`vendor-three`): never import `cad-views` statically. See
+  `docs/ui/ui-ux-review-2026-10.md`.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

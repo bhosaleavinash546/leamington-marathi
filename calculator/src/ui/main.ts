@@ -12,6 +12,9 @@ import { buildCostDriverChart, buildNPISection, buildConfidenceRoadmap, buildSan
 import './styles/calculator.css';
 // After calculator.css: the brand colours (generated from src/brand/brand.json) win.
 import './styles/brand.css';
+// UI/UX review (Oct 2026): the review's layout and polish, loaded last — docs/ui/ui-ux-review-2026-10.md.
+import './styles/saas-polish.css';
+import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
@@ -206,7 +209,6 @@ import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { renderAlExtrusionForm, collectAlExtrusionDrivers, wireAlExtrusionForm } from './al-extrusion-form.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
 import { COMMODITY_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/commodity-meta.js';
-import { renderSTLViews } from './cad-views.js';
 import { CAD_COMMODITY_OPTIONS, CAD_MATERIALS_BY_COMMODITY } from './data/cad-options.js';
 import { analysisErrorHint } from './cad-error-hint.js';
 import { rubberProcFromSuggestion } from '../engine/modules/rubber-advisor.js';
@@ -1435,7 +1437,7 @@ async function renderIntelligencePanel(): Promise<void> {
       improving: ['--success', '▲ improving'], degrading: ['--danger', '▼ degrading'], stable: ['--warning', 'stable'],
     };
     const [pillTok, pillLabel] = pillMap[iq.verdict] ?? ['--text-muted', 'building evidence…'];
-    const verdictPill = `<span class="pi-pill" style="color:var(${pillTok});background:color-mix(in srgb, var(${pillTok}) 13%, transparent)">${pillLabel}</span>`;
+    const verdictPill = `<span class="pi-pill" style="color:color-mix(in srgb, var(${pillTok}) 72%, var(--text-primary));background:color-mix(in srgb, var(${pillTok}) 13%, transparent)">${pillLabel}</span>`;
     const trendTxt = iq.trend.length
       ? iq.trend.slice(-4).map(t => `${t.month.slice(5)}: ${t.mapePct}% (n=${t.n})`).join('  ·  ')
       : 'no actuals logged yet — use Log Actual £ after costings';
@@ -1589,11 +1591,11 @@ async function renderWhatIfPanel(): Promise<void> {
       </div>
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:0.84rem;color:var(--text-secondary)">
         <span>If</span>
-        <select id="wf-cat" class="hdr-select" style="max-width:150px">${useCats.map(c => `<option value="${escHtml(c)}"${c === state.cat ? ' selected' : ''}>${escHtml(c)}</option>`).join('')}</select>
+        <select id="wf-cat" class="hdr-select" style="max-width:150px" aria-label="Commodity index to move">${useCats.map(c => `<option value="${escHtml(c)}"${c === state.cat ? ' selected' : ''}>${escHtml(c)}</option>`).join('')}</select>
         <span>moves</span>
         <strong id="wf-delta-lbl" style="min-width:48px;font-family:var(--font-mono);color:var(--accent);font-size:0.98rem">${state.delta > 0 ? '+' : ''}${state.delta}%</strong>
       </div>
-      <input id="wf-delta" type="range" min="-20" max="20" step="5" value="${state.delta}" style="width:100%;margin-top:11px;accent-color:var(--accent);cursor:pointer" />
+      <input id="wf-delta" type="range" min="-20" max="20" step="5" value="${state.delta}" aria-label="Commodity price change, %" style="width:100%;margin-top:11px;accent-color:var(--accent);cursor:pointer" />
       <div id="wf-result" style="margin-top:auto;padding-top:12px;font-size:0.8rem;color:var(--text-secondary);line-height:1.5;border-top:1px solid var(--border)">Computing…</div>
     </div>`;
   box.style.display = '';
@@ -5869,13 +5871,13 @@ function renderCADAnalysisForm(): string {
     <div class="field-row" style="margin-top:10px">
       <div class="field-group">
         <label style="font-size:0.75rem">Manufacturing Process
-          <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
+          <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent-ink);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
         </label>
         <select id="cad-commodity-override" style="font-size:0.8rem">${commOpts}</select>
       </div>
       <div class="field-group">
         <label style="font-size:0.75rem">Material
-          <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
+          <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent-ink);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
         </label>
         <select id="cad-material-override" style="font-size:0.8rem">
           <option value="">— Auto-detect (AI selects) —</option>
@@ -6370,6 +6372,9 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       }
     }
     if (meshForViews) {
+      // Loaded on demand: it pulls in the 3D engine, which no other screen needs (UI/UX review —
+      // it was on every first load).
+      const { renderSTLViews } = await import('./cad-views.js');
       const views = await renderSTLViews(meshForViews);
       if (views.length) formData.append('renderViews', JSON.stringify(views.map(v => v.split(',')[1])));
     }
@@ -11644,6 +11649,12 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 function switchCommodity(type: CommodityType): void {
   breadcrumb(`commodity:${type}`);
   activeCommodity = type;
+  // A new form opens at its top — it kept the previous one's scroll (the CAD form opened
+  // scrolled to its action bar; UI/UX review, Oct 2026).
+  for (const sel of ['#costing-view', '#costing-view .input-panel', '#costing-view .results-panel']) {
+    const scroller = document.querySelector<HTMLElement>(sel);
+    if (scroller) scroller.scrollTop = 0;
+  }
   document.querySelectorAll<HTMLElement>('.ctab').forEach(t => {
     t.classList.toggle('active', t.dataset.commodity === type);
   });
@@ -14549,7 +14560,7 @@ function compute(): void {
 
 /** The results panel's "nothing yet" state. `message` replaces the default
  *  prompt, e.g. to say what an assembly needs before it can calculate. */
-function renderEmptyResults(title = 'No costing yet', message = 'Fill in the inputs on the left and hit <strong>Calculate</strong> to get a full 8-bucket should-cost with a confidence band and DFM guidance.'): void {
+function renderEmptyResults(title = 'No costing yet', message = 'Fill in the inputs and hit <strong>Calculate</strong> to get a full 8-bucket should-cost with a confidence band and DFM guidance.'): void {
   el('results-breakdown').innerHTML = `
       <div class="cv-empty" id="results-empty">
         <div class="cv-empty-icon"><svg class="ic"><use href="#i-gauge"/></svg></div>
@@ -16143,11 +16154,11 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           <div class="big-lbl">Combined Saving Potential</div>
           <div class="big-num">~${totalSaving.toFixed(0)}%</div>
         </div>
-        <div style="flex:1;font-size:0.78rem;color:#555">
+        <div style="flex:1;font-size:0.78rem;color:var(--text-secondary)">
           Based on ${insights.length} insights across material, process, commercial and regional dimensions.
           Savings are illustrative — not all measures are simultaneously achievable.
         </div>
-        <div style="font-size:0.72rem;color:#888;text-align:right">
+        <div style="font-size:0.72rem;color:var(--text-secondary);text-align:right">
           Methodology: industry-calibrated benchmarks<br>
           Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong>
         </div>
@@ -16272,7 +16283,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
       <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #059669;border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
           <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Embodied carbon <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(cradle-to-gate, indicative)</span></div>
-          <div style="font-size:1.15rem;font-weight:700;color:#059669">${cb.totalKgCO2e} kgCO₂e <span style="font-size:0.78rem;color:var(--text-muted)">· ${cb.perNetKgCO2e} /kg</span></div>
+          <div style="font-size:1.15rem;font-weight:700;color:var(--green)">${cb.totalKgCO2e} kgCO₂e <span style="font-size:0.78rem;color:var(--text-muted)">· ${cb.perNetKgCO2e} /kg</span></div>
         </div>
         <div style="margin-top:8px;height:8px;border-radius:4px;overflow:hidden;display:flex;background:var(--border)">
           ${seg(cb.materialKgCO2e, '#059669', 'Material')}${seg(cb.processKgCO2e, '#f59e0b', 'Process energy')}${seg(cb.logisticsKgCO2e, '#64748b', 'Logistics')}
@@ -18965,7 +18976,8 @@ function loadCADDemo(commodity: string): void {
 }
 
 (window as unknown as Record<string, unknown>).loadCADDemo = loadCADDemo;
-(window as unknown as Record<string, unknown>).__renderSTLViews = renderSTLViews;
+(window as unknown as Record<string, unknown>).__renderSTLViews = async (...a: Parameters<typeof import('./cad-views.js').renderSTLViews>) =>
+  (await import('./cad-views.js')).renderSTLViews(...a);
 (window as unknown as Record<string, unknown>).__createCADViewer =
   (host: HTMLElement, opts?: import('./cad-viewer.js').CADViewerOptions) =>
     import('./cad-viewer.js').then(m => m.createCADViewer(host, opts));
@@ -19682,6 +19694,11 @@ async function init(): Promise<void> {
 
   // Field names for generated forms, Escape for dialogs (a11y.ts).
   initA11y();
+  // The action bar's secondary buttons in a "More" menu, the account menu, and
+  // keyboard-reachable scrolling tables (saas-shell.ts).
+  initActionMenu();
+  initAccountMenu(() => (window as unknown as { signOut?: () => void }).signOut?.());
+  watchScrollRegions();
 
   // Start on machining
   switchCommodity('machining');
@@ -20345,21 +20362,14 @@ function renderResultHero(): void {
         `<span class="${cls}">${d > 0 ? '+' : '−'}${_currFmt(Math.abs(d))}</span>&nbsp;vs previous run</span>`;
     }
   } catch { /* history unavailable — skip delta */ }
-  const bandChip = band
-    // The ±% is printed beside the total already; the chip names the band only
-    // (it used to repeat the figure: "£10.79 ±7.9%  ±7.9% · moderate band").
-    ? `<span class="crh-chip crh-chip--band-${band.band}" title="Monte-Carlo uncertainty band ±${band.pm}% (${band.conf})">${band.band} band</span>`
-    : '';
+  // The band and the rate-book chips sit on the total card just below; the summary
+  // repeated them (UI/UX review, Oct 2026). It keeps the figure, the change and the actions.
   host.innerHTML = `
     <div class="crh-part">
       <div class="crh-name" title="${escHtml(r.partName)}">${escHtml(r.partName || 'Unnamed part')}</div>
       <div class="crh-total">${_currFmt(r.total)}${band ? ` <span class="crh-pm" style="color:${band.band === 'tight' ? 'var(--success)' : band.band === 'moderate' ? 'var(--warning)' : 'var(--danger)'}">±${band.pm}%</span>` : ''}</div>
     </div>
-    <div class="crh-chips">
-      ${bandChip}
-      <span class="crh-chip" title="Rates and material prices in force for this calculation — edit in the Rate Library">${escHtml(region)} rates · ${ratesAsOf()}</span>
-      ${deltaHtml}
-    </div>
+    ${deltaHtml ? `<div class="crh-chips">${deltaHtml}</div>` : ''}
     <div class="crh-actions">
       <button class="btn btn-secondary btn-sm" id="crh-share-btn">Share</button>
       <button class="btn btn-secondary btn-sm" data-proxy="export-excel-btn">Export Excel</button>

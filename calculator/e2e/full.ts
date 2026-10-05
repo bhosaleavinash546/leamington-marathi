@@ -218,7 +218,9 @@ async function main(): Promise<void> {
       await page.waitForFunction(b => document.getElementById('cad-results')!.innerHTML.length !== b, before, { timeout: 60_000 });
     }
     await page.click('#cad-apply-btn');
-    await page.waitForTimeout(1500);
+    // Apply fills the form once per comparison country before the costed one
+    // (captureCountryFills), ~1–1.5 s: wait for the measured weight, not a fixed sleep.
+    await page.waitForFunction(() => { const v = Number((document.getElementById('mach-net-wt') as HTMLInputElement | null)?.value); return v > 0.1 && v < 0.15; }, null, { timeout: 15_000 }).catch(() => undefined);
     const netWt = Number(await page.inputValue('#mach-net-wt').catch(() => '0'));
     if (!(netWt > 0.1 && netWt < 0.15)) fail(`CAD: net weight ${netWt} kg, expected the measured 0.121 kg of aluminium`);
     // An STL has no feature table, so the route has no cycle time: the engineer

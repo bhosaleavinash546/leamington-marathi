@@ -1,0 +1,147 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   UI/UX review, Oct 2026 — loaded LAST (after calculator.css and brand.css) so
+   every change of the review is in one place and can be read as a diff.
+   See docs/ui/ui-ux-review-2026-10.md for the finding behind each block.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── F1  Costing workspace: inputs left, results right (≥1280 px) ─────────────
+   The form and the result were one long column: after Calculate the page
+   scrolled to the result and the tail of the form (its sticky action bar) and
+   the panel header sat over it, inputs stretched to 1,200 px. Professional
+   cost tools keep the inputs and the answer side by side; each pane scrolls on
+   its own, so changing an input and reading the result are one glance. */
+@media (min-width: 1280px) {
+  body.cv-new-costing #costing-view {
+    display: grid !important;
+    grid-template-columns: clamp(460px, 42%, 600px) minmax(0, 1fr) !important;   /* calculator.css unsets it with !important */
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden !important;
+  }
+  body.cv-new-costing #costing-view > .wf-panel-header { grid-column: 1 / -1; }
+  body.cv-new-costing #costing-view > .input-panel {
+    grid-column: 1; grid-row: 2;
+    min-height: 0; overflow-y: auto !important;
+    border-bottom: none; border-right: 1px solid var(--border);
+    padding: 16px 18px 0;
+  }
+  body.cv-new-costing #costing-view > .results-panel {
+    grid-column: 2; grid-row: 2;
+    min-height: 0; overflow-y: auto !important;
+    padding: 16px 22px 28px;
+    background: var(--bg);
+  }
+  /* Focus mode (report full width) keeps working. */
+  :root.cv-focus-report body.cv-new-costing #costing-view > .input-panel { display: none; }
+  :root.cv-focus-report body.cv-new-costing #costing-view > .results-panel { grid-column: 1 / -1; }
+  /* The panel's own sticky header no longer floats over a scrolling page. */
+  body.cv-new-costing #costing-view > .wf-panel-header { position: static; }
+  /* The result lands at the top of its own pane. */
+  body.cv-new-costing #cv-result-hero { scroll-margin-top: 0; }
+}
+
+/* ── F2  Commodity switcher: one scrollable row, not two rows of 21 pills ──── */
+.commodity-tabs {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+  padding-bottom: 6px;
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+.commodity-tabs .ctab { flex: 0 0 auto; scroll-snap-align: start; }
+/* A scrolling box may shrink to nothing inside the column flex panel — it must not. */
+.input-panel > .commodity-tabs { flex-shrink: 0; overflow-y: hidden; }
+
+/* Below 1280 px the form and result share one scroll: the panel header (Close,
+   collapse) must sit above the form's sticky action bar, not under its tail. */
+body.cv-new-costing #costing-view > .wf-panel-header { z-index: 25; }
+
+/* ── F3  Summary card: the money in the UI face, not a typewriter face ─────── */
+.crh-total { font-family: var(--font) !important; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+/* ── F4  Action bar: one primary action, the rest in a menu ────────────────── */
+.cv-sticky-actions { align-items: center; flex-wrap: nowrap !important; gap: 8px; }
+.cv-more { position: relative; margin-left: auto; }
+.cv-more-btn { display: inline-flex; align-items: center; gap: 6px; }
+.cv-more-btn[aria-expanded="true"] { background: var(--surface-hover); }
+.cv-more-menu {
+  position: absolute; right: 0; bottom: calc(100% + 8px);
+  min-width: 240px; padding: 6px;
+  background: var(--surface); color: var(--text-primary);
+  border: 1px solid var(--border-strong); border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+  display: none; z-index: 80;
+}
+.cv-more-menu[data-open="true"] { display: block; }
+.cv-more-menu .btn {
+  display: flex; width: 100%; justify-content: flex-start; text-align: left;
+  border: none; background: transparent; box-shadow: none;
+  padding: 8px 10px; border-radius: 7px; font-weight: 500; font-size: 0.82rem;
+}
+.cv-more-menu .btn:hover, .cv-more-menu .btn:focus-visible { background: var(--surface-hover); outline: none; }
+.cv-more-sep { height: 1px; background: var(--border); margin: 5px 4px; }
+.cv-more-label { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 6px 10px 2px; }
+
+/* ── F5  Phone: the insight summary bar stacks instead of squeezing ─────────── */
+@media (max-width: 640px) {
+  .insights-summary-bar { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+  .insights-summary-bar > div { width: 100% !important; text-align: left !important; }
+}
+
+/* ── F6  Header account menu ───────────────────────────────────────────────── */
+.cv-account { position: relative; }
+.cv-account-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 34px; padding: 0 10px 0 4px; border-radius: 20px;
+  border: 1px solid var(--border-strong); background: var(--surface-elevated);
+  color: var(--text-secondary); font: 500 0.78rem var(--font); cursor: pointer;
+}
+.cv-account-btn:hover { background: var(--surface-hover); }
+.cv-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #fff; font: 700 0.7rem var(--font);
+}
+.cv-account-menu {
+  position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18); display: none; z-index: 120;
+}
+.cv-account-menu[data-open="true"] { display: block; }
+.cv-account-head { padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.cv-account-head strong { display: block; font-size: 0.84rem; color: var(--text-primary); }
+.cv-account-head span { font-size: 0.72rem; color: var(--text-muted); }
+.cv-account-menu button {
+  display: flex; width: 100%; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px;
+  border: none; background: transparent; color: var(--text-primary); font: 500 0.82rem var(--font); cursor: pointer; text-align: left;
+}
+.cv-account-menu button:hover, .cv-account-menu button:focus-visible { background: var(--surface-hover); outline: none; }
+@media (max-width: 640px) { .cv-account-btn .cv-account-name { display: none; } .cv-account-btn { padding: 0 4px; } }
+
+/* ── F7  Keyboard focus that is visible everywhere ─────────────────────────── */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+[data-scroll-region]:focus-visible { outline-offset: -2px; }
+
+/* ── F8  Picker: the legend's blue / violet borders are actually drawn ──────── */
+.cpicker-tile.cpicker-tile--primary { border: 1.5px solid var(--accent) !important; }
+.cpicker-tile.cpicker-tile--ai      { border: 1.5px solid var(--accent2) !important; }
+
+/* ── F9  Accent text on an accent tint passes 4.5:1 ────────────────────────────
+   The brand blue on its own 10–15% tint measured 3.2–4.4:1 (axe, light theme):
+   badges, tags, the active nav item, step numbers. Text on a tint uses a darker
+   ink of the same hue; the brand colour itself is unchanged. */
+:root { --accent-ink: color-mix(in srgb, var(--accent) 78%, #000); }
+html:not([data-theme="light"]) { --accent-ink: var(--accent); }
+.dash-commodity-badge, .demo-tag, .demo-tag--cad, .anav-item.active, .cv-step-n { color: var(--accent-ink) !important; }
+
+/* ── F10  Result tabs: one row in the result pane, scrolls sideways if narrow ─ */
+@media (min-width: 1280px) {
+  body.cv-new-costing .results-tabs { flex-wrap: nowrap !important; overflow-x: auto; overflow-y: hidden; flex-shrink: 0; scrollbar-width: none; }
+  body.cv-new-costing .results-tabs .rtab { flex: 0 0 auto; padding-left: 12px; padding-right: 12px; }
+  /* Focus is icon-only here (its name stays in aria-label / title) so the last tab is not covered. */
+  body.cv-new-costing .results-tabs .results-focus-btn { margin-left: auto; flex: 0 0 auto; }
+  body.cv-new-costing .results-tabs .results-focus-btn .rfb-label { display: none; }
+}

@@ -19,6 +19,9 @@ export default defineConfig({
         manualChunks(id: string) {
           if (!id.includes('node_modules')) return;
           if (id.includes('/xlsx') || id.includes('html2canvas') || id.includes('dompurify') || id.includes('/purify')) return;
+          // The 3D engine: only the CAD viewer and its views load it, on demand — it used to sit in
+          // the shared vendor chunk that every page preloads (~1 MB; UI/UX review, Oct 2026).
+          if (id.includes('/three/') || id.includes('/three-') || id.includes('occt-import')) return 'vendor-three';
           if (id.includes('jspdf')) return 'vendor-pdf';
           if (id.includes('chart.js') || id.includes('@kurkle')) return 'vendor-chart';
           if (id.includes('/gsap') || id.includes('/motion')) return 'vendor-motion';

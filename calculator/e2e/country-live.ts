@@ -138,14 +138,14 @@ async function main(): Promise<void> {
     out.comparison = await page.evaluate(() => (window as unknown as { __cvComparison?: unknown }).__cvComparison ?? null);
 
     // 4. The tool's own record of the costing: its Excel export.
-    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('#export-excel-btn')]);
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.evaluate(() => document.getElementById('export-excel-btn')!.click())]);
     const xlPath = join(OUT, `costing-${REGION}.xlsx`);
     await dl.saveAs(xlPath);
     const wb = XLSX.read(readFileSync(xlPath));
     out.excel = { sheets: wb.SheetNames, summary: sheet(wb, '1-Summary'), operations: sheet(wb, '3-Operations'), labour: sheet(wb, '5-LabourRates').slice(0, 20), trace: sheet(wb, '6-Traceability') };
 
     // 5. The active rate database, as the tool exports it.
-    const [dl2] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('#export-rates-btn')]);
+    const [dl2] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.evaluate(() => document.getElementById('export-rates-btn')!.click())]);
     const rbPath = join(OUT, `ratebook-${REGION}.xlsx`);
     await dl2.saveAs(rbPath);
     const rb = XLSX.read(readFileSync(rbPath));

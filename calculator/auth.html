@@ -9,7 +9,7 @@
     <link rel="manifest" href="/calculator/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/calculator/icons/icon-192x192.png" />
     <link rel="icon" type="image/svg+xml" href="/calculator/favicon.svg" />
-  <meta name="description" content="CostVision — AI-powered should-cost intelligence. Bottom-up cost engineering across 19+ manufacturing processes, from a photo, a CAD file, or a plain-English brief." />
+  <meta name="description" content="CostVision — AI-powered should-cost intelligence. Bottom-up cost engineering across 21 cost models in 39 countries, from a photo, a CAD file, or a plain-English brief." />
   <meta property="og:title" content="CostVision — AI Cost Intelligence" />
   <meta property="og:description" content="Know what a part should cost — before you negotiate. Physics-based should-costing with self-learning accuracy." />
   <meta property="og:type" content="website" />
@@ -253,6 +253,7 @@
     .feature-chip:nth-child(2) { animation-delay: 0.55s; }
     .feature-chip:nth-child(3) { animation-delay: 0.70s; }
     .feature-chip:nth-child(4) { animation-delay: 0.85s; }
+    .feature-chip:nth-child(5) { animation-delay: 1.00s; }
     @keyframes chip-slide-in {
       from { opacity: 0; transform: translateX(-18px); }
       to   { opacity: 1; transform: translateX(0); }
@@ -263,7 +264,7 @@
       background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(99,102,241,0.15));
       border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.88rem;
+      font-size: 0.88rem; color: #c7d2fe;
       border: 1px solid rgba(99,102,241,0.15);
     }
 
@@ -282,7 +283,7 @@
     .stat-label { font-size: 0.60rem; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; display: block; }
 
     /* Hero footer — improved contrast */
-    .hero-footer { font-size: 0.68rem; color: rgba(148,163,184,0.80); animation: hero-fade-in 1s 1.2s ease both; }
+    .hero-footer { font-size: 0.68rem; color: #b6c3d4; animation: hero-fade-in 1s 1.2s ease both; }
 
     @keyframes hero-fade-in {
       from { opacity: 0; transform: translateY(16px); }
@@ -628,46 +629,31 @@
           <span class="accent">Automotive OEMs</span>
         </h1>
         <p class="hero-sub">
-          Model a defensible should-cost for any manufactured component — from AHSS stampings to battery packs. AI reads the input; a deterministic engine prices it across 20 regions — auditable, negotiation-ready, in minutes.
+          Model a defensible should-cost for any manufactured component — from AHSS stampings to PCB assemblies. AI reads the input; a deterministic engine prices it in 39 countries — auditable, negotiation-ready, in minutes.
         </p>
 
         <!-- Chips — shortened to single lines -->
         <div class="feature-grid">
-          <div class="feature-chip">
-            <span class="chip-icon">🏭</span>
-            52+ commodities — machining, casting, moulding, composites &amp; PCBA
-          </div>
-          <div class="feature-chip">
-            <span class="chip-icon">⚡</span>
-            EV / e-drive cost models — NMC · LFP · SiC · electrical steel
-          </div>
-          <div class="feature-chip">
-            <span class="chip-icon">🤖</span>
-            AI agent — describe a part, get an 8-bucket should-cost
-          </div>
-          <div class="feature-chip">
-            <span class="chip-icon">📐</span>
-            CAD &amp; PCB → cost — geometry &amp; BOM captured automatically
-          </div>
-          <div class="feature-chip">
-            <span class="chip-icon">🤝</span>
-            Negotiation Intelligence — line-by-line quote teardown
-          </div>
+          <div class="feature-chip"><span class="chip-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20V9l6 4V9l6 4V5h4l2 15z"/><path d="M2 20h20"/></svg></span>21 cost models — machining, casting, moulding, sheet metal, composites &amp; PCBA</div>
+          <div class="feature-chip"><span class="chip-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>39 countries — every rate from that country's own book</div>
+          <div class="feature-chip"><span class="chip-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg></span>CAD &amp; PCB → cost — geometry measured, not guessed</div>
+          <div class="feature-chip"><span class="chip-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></span>8-bucket breakdown — every £ traced to a rate and a formula</div>
+          <div class="feature-chip"><span class="chip-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></svg></span>Negotiation — line-by-line quote teardown</div>
         </div>
       </div>
 
       <!-- Stats — meaningful values replacing "AI" / "Live" -->
       <div class="hero-stats">
         <div class="stat-pill">
-          <span class="stat-val">52+</span>
-          <span class="stat-label">Commodities</span>
+          <span class="stat-val">21</span>
+          <span class="stat-label">Cost models</span>
         </div>
         <div class="stat-pill">
-          <span class="stat-val">20</span>
-          <span class="stat-label">Regions</span>
+          <span class="stat-val">39</span>
+          <span class="stat-label">Countries</span>
         </div>
         <div class="stat-pill">
-          <span class="stat-val">10</span>
+          <span class="stat-val">28</span>
           <span class="stat-label">Currencies</span>
         </div>
         <div class="stat-pill">
@@ -718,7 +704,7 @@
             </div>
             <div class="input-wrap">
               <input type="password" id="signin-pw" placeholder="Enter your password" autocomplete="current-password" />
-              <button type="button" class="toggle-pw" onclick="togglePw('signin-pw', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw(\'signin-pw\', this)" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -777,7 +763,7 @@
             <div class="input-wrap">
               <input type="password" id="signup-pw" placeholder="Min. 8 characters" autocomplete="new-password"
                      oninput="checkPwStrength(this.value, 'signup-pw-strength')" />
-              <button type="button" class="toggle-pw" onclick="togglePw('signup-pw', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw(\'signup-pw\', this)" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -790,7 +776,7 @@
             <label for="signup-pw2">Confirm Password</label>
             <div class="input-wrap">
               <input type="password" id="signup-pw2" placeholder="Re-enter your password" autocomplete="new-password" />
-              <button type="button" class="toggle-pw" onclick="togglePw('signup-pw2', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw('signup-pw2', this)" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -889,7 +875,7 @@
             <div class="input-wrap">
               <input type="password" id="reset-pw" placeholder="Min. 8 characters"
                      oninput="checkPwStrength(this.value, 'reset-pw-strength')" />
-              <button type="button" class="toggle-pw" onclick="togglePw('reset-pw', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw(\'reset-pw\', this)" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -902,7 +888,7 @@
             <label for="reset-pw2">Confirm New Password</label>
             <div class="input-wrap">
               <input type="password" id="reset-pw2" placeholder="Re-enter your new password" />
-              <button type="button" class="toggle-pw" onclick="togglePw('reset-pw2', this)" tabindex="-1">
+              <button type="button" class="toggle-pw" aria-label="Show or hide password" onclick="togglePw('reset-pw2', this)" tabindex="-1">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
