@@ -140,6 +140,7 @@ during `npm run build:site`, never by the running server.
 | `CHROMIUM_PATH` | `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` | Browser binary for the e2e and PDF-QA runs. |
 | `CI` | set by the runner | Used to pick non-interactive behaviour. |
 | `UX_ROUTES` | unset (all routes) | Comma-separated routes for `scripts/ux-crawl.mjs` to measure instead of the full list. |
+| `UX_SEED` | unset (first-run user) | `history` makes `scripts/ux-crawl.mjs` give its user one saved analysis and two business cases (one at G3) through the API, so Home shows the KPI strip. |
 
 ## Handled
 

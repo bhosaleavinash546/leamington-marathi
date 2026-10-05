@@ -1,3 +1,4 @@
+import Chip from '../components/ui/Chip';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useVirtualList } from '../hooks/useVirtualList';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -462,13 +463,11 @@ export default function MarketplacePage() {
               {themes.slice(0, 24).map(t => {
                 const active = themeFilter && t.ideaIds.every(id => themeFilter.has(id)) && themeFilter.size === t.ideaIds.length;
                 return (
-                  <button key={t.id}
+                  <Chip key={t.id} pressed={!!active} count={t.count}
                     onClick={() => setThemeFilter(active ? null : new Set(t.ideaIds))}
-                    title={t.totalSaving > 0 ? `~£${(t.totalSaving / 1e6).toFixed(1)}M combined annual saving` : undefined}
-                    className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${active ? 'bg-gold-500/20 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/25 hover:text-white'}`}
-                  >
-                    {t.label} <span className="text-slate-500">({t.count})</span>
-                  </button>
+                    title={t.totalSaving > 0 ? `~£${(t.totalSaving / 1e6).toFixed(1)}M combined annual saving` : undefined}>
+                    {t.label}
+                  </Chip>
                 );
               })}
             </div>

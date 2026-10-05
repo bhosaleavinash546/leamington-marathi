@@ -36,6 +36,17 @@ const srv = spawn('node', ['server.mjs'], { cwd: ROOT, env: { ...process.env, DA
 for (let i = 0; i < 150; i++) { try { if ((await fetch(BASE + '/api/health')).ok) break; } catch {} await sleep(1000); }
 const su = await (await fetch(BASE + '/api/auth/signup', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: `ux${Date.now()}@brainspark.io`, password: 'Passw0rd!long', name: 'Priya Sharma' }) })).json();
 const STORE = JSON.stringify({ token: su.token, user: su.user });
+// UX_SEED=history: give the user a saved analysis and two business cases
+// (one at G3) through the real API, so Home renders its KPI strip and
+// "continue where you left off" instead of the first-run state.
+if (process.env.UX_SEED === 'history') {
+  const auth = { 'content-type': 'application/json', authorization: `Bearer ${su.token}` };
+  const r = JSON.parse(RESULT);
+  await fetch(BASE + '/api/projects', { method: 'POST', headers: auth, body: JSON.stringify({ ...r, systemName: 'Electric Drive Unit', subassemblyName: 'EDU housing', generatedAt: new Date().toISOString() }) });
+  for (const [ideaTitle, gate, savingPerPart] of [['Consolidate 3-part housing into one HPDC water-jacket', 'G3', 4.2], ['Grain-boundary-diffused NdFeB magnets', 'G1', 6.5]]) {
+    await fetch(BASE + '/api/business-cases', { method: 'POST', headers: auth, body: JSON.stringify({ ideaTitle, gate, savingPerPart, commodityName: 'Electric Drive', vehicleData: [{ model: 'Premium SUV', volume: 120000, applicablePct: 100 }] }) });
+  }
+}
 const launch = () => chromium.launch({ executablePath: CHROME, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 let b = await launch();
 const rows = [];

@@ -1,3 +1,4 @@
+import Chip from '../components/ui/Chip';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu, Layers, FileDown, Table2, Scissors, SplitSquareHorizontal, Gauge
@@ -296,10 +297,7 @@ export default function TrizStudioPage() {
           />
           <div className="flex flex-wrap gap-2 mt-3">
             {EXAMPLES.map(ex => (
-              <button key={ex} onClick={() => setContradiction(ex)}
-                className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs hover:border-gold-500/40 hover:text-gold-300 transition-colors">
-                {ex.length > 46 ? ex.slice(0, 44) + '…' : ex}
-              </button>
+              <Chip key={ex} onClick={() => setContradiction(ex)} title={ex}>{ex.length > 46 ? ex.slice(0, 44) + '…' : ex}</Chip>
             ))}
           </div>
 

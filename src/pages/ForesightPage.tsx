@@ -1,3 +1,4 @@
+import Chip from '../components/ui/Chip';
 import PageHeader from '../components/ui/PageHeader';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -845,38 +846,20 @@ export default function ForesightPage() {
           {/* Segment lens — the dedicated Off-Road / Luxury SUV category */}
           <div className="flex flex-wrap items-center gap-2 mt-3">
             <span className="text-slate-500 text-xs mr-1">Segment:</span>
-            <button onClick={() => setSegment('')}
-              className={`px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === '' ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
-              All vehicles
-            </button>
-            <button onClick={() => setSegment(s => s === 'off-road' ? '' : 'off-road')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'off-road' ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
-              <Mountain size={12} /> Off-Road Features & Tech
-            </button>
-            <button onClick={() => setSegment(s => s === 'luxury' ? '' : 'luxury')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'luxury' ? 'bg-violet-500/15 border-violet-500/40 text-violet-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
-              <Gem size={12} /> Luxury / Premium SUV
-            </button>
-            <button onClick={() => setSegment(s => s === 'software' ? '' : 'software')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs transition-colors ${segment === 'software' ? 'bg-teal-500/15 border-teal-500/40 text-teal-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
-              <Cpu size={12} /> SDV / ADAS & Software
-            </button>
+            <Chip pressed={segment === ''} onClick={() => setSegment('')}>All vehicles</Chip>
+            <Chip pressed={segment === 'off-road'} onClick={() => setSegment(s => s === 'off-road' ? '' : 'off-road')} icon={<Mountain size={12} />}>Off-Road Features &amp; Tech</Chip>
+            <Chip pressed={segment === 'luxury'} onClick={() => setSegment(s => s === 'luxury' ? '' : 'luxury')} icon={<Gem size={12} />}>Luxury / Premium SUV</Chip>
+            <Chip pressed={segment === 'software'} onClick={() => setSegment(s => s === 'software' ? '' : 'software')} icon={<Cpu size={12} />}>SDV / ADAS &amp; Software</Chip>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-3">
             <span className="text-slate-500 text-xs mr-1">Powertrain:</span>
             {['', ...(catalogue?.powertrains ?? ['ICE', 'MHEV', 'PHEV', 'BEV'])].map(p => (
-              <button key={p || 'all'} onClick={() => setPowertrain(p)}
-                className={`px-2.5 py-1 rounded-full border text-xs transition-colors ${powertrain === p ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
-                {p || 'All'}
-              </button>
+              <Chip key={p || 'all'} pressed={powertrain === p} onClick={() => setPowertrain(p)}>{p || 'All'}</Chip>
             ))}
           </div>
           <div className="flex flex-wrap gap-2 mt-3">
             {EXAMPLES.map(ex => (
-              <button key={ex} onClick={() => setQuery(ex)}
-                className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs hover:border-gold-500/40 hover:text-gold-300 transition-colors">
-                {ex}
-              </button>
+              <Chip key={ex} onClick={() => setQuery(ex)}>{ex}</Chip>
             ))}
           </div>
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
@@ -1297,10 +1280,7 @@ export default function ForesightPage() {
               {bomView === 'bom' && (<>
               <div className="flex flex-wrap gap-2 mb-3">
                 {Object.keys(catalogue.bom).map(c => (
-                  <button key={c} onClick={() => setBomCommodity(b => b === c ? '' : c)}
-                    className={`px-2.5 py-1 rounded-full border text-xs transition-colors ${bomCommodity === c ? 'bg-gold-500/15 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200'}`}>
-                    {c}
-                  </button>
+                  <Chip key={c} pressed={bomCommodity === c} onClick={() => setBomCommodity(b => b === c ? '' : c)}>{c}</Chip>
                 ))}
               </div>
               {bomCommodity && catalogue.bom[bomCommodity] && (

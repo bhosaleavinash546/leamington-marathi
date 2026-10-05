@@ -1,3 +1,5 @@
+import Chip from '../components/ui/Chip';
+import { dashboardKpis } from '../lib/dashboard-kpis';
 import { useEffect, useState, useMemo, type FormEvent } from 'react';
 import { writeJSON } from '../lib/storage';
 import { Link, useNavigate } from 'react-router-dom';
@@ -230,6 +232,10 @@ export default function DashboardPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0, committedSavings: 0, investigatingSavings: 0 });
   const [pipelineKpi, setPipelineKpi] = useState<PipelineKpi | null>(null);
+  // When the figures were last read from the server — shown as "As of" on the
+  // KPI strip, so a number is never older than it admits. Refresh re-reads.
+  const [asOf, setAsOf] = useState<Date | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [ask, setAsk] = useState('');
 
   // Compute annotation summary across all projects from localStorage
@@ -282,7 +288,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && token) {
-      fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } })
+      const projects = fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } })
         .then(async r => {
           if (r.status === 401) { signOut(); navigate('/auth'); return []; }
           if (!r.ok) return [];
@@ -291,12 +297,13 @@ export default function DashboardPage() {
         .then(data => setServerProjects(Array.isArray(data) ? data : []))
         .catch(() => {});
 
-      fetch('/api/business-cases/kpi', { headers: { Authorization: `Bearer ${token}` } })
+      const kpi = fetch('/api/business-cases/kpi', { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.ok ? r.json() : null)
         .then(data => { if (data) setPipelineKpi(data); })
         .catch(() => {});
+      void Promise.allSettled([projects, kpi]).then(() => setAsOf(new Date()));
     }
-  }, [token, loading, signOut, navigate]);
+  }, [token, loading, signOut, navigate, reloadKey]);
 
   useEffect(() => {
     function parseAnnual(val?: string): number {
@@ -404,12 +411,13 @@ export default function DashboardPage() {
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   const hasData = serverProjects.length > 0 || recentAnalyses.length > 0;
-  // Prefer the pipeline tool's server-side KPIs; fall back to annotation-derived savings.
-  const committed = pipelineKpi?.confirmedSaving || savingsPipeline.committedSavings;
-  const inFlight = pipelineKpi?.inProgressSaving || savingsPipeline.investigatingSavings;
-  const ideaCount = savingsPipeline.total || annotationStats.total;
-  const reviewedPct = annotationStats.total > 0 ? Math.round((annotationStats.reviewed / annotationStats.total) * 100) : 0;
-  const projectCount = serverProjects.length || recentAnalyses.length;
+  const kpis = dashboardKpis({
+    pipeline: pipelineKpi,
+    projects: serverProjects.length > 0 ? serverProjects : recentAnalyses.map(a => ({ generatedAt: a.date, summary: { totalIdeas: a.ideasCount } })),
+    reviewed: annotationStats.reviewed,
+    annotated: annotationStats.total,
+    now: asOf ?? new Date(),
+  });
   const topIdeas = pipelineKpi?.topIdeas?.slice(0, 3) ?? [];
 
   // First-run checklist state (shared with the global OnboardingChecklist).
@@ -467,45 +475,46 @@ export default function DashboardPage() {
 
           <div className="mt-3 flex flex-wrap gap-2">
             {HERO_CHIPS.map(c => (
-              <Link
-                key={c.label}
-                to={c.to}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-medium hover:border-gold-500/30 hover:text-white transition-colors"
-              >
-                <c.icon size={12} className="text-gold-400" /> {c.label}
-              </Link>
+              <Chip key={c.label} to={c.to} icon={<c.icon size={12} className="text-gold-400" />}>{c.label}</Chip>
             ))}
           </div>
         </motion.div>
 
         {hasData ? (
           <>
-            {/* ── Savings proof strip ───────────────────────────────────── */}
-            <motion.div
+            {/* ── KPI strip ─────────────────────────────────────────────────
+                Four figures, each with its source, under one "As of" — the
+                Stripe Home pattern. Logic and honesty rules: lib/dashboard-kpis. */}
+            <motion.section aria-labelledby="kpi-heading"
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.08 }}
-              className="mt-8 grid grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-3.5"
+              className="mt-8"
             >
-              <div className="col-span-2 lg:col-span-1 rounded-2xl bg-navy-900 border border-gold-500/20 p-5">
-                <div className="text-2xs font-semibold uppercase tracking-wider text-slate-500">Committed savings</div>
-                <div className="text-4xl font-bold text-white tracking-tight leading-tight mt-1">
-                  {fmtM(committed)} <span className="text-sm font-medium text-slate-500">/yr</span>
-                </div>
-                <div className="text-xs text-slate-400 mt-1">
-                  {savingsPipeline.approved} approved ideas · <span className="text-gold-300">{fmtM(inFlight)} under investigation</span>
-                </div>
+              <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                <h2 id="kpi-heading" className="text-white font-semibold text-base">Your numbers</h2>
+                <p className="text-xs text-slate-500">
+                  {asOf ? <>As of {asOf.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}, {asOf.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</> : 'Loading…'}
+                  {' · '}
+                  <button type="button" onClick={() => setReloadKey(k => k + 1)} className="text-gold-400 hover:underline">Refresh</button>
+                </p>
               </div>
-              {[
-                { label: 'Ideas generated', value: String(ideaCount || '—'), sub: `${projectCount} saved ${projectCount === 1 ? 'analysis' : 'analyses'}` },
-                { label: 'Reviewed', value: `${reviewedPct}%`, sub: `${annotationStats.reviewed} of ${annotationStats.total} ideas` },
-                { label: 'Investigating', value: String(savingsPipeline.investigating || annotationStats.investigating), sub: 'ideas in review' },
-              ].map(k => (
-                <div key={k.label} className="rounded-2xl bg-navy-900 border border-white/8 p-5">
-                  <div className="text-2xs font-semibold uppercase tracking-wider text-slate-500">{k.label}</div>
-                  <div className="text-2xl font-bold text-white tracking-tight mt-1">{k.value}</div>
-                  <div className="text-xs text-slate-500 mt-1">{k.sub}</div>
-                </div>
-              ))}
-            </motion.div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                {kpis.map(k => (
+                  <div key={k.id} className={`rounded-2xl bg-navy-900 border p-5 ${k.id === 'confirmed' ? 'border-gold-500/25' : 'border-hairline'}`}>
+                    <div className="text-2xs font-semibold uppercase tracking-wider text-slate-500">{k.label}</div>
+                    <div className="text-[28px] font-bold text-white tracking-tight leading-tight mt-1">
+                      {k.value === null ? '—' : k.kind === 'money' ? <>{fmtM(k.value)}<span className="text-sm font-medium text-slate-500"> /yr</span></> : k.kind === 'percent' ? `${k.value}%` : k.value.toLocaleString('en-GB')}
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">{k.sub}</div>
+                    <div className="text-2xs text-slate-500 mt-2">Source: {k.source}</div>
+                  </div>
+                ))}
+              </div>
+              {(savingsPipeline.committedSavings > 0 || savingsPipeline.investigatingSavings > 0) && (
+                <p className="mt-3 text-xs text-slate-500 measure">
+                  <span className="text-slate-400">Not yet business cases:</span> {savingsPipeline.approved} idea{savingsPipeline.approved === 1 ? '' : 's'} approved in your analyses ({fmtM(savingsPipeline.committedSavings)}/yr) and {savingsPipeline.investigating} under investigation ({fmtM(savingsPipeline.investigatingSavings)}/yr) — AI-estimated from the idea text, so they are not counted above.
+                </p>
+              )}
+            </motion.section>
 
             {/* ── Next best actions ─────────────────────────────────────── */}
             {topIdeas.length > 0 && (

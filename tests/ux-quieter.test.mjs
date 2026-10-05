@@ -75,3 +75,16 @@ test('step 4: one Stepper, gold primaries, every flagged page on the masthead', 
   for (const [f, src] of walk(new URL('../src/', import.meta.url))) assert.ok(!solid.test(src), `${f}: primary actions are gold; teal is for engine readouts`);
   assert.ok(!/dfm-aura/.test(read('PrismPage.tsx') + read('DfmStudioPage.tsx')), 'no aura glow');
 });
+
+test('step 5: chips are the shared 36 px Chip; Home KPIs carry an "As of" and sources', () => {
+  const chip = readFileSync(new URL('../src/components/ui/Chip.tsx', import.meta.url), 'utf8');
+  assert.ok(chip.includes('min-h-[36px]') && chip.includes('aria-pressed'), 'Chip is 36 px and announces its state');
+  for (const f of ['ForesightPage.tsx', 'MarketplacePage.tsx', 'DashboardPage.tsx', 'TrizStudioPage.tsx']) {
+    assert.ok(readFileSync(new URL(f, pagesDir), 'utf8').includes("from '../components/ui/Chip'"), `${f} uses Chip`);
+  }
+  const fore = readFileSync(new URL('ForesightPage.tsx', pagesDir), 'utf8');
+  assert.ok(!/px-2\.5 py-1 rounded-full/.test(fore), 'no hand-rolled 26 px chips left on Horizon');
+  const dash = readFileSync(new URL('DashboardPage.tsx', pagesDir), 'utf8');
+  assert.ok(dash.includes('As of') && dash.includes('Source: {k.source}') && dash.includes('dashboardKpis('), 'KPI strip is stamped and sourced');
+  assert.ok(!/confirmedSaving \|\| savingsPipeline/.test(dash), 'confirmed savings never falls back to AI-estimated annotation values');
+});
