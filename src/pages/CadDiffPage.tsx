@@ -93,7 +93,7 @@ export default function CadDiffPage() {
         <PageHeader
           tool="cad-diff"
           title="CAD Diff Analysis"
-          subtitle={<><span className="text-slate-200">Describe each revision in text for best results</span> — the AI reasons over the differences you describe and generates targeted cost-reduction ideas. File uploads compare metadata only, not geometry.</>}
+          subtitle="Cost ideas from what changed between revisions. Uploads compare metadata, not geometry."
         />
 
         {/* Input mode toggle */}

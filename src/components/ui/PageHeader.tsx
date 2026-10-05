@@ -47,7 +47,7 @@ interface Props {
   icon?: Tool['icon'];
   eyebrow?: string;
   title?: ReactNode;
-  /** The one-line promise. Keep it one line; the engine explains itself below. */
+  /** The one-line promise: ≤ 90 characters (gated), set on a 90ch line so it stays one. */
   subtitle?: ReactNode;
   tone?: HeaderTone;
   /** Page-level controls: mode chips, badges, admin links. */
@@ -84,7 +84,7 @@ export default function PageHeader({ tool, icon, eyebrow, title, subtitle, tone,
             {title ?? t?.label}
           </h1>
           {subtitle && (
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mt-2 measure">{subtitle}</p>
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed mt-2 max-w-[90ch]">{subtitle}</p>
           )}
         </div>
       </motion.div>

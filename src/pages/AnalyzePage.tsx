@@ -379,7 +379,7 @@ export default function AnalyzePage() {
         <PageHeader
           tool="analyze"
           title="Cost Reduction Analysis"
-          subtitle="Pick a vehicle system, describe the part, and get engine-checked cost-reduction ideas with the arithmetic shown."
+          subtitle="Pick a system, describe the part, get engine-checked ideas with the arithmetic shown."
         />
 
         {/* Back on the page mid-run (the wizard has reset): the run first. */}

@@ -3,6 +3,15 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // Off-scale alpha steps the source uses (border-white/8 ×100, bg-amber-500/8,
+      // bg-gold-500/12, border-white/6 …). Tailwind 3's default scale stops at
+      // multiples of 5, so these were NEVER GENERATED: index.css defined some of
+      // them for the light theme only, and in the dark theme every one fell back
+      // to the preflight border colour — a bright grey outline on a navy card.
+      // Putting them on the scale generates them in both themes; the light-theme
+      // remap in index.css still wins with !important. Gated by
+      // tests/ux-quieter.test.mjs: a modifier must be on this scale.
+      opacity: { 2: '0.02', 3: '0.03', 4: '0.04', 6: '0.06', 7: '0.07', 8: '0.08', 12: '0.12', 18: '0.18' },
       colors: {
         // Navy and gold reference CSS variables so dark/light themes
         // update every derived utility (bg, text, border, from, to, ring…)

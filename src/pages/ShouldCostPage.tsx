@@ -271,7 +271,7 @@ export default function ShouldCostPage() {
         <PageHeader
           tool="should-cost"
           title="Should-Cost Engine"
-          subtitle={<>Deterministic bottom-up cost modelling — <span className="text-teal-300">rate × time + mass × price</span>, computed in-engine, not guessed.</>}
+          subtitle={<>Bottom-up cost — <span className="text-teal-300">rate × time + mass × price</span>, computed in-engine, not guessed.</>}
           actions={(libraryCustom || isAdmin) ? (<>
             {libraryCustom && <span className="inline-flex items-center gap-1.5 min-h-[32px] text-2xs font-semibold px-3 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25"><Database size={11} aria-hidden="true" /> Using your company rate library</span>}
             {isAdmin && <Link to="/admin/rate-library" className="inline-flex items-center gap-1.5 min-h-[32px] text-2xs font-medium px-3 rounded-full border border-white/10 text-slate-300 hover:bg-white/5 hover:border-white/20 transition-ui duration-micro ease-house"><Database size={11} aria-hidden="true" /> Manage rate library</Link>}

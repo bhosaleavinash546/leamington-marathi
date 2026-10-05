@@ -94,7 +94,7 @@ export default function IntegrationsPage() {
           eyebrow="Settings"
           tone="neutral"
           title="Integrations"
-          subtitle="Connect BrainSpark to your team's workflow tools. Configure a webhook and post to the channel from here; automatic posting on approval is not built yet."
+          subtitle="Post ideas to your team's channels by webhook. Auto-posting on approval is not built yet."
         />
 
         {/* ── Live Integrations ── */}

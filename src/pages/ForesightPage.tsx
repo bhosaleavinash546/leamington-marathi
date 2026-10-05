@@ -822,15 +822,13 @@ export default function ForesightPage() {
       <div className="hz-stars2" aria-hidden="true" />
       {/* Instrument backdrop: engineering grid + drifting aurora, header region */}
       <div className="hz-backdrop" style={{ height: 420 }} aria-hidden="true">
-        <div className="hz-glow hz-glow-gold" />
-        <div className="hz-glow hz-glow-teal" />
       </div>
       <div className="max-w-6xl mx-auto relative">
         {/* One masthead, like every tool page. The centred brand hero (radar
             dish, orbits, perspective grid, gradient title) made Horizon read as
-            a landing page inside the product; the backdrop glow stays. */}
+            a landing page inside the product; the grid backdrop stays. */}
         <PageHeader tool="horizon" className="mb-6"
-          subtitle={<>Which technologies will reshape this part — and when? A curated register of {catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by deterministic S-curve, Bass-diffusion and Wright’s-law models. The AI narrates; it never invents a number.</>} />
+          subtitle={<>{catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies on deterministic adoption curves — when will each reshape this part?</>} />
 
         {/* Input */}
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6">

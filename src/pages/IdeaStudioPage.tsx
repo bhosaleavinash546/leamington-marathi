@@ -242,7 +242,7 @@ export default function IdeaStudioPage() {
         <PageHeader
           tool="idea-studio"
           title="Idea Studio"
-          subtitle="Upload a part, describe its current condition, and get cost-reduction ideas grounded in your data."
+          subtitle="Upload a part and describe its current state; get ideas grounded in your data."
         />
 
         {/* Mode selector */}

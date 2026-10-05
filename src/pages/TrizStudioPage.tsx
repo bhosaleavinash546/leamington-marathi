@@ -197,7 +197,7 @@ export default function TrizStudioPage() {
         <PageHeader
           tool="triz"
           title="TRIZ Innovation Studio"
-          subtitle={<>Cost reduction is a game of trade-offs. Describe the one you want to <span className="text-white">break</span> — TRIZ maps it to the inventive principles that resolve it, then generates concrete, <span className="text-gold-400">engine-checked</span> ideas.</>}
+          subtitle="Name the trade-off to break — TRIZ maps it to principles and engine-checked ideas."
         />
 
         {/* Which tool. Three genuinely different instruments, not three

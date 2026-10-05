@@ -1574,7 +1574,7 @@ export default function ResultsPage() {
                 </div>
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                <span aria-live="polite"><span className="font-mono text-slate-300">{filtered.length}</span> of {result.ideas.length} ideas</span>
+                <span aria-live="polite"><span className="text-slate-300 font-medium">{filtered.length}</span> of {result.ideas.length} ideas</span>
                 {active && (
                   <button type="button" onClick={() => { setQuery(''); setFilterDifficulty('All'); setFilterType('All'); setFilterStatus('All'); }} className="text-gold-400 hover:underline">Clear filters</button>
                 )}

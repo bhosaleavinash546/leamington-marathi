@@ -353,7 +353,7 @@ export default function PcbBomCostPage() {
         <PageHeader
           tool="pcb-bom"
           title="PCB → BOM → Should-Cost"
-          subtitle={<>Upload your engineering BOM (.xlsx/.csv/.pdf — exact part numbers, highest accuracy) or up to {MAX_PHOTOS} board photos. Live distributor pricing fills real part costs; a deterministic model then costs the board across the world's PCB manufacturing hubs, with sensitivity bands and engine-verified optimisation ideas.</>}
+          subtitle={<>Cost a board from its BOM or up to {MAX_PHOTOS} photos — live part prices, deterministic model.</>}
         />
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6">

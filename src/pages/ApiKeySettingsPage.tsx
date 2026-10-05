@@ -74,7 +74,7 @@ export default function ApiKeySettingsPage() {
           eyebrow="Settings"
           tone="neutral"
           title="API Key"
-          subtitle="Stored encrypted against your account, so every tool works on every device without re-entering it."
+          subtitle="Stored encrypted on your account, so every tool works on every device."
         />
 
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 space-y-5">

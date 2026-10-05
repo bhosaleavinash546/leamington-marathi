@@ -215,7 +215,7 @@ export default function AdminRateLibraryPage() {
   if (forbidden) return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
       <PageHeader icon={Database} tone="neutral" eyebrow="Settings" title="Rate Library"
-        subtitle="Material prices, machine rates, regional labour and constants that every cost engine reads." />
+        subtitle="Material prices, machine rates and labour that every cost engine reads." />
       <div className="mt-6 rounded-2xl border border-hairline bg-tint p-6 flex items-start gap-4">
         <ShieldAlert size={22} className="text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
         <div>

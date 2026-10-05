@@ -227,7 +227,7 @@ export default function BomAnalysisPage() {
         <PageHeader
           tool="bom-batch"
           title="BOM Batch Analysis"
-          subtitle="Upload a Bill of Materials to analyse multiple parts in one run. Up to 100 parts per batch."
+          subtitle="Analyse up to 100 parts from one Bill of Materials in a single run."
         />
 
         <div className="grid lg:grid-cols-2 gap-6 mb-8">

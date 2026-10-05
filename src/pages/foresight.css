@@ -7,7 +7,7 @@
    no-preference) — reduced-motion users get an instant, static page.
    ──────────────────────────────────────────────────────────────────────────── */
 
-/* Instrument backdrop: faint engineering grid + two drifting aurora glows. */
+/* Instrument backdrop: a faint engineering grid. */
 .hz-backdrop {
   position: absolute;
   inset: 0;
@@ -20,16 +20,8 @@
   -webkit-mask-image: radial-gradient(ellipse 70% 90% at 50% 20%, black 30%, transparent 75%);
   mask-image: radial-gradient(ellipse 70% 90% at 50% 20%, black 30%, transparent 75%);
 }
-.hz-glow {
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  border-radius: 9999px;
-  filter: blur(90px);
-  opacity: 0.14;
-}
-.hz-glow-gold { background: #f59e0b; top: -180px; left: 12%; }
-.hz-glow-teal { background: #14b8a6; top: -140px; right: 10%; }
+/* The two drifting aurora glows were removed in the October 2026 UX review
+   (step 3, "quieter"): decoration behind a work surface. The grid stays. */
 
 /* Radar ring around the telescope: a slow conic sweep + expanding echo ring. */
 .hz-radar {
@@ -273,8 +265,6 @@
     box-shadow: 0 0 8px 2px rgba(245, 158, 11, 0.5);
     animation: hz-rail-photon 6s ease-in-out infinite;
   }
-  .hz-glow-gold { animation: hz-drift 14s ease-in-out infinite alternate; }
-  .hz-glow-teal { animation: hz-drift 18s ease-in-out infinite alternate-reverse; }
   .hz-radar::before { animation: hz-sweep 4.5s linear infinite; }
   .hz-radar-echo { animation: hz-echo 4.5s ease-out infinite; }
   .hz-title { animation: hz-shimmer 7s ease-in-out infinite; }
@@ -293,10 +283,6 @@
   }
 }
 
-@keyframes hz-drift {
-  from { transform: translate3d(0, 0, 0) scale(1); }
-  to { transform: translate3d(60px, 26px, 0) scale(1.15); }
-}
 @keyframes hz-sweep {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

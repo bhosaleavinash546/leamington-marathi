@@ -79,7 +79,7 @@ export default function HarnessCostPage() {
         <PageHeader
           tool="harness"
           title="Wiring Harness Cost"
-          subtitle={<>Deterministic bottom-up piece price — <span className="text-teal-300">copper × circuits × connectors × assembly minutes</span>. No AI in the numbers.</>}
+          subtitle={<>Bottom-up piece price — <span className="text-teal-300">copper × circuits × connectors × minutes</span>. No AI in the numbers.</>}
         />
 
       <div className="grid lg:grid-cols-[340px_1fr] gap-6 mt-6">

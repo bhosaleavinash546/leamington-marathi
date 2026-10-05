@@ -336,11 +336,6 @@ export default function InnovationStudioPage() {
       {/* Ambient field. Purely decorative and therefore hidden from assistive
           technology; every animation in it is behind prefers-reduced-motion. */}
       <div className="iv-backdrop" aria-hidden="true" />
-      <div className="iv-motes" aria-hidden="true" />
-      <div className="iv-motes2" aria-hidden="true" />
-      <div className="iv-glow iv-glow-gold" aria-hidden="true" />
-      <div className="iv-glow iv-glow-violet" aria-hidden="true" />
-      <div className="iv-glow iv-glow-teal" aria-hidden="true" />
 
       <div className="relative max-w-5xl mx-auto">
         {/* ── Page header ──────────────────────────────────────────────────
@@ -350,7 +345,7 @@ export default function InnovationStudioPage() {
             engineer could do anything. Title left, what it does beside it,
             what it is made of on the right. */}
         <PageHeader tool="innovate" className="mb-6"
-          subtitle={<>Structured idea generation. Each method gives the AI a proven thinking framework — one problem, many lenses — and every idea comes back <span className="text-gold-400">engine-checked</span>.</>}
+          subtitle="One problem, many proven thinking frameworks — every idea comes back engine-checked."
           actions={
             /* COUNTED, not typed. This strip read "Eight structured methods" while
                the list held eleven — a figure in the product's own shop window

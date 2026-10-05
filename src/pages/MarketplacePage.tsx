@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useVirtualList } from '../hooks/useVirtualList';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Store, Star, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
+  Store, Star, Search, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
   Lightbulb, ThumbsUp, ChevronRight, GitMerge, Layers, FileDown, AlertTriangle
 } from 'lucide-react';
 import { exportMarketplaceIdeaPdf, exportMarketplaceCataloguePdf } from '../services/export-service';
@@ -347,7 +347,7 @@ export default function MarketplacePage() {
         <PageHeader
           tool="marketplace"
           title="Idea Marketplace"
-          subtitle="A curated library of OEM-benchmarked cost ideas, plus your team's own contributions — each labelled by origin, engine-checked where the move is expressible."
+          subtitle="Benchmarked OEM ideas plus your team's own, each labelled by where it came from."
           actions={
             <span className="inline-flex items-center gap-2 min-h-[32px] px-3 rounded-full bg-info-500/10 border border-info-500/20 text-info-400 text-xs">
               <CheckCircle size={11} aria-hidden="true" /> Curated = benchmark/teardown-sourced · Community = submitted &amp; reviewed here
@@ -398,18 +398,19 @@ export default function MarketplacePage() {
             <button
               key={grp.key}
               onClick={() => handleCommodityChange(grp.key)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              aria-pressed={filterCommodity === grp.key}
+              className={`flex-shrink-0 flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium border transition-colors ${
                 filterCommodity === grp.key
                   ? COLOR_TAB_ACTIVE[grp.color]
-                  : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
+                  : 'text-slate-400 border-hairline hover:text-white'
               }`}
             >
               {grp.label}
               <span
                 className={`inline-flex items-center justify-center min-w-[1.25rem] px-1 py-px rounded-full text-xs leading-none ${
                   filterCommodity === grp.key
-                    ? 'bg-white/20 text-current'
-                    : 'bg-white/5 text-slate-500'
+                    ? 'bg-tint-strong text-current'
+                    : 'bg-tint text-slate-500'
                 }`}
               >
                 {commodityCounts[grp.key] ?? 0}
@@ -431,7 +432,7 @@ export default function MarketplacePage() {
                     .then(r => r.ok ? r.json() : null).then(d => { if (d) setCoverage(d); }).catch(() => {});
                 }
               }}
-              className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-lg transition-colors"
+              className="h-9 text-xs text-slate-400 hover:text-white border border-hairline px-3 rounded-lg transition-colors"
             >
               {showCoverage ? 'Hide' : 'Show'} coverage map — where the corpus is thin
             </button>
@@ -446,7 +447,7 @@ export default function MarketplacePage() {
                     .then(r => r.ok ? r.json() : null).then(d => { if (d?.clusters) setThemes(d.clusters); }).catch(() => {});
                 }
               }}
-              className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-lg transition-colors"
+              className="h-9 text-xs text-slate-400 hover:text-white border border-hairline px-3 rounded-lg transition-colors"
             >
               {showThemes ? 'Hide' : 'Show'} themes — recurring idea clusters
             </button>
@@ -505,116 +506,96 @@ export default function MarketplacePage() {
           )}
         </div>
 
-        {/* ── Search + sub-filters ── */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          <input
-            value={searchQ}
-            onChange={e => setSearchQ(e.target.value)}
-            placeholder="Search ideas..."
-            className="flex-1 min-w-[200px] bg-navy-900 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/30"
-          />
-
-          {/* System sub-filter */}
-          <div className="relative">
-            <select
-              value={filterSystem}
-              onChange={e => setFilterSystem(e.target.value)}
-              aria-label="Filter by system"
-              className="bg-navy-900 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/30 pr-8"
-            >
-              {availableSystems.map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-            <ChevronDown size={13} className="absolute right-3 top-3.5 text-slate-500 pointer-events-none" />
-          </div>
-
-          {/* Difficulty buttons */}
-          <div className="flex gap-1.5">
-            {DIFFICULTIES.map(d => (
-              <button
-                key={d}
-                onClick={() => setFilterDiff(d)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
-                  filterDiff === d
-                    ? 'bg-gold-500/20 text-gold-400 border-gold-500/30'
-                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
-                }`}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-
-          {/* Level buttons (part vs sub-assembly/system) */}
-          <div className="flex gap-1.5">
-            {['All', 'Part', 'System'].map(l => (
-              <button
-                key={l}
-                onClick={() => setFilterLevel(l)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
-                  filterLevel === l
-                    ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
-                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
-                }`}
-                title={l === 'Part' ? 'Part-level ideas (single discrete component)' : l === 'System' ? 'Sub-assembly / system-level ideas' : 'All levels'}
-              >
-                {l === 'All' ? 'All Levels' : l}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Powertrain + Voltage facets */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider mr-1">Powertrain</span>
-            {(['All', ...POWERTRAINS] as const).map(p => (
-              <button
-                key={p}
-                onClick={() => setFilterPowertrain(p)}
-                disabled={p !== 'All' && powertrainCounts[p] === 0}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
-                  filterPowertrain === p
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
-                }`}
-                title={p === 'All' ? 'All powertrains' : `${p}-specific ideas`}
-              >
-                {p === 'All' ? 'All' : p}
-                <span className="ml-1 tabular-nums">{p === 'All' ? powertrainCounts.All : powertrainCounts[p]}</span>
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider mr-1">Architecture</span>
-            {(['All', ...VOLTAGES] as const).map(v => (
-              <button
-                key={v}
-                onClick={() => setFilterVoltage(v)}
-                disabled={v !== 'All' && voltageCounts[v] === 0}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
-                  filterVoltage === v
-                    ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
-                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
-                }`}
-                title={v === 'All' ? 'All architectures' : `${v} architecture ideas`}
-              >
-                {v === 'All' ? 'All' : v}
-                <span className="ml-1 tabular-nums">{v === 'All' ? voltageCounts.All : voltageCounts[v]}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* ── Filter bar ── one row of labelled controls. It replaced a search
+            box, a select and four rows of colour-coded chip groups (purple,
+            emerald, sky): five filters read as five colours, and a 1,600-idea
+            library does not need its facets laid out as buttons. Counts stay,
+            in the option labels; an empty facet is disabled, as before. */}
+        {(() => {
+          const sel = 'h-10 rounded-xl border border-hairline bg-navy-900 px-2.5 text-sm text-slate-200 focus:outline-none focus:border-gold-500/40';
+          const active = searchQ.trim() !== '' || filterSystem !== 'All Systems' || filterDiff !== 'All' || filterLevel !== 'All' || filterPowertrain !== 'All' || filterVoltage !== 'All';
+          return (
+            <div className="mb-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative flex-1 min-w-[180px]">
+                  <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
+                  <input type="search" value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Search ideas…" aria-label="Search ideas"
+                    className={`${sel} w-full pl-10 placeholder-slate-600`} />
+                </div>
+                <select value={filterSystem} onChange={e => setFilterSystem(e.target.value)} aria-label="Filter by system" className={`${sel} max-w-[190px]`}>
+                  {availableSystems.map(sy => <option key={sy} value={sy}>{sy}</option>)}
+                </select>
+                <select value={filterDiff} onChange={e => setFilterDiff(e.target.value)} aria-label="Filter by difficulty" className={sel}>
+                  {DIFFICULTIES.map(d => <option key={d} value={d}>{d === 'All' ? 'Any difficulty' : `${d} difficulty`}</option>)}
+                </select>
+                <select value={filterLevel} onChange={e => setFilterLevel(e.target.value)} aria-label="Filter by level" title="Part = one discrete component; System = sub-assembly or system" className={sel}>
+                  <option value="All">All levels</option>
+                  <option value="Part">Part</option>
+                  <option value="System">System</option>
+                </select>
+                <select value={filterPowertrain} onChange={e => setFilterPowertrain(e.target.value as 'All' | Powertrain)} aria-label="Filter by powertrain" className={sel}>
+                  <option value="All">All powertrains</option>
+                  {POWERTRAINS.map(pt => <option key={pt} value={pt} disabled={powertrainCounts[pt] === 0}>{pt} ({powertrainCounts[pt]})</option>)}
+                </select>
+                <select value={filterVoltage} onChange={e => setFilterVoltage(e.target.value as 'All' | Voltage)} aria-label="Filter by architecture" className={sel}>
+                  <option value="All">All architectures</option>
+                  {VOLTAGES.map(v => <option key={v} value={v} disabled={voltageCounts[v] === 0}>{v} ({voltageCounts[v]})</option>)}
+                </select>
+                {active && (
+                  <button type="button" onClick={() => { setSearchQ(''); setFilterSystem('All Systems'); setFilterDiff('All'); setFilterLevel('All'); setFilterPowertrain('All'); setFilterVoltage('All'); }}
+                    className="h-10 px-2 text-sm text-gold-400 hover:underline">Clear filters</button>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Results header */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-slate-500 text-sm">
-            {filtered.length} idea{filtered.length !== 1 ? 's' : ''} · Community-submitted, anonymised
+        {/* One results row: the count, then the controls that act on what is
+            counted. It used to be two rows that both counted ("2,726 of 2,726
+            ideas" above "2,726 ideas match"). */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <p className="mr-auto text-slate-500 text-sm" aria-live="polite">
+            <span className="text-slate-300 font-medium">{sorted.length.toLocaleString()}</span> of {ideas.length.toLocaleString()} ideas
           </p>
+                <button
+                  onClick={() => {
+                    if (sorted.length === 0) return;
+                    try {
+                      exportMarketplaceCataloguePdf(sorted, {
+                        searchQ,
+                        commodity: COMMODITY_GROUPS.find(g => g.key === filterCommodity)?.label ?? filterCommodity,
+                        system: filterSystem,
+                        difficulty: filterDiff,
+                        level: filterLevel,
+                        powertrain: filterPowertrain,
+                        voltage: filterVoltage,
+                        theme: !!themeFilter,
+                        sortBy,
+                      });
+                      toast(`Exported ${sorted.length.toLocaleString()} ideas to PDF`, 'success');
+                    } catch { toast('PDF export failed', 'error'); }
+                  }}
+                  disabled={sorted.length === 0}
+                  aria-label={`Export the ${sorted.length} filtered ideas to PDF`}
+                  title="Export the current filtered selection as a PDF catalogue"
+                  className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-hairline text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  <FileDown size={14} aria-hidden="true" /> Export PDF ({sorted.length.toLocaleString()})
+                </button>
+                <label className="flex items-center gap-2 text-sm text-slate-400">
+                  Sort
+                  <select aria-label="Sort ideas" value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); window.scrollTo({ top: 0 }); }}
+                    className="h-9 bg-navy-900 border border-hairline rounded-lg px-2 text-slate-200 text-sm">
+                    <option value="featured">Featured</option>
+                    <option value="saving">Highest saving</option>
+                    <option value="votes">Most votes</option>
+                    <option value="newest">Newest</option>
+                  </select>
+                </label>
           <button
             onClick={() => setShowSubmit(v => !v)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-500/15 border border-gold-500/25 text-gold-400 text-sm font-medium hover:bg-gold-500/25 transition-colors"
+            className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold transition-colors"
           >
             + Submit an Idea
           </button>
@@ -717,44 +698,6 @@ export default function MarketplacePage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-slate-500 text-xs">{sorted.length.toLocaleString()} idea{sorted.length === 1 ? '' : 's'} match</p>
-              <button
-                onClick={() => {
-                  if (sorted.length === 0) return;
-                  try {
-                    exportMarketplaceCataloguePdf(sorted, {
-                      searchQ,
-                      commodity: COMMODITY_GROUPS.find(g => g.key === filterCommodity)?.label ?? filterCommodity,
-                      system: filterSystem,
-                      difficulty: filterDiff,
-                      level: filterLevel,
-                      powertrain: filterPowertrain,
-                      voltage: filterVoltage,
-                      theme: !!themeFilter,
-                      sortBy,
-                    });
-                    toast(`Exported ${sorted.length.toLocaleString()} ideas to PDF`, 'success');
-                  } catch { toast('PDF export failed', 'error'); }
-                }}
-                disabled={sorted.length === 0}
-                aria-label={`Export the ${sorted.length} filtered ideas to PDF`}
-                title="Export the current filtered selection as a PDF catalogue"
-                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs"
-              >
-                <FileDown size={12} /> Export PDF ({sorted.length.toLocaleString()})
-              </button>
-              <label className="flex items-center gap-2 text-xs text-slate-400">
-                Sort
-                <select aria-label="Sort ideas" value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); window.scrollTo({ top: 0 }); }}
-                  className="bg-navy-900 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
-                  <option value="featured">Featured</option>
-                  <option value="saving">Highest saving</option>
-                  <option value="votes">Most votes</option>
-                  <option value="newest">Newest</option>
-                </select>
-              </label>
-            </div>
             <div ref={listRef}>
             <div style={{ height: range.offsetTop }} aria-hidden="true" />
             {rows.map((idea, i) => {
