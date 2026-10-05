@@ -71,7 +71,7 @@ professional audience. S3 is polish.
 | B-2 | S2 | One document title for all 27 pages, so tabs, history and bookmarks were indistinguishable. | MEASURED | **Fixed**: `Should-Cost · BrainSpark`, from the nav registry |
 | U-1 | S2 | **The sidebar hid half the product.** Four settings links, Collapse and the user card filled about 260 px of a fixed footer, so at 900 px tall the Track and Learn tools (Pipeline, Marketplace, Horizon, Help) sat out of sight with no scroll cue. | Screenshot | **Fixed**: Settings is one disclosure row, open on settings pages; Collapse moved into the user row |
 | U-2 | S2 | **A rainbow export bar.** Share, Excel, PowerPoint, PDF and RFQ were five buttons in five saturated colours, with three more in the footer. | Screenshot | **Fixed**: one gold Export menu that names what each format is for (keyboard: arrows, Esc, focus return); Share is a quiet secondary; the footer buttons are neutral |
-| U-3 | S2 | **Headers still not unified.** Horizon had a centred brand hero; Innovation Studio a gradient title; Pipeline and VAVE a compact header; Rate Library none. | Screenshot | **Fixed** for Horizon, Innovation Studio, Pipeline, VAVE and Rate Library. **Open**: DFM Studio, Trends and Help (see §5) |
+| U-3 | S2 | **Headers still not unified.** Horizon had a centred brand hero; Innovation Studio a gradient title; Pipeline and VAVE a compact header; Rate Library none. | Screenshot | **Fixed**: every tool page, DFM Studio and Trends included (§7). Help keeps its own layout |
 | U-4 | S2 | **Emoji as icons** (🚗 ⚙️ 🔥 ⚡) on per-system gradient tiles in Analyze. That is a second icon language next to lucide, and it renders differently by operating system. | Screenshot | **Fixed**: lucide line icons on neutral tiles, gold when selected; the spring scale-on-hover replaced by the house lift |
 | U-5 | S2 | **Three floating objects on a phone.** The onboarding pill, chat button and tab bar covered content, and the pill repeated the dashboard's own "Get set up" card. | Screenshot | **Fixed**: onboarding lives on Home on phones; the desktop header chip stays |
 | U-6 | S2 | **Key fields inside tools.** CAD → Cost and BOM Batch asked for the key on the page, and CAD → Cost carried a personal "Designed & Created by" credit inside the tool. | Screenshot | **Fixed**: the field appears only when no key exists anywhere and links to Settings; the credit is removed |
@@ -79,8 +79,8 @@ professional audience. S3 is polish.
 | B-4 | S3 | Rate Library fired a request bound to return 403 for every non-admin. | MEASURED | **Fixed**: it asks the `/status` gate first and explains what non-admins still get |
 | B-5 | S3 | Help said the key is "entered on the Analyze page" and "stored only in your browser". | CODE | **Fixed** (three answers rewritten) |
 | T-1 | S2 | **Small targets on Results.** The per-idea select box was 17×17 and the "Full Technical Detail" row 20 px tall, both on every card. | MEASURED | **Fixed**: 36 px hit areas, `aria-pressed` and `aria-expanded`. Results mobile went from 71 to 27 small targets |
-| T-2 | S3 | Filter chips are 26–30 px on Marketplace, Horizon and Results. | MEASURED | **Open**: a touch-only chip size belongs in a shared Chip primitive, not a global CSS rule |
-| J-1 | S2 | **Three steppers** (Analyze pills, Prism numbered rail, DFM numbered rail) and **three primary-button colours** (gold, teal, outline) for the same job. | JUDGED | **Open** (§5) |
+| T-2 | S3 | Filter chips are 26–30 px on Marketplace, Horizon and Results. | MEASURED | **Fixed** (§7): a shared 36 px `Chip`; Results and Marketplace filters are now selects |
+| J-1 | S2 | **Three steppers** (Analyze pills, Prism numbered rail, DFM numbered rail) and **three primary-button colours** (gold, teal, outline) for the same job. | JUDGED | **Fixed** (§7): one `Stepper`; every primary is gold |
 
 **Checked and found not to be defects:**
 - The logo "clipping" was my contact sheet's label.
@@ -141,3 +141,58 @@ proven to flag the old pattern and pass the new one before it was trusted.
 | Workflow correctness | — | 9 | The account-key bug no longer blocks any AI tool |
 | Long-job experience | 6 | 6 | Unchanged; first in §5 |
 | **Overall** | **7.7** | **8.1** | |
+
+## 7. Implemented: the five-step plan
+
+After the review the user asked for the plan to be built "step by step". Each
+step was verified the same way:
+- `tsc`, the build, and the full suite;
+- a targeted crawl in both themes and both viewports, with screenshots looked
+  at, not only counted;
+- a gate test for the step.
+
+Each step is its own commit.
+
+| Step | What changed | Gate |
+|---|---|---|
+| 1. Long jobs | Analyze and Prism runs live in an app-wide store. A header pill shows the stage, the clock and Cancel; "Results ready", a toast and ✓ in the tab follow when the run finishes elsewhere. Closing the tab still stops the bill (DECISIONS 118). | `run-store.test.mjs` |
+| 2. Results toolbar | One row: search, Difficulty, Saving type, Status and Sort selects, "N of M", Clear filters, and a Cards / Table switch. The table has sortable headers and rows that expand in place. The view lives in the URL (DECISIONS 121). | `ux-results-toolbar.test.mjs` |
+| 3. Quieter | 18 subtitles cut to one line (≤ 90 characters). The Marketplace chip wall is a filter bar with a single results row. The aurora glows and drifting motes on Horizon, Innovation, DFM and Prism are gone. | `ux-quieter.test.mjs` |
+| 4. One stepper, one primary | `ui/Stepper` serves Analyze, Prism and DFM. Every primary action is gold; the teal, cyan, violet and emerald ones are converted, and the small secondaries are neutral. DFM Studio and Trends use `PageHeader`, with the Trends tabs below the title. | same |
+| 5. Home and chips | KPI strip with source labels and "As of". Confirmed savings comes from G3 only (DECISIONS 120). A shared 36 px `Chip` is used on Horizon, Marketplace, Home and TRIZ. | `dashboard-kpis.test.mjs`, same |
+
+**A bug found on the way (MEASURED).** Off-scale opacity classes
+(`border-white/8` ×100 and 14 others) were never generated by Tailwind, so in
+the dark theme those cards drew a bright default border. Fixed at the config,
+and gated (DECISIONS 119).
+
+### Before / after, full crawl (108 captures each)
+
+| Measure | After §4 | After §7 |
+|---|---|---|
+| axe serious / critical | 0 | **0** |
+| Console errors / failed requests | 0 / 0 | **0 / 0** |
+| Horizontal overflow | 0 | **0** |
+| Distinct titles | 27 / 27 | **27 / 27** |
+| Targets < 32 px, mobile (all pages) | 456 | **310** |
+| Targets < 32 px, desktop (all pages) | 536 | **388** |
+| Results / Marketplace / Horizon, mobile | 27 / 33 / 24 | **4 / 12 / 5** |
+
+### Scorecard (judged)
+
+| Dimension | Before §7 | Now | What moved it |
+|---|---|---|---|
+| Information architecture | 8.5 | 8.5 | Unchanged |
+| Visual language | 8 | 8.8 | One masthead, stepper, primary colour and chip; no glows; one-line subtitles |
+| Interaction states | 8.5 | 8.8 | Pressed and selected states announced everywhere; linkable views |
+| Touch / density | 6.5 | 7.8 | Shared chip; filters as selects; Results table |
+| Workflow correctness | 9 | 9.2 | Honest KPIs; the dark-theme border bug fixed |
+| Long-job experience | 6 | 8.5 | Background runs with a staged rail, cancel and notification |
+| **Overall** | **8.1** | **8.6** | |
+
+**Still open, in order:**
+1. ⌘K that runs actions, plus a `?` shortcut sheet.
+2. Provenance on hover: each € figure opens its engine calculation.
+3. A comparison tray for the selected ideas.
+4. Ideas streaming in during a run, before ranking.
+5. The light-theme Home input's inner fill.

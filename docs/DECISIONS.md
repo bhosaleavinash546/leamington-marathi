@@ -4713,3 +4713,54 @@ server aborts its upstream call (measured with the stub: `aborted: 1`).
 
 **Only one run at a time.** A second start is refused with a message, since
 two concurrent generations would double the bill.
+
+## 119. Off-scale opacity steps live on the Tailwind scale, and a gate keeps them there
+
+**Surprise for a newcomer: `border-white/8` did nothing in the dark theme for
+months.** Tailwind 3's default opacity scale stops at multiples of 5. A class
+such as `border-white/8` (100 uses), `bg-amber-500/8` or `bg-gold-500/12` is
+never generated. `index.css` happened to define a few of them for the light
+theme's remap, so the light theme looked right. In the dark theme each element
+fell back to the preflight border colour, a bright grey outline on a navy
+card, which is exactly what a "faint hairline" was meant not to be.
+
+The steps the source uses (2, 3, 4, 6, 7, 8, 12, 18) are now on
+`theme.extend.opacity`, so they generate in both themes and the light-theme
+`!important` remap still wins. `tests/ux-quieter.test.mjs` fails the build on
+any colour modifier off the scale. Add the step to the config, or pick one on
+the scale; never rely on a hand-written CSS rule to stand in.
+
+## 120. "Confirmed savings" on Home is the pipeline's G3 gate and nothing else
+
+The Home tile was labelled "Committed savings" and read the pipeline's G3
+total, but when that was zero (no business cases yet) it fell back to the sum
+of ideas the user had marked approved in an analysis. Those values are parsed
+from AI-written text, in mixed currency symbols. So a first-week user saw a
+confident "£3.4M /yr committed" that no gate had passed.
+
+`src/lib/dashboard-kpis.ts` now builds the tiles:
+- **Pipeline value** is the total of all business cases (G0–G3).
+- **Confirmed savings** is G3 only.
+- With no business cases, both tiles say "—" with the reason.
+- The annotation estimates still appear, below the tiles, labelled as
+  AI-estimated and "not counted above".
+
+Every tile names its source, and the strip carries the time the figures were
+read ("As of 22:41, 5 Oct") with a Refresh. That follows the house rule that
+a number states its basis, and the Stripe Home pattern that a number states
+its age.
+
+## 121. Results filters live in the URL; selected chips are always gold
+
+**Linkable views.** On Results, the search text, filters, sort and the
+Cards/Table view are query parameters (`?q=&diff=&type=&status=&sort=&view=`).
+They are written with `replace`, so filtering does not fill the back-button
+history. A filtered view can be shared, bookmarked, and survives a reload,
+which is the saved-views pattern of Linear and Airtable without a new store.
+`?id=` keeps its meaning.
+
+**One chip colour.** `components/ui/Chip` has one selected state, gold. Before
+it, Horizon used gold, emerald, violet and teal for four options of one
+segmented control, so the colour implied a meaning the options did not have.
+Colour has a job: gold marks the user's choice and action, teal marks the
+engine's measurement. A selected chip is the user's choice.
