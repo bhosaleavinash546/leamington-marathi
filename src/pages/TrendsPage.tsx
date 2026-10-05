@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog, BarChart3, Zap, Shield, Droplets, Layers } from 'lucide-react';
 import {
@@ -121,7 +122,6 @@ export default function TrendsPage() {
   }, [tab]);
 
   const domainMeta = DOMAINS.find(d => d.id === domain)!;
-  const DomainIcon = domainMeta.icon;
 
   function getKpis() {
     if (domain === 'edu')      return [{ label: 'Components', value: EDU_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalEduIdeas() }, { label: 'Mfg levers', value: MFG_LEVERS.edu.items.length + MFG_LEVERS.sub.items.length + MFG_LEVERS.part.items.length }, { label: 'Trends', value: EDU_TRENDS.unit.length + EDU_TRENDS.sub.length + EDU_TRENDS.part.length }];
@@ -571,39 +571,30 @@ export default function TrendsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 pt-16">
-      {/* Hero */}
-      <div className="bg-gradient-to-b from-navy-900 to-navy-950 border-b border-white/8 px-4 py-10">
+    <div className="min-h-screen bg-navy-950 pt-20">
+      {/* The house masthead, then the domain tabs UNDER it. The tabs used to
+          sit above the title, so the first thing on the page was a row of
+          fourteen buttons and the page did not say what it was until below
+          them. A tab row belongs to the content it switches. */}
+      <div className="border-b border-hairline px-4 pb-8">
         <div className="max-w-7xl mx-auto">
-          {/* Domain selector */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <PageHeader tool="trends" className="mb-5"
+            title={<>{domainMeta.label} Trends &amp; Levers</>}
+            subtitle={<>Industry trends, validated VAVE levers and cost opportunities for {domainMeta.label}.</>} />
+
+          <div role="tablist" aria-label="Domain" className="flex gap-2 mb-6 overflow-x-auto pb-1 [scrollbar-width:none]">
             {DOMAINS.map(({ id, label, icon: Icon, color }) => (
               <button
                 key={id}
+                role="tab"
+                aria-selected={domain === id}
                 onClick={() => { setDomain(id); setTab('trends'); }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-ui border ${domain === id ? 'bg-gold-500/15 text-gold-400 border-gold-500/30 shadow-lg' : 'text-slate-400 border-white/10 hover:text-white hover:bg-white/5'}`}
+                className={`shrink-0 flex items-center gap-2 h-9 px-3.5 rounded-lg text-sm font-medium transition-colors border ${domain === id ? 'bg-gold-500/15 text-gold-400 border-gold-500/30' : 'text-slate-400 border-hairline hover:text-white hover:bg-tint'}`}
               >
-                <Icon size={15} className={domain === id ? 'text-gold-400' : color} />
+                <Icon size={15} className={domain === id ? 'text-gold-400' : color} aria-hidden="true" />
                 {label}
               </button>
             ))}
-          </div>
-
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center flex-shrink-0">
-              <DomainIcon size={22} className={domainMeta.color} />
-            </div>
-            <div>
-              <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${domainMeta.color}`}>
-                {domainMeta.label} · Value &amp; Manufacturing Engineering
-              </p>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                {domainMeta.label} Trends &amp; Levers
-              </h1>
-              <p className="text-slate-400 text-sm measure">
-                Industry trends, validated VAVE levers and manufacturing cost-reduction opportunities for the {domainMeta.label} domain.
-              </p>
-            </div>
           </div>
 
           {/* KPIs */}

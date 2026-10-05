@@ -31,7 +31,7 @@ import { AnalysisConfig, AnalysisResult, PlantRegion } from '../types';
 import { CURRENCIES, CURRENCY_SYMBOLS } from '../constants/costing';
 import { useDfmMotion } from '../lib/motion';
 import { useSpotlight } from '../components/dfm/useSpotlight';
-import StepRail, { RailStep } from '../components/dfm/StepRail';
+import Stepper, { type StepperStep } from '../components/ui/Stepper';
 import TickNumber from '../components/dfm/TickNumber';
 import ScoreRing from '../components/dfm/ScoreRing';
 import { Money, FxNote } from '../components/ui/Money';
@@ -830,7 +830,7 @@ export default function Part360Page() {
   }
 
   // ── The rail: every tick is a fact derived from real state ────────────────
-  const railSteps: RailStep[] = [
+  const railSteps: StepperStep[] = [
     { id: 's0', label: 'Part & files', hint: !inputsValid ? 'material, process, mass, volume' : undefined, done: inputsValid && step > 0 },
     { id: 's1', label: 'Measure', hint: step === 1 && !shouldCost ? 'run the engines' : undefined, done: !!shouldCost && step > 1 },
     { id: 's2', label: 'Quote', hint: step === 2 ? 'optional — unlocks forensics' : undefined, done: !!dossier },
@@ -860,7 +860,6 @@ export default function Part360Page() {
 
   return (
     <div className="dfm-shell min-h-screen bg-navy-950 pt-20 pb-16 px-4">
-      <div className="dfm-aura" aria-hidden="true" />
       <div className="dfm-grid" aria-hidden="true" />
       <div className="dfm-content max-w-6xl mx-auto">
 
@@ -925,7 +924,7 @@ export default function Part360Page() {
 
         {/* ── STEP RAIL ────────────────────────────────────────────────────── */}
         <div className="dfm-sticky -mx-4 px-4 py-2.5 mb-6 border-y border-white/[0.07] bg-navy-950/70">
-          <StepRail steps={railSteps} activeId={activeRailId} onJump={jumpTo} />
+          <Stepper label="Analysis progress" steps={railSteps} activeId={activeRailId} onJump={jumpTo} />
         </div>
 
         {/* Back on the page mid-run (the wizard has reset): the run first. */}

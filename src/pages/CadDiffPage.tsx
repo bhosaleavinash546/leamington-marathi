@@ -157,7 +157,7 @@ export default function CadDiffPage() {
         {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
 
         <button onClick={handleCompare} disabled={loading || !canCompare}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-semibold transition-ui hover:-translate-y-0.5">
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold-500 hover:bg-gold-400 text-navy-950 disabled:opacity-50 font-semibold transition-ui hover:-translate-y-0.5">
           {loading
             ? <><ButtonSpinner size={16} /> Analysing delta…</>
             : <><GitCompare size={18} /> Compare Designs &amp; Generate Ideas</>}

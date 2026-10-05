@@ -1862,7 +1862,7 @@ export default function ResultsPage() {
                 <button
                   disabled={!refineFocus.trim() || refining}
                   onClick={handleRefine}
-                  className="flex items-center gap-2 px-6 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm transition-ui"
+                  className="flex items-center gap-2 px-6 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-sm transition-ui"
                 >
                   {refining ? <><ButtonSpinner size={14} /> Generating…</> : <><Zap size={14} /> Generate More Ideas</>}
                 </button>

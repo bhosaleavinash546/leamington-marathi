@@ -421,7 +421,7 @@ export default function PcbBomCostPage() {
                       <label className="text-xs text-slate-400 col-span-2">Board width (mm) — a scale reference greatly improves size accuracy
                         <input type="number" value={boardWidthMm} onChange={e => setBoardWidthMm(e.target.value)} placeholder="optional, e.g. 85" className={`${inp} mt-1`} /></label>
                     </div>
-                    <button onClick={extractAndCost} disabled={busy} className="w-full py-3 rounded-xl bg-teal-600/90 hover:bg-teal-500 disabled:opacity-40 text-white font-semibold flex items-center justify-center gap-2">
+                    <button onClick={extractAndCost} disabled={busy} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 disabled:opacity-40 font-semibold flex items-center justify-center gap-2">
                       {busy ? <><ButtonSpinner /> Reading {photos.length} photo{photos.length > 1 ? 's' : ''}…</> : <><Cpu size={16} /> Extract BOM & cost ({photos.length} photo{photos.length > 1 ? 's' : ''})</>}
                     </button>
                   </div>
@@ -471,7 +471,7 @@ export default function PcbBomCostPage() {
                       {pricingBusy ? <><ButtonSpinner size={11} /> Pricing…</> : <><Zap size={12} /> Live prices</>}
                     </button>
                     <button onClick={addLine} className="text-xs px-2 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 flex items-center gap-1"><Plus size={12} /> Row</button>
-                    <button onClick={() => recost()} disabled={busy} className="text-xs px-3 py-1 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium disabled:opacity-40">{busy ? 'Costing…' : 'Re-cost'}</button>
+                    <button onClick={() => recost()} disabled={busy} className="text-xs px-3 py-1 rounded-lg border border-hairline bg-tint hover:bg-tint-strong text-slate-200 font-medium disabled:opacity-40">{busy ? 'Costing…' : 'Re-cost'}</button>
                   </div>
                 </div>
                 <div className="overflow-x-auto max-h-[520px]">
@@ -659,7 +659,7 @@ export default function PcbBomCostPage() {
                   <p>@ {cost.volume.toLocaleString()} boards/yr · test: {cost.params.testStrategy} · {cost.params.autoGrade ? 'AEC-Q grade' : 'commercial grade'}</p>
                 </div>
                 {dirty && <p className="text-amber-300/80 text-2xs mt-2">Edits pending — re-cost to update the totals before exporting.</p>}
-                <button onClick={exportXlsx} disabled={dirty} title={dirty ? 'Re-cost first' : ''} className="w-full mt-3 py-2 rounded-lg bg-teal-600/80 hover:bg-teal-500 disabled:opacity-40 text-white text-sm font-medium flex items-center justify-center gap-2"><Download size={14} /> Export .xlsx</button>
+                <button onClick={exportXlsx} disabled={dirty} title={dirty ? 'Re-cost first' : ''} className="w-full mt-3 py-2 rounded-lg border border-hairline bg-tint hover:bg-tint-strong text-slate-200 disabled:opacity-40 text-sm font-medium flex items-center justify-center gap-2"><Download size={14} /> Export .xlsx</button>
               </div>
             )}
 
@@ -880,7 +880,7 @@ function DetailedEngine({ token, board, lines, getParams }: { token: string | nu
                                 <input type="number" value={mhrIn[k]} onChange={e => setMhrIn(p => ({ ...p, [k]: e.target.value }))} className={`${inpS} border-white/10 w-full mt-0.5`} />
                               </label>
                             ))}
-                            <button onClick={() => void applyMhr(st.id)} className="col-span-2 text-2xs py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium">Compute & apply MHR</button>
+                            <button onClick={() => void applyMhr(st.id)} className="col-span-2 text-2xs py-1.5 rounded-lg border border-hairline bg-tint hover:bg-tint-strong text-slate-200 font-medium">Compute & apply MHR</button>
                           </div>
                         )}
                       </div>

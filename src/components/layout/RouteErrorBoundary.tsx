@@ -49,7 +49,7 @@ export default class RouteErrorBoundary extends Component<Props, State> {
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => this.setState({ hasError: false, message: '' })}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold transition-colors"
             >
               <RefreshCw size={15} /> Retry
             </button>

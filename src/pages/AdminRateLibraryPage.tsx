@@ -270,7 +270,7 @@ export default function AdminRateLibraryPage() {
           <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
             <p className="text-white font-semibold mb-1 flex items-center gap-2"><Upload size={15} className="text-teal-400" /> 2 · Upload your data</p>
             <p className="text-slate-400 text-xs mb-3">Only changed cells (or new rows) are staged. You'll see the diff, plausibility warnings and the impact on sample parts <em>before</em> applying.</p>
-            <label className={`inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium cursor-pointer ${busy ? 'opacity-50 pointer-events-none' : ''}`}>
+            <label className={`inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg border border-hairline bg-tint hover:bg-tint-strong text-slate-200 font-medium cursor-pointer ${busy ? 'opacity-50 pointer-events-none' : ''}`}>
               {busy ? <ButtonSpinner /> : <Upload size={14} />} Upload .xlsx / .csv
               <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) onUpload(f); e.target.value = ''; }} />
             </label>
@@ -288,7 +288,7 @@ export default function AdminRateLibraryPage() {
                 <p className="text-white font-semibold flex items-center gap-2"><GitCompare size={16} className="text-teal-400" /> Review before applying</p>
                 <div className="flex items-center gap-2">
                   <button onClick={cancelPreview} className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5">Cancel</button>
-                  <button onClick={applyCandidate} disabled={busy || !preview.ok} title={preview.ok ? '' : 'Fix validation errors first'} className="text-xs px-3 py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium disabled:opacity-40">{busy ? 'Applying…' : 'Apply changes'}</button>
+                  <button onClick={applyCandidate} disabled={busy || !preview.ok} title={preview.ok ? '' : 'Fix validation errors first'} className="text-xs px-3 py-1.5 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold disabled:opacity-40">{busy ? 'Applying…' : 'Apply changes'}</button>
                 </div>
               </div>
               <div className="p-5 space-y-4">

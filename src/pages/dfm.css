@@ -43,34 +43,8 @@
   -webkit-mask-image: radial-gradient(ellipse 85% 55% at 50% 0%, #000 12%, transparent 72%);
 }
 
-/* Two enormous, almost-invisible light sources. They do the job a photographer
-   does with a softbox: give the flat dark ground somewhere to fall off to, so
-   the glass panels have something to sit against. */
-.dfm-aura {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.dfm-aura::before,
-.dfm-aura::after {
-  content: '';
-  position: absolute;
-  width: 780px;
-  height: 780px;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.5;
-}
-.dfm-aura::before {
-  top: -380px; left: -180px;
-  background: radial-gradient(circle, rgb(var(--gold-500) / 0.10), transparent 65%);
-}
-.dfm-aura::after {
-  top: -300px; right: -260px;
-  background: radial-gradient(circle, rgb(56 189 248 / 0.07), transparent 65%);
-}
+/* The two blurred "softbox" light sources (.dfm-aura) were removed in the
+   October 2026 UX review, step 3 — decoration behind a work surface. */
 
 /* ── PANEL: layered glass with a lit top edge ─────────────────────────────── */
 .dfm-panel {
@@ -268,34 +242,6 @@
   box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.3) inset, 0 4px 10px -6px rgb(var(--gold-500) / 0.8);
 }
 
-/* ── DATUM MARKER: the step-rail bullet, drawn like a GD&T datum ──────────── */
-.dfm-datum {
-  width: 24px; height: 24px;
-  border-radius: 7px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgb(255 255 255 / 0.14);
-  background: rgb(var(--navy-950) / 0.8);
-  font-size: 11px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: rgb(148 163 184);
-  transition: all 0.2s ease-out;
-}
-.dfm-datum[data-state='done'] {
-  border-color: rgb(16 185 129 / 0.5);
-  background: linear-gradient(180deg, rgb(16 185 129 / 0.22), rgb(16 185 129 / 0.10));
-  color: rgb(52 211 153);
-  box-shadow: 0 0 14px -4px rgb(16 185 129 / 0.55);
-}
-.dfm-datum[data-state='active'] {
-  border-color: rgb(var(--gold-500) / 0.65);
-  background: linear-gradient(180deg, rgb(var(--gold-500) / 0.24), rgb(var(--gold-500) / 0.10));
-  color: rgb(var(--gold-400));
-  box-shadow: 0 0 16px -3px rgb(var(--gold-500) / 0.6);
-}
-
 /* ── FINDING SPINE: severity as a lit edge ────────────────────────────────── */
 .dfm-spine { position: relative; overflow: hidden; }
 .dfm-spine::before {
@@ -357,17 +303,6 @@
    MOTION — everything below is optional by definition.
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: no-preference) {
-
-  .dfm-aura::before { animation: dfm-drift-a 26s ease-in-out infinite alternate; }
-  .dfm-aura::after  { animation: dfm-drift-b 34s ease-in-out infinite alternate; }
-  @keyframes dfm-drift-a {
-    from { transform: translate3d(0, 0, 0); }
-    to   { transform: translate3d(70px, 40px, 0); }
-  }
-  @keyframes dfm-drift-b {
-    from { transform: translate3d(0, 0, 0); }
-    to   { transform: translate3d(-60px, 50px, 0); }
-  }
 
   .dfm-lift:hover {
     transform: translateY(-2px);

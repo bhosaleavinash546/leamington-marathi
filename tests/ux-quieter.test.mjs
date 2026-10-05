@@ -60,3 +60,18 @@ test('every colour opacity modifier is on the Tailwind scale (else it is never g
   walk(new URL('../src/', import.meta.url));
   assert.deepEqual([...off], [], 'add the step to theme.extend.opacity or use a step on the scale');
 });
+
+test('step 4: one Stepper, gold primaries, every flagged page on the masthead', () => {
+  const read = (p) => readFileSync(new URL(p, pagesDir), 'utf8');
+  for (const f of ['AnalyzePage.tsx', 'PrismPage.tsx', 'DfmStudioPage.tsx']) {
+    assert.ok(read(f).includes("from '../components/ui/Stepper'"), `${f} uses the house Stepper`);
+  }
+  for (const f of ['DfmStudioPage.tsx', 'TrendsPage.tsx']) assert.ok(read(f).includes('<PageHeader'), `${f} uses PageHeader`);
+  const trends = read('TrendsPage.tsx');
+  assert.ok(trends.indexOf('<PageHeader') < trends.indexOf('role="tablist" aria-label="Domain"'), 'Trends domain tabs sit below the header');
+  // A solid non-gold fill with a hover step is a primary button in another colour.
+  const solid = /\bbg-(teal|emerald|cyan|violet|purple|indigo|blue|sky)-(500|600)(\/\d+)? hover:bg-(teal|emerald|cyan|violet|purple|indigo|blue|sky)-/;
+  const walk = (d) => readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(new URL(e.name + '/', d)) : e.name.endsWith('.tsx') ? [[e.name, readFileSync(new URL(e.name, d), 'utf8')]] : []);
+  for (const [f, src] of walk(new URL('../src/', import.meta.url))) assert.ok(!solid.test(src), `${f}: primary actions are gold; teal is for engine readouts`);
+  assert.ok(!/dfm-aura/.test(read('PrismPage.tsx') + read('DfmStudioPage.tsx')), 'no aura glow');
+});

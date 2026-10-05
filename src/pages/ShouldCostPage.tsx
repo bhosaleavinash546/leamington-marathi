@@ -391,7 +391,7 @@ export default function ShouldCostPage() {
             {error && <p className="text-red-400 text-sm" role="alert">{error}</p>}
 
             <button onClick={handleCalc} disabled={loading || !partName || !weightKg || !annualVolume}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5">
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 disabled:opacity-50 font-semibold text-sm transition-ui hover:-translate-y-0.5">
               {loading ? <><ButtonSpinner size={16} /> Calculating...</> : <><Calculator size={16} /> Calculate Should-Cost</>}
             </button>
             <p className="text-slate-500 text-xs flex items-center gap-1.5"><ShieldCheck size={12} className="text-teal-500" /> Numbers are computed deterministically. An API key (optional) only adds an AI narrative.</p>
@@ -461,7 +461,7 @@ export default function ShouldCostPage() {
                     <input type="number" value={teachPrice} onChange={e => setTeachPrice(e.target.value)} placeholder={`Actual ${currency}/unit`}
                       className="flex-1 bg-navy-900 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-teal-500/40" />
                     <button onClick={teachQuote} disabled={teaching || !teachPrice}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 disabled:opacity-40 text-white font-medium transition-colors whitespace-nowrap">
+                      className="text-xs px-3 py-1.5 rounded-lg border border-hairline bg-tint hover:bg-tint-strong text-slate-200 disabled:opacity-40 font-medium transition-colors whitespace-nowrap">
                       {teaching ? 'Learning…' : 'Teach'}
                     </button>
                   </div>
@@ -490,7 +490,7 @@ export default function ShouldCostPage() {
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                       <div className="text-emerald-400 text-sm font-semibold">Gap vs Supplier Quote: {result.gapVsQuote}</div>
                       <button onClick={generateGapIdeas} disabled={gapLoading}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-ui">
+                        className="px-3 py-1.5 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 disabled:opacity-50 text-xs font-semibold transition-ui">
                         {gapLoading ? 'Allocating gap & generating…' : 'Generate gap-closure ideas'}
                       </button>
                     </div>

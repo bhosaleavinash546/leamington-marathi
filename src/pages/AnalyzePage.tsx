@@ -14,6 +14,7 @@ import { toast } from '../hooks/useToast';
 import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent, RunPhase } from '../services/claude-service';
+import Stepper from '../components/ui/Stepper';
 import RunPanel from '../components/analyze/RunPanel';
 import { useRun, startRun, cancelRun, consumeRun } from '../lib/run-store';
 import { writeString } from '../lib/storage';
@@ -390,26 +391,13 @@ export default function AnalyzePage() {
           </div>
         )}
 
-        {/* Step indicators */}
-        {/* On a phone the rail scrolls rather than clips (the review saw the
-            first and last steps cut off at 390 px). */}
-        <div className="flex items-center justify-start sm:justify-center mb-8 gap-0 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 [scrollbar-width:none]">
-          {STEPS.map((s, i) => (
-            <div key={s.label} className="flex items-center">
-              <button
-                onClick={() => i < step && setStep(i)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-ui ${
-                  i === step ? 'bg-gold-500 text-navy-950'
-                  : i < step ? 'bg-success-500/20 text-success-400 cursor-pointer hover:bg-success-500/30'
-                  : 'bg-white/5 text-slate-500'
-                }`}
-              >
-                {i < step ? <CheckCircle size={13} /> : <s.icon size={13} />}
-                {s.label}
-              </button>
-              {i < STEPS.length - 1 && <div className={`w-6 h-0.5 ${i < step ? 'bg-success-500/40' : 'bg-white/10'}`} />}
-            </div>
-          ))}
+        {/* Step indicators — the house Stepper (Prism and DFM use the same).
+            Only reached steps are jumpable; ticks come from the wizard's own
+            position, so a step is "done" only once the user has passed it. */}
+        <div className="flex justify-start sm:justify-center mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <Stepper label="Analysis steps"
+            steps={STEPS.map((s, i) => ({ id: String(i), label: s.label, done: i < step }))}
+            activeId={String(step)} onJump={id => setStep(Number(id))} canJump={id => Number(id) < step} />
         </div>
 
         <AnimatePresence mode="wait">

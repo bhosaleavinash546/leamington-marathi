@@ -293,7 +293,7 @@ export default function IdeaStudioPage() {
               <div className="flex items-center justify-between mb-2">
                 <p className="text-white text-sm font-semibold flex items-center gap-2"><Calculator size={15} className="text-teal-400" /> Should-cost baseline</p>
                 <button onClick={computeBaseline} disabled={baselineLoading || !material.trim() || !process.trim() || !weightKg}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 disabled:opacity-40 text-white font-medium transition-colors">
+                  className="text-xs px-3 py-1.5 rounded-lg border border-hairline bg-tint hover:bg-tint-strong text-slate-200 disabled:opacity-40 font-medium transition-colors">
                   {baselineLoading ? 'Computing…' : 'Estimate'}
                 </button>
               </div>

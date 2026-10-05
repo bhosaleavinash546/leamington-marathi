@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -25,7 +26,7 @@ import Panel from '../components/dfm/Panel';
 import ScoreRing from '../components/dfm/ScoreRing';
 import TickNumber from '../components/dfm/TickNumber';
 import { Money, FxNote } from '../components/ui/Money';
-import StepRail, { type RailStep } from '../components/dfm/StepRail';
+import Stepper, { type StepperStep } from '../components/ui/Stepper';
 import SectionNav, { type NavSection } from '../components/dfm/SectionNav';
 import { useSpotlight } from '../components/dfm/useSpotlight';
 
@@ -990,7 +991,7 @@ export default function DfmStudioPage() {
   // or drawing actually loaded, a material and process actually chosen, an
   // analysis that actually returned. A tick here is a fact about the session,
   // never encouragement, which is the same contract the findings keep.
-  const railSteps: RailStep[] = useMemo(() => [
+  const railSteps: StepperStep[] = useMemo(() => [
     { id: 'step-part', label: 'Part', done: !!file || !!drawing,
       hint: 'Upload a STEP/IGES model, a 2D drawing, or both' },
     { id: 'step-process', label: 'Process', done: (!!material && !!costProcess) || runGeneric,
@@ -1336,48 +1337,37 @@ export default function DfmStudioPage() {
     <div className="dfm-shell min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       {/* The ground this tool works on: two-level squared paper, faded away
           from the reading column. Decorative and inert. */}
-      <div className="dfm-aura" aria-hidden="true" />
       <div className="dfm-grid" aria-hidden="true" />
       <div className="dfm-content max-w-6xl mx-auto">
         {/* ── TOOL HEADER ────────────────────────────────────────────────────
             A workspace masthead, not a landing hero. The right-hand figures
             are COUNTED from the catalogue the server sent, so the header
             cannot claim a rule count the engine does not hold. */}
-        <header className="flex flex-wrap items-start justify-between gap-4 mb-5">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gold-500/15 border border-gold-500/25 shrink-0">
-              <ShieldCheck size={22} className="text-gold-400" aria-hidden="true" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-2xl sm:text-[28px] font-bold text-white tracking-tight leading-tight">DFM / DFA Studio</h1>
-              <p className="text-[13px] text-slate-400 mt-0.5 measure">
-                Manufacturability measured from your geometry and read off your drawing, judged against
-                cited standards, priced by deterministic engines.
-              </p>
-            </div>
-          </div>
-          <dl className="flex items-center gap-5 shrink-0">
-            {[
-              ['Rules', result?.catalogue?.total ?? catalogue.length ?? null],
-              ['Standards-named', result?.catalogue?.byGrade?.['standard-named'] ?? null],
-              ['Company standards', Object.keys(overrides).length || null],
-            ].map(([label, value]) => (
-              <div key={label as string} className="text-right">
-                <dd className="text-white font-bold text-lg dfm-num leading-none">
-                  {value === null || value === undefined ? '—' : (value as number)}
-                </dd>
-                <dt className="dfm-label text-slate-500 mt-1">{label as string}</dt>
-              </div>
-            ))}
-          </dl>
-        </header>
+        <PageHeader tool="dfm-studio" className="mb-5"
+          subtitle="Manufacturability measured from your geometry, judged on cited standards, engine-priced."
+          actions={
+            <dl className="flex items-center gap-5">
+              {[
+                ['Rules', result?.catalogue?.total ?? catalogue.length ?? null],
+                ['Standards-named', result?.catalogue?.byGrade?.['standard-named'] ?? null],
+                ['Company standards', Object.keys(overrides).length || null],
+              ].map(([label, value]) => (
+                <div key={label as string}>
+                  <dd className="text-white font-bold text-lg dfm-num leading-none">
+                    {value === null || value === undefined ? '—' : (value as number)}
+                  </dd>
+                  <dt className="dfm-label text-slate-500 mt-1">{label as string}</dt>
+                </div>
+              ))}
+            </dl>
+          } />
 
         {/* ── THE GUIDED FLOW + REPORT NAV ───────────────────────────────────
             One sticky bar carrying both: where you are in the four steps, and
             — once there is a report — its table of contents with live counts. */}
         <div className="dfm-sticky -mx-4 px-4 py-2.5 mb-5 border-y border-white/[0.07] bg-navy-950/70">
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-            <StepRail steps={railSteps} activeId={activeStep} onJump={scrollToStep} />
+            <Stepper label="Analysis progress" steps={railSteps} activeId={activeStep} onJump={scrollToStep} />
             {navSections.length > 1 && (
               <div className="flex items-center gap-2 min-w-0">
                 <span className="dfm-label text-slate-500 hidden lg:inline shrink-0">Report</span>
