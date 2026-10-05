@@ -96,7 +96,7 @@ import {
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
-import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison, alBilletMaterialFactors } from '../engine/regional-rates.js';
+import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison, alBilletMaterialFactors, DEFAULT_RC_REGIONS } from '../engine/regional-rates.js';
 import type { AlAlloy } from '../engine/al-extrusion-data.js';
 import { featureToOperation } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, secondaryMachiningMachineId, type StockCondition } from '../engine/feature-machining.js';
@@ -104,7 +104,7 @@ import { familyFromFilename, familyFromDensity, resolveFormMaterialId, type Mate
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../engine/geometry-sanity.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
-import type { ManufacturingRegion } from '../engine/regional-rates.js';
+import type { ManufacturingRegion, RegionalComparisonRow } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import {
@@ -145,6 +145,8 @@ import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
 import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
 import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor } from './country-fields.js';
 import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
+import { recostInCountries, formatRuleValue, type CountryCosting } from './country-recost.js';
+import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
 import { countryFactor } from '../engine/regional-services.js';
 import { swRegionFor } from '../engine/sw-should-cost.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
@@ -378,6 +380,11 @@ interface CADRuleField {
   source: string; confidence: number; ruleId: string;
 }
 let _cadRuleFields: Record<string, CADRuleField> = {};
+/** The part's rules-only analysis in each comparison country (CAD response). */
+let _cadAnalysisByRegion: Record<string, { analysis: CADAnalysisResult; ruleFields: Record<string, CADRuleField> }> = {};
+/** What CAD apply wrote into the form in each comparison country, and in the costed country. */
+let _cadFillsByRegion: Record<string, Record<string, string>> = {};
+let _cadFillSource: Record<string, string> = {};
 let _cadDecisions: CADDecision[] = [];
 let _cadDecisionAnswers: Record<string, string> = {};
 /** The rules-vs-AI comparison. Only mode='both' produces one; else null. */
@@ -6129,7 +6136,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadDiff = null;
+    _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6269,7 +6276,7 @@ function setCADFile(f: File): void {
   setCadQualityBadge(null, null);
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-  _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadDiff = null;
+  _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6448,6 +6455,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
     _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
+    _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
     cadDfmJobId = (data as { dfmJobId?: string | null }).dfmJobId ?? null;
     cadGeometricDFM = null;
@@ -7169,6 +7177,7 @@ async function reanalyzeCAD(): Promise<void> {
     // What the rules could still not settle after the answers were applied.
     _cadDecisions = data.decisions ?? [];
     _cadRuleFields = data.ruleFields ?? {};
+    _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     _cadRuleOverrides = (() => { const ro = (data as { ruleOverrides?: unknown }).ruleOverrides;
@@ -10583,8 +10592,7 @@ function applyRuleFieldsToForm(): void {
     } else if (typeof f.value === 'number') {
       // Six places below 0.01: a 15 s forge takt is 0.004167 h, and four places
       // (0.0042) moved the screen's forging cost 1% off headless (forging review).
-      elm.value = Number.isInteger(f.value) ? String(f.value)
-        : f.value.toFixed(Math.abs(f.value) < 0.01 ? 6 : 4).replace(/0+$/, '').replace(/\.$/, '');
+      elm.value = formatRuleValue(f.value);   // the comparison table re-collects against exactly this text
     } else if (typeof f.value === 'boolean') {
       if (elm.type === 'checkbox') (elm as HTMLInputElement).checked = f.value;
       else elm.value = String(f.value);
@@ -10753,6 +10761,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     _cadDecisions = data.decisions ?? [];
     _cadRuleFields = data.ruleFields ?? {};
+    _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     // This path never asks for a comparison, so any diff on screen is the last
     // part's. Clearing beats leaving it to look current.
     _cadDiff = null;
@@ -10947,12 +10956,8 @@ function applyDetectedHardware(prefix: 'sm' | 'smf', weightFieldId: string, mate
   void weightFieldId; void materialId;
 }
 
-function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
-  if (!cadAnalysisResult) return;
-  _cadAppliedTo = targetCommodity;
-  _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
-  const r = cadAnalysisResult;
-  const c = r.costInputSuggestions;
+/** A CAD material id resolved to a real library grade of the same family (mutates `c`). */
+function resolveCadMaterial(c: CADAnalysisResult['costInputSuggestions'], targetCommodity: CommodityType): void {
   // The AI sometimes returns the right commodity but leaves materialId blank —
   // fall back to the filename-named material so the cost uses the correct grade.
   if (!c.materialId) {
@@ -10972,19 +10977,15 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       (resolved ? `resolved to representative grade '${resolved}'` : 'could not be resolved; form default will be used'));
     if (resolved) c.materialId = resolved;
   }
-  // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
-  const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);
+}
 
-  // Sync annual volume from CAD form to Universal Costs
-  const cadAnnVol = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value;
-  if (cadAnnVol) {
-    const univVol = document.getElementById('annual-volume') as HTMLInputElement | null;
-    if (univVol) { univVol.value = cadAnnVol; univVol.dispatchEvent(new Event('input')); }
-  }
-
-  switchCommodity(targetCommodity);
-
-  setTimeout(() => {
+/**
+ * Write a CAD analysis into the commodity form (the form is already drawn). Split out
+ * of applyCADToForm so the comparison table can fill the same form with each country's
+ * analysis and record what selecting that country would put in it.
+ */
+function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: CADAnalysisResult['costInputSuggestions'],
+  cadAnnVol: string | undefined, bboxMaxMm: number): void {
     // Tooling amortisation must follow the user's stated volume — the per-
     // commodity amort fields default to 50k-500k, so leaving them untouched
     // makes the calculated tooling/part diverge from the suggested panel.
@@ -11537,14 +11538,6 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 
     // Surface provenance: how much of this form is measured geometry vs AI guess.
     applyRuleFieldsToForm();
-  markBlockedDecisionFields();
-  showCADProvenanceBanner();
-
-    // Keep the 3D model on screen: the CAD form (with its viewer) was just
-    // swapped for this commodity form, so remount a compact viewer in the
-    // persistent host that survives the swap.
-    if (cadFile) void showPersistentCADViewer(cadFile);
-
     // A CAD apply must not inherit the feature-panel's £150,000 NRE default:
     // reproducing the audit bracket's tooling bucket required exactly that
     // phantom (£150k ÷ 200k volume = £0.75/part nobody specified). The panel's
@@ -11560,6 +11553,86 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       }
     }
 
+}
+
+/** Every input / select value in the commodity form, by id. */
+function snapshotFormFields(): Record<string, string> {
+  const out: Record<string, string> = {};
+  document.getElementById('commodity-form-area')?.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[id], select[id]')
+    .forEach(f => { out[f.id] = (f as HTMLInputElement).type === 'checkbox' ? String((f as HTMLInputElement).checked) : f.value; });
+  return out;
+}
+
+/**
+ * The form as CAD apply would fill it in each comparison country: drawn fresh, filled
+ * with that country's rules-only analysis in that country's book, recorded. Globals the
+ * fill reads are restored afterwards; the caller then draws and fills the costed country.
+ */
+async function captureCountryFills(targetCommodity: CommodityType, cadAnnVol: string | undefined, bboxMaxMm: number):
+  Promise<Record<string, Record<string, string>>> {
+  const out: Record<string, Record<string, string>> = {};
+  const regions = Object.keys(_cadAnalysisByRegion) as ManufacturingRegion[];
+  if (!regions.length || !cadAnalysisResult) return out;
+  const keep = { analysis: cadAnalysisResult, ruleFields: _cadRuleFields, lib: library, region: _mfgRegion };
+  const settle = () => new Promise<void>(res => setTimeout(res, 20));   // the form's own setTimeout(0) set-up
+  try {
+    for (const X of regions) {
+      const there = _cadAnalysisByRegion[X];
+      const lib = X === 'UK' ? _baseLibrary : buildRegionalLibrary(_baseLibrary, X);
+      library = lib; setActiveRates(lib);
+      _mfgRegion = X;   // the form's £ defaults are drawn for X (country-money-defaults.ts)
+      cadAnalysisResult = there.analysis; _cadRuleFields = there.ruleFields;
+      resolveCadMaterial(there.analysis.costInputSuggestions, targetCommodity);
+      switchCommodity(targetCommodity);
+      await settle();
+      try {
+        fillCADFields(targetCommodity, there.analysis, there.analysis.costInputSuggestions, cadAnnVol, bboxMaxMm);
+        out[X] = snapshotFormFields();
+      } catch (e) { console.warn(`[comparison] ${X}: CAD fill failed — ${(e as Error).message}`); }
+    }
+  } finally {
+    cadAnalysisResult = keep.analysis; _cadRuleFields = keep.ruleFields;
+    library = keep.lib; setActiveRates(keep.lib); _mfgRegion = keep.region;
+    switchCommodity(targetCommodity);
+    await settle();
+  }
+  return out;
+}
+
+function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
+  if (!cadAnalysisResult) return;
+  _cadAppliedTo = targetCommodity;
+  _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
+  const r = cadAnalysisResult;
+  const c = r.costInputSuggestions;
+  resolveCadMaterial(c, targetCommodity);
+  // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
+  const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);
+
+  // Sync annual volume from CAD form to Universal Costs
+  const cadAnnVol = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value;
+  if (cadAnnVol) {
+    const univVol = document.getElementById('annual-volume') as HTMLInputElement | null;
+    if (univVol) { univVol.value = cadAnnVol; univVol.dispatchEvent(new Event('input')); }
+  }
+
+  switchCommodity(targetCommodity);
+
+  setTimeout(async () => {
+    // The part filled as it would be in each comparison country — recorded, then the
+    // form is drawn and filled again for the costed country (country-recost.ts).
+    _cadFillsByRegion = await captureCountryFills(targetCommodity, cadAnnVol, bboxMaxMm);
+    fillCADFields(targetCommodity, r, c, cadAnnVol, bboxMaxMm);
+    _cadFillSource = snapshotFormFields();
+  markBlockedDecisionFields();
+  showCADProvenanceBanner();
+
+    // Keep the 3D model on screen: the CAD form (with its viewer) was just
+    // swapped for this commodity form, so remount a compact viewer in the
+    // persistent host that survives the swap.
+    if (cadFile) void showPersistentCADViewer(cadFile);
+
+    document.documentElement.dataset.cadFilled = String(Date.now());   // e2e: the fill (all countries) is done
     if (autoCalculate) {
       compute();
     }
@@ -14217,6 +14290,56 @@ function collectWiringHarnessInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+/** The learning curve, when switched on, as the costing applies it. */
+function withLearningCurve(input: UniversalStackInput): UniversalStackInput {
+  const lcEnabled = (document.getElementById('lc-enabled') as HTMLInputElement)?.checked;
+  if (!lcEnabled) return input;
+  const annualVolume = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value) || 10000;
+  const referenceVolume = parseFloat((document.getElementById('reference-volume') as HTMLInputElement)?.value) || 1000;
+  const curvePct = parseFloat((document.getElementById('learning-curve-pct') as HTMLInputElement)?.value) || 85;
+  return { ...input, annualVolume, learningCurve: { enabled: true, curvePct, referenceVolume } };
+}
+
+/** The last Calculate's part re-collected and costed in each comparison country. */
+let _countryCostings: Map<ManufacturingRegion, CountryCosting> = new Map();
+function costInComparisonCountries(): Map<ManufacturingRegion, CountryCosting> {
+  const root = document.getElementById('commodity-form-area');
+  if (!root) return new Map();
+  // Collectors have side effects (advisor panels, derivation warnings): keep this
+  // costing's warnings, and re-collect once in the costed country afterwards so every
+  // panel shows the selected country again.
+  const keepWarnings = [..._smExtraWarnings];
+  try {
+    const m = recostInCountries(DEFAULT_RC_REGIONS, {
+    root, sourceRegion: _mfgRegion, baseLibrary: _baseLibrary, currentLibrary: library,
+    setLibrary: lib => { library = lib; setActiveRates(lib); },
+    collect: collectInput, finish: withLearningCurve,
+    // CAD fills only describe the form CAD apply drew — not one the engineer switched to since.
+    ...(activeCommodity === _cadAppliedTo ? { fillSource: _cadFillSource, fillsByRegion: _cadFillsByRegion } : { fillSource: {}, fillsByRegion: {} }),
+    shopFor: r => shopFieldsFor(r),
+    countryControls: r => ({
+      'mfg-region-selector': r, 'costing-country-sel': r,
+      'pcb-mfg-country': pcbMarketFor(r).id, 'pcbf-region': pcbFabRegionFor(r).region,
+    }),
+    });
+    try { collectInput(); } catch { /* the headline already collected this form */ }
+    return m;
+  } finally {
+    _smExtraWarnings = keepWarnings;
+  }
+}
+
+/** The comparison rows: each country's row is the part costed with that country selected. */
+function comparisonRows(input: UniversalStackInput, result: PartCostResult, landed: boolean): RegionalComparisonRow[] {
+  const rows = computeRegionalComparisonExact(input, _baseLibrary, {
+    landed, sourceRegion: _mfgRegion, sourceResult: result,
+    resultFor: code => _countryCostings.get(code)?.result ?? null,
+  });
+  // Read by e2e/country-live.ts, which checks each row against that country costed live.
+  (window as unknown as { __cvComparison?: unknown }).__cvComparison = rows.map(r => ({ code: r.code, total: r.total, material: r.material, process: r.process, labour: r.labour, tooling: r.tooling, overhead: r.overhead, packaging: r.packaging, logistics: r.logistics, margin: r.margin, recosted: _countryCostings.has(r.code) || r.code === _mfgRegion }));
+  return rows;
+}
+
 function collectInput(): UniversalStackInput {
   switch (activeCommodity) {
     case 'machining':            return collectMachiningInput();
@@ -14365,13 +14488,7 @@ function compute(): void {
     lastLCResult = null;
 
     // Inject learning curve config into the formal input (wires through computeUniversalStack)
-    const lcEnabled = (document.getElementById('lc-enabled') as HTMLInputElement)?.checked;
-    if (lcEnabled) {
-      const annualVolume = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value) || 10000;
-      const referenceVolume = parseFloat((document.getElementById('reference-volume') as HTMLInputElement)?.value) || 1000;
-      const curvePct = parseFloat((document.getElementById('learning-curve-pct') as HTMLInputElement)?.value) || 85;
-      input = { ...input, annualVolume, learningCurve: { enabled: true, curvePct, referenceVolume } };
-    }
+    input = withLearningCurve(input);
 
     const result = computeUniversalStack(input, library);
 
@@ -14401,6 +14518,10 @@ function compute(): void {
 
     lastResult = result;
     lastInput = input;
+    // The part as it would be costed with each comparison country SELECTED — computed
+    // now, from this form, so the table and the PDF show the same rows (country-recost.ts).
+    _countryCostings = costInComparisonCountries();
+    comparisonRows(input, result, false);   // publishes the rows (e2e) before any tab is opened
     pushViewerState();
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
@@ -15947,7 +16068,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
   // Each row is the part RE-COSTED in that country's book (regional-comparison.ts) —
   // the old multiplier estimate disagreed with what selecting the country gives.
   const rcRows = input
-    ? computeRegionalComparisonExact(input, _baseLibrary, { landed: _landedCostMode, sourceRegion: _mfgRegion, sourceResult: result })
+    ? comparisonRows(input, result, _landedCostMode)
     : computeRegionalComparison(result.breakdown, { landed: _landedCostMode, sourceRegion: _mfgRegion,
       ...(activeCommodity === 'aluminium_extrusion' ? { materialFactorByRegion: alBilletMaterialFactors((sel('alx-alloy') || '6063') as AlAlloy) } : {}) });
 
@@ -16755,6 +16876,7 @@ async function printMasterPDF(): Promise<void> {
       input: lastInput,
       library,
       baseLibrary: _baseLibrary,
+      regionalRows: comparisonRows(lastInput, lastResult, false),
       currency: _displayCurrency,
       fxRate: _displayFxRate,
       commodityType: activeCommodity,
@@ -17366,7 +17488,7 @@ async function openPDF(): Promise<void> {
   if (notFromPhoto) {
     showToast(`This report costs the ${activeCommodity === 'pcba' ? 'PCBA' : 'PCB fab'} form as it stands, not your photo board — the photos and ASIL are left out. To report the photo board, use "Apply to ${activeCommodity === 'pcba' ? 'PCBA' : 'Fab'}" first, or Export PDF on the photo results.`, 'warning');
   }
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta(), _baseLibrary);
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta(), _baseLibrary, comparisonRows(lastInput, lastResult, false));
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────

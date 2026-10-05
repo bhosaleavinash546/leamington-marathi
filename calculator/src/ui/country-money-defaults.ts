@@ -138,3 +138,20 @@ export function setCountryDefault(inp: HTMLInputElement | null, ukValue: number,
   inp.setAttribute(AUTO_ATTR, inp.value = String(ukValue));
   applyCountryMoneyDefaults({ querySelectorAll: () => [inp] } as unknown as ParentNode, region);
 }
+
+/**
+ * The value a £ field WOULD show in `region`, without touching it — null when the
+ * field is not a tracked default (typed, restored, CAD-filled, traded or a quote).
+ * The comparison table re-collects the form per country with these (country-recost.ts).
+ * Factors that read the rate book (a library material) read the ACTIVE book, so call
+ * it with `region`'s book active.
+ */
+export function countryDefaultValue(inp: HTMLInputElement, region: ManufacturingRegion): string | null {
+  const basis = basisFor(inp.id);
+  if (!basis || basis === 'quote' || basis === 'global') return null;
+  const ukText = inp.getAttribute(UK_ATTR);
+  if (ukText === null || ukText === '' || inp.value !== inp.getAttribute(AUTO_ATTR)) return null;
+  const uk = Number(ukText);
+  if (!Number.isFinite(uk) || uk === 0) return null;
+  return fmt(uk * countryFactor(basis, region), ukText);
+}

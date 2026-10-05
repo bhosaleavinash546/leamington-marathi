@@ -657,3 +657,57 @@ describe('14. a country picked while the page is still loading is applied (seen 
     expect(src).toContain("document.documentElement.dataset.countryReady = '1'");
   });
 });
+
+/**
+ * The comparison table (all-39-countries audit follow-up, Oct 2026): a row is the part costed
+ * with that country SELECTED. It re-priced the stack and carried the costed country's tools,
+ * services and consumables into every row — up to 68% off on a die-heavy BIW panel.
+ */
+describe('15. comparison rows are the part as costed with each country selected', async () => {
+  const R = await import('../src/ui/country-recost.js');
+  const RR = await import('../src/engine/regional-rates.js');
+  // Stand-ins for the DOM the module reads (there is no DOM in this test environment).
+  class FakeInput { id = ''; value = ''; type = 'number'; checked = false; attrs = new Map<string, string>();
+    getAttribute(k: string) { return this.attrs.get(k) ?? null; } setAttribute(k: string, v: string) { this.attrs.set(k, v); }
+    hasAttribute(k: string) { return this.attrs.has(k); } }
+  class FakeSelect { id = ''; value = ''; options: Array<{ value: string }> = []; }
+  const g = globalThis as Record<string, unknown>;
+  g.HTMLInputElement = FakeInput; g.HTMLSelectElement = FakeSelect;
+  const inp = (id: string, value: string) => Object.assign(new FakeInput(), { id, value });
+  it('CAD-filled → that country\'s fill; a typed figure stays; a £ default → that country; the form is restored exactly', () => {
+    const die = inp('cam-grav-mould-cost', '4076');          // CAD wrote it (India); unchanged
+    const typed = inp('cam-mach-tooling', '2500');           // CAD wrote 3581; the engineer typed 2500 — a quote
+    const nre = inp('mach-prog-nre', '2000');                // a £ default nobody touched
+    nre.setAttribute('data-cv-uk', '2000'); nre.setAttribute('data-cv-auto', '2000');
+    const shop = { 'overhead-pct': inp('overhead-pct', '9'), packaging: inp('packaging', '0.117'), logistics: inp('logistics', '0.45') } as Record<string, FakeInput>;
+    g.document = { getElementById: (id: string) => shop[id] ?? null };
+    const seen: Record<string, Record<string, string>> = {};
+    const base = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+    const out = R.recostInCountries(['IN', 'DE'] as never, {
+      root: { querySelectorAll: () => [die, typed, nre] } as never, sourceRegion: 'IN', baseLibrary: base, currentLibrary: base,
+      setLibrary: () => undefined,
+      collect: () => { seen.DE = { die: die.value, typed: typed.value, nre: nre.value, oh: shop['overhead-pct'].value }; throw new Error('stop after reading'); },
+      fillSource: { 'cam-grav-mould-cost': '4076', 'cam-mach-tooling': '3581' },
+      fillsByRegion: { DE: { 'cam-grav-mould-cost': '14320', 'cam-mach-tooling': '13000', 'mach-prog-nre': '2000' } },
+      shopFor: r => RR.regionalShopDefaults(r),
+    });
+    expect(out.size).toBe(0);                                 // collect threw — the row is left out, not guessed
+    expect(seen.DE.die).toBe('14320');                        // Germany's die, as CAD apply writes it there
+    expect(seen.DE.typed).toBe('2500');                       // the quote stays
+    expect(Number(seen.DE.oh)).toBeCloseTo(Math.round(RR.regionalShopDefaults('DE').overheadPct * 1000) / 10, 6);
+    expect([die.value, typed.value, nre.value, shop['overhead-pct'].value]).toEqual(['4076', '2500', '2000', '9']);   // restored
+  });
+  it('the engine uses the re-collected costing for a row, and the screen, the PDF and the server are wired to it', async () => {
+    const { computeRegionalComparisonExact } = await import('../src/engine/regional-comparison.js');
+    const input = { partName: 'x', rawMaterial: { materialId: 'mat-al6061', netWeightKg: 1, materialUtilization: 0.8 }, operations: [],
+      tooling: { totalToolingCost: 1000, amortizationVolume: 1000, mode: 'amortized' }, packagingPerPart: 0.1, logisticsPerPart: 0.1, overheadPct: 0.12, marginPct: 0.08 } as never;
+    const fake = { breakdown: { rawMaterial: 1, process: 2, labour: 3, tooling: 4, packaging: 0, logistics: 0, overhead: 0, margin: 0 }, total: 123.45 };
+    const rows = computeRegionalComparisonExact(input, UK, { regions: ['UK', 'DE'], sourceRegion: 'UK', resultFor: c => (c === 'DE' ? fake : null) });
+    expect(rows.find(r => r.code === 'DE')!.total).toBe(123.45);
+    const main = readFileSync('src/ui/main.ts', 'utf8');
+    expect(main).toContain('_cadFillsByRegion = await captureCountryFills(targetCommodity, cadAnnVol, bboxMaxMm);');
+    expect(main).toContain('resultFor: code => _countryCostings.get(code)?.result ?? null');
+    expect(main).toContain('comparisonRows(lastInput, lastResult, false)');
+    expect(readFileSync('server/routes/cad.ts', 'utf8').match(/analysisByRegion: analysisByRegion\(/g)).toHaveLength(2);
+  });
+});

@@ -68,7 +68,8 @@ async function main(): Promise<void> {
       try { j = await r.json() as Record<string, unknown>; } catch { /* not json */ }
       if (j.analysis) lastAnalysis = j;
       calls.push({ url: u.replace(/^.*\/api/, '/api'), status: r.status(), sentRegion, ratesRegion: j.ratesRegion ?? null,
-        decisions: (j.decisions as Array<{ id: string }> | undefined)?.map(d => d.id), fromCache: j.fromCache, error: j.error });
+        decisions: (j.decisions as Array<{ id: string }> | undefined)?.map(d => d.id), fromCache: j.fromCache, error: j.error,
+        byRegion: Object.fromEntries(Object.entries((j.ruleFieldsByRegion ?? {}) as Record<string, object>).map(([k, v]) => [k, Object.keys(v).length])) });
     });
     await page.addInitScript(t => { localStorage.setItem('auth_token', t); localStorage.setItem('cv-tour-v41-seen', '1'); localStorage.setItem('cv-wizard-off', '1'); }, token);
     await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
@@ -120,8 +121,11 @@ async function main(): Promise<void> {
     out.ruleFields = la?.ruleFields ?? null;
 
     // 3. Apply to the form and Calculate.
+    const filledBefore = await page.evaluate(() => document.documentElement.dataset.cadFilled ?? '');
     await page.click('#cad-apply-btn');
-    await page.waitForTimeout(1500);
+    // The fill now draws the form once per comparison country first — wait for it to finish.
+    await page.waitForFunction(b => (document.documentElement.dataset.cadFilled ?? '') !== b, filledBefore, { timeout: 120_000 });
+    await page.waitForTimeout(500);
     out.formShop = await page.evaluate(() => Object.fromEntries(['overhead-pct', 'margin-pct', 'packaging', 'logistics'].map(id => [id, (document.getElementById(id) as HTMLInputElement | null)?.value])));
     out.form = await page.evaluate(() => Object.fromEntries(Array.from(document.querySelectorAll<HTMLInputElement | HTMLSelectElement>('#commodity-form-area input[id], #commodity-form-area select[id]'))
       .filter(e => (e as HTMLInputElement).type !== 'file').map(e => [e.id, { value: e.value, prov: e.getAttribute('data-prov') }])));
@@ -130,6 +134,8 @@ async function main(): Promise<void> {
     out.headline = await page.evaluate(() => (document.querySelector('#cv-result-hero .crh-total')?.textContent ?? '').trim());
     out.heroChip = await page.evaluate(() => (document.querySelector('#cv-result-hero .crh-chips')?.textContent ?? '').replace(/\s+/g, ' ').trim());
     out.breakdownScreen = await page.$$eval('#results-breakdown tbody tr', rs => rs.map(r => r.textContent!.replace(/\s+/g, ' ').trim()));
+    // The comparison table's rows (£, ex-works not landed) — each should equal that country costed live.
+    out.comparison = await page.evaluate(() => (window as unknown as { __cvComparison?: unknown }).__cvComparison ?? null);
 
     // 4. The tool's own record of the costing: its Excel export.
     const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('#export-excel-btn')]);

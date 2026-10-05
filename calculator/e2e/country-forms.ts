@@ -72,6 +72,7 @@ async function main(): Promise<void> {
           await page.click('#calc-btn');
           await page.waitForTimeout(3500);
           rec.headline = await page.evaluate(() => (document.querySelector('#cv-result-hero .crh-total')?.textContent ?? '').trim());
+          rec.comparison = await page.evaluate(() => (window as unknown as { __cvComparison?: unknown }).__cvComparison ?? null);
           const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 60_000 }), page.click('#export-excel-btn')]);
           const p = join(OUT, `forms-${region}-${c}.xlsx`);
           await dl.saveAs(p);

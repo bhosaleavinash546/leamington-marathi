@@ -37,7 +37,8 @@ import { regionOf, rateBookForRegion } from '../services/rate-book.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
 import { renderCommodityRulesPrompt, runCostInputRules } from '../../src/engine/cost-input-rules/engine.js';
 import { applyRuleDecisions, toRuleFields, suppressAIForUndecided, type AISuppression } from '../../src/engine/cost-input-rules/apply.js';
-import { RULE_ENGINE_VERSION, type RuleContext, type Decision } from '../../src/engine/cost-input-rules/types.js';
+import { RULE_ENGINE_VERSION, type RuleContext, type Decision, type CommodityRuleSpec } from '../../src/engine/cost-input-rules/types.js';
+import { DEFAULT_RC_REGIONS } from '../../src/engine/regional-rates.js';
 
 const router = Router();
 
@@ -1137,6 +1138,9 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       costable: isCostable(detDecisions, detWarnings, acknowledged),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
+      // The part in each comparison country — a row IS the costing selecting that country gives.
+      analysisByRegion: analysisByRegion(ruleSpec!, ruleCtx, geo, geo.partName || originalname,
+        geo.status === 'success' ? (geo.volume?.cm3 ?? null) : (stlGeometry?.volume ?? null), statedFromAnswers(decisionAnswers)),
       decisions: detDecisions,
       mode: analysisMode,
       fromCache: false,
@@ -2156,6 +2160,29 @@ export type AnalysisMode = 'deterministic' | 'ai' | 'both';
  * — is met, and the AI path becomes the second opinion it should always have
  * been. `'ai'` and `'both'` remain available and are one select away in the UI.
  */
+/**
+ * The part's rules-only analysis in each country of the comparison table — the same
+ * build and guards this route runs for the costed country, in that country's book.
+ * The table used to re-price only the rate lines and carry the costed country's tools,
+ * services and consumables into every other row (up to 68% off the true costing on a
+ * die-heavy BIW panel — all-39-countries audit, Oct 2026). The client fills the form
+ * with each of these, records it, and costs the row from that (src/ui/country-recost.ts).
+ */
+function analysisByRegion(
+  spec: CommodityRuleSpec, ctx: RuleContext, geo: OCCTGeometry, partName: string,
+  volumeCm3: number | null, stated: ReturnType<typeof statedFromAnswers>,
+): Record<string, { analysis: unknown; ruleFields: unknown }> {
+  const src = ctx.rates?.regional?.code ?? 'UK';
+  const out: Record<string, { analysis: unknown; ruleFields: unknown }> = {};
+  for (const X of DEFAULT_RC_REGIONS) {
+    if (X === src) continue;
+    const det = buildDeterministicAnalysis(spec, { ...ctx, rates: rateBookForRegion(X) }, partName);
+    runAllGuards(det.analysis, geo, volumeCm3, stated);   // the guards mutate (near-net machining cap), as for the costed country
+    out[X] = { analysis: det.analysis, ruleFields: det.ruleFields };
+  }
+  return out;
+}
+
 export function parseAnalysisMode(raw: unknown): AnalysisMode {
   return raw === 'ai' || raw === 'both' ? raw : 'deterministic';
 }
@@ -2906,6 +2933,9 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       costable: isCostable(detDecisions, detWarnings, acknowledged),
       ruleOverrides: det.applied,
       ruleFields: det.ruleFields,
+      // The part in each comparison country — a row IS the costing selecting that country gives.
+      analysisByRegion: analysisByRegion(ruleSpec!, ruleCtx, geo, geo.partName || filename,
+        geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers)),
       decisions: detDecisions,
       geometryHash,
       mode: analysisMode,

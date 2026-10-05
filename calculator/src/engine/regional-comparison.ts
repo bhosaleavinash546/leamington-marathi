@@ -30,6 +30,14 @@ export function computeRegionalComparisonExact(
     regions?: ManufacturingRegion[]; sourceRegion?: ManufacturingRegion; baseRegion?: ManufacturingRegion; landed?: boolean;
     /** The headline result in the source country — its row shows exactly that. */
     sourceResult?: { breakdown: import('./types.js').Breakdown8Bucket; total: number };
+    /**
+     * The part costed in a country through the WHOLE chain (rules, defaults, module,
+     * stack) — the screen re-collects its form in each country (src/ui/country-recost.ts).
+     * Used for a row when given; the stack re-price below is the fallback, and it carries
+     * the source country's tools, services and consumables into every row (all-39-countries
+     * audit, Oct 2026: up to 68% off the true costing on a die-heavy BIW panel).
+     */
+    resultFor?: (code: ManufacturingRegion) => { breakdown: import('./types.js').Breakdown8Bucket; total: number } | null;
   } = {},
 ): RegionalComparisonRow[] {
   const source = opts.sourceRegion ?? 'UK';
@@ -47,7 +55,8 @@ export function computeRegionalComparisonExact(
       packagingPerPart: input.packagingPerPart * rd.packagingMultiplier / (src.packagingMultiplier || 1),
       logisticsPerPart: input.logisticsPerPart * rd.logisticsMultiplier / (src.logisticsMultiplier || 1),
     };
-    const r = code === source && opts.sourceResult ? opts.sourceResult : withRates(lib, () => computeUniversalStack(inR, lib));
+    const r = code === source && opts.sourceResult ? opts.sourceResult
+      : opts.resultFor?.(code) ?? withRates(lib, () => computeUniversalStack(inR, lib));
     const b = r.breakdown;
     const exWorks = b.rawMaterial + b.process + b.labour + b.tooling + b.overhead;
     const add = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };

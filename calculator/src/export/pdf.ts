@@ -9,7 +9,7 @@ import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion } from '../engine/regional-rates.js';
+import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -704,9 +704,11 @@ export function renderShouldCostSections(
     cadMeta: CADReportMeta;
     /** The UK-basis book the country was rebuilt from (§9 re-costs the part in each country). */
     baseLibrary?: RateLibrary;
+    /** The screen's comparison rows (the part re-collected and costed in each country) — §9 prints exactly these. */
+    regionalRows?: RegionalComparisonRow[];
   },
 ): number {
-  const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary } = ctx;
+  const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary, regionalRows } = ctx;
   y = renderSourcePhotographs(doc, y, cadMeta.photos ?? []);
   const sym  = currencySymbol(currency);
   const c    = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
@@ -1369,7 +1371,8 @@ export function renderShouldCostSections(
     // Aluminium extrusion: the billet's own regional prices, by the alloy in the material id.
     const alAlloy = commodityType === 'aluminium_extrusion'
       ? AL_ALLOY_LIST.find(a => `mat-al-billet-${a.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
-    const rc = baseLibrary
+    const rc = regionalRows?.length ? regionalRows
+      : baseLibrary
       ? computeRegionalComparisonExact(input, baseLibrary, { landed: false, sourceRegion: region as ManufacturingRegion, sourceResult: result })
       : computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion,
         ...(alAlloy ? { materialFactorByRegion: alBilletMaterialFactors(alAlloy) } : {}) });
@@ -1671,6 +1674,8 @@ export function printPDF(
   cadMeta: CADReportMeta = {},
   /** The UK-basis book the country was rebuilt from — the comparison re-costs the part in each country. */
   baseLibrary?: RateLibrary,
+  /** The screen's comparison rows — printed as they are, so the report and the screen agree. */
+  regionalRows?: RegionalComparisonRow[],
 ): void {
 
   const sym  = currencySymbol(currency);
@@ -1894,7 +1899,7 @@ export function printPDF(
   ], NAVY, HDR);
 
 
-  y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary });
+  y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary, regionalRows });
 
   addFooters();
 
