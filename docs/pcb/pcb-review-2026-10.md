@@ -200,3 +200,77 @@ Datasheet parameters (tolerance, voltage rating, temperature range) are **not fe
 | Changed | `src/ui/main.ts` (BOM table, tiles, exports, scenario, live prices, uploads), `src/ui/pcb/panels.ts`, `src/ui/pcb/types.ts`, `e2e/pcb-live.ts` |
 
 The engine's commodity modules and the rate tables are unchanged.
+
+---
+
+## 8. Scorecard: before and after
+
+`e2e/pcb-scorecard.ts` runs **the same case through any version of the code**, using its real server from its own directory, and scores 25 fixed pass/fail checks.
+
+**The test case:**
+- the radar board as the real model read it on 29 September;
+- answered by a stand-in model in the shape structured output allows;
+- all 8 photos sent;
+- China, 250,000 boards.
+
+**Planted model faults** (things a real model does):
+- an invented part number at its own price (£9.50);
+- the same transceiver listed twice from two photos;
+- "R101-R110" with qty 12, and a qty of 1.5;
+- a 32 Gb memory that the catalogue only holds as an 8 Gb family entry;
+- a "read off the chip" claim that no OCR marking supports;
+- 50 sub-penny resistors on separate lines;
+- a BOM file with a quantity of "1.5".
+
+The stand-in logs what every call received, so the photo checks measure the requests the server really sent. The screen's follow-up calls (Re-analyze and the what-if scenario) are sent as **that version's** screen sends them.
+
+```
+npx tsx e2e/pcb-scorecard.ts <calculator dir> <label> --client=before|after     (npm run test:e2e:pcb-score)
+```
+
+| Group | Before (`deb0668`) | After (`7b2ed2a`) |
+|---|---|---|
+| A. Golden rule & honest labels | 1 / 6 | **6 / 6** |
+| B. Reading the 8 photos | 2 / 6 | **6 / 6** |
+| C. BOM integrity | 1 / 7 | **7 / 7** |
+| D. Arithmetic consistency | 2 / 6 | **6 / 6** |
+| **Total** | **6 / 25 (24%)** | **25 / 25 (100%)** |
+| Headline on this case | £83.04 | £72.03 |
+
+| Check | Before | After |
+|---|---|---|
+| A1 No line in the total priced by the model alone | ✗ 2 lines `ai-estimate` | ✓ |
+| A2 The invented part is not kept at the model's price as "confirmed" | ✗ £8.36 (£9.50 × 0.88), confirmed | ✓ £3.52 class table, to verify |
+| A3 "LIVE" only when a distributor was called | ✗ 6 lines LIVE, no key | ✓ |
+| A4 An unsupported "read off the chip" claim is not shown as read | ✗ | ✓ |
+| A5 The 32 Gb memory is not priced as the 8 Gb entry | ✗ catalogue £6.38 | ✓ class table £7.92, to verify |
+| A6 "Priced" + "to verify" = BOM total | ✓ | ✓ |
+| B1 Classification sees all 8 photos | ✗ 1 photo | ✓ 8 |
+| B2 OCR stage sees all 8 photos | ✓ | ✓ |
+| B3 BOM stage sees all 8 photos | ✓ | ✓ |
+| B4 Second look at unread chips runs on the screen's route | ✗ never | ✓ |
+| B5 Prompts don't invite invented part numbers | ✗ "best-guess", "ALWAYS has" | ✓ |
+| B6 OCR prompt carries no real part numbers that could leak | ✗ TJA1044 / AURIX | ✓ |
+| C1 A part seen in two photos counted once | ✗ 2 lines | ✓ |
+| C2 Quantity follows the designators | ✗ 12 | ✓ 10 |
+| C3 Whole-number quantities | ✗ 1.5 | ✓ 2 |
+| C4 Sub-penny parts not rounded away | ✗ £0.00 over 50 lines | ✓ £0.13 |
+| C5 "To verify" count = flagged lines | ✗ 65 vs 13 | ✓ 14 = 14 |
+| C6 Placements = placed parts | ✓ (but 289.5, fractional) | ✓ 287 |
+| C7 BOM file "1.5" read as 2 | ✗ 15 | ✓ |
+| D1 Headline = sum of its parts | ✓ | ✓ |
+| D2 Country row = headline | ✓ | ✓ |
+| D3 Volume curve passes through the headline | ✗ no point at 250k | ✓ |
+| D4 NPI production = headline | ✗ £85.47 vs £83.04 | ✓ |
+| D5 Unchanged what-if shows £0 | ✗ −£2.75/board | ✓ £0.00 |
+| D6 Re-analyze keeps the automotive grade | ✗ not graded | ✓ |
+
+The headline falls by £11.01 on this case (£83.04 → £72.03). That is the planted faults no longer being paid for:
+- the duplicate transceiver: one £10.20 line removed;
+- two extra resistors;
+- the invented and misidentified parts held to the tool's tables.
+
+**Read the score with these caveats:**
+- **The checks were written after the review**, from its findings. 100% means "the faults the review found are fixed and stay fixed", not "the tool is right". The faults are planted, not sampled from real runs.
+- **It does not score photo-reading accuracy.** A stand-in model reads nothing. Whether the model finds the right parts on a real board stays unmeasured until labelled boards exist (§5). That is the score that matters most for the demo.
+- **One judgement in the setup:** the stand-in answers in the structured-output shape, without the domain and markings echo the 29 September recording carried. With the echo left in, the old code passes D6 (the re-analysis grade) and scores 7/25.

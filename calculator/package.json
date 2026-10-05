@@ -23,6 +23,7 @@
     "examples": "tsx scripts/worked-examples.ts",
     "test:e2e:full": "tsx e2e/full.ts",
     "test:e2e:sheet": "tsx e2e/sheet-metal-live.ts . live",
+    "test:e2e:pcb-score": "tsx e2e/pcb-scorecard.ts . now --client=after",
     "test:e2e:pcb": "tsx e2e/pcb-live.ts",
     "test:e2e:country": "tsx e2e/country-live.ts"
   },
