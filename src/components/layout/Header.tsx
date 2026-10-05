@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, Sun, Moon, S
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { OnboardingHeaderChip } from '../OnboardingChecklist';
+import RunIndicator from './RunIndicator';
 import { useTheme } from '../../contexts/ThemeContext';
 import { TOOLS, TOOL_GROUPS, SETTINGS_LINKS } from '../../config/tools';
 import { getAuthToken } from '../../services/auth';
@@ -269,6 +270,7 @@ export default function Header() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3 shrink-0">
+            {isAuthenticated && <RunIndicator />}
             {isAuthenticated && <OnboardingHeaderChip />}
             <button
               onClick={e => { const r = e.currentTarget.getBoundingClientRect(); toggleTheme({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); }}

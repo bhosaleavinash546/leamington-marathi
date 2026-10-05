@@ -139,6 +139,7 @@ during `npm run build:site`, never by the running server.
 | `CV_HEAVY_IT` | unset | `1` enables the heavy integration tests that are skipped by default. |
 | `CHROMIUM_PATH` | `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` | Browser binary for the e2e and PDF-QA runs. |
 | `CI` | set by the runner | Used to pick non-interactive behaviour. |
+| `UX_ROUTES` | unset (all routes) | Comma-separated routes for `scripts/ux-crawl.mjs` to measure instead of the full list. |
 
 ## Handled
 

@@ -15,6 +15,7 @@ import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent, RunPhase } from '../services/claude-service';
 import RunPanel from '../components/analyze/RunPanel';
+import { useRun, startRun, cancelRun, consumeRun } from '../lib/run-store';
 import { writeString } from '../lib/storage';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
 import CadViewer3D from '../components/CadViewer3D';
@@ -166,16 +167,12 @@ export default function AnalyzePage() {
   const [cadFile, setCadFile] = useState<File | null>(null);
   const [cadGeometry, setCadGeometry] = useState<CadGeometry | null>(null);
   const [isParsing, setIsParsing] = useState(false);
-  const [progressSteps, setProgressSteps] = useState<ProgressStep[]>([]);
-  // The live run: when it started, which phase the server last reported, and
-  // the server's own output-token estimate. Rendered by RunPanel.
-  const [run, setRun] = useState<{ startedAt: number; phase: RunPhase; outTokens: number } | null>(null);
-  const [cancelling, setCancelling] = useState(false);
-  // One controller per run. Cancel aborts the fetch, which closes the SSE
-  // response, which makes the server abort its upstream model call.
-  const abortRef = useRef<AbortController | null>(null);
-  useEffect(() => () => abortRef.current?.abort(), []);   // leaving the page stops the bill too
-  const [loading, setLoading] = useState(false);
+  // The live run is owned by the app-wide run store (lib/run-store.ts), so it
+  // survives leaving this page; the header pill shows it meanwhile. Cancel
+  // aborts the fetch, which makes the server abort its upstream model call.
+  const runInfo = useRun();
+  const myRun = runInfo?.kind === 'analyze' ? runInfo : null;
+  const loading = myRun?.status === 'running';
   const [error, setError] = useState('');
 
   const selectedSystem = getSystemById(systemId);
@@ -248,38 +245,6 @@ export default function AnalyzePage() {
     maxFiles: 1,
   });
 
-  const handleProgress = useCallback((event: ProgressEvent) => {
-    const phase = event.phase ?? PHASE_OF[event.type];
-    setRun(r => r ? { ...r, phase: phase ?? r.phase, outTokens: event.outTokens ?? r.outTokens } : r);
-    setProgressSteps(prev => {
-      const markActiveDone = () => prev.map(s => s.status === 'active' ? { ...s, status: 'done' as const } : s);
-      switch (event.type) {
-        case 'connecting':
-          return [{ id: 'connect', label: event.message || 'Connecting to AI chief engineer...', status: 'active' as const }];
-        case 'searching':
-          return [
-            ...markActiveDone(),
-            { id: `s-${event.searchNumber}`, label: `Searching: ${event.query?.slice(0, 55)}${(event.query?.length || 0) > 55 ? '…' : ''}`, status: 'active' as const, detail: event.purpose?.replace('_', ' ') },
-          ];
-        case 'search_done':
-          return prev.map(s =>
-            s.id === `s-${event.searchNumber}`
-              ? { ...s, status: 'done' as const, detail: `${event.resultCount} result${event.resultCount !== 1 ? 's' : ''} found` }
-              : s
-          );
-        case 'synthesizing':
-          return [...markActiveDone(), { id: 'synth', label: event.message || 'Synthesising expert ideas...', status: 'active' as const }];
-        case 'progress':
-          // Server-side stage notes (reasoning elapsed, tokens written, a retry
-          // announced) land on the step that is running, so a multi-minute
-          // generation never looks frozen on "Connecting…".
-          return prev.map((s, i) => i === prev.length - 1 && s.status === 'active' ? { ...s, detail: event.message } : s);
-        default:
-          return prev;
-      }
-    });
-  }, []);
-
   function toggleVoice() {
     if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
       toast('Voice input is not supported in this browser. Try Chrome or Edge.', 'error');
@@ -306,18 +271,12 @@ export default function AnalyzePage() {
     if (!apiKey.trim() && !aiAvailable) { setError('Add your Anthropic API key here or under Settings → API Key.'); return; }
     if (!systemId || !subassemblyId) { setError('Please select a system and subassembly.'); return; }
 
-    setLoading(true);
     setError('');
-    setProgressSteps([]);
-    setCancelling(false);
-    setRun({ startedAt: Date.now(), phase: 'connect', outTokens: 0 });
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    writeString('brainspark_api_key', apiKey);
+    if (apiKey.trim()) writeString('brainspark_api_key', apiKey);
     if (searchApiKey) writeString('brainspark_brave_key', searchApiKey);
 
-    try {
+    const sysLabel = getSystemById(systemId)?.name ?? 'Analysis';
+    const started = startRun({ kind: 'analyze', label: `Analyze · ${sysLabel}`, returnTo: '/analyze', enableSearch, exec: async ({ signal, onProgress }) => {
       let contextWithTeardown = additionalContext;
       if (teardownFile) {
         try {
@@ -373,8 +332,8 @@ export default function AnalyzePage() {
       const part = partId ? selectedSub?.parts.find(p => p.id === partId) : undefined;
 
       const { ideas, sources, resultId, onServer } = await generateCostReductionIdeas(
-        config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined, handleProgress,
-        { signal: controller.signal }
+        config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined, onProgress,
+        { signal }
       );
 
       const quickWins = ideas.filter(i => i.implementationDifficulty === 'Low').length;
@@ -400,33 +359,19 @@ export default function AnalyzePage() {
       sessionStorage.setItem('analysisSubName', sub.name);
       saveFullResult(resultId, result, system.name, sub.name);
       markOnboardingStep('generate');
-      navigate('/results');
-    } catch (err: unknown) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        // The user's own decision, not a failure: no red banner, one plain line.
-        toast('Run cancelled. The model call was stopped; only what had already streamed is billed.', 'info');
-      } else {
-        const message = err instanceof Error ? err.message : String(err);
-        // A network failure is a TypeError from fetch itself; testing for the
-        // word "fetch" also matched provider messages that merely contained it.
-        const unreachable = err instanceof TypeError || message.includes('ECONNREFUSED');
-        setError(unreachable
-          ? 'Cannot reach the BrainSpark server. Start it with start-macos.command (or "npm run dev"), then retry.'
-          : `Analysis failed: ${message}`);
-      }
-    } finally {
-      setLoading(false);
-      setRun(null);
-      setCancelling(false);
-      abortRef.current = null;
-    }
+      return '/results';
+    } });
+    if (!started) setError('Another AI run is already in progress — it is shown in the header. Cancel it or wait for it to finish.');
   };
 
-  const cancelRun = () => {
-    if (!abortRef.current) return;
-    setCancelling(true);
-    abortRef.current.abort();
-  };
+  // The run finished: open the result if this page is showing; report a
+  // cancel or an error here. (Finished while elsewhere: the header pill.)
+  useEffect(() => {
+    if (!myRun || myRun.status === 'running') return;
+    if (myRun.status === 'done' && myRun.openRoute) { consumeRun(); navigate(myRun.openRoute); }
+    else if (myRun.status === 'cancelled') { consumeRun(); toast('Run cancelled. The model call was stopped; only what had already streamed is billed.', 'info'); }
+    else if (myRun.status === 'error') { consumeRun(); setError(`Analysis failed: ${myRun.error}`); }
+  }, [myRun?.status]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
@@ -436,6 +381,14 @@ export default function AnalyzePage() {
           title="Cost Reduction Analysis"
           subtitle="Pick a vehicle system, describe the part, and get engine-checked cost-reduction ideas with the arithmetic shown."
         />
+
+        {/* Back on the page mid-run (the wizard has reset): the run first. */}
+        {loading && myRun && step !== 3 && (
+          <div className="mb-6">
+            <RunPanel steps={myRun.steps} phase={myRun.phase} startedAt={myRun.startedAt} outTokens={myRun.outTokens}
+              enableSearch={myRun.enableSearch} onCancel={cancelRun} cancelling={myRun.cancelling} />
+          </div>
+        )}
 
         {/* Step indicators */}
         {/* On a phone the rail scrolls rather than clips (the review saw the
@@ -1071,15 +1024,15 @@ export default function AnalyzePage() {
                 </div>
 
                 {/* Live run: phase rail, elapsed clock, event log, Cancel. */}
-                {loading && run && (
+                {loading && myRun && (
                   <RunPanel
-                    steps={progressSteps}
-                    phase={run.phase}
-                    startedAt={run.startedAt}
-                    outTokens={run.outTokens}
-                    enableSearch={enableSearch}
+                    steps={myRun.steps}
+                    phase={myRun.phase}
+                    startedAt={myRun.startedAt}
+                    outTokens={myRun.outTokens}
+                    enableSearch={myRun.enableSearch}
                     onCancel={cancelRun}
-                    cancelling={cancelling}
+                    cancelling={myRun.cancelling}
                   />
                 )}
               </div>

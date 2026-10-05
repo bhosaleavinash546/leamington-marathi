@@ -55,7 +55,9 @@ function AnimatedRoutes() {
   return (
     <RouteErrorBoundary resetKey={location.pathname}>
     <AnimatePresence mode="wait" initial={false}>
-      <Routes location={location} key={location.pathname}>
+      {/* A result opened from a finished run remounts Results even when
+          /results is already showing another analysis. */}
+      <Routes location={location} key={location.pathname + ((location.state as { fromRun?: number } | null)?.fromRun ? `#run${(location.state as { fromRun: number }).fromRun}` : '')}>
         {/* Public */}
         <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><AuthPage /></PageTransition>} />

@@ -12,6 +12,8 @@
 // useDfmMotion): glass panels on squared paper, a travelling step rail, bars
 // and count-ups that can only land on engine-measured values, and full
 // reduced-motion discipline. No second motion vocabulary is invented here.
+import RunPanel from '../components/analyze/RunPanel';
+import { useRun, startRun, cancelRun, consumeRun } from '../lib/run-store';
 import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -261,8 +263,11 @@ export default function Part360Page() {
   // batch) is the default: measured on four live runs the panel had never
   // once been used because it sat behind an off-by-default toggle.
   const [deepMode, setDeepMode] = useState<'critique' | 'full' | 'off'>('critique');
-  const [generating, setGenerating] = useState(false);
-  const [genLog, setGenLog] = useState<string[]>([]);
+  // Generation runs in the app-wide run store (lib/run-store.ts): it survives
+  // leaving the page, shows in the header meanwhile, and can be cancelled.
+  const runInfo = useRun();
+  const myRun = runInfo && (runInfo.kind === 'prism' || runInfo.kind === 'prism-assembly') ? runInfo : null;
+  const generating = myRun?.kind === 'prism' && myRun.status === 'running';
   const [error, setError] = useState('');
 
   // ── Teardown library (the private evidence base) ──────────────────────────
@@ -292,8 +297,7 @@ export default function Part360Page() {
   const [dfaInput, setDfaInput] = useState<DfaInput>({ answers: {}, securing: {} });
   const [asmDossier, setAsmDossier] = useState<AssemblyDossier | null>(null);
   const [asmLenses, setAsmLenses] = useState<Set<string>>(new Set(['assembly-architecture', 'subassembly-block', 'part-line']));
-  const [asmGenerating, setAsmGenerating] = useState(false);
-  const [asmGenLog, setAsmGenLog] = useState<string[]>([]);
+  const asmGenerating = myRun?.kind === 'prism-assembly' && myRun.status === 'running';
   const asmInputRef = useRef<HTMLInputElement>(null);
 
   // ── What-if cockpit (live engine re-runs on the dossier) ──────────────────
@@ -578,8 +582,10 @@ export default function Part360Page() {
       .filter(b => selectedLenses.has(b.lensId))
       .map(b => ({ lensId: b.lensId, text: b.text }));
     if (!blocks.length) { toast('Pick at least one evidence lens.', 'error'); return; }
-    setGenerating(true); setGenLog([]); setError('');
-    try {
+    setError('');
+    const dossierNow = dossier;
+    const started = startRun({ kind: 'prism', label: `Prism · ${partName || 'part'}`, returnTo: '/prism', exec: async ({ signal, onProgress }) => {
+      const dossier = dossierNow;
       const config: AnalysisConfig = {
         systemId: 'part360', subassemblyId: 'part360',
         vehicleType: 'Platform-agnostic component',
@@ -595,8 +601,8 @@ export default function Part360Page() {
       const subName = material;
       const { ideas, sources, resultId, onServer, validation } = await generateCostReductionIdeas(
         config, sysName, subName, partName || 'Part', false, undefined,
-        (ev: ProgressEvent) => { if (ev.message) setGenLog(prev => [...prev.slice(-14), ev.message as string]); },
-        { partEvidence: { blocks }, prismRunId: dossier.runId ?? undefined },
+        onProgress,
+        { partEvidence: { blocks }, prismRunId: dossier.runId ?? undefined, signal },
       );
       const result: AnalysisResult = {
         id: resultId,
@@ -620,13 +626,18 @@ export default function Part360Page() {
       // waterfall/forensics questions from evidence (negotiation briefing).
       try { sessionStorage.setItem('prismDossier', dossier.promptBlock); } catch { /* quota — chat just loses grounding */ }
       saveFullResult(resultId, result, sysName, subName);
-      navigate('/results');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Generation failed');
-    } finally {
-      setGenerating(false);
-    }
+      return '/results';
+    } });
+    if (!started) toast('Another AI run is already in progress — it is shown in the header.', 'error');
   }
+
+  // A run finished: open the result here, or report the cancel/error here.
+  useEffect(() => {
+    if (!myRun || myRun.status === 'running') return;
+    if (myRun.status === 'done' && myRun.openRoute) { consumeRun(); navigate(myRun.openRoute); }
+    else if (myRun.status === 'cancelled') { consumeRun(); toast('Run cancelled. The model calls were stopped; only what had already streamed is billed.', 'info'); }
+    else if (myRun.status === 'error') { consumeRun(); if (myRun.kind === 'prism') setError(myRun.error || 'Generation failed'); else toast(myRun.error || 'Generation failed', 'error'); }
+  }, [myRun?.status]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   async function saveTeardown() {
     if (!tdForm.title.trim()) { toast('Give the teardown a title.', 'error'); return; }
@@ -784,8 +795,9 @@ export default function Part360Page() {
     if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
     const blocks = asmDossier.lensBlocks.filter(b => asmLenses.has(b.lensId)).map(b => ({ lensId: b.lensId, text: b.text }));
     if (!blocks.length) { toast('Pick at least one level.', 'error'); return; }
-    setAsmGenerating(true); setAsmGenLog([]);
-    try {
+    const asmDossierNow = asmDossier;
+    const started = startRun({ kind: 'prism-assembly', label: `Prism · ${asmName || 'assembly'}`, returnTo: '/prism', exec: async ({ signal, onProgress }) => {
+      const asmDossier = asmDossierNow;
       const config: AnalysisConfig = {
         systemId: 'part360', subassemblyId: 'part360', vehicleType: 'Platform-agnostic assembly',
         annualVolume: Number(annualVolume) || 80000, plantRegion: REGION_TO_PLANT[region] ?? 'germany', currency: 'EUR',
@@ -794,8 +806,8 @@ export default function Part360Page() {
       };
       const { ideas, sources, resultId, onServer, validation } = await generateCostReductionIdeas(
         config, 'Prism', asmName || 'Assembly', asmName || 'Assembly', false, undefined,
-        (ev: ProgressEvent) => { if (ev.message) setAsmGenLog(prev => [...prev.slice(-14), ev.message as string]); },
-        { partEvidence: { blocks, offered: asmDossier.lensBlocks.map(l => l.lensId) } },
+        onProgress,
+        { partEvidence: { blocks, offered: asmDossier.lensBlocks.map(l => l.lensId) }, signal },
       );
       const result: AnalysisResult = {
         id: resultId, onServer, config: { ...config, apiKey: '' }, ideas, sources: sources ?? [], validation,
@@ -812,10 +824,9 @@ export default function Part360Page() {
       sessionStorage.setItem('analysisSubName', asmName || 'Assembly');
       try { sessionStorage.setItem('prismDossier', asmDossier.lensBlocks[0]?.text ?? ''); } catch { /* quota */ }
       saveFullResult(resultId, result, 'Prism', asmName || 'Assembly');
-      navigate('/results');
-    } catch (e) {
-      toast(e instanceof Error ? e.message : 'Generation failed', 'error');
-    } finally { setAsmGenerating(false); }
+      return '/results';
+    } });
+    if (!started) toast('Another AI run is already in progress — it is shown in the header.', 'error');
   }
 
   // ── The rail: every tick is a fact derived from real state ────────────────
@@ -916,6 +927,14 @@ export default function Part360Page() {
         <div className="dfm-sticky -mx-4 px-4 py-2.5 mb-6 border-y border-white/[0.07] bg-navy-950/70">
           <StepRail steps={railSteps} activeId={activeRailId} onJump={jumpTo} />
         </div>
+
+        {/* Back on the page mid-run (the wizard has reset): the run first. */}
+        {myRun?.status === 'running' && !(myRun.kind === 'prism' && step === 3) && !(myRun.kind === 'prism-assembly' && asmMode && asmDossier) && (
+          <div className="mb-6">
+            <RunPanel steps={myRun.steps} phase={myRun.phase} startedAt={myRun.startedAt} outTokens={myRun.outTokens}
+              enableSearch={false} onCancel={cancelRun} cancelling={myRun.cancelling} />
+          </div>
+        )}
 
         {asmMode ? (
           <motion.div variants={m.panel} initial="hidden" animate="show" className="space-y-5">
@@ -1050,9 +1069,10 @@ export default function Part360Page() {
                   })}
                 </div>
                 <p className="text-2xs text-slate-500 mb-3">{asmDossier.dossier.evidenceCount} numbered evidence lines. Each level runs its own generation pass; every idea must cite the evidence and carries its systemLevel.</p>
-                {asmGenerating && asmGenLog.length > 0 && (
-                  <div className="mb-3 bg-navy-950/70 border border-white/[0.07] rounded-xl p-3 text-xs max-h-40 overflow-y-auto">
-                    {asmGenLog.map((line, i) => <LogLine key={`${i}-${line.slice(0, 20)}`} text={line} active={i === asmGenLog.length - 1} />)}
+                {asmGenerating && myRun && (
+                  <div className="mb-3">
+                    <RunPanel steps={myRun.steps} phase={myRun.phase} startedAt={myRun.startedAt} outTokens={myRun.outTokens}
+                      enableSearch={false} onCancel={cancelRun} cancelling={myRun.cancelling} />
                   </div>
                 )}
                 <div className="flex justify-end">
@@ -1930,16 +1950,10 @@ export default function Part360Page() {
                 <p className="text-2xs text-slate-500 mb-4">
                   Cost: {selectedLenses.size} generation call{selectedLenses.size === 1 ? '' : 's'}{deepMode === 'full' ? ' + deep-mode passes' : deepMode === 'critique' ? ' + a small-model critique pass' : ''} on your API key, typically 2–6 minutes.
                 </p>
-                {generating && (
+                {generating && myRun && (
                   <div className="mb-4">
-                    <div className="dfm-photon h-0.5 rounded-full bg-white/5 mb-3" aria-hidden="true" />
-                    {genLog.length > 0 && (
-                      <div className="bg-navy-950/70 border border-white/[0.07] rounded-xl p-3 text-xs space-y-0 max-h-40 overflow-y-auto">
-                        {genLog.map((line, i) => (
-                          <LogLine key={`${i}-${line.slice(0, 24)}`} text={line} active={i === genLog.length - 1} />
-                        ))}
-                      </div>
-                    )}
+                    <RunPanel steps={myRun.steps} phase={myRun.phase} startedAt={myRun.startedAt} outTokens={myRun.outTokens}
+                      enableSearch={false} onCancel={cancelRun} cancelling={myRun.cancelling} />
                   </div>
                 )}
                 {error && <p className="text-danger-400 text-sm mb-3">{error}</p>}

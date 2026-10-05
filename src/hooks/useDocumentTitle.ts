@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useRun } from '../lib/run-store';
 import { useLocation } from 'react-router-dom';
 import { TOOLS, SETTINGS_LINKS } from '../config/tools';
 
@@ -27,7 +28,24 @@ export function titleForPath(pathname: string): string {
   return 'Page not found · BrainSpark';
 }
 
+/**
+ * The tab also carries the AI run (lib/run-store): "● 2:31 · Prism ·
+ * BrainSpark" while one runs, "✓ Results ready · …" when it finished on
+ * another page — so a run in a background tab is visible from the tab strip.
+ * One owner for document.title; nothing else writes it.
+ */
 export function useDocumentTitle() {
   const { pathname } = useLocation();
-  useEffect(() => { document.title = titleForPath(pathname); }, [pathname]);
+  const run = useRun();
+  const [now, setNow] = useState(() => Date.now());
+  const running = run?.status === 'running';
+  useEffect(() => { if (!running) return; const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, [running]);
+  useEffect(() => {
+    const base = titleForPath(pathname);
+    const s = run ? Math.max(0, Math.floor((now - run.startedAt) / 1000)) : 0;
+    document.title = !run ? base
+      : run.status === 'running' ? `● ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')} · ${base}`
+      : run.status === 'done' && pathname !== run.returnTo ? `✓ Results ready · ${base}`
+      : base;
+  }, [pathname, run, now]);
 }

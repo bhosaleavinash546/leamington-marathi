@@ -4689,3 +4689,27 @@ Pages still send only a real local key, never a placeholder, so the server's
 fallback order is untouched. `useAiKeySource()` tells a page *which* key will
 be used, for wording only. A test fails the build if any gate goes back to
 checking the browser key alone.
+
+## 118. AI runs belong to the app, not the page: they survive navigation; closing the tab still stops them
+
+**Reverses part of the September decision that "leaving the page stops the
+bill".** That rule cost more than it saved. An engineer who checked the
+marketplace two minutes into a run threw the run away and paid for a second
+one.
+
+**What happens now.** `src/lib/run-store.ts` owns the one AI run that may be
+in progress (Analyze, Prism part, Prism assembly).
+- Pages start it and render it with the same `RunPanel`.
+- A page you return to mid-run shows the run first.
+- The header carries a pill (`RunIndicator`) showing what is running, the
+  stage the server last reported, the elapsed clock, and a Cancel button.
+- When the run finishes elsewhere, the pill becomes "Results ready", a toast
+  appears, the tab title starts with ✓, and a system notification is sent if
+  notifications were already allowed.
+
+**What still stops a run.** Closing the tab stops it, because the request
+dies with the document, and Cancel still closes the stream. Either way the
+server aborts its upstream call (measured with the stub: `aborted: 1`).
+
+**Only one run at a time.** A second start is refused with a message, since
+two concurrent generations would double the bill.
