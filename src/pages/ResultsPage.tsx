@@ -1,18 +1,18 @@
 import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import TickNumber from '../components/dfm/TickNumber';
 import ScoreRing from '../components/dfm/ScoreRing';
 import { Money, FxNote } from '../components/ui/Money';
 import {
-  FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
+  FileDown, FileSpreadsheet, Presentation, ArrowLeft,
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
   MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
-  Square, Store, Layers, ThumbsUp, FileSearch
+  Square, Store, Layers, ThumbsUp, FileSearch, LayoutGrid, Rows3
 } from 'lucide-react';
 import PrismIcon from '../components/icons/PrismIcon';
 import TypingDots from '../components/ui/TypingDots';
@@ -26,6 +26,7 @@ import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../
 import { notableFlags, verificationTally } from '../services/idea-provenance.mjs';
 import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
+import IdeasTable from '../components/results/IdeasTable';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 import { getAuthToken } from '../services/auth';
 import IdeaProvenanceBadges from '../components/IdeaProvenanceBadges';
@@ -904,10 +905,23 @@ export default function ResultsPage() {
   const [loadError, setLoadError] = useState('');
   const [systemName, setSystemName] = useState('');
   const [subName, setSubName] = useState('');
-  const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'All'>('All');
-  const [filterType, setFilterType] = useState<CostSavingType | 'All'>('All');
-  const [filterStatus, setFilterStatus] = useState<AnnotationStatus | 'All'>('All');
-  const [sortBy, setSortBy] = useState<'default' | 'roi' | 'savings' | 'ease'>('default');
+  // The view lives in the URL (?q=&diff=&type=&status=&sort=&view=), so a
+  // filtered view can be linked, bookmarked and survives a reload — the
+  // saved-views pattern of Linear and Airtable, without a new store.
+  const [params, setParams] = useSearchParams();
+  const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'All'>(() => (params.get('diff') as Difficulty) || 'All');
+  const [filterType, setFilterType] = useState<CostSavingType | 'All'>(() => (params.get('type') as CostSavingType) || 'All');
+  const [filterStatus, setFilterStatus] = useState<AnnotationStatus | 'All'>(() => (params.get('status') as AnnotationStatus) || 'All');
+  const [sortBy, setSortBy] = useState<'default' | 'roi' | 'savings' | 'ease'>(() => (params.get('sort') as 'roi' | 'savings' | 'ease') || 'default');
+  const [query, setQuery] = useState(() => params.get('q') || '');
+  const [view, setView] = useState<'cards' | 'table'>(() => (params.get('view') === 'table' ? 'table' : 'cards'));
+  useEffect(() => {
+    const next = new URLSearchParams(params);
+    const put = (k: string, v: string, dflt: string) => { if (v && v !== dflt) next.set(k, v); else next.delete(k); };
+    put('q', query.trim(), ''); put('diff', filterDifficulty, 'All'); put('type', filterType, 'All');
+    put('status', filterStatus, 'All'); put('sort', sortBy, 'default'); put('view', view, 'cards');
+    if (next.toString() !== params.toString()) setParams(next, { replace: true });
+  }, [query, filterDifficulty, filterType, filterStatus, sortBy, view]);   // eslint-disable-line react-hooks/exhaustive-deps
   const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | 'rfq' | null>(null);
   const [annotations, setAnnotations] = useState<Record<string, IdeaAnnotation>>({});
   const [showRefine, setShowRefine] = useState(false);
@@ -1044,7 +1058,9 @@ export default function ResultsPage() {
       const matchType = filterType === 'All' || idea.costSavingTypes.includes(filterType);
       const ann = annotations[idea.id];
       const matchStatus = filterStatus === 'All' || (ann?.status ?? 'pending') === filterStatus;
-      return matchDiff && matchType && matchStatus;
+      const q = query.trim().toLowerCase();
+      const matchQuery = !q || `${idea.title} ${idea.technicalDescription} ${idea.materialGrade ?? ''}`.toLowerCase().includes(q);
+      return matchDiff && matchType && matchStatus && matchQuery;
     })
     .sort((a, b) => {
       if (sortBy === 'roi') {
@@ -1516,72 +1532,59 @@ export default function ResultsPage() {
           </div>
         )}
 
-        {/* Filters + Sort */}
-        <div className="flex flex-col gap-3 mb-6 p-4 bg-navy-900 border border-white/10 rounded-2xl">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-slate-400 text-sm font-medium flex-shrink-0">
-              <Filter size={14} /> Filter:
+        {/* Toolbar: one row — search, three filters, sort, count, view. It
+            replaces two rows of ~20 chips; the choices are the same. */}
+        {(() => {
+          const sel = 'h-9 rounded-lg border border-hairline bg-tint px-2.5 text-sm text-slate-200 focus:outline-none focus:border-gold-500/50';
+          const active = filterDifficulty !== 'All' || filterType !== 'All' || filterStatus !== 'All' || query.trim() !== '';
+          return (
+            <div className="mb-6 rounded-2xl border border-hairline bg-navy-900 p-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
+                  <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search ideas, grades…" aria-label="Search ideas"
+                    className={`${sel} w-full pl-8`} />
+                </div>
+                <select aria-label="Filter by difficulty" value={filterDifficulty} onChange={e => setFilterDifficulty(e.target.value as Difficulty | 'All')} className={sel}>
+                  <option value="All">Any difficulty</option>
+                  {(['Low', 'Medium', 'High'] as const).map(d => <option key={d} value={d}>{d} difficulty</option>)}
+                </select>
+                <select aria-label="Filter by saving type" value={filterType} onChange={e => setFilterType(e.target.value as CostSavingType | 'All')} className={sel}>
+                  <option value="All">Any saving type</option>
+                  {(['material', 'process', 'tooling', 'weight', 'complexity', 'warranty', 'logistics', 'commonisation'] as const).map(t => <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>)}
+                </select>
+                <select aria-label="Filter by status" value={filterStatus} onChange={e => setFilterStatus(e.target.value as AnnotationStatus | 'All')} className={sel}>
+                  <option value="All">Any status</option>
+                  {(['pending', 'investigating', 'approved', 'rejected', 'on-hold'] as const).map(st => <option key={st} value={st}>{ANNOTATION_STATUS_CONFIG[st].label}</option>)}
+                </select>
+                <select aria-label="Sort ideas" value={sortBy} onChange={e => setSortBy(e.target.value as 'default' | 'roi' | 'savings' | 'ease')} className={sel}>
+                  <option value="default">Sort: AI order</option>
+                  <option value="roi">Sort: best value</option>
+                  <option value="savings">Sort: highest saving</option>
+                  <option value="ease">Sort: easiest first</option>
+                </select>
+                <div role="group" aria-label="View" className="inline-flex h-9 rounded-lg border border-hairline overflow-hidden">
+                  {(['cards', 'table'] as const).map(v => (
+                    <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}
+                      className={`inline-flex items-center gap-1.5 px-3 text-sm transition-colors ${view === v ? 'bg-gold-500/15 text-gold-400' : 'text-slate-400 hover:text-white'}`}>
+                      {v === 'cards' ? <LayoutGrid size={14} aria-hidden="true" /> : <Rows3 size={14} aria-hidden="true" />}
+                      {v === 'cards' ? 'Cards' : 'Table'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <span aria-live="polite"><span className="font-mono text-slate-300">{filtered.length}</span> of {result.ideas.length} ideas</span>
+                {active && (
+                  <button type="button" onClick={() => { setQuery(''); setFilterDifficulty('All'); setFilterType('All'); setFilterStatus('All'); }} className="text-gold-400 hover:underline">Clear filters</button>
+                )}
+                {sortBy === 'roi' && (
+                  <span>Best value = annual saving × payback speed × validation quality × engine cross-check × evidence status{filtered.some(i => i.tasteMatch) ? ' × similarity to your approved ideas' : ''}.</span>
+                )}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {(['All', 'Low', 'Medium', 'High'] as const).map(d => (
-                <motion.button key={d} onClick={() => setFilterDifficulty(d)}
-                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterDifficulty === d ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
-                  {d === 'All' ? 'All Difficulty' : d}
-                </motion.button>
-              ))}
-            </div>
-            <div className="w-px h-4 bg-white/10 hidden sm:block" />
-            <div className="flex flex-wrap gap-1.5">
-              {(['All', 'material', 'process', 'tooling', 'weight', 'complexity', 'warranty', 'logistics', 'commonisation'] as const).map(t => (
-                <motion.button key={t} onClick={() => setFilterType(t)}
-                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium border capitalize transition-colors ${filterType === t ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
-                  {t === 'All' ? 'All Types' : t}
-                </motion.button>
-              ))}
-            </div>
-            <div className="ml-auto flex items-center gap-1.5 text-slate-500 text-xs">
-              <RefreshCw size={11} /> {filtered.length}/{result.ideas.length}
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/6">
-            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium flex-shrink-0">
-              <Tag size={12} /> Status:
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {(['All', 'pending', 'investigating', 'approved', 'rejected', 'on-hold'] as const).map(s => (
-                <motion.button key={s} onClick={() => setFilterStatus(s)}
-                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterStatus === s ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
-                  {s === 'All' ? 'All Status' : ANNOTATION_STATUS_CONFIG[s].label}
-                </motion.button>
-              ))}
-            </div>
-            <div className="w-px h-4 bg-white/10 hidden sm:block" />
-            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium flex-shrink-0">
-              <BarChart3 size={12} /> Sort:
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {([['default', 'AI Order'], ['roi', 'Best ROI'], ['savings', 'Highest Savings'], ['ease', 'Easiest First']] as const).map(([key, label]) => (
-                <motion.button key={key} onClick={() => setSortBy(key)}
-                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${sortBy === key ? 'bg-violet-500/20 text-violet-400 border-violet-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
-                  {label}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-          {sortBy === 'roi' && (
-            <p className="mt-2 text-xs text-slate-500">
-              Ranked by verified value: annual saving × payback speed × validation quality × engine cross-check × evidence status{filtered.some(i => i.tasteMatch) ? ' × similarity to your approved ideas' : ''}. Hover an idea's rank factors via its badges.
-            </p>
-          )}
-        </div>
+          );
+        })()}
 
         {/* Bulk selection action bar */}
         <AnimatePresence>
@@ -1633,7 +1636,13 @@ export default function ResultsPage() {
 
         {/* Ideas */}
         {filtered.length === 0 ? (
-          <motion.div layout className="text-center py-12 text-slate-500">No ideas match the current filters.</motion.div>
+          <motion.div layout className="text-center py-12 text-slate-500">
+            No ideas match the current filters.{' '}
+            <button type="button" onClick={() => { setQuery(''); setFilterDifficulty('All'); setFilterType('All'); setFilterStatus('All'); }} className="text-gold-400 hover:underline">Clear filters</button>
+          </motion.div>
+        ) : view === 'table' ? (
+          <IdeasTable ideas={filtered} annotations={annotations} statusLabel={st => ANNOTATION_STATUS_CONFIG[st as AnnotationStatus]?.label ?? st}
+            selectedIds={selectedIds} onToggleSelect={toggleSelect} sortBy={sortBy} onSort={setSortBy} />
         ) : (
           <motion.div
             layout
