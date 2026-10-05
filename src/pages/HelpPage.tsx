@@ -59,7 +59,7 @@ const FAQ: FaqSection[] = [
     icon: BookOpen,
     items: [
       { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered VAVE (Value Analysis / Value Engineering) tool for automotive products. It uses a Chief Engineer AI persona with 30+ years of domain expertise and live internet search to generate all available DFMA and cost-engineering ideas in a single click, across 13 vehicle systems and 250+ parts, plus a Marketplace of 1,250+ curated, benchmarked cost-reduction ideas.' },
-      { q: 'Do I need an API key to use this?', a: 'Yes — you need an Anthropic API key (for Claude AI). You enter it on the Analyze page. It is stored only in your browser session and never saved to any server.' },
+      { q: 'Do I need an API key to use this?', a: 'For the AI features, yes — an Anthropic API key (for Claude). Save it once under Settings → API Key: it is stored encrypted against your account, so every tool works on every device without re-entering it, and only its last four characters are ever shown back. The deterministic engines (Should-Cost, CAD → Cost geometry, DFM rules, Wiring Harness) run without a key.' },
       { q: 'Where does BrainSpark run?', a: 'On a server your organisation operates — nothing you upload leaves it except the prompts sent to the AI model under your own API key. Ask your administrator for the address; developers will find setup and deployment instructions in the repository documentation.' },
       { q: 'Is an internet connection required?', a: 'An internet connection is required to call the Claude AI API. The optional web search feature (enabled by default) also uses internet to fetch live pricing and supplier data for more accurate estimates.' },
     ],
@@ -111,7 +111,7 @@ const FAQ: FaqSection[] = [
     category: 'Account & Security',
     icon: Lock,
     items: [
-      { q: 'How is my data secured?', a: 'All API keys are stored only in your browser (localStorage) and sent directly to the backend only during analysis — never logged or persisted. User credentials are hashed with bcrypt. Sessions use JWT tokens with 7-day expiry and server-side revocation on sign-out.' },
+      { q: 'How is my data secured?', a: 'Your API key is stored encrypted on the server against your account (Settings → API Key) and is never logged or shown back in full; it is redacted from saved analyses. User credentials are hashed with bcrypt. Sessions use JWT tokens with 7-day expiry and server-side revocation on sign-out.' },
       { q: 'What happens if I forget my password?', a: 'Use the "Forgot password" option on the sign-in page. An OTP (one-time password) is sent to your registered email. The OTP expires in 10 minutes and can be used only once.' },
       { q: 'Where is my analysis data stored?', a: 'From v3.0, analysis results are automatically saved to a server-side SQLite database linked to your account (API key is redacted before saving). You can access all your past analyses from the Dashboard — including projects from any device. Idea annotations are still stored locally in your browser and restored when you re-open a project.' },
       { q: 'How do share links work?', a: 'Share links are generated per project with a 30-day expiry. They are single-use read-only views — the recipient does not need a BrainSpark account. Share tokens are stored in the database and expire automatically. You cannot revoke a token before expiry, but expiry ensures they are short-lived.' },
@@ -179,7 +179,7 @@ const FAQ: FaqSection[] = [
 
 const STEPS = [
   { n: 1, title: 'Sign in', desc: 'Create your account or sign in with email and password. Use "Forgot password" if needed — an OTP is sent to your email.' },
-  { n: 2, title: 'Enter API key', desc: 'On the Analyze page, paste your Anthropic API key. It stays in your browser only.' },
+  { n: 2, title: 'Save your API key', desc: 'Under Settings → API Key, paste your Anthropic key once. It is stored encrypted against your account and used by every AI tool.' },
   { n: 3, title: 'Select target', desc: 'Choose a Vehicle System → Subassembly → Part (optional). Optionally upload a CAD file (STL / STEP / DXF / PNG) — geometry is auto-extracted and injected into the AI prompt.' },
   { n: 4, title: 'Generate & export', desc: 'Click "Generate Ideas". Watch live as the AI searches the web and synthesises all available expert ideas (typically 12–20+). Export to Excel, PowerPoint, or PDF. Annotate ideas with implementation status and notes.' },
 ];

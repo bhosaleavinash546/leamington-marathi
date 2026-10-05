@@ -4670,3 +4670,22 @@ caveat with the idea, not in a separate report.
 **Two library-wide rules made explicit.** Single-powertrain savings are
 fleet averages at the stated mix. Savings across ideas are not additive:
 each idea says so, and 48 V ideas carry the architecture they assume.
+
+## 117. AI gates ask "is any key available", not "is there a key in this browser"
+
+Keys moved to the account (Settings → API Key, stored encrypted), and the
+server resolves a key in this order: the request body, then the user's stored
+key, then the server environment. But twenty client gates still checked
+`localStorage.brainspark_api_key` alone, so a user with an account key was
+blocked on any new device.
+
+`useAiAvailable()` now answers whether any of the three exists. It fetches
+`/api/settings/api-key` once per session, and saving or removing a key
+invalidates that cache. An unknown answer counts as available: a false block
+is worse than letting the server reply with its explicit "No API key
+configured" message.
+
+Pages still send only a real local key, never a placeholder, so the server's
+fallback order is untouched. `useAiKeySource()` tells a page *which* key will
+be used, for wording only. A test fails the build if any gate goes back to
+checking the browser key alone.

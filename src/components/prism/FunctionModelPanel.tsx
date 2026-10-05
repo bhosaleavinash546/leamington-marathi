@@ -10,6 +10,7 @@
  * should-cost and gives the VA/VE lens its poor-value functions and trimming
  * questions — the evidence that lens never had before.
  */
+import { useAiAvailable } from '../../hooks/useAiAvailable';
 import { useEffect, useState } from 'react';
 import { Workflow, Loader2, Plus, Trash2, AlertTriangle, Calculator } from 'lucide-react';
 
@@ -35,6 +36,7 @@ const sum = (xs: number[]) => xs.reduce((a, b) => a + (Number(b) || 0), 0);
 const round = (n: number) => Math.round(n * 10) / 10;
 
 export default function FunctionModelPanel({ token, apiKey, partName, partContext, observations, geo, onChange }: Props) {
+  const aiAvailable = useAiAvailable();
   const [draft, setDraft] = useState<FunctionDraft | null>(null);
   const [use, setUse] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -47,7 +49,7 @@ export default function FunctionModelPanel({ token, apiKey, partName, partContex
   const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
   async function draftIt() {
-    if (!apiKey) { setError('Add your Anthropic API key in Settings to draft functions.'); return; }
+    if (!apiKey && !aiAvailable) { setError('Add your Anthropic API key in Settings to draft functions.'); return; }
     setBusy(true); setError(''); setCheck(null);
     try {
       const r = await fetch('/api/part360/draft-functions', {

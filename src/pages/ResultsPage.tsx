@@ -1,3 +1,4 @@
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +19,7 @@ import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '../services/export-service';
+import ExportMenu, { type ExportItem } from '../components/ui/ExportMenu';
 import { useAuth } from '../contexts/AuthContext';
 import BusinessCaseModal from '../components/BusinessCaseModal';
 import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../services/claude-service';
@@ -176,6 +178,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
   isSelected?: boolean;
   onToggleSelect?: (id: string) => void;
 }) {
+  const aiAvailable = useAiAvailable();
   const { token } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [showAnnotation, setShowAnnotation] = useState(false);
@@ -310,8 +313,9 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             {onToggleSelect && (
               <button
                 onClick={e => { e.stopPropagation(); onToggleSelect(idea.id); }}
-                className={`flex-shrink-0 self-center transition-colors ${isSelected ? 'text-gold-400' : 'text-slate-500 hover:text-slate-400'}`}
+                className={`flex-shrink-0 self-center -m-2 inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${isSelected ? 'text-gold-400' : 'text-slate-500 hover:text-slate-400'}`}
                 aria-label={isSelected ? 'Deselect idea' : 'Select idea'}
+                aria-pressed={isSelected}
               >
                 {isSelected ? <CheckSquare size={17} /> : <Square size={17} />}
               </button>
@@ -372,7 +376,8 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
 
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-3 flex items-center gap-1.5 text-gold-400 hover:text-gold-300 text-sm font-medium transition-colors"
+          aria-expanded={expanded}
+          className="mt-2 -ml-2 inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-gold-400 hover:text-gold-300 hover:bg-tint text-sm font-medium transition-colors"
         >
           {expanded ? <><ChevronUp size={14} /> Collapse</> : <><ChevronDown size={14} /> Full Technical Detail</>}
         </button>
@@ -559,7 +564,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
               <button
                 onClick={async () => {
                   const apiKey = localStorage.getItem('brainspark_api_key') || '';
-                  if (!apiKey || patentLoading) return;
+                  if ((!apiKey && !aiAvailable) || patentLoading) return;
                   setPatentLoading(true);
                   setPatentResult(null);
                   setPatentData(null);
@@ -893,6 +898,7 @@ function SourcesPanel({ sources }: { sources: SearchSource[] }) {
 }
 
 export default function ResultsPage() {
+  const aiAvailable = useAiAvailable();
   const navigate = useNavigate();
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loadError, setLoadError] = useState('');
@@ -1102,6 +1108,15 @@ export default function ResultsPage() {
     try { exportRfqPdf(result, systemName, subName, approved); } finally { setExporting(null); }
   };
 
+  // One export menu instead of five coloured buttons. Order = how often each
+  // is used for a management review; the RFQ pack says what it contains.
+  const exportItems: ExportItem[] = [
+    { id: 'pdf', label: 'PDF report', description: 'The full analysis for reading and sharing', icon: FileDown, onSelect: handlePdfExport, busy: exporting === 'pdf' },
+    { id: 'pptx', label: 'PowerPoint deck', description: 'Slides for a management review', icon: Presentation, onSelect: handlePptxExport, busy: exporting === 'pptx' },
+    { id: 'excel', label: 'Excel workbook', description: 'Summary, ideas and roadmap sheets', icon: FileSpreadsheet, onSelect: handleExcelExport, busy: exporting === 'excel' },
+    { id: 'rfq', label: 'RFQ pack', description: 'Request-for-quote package of the approved ideas', icon: ClipboardList, onSelect: handleRfqExport, busy: exporting === 'rfq' },
+  ];
+
   const handleAnnotate = (ideaId: string, annotation: IdeaAnnotation) => {
     const updated = { ...annotations, [ideaId]: annotation };
     setAnnotations(updated);
@@ -1181,7 +1196,7 @@ export default function ResultsPage() {
     const msg = chatInput.trim();
     if (!msg || chatLoading || !result) return;
     const apiKey = localStorage.getItem('brainspark_api_key') || result.config.apiKey || '';
-    if (!apiKey) return;
+    if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key under Settings → API Key to ask about this analysis.', 'error'); return; }
 
     const userMsg: ChatMessage = { role: 'user', content: msg, timestamp: new Date().toISOString() };
     const newHistory = [...chatMessages, userMsg];
@@ -1366,48 +1381,16 @@ export default function ResultsPage() {
               <h1 className="text-3xl font-bold text-white">{systemName}</h1>
               <p className="text-slate-400 mt-1">{subName} — {result.generatedAt}</p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               {result.id && (
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-hairline bg-tint hover:bg-tint-strong text-slate-200 font-medium text-sm transition-colors"
                 >
-                  <Share2 size={16} /> Share
+                  <Share2 size={16} aria-hidden="true" /> Share
                 </button>
               )}
-              <button
-                onClick={handleExcelExport}
-                disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
-              >
-                <FileSpreadsheet size={16} />
-                {exporting === 'excel' ? 'Exporting...' : 'Excel'}
-              </button>
-              <button
-                onClick={handlePptxExport}
-                disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
-              >
-                <Presentation size={16} />
-                {exporting === 'pptx' ? 'Exporting...' : 'PowerPoint'}
-              </button>
-              <button
-                onClick={handlePdfExport}
-                disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
-              >
-                <FileDown size={16} />
-                {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
-              </button>
-              <button
-                onClick={handleRfqExport}
-                disabled={!!exporting}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-700 hover:bg-violet-600 disabled:opacity-50 text-white font-semibold text-sm transition-ui hover:-translate-y-0.5"
-                title="Export RFQ package for all Approved ideas"
-              >
-                <ClipboardList size={16} />
-                {exporting === 'rfq' ? 'Generating...' : 'RFQ Pack'}
-              </button>
+              <ExportMenu busy={!!exporting} items={exportItems} />
             </div>
           </div>
         </div>
@@ -1885,19 +1868,13 @@ export default function ResultsPage() {
             <div className="text-white font-semibold mb-1">Export for management presentation</div>
             <div className="text-slate-400 text-sm">Excel workbook (Summary + Ideas + Roadmap) or full PowerPoint deck</div>
           </div>
-          <div className="flex gap-3">
-            <button onClick={handleExcelExport} disabled={!!exporting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-semibold text-sm">
-              <FileSpreadsheet size={16} /> Excel Workbook
-            </button>
-            <button onClick={handlePptxExport} disabled={!!exporting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold text-sm">
-              <FileDown size={16} /> PowerPoint Deck
-            </button>
-            <button onClick={handlePdfExport} disabled={!!exporting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white font-semibold text-sm">
-              <FileDown size={16} /> PDF Report
-            </button>
+          <div className="flex flex-wrap gap-2">
+            {exportItems.slice(0, 3).map(it => (
+              <button key={it.id} onClick={it.onSelect} disabled={!!exporting}
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-hairline bg-tint hover:bg-tint-strong disabled:opacity-50 text-slate-200 font-medium text-sm transition-colors">
+                <it.icon size={16} aria-hidden="true" /> {it.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -155,7 +155,7 @@ export default function IdeasDashboard({ ideas }: Props) {
         {/* Bar: Difficulty */}
         <ChartCard title="Implementation Difficulty" icon={TrendingDown}>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={diffData} barCategoryGap="30%" margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={diffData} barCategoryGap="30%" margin={{ top: 22, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
               <XAxis dataKey="name" tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
@@ -171,7 +171,7 @@ export default function IdeasDashboard({ ideas }: Props) {
         {/* Bar: Level */}
         <ChartCard title="Analysis Level" icon={Layers}>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={levelData} barCategoryGap="30%" margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={levelData} barCategoryGap="30%" margin={{ top: 22, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
               <XAxis dataKey="name" tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />

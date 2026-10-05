@@ -13,7 +13,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteErrorBoundary from './components/layout/RouteErrorBoundary';
 import { useIsNative } from './hooks/useMobile';
 import AiChatbot from './components/AiChatbot';
-import OnboardingChecklist from './components/OnboardingChecklist';
+import { useDocumentTitle } from './hooks/useDocumentTitle';
 
 // Route components are code-split: each page (and its heavy deps — recharts,
 // framer-motion charts, the xlsx/pptx/jspdf export libs) loads on demand instead
@@ -48,6 +48,7 @@ const HarnessCostPage = lazy(() => import('./pages/HarnessCostPage'));
 const ApiKeySettingsPage = lazy(() => import('./pages/ApiKeySettingsPage'));
 const TeamPage = lazy(() => import('./pages/TeamPage'));
 const PrismPage = lazy(() => import('./pages/PrismPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -93,8 +94,9 @@ function AnimatedRoutes() {
         <Route path="/innovate" element={<ProtectedRoute><PageTransition><InnovationStudioPage /></PageTransition></ProtectedRoute>} />
         <Route path="/horizon" element={<ProtectedRoute><PageTransition><ForesightPage /></PageTransition></ProtectedRoute>} />
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Fallback: a real 404 that keeps the URL, instead of silently
+            redirecting to the marketing page. */}
+        <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
       </Routes>
     </AnimatePresence>
     </RouteErrorBoundary>
@@ -113,6 +115,7 @@ const BARE_DARK_ROUTES = ['/auth'];
 function AppShell() {
   const native = useIsNative();
   const location = useLocation();
+  useDocumentTitle();
 
   if (BARE_DARK_ROUTES.includes(location.pathname)) {
     return (
@@ -138,7 +141,11 @@ function AppShell() {
       {/* Bottom tab bar: always on native; on mobile-web only (hidden ≥lg). */}
       {native ? <MobileNav /> : <div className="lg:hidden"><MobileNav /></div>}
       <AiChatbot />
-      <OnboardingChecklist />
+      {/* Phones: no floating onboarding pill. It sat over page content on every
+          route, beside the chat button, above the tab bar — three floating
+          objects on a 390 px screen — and repeated the dashboard's own
+          "Get set up" card step for step. Onboarding lives on Home there;
+          desktop keeps the header chip, which never covers content. */}
     </div>
   );
 }

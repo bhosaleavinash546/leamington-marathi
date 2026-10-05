@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -495,19 +496,9 @@ export default function PipelinePage() {
       <div className="max-w-6xl mx-auto">
 
         {/* ── Header ── */}
-        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/25 flex items-center justify-center">
-                <ClipboardList size={18} className="text-gold-400" />
-              </div>
-              <h1 className="text-2xl font-bold text-white">Idea Pipeline</h1>
-            </div>
-            <p className="text-slate-400 text-sm ml-11">
-              All team ideas tracked through G0 → G3 implementation gates
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+        <PageHeader tool="pipeline" title="Idea Pipeline" className="mb-6"
+          subtitle="All team ideas tracked through G0 → G3 implementation gates."
+          actions={<div className="flex items-center gap-2">
             <button
               onClick={exportExcel}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:border-white/20 text-sm transition-colors"
@@ -522,8 +513,7 @@ export default function PipelinePage() {
               <Plus size={15} />
               Add Business Case
             </button>
-          </div>
-        </div>
+          </div>} />
 
         {/* ── Title prompt mini modal ── */}
         <AnimatePresence>

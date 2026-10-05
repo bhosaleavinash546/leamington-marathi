@@ -1,3 +1,4 @@
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -77,6 +78,7 @@ const SECONDARY_OPS = [
 ];
 
 export default function ShouldCostPage() {
+  const aiAvailable = useAiAvailable();
   const { token } = useAuth();
   const [materials, setMaterials] = useState<string[]>(FALLBACK_MATERIALS);
   const [processes, setProcesses] = useState<string[]>(FALLBACK_PROCESSES);
@@ -223,7 +225,7 @@ export default function ShouldCostPage() {
   async function generateGapIdeas() {
     if (!token || !result || !quotedCost) return;
     const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
-    if (!apiKey) { setGapError('Add your Anthropic API key in settings to generate gap-closure ideas (the gap math stays deterministic).'); return; }
+    if (!apiKey && !aiAvailable) { setGapError('Add your Anthropic API key under Settings → API Key to generate gap-closure ideas (the gap math stays deterministic).'); return; }
     setGapLoading(true); setGapError(''); setGapIdeas(null);
     try {
       const r = await fetch('/api/should-cost/delta-ideas', {
@@ -249,7 +251,7 @@ export default function ShouldCostPage() {
     setCdLoading(true); setCdError(''); setCostDown(null);
     try {
       const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
-      if (!apiKey) { setCdError('Add your Anthropic API key in settings to explore cost-down ideas (numbers stay engine-verified).'); return; }
+      if (!apiKey && !aiAvailable) { setCdError('Add your Anthropic API key under Settings → API Key to explore cost-down ideas (numbers stay engine-verified).'); return; }
       const r = await fetch('/api/cost-down', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },

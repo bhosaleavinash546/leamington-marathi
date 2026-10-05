@@ -11,6 +11,7 @@
  *
  * House rule: the images inform judgement; every number stays with the engines.
  */
+import { useAiAvailable } from '../../hooks/useAiAvailable';
 import { useEffect, useRef, useState } from 'react';
 import { Eye, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import CadViewer3D, { type CadViewerRef } from '../CadViewer3D';
@@ -49,6 +50,7 @@ interface Props {
 }
 
 export default function PartVisionPanel({ file, token, apiKey, geo, partName, material, process, partContext, onConfirmedChange, onUseDescription }: Props) {
+  const aiAvailable = useAiAvailable();
   const viewerRef = useRef<CadViewerRef | null>(null);
   const [busy, setBusy] = useState<string>('');
   const [error, setError] = useState('');
@@ -81,7 +83,7 @@ export default function PartVisionPanel({ file, token, apiKey, geo, partName, ma
   async function read() {
     const v = viewerRef.current;
     if (!v) return;
-    if (!apiKey) { setError('Add your Anthropic API key in Settings to use AI vision.'); return; }
+    if (!apiKey && !aiAvailable) { setError('Add your Anthropic API key in Settings to use AI vision.'); return; }
     setError(''); setBusy('Capturing views…');
     try {
       const captured: { view: string; dataUrl: string }[] = [];

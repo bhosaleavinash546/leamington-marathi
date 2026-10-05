@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useCallback, useRef } from 'react';
 import { writeString } from '../lib/storage';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -218,6 +220,7 @@ export default function CadToCostPage() {
 
   // Config state
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
+  const aiAvailable = useAiAvailable();
   const [annualVolume, setAnnualVolume] = useState(50000);
   const [plantRegion, setPlantRegion] = useState('germany');
   const [currency, setCurrency] = useState('GBP');
@@ -256,7 +259,7 @@ export default function CadToCostPage() {
   };
 
   const handleAnalyse = async () => {
-    if (!geometry || !apiKey.trim()) return;
+    if (!geometry || (!apiKey.trim() && !aiAvailable)) return;
     setAnalysing(true);
     setError(null);
     try {
@@ -335,23 +338,20 @@ export default function CadToCostPage() {
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
-        {/* API key strip */}
-        {!apiKey && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/8 border border-amber-500/20">
-            <AlertTriangle size={16} className="text-amber-400 flex-shrink-0" />
-            <span className="text-amber-300 text-sm">An Anthropic API key is required. Enter it below or in Settings.</span>
+        {/* API key: only when no key is saved anywhere (browser, account, server). */}
+        {!aiAvailable && (
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 px-4 py-3 space-y-2">
+            <p className="flex items-center gap-2 text-amber-300 text-sm"><AlertTriangle size={16} className="shrink-0" aria-hidden="true" /> The AI estimate needs an Anthropic API key. <Link to="/settings/api-key" className="underline">Save one to your account</Link> or use one in this browser:</p>
+            <input
+              type="password"
+              aria-label="Anthropic API key for this browser"
+              value={apiKey}
+              onChange={e => { setApiKey(e.target.value); writeString('brainspark_api_key', e.target.value); }}
+              placeholder="sk-ant-api03-..."
+              className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/50"
+            />
           </div>
         )}
-        <div>
-          <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1.5">Anthropic API Key</label>
-          <input
-            type="password"
-            value={apiKey}
-            onChange={e => { setApiKey(e.target.value); writeString('brainspark_api_key', e.target.value); }}
-            placeholder="sk-ant-api03-..."
-            className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/50"
-          />
-        </div>
 
         {/* Upload zone */}
         {!file ? (
@@ -568,7 +568,7 @@ export default function CadToCostPage() {
 
             <button
               onClick={handleAnalyse}
-              disabled={analysing || !apiKey.trim()}
+              disabled={analysing || (!apiKey.trim() && !aiAvailable)}
               className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 font-bold text-sm transition-ui hover:from-gold-400 hover:to-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {analysing ? <><ButtonSpinner size={16} /> Analysing…</> : <><Target size={16} /> Analyse Cost & DFMA</>}
@@ -780,7 +780,6 @@ export default function CadToCostPage() {
         {/* Footer note */}
         <p className="text-slate-700 text-xs text-center pb-4">
           Cost estimates are directional — not supplier quotes. CAD geometry is processed client-side and not stored.
-          Designed &amp; Created by <strong className="text-slate-500">Avinash Bhosale</strong>
         </p>
       </div>
     </div>

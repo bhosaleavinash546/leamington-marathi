@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
 import { downloadXlsx } from '../services/xlsx-write';
 import { parseWorkbook } from '../services/safe-xlsx';
@@ -60,6 +61,18 @@ export default function AdminRateLibraryPage() {
   const load = useCallback(async () => {
     setForbidden(null); setErrMsg('');
     try {
+      // Ask the cheap gate first: a non-admin never fires a request that is
+      // bound to fail (it logged a 403 in the console on every visit).
+      const st = await fetch('/api/admin/rate-library/status', { headers: auth });
+      if (st.ok) {
+        const g = await st.json().catch(() => ({}));
+        if (g && g.isAdmin === false) {
+          setForbidden(g.configured
+            ? 'Only administrators can edit the rate library. Every cost engine still runs on the current library — ask an administrator if a rate needs changing.'
+            : 'Rate-library editing is not configured on this server: an administrator must set the ADMIN_EMAILS environment variable. Every cost engine still runs on the built-in library.');
+          return;
+        }
+      }
       const r = await fetch('/api/admin/rate-library', { headers: auth });
       if (r.status === 403) { const d = await r.json().catch(() => ({})); setForbidden(d.error || 'Admin access required.'); return; }
       if (r.status === 401) { setForbidden('Your session has expired — please sign in again.'); return; }
@@ -200,12 +213,15 @@ export default function AdminRateLibraryPage() {
   }
 
   if (forbidden) return (
-    <div className="min-h-screen bg-navy-950 pt-24 px-4">
-      <div className="lg:hidden max-w-3xl mx-auto mb-4 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200/90 text-xs">This data-dense workspace is best used on a desktop screen — editing tables here is cramped on mobile.</div>
-      <div className="max-w-lg mx-auto text-center bg-navy-900 border border-white/10 rounded-2xl p-8">
-        <ShieldAlert size={32} className="text-amber-400 mx-auto mb-3" />
-        <h1 className="text-white text-lg font-semibold mb-2">Admin access required</h1>
-        <p className="text-slate-400 text-sm">{forbidden}</p>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <PageHeader icon={Database} tone="neutral" eyebrow="Settings" title="Rate Library"
+        subtitle="Material prices, machine rates, regional labour and constants that every cost engine reads." />
+      <div className="mt-6 rounded-2xl border border-hairline bg-tint p-6 flex items-start gap-4">
+        <ShieldAlert size={22} className="text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+        <div>
+          <p className="text-white font-semibold">Admin access required</p>
+          <p className="text-slate-400 text-sm mt-1 measure">{forbidden}</p>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
+import { useAiAvailable, useAiKeySource } from '../hooks/useAiAvailable';
+import { systemIcon } from '../data/system-icons';
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -153,6 +155,8 @@ export default function AnalyzePage() {
   const [dfmeaFile, setDfmeaFile] = useState<File | null>(null);
   const [dfmeaContent, setDfmeaContent] = useState<string>('');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
+  const aiAvailable = useAiAvailable();
+  const keySource = useAiKeySource();
   const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
   const [enableSearch, setEnableSearch] = useState(true);
@@ -299,7 +303,7 @@ export default function AnalyzePage() {
   }
 
   const handleGenerate = async () => {
-    if (!apiKey.trim()) { setError('Please enter your Anthropic API key.'); return; }
+    if (!apiKey.trim() && !aiAvailable) { setError('Add your Anthropic API key here or under Settings → API Key.'); return; }
     if (!systemId || !subassemblyId) { setError('Please select a system and subassembly.'); return; }
 
     setLoading(true);
@@ -475,9 +479,8 @@ export default function AnalyzePage() {
                     <motion.button
                       key={sys.id}
                       onClick={() => { setSystemId(sys.id); setSubassemblyId(''); setPartId(''); }}
-                      whileHover={{ y: -3, scale: 1.02 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                      whileHover={{ y: -3 }}
+                      whileTap={{ y: 0 }}
                       className={`p-3.5 rounded-xl border text-left ${
                         systemId === sys.id
                           ? 'border-gold-500 bg-gold-500/10 shadow-lg shadow-gold-500/10'
@@ -485,9 +488,11 @@ export default function AnalyzePage() {
                       }`}
                       style={systemId === sys.id ? { boxShadow: '0 0 20px rgba(245,158,11,0.12)' } : {}}
                     >
-                      <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${sys.color} flex items-center justify-center text-lg mb-2`}>
-                        {sys.icon}
-                      </div>
+                      {(() => { const Icon = systemIcon(sys.id); return (
+                        <div className={`w-9 h-9 rounded-lg border flex items-center justify-center mb-2 ${systemId === sys.id ? 'bg-gold-500/15 border-gold-500/30 text-gold-400' : 'bg-tint-strong border-hairline text-slate-300'}`}>
+                          <Icon size={18} aria-hidden="true" />
+                        </div>
+                      ); })()}
                       <div className="text-white text-xs font-semibold leading-tight">{sys.name}</div>
                       <div className="text-slate-500 text-xs mt-0.5">{sys.subassemblies.length} subs</div>
                       {systemId === sys.id && (
@@ -535,7 +540,7 @@ export default function AnalyzePage() {
                     >
                       <option value="">— Select Subassembly —</option>
                       {selectedSystem?.subassemblies.map(sub => (
-                        <option key={sub.id} value={sub.id}>{sub.icon} {sub.name}</option>
+                        <option key={sub.id} value={sub.id}>{sub.name}</option>
                       ))}
                     </select>
                     <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -1009,13 +1014,23 @@ export default function AnalyzePage() {
                   </div>
                 </div>
 
-                {/* API Key */}
+                {/* API key: the field shows only when no key is saved to the
+                    account or the server; otherwise one line says which key
+                    will be used. It used to demand a key in every browser and
+                    promise it was "stored locally" — keys live on the account. */}
+                {(keySource === 'account' || keySource === 'server') && !apiKey.trim() ? (
+                  <div className="flex items-center gap-2 rounded-xl border border-hairline bg-tint px-4 py-3 text-sm text-slate-300">
+                    <Shield size={14} className="text-teal-400 shrink-0" aria-hidden="true" />
+                    <span>Using the Anthropic key {keySource === 'account' ? 'saved to your account' : 'configured on this server'}. <Link to="/settings/api-key" className="text-gold-400 hover:underline">Manage in Settings</Link></span>
+                  </div>
+                ) : (
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
-                    <Key size={14} /> Anthropic API Key <span className="text-gold-400">*</span>
+                  <label htmlFor="analyze-api-key" className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
+                    <Key size={14} aria-hidden="true" /> Anthropic API key
                   </label>
                   <div className="relative">
                     <input
+                      id="analyze-api-key"
                       type={showApiKey ? 'text' : 'password'}
                       value={apiKey}
                       onChange={e => setApiKey(e.target.value)}
@@ -1027,10 +1042,11 @@ export default function AnalyzePage() {
                     </button>
                   </div>
                   <div className="flex items-center gap-1.5 mt-1.5">
-                    <Shield size={11} className="text-slate-500" />
-                    <p className="text-slate-500 text-xs">Key stored locally in your browser. Never sent anywhere except Anthropic's API.</p>
+                    <Shield size={11} className="text-slate-500" aria-hidden="true" />
+                    <p className="text-slate-500 text-xs">Used from this browser only. To use it on every device, <Link to="/settings/api-key" className="text-gold-400 hover:underline">save it to your account</Link>.</p>
                   </div>
                 </div>
+                )}
 
                 {/* The old "Backend required: run npm run server" note was shown to
                     everyone, always — including users whose server was answering
@@ -1046,7 +1062,7 @@ export default function AnalyzePage() {
                 <div className="flex gap-3">
                   <button onClick={() => setStep(2)} disabled={loading} className="flex-1 py-3 rounded-xl border border-white/15 text-slate-300 hover:text-white font-medium disabled:opacity-40 transition-colors">← Back</button>
                   <button
-                    disabled={!apiKey.trim() || loading}
+                    disabled={(!apiKey.trim() && !aiAvailable) || loading}
                     onClick={handleGenerate}
                     className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold flex items-center justify-center gap-2 transition-ui shadow-glow-gold"
                   >

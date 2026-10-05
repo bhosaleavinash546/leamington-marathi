@@ -28,7 +28,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ARGS = process.argv.slice(2);
 const VOLUMES = ARGS.includes('--volumes');
 const OUT = resolve(ARGS.find(a => !a.startsWith('--')) || join(ROOT, 'exports', 'BrainSpark-Marketplace-Idea-Library.pdf'));
-const CHROME = process.env.CHROME_PATH || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium'].find(existsSync);
+const CHROME = process.env.CHROMIUM_PATH || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium'].find(existsSync);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ── 1. The marketplace, as the app serves it ─────────────────────────────────

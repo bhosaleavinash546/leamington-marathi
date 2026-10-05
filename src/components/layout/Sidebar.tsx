@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Home, PanelLeftClose, PanelLeftOpen, Settings, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { TOOL_GROUPS, SETTINGS_LINKS, isAppRoute } from '../../config/tools';
 
@@ -17,6 +17,14 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem(COLLAPSE_KEY) === '1'; } catch { return false; }
   });
+  // Settings is ONE disclosure row, not four permanent links. The four links
+  // plus Collapse plus the user card took ~260 px of a fixed footer, so on a
+  // 900 px-tall window the tool list above it was clipped: Track and Learn
+  // (Pipeline, Marketplace, Horizon, Help) sat out of sight with no scroll
+  // affordance. It opens itself while you are on a settings page.
+  const onSettings = SETTINGS_LINKS.some(l => l.route === location.pathname);
+  const [settingsOpen, setSettingsOpen] = useState(onSettings);
+  useEffect(() => { if (onSettings) setSettingsOpen(true); }, [onSettings]);
 
   if (!isAuthenticated || !isAppRoute(location.pathname)) return null;
 
@@ -70,32 +78,58 @@ export default function Sidebar() {
         ))}
       </div>
 
-      <div className="border-t border-white/8 px-2.5 py-3 space-y-0.5">
-        {SETTINGS_LINKS.map(s => (
-          <Link key={s.id} to={s.route} className={itemCls(active(s.route))} title={collapsed ? s.label : undefined}>
-            <s.icon size={16} className="shrink-0" />
-            {!collapsed && <span>{s.label}</span>}
+      <div className="border-t border-white/8 px-2.5 py-2.5 space-y-0.5">
+        {collapsed ? (
+          <Link to={SETTINGS_LINKS[0].route} className={itemCls(onSettings)} title="Settings">
+            <Settings size={16} className="shrink-0" />
           </Link>
-        ))}
-        <button
-          onClick={toggle}
-          className={`w-full ${itemCls(false)}`}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? <PanelLeftOpen size={16} className="shrink-0" /> : <PanelLeftClose size={16} className="shrink-0" />}
-          {!collapsed && <span>Collapse</span>}
-        </button>
-        {!collapsed && (
-          <div className="flex items-center gap-2.5 px-2.5 pt-2.5">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-bold text-2xs shrink-0">
-              {initials}
-            </div>
-            <div className="min-w-0">
-              <p className="text-white text-xs font-semibold truncate">{user?.name}</p>
-              <p className="text-slate-500 text-2xs truncate">{user?.email}</p>
-            </div>
-          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(v => !v)}
+              aria-expanded={settingsOpen}
+              aria-controls="sidebar-settings"
+              className={`w-full ${itemCls(onSettings && !settingsOpen)}`}
+            >
+              <Settings size={16} className="shrink-0" />
+              <span className="flex-1 text-left">Settings</span>
+              <ChevronDown size={14} className={`shrink-0 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+            </button>
+            {settingsOpen && (
+              <div id="sidebar-settings" className="space-y-0.5 pl-3">
+                {SETTINGS_LINKS.map(l => (
+                  <Link key={l.id} to={l.route} className={itemCls(active(l.route))}>
+                    <l.icon size={15} className="shrink-0" />
+                    <span>{l.label}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
         )}
+        <div className={`flex items-center gap-2 pt-2 ${collapsed ? 'flex-col' : ''}`}>
+          {!collapsed && (
+            <div className="flex items-center gap-2.5 min-w-0 flex-1 px-2.5">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-bold text-2xs shrink-0" aria-hidden="true">
+                {initials}
+              </div>
+              <div className="min-w-0">
+                <p className="text-white text-xs font-semibold truncate">{user?.name}</p>
+                <p className="text-slate-500 text-2xs truncate">{user?.email}</p>
+              </div>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={toggle}
+            className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
+        </div>
       </div>
     </aside>
   );

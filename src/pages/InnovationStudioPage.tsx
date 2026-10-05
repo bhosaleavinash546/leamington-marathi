@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useMemo, useRef, useState } from 'react';
 import { Money, FxNote } from '../components/ui/Money';
 import { parseDfaLines } from '../services/innovation-input.mjs';
@@ -348,35 +349,25 @@ export default function InnovationStudioPage() {
             landing-page pattern and cost a third of the first screen before an
             engineer could do anything. Title left, what it does beside it,
             what it is made of on the right. */}
-        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 mb-6">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2.5">
-              <span className="iv-mark inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-gold-500/20 to-violet-500/10 border border-gold-500/25 shrink-0">
-                <Wand2 size={17} className="text-gold-400" />
-              </span>
-              <h1 className="iv-title text-2xl sm:text-3xl font-bold tracking-tight leading-none">Innovation Studio</h1>
-            </div>
-            <p className="text-slate-400 text-[13px] mt-2 max-w-2xl leading-relaxed">
-              Structured idea generation. Each method gives the AI a proven thinking framework —
-              one problem, many lenses — and every idea comes back <span className="text-gold-400">engine-checked</span>.
-            </p>
-          </div>
-          {/* COUNTED, not typed. This strip read "Eight structured methods" while
-              the list held eleven — a figure in the product's own shop window
-              that nobody updated when methods were added. */}
-          <dl className="flex items-center gap-5 shrink-0">
-            {[
-              { v: METHODS.length, l: 'methods' },
-              { v: METHODS.filter(m => m.tier === 1).length, l: 'deterministic' },
-              { v: METHODS.reduce((a, m) => a + m.lenses.length, 0), l: 'lenses' },
-            ].map(k => (
-              <div key={k.l} className="text-right">
-                <dd className="iv-num text-white text-lg font-bold leading-none">{k.v}</dd>
-                <dt className="iv-label mt-1">{k.l}</dt>
-              </div>
-            ))}
-          </dl>
-        </div>
+        <PageHeader tool="innovate" className="mb-6"
+          subtitle={<>Structured idea generation. Each method gives the AI a proven thinking framework — one problem, many lenses — and every idea comes back <span className="text-gold-400">engine-checked</span>.</>}
+          actions={
+            /* COUNTED, not typed. This strip read "Eight structured methods" while
+               the list held eleven — a figure in the product's own shop window
+               that nobody updated when methods were added. */
+            <dl className="flex items-center gap-5 shrink-0">
+              {[
+                { v: METHODS.length, l: 'methods' },
+                { v: METHODS.filter(m => m.tier === 1).length, l: 'deterministic' },
+                { v: METHODS.reduce((a, m) => a + m.lenses.length, 0), l: 'lenses' },
+              ].map(k => (
+                <div key={k.l} className="text-right">
+                  <dd className="iv-num text-white text-lg font-bold leading-none">{k.v}</dd>
+                  <dt className="iv-label mt-1">{k.l}</dt>
+                </div>
+              ))}
+            </dl>
+          } />
 
         {/* ── Method picker ────────────────────────────────────────────────── */}
         <div className="mb-5">

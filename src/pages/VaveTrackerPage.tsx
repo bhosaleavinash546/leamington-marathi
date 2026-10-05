@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -280,24 +281,9 @@ export default function VaveTrackerPage() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
-                  <Target size={18} className="text-emerald-400" />
-                </div>
-                <h1 className="text-2xl font-bold text-white">VAVE Tracker</h1>
-              </div>
-              <p className="text-slate-400 text-sm ml-11">Track approved cost-reduction ideas from identification to confirmed saving.</p>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <div className="px-3 py-1.5 rounded-lg bg-navy-900 border border-white/10 text-slate-400">
-                {actions.length} action{actions.length !== 1 ? 's' : ''} tracked
-              </div>
-            </div>
-          </div>
-        </div>
+        <PageHeader tool="vave" className="mb-8"
+          subtitle="Track approved cost-reduction ideas from identification to confirmed saving."
+          actions={<div className="px-3 py-1.5 rounded-lg bg-tint border border-hairline text-slate-400 text-sm">{actions.length} action{actions.length !== 1 ? 's' : ''} tracked</div>} />
 
         {/* Funnel summary */}
         <div className="grid grid-cols-3 gap-3 mb-6">

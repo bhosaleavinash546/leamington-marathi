@@ -8,6 +8,7 @@
  * checkbox; only ticked ones reach the dossier. With a benchmark read, the
  * dossier runs the deterministic teardown-delta core on the ticked facts.
  */
+import { useAiAvailable } from '../../hooks/useAiAvailable';
 import { useEffect, useRef, useState } from 'react';
 import { Camera, Loader2, Trash2, AlertTriangle, BookmarkPlus } from 'lucide-react';
 
@@ -51,6 +52,7 @@ async function toJpeg(file: File): Promise<string> {
 }
 
 export default function PhotoReadPanel({ token, apiKey, partName, material, process, onChange }: Props) {
+  const aiAvailable = useAiAvailable();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [subject, setSubject] = useState<'ours' | 'benchmark'>('ours');
   const [label, setLabel] = useState('');
@@ -68,7 +70,7 @@ export default function PhotoReadPanel({ token, apiKey, partName, material, proc
   const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
   async function read() {
-    if (!apiKey) { setError('Add your Anthropic API key in Settings to read photos.'); return; }
+    if (!apiKey && !aiAvailable) { setError('Add your Anthropic API key in Settings to read photos.'); return; }
     if (!files.length) { setError('Choose one or more photos first.'); return; }
     if (subject === 'benchmark' && !label.trim()) { setError('Name the benchmark part (e.g. "Competitor X side cover, 2025 model").'); return; }
     if (reads.length >= MAX_READS) { setError(`At most ${MAX_READS} photo sets — remove one first.`); return; }

@@ -12,6 +12,7 @@
 // useDfmMotion): glass panels on squared paper, a travelling step rail, bars
 // and count-ups that can only land on engine-measured values, and full
 // reduced-motion discipline. No second motion vocabulary is invented here.
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -199,6 +200,7 @@ export default function Part360Page() {
   const navigate = useNavigate();
   const { token } = useAuth();
   const apiKey = localStorage.getItem('brainspark_api_key') || '';
+  const aiAvailable = useAiAvailable();
   const m = useDfmMotion();
   const spot = useSpotlight();
 
@@ -449,7 +451,7 @@ export default function Part360Page() {
 
   // ── Step 3: quote PDF assist (prefill only — everything stays editable) ───
   async function extractQuote(f: File) {
-    if (!apiKey) { toast('Add your Anthropic API key in Settings to use PDF assist.', 'error'); return; }
+    if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key in Settings to use PDF assist.', 'error'); return; }
     setExtracting(true); setExtractNote('');
     try {
       const base64 = await fileToBase64(f);
@@ -571,7 +573,7 @@ export default function Part360Page() {
   // ── Step 4: multi-lens grounded generation → ResultsPage ─────────────────
   async function generate() {
     if (!dossier) return;
-    if (!apiKey) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
+    if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
     const blocks = dossier.lensBlocks
       .filter(b => selectedLenses.has(b.lensId))
       .map(b => ({ lensId: b.lensId, text: b.text }));
@@ -779,7 +781,7 @@ export default function Part360Page() {
 
   async function generateAssembly() {
     if (!asmDossier) return;
-    if (!apiKey) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
+    if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
     const blocks = asmDossier.lensBlocks.filter(b => asmLenses.has(b.lensId)).map(b => ({ lensId: b.lensId, text: b.text }));
     if (!blocks.length) { toast('Pick at least one level.', 'error'); return; }
     setAsmGenerating(true); setAsmGenLog([]);

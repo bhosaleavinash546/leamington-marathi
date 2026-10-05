@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { writeString } from '../lib/storage';
 import { useDropzone } from 'react-dropzone';
@@ -29,6 +31,7 @@ interface BomResult {
 export default function BomAnalysisPage() {
   const [rows, setRows] = useState<BomRow[]>([]);
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
+  const aiAvailable = useAiAvailable();
   const [vehicleType, setVehicleType] = useState('Automotive');
   const [results, setResults] = useState<BomResult[]>([]);
   const [running, setRunning] = useState(false);
@@ -116,7 +119,7 @@ export default function BomAnalysisPage() {
   const CKPT_KEY = 'brainspark_bom_checkpoint_v1';
 
   async function runBomAnalysis(resume = false) {
-    if (!rows.length || !apiKey.trim()) return;
+    if (!rows.length || (!apiKey.trim() && !aiAvailable)) return;
     setRunning(true);
     setError('');
     const token = getAuthToken();
@@ -248,11 +251,13 @@ export default function BomAnalysisPage() {
           {/* Settings */}
           <div className="rounded-2xl bg-navy-900 border border-white/10 p-6 space-y-4 shadow-card">
             <h2 className="text-white font-semibold">Settings</h2>
+            {!aiAvailable && (
             <div>
-              <label className="text-slate-400 text-sm mb-1.5 block">Anthropic API Key</label>
-              <input type="password" value={apiKey} onChange={e => { setApiKey(e.target.value); writeString('brainspark_api_key', e.target.value); }}
+              <label htmlFor="bom-api-key" className="text-slate-400 text-sm mb-1.5 block">Anthropic API key <span className="text-slate-500">— or <Link to="/settings/api-key" className="text-gold-400 hover:underline">save one to your account</Link></span></label>
+              <input id="bom-api-key" type="password" value={apiKey} onChange={e => { setApiKey(e.target.value); writeString('brainspark_api_key', e.target.value); }}
                 className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold-500/40" placeholder="sk-ant-..." />
             </div>
+            )}
             <div>
               <label className="text-slate-400 text-sm mb-1.5 block">Vehicle Type</label>
               <input value={vehicleType} onChange={e => setVehicleType(e.target.value)}
@@ -279,7 +284,7 @@ export default function BomAnalysisPage() {
             </div>
             <button
               onClick={() => runBomAnalysis(false)}
-              disabled={running || !apiKey.trim()}
+              disabled={running || (!apiKey.trim() && !aiAvailable)}
               className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-ui shadow-glow-gold"
             >
               {running ? <><ButtonSpinner size={18} /> Analysing {rows.length} parts…</> : <><Zap size={18} /> Run BOM Analysis</>}
@@ -287,7 +292,7 @@ export default function BomAnalysisPage() {
             {hasCheckpoint && !running && (
               <button
                 onClick={() => runBomAnalysis(true)}
-                disabled={!apiKey.trim()}
+                disabled={!apiKey.trim() && !aiAvailable}
                 className="mt-2 w-full py-2.5 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-200 text-sm font-semibold hover:bg-teal-500/25 transition"
               >
                 Resume previous run (progress was checkpointed)

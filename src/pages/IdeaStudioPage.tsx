@@ -1,3 +1,4 @@
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -30,6 +31,7 @@ function mapProcess(guess: string, catalogue: string[]): string {
 }
 
 export default function IdeaStudioPage() {
+  const aiAvailable = useAiAvailable();
   const { token } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -165,7 +167,7 @@ export default function IdeaStudioPage() {
   async function handleGenerate() {
     setError('');
     const apiKey = localStorage.getItem('brainspark_api_key') || '';
-    if (!apiKey) { setError('No API key found. Add one on the Analyze page first (stored only in your browser).'); return; }
+    if (!apiKey && !aiAvailable) { setError('No Anthropic API key found. Save one under Settings → API Key.'); return; }
     if (!token) { setError('Please sign in to generate ideas.'); return; }
     if (mode === 'cad' && !geometry) { setError('Upload a CAD file (STL/STEP) first.'); return; }
     if (mode === 'image' && !file) { setError('Upload a part image/drawing first.'); return; }

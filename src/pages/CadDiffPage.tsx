@@ -1,3 +1,4 @@
+import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
@@ -30,6 +31,7 @@ interface DeltaIdea {
 }
 
 export default function CadDiffPage() {
+  const aiAvailable = useAiAvailable();
   const [fileA, setFileA] = useState<File | null>(null);
   const [fileB, setFileB] = useState<File | null>(null);
   const [descA, setDescA] = useState('');
@@ -56,7 +58,7 @@ export default function CadDiffPage() {
 
   async function handleCompare() {
     const apiKey = localStorage.getItem('brainspark_api_key') || '';
-    if (!apiKey) { setError('No API key found — run an analysis on the Analyze page first.'); return; }
+    if (!apiKey && !aiAvailable) { setError('No Anthropic API key found. Save one under Settings → API Key.'); return; }
 
     const aDesc = inputMode === 'text' ? descA : (fileA ? `CAD file: ${fileA.name} (${(fileA.size / 1024).toFixed(0)} KB)` : '');
     const bDesc = inputMode === 'text' ? descB : (fileB ? `CAD file: ${fileB.name} (${(fileB.size / 1024).toFixed(0)} KB)` : '');

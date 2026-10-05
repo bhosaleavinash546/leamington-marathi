@@ -1,3 +1,4 @@
+import PageHeader from '../components/ui/PageHeader';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Telescope, Sparkles, Landmark, Factory, ChevronDown, ChevronUp, FileSearch, ExternalLink, Microscope, Users, BookMarked, Trash2, RotateCcw, FileDown, Mountain, Gem, Cpu, Layers, Sun, Moon, Undo2 } from 'lucide-react';
@@ -825,25 +826,14 @@ export default function ForesightPage() {
         <div className="hz-glow hz-glow-teal" />
       </div>
       <div className="max-w-6xl mx-auto relative">
-        {/* Header */}
-        <div className="relative text-center mb-8">
-          {/* The literal horizon: perspective grid floor vanishing behind the title */}
-          <div className="hz-horizon-grid" style={{ top: 96 }} aria-hidden="true" />
-          <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gold-500/15 border border-gold-500/25 mb-9">
-            <span className="hz-radar" aria-hidden="true" />
-            <span className="hz-radar-echo" aria-hidden="true" />
-            <span className="hz-orbit" aria-hidden="true"><span className="hz-orbit-sat" /></span>
-            <span className="hz-orbit-outer" aria-hidden="true"><span className="hz-orbit-sat2" /></span>
-            <Telescope size={46} className="text-gold-400" />
-          </div>
-          <h1 className="relative text-4xl font-bold mb-3"><span className="hz-title">BrainSpark Horizon</span></h1>
-          <p className="relative text-slate-400 max-w-2xl mx-auto">
-            Which technologies will reshape this part — and when? A curated register of {catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by <span className="text-white">deterministic S-curve, Bass-diffusion and Wright's-law models</span>. The AI narrates; it never invents a number.
-          </p>
-        </div>
+        {/* One masthead, like every tool page. The centred brand hero (radar
+            dish, orbits, perspective grid, gradient title) made Horizon read as
+            a landing page inside the product; the backdrop glow stays. */}
+        <PageHeader tool="horizon" className="mb-6"
+          subtitle={<>Which technologies will reshape this part — and when? A curated register of {catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies with automotive TRL, adoption and dated regulations, positioned by deterministic S-curve, Bass-diffusion and Wright’s-law models. The AI narrates; it never invents a number.</>} />
 
         {/* Input */}
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6 max-w-4xl mx-auto">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6">
           <div className="grid sm:grid-cols-[1fr_auto] gap-3">
             <input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && predict()}
               placeholder='Part or assembly — e.g. "BEV HV battery", "stator", "headlamps"'

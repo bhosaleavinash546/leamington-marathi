@@ -8,6 +8,7 @@
 // configured. resolveApiKey() already prefers a request-body key and falls back
 // to the stored one, so saving a key here makes every tool work everywhere
 // without the browser holding it.
+import { invalidateAiKeyStatus } from '../hooks/useAiAvailable';
 import { useEffect, useState } from 'react';
 import { KeyRound, Loader2, Check, Trash2, ShieldCheck } from 'lucide-react';
 import { getAuthToken } from '../services/auth';
@@ -46,6 +47,7 @@ export default function ApiKeySettingsPage() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Could not save that key.');
       setEntry(''); setSaved(true);
+      invalidateAiKeyStatus();
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save that key.');
@@ -57,6 +59,7 @@ export default function ApiKeySettingsPage() {
     try {
       const r = await fetch('/api/settings/api-key', { method: 'DELETE', headers });
       if (!r.ok) throw new Error('Could not remove the key.');
+      invalidateAiKeyStatus();
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not remove the key.');
