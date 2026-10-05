@@ -420,6 +420,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`tests/ui-shell.test.ts`). Measure with `e2e/ui-audit.ts` (axe WCAG 2.1 AA on 65 screen states — 0 at review
   close). three.js is a lazy chunk (`vendor-three`): never import `cad-views` statically. See
   `docs/ui/ui-ux-review-2026-10.md`.
+  Second pass: the sticky summary bar shows its £ only when the total card is out of view (`result-headline.ts`);
+  the panel header's commodity name is a searchable switcher that clicks the hidden `.ctab` buttons
+  (`commodity-switcher.ts`; `switchCommodity` sets the header title); numeric fields validate inline against their
+  own min/max (`field-validation.ts`, advisory); CAD apply shows a busy strip and disables Calculate (`busy.ts`).
+  Help sections and the demo gallery live in `<template data-cv-lazy>` and are built on first open
+  (`lazy-blocks.ts`) — code that reaches inside them must run after the modal opens; demo cards use ONE delegated
+  handler. No light colour literals in in-app panels (`tests/ui-polish.test.ts`); use theme tokens.
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

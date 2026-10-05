@@ -135,18 +135,16 @@ The UI work here is about making that depth easy to read, not about adding featu
 
 ---
 
-## 4. Recommended next steps (not in this change)
+## 4. Recommended next steps
+
+Done in the second pass (§6): render less (2), one headline (3), commodity switcher (4), tokens (5, first step), inline validation (6) and the busy state (7).
+
+Still open:
 
 1. **A home for returning users.** Replace the signed-in marketing hero with recent estimates, saved scenarios, calibration status ("12 actuals logged; machining bias −3%") and one "New costing" action.
-2. **Render only the active form** (P3-1). The largest single gain in responsiveness on low-end laptops.
-3. **One headline.** Merge the summary card and the total-should-cost card. Keep the sticky summary as a compact bar that appears only when the large card scrolls out of view.
-4. **A commodity switcher** as a searchable drop-down in the panel header (as in the ⌘K palette), replacing the pill row entirely.
-5. **Design tokens and CSS consolidation** (P3-2). Remove `!important` layering. The UI-review layer `saas-polish.css` is the place to collect rules while that happens.
-6. **Inline validation.** Flag out-of-range inputs at the field (for example a utilisation above 1, or a cycle time of 0) before Calculate, not after.
-7. **A busy state on CAD "Apply to form".** Apply now fills the form once per comparison country before the costed one (so the country table is a true per-country costing), which takes about 1–1.5 s on a 1440 px desktop with no feedback. Show "Applying…" on the button, or move the per-country fills off the click path.
-8. **A guided first run** for a new user, built on the existing tour, ending on a costed example part rather than a feature list.
-
----
+2. **CSS consolidation** (P3-2). The token scale exists (§6). Migrating `calculator.css` onto it and removing the `!important` layering is the remaining work.
+3. **A guided first run** for a new user, built on the existing tour, ending on a costed example part rather than a feature list.
+4. **Split `main.ts`** (about 20,000 lines). Each item in §6 went into its own module.
 
 ## 5. What changed: files
 
@@ -163,3 +161,26 @@ The UI work here is about making that depth easy to read, not about adding featu
 | `calculator/e2e/country-live.ts`, `country-forms.ts` | Click the Excel export through the DOM (it now sits in the More menu). |
 
 No cost logic changed: the engine, the rules and the rate books are untouched.
+
+---
+
+## 6. Second pass (October 2026)
+
+Six of the seven items left open after the first pass were done. The signed-in home screen was not changed, by request.
+
+| # | Item | What changed | Where |
+|---|---|---|---|
+| 1 | **The headline was shown twice** (summary bar and total card). | The sticky bar keeps the part name and the actions. It shows the £ figure only once the total card has scrolled out of view, so one number is on screen at a time. The bar is now opaque (the table showed through it), and no rows scroll visibly above it. | `result-headline.ts`, F12, F17 |
+| 3 | **Uneven styling.** 12+ corner radii, four chip styles, and 41 hard-coded light colours that showed as white boxes in dark mode. | A token scale for radius, chip and card. One chip style shared by the badge classes. Every in-app light literal replaced by theme tokens; export and print documents keep their literals. The "Log actual £" chip follows the theme. The 8-bucket table keeps at least 460 px and the chart wraps below it (labels had wrapped onto six lines). Tabular figures in every money column. | F16, F17; `tests/ui-polish.test.ts` guards the literals |
+| 4 | **No feedback on CAD "Apply to form"** (about 1–1.5 s). | A status strip ("Applying the CAD measurements — filling the form for N comparison countries…", `role=status`). Calculate is disabled until the fill finishes, so a half-filled form cannot be costed. | `busy.ts`, F13 |
+| 5 | **Commodity pill row.** | The panel header's commodity name is a searchable switcher (type to filter, ↑ ↓ Enter, Esc, Alt+C). It clicks the page's own commodity buttons, so a switch runs the same code. The pill row is hidden while the header shows. This also fixed a bug: switching with the pills never renamed the header. | `commodity-switcher.ts`, F14; `setPanelTitle` in `switchCommodity` |
+| 6 | **Errors only after Calculate.** | Numeric fields are checked against their own `min` / `max` (518 of 530 fields declare them), plus three cost rules: a cycle time, part weight or annual volume of 0. A failing field is marked (`aria-invalid`, red ring) and explained beneath it (`aria-describedby`). This is advisory: the engine stays the authority. | `field-validation.ts`, F15 |
+| 7 | **About 7,000 elements on every screen.** A census showed most of them in blocks that are almost always hidden: Help (2,170) and the demo gallery (1,255). | Their content is in `<template data-cv-lazy>` and built on first open. Scripts inside are recreated so each runs once. The modal shells (tabs, search, close buttons) stay live. **Home: 6,979 → 3,699 elements; result screen: 7,222 → 3,942 (−46%).** Demo cards were bound twice (a CAD demo ran both loaders); now there is one delegated handler. | `lazy-blocks.ts` |
+
+**Checked in the browser after the change.** All of these worked with no page errors:
+- Help: tabs, search (27 results for "tooling"), the step-through demo player (1/13 → 2/13) and the guide picker.
+- The demo gallery: 86 cards; a card loads its example.
+- The switcher: "mould" filters to four commodities, and Enter switches.
+- Validation: "−5" in Part Weight shows "Must be at least 0.001."
+
+Screens: `docs/ui/screens/v2-*.png`.

@@ -15,6 +15,11 @@ import './styles/brand.css';
 // UI/UX review (Oct 2026): the review's layout and polish, loaded last — docs/ui/ui-ux-review-2026-10.md.
 import './styles/saas-polish.css';
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
+import { linkHeadline } from './result-headline.js';
+import { beginBusy } from './busy.js';
+import { initCommoditySwitcher } from './commodity-switcher.js';
+import { initFieldValidation } from './field-validation.js';
+import { hydrateOnShow } from './lazy-blocks.js';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
@@ -795,8 +800,8 @@ function renderCalibrationCoverage(): void {
     const drift = segmentDrift(recs, { commodity: c.commodity, materialFamily: c.materialFamily, region: c.region });
     const seg = `${(COMMODITY_LABELS[c.commodity] ?? c.commodity)}${c.materialFamily ? ' · ' + c.materialFamily : ''}${c.region ? ' · ' + c.region : ''}`;
     const badge = c.calibrated
-      ? `<span style="background:#e6f4ea;color:#1b6b3a;border-radius:4px;padding:1px 7px;font-size:0.66rem;font-weight:700">×${c.biasFactor}</span>`
-      : `<span style="background:#eef1f4;color:#647084;border-radius:4px;padding:1px 7px;font-size:0.66rem">${c.n}/3</span>`;
+      ? `<span style="background:color-mix(in srgb, var(--green) 12%, var(--surface));color:var(--green);border-radius:4px;padding:1px 7px;font-size:0.66rem;font-weight:700">×${c.biasFactor}</span>`
+      : `<span style="background:var(--surface-elevated);color:var(--text-muted);border-radius:4px;padding:1px 7px;font-size:0.66rem">${c.n}/3</span>`;
     const driftCell = drift.drifting
       ? `<span style="color:#8a5300;font-weight:600">⚠ ${drift.deltaPct > 0 ? '+' : ''}${drift.deltaPct}%</span>`
       : '<span style="color:var(--text-muted)">—</span>';
@@ -1087,17 +1092,11 @@ function showCommodityPicker(): void {
   requestAnimationFrame(() => onViewShown('picker'));
 }
 
-function showWorkflowPanel(commodity: string): void {
-  const costingEl = document.getElementById('costing-view');
-  const backdrop = document.getElementById('picker-backdrop');
-  const headerEl = document.getElementById('wf-panel-header');
+/** The panel header names the commodity on screen. Set from switchCommodity, so a switch by
+ *  the pill row or the switcher renames it too — only the picker used to (UI/UX review, Oct 2026). */
+function setPanelTitle(commodity: string): void {
   const iconEl = document.getElementById('wf-panel-icon');
   const nameEl = document.getElementById('wf-panel-name');
-  const errEl = document.getElementById('validation-errors');
-  const warnEl = document.getElementById('validation-warnings');
-  if (errEl) errEl.style.display = 'none';
-  if (warnEl) warnEl.style.display = 'none';
-
   const meta = CPICKER_META[commodity] ?? { icon: '', name: commodity };
   if (iconEl) {
     // Reuse the picker tile's line-art SVG so the whole flow shares one icon system
@@ -1106,6 +1105,18 @@ function showWorkflowPanel(commodity: string): void {
     else iconEl.innerHTML = meta.icon;   // a static sprite icon from CPICKER_META, not user text
   }
   if (nameEl) nameEl.textContent = meta.name;
+}
+
+function showWorkflowPanel(commodity: string): void {
+  const costingEl = document.getElementById('costing-view');
+  const backdrop = document.getElementById('picker-backdrop');
+  const headerEl = document.getElementById('wf-panel-header');
+  const errEl = document.getElementById('validation-errors');
+  const warnEl = document.getElementById('validation-warnings');
+  if (errEl) errEl.style.display = 'none';
+  if (warnEl) warnEl.style.display = 'none';
+
+  setPanelTitle(commodity);
 
   // Full-screen split layout: picker becomes narrow sidebar, costing takes remaining width
   document.body.classList.add('cv-new-costing');
@@ -2933,10 +2944,10 @@ function renderAgentForm(): string {
           value="${sessionStorage.getItem('cad_api_key') ?? ''}"/>
       </div>
       <div id="agent-messages"
-        style="height:320px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:#f8f9fa;border-radius:8px;border:1px solid #e8e8e8">
+        style="height:320px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:var(--surface-elevated);border-radius:8px;border:1px solid var(--border)">
         <div style="text-align:center;padding:20px 10px;color:#888;font-size:0.80rem">
           <div style="font-size:1.4rem;margin-bottom:8px"></div>
-          <div style="font-weight:600;color:#1565c0;margin-bottom:6px">Unified Should-Cost AI Agent</div>
+          <div style="font-weight:600;color:var(--accent-ink);margin-bottom:6px">Unified Should-Cost AI Agent</div>
           <div style="line-height:1.5">Describe your part — material, dimensions, features, volume, region — and I'll orchestrate the full should-cost model. Attach a photo for better accuracy.</div>
           <div style="margin-top:8px;font-size:0.72rem;color:#aaa">Supports: Machining · Sheet Metal · Castings · Injection Moulding · Forgings · PCB · and more</div>
         </div>
@@ -3599,7 +3610,7 @@ function renderSheetMetalForm(): string {
       <div class="field-group"><label>Insulation Re-coat?</label><select id="sm-lam-coat"><option value="no" selected>No</option><option value="yes">Yes (C5/C6)</option></select></div>
       <div class="field-group"><label>Min Tooth/Slot (mm) <span title="DFM: narrowest tooth/slot — punch breakage below ~1×thickness.">ℹ</span></label><input type="number" id="sm-lam-tooth" step="0.1" min="0" value="2"/></div>
     </div>
-    <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-top:8px">
+    <details style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Stamping Advisor — process route + DFM check</summary>
       <div style="margin-top:6px">
         <div class="field-row">
@@ -3670,7 +3681,7 @@ function wireSheetMetalBlankingChange(): void {
 
 function renderSheetMetalFabAdvisor(): string {
   return `
-    <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-bottom:6px">
+    <details style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:6px 8px;margin-bottom:6px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">Process Advisor — Laser vs Punch vs Stamp</summary>
       <div style="margin-top:6px">
         <div class="field-row">
@@ -3859,8 +3870,8 @@ function wireSheetMetalFabAdvisor(): void {
 
 function renderInjectionForm(): string {
   return `
-    <details style="background:#f3f8ff;border:1px solid #b9d4ff;border-radius:6px;padding:6px 8px;margin-bottom:8px">
-      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#1451a3">Moulding DFM Advisor — wall / sink / draft / weld-line / flow check</summary>
+    <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-bottom:8px">
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:var(--accent-ink)">Moulding DFM Advisor — wall / sink / draft / weld-line / flow check</summary>
       <div style="margin-top:6px">
         <div class="field-row">
           <div class="field-group"><label>Resin Behaviour</label><select id="imm-adv-resin"><option value="amorphous">Amorphous (ABS/PC/PS)</option><option value="semi_crystalline" selected>Semi-crystalline (PP/PE/PA/POM)</option><option value="filled">Glass/Mineral Filled</option></select></div>
@@ -4096,7 +4107,7 @@ function renderBlowMouldingForm(): string {
       <div class="field-group"><label>Deflash Cycle (s, 0=none) <span title="Time the trim station is occupied per part. In line with the blow machine it is the blow cycle ÷ cavities.">ℹ</span></label><input type="number" id="bm-deflash-ct" step="0.1" min="0" value="0"/></div>
       <div class="field-group"><label>Deflash Manning <span title="Operators on the trim station. 0 when the blow-machine crew tends an in-line trimmer.">ℹ</span></label><input type="number" id="bm-deflash-man" step="0.25" min="0" value="1"/></div>
     </div>
-    <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
+    <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Blow DFM check — BUR / wall / corners / weld line</summary>
       <div style="margin-top:6px">
         <div class="field-row">
@@ -4348,7 +4359,7 @@ function renderRotationalMouldingForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="rm-amort" step="1000" min="1" value="5000"/></div>
     </div>
-    <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
+    <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Roto DFM check — wall / radii / draft / warpage / venting</summary>
       <div style="margin-top:6px">
         <div class="field-row">
@@ -4592,7 +4603,7 @@ function renderRubberForm(): string {
     <div class="field-group"><label title="Mould or die change and heat-up, hours a batch.">Mould Change (h)</label><input type="number" id="rub-setup-hr" step="0.25" min="0" value="1.5"/></div>
     <div class="field-group"><label>Batch Size</label><input type="number" id="rub-batch" step="50" min="1" value="2500"/></div>
   </div>
-  <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
+  <details style="background:color-mix(in srgb, var(--accent) 7%, var(--surface));border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);border-radius:6px;padding:6px 8px;margin-top:8px">
     <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
     <div style="margin-top:6px">
       <div class="field-row">
@@ -4782,7 +4793,7 @@ function renderWiringHarnessForm(): string {
 
 function renderCastingForm(): string {
   return `
-    <div style="font-size:0.72rem;color:#5f5f5f;padding:2px 4px 6px;background:#fff8f3;border-radius:4px;border-left:3px solid #e65100;margin-bottom:4px">
+    <div style="font-size:0.72rem;color:var(--text-secondary);padding:2px 4px 6px;background:color-mix(in srgb, var(--warning) 8%, var(--surface));border-radius:4px;border-left:3px solid var(--warning);margin-bottom:4px">
       For as-cast parts only. Use <strong>Cast+Machine</strong> if the casting is subsequently machined.
     </div>
     <div class="section-title">Common</div>
@@ -4898,7 +4909,7 @@ function updateCastingSubtype(): void {
 
 function renderForgingForm(): string {
   return `
-    <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-bottom:8px">
+    <details style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:6px 8px;margin-bottom:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Forging Advisor — Process route + DFM check</summary>
       <div style="margin-top:6px">
         <div class="field-row">
@@ -5681,7 +5692,7 @@ function renderCastAndMachineForm(): string {
         <option value="5">5 — Complex organic</option>
       </select></div>
     </div>
-    <div id="cam-recommend" style="font-size:0.75rem;color:#5f5f5f;margin:4px 0 6px;padding:4px 8px;background:#f9f9f9;border-radius:4px"></div>
+    <div id="cam-recommend" style="font-size:0.75rem;color:var(--text-secondary);margin:4px 0 6px;padding:4px 8px;background:var(--surface-elevated);border-radius:4px"></div>
     <div class="field-row">
       <div class="field-group"><label>Setup Time (hr)</label><input type="number" id="cam-mach-setup-time" step="0.25" min="0" value="0.5"/></div>
       <div class="field-group"><label>Batch Size</label><input type="number" id="cam-mach-batch-size" step="1" min="1" value="50"/></div>
@@ -7537,7 +7548,7 @@ function buildPCBDemoSection(): string {
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
             <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">Automotive ECU</span>
-            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
+            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:var(--green);padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
           </div>
           <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Engine Control Unit — 6-layer 150×100mm HDI, 290 SMT, 5 BGA, 5000 pcs/yr</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
@@ -7556,7 +7567,7 @@ function buildPCBDemoSection(): string {
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
             <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">ADAS Camera PCB</span>
-            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
+            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:var(--green);padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
           </div>
           <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Surround View Processor — 8-layer 80×80mm 2+N+2 HDI, 198 SMT, 8 BGA, 2000 pcs/yr</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
@@ -7575,7 +7586,7 @@ function buildPCBDemoSection(): string {
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
             <span style="font-size:1.1rem"></span>
             <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">77 GHz Radar ECU</span>
-            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
+            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:var(--green);padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
           </div>
           <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Bosch LRR5-type ACC/AEB Radar — 6-layer 100×70mm Rogers 4350B, AWR1843AOP + AURIX TC234</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
@@ -7691,7 +7702,7 @@ function buildPCBImageUploadZone(): string {
 
         <!-- Fab data (drill + Gerber) — measured board size, layer count and via count; a photo cannot show these -->
         <div style="margin-top:8px;padding:10px 12px;background:rgba(37,99,235,0.05);border:1px dashed rgba(37,99,235,0.35);border-radius:8px">
-          <div style="font-size:0.72rem;font-weight:600;color:#2563eb;margin-bottom:4px">Attach Fab Data — drill + Gerber files (board size, layers, vias measured)</div>
+          <div style="font-size:0.72rem;font-weight:600;color:var(--accent-ink);margin-bottom:4px">Attach Fab Data — drill + Gerber files (board size, layers, vias measured)</div>
           <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">A photo cannot show the layer count or the via count, and the bare-board cost depends on both. Drop the Excellon drill file (.drl/.txt) and the Gerbers (outline + copper layers) and they are measured, not guessed.</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <input type="file" id="pcb-fab-input" multiple style="display:none"/>
@@ -11622,22 +11633,28 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
   }
 
   switchCommodity(targetCommodity);
+  const nCountries = Object.keys(_cadAnalysisByRegion).length;
+  const doneBusy = beginBusy(nCountries > 1
+    ? `Applying the CAD measurements — filling the form for ${nCountries} comparison countries…`
+    : 'Applying the CAD measurements…');
 
   setTimeout(async () => {
-    // The part filled as it would be in each comparison country — recorded, then the
-    // form is drawn and filled again for the costed country (country-recost.ts).
-    _cadFillsByRegion = await captureCountryFills(targetCommodity, cadAnnVol, bboxMaxMm);
-    fillCADFields(targetCommodity, r, c, cadAnnVol, bboxMaxMm);
-    _cadFillSource = snapshotFormFields();
-  markBlockedDecisionFields();
-  showCADProvenanceBanner();
+    try {
+      // The part filled as it would be in each comparison country — recorded, then the
+      // form is drawn and filled again for the costed country (country-recost.ts).
+      _cadFillsByRegion = await captureCountryFills(targetCommodity, cadAnnVol, bboxMaxMm);
+      fillCADFields(targetCommodity, r, c, cadAnnVol, bboxMaxMm);
+      _cadFillSource = snapshotFormFields();
+    markBlockedDecisionFields();
+    showCADProvenanceBanner();
 
-    // Keep the 3D model on screen: the CAD form (with its viewer) was just
-    // swapped for this commodity form, so remount a compact viewer in the
-    // persistent host that survives the swap.
-    if (cadFile) void showPersistentCADViewer(cadFile);
+      // Keep the 3D model on screen: the CAD form (with its viewer) was just
+      // swapped for this commodity form, so remount a compact viewer in the
+      // persistent host that survives the swap.
+      if (cadFile) void showPersistentCADViewer(cadFile);
 
-    document.documentElement.dataset.cadFilled = String(Date.now());   // e2e: the fill (all countries) is done
+      document.documentElement.dataset.cadFilled = String(Date.now());   // e2e: the fill (all countries) is done
+    } finally { doneBusy(); }
     if (autoCalculate) {
       compute();
     }
@@ -11649,6 +11666,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 function switchCommodity(type: CommodityType): void {
   breadcrumb(`commodity:${type}`);
   activeCommodity = type;
+  setPanelTitle(type);
   // A new form opens at its top — it kept the previous one's scroll (the CAD form opened
   // scrolled to its action bar; UI/UX review, Oct 2026).
   for (const sel of ['#costing-view', '#costing-view .input-panel', '#costing-view .results-panel']) {
@@ -15540,7 +15558,7 @@ function renderBreakdown(result: PartCostResult): void {
   const maxPct = Math.max(...buckets.map(b => b.pct), pcts.overhead, pcts.margin, 1);
 
   const lcHtml = lastLCResult ? `
-    <div style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:0.8rem">
+    <div style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:0.8rem">
       <strong>Learning Curve Applied</strong> (Wright's Law ${lastLCResult.params.curvePct}%, ${lastLCResult.params.annualVolume.toLocaleString()} pcs/yr vs. ref ${lastLCResult.params.referenceVolume.toLocaleString()} pcs/yr)<br/>
       Factor: <strong>×${lastLCResult.adjustmentFactor.toFixed(3)}</strong> &nbsp;|&nbsp;
       Labour: <strong>${fmt(lastLCResult.baseLabourCost)}</strong> → <strong>${fmt(lastLCResult.adjustedLabourCost)}</strong>
@@ -15582,10 +15600,10 @@ function renderBreakdown(result: PartCostResult): void {
 
   const commodityLabel = activeCommodity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   const photoHtml = partPhotoDataUrl ? `
-    <div style="display:flex;gap:16px;align-items:center;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:12px 16px;margin-bottom:14px">
+    <div style="display:flex;gap:16px;align-items:center;background:var(--surface-elevated);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px">
       <img src="${partPhotoDataUrl}" style="width:130px;height:88px;object-fit:contain;border-radius:6px;border:1px solid #e0e0e0;background:#fff;padding:4px;flex-shrink:0" alt="Part photo"/>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:0.95rem;color:#1a1a1a;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(result.partName)}</div>
+        <div style="font-weight:700;font-size:0.95rem;color:var(--text-primary);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(result.partName)}</div>
         <div style="font-size:0.75rem;color:#888;margin-bottom:6px">${escHtml(commodityLabel)} · Should-Cost Analysis</div>
         <div style="font-size:1.25rem;font-weight:700;color:#e65100;letter-spacing:-0.5px">${fmt(result.total)} <span style="font-size:0.76rem;font-weight:400;color:#888">/ part</span></div>
         ${result.toolingNRE !== undefined && result.toolingNRE > 0 ? `<div style="font-size:0.73rem;color:#888;margin-top:2px">+ NRE ${fmt(result.toolingNRE)} (one-time)</div>` : ''}
@@ -15638,8 +15656,8 @@ function renderBreakdown(result: PartCostResult): void {
 
     ${sqHtml}
 
-    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-      <div style="flex:1;min-width:280px">
+    <div class="bd-split" style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div class="bd-table" style="flex:1;min-width:280px">
         <div class="panel-title">8-Bucket Breakdown</div>
         <table class="breakdown-table">
           <thead><tr><th>Bucket</th><th>Amount</th><th>%</th><th style="width:180px">Bar</th></tr></thead>
@@ -15668,7 +15686,7 @@ function renderBreakdown(result: PartCostResult): void {
           </tbody>
         </table>
       </div>
-      <div style="width:320px;flex-shrink:0">
+      <div class="bd-chart" style="width:320px;flex-shrink:0">
         <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
           <span>Cost Mix</span>
           <div class="chart-mode-toggle">
@@ -16110,7 +16128,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     const rowStyle = isUK ? `background:var(--accent-light);font-weight:600` : '';
     const vsUK = isUK ? '<span style="color:#888;font-size:0.72rem">Base</span>'
       : savingPct > 0.5
-        ? `<span style="color:#10b981;font-weight:700;font-size:0.75rem">▼ ${savingPct.toFixed(0)}%</span>`
+        ? `<span style="color:var(--green);font-weight:700;font-size:0.75rem">▼ ${savingPct.toFixed(0)}%</span>`
         : `<span style="color:#e63b3b;font-weight:600;font-size:0.75rem">▲ ${Math.abs(savingPct).toFixed(0)}%</span>`;
     return `<tr style="${rowStyle}">
       <td style="white-space:nowrap;font-weight:${isUK ? '700' : '600'}">${r.name}<br><span style="font-size:0.63rem;color:#999;font-weight:400">${r.currency}</span></td>
@@ -16362,7 +16380,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
             ${o.detail ? `<p style="font-size:0.72rem;color:#888;margin:0;font-style:italic">${escHtml(o.detail)}</p>` : ''}
           </div>
           <div style="min-width:118px;text-align:right">
-            <div style="font-size:1.02rem;font-weight:800;color:#10b981;line-height:1.2">${fmt(o.savingPerPart)}</div>
+            <div style="font-size:1.02rem;font-weight:800;color:var(--green);line-height:1.2">${fmt(o.savingPerPart)}</div>
             <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">per part · ${o.savingPct.toFixed(1)}%</div>
             <div style="font-size:0.66rem;color:${timeColor(o.timeframe)};font-weight:700">${o.timeframe}</div>
             <div style="font-size:0.66rem;color:${riskColor(o.risk)}">${o.risk} risk</div>
@@ -16375,7 +16393,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
           <div style="display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px">
             <span style="font-weight:700;font-size:0.9rem">${escHtml(g.label)}</span>
             <span style="font-size:0.72rem;color:var(--text-muted)">${g.opportunities.length} ${g.opportunities.length === 1 ? 'opportunity' : 'opportunities'}</span>
-            <span style="margin-left:auto;font-size:0.75rem;color:#10b981;font-weight:700">best ${fmt(g.topSavingPerPart)}/part</span>
+            <span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-weight:700">best ${fmt(g.topSavingPerPart)}/part</span>
           </div>
           ${g.opportunities.map(o => oppRow(o, ++rankNo)).join('')}
         </div>`).join('') || '<p style="color:#888;font-size:0.82rem">No cost-reduction opportunities triggered on this costing.</p>';
@@ -16395,7 +16413,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
           <div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--surface-elevated);border-radius:8px;padding:14px 16px;margin-bottom:16px;align-items:center">
             <div style="min-width:150px">
               <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase">Combined opportunity</div>
-              <div style="font-size:1.6rem;font-weight:800;color:#10b981;line-height:1.2">${fmt(ranked.headlineSavingPerPart)}</div>
+              <div style="font-size:1.6rem;font-weight:800;color:var(--green);line-height:1.2">${fmt(ranked.headlineSavingPerPart)}</div>
               <div style="font-size:0.72rem;color:var(--text-muted)">per part · ~${ranked.headlineSavingPct.toFixed(1)}% of ${fmt(ranked.partTotal)}</div>
             </div>
             <div style="flex:1;min-width:240px;font-size:0.76rem;color:var(--text-secondary)">
@@ -16414,7 +16432,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
                 <span style="font-size:0.72rem;color:var(--text-muted);min-width:16px">${i + 1}</span>
                 <span style="font-size:0.8rem;font-weight:600;flex:1">${escHtml(o.action)}</span>
                 <span style="font-size:0.7rem;color:var(--text-muted)">${escHtml(CATEGORY_LABELS[o.category])}</span>
-                <span style="font-size:0.85rem;font-weight:700;color:#10b981;min-width:80px;text-align:right">${fmt(o.savingPerPart)}</span>
+                <span style="font-size:0.85rem;font-weight:700;color:var(--green);min-width:80px;text-align:right">${fmt(o.savingPerPart)}</span>
               </div>`).join('')}
           </div>` : ''}
 
@@ -17617,7 +17635,7 @@ function loadExample(): void {
       break;
 
     case 'cad_analysis':
-      el('cad-results').innerHTML = `<div style="padding:12px;font-size:0.8rem;color:#555;background:#fff8f3;border-radius:6px;border:1px solid #ffd699">Upload a STEP or IGES file and click "Analyze CAD File" to get AI-powered cost estimates.</div>`;
+      el('cad-results').innerHTML = `<div style="padding:12px;font-size:0.8rem;color:var(--text-secondary);background:color-mix(in srgb, var(--warning) 8%, var(--surface));border-radius:6px;border:1px solid color-mix(in srgb, var(--warning) 35%, transparent)">Upload a STEP or IGES file and click "Analyze CAD File" to get AI-powered cost estimates.</div>`;
       break;
 
     case 'assembly': {
@@ -19699,6 +19717,10 @@ async function init(): Promise<void> {
   initActionMenu();
   initAccountMenu(() => (window as unknown as { signOut?: () => void }).signOut?.());
   watchScrollRegions();
+  // The panel header's commodity name is a searchable switcher (commodity-switcher.ts).
+  initCommoditySwitcher();
+  // Numeric fields are checked against their limits as they are typed (field-validation.ts).
+  initFieldValidation();
 
   // Start on machining
   switchCommodity('machining');
@@ -19834,14 +19856,19 @@ async function init(): Promise<void> {
   document.getElementById('nego-back-btn')?.addEventListener('click', showHome);
   document.getElementById('news-refresh-btn')?.addEventListener('click', () => { void refreshNews(); });
 
-  document.querySelectorAll<HTMLElement>('#demo-gallery-body .demo-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const commodity = card.dataset.commodity ?? '';
-      const slot = parseInt(card.dataset.slot ?? '1', 10);
-      closeDemoModal();
-      loadSUVDemo(commodity, slot);
-    });
+  // One delegated handler: the cards are built when the gallery first opens (lazy-blocks.ts).
+  // Each card was bound twice — here and by an inline script — so a CAD demo card ran
+  // loadCADDemo AND loadSUVDemo.
+  document.getElementById('demo-gallery-body')?.addEventListener('click', e => {
+    const card = (e.target as HTMLElement).closest<HTMLElement>('.demo-card');
+    if (!card) return;
+    const commodity = card.dataset.commodity ?? '';
+    closeDemoModal();
+    if (card.hasAttribute('data-cad-demo')) loadCADDemo(commodity);
+    else loadSUVDemo(commodity, parseInt(card.dataset.slot ?? '1', 10));
   });
+  hydrateOnShow('demo-modal');
+  hydrateOnShow('help-modal');
 
   // Commodity picker — back button
   document.getElementById('cpicker-back-btn')?.addEventListener('click', showHome);
@@ -20381,6 +20408,7 @@ function renderResultHero(): void {
   host.querySelectorAll<HTMLButtonElement>('[data-proxy]').forEach(b =>
     b.addEventListener('click', () => document.getElementById(b.dataset.proxy ?? '')?.click()));
   document.getElementById('crh-share-btn')?.addEventListener('click', () => { void shareCurrentCosting(); });
+  requestAnimationFrame(() => linkHeadline());   // one headline: the bar's figure shows only when the card is out of view
 }
 
 function tagTraceableRows(): void {

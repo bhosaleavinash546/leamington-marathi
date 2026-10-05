@@ -51,7 +51,7 @@ export function buildNPISection(r: PCBImageAnalysis): string {
       </div>
       <div style="padding:8px;background:rgba(22,163,74,0.07);border-radius:6px;border:1px solid rgba(22,163,74,0.2)">
         <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">Production (this volume)</div>
-        <div style="font-size:1rem;font-weight:700;color:#16a34a">£${n.unitCostProd.toFixed(2)}</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--green)">£${n.unitCostProd.toFixed(2)}</div>
         <div style="font-size:0.6rem;color:var(--text-muted)">per unit</div>
         <div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px">${((n.unitCostNPI/n.unitCostProd-1)*100).toFixed(0)}% saving vs NPI rate</div>
       </div>
@@ -191,7 +191,7 @@ export function buildAutomotiveAssemblySection(r: PCBImageAnalysis): string {
   ].filter(Boolean) as Array<{ label: string; val: number; note: string }>;
   const tableRows = rows.map(row => `<tr><td style="padding:3px 6px;font-size:0.68rem">${row.label}</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(row.val)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">${row.note}</td></tr>`).join('');
   return `<div style="margin-top:8px;padding:10px 12px;background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.2);border-radius:8px">
-    <div style="font-size:0.72rem;font-weight:600;color:#2563eb;margin-bottom:8px">Automotive Assembly Cost Model (IATF 16949) — +${ac.premiumPctOverStandard}% vs standard</div>
+    <div style="font-size:0.72rem;font-weight:600;color:var(--accent-ink);margin-bottom:8px">Automotive Assembly Cost Model (IATF 16949) — +${ac.premiumPctOverStandard}% vs standard</div>
     <table style="width:100%;border-collapse:collapse">
       <thead><tr>
         <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Cost element</th>
@@ -199,7 +199,7 @@ export function buildAutomotiveAssemblySection(r: PCBImageAnalysis): string {
         <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Rationale</th>
       </tr></thead>
       <tbody>${tableRows}
-        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total automotive assembly</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#2563eb">${fmt(ac.totalAutomotiveAssemblyGBP)}</td><td></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total automotive assembly</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:var(--accent-ink)">${fmt(ac.totalAutomotiveAssemblyGBP)}</td><td></td></tr>
       </tbody>
     </table>
   </div>`;
@@ -210,7 +210,7 @@ export function buildAutomotiveFabSection(r: PCBImageAnalysis): string {
   if (!fa || fa.premiumPctOverStandard === 0) return '';
   const fmt = (n: number) => `£${n.toFixed(2)}`;
   return `<div style="margin-top:8px;padding:10px 12px;background:rgba(22,163,74,0.05);border:1px solid rgba(22,163,74,0.2);border-radius:8px">
-    <div style="font-size:0.72rem;font-weight:600;color:#16a34a;margin-bottom:8px">Automotive PCB Fabrication Adjustment (IATF 16949 + AEC-Q laminate) — +${fa.premiumPctOverStandard}% vs standard FR4</div>
+    <div style="font-size:0.72rem;font-weight:600;color:var(--green);margin-bottom:8px">Automotive PCB Fabrication Adjustment (IATF 16949 + AEC-Q laminate) — +${fa.premiumPctOverStandard}% vs standard FR4</div>
     <table style="width:100%;border-collapse:collapse">
       <thead><tr>
         <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Cost element</th>
@@ -223,7 +223,7 @@ export function buildAutomotiveFabSection(r: PCBImageAnalysis): string {
         <tr><td style="padding:3px 6px;font-size:0.68rem">Automotive laminate (IT-180A / Isola 370HR)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.automotiveLaminatePremiumGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">35–50% material premium over standard FR4</td></tr>
         <tr><td style="padding:3px 6px;font-size:0.68rem">IPC-6012 Class 3 inspection</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.ipcClass3InspectionGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Coupons + full electrical test</td></tr>
         <tr><td style="padding:3px 6px;font-size:0.68rem">Coupon testing + impedance verification</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.couponTestingGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Per-panel impedance and coupon testing</td></tr>
-        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total automotive fab cost</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#16a34a">${fmt(fa.totalAutomotiveFabGBP)}</td><td></td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total automotive fab cost</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:var(--green)">${fmt(fa.totalAutomotiveFabGBP)}</td><td></td></tr>
       </tbody>
     </table>
   </div>`;
@@ -263,7 +263,7 @@ export function buildBOMCompletenessSection(r: PCBImageAnalysis): string {
       <div style="font-size:0.62rem;padding:3px 6px;background:rgba(0,0,0,0.03);border-radius:3px">ESD arrays: ~${bc.missingEstimateBreakdown.esdArrays}</div>
     </div>
     <div style="margin-top:6px;font-size:0.68rem;color:var(--text-secondary)">Estimated missing passive cost: <strong>£${bc.estimatedMissingCostGBP.toFixed(2)}</strong> (at AEC-Q grade prices)</div>
-    ` : '<div style="font-size:0.68rem;color:#16a34a">Passive count looks consistent with identified IC count — BOM appears substantially complete.</div>'}
+    ` : '<div style="font-size:0.68rem;color:var(--green)">Passive count looks consistent with identified IC count — BOM appears substantially complete.</div>'}
   </div>`;
 }
 
@@ -296,8 +296,8 @@ export function buildProgramPricingSection(r: PCBImageAnalysis): string {
         <div style="font-size:0.85rem;font-weight:700;color:${color}">£${pp.programBOMTotal.toFixed(2)}</div>
       </div>
       <div style="text-align:center;padding:8px;background:rgba(22,163,74,0.08);border-radius:4px">
-        <div style="font-size:0.68rem;color:#16a34a;margin-bottom:2px">Saving per board</div>
-        <div style="font-size:0.85rem;font-weight:700;color:#16a34a">−£${pp.savingsGBP.toFixed(2)}</div>
+        <div style="font-size:0.68rem;color:var(--green);margin-bottom:2px">Saving per board</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--green)">−£${pp.savingsGBP.toFixed(2)}</div>
       </div>
     </div>
     <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">Assumes ~${Math.round(pp.annualProgramVolume/1000)}K annual program volume (${pp.multiplier.toFixed(2)}× spot multiplier). Actual contract terms vary.</div>
@@ -366,7 +366,7 @@ export function buildRevisionComparison(r: PCBImageAnalysis): string {
   const changes: string[] = [];
   for (const line of r.bom) {
     const p = prevBOMMap.get(line.refDes);
-    if (!p) { changes.push(`<li style="color:#2563eb">+ ${line.refDes}: new (£${(line.qty*line.unitPriceGBP).toFixed(2)})</li>`); }
+    if (!p) { changes.push(`<li style="color:var(--accent-ink)">+ ${line.refDes}: new (£${(line.qty*line.unitPriceGBP).toFixed(2)})</li>`); }
     else {
       const delta = line.qty * line.unitPriceGBP - p.qty * p.unitPriceGBP;
       if (Math.abs(delta) > 0.10) changes.push(`<li style="color:${delta>0?'#dc2626':'#16a34a'}">${line.refDes}: ${sign(delta)} (${delta>0?'more':'less'} expensive)</li>`);

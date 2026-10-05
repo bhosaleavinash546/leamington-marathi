@@ -27,7 +27,7 @@
   body.cv-new-costing #costing-view > .results-panel {
     grid-column: 2; grid-row: 2;
     min-height: 0; overflow-y: auto !important;
-    padding: 16px 22px 28px;
+    padding: 0 22px 28px;   /* top spacing is on the first child: a padded top let rows show above the stuck summary bar */
     background: var(--bg);
   }
   /* Focus mode (report full width) keeps working. */
@@ -36,7 +36,8 @@
   /* The panel's own sticky header no longer floats over a scrolling page. */
   body.cv-new-costing #costing-view > .wf-panel-header { position: static; }
   /* The result lands at the top of its own pane. */
-  body.cv-new-costing #cv-result-hero { scroll-margin-top: 0; }
+  body.cv-new-costing #cv-result-hero { scroll-margin-top: 16px; top: 0; margin-top: 16px; box-shadow: 0 0 0 16px var(--bg), 0 6px 24px rgba(15, 23, 42, 0.07); clip-path: inset(-16px -16px -30px -16px); }
+  body.cv-new-costing #costing-view > .results-panel > :first-child:not(#cv-result-hero) { margin-top: 16px; }
 }
 
 /* ── F2  Commodity switcher: one scrollable row, not two rows of 21 pills ──── */
@@ -148,3 +149,117 @@ html:not([data-theme="light"]) { --accent-ink: var(--accent); }
 
 /* ── F11  Header menus open above the costing workspace ──────────────────────── */
 body.cv-header-menu-open header, body.cv-header-menu-open .header { z-index: 70; }
+
+/* ── F12  One headline: the sticky bar's figure only when the total card is out of view ── */
+#cv-result-hero .crh-total { transition: opacity 160ms ease; }
+#cv-result-hero.crh-card-visible .crh-total { display: none; }
+#cv-result-hero.crh-card-visible .crh-name { font-size: 0.86rem; font-weight: 700; color: var(--text-primary); max-width: 360px; }
+
+/* ── F13  Busy strip for slow actions (CAD apply) ─────────────────────────────── */
+.cv-busy {
+  position: sticky; top: 0; z-index: 22;
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 10px; padding: 9px 12px; border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--text-primary); font-size: 0.8rem; font-weight: 500;
+}
+.cv-busy-spin {
+  width: 14px; height: 14px; flex: 0 0 auto; border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--accent) 25%, transparent); border-top-color: var(--accent);
+  animation: cv-spin 0.8s linear infinite;
+}
+@keyframes cv-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .cv-busy-spin { animation-duration: 2.4s; } }
+#calc-btn:disabled { opacity: 0.55; cursor: progress; }
+
+/* ── F14  Searchable commodity switcher in the panel header ──────────────────────
+   The header's commodity name opens a filterable list; the pill row is hidden while
+   the header is on screen (it stays in the DOM — the switcher clicks its buttons). */
+body.cv-has-switcher.cv-new-costing #commodity-tabs { display: none !important; }
+.wf-panel-commodity.cv-switch { position: relative; }
+.cv-switch-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 10px 6px 6px; margin: -6px 0 -6px -6px; border-radius: 9px;
+  border: 1px solid transparent; background: transparent; color: var(--text-primary);
+  font: inherit; cursor: pointer;
+}
+.cv-switch-btn:hover, .cv-switch-btn[aria-expanded="true"] { background: var(--surface-hover); border-color: var(--border); }
+.cv-switch-chev { color: var(--text-muted); transition: transform 160ms ease; }
+.cv-switch-btn[aria-expanded="true"] .cv-switch-chev { transform: rotate(180deg); }
+.cv-switch-pop {
+  position: absolute; left: -6px; top: calc(100% + 10px); z-index: 90;
+  width: min(360px, calc(100vw - 32px)); padding: 8px;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2), 0 2px 6px rgba(15, 23, 42, 0.08);
+  display: none;
+}
+.cv-switch-pop[data-open="true"] { display: block; }
+.cv-switch-q {
+  width: 100%; height: 36px; padding: 0 10px; margin-bottom: 6px;
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  background: var(--surface-elevated); color: var(--text-primary); font: 500 0.84rem var(--font);
+}
+.cv-switch-list { list-style: none; margin: 0; padding: 0; max-height: min(420px, 60vh); overflow-y: auto; }
+.cv-switch-list [role="option"] {
+  display: grid; grid-template-columns: 1fr auto; column-gap: 8px; align-items: baseline;
+  padding: 7px 10px; border-radius: 7px; cursor: pointer;
+}
+.cv-switch-list [role="option"][aria-selected="true"] { background: color-mix(in srgb, var(--accent) 11%, transparent); }
+.cv-switch-label { font-size: 0.84rem; font-weight: 600; color: var(--text-primary); }
+.cv-switch-hint { grid-column: 1; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cv-switch-cur { grid-column: 2; grid-row: 1; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent-ink); }
+.cv-switch-empty { padding: 10px; font-size: 0.8rem; color: var(--text-muted); }
+
+/* ── F15  Inline validation: the field says what is wrong, where it is wrong ──── */
+input.cv-field-invalid, input[aria-invalid="true"] {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 16%, transparent) !important;
+}
+.cv-field-msg {
+  margin-top: 4px; font-size: 0.72rem; line-height: 1.35; font-weight: 500;
+  color: color-mix(in srgb, var(--danger) 80%, var(--text-primary));
+  display: flex; gap: 5px; align-items: flex-start;
+}
+.cv-field-msg::before { content: "!"; flex: 0 0 auto; width: 14px; height: 14px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 0.62rem; font-weight: 800; color: #fff; background: var(--danger); margin-top: 1px; }
+
+/* ── F16  One scale for corners, chips and cards (review item 3) ──────────────────
+   The stylesheet used 12+ corner radii (2–20 px) and four chip styles. The tokens
+   below are the scale; the components that appear on every result use it. */
+:root {
+  --radius-sm: 6px;      /* inputs, small buttons, inline boxes */
+  --radius: 8px;         /* buttons, tables, panels */
+  --radius-md: 10px;
+  --radius-card: 12px;   /* cards and the result summary */
+  --radius-pill: 999px;  /* chips and badges */
+  --chip-h: 22px;
+}
+/* Chips and badges: one height, one shape, one type size. */
+.crh-chip, .cv-rchip, .dash-commodity-badge, .demo-tag, .pi-pill, .cv-switch-cur {
+  min-height: var(--chip-h); padding: 2px 10px !important; border-radius: var(--radius-pill) !important;
+  font-size: 0.7rem !important; font-weight: 600; line-height: 1.3; letter-spacing: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.cv-switch-cur { min-height: 0; padding: 1px 7px !important; font-size: 0.62rem !important; text-transform: uppercase; letter-spacing: 0.04em; }
+/* Cards on the result: one radius, one hairline, one soft shadow. */
+#cv-result-hero, .cv-rhero, .insights-summary-bar, .kpi, .kpi-card, .summary-card {
+  border-radius: var(--radius-card) !important;
+}
+.cv-rhero, .kpi, .kpi-card { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); }
+/* A plain .btn inside a banner (e.g. "Log actual £") is a secondary button in both themes —
+   it rendered white on the dark banner. */
+.sa-logactual {
+  background: var(--surface-elevated) !important; color: var(--text-primary) !important;
+  border: 1px solid var(--border-strong) !important; border-radius: var(--radius-pill) !important;
+}
+.sa-logactual:hover { background: var(--surface-hover) !important; }
+/* Numbers that line up: every money and quantity cell uses tabular figures. */
+.breakdown-table td, .ops-table td, .detail-table td, .kpi-value, .cv-rhero-total, .crh-total, .tnum { font-variant-numeric: tabular-nums; }
+
+/* ── F17  Result readability in the narrower result pane ────────────────────────
+   The sticky summary bar was 88 % opaque — the table showed through it when scrolled.
+   The 8-bucket table sat beside the chart at ~400 px and wrapped its labels onto up
+   to six lines; it now keeps at least 460 px and the chart wraps below it. */
+#cv-result-hero { background: var(--surface) !important; backdrop-filter: none !important; }
+.bd-split > .bd-table { min-width: min(460px, 100%) !important; }
+.bd-split > .bd-chart { max-width: 100%; }

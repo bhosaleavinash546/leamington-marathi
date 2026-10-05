@@ -1081,7 +1081,7 @@ function renderSWPanelHTML(): string {
   border: 1px solid var(--sw-border); background: var(--sw-surface);
   color: var(--sw-text-muted); cursor: pointer;
 }
-.sw-saved-del:hover { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+.sw-saved-del:hover { background: color-mix(in srgb, var(--danger) 10%, var(--sw-surface)); border-color: color-mix(in srgb, var(--danger) 40%, transparent); color: var(--danger); }
 
 /* Phase timeline */
 .sw-phase-bar {
@@ -1644,7 +1644,7 @@ function renderResults(result: SWProgramResult): void {
     return def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
   }).length;
   const downgradeWarning = downgradeCount > 0
-    ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:#92400e">⚠ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
+    ? `<div style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:color-mix(in srgb, var(--warning) 75%, var(--text-primary))">⚠ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
     : '';
 
   const modTableEl = document.getElementById('sw-module-table');
@@ -1790,7 +1790,7 @@ function renderResults(result: SWProgramResult): void {
     const thisM = s.grandTotal / 1_000_000;
     if (medianBm > 0) {
       const diffPct = (thisM - medianBm) / medianBm * 100;
-      insights.push({ icon: diffPct > 30 ? '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>' : diffPct > 10 ? '<svg class="ic" aria-hidden="true" style="color:#eab308"><use href="#i-dot"/></svg>' : '<svg class="ic" aria-hidden="true" style="color:#22c55e"><use href="#i-dot"/></svg>', level: diffPct > 30 ? 'warn' : 'ok',
+      insights.push({ icon: diffPct > 30 ? '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>' : diffPct > 10 ? '<svg class="ic" aria-hidden="true" style="color:#eab308"><use href="#i-dot"/></svg>' : '<svg class="ic" aria-hidden="true" style="color:var(--green)"><use href="#i-dot"/></svg>', level: diffPct > 30 ? 'warn' : 'ok',
         title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
         body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. India offshoring could reduce by ${fmt(s.grandTotal > 0 ? Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / s.grandTotal * 100 : 0, 0)}% vs current region.`
               : `Programme cost is within normal range vs peers. Monitor cloud costs as fleet scales.`,
@@ -1834,7 +1834,7 @@ function renderResults(result: SWProgramResult): void {
           <span style="font-size:1.2rem;flex-shrink:0">${ins.icon}</span>
           <div>
             <div style="font-weight:700;font-size:0.82rem;color:${levelColor[ins.level]};margin-bottom:4px">${esc(ins.title)}</div>
-            <div style="font-size:0.78rem;color:#374151;line-height:1.5">${esc(ins.body)}</div>
+            <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5">${esc(ins.body)}</div>
           </div>
         </div>`).join('')}
       </div>`;
@@ -1935,7 +1935,7 @@ Keep response concise and actionable (under 250 words).`;
   })
   .catch(err => {
     const msg = ctrl.signal.aborted ? 'request timed out after 30s' : String(err);
-    contentEl.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:0.8rem;color:#dc2626">⚠ AI analysis unavailable: ${esc(msg)}. Engineering Insights above are still available.</div>`;
+    contentEl.innerHTML = `<div style="background:color-mix(in srgb, var(--danger) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--danger) 35%, transparent);border-radius:6px;padding:10px 14px;font-size:0.8rem;color:color-mix(in srgb, var(--danger) 80%, var(--text-primary))">⚠ AI analysis unavailable: ${esc(msg)}. Engineering Insights above are still available.</div>`;
     btnEl.disabled = false;
     btnEl.textContent = 'Retry AI Analysis';
   })
@@ -2378,7 +2378,7 @@ function showSWError(msg: string): void {
   if (!errEl) {
     errEl = document.createElement('div');
     errEl.id = 'sw-calc-error';
-    errEl.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 16px;margin:8px 0;font-size:0.82rem;color:#dc2626;display:flex;align-items:center;gap:8px';
+    errEl.style.cssText = 'background:color-mix(in srgb, var(--danger) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--danger) 35%, transparent);border-radius:8px;padding:10px 16px;margin:8px 0;font-size:0.82rem;color:color-mix(in srgb, var(--danger) 80%, var(--text-primary));display:flex;align-items:center;gap:8px';
     const calcBtn = document.getElementById('sw-calc-btn');
     calcBtn?.parentElement?.insertBefore(errEl, calcBtn);
   }
