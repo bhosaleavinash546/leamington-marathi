@@ -26,9 +26,11 @@
  *     quantity: 100k–300k are DERIVED, and say so. They are not contract prices.
  *  7. A part with no valid observation is NOT added (no unsourced price enters the catalogue);
  *     it is listed in the report.
- *  8. A researched entry replaces an estimate of the same part (keeping its aliases); a part
- *     already priced from a distributor is updated only when the new research has more
- *     distributors behind it.
+ *  8. A researched entry replaces an estimate of the same part (keeping its aliases). New
+ *     research on a part already priced from distributor observations ADDS to them (a
+ *     cross-check never discards the earlier listing; a repeated distributor + break is kept
+ *     once) and the part is re-priced from the union. A distributor entry without stored
+ *     observations is replaced only when the new research has more distributors behind it.
  */
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -112,7 +114,13 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
   const index = new Map<string, number>();
   catalogue.parts.forEach((e, i) => { for (const k of [e.mpn, e.family, ...(e.aliases ?? [])]) if (k) index.set(norm(k), i); });
   for (const r of research) {
-    const priced = priceFromObservations(r.observations);
+    const pre = index.get(norm(r.mpn.trim()));
+    const prior = pre != null ? (catalogue.parts[pre].observations ?? []) : [];
+    const seen = new Set<string>();
+    const union = [...prior, ...(r.observations ?? [])].filter(o => {
+      const k = `${String(o.distributor).toLowerCase()}|${o.qty}|${o.price}`; if (seen.has(k)) return false; seen.add(k); return true;
+    });
+    const priced = priceFromObservations(union);
     if (!priced) { report.notFound.push(`${r.mpn}${r.notes ? ` — ${r.notes}` : ''}`); continue; }
     const category = CATEGORIES.has(r.category) ? r.category : 'ic_soic';
     if (!CATEGORIES.has(r.category)) report.badCategory.push(`${r.mpn}: ${r.category}`);
@@ -136,7 +144,14 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
     if (old.confidence === 'estimate') {
       catalogue.parts[hit] = { ...entry, family: old.family || entry.family, aliases: aliases.length ? aliases : undefined };
       report.replacedEstimate.push(`${old.mpn} → ${entry.mpn}`);
-    } else if ((old.observations?.length ?? 1) < priced.distributors.length) {
+    } else if (old.observations?.length) {
+      if (priced.obs.length > old.observations.length) {
+        const sib = /^Priced on the sibling orderable code (\S+) /.exec(old.source)?.[1];
+        catalogue.parts[hit] = { ...old, gbp: priced.gbp, source: sourceText(priced, sib), asOf: date,
+          observations: entry.observations, volumeModel: entry.volumeModel, aliases: aliases.length ? aliases : undefined };
+        report.updated.push(`${entry.mpn} (cross-checked: ${priced.distributors.join(', ')})`);
+      } else report.keptExisting.push(`${entry.mpn} (no new observation)`);
+    } else if (1 < priced.distributors.length) {
       catalogue.parts[hit] = { ...entry, family: old.family || entry.family, aliases: aliases.length ? aliases : undefined };
       report.updated.push(entry.mpn);
     } else {

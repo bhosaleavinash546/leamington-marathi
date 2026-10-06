@@ -122,7 +122,7 @@ describe('grounding with the catalogue', () => {
   });
 });
 
-import { priceFromObservations, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
+import { priceFromObservations, mergeResearch, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
 describe('the research merge rules', () => {
   const o = (distributor: string, qty: number, price: number, currency = 'USD') => ({ distributor, qty, price, currency, url: 'https://x', date: '2026-10-06' });
   it('uses the part\'s own slope from one distributor\'s two breaks', () => {
@@ -149,6 +149,17 @@ describe('the research merge rules', () => {
   });
   it('the catalogue holds no slope taken across distributors', () => {
     for (const e of raw.parts) if (e.volumeModel) expect(e.volumeModel.basis, e.mpn).toMatch(/^(slope from the part's own breaks|franchise curve)/);
+  });
+  it('a cross-check adds to the stored observations and re-prices from both', () => {
+    const first = priceFromObservations([o('Digi-Key', 1000, 2.0)])!;
+    const cat = { parts: [{ mpn: 'TEST123Q1', family: 'TEST123', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true,
+      gbp: first.gbp, confidence: 'distributor' as const, source: 'Digi-Key $2 @1,000', asOf: '2026-10-06',
+      observations: first.obs.map(x => ({ ...x })), volumeModel: { b: first.b, basis: first.basis, derivedAbove: 1000 } }] };
+    const rep = mergeResearch(cat, [{ mpn: 'TEST123Q1', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true,
+      observations: [o('Mouser', 1000, 1.6), o('Digi-Key', 1000, 2.0)] }], '2026-10-06');
+    expect(rep.updated.length).toBe(1);
+    expect(cat.parts[0].observations!.map(x => x.distributor).sort()).toEqual(['Digi-Key', 'Mouser']);   // repeat kept once
+    expect(cat.parts[0].gbp.q1k).toBeCloseTo(1.8 * 0.7553, 3);                                           // median of the two
   });
   it('a price read on a sibling orderable code says so in the source', () => {
     const e = raw.parts.find(p => p.mpn === 'KSZ9563RNXV-VAO')!;
