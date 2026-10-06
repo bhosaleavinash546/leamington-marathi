@@ -402,6 +402,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   metal prices, arithmetic in the note. `GRADE_SCOPE` must equal the forms' scopes (forge excludes extrusion logs).
   4340 is under 4130 in the library — fix in the next rate refresh. See `docs/cad/casting-forging-materials-review-2026-10.md`,
   `tests/casting-forging-materials.test.ts`.
+- Casting material picker (Oct 2026): the casting and cast + machine forms pick Family → Standard → Grade
+  (`src/ui/cast-material-picker.ts`, data in `src/engine/casting-material-taxonomy.ts`). The grade `<select>`
+  (`cast-mat` / `cam-mat`) stays the ONE value holder — family / standard only hide `<optgroup>`s, and setting its
+  value (by code or hand) moves both to the grade's own. A new library casting grade must be filed in `GRADES`
+  (`tests/casting-material-taxonomy.test.ts`); an unknown company grade lands under "Other / company grades".
 - Material scope (review, Oct 2026): `src/engine/material-scope.ts` is the ONE table of which library categories each
   commodity buys (exact category match). The forms' drop-downs (`src/ui/material-scope.ts` → `SELECT_COMMODITY`), the
   CAD panel lists (`cad-options.ts`), the grade / resin / compound questions and `toCostParams::resolveMaterialId` all

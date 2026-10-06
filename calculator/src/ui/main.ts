@@ -2,6 +2,7 @@
 import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
 import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
+import { castingMaterialOptionsHtml, wireCastingMaterialPicker } from './cast-material-picker.js';
 import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
@@ -3341,6 +3342,9 @@ function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void
 // Any select id not listed here falls back to the full catalogue.
 // The table lives in ./material-scope.ts so the engine's grade choices can be tested against it.
 
+/** The casting forms' grade selects, shown as Family → Standard → Grade. */
+const CAST_PICKER_SELECTS = ['cast-mat', 'cam-mat'];
+
 function populateSelects(): void {
   syncPcbPickers(_mfgRegion);   // a newly drawn PCB form starts on the selected country's market
   const sig = _currentLibSig();
@@ -3376,12 +3380,15 @@ function populateSelects(): void {
     if (!rx) return matOptsAll;
     const cached = scopedMatCache.get(id);
     if (cached != null) return cached;
-    const opts = library.materials.filter(m => rx.test(m.category)).map(optFor).join('') || matOptsAll;
+    const inScope = library.materials.filter(m => rx.test(m.category));
+    // Casting grades are grouped family → standard → grade (cast-material-picker.ts).
+    const opts = (CAST_PICKER_SELECTS.includes(id) ? castingMaterialOptionsHtml(inScope, _currFmt) : inScope.map(optFor).join('')) || matOptsAll;
     scopedMatCache.set(id, opts);
     return opts;
   };
 
   document.querySelectorAll<HTMLSelectElement>('.material-select').forEach(s => _setSelectOpts(s, matOptsForSelect(s.id), sig));
+  for (const id of CAST_PICKER_SELECTS) { const s = el<HTMLSelectElement>(id); if (s) wireCastingMaterialPicker(s); }
   document.querySelectorAll<HTMLSelectElement>('.machine-select').forEach(s => _setSelectOpts(s, machOpts, sig));
   document.querySelectorAll<HTMLSelectElement>('.labour-select').forEach(s => _setSelectOpts(s, labOpts, sig));
 }
@@ -5819,6 +5826,11 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
 function _buildCadMaterialOptions(commodity: string): string {
   const mats = CAD_MATERIALS_BY_COMMODITY[commodity] ?? [];
   if (!mats.length) return '<option value="">— AI selects material —</option>';
+  if (commodity === 'casting' || commodity === 'cast_and_machine') {
+    const scope = MATERIAL_SCOPE_BY_COMMODITY[commodity];
+    return '<option value="">— AI selects material —</option>'
+      + castingMaterialOptionsHtml(library.materials.filter(m => scope.test(m.category)), _currFmt);
+  }
   return '<option value="">— AI selects material —</option>' +
     mats.map(m => `<option value="${m.id}">${escHtml(m.label)}</option>`).join('');
 }
