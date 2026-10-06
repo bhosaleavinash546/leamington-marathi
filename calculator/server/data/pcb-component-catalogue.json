@@ -1679,7 +1679,7 @@
 "q300k": 6.8754
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC264DA-40F200W BC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £10.2834 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC264DA-40F200W BC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £16.4706 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1703,7 +1703,7 @@
 "q300k": 11.2778
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC275TP-64F200W DC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £14.0844 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC275TP-64F200W DC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £18.8235 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.039,
@@ -1727,7 +1727,7 @@
 "q300k": 8.3954
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC277TP-64F200S DC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £12.5569 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC277TP-64F200S DC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £21.1765 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1751,7 +1751,7 @@
 "q300k": 15.44
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC297TP-128F300S BC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £23.0933 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC297TP-128F300S BC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £25.8824 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1794,7 +1794,7 @@
 "q300k": 9.4057
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC364DP-64F300W AA (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £14.0679 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC364DP-64F300W AA (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £21.1765 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1818,7 +1818,7 @@
 "q300k": 17.258
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC377TX-96F300S AA (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £25.8123 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC377TX-96F300S AA (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £28.2353 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1842,7 +1842,7 @@
 "q300k": 18.6543
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SAK-TC387QP-160F300S AE (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £27.9008 @1k.",
+"source": "Family key priced as its catalogued member SAK-TC387QP-160F300S AE (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £35.2941 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1866,7 +1866,7 @@
 "q300k": 27.143
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TC397XX256F300SBDKXUMA2 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £40.5972 @1k.",
+"source": "Family key priced as its catalogued member TC397XX256F300SBDKXUMA2 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £49.4118 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -1928,7 +1928,7 @@
 "q300k": 7.5105
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SPC584B70E3EHC0X (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £9.3317 @1k.",
+"source": "Family key priced as its catalogued member SPC584B70E3EHC0X (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £9.4118 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0381,
@@ -2462,7 +2462,7 @@
 "q300k": 4.7633
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member STM32H743ZIT6 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.1244 @1k.",
+"source": "Family key priced as its catalogued member STM32H743ZIT6 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £8.2353 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -2505,7 +2505,7 @@
 "q300k": 3.109
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member STM32G474RET3 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £4.6501 @1k.",
+"source": "Family key priced as its catalogued member STM32G474RET3 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £4.7059 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -2662,7 +2662,7 @@
 "q300k": 13.8336
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TEF8232EN1/N1/ZUZ (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £20.6906 @1k.",
+"source": "Family key priced as its catalogued member TEF8232EN1/N1/ZUZ (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £16.4706 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -3143,7 +3143,7 @@
 "q300k": 0.4667
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TCAN1043ADRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.7334 @1k.",
+"source": "Family key priced as its catalogued member TCAN1043ADRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.9412 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0792,
@@ -3386,7 +3386,7 @@
 "q300k": 0.6124
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLE9251VSJXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.7004 @1k.",
+"source": "Family key priced as its catalogued member TLE9251VSJXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.5294 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0235,
@@ -3429,7 +3429,7 @@
 "q300k": 0.7909
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLE9255WSKXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.1829 @1k.",
+"source": "Family key priced as its catalogued member TLE9255WSKXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.0588 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -3472,7 +3472,7 @@
 "q300k": 1.6081
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLE92633QXXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.4052 @1k.",
+"source": "Family key priced as its catalogued member TLE92633QXXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.3529 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -3515,7 +3515,7 @@
 "q300k": 1.1323
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLE94713ESXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.3709 @1k.",
+"source": "Family key priced as its catalogued member TLE94713ESXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.5882 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0335,
@@ -3799,7 +3799,7 @@
 "q300k": 3.8832
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member L9963E-TR (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £4.9019 @1k.",
+"source": "Family key priced as its catalogued member L9963E-TR (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £8.8235 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0408,
@@ -3823,7 +3823,7 @@
 "q300k": 3.5308
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member MC33772CTA1AE (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £4.7206 @1k.",
+"source": "Family key priced as its catalogued member MC33772CTA1AE (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.6471 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0509,
@@ -3847,7 +3847,7 @@
 "q300k": 5.6882
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BQ79616PAPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.0998 @1k.",
+"source": "Family key priced as its catalogued member BQ79616PAPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £10 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0389,
@@ -3871,7 +3871,7 @@
 "q300k": 4.6437
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member LTC6813HLWE-1#3ZZPBF (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £6.9455 @1k.",
+"source": "Family key priced as its catalogued member LTC6813HLWE-1#3ZZPBF (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £12.9412 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -3914,7 +3914,7 @@
 "q300k": 1.4342
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TJA1101BHN (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.7857 @1k.",
+"source": "Family key priced as its catalogued member TJA1101BHN (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.6471 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0384,
@@ -4132,7 +4132,7 @@
 "q300k": 2.6057
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member DP83TC811SWRNDRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.8973 @1k.",
+"source": "Family key priced as its catalogued member DP83TC811SWRNDRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4156,7 +4156,7 @@
 "q300k": 1.8269
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member DP83TG720SWRHARQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.7325 @1k.",
+"source": "Family key priced as its catalogued member DP83TG720SWRHARQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.8824 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4218,7 +4218,7 @@
 "q300k": 5.4001
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SJA1105QEL (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £6.442 @1k.",
+"source": "Family key priced as its catalogued member SJA1105QEL (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.0588 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0309,
@@ -4242,7 +4242,7 @@
 "q300k": 8.9517
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SJA1110AEL/0Y (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £10.703 @1k.",
+"source": "Family key priced as its catalogued member SJA1110AEL/0Y (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £15.2941 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0313,
@@ -4626,7 +4626,7 @@
 "q300k": 0.5006
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member LM74700QDBVRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.7488 @1k.",
+"source": "Family key priced as its catalogued member LM74700QDBVRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.8824 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4707,7 +4707,7 @@
 "q300k": 1.7119
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TPS65381AQDAPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.5605 @1k.",
+"source": "Family key priced as its catalogued member TPS65381AQDAPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £9.4118 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4788,7 +4788,7 @@
 "q300k": 1.6639
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member UCC21520AQDWRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.4547 @1k.",
+"source": "Family key priced as its catalogued member UCC21520AQDWRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.5882 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0682,
@@ -4888,7 +4888,7 @@
 "q300k": 0.8304
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member DRV8873HQPWPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.2419 @1k.",
+"source": "Family key priced as its catalogued member DRV8873HQPWPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.2353 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4931,7 +4931,7 @@
 "q300k": 0.764
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BTS70021EPPXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.1428 @1k.",
+"source": "Family key priced as its catalogued member BTS70021EPPXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4955,7 +4955,7 @@
 "q300k": 0.5055
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BTS70061EPPXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.7561 @1k.",
+"source": "Family key priced as its catalogued member BTS70061EPPXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.8824 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -4979,7 +4979,7 @@
 "q300k": 0.5258
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BTS70402EPAXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.5894 @1k.",
+"source": "Family key priced as its catalogued member BTS70402EPAXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.5294 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.02,
@@ -5041,7 +5041,7 @@
 "q300k": 1.0605
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BTT60302ERAXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.5861 @1k.",
+"source": "Family key priced as its catalogued member BTT60302ERAXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -5103,7 +5103,7 @@
 "q300k": 0.7535
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member VN7016AJTR (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.8896 @1k.",
+"source": "Family key priced as its catalogued member VN7016AJTR (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.1765 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0291,
@@ -5222,7 +5222,7 @@
 "q300k": 1.1099
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLS850D0TAV50ATMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.66 @1k.",
+"source": "Family key priced as its catalogued member TLS850D0TAV50ATMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.7647 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -5265,7 +5265,7 @@
 "q300k": 0.3813
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLE42754GATMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.5703 @1k.",
+"source": "Family key priced as its catalogued member TLE42754GATMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.6471 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -5446,7 +5446,7 @@
 "q300k": 2.3602
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TPS92662AQPHPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.5301 @1k.",
+"source": "Family key priced as its catalogued member TPS92662AQPHPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.7647 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -6742,7 +6742,7 @@
 "q300k": 1.1567
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member TLE5012BE1000XUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.7301 @1k.",
+"source": "Family key priced as its catalogued member TLE5012BE1000XUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2 @1k.",
 "asOf": "2026-10-06",
 "volumeModel": {
 "b": 0.0706,
@@ -7179,7 +7179,7 @@
 "q300k": 0.0967
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member ECS-250-20-3X-TR (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.14508 @1k.",
+"source": "Family key priced as its catalogued member ECS-250-20-3X-TR (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.17647 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7217,7 +7217,7 @@
 "q300k": 0.2391
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member 7V-25.000MAAE-T (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.3588 @1k.",
+"source": "Family key priced as its catalogued member 7V-25.000MAAE-T (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.42353 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7293,7 +7293,7 @@
 "q300k": 0.3898
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SIT8008BI-71-33E-25.000000 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.585 @1k.",
+"source": "Family key priced as its catalogued member SIT8008BI-71-33E-25.000000 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.70588 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7407,7 +7407,7 @@
 "q300k": 0.1195
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member ABS07-32.768KHZ-T (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.1794 @1k.",
+"source": "Family key priced as its catalogued member ABS07-32.768KHZ-T (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.2 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7635,7 +7635,7 @@
 "q300k": 0.024
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BAT54S,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.03596 @1k.",
+"source": "Family key priced as its catalogued member BAT54S,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.02471 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7711,7 +7711,7 @@
 "q300k": 0.0464
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member PMEG4010ER,115 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.06958 @1k.",
+"source": "Family key priced as its catalogued member PMEG4010ER,115 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08471 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7882,7 +7882,7 @@
 "q300k": 0.0255
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member 2N7002,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.03822 @1k.",
+"source": "Family key priced as its catalogued member 2N7002,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.02353 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7901,7 +7901,7 @@
 "q300k": 0.0122
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member BC847B,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.01825 @1k.",
+"source": "Family key priced as its catalogued member BC847B,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.01529 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -8034,7 +8034,7 @@
 "q300k": 0.0468
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SI2301CDS-T1-GE3 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0702 @1k.",
+"source": "Family key priced as its catalogued member SI2301CDS-T1-GE3 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08235 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -8053,7 +8053,7 @@
 "q300k": 0.0537
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member IRLML6344TRPBF (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08057 @1k.",
+"source": "Family key priced as its catalogued member IRLML6344TRPBF (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0941 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -9071,7 +9071,7 @@
 "q300k": 0.1277
 },
 "confidence": "estimate",
-"source": "Family key priced as its catalogued member SRN6045TA-4R7M (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.19172 @1k.",
+"source": "Family key priced as its catalogued member SRN6045TA-4R7M (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.22353 @1k.",
 "asOf": "2026-10-01"
 },
 {

@@ -185,6 +185,8 @@ describe('the research merge rules', () => {
     expect(cat.parts[0].confidence).toBe('estimate');
     expect(cat.parts[0].source).toMatch(/Family key priced as its catalogued member FAM1ABQ1/);
     expect(out[1]).toMatch(/not applied/);
+    applyFamilyLinks(cat, { FAM1: { member: 'FAM1ABQ1' } });   // a re-run keeps the original estimate, not the linked price
+    expect(cat.parts[0].source).toMatch(/Was an engineering estimate of £20 @1k/);
   });
   it('every family link in the catalogue points at a distributor-priced member', () => {
     const links = JSON.parse(readFileSync(new URL('../scripts/pcb-research/family-links.json', import.meta.url), 'utf8')).links as Record<string, { member: string }>;

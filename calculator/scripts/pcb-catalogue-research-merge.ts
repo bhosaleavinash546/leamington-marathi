@@ -202,7 +202,8 @@ export function applyFamilyLinks(catalogue: { parts: Entry[] }, links: Record<st
     const e = catalogue.parts.find(p => p.mpn === key);
     const m = catalogue.parts.find(p => p.mpn === l.member);
     if (!e || !m || e.confidence !== 'estimate' || m.confidence !== 'distributor') { out.push(`${key}: link not applied (${!e ? 'no key' : !m ? 'no member' : 'confidence'})`); continue; }
-    const was = e.gbp.q1k;
+    // The original estimate is stated once and kept: a re-run must not record the linked price as "was".
+    const was = Number(/Was an engineering estimate of £([\d.]+)/.exec(e.source)?.[1] ?? e.gbp.q1k);
     e.gbp = { ...m.gbp };
     e.volumeModel = m.volumeModel ? { ...m.volumeModel } : undefined;
     e.source = `Family key priced as its catalogued member ${m.mpn} (distributor-priced, ${m.asOf}${l.why ? `; ${l.why}` : ''}). `
