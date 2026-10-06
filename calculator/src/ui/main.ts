@@ -5,6 +5,7 @@ import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
 import { MATERIAL_PICKERS, materialOptionsHtml, wireMaterialPicker } from './material-picker.js';
 import { CASTING_TAXONOMY } from '../engine/casting-material-taxonomy.js';
 import { FORGING_TAXONOMY } from '../engine/forging-material-taxonomy.js';
+import { MOULDING_TAXONOMY } from '../engine/moulding-material-taxonomy.js';
 import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
@@ -3380,7 +3381,7 @@ function populateSelects(): void {
     const cached = scopedMatCache.get(id);
     if (cached != null) return cached;
     const inScope = library.materials.filter(m => rx.test(m.category));
-    // Casting and forging grades are grouped family → standard → grade (material-picker.ts).
+    // Casting, forging and moulding grades are grouped family → standard / polymer → grade (material-picker.ts).
     const picker = MATERIAL_PICKERS[id];
     const opts = (picker ? materialOptionsHtml(picker.tax, inScope, _currFmt) : inScope.map(optFor).join('')) || matOptsAll;
     scopedMatCache.set(id, opts);
@@ -5826,8 +5827,9 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
 function _buildCadMaterialOptions(commodity: string): string {
   const mats = CAD_MATERIALS_BY_COMMODITY[commodity] ?? [];
   if (!mats.length) return '<option value="">— AI selects material —</option>';
-  // Casting and forging grades are grouped family · standard, as on their forms.
-  const tax = commodity === 'casting' || commodity === 'cast_and_machine' ? CASTING_TAXONOMY : commodity === 'forging' ? FORGING_TAXONOMY : null;
+  // Casting, forging and moulding grades are grouped family · standard (or polymer), as on their forms.
+  const tax = commodity === 'casting' || commodity === 'cast_and_machine' ? CASTING_TAXONOMY
+    : commodity === 'forging' ? FORGING_TAXONOMY : commodity === 'injection_moulding' ? MOULDING_TAXONOMY : null;
   if (tax) {
     const scope = MATERIAL_SCOPE_BY_COMMODITY[commodity];
     return '<option value="">— AI selects material —</option>'

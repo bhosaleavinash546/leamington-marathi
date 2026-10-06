@@ -17,6 +17,10 @@ export interface MaterialTaxonomy {
   info(m: { id: string; category: string }): GradeInfo;
   /** The grade a family opens on when the engineer picks the family. */
   defaultGrade(family: string, subtype?: string): string;
+  /** The middle step's name: 'Standard' for metals (EN 1563…), 'Polymer' for resins (PA66, PP…). */
+  levelLabel?: string;
+  /** The info line under the grade; without it the line shows family · standard · density · usual routes. */
+  describe?(id: string, densityKgPerM3: number): string | null;
   /** A warning when the family cannot be made on the chosen route, else null. */
   routeWarning?(family: string, subtype?: string): string | null;
 }

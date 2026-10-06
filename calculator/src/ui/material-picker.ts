@@ -1,6 +1,6 @@
 /**
- * Material picker: Family → Standard → Grade, for the casting, cast + machine and forging forms
- * (material picker, Oct 2026). The taxonomies are data in src/engine/*-material-taxonomy.ts.
+ * Material picker: Family → Standard → Grade, for the casting, cast + machine and forging forms,
+ * and Family → Polymer → Grade for injection moulding (material picker, Oct 2026). The taxonomies are data in src/engine/*-material-taxonomy.ts.
  *
  * The form's own grade <select> (`cast-mat`, `cam-mat`, `forge-mat`) stays the one value holder —
  * the CAD rules, drafts, demos and the collectors all read and write it — and becomes the "Grade"
@@ -12,6 +12,7 @@
 import { familyLabelOf, groupGrades, type MaterialTaxonomy } from '../engine/material-taxonomy.js';
 import { CASTING_TAXONOMY } from '../engine/casting-material-taxonomy.js';
 import { FORGING_TAXONOMY } from '../engine/forging-material-taxonomy.js';
+import { MOULDING_TAXONOMY } from '../engine/moulding-material-taxonomy.js';
 
 type Mat = { id: string; grade: string; category: string; pricePerKg: number; densityKgPerM3: number };
 
@@ -20,6 +21,7 @@ export const MATERIAL_PICKERS: Record<string, { tax: MaterialTaxonomy; subtype?:
   'cast-mat': { tax: CASTING_TAXONOMY, subtype: 'cast-subtype' },
   'cam-mat': { tax: CASTING_TAXONOMY, subtype: 'cam-cast-subtype' },
   'forge-mat': { tax: FORGING_TAXONOMY },
+  'imm-mat': { tax: MOULDING_TAXONOMY },
 };
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -53,13 +55,16 @@ export function wireMaterialPicker(sel: HTMLSelectElement): void {
     if (!grp || !row) return;
     const famGrp = document.createElement('div');
     famGrp.className = 'field-group';
-    famGrp.innerHTML = `<label for="${id}-family">Material family</label><select id="${id}-family" title="Aluminium, steel, cast iron… — then pick the standard and the grade below."></select>`;
+    famGrp.innerHTML = `<label for="${id}-family">Material family</label><select id="${id}-family" title="The material family — then narrow it below and pick the grade."></select>`;
     row.replaceChild(famGrp, grp);
     // Standard and Grade each take the full width: the names are long (EN 1563 (EN-GJS), EN-GJS-500-7 (Ductile Iron)).
     const stdGrp = document.createElement('div');
     stdGrp.className = 'field-group';
     stdGrp.style.marginTop = '6px';
-    stdGrp.innerHTML = `<label for="${id}-standard">Standard</label><select id="${id}-standard" title="The material standard the grade is designated in. 'All standards' lists every grade of the family."></select>`;
+    const level = cfg.tax.levelLabel ?? 'Standard';
+    stdGrp.innerHTML = level === 'Standard'
+      ? `<label for="${id}-standard">Standard</label><select id="${id}-standard" title="The material standard the grade is designated in. 'All standards' lists every grade of the family."></select>`
+      : `<label for="${id}-standard">${esc(level)}</label><select id="${id}-standard" title="The base ${esc(level.toLowerCase())} (ISO 1043 code). 'All' lists every grade of the family."></select>`;
     const lab = grp.querySelector('label');
     if (lab) { lab.textContent = 'Grade'; lab.htmlFor = id; }
     (grp as HTMLElement).style.marginTop = '6px';
@@ -125,7 +130,7 @@ function sync(sel: HTMLSelectElement): void {
   famSel.value = fam;
 
   const stds = [...new Set(opts.filter(o => o.dataset.fam === fam).map(o => o.dataset.std!))];
-  const stdHtml = `<option value="">All standards (${stds.length})</option>` + stds.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  const stdHtml = `<option value="">All ${(cfg.tax.levelLabel ?? 'Standard').toLowerCase()}s (${stds.length})</option>` + stds.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
   const keep = stdSel.value;
   if (stdSel.dataset.html !== stdHtml) { stdSel.innerHTML = stdHtml; stdSel.dataset.html = stdHtml; }
   stdSel.value = keep && cur?.dataset.std === keep ? keep : '';
@@ -140,9 +145,10 @@ function sync(sel: HTMLSelectElement): void {
   const info = document.getElementById(`${sel.id}-info`);
   if (info) {
     const f = cfg.tax.families.find(x => x.id === fam);
-    info.textContent = cur?.dataset.fam && f
-      ? `${f.label} · ${cur.dataset.std} · ${Number(cur.dataset.density).toLocaleString('en-GB')} kg/m³ · usual routes: ${f.processes}`
-      : '';
+    const density = Number(cur?.dataset.density);
+    const described = cur && cfg.tax.describe?.(cur.value, density);
+    info.textContent = !cur?.dataset.fam || !f ? ''
+      : described ?? `${f.label} · ${cur.dataset.std} · ${density.toLocaleString('en-GB')} kg/m³ · usual routes: ${f.processes}`;
     const warning = cfg.tax.routeWarning?.(fam, subtypeOf(sel)?.value);
     if (warning) {
       const w = document.createElement('div');
