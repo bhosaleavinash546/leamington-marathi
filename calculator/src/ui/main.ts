@@ -17,6 +17,7 @@ import './styles/saas-polish.css';
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
+import { photoSlotsHtml, markPhotoSlot, wirePhotoSlot } from './pcb/photo-slots.js';
 import { analysisStackInput, snapshotFields, editedFields, boardSpecPatch } from './pcb/analysis-link.js';
 import { ecuLibraryShell, wireEcuLibrary } from './pcb/ecu-library.js';
 import { beginBusy } from './busy.js';
@@ -7660,35 +7661,12 @@ function buildPCBImageUploadZone(): string {
           <label for="pcb-order-qty" style="font-size:0.68rem;color:var(--text-muted)">boards / year</label>
         </div>
 
-        <!-- Multi-image slots: Top, Bottom, + 3 Additional -->
+        <!-- Photo slots: board sides (top required, bottom recommended) + 6 optional IC close-ups (pcb/photo-slots.ts) -->
         <div style="margin-top:10px">
-          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:2px;text-align:center">
-            Upload up to 8 photos — top &amp; bottom sides + up to 6 IC close-ups for best accuracy
+          <div style="font-size:0.66rem;color:var(--text-muted);margin-bottom:8px;text-align:center">
+            Click a tile, or drop up to 8 photos anywhere here — they fill the tiles in order. Avoid glare: accuracy depends on readable markings.
           </div>
-          <div style="font-size:0.63rem;color:var(--text-muted);margin-bottom:6px;text-align:center">
-            Fill the frame, avoid glare — accuracy depends on IC part markings being readable
-          </div>
-          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-            ${PCB_SLOT_LABELS.map((base, idx) => { const label = idx === 0 ? `${base} ★` : base; return `
-              <div id="pcb-img-slot-${idx}"
-                   style="width:96px;min-height:90px;border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:border-color 0.15s;overflow:hidden;background:var(--card-bg)"
-                   title="Click to choose ${label.replace(' ★', '')} image">
-                <input type="file" id="pcb-img-input-${idx}" accept="image/jpeg,image/png,image/webp" style="display:none"/>
-                <div id="pcb-img-slot-empty-${idx}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px">
-                  <span style="font-size:1.3rem">${idx === 0 ? '<svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg>' : idx === 1 ? '<svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>'}</span>
-                  <span style="font-size:0.60rem;color:var(--text-muted);text-align:center;line-height:1.3">${label}</span>
-                </div>
-                <div id="pcb-img-slot-filled-${idx}" style="display:none;width:100%;height:100%;position:relative">
-                  <img id="pcb-img-thumb-${idx}" alt="${label}" style="width:100%;height:90px;object-fit:cover;display:block"/>
-                  <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.55);padding:2px 4px">
-                    <span style="font-size:0.58rem;color:#fff;font-weight:600">${label.replace(' ★', '')}</span>
-                  </div>
-                  <button id="pcb-img-remove-${idx}"
-                          style="position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1"
-                          title="Remove this image">×</button>
-                </div>
-              </div>`; }).join('')}
-          </div>
+          ${photoSlotsHtml(PCB_SLOT_LABELS)}
           <div id="pcb-img-count" style="font-size:0.62rem;color:var(--text-muted);margin-top:4px;text-align:center">No images selected</div>
         </div>
         <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
@@ -7794,7 +7772,7 @@ function wirePCBImageZone(): void {
     const slot = el(`pcb-img-slot-${idx}`);
     if (emptyDiv) emptyDiv.style.display = 'none';
     if (filledDiv) filledDiv.style.display = 'block';
-    if (slot) slot.style.borderColor = idx === 0 ? 'var(--accent)' : 'rgba(79,142,247,0.4)';
+    markPhotoSlot(slot, true);
     updateAnalyzeBtn();
   }
   _pcbSetSlot = setSlot;
@@ -7808,7 +7786,7 @@ function wirePCBImageZone(): void {
     const input = el<HTMLInputElement>(`pcb-img-input-${idx}`);
     if (emptyDiv) emptyDiv.style.display = 'flex';
     if (filledDiv) filledDiv.style.display = 'none';
-    if (slot) slot.style.borderColor = '';
+    markPhotoSlot(slot, false);
     if (input) input.value = '';
     updateAnalyzeBtn();
   }
@@ -7831,6 +7809,8 @@ function wirePCBImageZone(): void {
       e.stopPropagation();
       clearSlot(idx);
     });
+    // Keyboard (Enter / Space) and a photo dropped on THIS slot goes in this slot.
+    wirePhotoSlot(slot, () => input?.click(), f => setSlot(idx, f));
   });
 
   // Analyze button — no argument needed, reads pcbImageFiles state

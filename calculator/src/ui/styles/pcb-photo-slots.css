@@ -1,0 +1,117 @@
+/* PCB photo slots (src/ui/pcb/photo-slots.ts) — two groups, a colour per role, every state.
+   Theme tokens only (calculator.css / brand.css), so light and dark both follow the theme.
+   Role colour: top = accent (required), bottom = teal (recommended), close-ups = accent2 (optional). */
+
+/* The bottom side's own hue: --accent3 is blue in the dark theme, too close to the top's accent. */
+.pcb-slots { --slot-teal: #2dd4bf; }
+[data-theme="light"] .pcb-slots { --slot-teal: #0d9488; }
+
+.pcb-slots { display: grid; gap: 12px; margin: 4px auto 0; max-width: 760px; text-align: left; }
+.pcb-slots__group {
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-elevated, var(--card-bg));
+}
+.pcb-slots__head { display: flex; min-height: 0; padding: 0; background: none; border: 0; position: static; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.pcb-slots__label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text-primary); }
+.pcb-slots__label em {
+  font-style: normal; font-weight: 600; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em;
+  margin-left: 4px; padding: 1px 6px; border-radius: 999px;
+  color: var(--text-muted); background: color-mix(in srgb, var(--text-muted) 14%, transparent);
+}
+.pcb-slots__sub { font-size: 0.64rem; color: var(--text-muted); }
+
+.pcb-slots__row { display: grid; gap: 8px; }
+.pcb-slots__row--sides { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pcb-slots__row--close { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 640px) { .pcb-slots__row--close { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ── Tile ─────────────────────────────────────────────────────────────── */
+.pcb-slot {
+  --slot-c: var(--accent2, var(--accent));
+  position: relative; overflow: hidden; cursor: pointer;
+  border-radius: 10px;
+  border: 1.5px dashed color-mix(in srgb, var(--slot-c) 45%, var(--border));
+  background: color-mix(in srgb, var(--slot-c) 6%, var(--surface, var(--card-bg)));
+  transition: border-color .15s, background-color .15s, box-shadow .15s, transform .15s;
+  min-height: 86px;
+}
+.pcb-slot--top    { --slot-c: var(--accent);  min-height: 128px; }
+.pcb-slot--bottom { --slot-c: var(--slot-teal); min-height: 128px; }
+
+.pcb-slot:hover {
+  border-color: var(--slot-c);
+  background: color-mix(in srgb, var(--slot-c) 12%, var(--surface, var(--card-bg)));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.pcb-slot:focus-visible { outline: none; border-style: solid; border-color: var(--slot-c);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--slot-c) 35%, transparent); }
+.pcb-slot.is-drop { border-style: solid; border-color: var(--slot-c);
+  background: color-mix(in srgb, var(--slot-c) 20%, var(--surface, var(--card-bg)));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--slot-c) 30%, transparent); }
+
+/* Empty state */
+.pcb-slot__empty {
+  height: 100%; min-height: inherit; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  padding: 18px 8px 10px; text-align: center;
+}
+.pcb-slot__badge {
+  position: absolute; top: 6px; left: 6px;
+  font-size: 0.56rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 999px;
+  color: var(--slot-c); background: color-mix(in srgb, var(--slot-c) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--slot-c) 35%, transparent);
+}
+.pcb-slot--closeup .pcb-slot__badge { min-width: 18px; text-align: center; padding: 2px 5px; }
+.pcb-slot__icon {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  color: var(--slot-c); background: color-mix(in srgb, var(--slot-c) 14%, transparent); font-size: 1.05rem;
+}
+.pcb-slot--closeup .pcb-slot__icon { width: 26px; height: 26px; font-size: 0.85rem; }
+.pcb-slot__title { font-size: 0.7rem; font-weight: 650; color: var(--text-primary); line-height: 1.2; }
+.pcb-slot--closeup .pcb-slot__title { font-size: 0.62rem; font-weight: 600; color: var(--text-secondary); }
+.pcb-slot__hint { font-size: 0.6rem; color: var(--text-muted); line-height: 1.25; }
+.pcb-slot__add {
+  display: inline-flex; align-items: center; gap: 3px; margin-top: 3px;
+  font-size: 0.6rem; font-weight: 600; color: var(--slot-c); opacity: .85;
+}
+.pcb-slot__add .ic { width: 0.8em; height: 0.8em; }
+.pcb-slot--closeup .pcb-slot__add { opacity: 0; transition: opacity .15s; }
+.pcb-slot--closeup:hover .pcb-slot__add, .pcb-slot--closeup:focus-visible .pcb-slot__add { opacity: .85; }
+
+/* Filled state */
+.pcb-slot.is-filled { border-style: solid; border-color: color-mix(in srgb, var(--success) 70%, var(--slot-c));
+  background: var(--surface, var(--card-bg)); }
+.pcb-slot__filled { position: absolute; inset: 0; }
+.pcb-slot__thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pcb-slot__ok {
+  position: absolute; top: 6px; left: 6px; display: inline-grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%; font-size: 0.75rem;
+  color: var(--success); background: var(--surface, var(--card-bg)); box-shadow: var(--shadow-sm);
+}
+.pcb-slot__caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; justify-content: space-between; align-items: center; gap: 4px;
+  padding: 14px 7px 4px; font-size: 0.6rem; font-weight: 600; color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0));
+}
+.pcb-slot__replace { font-weight: 500; opacity: 0; transition: opacity .15s; }
+.pcb-slot.is-filled:hover .pcb-slot__replace, .pcb-slot.is-filled:focus-visible .pcb-slot__replace { opacity: .9; }
+.pcb-slot__remove {
+  position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; padding: 0;
+  display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  font-size: 0.85rem; line-height: 1; font-weight: 600;
+  color: var(--text-primary); background: var(--glass-bg, var(--surface));
+  border: 1px solid var(--border-strong, var(--border)); box-shadow: var(--shadow-sm);
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.pcb-slot__remove:hover, .pcb-slot__remove:focus-visible { color: #fff; background: var(--danger); border-color: var(--danger); outline: none; }
+
+@media (prefers-reduced-motion: reduce) { .pcb-slot, .pcb-slot__add, .pcb-slot__replace { transition: none; } .pcb-slot:hover { transform: none; } }
+
+/* Small tiles: the title alone on one line ("Close-up 2" wrapped beside "Replace"). */
+.pcb-slot__caption > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pcb-slot--closeup .pcb-slot__replace { display: none; }
