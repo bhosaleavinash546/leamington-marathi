@@ -1,0 +1,1106 @@
+{
+ "domain": "EV/HEV high-voltage electronics (traction inverter, OBC, DC-DC)",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "UCC21750QDWRQ1",
+   "family": "UCC21750",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated single-ch gate driver 10A, 5.7kVrms, DESAT, SiC/IGBT",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "UCC21750QDWRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 4.66,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC21750QDWRQ1/12165174",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 4.24343,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC21750QDWRQ1/12165174",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "A Mouser 1k figure of $3.44 appeared in a summary but was ambiguous; not recorded."
+  },
+  {
+   "mpn": "UCC5870QDWJRQ1",
+   "family": "UCC5870",
+   "mfr": "Texas Instruments",
+   "desc": "Functional-safety isolated gate driver 30A, 3.75kVrms, SPI, SiC/IGBT",
+   "category": "ic_soic",
+   "pkg": "SSOP-36",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "UCC5870QDWJRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 9.71,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5870QDWJRQ1/13563014",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 750,
+     "price": 8.64,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5870QDWJRQ1/13563014",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "UCC5880QDFCRQ1",
+   "family": "UCC5880",
+   "mfr": "Texas Instruments",
+   "desc": "Functional-safety isolated gate driver 20A, 5kVrms, variable drive strength, SiC",
+   "category": "ic_soic",
+   "pkg": "SSOP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "UCC5880QDFCRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 6.0,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC5880QDFCRQ1/22539588",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "UCC21520AQDWRQ1",
+   "family": "UCC21520A",
+   "mfr": "Texas Instruments",
+   "desc": "Dual-ch isolated gate driver 4A/6A, 5.7kVrms",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "traction_inverter"
+   ],
+   "observedMpn": "UCC21520AQDWRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.25,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/UCC21520AQDWRQ1?qs=gTYE2QTfZfQ3PAJITZVK6Q%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 3.1,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/UCC21520AQDWRQ1?qs=gTYE2QTfZfQ3PAJITZVK6Q%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "UCC5350MCQDWVRQ1",
+   "family": "UCC5350-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Single-ch isolated gate driver +/-5A, Miller clamp, SiC/IGBT",
+   "category": "ic_soic",
+   "pkg": "SOIC-8W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "traction_inverter"
+   ],
+   "observedMpn": "UCC5350MCQDWVRQ1",
+   "observations": [
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 1.306,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/ucc5350mcqdwvrq1/texas-instruments",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 5000,
+     "price": 1.254,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/ucc5350mcqdwvrq1/texas-instruments",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "No franchised price found for UCC5350SBQDRQ1 (SOIC-8 narrow); wide-body MC variant used."
+  },
+  {
+   "mpn": "1EDI2002ASXUMA2",
+   "family": "1EDI2002AS",
+   "mfr": "Infineon",
+   "desc": "EiceDRIVER Boost isolated IGBT gate driver with SPI, EV inverter",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "1EDI2002ASXUMA2",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 5.57,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/02as",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Price from search summary (Mouser, via Findchips); another Mouser line for 1EDI2002AS showed $6.12 @1k, $6.99 @500."
+  },
+  {
+   "mpn": "1EDI2010ASXUMA1",
+   "family": "1EDI2010AS",
+   "mfr": "Infineon",
+   "desc": "EiceDRIVER Sense isolated IGBT gate driver, 8-bit ADC, SPI",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "1EDI2010ASXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.3,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/1EDI2010ASXUMA1/8629185",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "1ED3890MC12MXUMA1",
+   "family": "1ED389x",
+   "mfr": "Infineon",
+   "desc": "X3 Digital isolated gate driver 9A, 5.7kV, I2C configurable",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-16W",
+   "aecq": false,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "1ED3890MC12MXUMA1",
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 3.86,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/3890",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Newark 1-1000 range $6.58-$3.86 via Findchips; industrial-grade (1ED38x0 not AEC-Q100)."
+  },
+  {
+   "mpn": "2ED2410EMXUMA1",
+   "family": "2ED2410-EM",
+   "mfr": "Infineon",
+   "desc": "Dual smart high-side MOSFET gate driver 12/24V with current sense (PDU/eFuse, LV side)",
+   "category": "ic_soic",
+   "pkg": "PG-TSDSO-24",
+   "aecq": true,
+   "ecuRoles": [
+    "PDU",
+    "BMS"
+   ],
+   "observedMpn": "2ED2410EMXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 2.6537,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/2ED2410EMXUMA1/16719233",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.93925,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/2ED2410EMXUMA1/16719233",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Not an HV isolated driver; 12/24V switch driver."
+  },
+  {
+   "mpn": "STGAP2SICS",
+   "family": "STGAP2SICS",
+   "mfr": "STMicroelectronics",
+   "desc": "Galvanically isolated 4A single gate driver for SiC MOSFETs",
+   "category": "ic_soic",
+   "pkg": "SO-8W",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "STGAP2SICS",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 960,
+     "price": 2.2272,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Isolated-Gate-Drivers_STMicroelectronics-STGAP2SICS_C5267669.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 560,
+     "price": 1.78,
+     "currency": "USD",
+     "url": "https://www.newark.com/stmicroelectronics/stgap2sics/mosfet-driver-40-to-125deg-c-rohs/dp/91AH9101",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "No automotive-grade STGAP2SICS orderable found; industrial tube part. Newark figure low vs ST eStore $3.43 @500 for STGAP2SICSTR."
+  },
+  {
+   "mpn": "STGAP4STR",
+   "family": "STGAP4S",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive isolated single gate driver with ADC and SPI, SiC/IGBT",
+   "category": "ic_soic",
+   "pkg": "SO-36W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "STGAP4STR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.40746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STGAP4STR/18085100",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 800,
+     "price": 4.61461,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STGAP4S/18085109",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "800 break is tube code STGAP4S."
+  },
+  {
+   "mpn": "NCV57000DWR2G",
+   "family": "NCV57000",
+   "mfr": "onsemi",
+   "desc": "Isolated high-current IGBT gate driver, DESAT",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "NCV57000DWR2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.52,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV57000DWR2G/10064758",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.37,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV57000DWR2G/10064758",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "NCV51705MNTXG",
+   "family": "NCV51705",
+   "mfr": "onsemi",
+   "desc": "Single 6A SiC MOSFET gate driver (non-isolated), wettable-flank QFN",
+   "category": "ic_qfn",
+   "pkg": "QFNW-24",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "NCV51705MNTWG",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 200,
+     "price": 1.15,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/gate-drivers_onsemi-ncv51705mntwg_C603957.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 1.09,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/gate-drivers_onsemi-ncv51705mntwg_C603957.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "SI82390AD-AS3",
+   "family": "Si8239x",
+   "mfr": "Skyworks (Silicon Labs)",
+   "desc": "Automotive dual isolated gate driver 4A with safety features",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "SI82390AD-AS3",
+   "observations": [],
+   "notes": "No franchised-distributor price found; only an unsourced $11.99 figure (discarded)."
+  },
+  {
+   "mpn": "ADUM4135WBRWZ",
+   "family": "ADuM4135",
+   "mfr": "Analog Devices",
+   "desc": "Single-ch isolated IGBT/SiC gate driver 4A, DESAT, Miller clamp",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "ADUM4135BRWZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1034,
+     "price": 5.02,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4135BRWZ/5441084",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Richardson RFPD",
+     "qty": 1000,
+     "price": 3.19,
+     "currency": "USD",
+     "url": "https://www.richardsonrfpd.com/Products/Product/ADUM4135BRWZ",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Industrial sibling ADUM4135BRWZ; another Digi-Key listing showed $5.68 @1034. Wide spread vs Richardson."
+  },
+  {
+   "mpn": "ADUM4146WBRWZ",
+   "family": "ADuM4146",
+   "mfr": "Analog Devices",
+   "desc": "Isolated SiC MOSFET gate driver 11A, 5kVrms, DESAT",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "ADUM4146WBRWZ",
+   "observations": [],
+   "notes": "No distributor price found; ADI 1k list price $3.32 (manufacturer, not recorded). Search budget then exhausted."
+  },
+  {
+   "mpn": "FS820R08A6P2B",
+   "family": "HybridPACK Drive",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive 750V 820A IGBT six-pack module",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "FS820R08A6P2B",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "FS950R08A6P2B",
+   "family": "HybridPACK Drive",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive 750V 950A IGBT six-pack module",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "FS950R08A6P2B",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "FS03MR12A6MA1B",
+   "family": "HybridPACK Drive CoolSiC",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive 1200V CoolSiC six-pack module",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "FS03MR12A6MA1B",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "CAB425M12XM3",
+   "family": "XM3",
+   "mfr": "Wolfspeed",
+   "desc": "1200V 425A SiC half-bridge module XM3",
+   "category": "power_module",
+   "pkg": "XM3",
+   "aecq": false,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "CAB425M12XM3",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "NVH820S75L4SPB",
+   "family": "VE-Trac",
+   "mfr": "onsemi",
+   "desc": "VE-Trac Direct 750V 820A IGBT six-pack module",
+   "category": "power_module",
+   "pkg": "VE-Trac Direct",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "NVH820S75L4SPB",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ADP480120W3",
+   "family": "ACEPACK DRIVE",
+   "mfr": "STMicroelectronics",
+   "desc": "ACEPACK DRIVE 1200V SiC six-pack module",
+   "category": "power_module",
+   "pkg": "ACEPACK DRIVE",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "ADP480120W3",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "C3M0032120K",
+   "family": "C3M",
+   "mfr": "Wolfspeed",
+   "desc": "SiC MOSFET 1200V 32mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "C3M0032120K",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "C3M0075120K",
+   "family": "C3M",
+   "mfr": "Wolfspeed",
+   "desc": "SiC MOSFET 1200V 75mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "C3M0075120K",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AIMW120R045M1",
+   "family": "CoolSiC M1",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 1200V 45mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "AIMW120R045M1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "IMW120R045M1H",
+   "family": "CoolSiC M1H",
+   "mfr": "Infineon",
+   "desc": "CoolSiC MOSFET 1200V 45mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "IMW120R045M1H",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "SCTW35N65G2V",
+   "family": "SCT G2",
+   "mfr": "STMicroelectronics",
+   "desc": "SiC MOSFET 650V 55mOhm",
+   "category": "through_hole",
+   "pkg": "HiP247",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "SCTW35N65G2V",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "NVHL020N120SC1",
+   "family": "NVHL020N120",
+   "mfr": "onsemi",
+   "desc": "Automotive SiC MOSFET 1200V 20mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "traction_inverter"
+   ],
+   "observedMpn": "NVHL020N120SC1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AIKW40N65DH5",
+   "family": "TRENCHSTOP 5",
+   "mfr": "Infineon",
+   "desc": "Automotive IGBT 650V 40A with diode",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "AIKW40N65DH5",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "IKW40N120H3",
+   "family": "TRENCHSTOP H3",
+   "mfr": "Infineon",
+   "desc": "IGBT 1200V 40A with diode",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "IKW40N120H3",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AMC1311BQDWVRQ1",
+   "family": "AMC1311",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier 2V input, voltage sensing",
+   "category": "ic_soic",
+   "pkg": "SOIC-8W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "AMC1311BQDWVRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AMC1301DWVRQ1",
+   "family": "AMC1301",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier +/-250mV, shunt current sensing",
+   "category": "ic_soic",
+   "pkg": "SOIC-8W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "AMC1301DWVRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AMC3301QDWERQ1",
+   "family": "AMC3301",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated amplifier with integrated DC/DC, shunt sensing",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "AMC3301QDWERQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AMC1302QDWVRQ1",
+   "family": "AMC1302",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier +/-50mV",
+   "category": "ic_soic",
+   "pkg": "SOIC-8W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "AMC1302QDWVRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "TMCS1123B1AQDVGRQ1",
+   "family": "TMCS1123",
+   "mfr": "Texas Instruments",
+   "desc": "Hall-effect current sensor, reinforced isolation",
+   "category": "ic_soic",
+   "pkg": "SOIC-10W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "TMCS1123B1AQDVGRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ACS37002LMABTR-050B5",
+   "family": "ACS37002",
+   "mfr": "Allegro",
+   "desc": "Hall current sensor, 400kHz, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ACS37002LMABTR-050B5",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ACS724KMATR-20AB-T",
+   "family": "ACS724",
+   "mfr": "Allegro",
+   "desc": "Hall current sensor, automotive, SOIC-16W",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ACS724KMATR-20AB-T",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "MLX91220KDF-ABF-025-RE",
+   "family": "MLX91220",
+   "mfr": "Melexis",
+   "desc": "Integrated Hall current sensor, SOIC-16W",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "MLX91220KDF-ABF-025-RE",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "INA241A1QDDFRQ1",
+   "family": "INA241A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Bidirectional current-sense amplifier, -5V to 110V CM",
+   "category": "ic_soic",
+   "pkg": "SOT-23-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "DCDC"
+   ],
+   "observedMpn": "INA241A1QDDFRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "HAH3DR 800-S07",
+   "family": "HAH3DR",
+   "mfr": "LEM",
+   "desc": "Open-loop Hall current transducer, 3-phase, automotive",
+   "category": "mechanical",
+   "pkg": "module",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "HAH3DR 800-S07",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "TLE4972AE35D5XUMA1",
+   "family": "TLE4972",
+   "mfr": "Infineon",
+   "desc": "Coreless magnetic current sensor, automotive",
+   "category": "ic_soic",
+   "pkg": "PG-TDSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "BMS"
+   ],
+   "observedMpn": "TLE4972AE35D5XUMA1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AD2S1210WDSTZ",
+   "family": "AD2S1210",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 10-16 bit, automotive",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "AD2S1210WDSTZ",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "PGA411QPHPRQ1",
+   "family": "PGA411-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Resolver sensor interface with exciter",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "PGA411QPHPRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "family": "AD2S1205",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 12-bit",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-44",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter"
+   ],
+   "observedMpn": "AD2S1205WYSTZ",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ISO7741QDWRQ1",
+   "family": "ISO7741-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Quad-ch reinforced digital isolator 3/1",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ISO7741QDWRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ISO7721QDWVRQ1",
+   "family": "ISO7721-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Dual-ch reinforced digital isolator",
+   "category": "ic_soic",
+   "pkg": "SOIC-8W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ISO7721QDWVRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ISO1042BQDWRQ1",
+   "family": "ISO1042-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated CAN FD transceiver",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ISO1042BQDWRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ISO1044BQDRQ1",
+   "family": "ISO1044-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated CAN FD transceiver, SOIC-8",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ISO1044BQDRQ1",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "SI8641BD-AS",
+   "family": "Si8641",
+   "mfr": "Skyworks (Silicon Labs)",
+   "desc": "Quad-ch digital isolator, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "SI8641BD-AS",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "ADUM1401WSRWZ",
+   "family": "ADuM1401",
+   "mfr": "Analog Devices",
+   "desc": "Quad-ch digital isolator, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ADUM1401WSRWZ",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "B32776",
+   "family": "B32776",
+   "mfr": "TDK EPCOS",
+   "desc": "DC-link MKP film capacitor",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": false,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "B32776",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "C4AQ",
+   "family": "C4AQ",
+   "mfr": "KEMET",
+   "desc": "Automotive DC-link film capacitor",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": true,
+   "ecuRoles": [
+    "traction_inverter",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "C4AQ",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "EVC 250",
+   "family": "EVC 250",
+   "mfr": "TE Connectivity",
+   "desc": "HV DC contactor 250A",
+   "category": "relay_switch",
+   "pkg": "contactor",
+   "aecq": false,
+   "ecuRoles": [
+    "BDU",
+    "PDU"
+   ],
+   "observedMpn": "EVC 250",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "AEV",
+   "family": "AEV",
+   "mfr": "Panasonic",
+   "desc": "HV DC EV relay/contactor",
+   "category": "relay_switch",
+   "pkg": "contactor",
+   "aecq": false,
+   "ecuRoles": [
+    "BDU",
+    "PDU"
+   ],
+   "observedMpn": "AEV",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  },
+  {
+   "mpn": "B32922",
+   "family": "B32922",
+   "mfr": "TDK EPCOS",
+   "desc": "X2/Y-class MKP film suppression capacitor",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "DCDC"
+   ],
+   "observedMpn": "B32922",
+   "observations": [],
+   "notes": "Not searched: shared web-search budget (200/turn) exhausted before this part was reached. Orderable code is indicative, not verified."
+  }
+ ]
+}

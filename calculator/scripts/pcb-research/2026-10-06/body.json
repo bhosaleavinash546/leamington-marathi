@@ -1,0 +1,1196 @@
+{
+ "domain": "body/chassis/powertrain drivers & sensors",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "BTS70021EPPXUMA1",
+   "family": "BTS7002-1EPP",
+   "mfr": "Infineon",
+   "desc": "PROFET+2 12V single high-side switch 2.6 mOhm",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "PDU"
+   ],
+   "observedMpn": "BTS70021EPPXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 2.9,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70021EPPXUMA1/9829548",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 1.78,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70021EPPXUMA1/9829548",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "no 1k break in snippet"
+  },
+  {
+   "mpn": "BTS70041EPPXUMA1",
+   "family": "BTS7004-1EPP",
+   "mfr": "Infineon",
+   "desc": "PROFET+2 12V single high-side switch 4.4 mOhm",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "PDU"
+   ],
+   "observedMpn": "BTS70041EPPXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10,
+     "price": 1.781,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70041EPPXUMA1/7791523",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.25353,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70041EPPXUMA1/7791523",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "BTS70061EPPXUMA1",
+   "family": "BTS7006-1EPP",
+   "mfr": "Infineon",
+   "desc": "PROFET+2 12V single high-side switch 6.6 mOhm",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "PDU"
+   ],
+   "observedMpn": "BTS70061EPPXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key Japan",
+     "qty": 1000,
+     "price": 157.621,
+     "currency": "JPY",
+     "url": "https://www.digikey.jp/ja/products/detail/infineon-technologies/BTS70061EPPXUMA1/9829549",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "snippet also quoted USD 1.0344 @1k without a clear URL; not used"
+  },
+  {
+   "mpn": "BTS500151TADATMA2",
+   "family": "BTS50015-1TAD",
+   "mfr": "Infineon",
+   "desc": "Power PROFET 12/24V high-side switch 1.5 mOhm 33A",
+   "category": "ic_soic",
+   "pkg": "TO-263-7",
+   "aecq": true,
+   "ecuRoles": [
+    "PDU",
+    "BCM",
+    "fan",
+    "pump"
+   ],
+   "observedMpn": "BTS500151TADATMA2",
+   "observations": [
+    {
+     "distributor": "Rutronik",
+     "qty": 1000,
+     "price": 3.3,
+     "currency": "EUR",
+     "url": "https://www.rutronik24.com/product/infineon/bts50015-1tad/8563336.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser 1k $3.25 / 2k $3.14 seen in summary but no Mouser URL returned; not recorded"
+  },
+  {
+   "mpn": "BTT60302ERAXUMA1",
+   "family": "BTT6030-2ERA",
+   "mfr": "Infineon",
+   "desc": "PROFET+ 24V dual high-side switch 30 mOhm",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "truck BCM"
+   ],
+   "observedMpn": "BTT60302ERAXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.1,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTT60302ERAXUMA1/10379697",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 1.86,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--analog--power-switches/btt60302eraxuma1-infineon-5127807",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "BTS70402EPAXUMA1",
+   "family": "BTS7040-2EPA",
+   "mfr": "Infineon",
+   "desc": "PROFET+2 12V dual high-side switch 40 mOhm",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "BTS70402EPAXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.76,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70402EPAXUMA1/7791528",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.75,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS70402EPAXUMA1/7791528",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "summary gave 1k only as approx 0.83; not recorded"
+  },
+  {
+   "mpn": "BSP762TXUMA1",
+   "family": "BSP762T",
+   "mfr": "Infineon",
+   "desc": "Smart high-side switch 2A",
+   "category": "ic_soic",
+   "pkg": "DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "relay driver"
+   ],
+   "observedMpn": "BSP762TXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.19,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BSP762TXUMA1/1281688",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.11,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BSP762TXUMA1/1281688",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "VNQ7040AYTR-E",
+   "family": "VNQ7040AY",
+   "mfr": "STMicroelectronics",
+   "desc": "Quad high-side driver 40 mOhm",
+   "category": "ic_qfn",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "VNQ7040AYTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.32217,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VNQ7040AYTR/5892710",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.24152,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VNQ7040AYTR/5892710",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "sibling code without -E"
+  },
+  {
+   "mpn": "VN7016AJTR",
+   "family": "VN7016AJ",
+   "mfr": "STMicroelectronics",
+   "desc": "Single high-side driver 16 mOhm",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "VN7016AJTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.14678,
+     "currency": "USD",
+     "url": "https://digikey.com/product-detail/en/stmicroelectronics/VN7016AJTR/497-15852-1-ND/5321997",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.11068,
+     "currency": "USD",
+     "url": "https://digikey.com/product-detail/en/stmicroelectronics/VN7016AJTR/497-15852-1-ND/5321997",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "out of stock at DK when read"
+  },
+  {
+   "mpn": "VND7020AJTR",
+   "family": "VND7020AJ",
+   "mfr": "STMicroelectronics",
+   "desc": "Dual high-side driver 20 mOhm",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "VND7020AJTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.6158,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VND7020AJTR/5319616",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.58397,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VND7020AJTR/5319616",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "VN9D30Q100FTR",
+   "family": "VN9D30Q100F",
+   "mfr": "STMicroelectronics",
+   "desc": "6-channel high-side driver 33 mOhm, SPI",
+   "category": "ic_qfn",
+   "pkg": "QFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "only a DK '$3.70' with no break on a product-highlight page; not recorded"
+  },
+  {
+   "mpn": "TPS1HB08BQPWPRQ1",
+   "family": "TPS1HB08-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 8 mOhm single high-side switch",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "PDU"
+   ],
+   "observedMpn": "TPS1HB08BQPWPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.5955,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1HB08AQPWPRQ1/11615928",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.5072,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1HB08AQPWPRQ1/11615928",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "summary named B variant; URL returned is A variant page"
+  },
+  {
+   "mpn": "TPS1H200AQDGNRQ1",
+   "family": "TPS1H200A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 200 mOhm single high-side switch",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "TPS1H200AQDGNRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.82082,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1H200AQDGNRQ1/9685555",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12500,
+     "price": 0.75518,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1H200AQDGNRQ1/9685555",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TPS2HB16AQPWPRQ1",
+   "family": "TPS2HB16-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 16 mOhm dual high-side switch",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "TPS2HB16AQPWPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.58356,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2HB16AQPWPRQ1/11308755",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.45838,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2HB16AQPWPRQ1/11308755",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.43043,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2HB16AQPWPRQ1/11308755",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TPS4H160BQPWPRQ1",
+   "family": "TPS4H160-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 160 mOhm quad high-side switch",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-28",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "TPS4H160BQPWPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.98329,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS4H160BQPWPRQ1/6100239",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key Canada",
+     "qty": 1000,
+     "price": 2.7648,
+     "currency": "CAD",
+     "url": "https://www.digikey.ca/en/products/detail/texas-instruments/TPS4H160BQPWPRQ1/6100239",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "NCV84160DR2G",
+   "family": "NCV84160",
+   "mfr": "onsemi",
+   "desc": "Self-protected high-side driver 160 mOhm",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "NCV84160DR2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.0973,
+     "currency": "USD",
+     "url": "https://www.digikey.com/product-detail/en/on-semiconductor/NCV84160DR2G/NCV84160DR2G-ND/8636509",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "NCV8406ASTT1G",
+   "family": "NCV8406",
+   "mfr": "onsemi",
+   "desc": "Self-protected low-side driver 65V",
+   "category": "ic_soic",
+   "pkg": "SOT-223",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "ECM relay drive"
+   ],
+   "observedMpn": "NCV8406ASTT1G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.60663,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8406ASTT1G/3062191",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 0.58883,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8406ASTT1G/3062191",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "DRV8873HQPWPRQ1",
+   "family": "DRV8873-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 10A H-bridge motor driver",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-24",
+   "aecq": true,
+   "ecuRoles": [
+    "door",
+    "seat",
+    "window"
+   ],
+   "observedMpn": "DRV8873HPWPRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.6443,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/stepper-motor-driver_texas-instruments-drv8873hpwprq1_C2150479.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK 1250 $3.109 and Mouser 1k $2.84 seen in summary, no URLs; LCSC well below DK"
+  },
+  {
+   "mpn": "DRV8705SQRHBRQ1",
+   "family": "DRV8705-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "H-bridge smart gate driver",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "pump",
+    "seat"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "DK $2.77 (break unknown) seen without URL; not recorded"
+  },
+  {
+   "mpn": "DRV8714SQPHPRQ1",
+   "family": "DRV8714-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "4-half-bridge smart gate driver",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "door",
+    "seat"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "only TI direct and broker prices found"
+  },
+  {
+   "mpn": "DRV3245AQPHPRQ1",
+   "family": "DRV3245Q-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-phase gate driver for EPS/BLDC",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump"
+   ],
+   "observedMpn": "DRV3245AQPHPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 7.11634,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DRV3245AQPHPRQ1/9356553",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "not normally stocked"
+  },
+  {
+   "mpn": "DRV8343SQPHPRQ1",
+   "family": "DRV8343-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-phase smart gate driver",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-52",
+   "aecq": true,
+   "ecuRoles": [
+    "pump",
+    "fan"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE9562QX",
+   "family": "TLE9562QX",
+   "mfr": "Infineon",
+   "desc": "BLDC gate driver with SBC",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "pump",
+    "fan"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE9180D-31QK",
+   "family": "TLE9180D-31QK",
+   "mfr": "Infineon",
+   "desc": "3-phase bridge driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE9183QK",
+   "family": "TLE9183",
+   "mfr": "Infineon",
+   "desc": "3-phase bridge driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE9201SG",
+   "family": "TLE9201SG",
+   "mfr": "Infineon",
+   "desc": "6A H-bridge",
+   "category": "ic_soic",
+   "pkg": "DSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "throttle",
+    "actuator"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE94112EL",
+   "family": "TLE94112EL",
+   "mfr": "Infineon",
+   "desc": "12-half-bridge driver",
+   "category": "ic_soic",
+   "pkg": "SSOP-24",
+   "aecq": true,
+   "ecuRoles": [
+    "HVAC flap"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "L9907",
+   "family": "L9907",
+   "mfr": "STMicroelectronics",
+   "desc": "3-phase FET pre-driver",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "L99H92",
+   "family": "L99H92",
+   "mfr": "STMicroelectronics",
+   "desc": "H-bridge gate driver",
+   "category": "ic_qfn",
+   "pkg": "QFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "door",
+    "seat"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "A4910",
+   "family": "A4910",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Automotive 3-phase MOSFET driver",
+   "category": "ic_tqfp",
+   "pkg": "eTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "pump",
+    "fan"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "L9779WD",
+   "family": "L9779",
+   "mfr": "STMicroelectronics",
+   "desc": "Engine management system IC",
+   "category": "ic_tqfp",
+   "pkg": "PowerSSO-64",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE8888-1QK",
+   "family": "TLE8888",
+   "mfr": "Infineon",
+   "desc": "Engine management system IC",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE8110EE",
+   "family": "TLE8110EE",
+   "mfr": "Infineon",
+   "desc": "10-channel low-side switch",
+   "category": "ic_soic",
+   "pkg": "DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE6240GP",
+   "family": "TLE6240GP",
+   "mfr": "Infineon",
+   "desc": "16-channel low-side switch",
+   "category": "ic_soic",
+   "pkg": "DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "NCV7517",
+   "family": "NCV7517",
+   "mfr": "onsemi",
+   "desc": "Hex low-side MOSFET pre-driver",
+   "category": "ic_qfn",
+   "pkg": "QFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "L9788",
+   "family": "L9788",
+   "mfr": "STMicroelectronics",
+   "desc": "Engine management system IC",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "MC33816",
+   "family": "MC33816",
+   "mfr": "NXP",
+   "desc": "Injector/solenoid pre-driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "GDI"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TPS92662A-Q1",
+   "family": "TPS92662A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "12-switch LED matrix manager",
+   "category": "ic_tqfp",
+   "pkg": "HTSSOP-28",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TPS92830-Q1",
+   "family": "TPS92830-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-ch linear LED controller",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-24",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TPS92520-Q1",
+   "family": "TPS92520-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Dual buck LED driver",
+   "category": "ic_qfn",
+   "pkg": "HTQFP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TPS92633-Q1",
+   "family": "TPS92633-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-ch linear LED driver",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "LT3964",
+   "family": "LT3964",
+   "mfr": "Analog Devices",
+   "desc": "Dual synchronous LED driver",
+   "category": "ic_qfn",
+   "pkg": "QFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "MAX20096",
+   "family": "MAX20096",
+   "mfr": "Analog Devices",
+   "desc": "Dual buck LED controller",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLD5542-1QU",
+   "family": "TLD5542-1QU",
+   "mfr": "Infineon",
+   "desc": "Buck-boost LED controller",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLD1114-1EP",
+   "family": "TLD1114-1EP",
+   "mfr": "Infineon",
+   "desc": "LITIX Basic+ 1-ch linear LED driver",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "interior",
+    "rear lamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLD2331-3EP",
+   "family": "TLD2331-3EP",
+   "mfr": "Infineon",
+   "desc": "LITIX Basic 3-ch LED driver",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "NCV7685",
+   "family": "NCV7685",
+   "mfr": "onsemi",
+   "desc": "12-ch linear LED driver I2C",
+   "category": "ic_soic",
+   "pkg": "SSOP-24",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE5012BE1000",
+   "family": "TLE5012B",
+   "mfr": "Infineon",
+   "desc": "GMR angle sensor",
+   "category": "ic_soic",
+   "pkg": "DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "motor position"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE5014SP16",
+   "family": "TLE5014",
+   "mfr": "Infineon",
+   "desc": "GMR angle sensor SPC/PWM",
+   "category": "ic_soic",
+   "pkg": "TDSO-16",
+   "aecq": true,
+   "ecuRoles": [
+    "pedal",
+    "throttle"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "MLX90381",
+   "family": "MLX90381",
+   "mfr": "Melexis",
+   "desc": "Analog resolver/angle sensor",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "motor position"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "MLX90363",
+   "family": "MLX90363",
+   "mfr": "Melexis",
+   "desc": "Triaxis position sensor SPI",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pedal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "AS5047P",
+   "family": "AS5047P",
+   "mfr": "ams OSRAM",
+   "desc": "14-bit magnetic encoder",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "ecuRoles": [
+    "motor position"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE4999C8",
+   "family": "TLE4999",
+   "mfr": "Infineon",
+   "desc": "Dual linear Hall sensor",
+   "category": "ic_soic",
+   "pkg": "TDSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "pedal",
+    "throttle"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "KP236N6165",
+   "family": "KP236",
+   "mfr": "Infineon",
+   "desc": "Analog barometric/MAP pressure sensor",
+   "category": "ic_soic",
+   "pkg": "DSOF-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM MAP"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "SMI230",
+   "family": "SMI230",
+   "mfr": "Bosch",
+   "desc": "6-axis inertial sensor (automotive)",
+   "category": "ic_qfn",
+   "pkg": "LGA-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "nav"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "ASM330LHHTR",
+   "family": "ASM330LHH",
+   "mfr": "STMicroelectronics",
+   "desc": "6-axis automotive IMU",
+   "category": "ic_qfn",
+   "pkg": "LGA-14",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "telematics"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "IAM-20685",
+   "family": "IAM-20685",
+   "mfr": "TDK InvenSense",
+   "desc": "6-axis automotive IMU",
+   "category": "ic_qfn",
+   "pkg": "LGA-24",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "TLE4966",
+   "family": "TLE4966",
+   "mfr": "Infineon",
+   "desc": "Dual Hall switch (speed/direction)",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "window",
+    "seat"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  },
+  {
+   "mpn": "A1335",
+   "family": "A1335",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Magnetic angle sensor",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "motor position"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not researched: shared web-search budget (200/turn) exhausted before this part; re-run"
+  }
+ ]
+}

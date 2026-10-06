@@ -17,6 +17,7 @@ import './styles/saas-polish.css';
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
+import { ecuLibraryShell, wireEcuLibrary } from './pcb/ecu-library.js';
 import { beginBusy } from './busy.js';
 import { initCommoditySwitcher } from './commodity-switcher.js';
 import { initFieldValidation } from './field-validation.js';
@@ -5277,6 +5278,7 @@ function renderPCBFabForm(): string {
   return `
     ${buildPCBImageUploadZone()}
     <div id="pcb-img-results"></div>
+    ${ecuLibraryShell()}
     <div class="section-title">PCB Technology & Quality</div>
     <div class="field-row">
       <div class="field-group"><label>PCB Technology</label><select id="pcbf-technology">
@@ -5443,6 +5445,7 @@ function renderPCBAForm(): string {
   return `
     ${buildPCBImageUploadZone()}
     <div id="pcb-img-results"></div>
+    ${ecuLibraryShell()}
     <div class="section-title">Complexity &amp; Grade</div>
     <div class="field-row">
       <div class="field-group"><label>Assembly Complexity <span title="Multiplies SMT placement time. Low=×1.0 (≤100 comps, no BGAs), Medium=×1.3 (100–300, fine-pitch), High=×1.7 (>300, BGAs, 2-sided), Very High=×2.0 (ADAS/domain)">ℹ</span></label>
@@ -11898,6 +11901,7 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderPCBFabForm();
       populateSelects();
       wirePCBImageZone();
+      wireEcuLibrary();
       if (pcbImageResult) injectPCBImagePanel(); else injectPCBDemoCards();
       break;
 
@@ -11905,6 +11909,7 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderPCBAForm();
       populateSelects();
       wirePCBImageZone();
+      wireEcuLibrary();
       if (pcbImageResult) injectPCBImagePanel(); else injectPCBDemoCards();
       el('add-bom-btn')?.addEventListener('click', () => addBOMRow());
       el('bom-csv-input')?.addEventListener('change', importBOMFromCSV);

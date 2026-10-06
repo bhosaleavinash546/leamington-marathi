@@ -1,0 +1,498 @@
+{
+ "domain": "AEC-Q200/AEC-Q101 SMT passives and discretes",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "GCM155R71C104KA55D",
+   "family": "GCM155R71C104KA55",
+   "mfr": "Murata",
+   "desc": "MLCC 100nF 16V X7R 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM155R71C104KA55D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0085,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM155R71C104KA55D/1641633",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00649,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM155R71C104KA55D/1641633",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 50000,
+     "price": 0.00525,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM155R71C104KA55D/1641633",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK also 100k $0.00425"
+  },
+  {
+   "mpn": "GCM155R71H103KA55D",
+   "family": "GCM155R71H103KA55",
+   "mfr": "Murata",
+   "desc": "MLCC 10nF 50V X7R 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM155R71H103KA55D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00587,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM155R71H103KA55D/1641636",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.00505,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM155R71H103KA55D/1641636",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "1k break not in snippet (500 = $0.01056)"
+  },
+  {
+   "mpn": "GCM1555C1H101JA16D",
+   "family": "GCM1555C1H101JA16",
+   "mfr": "Murata",
+   "desc": "MLCC 100pF 50V C0G 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "filtering",
+    "CAN/RF"
+   ],
+   "observedMpn": "GCM1555C1H101JA16D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.01095,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM1555C1H101JA16D/4903548",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.00588,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM1555C1H101JA16D/4903548",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "GCM188R71H104KA57D",
+   "family": "GCM188R71H104KA57",
+   "mfr": "Murata",
+   "desc": "MLCC 100nF 50V X7R 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM188R71H104KA57D",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1600,
+     "price": 0.014,
+     "currency": "USD",
+     "url": "https://eu.mouser.com/ProductDetail/Murata-Electronics/GCM188R71H104KA57D?qs=aEuGZpxfbxWuy5eQGqiN%2BA%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 0.0126,
+     "currency": "USD",
+     "url": "https://eu.mouser.com/ProductDetail/Murata-Electronics/GCM188R71H104KA57D?qs=aEuGZpxfbxWuy5eQGqiN%2BA%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "eu.mouser page, currency as summarised ($); snippet's 40k=$0.034 discarded as inconsistent"
+  },
+  {
+   "mpn": "GCM188R71C105KA64D",
+   "family": "GCM188R71C105KA64",
+   "mfr": "Murata",
+   "desc": "MLCC 1uF 16V X7R 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM188R71C105KA64D",
+   "observations": [
+    {
+     "distributor": "TTI",
+     "qty": 4000,
+     "price": 0.024,
+     "currency": "USD",
+     "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=GCM188R71C105KA64D&mfgShortname=MUR",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 4000,
+     "price": 0.023,
+     "currency": "USD",
+     "url": "https://www.newark.com/murata/gcm188r71c105ka64d/cap-1-f-16v-10-x7r-0603/dp/03AC2497",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0104,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Others_Murata-Electronics-GCM188R71C105KA64D_C161212.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC well below TTI/Newark"
+  },
+  {
+   "mpn": "GCM21BR71H105KA03L",
+   "family": "GCM21BR71H105KA03",
+   "mfr": "Murata",
+   "desc": "MLCC 1uF 50V X7R 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM21BR71H105KA03L",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.04335,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM21BR71H105KA03L/4903984",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 0.0392,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm21br71h105ka03l-murata-2101380",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 9000,
+     "price": 0.0235,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C126592.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Arrow ~$0.041-0.044 (break not stated)"
+  },
+  {
+   "mpn": "GCM21BR71A106KE22L",
+   "family": "GCM21BR71A106KE22",
+   "mfr": "Murata",
+   "desc": "MLCC 10uF 10V X7R 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM21BR71A106KE22L",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0479,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C126586.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 6000,
+     "price": 0.0436,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C126586.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "only LCSC breaks found"
+  },
+  {
+   "mpn": "GCM31CR71E106KA64L",
+   "family": "GCM31CR71E106KA64",
+   "mfr": "Murata",
+   "desc": "MLCC 10uF 25V X7R 1206 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCM31CR71E106KA64L",
+   "observations": [],
+   "notes": "No distributor price for exact MPN in results (only 16V sibling GCM31CR71C106KA64L, different voltage - not used)"
+  },
+  {
+   "mpn": "GCM32ER71H475KA55L",
+   "family": "GCM32ER71H475KA55",
+   "mfr": "Murata",
+   "desc": "MLCC 4.7uF 50V X7R 1210 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "supply filtering",
+    "DC-DC"
+   ],
+   "observedMpn": "GCM32ER71H475KA55L",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 2000,
+     "price": 0.1671,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics-GCM32ER71H475KA55L_C126618.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.1643,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics-GCM32ER71H475KA55L_C126618.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 500,
+     "price": 0.253,
+     "currency": "USD",
+     "url": "https://www.newark.com/murata/gcm32er71h475ka55l/cap-4-7-f-50v-10-x7r-1210/dp/12AC6489",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Arrow reel ~$0.1645 (qty not stated)"
+  },
+  {
+   "mpn": "GCJ31CR71H105KA01L",
+   "family": "GCJ31CR71H105KA01",
+   "mfr": "Murata",
+   "desc": "MLCC 1uF 50V X7R 1206 soft-termination AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "GCJ31CR71H105KA01L",
+   "observations": [],
+   "notes": "Exact MPN not found; only 100V sibling GCJ31CR72A105KA01L (different voltage) surfaced - not used"
+  },
+  {
+   "mpn": "CGA3E2X7R1H104K080AA",
+   "family": "CGA3E2X7R1H104K080",
+   "mfr": "TDK",
+   "desc": "MLCC 100nF 50V X7R 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "CGA3E2X7R1H104K080AA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01366,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk/CGA3E2X7R1H104K080AA/2443144",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0118,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk/CGA3E2X7R1H104K080AA/2443144",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "CGA4J3X7R1H105K125AB",
+   "family": "CGA4J3X7R1H105K125",
+   "mfr": "TDK",
+   "desc": "MLCC 1uF 50V X7R 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "CGA4J3X7R1H105K125AB",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 0.0611,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga4j3x7r1h105k125ab-tdk-9049676",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 2000,
+     "price": 0.101,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/cga4j3x7r1h105k125ab/tdk.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.0922,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA4J3X7R1H105K125AB/2672854",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC 4000+ $0.188 discarded (above its own small-qty trend); wide spread Future vs Arrow"
+  },
+  {
+   "mpn": "CGA5L1X7R1H475K160AC",
+   "family": "CGA5L1X7R1H475K160",
+   "mfr": "TDK",
+   "desc": "MLCC 4.7uF 50V X7R 1206 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "CGA5L1X7R1H475K160AC",
+   "observations": [],
+   "notes": "Exact MPN not listed at DK/Mouser in results; nearest CGA5L3X7R1H475K160AE/AB (different thickness code) - not used. 25V sibling CGA5L1X7R1E475K160AC Future 2000 $0.0728 for reference only"
+  },
+  {
+   "mpn": "C0603C104K5RACAUTO",
+   "family": "C0603C104K5RAC",
+   "mfr": "KEMET",
+   "desc": "MLCC 100nF 50V X7R 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "C0603C104K5RACAUTO",
+   "observations": [
+    {
+     "distributor": "Arrow",
+     "qty": 4000,
+     "price": 0.016,
+     "currency": "USD",
+     "url": "https://octopart.com/c0603c104k5racauto-kemet-12563741",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 24000,
+     "price": 0.012,
+     "currency": "USD",
+     "url": "https://octopart.com/c0603c104k5racauto-kemet-12563741",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 20000,
+     "price": 0.012,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_KEMET_C129621.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Arrow breaks via search summary (Octopart aggregated); Arrow 8000 = $0.0130"
+  },
+  {
+   "mpn": "CL10B104KB8WPNC",
+   "family": "CL10B104KB8",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 100nF 50V X7R 0603 AEC-Q200 (automotive W-series)",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "decoupling",
+    "all ECUs"
+   ],
+   "observedMpn": "CL10B104KB8WPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 28000,
+     "price": 0.01078,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/samsung-electro-mechanics/CL10B104KB8WPNC/5961338",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 100000,
+     "price": 0.004,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Others_Samsung-Electro-Mechanics_CL10B104KB8WPNC_Samsung-Electro-Mechanics-CL10B104KB8WPNC_C307348.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Task listed CL10B104KB8NNWC?; automotive orderable code is CL10B104KB8WPNC. DK/LCSC spread large"
+  }
+ ]
+}

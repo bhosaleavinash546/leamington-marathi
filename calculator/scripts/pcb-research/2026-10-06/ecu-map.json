@@ -1,0 +1,1854 @@
+{
+  "researched": "2026-10-06",
+  "notes": [
+    "PCB layers/sizes/placements are engineering judgement unless 'basis' is a URL; only the ECM/DCU placement count (~412 components, Bosch DCU17HD01 teardown) is sourced.",
+    "Sources were read from web-search result snippets; vendor sites could not be fetched (egress blocked) and the search budget ran out before cluster/IVI, NOx/DCU, glow-plug and fuel-pump sources were found - those ICs are engineering judgement.",
+    "MHEV/HEV/PHEV semiconductor content is interpolated; Infineon (Dec 2024) publishes ICE ~USD 750 and BEV ~USD 1,300 only."
+  ],
+  "powertrains": [
+    {
+      "id": "ICE",
+      "name": "Internal combustion (gasoline / diesel)",
+      "ecuCountTypical": "30–70 mid-range; 70–100 premium",
+      "ecuCountSource": "https://spectrum.ieee.org/this-car-runs-on-code (70–100 for premium cars); mid-range range is engineering judgement",
+      "semiContentUSD": {
+        "value": "~750 (2024 average ICE)",
+        "source": "https://www.infineon.com/assets/row/public/documents/corporate/investors/presentations/2025/2024-12-04-atv-roadshow-london-v01-00-en.pdf"
+      },
+      "ecus": [
+        "BCM",
+        "GW",
+        "ACU",
+        "EPS",
+        "ESC",
+        "CLUSTER",
+        "IVI",
+        "RADAR",
+        "FCAM",
+        "TEL",
+        "SEAT",
+        "DOOR",
+        "HVAC",
+        "HEADLAMP",
+        "ECM",
+        "TCM",
+        "GPCU",
+        "IGN",
+        "FPC",
+        "NOX",
+        "DCU",
+        "IBS",
+        "ALTREG"
+      ]
+    },
+    {
+      "id": "MHEV",
+      "name": "48 V mild hybrid with belt starter-generator",
+      "ecuCountTypical": "ICE count + 3–4",
+      "ecuCountSource": "engineering judgement",
+      "semiContentUSD": {
+        "value": "~850–1,000 (ICE + 48 V BSG inverter, DC-DC, BMS)",
+        "source": "engineering judgement (interpolated between Infineon's ICE ~750 and BEV ~1,300)"
+      },
+      "ecus": [
+        "BCM",
+        "GW",
+        "ACU",
+        "EPS",
+        "ESC",
+        "CLUSTER",
+        "IVI",
+        "RADAR",
+        "FCAM",
+        "TEL",
+        "SEAT",
+        "DOOR",
+        "HVAC",
+        "HEADLAMP",
+        "ECM",
+        "TCM",
+        "GPCU",
+        "IGN",
+        "FPC",
+        "NOX",
+        "DCU",
+        "IBS",
+        "BSG_INV",
+        "DCDC48",
+        "BMS48",
+        "EBOOST"
+      ]
+    },
+    {
+      "id": "HEV",
+      "name": "Full hybrid (e.g. power-split)",
+      "ecuCountTypical": "ICE count + 5–8",
+      "ecuCountSource": "engineering judgement",
+      "semiContentUSD": {
+        "value": "~1,000–1,200",
+        "source": "engineering judgement (interpolated; Infineon publishes ICE and BEV only)"
+      },
+      "ecus": [
+        "BCM",
+        "GW",
+        "ACU",
+        "EPS",
+        "ESC",
+        "CLUSTER",
+        "IVI",
+        "RADAR",
+        "FCAM",
+        "TEL",
+        "SEAT",
+        "DOOR",
+        "HVAC",
+        "HEADLAMP",
+        "ECM",
+        "TCM",
+        "IGN",
+        "FPC",
+        "IBS",
+        "PCU",
+        "BMS_CMU",
+        "BMS_BMU",
+        "DCDC_HV",
+        "VCU",
+        "ECOMP"
+      ]
+    },
+    {
+      "id": "PHEV",
+      "name": "Plug-in hybrid",
+      "ecuCountTypical": "HEV count + 2–4",
+      "ecuCountSource": "engineering judgement",
+      "semiContentUSD": {
+        "value": "~1,200–1,400",
+        "source": "engineering judgement (interpolated; at or near Infineon's ~1,300 BEV figure)"
+      },
+      "ecus": [
+        "BCM",
+        "GW",
+        "ACU",
+        "EPS",
+        "ESC",
+        "CLUSTER",
+        "IVI",
+        "RADAR",
+        "FCAM",
+        "TEL",
+        "SEAT",
+        "DOOR",
+        "HVAC",
+        "HEADLAMP",
+        "ECM",
+        "TCM",
+        "IGN",
+        "FPC",
+        "NOX",
+        "DCU",
+        "IBS",
+        "TINV",
+        "PCU",
+        "BMS_CMU",
+        "BMS_BMU",
+        "DCDC_HV",
+        "VCU",
+        "OBC",
+        "CCU",
+        "ECOMP",
+        "PTC",
+        "TMS"
+      ]
+    },
+    {
+      "id": "BEV400",
+      "name": "Battery electric, 400 V",
+      "ecuCountTypical": "70–100+ (premium BEV); zonal architectures reduce count",
+      "ecuCountSource": "https://spectrum.ieee.org/this-car-runs-on-code (premium 70–100); BEV-specific range engineering judgement",
+      "semiContentUSD": {
+        "value": "~1,300 (2024 average BEV); ~1,650 projected 2030, up to ~2,500 high-end",
+        "source": "https://www.infineon.com/assets/row/public/documents/corporate/investors/presentations/2025/2024-12-04-atv-roadshow-london-v01-00-en.pdf"
+      },
+      "ecus": [
+        "BCM",
+        "GW",
+        "ACU",
+        "EPS",
+        "ESC",
+        "CLUSTER",
+        "IVI",
+        "RADAR",
+        "FCAM",
+        "TEL",
+        "SEAT",
+        "DOOR",
+        "HVAC",
+        "HEADLAMP",
+        "IBS",
+        "TINV",
+        "BMS_CMU",
+        "BMS_BMU",
+        "DCDC_HV",
+        "VCU",
+        "OBC",
+        "CCU",
+        "ECOMP",
+        "PTC",
+        "TMS"
+      ]
+    },
+    {
+      "id": "BEV800",
+      "name": "Battery electric, 800 V (SiC inverter, high-power DC charging)",
+      "ecuCountTypical": "as BEV400; often + DC-DC boost for 400 V chargers",
+      "ecuCountSource": "engineering judgement",
+      "semiContentUSD": {
+        "value": "above the ~1,300 BEV average, toward Infineon's ~2,500 high-end figure (SiC traction inverter content)",
+        "source": "https://www.infineon.com/assets/row/public/documents/corporate/investors/presentations/2025/2024-12-04-atv-roadshow-london-v01-00-en.pdf (range bounds); placement within range is engineering judgement"
+      },
+      "ecus": [
+        "BCM",
+        "GW",
+        "ACU",
+        "EPS",
+        "ESC",
+        "CLUSTER",
+        "IVI",
+        "RADAR",
+        "FCAM",
+        "TEL",
+        "SEAT",
+        "DOOR",
+        "HVAC",
+        "HEADLAMP",
+        "IBS",
+        "TINV",
+        "BMS_CMU",
+        "BMS_BMU",
+        "DCDC_HV",
+        "VCU",
+        "OBC",
+        "CCU",
+        "ECOMP",
+        "PTC",
+        "TMS"
+      ]
+    }
+  ],
+  "ecus": [
+    {
+      "ecu": "BCM",
+      "name": "Body control module",
+      "function": "Exterior/interior lighting, locks, wipers, window/mirror loads, switch inputs; LIN master for body nodes.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~150×200 mm to 250×300 mm",
+        "technology": "FR4 high-Tg, 2 oz outer copper for load paths; through-hole + SMT connectors",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "800–2,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU",
+          "examples": [
+            "NXP S32K344",
+            "NXP MPC574xB/C"
+          ],
+          "source": "https://www.heisener.com/TechnologyDetail/United-Nations-World-Peace-launches-the-Body-Control-Module-BCM-solution-based-on-NXP-products"
+        },
+        {
+          "role": "high-side / low-side relay, motor and load drivers",
+          "examples": [
+            "TI high-/low-side driver portfolio in TIDA-00296 (loads: door locks, window lifts, seat heaters, HVAC, lamps, LEDs)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-00296"
+        },
+        {
+          "role": "SBC / LDO, CAN & LIN transceivers",
+          "examples": [
+            "TI BCM solution: LDOs, CAN, LIN, limp-home, high-side switches"
+          ],
+          "source": "https://www.ti.com/solution/body-control-module-bcm"
+        }
+      ]
+    },
+    {
+      "ecu": "GW",
+      "name": "Central gateway / vehicle network processor",
+      "function": "Routes and firewalls CAN/CAN-FD/LIN/Ethernet traffic between domains; diagnostics (DoIP), OTA staging, security.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "6–10",
+        "size": "~120×160 mm to 200×250 mm",
+        "technology": "FR4 high-Tg; 8–10 layer when DDR + multi-port Ethernet switch (S32G class)",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "600–2,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "gateway processor / MCU",
+          "examples": [
+            "NXP S32G274A / S32G3",
+            "NXP MPC5748G (classic gateway)"
+          ],
+          "source": "https://www.nxp.com/docs/en/fact-sheet/S32G-VNP-RDB-FS.pdf"
+        },
+        {
+          "role": "automotive Ethernet switch",
+          "examples": [
+            "NXP SJA1105Q",
+            "NXP SJA1110A"
+          ],
+          "source": "https://www.nxp.com/docs/en/fact-sheet/S32G-VNP-RDB-FS.pdf"
+        },
+        {
+          "role": "interfaces (reference design counts)",
+          "examples": [
+            "S32G-VNP-RDB: 16× CAN/CAN-FD, 14 Ethernet ports",
+            "S32G3 RDB3: 18× CAN-FD, 12 Ethernet",
+            "MPC5748G-GW-RDB: 8× CAN-FD, 4× 100BASE-T1"
+          ],
+          "source": "https://www.nxp.com/docs/en/fact-sheet/MPC5748G-GW-RDB-FS.pdf"
+        }
+      ]
+    },
+    {
+      "ecu": "ACU",
+      "name": "Airbag / restraint control unit",
+      "function": "Crash sensing (internal accelerometers + PSI5 satellites), squib firing, energy reserve, seat-belt pretensioners.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~80×120 mm to 120×150 mm",
+        "technology": "FR4 high-Tg; energy-reserve electrolytic caps",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–700",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "airbag system IC (firing loops, PSI5, energy reserve, safety controller)",
+          "examples": [
+            "Bosch CG912 (4 loops)",
+            "Bosch CG902 (8 loops)",
+            "Bosch CG903 (12 loops)",
+            "Bosch CG904 (16 loops)"
+          ],
+          "source": "https://www.bosch-semiconductors.com/products/automotive-ics/safety/cg912/"
+        },
+        {
+          "role": "squib driver",
+          "examples": [
+            "TI TPIC71008-Q1 (8-channel)"
+          ],
+          "source": "https://www.ti.com/lit/ds/slvsax3/slvsax3.pdf"
+        },
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon AURIX TC2xx/TC3xx",
+            "Renesas RH850"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "EPS",
+      "name": "Electric power steering controller",
+      "function": "3-phase BLDC/PMSM assist motor control from torque-sensor input; ASIL-D.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6 control board + power stage",
+        "size": "control ~80×100 mm; power stage often on IMS or thick-copper/DBC",
+        "technology": "FR4 high-Tg control + IMS or thick copper (≥3 oz) power stage; 12 V high-current MOSFET bridge (60–120 A)",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–800",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "3-phase gate driver unit",
+          "examples": [
+            "TI DRV3245Q-Q1 (ISO 26262, listed for EPS/EHPS)"
+          ],
+          "source": "https://www.ti.com/product/DRV3245Q-Q1"
+        },
+        {
+          "role": "main MCU (lock-step)",
+          "examples": [
+            "Infineon AURIX TC3xx",
+            "Renesas RH850/P1x"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "power MOSFETs (12 V, 40 V class)",
+          "examples": [
+            "Infineon OptiMOS 40 V",
+            "Nexperia LFPAK 40 V"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "ESC",
+      "name": "ABS / ESC brake control unit",
+      "function": "Wheel-speed sensing, valve solenoid and pump motor drive for ABS/ESC; mounted on hydraulic unit.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~80×120 mm (stacked on valve block)",
+        "technology": "FR4 high-Tg / ceramic hybrid historically; press-fit to coil carrier",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–700",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU (dual-core lockstep)",
+          "examples": [
+            "Infineon AURIX TC3xx",
+            "NXP MPC57xx"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "valve/pump driver ASIC",
+          "examples": [
+            "supplier ASIC (Bosch/Continental in-house)"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "3-phase gate driver for e-brake/booster variants",
+          "examples": [
+            "TI DRV3245Q-Q1 (listed for electrical brake and brake assist)"
+          ],
+          "source": "https://www.ti.com/product/DRV3245Q-Q1"
+        }
+      ]
+    },
+    {
+      "ecu": "CLUSTER",
+      "name": "Instrument cluster",
+      "function": "Driver display (TFT 7–12.3 in), telltales, chimes.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "6–8 (8–10 with DDR / HDI)",
+        "size": "~150×250 mm",
+        "technology": "FR4 high-Tg; HDI 1+n+1 on SoC-based digital clusters",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "600–1,500",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "graphics SoC / MCU",
+          "examples": [
+            "NXP i.MX 8",
+            "Renesas R-Car",
+            "Infineon TRAVEO T2G cluster"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "DDR / flash",
+          "examples": [
+            "LPDDR4",
+            "eMMC / NOR"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "IVI",
+      "name": "Infotainment head unit",
+      "function": "Media, navigation, smartphone projection, audio amp, centre display.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "8–12",
+        "size": "~200×250 mm main board + display/IO boards",
+        "technology": "HDI (1+n+1 to 3+n+3) FR4 high-Tg; BGA SoC with LPDDR",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "1,500–4,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "application SoC",
+          "examples": [
+            "Qualcomm SA8155P / SA8295P",
+            "Renesas R-Car H3/M3",
+            "NXP i.MX 8QM"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "audio amplifier",
+          "examples": [
+            "class-D automotive amp (TI TAS6424-Q1 class)"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "RADAR",
+      "name": "ADAS radar sensor (front / corner)",
+      "function": "77 GHz FMCW radar for ACC, AEB, blind-spot, cross-traffic.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "6–8 hybrid",
+        "size": "~70×90 mm to 100×120 mm",
+        "technology": "Hybrid stack: low-loss RF laminate (PTFE/hydrocarbon) top layer for antennas + FR4 below",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "200–600",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "77 GHz radar transceiver",
+          "examples": [
+            "NXP TEF82xx (3 Tx / 4 Rx, 76–81 GHz, ASIL B)"
+          ],
+          "source": "https://www.nxp.com/docs/en/fact-sheet/TEF82XX-FS.pdf"
+        },
+        {
+          "role": "77 GHz radar SoC (alternative)",
+          "examples": [
+            "TI AWR2944 (4 Tx / 4 Rx)"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "radar processor",
+          "examples": [
+            "NXP S32R41 (Cortex-A53 + M7, SPT/BBE accelerators)",
+            "NXP S32R45"
+          ],
+          "source": "https://www.nxp.com/docs/en/fact-sheet/S32R41FS.pdf"
+        }
+      ]
+    },
+    {
+      "ecu": "FCAM",
+      "name": "ADAS front camera module",
+      "function": "Mono/tri camera for lane keeping, AEB, TSR; vision SoC on board.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "8–10",
+        "size": "~60×90 mm main + imager board",
+        "technology": "HDI FR4 high-Tg; rigid-flex to imager common",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "400–1,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "vision SoC",
+          "examples": [
+            "Mobileye EyeQ4 Mid/High (ZF S-Cam4 mono and tri-cam)"
+          ],
+          "source": "https://www.globenewswire.com/news-release/2019/05/23/1841324/0/en/teardown-analysis-of-mobileye-s-eyeq4-vision-processor-family-with-an-exhaustive-comparison-between-the-eyeq4-high-and-mid-versions-and-the-previous-eyeq3.html"
+        },
+        {
+          "role": "vision SoC (next gen)",
+          "examples": [
+            "Mobileye EyeQ5 Mid (7 nm FinFET, 4.6 DL TOPS)"
+          ],
+          "source": "https://www.yolegroup.com/product/report/mobileyes-eyeq5-mid-soc/"
+        },
+        {
+          "role": "image sensor",
+          "examples": [
+            "onsemi AR0820AT",
+            "Sony IMX4xx automotive"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "TEL",
+      "name": "Telematics control unit (TCU)",
+      "function": "LTE/5G modem, GNSS, eCall with backup battery, remote services, OTA.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "6–10",
+        "size": "~100×150 mm",
+        "technology": "HDI FR4 high-Tg; RF shielding cans; modem module soldered (LGA)",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "500–1,500",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "cellular modem / SoC",
+          "examples": [
+            "Qualcomm MDM9250 / Snapdragon X16 LTE (CCARD reference TCU)"
+          ],
+          "source": "https://estore.lantronix.com/products/qualcomm-connected-car-application-reference-design-ccard"
+        },
+        {
+          "role": "composition (processor, GNSS, modem, Wi-Fi/BT, Ethernet)",
+          "examples": [
+            "MCU/processor + GNSS + LTE modem + Wi-Fi/BLE + Ethernet PHY"
+          ],
+          "source": "https://en.wikipedia.org/wiki/Telematic_control_unit"
+        },
+        {
+          "role": "security controller / HSM",
+          "examples": [
+            "Infineon OPTIGA TPM class secure element"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "SEAT",
+      "name": "Seat control module",
+      "function": "Power seat motors, memory, heating/ventilation, occupant sensing.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "2–4",
+        "size": "~60×100 mm to 100×150 mm",
+        "technology": "FR4; 2 oz copper for motor H-bridges/relays",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "150–500",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU",
+          "examples": [
+            "NXP S32K1xx",
+            "Infineon TRAVEO T2G Body Entry"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "motor H-bridge / relay drivers",
+          "examples": [
+            "TI DRV8xxx-Q1 family",
+            "Infineon TLE94xxx multi-half-bridge"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "DOOR",
+      "name": "Door control module",
+      "function": "Window lift, mirror, lock motors, switch pack; LIN/CAN node per door.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "2–4",
+        "size": "~60×100 mm",
+        "technology": "FR4; often integrated in window-lift motor housing",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "150–500",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU",
+          "examples": [
+            "NXP S32K1xx",
+            "Infineon TRAVEO T2G"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "multi-half-bridge / H-bridge drivers",
+          "examples": [
+            "Infineon TLE94xxx",
+            "TI DRV8xxx-Q1"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "window-lift / door-lock driver reference",
+          "examples": [
+            "TI TIDA-00296 BCM driver design (door locks, window lifts)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-00296"
+        }
+      ]
+    },
+    {
+      "ecu": "HVAC",
+      "name": "HVAC / climate control module",
+      "function": "Blower, flap actuators, A/C request; on ICE drives mechanical compressor clutch, on xEV coordinates e-compressor/PTC/heat pump.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "2–4 (4–6 when integrated with control panel)",
+        "size": "~100×150 mm",
+        "technology": "FR4",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "200–700",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU",
+          "examples": [
+            "NXP S32K1xx",
+            "Renesas RH850/F1x"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "flap stepper / DC motor drivers",
+          "examples": [
+            "Infineon TLE94xxx",
+            "TI DRV8xxx-Q1"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "HEADLAMP",
+      "name": "Headlamp LED driver / matrix controller",
+      "function": "LED buck/boost drivers, adaptive driving beam pixel control, levelling.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "2–4 driver; LED boards 1–2",
+        "size": "driver ~60×100 mm; LED boards on IMS",
+        "technology": "Driver FR4; LED carriers aluminium IMS",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "150–600",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "LED matrix manager (ADB)",
+          "examples": [
+            "TI TPS92662-Q1 (12-channel, 4.5–60 V)"
+          ],
+          "source": "https://www.ti.com/product/TPS92662-Q1"
+        },
+        {
+          "role": "LED driver selection (front headlight)",
+          "examples": [
+            "TI front headlight selection guide parts"
+          ],
+          "source": "https://www.ti.com/lit/pdf/sluaad5"
+        }
+      ]
+    },
+    {
+      "ecu": "ECM",
+      "name": "Engine control module / PCM",
+      "function": "Fuel injection, ignition timing, air/boost, knock, lambda, OBD; drives injectors, coils, valves, relays.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "4–8",
+        "size": "~120×160 mm to 180×220 mm",
+        "technology": "FR4 high-Tg (engine-bay / on-engine mounts); thermal vias under power ICs",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "~412 components on the main PCB of a Bosch DCU17HD01 ECM teardown (MCU + companion IC, 80 MHz); 400–1,200 typical",
+        "basis": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon TriCore TC1797 (Bosch MED17.8.31)",
+            "Infineon AURIX TC3xx (current gen)",
+            "Infineon TC1766 + CIC751 companion (DCU17 teardown)"
+          ],
+          "source": "https://www.autotuner.com/pages/ecu/bosch-med17831-tc1797"
+        },
+        {
+          "role": "engine management IC (power outputs, supplies, CAN/LIN)",
+          "examples": [
+            "Infineon TLE8888-1QK (4-cyl, 29 power outputs)"
+          ],
+          "source": "https://www.infineon.com/part/TLE8888-1QK"
+        },
+        {
+          "role": "injector / ignition pre-drivers",
+          "examples": [
+            "supplier ASICs; integrated in TLE8888 for 4-cyl"
+          ],
+          "source": "https://www.infineon.com/part/TLE8888-1QK"
+        }
+      ]
+    },
+    {
+      "ecu": "TCM",
+      "name": "Transmission control unit",
+      "function": "Shift scheduling, clutch/solenoid pressure control (AT, DCT, CVT); often mechatronic (in-oil).",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~80×120 mm (mechatronic) ",
+        "technology": "FR4 high-Tg or LTCC/ceramic for in-oil mechatronics; sealed",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–800",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "function definition",
+          "examples": [
+            "Transmission control unit"
+          ],
+          "source": "https://en.wikipedia.org/wiki/Transmission_control_unit"
+        },
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon AURIX TC2xx/TC3xx",
+            "Renesas RH850"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "solenoid current drivers",
+          "examples": [
+            "Infineon / NXP multi-channel constant-current solenoid drivers"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "GPCU",
+      "name": "Glow-plug control unit (diesel)",
+      "function": "PWM-controlled power to ceramic/metal glow plugs for cold start and after-glow.",
+      "powertrains": [
+        "ICE",
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "2–4",
+        "size": "~50×80 mm",
+        "technology": "FR4 / thick copper for 4–6 high-current channels",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "50–200",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "smart high-side switches / power MOSFETs per plug",
+          "examples": [
+            "Infineon PROFET / OptiMOS 40 V class"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "small MCU / LIN",
+          "examples": [
+            "8–32-bit automotive MCU with LIN"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "IGN",
+      "name": "Ignition coil drivers (gasoline)",
+      "function": "Coil-on-plug IGBT switching; usually an IGBT in each coil, triggered by the ECM (not a separate ECU on modern cars).",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "n/a (IGBT in coil) or 1–2 layer",
+        "size": "small, in-coil",
+        "technology": "Leadframe/IGBT in coil body",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "<20 per coil",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "ignition IGBT",
+          "examples": [
+            "smart ignition IGBT (e.g. onsemi/Infineon automotive ignition IGBTs)"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "FPC",
+      "name": "Fuel-pump controller",
+      "function": "Demand-controlled (PWM or BLDC) in-tank low-pressure fuel pump drive.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "2–4",
+        "size": "~50×80 mm",
+        "technology": "FR4; 2 oz copper",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "80–300",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + gate driver / BLDC controller",
+          "examples": [
+            "automotive 32-bit MCU + 3-phase gate driver (e.g. Infineon MOTIX)"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "NOX",
+      "name": "NOx sensor control unit",
+      "function": "Heats and reads the zirconia NOx sensor cell, reports NOx/O2 over CAN; one or two per SCR system.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "4",
+        "size": "~40×60 mm",
+        "technology": "FR4 high-Tg, potted/sealed housing",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "100–300",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "sensor interface ASIC + MCU",
+          "examples": [
+            "supplier ASIC (Bosch / Continental-Vitesco / NGK)"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "DCU",
+      "name": "Exhaust aftertreatment / SCR dosing control unit",
+      "function": "AdBlue/DEF dosing valve, pump and line heater control; often integrated into ECM on passenger cars, separate on heavy duty (e.g. Bosch DCU17).",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~100×150 mm",
+        "technology": "FR4 high-Tg",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–700 (the Bosch DCU17HD01 module torn down had ~412 components on its main PCB)",
+        "basis": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + companion",
+          "examples": [
+            "Infineon TC1766 + CIC751 (Bosch DCU17HD01 teardown)"
+          ],
+          "source": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+        },
+        {
+          "role": "heater / pump high-side drivers",
+          "examples": [
+            "smart high-side switches"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "IBS",
+      "name": "12 V intelligent battery sensor",
+      "function": "Shunt-based current, voltage and temperature measurement of the 12 V battery; SoC/SoH for energy management and stop-start; on the battery terminal.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "2–4",
+        "size": "~20×40 mm on the shunt",
+        "technology": "FR4 mounted on manganin shunt / terminal clamp",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "20–60",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "battery sensor SoC (AFE + MCU + LIN/CAN)",
+          "examples": [
+            "NXP MM9Z1J638 (LIN and CAN reference designs)"
+          ],
+          "source": "https://www.nxp.com/design/design-center/development-boards-and-designs/12-v-lead-acid-battery-management-system-with-lin:RD9Z1-638-12V"
+        }
+      ]
+    },
+    {
+      "ecu": "ALTREG",
+      "name": "Alternator voltage regulator",
+      "function": "Field-current regulation of the 12 V alternator, LIN-controlled 'smart charging'; mounted on alternator.",
+      "powertrains": [
+        "ICE"
+      ],
+      "pcb": {
+        "layers": "1–2 / hybrid",
+        "size": "~30×40 mm",
+        "technology": "Monolithic regulator ASIC on leadframe or small ceramic/FR4 hybrid",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "<30",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "alternator regulator ASIC with LIN",
+          "examples": [
+            "supplier ASIC (Bosch, Valeo, Denso in-house)"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "BSG_INV",
+      "name": "48 V belt starter-generator inverter/controller",
+      "function": "Low-voltage high-current inverter for the 10–25 kW BSG: start, boost, regen; often integrated in the machine.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "4–6 control; power stage on IMS/DBC/thick copper",
+        "size": "control ~100×120 mm; power stage annular around machine",
+        "technology": "Thick copper (≥4 oz) or IMS / leadframe power module with 80–100 V MOSFETs; FR4 control",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–900",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "half-bridge gate driver",
+          "examples": [
+            "Allegro AMT49502 (5.5–80 V, 12 V & 48 V BSG)"
+          ],
+          "source": "https://www.allegromicro.com/en/insights-and-innovations/technical-documents/12v-48v-bsg"
+        },
+        {
+          "role": "isolated gate driver (5-phase BSG)",
+          "examples": [
+            "TI UCC20225-Q1 (5 drivers: 3 stator + 2 rotor excitation)"
+          ],
+          "source": "https://www.ti.com/lit/pdf/sszt409"
+        },
+        {
+          "role": "MCU + gate driver (published 48 V BSG prototype)",
+          "examples": [
+            "Infineon TC1782 + TLE9180"
+          ],
+          "source": "https://www.researchgate.net/publication/269270620_Multiphase_starter_generator_for_48V_mini-hybrid_powertrain_Design_and_testing"
+        },
+        {
+          "role": "system solution guide (48 V starter-generator)",
+          "examples": [
+            "onsemi BRD8212/D parts list"
+          ],
+          "source": "https://static4.arrow.com/-/media/arrow/files/pdf/0524-brd8212-48v-starter-generator.pdf"
+        }
+      ]
+    },
+    {
+      "ecu": "DCDC48",
+      "name": "48 V–12 V bidirectional DC-DC converter",
+      "function": "Supplies the 12 V net from 48 V (1–3 kW), and the reverse for 48 V pre-charge/start.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~150×200 mm",
+        "technology": "Thick copper (3–4 oz) FR4 or IMS for multiphase buck/boost power stage",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–800",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "multiphase bidirectional current controller",
+          "examples": [
+            "TI LM5170-Q1 (2× in 4-phase TIDA-01168)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-01168"
+        },
+        {
+          "role": "control MCU",
+          "examples": [
+            "TI TMS320F28027F (TIDA-01168)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-01168"
+        }
+      ]
+    },
+    {
+      "ecu": "BMS48",
+      "name": "48 V battery management system",
+      "function": "12–14S Li-ion monitoring, balancing, contactor/relay control for the 48 V pack.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~100×200 mm",
+        "technology": "FR4 high-Tg; thick copper if relay/MOSFET disconnect on board",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "200–600",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "cell monitor (14 ch; 48 V pack is 12–14S)",
+          "examples": [
+            "NXP MC33771C"
+          ],
+          "source": "https://www.nxp.com/products/MC33771C"
+        },
+        {
+          "role": "MCU",
+          "examples": [
+            "NXP S32K1xx"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "EBOOST",
+      "name": "48 V electric supercharger / e-booster controller",
+      "function": "Drives a 48 V high-speed motor-driven compressor for transient boost (fitted on some premium MHEVs, not universal).",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~80×120 mm",
+        "technology": "Thick copper / IMS power stage",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "200–600",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + 3-phase gate driver + 80–100 V MOSFETs",
+          "examples": [
+            "AURIX TC2xx/TC3xx + motor gate driver"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "PCU",
+      "name": "Hybrid power control unit (motor + generator inverters + boost converter)",
+      "function": "Power-split HEV: two inverters (MG1 generator, MG2 motor) and a bidirectional boost converter (e.g. Prius 200 V battery boosted to 650 V).",
+      "powertrains": [
+        "HEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "6–8 control/gate-driver board",
+        "size": "~200×250 mm control/gate-drive board",
+        "technology": "FR4 high-Tg with reinforced isolation (transformer + optocoupler isolation per Prius teardown); separate power cards",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "800–2,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "controller ASIC + 2 MCUs (vector control of motor and generator, resolver, CAN)",
+          "examples": [
+            "Toyota/Denso custom ASIC + 2 MCUs (Prius ZVW51)"
+          ],
+          "source": "https://www.marklines.com/en/report/ltec001_201704"
+        },
+        {
+          "role": "boost/inverter architecture",
+          "examples": [
+            "2010 Prius PCU: inverter + boost converter (ORNL evaluation)"
+          ],
+          "source": "https://info.ornl.gov/sites/publications/files/Pub26762.pdf"
+        }
+      ]
+    },
+    {
+      "ecu": "TINV",
+      "name": "Traction inverter (front / rear e-axle)",
+      "function": "DC-AC drive of the traction motor (100–300+ kW); IGBT at 400 V, SiC MOSFET dominant at 800 V; PHEV/BEV and some HEV architectures.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "8–12 (control + gate-driver board)",
+        "size": "~200×250 mm to 250×300 mm",
+        "technology": "FR4 high-Tg, reinforced isolation creepage (800 V needs ≥ 1200 V class isolation); separate power module + laminated busbar",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "1,000–2,500",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon AURIX TC3x7 (logic board in Infineon HybridPACK Drive CoolSiC G2 eval kit)"
+          ],
+          "source": "https://www.infineon.com/cms/en/applications/automotive/electric-drive-train/traction-inverter/"
+        },
+        {
+          "role": "inverter control reference (NXP)",
+          "examples": [
+            "NXP EV-INVERTERGEN3 control reference design"
+          ],
+          "source": "https://www.nxp.com/design/design-center/development-boards-and-designs/EV-INVERTERGEN3"
+        },
+        {
+          "role": "isolated gate driver",
+          "examples": [
+            "Infineon 1EDI303xAS EiceDRIVER G3 (1EDI3026AS/1EDI3035AS 20 A, inverters >300 kW)"
+          ],
+          "source": "https://www.electronicdesign.com/markets/automotive/article/55268893/electronic-design-infineons-isolated-gate-driver-ics-meet-ev-traction-inverter-needs"
+        },
+        {
+          "role": "power module",
+          "examples": [
+            "Infineon HybridPACK Drive CoolSiC G2",
+            "Wolfspeed SiC (300 kW TIDM-02014 reference)"
+          ],
+          "source": "https://www.wolfspeed.com/products/power/reference-designs/tidm-02014/"
+        },
+        {
+          "role": "current sensor",
+          "examples": [
+            "Infineon TLE4972 coreless Hall"
+          ],
+          "source": "https://www.infineon.com/part/TLE4972-AE35S5"
+        }
+      ]
+    },
+    {
+      "ecu": "BMS_CMU",
+      "name": "HV battery cell monitoring unit (slave boards)",
+      "function": "Per-module cell-voltage / temperature measurement and passive balancing; daisy-chained to the BMU (or wireless).",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~60×150 mm per module board (count = modules: ~4–8 HEV/PHEV, 8–24 BEV)",
+        "technology": "FR4 high-Tg; isolation slots; may be flex/FPC on CTP packs",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "80–300 per board",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "TI BQ79616-Q1 (16S, ASIL-D, 240 mA balancing)"
+          ],
+          "source": "https://www.ti.com/product/BQ79616-Q1"
+        },
+        {
+          "role": "cell monitor AFE (alternatives)",
+          "examples": [
+            "NXP MC33771C (14 ch)"
+          ],
+          "source": "https://www.nxp.com/products/MC33771C"
+        },
+        {
+          "role": "cell monitor AFE (ADI)",
+          "examples": [
+            "ADI ADBMS6830"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "isolated daisy-chain transceiver",
+          "examples": [
+            "NXP MC33664 (TPL)"
+          ],
+          "source": "https://www.nxp.com/products/MC33664"
+        }
+      ]
+    },
+    {
+      "ecu": "BMS_BMU",
+      "name": "HV battery management unit (master) + battery junction box electronics",
+      "function": "SoC/SoH, contactor control, pre-charge, isolation monitoring, pack current (shunt/Hall), HVIL; aggregates CMU data.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "6–8",
+        "size": "~150×200 mm",
+        "technology": "FR4 high-Tg; reinforced isolation between HV sense and LV domain",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "500–1,200",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon AURIX TC3xx",
+            "NXP S32K3 / MPC5775B"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "BMS reference (BCC + MCU on board)",
+          "examples": [
+            "NXP RD33771CNTREVM: 4× MC33771C + S32K1xx"
+          ],
+          "source": "https://www.nxp.com/design/design-center/development-boards-and-designs/flexible-battery-management-system-bms-reference-design:RD33771CNTREVM"
+        },
+        {
+          "role": "pack current sensor",
+          "examples": [
+            "Infineon TLE4972 (named for battery main switch)"
+          ],
+          "source": "https://www.infineon.com/part/TLE4972-AE35S5"
+        }
+      ]
+    },
+    {
+      "ecu": "DCDC_HV",
+      "name": "HV–12 V DC-DC converter (APM/LDC)",
+      "function": "Replaces the alternator: supplies the 12 V net from the HV battery (2–3.6 kW).",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–8",
+        "size": "~200×250 mm",
+        "technology": "Thick copper (3–6 oz) or busbars for 200–300 A output; planar magnetics common",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "400–1,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "topology and power devices",
+          "examples": [
+            "TI TIDA-020031: 400 V→12 V 3.6 kW phase-shifted full bridge with SiC MOSFETs, 300 A peak"
+          ],
+          "source": "https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/14/TIDUEY2-_2800_1_2900_.PDF"
+        },
+        {
+          "role": "GaN alternative",
+          "examples": [
+            "TI PMP41078: GaN PSFB 3.5 kW, 200–450 V in, 14 V out"
+          ],
+          "source": "https://www.ti.com/tool/PMP41078"
+        },
+        {
+          "role": "control MCU",
+          "examples": [
+            "TI C2000 (TIDM-BIDIR-400-12)"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-BIDIR-400-12"
+        }
+      ]
+    },
+    {
+      "ecu": "VCU",
+      "name": "Vehicle / hybrid control unit (VCU/HCU)",
+      "function": "Torque arbitration, energy management, drive mode, charge sequencing; on HEVs the hybrid supervisor.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–8",
+        "size": "~120×160 mm",
+        "technology": "FR4 high-Tg",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "400–1,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon AURIX TC3xx",
+            "NXP MPC57xx / S32K3"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    },
+    {
+      "ecu": "OBC",
+      "name": "On-board charger",
+      "function": "AC charging 3.7–22 kW: PFC (totem-pole) + isolated DC-DC (LLC/CLLC); often combined with HV DC-DC in one box.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–8",
+        "size": "~250×300 mm power board + control",
+        "technology": "Thick copper (3–4 oz) FR4 power board; IMS or discrete on cold plate",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "800–2,000",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "SiC MOSFETs + driver (11 kW 3-phase PFC + LLC)",
+          "examples": [
+            "onsemi NVHL080N120SC1 1200 V 80 mΩ",
+            "onsemi NCV51705 SiC driver",
+            "onsemi FFSH3065B diode"
+          ],
+          "source": "https://www.onsemi.com/company/newsroom/blog/automotive/development-kit-introduced-by-onsemi-for-electric-vehicle-on-board-charging"
+        },
+        {
+          "role": "control MCU",
+          "examples": [
+            "ST SR5E1 (7 kW OBC reference)"
+          ],
+          "source": "https://www.st.com/resource/en/application_note/an5949-sr5e1-line--7-kw-evhev-onboardcharger-reference-design-stmicroelectronics.pdf"
+        },
+        {
+          "role": "control MCU (TI)",
+          "examples": [
+            "TI C2000 (6.6 kW SiC totem-pole PFC reference)"
+          ],
+          "source": "https://www.ti.com/lit/ug/tidue54b/tidue54b.pdf"
+        },
+        {
+          "role": "11 kW totem-pole PFC reference",
+          "examples": [
+            "Microchip 11 kW totem-pole PFC demonstration"
+          ],
+          "source": "https://www.microchip.com/en-us/tools-resources/reference-designs/11-kw-totem-pole-demonstration-application"
+        }
+      ]
+    },
+    {
+      "ecu": "CCU",
+      "name": "Charging communication controller (EVCC, CCS PLC)",
+      "function": "ISO 15118 / DIN 70121 over HomePlug Green PHY on the CP line for DC fast charging; control pilot/proximity; often merged into OBC or VCU.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~60×100 mm",
+        "technology": "FR4",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "150–400",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "HomePlug Green PHY modem",
+          "examples": [
+            "Qualcomm QCA7005 (AEC-Q100 Grade 3)"
+          ],
+          "source": "https://www.5gtechnologyworld.com/homeplug-green-phy-solutions-from-qualcomm-enable-the-internet-of-everything/"
+        },
+        {
+          "role": "host MCU",
+          "examples": [
+            "STM32 (ccs32clara open design)"
+          ],
+          "source": "https://github.com/uhi22/ccs32clara"
+        }
+      ]
+    },
+    {
+      "ecu": "ECOMP",
+      "name": "HV electric A/C compressor inverter",
+      "function": "Sensorless FOC drive of the e-compressor motor (3–8 kW), integrated on the compressor; 400 V or 800 V.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~100×150 mm (annular/rectangular on compressor head)",
+        "technology": "FR4 high-Tg with HV isolation; IPM or discrete IGBT/SiC on cold side",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–800",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU",
+          "examples": [
+            "TI C2000 TMS320F28003x (TIDM-02012, 5 kW, 400/800 V)",
+            "Infineon TRAVEO T2G / PSoC 4"
+          ],
+          "source": "https://www.ti.com/lit/ug/tiduf17/tiduf17.pdf"
+        },
+        {
+          "role": "isolated gate driver",
+          "examples": [
+            "TI UCC21530-Q1"
+          ],
+          "source": "https://www.ti.com/lit/ug/tiduf17/tiduf17.pdf"
+        },
+        {
+          "role": "system solution",
+          "examples": [
+            "Infineon HV e-compressor application"
+          ],
+          "source": "https://www.infineon.com/application/automotive-high-voltage-e-compressor"
+        }
+      ]
+    },
+    {
+      "ecu": "PTC",
+      "name": "HV PTC heater controller",
+      "function": "Switches HV PTC elements (cabin air or coolant, 5–10 kW) in stages/PWM.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4",
+        "size": "~100×150 mm",
+        "technology": "FR4 with HV isolation; IGBTs/MOSFETs on heat sink",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "150–400",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "IGBT + isolated gate driver",
+          "examples": [
+            "onsemi FGH40T65 + NCV57000 (TND6319)",
+            "ROHM RGS80TSX2DHR 1200 V IGBT (REF66011, 7 kW)",
+            "TI UCC21551-Q1"
+          ],
+          "source": "https://www.onsemi.com/pub/Collateral/TND6319-D.PDF"
+        },
+        {
+          "role": "design considerations",
+          "examples": [
+            "TI PTC heater module app note"
+          ],
+          "source": "https://www.ti.com/lit/pdf/sluaay5"
+        }
+      ]
+    },
+    {
+      "ecu": "TMS",
+      "name": "Thermal management controller / heat-pump controller",
+      "function": "Coordinates coolant pumps, valves (octovalve-style manifolds), heat-pump refrigerant EXVs, battery/drive-unit thermal loops.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "4–6",
+        "size": "~100×150 mm",
+        "technology": "FR4 high-Tg",
+        "basis": "engineering judgement"
+      },
+      "placements": {
+        "range": "300–800",
+        "basis": "engineering judgement"
+      },
+      "keyIcs": [
+        {
+          "role": "MCU",
+          "examples": [
+            "NXP S32K3",
+            "Infineon TRAVEO T2G"
+          ],
+          "source": "engineering judgement"
+        },
+        {
+          "role": "valve/EXV stepper and pump drivers",
+          "examples": [
+            "Infineon TLE94xxx",
+            "TI DRV8xxx-Q1"
+          ],
+          "source": "engineering judgement"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    "https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/14/TIDUEY2-_2800_1_2900_.PDF",
+    "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown",
+    "https://en.wikipedia.org/wiki/Telematic_control_unit",
+    "https://en.wikipedia.org/wiki/Transmission_control_unit",
+    "https://estore.lantronix.com/products/qualcomm-connected-car-application-reference-design-ccard",
+    "https://github.com/uhi22/ccs32clara",
+    "https://info.ornl.gov/sites/publications/files/Pub26762.pdf",
+    "https://spectrum.ieee.org/this-car-runs-on-code",
+    "https://static4.arrow.com/-/media/arrow/files/pdf/0524-brd8212-48v-starter-generator.pdf",
+    "https://www.5gtechnologyworld.com/homeplug-green-phy-solutions-from-qualcomm-enable-the-internet-of-everything/",
+    "https://www.allegromicro.com/en/insights-and-innovations/technical-documents/12v-48v-bsg",
+    "https://www.autotuner.com/pages/ecu/bosch-med17831-tc1797",
+    "https://www.bosch-semiconductors.com/products/automotive-ics/safety/cg912/",
+    "https://www.electronicdesign.com/markets/automotive/article/55268893/electronic-design-infineons-isolated-gate-driver-ics-meet-ev-traction-inverter-needs",
+    "https://www.globenewswire.com/news-release/2019/05/23/1841324/0/en/teardown-analysis-of-mobileye-s-eyeq4-vision-processor-family-with-an-exhaustive-comparison-between-the-eyeq4-high-and-mid-versions-and-the-previous-eyeq3.html",
+    "https://www.heisener.com/TechnologyDetail/United-Nations-World-Peace-launches-the-Body-Control-Module-BCM-solution-based-on-NXP-products",
+    "https://www.infineon.com/application/automotive-high-voltage-e-compressor",
+    "https://www.infineon.com/assets/row/public/documents/corporate/investors/presentations/2025/2024-12-04-atv-roadshow-london-v01-00-en.pdf",
+    "https://www.infineon.com/cms/en/applications/automotive/electric-drive-train/traction-inverter/",
+    "https://www.infineon.com/part/TLE4972-AE35S5",
+    "https://www.infineon.com/part/TLE8888-1QK",
+    "https://www.marklines.com/en/report/ltec001_201704",
+    "https://www.microchip.com/en-us/tools-resources/reference-designs/11-kw-totem-pole-demonstration-application",
+    "https://www.nxp.com/design/design-center/development-boards-and-designs/12-v-lead-acid-battery-management-system-with-lin:RD9Z1-638-12V",
+    "https://www.nxp.com/design/design-center/development-boards-and-designs/EV-INVERTERGEN3",
+    "https://www.nxp.com/design/design-center/development-boards-and-designs/flexible-battery-management-system-bms-reference-design:RD33771CNTREVM",
+    "https://www.nxp.com/docs/en/fact-sheet/MPC5748G-GW-RDB-FS.pdf",
+    "https://www.nxp.com/docs/en/fact-sheet/S32G-VNP-RDB-FS.pdf",
+    "https://www.nxp.com/docs/en/fact-sheet/S32R41FS.pdf",
+    "https://www.nxp.com/docs/en/fact-sheet/TEF82XX-FS.pdf",
+    "https://www.nxp.com/products/MC33664",
+    "https://www.nxp.com/products/MC33771C",
+    "https://www.onsemi.com/company/newsroom/blog/automotive/development-kit-introduced-by-onsemi-for-electric-vehicle-on-board-charging",
+    "https://www.onsemi.com/pub/Collateral/TND6319-D.PDF",
+    "https://www.researchgate.net/publication/269270620_Multiphase_starter_generator_for_48V_mini-hybrid_powertrain_Design_and_testing",
+    "https://www.st.com/resource/en/application_note/an5949-sr5e1-line--7-kw-evhev-onboardcharger-reference-design-stmicroelectronics.pdf",
+    "https://www.ti.com/lit/ds/slvsax3/slvsax3.pdf",
+    "https://www.ti.com/lit/pdf/sluaad5",
+    "https://www.ti.com/lit/pdf/sluaay5",
+    "https://www.ti.com/lit/pdf/sszt409",
+    "https://www.ti.com/lit/ug/tidue54b/tidue54b.pdf",
+    "https://www.ti.com/lit/ug/tiduf17/tiduf17.pdf",
+    "https://www.ti.com/product/BQ79616-Q1",
+    "https://www.ti.com/product/DRV3245Q-Q1",
+    "https://www.ti.com/product/TPS92662-Q1",
+    "https://www.ti.com/solution/body-control-module-bcm",
+    "https://www.ti.com/tool/PMP41078",
+    "https://www.ti.com/tool/TIDA-00296",
+    "https://www.ti.com/tool/TIDA-01168",
+    "https://www.ti.com/tool/TIDM-BIDIR-400-12",
+    "https://www.wolfspeed.com/products/power/reference-designs/tidm-02014/",
+    "https://www.yolegroup.com/product/report/mobileyes-eyeq5-mid-soc/"
+  ]
+}

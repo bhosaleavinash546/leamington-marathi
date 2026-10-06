@@ -23,6 +23,7 @@ import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
+import { ecuLibrary } from '../utils/pcb-ecu-library.js';
 import { isNotFitted } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
@@ -2296,6 +2297,15 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
 });
 
 // POST /api/pcb/live-pricing  — optional live component pricing
+/**
+ * GET /api/pcb/ecu-library?volume=300000 — which ECUs each powertrain carries and their key
+ * ICs, each linked to its catalogue price at that annual volume (pcb-ecu-library.ts).
+ */
+router.get('/ecu-library', (req, res): void => {
+  const v = parseInt(String(req.query.volume ?? '100000'), 10);
+  res.json(ecuLibrary([100_000, 200_000, 300_000].includes(v) ? v : Math.min(1_000_000, Math.max(1_000, v || 100_000))));
+});
+
 /**
  * POST /api/pcb/reprice — Stage 4 again on the current analysis, no AI call: a new
  * country, quantity or distributor key. "Fetch Live Prices" used to overwrite line

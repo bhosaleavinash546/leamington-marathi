@@ -1,0 +1,926 @@
+{
+ "domain": "Battery management (BMS CMU/BJB/pack controller) and charging (OBC, DC-DC, CCS PLC, insulation/HV measurement, contactor drive)",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "BQ79616PAPRQ1",
+   "family": "BQ79616-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "16S battery monitor/balancer, daisy-chain, ASIL-D",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "BQ79616PAPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 9.4,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79616PAPRQ1/13627120",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.28,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79616PAPRQ1/13627120",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 25,
+     "price": 11.23,
+     "currency": "USD",
+     "url": "https://mouser.com/c/semiconductors/power-management-ics/battery-management/?m=Texas+Instruments&series=BQ79616",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK 100-break read as 'down to $10.28' over 1-100 CT range. Mouser 25 $11.23 seen; Mouser $8.31 tier break unknown, not recorded."
+  },
+  {
+   "mpn": "BQ79656PAPRQ1",
+   "family": "BQ79656-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "16S battery monitor/balancer with protector, ASIL-D",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "BQ79656PAPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 14.46,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79656PAPRQ1/15666834",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 11.37,
+     "currency": "USD",
+     "url": "https://jlcpcb.com/partdetail/TexasInstruments-BQ79656PAPRQ1/C3681535",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC price read from JLCPCB parts page (LCSC stock). Arrow.de EUR14.90 qty unknown, not recorded."
+  },
+  {
+   "mpn": "BQ79612PAPRQ1",
+   "family": "BQ79612-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "12S battery monitor/balancer, daisy-chain",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "BQ79612PAPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 12.01766,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79612PAPRQ1/14641468",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK 1k TR is above BQ79616 1k ($9.40) - as listed."
+  },
+  {
+   "mpn": "BQ79718BQPAPRQ1",
+   "family": "BQ79718-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "18S battery monitor/balancer, daisy-chain",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "BQ79718BQPAPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 9.48606,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.3587,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "BQ79731PHPRQ1",
+   "family": "BQ79731-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "HV pack monitor: pack voltage, current, isolation resistance",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "BJB",
+    "pack controller"
+   ],
+   "observedMpn": "BQ79731PHPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 88.97127,
+     "currency": "NOK",
+     "url": "https://www.digikey.no/en/products/detail/texas-instruments/BQ79731PHPRQ1/25811558",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK Norway site, NOK; non-stock TR. ti.com list $5.99 (qty unstated, manufacturer store) not recorded."
+  },
+  {
+   "mpn": "BQ79600PWRQ1",
+   "family": "BQ79600-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "SPI/UART to daisy-chain communication bridge",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "pack controller"
+   ],
+   "observedMpn": "BQ79600PWRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.3,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79600PWRQ1/13173848",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 6.18,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79600PWRQ1/13173848",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "MC33771CTA1AE",
+   "family": "MC33771C",
+   "mfr": "NXP",
+   "desc": "14-ch Li-ion battery cell controller, TPL",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "MC33771CTA1AE",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 8.79,
+     "currency": "USD",
+     "url": "https://www.mouser.co.uk/ProductDetail/NXP-Semiconductors/MC33771CTA1AE?qs=wnTfsH77Xs6jFzaitZGTPg%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 9.05,
+     "currency": "USD",
+     "url": "https://www.mouser.co.uk/ProductDetail/NXP-Semiconductors/MC33771CTA1AE?qs=wnTfsH77Xs6jFzaitZGTPg%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Tray; largest Mouser break seen 250."
+  },
+  {
+   "mpn": "MC33772CTA1AE",
+   "family": "MC33772C",
+   "mfr": "NXP",
+   "desc": "6-ch Li-ion battery cell controller, TPL",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU",
+    "48V MHEV"
+   ],
+   "observedMpn": "MC33772CTA1AE",
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 500,
+     "price": 8.92,
+     "currency": "USD",
+     "url": "https://www.newark.com/nxp/mc33772cta1ae/battery-cell-contr-6-channels/dp/25AK0889",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Sibling MC33772CTC1AE: LCSC 100+ $9.56 (https://www.lcsc.com/product-detail/C3681629.html)."
+  },
+  {
+   "mpn": "MC33775ATA1AER2",
+   "family": "MC33775A",
+   "mfr": "NXP",
+   "desc": "18-ch Li-ion battery cell controller, ASIL-D",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "MC33775ATA1AER2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 7.315,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33775ATA1AE/21186614",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Tray MC33775ATA1AE DK 25 $8.17. Package not verified."
+  },
+  {
+   "mpn": "MC33664ATL1EGR2",
+   "family": "MC33664",
+   "mfr": "NXP",
+   "desc": "Isolated network (TPL) transceiver, dual SPI",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "pack controller"
+   ],
+   "observedMpn": "MC33664ATL1EGR2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 2.6893,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33664ATL1EGR2/7645872",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 48,
+     "price": 2.876,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/interface-specialized_nxp-semicon-mc33664atl1eg_C427709.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC figure is tube part MC33664ATL1EG."
+  },
+  {
+   "mpn": "MC33665ATS4AE",
+   "family": "MC33665A",
+   "mfr": "NXP",
+   "desc": "BMS TPL transceiver / CAN gateway, 4-port",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "pack controller"
+   ],
+   "observedMpn": "MC33665ATS4AE",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1,
+     "price": 9.76,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/MC33665ATS4AE?qs=Znm5pLBrcALlwOCzS5prnQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Only qty-1 price found; DK $9.81 qty unstated. Package not verified."
+  },
+  {
+   "mpn": "ADBMS6830BCSWZ",
+   "family": "ADBMS6830",
+   "mfr": "Analog Devices",
+   "desc": "16-ch multicell battery monitor, isoSPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "ADBMS6830BCSWZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 25,
+     "price": 15.6375,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADBMS6830BCSWZ/22462711",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "No 1k distributor break found; ADI-direct 1k figures not recorded."
+  },
+  {
+   "mpn": "ADBMS6815WCSWZ",
+   "family": "ADBMS6815",
+   "mfr": "Analog Devices",
+   "desc": "12-ch multicell battery monitor, isoSPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "ADBMS6815CSWZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.93,
+     "currency": "USD",
+     "url": "https://www.digikey.lt/en/products/detail/analog-devices-inc/ADBMS6815CSWZ/17826508",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Observed on non-W (non-auto-qualified) sibling ADBMS6815CSWZ; ADI 1ku for WFS variant $9.61 (manufacturer, not recorded)."
+  },
+  {
+   "mpn": "ADBMS1818ASWAZ",
+   "family": "ADBMS1818",
+   "mfr": "Analog Devices",
+   "desc": "18-ch multicell battery monitor, isoSPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "ADBMS1818ASWAZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 14.81232,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADBMS1818ASWAZ/16123962",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 5.5252,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Battery-Management-ICs_Analog-Devices-ADBMS1818ASWAZ-RL_C5372802.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC figure is ADBMS1818ASWAZ-RL and ~2.7x below DK - treat with caution."
+  },
+  {
+   "mpn": "ADBMS2950WFSCCSZ",
+   "family": "ADBMS2950",
+   "mfr": "Analog Devices",
+   "desc": "Battery pack monitor: dual current + voltage, ASIL-D",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "BJB",
+    "pack controller"
+   ],
+   "observedMpn": "ADBMS2950WFSCCSZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 260,
+     "price": 14.44,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADBMS2950WCCSZ/22118755",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK min-qty 260 tray; URL is the WCCSZ page from the result set. Package from LFCSP-48 listing of -RL sibling."
+  },
+  {
+   "mpn": "LTC6811HG-1#PBF",
+   "family": "LTC6811-1",
+   "mfr": "Analog Devices",
+   "desc": "12-cell battery stack monitor, isoSPI, H grade",
+   "category": "ic_soic",
+   "pkg": "SSOP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "LTC6811HG-1#PBF",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 518,
+     "price": 17.58,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC6811HG-1-PBF/6235369",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 259,
+     "price": 17.99,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC6811HG-1-PBF/6235369",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Unsourced $9.77@1k in summary discarded."
+  },
+  {
+   "mpn": "LTC6813HLWE-1#3ZZPBF",
+   "family": "LTC6813-1",
+   "mfr": "Analog Devices",
+   "desc": "18-cell battery stack monitor, isoSPI, H grade AEC",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "LTC6813HLWE-1#3ZZPBF",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 10.8184,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Battery-Management-ICs_Analog-Devices-LTC6813HLWE-1-3ZZPBF_C2758259.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Rochester (aftermarket) $14.99@1k not recorded; no DK price in results."
+  },
+  {
+   "mpn": "LTC6820HMS#TRPBF",
+   "family": "LTC6820",
+   "mfr": "Analog Devices",
+   "desc": "isoSPI isolated communications interface, H grade",
+   "category": "ic_soic",
+   "pkg": "MSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "pack controller"
+   ],
+   "observedMpn": "LTC6820HMS#TRPBF",
+   "observations": [],
+   "notes": "Summary gave Mouser 2500+ $4.77 but no Mouser URL in results; not recorded (unverifiable). DK qty-1 $8.22 only."
+  },
+  {
+   "mpn": "L9963E-TR",
+   "family": "L9963E",
+   "mfr": "STMicroelectronics",
+   "desc": "14-cell battery monitor/balancer, isolated SPI",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "L9963E-TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.49,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L9963E-TR/13986399",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 7.13,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L9963E-TR/13986399",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DK L9963E tray: $7.08 @960."
+  },
+  {
+   "mpn": "L9963T-TR",
+   "family": "L9963T",
+   "mfr": "STMicroelectronics",
+   "desc": "SPI to isolated SPI transceiver for BMS",
+   "category": "ic_soic",
+   "pkg": "SO-16 (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "pack controller"
+   ],
+   "observedMpn": "L9963T-TR",
+   "observations": [],
+   "notes": "DK Canada results inconsistent (CT 1k 3.74 vs TR 1k 5.76, currency unclear) - discarded."
+  },
+  {
+   "mpn": "TLE9012DQU",
+   "family": "TLE9012DQU",
+   "mfr": "Infineon",
+   "desc": "12-cell battery monitor/balancer, iso-UART",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-48 (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "TLE9015DQU",
+   "family": "TLE9015DQU",
+   "mfr": "Infineon",
+   "desc": "iso-UART transceiver for BMS",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14 (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "INA228AQDGSRQ1",
+   "family": "INA228-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "85V 20-bit power/energy/charge monitor, I2C",
+   "category": "ic_soic",
+   "pkg": "VSSOP-10",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "48V MHEV",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "INA229AQDGSRQ1",
+   "family": "INA229-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "85V 20-bit power/energy/charge monitor, SPI",
+   "category": "ic_soic",
+   "pkg": "VSSOP-10",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "48V MHEV",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "MAX17853",
+   "family": "MAX17853",
+   "mfr": "Analog Devices",
+   "desc": "14-ch battery monitor (data acquisition)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 (unverified)",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS",
+    "CMU"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "MAX17841",
+   "family": "MAX17841",
+   "mfr": "Analog Devices",
+   "desc": "SPI to UART battery-management communication bridge",
+   "category": "ic_soic",
+   "pkg": "TSSOP (unverified)",
+   "aecq": false,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "UCC28951QPWRQ1",
+   "family": "UCC28951-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Phase-shifted full-bridge PWM controller with SR",
+   "category": "ic_soic",
+   "pkg": "TSSOP-24",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "UCC28740-Q1",
+   "family": "UCC28740-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Opto flyback controller (aux supply)",
+   "category": "ic_soic",
+   "pkg": "SOIC-7",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "UCC256404",
+   "family": "UCC256404",
+   "mfr": "Texas Instruments",
+   "desc": "LLC resonant controller",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 (unverified)",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "UCD3138",
+   "family": "UCD3138",
+   "mfr": "Texas Instruments",
+   "desc": "Digital power controller",
+   "category": "ic_qfn",
+   "pkg": "QFN (unverified)",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "UCC14240-Q1",
+   "family": "UCC14240-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated DC/DC bias module 2W",
+   "category": "power_module",
+   "pkg": "SSOP-36",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "UCC14140-Q1",
+   "family": "UCC14140-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated DC/DC bias module 1.5W",
+   "category": "power_module",
+   "pkg": "SSOP-36",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "SN6505BQDBVRQ1",
+   "family": "SN6505B-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Push-pull transformer driver for isolated supplies",
+   "category": "ic_soic",
+   "pkg": "SOT-23-6",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "UCC28180QDRQ1",
+   "family": "UCC28180-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "CCM PFC controller",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "QCA7005",
+   "family": "QCA7005",
+   "mfr": "Qualcomm",
+   "desc": "HomePlug Green PHY (CCS PLC) modem",
+   "category": "ic_qfn",
+   "pkg": "QFN (unverified)",
+   "aecq": false,
+   "ecuRoles": [
+    "charge port",
+    "EVCC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "QCA7006AQ",
+   "family": "QCA7006AQ",
+   "mfr": "Qualcomm",
+   "desc": "HomePlug Green PHY (CCS PLC) modem, automotive",
+   "category": "ic_qfn",
+   "pkg": "QFN (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "charge port",
+    "EVCC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "MSE1022",
+   "family": "MSE102x",
+   "mfr": "Vertexcom",
+   "desc": "HomePlug Green PHY (CCS PLC) modem",
+   "category": "ic_qfn",
+   "pkg": "QFN (unverified)",
+   "aecq": false,
+   "ecuRoles": [
+    "charge port",
+    "EVCC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "AMC3330QDWERQ1",
+   "family": "AMC3330-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated voltage amplifier with integrated DC/DC",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "insulation monitoring"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "AMC0330RQDWERQ1",
+   "family": "AMC0330-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated voltage amplifier with integrated DC/DC",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "insulation monitoring"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "ISO224BQDWVRQ1",
+   "family": "ISO224-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated +/-12V single-ended voltage amplifier",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "HV sensing"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached."
+  },
+  {
+   "mpn": "DRV3946QDGQRQ1",
+   "family": "DRV3946-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Dual contactor driver with diagnostics",
+   "category": "ic_soic",
+   "pkg": "HVSSOP (unverified)",
+   "aecq": true,
+   "ecuRoles": [
+    "BJB",
+    "pack controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Orderable code not verified."
+  },
+  {
+   "mpn": "BQ79631-Q1",
+   "family": "BQ79631-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "(existence not checked)",
+   "category": "ic_tqfp",
+   "pkg": "unknown",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: shared web-search budget exhausted before this part was reached. Existence of part not verified."
+  }
+ ]
+}

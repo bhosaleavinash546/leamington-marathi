@@ -1,0 +1,905 @@
+{
+ "domain": "automotive power management",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "TLF35584QVVS1XUMA2",
+   "family": "TLF35584",
+   "mfr": "Infineon Technologies",
+   "desc": "Safety PMIC ASIL D, multi-rail, 5V/3.3V uC supply",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain",
+    "chassis",
+    "ADAS"
+   ],
+   "observedMpn": "TLF35584QVVS1XUMA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 4.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLF35584QVVS1XUMA2/7428180",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 3.75,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLF35584QVVS1XUMA2/7428180",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TLF35585QVS01XUMA2",
+   "family": "TLF35585",
+   "mfr": "Infineon Technologies",
+   "desc": "Safety PMIC ASIL D, buck/boost pre-reg, trackers, watchdog",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain",
+    "chassis",
+    "ADAS"
+   ],
+   "observedMpn": "TLF35585QVS01XUMA2",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 4.33,
+     "currency": "USD",
+     "url": "https://www.oemstrade.com/search/tlf35585qvs01",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 4.21,
+     "currency": "USD",
+     "url": "https://www.oemstrade.com/search/tlf35585qvs01",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 5.3,
+     "currency": "USD",
+     "url": "https://www.oemstrade.com/search/tlf35585qvs01",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "TLF35585QVVS1 not found as orderable; QVS01 variant used. Breaks read via OEMsTrade aggregator snippet naming Mouser/Newark."
+  },
+  {
+   "mpn": "TLE92633QXXUMA1",
+   "family": "TLE9263-3",
+   "mfr": "Infineon Technologies",
+   "desc": "Mid-range SBC, 2x CAN + LIN, LDOs, watchdog",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "door"
+   ],
+   "observedMpn": "TLE92633QXXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 2.985,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/TLE9263-3QX",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key T&R 2500 min, non-stock, Not For New Designs; read from search summary of Digi-Key listing."
+  },
+  {
+   "mpn": "TLE94713ESXUMA1",
+   "family": "TLE9471-3ES",
+   "mfr": "Infineon Technologies",
+   "desc": "Lite SBC, CAN FD + 5V LDO",
+   "category": "ic_soic",
+   "pkg": "TSDSO-24",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "seat",
+    "door"
+   ],
+   "observedMpn": "TLE94713ESXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.815,
+     "currency": "USD",
+     "url": "https://digikey.com/product-detail/en/infineon-technologies/TLE94713ESXUMA1/TLE94713ESXUMA1CT-ND/9678752",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.74938,
+     "currency": "USD",
+     "url": "https://digikey.com/product-detail/en/infineon-technologies/TLE94713ESXUMA1/TLE94713ESXUMA1CT-ND/9678752",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TLS850D0TAV50ATMA1",
+   "family": "TLS850D0",
+   "mfr": "Infineon Technologies",
+   "desc": "LDO 5V 500mA, low Iq, reset",
+   "category": "ic_soic",
+   "pkg": "TO-263-5",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "sensor supply",
+    "gateway"
+   ],
+   "observedMpn": "TLS850D0TAV50ATMA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 2.308,
+     "currency": "USD",
+     "url": "https://africa.rsdelivers.com/product/infineon/tls850d0tav50atma1/infineon-ldo-volt-reg-tls850d0tav50atma1/2581697P",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Rochester (aftermarket) 1k $1.39 not used. RS currency read as USD from snippet."
+  },
+  {
+   "mpn": "TLS205B0LDV33XUMA1",
+   "family": "TLS205B0",
+   "mfr": "Infineon Technologies",
+   "desc": "Low-noise LDO 3.3V 500mA",
+   "category": "ic_qfn",
+   "pkg": "TSON-10",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "infotainment"
+   ],
+   "observedMpn": "TLS205B0LDV33XUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.779,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/tls205",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.734,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/tls205",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.7201,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/tls205",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key breaks from search summary; exact Digi-Key product URL not returned."
+  },
+  {
+   "mpn": "TLE42754GATMA1",
+   "family": "TLE4275",
+   "mfr": "Infineon Technologies",
+   "desc": "LDO 5V 450mA with reset, 45V",
+   "category": "ic_soic",
+   "pkg": "TO-263-5",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "ECU supply"
+   ],
+   "observedMpn": "TLE42754GATMA1",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 0.755,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/TLE4275",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Future break via search summary (findchips)."
+  },
+  {
+   "mpn": "TLE42754DATMA1",
+   "family": "TLE4275",
+   "mfr": "Infineon Technologies",
+   "desc": "LDO 5V 450mA with reset, 45V",
+   "category": "ic_soic",
+   "pkg": "TO-252-5",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "ECU supply"
+   ],
+   "observedMpn": "TLE42754DATMA1",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 100,
+     "price": 1.02,
+     "currency": "USD",
+     "url": "https://www.tme.com/us/en-us/details/tle42754d/ldo-fixed-voltage-regulators/infineon-technologies/tle42754datma1/",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "element14 APAC 2500+ $1.03 seen in summary but no URL; not recorded."
+  },
+  {
+   "mpn": "TLF4277ELXUMA1",
+   "family": "TLF4277",
+   "mfr": "Infineon Technologies",
+   "desc": "Adjustable LDO 300mA with current monitor (antenna/sensor supply)",
+   "category": "ic_soic",
+   "pkg": "SSOP-14",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor supply",
+    "telematics"
+   ],
+   "observedMpn": "TLF4277ELXUMA1",
+   "observations": [],
+   "notes": "Only broker prices found (Heisener, Components-Store); TME out of stock with no price."
+  },
+  {
+   "mpn": "MC33FS6500NAER2",
+   "family": "FS6500",
+   "mfr": "NXP Semiconductors",
+   "desc": "Safety SBC, buck/boost VCORE, CAN, ASIL D",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain",
+    "chassis",
+    "EPS"
+   ],
+   "observedMpn": "MC33FS6500NAER2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 4.55902,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33FS6500NAER2/7645902",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 2000,
+     "price": 5.509,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/mc33fs6500naer2/nxp-semiconductors",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "MC33FS6500LAE: only broker prices; NAER2 sibling used."
+  },
+  {
+   "mpn": "MC33FS8410",
+   "family": "FS84",
+   "mfr": "NXP Semiconductors",
+   "desc": "Safety PMIC FS84 for S32 processors",
+   "category": "ic_qfn",
+   "pkg": "HVQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller"
+   ],
+   "observedMpn": "MC33FS8410",
+   "observations": [],
+   "notes": "No FS8410 distributor price found. Sibling MC33FS8430G0KSR2 Digi-Key 4000 @ $5.87747 (different variant, not recorded)."
+  },
+  {
+   "mpn": "MFS2633AMDAKADR2",
+   "family": "FS26",
+   "mfr": "NXP Semiconductors",
+   "desc": "Safety SBC FS26, ASIL D, CAN FD",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "chassis",
+    "powertrain",
+    "zone"
+   ],
+   "observedMpn": "MFS2633AMDAKADR2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 6.03757,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MFS2633AMDAKADR2/24374772",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 6.0376,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MFS2633HMDA0AD/28947898",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "100 break is tray sibling MFS2633HMDA0AD."
+  },
+  {
+   "mpn": "MVR5510AMBA6ES",
+   "family": "VR5510",
+   "mfr": "NXP Semiconductors",
+   "desc": "PMIC for S32G, ASIL B, 3 buck + boost + 4 LDO",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "domain controller"
+   ],
+   "observedMpn": "MVR5510AMBA6ES",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 520,
+     "price": 9.30746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MVR5510AMBA6ES/13981765",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Tray of 520."
+  },
+  {
+   "mpn": "MPF5020",
+   "family": "PF5020",
+   "mfr": "NXP Semiconductors",
+   "desc": "PMIC for i.MX 8 / S32, automotive",
+   "category": "ic_qfn",
+   "pkg": "QFN-40",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cluster"
+   ],
+   "observedMpn": "MPF5020",
+   "observations": [],
+   "notes": "No distributor price found."
+  },
+  {
+   "mpn": "MC33PF8200D2ES",
+   "family": "PF8200",
+   "mfr": "NXP Semiconductors",
+   "desc": "PMIC 7 buck + 4 LDO for i.MX 8, automotive",
+   "category": "ic_qfn",
+   "pkg": "QFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cluster",
+    "ADAS"
+   ],
+   "observedMpn": "MC33PF8200D2ES",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 520,
+     "price": 7.47746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33PF8200D2ES/9757899",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Tray of 520."
+  },
+  {
+   "mpn": "UJA1169ATK/F/3Z",
+   "family": "UJA1169",
+   "mfr": "NXP Semiconductors",
+   "desc": "Mini HS-CAN SBC, 5V/100mA, watchdog",
+   "category": "ic_qfn",
+   "pkg": "HVSON-20",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat"
+   ],
+   "observedMpn": "UJA1169ATK/F/3Z",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 2.68,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/UJA1169ATK-F-3Z/?qs=W/MpXkg%252BdQ5x6O2biQNWWQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "UJA1169TK/F/3Z obsolete; A-version is direct substitute."
+  },
+  {
+   "mpn": "UJA1167ATK/0Z",
+   "family": "UJA1167",
+   "mfr": "NXP Semiconductors",
+   "desc": "HS-CAN SBC with 5V LDO, watchdog",
+   "category": "ic_qfn",
+   "pkg": "HVSON-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "sensor nodes"
+   ],
+   "observedMpn": "UJA1167ATK/0Z",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 1.98778,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/UJA1167ATK-0Z/11589962",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 1.624,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/UJA1167ATK-0Z/11589962",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TPS65313QRWGRQ1",
+   "family": "TPS65313-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Safety PMIC 3 buck + boost, ASIL B, radar/ADAS",
+   "category": "ic_qfn",
+   "pkg": "VQFN-40",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS"
+   ],
+   "observedMpn": "TPS65313QRWGRQ1",
+   "observations": [],
+   "notes": "Only TI.com list price $4.16 seen (qty not stated; manufacturer store); not recorded."
+  },
+  {
+   "mpn": "TPS65381AQDAPRQ1",
+   "family": "TPS65381A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Multi-rail safety PMIC for MCUs, ASIL D",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "braking",
+    "powertrain"
+   ],
+   "observedMpn": "TPS65381AQDAPRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.39,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS65381AQDAPRQ1?qs=Bho/beBaDExXUGAFZ2tmYA%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TPS653850AQDCARQ1",
+   "family": "TPS653850A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Safety PMIC, ASIL D",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-32",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS653850AQDCARQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "TPS7B6950QDBVRQ1",
+   "family": "TPS7B69-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 150mA LDO 5V low Iq",
+   "category": "ic_soic",
+   "pkg": "SOT-23-5",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS7B6950QDBVRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "TPS7B8150QDGNRQ1",
+   "family": "TPS7B81-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 150mA LDO 5V",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-8",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS7B8150QDGNRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "TPS7B8450QDGNRQ1",
+   "family": "TPS7B84-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 150mA LDO 5V",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-8",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS7B8450QDGNRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LM5146QRGYRQ1",
+   "family": "LM5146-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "100V sync buck controller",
+   "category": "ic_qfn",
+   "pkg": "VQFN-20",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LM5146QRGYRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LMR33630BQRNXRQ1",
+   "family": "LMR33630-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "36V 3A sync buck",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR-12",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LMR33630BQRNXRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LMR14030SQDPRRQ1",
+   "family": "LMR14030-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 3.5A buck",
+   "category": "ic_qfn",
+   "pkg": "WSON-10",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LMR14030SQDPRRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "TPS62810QWRWYRQ1",
+   "family": "TPS62810-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "6V 1A sync buck",
+   "category": "ic_qfn",
+   "pkg": "VQFN-9",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS62810QWRWYRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LM5170QPHPRQ1",
+   "family": "LM5170-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "48V/12V bidirectional multiphase controller",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LM5170QPHPRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LM5122QPWPRQ1",
+   "family": "LM5122-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Sync boost controller",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-20",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LM5122QPWPRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LM74700QDBVRQ1",
+   "family": "LM74700-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Ideal diode controller",
+   "category": "ic_soic",
+   "pkg": "SOT-23-6",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LM74700QDBVRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LM74800QDRRRQ1",
+   "family": "LM74800-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Ideal diode controller, back-to-back FET",
+   "category": "ic_qfn",
+   "pkg": "WSON-12",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LM74800QDRRRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "TPS3850H01QDRCRQ1",
+   "family": "TPS3850-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Supervisor with window watchdog",
+   "category": "ic_qfn",
+   "pkg": "VSON-10",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS3850H01QDRCRQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "TPS3703A7330QDSERQ1",
+   "family": "TPS3703-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Window supervisor",
+   "category": "ic_qfn",
+   "pkg": "WSON-6",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TPS3703A7330QDSERQ1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "MAX20087ATPA/V+",
+   "family": "MAX20087",
+   "mfr": "Analog Devices",
+   "desc": "Quad camera/antenna power protector",
+   "category": "ic_qfn",
+   "pkg": "TQFN-20",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MAX20087ATPA/V+",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "MAX20098",
+   "family": "MAX20098",
+   "mfr": "Analog Devices",
+   "desc": "Sync buck controller automotive",
+   "category": "ic_qfn",
+   "pkg": "TQFN",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MAX20098",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LT8645S-1",
+   "family": "LT8645S",
+   "mfr": "Analog Devices",
+   "desc": "65V 8A Silent Switcher buck",
+   "category": "ic_qfn",
+   "pkg": "LQFN-32",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LT8645S-1",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LTC7803",
+   "family": "LTC7803",
+   "mfr": "Analog Devices",
+   "desc": "40V low-Iq sync buck controller",
+   "category": "ic_qfn",
+   "pkg": "QFN",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LTC7803",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "MAX16141",
+   "family": "MAX16141",
+   "mfr": "Analog Devices",
+   "desc": "Ideal diode controller",
+   "category": "ic_qfn",
+   "pkg": "TDFN",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MAX16141",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "MAX20004",
+   "family": "MAX20004",
+   "mfr": "Analog Devices",
+   "desc": "36V 4A sync buck",
+   "category": "ic_qfn",
+   "pkg": "FC2QFN",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MAX20004",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "L5964",
+   "family": "L5964",
+   "mfr": "STMicroelectronics",
+   "desc": "Dual buck + LDO",
+   "category": "ic_qfn",
+   "pkg": "VFQFPN",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "L5964",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "L5965",
+   "family": "L5965",
+   "mfr": "STMicroelectronics",
+   "desc": "Multi-channel safety PMIC",
+   "category": "ic_qfn",
+   "pkg": "VFQFPN-48",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "L5965",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "SPSB081",
+   "family": "SPSB081",
+   "mfr": "STMicroelectronics",
+   "desc": "System basis chip",
+   "category": "ic_qfn",
+   "pkg": "VFQFPN",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "SPSB081",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "L99PM62GXP",
+   "family": "L99PM62",
+   "mfr": "STMicroelectronics",
+   "desc": "Power management IC with LIN/CAN",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "L99PM62GXP",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "A6986",
+   "family": "A6986",
+   "mfr": "STMicroelectronics",
+   "desc": "38V 2A sync buck",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "A6986",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "LDO40LPURY",
+   "family": "LDO40L",
+   "mfr": "STMicroelectronics",
+   "desc": "38V 400mA LDO",
+   "category": "ic_qfn",
+   "pkg": "DFN-6",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LDO40LPURY",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "NCV8730",
+   "family": "NCV8730",
+   "mfr": "onsemi",
+   "desc": "38V 150mA low-Iq LDO",
+   "category": "ic_soic",
+   "pkg": "TSOP-5",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "NCV8730",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "NCV4275C",
+   "family": "NCV4275C",
+   "mfr": "onsemi",
+   "desc": "LDO 5V 450mA with reset",
+   "category": "ic_soic",
+   "pkg": "DPAK-5",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "NCV4275C",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  },
+  {
+   "mpn": "NCV890100",
+   "family": "NCV890100",
+   "mfr": "onsemi",
+   "desc": "2MHz 1.2A buck",
+   "category": "ic_qfn",
+   "pkg": "DFN-10",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "NCV890100",
+   "observations": [],
+   "notes": "not searched: shared web-search budget exhausted this run"
+  }
+ ]
+}

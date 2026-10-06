@@ -1,0 +1,876 @@
+{
+ "domain": "ADAS (radar, camera), infotainment/cluster, automotive memory",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "AWR2944ABGALTRQ1",
+   "family": "AWR2944",
+   "mfr": "Texas Instruments",
+   "desc": "77-81 GHz radar SoC, 4TX/4RX, DSP+MCU",
+   "category": "ic_bga",
+   "pkg": "FCCSP-266",
+   "aecq": true,
+   "ecuRoles": [
+    "radar_corner",
+    "radar_front"
+   ],
+   "observedMpn": "AWR2944ABGALTRQ1",
+   "observations": [],
+   "notes": "DigiKey snippet $49.92 with no qty break and an unsourced $27.60 - discarded. TI.com (manufacturer, not a distributor) lists AWR2944ALBGALTRQ1 at $27.873/1ku."
+  },
+  {
+   "mpn": "AWR2243ABGABLQ1",
+   "family": "AWR2243",
+   "mfr": "Texas Instruments",
+   "desc": "76-81 GHz radar MMIC transceiver, 3TX/4RX (cascade)",
+   "category": "ic_bga",
+   "pkg": "FCCSP-161",
+   "aecq": true,
+   "ecuRoles": [
+    "radar_front",
+    "imaging_radar"
+   ],
+   "observedMpn": "AWR2243ABGABLQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 32.13,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR2243ABGABLQ1?qs=DPoM0jnrROU%2Bec1zSfah6g%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 176,
+     "price": 30.67,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR2243ABGABLQ1?qs=DPoM0jnrROU%2Bec1zSfah6g%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key AWR2243ABGABLRQ1 $36.78/176 seen but its Digi-Key page URL was not returned - omitted. A 1000-pc $30.13 was seen but its source page was ambiguous - omitted."
+  },
+  {
+   "mpn": "AWR1843ARBGALPQ1",
+   "family": "AWR1843AOP",
+   "mfr": "Texas Instruments",
+   "desc": "76-81 GHz radar SoC, antenna-on-package, DSP+MCU",
+   "category": "ic_bga",
+   "pkg": "FCCSP-180 (15x15)",
+   "aecq": true,
+   "ecuRoles": [
+    "radar_corner",
+    "in_cabin"
+   ],
+   "observedMpn": "AWR1843ARBGALPQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 126,
+     "price": 41.45,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR1843ARBGALPQ1/15856555",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "AWR1843AOPQGALPQ1 not found; orderable AOP code is AWR1843ARBGALP(R)Q1. TI.com lists ARBGALPRQ1 at $27.531/1ku (manufacturer, not a distributor)."
+  },
+  {
+   "mpn": "AWR1642ABIGABLQ1",
+   "family": "AWR1642",
+   "mfr": "Texas Instruments",
+   "desc": "76-81 GHz radar SoC, 2TX/4RX, DSP+MCU",
+   "category": "ic_bga",
+   "pkg": "FCBGA-161",
+   "aecq": true,
+   "ecuRoles": [
+    "radar_corner",
+    "radar_srr"
+   ],
+   "observedMpn": "AWR1642ABIGABLQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 50,
+     "price": 31.44,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR1642ABIGABLQ1/9169372",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 176,
+     "price": 29.94,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR1642ABIGABLQ1/9169372",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Unsourced 1000-pc $26.85 (likely broker) discarded."
+  },
+  {
+   "mpn": "AWR6843ARBGALPRQ1",
+   "family": "AWR6843AOP",
+   "mfr": "Texas Instruments",
+   "desc": "60-64 GHz radar SoC, antenna-on-package (reference)",
+   "category": "ic_bga",
+   "pkg": "FCCSP-180",
+   "aecq": true,
+   "ecuRoles": [
+    "in_cabin",
+    "radar_srr"
+   ],
+   "observedMpn": "AWR6843ARBGALPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 44.7,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR6843ARBGALPRQ1/15856913",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 126,
+     "price": 48.08,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR6843ARBGALPQ1/15857116",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "126-pc obs is the tray code AWR6843ARBGALPQ1."
+  },
+  {
+   "mpn": "IWR6843ARQGALPR",
+   "family": "IWR6843",
+   "mfr": "Texas Instruments",
+   "desc": "60-64 GHz radar SoC, industrial (reference)",
+   "category": "ic_bga",
+   "pkg": "FCBGA-180",
+   "aecq": false,
+   "ecuRoles": [
+    "reference_industrial"
+   ],
+   "observedMpn": "IWR6843ARQGALPR",
+   "observations": [
+    {
+     "distributor": "Digi-Key UK",
+     "qty": 1000,
+     "price": 19.62,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/IWR6843ARQGALPR/15857294",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "USD 1000-pc figures ($25.71 / $28.62) seen without a named distributor - omitted."
+  },
+  {
+   "mpn": "S32R458AASK0MUDT",
+   "family": "S32R45",
+   "mfr": "NXP",
+   "desc": "Imaging-radar processor, A53+M7+SPT",
+   "category": "ic_bga",
+   "pkg": "FBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "imaging_radar"
+   ],
+   "observedMpn": "S32R458AASK0MUDT",
+   "observations": [],
+   "notes": "No franchised price: Rochester $73.83 (out of stock, no break), NXP site $130 (S32R458AAUK0MUDT, manufacturer)."
+  },
+  {
+   "mpn": "S32R418AAUK0MUFT",
+   "family": "S32R41",
+   "mfr": "NXP",
+   "desc": "High-resolution radar processor",
+   "category": "ic_bga",
+   "pkg": "FBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "radar_front",
+    "radar_corner"
+   ],
+   "observedMpn": "S32R418AAUK0MUFT",
+   "observations": [],
+   "notes": "Breaks $32.50/1, $30.00/26, $27.50/100 seen via aggregator without a named franchised distributor - omitted; NXP site $36.18."
+  },
+  {
+   "mpn": "TEF8232EN1/N1/ZUZ",
+   "family": "TEF82xx",
+   "mfr": "NXP",
+   "desc": "77 GHz RFCMOS radar transceiver 3TX/4RX",
+   "category": "ic_bga",
+   "pkg": "eWLB",
+   "aecq": true,
+   "ecuRoles": [
+    "radar_front",
+    "radar_corner"
+   ],
+   "observedMpn": "TEF8232EN1/N1/ZUZ",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 25.35,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TEF8232EN1-N1-ZUZ?qs=2SLPxufLcgCxadDsAN9aIQ%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 27.72,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TEF8232EN1-N1-ZUZ/21186730",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 3000,
+     "price": 24.31,
+     "currency": "USD",
+     "url": "https://octopart.com/part/nxp-semiconductors/TEF8232EN1%2FN1ZZ",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Arrow via Octopart is TEF8232EN1/N1ZZ (Newark $24.48, Avnet $24.32 same break). Mouser N1ZZ $25.67/3000."
+  },
+  {
+   "mpn": "CAL60S244-AB",
+   "family": "CAL60S244",
+   "mfr": "Calterah",
+   "desc": "60 GHz radar SoC with AiP",
+   "category": "ic_bga",
+   "pkg": "AiP BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "in_cabin"
+   ],
+   "observedMpn": "CAL60S244-IB",
+   "observations": [],
+   "notes": "Only JLCPCB listing ($0.0006 - implausible). No franchised price."
+  },
+  {
+   "mpn": "AR0233ATSC17XUEA1-DRBR",
+   "family": "AR0233AT",
+   "mfr": "onsemi",
+   "desc": "2.6 MP 1/2.7in automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "iBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera_front",
+    "surround_view",
+    "CMS"
+   ],
+   "observedMpn": "AR0233ATSC17XUEA1-DRBR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2100,
+     "price": 29.97,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/AR0233ATSC17XUEA1-DRBR/15860680",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 41.77,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/AR0233ATSC17XUEA1-DPBR2/26926827",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "100-pc obs is AR0233ATSC17XUEA1-DPBR2 (dry pack tray)."
+  },
+  {
+   "mpn": "AR0820ATSC18XMEA0-DPBR",
+   "family": "AR0820AT",
+   "mfr": "onsemi",
+   "desc": "8.3 MP 1/2in automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "iBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera_front",
+    "ADAS_camera"
+   ],
+   "observedMpn": "AR0820ATSC18XMEA0-DPBR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 40.3,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/AR0820ATSC18XMEA0-DPBR/15860042",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10,
+     "price": 35.96,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/AR0820ATSC18XMEA0-DPBR/15860042",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key DRBR code shows $40.98/100. Mouser DPBR $39.42 (break not given)."
+  },
+  {
+   "mpn": "AR0147ATSC00XUEA0-DPBR",
+   "family": "AR0147AT",
+   "mfr": "onsemi",
+   "desc": "1.3 MP 1/4in automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "iBGA-80 (9x9)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround_view",
+    "rear_camera",
+    "in_cabin"
+   ],
+   "observedMpn": "AR0147ATSC00XUEA0-DPBR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 20.01,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/AR0147ATSC00XUEA0-DPBR/12180052",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Sibling AR0147ATSC00XUEA5-DPBR $17.01/1 at Digi-Key. Volume breaks not in snippet."
+  },
+  {
+   "mpn": "OX08B40-B86Y-001F",
+   "family": "OX08B40",
+   "mfr": "OmniVision",
+   "desc": "8 MP automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera_front"
+   ],
+   "observedMpn": "OX08B40-B86Y-001F",
+   "observations": [],
+   "notes": "Digi-Key shows $37.34 but no quantity break in snippet - omitted."
+  },
+  {
+   "mpn": "OX03C10-EXAL-BA0B",
+   "family": "OX03C10",
+   "mfr": "OmniVision",
+   "desc": "2.5 MP automotive HDR/LFM image sensor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "surround_view",
+    "CMS"
+   ],
+   "observedMpn": "OX03C10-EXAL-BA0B",
+   "observations": [],
+   "notes": "Digi-Key OX03C10-E66Y-OD $20.02 (discontinued, no break); Arrow $375 implausible - omitted."
+  },
+  {
+   "mpn": "IMX490",
+   "family": "IMX490",
+   "mfr": "Sony",
+   "desc": "5.4 MP automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera_front"
+   ],
+   "observedMpn": "IMX490",
+   "observations": [],
+   "notes": "No bare-sensor distributor price; only camera modules listed."
+  },
+  {
+   "mpn": "AP0202AT",
+   "family": "AP0202AT",
+   "mfr": "onsemi",
+   "desc": "Automotive image signal processor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "surround_view"
+   ],
+   "observedMpn": "AP0202AT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "SA8155P",
+   "family": "SA8155P",
+   "mfr": "Qualcomm",
+   "desc": "Cockpit SoC",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "SA8155P",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "SA8295P",
+   "family": "SA8295P",
+   "mfr": "Qualcomm",
+   "desc": "Cockpit SoC",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "SA8295P",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MCIMX6Q6AVT10AD",
+   "family": "i.MX6Q",
+   "mfr": "NXP",
+   "desc": "i.MX 6Quad automotive applications processor",
+   "category": "ic_bga",
+   "pkg": "FCPBGA-624",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cluster"
+   ],
+   "observedMpn": "MCIMX6Q6AVT10AD",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "R8A77960",
+   "family": "R-Car M3",
+   "mfr": "Renesas",
+   "desc": "R-Car M3 SoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cluster"
+   ],
+   "observedMpn": "R8A77960",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "DRA821U",
+   "family": "DRA821",
+   "mfr": "Texas Instruments",
+   "desc": "Gateway/cluster processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "cluster"
+   ],
+   "observedMpn": "DRA821U",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT53E512M32D1ZW-046 AUT:B",
+   "family": "MT53E512M32",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 16Gb automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "MT53E512M32D1ZW-046 AUT:B",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT53E1G32D2FW-046 AUT:B",
+   "family": "MT53E1G32",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 32Gb automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "MT53E1G32D2FW-046 AUT:B",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT53E256M32D1KS-046 AUT",
+   "family": "MT53E256M32",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 8Gb automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "MT53E256M32D1KS-046 AUT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT62F1G32D2DS",
+   "family": "MT62F1G32",
+   "mfr": "Micron",
+   "desc": "LPDDR5 32Gb automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "MT62F1G32D2DS",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT41K256M16TW-107 AAT:P",
+   "family": "MT41K256M16",
+   "mfr": "Micron",
+   "desc": "DDR3L 4Gb automotive",
+   "category": "ic_bga",
+   "pkg": "FBGA-96",
+   "aecq": true,
+   "ecuRoles": [
+    "cluster",
+    "telematics"
+   ],
+   "observedMpn": "MT41K256M16TW-107 AAT:P",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT40A1G16TB",
+   "family": "MT40A1G16",
+   "mfr": "Micron",
+   "desc": "DDR4 16Gb automotive",
+   "category": "ic_bga",
+   "pkg": "FBGA-96",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "MT40A1G16TB",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "IS46LQ32256AL",
+   "family": "IS46LQ32256",
+   "mfr": "ISSI",
+   "desc": "LPDDR4 8Gb automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "IS46LQ32256AL",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "K4F6E3S4HM",
+   "family": "K4F6E3S4HM",
+   "mfr": "Samsung",
+   "desc": "LPDDR4 16Gb automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "K4F6E3S4HM",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MTFC16GAPALBH-AAT",
+   "family": "MTFC16GAPALBH",
+   "mfr": "Micron",
+   "desc": "eMMC 16GB automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "MTFC16GAPALBH-AAT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MTFC32GAPALBH-AAT",
+   "family": "MTFC32GAPALBH",
+   "mfr": "Micron",
+   "desc": "eMMC 32GB automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "MTFC32GAPALBH-AAT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MTFC64GAPALNA-AAT",
+   "family": "MTFC64GAPALNA",
+   "mfr": "Micron",
+   "desc": "eMMC 64GB automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "MTFC64GAPALNA-AAT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "THGBMJG8C2LBAU8",
+   "family": "THGBMJG8C2LBAU8",
+   "mfr": "Kioxia",
+   "desc": "eMMC 32GB automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "THGBMJG8C2LBAU8",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT25QU01GBBB8E12-0AUT",
+   "family": "MT25QU01G",
+   "mfr": "Micron",
+   "desc": "1Gb 1.8V serial NOR automotive",
+   "category": "ic_bga",
+   "pkg": "TBGA-24",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "MT25QU01GBBB8E12-0AUT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT25QL512ABB8ESF-0AUT",
+   "family": "MT25QL512",
+   "mfr": "Micron",
+   "desc": "512Mb 3V serial NOR automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "MT25QL512ABB8ESF-0AUT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "S25FL512SAGMFV011",
+   "family": "S25FL512S",
+   "mfr": "Infineon",
+   "desc": "512Mb serial NOR automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "S25FL512SAGMFV011",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "S25FL128LAGMFV010",
+   "family": "S25FL128L",
+   "mfr": "Infineon",
+   "desc": "128Mb serial NOR automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "cluster"
+   ],
+   "observedMpn": "S25FL128LAGMFV010",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "IS25LP128-JBLA3",
+   "family": "IS25LP128",
+   "mfr": "ISSI",
+   "desc": "128Mb serial NOR automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "cluster"
+   ],
+   "observedMpn": "IS25LP128-JBLA3",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "W25Q256JVEIQ",
+   "family": "W25Q256JV",
+   "mfr": "Winbond",
+   "desc": "256Mb serial NOR",
+   "category": "ic_qfn",
+   "pkg": "WSON-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "W25Q256JVEIQ",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MT29F4G08ABAFAWP-AAT",
+   "family": "MT29F4G08",
+   "mfr": "Micron",
+   "desc": "4Gb SLC NAND automotive",
+   "category": "ic_soic",
+   "pkg": "TSOP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "telematics",
+    "cluster"
+   ],
+   "observedMpn": "MT29F4G08ABAFAWP-AAT",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "MX25L25645GZ2I",
+   "family": "MX25L25645G",
+   "mfr": "Macronix",
+   "desc": "256Mb serial NOR (automotive variant)",
+   "category": "ic_qfn",
+   "pkg": "WSON-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "MX25L25645GZ2I",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "M24C64-RMN6TP",
+   "family": "M24C64",
+   "mfr": "STMicroelectronics",
+   "desc": "64Kb I2C EEPROM",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "all_ECU"
+   ],
+   "observedMpn": "M24C64-RMN6TP",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "AT24C256C",
+   "family": "AT24C256C",
+   "mfr": "Microchip",
+   "desc": "256Kb I2C EEPROM automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "all_ECU"
+   ],
+   "observedMpn": "AT24C256C",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "M95256-DRMN3TP/K",
+   "family": "M95256",
+   "mfr": "STMicroelectronics",
+   "desc": "256Kb SPI EEPROM automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "all_ECU"
+   ],
+   "observedMpn": "M95256-DRMN3TP/K",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "25LC256T-E/SN",
+   "family": "25LC256",
+   "mfr": "Microchip",
+   "desc": "256Kb SPI EEPROM, E temp",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "all_ECU"
+   ],
+   "observedMpn": "25LC256T-E/SN",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  },
+  {
+   "mpn": "CAT24C512",
+   "family": "CAT24C512",
+   "mfr": "onsemi",
+   "desc": "512Kb I2C EEPROM automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "all_ECU"
+   ],
+   "observedMpn": "CAT24C512",
+   "observations": [],
+   "notes": "not researched: shared WebSearch budget (200/turn) exhausted before this part"
+  }
+ ]
+}

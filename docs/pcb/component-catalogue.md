@@ -1,8 +1,10 @@
 # Offline component price catalogue
 
-`calculator/server/data/pcb-component-catalogue.json` — 458 parts and families,
-GBP unit prices at the 1k / 10k / 100k breaks, AEC-Q grade where the part is
-automotive, **a source and a date on every entry**. Built 1 October 2026; commodity parts added the same day.
+`calculator/server/data/pcb-component-catalogue.json` — 549 parts and families,
+GBP unit prices at the 1k / 10k / 100k / 200k / 300k breaks, AEC-Q grade where the part is
+automotive, **a source and a date on every entry**. Built 1 October 2026; extended on 6 October 2026
+with 106 distributor-priced automotive parts and annual-volume breaks — see
+`component-database-2026-10.md` (method, what is derived, what is still to research).
 
 ## Where the numbers come from — be clear about this in a review
 

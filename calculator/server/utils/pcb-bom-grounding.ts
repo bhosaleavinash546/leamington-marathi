@@ -145,7 +145,7 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number): Live
       unitPriceGBP: price, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
       provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn,
       rawCurrency: 'GBP', rawUnitPrice: price,
-      sourceNote: `Catalogue ${e.mpn} (${e.confidence === 'distributor' ? 'distributor price' : 'engineering estimate'}, ${e.asOf}): ${e.source}; at ${qty.toLocaleString('en-GB')} from the 1k/10k/100k breaks`,
+      sourceNote: `Catalogue ${e.mpn} (${e.confidence === 'distributor' ? 'distributor price' : 'engineering estimate'}, ${e.asOf}): ${e.source}; at ${qty.toLocaleString('en-GB')} from the 1k/10k/100k/200k/300k breaks`,
     });
   }
   return out;

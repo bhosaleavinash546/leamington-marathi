@@ -1,0 +1,1041 @@
+{
+ "domain": "automotive microcontrollers, DSPs and SoCs",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "SAK-TC233LP-32F200F AC",
+   "family": "TC233LP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 single-core TriCore 200 MHz, 2 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "EPS",
+    "BMS"
+   ],
+   "observedMpn": "SAK-TC233LP-32F200F AC",
+   "observations": [],
+   "notes": "DigiKey lists F-variant as no longer available; only an unbroken '$20.83' from unnamed sellers and eBay seen - discarded."
+  },
+  {
+   "mpn": "SAK-TC234LP-32F200F AC",
+   "family": "TC234LP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 single-core TriCore 200 MHz, 2 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "EPS",
+    "BMS"
+   ],
+   "observedMpn": "TC234LP32F200FACKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 10.84,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC234LP32F200FABKXUMA1/5960559",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 11.62,
+     "currency": "USD",
+     "url": "https://octopart.com/part/infineon/TC234LP32F200FACKXUMA1",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 12.68,
+     "currency": "USD",
+     "url": "https://octopart.com/part/infineon/TC234LP32F200FACKXUMA1",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Read via search summary of Octopart/Findchips for TC234LP32F200FACKXUMA1; DigiKey qty1 $17.30. Mouser 1k price conflicts with another snippet ($24.82, break unstated)."
+  },
+  {
+   "mpn": "SAK-TC264DA-40F200W BC",
+   "family": "TC264DA",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 dual-core TriCore 200 MHz, 2.5 MB flash, Ethernet",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "EPS",
+    "TCU"
+   ],
+   "observedMpn": "TC264D40F200NBCKXUMA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 22.8,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC264D40F200NBCKXUMA2/7791594",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 13.615,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC264D40F200NBCKXUMA2/7791594",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Sibling SAK-TC264D-40F200N BC (non-ADAS, N temp) priced; exact DA-W at DigiKey $19.82 with unstated break, not used."
+  },
+  {
+   "mpn": "SAK-TC275TP-64F200W DC",
+   "family": "TC275TP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-176",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "TCU",
+    "inverter"
+   ],
+   "observedMpn": "TC275TP64F200WDCKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 18.84584,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC275TP64F200WDCKXUMA1/7791605",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "SAK-TC277TP-64F200S DC",
+   "family": "TC277TP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB flash",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "TCU",
+    "inverter"
+   ],
+   "observedMpn": "SAK-TC277TP-64F200S DC",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 14.56,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/microcontrollers-mcu-mpu-soc_infineon-technologies-sak-tc277tp-64f200s-dc_C538817.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 18.69,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/microcontrollers-mcu-mpu-soc_infineon-technologies-sak-tc277tp-64f200s-ca_C538816.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "2nd obs is the CA step (SAK-TC277TP-64F200S CA). DigiKey TC277TP64F200SDCKXUMA1 $31.19 break unstated (likely qty 1); Rutronik EUR 18.65 break unstated."
+  },
+  {
+   "mpn": "SAK-TC297TP-128F300S BC",
+   "family": "TC297TP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 tri-core TriCore 300 MHz, 8 MB flash",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "TCU",
+    "gateway"
+   ],
+   "observedMpn": "TC297TP128F300SBCKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 48.62,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC297TP128F300SBCKXUMA1/7791613",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 34.7,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC297TP128F300SBCKXUMA1/7791613",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 26.45,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Infineon_Infineon-Technologies-SAK-TC297TP-128F300S-BC_C538826.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "SAK-TC364DP-64F300W AA",
+   "family": "TC364DP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 dual-core TriCore 300 MHz, 4 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "BMS",
+    "VCU"
+   ],
+   "observedMpn": "TC364DP64F300WAAKXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1,
+     "price": 29.44,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TC364DP64F300WAAKXUMA1?qs=l7cgNqFNU1hF1%2FLt2kDnDg%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 500,
+     "price": 21.55,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TC364DP64F300WAAKXUMA1?qs=l7cgNqFNU1hF1%2FLt2kDnDg%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 16.73,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Pre-ordered-transistors_Infineon-Technologies-SAK-TC364DP-64F300W-AA_C538861.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "SAK-TC377TX-96F300S AA",
+   "family": "TC377TX",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 tri-core TriCore 300 MHz, 6 MB flash",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "TC377TX96F300SAAKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 34.30397,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC377TX96F300SAAKXUMA1/11500287",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey T&R 1k, non-stocked, 99 wk lead. LCSC AB $0.18 implausible - discarded; JLCPCB/Kynix not allowed."
+  },
+  {
+   "mpn": "SAK-TC387QP-160F300S AE",
+   "family": "TC387QP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 quad-core TriCore 300 MHz, 10 MB flash",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "domain",
+    "ADAS"
+   ],
+   "observedMpn": "TC387QP160F300SAEKXUMA1",
+   "observations": [
+    {
+     "distributor": "Rutronik",
+     "qty": 1000,
+     "price": 36.94,
+     "currency": "USD",
+     "url": "https://www.findchips.com/detail/TC387QP160F300SAEKXUMA1/Infineon-Technologies-AG",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Rutronik 1k MOQ via Findchips (currency as displayed there; Rutronik24 page shows EUR 31.97, break unstated). Newark $136.83 break unstated; LCSC/Mouser snippet tiers incoherent - discarded. DigiKey limited supply, no price."
+  },
+  {
+   "mpn": "SAK-TC397XX-256F300S BD",
+   "family": "TC397XX",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 hexa-core TriCore 300 MHz, 16 MB flash",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "domain",
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "SAK-TC397XX-256F300S BD",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1,
+     "price": 36.8926,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C538883.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 30,
+     "price": 35.0499,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C538883.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "BD step looks low vs BC step at LCSC ($85.29 @30) - treat with caution; no 1k break found."
+  },
+  {
+   "mpn": "TC375TP-96F300W",
+   "family": "TC375TP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 tri-core 300 MHz, 6 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-176",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Skipped: TC375TP96F300W already in existing-mpns.txt."
+  },
+  {
+   "mpn": "FS32K142HAT0MLHT",
+   "family": "S32K142",
+   "mfr": "NXP",
+   "desc": "S32K142 Cortex-M4F 80 MHz, 256 KB flash, CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "body",
+    "BMS slave"
+   ],
+   "observedMpn": "FS32K142HAT0MLHT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 8.93,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K142HAT0MLHT/8134928",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 5.46,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K142HAT0MLHT/8134928",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "FS32K144HAT0MLLT",
+   "family": "S32K144",
+   "mfr": "NXP",
+   "desc": "S32K144 Cortex-M4F 80 MHz, 512 KB flash, CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "FS32K144HAT0MLLT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1,
+     "price": 9.31,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K144HAT0MLLT/8343993",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1350,
+     "price": 5.52504,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K144HAT0MLLT/8343993",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1,
+     "price": 10.11,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/FS32K144HAT0MLLT",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "FS32K146HAT0MLLT",
+   "family": "S32K146",
+   "mfr": "NXP",
+   "desc": "S32K146 Cortex-M4F 80 MHz, 1 MB flash, CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "BMS"
+   ],
+   "observedMpn": "FS32K146HAT0MLLT",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 6.1113,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C1340686.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1,
+     "price": 10.14,
+     "currency": "USD",
+     "url": "https://www.trustedparts.com/en/part/nxp/FS32K146HAT0MLLT",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 1,
+     "price": 11.04,
+     "currency": "USD",
+     "url": "https://www.newark.com/nxp/fs32k146hat0mllt/s32k146-arm-cortex-m4f-80-mhz/dp/56AC2516?CMP=AFC-ECIA",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey $6.735 and Arrow $7.03 seen with unstated break - not used."
+  },
+  {
+   "mpn": "FS32K148UAT0VLQT",
+   "family": "S32K148",
+   "mfr": "NXP",
+   "desc": "S32K148 Cortex-M4F 112 MHz, 2 MB flash, Ethernet",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "BCM",
+    "BMS master"
+   ],
+   "observedMpn": "FS32K148UAT0VLQT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 300,
+     "price": 15.31953,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K148UAT0VLQT/8628236",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 10,
+     "price": 14.895,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/microcontrollers-mcu-mpu-soc_nxp-semicon-fs32k148uat0vlqt_C427710.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "S32K311NHT0MPAST",
+   "family": "S32K311",
+   "mfr": "NXP",
+   "desc": "S32K311 Cortex-M7 120 MHz, 1 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "HDQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "body",
+    "actuator"
+   ],
+   "observedMpn": "S32K311NHT0MPAST",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1,
+     "price": 7.42,
+     "currency": "EUR",
+     "url": "https://at.farnell.com/en-AT/nxp/s32k311nht0mpast/arm-mcu-32bit-120mhz-hdqfp-100/dp/4351750",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 5.83,
+     "currency": "EUR",
+     "url": "https://at.farnell.com/en-AT/nxp/s32k311nht0mpast/arm-mcu-32bit-120mhz-hdqfp-100/dp/4351750",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Farnell AT ex-VAT. DigiKey tiers in the snippet ($7.18 -> $5.68 @100) could not be tied to this exact MPN - not used."
+  },
+  {
+   "mpn": "S32K312NHT0VPBST",
+   "family": "S32K312",
+   "mfr": "NXP",
+   "desc": "S32K312 Cortex-M7 120 MHz, 2 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "MaxQFP-172",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32K314NHT0VPBST",
+   "family": "S32K314",
+   "mfr": "NXP",
+   "desc": "S32K314 Cortex-M7 160 MHz, 4 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "MaxQFP-172",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "BMS",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32K322NHT0VPBST",
+   "family": "S32K322",
+   "mfr": "NXP",
+   "desc": "S32K322 dual Cortex-M7 160 MHz, 2 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "MaxQFP-172",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "VCU"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32K344NHT1VPBST",
+   "family": "S32K344",
+   "mfr": "NXP",
+   "desc": "S32K344 lockstep Cortex-M7 160 MHz, 4 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "MaxQFP-172",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "VCU",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32K358",
+   "family": "S32K358",
+   "mfr": "NXP",
+   "desc": "S32K358 Cortex-M7, 8 MB flash",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-289",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU",
+    "zone"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32G274AABK0VUCT",
+   "family": "S32G274",
+   "mfr": "NXP",
+   "desc": "S32G2 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA-525",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32G399A",
+   "family": "S32G399",
+   "mfr": "NXP",
+   "desc": "S32G3 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA-525",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "MPC5744PK1AMLQ9",
+   "family": "MPC5744P",
+   "mfr": "NXP",
+   "desc": "MPC5744P e200z4 lockstep 200 MHz, 2.5 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "braking",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "MPC5748GVMN6A",
+   "family": "MPC5748G",
+   "mfr": "NXP",
+   "desc": "MPC5748G e200z4/z2 gateway MCU, 6 MB flash",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-324",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "BCM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "S32E288",
+   "family": "S32E2",
+   "mfr": "NXP",
+   "desc": "S32E2 real-time processor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU",
+    "zone"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "MPC5777C",
+   "family": "MPC5777C",
+   "mfr": "NXP",
+   "desc": "MPC5777C e200z7 powertrain MCU, 8 MB flash",
+   "category": "ic_bga",
+   "pkg": "BGA-516",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "TCU"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "R7F701581",
+   "family": "RH850/F1KM-S1",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KM-S1 body MCU",
+   "category": "ic_tqfp",
+   "pkg": "LQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "body"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "R7F701684",
+   "family": "RH850/F1KH",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KH body/gateway MCU",
+   "category": "ic_tqfp",
+   "pkg": "LQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "R7F702300",
+   "family": "RH850/U2A",
+   "mfr": "Renesas",
+   "desc": "RH850/U2A multi-core domain MCU",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "domain"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "R8A77980",
+   "family": "R-Car V3H",
+   "mfr": "Renesas",
+   "desc": "R-Car V3H ADAS vision SoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "R8A77951",
+   "family": "R-Car H3",
+   "mfr": "Renesas",
+   "desc": "R-Car H3 infotainment/cockpit SoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "SPC58NH92E7",
+   "family": "SPC58NH",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 Chorus powertrain MCU",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "SPC584B70E",
+   "family": "SPC584B",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 B-line body MCU",
+   "category": "ic_tqfp",
+   "pkg": "eTQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "SR6P3",
+   "family": "Stellar P3",
+   "mfr": "STMicroelectronics",
+   "desc": "Stellar SR6P3 integration MCU",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "domain",
+    "VCU"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "STM32H743ZIT6",
+   "family": "STM32H743",
+   "mfr": "STMicroelectronics",
+   "desc": "STM32H743 Cortex-M7 480 MHz, 2 MB flash (industrial reference)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": false,
+   "ecuRoles": [
+    "reference"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "STM32G474RET3",
+   "family": "STM32G474",
+   "mfr": "STMicroelectronics",
+   "desc": "STM32G474 Cortex-M4 170 MHz, 512 KB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC",
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "TMS320F280039CPZSQ1",
+   "family": "F280039C",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU 120 MHz",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "TMS320F280049CPZSQ1",
+   "family": "F280049C",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU 100 MHz",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "TMS320F28377DPTPQ",
+   "family": "F28377D",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 dual-core 200 MHz",
+   "category": "ic_tqfp",
+   "pkg": "HLQFP-176",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "TDA4VM",
+   "family": "TDA4VM",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA-827",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "AM2634-Q1",
+   "family": "AM2634",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM263x Cortex-R5F real-time MCU",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "VCU"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "MSPM0G3507-Q1",
+   "family": "MSPM0G3507",
+   "mfr": "Texas Instruments",
+   "desc": "MSPM0 Cortex-M0+ 80 MHz",
+   "category": "ic_qfn",
+   "pkg": "VQFN/LQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "BMS slave"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "dsPIC33CK256MP506-E/PT",
+   "family": "dsPIC33CK",
+   "mfr": "Microchip",
+   "desc": "dsPIC33CK DSC 100 MHz, 256 KB flash",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "pump",
+    "motor"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "PIC18F26Q83",
+   "family": "PIC18-Q83",
+   "mfr": "Microchip",
+   "desc": "PIC18 8-bit with CAN FD",
+   "category": "ic_qfn",
+   "pkg": "SSOP/QFN-28",
+   "aecq": false,
+   "ecuRoles": [
+    "body"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "ATSAMC21J18A",
+   "family": "SAMC21",
+   "mfr": "Microchip",
+   "desc": "SAM C21 Cortex-M0+ 5 V, CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "BMS slave"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "i.MX 8QuadMax automotive",
+   "family": "i.MX8QM",
+   "mfr": "NXP",
+   "desc": "i.MX 8QuadMax automotive applications processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cockpit"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  },
+  {
+   "mpn": "MIMX8ML8DVNLZAB",
+   "family": "i.MX8MP",
+   "mfr": "NXP",
+   "desc": "i.MX 8M Plus applications processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cockpit"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched: the shared WebSearch budget (200/turn) ran out before this part; no price recorded."
+  }
+ ]
+}

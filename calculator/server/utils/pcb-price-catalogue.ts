@@ -14,8 +14,15 @@ export interface CatalogueEntry {
   mpn: string; family: string; mfr: string; desc: string; category: string; pkg: string; aecq: boolean;
   /** Other spellings the part is seen under — chip top marks ("25Q32JW", "1044AV"), order codes. */
   aliases?: string[];
-  gbp: { q1k: number; q10k: number; q100k: number };
+  /** Unit price, GBP. q200k / q300k: derived along the part's volume slope (Oct 2026 research). */
+  gbp: { q1k: number; q10k: number; q100k: number; q200k?: number; q300k?: number };
   confidence: 'distributor' | 'estimate'; source: string; asOf: string;
+  /** ECUs the part is used in (research tags). */
+  ecuRoles?: string[];
+  /** The distributor prices behind a researched entry, as read. */
+  observations?: Array<{ distributor: string; qty: number; price: number; currency: string; url: string; date: string; gbp: number }>;
+  /** How the volume breaks were derived. */
+  volumeModel?: { b: number; basis: string; derivedAbove: number };
 }
 interface CatalogueFile { asOf: string; fxUsdToGbp: number; currency: string; basis: string; parts: CatalogueEntry[] }
 
@@ -97,8 +104,14 @@ export function cataloguePriceAt(mpn: string, qty: number): number | null {
     const t = (Math.log10(q) - Math.log10(qa)) / (Math.log10(qb) - Math.log10(qa));
     return pa + (pb - pa) * t;
   };
+  const { q200k, q300k } = e.gbp;
   let p: number;
-  if (q >= 100000) p = q100k;
+  // Annual programme volumes 100k–300k have their own breaks (derived along the part's
+  // slope); flat above the last break rather than extrapolated further.
+  if (q300k != null && q >= 300000) p = q300k;
+  else if (q200k != null && q300k != null && q >= 200000) p = lerp(200000, q200k, 300000, q300k);
+  else if (q200k != null && q >= 100000) p = lerp(100000, q100k, 200000, q200k);
+  else if (q >= 100000) p = q100k;
   else if (q >= 10000) p = lerp(10000, q10k, 100000, q100k);
   else if (q >= 1000) p = lerp(1000, q1k, 10000, q10k);
   else p = q1k * volumeScaleFrom10k(q) / volumeScaleFrom10k(1000);

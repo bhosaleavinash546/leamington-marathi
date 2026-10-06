@@ -182,6 +182,15 @@ never asks for a price. The response carries `stage1Classification` / `ocrExtrac
 family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
 the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
 
+**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 549 parts, 183 distributor-priced;
+researched entries carry `observations` (distributor, qty ≥ 100, price, URL, date) and `volumeModel` (slope b). Breaks are
+1k/10k/100k/200k/300k — above the largest published break they are DERIVED (`P1k × (Q/1000)^−b`), not quotes; lookups
+follow parts bought (qty × boards) and stay flat above 300k. Add prices only through `scripts/pcb-catalogue-research-merge.ts`
+(rules in its header; raw research in `scripts/pcb-research/<date>/`, queue in `scripts/pcb-research/queue.json`) or
+`pcb-catalogue-import.ts` — never by hand. `server/data/pcb-ecu-library.json` maps 38 ECUs to 6 powertrains with sourced key
+ICs (`pcb-ecu-library.ts`, `GET /api/pcb/ecu-library`, the "Vehicle electronics library" panel); every claim carries a URL or
+"engineering judgement".
+
 ### Frontend & server shell
 - `src/ui/main.ts` is a ~20.3k-line monolith holding most of the SPA (forms per
   commodity, results, CAD viewer wiring, exports). Cost inputs are collected by
