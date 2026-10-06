@@ -402,11 +402,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   metal prices, arithmetic in the note. `GRADE_SCOPE` must equal the forms' scopes (forge excludes extrusion logs).
   4340 is under 4130 in the library — fix in the next rate refresh. See `docs/cad/casting-forging-materials-review-2026-10.md`,
   `tests/casting-forging-materials.test.ts`.
-- Material picker (Oct 2026): the casting, cast + machine and forging forms pick Family → Standard → Grade
-  (`src/ui/material-picker.ts`; data in `src/engine/{casting,forging}-material-taxonomy.ts` on `material-taxonomy.ts`).
-  The grade `<select>` (`cast-mat` / `cam-mat` / `forge-mat`) stays the ONE value holder — family / standard only hide
-  `<optgroup>`s, and setting its value (by code or hand) moves both to the grade's own. A new library casting or forging
-  grade must be filed in its `GRADES` (`tests/{casting,forging}-material-taxonomy.test.ts`); an unknown company grade
+- Material picker (Oct 2026): the casting, cast + machine, forging and sheet-metal (stamping + fab) forms pick Family →
+  Standard → Grade (`src/ui/material-picker.ts`; data in `src/engine/{casting,forging,sheet}-material-taxonomy.ts` on
+  `material-taxonomy.ts`). The grade `<select>` (`cast-mat` / `cam-mat` / `forge-mat` / `sm-mat` / `smf-mat`) stays the ONE value holder — family / standard only hide
+  `<optgroup>`s, and setting its value (by code or hand) moves both to the grade's own. A new library casting, forging or sheet
+  grade must be filed in its `GRADES` (`tests/{casting,forging,sheet}-material-taxonomy.test.ts`); an unknown company grade
   lands under "Other / company grades". The CAD panel's material pin is grouped the same way.
   Plastics — injection moulding, blow moulding, thermoforming, extrusion (`imm-mat`, `bm-mat`, `tf-mat`, `ext-mat`) —
   are Family → POLYMER → Grade (`polymer-material-taxonomy.ts`: ONE polymer list + family list, one grade table per

@@ -1,5 +1,5 @@
 /**
- * Material picker: Family → Standard → Grade, for the casting, cast + machine and forging forms,
+ * Material picker: Family → Standard → Grade, for the casting, cast + machine, forging and sheet-metal forms,
  * and Family → Polymer → Grade for injection moulding, blow moulding, thermoforming and extrusion
  * (material picker, Oct 2026). The taxonomies are data in src/engine/*-material-taxonomy.ts.
  *
@@ -13,6 +13,7 @@
 import { familyLabelOf, groupGrades, type MaterialTaxonomy } from '../engine/material-taxonomy.js';
 import { CASTING_TAXONOMY } from '../engine/casting-material-taxonomy.js';
 import { FORGING_TAXONOMY } from '../engine/forging-material-taxonomy.js';
+import { SHEET_TAXONOMY } from '../engine/sheet-material-taxonomy.js';
 import { BLOW_TAXONOMY, EXTRUSION_TAXONOMY, FORMING_TAXONOMY, MOULDING_TAXONOMY } from '../engine/polymer-material-taxonomy.js';
 
 type Mat = { id: string; grade: string; category: string; pricePerKg: number; densityKgPerM3: number };
@@ -22,6 +23,8 @@ export const MATERIAL_PICKERS: Record<string, { tax: MaterialTaxonomy; subtype?:
   'cast-mat': { tax: CASTING_TAXONOMY, subtype: 'cast-subtype' },
   'cam-mat': { tax: CASTING_TAXONOMY, subtype: 'cam-cast-subtype' },
   'forge-mat': { tax: FORGING_TAXONOMY },
+  'sm-mat': { tax: SHEET_TAXONOMY },
+  'smf-mat': { tax: SHEET_TAXONOMY },
   'imm-mat': { tax: MOULDING_TAXONOMY },
   'bm-mat': { tax: BLOW_TAXONOMY },
   'tf-mat': { tax: FORMING_TAXONOMY },
