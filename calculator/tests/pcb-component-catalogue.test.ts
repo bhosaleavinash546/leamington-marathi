@@ -10,7 +10,7 @@ const raw = JSON.parse(readFileSync(new URL('../server/data/pcb-component-catalo
 
 describe('catalogue data', () => {
   it('is large, dated and sourced on every line', () => {
-    expect(CATALOGUE_SIZE).toBeGreaterThan(450);
+    expect(CATALOGUE_SIZE).toBeGreaterThan(650);
     expect(CATALOGUE_AS_OF).toBe(raw.asOf);
     for (const p of raw.parts) {
       expect(p.source.length, p.mpn).toBeGreaterThan(10);
@@ -20,7 +20,7 @@ describe('catalogue data', () => {
       expect(p.gbp.q100k).toBeGreaterThan(0);
     }
     const researched = raw.parts.filter(p => p.confidence === 'distributor');
-    expect(researched.length).toBeGreaterThanOrEqual(70);
+    expect(researched.length).toBeGreaterThanOrEqual(300);
     for (const p of researched) expect(p.source, p.mpn).toMatch(/Digi-Key|Mouser|LCSC|Farnell|Newark|Arrow|Avnet|TME|Rochester|Chip One|Heilind|ICC|FindChips|Spirit|Master|Comet|OMO|Component Stockers|XON|distributor|Future|JLCPCB|Jameco|JAK|GAM|Ersa|PCBX|SiTime|TTI|Verical|DigiPart/);
   });
   it('has no duplicate part numbers', () => {
@@ -32,7 +32,7 @@ describe('catalogue data', () => {
 describe('the October 2026 research (docs/pcb/component-database-2026-10.md)', () => {
   const researched = raw.parts.filter(p => p.asOf === '2026-10-06');
   it('every researched entry carries its distributor observations, URLs and volume model', () => {
-    expect(researched.length).toBeGreaterThanOrEqual(100);
+    expect(researched.length).toBeGreaterThanOrEqual(220);
     for (const p of researched) {
       expect(p.confidence, p.mpn).toBe('distributor');
       expect(p.observations?.length, p.mpn).toBeGreaterThan(0);
@@ -140,5 +140,18 @@ describe('the research merge rules', () => {
     const p = priceFromObservations([o('Digi-Key', 1000, 1.0), o('Mouser', 1000, 1.1), o('LCSC', 1000, 0.2)])!;
     expect(p.distributors).not.toContain('LCSC');
     expect(p.dropped.join(' ')).toMatch(/outlier/);
+  });
+  it('never reads two distributors\' prices as a volume slope (round 2: DS90UB954)', () => {
+    // Mouser $14.78 @1k vs Digi-Key $10.79 @2.5k is the distributors' spread; it used to read as b = 0.34.
+    const p = priceFromObservations([o('Mouser', 1000, 14.78), o('Digi-Key', 2500, 10.79)])!;
+    expect(p.b).toBeCloseTo(DEFAULT_B, 4);
+    expect(p.basis).toMatch(/franchise curve/);
+  });
+  it('the catalogue holds no slope taken across distributors', () => {
+    for (const e of raw.parts) if (e.volumeModel) expect(e.volumeModel.basis, e.mpn).toMatch(/^(slope from the part's own breaks|franchise curve)/);
+  });
+  it('a price read on a sibling orderable code says so in the source', () => {
+    const e = raw.parts.find(p => p.mpn === 'KSZ9563RNXV-VAO')!;
+    expect(e.source).toMatch(/^Priced on the sibling orderable code KSZ9563RNXI-TR/);
   });
 });

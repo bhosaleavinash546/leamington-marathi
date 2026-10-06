@@ -147,9 +147,9 @@ precedence catalogue → OCR-named part range → function range → class range
 line carrying `priceSource` / `priceBasis` / `priceNote`, `pcb-bom-grounding.ts`).
 Chip markings OCR read are attached to the BOM line of the same function
 (`pcb-ocr-reconcile.ts`). The offline catalogue is **data**:
-`server/data/pcb-component-catalogue.json` (458 parts, 1k/10k/100k GBP breaks, a
-source and date on every entry — 77 read from distributor pages on 2026-10-01, the
-rest labelled engineering estimates; see `docs/pcb/component-catalogue.md`), loaded
+`server/data/pcb-component-catalogue.json` (653 parts, 1k–300k GBP breaks, a
+source and date on every entry — 303 from distributor listings, the rest labelled
+engineering estimates; see `docs/pcb/component-database-2026-10.md`), loaded
 by `pcb-price-catalogue.ts` (`catalogueEntry` / `cataloguePriceAt`, aliases for chip
 top marks) and refreshed with `scripts/pcb-catalogue-import.ts` from a distributor
 CSV export or Nexar — never by editing prices in TypeScript. Models: Haiku 4.5 classifies, **Sonnet 5.5** reads chips
@@ -182,11 +182,11 @@ never asks for a price. The response carries `stage1Classification` / `ocrExtrac
 family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
 the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
 
-**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 549 parts, 183 distributor-priced;
+**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 653 parts, 303 distributor-priced (two research rounds; 129 listed parts still unpriced, in `queue.json`);
 researched entries carry `observations` (distributor, qty ≥ 100, price, URL, date) and `volumeModel` (slope b). Breaks are
 1k/10k/100k/200k/300k — above the largest published break they are DERIVED (`P1k × (Q/1000)^−b`), not quotes; lookups
 follow parts bought (qty × boards) and stay flat above 300k. Add prices only through `scripts/pcb-catalogue-research-merge.ts`
-(rules in its header; raw research in `scripts/pcb-research/<date>/`, queue in `scripts/pcb-research/queue.json`) or
+(rules in its header — a slope comes from ONE distributor's breaks, never across distributors; a sibling-code price says so in its source; raw research in `scripts/pcb-research/<date>/`, queue in `scripts/pcb-research/queue.json`) or
 `pcb-catalogue-import.ts` — never by hand. `server/data/pcb-ecu-library.json` maps 38 ECUs to 6 powertrains with sourced key
 ICs (`pcb-ecu-library.ts`, `GET /api/pcb/ecu-library`, the "Vehicle electronics library" panel); every claim carries a URL or
 "engineering judgement".

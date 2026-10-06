@@ -6,13 +6,14 @@
 
 ## 1. Result
 
-| | Before (1 Oct) | After (6 Oct) |
-|---|---|---|
-| Parts in the catalogue | 458 | **549** |
-| Priced from distributors | 77 | **183** (+106) |
-| Engineering estimates | 381 | 366 (15 replaced by distributor prices) |
-| Researched entries carrying their raw observations and URLs | 0 | 107 |
-| Of those, priced by 2+ distributors | — | 24 |
+| | Before (1 Oct) | Round 1 (6 Oct) | **Round 2 (6 Oct)** |
+|---|---|---|---|
+| Parts in the catalogue | 458 | 549 | **653** |
+| Priced from distributors | 77 | 183 | **303** |
+| Engineering estimates | 381 | 366 | 350 (16 more replaced by distributor prices) |
+| Researched entries carrying their raw observations and URLs | 0 | 107 | **228** |
+| Of those, priced by 2+ distributors | — | 24 | **88** |
+| Listed parts still without a distributor price | — | 254 | **129** |
 | Volume breaks per part | 1k / 10k / 100k | 1k / 10k / 100k / **200k / 300k** |
 | ECU map by powertrain | none | **38 ECUs × 6 powertrains**, 52 sources |
 
@@ -29,6 +30,24 @@ New researched parts by area:
 | Passives (AEC-Q200) | 12 | Murata GCM 0402–1210 MLCCs, TDK CGA, KEMET AUTO, Samsung CL…W |
 | ADAS / radar / camera | 7 | AWR1642/1843/2243/6843, IWR6843, TEF8232, AR0233AT |
 
+Round 2 priced 122 of the 222 queued parts searched (raw files: `calculator/scripts/pcb-research/2026-10-06-r2/`):
+
+| Area | Priced / listed | Examples |
+|---|---|---|
+| Communication interfaces | 25 / 29 | LIN TJA1021/1027, TLIN1029, MCP2003B, TLE7259; CAN NCV7344, ATA6563; Ethernet PHYs TJA1101B/1102/1103/1120, DP83TC811/813, DP83TG720; switches SJA1110, KSZ9563, LAN9372; FPD-Link DS90UB953/954/960/941/948; GMSL MAX9295A/9296A/96717 |
+| Power management | 19 / 30 | TPS7B69/7B81 LDOs, LMR33630, TPS62810, LM74700/74800, LM5146, LM5170, LM5122, TPS3703; NCV8730/4275C/890100; A6986, LDO40L, L5965, SPSB081, L99PM62; MAX20087 |
+| EV high voltage | 19 / 40 | AMC1301/1302/1311/3301, ISO7741/7721/1042, Si8641, ADuM1401; TMCS1123, ACS37002/724, MLX91220, TLE4972; AD2S1210; Wolfspeed C3M0032/0075, SCTW35N65G2V, IKW40N120H3 |
+| Body / engine / lighting | 19 / 40 | TLE9180D/9183/9201, L99H92, A4910; L9779WD, TLE8110, TLE6240, MC33816; TPS92662A/92830/92520, TLD5542/1114/2331, NCV7685; TLE5012B, AS5047P, ASM330LHH |
+| Battery management / charging | 15 / 26 | INA228/229, SN6505B, UCC28740/28951/256404, UCD3138, UCC14240, AMC3330; TLE9012/9015, MAX17841, LTC6820, MC33665, L9963T |
+| Memory | 14 / 29 | EEPROM M24C64, AT24C256C, M95256, 25LC256, CAT24C512; NOR S25FL128L/512S, IS25LP128, MX25L256, MT25QL512; NAND MT29F4G08; LPDDR4 MT53E256M32, IS46LQ32256; eMMC MTFC16G |
+| MCUs | 11 / 28 | S32K312/314/358, S32G274A, SPC584B, SPC5777C, TMS320F28377D, AM2634, STM32G474/H743 (S32K344 kept its earlier price) |
+
+**Read these with care:**
+- **Sibling codes.** 25 parts are priced on a sibling orderable code. The entry's source opens "Priced on the sibling orderable code …", and the code is an alias. Most are a packing or revision variant. Four are an industrial-temperature version of an automotive part, and the AEC-Q grade usually costs more: KSZ9563 (-VAO), Si8641 (-AS), MT29F4G08 (-AAT) and LAN9372.
+- **Spreads between distributors.** Some parts show a wide gap between distributors, for example CAT24C512 at Digi-Key $0.63 against LCSC and Newark $0.25. The 1k price is the median; the observations are on the entry.
+- **Aggregator summaries.** Some prices were read from aggregator summaries (Findchips, Octopart, Digipart) that named the franchised distributor and its break. The URL is the aggregator page.
+- **SiC MOSFETs.** The Wolfspeed SiC MOSFETs (C3M0032120K $7.37 @120, $6.65 @510 at Digi-Key; Mouser agrees) are well below older SiC prices. They are kept as listed.
+
 Every new entry carries its `observations` (distributor, quantity, price, currency, URL, date) and its `volumeModel`. The raw research files are in `calculator/scripts/pcb-research/2026-10-06/`.
 
 ## 2. How a price is built (`scripts/pcb-catalogue-research-merge.ts`)
@@ -38,34 +57,46 @@ Every new entry carries its `observations` (distributor, quantity, price, curren
 3. **Outliers.** With 3+ observations, one more than 2.5× from the median of the others is dropped.
 4. **The 1k price** is the median of the observations at 500–2,500 units. A single other break is moved to 1k along the slope.
 5. **The slope** is the part's own where possible:
-   - from two breaks of one distributor: `b = ln(Pa/Pb) / ln(qb/qa)`;
-   - else from a ≥ 2,500 break against the 1k median;
+   - from two breaks of ONE distributor: `b = ln(Pa/Pb) / ln(qb/qa)`;
    - else the catalogue's franchise curve (10k = 1k × 0.85, b = 0.0706).
+
+   Two different distributors' breaks are never turned into a slope. The gap between them is the distributors' price spread, not a volume discount. Round 1 allowed it, and round 2 showed why that was wrong: DS90UB954 at Mouser $14.78 @1k against Digi-Key $10.79 @2.5k read as b = 0.34, which put the 300k price at a third of the 1k price. The rule was removed and every earlier researched entry was re-priced from its stored observations. Two changed: BTT6030-2ERA (slope only) and TLE9255W (1k £1.218 → £1.183).
 
    It is clamped to 0.02–0.18. Measured slopes came out at 0.02–0.16. Passives run steepest: Murata 0402 MLCCs at 0.12–0.14 from Digi-Key's 1k → 10k → 50k reels.
 6. **Volume breaks.** 10k / 100k / 200k / 300k = `P1k × (Q / 1000)^−b`. **Above the largest published break these are derived, not quoted.** Distributors publish nothing at 100k–300k a year; contract prices at that volume are negotiated, and are typically lower again.
 7. **Lookup.** A BOM line is priced at the parts it buys: quantity per board × boards per year. The lookup interpolates between breaks and stays flat above 300k (`cataloguePriceAt`).
 
-## 3. What this round did not finish — and why
+## 3. What is not finished — and why
 
-Web search was the only route. Direct fetches of every distributor and manufacturer site (Digi-Key, Mouser, Octopart, LCSC, ti.com, st.com, nxp.com, infineon.com) are blocked by this environment's network policy. Web search has a limit of 200 searches per turn, shared by the nine research agents, and it ran out partway through every list.
+Web search was the only route. Direct fetches of every distributor and manufacturer site (Digi-Key, Mouser, Octopart, LCSC, ti.com, st.com, nxp.com, infineon.com) are blocked by this environment's network policy. Web search allows 200 searches per turn, shared by all research agents. Both rounds ran out of searches.
 
-- **254 listed parts have no price yet.** Almost all of them were simply not searched. They are listed in `calculator/scripts/pcb-research/queue.json`:
-  - Ethernet PHYs and switches, SerDes, LIN, FlexRay;
-  - TI and ADI regulators;
-  - Renesas, ST, TI and Microchip MCUs, plus S32G and i.MX;
-  - DRAM, eMMC, NOR/NAND and EEPROM;
-  - power modules, SiC/IGBT, isolated sensing, resolver and isolators;
-  - OBC/DC-DC controllers and charge-communication chips;
-  - LED drivers and sensors;
-  - resistors, inductors, discretes and crystals.
-- **83 of the 107 new prices come from one distributor.** They are real listings, not cross-checked; a second source is the next step for each.
-- **Some prices were read from search summaries of distributor pages, not the pages themselves.** Each one keeps its URL so it can be re-checked.
-- **Three slopes hit a clamp** (BTS7040, GCM32ER, MFS2633) and are held at the limit.
-- **TEF810x, MAX2043x, Mobileye EyeQ and Qualcomm SA8xxx are NDA-priced:** there is no public distributor price. They stay estimates or unlisted.
+**129 listed parts have no distributor price** (`calculator/scripts/pcb-research/queue.json`, in three lists):
+- **`notSearched` (45): the search budget ran out.** These include:
+  - the six traction power modules (HybridPACK Drive, XM3, VE-Trac, ACEPACK);
+  - film capacitors and HV contactors;
+  - several sensors (MLX9036x, TLE4999/4966, KP236, SMI230, IAM-20685);
+  - the MAX / LT regulators;
+  - DRA821, AP0202, AR0820/AR0147, TC397, TDA4VM, i.MX 8M Plus;
+  - the three 1206 MLCCs and FlexRay.
+- **`searchedNoPrice` (55): searched, but no franchised break of 100 units or more.** The reasons were:
+  - only one-off prices;
+  - prices with no quantity attached;
+  - figures that contradicted each other and were discarded;
+  - brokers only;
+  - parts discontinued at distributors.
+
+  The reason is in each part's notes.
+- **`ndaOrNoPublicPrice` (29): no public distributor price.** These are:
+  - SoCs sold under NDA (Qualcomm SA8155P/8295P, R-Car, Mobileye, Marvell / Broadcom PHYs, HomePlug GreenPHY modems);
+  - radar and imaging chips priced only by the maker (AWR2944, S32R45/41, OX08B40/OX03C10, IMX490);
+  - parts where round 1 found only brokers or the maker's store.
+
+**Other limits:**
+- 215 of the 303 distributor-priced parts have one distributor behind them. They are real listings, not cross-checked.
+- Prices at 100k–300k a year are derived along the part's slope, not quoted. Contract prices at that volume are negotiated, and are usually lower again.
 
 **To finish (no code changes):**
-1. Start a new turn, or raise `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`. Research `queue.json` with the same rules (`scripts/pcb-research/RULES.md`), then run `npx tsx scripts/pcb-catalogue-research-merge.ts <dir> --write`.
+1. Start a new turn, or raise `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`. Research `queue.json` (`notSearched` first) with the same rules (`scripts/pcb-research/RULES.md`), then run `npx tsx scripts/pcb-catalogue-research-merge.ts <dir> --write`.
 2. **More authoritative:** Purchasing's distributor quote or BOM-tool exports (Digi-Key, Mouser, Arrow), imported with `scripts/pcb-catalogue-import.ts`. Or a Nexar/Octopart key, which returns full break tables with stock.
 3. Allowing the distributor domains in the environment's network settings would let the research read the pages themselves rather than search summaries.
 

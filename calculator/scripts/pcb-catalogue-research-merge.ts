@@ -15,9 +15,13 @@
  *  3. With 3+ observations, one more than 2.5× from the median of the others is dropped.
  *  4. The 1k price is the median of the observations at 500–2,500 units (a single other
  *     break is moved to 1k along the part's slope).
- *  5. The slope is the part's own: from one distributor's two breaks (b = ln(Pa/Pb)/ln(qb/qa)),
- *     else from a high break (≥ 2,500) of any distributor against the 1k median; clamped to
- *     0.02–0.18. With neither, the catalogue's franchise curve (10k = 1k × 0.85 → b = 0.0706).
+ *  5. The slope is the part's own: from ONE distributor's two breaks (b = ln(Pa/Pb)/ln(qb/qa)),
+ *     clamped to 0.02–0.18. Otherwise the catalogue's franchise curve (10k = 1k × 0.85 →
+ *     b = 0.0706). Two DIFFERENT distributors' breaks are never turned into a slope: the gap
+ *     between them is the distributors' price spread, not a volume discount (DS90UB954:
+ *     Mouser $14.78 @1k vs Digi-Key $10.79 @2.5k read as b = 0.34).
+ *  5a. A price read on a sibling orderable code (another temperature grade, packing or
+ *     revision) says so in the entry's source, and the sibling code becomes an alias.
  *  6. 10k / 100k / 200k / 300k = P1k × (Q / 1000)^−b. Distributors publish nothing above reel
  *     quantity: 100k–300k are DERIVED, and say so. They are not contract prices.
  *  7. A part with no valid observation is NOT added (no unsourced price enters the catalogue);
@@ -83,14 +87,6 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   }
   const near1k = obs.filter(o => o.qty >= 500 && o.qty <= 2500);
   if (own.length) { b = median(own); basis = `slope from the part's own breaks (${own.length} pair${own.length > 1 ? 's' : ''})`; }
-  else {
-    const hi = obs.filter(o => o.qty >= 2500);
-    if (near1k.length && hi.length) {
-      const p1 = median(near1k.map(o => o.gbp * Math.pow(o.qty / 1000, DEFAULT_B)));
-      const h = hi.sort((x, y) => y.qty - x.qty)[0];
-      if (p1 > h.gbp) { b = Math.log(p1 / h.gbp) / Math.log(h.qty / 1000); basis = `slope from the 1k median to ${h.distributor}'s ${h.qty.toLocaleString('en-GB')} break`; }
-    }
-  }
   if (!Number.isFinite(b)) { b = DEFAULT_B; basis = 'franchise curve (no second break found): 10k = 1k × 0.85'; }
   b = Math.min(0.18, Math.max(0.02, b));
   // Rule 4 — the 1k price.
@@ -103,15 +99,16 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   };
 }
 
-function sourceText(p: Priced): string {
+function sourceText(p: Priced, sibling?: string): string {
   const sym = (c: string) => ({ USD: '$', GBP: '£', EUR: '€' }[c.toUpperCase()] ?? `${c} `);
   const list = p.obs.map(o => `${o.distributor} ${sym(o.currency)}${o.price} @${o.qty.toLocaleString('en-GB')}`).join('; ');
-  return `${list} (search of distributor listings, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.`;
+  const sib = sibling ? `Priced on the sibling orderable code ${sibling} (the listed code was not found at a distributor). ` : '';
+  return `${sib}${list} (search of distributor listings, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.`;
 }
 
 /** Merge research into the catalogue file (rules 7–8). Returns the report. */
 export function mergeResearch(catalogue: { parts: Entry[] }, research: Researched[], date: string) {
-  const report = { added: [] as string[], replacedEstimate: [] as string[], updated: [] as string[], keptExisting: [] as string[], notFound: [] as string[], badCategory: [] as string[] };
+  const report = { added: [] as string[], replacedEstimate: [] as string[], updated: [] as string[], keptExisting: [] as string[], notFound: [] as string[], badCategory: [] as string[], repriced: [] as string[] };
   const index = new Map<string, number>();
   catalogue.parts.forEach((e, i) => { for (const k of [e.mpn, e.family, ...(e.aliases ?? [])]) if (k) index.set(norm(k), i); });
   for (const r of research) {
@@ -121,7 +118,7 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
     if (!CATEGORIES.has(r.category)) report.badCategory.push(`${r.mpn}: ${r.category}`);
     const entry: Entry = {
       mpn: r.mpn.trim(), family: (r.family || r.mpn).trim(), mfr: r.mfr, desc: r.desc, category, pkg: r.pkg, aecq: !!r.aecq,
-      gbp: priced.gbp, confidence: 'distributor', source: sourceText(priced), asOf: date,
+      gbp: priced.gbp, confidence: 'distributor', source: sourceText(priced, r.observedMpn && norm(r.observedMpn) !== norm(r.mpn) ? r.observedMpn.trim() : undefined), asOf: date,
       ecuRoles: r.ecuRoles?.length ? r.ecuRoles : undefined,
       observations: priced.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date, gbp: r4(o.gbp) })),
       volumeModel: { b: priced.b, basis: priced.basis, derivedAbove: Math.max(...priced.obs.map(o => o.qty)) },
@@ -146,6 +143,17 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
       report.keptExisting.push(`${entry.mpn} (existing ${old.source.slice(0, 60)}…)`);
     }
   }
+  // Entries researched earlier are re-priced from their stored observations, so one rule set
+  // prices the whole catalogue (the source's sibling sentence is kept).
+  for (const e of catalogue.parts) {
+    if (!e.observations?.length || research.some(r => norm(r.mpn) === norm(e.mpn))) continue;
+    const p = priceFromObservations(e.observations);
+    if (!p) continue;
+    const sib = /^Priced on the sibling orderable code (\S+) /.exec(e.source)?.[1];
+    if (JSON.stringify(p.gbp) !== JSON.stringify(e.gbp)) report.repriced.push(`${e.mpn}: 1k £${e.gbp.q1k} → £${p.gbp.q1k}, b ${e.volumeModel?.b} → ${p.b}`);
+    e.gbp = p.gbp; e.source = sourceText(p, sib);
+    e.volumeModel = { b: p.b, basis: p.basis, derivedAbove: Math.max(...p.obs.map(o => o.qty)) };
+  }
   // Every entry carries 200k / 300k: the earlier entries by their own stated curve.
   for (const e of catalogue.parts) {
     if (e.gbp.q200k != null && e.gbp.q300k != null) continue;
@@ -162,7 +170,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const file = new URL('../server/data/pcb-component-catalogue.json', import.meta.url);
   const cat = JSON.parse(readFileSync(file, 'utf8'));
   const research: Researched[] = [];
-  for (const f of readdirSync(dir).filter(f => f.endsWith('.json') && !/^ecu-map|existing/.test(f))) {
+  for (const f of readdirSync(dir).filter(f => f.endsWith('.json') && !/^ecu-map|existing|merge-report/.test(f))) {
     const j = JSON.parse(readFileSync(join(dir, f), 'utf8'));
     for (const p of j.parts ?? []) research.push(p);
   }
