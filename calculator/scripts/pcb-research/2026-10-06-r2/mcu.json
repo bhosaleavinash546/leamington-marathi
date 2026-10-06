@@ -1,0 +1,112 @@
+{ "domain": "mcu", "researched": "2026-10-06", "parts": [
+  { "mpn": "S32K344NHT1VPBST", "family": "S32K344", "mfr": "NXP", "desc": "S32K344 lockstep Cortex-M7 160MHz 4MB flash", "category": "ic_tqfp", "pkg": "172-MaxQFP", "aecq": true, "ecuRoles": ["BCM","BMS","inverter","zone"],
+    "observedMpn": "S32K344NHT1VPBST",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 420, "price": 13.84, "currency": "USD", "url": "https://www.findchips.com/search/k344", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key break via Findchips summary; summary not fully explicit that row was exact MPN. Rochester (aftermarket) $9.32@1000 and Win Source excluded." },
+  { "mpn": "S32K312NHT0VPBST", "family": "S32K312", "mfr": "NXP", "desc": "S32K312 Cortex-M7 120MHz 2MB flash", "category": "ic_tqfp", "pkg": "172-MaxQFP", "aecq": true, "ecuRoles": ["BCM","body","lighting"],
+    "observedMpn": "S32K312NHT0VPBST",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 6.96, "currency": "USD", "url": "https://www.mouser.com/es/ProductDetail/NXP-Semiconductors/S32K312NHT0VPBST?qs=Rp5uXu7WBW9ehT33ZmAqig%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 250, "price": 6.07, "currency": "USD", "url": "https://www.mouser.com/es/ProductDetail/NXP-Semiconductors/S32K312NHT0VPBST?qs=Rp5uXu7WBW9ehT33ZmAqig%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Arrow", "qty": 250, "price": 6.03, "currency": "USD", "url": "https://www.arrow.com/en/products/s32k312nht0vpbst/nxp-semiconductors.html?region=nac", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key $9.79 listed, qty break not stated (non-stock)." },
+  { "mpn": "S32K314NHT0VPBST", "family": "S32K314", "mfr": "NXP", "desc": "S32K314 Cortex-M7 160MHz 4MB flash", "category": "ic_tqfp", "pkg": "172-MaxQFP", "aecq": true, "ecuRoles": ["BCM","BMS","inverter"],
+    "observedMpn": "S32K314NHT1VPBST",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 11.67, "currency": "USD", "url": "https://octopart.com/part/nxp-semiconductors/S32K314NHT1VPBST", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 420, "price": 10.72, "currency": "USD", "url": "https://octopart.com/part/nxp-semiconductors/S32K314NHT1VPBST", "date": "2026-10-06" }
+    ],
+    "notes": "Exact NHT0 not found; sibling NHT1 (silicon rev) used. Arrow figures in summary inconsistent ($16.88@420) - discarded." },
+  { "mpn": "S32K322NHT0VPBST", "family": "S32K322", "mfr": "NXP", "desc": "S32K322 dual Cortex-M7 2MB flash", "category": "ic_tqfp", "pkg": "172-MaxQFP", "aecq": true, "ecuRoles": ["BCM","inverter","BMS"],
+    "observedMpn": "", "observations": [], "notes": "No distributor price found in search results." },
+  { "mpn": "TMS320F280039CPZSQ1", "family": "TMS320F280039C-Q1", "mfr": "Texas Instruments", "desc": "C2000 F28003x 120MHz real-time MCU", "category": "ic_tqfp", "pkg": "100-LQFP", "aecq": true, "ecuRoles": ["OBC","DC-DC","inverter"],
+    "observedMpn": "", "observations": [], "notes": "No distributor price found in search results." },
+  { "mpn": "TMS320F280049CPZSQ1", "family": "TMS320F280049C-Q1", "mfr": "Texas Instruments", "desc": "C2000 F28004x 100MHz real-time MCU", "category": "ic_tqfp", "pkg": "100-LQFP", "aecq": true, "ecuRoles": ["OBC","DC-DC","inverter"],
+    "observedMpn": "", "observations": [], "notes": "Only TI.com direct price for commercial F280049CPZS ($5.418) seen - manufacturer, not distributor, and not Q1; excluded." },
+  { "mpn": "TMS320F28377DPTPQ", "family": "TMS320F28377D-Q1", "mfr": "Texas Instruments", "desc": "C2000 dual-core 200MHz real-time MCU", "category": "ic_tqfp", "pkg": "176-HLQFP", "aecq": true, "ecuRoles": ["inverter","OBC","motor control"],
+    "observedMpn": "TMS320F28377DPTPQ",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 120, "price": 25.71, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMS320F28377DPTPQ/6156199", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 120, "price": 27.34, "currency": "USD", "url": "https://octopart.com/part/texas-instruments/TMS320F28377DPTPQ", "date": "2026-10-06" }
+    ],
+    "notes": "Largest published break 120 (tray)." },
+  { "mpn": "R7F701581", "family": "RH850/F1KM-S1", "mfr": "Renesas", "desc": "RH850/F1KM-S1 body MCU", "category": "ic_tqfp", "pkg": "LQFP", "aecq": true, "ecuRoles": ["BCM","body"],
+    "observedMpn": "", "observations": [], "notes": "Exact part not found at distributors; only Mouser qty-1 price for sibling R7F7016904AFP-C#AA1 ($14.07) - not a volume break, excluded." },
+  { "mpn": "R7F701684", "family": "RH850/F1KH", "mfr": "Renesas", "desc": "RH850/F1KH dual G3KH MCU", "category": "ic_tqfp", "pkg": "LQFP-176", "aecq": true, "ecuRoles": ["gateway","BCM"],
+    "observedMpn": "R7F7016844AFP-C#AA1", "observations": [], "notes": "Orderable code R7F7016844AFP-C#AA1 seen on renesas.com; no distributor price found." },
+  { "mpn": "SPC584B70E3EHC0X", "family": "SPC584B70E", "mfr": "STMicroelectronics", "desc": "SPC58 B-line body MCU e200z4", "category": "ic_tqfp", "pkg": "eTQFP", "aecq": true, "ecuRoles": ["BCM","body","gateway"],
+    "observedMpn": "SPC584B70E3EHC0X",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 10.97, "currency": "USD", "url": "https://www.findchips.com/search/SPC584B70E3EHC0X", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 10.0488, "currency": "USD", "url": "https://www.findchips.com/search/SPC584B70E3EHC0X", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key 497-19519-1-ND via Findchips." },
+  { "mpn": "SPC58NH92E7HMI0X", "family": "SPC58NH92E7", "mfr": "STMicroelectronics", "desc": "SPC58 Chorus powertrain MCU", "category": "ic_bga", "pkg": "BGA", "aecq": true, "ecuRoles": ["engine control","powertrain","gateway"],
+    "observedMpn": "SPC58NH92E7HMI0X", "observations": [], "notes": "Only ST eStore (manufacturer direct, not franchised distributor): $37.50 (1-499), $26.42 @500 - excluded per rules. No distributor price found." },
+  { "mpn": "MPC5744PK1AMLQ9", "family": "MPC5744P", "mfr": "NXP", "desc": "MPC5744P lockstep e200z4 200MHz", "category": "ic_tqfp", "pkg": "144-LQFP", "aecq": true, "ecuRoles": ["EPS","braking","chassis safety"],
+    "observedMpn": "", "observations": [], "notes": "Search returned only SPC5741P (different device, less flash) - not used." },
+  { "mpn": "MPC5748GVMN6A", "family": "MPC5748G", "mfr": "NXP", "desc": "MPC5748G gateway MCU", "category": "ic_bga", "pkg": "324-MAPBGA", "aecq": true, "ecuRoles": ["gateway","BCM"],
+    "observedMpn": "", "observations": [], "notes": "No distributor price found; only dev-board prices returned." },
+  { "mpn": "SPC5777CCK3MME3", "family": "MPC5777C", "mfr": "NXP", "desc": "MPC5777C tri-core 264MHz 8MB powertrain MCU", "category": "ic_bga", "pkg": "416-MAPBGA", "aecq": true, "ecuRoles": ["engine control","transmission","powertrain"],
+    "observedMpn": "SPC5777CCK3MME3",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 200, "price": 57.0293, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SPC5777CCK3MME3/7648118", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser sibling SPC5777CDK3MMO4 (516 BGA, 300MHz) $53.86@200 - different variant, not recorded." },
+  { "mpn": "STM32G474RET3", "family": "STM32G474RE", "mfr": "STMicroelectronics", "desc": "STM32G474 Cortex-M4 170MHz 512KB", "category": "ic_tqfp", "pkg": "64-LQFP", "aecq": false, "ecuRoles": ["DC-DC","OBC","motor control"],
+    "observedMpn": "STM32G474RET3",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 640, "price": 6.67, "currency": "USD", "url": "https://www.digikey.com.br/en/products/detail/stmicroelectronics/STM32G474RET3/11590973", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 5.85, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/STM32G474RET3?qs=xZ%2FP%2Ba9zWqYL6K%2Ba4ZBwGg%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "Industrial grade (-40..125C), not AEC-Q100. Digi-Key T&R 1000 @6.39 (TR suffix) also listed." },
+  { "mpn": "STM32H743ZIT6", "family": "STM32H743ZI", "mfr": "STMicroelectronics", "desc": "STM32H743 Cortex-M7 480MHz 2MB", "category": "ic_tqfp", "pkg": "144-LQFP", "aecq": false, "ecuRoles": ["infotainment","telematics","test equipment"],
+    "observedMpn": "STM32H743ZIT6",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1020, "price": 9.29, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STM32H743ZIT6/497-17721-ND/7809238", "date": "2026-10-06" }
+    ],
+    "notes": "Commercial/industrial grade, not AEC-Q100." },
+  { "mpn": "MSPM0G3507QRHBRQ1", "family": "MSPM0G3507-Q1", "mfr": "Texas Instruments", "desc": "MSPM0 Cortex-M0+ 80MHz 128KB", "category": "ic_qfn", "pkg": "32-VQFN", "aecq": true, "ecuRoles": ["sensor node","body","actuator"],
+    "observedMpn": "", "observations": [], "notes": "Q1 orderable not found in results; only commercial variants without volume break." },
+  { "mpn": "AM2634COKFHMZCZRQ1", "family": "AM2634-Q1", "mfr": "Texas Instruments", "desc": "Sitara AM263x quad Cortex-R5F 400MHz", "category": "ic_bga", "pkg": "324-NFBGA", "aecq": true, "ecuRoles": ["inverter","OBC","domain controller"],
+    "observedMpn": "AM2634COKFHMZCZRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 23.73602, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/AM2634COKFHMZCZRQ1/17394983", "date": "2026-10-06" }
+    ],
+    "notes": "Sibling AM2634CODFHMZCZRQ1 $21.34 qty 1 not recorded." },
+  { "mpn": "dsPIC33CK256MP506-E/PT", "family": "dsPIC33CK256MP506", "mfr": "Microchip", "desc": "dsPIC33CK DSC 100MHz 256KB", "category": "ic_tqfp", "pkg": "64-TQFP", "aecq": true, "ecuRoles": ["DC-DC","motor control","pump"],
+    "observedMpn": "", "observations": [], "notes": "Prices seen for -I/PT and -E/MR without quantity break - not recorded." },
+  { "mpn": "PIC18F26Q83", "family": "PIC18F26Q83", "mfr": "Microchip", "desc": "PIC18 8-bit with CAN FD", "category": "ic_qfn", "pkg": "28-VQFN (5N)", "aecq": true, "ecuRoles": ["sensor node","body","actuator"],
+    "observedMpn": "", "observations": [], "notes": "Aggregator 1000-qty $1.25 (-I/5N) without named distributor - not allowed." },
+  { "mpn": "ATSAMC21J18A-AZTVAO", "family": "ATSAMC21J18A", "mfr": "Microchip", "desc": "SAM C21 Cortex-M0+ 5V CAN FD", "category": "ic_tqfp", "pkg": "64-TQFP", "aecq": true, "ecuRoles": ["body","sensor node","actuator"],
+    "observedMpn": "", "observations": [], "notes": "Automotive code ATSAMC21J18A-AZTVAO seen at Digi-Key; no qty-break price found. Win Source excluded (broker)." },
+  { "mpn": "S32K358GHT1MPCST", "family": "S32K358", "mfr": "NXP", "desc": "S32K358 Cortex-M7 lockstep 240MHz 8MB", "category": "ic_tqfp", "pkg": "172-HDQFP-EP", "aecq": true, "ecuRoles": ["domain controller","BMS","zone"],
+    "observedMpn": "S32K358GHT1MPCST",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 20.72, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/S32K358GHT1MPCST/22484498", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 420, "price": 19.63, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/S32K358GHT1MPCST/22484498", "date": "2026-10-06" },
+      { "distributor": "Farnell", "qty": 420, "price": 14.09, "currency": "GBP", "url": "https://uk.farnell.com/nxp/s32k358ght1mpcst/mcu-32bit-240mhz-hdqfp-ep-172/dp/4380564", "date": "2026-10-06" }
+    ],
+    "notes": "Hint said BGA; orderable found is 172 HDQFP (category set ic_tqfp). Mouser 250 @19.63 also listed." },
+  { "mpn": "S32G274AABK0VUCT", "family": "S32G274A", "mfr": "NXP", "desc": "S32G2 vehicle network processor", "category": "ic_bga", "pkg": "525-FCBGA", "aecq": true, "ecuRoles": ["gateway","domain controller"],
+    "observedMpn": "S32G274AABK0VUCT",
+    "observations": [
+      { "distributor": "Arrow", "qty": 420, "price": 73.11, "currency": "USD", "url": "https://www.oemstrade.com/search/S32G274A", "date": "2026-10-06" },
+      { "distributor": "Future", "qty": 420, "price": 94.37, "currency": "USD", "url": "https://www.oemstrade.com/search/S32G274A", "date": "2026-10-06" },
+      { "distributor": "Avnet", "qty": 8400, "price": 65.78, "currency": "USD", "url": "https://www.oemstrade.com/search/S32G274A", "date": "2026-10-06" }
+    ],
+    "notes": "Via aggregator naming distributors. Part obsolete (Digi-Key); NXP successor S32G274AABK1VUCT." },
+  { "mpn": "S32G399AACK1VUCT", "family": "S32G399A", "mfr": "NXP", "desc": "S32G3 vehicle network processor", "category": "ic_bga", "pkg": "525-FCBGA", "aecq": true, "ecuRoles": ["gateway","domain controller"],
+    "observedMpn": "S32G399AACK1VUCT", "observations": [], "notes": "Only breaks <100 found (Digi-Key 25 @131.98, Mouser 10 @129.60, Newark 10 @127.01) - not recorded." },
+  { "mpn": "R7F702300", "family": "RH850/U2A", "mfr": "Renesas", "desc": "RH850/U2A domain MCU", "category": "ic_bga", "pkg": "BGA", "aecq": true, "ecuRoles": ["domain controller","gateway"],
+    "observedMpn": "", "observations": [], "notes": "not searched (budget)" },
+  { "mpn": "TDA4VM", "family": "TDA4VM-Q1", "mfr": "Texas Instruments", "desc": "Jacinto 7 ADAS SoC", "category": "ic_bga", "pkg": "827-FCBGA", "aecq": true, "ecuRoles": ["ADAS","camera"],
+    "observedMpn": "", "observations": [], "notes": "not searched (budget)" },
+  { "mpn": "MIMX8ML8DVNLZAB", "family": "i.MX 8M Plus", "mfr": "NXP", "desc": "i.MX 8M Plus applications processor", "category": "ic_bga", "pkg": "548-FBGA", "aecq": false, "ecuRoles": ["infotainment","telematics"],
+    "observedMpn": "", "observations": [], "notes": "not searched (budget)" },
+  { "mpn": "SAK-TC397XX-256F300S BD", "family": "TC397", "mfr": "Infineon", "desc": "AURIX TC397 hexa-core 300MHz", "category": "ic_bga", "pkg": "LFBGA-292", "aecq": true, "ecuRoles": ["domain controller","ADAS","powertrain"],
+    "observedMpn": "", "observations": [], "notes": "not searched (budget)" }
+] }

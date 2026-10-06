@@ -1,0 +1,858 @@
+{
+  "domain": "power",
+  "researched": "2026-10-06",
+  "parts": [
+    {
+      "mpn": "TPS7B6950QDBVRQ1",
+      "family": "TPS7B69",
+      "mfr": "Texas Instruments",
+      "desc": "40V 150mA LDO, 5V fixed, low Iq",
+      "category": "ic_soic",
+      "pkg": "SOT-23-5",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "sensor supply",
+        "body"
+      ],
+      "observedMpn": "TPS7B6950QDBVRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.65178,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS7B6950QDBVRQ1/5358038",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 0.571,
+          "currency": "USD",
+          "url": "https://eu.mouser.com/en/ProductDetail/Texas-Instruments/TPS7B6950QDBVRQ1?qs=n7vHx8wJlDGjk5D3YkjksA%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "TPS7B8150QDGNRQ1",
+      "family": "TPS7B81",
+      "mfr": "Texas Instruments",
+      "desc": "40V 150mA LDO, 5V fixed",
+      "category": "ic_soic",
+      "pkg": "HVSSOP-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "gateway",
+        "sensor supply"
+      ],
+      "observedMpn": "TPS7B8150QDGNRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 0.876,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TPS7B8150QDGNRQ1?qs=%2B6g0mu59x7L%2FdUgIrfYppA%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2500,
+          "price": 0.819,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TPS7B8150QDGNRQ1?qs=%2B6g0mu59x7L%2FdUgIrfYppA%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.61226,
+          "currency": "GBP",
+          "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/TPS7B8150QDGNRQ1/10445090",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "LMR33630BQRNXRQ1",
+      "family": "LMR33630-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "36V 3A synchronous buck, 1.4MHz",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-12 (RNX)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "infotainment",
+        "cluster",
+        "gateway"
+      ],
+      "observedMpn": "LMR33630BQRNXRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.36,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/lmr33630",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser break via findchips aggregator summary; Digi-Key 10k figure not tied to this MPN in snippet, discarded"
+    },
+    {
+      "mpn": "LMR14030SQDPRRQ1",
+      "family": "LMR14030-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "40V 3.5A buck, 2.2MHz",
+      "category": "ic_qfn",
+      "pkg": "WSON-10 (DPR)",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "ADAS",
+        "body"
+      ],
+      "observedMpn": "LMR14030SQDPRRQ1",
+      "observations": [],
+      "notes": "search summary gave $58.8 (implausible, discarded) and an unattributed 10k figure; no usable franchised break"
+    },
+    {
+      "mpn": "TPS62810QWRWYRQ1",
+      "family": "TPS6281x-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "6V 1A synchronous buck, 2.25/4MHz",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-9 (RWY)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar",
+        "camera",
+        "domain controller"
+      ],
+      "observedMpn": "TPS62810QWRWYRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 1.87424,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62810QWRWYRQ1/10320669",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 2.06285,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62810QWRWYRQ1/10320669",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 500,
+          "price": 2.06,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/PS-628",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key full-reel price above its 500 cut-tape break as reported; Mouser break 500+ from summary"
+    },
+    {
+      "mpn": "LM74700QDBVRQ1",
+      "family": "LM74700-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Ideal diode controller, reverse battery",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "ADAS",
+        "infotainment",
+        "reverse-polarity"
+      ],
+      "observedMpn": "LM74700QDBVRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.9914,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74700QDBVRQ1/10434692",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser $1.95 had no quantity; not recorded"
+    },
+    {
+      "mpn": "LM74800QDRRRQ1",
+      "family": "LM74800-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Ideal diode controller, back-to-back FET, load dump",
+      "category": "ic_qfn",
+      "pkg": "WSON-12 (DRR)",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "zonal",
+        "ADAS"
+      ],
+      "observedMpn": "LM74800QDRRRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 1.71512,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74800QDRRRQ1/13627158",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 1.54704,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74800QDRRRQ1/13627158",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 1.69,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LM74800QDRRRQ1?qs=KUoIvG%2F9IlYNgS7D9vQjYA%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key 3000 reel $1.57682 also reported"
+    },
+    {
+      "mpn": "TPS3850H01QDRCRQ1",
+      "family": "TPS3850-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Window supervisor with watchdog, adjustable",
+      "category": "ic_qfn",
+      "pkg": "VSON-10 (DRC)",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU safety",
+        "EPS",
+        "braking"
+      ],
+      "observedMpn": "TPS3850H01QDRCRQ1",
+      "observations": [],
+      "notes": "summary price not traceable to a distributor page for this exact MPN (Digi-Key link was H12 variant; Arrow figure had no qty); TI list ~$0.976 not used"
+    },
+    {
+      "mpn": "TPS3703A7330QDSERQ1",
+      "family": "TPS3703-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Window voltage supervisor, 3.3V, 7%",
+      "category": "ic_qfn",
+      "pkg": "WSON-6 (DSE)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar",
+        "MCU supply"
+      ],
+      "observedMpn": "TPS3703A7330DSERQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 2.34296,
+          "currency": "USD",
+          "url": "https://www.digikey.ca/en/products/detail/texas-instruments/TPS3703A7330DSERQ1/10715530",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "orderable automotive code is TPS3703A7330DSERQ1 (no Q before DSE); Digi-Key .ca page, currency assumed USD per summary; broker Allelco excluded"
+    },
+    {
+      "mpn": "LM5146QRGYRQ1",
+      "family": "LM5146-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "100V synchronous buck controller",
+      "category": "ic_qfn",
+      "pkg": "VQFN-20 (RGY)",
+      "aecq": true,
+      "ecuRoles": [
+        "48V",
+        "DC-DC",
+        "BMS"
+      ],
+      "observedMpn": "LM5146QRGYRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 3.4318,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5146QRGYRQ1/10820368",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.11109,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5146QRGYRQ1/10820368",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 3.08,
+          "currency": "USD",
+          "url": "https://www.mouser.in/ProductDetail/Texas-Instruments/LM5146QRGYRQ1?qs=PqoDHHvF64%2Bqr7KHxro84Q%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key T&R break reported as 3000 minimum"
+    },
+    {
+      "mpn": "TPS653850AQDCARQ1",
+      "family": "TPS65385x-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Safety PMIC, ASIL D, multi-rail",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-48 (DCA)",
+      "aecq": true,
+      "ecuRoles": [
+        "EPS",
+        "braking",
+        "safety MCU"
+      ],
+      "observedMpn": "TPS653850AQDCARQ1",
+      "observations": [],
+      "notes": "no distributor price found in search"
+    },
+    {
+      "mpn": "LM5170QPHPRQ1",
+      "family": "LM5170-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "48V/12V bidirectional multiphase current controller",
+      "category": "ic_tqfp",
+      "pkg": "HTQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "48V DC-DC",
+        "mild hybrid"
+      ],
+      "observedMpn": "LM5170QPHPRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 7.02,
+          "currency": "USD",
+          "url": "https://octopart.com/lm5170qphprq1-texas+instruments-76714621",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 8.07,
+          "currency": "USD",
+          "url": "https://octopart.com/lm5170qphprq1-texas+instruments-76714621",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 1000,
+          "price": 8.38,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/lm5170qphprq1/texas-instruments",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key/Mouser breaks via Octopart summary"
+    },
+    {
+      "mpn": "LM5122QPWPRQ1",
+      "family": "LM5122-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Synchronous boost controller, multiphase",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-20",
+      "aecq": true,
+      "ecuRoles": [
+        "start-stop",
+        "boost",
+        "infotainment"
+      ],
+      "observedMpn": "LM5122QMHE/NOPB",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 3.79,
+          "currency": "USD",
+          "url": "https://www.electronicsdatasheets.com/manufacturers/texas-instruments/parts/lm5122",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "LM5122QPWPRQ1 not found; automotive orderable is LM5122QMHE/NOPB (HTSSOP-20); Mouser break via aggregator summary"
+    },
+    {
+      "mpn": "TPS7B8450QDGNRQ1",
+      "family": "TPS7B84-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "40V 150mA LDO, 5V fixed",
+      "category": "ic_soic",
+      "pkg": "HVSSOP-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "sensor supply"
+      ],
+      "observedMpn": "TPS7B8450QWDRBRQ1",
+      "observations": [],
+      "notes": "QDGNRQ1 package not found at distributors; orderable codes seen TPS7B8450QWDRBRQ1 (SON-8) / QDCYRQ1; no franchised price found"
+    },
+    {
+      "mpn": "NCV8730ASNADJT1G",
+      "family": "NCV8730",
+      "mfr": "onsemi",
+      "desc": "38V 150mA LDO, adjustable, low Iq",
+      "category": "ic_soic",
+      "pkg": "TSOP-5",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "sensor supply"
+      ],
+      "observedMpn": "NCV8730ASNADJT1G",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.45279,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8730ASNADJT1G/12181306",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 0.496,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/onsemi/NCV8730ASNADJT1G?qs=GedFDFLaBXFZJgT1iqVkOg%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 1000,
+          "price": 0.495,
+          "currency": "USD",
+          "url": "https://www.newark.com/on-semiconductor/ncv8730asnadjt1g/ldo-adj-0-15a-40-to-125deg-c-rohs/dp/74AH4812",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "NCV4275CDT50RKG",
+      "family": "NCV4275C",
+      "mfr": "onsemi",
+      "desc": "LDO 5V 450mA with reset and delay",
+      "category": "ic_soic",
+      "pkg": "DPAK-5",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "powertrain",
+        "body"
+      ],
+      "observedMpn": "NCV4275CDT50RKG",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.7524,
+          "currency": "USD",
+          "url": "https://octopart.com/part/onsemi/NCV4275CDT50RKG",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.6733,
+          "currency": "USD",
+          "url": "https://octopart.com/part/onsemi/NCV4275CDT50RKG",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key breaks via Octopart/findchips summary"
+    },
+    {
+      "mpn": "NCV890100MWTXG",
+      "family": "NCV890100",
+      "mfr": "onsemi",
+      "desc": "2MHz 1.2A automotive buck",
+      "category": "ic_qfn",
+      "pkg": "DFN-10",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "cluster",
+        "body"
+      ],
+      "observedMpn": "NCV890100MWTXG",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.1775,
+          "currency": "USD",
+          "url": "https://www.digikey.com/product-detail/en/on-semiconductor/NCV890100MWTXG/NCV890100MWTXGOSTR-ND/3062204",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.53,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/ncv890100",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 3000,
+          "price": 0.979,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/ncv890100mwtxg/on-semiconductor",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Newark 3000 $1.36 also reported"
+    },
+    {
+      "mpn": "A6986TR",
+      "family": "A6986",
+      "mfr": "STMicroelectronics",
+      "desc": "38V 2A synchronous buck",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "body",
+        "infotainment",
+        "BCM"
+      ],
+      "observedMpn": "A6986F3V3TR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 1.53685,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6986F3V3TR/5962612",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 2.11,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6986ITR?qs=CiayqK2gdcJ30OZkfSCFIw%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "siblings: Digi-Key obs is A6986F3V3TR (3.3V fixed), Mouser obs is A6986ITR; A6986TR itself not priced"
+    },
+    {
+      "mpn": "LDO40LPURY",
+      "family": "LDO40L",
+      "mfr": "STMicroelectronics",
+      "desc": "38V 400mA LDO, adjustable, low Iq",
+      "category": "ic_qfn",
+      "pkg": "DFN-6 (3x3) wettable",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "sensor supply",
+        "body"
+      ],
+      "observedMpn": "LDO40LPURY",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 6000,
+          "price": 0.781,
+          "currency": "USD",
+          "url": "https://octopart.com/ldo40lpury-stmicroelectronics-95633557",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 0.695,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/semiconductors--analog--regulators-reference--linear-regulators/ldo40lpury-stmicroelectronics-1107186",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser 6000+ break via Octopart summary"
+    },
+    {
+      "mpn": "L5964",
+      "family": "L5964",
+      "mfr": "STMicroelectronics",
+      "desc": "Dual 3.5A buck + LDO, automotive",
+      "category": "ic_qfn",
+      "pkg": "VFQFPN-36",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "infotainment",
+        "radar"
+      ],
+      "observedMpn": "L5964Q-V0Y",
+      "observations": [],
+      "notes": "orderable L5964Q-V0Y (Digi-Key, SPQ 1560); no distributor break found"
+    },
+    {
+      "mpn": "L5965",
+      "family": "L5965",
+      "mfr": "STMicroelectronics",
+      "desc": "Safety multi-rail PMIC, ASIL B/D, vision/radar",
+      "category": "ic_qfn",
+      "pkg": "VFQFPN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "camera",
+        "ADAS"
+      ],
+      "observedMpn": "L5965SQ-V0T",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 7.22722,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L5965SQ-V0T/9990052",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "L5965SQ-V0Y (tray) reported scheduled for obsolescence; Mouser $7.55 had no qty"
+    },
+    {
+      "mpn": "SPSB081",
+      "family": "SPSB081",
+      "mfr": "STMicroelectronics",
+      "desc": "System basis chip / automotive PMIC with CAN",
+      "category": "ic_qfn",
+      "pkg": "QFN-32L 5x5",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "zonal",
+        "gateway"
+      ],
+      "observedMpn": "SPSB0815-TR",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 3000,
+          "price": 1.824,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/dc-dc-converters-ics/2751335",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key $328.95 figure implausible (likely reel/other), discarded"
+    },
+    {
+      "mpn": "L99PM62GXP",
+      "family": "L99PM62",
+      "mfr": "STMicroelectronics",
+      "desc": "Power management IC with LIN/HS-CAN, 2 LDOs",
+      "category": "ic_soic",
+      "pkg": "PowerSSO-36",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "door",
+        "seat"
+      ],
+      "observedMpn": "L99PM62GXP",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 3.5476,
+          "currency": "USD",
+          "url": "https://octopart.com/l99pm62gxp-stmicroelectronics-22026882",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 3.78,
+          "currency": "USD",
+          "url": "https://octopart.com/l99pm62gxp-stmicroelectronics-22026882",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 1000,
+          "price": 2.838,
+          "currency": "USD",
+          "url": "https://octopart.com/l99pm62gxp-stmicroelectronics-22026882",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "breaks via Octopart summary; Future $2.96 and Avnet $3.5122 at 1000 also reported"
+    },
+    {
+      "mpn": "MAX20087ATPA/V+",
+      "family": "MAX20087",
+      "mfr": "Analog Devices",
+      "desc": "Quad camera power protector",
+      "category": "ic_qfn",
+      "pkg": "TQFN-20 (4x4)",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS",
+        "surround view"
+      ],
+      "observedMpn": "MAX20087ATPA/VY+",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 980,
+          "price": 3.39683,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20087ATPA-VY/11682649",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1470,
+          "price": 3.35173,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20087ATPA-VY/11682649",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 3.16,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Analog-Devices-Maxim-Integrated/MAX20087ATPA-VY%2bT?qs=w%2Fv1CP2dgqqhe13mYI5Iag%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "orderable automotive is MAX20087ATPA/VY+ (tube) / VY+T (reel); Mouser obs likely VY+T; broker Lisle Apex excluded"
+    },
+    {
+      "mpn": "MAX20098",
+      "family": "MAX20098",
+      "mfr": "Analog Devices",
+      "desc": "Synchronous buck controller, automotive",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "ADAS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "not searched (budget)"
+    },
+    {
+      "mpn": "MAX20004",
+      "family": "MAX20004",
+      "mfr": "Analog Devices",
+      "desc": "36V 4A synchronous buck",
+      "category": "ic_qfn",
+      "pkg": "FC2QFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "infotainment"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "not searched (budget)"
+    },
+    {
+      "mpn": "MAX16141",
+      "family": "MAX16141",
+      "mfr": "Analog Devices",
+      "desc": "Ideal diode controller",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "reverse-polarity"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "not searched (budget)"
+    },
+    {
+      "mpn": "LT8645S-1",
+      "family": "LT8645S",
+      "mfr": "Analog Devices",
+      "desc": "65V 8A Silent Switcher buck",
+      "category": "ic_qfn",
+      "pkg": "LQFN-32",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "ADAS",
+        "domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "not searched (budget)"
+    },
+    {
+      "mpn": "LTC7803",
+      "family": "LTC7803",
+      "mfr": "Analog Devices",
+      "desc": "40V synchronous buck controller",
+      "category": "ic_qfn",
+      "pkg": "QFN-16",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "DC-DC"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "not searched (budget)"
+    },
+    {
+      "mpn": "TPS65313QRWGRQ1",
+      "family": "TPS65313-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Safety PMIC for radar",
+      "category": "ic_qfn",
+      "pkg": "VQFN-40 (RWG)",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "ADAS"
+      ],
+      "observedMpn": "TPS65313QRWGRQ1",
+      "observations": [],
+      "notes": "not searched (budget)"
+    }
+  ]
+}
