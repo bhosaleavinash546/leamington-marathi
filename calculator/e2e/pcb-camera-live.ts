@@ -194,6 +194,34 @@ async function main(): Promise<void> {
     }
     log(`report: ${pdf.length} chars of text, PCBA body, headline £${headline.toFixed(2)}`);
 
+    // ── The photo results' own exports: the six-tab Excel report and the PDF report ──
+    const dlx = page.waitForEvent('download', { timeout: 60_000 });
+    await page.evaluate(() => (document.getElementById('pcb-export-excel-btn') as HTMLButtonElement).click());
+    const xlsxPath = join(dir, 'camera-report.xlsx');
+    await (await dlx).saveAs(xlsxPath);
+    if (process.env.CV_SHOT_DIR) writeFileSync(join(process.env.CV_SHOT_DIR, 'camera-report.xlsx'), readFileSync(xlsxPath));
+    {
+      const JSZip = (await import('jszip')).default;
+      const z = await JSZip.loadAsync(readFileSync(xlsxPath));
+      const wbXml = await z.file('xl/workbook.xml')!.async('string');
+      const tabs = [...wbXml.matchAll(/<sheet [^>]*name="([^"]+)"/g)].map(x => x[1].replace(/&amp;/g, '&'));
+      if (tabs.join('|') !== 'Summary|Cost Breakdown|Bill of Materials|Board &amp; Assembly|Countries|Volume &amp; Notes'.replace(/&amp;/g, '&')) fail(`Excel tabs: ${tabs.join(', ')}`);
+      const charts = Object.keys(z.files).filter(f => /^xl\/charts\/chart\d+\.xml$/.test(f)).length;
+      if (charts < 3) fail(`Excel report has ${charts} chart(s), expected 3`);
+      const pics = Object.keys(z.files).filter(f => /^xl\/media\//.test(f)).length;
+      if (pics < 1 + 2) fail(`Excel report has ${pics} image(s): the logo and the two board photos expected`);
+      const sum = await z.file('xl/worksheets/sheet1.xml')!.async('string');
+      if (!sum.includes(`<v>${headline}</v>`) && !sum.includes(`<v>${headline.toFixed(2)}</v>`)) fail('Summary does not carry the headline as a formula result');
+      log(`Excel report: ${tabs.length} tabs, ${charts} native charts, ${pics} images`);
+    }
+    const dlp = page.waitForEvent('download', { timeout: 60_000 });
+    await page.evaluate(() => (document.getElementById('pcb-export-report-pdf-btn') as HTMLButtonElement).click());
+    const pdf2Path = join(dir, 'camera-report-2.pdf');
+    await (await dlp).saveAs(pdf2Path);
+    const pdf2 = pdfText(readFileSync(pdf2Path));
+    for (const must of ['Ex-works / board (China)', 'Delivered UK / board', 'Cost Breakdown per Board', 'Build-Country Comparison']) if (!pdf2.includes(must)) fail(`PDF report lacks "${must}"`);
+    log('PDF report from the photo results: PCBA report');
+
     // ── Edit a field → Calculate re-prices the analysis with it ──
     await page.selectOption('#pcbf-layers', '6');
     await page.click('#calc-btn', { timeout: 15_000 });

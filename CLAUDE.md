@@ -189,6 +189,10 @@ The ASIL is checked against the parts list in `runStage4` (`pcb-asil-guard.ts`):
 lockstep MCU in the BOM (else costed ASIL-B, claim kept as `asilClaimed`); a rationale contradicting the BOM's function is
 withheld. The should-cost PDF of an analysis-linked costing is a PCBA report (`src/export/pcba-report-data.ts` +
 `renderPcbaSections` in pdf.ts) — never the machined-part body; `docs/pcb/camera-board-360-2026-10.md` §8.
+The PCB results export an **Excel report** (`src/export/pcb-workbook.ts`, six tabs from the same `buildPcbaReport`
+model; totals are live formulas; native charts via `src/export/xlsx-charts.ts`, logo `src/brand/logo-png.ts`) and the
+matching **PDF report**. Check a change with `npx tsx scripts/pcb-workbook-sample.ts out.xlsx` + LibreOffice recalc
+(0 formula errors) and a render; see `docs/pcb/pcb-excel-report-2026-10.md`.
 **Calculate after Analyze = the analysis** (`src/ui/pcb/analysis-link.ts`, camera-board trial Oct 2026): the
 analysis fills the PCB fab form; Calculate with nothing edited reports the analysis (components itemised, board and
 assembly bought-in, no second overhead / margin); an edited field is written into the analysis's board spec and

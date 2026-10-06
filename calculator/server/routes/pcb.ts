@@ -213,7 +213,7 @@ export function applyGroundTruth(
     if (t.throughHoleLines > 0 && !(Number(asm.throughHoleJoints) > 0)) asm.throughHoleJoints = t.throughHoleLines * 2;
     if (t.bottomSide && Number(asm.reflowSides ?? 1) < 2) asm.reflowSides = 2;
     warnings.push({ code: 'BOM_FROM_FILE', severity: 'warn',
-      message: `BOM taken from your ${fromImage ? 'BOM image (transcribed by the reader, never priced by it)' : 'file'}: ${t.bom.length} lines, ${t.smtPlacements} SMT placements. The photos were used for the board build and to fill gaps, not to write the BOM.` });
+      message: `BOM taken from your ${fromImage ? 'BOM image (transcribed by the AI reader; prices come from the catalogue and rate tables, never from the reader)' : 'file'}: ${t.bom.length} lines, ${t.smtPlacements} SMT placements. The photos were used for the board build and to fill gaps, not to write the BOM.` });
     // A BOM without designators is checked by count: the photos counting clearly more parts than the
     // BOM lists is the signal (its own count stays the costed one).
     const fileParts = t.bom.reduce((n, l) => n + (Number(l.qty) || 0), 0);

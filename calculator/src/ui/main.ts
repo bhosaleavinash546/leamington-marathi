@@ -8220,7 +8220,8 @@ function injectPCBImagePanel(): void {
 
   // Feature wiring (Phase 1-2)
   el('pcb-export-csv-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisCSV(pcbImageResult); });
-  el('pcb-export-excel-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisExcel(pcbImageResult); });
+  el('pcb-export-excel-btn')?.addEventListener('click', () => { if (pcbImageResult) void exportPcbExcelReport(pcbImageResult); });
+  el('pcb-export-report-pdf-btn')?.addEventListener('click', () => { if (pcbImageResult) void exportPcbPdfReport(pcbImageResult); });
   el('pcb-export-pdf-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisPrint(pcbImageResult); });
   if (pcbImageResult) {
     wireScenarioBuilder(pcbImageResult);
@@ -8748,8 +8749,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
 
       <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn btn-secondary btn-sm" id="pcb-export-csv-btn" style="font-size:0.65rem">&#11015; Export CSV</button>
-        <button class="btn btn-secondary btn-sm" id="pcb-export-excel-btn" style="font-size:0.65rem" title="Excel workbook — BOM, country comparison and all uploaded board images embedded">&#11015; Export Excel</button>
-        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem;display:flex;align-items:center;gap:3px"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg> Export PDF</button>
+        <button class="btn btn-primary btn-sm" id="pcb-export-excel-btn" style="font-size:0.65rem" title="Six-tab Excel report: summary with cost-composition chart, cost breakdown, bill of materials, board & assembly with photos, countries, volume & notes">&#11015; Excel report</button>
+        <button class="btn btn-primary btn-sm" id="pcb-export-report-pdf-btn" style="font-size:0.65rem" title="The same report as a PDF: cost breakdown, bill of materials, board, countries, NRE, drivers">&#11015; PDF report</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" title="The full analysis as read from the photos: board spec, assembly, BOM, AI insights, DFM and limitations" style="font-size:0.65rem;display:flex;align-items:center;gap:3px"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg> Analysis PDF</button>
       </div>
 
       ${pcbEditMode ? `<div id="pcb-edit-actions" style="display:flex;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:6px;align-items:center">
@@ -9378,62 +9380,37 @@ function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
 // the HTML-workbook format is the reliable, dependency-free way Excel / Google
 // Sheets / LibreOffice all open with the images shown. Machine-readable data stays
 // in the CSV export.
-function exportPCBAnalysisExcel(r: PCBImageAnalysis): void {
-  const dateStr = new Date().toISOString().slice(0, 10);
-  const money = (n: number) => `£${n.toFixed(2)}`;
-  const th = (t: string) => `<th style="background:#1e3a8a;color:#fff;border:1px solid #cbd5e1;padding:4px 8px;text-align:left">${escHtml(t)}</th>`;
-  const td = (t: string | number, extra = '') => `<td style="border:1px solid #cbd5e1;padding:3px 8px;${extra}">${escHtml(String(t))}</td>`;
+/** "Excel report": the six-tab workbook (src/export/pcb-workbook.ts) — it replaced an HTML page saved as .xls. */
+async function exportPcbExcelReport(r: PCBImageAnalysis): Promise<void> {
+  if (!r._selectedCountryBreakdown) { showToast('Run the analysis first — the report needs its country costing.', 'error'); return; }
+  showToast('Building the Excel report…', 'info');
+  try {
+    const { exportPcbWorkbook } = await import('./pcb/export-workbook.js');
+    await exportPcbWorkbook({
+      analysis: r as unknown as Parameters<typeof exportPcbWorkbook>[0]['analysis'],
+      partName: (document.getElementById('part-name') as HTMLInputElement | null)?.value || r.partName,
+      annualVolume: r._orderQty ?? null, qualityGrade: r.boardSpec?.qualityGrade ?? null,
+      currency: { code: _displayCurrency, symbol: CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency, fx: _displayFxRate },
+      photos: pcbUploadedImages,
+    });
+  } catch (err) {
+    showToast(`Excel report failed: ${err instanceof Error ? err.message : String(err)}`, 'error');
+  }
+}
 
-  const bomRows = r.bom.map(b => `<tr>${[
-    td(b.refDes), td(b.description), td(b.pkg), td(b.value), td(b.partNumber ?? ''),
-    td(b.qty), td(b.unitPriceGBP.toFixed(4)), td((b.qty * b.unitPriceGBP).toFixed(2)),
-    td(b.automotive ? 'Y' : 'N'), td(b.highCost ? 'Y' : 'N'),
-  ].join('')}</tr>`).join('');
-
-  const countryRows = (r._countryComparison ?? []).map(c => `<tr>${[
-    td(c.countryName), td(money(c.pcbFabPerBoard)), td(money(c.assemblyPerBoard)),
-    td(money(c.logisticsPerBoard)), td(money(c.bomCostPerBoard)), td(money(otherPerBoard(c))), td(money(c.totalPerBoard)),
-    td(c.leadTimeWeeks), td(`${Math.round(c.qualityIndex * 100)}%`),
-  ].join('')}</tr>`).join('');
-
-  // Embedded board images — each in its own row so Excel sizes the cell to the picture.
-  const imageRows = pcbUploadedImages.map(im => {
-    const w = Math.min(420, im.w);
-    const h = Math.round(w * (im.h / Math.max(1, im.w)));
-    return `<tr>
-      <td style="border:1px solid #cbd5e1;padding:6px;font-weight:bold;vertical-align:top">${escHtml(im.label)}</td>
-      <td style="border:1px solid #cbd5e1;padding:6px"><img src="${im.dataUrl}" width="${w}" height="${h}"/></td>
-    </tr>`;
-  }).join('');
-
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-  <head><meta charset="utf-8"/><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:11px;margin-bottom:16px}h2{font-family:Arial;font-size:14px;color:#1e3a8a}</style></head>
-  <body>
-    <table style="border:none;margin-bottom:6px"><tr>
-      <td style="border:none;background:#4f46e5;color:#ffffff;font-weight:bold;font-size:18px;font-family:Arial;padding:4px 10px;text-align:center">cv</td>
-      <td style="border:none;color:#2563eb;font-weight:bold;font-size:22px;font-family:Arial;padding-left:10px">CostVision</td>
-      <td style="border:none;color:#475569;font-size:10px;font-family:Arial;padding-left:10px;vertical-align:bottom">AI COST INTELLIGENCE</td>
-    </tr></table>
-    <h2>PCB Should-Cost Analysis — ${escHtml(r.partName)}</h2>
-    <div style="font-size:11px;color:#475569">Exported ${dateStr} · BOM ${money(r.costEstimates.totalBOMCostGBP)} at distributor level${r._selectedCountryBreakdown ? ` → ${money(r._selectedCountryBreakdown.bomCostPerBoard)} sourced in ${escHtml(r._selectedCountryBreakdown.countryName)}` : ''}</div>
-    ${r._selectedCountryBreakdown ? `<h2>Total should-cost per board — ${escHtml(r._selectedCountryBreakdown.countryName)}: ${money(r._selectedCountryBreakdown.totalPerBoard)}</h2>` : ''}
-    <h2>Bill of Materials</h2>
-    <table><tr>${['RefDes','Description','Package','Value','Part Number','Qty','Unit £','Ext £','Automotive','High-Cost'].map(th).join('')}</tr>${bomRows}
-      <tr><td colspan="7" style="border:1px solid #cbd5e1;padding:3px 8px;font-weight:bold;text-align:right">Total BOM Cost (distributor level)</td>${td(r.costEstimates.totalBOMCostGBP.toFixed(2), 'font-weight:bold')}<td></td><td></td></tr>
-    </table>
-    ${countryRows ? `<h2>Country Comparison (per board)</h2><table><tr>${['Country','PCB Fab','Assembly','Logistics','BOM','Energy/Pack/Yield','Total/Board','Lead (wk)','Quality'].map(th).join('')}</tr>${countryRows}</table>` : ''}
-    ${imageRows ? `<h2>Uploaded Board Images (${pcbUploadedImages.length})</h2><table>${imageRows}</table>` : '<p style="font-size:11px;color:#94a3b8">No board images were uploaded for this analysis.</p>'}
-  </body></html>`;
-
-  const blob = new Blob(['﻿', html], { type: 'application/vnd.ms-excel' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = exportFilename('pcb-analysis', r.partName, 'xls');
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+/** "PDF report": the PCBA should-cost report (pdf.ts renderPcbaSections) straight from the photo results. */
+async function exportPcbPdfReport(r: PCBImageAnalysis): Promise<void> {
+  if (!r._selectedCountryBreakdown) { showToast('Run the analysis first — the report needs its country costing.', 'error'); return; }
+  await ensurePdfLibs();
+  const partName = (document.getElementById('part-name') as HTMLInputElement | null)?.value || r.partName;
+  const input = analysisStackInput(r as unknown as Parameters<typeof analysisStackInput>[0], partName, r._orderQty);
+  const result = computeUniversalStack(input, library);
+  const photos = pcbUploadedImages.map(p => ({ dataUrl: p.dataUrl, label: p.label }));
+  printPDF!(result, input, library, _displayCurrency, _displayFxRate, 'pcb_fab', photos[0]?.dataUrl ?? null, _mfgRegion, [], {
+    annualVolume: r._orderQty ?? null, photos,
+    functionalSafety: { asil: r._asilLevel ?? null, qualityGrade: r.boardSpec?.qualityGrade ?? null, safetyFunctions: [] },
+    pcbAnalysis: r as unknown as NonNullable<CADReportMeta['pcbAnalysis']>,
+  });
 }
 
 async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {

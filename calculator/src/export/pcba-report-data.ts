@@ -48,9 +48,10 @@ export interface PcbaAnalysisLike {
   _orderQty?: number;
 }
 
-export interface PcbaStackRow { label: string; amount: number; basis: string; kind?: 'sub' | 'total' }
+export type PcbaStackKey = 'components' | 'burden' | 'fab' | 'autoFab' | 'asm' | 'test' | 'autoAsm' | 'other' | 'rounding' | 'exWorks' | 'freight' | 'duty' | 'delivered';
+export interface PcbaStackRow { key: PcbaStackKey; label: string; amount: number; basis: string; kind?: 'sub' | 'total' }
 export interface PcbaBomRow { ref: string; description: string; partNumber: string; pkg: string; qty: number; unit: number; ext: number; source: string; verify: boolean }
-export interface PcbaCountryRow { name: string; components: number; fab: number; assembly: number; other: number; logistics: number; exWorks: number; total: number; delta: number; leadWeeks?: number; selected: boolean }
+export interface PcbaCountryRow { id: string; name: string; components: number; fab: number; assembly: number; other: number; logistics: number; exWorks: number; total: number; delta: number; leadWeeks?: number; selected: boolean }
 
 export interface PcbaReport {
   partName: string;
@@ -136,27 +137,27 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const duty = num(b.importDuty);
   const energy = num(b.energy), pack = num(b.packaging), yieldLoss = num(b.yieldLoss);
   const stack: PcbaStackRow[] = [
-    { label: 'Components (as the EMS buys them)', amount: componentsAtCost, basis: `${a.bom.length} BOM lines at ${country} sourcing — see §3` },
-    ...(burden > 0 ? [{ label: `EMS material burden (${Math.round(burdenPct * 100)}%)`, amount: burden, basis: 'Procurement, inventory, scrap and margin on material — stated rate by volume' }] : []),
-    { label: 'Bare PCB fabrication', amount: fabStd, basis: 'Fabricator price: base, layers, finish, vias, set-up — see §4' },
-    ...(autoFab > 0 ? [{ label: 'Automotive fab grade', amount: autoFab, basis: 'IATF 16949 line, automotive laminate, class 3 inspection, coupons' }] : []),
-    { label: 'SMT / THT assembly', amount: asmStd, basis: 'Placements and joints at the country line rate' },
-    { label: 'Test & inspection', amount: test, basis: 'AOI, X-ray, ICT (station time + fixture over the order)' },
-    ...(autoAsm > 0 ? [{ label: 'Automotive assembly grade', amount: autoAsm, basis: 'IATF line, class 3 workmanship, serialisation' + (/ASIL-[CD]/.test(String(bd.automotiveGrade?.asil)) ? ', burn-in' : '') }] : []),
-    ...(energy + pack + yieldLoss > 0 ? [{ label: 'Energy, packaging, cost of quality', amount: r2(energy + pack + yieldLoss), basis: `Energy ${money(energy)} · ESD packaging ${money(pack)} · rework/scrap ${money(yieldLoss)}` }] : []),
+    { key: 'components', label: 'Components (as the EMS buys them)', amount: componentsAtCost, basis: `${a.bom.length} BOM lines at ${country} sourcing — see §3` },
+    ...(burden > 0 ? [{ key: 'burden' as const, label: `EMS material burden (${Math.round(burdenPct * 100)}%)`, amount: burden, basis: 'Procurement, inventory, scrap and margin on material — stated rate by volume' }] : []),
+    { key: 'fab', label: 'Bare PCB fabrication', amount: fabStd, basis: 'Fabricator price: base, layers, finish, vias, set-up — see §4' },
+    ...(autoFab > 0 ? [{ key: 'autoFab' as const, label: 'Automotive fab grade', amount: autoFab, basis: 'IATF 16949 line, automotive laminate, class 3 inspection, coupons' }] : []),
+    { key: 'asm', label: 'SMT / THT assembly', amount: asmStd, basis: 'Placements and joints at the country line rate' },
+    { key: 'test', label: 'Test & inspection', amount: test, basis: 'AOI, X-ray, ICT (station time + fixture over the order)' },
+    ...(autoAsm > 0 ? [{ key: 'autoAsm' as const, label: 'Automotive assembly grade', amount: autoAsm, basis: 'IATF line, class 3 workmanship, serialisation' + (/ASIL-[CD]/.test(String(bd.automotiveGrade?.asil)) ? ', burn-in' : '') }] : []),
+    ...(energy + pack + yieldLoss > 0 ? [{ key: 'other' as const, label: 'Energy, packaging, cost of quality', amount: r2(energy + pack + yieldLoss), basis: `Energy ${money(energy)} · ESD packaging ${money(pack)} · rework/scrap ${money(yieldLoss)}` }] : []),
   ];
   // Ex-works = the board at the factory gate, packed: everything but freight and UK duty.
   const exWorks = r2(bd.totalPerBoard - bd.logisticsPerBoard);
   const sum = stack.reduce((t, s) => t + s.amount, 0);
   const rounding = r2(exWorks - sum);
-  if (Math.abs(rounding) >= 0.005) stack.push({ label: 'Rounding', amount: rounding, basis: 'Each figure is rounded to the penny on the server' });
-  stack.push({ label: `Ex-works cost (${country.split(' (')[0]} factory gate)`, amount: exWorks, basis: 'Built, tested and packed — before freight and import duty', kind: 'sub' });
+  if (Math.abs(rounding) >= 0.005) stack.push({ key: 'rounding', label: 'Rounding (to the penny)', amount: rounding, basis: `Every figure is rounded to ${money(0.01)}; this is the residual` });
+  stack.push({ key: 'exWorks', label: `Ex-works cost (${country.split(' (')[0]} factory gate)`, amount: exWorks, basis: 'Built, tested and packed — before freight and import duty', kind: 'sub' });
   // Freight is what the logistics figure holds beyond the duty, so the two rows sum to it exactly.
   stack.push(
-    { label: 'Freight to the UK', amount: r2(bd.logisticsPerBoard - duty), basis: `Sea at volume, air below 2,500 boards${r2(bd.logisticsPerBoard - duty) < 0.005 && (qty ?? 0) >= 2500 ? ' — under a penny a board by sea at this size and volume' : ''}` },
-    { label: 'UK import duty', amount: duty, basis: 'On components + board + assembly (customs value)' },
+    { key: 'freight', label: 'Freight to the UK', amount: r2(bd.logisticsPerBoard - duty), basis: `Sea at volume, air below 2,500 boards${r2(bd.logisticsPerBoard - duty) < 0.005 && (qty ?? 0) >= 2500 ? ' — under a penny a board by sea at this size and volume' : ''}` },
+    { key: 'duty', label: 'UK import duty', amount: duty, basis: 'On components + board + assembly (customs value)' },
   );
-  stack.push({ label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
+  stack.push({ key: 'delivered', label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
 
   // ── BOM: the analysis's lines at the country's sourcing (the same factor the components bucket uses).
   const lines = a.bom.filter(l => num(l.qty) > 0);
@@ -165,7 +166,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const bom: PcbaBomRow[] = lines.map(l => {
     const unit = num(l.unitPriceGBP) * sourcingFactor;
     return {
-      ref: refOf(l), description: String(l.description || l.componentType || ''), partNumber: String(l.partNumber ?? ''),
+      ref: refOf(l), description: tidyCaps(String(l.description || l.componentType || '')), partNumber: String(l.partNumber ?? ''),
       pkg: String(l.pkg ?? ''), qty: num(l.qty), unit, ext: unit * num(l.qty), source: priceSourceLabel(l),
       verify: unit * num(l.qty) >= 1 && !(l.livePriced || (l.priceSource === 'catalogue' && l.catalogueConfidence === 'distributor')),
     };
@@ -203,7 +204,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
     .filter(c => c.totalPerBoard > 0)
     .map(c => ({
       // "Poland", not "Poland (Wrocław / Łódź / Poznań)" — the city list wraps every row of the table.
-      name: (c.countryName || c.countryId).split(' (')[0], components: c.bomCostPerBoard, fab: c.pcbFabPerBoard, assembly: c.assemblyPerBoard,
+      id: c.countryId, name: (c.countryName || c.countryId).split(' (')[0], components: c.bomCostPerBoard, fab: c.pcbFabPerBoard, assembly: c.assemblyPerBoard,
       other: r2(c.totalPerBoard - c.bomCostPerBoard - c.pcbFabPerBoard - c.assemblyPerBoard - c.logisticsPerBoard),
       logistics: c.logisticsPerBoard, exWorks: r2(c.totalPerBoard - c.logisticsPerBoard), total: c.totalPerBoard, delta: c.totalPerBoard - bd.totalPerBoard, leadWeeks: c.leadTimeWeeks,
       selected: c.countryId === bd.countryId,
@@ -232,7 +233,10 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const top = [...bom].sort((x, y) => y.ext - x.ext).slice(0, 3);
   const topSum = top.reduce((t, l) => t + l.ext, 0);
   if (top.length) drivers.push(`${top.length} lines carry ${Math.round(topSum / bd.totalPerBoard * 100)}% of the board: ${top.map(l => `${l.description}${l.partNumber ? ` (${l.partNumber})` : ''} ${money(l.ext)}`).join('; ')}. These are the quotes to get first.`);
-  drivers.push(`Components are ${Math.round(bd.bomCostPerBoard / bd.totalPerBoard * 100)}% of the board; bare board ${Math.round(bd.pcbFabPerBoard / bd.totalPerBoard * 100)}%, assembly and test ${Math.round(bd.assemblyPerBoard / bd.totalPerBoard * 100)}%. A should-cost discussion on this board is a component-price discussion.`);
+  // The same basis as the cost-composition table: components at cost, the EMS burden on them stated
+  // separately (the audit found "87%" beside a table reading 83%).
+  const pc = (x: number) => Math.round(x / bd.totalPerBoard * 100);
+  drivers.push(`Components are ${pc(componentsAtCost)}% of the board${burden > 0 ? ` (${pc(componentsAtCost + burden)}% with the EMS material burden)` : ''}; bare board ${pc(bd.pcbFabPerBoard)}%, assembly and test ${pc(bd.assemblyPerBoard)}% (each with its automotive grade). A should-cost discussion on this board is a component-price discussion.`);
   const cheapest = countries[0];
   if (cheapest && !cheapest.selected && cheapest.delta < -0.005) drivers.push(`${cheapest.name} costs this board ${money(-cheapest.delta)} less delivered (${money(cheapest.total)}) — before qualification, lead time and supply-chain risk.`);
   else if (cheapest?.selected) drivers.push(`${country} is the lowest delivered cost of the ${countries.length} countries compared.`);
@@ -267,16 +271,27 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
     bomOrigin: a.bom.some(l => l.bomSource === 'image' || l.fromImage) ? 'BOM image' : a.bom.some(l => l.bomSource === 'file') ? 'BOM file' : 'photos',
     // The photo reader's own caveats. With a supplied parts list, a caveat about the photo-read BOM
     // ("ICs may be double counted") no longer applies: the list, not the photos, is the BOM.
-    limitations: (a.analysisLimitations ?? []).filter(Boolean)
+    limitations: (a.analysisLimitations ?? []).filter(Boolean).map(t => (/[.!?)]$/.test(t.trim()) ? t.trim() : `${t.trim()}.`))
       .filter(t => !(a.bom.some(l => l.bomSource === 'file' || l.bomSource === 'image' || l.fromImage) && /double[- ]?count|duplicat|designators? (are|were) not visible|assigned by grouping/i.test(t))),
     excluded: [
-      ...(nre.length ? [`One-time automotive NRE (${money(n!.totalNRE)} — PPAP, FMEA, DV/PV, audit) is not in the unit cost; see §6.`] : []),
+      ...(nre.length ? [`One-time automotive NRE (${money(n!.totalNRE).replace(/\.00$/, '')} — PPAP, FMEA, DV/PV, audit) is not in the unit cost; see §6.`] : []),
       'Stencils, test fixtures and programming are inside the EMS price, spread over the order (no separate tooling line).',
       'Tier-1 / distributor margin above the EMS price, and the enclosure, lens and cable of a module, are not in this board cost.',
     ],
   };
 }
 
+/** A description written in capitals ("LI-ION AND LI-POL CHARGER IC") in title case; short acronyms stay. */
+export function tidyCaps(t: string): string {
+  if (!/[A-Z]{4}/.test(t) || t !== t.toUpperCase()) return t;
+  const small = new Set(['and', 'or', 'with', 'for', 'of', 'to', 'in', 'on']);
+  return t.toLowerCase().replace(/[a-z0-9][a-z0-9]*/g, (w, i: number) => {
+    if (w.length <= 3 && /^(ic|ldo|csi|i2c|spi|usb|can|lin|led|pmic|adc|dac|esd|tvs|emi|rf|mcu|soc|ddr|mipi)$/.test(w)) return w.toUpperCase();
+    if (/^(pmic|mipi)$/.test(w)) return w.toUpperCase();
+    if (i > 0 && small.has(w)) return w;
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  });
+}
 function gbp(n: number): string { return `£${n.toFixed(2)}`; }
 /** "FR4_HTg" → "FR4 HTg", "osp" → "OSP" — a value the reader sees, not an id. */
 function pretty(v: unknown): string {
