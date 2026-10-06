@@ -1,0 +1,932 @@
+{
+ "domain": "hv",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "AMC1311BQDWVRQ1",
+   "family": "AMC1311B",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier, 2 V input, high-Z",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide (DWV)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "OBC",
+    "BMS"
+   ],
+   "observedMpn": "AMC1311BQDWVRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.8367,
+     "currency": "USD",
+     "url": "https://www.digikey.in/en/products/detail/texas-instruments/AMC1311BQDWVRQ1/9477603",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $3.26 @1k quoted in search summary but no Mouser URL returned; not recorded"
+  },
+  {
+   "mpn": "AMC1301DWVRQ1",
+   "family": "AMC1301",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier, \u00b1250 mV input",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide (DWV)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "AMC1301QDWVRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.74,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AMC1301QDWVRQ1/7244172",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Orderable auto code is AMC1301QDWVRQ1; summary gave the same $3.74 @1k for Mouser too - recorded Digi-Key only"
+  },
+  {
+   "mpn": "AMC3301QDWERQ1",
+   "family": "AMC3301",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier \u00b1250 mV with integrated DC/DC",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide (DWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "AMC3301QDWERQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 2.98,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AMC3301QDWERQ1/13173998",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 2.74,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AMC3301QDWERQ1/13173998",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $2.78 @100 in summary without URL; IC-Components (broker) $7.66 discarded"
+  },
+  {
+   "mpn": "AMC1302QDWVRQ1",
+   "family": "AMC1302",
+   "mfr": "Texas Instruments",
+   "desc": "Reinforced isolated amplifier \u00b150 mV input",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide (DWV)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "AMC1302QDWVRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.4964,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/AMC1302QDWVRQ1/9675907",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.8,
+     "currency": "USD",
+     "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/AMC1302QDWVRQ1?qs=byeeYqUIh0Pm6E54Sg9MPQ%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 3.69,
+     "currency": "USD",
+     "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/AMC1302QDWVRQ1?qs=byeeYqUIh0Pm6E54Sg9MPQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "ISO7741QDWRQ1",
+   "family": "ISO7741",
+   "mfr": "Texas Instruments",
+   "desc": "Quad-channel reinforced digital isolator (3 fwd/1 rev)",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide (DW)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS",
+    "OBC"
+   ],
+   "observedMpn": "ISO7741QDWRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.81019,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/ISO7741QDWRQ1/6615453",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $1.82 @1k in summary, no Mouser URL for this MPN returned"
+  },
+  {
+   "mpn": "ISO7721QDWVRQ1",
+   "family": "ISO7721",
+   "mfr": "Texas Instruments",
+   "desc": "Dual-channel reinforced digital isolator",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 wide (DWV)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS",
+    "OBC"
+   ],
+   "observedMpn": "ISO7721FQDWVRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 1.4,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/ISO7721FQDWVRQ1?qs=ZcfC38r4Pov9MWMeMnXMgA%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Price is for the F (fail-safe low) sibling, full reel"
+  },
+  {
+   "mpn": "ISO1042BQDWRQ1",
+   "family": "ISO1042",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated CAN FD transceiver, 70 V bus fault",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide (DW)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS",
+    "OBC"
+   ],
+   "observedMpn": "ISO1042BQDWVRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 3.59,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/ISO1042BQDWVRQ1?qs=byeeYqUIh0NmbePKADUcRQ%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.51,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/ISO1042BQDWVRQ1?qs=byeeYqUIh0NmbePKADUcRQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Prices are for the SOIC-8 wide (DWV) package sibling of the same die"
+  },
+  {
+   "mpn": "ISO1044BQDRQ1",
+   "family": "ISO1044",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated CAN FD transceiver, SOIC-8",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "ISO1044BQDRQ1",
+   "observations": [],
+   "notes": "No price found for the Q1 code; non-auto ISO1044BDR $1.64 @2.5k (Digi-Key) not recorded"
+  },
+  {
+   "mpn": "SI8641BD-AS",
+   "family": "Si8641",
+   "mfr": "Skyworks (Silicon Labs)",
+   "desc": "Quad digital isolator 5 kV, 3 fwd/1 rev, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS",
+    "OBC"
+   ],
+   "observedMpn": "SI8641BD-B-IS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1012,
+     "price": 2.44,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI8641BD-B-IS/2623336",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Exact -AS automotive code not found; price is industrial-grade sibling SI8641BD-B-IS (tube break 1012)"
+  },
+  {
+   "mpn": "ADUM1401WSRWZ",
+   "family": "ADuM1401",
+   "mfr": "Analog Devices",
+   "desc": "Quad digital isolator 2.5 kV, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS"
+   ],
+   "observedMpn": "ADUM1401WSRWZ-RL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.54231,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM1401WSRWZ-RL/1873643",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "T&R code; Mouser $6.46 @1k in summary without URL"
+  },
+  {
+   "mpn": "ADUM4146WBRWZ",
+   "family": "ADuM4146",
+   "mfr": "Analog Devices",
+   "desc": "Isolated SiC MOSFET gate driver 11 A, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "ADUM4146WBRWZ",
+   "observations": [],
+   "notes": "No distributor price returned by search"
+  },
+  {
+   "mpn": "TMCS1123B1AQDVGRQ1",
+   "family": "TMCS1123",
+   "mfr": "Texas Instruments",
+   "desc": "Hall-effect current sensor, reinforced isolation",
+   "category": "ic_soic",
+   "pkg": "SOIC-10 wide (DVG)",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "TMCS1123B1AQDVGRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 3.29601,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMCS1123B1AQDVGRQ1/26262587",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key non-stock, 12 wk lead time"
+  },
+  {
+   "mpn": "ACS37002LMABTR-050B5",
+   "family": "ACS37002",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Hall current sensor 50 A bidirectional",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ACS37002LMABTR-050B5",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.5148,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS37002LMABTR-050B5/13560511",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser tiers to $3.25 in summary, break and URL unclear"
+  },
+  {
+   "mpn": "ACS724KMATR-20AB-T",
+   "family": "ACS724",
+   "mfr": "Allegro MicroSystems",
+   "desc": "Hall current sensor 20 A bidirectional, ratiometric",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "ACS724KMATR-20AB-T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.30051,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS724KMATR-20AB-T/6167399",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.72216,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/allegro-microsystems/ACS724KMATR-20AB-T/6167399",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "MLX91220KDF-ABF-025-RE",
+   "family": "MLX91220",
+   "mfr": "Melexis",
+   "desc": "Integrated Hall current sensor 25 A",
+   "category": "ic_soic",
+   "pkg": "SOIC-16 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "MLX91220KDF-ABF-025-RE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.94976,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/melexis-technologies-nv/MLX91220KDF-ABF-025-RE/11617705",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1500,
+     "price": 2.67,
+     "currency": "USD",
+     "url": "https://mouser.com/ProductDetail/Melexis/MLX91220KDF-ABF-025-RE?qs=81r+iQLm7BTNsM07X1ZDGw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "INA241A1QDDFRQ1",
+   "family": "INA241A",
+   "mfr": "Texas Instruments",
+   "desc": "Current-sense amplifier -4 V to 110 V, PWM rejection",
+   "category": "ic_soic",
+   "pkg": "SOT-23-THN-8 (DDF)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "DCDC",
+    "BMS"
+   ],
+   "observedMpn": "INA241A1QDDFRQ1",
+   "observations": [],
+   "notes": "No Digi-Key/Mouser price for this code; ti.com direct $1.702 (not a listed distributor)"
+  },
+  {
+   "mpn": "TLE4972AE35D5XUMA1",
+   "family": "TLE4972",
+   "mfr": "Infineon",
+   "desc": "Coreless Hall current sensor (busbar), automotive",
+   "category": "ic_soic",
+   "pkg": "PG-TDSO-16",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS"
+   ],
+   "observedMpn": "TLE4972AE35D5XUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.83472,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/infineon-technologies/TLE4972AE35D5XUMA1/15668045",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.09784,
+     "currency": "EUR",
+     "url": "https://www.digikey.be/en/products/detail/infineon-technologies/TLE4972AE35D5XUMA1/15668045",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $4.29 @1k in summary without URL - large spread vs Digi-Key; treat with care"
+  },
+  {
+   "mpn": "AD2S1210WDSTZ",
+   "family": "AD2S1210",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 10-16 bit, automotive",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "EPS"
+   ],
+   "observedMpn": "AD2S1210WDSTZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 261,
+     "price": 30.39,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/AD2S1210WDSTZ/5012013",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Tray break 261; $18.90 @1k seen for RL7 variant from unnamed source - not recorded"
+  },
+  {
+   "mpn": "PGA411QPHPRQ1",
+   "family": "PGA411",
+   "mfr": "Texas Instruments",
+   "desc": "Resolver sensor interface with exciter",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "PGA411QPHPRQ1",
+   "observations": [],
+   "notes": "No distributor price returned by search"
+  },
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "family": "AD2S1205",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 12-bit, automotive",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-44",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "EPS"
+   ],
+   "observedMpn": "AD2S1205WYSTZ",
+   "observations": [],
+   "notes": "Only non-auto AD2S1205YSTZ prices found (Mouser down to $23.52, break unclear); not recorded"
+  },
+  {
+   "mpn": "C3M0032120K",
+   "family": "C3M0032120K",
+   "mfr": "Wolfspeed",
+   "desc": "SiC MOSFET 1200 V 32 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "inverter"
+   ],
+   "observedMpn": "C3M0032120K",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 7.37275,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/wolfspeed-inc/C3M0032120K/10719207",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 6.65,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/wolfspeed-inc/C3M0032120K/10719207",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 120,
+     "price": 7.6,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Wolfspeed/C3M0032120K?qs=uwxL4vQweFMctlP4KnOGfw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Low vs historic SiC pricing; as shown in search summary"
+  },
+  {
+   "mpn": "C3M0075120K",
+   "family": "C3M0075120K",
+   "mfr": "Wolfspeed",
+   "desc": "SiC MOSFET 1200 V 75 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "C3M0075120K",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 4.86108,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/wolfspeed-inc/C3M0075120K/6670472",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 4.21114,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/wolfspeed-inc/C3M0075120K/6670472",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $4.86 @120 / $4.50 @510 in summary without URL"
+  },
+  {
+   "mpn": "AIMW120R045M1",
+   "family": "AIMW120R045M1",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 1200 V 45 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "AIMW120R045M1XKSA1",
+   "observations": [],
+   "notes": "Only Digi-Key qty-1 $25.44 found (AIMW120R045M1XKSA1); no >=100 break"
+  },
+  {
+   "mpn": "IMW120R045M1H",
+   "family": "IMW120R045M1H",
+   "mfr": "Infineon",
+   "desc": "CoolSiC M1H MOSFET 1200 V 45 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "IMW120R045M1H",
+   "observations": [],
+   "notes": "Only older IMW120R045M1 prices found (Digi-Key qty-1 $13.39, LCSC $9.72 @90+); not recorded"
+  },
+  {
+   "mpn": "SCTW35N65G2V",
+   "family": "SCTW35N65G2V",
+   "mfr": "STMicroelectronics",
+   "desc": "SiC MOSFET 650 V 55 mOhm",
+   "category": "through_hole",
+   "pkg": "HiP247",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "SCTW35N65G2V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 7.43142,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCTW35N65G2V/11591123",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 7.25625,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCTW35N65G2V/11591123",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 600,
+     "price": 8.2834,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/sctw35n65g2v/stmicroelectronics.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Reported obsolete / out of production"
+  },
+  {
+   "mpn": "NVHL020N120SC1",
+   "family": "NVHL020N120SC1",
+   "mfr": "onsemi",
+   "desc": "Automotive SiC MOSFET 1200 V 20 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "inverter"
+   ],
+   "observedMpn": "NVHL020N120SC1",
+   "observations": [],
+   "notes": "Digi-Key $34.73 @30 only; Avnet $39.687 @450 in summary without URL - not recorded"
+  },
+  {
+   "mpn": "AIKW40N65DH5",
+   "family": "AIKW40N65DH5",
+   "mfr": "Infineon",
+   "desc": "Automotive TRENCHSTOP 5 IGBT 650 V 40 A with diode",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "PTC heater"
+   ],
+   "observedMpn": "AIKW40N65DH5",
+   "observations": [],
+   "notes": "No distributor price returned by search"
+  },
+  {
+   "mpn": "IKW40N120H3",
+   "family": "IKW40N120H3",
+   "mfr": "Infineon",
+   "desc": "TRENCHSTOP IGBT3 1200 V 40 A with diode",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "charger"
+   ],
+   "observedMpn": "IKW40N120H3FKSA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 3.45,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IKW40N120H3FKSA1/2338027",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 2.96,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IKW40N120H3FKSA1/2338027",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser AUD 11.85 @240 inconsistent with USD tiers - discarded"
+  },
+  {
+   "mpn": "FS820R08A6P2B",
+   "family": "HybridPACK Drive",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive six-pack IGBT 750 V 820 A",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "FS820R08A6P2B",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "FS950R08A6P2B",
+   "family": "HybridPACK Drive",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive six-pack IGBT 750 V 950 A",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "FS950R08A6P2B",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "FS03MR12A6MA1B",
+   "family": "HybridPACK Drive CoolSiC",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive CoolSiC six-pack 1200 V",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "FS03MR12A6MA1B",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "CAB425M12XM3",
+   "family": "XM3",
+   "mfr": "Wolfspeed",
+   "desc": "SiC half-bridge module 1200 V 425 A",
+   "category": "power_module",
+   "pkg": "XM3",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "CAB425M12XM3",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "NVH820S75L4SPB",
+   "family": "VE-Trac Direct",
+   "mfr": "onsemi",
+   "desc": "VE-Trac Direct IGBT six-pack 750 V 820 A",
+   "category": "power_module",
+   "pkg": "VE-Trac Direct",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "NVH820S75L4SPB",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "ADP480120W3",
+   "family": "ACEPACK DRIVE",
+   "mfr": "STMicroelectronics",
+   "desc": "ACEPACK DRIVE SiC six-pack 1200 V",
+   "category": "power_module",
+   "pkg": "ACEPACK DRIVE",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "ADP480120W3",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "HAH3DR 800-S07",
+   "family": "HAH3DR",
+   "mfr": "LEM",
+   "desc": "Open-loop Hall current transducer 800 A, 3-phase automotive",
+   "category": "mechanical",
+   "pkg": "module",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "HAH3DR 800-S07",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "B32776",
+   "family": "B32776",
+   "mfr": "TDK EPCOS",
+   "desc": "DC-link MKP film capacitor",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "inverter"
+   ],
+   "observedMpn": "B32776",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "C4AQ",
+   "family": "C4AQ",
+   "mfr": "KEMET",
+   "desc": "DC-link polypropylene film capacitor",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC",
+    "inverter"
+   ],
+   "observedMpn": "C4AQ",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "B32922",
+   "family": "B32922",
+   "mfr": "TDK EPCOS",
+   "desc": "X2 MKP EMI suppression capacitor",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DCDC"
+   ],
+   "observedMpn": "B32922",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "EVC 250",
+   "family": "EVC 250",
+   "mfr": "TE Connectivity",
+   "desc": "HV DC contactor 250 A",
+   "category": "relay_switch",
+   "pkg": "module",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "PDU"
+   ],
+   "observedMpn": "EVC 250",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "AEV",
+   "family": "AEV",
+   "mfr": "Panasonic",
+   "desc": "HV DC EV relay (capsule contactor)",
+   "category": "relay_switch",
+   "pkg": "module",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "PDU"
+   ],
+   "observedMpn": "AEV",
+   "observations": [],
+   "notes": "not searched (budget)"
+  }
+ ]
+}

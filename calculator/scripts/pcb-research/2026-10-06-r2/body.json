@@ -1,0 +1,945 @@
+{
+ "domain": "body",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "DRV8343SQPHPRQ1",
+   "family": "DRV8343S",
+   "mfr": "Texas Instruments",
+   "desc": "3-phase smart gate driver, SPI",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-52",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump",
+    "fan",
+    "BLDC"
+   ],
+   "observedMpn": "DRV8343SQPHPRQ1",
+   "observations": [],
+   "notes": "No distributor break found for the S (SPI) variant; only sibling DRV8343HPHPRQ1 (H variant) seen: DigiKey India 1000 @ INR 471.36 - not recorded (different variant)."
+  },
+  {
+   "mpn": "TLE9562QXXUMA1",
+   "family": "TLE9562QX",
+   "mfr": "Infineon",
+   "desc": "BLDC gate driver with SBC (LDO, CAN FD, LIN)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "window lift",
+    "seat",
+    "sunroof",
+    "pump"
+   ],
+   "observedMpn": "TLE9562QXXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.54602,
+     "currency": "AUD",
+     "url": "https://www.digikey.com.au/en/products/detail/infineon-technologies/TLE9562QXXUMA1/14560467",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey Australia price, AUD."
+  },
+  {
+   "mpn": "TLE9180D31QKXUMA1",
+   "family": "TLE9180D-31QK",
+   "mfr": "Infineon",
+   "desc": "3-phase bridge driver, 48V",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "48V BSG",
+    "EPS",
+    "pump"
+   ],
+   "observedMpn": "TLE9180D31QKXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1900,
+     "price": 3.86,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE9180D31QKXUMA1?qs=unwgFEO1A6vQ3QLPNwCSmQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser full reel 1900. DigiKey reel price $3.81 seen but break qty unclear - not recorded."
+  },
+  {
+   "mpn": "TLE9183QKXUMA1",
+   "family": "TLE9183QK",
+   "mfr": "Infineon",
+   "desc": "3-phase bridge driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump",
+    "fan"
+   ],
+   "observedMpn": "TLE9183QKXUMA1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 4.37,
+     "currency": "USD",
+     "url": "https://www.digipart.com/part/TLE9183QK",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Rochester Electronics",
+     "qty": 10000,
+     "price": 2.85,
+     "currency": "USD",
+     "url": "https://www.digipart.com/part/TLE9183QK",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Via Digipart snippet naming distributors; Rochester is an authorised aftermarket distributor."
+  },
+  {
+   "mpn": "TLE9201SGAUMA1",
+   "family": "TLE9201SG",
+   "mfr": "Infineon",
+   "desc": "6A H-bridge, SPI",
+   "category": "ic_soic",
+   "pkg": "DSO-20",
+   "aecq": true,
+   "ecuRoles": [
+    "throttle",
+    "EGR",
+    "actuator"
+   ],
+   "observedMpn": "TLE9201SGAUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 2.03,
+     "currency": "USD",
+     "url": "https://nz.mouser.com/ProductDetail/Infineon-Technologies/TLE9201SG?qs=vPP9GyyTAo0adzx32c44wA%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.14398,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9201SGAUMA1/5960696",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TLE94112ELXUMA1",
+   "family": "TLE94112EL",
+   "mfr": "Infineon",
+   "desc": "12-half-bridge driver, SPI",
+   "category": "ic_soic",
+   "pkg": "SSOP-24",
+   "aecq": true,
+   "ecuRoles": [
+    "HVAC flap",
+    "mirror",
+    "BCM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only broker (AVAQ) price found - rejected."
+  },
+  {
+   "mpn": "L9907TR",
+   "family": "L9907",
+   "mfr": "STMicroelectronics",
+   "desc": "3-phase FET pre-driver",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump",
+    "fan"
+   ],
+   "observedMpn": "L9907TR",
+   "observations": [],
+   "notes": "Mouser L9907TR $10.56 at unstated qty; a $6.32 @1000 figure had no named distributor - not recorded."
+  },
+  {
+   "mpn": "L99H92Q5-TR",
+   "family": "L99H92",
+   "mfr": "STMicroelectronics",
+   "desc": "H-bridge gate driver (4 N-FET)",
+   "category": "ic_qfn",
+   "pkg": "VFQFPN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "seat",
+    "window lift",
+    "tailgate"
+   ],
+   "observedMpn": "L99H92Q5-TR",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 1.77,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/STMicroelectronics/L99H92Q5-TR?qs=rQFj71Wb1eUOFSd0uSgV4w%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Snippet said 1000 but extended $5,310 implies full reel 3000."
+  },
+  {
+   "mpn": "A4910KJPTR-T",
+   "family": "A4910",
+   "mfr": "Allegro",
+   "desc": "3-phase MOSFET driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "pump",
+    "fan",
+    "EPS"
+   ],
+   "observedMpn": "A4910KJPTR-T",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 4.19,
+     "currency": "USD",
+     "url": "https://octopart.com/part/allegro-microsystems/A4910KJPTR-T",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 4.35,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/allegro-microsystems/A4910KJPTR-T/4448873",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Orderable is A4910KJPTR-T (LQFP-48). Rochester $2.52 @1000 seen, not recorded (outlier)."
+  },
+  {
+   "mpn": "TLE88881QKXUMA1",
+   "family": "TLE8888-1QK",
+   "mfr": "Infineon",
+   "desc": "Engine management system IC",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Results gave DigiKey TLE8888QKXUMA1 (non -1 variant) $11.48 @1000 - different variant, not recorded; LCSC $4.02 implausible."
+  },
+  {
+   "mpn": "L9779WD-SPI-TR",
+   "family": "L9779WD",
+   "mfr": "STMicroelectronics",
+   "desc": "Engine management multifunction IC, SPI",
+   "category": "ic_tqfp",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "small engine"
+   ],
+   "observedMpn": "L9779WD-SPI-TR",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 15.49,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/L9779WD-SPI-TR?qs=BA62vJVifGoNfgCJ%252BnshAw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 500,
+     "price": 14.34,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/L9779WD-SPI-TR?qs=BA62vJVifGoNfgCJ%252BnshAw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 504,
+     "price": 12.73,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L9779WD-SPI/5873451",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey break is tube part L9779WD-SPI. Package per ST is PowerSSO-36 (category kept from hint)."
+  },
+  {
+   "mpn": "TLE8110EEXUMA2",
+   "family": "TLE8110EE",
+   "mfr": "Infineon",
+   "desc": "10-ch smart low-side switch, SPI",
+   "category": "ic_soic",
+   "pkg": "DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "TCU"
+   ],
+   "observedMpn": "TLE8110EEXUMA2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 6.88,
+     "currency": "USD",
+     "url": "https://www.digikey.co.th/product-detail/en/infineon-technologies/TLE8110EEXUMA2/TLE8110EEXUMA2-ND/5960686",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 6.92,
+     "currency": "EUR",
+     "url": "https://gr.mouser.com/ProductDetail/Infineon-Technologies/TLE8110EE?qs=TI/9gtmDCEE3mY0HMefsnw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TLE6240GP",
+   "family": "TLE6240GP",
+   "mfr": "Infineon",
+   "desc": "16-ch low-side switch, SPI",
+   "category": "ic_soic",
+   "pkg": "P-DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "BCM"
+   ],
+   "observedMpn": "TLE6240GP",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 800,
+     "price": 7.69,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE6240GP?qs=mzcOS1kGbgeKpMCv3zq/WA%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Full reel 800 (extended $6,152). EOL. Win Source $55.49 rejected (broker)."
+  },
+  {
+   "mpn": "MC33816AE",
+   "family": "MC33816",
+   "mfr": "NXP",
+   "desc": "Programmable injector/solenoid pre-driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "GDI"
+   ],
+   "observedMpn": "MC33816AE",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 5.18,
+     "currency": "USD",
+     "url": "https://www.mouser.com/new/nxp-semiconductors/freescale-mc33816-gate-drivers/",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.52,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33816AE/4693868",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 6.55,
+     "currency": "USD",
+     "url": "https://octopart.com/search?q=MC33816",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Newark $4.70 'all tiers' ambiguous - not recorded."
+  },
+  {
+   "mpn": "NCV7517FTR2G",
+   "family": "NCV7517",
+   "mfr": "onsemi",
+   "desc": "Hex low-side MOSFET pre-driver",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "TCU"
+   ],
+   "observedMpn": "NCV7517FTR2G",
+   "observations": [],
+   "notes": "Obsolete; no distributor price in results. Package is LQFP-32 (not QFN)."
+  },
+  {
+   "mpn": "L9788",
+   "family": "L9788",
+   "mfr": "STMicroelectronics",
+   "desc": "Engine management multifunction IC",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "L9788",
+   "observations": [],
+   "notes": "Only eval board price found; no IC break."
+  },
+  {
+   "mpn": "TPS92662AQPHPRQ1",
+   "family": "TPS92662A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "12-switch LED matrix manager",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp",
+    "adaptive beam"
+   ],
+   "observedMpn": "TPS92662AQPHPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.67373,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS92662AQPHPRQ1/11625834",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $4.14 @1000 in summary not tied to a URL for the A variant - not recorded."
+  },
+  {
+   "mpn": "TPS92830QPWRQ1",
+   "family": "TPS92830-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-ch linear LED controller",
+   "category": "ic_soic",
+   "pkg": "TSSOP-28",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp",
+    "DRL"
+   ],
+   "observedMpn": "TPS92830QPWRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.40089,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS92830QPWRQ1/7931918",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TPS92520QDAPRQ1",
+   "family": "TPS92520-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Dual 1.6A buck LED driver, SPI",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "TPS92520QDAPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.8382,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS92520QDAPRQ1/13280048",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 2.6365,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C3191125.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Package is HTSSOP-32 (DAP), so ic_soic not ic_qfn."
+  },
+  {
+   "mpn": "TPS92633QPWPRQ1",
+   "family": "TPS92633-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "3-ch linear LED driver",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp",
+    "interior"
+   ],
+   "observedMpn": "TPS92633QPWPRQ1",
+   "observations": [],
+   "notes": "Only a DigiKey $2.58 figure at unstated qty - not recorded."
+  },
+  {
+   "mpn": "TLD55421QUXUMA1",
+   "family": "TLD5542-1QU",
+   "mfr": "Infineon",
+   "desc": "Buck-boost LED controller, SPI",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "TLD5542-1QU",
+   "observations": [
+    {
+     "distributor": "Rutronik",
+     "qty": 2500,
+     "price": 2.08,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/554",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Via Findchips snippet naming Rutronik, MOQ 2500."
+  },
+  {
+   "mpn": "TLD11141EPXUMA1",
+   "family": "TLD1114-1EP",
+   "mfr": "Infineon",
+   "desc": "1-ch linear LED driver",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp",
+    "interior"
+   ],
+   "observedMpn": "TLD11141EPXUMA1",
+   "observations": [
+    {
+     "distributor": "Rochester Electronics",
+     "qty": 1000,
+     "price": 0.4919,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/1-141",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Via Findchips snippet; Rochester is an authorised aftermarket distributor."
+  },
+  {
+   "mpn": "TLD23313EPXUMA1",
+   "family": "TLD2331-3EP",
+   "mfr": "Infineon",
+   "desc": "3-ch linear LED driver",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp",
+    "DRL"
+   ],
+   "observedMpn": "TLD23313EPXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.63,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/D2331",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.638,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/D2331",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Via Findchips snippet naming the distributors."
+  },
+  {
+   "mpn": "NCV7685DQR2G",
+   "family": "NCV7685",
+   "mfr": "onsemi",
+   "desc": "12-ch linear LED driver, I2C",
+   "category": "ic_soic",
+   "pkg": "SSOP-24-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "rear lamp"
+   ],
+   "observedMpn": "NCV7685DQR2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.26967,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV7685DQR2G/10064767",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.228,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV7685DQR2G/10064767",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "LT3964HUHE#PBF",
+   "family": "LT3964",
+   "mfr": "Analog Devices",
+   "desc": "Dual synchronous LED driver, I2C",
+   "category": "ic_qfn",
+   "pkg": "QFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "LT3964EUHE#PBF",
+   "observations": [],
+   "notes": "DigiKey list prices ($11.23 E-grade, $12.33 I-grade) at unstated qty; no volume break found."
+  },
+  {
+   "mpn": "MAX20096ATJ/VY+",
+   "family": "MAX20096",
+   "mfr": "Analog Devices",
+   "desc": "Dual buck LED controller",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "headlamp"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "TLE5014SP16XUMA1",
+   "family": "TLE5014SP16",
+   "mfr": "Infineon",
+   "desc": "GMR angle sensor",
+   "category": "ic_soic",
+   "pkg": "TDSO-16",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "throttle",
+    "pedal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "TLE5012BE1000XUMA1",
+   "family": "TLE5012BE1000",
+   "mfr": "Infineon",
+   "desc": "GMR angle sensor, SSC",
+   "category": "ic_soic",
+   "pkg": "DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "motor position"
+   ],
+   "observedMpn": "TLE5012BE1000XUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.30663,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE5012BE1000XUMA1/5410029",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 2.2745,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C123083.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $2.34 @1000 in summary without URL - not recorded."
+  },
+  {
+   "mpn": "AS5047P-ATSM",
+   "family": "AS5047P",
+   "mfr": "ams OSRAM",
+   "desc": "14-bit magnetic rotary encoder",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "ecuRoles": [
+    "motor position",
+    "EPS"
+   ],
+   "observedMpn": "AS5047P-ATSM",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.30749,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/ams-osram-usa-inc/AS5047P-ATSM/5287311",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 3.0764,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C962063.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser 500 @ $4.84 seen on mouser.in, currency unclear - not recorded."
+  },
+  {
+   "mpn": "A1335",
+   "family": "A1335",
+   "mfr": "Allegro",
+   "desc": "Angle sensor",
+   "category": "ic_soic",
+   "pkg": "TSSOP-14",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "throttle"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "MLX90363",
+   "family": "MLX90363",
+   "mfr": "Melexis",
+   "desc": "Triaxis position sensor, SPI",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "pedal",
+    "throttle",
+    "gear selector"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "MLX90381",
+   "family": "MLX90381",
+   "mfr": "Melexis",
+   "desc": "Resolver/angle sensor",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "motor position"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "TLE4999C8",
+   "family": "TLE4999C8",
+   "mfr": "Infineon",
+   "desc": "Dual linear Hall sensor",
+   "category": "ic_soic",
+   "pkg": "TSSOP-8",
+   "aecq": true,
+   "ecuRoles": [
+    "pedal",
+    "steering"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "TLE4966",
+   "family": "TLE4966",
+   "mfr": "Infineon",
+   "desc": "Dual Hall switch (speed+direction)",
+   "category": "ic_soic",
+   "pkg": "TSOP-6",
+   "aecq": true,
+   "ecuRoles": [
+    "window lift",
+    "seat"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "KP236N6165",
+   "family": "KP236",
+   "mfr": "Infineon",
+   "desc": "Analog MAP pressure sensor",
+   "category": "ic_soic",
+   "pkg": "DSOF-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "ASM330LHHTR",
+   "family": "ASM330LHH",
+   "mfr": "STMicroelectronics",
+   "desc": "6-axis automotive IMU",
+   "category": "ic_qfn",
+   "pkg": "LGA-14",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "telematics",
+    "navigation"
+   ],
+   "observedMpn": "ASM330LHHTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.747,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/ASM330LHHTR/9998421",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.96352,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/stmicroelectronics/ASM330LHHTR/9998421",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser $5.16 @1000 in summary without URL - not recorded."
+  },
+  {
+   "mpn": "SMI230",
+   "family": "SMI230",
+   "mfr": "Bosch",
+   "desc": "6-axis inertial sensor",
+   "category": "ic_qfn",
+   "pkg": "LGA-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "navigation"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "IAM-20685",
+   "family": "IAM-20685",
+   "mfr": "TDK InvenSense",
+   "desc": "6-axis automotive IMU",
+   "category": "ic_qfn",
+   "pkg": "LGA-24",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "navigation"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "DRV8705SQRHBRQ1",
+   "family": "DRV8705-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "H-bridge gate driver",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "seat",
+    "door",
+    "pump"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "DRV8714SQPHPRQ1",
+   "family": "DRV8714-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Multi half-bridge gate driver",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "seat",
+    "door",
+    "BCM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not searched (budget)"
+  }
+ ]
+}
