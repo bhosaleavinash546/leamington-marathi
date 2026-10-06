@@ -10,17 +10,21 @@
  * dropped. `tests/casting-material-taxonomy.test.ts` requires every library casting grade be listed.
  */
 
+import { OTHER_STANDARD, gradeInfoFrom, groupGrades, type GradeGroup, type GradeInfo, type MaterialTaxonomy } from './material-taxonomy.js';
+
+export { OTHER_STANDARD };
+
 export type CastFamily =
   | 'aluminium' | 'cast_iron' | 'steel' | 'stainless' | 'magnesium' | 'zinc' | 'copper' | 'nickel';
 
 export const CAST_FAMILIES: Array<{ id: CastFamily; label: string; processes: string }> = [
   { id: 'aluminium', label: 'Aluminium', processes: 'HPDC, gravity, sand, low-pressure' },
   { id: 'cast_iron', label: 'Cast iron', processes: 'sand (green sand, shell, lost foam)' },
-  { id: 'steel', label: 'Steel (carbon / low-alloy)', processes: 'sand, investment' },
+  { id: 'steel', label: 'Steel', processes: 'sand, investment' },
   { id: 'stainless', label: 'Stainless steel', processes: 'sand, investment' },
   { id: 'magnesium', label: 'Magnesium', processes: 'HPDC' },
   { id: 'zinc', label: 'Zinc', processes: 'HPDC (hot chamber)' },
-  { id: 'copper', label: 'Copper alloys (bronze, brass)', processes: 'sand, gravity' },
+  { id: 'copper', label: 'Copper alloys', processes: 'sand, gravity' },
   { id: 'nickel', label: 'Nickel superalloy', processes: 'investment' },
 ];
 
@@ -63,8 +67,6 @@ export function familyDefaultGrade(family: CastFamily, subtype?: string): string
 
 /** Families that can be high-pressure die cast. */
 export const HPDC_FAMILIES: CastFamily[] = ['aluminium', 'magnesium', 'zinc'];
-
-export const OTHER_STANDARD = 'Other / company grades';
 
 /** Library id → [family, standard]. Order within a standard = order here. */
 const GRADES: Array<[string, CastFamily, string]> = [
@@ -137,8 +139,6 @@ const GRADES: Array<[string, CastFamily, string]> = [
   ['mat-in713c-cast', 'nickel', 'Proprietary superalloy (Inconel)'],
 ];
 
-const BY_ID = new Map(GRADES.map(([id, family, standard], i) => [id, { family, standard, order: i }]));
-
 /** A grade the table does not list is filed by its library category. */
 function familyOfCategory(category: string): CastFamily {
   const c = category.toLowerCase();
@@ -157,29 +157,25 @@ const AL_USE: Record<string, string> = {
   'die cast aluminium': 'die-cast', 'structural hpdc aluminium': 'structural HPDC', 'gravity/sand aluminium': 'sand / gravity',
 };
 
-export interface CastGradeInfo { family: CastFamily; standard: string; known: boolean; order: number; use?: string }
+export type CastGradeInfo = GradeInfo & { family: CastFamily };
 
-export function castGradeInfo(m: { id: string; category: string }): CastGradeInfo {
-  const k = BY_ID.get(m.id);
-  const use = AL_USE[m.category.toLowerCase()];
-  if (k) return { ...k, known: true, use };
-  return { family: familyOfCategory(m.category), standard: OTHER_STANDARD, known: false, order: 1e6, use };
-}
+export const castGradeInfo = gradeInfoFrom(GRADES, familyOfCategory, c => AL_USE[c.toLowerCase()]) as (m: { id: string; category: string }) => CastGradeInfo;
+
+export const CASTING_TAXONOMY: MaterialTaxonomy = {
+  families: CAST_FAMILIES,
+  standards: CAST_STANDARDS,
+  info: castGradeInfo,
+  defaultGrade: (f, subtype) => familyDefaultGrade(f as CastFamily, subtype),
+  routeWarning: (f, subtype) => subtype === 'hpdc' && !HPDC_FAMILIES.includes(f as CastFamily)
+    ? `${CAST_FAMILIES.find(x => x.id === f)?.label ?? f} cannot be high-pressure die cast — HPDC is for aluminium, magnesium or zinc. Set the subtype to sand or investment.`
+    : null,
+};
 
 export const familyLabel = (f: CastFamily): string => CAST_FAMILIES.find(x => x.id === f)!.label;
 
-export interface CastGroup<M> { family: CastFamily; standard: string; grades: M[] }
+export type CastGroup<M> = GradeGroup<M> & { family: CastFamily };
 
 /** The grades grouped family → standard, in display order (families and standards with no grade are left out). */
 export function groupCastingGrades<M extends { id: string; category: string }>(materials: M[]): CastGroup<M>[] {
-  const out: CastGroup<M>[] = [];
-  for (const fam of CAST_FAMILIES) {
-    const inFam = materials.filter(m => castGradeInfo(m).family === fam.id);
-    for (const std of [...CAST_STANDARDS[fam.id], OTHER_STANDARD]) {
-      const grades = inFam.filter(m => castGradeInfo(m).standard === std)
-        .sort((a, b) => castGradeInfo(a).order - castGradeInfo(b).order);
-      if (grades.length) out.push({ family: fam.id, standard: std, grades });
-    }
-  }
-  return out;
+  return groupGrades(CASTING_TAXONOMY, materials) as CastGroup<M>[];
 }

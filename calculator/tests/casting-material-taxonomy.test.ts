@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { MATERIAL_SCOPE_BY_COMMODITY } from '../src/engine/material-scope.js';
 import { CAST_FAMILIES, CAST_STANDARDS, OTHER_STANDARD, castGradeInfo, familyDefaultGrade, groupCastingGrades } from '../src/engine/casting-material-taxonomy.js';
-import { castingMaterialOptionsHtml } from '../src/ui/cast-material-picker.js';
+import { castingMaterialOptionsHtml } from '../src/ui/material-picker.js';
 
 const castGrades = DEFAULT_RATE_LIBRARY.materials.filter(m => MATERIAL_SCOPE_BY_COMMODITY.casting.test(m.category));
 
