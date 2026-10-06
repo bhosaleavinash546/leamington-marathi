@@ -39,7 +39,8 @@ describe('the October 2026 research (docs/pcb/component-database-2026-10.md)', (
       for (const o of p.observations!) {
         expect(o.url, p.mpn).toMatch(/^https?:\/\//);
         expect(o.qty, p.mpn).toBeGreaterThanOrEqual(100);           // one-off prices are not used
-        expect(o.distributor, p.mpn).toMatch(/digi-?key|mouser|arrow|avnet|farnell|newark|element|rs|tme|rutronik|future|tti|lcsc|verical|rochester|heilind|allied|sager|master/i);
+        expect(o.distributor, p.mpn).toMatch(/digi-?key|mouser|arrow|avnet|farnell|newark|element|rs|tme|rutronik|future|tti|lcsc|verical|heilind|allied|sager|master/i);
+        expect(o.distributor, p.mpn).not.toMatch(/rochester/i);       // aftermarket stock, not a production price
       }
       expect(p.volumeModel!.b, p.mpn).toBeGreaterThanOrEqual(0.02);
       expect(p.volumeModel!.b, p.mpn).toBeLessThanOrEqual(0.18);
@@ -160,6 +161,13 @@ describe('the research merge rules', () => {
     expect(rep.updated.length).toBe(1);
     expect(cat.parts[0].observations!.map(x => x.distributor).sort()).toEqual(['Digi-Key', 'Mouser']);   // repeat kept once
     expect(cat.parts[0].gbp.q1k).toBeCloseTo(1.8 * 0.7553, 3);                                           // median of the two
+  });
+  it('round 3 audit decisions are in the catalogue (2026-10-06-r3/audit-exclusions.json)', () => {
+    const audit = JSON.parse(readFileSync(new URL('../scripts/pcb-research/2026-10-06-r3/audit-exclusions.json', import.meta.url), 'utf8'));
+    for (const mpn of Object.keys(audit.parts)) expect(raw.parts.find(p => p.mpn === mpn && p.confidence === 'distributor'), mpn).toBeUndefined();
+    for (const mpn of Object.keys(audit.disputed)) expect(raw.parts.find(p => p.mpn === mpn)!.source, mpn).toMatch(/DISPUTED:/);
+    const phy = raw.parts.find(p => p.mpn === '88Q2112-A2-NYD2A000')!;
+    expect(phy.observations!.some(o => /oemstrade/.test(o.url))).toBe(false);
   });
   it('a price read on a sibling orderable code says so in the source', () => {
     const e = raw.parts.find(p => p.mpn === 'KSZ9563RNXV-VAO')!;

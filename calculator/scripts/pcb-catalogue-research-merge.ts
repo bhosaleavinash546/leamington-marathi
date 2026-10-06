@@ -9,7 +9,9 @@
  * up to 3 OBSERVATIONS — distributor, quantity break, unit price, currency, URL, date.
  *
  * Rules (each one is written onto the entry it shapes):
- *  1. Only franchised / authorised distributors count; brokers and marketplaces are dropped,
+ *  1. Only franchised / authorised distributors count; brokers and marketplaces are dropped, and
+ *     so is Rochester Electronics (an authorised AFTERMARKET house: end-of-life stock at its own
+ *     prices, e.g. LTC6813 $15.93 @1k against LCSC $10.82 @100 — not a production supply price),
  *     and so are breaks below 100 units (one-off prices run 2–3× the volume price).
  *  2. Prices convert to GBP with the engine's own FX table (src/engine/insights.ts).
  *  3. With 3+ observations, one more than 2.5× from the median of the others is dropped.
@@ -44,7 +46,7 @@ type Entry = { mpn: string; family: string; mfr: string; desc: string; category:
   aliases?: string[]; gbp: Gbp; confidence: 'distributor' | 'estimate'; source: string; asOf: string;
   ecuRoles?: string[]; observations?: Array<Obs & { gbp: number }>; volumeModel?: { b: number; basis: string; derivedAbove: number } };
 
-export const FRANCHISED = /^(digi-?key|mouser|arrow|avnet|farnell|newark|element ?14|rs( components)?|tme|rutronik|future( electronics)?|tti|lcsc|verical|rochester|heilind|allied|sager|master electronics)/i;
+export const FRANCHISED = /^(digi-?key|mouser|arrow|avnet|farnell|newark|element ?14|rs( components)?|tme|rutronik|future( electronics)?|tti|lcsc|verical|heilind|allied|sager|master electronics)/i;
 export const DEFAULT_B = -Math.log(0.85) / Math.log(10);   // the catalogue's franchise curve, 0.0706
 const CATEGORIES = new Set(['ic_bga', 'ic_qfn', 'ic_soic', 'ic_tqfp', 'passive_0402', 'passive_0603', 'passive_0805', 'passive_1206',
   'fuse_tvs', 'crystal_osc', 'connector_smt', 'through_hole', 'relay_switch', 'led', 'transformer', 'mechanical', 'power_module']);
@@ -110,7 +112,7 @@ function sourceText(p: Priced, sibling?: string): string {
 
 /** Merge research into the catalogue file (rules 7–8). Returns the report. */
 export function mergeResearch(catalogue: { parts: Entry[] }, research: Researched[], date: string) {
-  const report = { added: [] as string[], replacedEstimate: [] as string[], updated: [] as string[], keptExisting: [] as string[], notFound: [] as string[], badCategory: [] as string[], repriced: [] as string[] };
+  const report = { added: [] as string[], replacedEstimate: [] as string[], updated: [] as string[], keptExisting: [] as string[], notFound: [] as string[], badCategory: [] as string[], repriced: [] as string[], removed: [] as string[] };
   const index = new Map<string, number>();
   catalogue.parts.forEach((e, i) => { for (const k of [e.mpn, e.family, ...(e.aliases ?? [])]) if (k) index.set(norm(k), i); });
   for (const r of research) {
@@ -163,12 +165,17 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
   for (const e of catalogue.parts) {
     if (!e.observations?.length || research.some(r => norm(r.mpn) === norm(e.mpn))) continue;
     const p = priceFromObservations(e.observations);
-    if (!p) continue;
+    if (!p) { report.removed.push(`${e.mpn}: no observation passes the rules any more`); continue; }
     const sib = /^Priced on the sibling orderable code (\S+) /.exec(e.source)?.[1];
     if (JSON.stringify(p.gbp) !== JSON.stringify(e.gbp)) report.repriced.push(`${e.mpn}: 1k £${e.gbp.q1k} → £${p.gbp.q1k}, b ${e.volumeModel?.b} → ${p.b}`);
+    if (p.obs.length !== e.observations.length) report.repriced.push(`${e.mpn}: observations ${e.observations.length} → ${p.obs.length} (${p.dropped.join('; ')})`);
     e.gbp = p.gbp; e.source = sourceText(p, sib);
+    e.observations = p.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date, gbp: r4(o.gbp) }));
     e.volumeModel = { b: p.b, basis: p.basis, derivedAbove: Math.max(...p.obs.map(o => o.qty)) };
   }
+  // An entry left with no valid observation leaves the catalogue (no unsourced price).
+  const gone = new Set(report.removed.map(x => x.split(':')[0]));
+  catalogue.parts = catalogue.parts.filter(e => !gone.has(e.mpn));
   // Every entry carries 200k / 300k: the earlier entries by their own stated curve.
   for (const e of catalogue.parts) {
     if (e.gbp.q200k != null && e.gbp.q300k != null) continue;
@@ -185,12 +192,24 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const file = new URL('../server/data/pcb-component-catalogue.json', import.meta.url);
   const cat = JSON.parse(readFileSync(file, 'utf8'));
   const research: Researched[] = [];
-  for (const f of readdirSync(dir).filter(f => f.endsWith('.json') && !/^ecu-map|existing|merge-report/.test(f))) {
+  for (const f of readdirSync(dir).filter(f => f.endsWith('.json') && !/^ecu-map|existing|merge-report|audit-exclusions/.test(f))) {
     const j = JSON.parse(readFileSync(join(dir, f), 'utf8'));
     for (const p of j.parts ?? []) research.push(p);
   }
+  // The audit's decisions (audit-exclusions.json in the research dir), each with its reason.
+  const auditFile = join(dir, 'audit-exclusions.json');
+  const audit: { parts?: Record<string, string>; observations?: Array<{ mpn: string; url: string; reason: string }>; disputed?: Record<string, string> } =
+    readdirSync(dir).includes('audit-exclusions.json') ? JSON.parse(readFileSync(auditFile, 'utf8')) : {};
+  for (const r of research) {
+    if (audit.parts?.[r.mpn]) { r.notes = `excluded by audit: ${audit.parts[r.mpn]}`; r.observations = []; }
+    for (const x of audit.observations ?? []) if (x.mpn === r.mpn) r.observations = r.observations.filter(o => !String(o.url).includes(x.url));
+  }
   const date = new Date().toISOString().slice(0, 10);
   const report = mergeResearch(cat, research, date);
+  for (const [mpn, why] of Object.entries(audit.disputed ?? {})) {
+    const e = cat.parts.find((p: Entry) => p.mpn === mpn);
+    if (e && !e.source.includes('DISPUTED:')) e.source = `${e.source} DISPUTED: ${why}.`;
+  }
   cat.asOf = date;
   cat.basis = 'unit price, GBP, AEC-Q grade where automotive. Researched entries: 1k = median of franchised-distributor prices near 1,000; 10k/100k/200k/300k derived along the part\'s own break slope (else the franchise curve 10k = 1k × 0.85). Estimates are labelled.';
   console.log(JSON.stringify({ researched: research.length, total: cat.parts.length,

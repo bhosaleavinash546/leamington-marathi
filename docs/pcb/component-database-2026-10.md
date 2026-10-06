@@ -6,14 +6,14 @@
 
 ## 1. Result
 
-| | Before (1 Oct) | Round 1 (6 Oct) | **Round 2 (6 Oct)** |
-|---|---|---|---|
-| Parts in the catalogue | 458 | 549 | **653** |
-| Priced from distributors | 77 | 183 | **303** |
-| Engineering estimates | 381 | 366 | 350 (16 more replaced by distributor prices) |
-| Researched entries carrying their raw observations and URLs | 0 | 107 | **228** |
-| Of those, priced by 2+ distributors | — | 24 | **88** |
-| Listed parts still without a distributor price | — | 254 | **129** |
+| | Before (1 Oct) | Round 1 | Round 2 | **Round 3** |
+|---|---|---|---|---|
+| Parts in the catalogue | 458 | 549 | 653 | **687** |
+| Priced from distributors | 77 | 183 | 303 | **340** |
+| Engineering estimates | 381 | 366 | 350 | 347 |
+| Researched entries carrying their raw observations and URLs | 0 | 107 | 228 | **265** |
+| Of those, priced by 2+ distributors | — | 24 | 88 | **118** |
+| Listed parts still without a distributor price | — | 254 | 129 | **92** |
 | Volume breaks per part | 1k / 10k / 100k | 1k / 10k / 100k / **200k / 300k** |
 | ECU map by powertrain | none | **38 ECUs × 6 powertrains**, 52 sources |
 
@@ -48,11 +48,52 @@ Round 2 priced 122 of the 222 queued parts searched (raw files: `calculator/scri
 - **Aggregator summaries.** Some prices were read from aggregator summaries (Findchips, Octopart, Digipart) that named the franchised distributor and its break. The URL is the aggregator page.
 - **SiC MOSFETs.** The Wolfspeed SiC MOSFETs (C3M0032120K $7.37 @120, $6.65 @510 at Digi-Key; Mouser agrees) are well below older SiC prices. They are kept as listed.
 
+### Round 3: the remaining parts, and cross-checks
+
+Round 3 (raw files: `calculator/scripts/pcb-research/2026-10-06-r3/`) had four jobs:
+- **Search the 45 parts never searched.** 24 were priced. BQ79731's only price was in Norwegian kroner, a currency not in the FX table.
+- **Re-search the 55 with no usable price, using different search forms.** 13 were priced, after 2 were rejected by the audit.
+- **Try 12 of the parts set aside earlier.** 1 was priced.
+- **Look for a second distributor on the 44 most valuable single-source parts.** 26 were cross-checked.
+
+Newly priced parts include:
+- **Processors:** TDA4VM, TC397, the RH850/U2A, i.MX 8M Plus, MPC5744P, MSPM0G3507-Q1, SAM C21 (automotive grade) and PIC18-Q83.
+- **Communication chips:** SJA1105, 88Q2112, MAX96712, FlexRay TJA1081/1085.
+- **Sensors:** MLX90363/90381, TLE4999, TLE4966, A1335, KP236, SMI230, the AR0820 image sensor and the AP0202 image processor.
+- **Power and drivers:** the MAX20004/20098/16141/20096 regulators and LED driver, LT8645S, the L9907, DRV8705 and DRV3946 drivers, and the TPS92633 LED driver.
+- **High voltage:** the AIMW120R045M1 SiC MOSFET, the ADBMS6830 cell monitor, a Panasonic AEV contactor and an X2 film capacitor.
+- **Memory:** W25Q256 flash and LPDDR4X.
+
+**Cross-checks.** A cross-check now adds to a part's stored observations; it never replaces them. The part is re-priced from all of its observations together. Most second sources agreed within 15%. Where they did not, the median of all the observations sets the 1k price:
+- AWR1843 −14%;
+- AM2634 −16%;
+- MC33772C −26%;
+- DRV3245A −31%;
+- SPC584B +23%;
+- AD2S1210 −39%. Mouser's 100/250 breaks give it a steep own slope, held at the 0.18 limit.
+
+**Audit decisions** (`audit-exclusions.json`, each with its reason, applied by the merge):
+- **Rejected:**
+  - VN9D30Q100F: two RS regional sites contradict each other.
+  - MPC5748G: the only price was for a different package, LQFP rather than BGA.
+  - MT41K256M16 AAT:P: the reel price was 5× below the tray price of the same die.
+  - 88Q2112: one Mouser figure read off a broker page.
+- **Disputed but kept:** MT29F4G08 (Newark ≈ $4.36 @50 against Digi-Key $21.07 @960) and MT25QL512 (the catalogue's Mouser $9 @1k against Digi-Key's related codes at $31–47). Their sources say "DISPUTED" until a quote settles them.
+- **Rochester Electronics** is no longer accepted. It is an authorised *aftermarket* house selling end-of-life stock at its own prices; LTC6813 was $15.93 @1k there against LCSC $10.82 @100. That re-priced TLE9183 from its LCSC price and removed TLD1114, whose only price was Rochester's.
+
+**Sibling codes.** 34 entries are priced on a sibling orderable code, and their source says so. The ones to read with care, because the grade differs and the automotive part usually costs more:
+- AD2S1205 (industrial);
+- PIC18F26Q83 (industrial, SSOP);
+- MPC5744P (another speed/temperature grade);
+- i.MX 8M Plus (consumer code);
+- B32922 (not AEC-Q200);
+- LT8645S (E-grade).
+
 Every new entry carries its `observations` (distributor, quantity, price, currency, URL, date) and its `volumeModel`. The raw research files are in `calculator/scripts/pcb-research/2026-10-06/`.
 
 ## 2. How a price is built (`scripts/pcb-catalogue-research-merge.ts`)
 
-1. **Sources.** Only franchised and authorised distributors count: Digi-Key, Mouser, Arrow, Avnet, Farnell/Newark/element14, RS, TME, Rutronik, Future, TTI and LCSC. Brokers and marketplaces are dropped (Win Source, eBay, AliExpress, Kynix and similar), and so are manufacturer web stores. Breaks below 100 units are dropped, because one-off prices run 2–3× the volume price.
+1. **Sources.** Only franchised and authorised distributors count: Digi-Key, Mouser, Arrow, Avnet, Farnell/Newark/element14, RS, TME, Rutronik, Future, TTI and LCSC. Brokers and marketplaces are dropped (Win Source, eBay, AliExpress, Kynix and similar), and so are manufacturer web stores and the aftermarket house Rochester Electronics. Breaks below 100 units are dropped, because one-off prices run 2–3× the volume price.
 2. **Currency.** Prices convert to GBP with the engine's FX table (`src/engine/insights.ts`; USD 0.7553). A currency not in that table (e.g. NOK) is dropped.
 3. **Outliers.** With 3+ observations, one more than 2.5× from the median of the others is dropped.
 4. **The 1k price** is the median of the observations at 500–2,500 units. A single other break is moved to 1k along the slope.
@@ -70,29 +111,25 @@ Every new entry carries its `observations` (distributor, quantity, price, curren
 
 Web search was the only route. Direct fetches of every distributor and manufacturer site (Digi-Key, Mouser, Octopart, LCSC, ti.com, st.com, nxp.com, infineon.com) are blocked by this environment's network policy. Web search allows 200 searches per turn, shared by all research agents. Both rounds ran out of searches.
 
-**129 listed parts have no distributor price** (`calculator/scripts/pcb-research/queue.json`, in three lists):
-- **`notSearched` (45): the search budget ran out.** These include:
-  - the six traction power modules (HybridPACK Drive, XM3, VE-Trac, ACEPACK);
-  - film capacitors and HV contactors;
-  - several sensors (MLX9036x, TLE4999/4966, KP236, SMI230, IAM-20685);
-  - the MAX / LT regulators;
-  - DRA821, AP0202, AR0820/AR0147, TC397, TDA4VM, i.MX 8M Plus;
-  - the three 1206 MLCCs and FlexRay.
-- **`searchedNoPrice` (55): searched, but no franchised break of 100 units or more.** The reasons were:
-  - only one-off prices;
-  - prices with no quantity attached;
-  - figures that contradicted each other and were discarded;
-  - brokers only;
-  - parts discontinued at distributors.
+**92 listed parts still have no distributor price** (`calculator/scripts/pcb-research/queue.json`, each with the last result). All have now been searched. They fall into four groups:
+- **No public distributor price (about 25).** These include:
+  - Qualcomm SA8155P/8295P, Renesas R-Car, Mobileye;
+  - Marvell 88Q2220 and Broadcom PHYs;
+  - HomePlug GreenPHY modems (QCA7005/7006, MSE1022);
+  - Sony IMX490, Samsung LPDDR4 and the Calterah radar chip;
+  - S32E2, Stellar SR6P3 and i.MX 8QuadMax.
+- **Single-unit prices only (about 30).** The prices for one unit are kept in the notes:
+  - the six traction power modules ($520–2,000 each at one unit);
+  - the HV contactor and DC-link film capacitors, and the LEM transducer;
+  - AWR2944, OX03C10/OX08B40, the i.MX 6Q, NVHL020 and S32G399;
+  - large automotive DRAM and eMMC.
+- **Exact automotive code not found (about 15).** Only commercial or other variants came back: TMS320F28003x/49 Q1, UCC28180/ISO224/ISO1044 Q1, AMC0330, DRV8343S, TPS7B8450, TLE5014SP16 and the three 1206 MLCCs.
+- **Brokers, the maker's store or Rochester only (about 20).** These include TLE94112, TLE8888-1, TPS65313, TPS653850, ADuM4146, INA241A1, SI82390 and TLF4277.
 
-  The reason is in each part's notes.
-- **`ndaOrNoPublicPrice` (29): no public distributor price.** These are:
-  - SoCs sold under NDA (Qualcomm SA8155P/8295P, R-Car, Mobileye, Marvell / Broadcom PHYs, HomePlug GreenPHY modems);
-  - radar and imaging chips priced only by the maker (AWR2944, S32R45/41, OX08B40/OX03C10, IMX490);
-  - parts where round 1 found only brokers or the maker's store.
+More web search will not close these: they need a Purchasing quote or a BOM-tool export (Digi-Key, Mouser or Arrow), imported with `scripts/pcb-catalogue-import.ts`, or a Nexar key.
 
 **Other limits:**
-- 215 of the 303 distributor-priced parts have one distributor behind them. They are real listings, not cross-checked.
+- 222 of the 340 distributor-priced parts have one distributor behind them. They are real listings, not cross-checked.
 - Prices at 100k–300k a year are derived along the part's slope, not quoted. Contract prices at that volume are negotiated, and are usually lower again.
 
 **To finish (no code changes):**

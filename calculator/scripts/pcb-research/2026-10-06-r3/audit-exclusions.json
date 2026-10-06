@@ -1,0 +1,15 @@
+{
+ "note": "Audit of round 3 (6 Oct 2026). Applied by scripts/pcb-catalogue-research-merge.ts before pricing. parts: research for this MPN is not used. observations: one observation dropped (matched by URL fragment). disputed: an EXISTING catalogue price is kept but its source states the dispute, until a quote settles it.",
+ "parts": {
+  "VN9D30Q100FTR": "RS Austria EUR 1.79 @500 vs RS Germany EUR 2.612 @3,000: the reel dearer than the smaller break on two regional sites - inconsistent, not used",
+  "MPC5748GVMN6A": "only price found is SPC5748GSK1MKU6R, the LQFP-176 package, not the listed MAPBGA - a different package is not a sibling code",
+  "MT41K256M16TW-107 AAT:P": "Digi-Key reel code $7.68 @100 while the tray code of the same die showed $41-47 in the same search - a 5x packing gap is not credible, not used"
+ },
+ "observations": [
+  { "mpn": "88Q2112-A2-NYD2A000", "url": "oemstrade.com", "reason": "Mouser price read off a broker page (oemstrade), not a Mouser listing" }
+ ],
+ "disputed": {
+  "MT29F4G08ABAFAWP-AAT": "Newark showed ~$4.36 @50 for the same family vs Digi-Key $21.07 @960 (IT:F) in the catalogue - about 4.8x apart; verify with a quote",
+  "MT25QL512ABB8ESF-0AUT": "Digi-Key lists the related -0SIT-TR at $31.54 @1,000 and -0AAT-TR at $47 @50 vs the catalogue's Mouser $9 @1,000 - verify with a quote"
+ }
+}
