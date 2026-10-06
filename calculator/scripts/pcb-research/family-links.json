@@ -1,5 +1,5 @@
 {
- "note": "Reviewed family links (rule 9 of scripts/pcb-catalogue-research-merge.ts): an estimate named by a family key is priced as this catalogued, distributor-priced member and stays an estimate. Left out on purpose: CAT24C (only member is 512 Kb, not representative), MT53E (density unknown), STM32H7 (two different members), L9963 links to L9963E (the monitor) not L9963T (a transceiver).",
+ "note": "Reviewed family links (rule 9 of scripts/pcb-catalogue-research-merge.ts): an estimate named by a family key is priced as this catalogued, distributor-priced member and stays an estimate. Left out on purpose: CAT24C (only member is 512 Kb, not representative), MT53E (density unknown), STM32H7 (two different members), L9963 links to L9963E (the monitor) not L9963T (a transceiver). S32G274 unlinked in round 4: its member S32G274AABK0VUCT was priced only through a broker storefront and left the catalogue. IND POWER 4x4 is not linked: the only 4x4 member priced is the premium Coilcraft XAL4020 (~3.5x a typical 4x4 automotive inductor).",
  "links": {
   "TC264": {
    "member": "SAK-TC264DA-40F200W BC"
@@ -27,9 +27,6 @@
   },
   "SPC584B": {
    "member": "SPC584B70E3EHC0X"
-  },
-  "S32G274": {
-   "member": "S32G274AABK0VUCT"
   },
   "STM32H743": {
    "member": "STM32H743ZIT6"
@@ -153,6 +150,46 @@
   },
   "SRN6045": {
    "member": "SRN6045TA-4R7M"
+  },
+  "MLCC 0402 100nF X7R AEC": {
+   "member": "GCM155R71H104KE02D",
+   "why": "representative: Murata GCM 0402 100 nF 50 V X7R AEC-Q200"
+  },
+  "RES 0402 AEC": {
+   "member": "CRCW040210K0FKED",
+   "why": "representative: Vishay CRCW 0402 10 k 1% AEC-Q200"
+  },
+  "RES 0603 AEC": {
+   "member": "ERJ-3EKF1002V",
+   "why": "representative: Panasonic ERJ-3EK 0603 10 k 1% AEC-Q200"
+  },
+  "FB 0603": {
+   "member": "BLM18KG601SH1D",
+   "why": "representative: Murata BLM18KG 0603 600 ohm automotive"
+  },
+  "CMC AUTO": {
+   "member": "ACT45B-510-2P-TL003",
+   "why": "representative: TDK ACT45B CAN choke 51 uH"
+  },
+  "HYBRID POLYMER 33uF": {
+   "member": "EEH-ZA1V330P",
+   "why": "representative: Panasonic ZA 33 uF 35 V hybrid polymer"
+  },
+  "SHUNT 2512": {
+   "member": "WSL2512R0100FEA",
+   "why": "representative: Vishay WSL2512 10 mohm"
+  },
+  "LM2904": {
+   "member": "LM2904BQDRQ1",
+   "why": "automotive LM2904B"
+  },
+  "RELAY AUTO 12V": {
+   "member": "V23086-C1001-A403",
+   "why": "representative: TE V23086 automotive PCB relay"
+  },
+  "RELAY SIGNAL": {
+   "member": "G6K-2F-Y DC12",
+   "why": "representative: Omron G6K signal relay"
   }
  }
 }

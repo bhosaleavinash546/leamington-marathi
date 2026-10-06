@@ -1,0 +1,104 @@
+{ "domain": "r4-power", "researched": "2026-10-06", "parts": [
+  { "mpn": "TPS3702CX33QDDCRQ1", "family": "TPS3702-Q1", "mfr": "Texas Instruments", "desc": "Window voltage supervisor, OV/UV, 3.3 V", "category": "ic_soic", "pkg": "SOT-23-6 (DDC)", "aecq": true, "ecuRoles": ["ADAS","MCU supply monitor","safety"], "observedMpn": "TPS3702CX33QDDCRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.05461, "currency": "GBP", "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/TPS3702CX33QDDCRQ1/5254552", "date": "2026-10-06" }
+    ], "notes": "Digi-Key UK price in GBP." },
+  { "mpn": "TPS3840DL30DBVRQ1", "family": "TPS3840-Q1", "mfr": "Texas Instruments", "desc": "Nano-Iq voltage supervisor, open-drain, MR, 3.0 V", "category": "ic_soic", "pkg": "SOT-23-5 (DBV)", "aecq": true, "ecuRoles": ["BCM","MCU reset"], "observedMpn": "TPS3840DL30DBVRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.59364, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS3840DL30DBVRQ1/10715386", "date": "2026-10-06" }
+    ], "notes": "Representative pick of the family (3.0 V open-drain). Push-pull TPS3840PL30DBVRQ1 was $0.63074 @1k at Digi-Key." },
+  { "mpn": "TPS3430WQDRCRQ1", "family": "TPS3430-Q1", "mfr": "Texas Instruments", "desc": "Window watchdog timer, programmable timeout", "category": "ic_qfn", "pkg": "VSON-10 (DRC)", "aecq": true, "ecuRoles": ["MCU watchdog","safety"], "observedMpn": "TPS3430WQDRCRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.53306, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS3430WQDRCRQ1/9597846", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 1.07, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS3430WQDRCRQ1?qs=w/v1CP2dgqp41ER3c3Dl1A%3D%3D", "date": "2026-10-06" },
+      { "distributor": "LCSC", "qty": 1000, "price": 1.1075, "currency": "USD", "url": "https://www.lcsc.com/product-detail/Timers-Clock-Oscillators_Texas-Instruments-TPS3430WQDRCRQ1_C2651379.html", "date": "2026-10-06" }
+    ], "notes": "Representative pick (W = window option). Digi-Key @1k is ~40% above Mouser/LCSC; spread is real in the snippets." },
+  { "mpn": "TPS389033QDSERQ1", "family": "TPS3890-Q1", "mfr": "Texas Instruments", "desc": "Precision low-Iq voltage supervisor, 3.3 V", "category": "ic_qfn", "pkg": "WSON-6 (DSE)", "aecq": true, "ecuRoles": ["MCU reset","ADAS"], "observedMpn": "",
+    "observations": [], "notes": "Representative pick. No franchised-distributor break found in search (only TI store price, not allowed)." },
+  { "mpn": "TPS7B4253QDBVRQ1", "family": "TPS7B4253-Q1", "mfr": "Texas Instruments", "desc": "Voltage-tracking LDO, 4 mV tracking, 40 V, 150 mA", "category": "ic_soic", "pkg": "SOT-23-5 (DBV)", "aecq": true, "ecuRoles": ["sensor supply","off-board sensor"], "observedMpn": "",
+    "observations": [], "notes": "No distributor price returned in search." },
+  { "mpn": "TPS7B4250QDBVRQ1", "family": "TPS7B4250-Q1", "mfr": "Texas Instruments", "desc": "Voltage-tracking LDO, 40 V, 50 mA", "category": "ic_soic", "pkg": "SOT-23-5 (DBV)", "aecq": true, "ecuRoles": ["sensor supply","off-board sensor"], "observedMpn": "TPS7B4250QDBVRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.65069, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS7B4250QDBVRQ1/5178860", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.5575, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS7B4250QDBVRQ1/5178860", "date": "2026-10-06" }
+    ], "notes": "3000 = full reel break." },
+  { "mpn": "TPS7A1633QDGNRQ1", "family": "TPS7A16-Q1", "mfr": "Texas Instruments", "desc": "60 V, 100 mA, ultra-low-Iq LDO, 3.3 V", "category": "ic_soic", "pkg": "HVSSOP-8 (DGN)", "aecq": true, "ecuRoles": ["KL30 always-on","BCM","BMS"], "observedMpn": "TPS7A1633QDGNRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 2.60096, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS7A1633QDGNRQ1/4341402", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "TLV76733QWDRBRQ1", "family": "TLV767-Q1", "mfr": "Texas Instruments", "desc": "16 V, 1 A LDO, 3.3 V", "category": "ic_qfn", "pkg": "WSON-8 (DRB)", "aecq": true, "ecuRoles": ["point-of-load","infotainment","ADAS"], "observedMpn": "TLV76733QWDRBRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 0.9567, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV76733QWDRBRQ1/15856719", "date": "2026-10-06" }
+    ], "notes": "Only the 100 break was shown; no 1k/reel break found." },
+  { "mpn": "TPS62A01AQDRLRQ1", "family": "TPS62A01-Q1", "mfr": "Texas Instruments", "desc": "1 A synchronous buck, 2.5-5.5 V in", "category": "ic_soic", "pkg": "SOT-563 (DRL)", "aecq": true, "ecuRoles": ["point-of-load","camera","ADAS"], "observedMpn": "TPS62A01AQDRLRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 0.328, "currency": "USD", "url": "https://www.findchips.com/distributors/mouser-electronics?search=TPS-6", "date": "2026-10-06" }
+    ], "notes": "Mouser break read via Findchips summary, not the Mouser page; verify before relying on it." },
+  { "mpn": "TPS629210QDRLRQ1", "family": "TPS629210-Q1", "mfr": "Texas Instruments", "desc": "3-17 V, 1 A synchronous buck", "category": "ic_soic", "pkg": "SOT-583 (DRL)", "aecq": true, "ecuRoles": ["point-of-load","ADAS","infotainment"], "observedMpn": "TPS629210QDRLRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.73477, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS629210QDRLRQ1/15853828", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.847, "currency": "USD", "url": "https://componentsearchengine.com/prices/TPS629210QDRLRQ1?manufacturer=Texas+Instruments", "date": "2026-10-06" }
+    ], "notes": "Mouser break read via Component Search Engine summary." },
+  { "mpn": "LMR51420QDBVRQ1", "family": "LMR51420", "mfr": "Texas Instruments", "desc": "4.5-36 V, 2 A synchronous buck", "category": "ic_soic", "pkg": "SOT-23-6", "aecq": true, "ecuRoles": ["point-of-load","BCM"], "observedMpn": "",
+    "observations": [], "notes": "Listed code not found at any distributor in search (only commercial LMR51420x DDCR codes, ~$0.64-0.68 @3k at Digi-Key, not recorded). Automotive orderable code unconfirmed." },
+  { "mpn": "LMQ61460AFSQRJRRQ1", "family": "LMQ61460-Q1", "mfr": "Texas Instruments", "desc": "36 V, 6 A synchronous buck, low EMI", "category": "ic_qfn", "pkg": "VQFN-HR-14 (RJR)", "aecq": true, "ecuRoles": ["ADAS","infotainment","domain controller"], "observedMpn": "LMQ61460AFSQRJRRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 3.40206, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMQ61460AFSQRJRRQ1/13542533", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 3.0, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LMQ61460AFSQRJRRQ1?qs=T94vaHKWudSsaxcxvwPPwQ%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Full-reel (3,000) breaks; 1k not shown." },
+  { "mpn": "TPS61379QWRWLRQ1", "family": "TPS61379-Q1", "mfr": "Texas Instruments", "desc": "Synchronous boost with input-to-output bypass", "category": "ic_qfn", "pkg": "WQFN", "aecq": true, "ecuRoles": ["start-stop","pre-boost","eCall"], "observedMpn": "",
+    "observations": [], "notes": "No distributor price returned in search." },
+  { "mpn": "LM5157QRTERQ1", "family": "LM5157-Q1", "mfr": "Texas Instruments", "desc": "50 V, 6 A boost/SEPIC/flyback converter", "category": "ic_qfn", "pkg": "WQFN-16 (RTE)", "aecq": true, "ecuRoles": ["start-stop","pre-boost","LED supply"], "observedMpn": "LM5157QRTERQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 2.676, "currency": "USD", "url": "https://octopart.com/lm5157qrterq1-texas+instruments-113687576", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 500, "price": 2.79, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LM5157QRTERQ1?qs=QNEnbhJQKvb8%2BoI1%2BJEaeg%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Digi-Key 1k read via Octopart summary naming Digi-Key." },
+  { "mpn": "LM5156QRTERQ1", "family": "LM5156-Q1", "mfr": "Texas Instruments", "desc": "2.2-42 V wide-VIN boost/SEPIC/flyback controller", "category": "ic_qfn", "pkg": "WQFN-12 (RTE)", "aecq": true, "ecuRoles": ["start-stop","pre-boost"], "observedMpn": "",
+    "observations": [], "notes": "No franchised-distributor price returned in search (only a broker figure for a non-auto code, discarded)." },
+  { "mpn": "TPS2116DRLR", "family": "TPS2116", "mfr": "Texas Instruments", "desc": "1.6-5.5 V, 2.5 A power mux", "category": "ic_soic", "pkg": "SOT-583 (DRL)", "aecq": false, "ecuRoles": ["power path","backup supply"], "observedMpn": "TPS2116DRLR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.50337, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2116DRLR/15205127", "date": "2026-10-06" }
+    ], "notes": "No automotive (Q1) orderable code found; TPS2116QDRLRQ1 does not appear at distributors. Commercial-grade price recorded." },
+  { "mpn": "TPS25762CQRQLRQ1", "family": "TPS25762-Q1", "mfr": "Texas Instruments", "desc": "USB-PD 3.0 controller with integrated buck-boost, automotive", "category": "ic_qfn", "pkg": "VQFN (RQL)", "aecq": true, "ecuRoles": ["USB charging","head unit","rear-seat USB"], "observedMpn": "",
+    "observations": [], "notes": "Representative pick. Only a qty-1 Digi-Key EU price (EUR 6.73) and TI store prices were found; neither usable." },
+  { "mpn": "TPS26631PWPR", "family": "TPS2663", "mfr": "Texas Instruments", "desc": "60 V, 6 A eFuse / surge protector", "category": "ic_soic", "pkg": "HTSSOP-24 (PWP)", "aecq": false, "ecuRoles": ["input protection","eFuse"], "observedMpn": "TPS26631PWPR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 2.26108, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS26631PWPR/12165168", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 2.26, "currency": "USD", "url": "https://www.findchips.com/search/TPS26631PWPR", "date": "2026-10-06" },
+      { "distributor": "LCSC", "qty": 1000, "price": 2.514, "currency": "USD", "url": "https://www.lcsc.com/product-detail/Surge-Suppressors_Texas-Instruments-TPS26631PWPR_C2866319.html", "date": "2026-10-06" }
+    ], "notes": "Representative pick. TPS2663 has no AEC-Q100 code; industrial grade. Mouser read via Findchips." },
+  { "mpn": "LM5069MM-2/NOPB", "family": "LM5069", "mfr": "Texas Instruments", "desc": "9-80 V hot-swap controller with power limiting", "category": "ic_soic", "pkg": "VSSOP-10 (DGS)", "aecq": false, "ecuRoles": ["hot swap","48V input protection"], "observedMpn": "LM5069MM-2/NOPB",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 2.47808, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5069MM-2-NOPB/1200193", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3500, "price": 1.7341, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5069MMX-2-NOPB/1871848", "date": "2026-10-06" }
+    ], "notes": "No automotive (Q1) LM5069 code exists; industrial grade. 3,500 break is the MMX (large reel) sibling LM5069MMX-2/NOPB. Snippet said an 'LM5069MM-2' listing is obsolete." },
+  { "mpn": "UCC27517AQDBVRQ1", "family": "UCC27517A-Q1", "mfr": "Texas Instruments", "desc": "4 A/4 A single low-side gate driver", "category": "ic_soic", "pkg": "SOT-23-5 (DBV)", "aecq": true, "ecuRoles": ["DC-DC","OBC","motor drive"], "observedMpn": "UCC27517AQDBVRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.83385, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC27517AQDBVRQ1/4368854", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "UCC27211AQDDARQ1", "family": "UCC27211A-Q1", "mfr": "Texas Instruments", "desc": "120 V half-bridge gate driver, 4 A", "category": "ic_soic", "pkg": "SO-8 PowerPAD (DDA)", "aecq": true, "ecuRoles": ["DC-DC","48V","OBC"], "observedMpn": "UCC27211AQDDARQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.1452, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC27211AQDDARQ1/5823405", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 1.15, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/UCC27211AQDDARQ1?qs=n%2BTO0c4TDSYQNOcAHEGCfA%3D%3D", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "SN6501QDBVRQ1", "family": "SN6501-Q1", "mfr": "Texas Instruments", "desc": "Push-pull transformer driver for isolated supplies", "category": "ic_soic", "pkg": "SOT-23-5 (DBV)", "aecq": true, "ecuRoles": ["isolated supply","BMS","inverter gate drive"], "observedMpn": "SN6501QDBVRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 1.558, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/texas-instruments/SN6501QDBVRQ1/296-36967-1-ND/4428915", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.05165, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/texas-instruments/SN6501QDBVRQ1/296-36967-1-ND/4428915", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "MAX25014ATG/VY+T", "family": "MAX25014", "mfr": "Analog Devices (Maxim)", "desc": "4-channel automotive display backlight driver with boost controller", "category": "ic_qfn", "pkg": "TQFN-24 (side-wettable)", "aecq": true, "ecuRoles": ["display","cluster","CID"], "observedMpn": "",
+    "observations": [], "notes": "Representative pick (side-wettable /VY+T). No distributor price returned in search." },
+  { "mpn": "TPS61194PWPRQ1", "family": "TPS61194-Q1", "mfr": "Texas Instruments", "desc": "4-channel LED backlight driver with boost", "category": "ic_soic", "pkg": "HTSSOP-20 (PWP)", "aecq": true, "ecuRoles": ["display","cluster"], "observedMpn": "TPS61194PWPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 1.95, "currency": "USD", "url": "https://www.trustedparts.com/ja/part/texas-instruments/TPS61194PWPRQ1", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 250, "price": 1.84, "currency": "USD", "url": "https://www.trustedparts.com/ja/part/texas-instruments/TPS61194PWPRQ1", "date": "2026-10-06" }
+    ], "notes": "Read via TrustedParts summary; it listed identical Digi-Key and Mouser ladders, so only one recorded. Rochester ($1.32 @1k) excluded as aftermarket." },
+  { "mpn": "LP8864SQDCPRQ1", "family": "LP8864-Q1", "mfr": "Texas Instruments", "desc": "4-channel 200 mA display backlight LED driver with boost", "category": "ic_soic", "pkg": "HTSSOP-38 (DCP)", "aecq": true, "ecuRoles": ["display","cluster","CID"], "observedMpn": "LP8864SQDCPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 66.569, "currency": "TWD", "url": "https://www.digikey.tw/zh/products/detail/texas-instruments/LP8864SQDCPRQ1/13245712", "date": "2026-10-06" }
+    ], "notes": "Representative pick (S = spread-spectrum variant). Price is Digi-Key Taiwan in TWD (~USD 2.1). Broker ABRMicro figure excluded." },
+  { "mpn": "TLC6C598QPWRQ1", "family": "TLC6C598-Q1", "mfr": "Texas Instruments", "desc": "8-bit shift-register LED/power sink driver", "category": "ic_soic", "pkg": "TSSOP-16 (PW)", "aecq": true, "ecuRoles": ["cluster telltales","BCM"], "observedMpn": "TLC6C598QPWRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.66861, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLC6C598QPWRQ1/3900177", "date": "2026-10-06" }
+    ], "notes": "Representative pick (TSSOP); SOIC TLC6C598QDRQ1 is obsolete." }
+] }

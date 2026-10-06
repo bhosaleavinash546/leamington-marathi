@@ -1,0 +1,14 @@
+{
+ "note": "Audit of round 4 (6 Oct 2026); applied by scripts/pcb-catalogue-research-merge.ts. Broker storefronts (OEMsTrade, omo-ic), datasheet sites and maker pages are now refused by the merge's PRICE_HOSTS rule for every entry, so they are not listed here.",
+ "parts": {},
+ "observations": [
+  {
+   "mpn": "DLW43SH510XK2L",
+   "url": "mouser.com",
+   "reason": "the Mouser URL was a search link the researcher built, not a page read; the breaks came from a summary that did not show a Mouser page"
+  }
+ ],
+ "disputed": {
+  "MT25QL256ABA1EW9": "round 4 re-check found contradictory figures; one reading (tray $3.49 @1,920) is ~2.6x below the catalogue - verify with a quote"
+ }
+}

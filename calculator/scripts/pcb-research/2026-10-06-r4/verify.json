@@ -1,0 +1,661 @@
+{
+  "domain": "r4-verify",
+  "researched": "2026-10-06",
+  "parts": [
+    {
+      "mpn": "FS32R294KCMJD",
+      "family": "S32R294",
+      "mfr": "NXP",
+      "desc": "S32R294 radar MCU (ASIL-B)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "FS32R294KCMJD",
+      "observations": [],
+      "notes": "Searched; no franchised-distributor price for this MPN in results."
+    },
+    {
+      "mpn": "AWR2944ALBGALTRQ1",
+      "family": "AWR2944",
+      "mfr": "Texas Instruments",
+      "desc": "AWR2944 77 GHz radar SoC (4T4R)",
+      "category": "ic_bga",
+      "pkg": "FCCSP-266",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AWR2944ALBGALTRQ1",
+      "observations": [],
+      "notes": "Only TI store price ($27.873) found - manufacturer store, excluded. No franchised price."
+    },
+    {
+      "mpn": "AWR1843ABGABLRQ1",
+      "family": "AWR1843",
+      "mfr": "Texas Instruments",
+      "desc": "AWR1843 77 GHz radar SoC",
+      "category": "ic_bga",
+      "pkg": "FCBGA-161",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AWR1843ABGABLRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 30.69,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR1843ABGABLRQ1?qs=%2B6g0mu59x7LDewSwpLCJ2g%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser $30.69 @1k = ~GBP 23.17, 1.19x catalogue; within 1.5x."
+    },
+    {
+      "mpn": "TC375TP96F300W",
+      "family": "TC375",
+      "mfr": "Infineon",
+      "desc": "AURIX TC375 (3x TriCore, 6 MB)",
+      "category": "ic_bga",
+      "pkg": "LFBGA-292",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TC375TP96F300WAAKXUMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 25.18,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC375TP96F300WAAKXUMA1/11500298",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 24.91,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC375TP96F300WAAKXUMA1/11500298",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Largest break 500. Search summary also gave Mouser $24.16 @500 but no Mouser URL in results - not recorded. Agrees with catalogue."
+    },
+    {
+      "mpn": "S32K344EHT1VMMST",
+      "family": "S32K344",
+      "mfr": "NXP",
+      "desc": "S32K344 automotive MCU, Cortex-M7 lockstep",
+      "category": "ic_bga",
+      "pkg": "MAPBGA-257",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "S32K344EHT1VMMST",
+      "observations": [],
+      "notes": "Search summary quoted Mouser $15.42 @100 / $14.70 @500 but no Mouser page URL in results (source page unclear) - not recorded. Consistent with catalogue."
+    },
+    {
+      "mpn": "R7F7016443AFP",
+      "family": "RH850/F1KM-S4",
+      "mfr": "Renesas",
+      "desc": "RH850/F1KM-S4 automotive MCU",
+      "category": "ic_tqfp",
+      "pkg": "LFQFP-100",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "R7F7016443AFP-C#KA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 11.54309,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/renesas-electronics-america-inc/R7F7016443AFP-C-KA1/8342106",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Non-stock at Digi-Key. Agrees with catalogue."
+    },
+    {
+      "mpn": "STM32H735IGK6",
+      "family": "STM32H735",
+      "mfr": "STMicroelectronics",
+      "desc": "STM32H735 Cortex-M7 550 MHz, 1 MB",
+      "category": "ic_bga",
+      "pkg": "UFBGA-176",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "STM32H735IGK6",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1008,
+          "price": 14.3011,
+          "currency": "CAD",
+          "url": "https://www.digikey.ca/en/products/detail/stmicroelectronics/STM32H735IGK6/13171218",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key Canada break 1,008 in CAD (~USD 10.3). Not AEC-Q (industrial). Agrees with catalogue."
+    },
+    {
+      "mpn": "SAK-TC234LP-32F200N",
+      "family": "TC234",
+      "mfr": "Infineon",
+      "desc": "AURIX TC234 (1x TriCore, 2 MB)",
+      "category": "ic_tqfp",
+      "pkg": "TQFP-144",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "SAK-TC234LP-32F200N",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 13.25,
+          "currency": "USD",
+          "url": "https://www.oemstrade.com/search/SAK-TC234LP-32F200N",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 500,
+          "price": 13.45,
+          "currency": "USD",
+          "url": "https://www.oemstrade.com/search/SAK-TC234LP-32F200N",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser breaks as reported via OEMsTrade aggregator page (source attribution from search summary). $13.25 @1k = ~GBP 10.00, 1.35x catalogue (catalogue low but within 1.5x). Infineon budgetary EUR10.88 @1k (manufacturer, not recorded)."
+    },
+    {
+      "mpn": "LM5143QRWGRQ1",
+      "family": "LM5143-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual-phase buck controller, 65 V",
+      "category": "ic_qfn",
+      "pkg": "VQFN-40",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "LM5143QRWGRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 9.37,
+          "currency": "USD",
+          "url": "https://gr.mouser.com/ProductDetail/Texas-Instruments/LM5143QRWGRQ1?qs=PqoDHHvF64%2B5/GL8e749Zw%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 10.29,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5143QRWGRQ1/10715501",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 10.99,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5143QRWGRQ1/10715501",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser URL is the gr. site; summary gave USD. Agrees with catalogue."
+    },
+    {
+      "mpn": "R7F7016904AFP",
+      "family": "RH850/F1KM-S1",
+      "mfr": "Renesas",
+      "desc": "RH850/F1KM-S1 automotive MCU",
+      "category": "ic_tqfp",
+      "pkg": "LFQFP-64",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "R7F7016904AFP-C#KA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 8.72773,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/renesas-electronics-america-inc/R7F7016904AFP-C-KA1/12750611",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 10.0375,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/renesas-electronics-america-inc/R7F7016904AFP-C-KA1/12750611",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "1k is tape & reel. Agrees with catalogue."
+    },
+    {
+      "mpn": "MT25QL256ABA1EW9",
+      "family": "MT25QL256",
+      "mfr": "Micron",
+      "desc": "256 Mbit SPI NOR flash",
+      "category": "ic_soic",
+      "pkg": "W-PDFN-8",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "MT25QL256ABA1EW9",
+      "observations": [],
+      "notes": "Search summary for MT25QL256ABA1EW9-0SIT was internally inconsistent (tray $3.49 @1,920; TR $22.49 @4,000; SG site 6.37 @1k) - not recorded. If the $3.49 tray figure is right the catalogue (~$8.72) is ~2.6x high; needs re-check."
+    },
+    {
+      "mpn": "776087-1",
+      "family": "AMPSEAL 23",
+      "mfr": "TE Connectivity",
+      "desc": "AMPSEAL 23-way sealed PCB header",
+      "category": "connector_smt",
+      "pkg": "PCB header 23-pos RA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "776087-1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 6.177,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/te-connectivity-amp-connectors/776087-1/350072",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 600,
+          "price": 6.341,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/te-connectivity-amp-connectors/776087-1/350072",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Through-hole right-angle per Digi-Key. Agrees with catalogue."
+    },
+    {
+      "mpn": "FS32K144HAT0MLLR",
+      "family": "S32K144",
+      "mfr": "NXP",
+      "desc": "S32K144 automotive MCU, Cortex-M4F, LQFP",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-100",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "FS32K144HAT0MLLR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 5.775,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K144HAT0MLLR/8343992",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 5.47,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/FS32K",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser figure via Findchips aggregator. Agrees with catalogue."
+    },
+    {
+      "mpn": "TPS54560BQDDARQ1",
+      "family": "TPS54560B-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "60 V 5 A step-down converter",
+      "category": "ic_soic",
+      "pkg": "HSOIC-8",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TPS54560BQDDARQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 4.78,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS54560BQDDARQ1/6820640",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 4.68,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TPS54560BQDDARQ1?qs=Mv7BduZupUi0AsDfghsxzg%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Only 100 breaks in results. Within 1.5x of catalogue."
+    },
+    {
+      "mpn": "TLF35584QVVS2",
+      "family": "TLF35584",
+      "mfr": "Infineon",
+      "desc": "Multi-voltage safety PMIC (ASIL-D)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TLF35584QVVS2XUMA2",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 3.99,
+          "currency": "USD",
+          "url": "https://www.mouser.com/c/?q=TLF35584QVVS2",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2500,
+          "price": 3.75,
+          "currency": "USD",
+          "url": "https://www.mouser.com/c/?q=TLF35584QVVS2",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 3.53712,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLF35584QVVS2XUMA2/7428181",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Agrees with catalogue (1.21x)."
+    },
+    {
+      "mpn": "DP83TC812SRHARQ1",
+      "family": "DP83TC812-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "100BASE-T1 automotive Ethernet PHY",
+      "category": "ic_qfn",
+      "pkg": "VQFN-36",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "DP83TC812SRHARQ1",
+      "observations": [],
+      "notes": "Only broker (Win Source) and unattributed Findchips ranges found - not recorded."
+    },
+    {
+      "mpn": "INA240A2QDRQ1",
+      "family": "INA240-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Current-sense amplifier, PWM rejection",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "INA240A2QDRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 2.50461,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA240A2QDRQ1/9555670",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Spirit Electronics $1.96 @1k not on allowed list. Agrees with catalogue."
+    },
+    {
+      "mpn": "TJA1145TK",
+      "family": "TJA1145",
+      "mfr": "NXP",
+      "desc": "CAN FD transceiver, partial networking",
+      "category": "ic_soic",
+      "pkg": "HVSON-14",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TJA1145TK/FDJ",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 1.78,
+          "currency": "GBP",
+          "url": "https://www.findchips.com/search/tja1145tk",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Farnell via Findchips. TJA1145TK/FDJ reported obsolete at Digi-Key (successor TJA1145ATK). Agrees with catalogue."
+    },
+    {
+      "mpn": "TLE9261BQXV33",
+      "family": "TLE9261",
+      "mfr": "Infineon",
+      "desc": "Lite SBC: CAN + 5 V LDO",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TLE9261BQXV33XUMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 2.07,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9261BQXV33XUMA1/7791638",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 2.13,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9261BQXV33XUMA1/7791638",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Agrees with catalogue."
+    },
+    {
+      "mpn": "UCC27211AQDDARQ1",
+      "family": "UCC27211A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "120 V half-bridge gate driver",
+      "category": "ic_soic",
+      "pkg": "HSOIC-8",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "UCC27211AQDDARQ1",
+      "observations": [],
+      "notes": "Search summary gave only vague ranges (Mouser 'down to $1.40', no break qty) - not recorded."
+    },
+    {
+      "mpn": "IPB017N06N3",
+      "family": "IPB017N06N3",
+      "mfr": "Infineon",
+      "desc": "60 V 180 A OptiMOS, D2PAK-7",
+      "category": "ic_soic",
+      "pkg": "PG-TO263-7",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "IPB017N06N3GATMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.64308,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IPB017N06N3GATMA1/2080881",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.45,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/IPB017N06N3-G?qs=wK%2BoHS4yu54fbcy%2BkFle2A%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Package is TO263-7, not SOIC (category kept as listed). Agrees with catalogue."
+    },
+    {
+      "mpn": "W25Q128JVSIQ",
+      "family": "W25Q128JV",
+      "mfr": "Winbond",
+      "desc": "128 Mbit SPI NOR flash",
+      "category": "ic_soic",
+      "pkg": "SOIC-8 208mil",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "W25Q128JVSIQ",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1080,
+          "price": 2.86136,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/winbond-electronics/W25Q128JVSIQ/5803943",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2000,
+          "price": 1.19,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Winbond/W25Q128JVSIQ-TR?qs=qSfuJ%2Bfl/d7vTyLA9kNdGw%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "DISAGREE: Digi-Key tube $2.86 @1,080 = ~GBP 2.16, 1.69x catalogue GBP 1.28. Mouser reel (W25Q128JVSIQ TR) $1.19 @2,000 = ~GBP 0.90 (0.70x). Wide spread between packing codes."
+    },
+    {
+      "mpn": "LMR33630AQDDARQ1",
+      "family": "LMR33630-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "36 V 3 A step-down converter",
+      "category": "ic_soic",
+      "pkg": "HSOIC-8",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "LMR33630AQDDARQ1",
+      "observations": [],
+      "notes": "Exact Q1 MPN not found; only commercial LMR33630ADDAR (Digi-Key $1.77 @100) - different grade, not recorded."
+    },
+    {
+      "mpn": "G6K-2F-Y DC12",
+      "family": "G6K",
+      "mfr": "Omron",
+      "desc": "DPDT signal relay 12 V SMD",
+      "category": "relay_switch",
+      "pkg": "SMD",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "G6K-2F-Y DC12",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 3.57025,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/omron-electronics-inc-emc-div/G6K-2F-Y-DC12/307649",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1800,
+          "price": 2.32,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Omron-Electronics/G6K-2F-Y-TR-DC12?qs=PlsTXiR3SngsZ78tKExSJg%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "DISAGREE: Digi-Key $3.57 @1k (Aratas page; an older snippet showed $3.036) = ~GBP 2.70, 2.3x catalogue GBP 1.17. Mouser reel G6K-2F-Y-TR DC12 $2.32 @1,800 = ~GBP 1.75, 1.50x. Catalogue leaned on LCSC $0.61-0.69."
+    },
+    {
+      "mpn": "V23086-C1001-A403",
+      "family": "V23086",
+      "mfr": "TE Connectivity",
+      "desc": "Automotive micro power relay 12 V 25 A",
+      "category": "relay_switch",
+      "pkg": "PCB relay",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "V23086-C1001-A403",
+      "observations": [],
+      "notes": "Not searched: shared search budget exhausted."
+    },
+    {
+      "mpn": "0334824001",
+      "family": "MX150",
+      "mfr": "Molex",
+      "desc": "MX150 12-way sealed PCB header",
+      "category": "connector_smt",
+      "pkg": "PCB header",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "0334824001",
+      "observations": [],
+      "notes": "Not searched: shared search budget exhausted."
+    },
+    {
+      "mpn": "UCD2A101MNQ1MS",
+      "family": "UCD",
+      "mfr": "Nichicon",
+      "desc": "100 uF 100 V radial electrolytic 105 C",
+      "category": "through_hole",
+      "pkg": "Radial",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "UCD2A101MNQ1MS",
+      "observations": [],
+      "notes": "Not searched: shared search budget exhausted."
+    },
+    {
+      "mpn": "W25Q32JWSSIQ",
+      "family": "W25Q32JW",
+      "mfr": "Winbond",
+      "desc": "32 Mbit SPI NOR flash, 1.8 V (JW)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "W25Q32JWSSIQ",
+      "observations": [],
+      "notes": "Not searched: shared search budget exhausted."
+    },
+    {
+      "mpn": "43045-0800",
+      "family": "Micro-Fit 3.0",
+      "mfr": "Molex",
+      "desc": "Micro-Fit 3.0 8-way right-angle header",
+      "category": "through_hole",
+      "pkg": "Header",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "43045-0800",
+      "observations": [],
+      "notes": "Not searched: shared search budget exhausted."
+    },
+    {
+      "mpn": "BTS7008-2EPA",
+      "family": "BTS7008-2EPA",
+      "mfr": "Infineon",
+      "desc": "PROFET+2 dual high-side switch",
+      "category": "ic_tqfp",
+      "pkg": "TSDSO-14",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "BTS7008-2EPA",
+      "observations": [],
+      "notes": "Not searched: shared search budget exhausted."
+    }
+  ]
+}

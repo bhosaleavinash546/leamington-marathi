@@ -9,7 +9,9 @@
  * up to 3 OBSERVATIONS — distributor, quantity break, unit price, currency, URL, date.
  *
  * Rules (each one is written onto the entry it shapes):
- *  1. Only franchised / authorised distributors count; brokers and marketplaces are dropped, and
+ *  1. Only franchised / authorised distributors count, read on the distributor's own site or an
+ *     aggregator that names it (PRICE_HOSTS — a broker storefront relisting a Mouser row is not);
+ *     brokers and marketplaces are dropped, and
  *     so is Rochester Electronics (an authorised AFTERMARKET house: end-of-life stock at its own
  *     prices, e.g. LTC6813 $15.93 @1k against LCSC $10.82 @100 — not a production supply price),
  *     and so are breaks below 100 units (one-off prices run 2–3× the volume price).
@@ -50,6 +52,10 @@ type Entry = { mpn: string; family: string; mfr: string; desc: string; category:
   ecuRoles?: string[]; observations?: Array<Obs & { gbp: number }>; volumeModel?: { b: number; basis: string; derivedAbove: number } };
 
 export const FRANCHISED = /^(digi-?key|mouser|arrow|avnet|farnell|newark|element ?14|rs( components)?|tme|rutronik|future( electronics)?|tti|lcsc|verical|heilind|allied|sager|master electronics)/i;
+/** Where a price may be read: the distributor's own site, or an aggregator that names the distributor and break.
+ *  Broker storefronts that relist distributor rows (OEMsTrade, omo-ic), datasheet sites and maker pages are not. */
+export const PRICE_HOSTS = /(^|\.)(digikey\.[a-z.]+|mouser\.[a-z.]+|arrow\.com|avnet\.com|farnell\.com|newark\.com|element14\.com|rs-online\.com|rsdelivers\.com|tme\.(eu|com)|rutronik(24)?\.com|futureelectronics\.com|tti(inc)?\.com|lcsc\.com|verical\.com|heilind\.com|alliedelec\.com|sager\.com|masterelectronics\.com|findchips\.com|octopart\.com|digipart\.com|trustedparts\.com)$/i;
+const hostOf = (u: string) => String(u).replace(/^https?:\/\//i, '').split('/')[0].toLowerCase();
 export const DEFAULT_B = -Math.log(0.85) / Math.log(10);   // the catalogue's franchise curve, 0.0706
 const CATEGORIES = new Set(['ic_bga', 'ic_qfn', 'ic_soic', 'ic_tqfp', 'passive_0402', 'passive_0603', 'passive_0805', 'passive_1206',
   'fuse_tvs', 'crystal_osc', 'connector_smt', 'through_hole', 'relay_switch', 'led', 'transformer', 'mechanical', 'power_module']);
@@ -65,7 +71,7 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   let obs = (raw ?? []).filter(o => {
     // A one-off price (1, 25, 30 units) says little about volume and runs 2–3× the 1k
     // price; only breaks of 100 units or more are used.
-    const ok = FRANCHISED.test(String(o.distributor).trim()) && Number(o.price) > 0 && Number(o.qty) >= 100 && FX_TO_GBP[String(o.currency).toUpperCase()] != null;
+    const ok = FRANCHISED.test(String(o.distributor).trim()) && PRICE_HOSTS.test(hostOf(o.url)) && Number(o.price) > 0 && Number(o.qty) >= 100 && FX_TO_GBP[String(o.currency).toUpperCase()] != null;
     if (!ok) dropped.push(`${o.distributor} ${o.price} ${o.currency} @${o.qty}`);
     return ok;
   }).map(o => ({ ...o, qty: Number(o.qty), price: Number(o.price), gbp: Number(o.price) * FX_TO_GBP[String(o.currency).toUpperCase()] }));

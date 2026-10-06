@@ -38,6 +38,7 @@ describe('the October 2026 research (docs/pcb/component-database-2026-10.md)', (
       expect(p.observations?.length, p.mpn).toBeGreaterThan(0);
       for (const o of p.observations!) {
         expect(o.url, p.mpn).toMatch(/^https?:\/\//);
+        expect(o.url, p.mpn).not.toMatch(/oemstrade|omo-ic|alldatasheet|electronicsdatasheets|jlcpcb|\/\/www\.ti\.com/);
         expect(o.qty, p.mpn).toBeGreaterThanOrEqual(100);           // one-off prices are not used
         expect(o.distributor, p.mpn).toMatch(/digi-?key|mouser|arrow|avnet|farnell|newark|element|rs|tme|rutronik|future|tti|lcsc|verical|heilind|allied|sager|master/i);
         expect(o.distributor, p.mpn).not.toMatch(/rochester/i);       // aftermarket stock, not a production price
@@ -125,7 +126,7 @@ describe('grounding with the catalogue', () => {
 
 import { priceFromObservations, mergeResearch, applyFamilyLinks, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
 describe('the research merge rules', () => {
-  const o = (distributor: string, qty: number, price: number, currency = 'USD') => ({ distributor, qty, price, currency, url: 'https://x', date: '2026-10-06' });
+  const o = (distributor: string, qty: number, price: number, currency = 'USD') => ({ distributor, qty, price, currency, url: 'https://www.digikey.com/x', date: '2026-10-06' });
   it('uses the part\'s own slope from one distributor\'s two breaks', () => {
     const p = priceFromObservations([o('Digi-Key', 1000, 1.0), o('Digi-Key', 10000, 0.8)])!;
     expect(p.b).toBeCloseTo(Math.log(1 / 0.8) / Math.log(10), 3);
@@ -136,6 +137,11 @@ describe('the research merge rules', () => {
   });
   it('drops brokers, one-off quantities and unknown currencies; nothing left → no entry', () => {
     expect(priceFromObservations([o('Win Source', 1000, 1), o('Digi-Key', 1, 3), o('Digi-Key', 1000, 1, 'NOK')])).toBeNull();
+  });
+  it('drops a price read on a broker storefront or a datasheet site, even when it names Mouser', () => {
+    expect(priceFromObservations([{ ...o('Mouser', 1000, 5), url: 'https://www.oemstrade.com/search/x' }])).toBeNull();
+    expect(priceFromObservations([{ ...o('Digi-Key', 1000, 5), url: 'https://www.alldatasheet.com/x' }])).toBeNull();
+    expect(priceFromObservations([{ ...o('Digi-Key', 1000, 5), url: 'https://www.digikey.co.uk/en/products/x' }])).not.toBeNull();
   });
   it('drops a 2.5× outlier when three or more distributors agree', () => {
     const p = priceFromObservations([o('Digi-Key', 1000, 1.0), o('Mouser', 1000, 1.1), o('LCSC', 1000, 0.2)])!;

@@ -1,0 +1,127 @@
+{ "domain": "r4-discretes", "researched": "2026-10-06", "parts": [
+  { "mpn": "SZNUP2105LT1G", "family": "NUP2105L", "mfr": "onsemi", "desc": "Dual bidirectional TVS for CAN bus, 24 VWM, 44 VC", "category": "fuse_tvs", "pkg": "SOT-23", "aecq": true, "ecuRoles": ["CAN","gateway","BCM"], "observedMpn": "SZNUP2105LT1G",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.08073, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/SZNUP2105LT1G/3063422", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 0.081, "currency": "USD", "url": "https://www.mouser.com/c/?q=SZNUP2105LT1G", "date": "2026-10-06" }
+    ], "notes": "SZ prefix = AEC-Q101 code." },
+  { "mpn": "ESD2CAN24DBZRQ1", "family": "ESD2CAN24", "mfr": "Texas Instruments", "desc": "Dual 24 V ESD/TVS for CAN, 3 pF", "category": "fuse_tvs", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["CAN","gateway"], "observedMpn": "ESD2CAN24DBZRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.23927, "currency": "USD", "url": "https://www.digikey.com.au/en/products/detail/texas-instruments/ESD2CAN24DBZRQ1/16982061", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.22591, "currency": "USD", "url": "https://www.digikey.com.au/en/products/detail/texas-instruments/ESD2CAN24DBZRQ1/16982061", "date": "2026-10-06" }
+    ], "notes": "LCSC 'from $0.1439' had no break stated; not used. Page is .com.au but snippet quoted USD-looking figures; currency as given." },
+  { "mpn": "TPD2E007DCKRQ1", "family": "TPD2E007", "mfr": "Texas Instruments", "desc": "2-channel ESD protection, +/-80 V", "category": "fuse_tvs", "pkg": "SC-70-3", "aecq": true, "ecuRoles": ["CAN","LIN","I/O"], "observedMpn": "TPD2E007DCKR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.44169, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD2E007DCKR/2177393", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 9000, "price": 0.39479, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD2E007DCKR/2177393", "date": "2026-10-06" }
+    ], "notes": "Q1 code not found in search; prices are the commercial TPD2E007DCKR sibling (Q1 typically somewhat higher). Out of stock at Digi-Key." },
+  { "mpn": "SM8S33A", "family": "SM8S33A", "mfr": "Littelfuse", "desc": "Load-dump TVS, 6.6 kW, 33 VWM, 53.3 VC", "category": "fuse_tvs", "pkg": "DO-218AB (SMTO-263)", "aecq": true, "ecuRoles": ["power input","load dump"], "observedMpn": "SM8S33A",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.3132, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SM8S33A/24764313", "date": "2026-10-06" }
+    ], "notes": "Littelfuse code. Vishay auto equivalent SM8S33AHE3_A/I not priced. Mouser 500-break $1.43 seen (below 1k, not recorded)." },
+  { "mpn": "SMBJ24CA-Q", "family": "SMBJ24CA", "mfr": "Bourns", "desc": "600 W bidirectional TVS, 24 VWM, AEC-Q101", "category": "fuse_tvs", "pkg": "DO-214AA (SMB)", "aecq": true, "ecuRoles": ["power input","I/O"], "observedMpn": "SMBJ24CA-Q",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.145, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/bourns-inc/SMBJ24CA-Q/8275798", "date": "2026-10-06" }
+    ], "notes": "Commercial SMBJ24CA at Mouser 3k: $0.10 (Littelfuse) to $0.125 (Bourns), for reference only." },
+  { "mpn": "SMCJ36A", "family": "SMCJ36A", "mfr": "Littelfuse", "desc": "1500 W unidirectional TVS, 36 VWM, 58.1 VC", "category": "fuse_tvs", "pkg": "DO-214AB (SMC)", "aecq": true, "ecuRoles": ["power input"], "observedMpn": "SMCJ36A",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.18703, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SMCJ36A/762404", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 0.198, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Littelfuse/SMCJ36A/?qs=zHiv0nsVGmrW8NZqgG8BqA%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Representative pick: Littelfuse SMCJ36A (AEC-Q101 status per Littelfuse SMCJ series, not re-verified). A second Digi-Key listing showed $0.167 at 3k." },
+  { "mpn": "SM6T39AY", "family": "SM6T39A", "mfr": "STMicroelectronics", "desc": "600 W unidirectional TVS, 33 VWM / 39 V breakdown", "category": "fuse_tvs", "pkg": "DO-214AA (SMB)", "aecq": true, "ecuRoles": ["power input","I/O"], "observedMpn": "SM6T39A",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 2500, "price": 0.20422, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SM6T39A/1039093", "date": "2026-10-06" },
+      { "distributor": "Arrow", "qty": 2500, "price": 0.2473, "currency": "USD", "url": "https://www.arrow.com/en/products/sm6t39a/stmicroelectronics?region", "date": "2026-10-06" },
+      { "distributor": "Future", "qty": 2500, "price": 0.0707, "currency": "USD", "url": "https://www.futureelectronics.com/p/electromechanical--circuit-protection--tvs-diodes/sm6t39a-stmicroelectronics-1982446", "date": "2026-10-06" }
+    ], "notes": "Automotive code is SM6T39AY; prices are the SM6T39A sibling. Future $0.0707 is ~3x below DK/Arrow - treat with care." },
+  { "mpn": "PESD5V0S1BL-QYL", "family": "PESD5V0S1BL", "mfr": "Nexperia", "desc": "Bidirectional ESD protection diode, 5 V", "category": "fuse_tvs", "pkg": "DFN1006-2 (SOD882)", "aecq": true, "ecuRoles": ["I/O","sensor"], "observedMpn": "PESD5V0S1BL,315",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 10000, "price": 0.05305, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD5V0S1BL-315/1157465", "date": "2026-10-06" }
+    ], "notes": "-Q code exists (PESD5V0S1BL-QYL); price is the ,315 sibling. Backordered at DK." },
+  { "mpn": "BZX84-C5V1,215", "family": "BZX84-C5V1", "mfr": "Nexperia", "desc": "Zener diode 5.1 V 250 mW", "category": "fuse_tvs", "pkg": "SOT-23", "aecq": true, "ecuRoles": ["reference","I/O clamp"], "observedMpn": "BZX84-C5V1,215",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.02522, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BZX84-C5V1-215/763281", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 0.05, "currency": "AUD", "url": "https://au.mouser.com/ProductDetail/Nexperia/BZX84-C5V1215?qs=me8TqzrmIYVKCqOFbOtofg%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Mouser figure from the Australian site, assumed AUD." },
+  { "mpn": "SZMMSZ5231BT1G", "family": "MMSZ5231B", "mfr": "onsemi", "desc": "Zener diode 5.1 V 500 mW", "category": "fuse_tvs", "pkg": "SOD-123", "aecq": true, "ecuRoles": ["reference","I/O clamp"], "observedMpn": "SZMMSZ5231BT1G",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.07216, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/SZMMSZ5231BT1G/3063350", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 6000, "price": 0.06499, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/SZMMSZ5231BT1G/3063350", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "BAS21,215", "family": "BAS21", "mfr": "Nexperia", "desc": "High-voltage switching diode 200 V 200 mA", "category": "fuse_tvs", "pkg": "SOT-23", "aecq": true, "ecuRoles": ["general"], "observedMpn": "BAS21,215",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.02883, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BAS21-215/763202", "date": "2026-10-06" }
+    ], "notes": "Representative pick (Nexperia ,215, AEC-Q101). onsemi BAS21LT1G 3k at DK $0.02636 for reference." },
+  { "mpn": "BAV99,215", "family": "BAV99", "mfr": "Nexperia", "desc": "Dual series switching diode 100 V 215 mA", "category": "fuse_tvs", "pkg": "SOT-23", "aecq": true, "ecuRoles": ["general","I/O clamp"], "observedMpn": "BAV99,215",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.02382, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BAV99-215/763228", "date": "2026-10-06" },
+      { "distributor": "Future", "qty": 3000, "price": 0.0416, "currency": "USD", "url": "https://www.futureelectronics.com/p/discretes--diodes--switching/bav99-215-nexperia-3372703", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "BAT46WJ,115", "family": "BAT46", "mfr": "Nexperia", "desc": "Schottky barrier diode 100 V 250 mA", "category": "fuse_tvs", "pkg": "SOD-323F", "aecq": true, "ecuRoles": ["general"], "observedMpn": "BAT46WJ,115",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.05133, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BAT46WJ-115/2405998", "date": "2026-10-06" }
+    ], "notes": "Representative pick (Nexperia, AEC-Q101). ST BAT46ZFILM ref: DK 3k $0.04545, Arrow 3k $0.0377." },
+  { "mpn": "PMEG6030ELP-QX", "family": "PMEG6030ELP", "mfr": "Nexperia", "desc": "Schottky rectifier 60 V 3 A", "category": "fuse_tvs", "pkg": "SOD128 (CFP5)", "aecq": true, "ecuRoles": ["power input","reverse polarity"], "observedMpn": "PMEG6030ELP-QX",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.17658, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG6030ELP-QX/16629693", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 0.1766, "currency": "USD", "url": "https://www.findchips.com/search/pmeg6030elp", "date": "2026-10-06" }
+    ], "notes": "Mouser figure via aggregator snippet. PMEG6030ELPX sibling: DK $0.17988, Future $0.174 at 3k." },
+  { "mpn": "RB160MM-60TR", "family": "RB160M-60", "mfr": "Rohm", "desc": "Schottky barrier diode 60 V 1 A", "category": "fuse_tvs", "pkg": "SOD-123FL (PMDU)", "aecq": true, "ecuRoles": ["general"], "observedMpn": "RB160MM-60TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.1103, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/RB160MM-60TR/5001880", "date": "2026-10-06" },
+      { "distributor": "LCSC", "qty": 3000, "price": 0.0563, "currency": "USD", "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_ROHM-Semicon-RB160MM-60TR_C323858.html", "date": "2026-10-06" }
+    ], "notes": "RB160M-60TR is obsolete; RB160MM-60TR is the successor. AEC-Q101 status per Rohm not re-verified. Mouser 3k $0.106 seen without URL." },
+  { "mpn": "NRVBS340T3G", "family": "MBRS340", "mfr": "onsemi", "desc": "Schottky rectifier 40 V 3 A", "category": "fuse_tvs", "pkg": "SMC (DO-214AB)", "aecq": true, "ecuRoles": ["power input","reverse polarity"], "observedMpn": "MBRS340T3G",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 2500, "price": 0.25324, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/MBRS340T3G/918645", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 2500, "price": 0.261, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/onsemi/MBRS340T3G?qs=3JMERSakeboCr3wxBgfY3w%3D%3D", "date": "2026-10-06" }
+    ], "notes": "NRVB auto code not found; prices are the commercial MBRS340T3G sibling." },
+  { "mpn": "NRVBA340T3G", "family": "MBRA340", "mfr": "onsemi", "desc": "Schottky rectifier 40 V 3 A", "category": "fuse_tvs", "pkg": "SMA (DO-214AC)", "aecq": true, "ecuRoles": ["power input","reverse polarity"], "observedMpn": "NRVBA340T3G",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 5000, "price": 0.1818, "currency": "USD", "url": "https://octopart.com/nrvba340t3g-onsemi-22133726", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 5000, "price": 0.242, "currency": "USD", "url": "https://www.mouser.de/en/ProductDetail/onsemi/NRVBA340T3G?qs=lYuAOLy5nvbez2jPN1M99Q%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Snippet attribution weak: DK figure via aggregator; Mouser figure may be the MBRA340T3G page. Use with care." },
+  { "mpn": "STPS2H100AY", "family": "STPS2H100A", "mfr": "STMicroelectronics", "desc": "Schottky rectifier 100 V 2 A", "category": "fuse_tvs", "pkg": "SMA (DO-214AC)", "aecq": true, "ecuRoles": ["power input","reverse polarity"], "observedMpn": "STPS2H100AY",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 5000, "price": 0.10504, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STPS2H100AY/2612172", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 5000, "price": 0.123, "currency": "USD", "url": "https://www.mouser.com/en/ProductDetail/STMicroelectronics/STPS2H100AY?qs=CBOTe0%2BbgkaH%2BwaJWKQB%2Fw%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Y suffix = AEC-Q101. Commercial STPS2H100A DK 5k $0.11136." },
+  { "mpn": "S1MHE3_A/H", "family": "S1M", "mfr": "Vishay", "desc": "Standard rectifier 1000 V 1 A", "category": "fuse_tvs", "pkg": "SMA (DO-214AC)", "aecq": true, "ecuRoles": ["general"], "observedMpn": "S1MHE3_A/H",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1800, "price": 0.10932, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/S1MHE3-A-H/4770552", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 5400, "price": 0.09302, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/S1MHE3-A-H/4770552", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.11, "currency": "USD", "url": "https://www.digipart.com/part/S1MHE3_A%2FH", "date": "2026-10-06" }
+    ], "notes": "Representative pick: S1MHE3_A/H (HE3 auto; S1MHE3/61T obsolete). Mouser via aggregator snippet. Commercial S1M-E3/61T DK 1.8k $0.0634." },
+  { "mpn": "ES1DHE3_A/H", "family": "ES1D", "mfr": "Vishay", "desc": "Ultrafast rectifier 200 V 1 A", "category": "fuse_tvs", "pkg": "SMA (DO-214AC)", "aecq": true, "ecuRoles": ["general","gate drive"], "observedMpn": "ES1DHE3_A/H",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1800, "price": 0.16886, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/ES1DHE3-A-H/4743545", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 5400, "price": 0.14521, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/ES1DHE3-A-H/4743545", "date": "2026-10-06" }
+    ], "notes": "Representative pick (Vishay HE3 auto). Commercial ES1D-E3/61T: DK 1.8k $0.11766, Mouser 1.8k $0.084, Future $0.0401." },
+  { "mpn": "US1MHE3_A/H", "family": "US1M", "mfr": "Vishay", "desc": "Ultrafast rectifier 1000 V 1 A", "category": "fuse_tvs", "pkg": "SMA (DO-214AC)", "aecq": true, "ecuRoles": ["general"], "observedMpn": "US1MHE3_A/H",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1800, "price": 0.15403, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/vishay-semiconductor-diodes-division/US1MHE3_A-H/US1MHE3_A-HGICT-ND/4743587", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 5400, "price": 0.13212, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/vishay-semiconductor-diodes-division/US1MHE3_A-H/US1MHE3_A-HGICT-ND/4743587", "date": "2026-10-06" }
+    ], "notes": "Representative pick (Vishay HE3 auto). Commercial US1M-E3/61T: DK 1.8k $0.11794, Future 1.8k $0.038." },
+  { "mpn": "BSS84AKW,115", "family": "BSS84AKW", "mfr": "Nexperia", "desc": "P-channel MOSFET -50 V, ESD protected", "category": "fuse_tvs", "pkg": "SOT-323", "aecq": true, "ecuRoles": ["load switch","level shift"], "observedMpn": "BSS84AKW,115",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.03968, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BSS84AKW115/2763894", "date": "2026-10-06" },
+      { "distributor": "TME", "qty": 3000, "price": 0.04, "currency": "USD", "url": "https://www.tme.com/us/en-us/details/bss84akw.115/smd-p-channel-transistors/nexperia/bss84akw-115/", "date": "2026-10-06" },
+      { "distributor": "LCSC", "qty": 3000, "price": 0.0671, "currency": "USD", "url": "https://www.lcsc.com/product-detail/MOSFET_Nexperia_BSS84AKW-115_Nexperia-BSS84AKW-115_C179347.html", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "NX3008NBK,215", "family": "NX3008NBK", "mfr": "Nexperia", "desc": "N-channel trench MOSFET 30 V 350 mA", "category": "fuse_tvs", "pkg": "SOT-23", "aecq": true, "ecuRoles": ["level shift","small switch"], "observedMpn": "NX3008NBK,215",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.04208, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/NX3008NBK-215/2779967", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "PMV50ENEAR", "family": "PMV50ENEA", "mfr": "Nexperia", "desc": "N-channel trench MOSFET 30 V 3.9 A, AEC-Q101", "category": "fuse_tvs", "pkg": "SOT-23", "aecq": true, "ecuRoles": ["load switch","small switch"], "observedMpn": "PMV50ENEAR",
+    "observations": [
+      { "distributor": "Mouser", "qty": 3000, "price": 0.116, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Nexperia/PMV50ENEAR?qs=gH1BdSMZm8XmiYzQdZYiAw%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Search summary also quoted a conflicting Mouser 3k figure of $0.145; $0.116 is the product-page value. Care." },
+  { "mpn": "BSS138BKW,115", "family": "BSS138BKW", "mfr": "Nexperia", "desc": "N-channel MOSFET 60 V 320 mA, ESD protected", "category": "fuse_tvs", "pkg": "SOT-323", "aecq": true, "ecuRoles": ["level shift","small switch"], "observedMpn": "BSS138BKW,115",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.05511, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BSS138BKW-115/2779824", "date": "2026-10-06" },
+      { "distributor": "Newark", "qty": 3000, "price": 0.091, "currency": "USD", "url": "https://www.newark.com/nexperia/bss138bkw-115/mosfet-n-ch-60v-0-32a-sot323-reel/dp/86AK7297", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "2N7002BKW,115", "family": "2N7002BKW", "mfr": "Nexperia", "desc": "N-channel MOSFET 60 V 310 mA, ESD protected", "category": "fuse_tvs", "pkg": "SOT-323", "aecq": true, "ecuRoles": ["level shift","small switch"], "observedMpn": "2N7002BKW,115",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.04288, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/2N7002BKW115/2405959", "date": "2026-10-06" }
+    ], "notes": "" }
+] }

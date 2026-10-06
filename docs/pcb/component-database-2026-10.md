@@ -6,14 +6,15 @@
 
 ## 1. Result
 
-| | Before (1 Oct) | Round 1 | Round 2 | **Round 3** |
-|---|---|---|---|---|
-| Parts in the catalogue | 458 | 549 | 653 | **687** |
-| Priced from distributors | 77 | 183 | 303 | **340** |
-| Engineering estimates | 381 | 366 | 350 | 347 |
-| Researched entries carrying their raw observations and URLs | 0 | 107 | 228 | **265** |
-| Of those, priced by 2+ distributors | — | 24 | 88 | **118** |
-| Listed parts still without a distributor price | — | 254 | 129 | **92** |
+| | Before (1 Oct) | Round 1 | Round 2 | Round 3 | **Round 4** |
+|---|---|---|---|---|---|
+| Parts in the catalogue | 458 | 549 | 653 | 687 | **796** |
+| Priced from distributors | 77 | 183 | 303 | 340 | **450** |
+| Engineering estimates | 381 | 366 | 350 | 347 | 346, of which **60 now priced as a reviewed family member** |
+| Entries carrying raw observations and URLs | 0 | 107 | 228 | 265 | **398** |
+| Of those, priced by 2+ distributors | — | 24 | 88 | 118 | **160** |
+| Distributor prices with no URL (1 Oct pass) | 77 | 75 | 75 | 75 | **52** |
+| Listed parts still without a distributor price | — | 254 | 129 | 92 | 92 + 40 from the round-4 gap list |
 | Volume breaks per part | 1k / 10k / 100k | 1k / 10k / 100k / **200k / 300k** |
 | ECU map by powertrain | none | **38 ECUs × 6 powertrains**, 52 sources |
 
@@ -47,6 +48,58 @@ Round 2 priced 122 of the 222 queued parts searched (raw files: `calculator/scri
 - **Spreads between distributors.** Some parts show a wide gap between distributors, for example CAT24C512 at Digi-Key $0.63 against LCSC and Newark $0.25. The 1k price is the median; the observations are on the entry.
 - **Aggregator summaries.** Some prices were read from aggregator summaries (Findchips, Octopart, Digipart) that named the franchised distributor and its break. The URL is the aggregator page.
 - **SiC MOSFETs.** The Wolfspeed SiC MOSFETs (C3M0032120K $7.37 @120, $6.65 @510 at Digi-Key; Mouser agrees) are well below older SiC prices. They are kept as listed.
+
+### Round 4: the gap analysis, and a review of the existing prices
+
+**Gap analysis.** A list of 198 parts that automotive ECUs commonly use was checked against the catalogue, and 162 were missing. Six search groups covered them and priced 121. Some of these already had an entry that carried a 1 October price with no URL.
+
+| Group | Priced | Examples |
+|---|---|---|
+| Smart switches, SBCs, MOSFETs | 18 / 25 | TLE9461/94613, TLE9278, BTS70012, BTT6100, VNQ9080, TPS1H100/2H160/1HTC30/2HCS10, TPS4810, BTS3125, NCV8402; IPD50N04S4, IAUC60N04S6L, BUK7S1R0, SQJ844AEP |
+| Protection, discretes | 26 / 26 | NUP2105L, ESD2CAN24, TPD2E007, SM8S33A, SMBJ24CA, SMCJ36A, SM6T39A; BZX84, BAS21, BAV99, BAT46, PMEG6030, RB160M, STPS2H100, NRVBA/NRVBS340, S1M/ES1D/US1M (HE3); BSS84AKW, BSS138BKW, 2N7002BKW, NX3008NBK, PMV50ENEA |
+| Analog, logic, sensors | 18 / 28 | LM2904B, LMV358A, TLV3201, TLV7031, INA181/186, TL431, OPA2376/2333, TMP112/235, ADS7038, SN74LVC1G08, 74HC595-Q100, TXU0104, SN74LV4T125, TCA9539 |
+| Regulators, supervisors, drivers | 19 / 26 | TPS3702/3840/3430, TPS7B4250, TPS7A16, TLV767, TPS62A01, TPS629210, LMQ61460, LM5157, UCC27517A/27211A, SN6501, TPS61194, LP8864, TLC6C598 |
+| Magnetics, resistors | 23 / 27 | ACT45B/ACT1210 CAN chokes, WE-CNSW, BLM15/18 beads, XAL4020/5030, CLF7045, SRP7028A, IHLP-2525, VLS4012; CRCW/ERJ/AC/RK73 0402–0603, PAT0603, ERJ-PB3, CSS2H shunt |
+| Capacitors, crystals, relays, audio | 17 / 30 | EEE-FK, EEH-ZA/ZC hybrid polymer, GCM155/CL10B/CGA3E 100 nF; CSTNE resonators, ABM8AIG, ECS-160; CB1A relay; 0451 fuse; TAS6424, FDA803D, TDA7802; DS90UB927 |
+
+**Review of existing prices:**
+1. **Family keys.**
+   - **The problem:** 51 estimates named only by a family ("TC387", "LM74700", "BQ79616", "BTS7040") had a distributor-priced member in the catalogue and were far off it. For example:
+     - TPS65381: estimate £9.41 against £2.56 (3.7×);
+     - BTS7040: £1.53 against £0.59;
+     - LTC6813: £12.94 against £6.95;
+     - TC277: £21.18 against £12.56;
+     - DP83TC811: £2.00 against £3.90.
+   - **The fix:** `scripts/pcb-research/family-links.json` is now the reviewed list. It has 60 links, including 10 generic keys priced as a representative part:
+     - 0402 100 nF MLCC, 0402/0603 resistors, 0603 bead;
+     - automotive CMC, 33 µF hybrid polymer, 2512 shunt;
+     - LM2904, both relays.
+   - **How the linked keys behave:** they take the member's breaks and stay estimates. A BOM line that names only a family does not say which variant it is.
+   - **Left out on purpose:**
+     - CAT24C: the only member is 512 Kb, which is not representative.
+     - MT53E: the density is unknown.
+     - STM32H7: there are two different members.
+     - S32G274: its only member was broker-sourced.
+     - The 4×4 power inductor: the only member priced is Coilcraft's premium XAL4020, about 3.5× a typical part.
+   - **L9963** links to L9963E, the monitor, not L9963T, the transceiver.
+2. **Prices with no URL (from 1 October).** 24 were re-checked, and a URL-backed listing now replaces the old figure. Most moved by under 20%. The larger moves:
+   - G6K-2F-Y relay: £1.17 → £2.26. The old figure had leaned on LCSC.
+   - AWR1843ABGABLRQ1: £19.43 → £23.18.
+   - TLF35584: £2.49 → £3.01.
+   - UCC27211A: £1.29 → £0.87.
+   - W25Q128JV: £1.28 → £1.56.
+
+   MT25QL256 is marked DISPUTED: one reading was 2.6× below the catalogue.
+3. **Where a price may be read** (`PRICE_HOSTS`, rule 1).
+   - **The rule:** an observation counts only when its URL is the distributor's own site, or an aggregator that names the distributor and break (Findchips, Octopart, Digipart, TrustedParts). Broker storefronts that relist a Mouser row (OEMsTrade, omo-ic), datasheet sites and maker pages no longer count.
+   - **What it removed:** observations on AM2634, UCC5870, MC33771C and BQ79656.
+   - **Entries that left the catalogue:** three entries priced only that way (S32G274A, TLF35585, LM5122). None had replaced an estimate. The S32G274 family key went back to its original estimate.
+
+The round-4 audit file is `2026-10-06-r4/audit-exclusions.json`. It removes DLW43SH510XK2L, whose Mouser URL was a search link built by the researcher. Parts priced on a non-automotive code are marked `aecq: false` or say "sibling" in their source:
+- TPS2116, TPS2663, LM5069 and IPB015N04L;
+- MPZ1608 (commercial grade);
+- BLM15PX, priced on its SN1D sibling;
+- TPD2E007, SM6T39A, PESD5V0S1BL and NRVBS340, priced on their standard codes.
 
 ### Round 3: the remaining parts, and cross-checks
 
@@ -111,7 +164,7 @@ Every new entry carries its `observations` (distributor, quantity, price, curren
 
 Web search was the only route. Direct fetches of every distributor and manufacturer site (Digi-Key, Mouser, Octopart, LCSC, ti.com, st.com, nxp.com, infineon.com) are blocked by this environment's network policy. Web search allows 200 searches per turn, shared by all research agents. Both rounds ran out of searches.
 
-**92 listed parts still have no distributor price** (`calculator/scripts/pcb-research/queue.json`, each with the last result). All have now been searched. They fall into four groups:
+**92 listed parts from rounds 1–3, and 40 parts from the round-4 gap list (`round4GapNotPriced`), still have no distributor price** (`calculator/scripts/pcb-research/queue.json`, each with the last result). All have now been searched. They fall into four groups:
 - **No public distributor price (about 25).** These include:
   - Qualcomm SA8155P/8295P, Renesas R-Car, Mobileye;
   - Marvell 88Q2220 and Broadcom PHYs;
@@ -129,7 +182,7 @@ Web search was the only route. Direct fetches of every distributor and manufactu
 More web search will not close these: they need a Purchasing quote or a BOM-tool export (Digi-Key, Mouser or Arrow), imported with `scripts/pcb-catalogue-import.ts`, or a Nexar key.
 
 **Other limits:**
-- 222 of the 340 distributor-priced parts have one distributor behind them. They are real listings, not cross-checked.
+- 290 of the 450 distributor-priced parts have one distributor behind them, and 52 still carry the 1 October figure with no URL. They are real listings, not cross-checked.
 - Prices at 100k–300k a year are derived along the part's slope, not quoted. Contract prices at that volume are negotiated, and are usually lower again.
 
 **To finish (no code changes):**
