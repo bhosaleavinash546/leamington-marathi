@@ -4791,3 +4791,47 @@ now has a `currency` column:
 
 Gated by `tests/dashboard-kpis.test.mjs` and the HTTP integration test (a €
 case adds `10,000 × rate`, not 10,000).
+
+## 123. One validated chart palette; a single series is one colour
+
+Charts used to choose their own colours: about 15 Tailwind pastels across four
+files. Each bar of a single series got a different hue (green, amber and red
+for Low/Medium/High; purple, sky and emerald for the three levels), so colour
+implied a meaning it did not carry. Grids were dashed, figures were printed in
+series colours, and every file had its own tooltip.
+
+`src/lib/chart-palette.ts` (pure, tested) and `chart-theme.ts` (the hook) hold
+one palette for every chart: the dataviz skill's eight-hue categorical set.
+It was **validated against our card surfaces**, not the skill's default ones
+(`validate_palette.js`):
+
+| Theme | Surface | Result |
+|---|---|---|
+| dark | `#111827` | every check passes, every hue ≥ 3:1 |
+| light | `#FFFFFF` | every check passes; aqua, yellow and magenta are below 3:1 |
+
+Because three light-theme hues are below 3:1, every chart that uses them
+carries value labels or a legend with values. `components/charts/ChartKit`
+supplies the shared card, axes, solid hairline grid, tooltip and legend.
+
+The rules:
+- **A single series is one colour** (slot 1, the accent). The category is read
+  from the axis.
+- **Categorical slots follow the entity, not the rank.** Cost elements carry a
+  fixed `slot` in `COST_COMPONENTS`, so Material is blue even when a zero
+  element is filtered out.
+- **The ninth category is neutral grey,** never a generated hue. SG&A / Profit,
+  the non-manufacturing remainder, uses it. A long list folds into "Other"
+  (`foldOther`; vehicles show the top 4 plus Other).
+- **Part-of-whole shapes only for real wholes.** "Ideas by saving lever" was a
+  donut, but an idea carries several levers, so the slices overlapped. It is
+  now sorted bars, with a subtitle that says so. A one-vehicle donut is a
+  sentence instead.
+- **Marks.** Bars are at most 24 px wide with a 4 px rounded end. Lines are
+  2 px and straight, never smoothed, so no year is drawn above its value.
+  Pie slices are separated by a 2 px gap in the surface colour. Axis ticks
+  are round numbers (`niceTicks`) in the same money format as the labels.
+- **Text never wears a series colour.**
+
+Gated by `tests/chart-theme.test.mjs`: every Recharts file uses the theme, no
+chart file hard-codes a mark, grid or tooltip colour, and grids are solid.

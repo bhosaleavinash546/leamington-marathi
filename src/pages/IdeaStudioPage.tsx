@@ -1,3 +1,5 @@
+import { useChartTheme, slotColor } from '../lib/chart-theme';
+import { ChartTooltip } from '../components/charts/ChartKit';
 import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -16,7 +18,7 @@ type Mode = 'cad' | 'image';
 
 const TOLERANCE = ['Standard', 'Tight (precision)', 'Loose (non-critical)'];
 
-type CostSlice = { name: string; value: number; pct: number; color: string };
+type CostSlice = { name: string; value: number; pct: number; slot: number | null };
 
 // Map a mesh process guess (feature engine) to a should-cost catalogue process name.
 function mapProcess(guess: string, catalogue: string[]): string {
@@ -31,6 +33,7 @@ function mapProcess(guess: string, catalogue: string[]): string {
 }
 
 export default function IdeaStudioPage() {
+  const ct = useChartTheme();
   const aiAvailable = useAiAvailable();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -130,7 +133,7 @@ export default function IdeaStudioPage() {
       if (r.ok) {
         const d = await r.json();
         const slices: CostSlice[] = COST_COMPONENTS
-          .flatMap(m => { const c = d.breakdown?.[m.key]; const v = Number(c?.value) || 0; return c && v > 0 ? [{ name: m.label, value: v, pct: Number(c.pct) || 0, color: m.hex }] : []; });
+          .flatMap(m => { const c = d.breakdown?.[m.key]; const v = Number(c?.value) || 0; return c && v > 0 ? [{ name: m.label, value: v, pct: Number(c.pct) || 0, slot: m.slot }] : []; });
         setBaseline({ total: d.totalShouldCost, matPct: d.breakdown?.material?.pct ?? 0, p10: d.simulation?.p10, p90: d.simulation?.p90, symbol: d.symbol || '', breakdown: slices });
         // Let the user know if we interpreted their free text as a nearest catalogue match.
         if ((d.materialApprox && d.resolvedMaterial) || (d.processApprox && d.resolvedProcess)) {
@@ -320,13 +323,10 @@ export default function IdeaStudioPage() {
                   <div className="relative w-[148px] h-[148px] flex-shrink-0">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie data={baseline.breakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={2} stroke="none">
-                          {baseline.breakdown.map((e, i) => <Cell key={i} fill={e.color} />)}
+                        <Pie data={baseline.breakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={0} stroke={ct.surface} strokeWidth={2} isAnimationActive={false}>
+                          {baseline.breakdown.map(e => <Cell key={e.name} fill={slotColor(e.slot, ct)} />)}
                         </Pie>
-                        <Tooltip
-                          contentStyle={{ background: 'rgb(var(--navy-800))', border: '1px solid var(--hairline-strong)', borderRadius: 8, fontSize: 12, color: 'rgb(var(--navy-300))' }}
-                          itemStyle={{ color: '#e2e8f0' }} labelStyle={{ color: '#e2e8f0' }}
-                          formatter={(v, n) => [`${baseline.symbol}${Number(v).toFixed(2)}`, n as string]} />
+                        <Tooltip content={<ChartTooltip t={ct} format={v => `${baseline.symbol}${v.toFixed(2)}`} />} />
                       </PieChart>
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -337,7 +337,7 @@ export default function IdeaStudioPage() {
                   <div className="flex-1 space-y-1.5">
                     {baseline.breakdown.map((e, i) => (
                       <div key={i} className="flex items-center gap-2 text-xs">
-                        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: e.color }} />
+                        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: slotColor(e.slot, ct) }} />
                         <span className="text-slate-300 flex-1 truncate">{e.name}</span>
                         <span className="text-slate-400 tabular-nums w-9 text-right">{e.pct}%</span>
                         <span className="text-slate-500 tabular-nums w-[68px] text-right">{baseline.symbol}{e.value.toFixed(2)}</span>

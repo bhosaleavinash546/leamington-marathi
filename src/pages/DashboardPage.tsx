@@ -10,9 +10,10 @@ import {
   ChevronRight, ArrowRight, Sparkles, Lightbulb, CheckCircle, Trash2, Share2,
   Zap, Calculator, Box, Target, Store, ShieldCheck, GitMerge,
 } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, LabelList } from 'recharts';
+import { useChartTheme, foldOther, categoricalFor, niceTicks } from '../lib/chart-theme';
+import { ChartCard, ChartTooltip, ChartLegend, axisProps, categoryAxisProps, gridProps, valueLabelStyle, BAR_MAX, RADIUS_H, RADIUS_V } from '../components/charts/ChartKit';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
 import { TOOL_GROUPS } from '../config/tools';
@@ -53,8 +54,6 @@ interface ServerProject {
 }
 
 // ── helpers shared between PipelineKpiSection and module ──────────────────────
-const GATE_COLORS: Record<string, string> = { G0: '#94a3b8', G1: '#fbbf24', G2: '#60a5fa', G3: '#34d399' };
-const PIE_COLORS = ['#f59e0b', '#60a5fa', '#34d399', '#a78bfa', '#fb923c'];
 const GATE_DOT: Record<string, string> = { G0: 'bg-slate-400', G1: 'bg-amber-400', G2: 'bg-blue-400', G3: 'bg-green-400' };
 
 function fmtM(n: number) {   // GBP — the app-wide display currency
@@ -65,131 +64,122 @@ function fmtM(n: number) {   // GBP — the app-wide display currency
 }
 
 function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
-  // Chart chrome must follow the theme: a white-alpha grid line and a
-  // hardcoded #0f1629 tooltip are invisible or wrong on a light page.
-  const { isDark } = useTheme();
+  // One chart theme (lib/chart-theme): single-series charts are one colour,
+  // the vehicle split uses categorical slots in fixed order (top 4 + Other),
+  // and every surface follows the theme (DECISIONS 123).
+  const t = useChartTheme();
   const gateData = ['G0', 'G1', 'G2', 'G3'].map((g) => ({
     name: g,
-    saving: Math.round((kpi.gateSavings[g] || 0) / 1000),
+    value: Math.round((kpi.gateSavings[g] || 0) / 1000),
     count: kpi.gateCount[g] || 0,
-    fill: GATE_COLORS[g],
   }));
-  const vehicleData = Object.entries(kpi.vehicleSavings)
-    .map(([name, value]) => ({ name, value: Math.round(value / 1000) }))
-    .sort((a, b) => b.value - a.value);
+  const vehicleData = foldOther(Object.entries(kpi.vehicleSavings).map(([name, value]) => ({ name, value: Math.round(value / 1000) })), 5);
+  const vehicleColors = categoricalFor(vehicleData.length, t);
+  const vehicleTotal = vehicleData.reduce((s, v) => s + v.value, 0);
   const commData = Object.entries(kpi.commoditySavings)
-    .map(([name, value]) => ({
-      name: name.length > 16 ? name.slice(0, 14) + '…' : name,
-      saving: Math.round(value / 1000),
-    }))
-    .sort((a, b) => b.saving - a.saving)
+    .map(([name, value]) => ({ name: name.length > 16 ? name.slice(0, 14) + '…' : name, value: Math.round(value / 1000) }))
+    .sort((a, b) => b.value - a.value)
     .slice(0, 8);
   const yearData = Object.entries(kpi.yearTimeline)
-    .map(([year, value]) => ({ year, saving: Math.round(value / 1000) }))
-    .sort((a, b) => Number(a.year) - Number(b.year));
+    .map(([year, value]) => ({ name: year, value: Math.round(value / 1000) }))
+    .sort((a, b) => Number(a.name) - Number(b.name));
+  const money = (v: number) => fmtM(v * 1000);
+  const ticksFor = (d: Array<{ value: number }>) => { const tk = niceTicks(Math.max(0, ...d.map(x => x.value))); return { ticks: tk, domain: [0, tk[tk.length - 1]] as [number, number] }; };
+  const tip = (extra?: (row?: Record<string, unknown>) => string) => (
+    <Tooltip cursor={{ fill: t.cursor }} content={<ChartTooltip t={t} format={(v, row) => `${money(v)}${extra ? extra(row) : ''}`} />} />
+  );
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <GitMerge size={18} className="text-violet-400" />
-          <h2 className="text-white font-bold text-lg">Idea Pipeline KPIs</h2>
-          <span className="px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/25 text-violet-300 text-xs">{kpi.totalCases} ideas</span>
+          <GitMerge size={18} className="text-slate-400" aria-hidden="true" />
+          <h2 className="text-white font-semibold text-lg">Pipeline</h2>
+          <span className="px-2 py-0.5 rounded-full bg-tint border border-hairline text-slate-400 text-xs">{kpi.totalCases} business case{kpi.totalCases === 1 ? '' : 's'}</span>
         </div>
-        <Link to="/pipeline" className="flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm transition-colors">
-          View Pipeline <ChevronRight size={14} />
+        <Link to="/pipeline" className="flex items-center gap-1 text-gold-400 hover:text-gold-300 text-sm transition-colors">
+          View pipeline <ChevronRight size={14} aria-hidden="true" />
         </Link>
       </div>
 
-      {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (£k)</h3>
-          <ResponsiveContainer width="100%" height={160}>
-            <BarChart data={gateData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(17,24,39,0.08)"} />
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
-                labelStyle={{ color: '#fff' }}
-                formatter={(v: any, _: any, entry: any) => [`${fmtM((Number(v) || 0) * 1000)} (${entry?.payload?.count ?? 0} ideas)`, 'Savings']}
-              />
-              <Bar dataKey="saving" radius={[4, 4, 0, 0]}>
-                {gateData.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
+        <ChartCard title="Annual saving by gate" subtitle="Per year · G0 idea → G3 confirmed">
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={gateData} margin={{ top: 20, right: 4, bottom: 0, left: 0 }} barCategoryGap="30%">
+              <CartesianGrid {...gridProps(t)} />
+              <XAxis dataKey="name" {...categoryAxisProps(t)} />
+              <YAxis {...axisProps(t)} {...ticksFor(gateData)} tickFormatter={(v: number) => money(v)} width={52} />
+              {tip(row => ` · ${row?.count ?? 0} case${row?.count === 1 ? '' : 's'}`)}
+              <Bar dataKey="value" name="Saving" fill={t.accent} radius={RADIUS_V} maxBarSize={BAR_MAX} isAnimationActive={false}>
+                <LabelList dataKey="value" position="top" style={valueLabelStyle(t)} formatter={(v: unknown) => (Number(v) ? money(Number(v)) : '')} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Vehicle-wise Annual Saving</h3>
-          {vehicleData.length > 0 ? (
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={140} height={140}>
-                <PieChart>
-                  <Pie data={vehicleData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} dataKey="value" paddingAngle={2}>
-                    {vehicleData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
-                    formatter={(v: any) => [`${fmtM((Number(v) || 0) * 1000)}`, 'Annual saving']}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-1.5">
-                {vehicleData.map((v, i) => (
-                  <div key={v.name} className="flex items-center gap-2 text-xs">
-                    <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                    <span className="text-slate-300">{v.name}</span>
-                    <span className="text-slate-500 ml-auto">{fmtM(v.value * 1000)}</span>
-                  </div>
-                ))}
+        <ChartCard title="Annual saving by vehicle" subtitle={vehicleTotal ? `${money(vehicleTotal)} per year across ${Object.keys(kpi.vehicleSavings).length} vehicle${Object.keys(kpi.vehicleSavings).length === 1 ? '' : 's'}` : undefined}>
+          {vehicleData.length === 1 ? (
+            // One vehicle: a full ring says nothing a sentence does not.
+            <div className="py-6">
+              <div className="text-[28px] font-semibold leading-none text-white">{money(vehicleData[0].value)}<span className="text-sm font-medium text-slate-500"> /yr</span></div>
+              <p className="text-sm text-slate-400 mt-2">All from <span className="text-slate-200">{vehicleData[0].name}</span>. Add a second vehicle to a business case to see the split.</p>
+            </div>
+          ) : vehicleData.length > 0 ? (
+            <div className="flex items-center gap-5">
+              <div className="shrink-0" style={{ width: 150, height: 150 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    {/* 2 px surface gap between slices (stroke in the card colour), no padding angle. */}
+                    <Pie data={vehicleData} cx="50%" cy="50%" innerRadius={46} outerRadius={70} dataKey="value" nameKey="name" paddingAngle={0} stroke={t.surface} strokeWidth={2} isAnimationActive={false}>
+                      {vehicleData.map((v, i) => <Cell key={v.name} fill={vehicleColors[i]} />)}
+                    </Pie>
+                    <Tooltip content={<ChartTooltip t={t} format={v => `${money(v)} · ${vehicleTotal ? Math.round((v / vehicleTotal) * 100) : 0}%`} />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 min-w-0">
+                <ChartLegend items={vehicleData.map((v, i) => ({ name: v.name, color: vehicleColors[i], value: `${money(v.value)} · ${vehicleTotal ? Math.round((v.value / vehicleTotal) * 100) : 0}%` }))} />
               </div>
             </div>
           ) : <p className="text-slate-500 text-sm">No vehicle data yet.</p>}
-        </div>
+        </ChartCard>
       </div>
 
-      {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Commodity-wise (£k)</h3>
+        <ChartCard title="By commodity" subtitle="Per year, top 8">
           {commData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={commData} layout="vertical" margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} width={80} />
-                <Tooltip
-                  contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
-                  formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Saving']}
-                />
-                <Bar dataKey="saving" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+            <ResponsiveContainer width="100%" height={Math.max(120, commData.length * 30)}>
+              <BarChart data={commData} layout="vertical" margin={{ top: 0, right: 44, bottom: 0, left: 0 }} barCategoryGap="25%">
+                <CartesianGrid {...gridProps(t, false)} />
+                <XAxis type="number" {...axisProps(t)} {...ticksFor(commData)} tickFormatter={(v: number) => money(v)} />
+                <YAxis type="category" dataKey="name" {...categoryAxisProps(t)} axisLine={false} width={112} />
+                {tip()}
+                <Bar dataKey="value" name="Saving" fill={t.accent} radius={RADIUS_H} maxBarSize={18} isAnimationActive={false}>
+                  <LabelList dataKey="value" position="right" style={valueLabelStyle(t)} formatter={(v: unknown) => money(Number(v))} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : <p className="text-slate-500 text-sm">No commodity data yet.</p>}
-        </div>
+        </ChartCard>
 
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Savings Timeline (£k)</h3>
+        <ChartCard title="By implementation year" subtitle="Per year, by the year each case lands">
           {yearData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={yearData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(17,24,39,0.08)"} />
-                <XAxis dataKey="year" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={isDark ? { background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 } : { background: '#ffffff', border: '1px solid rgba(17,24,39,0.12)', borderRadius: 8, color: '#111827' }}
-                  formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Annual saving']}
-                />
-                <Bar dataKey="saving" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+              <BarChart data={yearData} margin={{ top: 20, right: 4, bottom: 0, left: 0 }} barCategoryGap="30%">
+                <CartesianGrid {...gridProps(t)} />
+                <XAxis dataKey="name" {...categoryAxisProps(t)} />
+                <YAxis {...axisProps(t)} {...ticksFor(yearData)} tickFormatter={(v: number) => money(v)} width={52} />
+                {tip()}
+                <Bar dataKey="value" name="Saving" fill={t.accent} radius={RADIUS_V} maxBarSize={BAR_MAX} isAnimationActive={false}>
+                  <LabelList dataKey="value" position="top" style={valueLabelStyle(t)} formatter={(v: unknown) => (Number(v) ? money(Number(v)) : '')} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : <p className="text-slate-500 text-sm">No timeline data yet.</p>}
-        </div>
+        </ChartCard>
 
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Top Ideas by Saving</h3>
+        <div className="bg-navy-900 border border-hairline rounded-2xl p-5 lg:col-span-1 shadow-card">
+          <h3 className="text-white font-semibold text-sm mb-4">Top ideas by saving</h3>
           <div className="space-y-2">
             {kpi.topIdeas.slice(0, 6).map((idea, i) => (
               <div key={idea.id} className="flex items-center gap-2.5">
@@ -199,7 +189,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
                   <p className="text-white text-xs font-medium truncate">{idea.ideaTitle}</p>
                   <p className="text-slate-500 text-xs">{idea.ideaNumber}</p>
                 </div>
-                <span className="text-gold-400 text-xs font-bold flex-shrink-0">{fmtM(idea.totalAnnualSaving)}</span>
+                <span className="font-mono text-slate-200 text-xs font-semibold flex-shrink-0">{fmtM(idea.totalAnnualSaving)}</span>
               </div>
             ))}
             {kpi.topIdeas.length === 0 && <p className="text-slate-500 text-sm">No ideas yet.</p>}

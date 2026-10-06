@@ -43,8 +43,12 @@ if (process.env.UX_SEED === 'history') {
   const auth = { 'content-type': 'application/json', authorization: `Bearer ${su.token}` };
   const r = JSON.parse(RESULT);
   await fetch(BASE + '/api/projects', { method: 'POST', headers: auth, body: JSON.stringify({ ...r, systemName: 'Electric Drive Unit', subassemblyName: 'EDU housing', generatedAt: new Date().toISOString() }) });
-  for (const [ideaTitle, gate, savingPerPart] of [['Consolidate 3-part housing into one HPDC water-jacket', 'G3', 4.2], ['Grain-boundary-diffused NdFeB magnets', 'G1', 6.5]]) {
-    await fetch(BASE + '/api/business-cases', { method: 'POST', headers: auth, body: JSON.stringify({ ideaTitle, gate, savingPerPart, commodityName: 'Electric Drive', vehicleData: [{ model: 'Premium SUV', volume: 120000, applicablePct: 100 }] }) });
+  const cases = [
+    ['Consolidate 3-part housing into one HPDC water-jacket', 'G3', 4.2, 'Electric Drive', [{ model: 'Premium SUV', volume: 120000, applicablePct: 100 }]],
+    ['Grain-boundary-diffused NdFeB magnets', 'G1', 6.5, 'Electric Drive', [{ model: 'Premium SUV', volume: 120000, applicablePct: 100 }, { model: 'Compact SUV', volume: 80000, applicablePct: 100 }]],
+  ];
+  for (const [ideaTitle, gate, savingPerPart, commodityName, vehicleData] of cases) {
+    await fetch(BASE + '/api/business-cases', { method: 'POST', headers: auth, body: JSON.stringify({ ideaTitle, gate, savingPerPart, commodityName, vehicleData }) });
   }
 }
 const launch = () => chromium.launch({ executablePath: CHROME, args: ['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });

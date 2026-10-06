@@ -1,3 +1,4 @@
+import { useChartTheme, slotColor } from '../lib/chart-theme';
 import { useAiAvailable } from '../hooks/useAiAvailable';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -68,7 +69,7 @@ interface CostDownResult {
   note: string;
 }
 
-const BREAKDOWN_META = COST_COMPONENTS.map(c => ({ key: c.key, label: c.label, color: c.text, bar: c.bar }));
+const BREAKDOWN_META = COST_COMPONENTS.map(c => ({ key: c.key, label: c.label, slot: c.slot }));
 
 // Downstream (conversion-only) operations offered as route steps — kept out of
 // the primary-process dropdown, selectable as chips instead.
@@ -78,6 +79,7 @@ const SECONDARY_OPS = [
 ];
 
 export default function ShouldCostPage() {
+  const ct = useChartTheme();
   const aiAvailable = useAiAvailable();
   const { token } = useAuth();
   const [materials, setMaterials] = useState<string[]>(FALLBACK_MATERIALS);
@@ -474,11 +476,13 @@ export default function ShouldCostPage() {
                     const c = result.breakdown[m.key];
                     return (
                       <div key={m.key} className="flex items-center gap-3">
-                        <span className="text-xs text-slate-400 w-28 flex-shrink-0">{m.label}</span>
-                        <div className="flex-1 h-4 rounded bg-navy-800 overflow-hidden">
-                          <div className={`h-full ${m.bar}`} style={{ width: `${Math.max(1, c.pct)}%` }} />
+                        <span className="flex items-center gap-2 text-xs text-slate-400 w-32 flex-shrink-0">
+                          <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: slotColor(m.slot, ct) }} aria-hidden="true" />{m.label}
+                        </span>
+                        <div className="flex-1 h-2.5 rounded-full bg-tint-strong overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${Math.max(1, c.pct)}%`, background: slotColor(m.slot, ct) }} />
                         </div>
-                        <span className={`text-xs font-semibold w-20 text-right ${m.color}`}>{result.symbol || result.currency}{c.value.toFixed(2)}</span>
+                        <span className="font-mono text-xs font-semibold w-20 text-right text-slate-200">{result.symbol || result.currency}{c.value.toFixed(2)}</span>
                         <span className="text-2xs text-slate-500 w-10 text-right">{c.pct}%</span>
                       </div>
                     );
@@ -555,11 +559,11 @@ export default function ShouldCostPage() {
                         const max = Math.max(...result.volumeCurve!.map(p => p.unitCost));
                         return result.volumeCurve!.map(p => (
                           <div key={p.volume} className="flex items-center gap-3">
-                            <span className="text-2xs text-slate-500 w-16 text-right tabular-nums">{p.volume.toLocaleString()}</span>
-                            <div className="flex-1 h-3.5 rounded bg-navy-800 overflow-hidden">
-                              <div className="h-full bg-teal-500/70" style={{ width: `${max > 0 ? (p.unitCost / max) * 100 : 0}%` }} />
+                            <span className="font-mono text-2xs text-slate-500 w-16 text-right">{p.volume.toLocaleString()}</span>
+                            <div className="flex-1 h-2.5 rounded-full bg-tint-strong overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${max > 0 ? (p.unitCost / max) * 100 : 0}%`, background: ct.accent }} />
                             </div>
-                            <span className="text-2xs text-teal-300 font-semibold w-20 text-right tabular-nums">{p.unitCostLabel}</span>
+                            <span className="font-mono text-xs text-slate-200 font-semibold w-20 text-right">{p.unitCostLabel}</span>
                           </div>
                         ));
                       })()}

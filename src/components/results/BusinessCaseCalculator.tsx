@@ -1,3 +1,5 @@
+import { useChartTheme } from '../../lib/chart-theme';
+import { ChartTooltip, axisProps, categoryAxisProps, gridProps } from '../charts/ChartKit';
 import { useState, useMemo } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -8,7 +10,6 @@ import {
   Calculator, TrendingDown, TrendingUp, DollarSign, Clock, Target,
   Percent, Package, Factory, TestTube, Wrench, ChevronDown, ChevronUp, Info,
 } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
 
 function fmt(n: number, decimals = 0): string {
   if (!isFinite(n) || isNaN(n)) return '—';
@@ -104,23 +105,7 @@ function KPICard({ label, value, sub, color = 'text-white', icon: Icon, positive
   );
 }
 
-function CustomTooltip({ active, payload, label, isDark }: any) {
-  if (!active || !payload?.length) return null;
-  const bg = isDark ? 'bg-navy-800 border-white/15' : 'bg-white border-slate-200';
-  const txt = isDark ? 'text-white' : 'text-slate-900';
-  const neg = payload[0]?.value < 0;
-  return (
-    <div className={`${bg} ${txt} border rounded-xl px-3 py-2 shadow-xl text-xs`}>
-      <p className="text-slate-400 mb-1">Year {label}</p>
-      <p className={`font-bold ${neg ? 'text-red-400' : 'text-green-400'}`}>
-        Cumulative: {fmt(payload[0]?.value ?? 0)}
-      </p>
-    </div>
-  );
-}
-
 export default function BusinessCaseCalculator() {
-  const { isDark } = useTheme();
   const [open, setOpen] = useState(false);
 
   // Cost parameters
@@ -181,8 +166,7 @@ export default function BusinessCaseCalculator() {
     };
   }, [savingPerPart, partsPerVehicle, annualVolume, applicability, nreInvestment, toolingCost, tvCost, prototypeCost, discountRate]);
 
-  const axisColor = isDark ? '#475569' : '#94a3b8';
-  const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+  const ct = useChartTheme();
 
   return (
     <div className="mb-8">
@@ -383,28 +367,20 @@ export default function BusinessCaseCalculator() {
                 <div>
                   <h3 className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-3">Cumulative Cash Flow (5-Year)</h3>
                   <ResponsiveContainer width="100%" height={170}>
-                    <AreaChart data={calc.cashFlowData} margin={{ top: 5, right: 5, left: 5, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="cfPositive" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#4ade80" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#4ade80" stopOpacity={0.02} />
-                        </linearGradient>
-                        <linearGradient id="cfNegative" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f87171" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#f87171" stopOpacity={0.02} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                      <XAxis dataKey="year" tickFormatter={v => `Yr ${v}`} tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} />
-                      <YAxis tickFormatter={v => fmt(v)} tick={{ fill: axisColor, fontSize: 11 }} axisLine={false} tickLine={false} width={55} />
-                      <ReferenceLine y={0} stroke={isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="4 4" />
-                      <Tooltip content={<CustomTooltip isDark={isDark} />} />
+                    <AreaChart data={calc.cashFlowData} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
+                      {/* One series: the accent line, a ~10% wash, a solid zero
+                          baseline, a straight (not smoothed) path so a year is
+                          never drawn above its value, and ringed markers. */}
+                      <CartesianGrid {...gridProps(ct)} />
+                      <XAxis dataKey="year" tickFormatter={v => `Yr ${v}`} {...categoryAxisProps(ct)} axisLine={false} />
+                      <YAxis tickFormatter={v => fmt(v)} {...axisProps(ct)} width={60} />
+                      <ReferenceLine y={0} stroke={ct.baseline} strokeWidth={1} />
+                      <Tooltip cursor={{ stroke: ct.baseline, strokeWidth: 1 }} content={<ChartTooltip t={ct} format={v => fmt(v)} />} />
                       <Area
-                        type="monotone" dataKey="cumulative"
-                        stroke={calc.net5yr >= 0 ? '#4ade80' : '#f87171'}
-                        strokeWidth={2}
-                        fill={calc.net5yr >= 0 ? 'url(#cfPositive)' : 'url(#cfNegative)'}
-                        dot={{ fill: calc.net5yr >= 0 ? '#4ade80' : '#f87171', r: 3 }}
+                        type="linear" dataKey="cumulative" name="Cumulative cash"
+                        stroke={ct.accent} strokeWidth={2} fill={ct.wash} isAnimationActive={false}
+                        dot={{ r: 4, fill: ct.accent, stroke: ct.surface, strokeWidth: 2 }}
+                        activeDot={{ r: 5, fill: ct.accent, stroke: ct.surface, strokeWidth: 2 }}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
