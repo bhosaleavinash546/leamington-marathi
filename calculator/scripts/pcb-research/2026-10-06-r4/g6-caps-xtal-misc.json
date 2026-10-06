@@ -1,0 +1,754 @@
+{
+ "domain": "r4-caps-xtal-misc",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "EEE-FK1H100P",
+   "family": "EEE-FK",
+   "mfr": "Panasonic",
+   "desc": "Al electrolytic SMD 10uF 50V, FK series",
+   "category": "through_hole",
+   "pkg": "SMD can D6.3",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "infotainment",
+    "power"
+   ],
+   "observedMpn": "EEE-FK1H100P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.17304,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/EEE-FK1H100P/765976",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.1366,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/EEE-FK1H100P/765976",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.129,
+     "currency": "USD",
+     "url": "https://mouser.com/ProductDetail/Panasonic/EEE-FK1H100P?qs=qE6bgDGEOCvem0jOvVm3BQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser also 2k $0.120, 5k $0.113, 10k $0.112."
+  },
+  {
+   "mpn": "EEE-FK1V101P",
+   "family": "EEE-FK",
+   "mfr": "Panasonic",
+   "desc": "Al electrolytic SMD 100uF 35V, FK series",
+   "category": "through_hole",
+   "pkg": "SMD can D8",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "infotainment",
+    "power"
+   ],
+   "observedMpn": "EEE-FK1V101P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.27485,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/EEE-FK1V101P/766004",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser snippet gave only 500+ $0.385; not recorded (break below 1k, unconfirmed)."
+  },
+  {
+   "mpn": "EEH-ZA1V330P",
+   "family": "EEH-ZA",
+   "mfr": "Panasonic",
+   "desc": "Hybrid polymer Al 33uF 35V 60mOhm, ZA series",
+   "category": "through_hole",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power",
+    "ADAS"
+   ],
+   "observedMpn": "EEH-ZA1V330P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.2809,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/EEH-ZA1V330P/10292377",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Snippet gave only qty-1 $1.10 and 10k $0.2809; no 1k break."
+  },
+  {
+   "mpn": "EEH-ZC1V101P",
+   "family": "EEH-ZC",
+   "mfr": "Panasonic",
+   "desc": "Hybrid polymer Al 100uF 35V 27mOhm, 125C ZC series",
+   "category": "through_hole",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power",
+    "ADAS",
+    "inverter"
+   ],
+   "observedMpn": "EEH-ZC1V101P",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.37567,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/EEH-ZC1V101P/10292389",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 0.32,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Panasonic/EEH-ZC1V101P?qs=uwxL4vQweFMWEMDV/WfbBQ%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "UCZ1H101MCL1GS",
+   "family": "UCZ",
+   "mfr": "Nichicon",
+   "desc": "Al electrolytic SMD 100uF 50V, UCZ 125C automotive",
+   "category": "through_hole",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power",
+    "body"
+   ],
+   "observedMpn": "UCZ1H101MCL1GS",
+   "observations": [],
+   "notes": "No UCZ1H101MCL1GS price found; search returned UCM1H101MCL1GS (different series) - not used."
+  },
+  {
+   "mpn": "875105244",
+   "family": "WCAP-ASLI",
+   "mfr": "Wurth Elektronik",
+   "desc": "Al electrolytic SMD (WCAP-AS5H/ASLI)",
+   "category": "through_hole",
+   "pkg": "SMD can",
+   "aecq": null,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "875105244",
+   "observations": [],
+   "notes": "No distributor price in search results. Value/series not confirmed."
+  },
+  {
+   "mpn": "T598D107M010ATE040",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Tantalum polymer 100uF 10V 40mOhm D case, automotive",
+   "category": "through_hole",
+   "pkg": "D (7343-31)",
+   "aecq": true,
+   "ecuRoles": [
+    "power",
+    "ADAS"
+   ],
+   "observedMpn": "T598D107M010ATE040",
+   "observations": [],
+   "notes": "Only Arrow price $0.5737 with no stated quantity break (25 in stock) - not recorded."
+  },
+  {
+   "mpn": "TPSD107K016R0080",
+   "family": "TPS",
+   "mfr": "KYOCERA AVX",
+   "desc": "Tantalum MnO2 100uF 16V 80mOhm D case",
+   "category": "through_hole",
+   "pkg": "D (7343-31)",
+   "aecq": null,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "TPSD107K016R0080",
+   "observations": [],
+   "notes": "Exact code not found; only TPSD107K016R0125V (different ESR) seen - not used. TPS is not the AVX automotive (TAJ/TRJ auto) line - verify AEC-Q."
+  },
+  {
+   "mpn": "GRT188R71H104KE13D",
+   "family": "GRT",
+   "mfr": "Murata",
+   "desc": "MLCC 0.1uF 50V X7R 0603, GRT AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all"
+   ],
+   "observedMpn": "GRT188R71H104KE13D",
+   "observations": [],
+   "notes": "No price in search results."
+  },
+  {
+   "mpn": "GCM155R71H104KE02D",
+   "family": "GCM",
+   "mfr": "Murata",
+   "desc": "MLCC 0.1uF 50V X7R 0402, GCM AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "all"
+   ],
+   "observedMpn": "GCM155R71H104KE02D",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 10000,
+     "price": 0.006,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Murata-Electronics/GCM155R71H104KE02D?qs=hNud%2FORuBR2sLZsqfoz4Fw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00808,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM155R71H104KE02D/4903704",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Reel 10k. Avnet $0.00523, LCSC $0.002, Newark $0.013 also seen but break not stated - not recorded."
+  },
+  {
+   "mpn": "CGA3E2X7R1H104K080AA",
+   "family": "CGA3",
+   "mfr": "TDK",
+   "desc": "MLCC 0.1uF 50V X7R 0603, CGA AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "all"
+   ],
+   "observedMpn": "CGA3E2X7R1H104K080AA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.01366,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk/CGA3E2X7R1H104K080AA/2443144",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.0118,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk/CGA3E2X7R1H104K080AA/2443144",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser 1k $0.028 / reel 4k $0.019 seen on a page that may be the K080AE sibling - not recorded."
+  },
+  {
+   "mpn": "CL10B104KB8WPNC",
+   "family": "CL10",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 0.1uF 50V X7R 0603",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "all"
+   ],
+   "observedMpn": "CL10B104KB8WPNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 12000,
+     "price": 0.01188,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/samsung-electro-mechanics-america-inc/CL10B104KB8WPNC/1276-6854-1-ND/5961713",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 0.012,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/cl10b104kb",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 100000,
+     "price": 0.0036,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL10B104KB8WPNC_C307348.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Listed code is the general-purpose (WPNC) grade, not Samsung's AEC-Q200 code. Mouser URL not in results (search page used). DigiKey 40k $0.01039."
+  },
+  {
+   "mpn": "CSTNE16M0V530000R0",
+   "family": "CSTNE",
+   "mfr": "Murata",
+   "desc": "Ceramic resonator 16 MHz, built-in 15pF, CSTNE",
+   "category": "crystal_osc",
+   "pkg": "SMD 3.2x1.3",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU clock"
+   ],
+   "observedMpn": "CSTNE16M0V530000R0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.1753,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/CSTNE16M0V530000R0/8747729",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "AEC-Q200 status of the 0000 (vs C000) code not confirmed in search."
+  },
+  {
+   "mpn": "CSTNE8M00G550000R0",
+   "family": "CSTNE",
+   "mfr": "Murata",
+   "desc": "Ceramic resonator 8 MHz, built-in 33pF, CSTNE",
+   "category": "crystal_osc",
+   "pkg": "SMD 3.2x1.3",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU clock"
+   ],
+   "observedMpn": "CSTNE8M00G550000R0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.18031,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/CSTNE8M00G550000R0/8747739",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.14949,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/murata-electronics/CSTNE8M00G550000R0/8747739",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 3000,
+     "price": 0.195,
+     "currency": "USD",
+     "url": "https://octopart.com/cstne8m00g550000r0-murata-91406934",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Newark break via Octopart snippet. Newark 30k $0.176."
+  },
+  {
+   "mpn": "XRCGB24M000F2P51R0",
+   "family": "XRCGB",
+   "mfr": "Murata",
+   "desc": "Crystal 24 MHz 2016, XRCGB automotive spec",
+   "category": "crystal_osc",
+   "pkg": "2016",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "gateway"
+   ],
+   "observedMpn": "XRCGB24M000F2P51R0",
+   "observations": [],
+   "notes": "Exact code not found. Consumer sibling XRCGB24M000F2P00R0 Mouser reel 3k $0.185 seen - not recorded (different spec code, not packing)."
+  },
+  {
+   "mpn": "FA-128",
+   "family": "FA-128",
+   "mfr": "Epson",
+   "desc": "Crystal 2016 (FA-128), automotive",
+   "category": "crystal_osc",
+   "pkg": "2016",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "gateway"
+   ],
+   "observedMpn": "FA-128",
+   "observations": [],
+   "notes": "not searched (budget). No orderable code picked."
+  },
+  {
+   "mpn": "ABM8AIG-16.000MHZ-8-1Z-T",
+   "family": "ABM8AIG",
+   "mfr": "Abracon",
+   "desc": "Crystal 16 MHz 8pF 3225 AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "3225",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU clock"
+   ],
+   "observedMpn": "ABM8AIG-16.000MHZ-8-1Z-T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.44305,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ABM8AIG-16-000MHZ-8-1Z-T/10313785",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Representative pick of ABM8AIG-16.000MHZ. Mouser 1k $0.773 is the -12-2Z-T3 (cut tape, different spec) - not recorded."
+  },
+  {
+   "mpn": "ECS-160-8-36B2-CKM-TR",
+   "family": "ECS-3225",
+   "mfr": "ECS Inc.",
+   "desc": "Crystal 16 MHz 8pF 3225",
+   "category": "crystal_osc",
+   "pkg": "3225",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU clock"
+   ],
+   "observedMpn": "ECS-160-8-36B2-CKM-TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.22047,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/ecs-inc/ECS-160-8-36B2-CKM-TR/14548842",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.17565,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/ecs-inc/ECS-160-8-36B2-CKM-TR/14548842",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "AEC-Q200 status not confirmed in search."
+  },
+  {
+   "mpn": "LT QH9G",
+   "family": "LT QH9G",
+   "mfr": "ams OSRAM",
+   "desc": "LED TOPLED compact, true green, automotive",
+   "category": "led",
+   "pkg": "0603-class",
+   "aecq": true,
+   "ecuRoles": [
+    "interior",
+    "HMI"
+   ],
+   "observedMpn": "LT QH9G",
+   "observations": [],
+   "notes": "not searched (budget). No orderable code picked."
+  },
+  {
+   "mpn": "KW DMLQ31.SG",
+   "family": "KW DMLQ31.SG",
+   "mfr": "ams OSRAM",
+   "desc": "LED white, Synios/automotive",
+   "category": "led",
+   "pkg": "SMD",
+   "aecq": true,
+   "ecuRoles": [
+    "lighting"
+   ],
+   "observedMpn": "KW DMLQ31.SG",
+   "observations": [],
+   "notes": "not searched (budget)."
+  },
+  {
+   "mpn": "V23086-C1001-A403",
+   "family": "Micro K",
+   "mfr": "TE Connectivity",
+   "desc": "Automotive micro relay 12V SPDT 30A, Micro K",
+   "category": "relay_switch",
+   "pkg": "PCB",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "fuse box"
+   ],
+   "observedMpn": "V23086-C1001-A403",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.34,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Automotive-Relays_TE-Connectivity-V23086-C1001-A403_C3034766.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser listed only an -EV-BLBOX variant without breaks; Win Source/Onlinecomponents ignored."
+  },
+  {
+   "mpn": "G8NB-17SR",
+   "family": "G8NB",
+   "mfr": "Omron",
+   "desc": "Automotive relay 12V SPST 30A",
+   "category": "relay_switch",
+   "pkg": "PCB",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "fuse box"
+   ],
+   "observedMpn": "G8NB-17SR",
+   "observations": [],
+   "notes": "No franchised price at >=100: only Quest (broker) and a DigiKey figure for a different variant - not used."
+  },
+  {
+   "mpn": "CB1A-12V",
+   "family": "CB",
+   "mfr": "Panasonic",
+   "desc": "Automotive relay 12V SPST-NO 40A, CB (cube)",
+   "category": "relay_switch",
+   "pkg": "Socketable",
+   "aecq": true,
+   "ecuRoles": [
+    "fuse box",
+    "power"
+   ],
+   "observedMpn": "CB1A-12V",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.92,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-industry/CB1A-12V/647008",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "ACJ1112",
+   "family": "ACJ",
+   "mfr": "Panasonic",
+   "desc": "Automotive relay twin 1 Form C",
+   "category": "relay_switch",
+   "pkg": "PCB",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "ACJ1112",
+   "observations": [],
+   "notes": "not searched (budget)."
+  },
+  {
+   "mpn": "0451005.MRL",
+   "family": "451",
+   "mfr": "Littelfuse",
+   "desc": "Fuse SMD 5A 125V Nano2 very fast",
+   "category": "fuse_tvs",
+   "pkg": "2-SMD square end",
+   "aecq": true,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "0451005.MRL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.94776,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/0451005-MRL/700828",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 0.5396,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/0451005.mrl/littelfuse",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "TTI",
+     "qty": 1000,
+     "price": 0.4,
+     "currency": "USD",
+     "url": "https://www.findchips.com/detail/0451005.MRL/Littelfuse-Inc",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Wide spread at 1k (0.40-0.95). TTI via findchips snippet. Mouser 1k $0.887 seen but result page was 0451005.NRL - not recorded. AEC-Q of 451 series not confirmed."
+  },
+  {
+   "mpn": "0466002.NR",
+   "family": "466",
+   "mfr": "Littelfuse",
+   "desc": "Fuse SMD 2A 1206 very fast",
+   "category": "fuse_tvs",
+   "pkg": "1206",
+   "aecq": null,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "0466002.NR",
+   "observations": [],
+   "notes": "not searched (budget)."
+  },
+  {
+   "mpn": "TAS6424QDKQRQ1",
+   "family": "TAS6424-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "4-ch class-D audio amp 2MHz, automotive",
+   "category": "ic_soic",
+   "pkg": "HSSOP-56 (DKQ)",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "amplifier"
+   ],
+   "observedMpn": "TAS6424QDKQRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 11.07963,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TAS6424QDKQRQ1/6553888",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser down to $9.79 at an unstated break - not recorded."
+  },
+  {
+   "mpn": "FDA803D-EHT",
+   "family": "FDA803D",
+   "mfr": "STMicroelectronics",
+   "desc": "1-ch class-D amp 45W, I2S, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "eCall"
+   ],
+   "observedMpn": "FDA803D-EHT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.5152,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/FDA803D-EHT/9330161",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.61,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/FDA803D-EHT?qs=MLItCLRbWsx5GE8rGYM2RA%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Representative pick: tape & reel code of FDA803D."
+  },
+  {
+   "mpn": "TDA7802",
+   "family": "TDA7802",
+   "mfr": "STMicroelectronics",
+   "desc": "4-ch digital-input class-AB/D amp, automotive",
+   "category": "ic_soic",
+   "pkg": "PowerSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "amplifier"
+   ],
+   "observedMpn": "TDA7802",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 255,
+     "price": 7.35,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/TDA7802/4250177",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1070,
+     "price": 6.75,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/TDA7802?qs=Rlwi1sSxVL7NsnVT7fq%2F4Q%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Tray/tube code. Breaks 255/1070 as given by snippets (Mouser '~1,070' - check). SMTR reel: Mouser to $6.15, DigiKey 300+ $6.49."
+  },
+  {
+   "mpn": "DS90UB927QSQX/NOPB",
+   "family": "DS90UB927Q-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III serializer 2.975 Gbps, 24-bit RGB",
+   "category": "ic_qfn",
+   "pkg": "WQFN-40 6x6",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "camera",
+    "display"
+   ],
+   "observedMpn": "DS90UB927QSQX/NOPB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 7.81717,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB927QSQX-NOPB/296-48540-1-ND/8567584",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  }
+ ]
+}

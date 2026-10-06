@@ -1,0 +1,103 @@
+{ "domain": "r4-g1-switches", "researched": "2026-10-06", "parts": [
+  { "mpn": "TLE9461ESXUMA1", "family": "TLE9461ES", "mfr": "Infineon", "desc": "Lite SBC, LDO + CAN FD + LIN", "category": "ic_soic", "pkg": "TSDSO-24", "aecq": true, "ecuRoles": ["BCM","body","door"], "observedMpn": "TLE9461ESXUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.62502, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9461ESXUMA1/9678734", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 1.49572, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9461ESXUMA1/9678734", "date": "2026-10-06" }
+    ], "notes": "5 V variant. Mouser 3000 @ $1.37 seen for the V33 (3.3 V) variant TLE9461ESV33XUMA1 - not recorded (different variant)." },
+  { "mpn": "TLE94613ESXUMA1", "family": "TLE94613ES", "mfr": "Infineon", "desc": "Lite SBC, LDO + CAN FD + 3x LIN", "category": "ic_soic", "pkg": "TSDSO-24", "aecq": true, "ecuRoles": ["BCM","body"], "observedMpn": "TLE94613ESXUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 500, "price": 1.95, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/infineon-technologies/TLE94613ESXUMA1/TLE94613ESXUMA1CT-ND/9678748", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.64, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/infineon-technologies/TLE94613ESXUMA1/TLE94613ESXUMA1CT-ND/9678748", "date": "2026-10-06" }
+    ], "notes": "Prices rounded to cents in search summary." },
+  { "mpn": "NCV7471DQ5R2G", "family": "NCV7471", "mfr": "onsemi", "desc": "SBC, 5 V regulator + HS-CAN + LIN", "category": "ic_soic", "pkg": "SOIC-32 EP", "aecq": true, "ecuRoles": ["BCM","body"], "observedMpn": "",
+    "observations": [], "notes": "Representative pick of orderable code. No franchised-distributor price found in search results." },
+  { "mpn": "TLE9278BQXV33XUMA1", "family": "TLE9278", "mfr": "Infineon", "desc": "Multi-CAN SBC, 4x CAN FD, 3.3 V", "category": "ic_qfn", "pkg": "VQFN-48 EP", "aecq": true, "ecuRoles": ["gateway","BCM"], "observedMpn": "TLE9278BQXV33XUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 3.73, "currency": "EUR", "url": "https://www.digikey.be/en/products/detail/infineon-technologies/TLE9278BQXV33XUMA1/11500220", "date": "2026-10-06" }
+    ], "notes": "Representative pick (3.3 V variant). Only the 100 break was published in the result; no 1k break found." },
+  { "mpn": "MC33FS6510CAE", "family": "MC33FS6510", "mfr": "NXP", "desc": "Safety SBC FS6500, buck 1.5 A, CAN FD, ASIL B", "category": "ic_tqfp", "pkg": "LQFP-48 EP", "aecq": true, "ecuRoles": ["EPS","braking","powertrain"], "observedMpn": "MC33FS6510CAE",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 4.13, "currency": "USD", "url": "https://www.omo-ic.com/chip/d65/MC33FS6510CAE.html", "date": "2026-10-06" },
+      { "distributor": "Avnet", "qty": 1000, "price": 3.99, "currency": "USD", "url": "https://www.omo-ic.com/chip/d65/MC33FS6510CAE.html", "date": "2026-10-06" },
+      { "distributor": "Avnet", "qty": 10000, "price": 3.59, "currency": "USD", "url": "https://www.omo-ic.com/chip/d65/MC33FS6510CAE.html", "date": "2026-10-06" }
+    ], "notes": "Breaks read from an aggregator page (omo-ic) that names Digi-Key and Avnet; not seen on the distributor page itself - verify." },
+  { "mpn": "BTS700121ESPXUMA2", "family": "BTS70012-1ESP", "mfr": "Infineon", "desc": "PROFET+2 12V single high-side switch 1.2 mOhm", "category": "ic_soic", "pkg": "TSDSO-14", "aecq": true, "ecuRoles": ["PDU","BCM","zonal"], "observedMpn": "BTS700121ESPXUMA2",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 500, "price": 2.5632, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS700121ESPXUMA2/18683899", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 2.33693, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS700121ESPXUMA2/18683899", "date": "2026-10-06" }
+    ], "notes": "Reel break quantity inferred from extended price $7,010.79 / $2.33693 = 3000 (summary mislabelled it 1,000)." },
+  { "mpn": "BTT61002ERAXUMA1", "family": "BTT6100-2ERA", "mfr": "Infineon", "desc": "PROFET+ 24V dual high-side switch 100 mOhm", "category": "ic_soic", "pkg": "TSDSO-14", "aecq": true, "ecuRoles": ["BCM","truck body"], "observedMpn": "BTT61002ERAXUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 250, "price": 1.90, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTT61002ERAXUMA1/10379701", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 500, "price": 1.87, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTT61002ERAXUMA1/10379701", "date": "2026-10-06" }
+    ], "notes": "No 1k/reel break in result. Mouser tiers seen ($1.60 lowest) without quantities - not recorded." },
+  { "mpn": "VN7140ASTR", "family": "VN7140AS", "mfr": "STMicroelectronics", "desc": "Single high-side driver 140 mOhm, VIPower M0-7", "category": "ic_soic", "pkg": "SO-8", "aecq": true, "ecuRoles": ["BCM","lighting"], "observedMpn": "",
+    "observations": [], "notes": "Representative T&R code. Digi-Key VN7140AS-E out of stock; VN7140ASTR $1.34-1.51 shown without a quantity; other figures from brokers - none recorded." },
+  { "mpn": "VNQ9080AJTR", "family": "VNQ9080AJ", "mfr": "STMicroelectronics", "desc": "Quad high-side driver 80 mOhm, VIPower M0-9", "category": "ic_soic", "pkg": "PowerSSO-16", "aecq": true, "ecuRoles": ["BCM","lighting"], "observedMpn": "VNQ9080AJTR",
+    "observations": [
+      { "distributor": "Arrow", "qty": 2500, "price": 2.2754, "currency": "USD", "url": "https://www.arrow.com/en/products/vnq9080ajtr/stmicroelectronics", "date": "2026-10-06" }
+    ], "notes": "Win Source prices seen and excluded (broker)." },
+  { "mpn": "TPS1H100BQPWPRQ1", "family": "TPS1H100-Q1", "mfr": "Texas Instruments", "desc": "Single smart high-side switch 100 mOhm, 40 V", "category": "ic_soic", "pkg": "HTSSOP-14", "aecq": true, "ecuRoles": ["BCM","lighting"], "observedMpn": "TPS1H100BQPWPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.1412, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1H100BQPWPRQ1/5765188", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 1.13, "currency": "USD", "url": "https://octopart.com/tps1h100bqpwprq1-texas+instruments-55347276", "date": "2026-10-06" }
+    ], "notes": "Mouser figure from search summary; URL is the aggregator listing." },
+  { "mpn": "TPS2H160BQPWPRQ1", "family": "TPS2H160-Q1", "mfr": "Texas Instruments", "desc": "Dual smart high-side switch 160 mOhm", "category": "ic_soic", "pkg": "HTSSOP-16", "aecq": true, "ecuRoles": ["BCM","lighting"], "observedMpn": "TPS2H160BQPWPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.09862, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2H160BQPWPRQ1/6191707", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 100, "price": 1.25, "currency": "USD", "url": "https://octopart.com/part/texas-instruments/TPS2H160BQPWPRQ1", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "TPS48100QDGXRQ1", "family": "TPS4810-Q1", "mfr": "Texas Instruments", "desc": "Smart high-side driver/controller with protection, 80 V", "category": "ic_soic", "pkg": "VSSOP-19", "aecq": true, "ecuRoles": ["PDU","zonal","BMS"], "observedMpn": "TPS48100QDGXRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 2.46732, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS48100QDGXRQ1/25881367", "date": "2026-10-06" }
+    ], "notes": "Representative pick. TI store $1.761 (1ku) seen and excluded (manufacturer store)." },
+  { "mpn": "TPS1HTC30AQPWPRQ1", "family": "TPS1HTC30-Q1", "mfr": "Texas Instruments", "desc": "Single smart high-side switch 30 mOhm, 6 A, 24 V", "category": "ic_soic", "pkg": "HTSSOP-14", "aecq": true, "ecuRoles": ["truck body","BCM"], "observedMpn": "TPS1HTC30AQPWPRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 3000, "price": 2.46, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS1HTC30AQPWPRQ1?qs=ST9lo4GX8V3KvUd2Q%2FnDqA%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Orderable code is the A revision." },
+  { "mpn": "TPS2HCS10AQPWPRQ1", "family": "TPS2HCS10-Q1", "mfr": "Texas Instruments", "desc": "Dual smart high-side switch / eFuse 10 mOhm, SPI", "category": "ic_soic", "pkg": "HTSSOP-16", "aecq": true, "ecuRoles": ["zonal","PDU"], "observedMpn": "TPS2HCS10AQPWPRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 500, "price": 2.43, "currency": "USD", "url": "https://www.mouser.com/c/semiconductors/power-management-ics/power-switch-ics-power-distribution/?m=Texas+Instruments&series=TPS2HCS10-Q1", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 2.21, "currency": "USD", "url": "https://www.mouser.com/c/semiconductors/power-management-ics/power-switch-ics-power-distribution/?m=Texas+Instruments&series=TPS2HCS10-Q1", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "BTS3125EJXUMA1", "family": "BTS3125EJ", "mfr": "Infineon", "desc": "HITFET+ 12V protected low-side switch", "category": "ic_soic", "pkg": "TDSO-8", "aecq": true, "ecuRoles": ["BCM","relay driver"], "observedMpn": "BTS3125EJXUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.48241, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/BTS3125EJXUMA1/7323978", "date": "2026-10-06" },
+      { "distributor": "TME", "qty": 1000, "price": 0.55, "currency": "USD", "url": "https://www.tme.com/us/en-us/details/bts3125ej/power-switches-integrated-circuits/infineon-technologies/", "date": "2026-10-06" }
+    ], "notes": "" },
+  { "mpn": "NCV8402ASTT1G", "family": "NCV8402", "mfr": "onsemi", "desc": "Self-protected low-side MOSFET 42 V 2 A", "category": "ic_soic", "pkg": "SOT-223", "aecq": true, "ecuRoles": ["BCM","relay driver"], "observedMpn": "NCV8402ASTT1G",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.43653, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8402ASTT1G/3536734", "date": "2026-10-06" }
+    ], "notes": "Findchips $0.3935 @1k seen without a named distributor - not recorded." },
+  { "mpn": "BUK9Y4R4-40HX", "family": "BUK9Y4R4-40H", "mfr": "Nexperia", "desc": "N-MOSFET 40 V 4.4 mOhm logic level, Trench 9", "category": "ic_soic", "pkg": "LFPAK56", "aecq": true, "ecuRoles": ["motor drive","BCM"], "observedMpn": "",
+    "observations": [], "notes": "Representative orderable code. Only the older BUK9Y4R4-40E (different generation) was found ($0.48 @3k Digi-Key) - not recorded." },
+  { "mpn": "BUK7S1R0-40HJ", "family": "BUK7S1R0-40H", "mfr": "Nexperia", "desc": "N-MOSFET 40 V 1.0 mOhm, Trench 9", "category": "ic_soic", "pkg": "LFPAK88", "aecq": true, "ecuRoles": ["EPS","pump","PDU"], "observedMpn": "BUK7S1R0-40HJ",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.3057, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/BUK7S1R0-40HJ/10260946", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 1.31, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Nexperia/BUK7S1R0-40HJ?qs=vLWxofP3U2wuww%2Fkt0E6bQ%3D%3D", "date": "2026-10-06" }
+    ], "notes": "A second Digi-Key listing showed $2.29 @1k (cut tape) - inconsistent, not recorded." },
+  { "mpn": "IPD50N04S4-08", "family": "IPD50N04S4-08", "mfr": "Infineon", "desc": "N-MOSFET 40 V 7.8 mOhm OptiMOS-T2", "category": "ic_soic", "pkg": "DPAK (TO-252)", "aecq": true, "ecuRoles": ["motor drive","BCM"], "observedMpn": "IPD50N04S4-08",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 0.555, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/IPD50N04S4-08?qs=HwMeRNENlMZz%252BNaSo1r7PA%3D%3D", "date": "2026-10-06" }
+    ], "notes": "Digi-Key $0.354 @1k appeared but the Digi-Key result was the logic-level IPD50N04S4L-08 - not recorded." },
+  { "mpn": "IAUC60N04S6L039ATMA1", "family": "IAUC60N04S6L039", "mfr": "Infineon", "desc": "N-MOSFET 40 V 3.9 mOhm logic level OptiMOS-6", "category": "ic_qfn", "pkg": "PG-TDSON-8 (SS08)", "aecq": true, "ecuRoles": ["motor drive","BCM"], "observedMpn": "IAUC60N04S6L039ATMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 500, "price": 0.38, "currency": "USD", "url": "https://octopart.com/iauc60n04s6l039atma1-infineon-105792395", "date": "2026-10-06" },
+      { "distributor": "Farnell", "qty": 1000, "price": 0.395, "currency": "EUR", "url": "https://octopart.com/iauc60n04s6l039atma1-infineon-105792395", "date": "2026-10-06" }
+    ], "notes": "Read via search summary (aggregator); TME page also lists it." },
+  { "mpn": "SQJ844AEP-T1_GE3", "family": "SQJ844AEP", "mfr": "Vishay Siliconix", "desc": "Automotive MOSFET, PowerPAK SO-8L", "category": "ic_soic", "pkg": "PowerPAK SO-8L", "aecq": true, "ecuRoles": ["motor drive","BCM"], "observedMpn": "SQJ844AEP-T1-GE3",
+    "observations": [
+      { "distributor": "TTI", "qty": 3000, "price": 0.506, "currency": "USD", "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=SQJ844AEP-T1-GE3&mfgShortname=SLN", "date": "2026-10-06" }
+    ], "notes": "$0.5794 @1k seen with unclear distributor - not recorded." },
+  { "mpn": "BUK9M6R3-40HX", "family": "BUK9M6R3-40H", "mfr": "Nexperia", "desc": "N-MOSFET 40 V 6.3 mOhm logic level, Trench 9", "category": "ic_qfn", "pkg": "LFPAK33", "aecq": true, "ecuRoles": ["motor drive","BCM"], "observedMpn": "",
+    "observations": [], "notes": "Representative orderable code. No distributor price found in search results." },
+  { "mpn": "IAUC120N04S6L008ATMA1", "family": "IAUC120N04S6L008", "mfr": "Infineon", "desc": "N-MOSFET 40 V 0.8 mOhm logic level OptiMOS-6", "category": "ic_qfn", "pkg": "PG-TDSON-8 (SS08)", "aecq": true, "ecuRoles": ["EPS","pump"], "observedMpn": "",
+    "observations": [], "notes": "Exact code not found. Siblings seen: IAUC120N04S6N008 (normal level) Mouser $1.04 @1k; IAUC120N04S6L012 Mouser $0.779 @1k - not recorded (different parts)." },
+  { "mpn": "IPB015N04LGATMA1", "family": "IPB015N04L", "mfr": "Infineon", "desc": "N-MOSFET 40 V 1.5 mOhm OptiMOS 3", "category": "ic_soic", "pkg": "D2PAK (TO-263)", "aecq": false, "ecuRoles": ["motor drive"], "observedMpn": "IPB015N04LGATMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 2.9346, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/IPB015N04L%20G/IPB015N04L%20GCT-ND/2231118", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 2.58, "currency": "USD", "url": "https://octopart.com/ipb015n04l+g-infineon-12634179", "date": "2026-10-06" }
+    ], "notes": "IPB015N04L G is an industrial OptiMOS 3 part, not AEC-Q qualified; no automotive orderable code with this name." },
+  { "mpn": "NVMFS5C628NLT1G", "family": "NVMFS5C628NL", "mfr": "onsemi", "desc": "N-MOSFET 60 V 2.4 mOhm logic level, automotive", "category": "ic_qfn", "pkg": "SO-8FL (DFN5)", "aecq": true, "ecuRoles": ["motor drive","BCM"], "observedMpn": "",
+    "observations": [], "notes": "$1.52 @1k seen with no named distributor - not recorded. Non-automotive NTMFS5C628NLT1G is Digi-Key $0.49 @1.5k (not recorded)." }
+] }

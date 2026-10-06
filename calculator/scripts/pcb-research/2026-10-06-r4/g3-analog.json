@@ -1,0 +1,140 @@
+{ "domain": "r4-analog", "researched": "2026-10-06", "parts": [
+  { "mpn": "LMV358AQDRQ1", "family": "LMV358A", "mfr": "Texas Instruments", "desc": "Dual low-voltage RRO op amp", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["BCM","sensor-interface","general"], "observedMpn": "LMV358AQDRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.28284, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMV358AQDRQ1/13174028", "date": "2026-10-06" }
+    ],
+    "notes": "Snippet also quoted a lower $0.26337 'unit price' at an unstated break (probably reel); not recorded. Ovaga (broker) excluded." },
+  { "mpn": "LM393BQDRQ1", "family": "LM393B", "mfr": "Texas Instruments", "desc": "Dual comparator, open collector", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["BCM","power-supervision","general"], "observedMpn": "",
+    "observations": [],
+    "notes": "No distributor price for the Q1 code found; only commercial LM393B/LM393DR returned (not used)." },
+  { "mpn": "TLV3201AQDCKRQ1", "family": "TLV3201", "mfr": "Texas Instruments", "desc": "40 ns push-pull comparator", "category": "ic_soic", "pkg": "SC-70-5", "aecq": true, "ecuRoles": ["inverter","OBC","fault-detect"], "observedMpn": "TLV3201AQDCKRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.82222, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV3201AQDCKRQ1/7056154", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.869, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV3201AQDCKRQ1/7056154", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser figure came from the same search summary; no Mouser URL in results, DigiKey URL given." },
+  { "mpn": "INA181A1QDBVRQ1", "family": "INA181", "mfr": "Texas Instruments", "desc": "Current-sense amp, gain 20, bidirectional", "category": "ic_soic", "pkg": "SOT-23-6", "aecq": true, "ecuRoles": ["BMS","motor-control","DCDC"], "observedMpn": "INA181A1QDBVRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 0.4751, "currency": "SGD", "url": "https://www.digikey.sg/en/products/detail/texas-instruments/INA181A1QDBVRQ1/10434865", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.40579, "currency": "SGD", "url": "https://www.digikey.sg/en/products/detail/texas-instruments/INA181A1QDBVRQ1/10434865", "date": "2026-10-06" }
+    ],
+    "notes": "Prices are in SGD (DigiKey Singapore)." },
+  { "mpn": "INA186A1QDCKRQ1", "family": "INA186", "mfr": "Texas Instruments", "desc": "Current-sense amp, 40 V, gain 25, enable", "category": "ic_soic", "pkg": "SC-70-6", "aecq": true, "ecuRoles": ["BMS","body","DCDC"], "observedMpn": "INA186A1QDCKRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.705, "currency": "USD", "url": "https://www.findchips.com/search/na-186-", "date": "2026-10-06" },
+      { "distributor": "Arrow", "qty": 3000, "price": 0.5693, "currency": "USD", "url": "https://www.arrow.com/en/products/ina186a1qdckrq1/texas-instruments", "date": "2026-10-06" },
+      { "distributor": "Arrow", "qty": 6000, "price": 0.564, "currency": "USD", "url": "https://www.arrow.com/en/products/ina186a1qdckrq1/texas-instruments", "date": "2026-10-06" }
+    ],
+    "notes": "DigiKey reel figure from an aggregator summary; DigiKey and Arrow reel prices differ ~20%." },
+  { "mpn": "INA199A1QDCKRQ1", "family": "INA199", "mfr": "Texas Instruments", "desc": "Current-shunt monitor, gain 50", "category": "ic_soic", "pkg": "SC-70-6", "aecq": true, "ecuRoles": ["BMS","body","motor-control"], "observedMpn": "",
+    "observations": [],
+    "notes": "Representative automotive pick for generic INA199A1. No distributor price for the Q1 code found; commercial INA199A1DCKR ($0.26981 @1k DigiKey) not used." },
+  { "mpn": "TLV431AQDBZRQ1", "family": "TLV431", "mfr": "Texas Instruments", "desc": "Low-voltage adjustable shunt regulator", "category": "ic_soic", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["OBC","DCDC","power-supply"], "observedMpn": "",
+    "observations": [],
+    "notes": "Search returned $0.213@1k from an unnamed distributor and Mouser $0.466@1k for TLV431AQDBVRQ1 (SOT-23-5, different package) - neither usable." },
+  { "mpn": "TL431AQDBZRQ1", "family": "TL431", "mfr": "Texas Instruments", "desc": "Adjustable shunt regulator", "category": "ic_soic", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["OBC","DCDC","power-supply"], "observedMpn": "TL431AQDBZRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.2843, "currency": "USD", "url": "https://www.findchips.com/search/tl431aqdbzrq1", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.285, "currency": "USD", "url": "https://www.findchips.com/search/tl431aqdbzrq1", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 100, "price": 0.3331, "currency": "USD", "url": "https://www.findchips.com/search/tl431aqdbzrq1", "date": "2026-10-06" }
+    ],
+    "notes": "Via Findchips aggregator naming DigiKey/Mouser breaks; DigiKey shown as backorder." },
+  { "mpn": "REF3033AQDBZRQ1", "family": "REF3033", "mfr": "Texas Instruments", "desc": "3.3 V series voltage reference, 50 ppm", "category": "ic_soic", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["BMS","sensor-interface","ADC-ref"], "observedMpn": "",
+    "observations": [],
+    "notes": "No distributor result for this code in search." },
+  { "mpn": "OPA2376AQDRQ1", "family": "OPA2376", "mfr": "Texas Instruments", "desc": "Dual low-noise precision RRIO op amp", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["sensor-interface","BMS"], "observedMpn": "OPA2376AQDRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 1.98, "currency": "USD", "url": "https://www.findchips.com/search/opa2376", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 2500, "price": 1.86, "currency": "USD", "url": "https://www.findchips.com/search/opa2376", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser breaks from search summary (aggregator URL)." },
+  { "mpn": "OPA2333AQDRQ1", "family": "OPA2333", "mfr": "Texas Instruments", "desc": "Dual zero-drift micropower op amp", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["BMS","sensor-interface","current-sense"], "observedMpn": "OPA2333AQDRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 250, "price": 3.21608, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/OPA2333AQDRQ1/2000822", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 2500, "price": 2.93374, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/OPA2333AQDRQ1/2000822", "date": "2026-10-06" }
+    ],
+    "notes": "No 1k break in summary." },
+  { "mpn": "TLV7031QDCKRQ1", "family": "TLV7031", "mfr": "Texas Instruments", "desc": "Nanopower push-pull comparator", "category": "ic_soic", "pkg": "SC-70-5", "aecq": true, "ecuRoles": ["body","wake-up","supervision"], "observedMpn": "TLV7031QDCKRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.7525, "currency": "USD", "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/TLV7031QDCKRQ1/13577761", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.692, "currency": "USD", "url": "https://www.findchips.com/search/TLV7031QDCKRQ1", "date": "2026-10-06" }
+    ],
+    "notes": "DigiKey cut-tape break." },
+  { "mpn": "LM2904BQDRQ1", "family": "LM2904B", "mfr": "Texas Instruments", "desc": "Dual 36 V op amp", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["BCM","sensor-interface","general"], "observedMpn": "LM2904BQDRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.1999, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM2904BQDRQ1/11502291", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.2, "currency": "USD", "url": "https://www.findchips.com/search/LM2904BQDRQ1", "date": "2026-10-06" }
+    ],
+    "notes": "" },
+  { "mpn": "TLV9062QDRQ1", "family": "TLV9062", "mfr": "Texas Instruments", "desc": "Dual 10 MHz RRIO CMOS op amp", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["sensor-interface","BMS","general"], "observedMpn": "TLV9062QDRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.574, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLV9062QDRQ1/13174021", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.522, "currency": "USD", "url": "https://www.trustedparts.com/en/part/texas-instruments/TLV9062QDRQ1", "date": "2026-10-06" }
+    ],
+    "notes": "Summary also mentioned $0.33@1k for an unspecified packaging/distributor; not used." },
+  { "mpn": "74LVC2T45GW-Q100H", "family": "74LVC2T45-Q100", "mfr": "Nexperia", "desc": "Dual-bit dual-supply bus transceiver", "category": "ic_soic", "pkg": "TSSOP-8", "aecq": true, "ecuRoles": ["gateway","level-shift"], "observedMpn": "",
+    "observations": [],
+    "notes": "GW (TSSOP8) code not found. Sibling 74LVC2T45GS-Q100X (XSON8, different package): DigiKey $0.16243@1k, Mouser $0.215@5k - not recorded as observations." },
+  { "mpn": "SN74LV4T125QPWRQ1", "family": "SN74LV4T125", "mfr": "Texas Instruments", "desc": "Quad buffer/level translator, 3-state", "category": "ic_soic", "pkg": "TSSOP-14", "aecq": true, "ecuRoles": ["gateway","level-shift"], "observedMpn": "SN74LV4T125QPWRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 2000, "price": 0.74862, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN74LV4T125QPWRQ1/16627788", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 10000, "price": 0.71193, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN74LV4T125QPWRQ1/16627788", "date": "2026-10-06" }
+    ],
+    "notes": "DigiKey reel breaks (2k..14k); price looks high for a quad buffer but consistent across breaks." },
+  { "mpn": "TXU0104QPWRQ1", "family": "TXU0104", "mfr": "Texas Instruments", "desc": "4-bit fixed-direction level translator", "category": "ic_soic", "pkg": "TSSOP-14", "aecq": true, "ecuRoles": ["gateway","level-shift"], "observedMpn": "TXU0104QPWRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 500, "price": 0.69, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TXU0104QPWRQ1/14641448", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 2000, "price": 0.42, "currency": "USD", "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/TXU0104QPWRQ1?qs=QNEnbhJQKvavOsVTxSnghg%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "DigiKey 500 vs Mouser 2000 differ a lot (0.69 vs 0.42); verify." },
+  { "mpn": "TCA9539QPWRQ1", "family": "TCA9539", "mfr": "Texas Instruments", "desc": "16-bit I2C I/O expander with interrupt/reset", "category": "ic_soic", "pkg": "TSSOP-24", "aecq": true, "ecuRoles": ["BCM","gateway","lighting"], "observedMpn": "TCA9539QPWRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 2.01, "currency": "USD", "url": "https://www.mouser.in/ProductDetail/Texas-Instruments/TCA9539QPWRQ1?qs=/d%2BFzHvH4c0nUO2Z6CldwA%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "DigiKey $2.0655 also reported 'at 1000' but its extended price ($1,032.75) matches 500 units; not recorded." },
+  { "mpn": "TCA9555QPWRQ1", "family": "TCA9555/PCA9555", "mfr": "Texas Instruments", "desc": "16-bit I2C I/O expander", "category": "ic_soic", "pkg": "TSSOP-24", "aecq": true, "ecuRoles": ["BCM","gateway"], "observedMpn": "",
+    "observations": [],
+    "notes": "Representative pick for generic auto PCA9555; existence of this exact Q1 code not confirmed in search. Only commercial TCA9555PWR found (Mouser $0.912@1k) - not used." },
+  { "mpn": "TCA9406QDCURQ1", "family": "TCA9406", "mfr": "Texas Instruments", "desc": "2-bit I2C bidirectional level translator", "category": "ic_soic", "pkg": "VSSOP-8", "aecq": true, "ecuRoles": ["gateway","level-shift"], "observedMpn": "",
+    "observations": [],
+    "notes": "No distributor price for the Q1 code; only commercial TCA9406DCUR returned." },
+  { "mpn": "TMP112AQDRLRQ1", "family": "TMP112", "mfr": "Texas Instruments", "desc": "I2C digital temperature sensor, 0.5 C", "category": "ic_soic", "pkg": "SOT-563", "aecq": true, "ecuRoles": ["BMS","inverter","thermal"], "observedMpn": "TMP112AQDRLRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 4000, "price": 1.31219, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP112AQDRLRQ1/5032041", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser $1.64 at unstated break not recorded." },
+  { "mpn": "TMP235AQDCKRQ1", "family": "TMP235", "mfr": "Texas Instruments", "desc": "Analog temperature sensor, 10 mV/C", "category": "ic_soic", "pkg": "SC-70-5", "aecq": true, "ecuRoles": ["BMS","thermal","lighting"], "observedMpn": "TMP235AQDCKRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.35464, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP235AQDCKRQ1/11308820", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.35, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP235AQDCKRQ1/11308820", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser figure from same summary, no Mouser URL for the Q code." },
+  { "mpn": "ADS7038QRTERQ1", "family": "ADS7038", "mfr": "Texas Instruments", "desc": "8-ch 12-bit SAR ADC, SPI, GPIO", "category": "ic_qfn", "pkg": "WQFN-16", "aecq": true, "ecuRoles": ["BMS","sensor-interface"], "observedMpn": "ADS7038QRTERQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 4.22, "currency": "USD", "url": "https://www.digikey.ca/en/products/detail/texas-instruments/ADS7038QRTERQ1/13562991", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 250, "price": 4.09, "currency": "USD", "url": "https://www.digikey.ca/en/products/detail/texas-instruments/ADS7038QRTERQ1/13562991", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 250, "price": 4.09, "currency": "USD", "url": "https://octopart.com/part/texas-instruments/ADS7038QRTERQ1", "date": "2026-10-06" }
+    ],
+    "notes": "No 1k/reel break seen; largest break 250." },
+  { "mpn": "TLE49643MXTSA1", "family": "TLE4964-3M", "mfr": "Infineon", "desc": "Unipolar Hall switch, high precision", "category": "ic_soic", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["body","seat","window-lift"], "observedMpn": "",
+    "observations": [],
+    "notes": "Representative orderable code. Only TLE4964-1M sibling priced (Mouser $0.296@3k, DigiKey $0.28655@10k - different switching threshold variant, not recorded); a -3M figure came from Chip One Stop (not an allowed source)." },
+  { "mpn": "TLE4946-2K", "family": "TLE4946-2K", "mfr": "Infineon", "desc": "Bipolar Hall latch", "category": "ic_soic", "pkg": "SC-59", "aecq": true, "ecuRoles": ["BLDC","pump","fan"], "observedMpn": "",
+    "observations": [],
+    "notes": "Not searched - search budget exhausted." },
+  { "mpn": "A1220LLHLT-T", "family": "A1220", "mfr": "Allegro MicroSystems", "desc": "Chopper-stabilised bipolar Hall latch", "category": "ic_soic", "pkg": "SOT-23W-3", "aecq": true, "ecuRoles": ["BLDC","pump","fan"], "observedMpn": "",
+    "observations": [],
+    "notes": "Representative orderable code (A1220LLHLT given). Not searched - search budget exhausted." },
+  { "mpn": "SN74LVC1G08QDCKRQ1", "family": "SN74LVC1G08", "mfr": "Texas Instruments", "desc": "Single 2-input AND gate", "category": "ic_soic", "pkg": "SC-70-5", "aecq": true, "ecuRoles": ["general","logic"], "observedMpn": "SN74LVC1G08QDCKRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.12315, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN74LVC1G08QDCKRQ1/1189661", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.113, "currency": "USD", "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/SN74LVC1G08QDCKRQ1?qs=PVVDbbWpW3IihgabOhRGgQ%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "" },
+  { "mpn": "74HC595D-Q100,118", "family": "74HC595-Q100", "mfr": "Nexperia", "desc": "8-bit shift register with output latches", "category": "ic_soic", "pkg": "SOIC-16", "aecq": true, "ecuRoles": ["BCM","lighting","cluster"], "observedMpn": "74HC595D-Q100,118",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.1239, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/74HC595D-Q100118/3749018", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.145, "currency": "USD", "url": "https://www.mouser.com/en/ProductDetail/Nexperia/74HC595D-Q100118?qs=1sbE9T7hb3auqb4IeRpHgw%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "DigiKey out of stock / no backorder." }
+] }

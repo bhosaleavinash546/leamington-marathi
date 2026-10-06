@@ -1,0 +1,845 @@
+{
+  "domain": "r4-magnetics-res",
+  "researched": "2026-10-06",
+  "parts": [
+    {
+      "mpn": "ACT45B-510-2P-TL003",
+      "family": "ACT45B",
+      "mfr": "TDK",
+      "desc": "CAN common-mode choke 51uH 2-line, 200mA",
+      "category": "transformer",
+      "pkg": "4.5x3.2mm SMD",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "gateway",
+        "ECU-CAN"
+      ],
+      "observedMpn": "ACT45B-510-2P-TL003",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 1.0342,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk/ACT45B-510-2P-TL003/1950642",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 0.77979,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk/ACT45B-510-2P-TL003/1950642",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "ACT1210-510-2P-TL00",
+      "family": "ACT1210",
+      "mfr": "TDK",
+      "desc": "CAN common-mode choke 51uH 2-line, 200mA, 1210",
+      "category": "transformer",
+      "pkg": "1210 (3.2x2.5mm)",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "gateway",
+        "ECU-CAN"
+      ],
+      "observedMpn": "ACT1210-510-2P-TL00",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 0.94096,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/ACT1210-510-2P-TL00/4918056",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 0.76875,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/ACT1210-510-2P-TL00/4918056",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Listed as ACT1210-510-2P; orderable reel code -TL00 priced."
+    },
+    {
+      "mpn": "DLW43SH510XK2L",
+      "family": "DLW43SH",
+      "mfr": "Murata",
+      "desc": "CAN common-mode choke 51uH 2-line, 230mA",
+      "category": "transformer",
+      "pkg": "1812 (4.5x3.2mm)",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "gateway",
+        "ECU-CAN"
+      ],
+      "observedMpn": "DLW43SH510XK2L",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 0.463,
+          "currency": "USD",
+          "url": "https://www.mouser.com/c/?q=DLW43SH510XK2L",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 5000,
+          "price": 0.419,
+          "currency": "USD",
+          "url": "https://www.mouser.com/c/?q=DLW43SH510XK2L",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser breaks attributed by search summary; no Mouser product URL in result links (URL is the Mouser search for the MPN). Verify before merge."
+    },
+    {
+      "mpn": "744232090",
+      "family": "WE-CNSW",
+      "mfr": "Wurth Elektronik",
+      "desc": "WE-CNSW common-mode choke 90R@100MHz, 370mA (CAN)",
+      "category": "transformer",
+      "pkg": "0805",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "gateway",
+        "ECU-CAN"
+      ],
+      "observedMpn": "744232090",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.88,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/744232090/732-1469-1-ND/1639481",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Representative pick for WE-CNSW family (744232090). DK cut-tape 1k break only; reel break not in summary."
+    },
+    {
+      "mpn": "BLM18KG601SH1D",
+      "family": "BLM18KG",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 600R@100MHz 1.3A, 0603, automotive",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "BLM18KG601SH1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.03136,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM18KG601SH1D/5881248",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 0.02409,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM18KG601SH1D/5881248",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 12000,
+          "price": 0.01938,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM18KG601SH1D/5881248",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "BLM15PX121SH1D",
+      "family": "BLM15PX",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 120R@100MHz 2A, 0402, automotive",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "BLM15PX121SN1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.03315,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM15PX121SN1D/4421095",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Exact SH1D (automotive) not priced; observation is the SN1D (general/consumer grade) sibling - automotive grade usually costs more, treat as lower bound."
+    },
+    {
+      "mpn": "BLM18PG221SH1D",
+      "family": "BLM18PG",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 220R@100MHz 1.4A, 0603, automotive",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "BLM18PG221SH1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.03387,
+          "currency": "USD",
+          "url": "https://digikey.com/en/products/detail/murata-electronics/BLM18PG221SH1D/2588045",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 12000,
+          "price": 0.02125,
+          "currency": "USD",
+          "url": "https://digikey.com/en/products/detail/murata-electronics/BLM18PG221SH1D/2588045",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "MPZ1608S221ATA00",
+      "family": "MPZ1608",
+      "mfr": "TDK",
+      "desc": "Power ferrite bead 220R@100MHz 2.2A, 0603",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": false,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "MPZ1608S221ATA00",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.0272,
+          "currency": "USD",
+          "url": "https://www.digikey.co.uk/en/products/detail/tdk-corporation/MPZ1608S221ATA00/571872",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 20000,
+          "price": 0.0158,
+          "currency": "USD",
+          "url": "https://www.digikey.co.uk/en/products/detail/tdk-corporation/MPZ1608S221ATA00/571872",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Priced as listed (ATA00 = commercial grade); the AEC-Q200 code is MPZ1608S221ATAH0, not priced."
+    },
+    {
+      "mpn": "NFM21PC105R1C3D",
+      "family": "NFM21PC",
+      "mfr": "Murata",
+      "desc": "3-terminal feed-through EMI filter 1uF 16V, 0805",
+      "category": "passive_0805",
+      "pkg": "0805",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "NFM21PC105R1C3D",
+      "observations": [],
+      "notes": "No distributor price found for the exact code; search returned only B1C3D/B1A3D siblings without a quantity break."
+    },
+    {
+      "mpn": "XAL4020-102MEC",
+      "family": "XAL4020",
+      "mfr": "Coilcraft",
+      "desc": "Molded power inductor 1.0uH 9.6A, 4x4x2mm, AEC-Q200 (MEC)",
+      "category": "passive_1206",
+      "pkg": "4.0x4.0x2.1mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "XAL4020-102MEC",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.05,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/xal4020-102me",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "MEC is the AEC-Q200 code (MEB same part, older code). Mouser 1k break via aggregator snippet."
+    },
+    {
+      "mpn": "XAL5030-472MEC",
+      "family": "XAL5030",
+      "mfr": "Coilcraft",
+      "desc": "Molded power inductor 4.7uH, 5.3x5.5x3mm, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "5.28x5.48x3.1mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "XAL5030-472MEC",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 1.36,
+          "currency": "USD",
+          "url": "https://www.mouser.in/ProductDetail/Coilcraft/XAL5030-472MEC?qs=zCSbvcPd3pYSK15J3LVNwA%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Representative pick for XAL5030. Only Mouser 100 break; DK out of stock."
+    },
+    {
+      "mpn": "XAL6060-472MEB",
+      "family": "XAL6060",
+      "mfr": "Coilcraft",
+      "desc": "Molded power inductor 4.7uH 11A, 6.7x6.5x6.1mm",
+      "category": "passive_1206",
+      "pkg": "6.7x6.5x6.1mm",
+      "aecq": false,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "XAL6060-472MEB",
+      "observations": [],
+      "notes": "No franchised price: DK discontinued MEB listing; only broker prices (Quest etc.) found. AEC code XAL6060-472MEC not priced."
+    },
+    {
+      "mpn": "CLF7045NIT-100M-D",
+      "family": "CLF7045NI-D",
+      "mfr": "TDK",
+      "desc": "Shielded wirewound power inductor 10uH 3A, 7x7x4.5mm, automotive",
+      "category": "passive_1206",
+      "pkg": "7.0x7.0x4.5mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "CLF7045NIT-100M-D",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 0.715,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/TDK/CLF7045NIT-100M-D?qs=P8zzrVhehauNw/0N5fPkGg%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "1k break not attributed to a distributor in the summary; not recorded."
+    },
+    {
+      "mpn": "SRP7028A-4R7M",
+      "family": "SRP7028A",
+      "mfr": "Bourns",
+      "desc": "Shielded power inductor 4.7uH, 7x6.6x2.8mm, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "7.3x6.6x2.8mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "SRP7028A-4R7M",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.61034,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bourns-inc/SRP7028A-4R7M/4876648",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.55618,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bourns-inc/SRP7028A-4R7M/4876648",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.50247,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bourns-inc/SRP7028A-4R7M/4876648",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "IHLP2525CZER4R7M11",
+      "family": "IHLP-2525CZ-11",
+      "mfr": "Vishay Dale",
+      "desc": "Molded power inductor 4.7uH 6A, 2525, automotive",
+      "category": "passive_1206",
+      "pkg": "2525 (6.47x6.86mm)",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "IHLP2525CZER4R7M11",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.48208,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/IHLP2525CZER4R7M11/1220682",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Representative pick for IHLP-2525CZ-11."
+    },
+    {
+      "mpn": "VLS4012ET-4R7M",
+      "family": "VLS4012ET",
+      "mfr": "TDK",
+      "desc": "Shielded wirewound power inductor 4.7uH 1.9A, 4x4x1.2mm",
+      "category": "passive_1206",
+      "pkg": "4.0x4.0x1.2mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU-PSU",
+        "DC-DC",
+        "BCM"
+      ],
+      "observedMpn": "VLS4012ET-4R7M-CA",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 25000,
+          "price": 0.26125,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS4012ET-4R7M-CA/4743481",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Observed the -CA (automotive) code; only the 25k reel break in the summary. Plain VLS4012ET-4R7M out of stock at DK."
+    },
+    {
+      "mpn": "WSL2512R0100FEA",
+      "family": "WSL2512",
+      "mfr": "Vishay Dale",
+      "desc": "Current-sense resistor 10mR 1% 1W, 2512",
+      "category": "passive_1206",
+      "pkg": "2512",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "ECU-PSU",
+        "motor-drive"
+      ],
+      "observedMpn": "WSL2512R0100FEA",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.20924,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL2512R0100FEA/713493",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.16561,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL2512R0100FEA/713493",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "WSLP2512R0050FEA",
+      "family": "WSLP2512",
+      "mfr": "Vishay Dale",
+      "desc": "Power metal strip current-sense 5mR 1% 3W, 2512",
+      "category": "passive_1206",
+      "pkg": "2512",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "ECU-PSU",
+        "motor-drive"
+      ],
+      "observedMpn": "WSLP2512R0050FEA",
+      "observations": [],
+      "notes": "Representative pick for WSLP2512; no distributor price found for this code (search returned other values only)."
+    },
+    {
+      "mpn": "CSS2H-2512R-L500F",
+      "family": "CSS2H",
+      "mfr": "Bourns",
+      "desc": "Metal-element current-sense 0.5mR 1% 6W, 2512, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "2512",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "motor-drive"
+      ],
+      "observedMpn": "CSS2H-2512R-L500F",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.63,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-2512R-L500F/6023753",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.56,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-2512R-L500F/6023753",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 15000,
+          "price": 0.49,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bourns-inc/CSS2H-2512R-L500F/6023753",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Prices as rounded in the search summary."
+    },
+    {
+      "mpn": "ERJ-2RKF1002X",
+      "family": "ERJ-2RK",
+      "mfr": "Panasonic",
+      "desc": "Thick film 10k 1% 1/10W, 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "ERJ-2RKF1002X",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00521,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-2RKF1002X/192073",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Reel (TR) 10k break; DK cut-tape 10k shown as $0.00542."
+    },
+    {
+      "mpn": "CRCW040210K0FKED",
+      "family": "CRCW0402",
+      "mfr": "Vishay Dale",
+      "desc": "Thick film 10k 1% 1/16W, 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "CRCW040210K0FKED",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.00882,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040210K0FKED/1178121",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00551,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW040210K0FKED/1178121",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "AC0402FR-0710KL",
+      "family": "AC0402",
+      "mfr": "YAGEO",
+      "desc": "Thick film 10k 1% 1/16W, 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "AC0402FR-0710KL",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 0.00406,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/yageo/AC0402FR-0710KL/5895030",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00204,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/yageo/AC0402FR-0710KL/5895030",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "RK73H1ETTP1002F",
+      "family": "RK73H1E",
+      "mfr": "KOA Speer",
+      "desc": "Thick film 10k 1% 1/10W, 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "RK73H1ETTP1002F",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00481,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RK73H1ETTP1002F/9844154",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 100000,
+          "price": 0.00355,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RK73H1ETTP1002F/9844154",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "ERJ-PB3B1002V",
+      "family": "ERJ-PB3",
+      "mfr": "Panasonic",
+      "desc": "High-precision thick film 10k 0.1% 1/5W, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "ERJ-PB3B1002V",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.04434,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-PB3B1002V/6212869",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.03624,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-PB3B1002V/6212869",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "PAT0603E1002BST1",
+      "family": "PAT0603",
+      "mfr": "Vishay Dale Thin Film",
+      "desc": "Thin film 10k 0.1% anti-sulfur, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "PAT0603E1002BST1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 12000,
+          "price": 0.33954,
+          "currency": "USD",
+          "url": "https://digikey.com/product-detail/en/vishay-thin-film/PAT0603E1002BST1/PAT10KACT-ND/2278993",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Only the 12k break in the summary; precision anti-sulfur thin film, ~10x a thick-film chip."
+    },
+    {
+      "mpn": "CRCW0603100RFKEAHP",
+      "family": "CRCW0603-HP",
+      "mfr": "Vishay Dale",
+      "desc": "Thick film pulse-proof 100R 1% 1/4W, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "CRCW0603100RFKEAHP",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.02548,
+          "currency": "USD",
+          "url": "https://www.digikey.com/product-detail/en/CRCW0603100RFKEAHP/541-100SDKR-ND/2223270",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 0.02336,
+          "currency": "USD",
+          "url": "https://www.digikey.com/product-detail/en/CRCW0603100RFKEAHP/541-100SDKR-ND/2223270",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Representative pick for CRCW0603 HP. Reel (5k) break not in summary."
+    },
+    {
+      "mpn": "ERJ-3EKF1002V",
+      "family": "ERJ-3EK",
+      "mfr": "Panasonic",
+      "desc": "Thick film 10k 1% 1/10W, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "BCM",
+        "gateway",
+        "BMS"
+      ],
+      "observedMpn": "ERJ-3EKF1002V",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.01021,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-3EKF1002V/198102",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.00751,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-3EKF1002V/198102",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00674,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-3EKF1002V/198102",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    }
+  ]
+}
