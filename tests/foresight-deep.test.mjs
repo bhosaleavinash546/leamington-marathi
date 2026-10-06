@@ -284,3 +284,37 @@ describe('only earned findings reach the register', () => {
     assert.match(c[0].replaces, /curator/);
   });
 });
+
+// ── Oct 2026 review: the report and the claims are checked, not trusted ────
+import { checkReport, valueInQuote, unitOf as unitOf2, parseFigure as parseFigure2 } from '../foresight-deep.mjs';
+
+it('checkReport drops citations to claims that do not exist and sentences with numbers not in their claims', () => {
+  const claims = [{ id: 'c1', value: '255 Wh/kg', statement: 'Cells reach 255 Wh/kg', quote: 'reach 255 Wh/kg at pack level' }];
+  const { report, removed } = checkReport({
+    summary: 'Cells reach 255 Wh/kg [c1]. Share will be 50% by 2028 [c99]. Toyota will launch in 2027.',
+    sections: [{ questionId: 'q1', heading: 'Density', findings: 'Pack density is 255 Wh/kg [c1]. A rival claims 300 Wh/kg [c1].' }],
+    trajectory: 'Density keeps rising [c1].', couldNotEstablish: 'No source gave a 2030 price.',
+  }, claims);
+  assert.equal(report.summary, 'Cells reach 255 Wh/kg [c1].');
+  assert.equal(report.sections[0].findings, 'Pack density is 255 Wh/kg [c1].');
+  assert.equal(report.couldNotEstablish, '');
+  assert.ok(removed.citations >= 1 && removed.sentences >= 4);
+});
+
+it('checkReport survives a malformed report (no sections array)', () => {
+  const { report } = checkReport({ summary: 'x', sections: 'oops' }, []);
+  assert.deepEqual(report.sections, []);
+});
+
+it('a claim figure must be inside its own quote', () => {
+  assert.equal(valueInQuote('255 Wh/kg', 'the cells reach 255 Wh/kg at pack level'), true);
+  assert.equal(valueInQuote('300 Wh/kg', 'the cells reach 255 Wh/kg at pack level'), false);
+  assert.equal(valueInQuote('1,200 MPa', 'tensile strength of 1200 MPa'), true);
+});
+
+it('figure and unit parsing no longer manufacture disagreements', () => {
+  assert.equal(parseFigure2('1,200 MPa'), 1200);
+  assert.equal(unitOf2('$95/kWh'), 'usd/kwh');
+  assert.equal(unitOf2('140 kWh'), 'kwh');
+  assert.equal(unitOf2('€4.20/kg'), 'eur/kg');
+});

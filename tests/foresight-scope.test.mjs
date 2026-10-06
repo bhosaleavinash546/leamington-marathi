@@ -90,3 +90,20 @@ describe('the answer shape is stated, not implied', () => {
     }
   });
 });
+
+// ── Oct 2026 review: relevance on the queries a demo actually types ─────────
+it('scope (Oct 2026): system-level queries keep their commodity; part queries keep only the part', () => {
+  const exact = (q) => { const r = foresightFor({ query: q }); return [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3].filter((c) => !c.related).map((c) => c.id); };
+  // A system-level query is about the whole system.
+  assert.ok(exact('BEV HV battery').length >= 20, 'HV battery query lost its battery technologies');
+  // Thermal hardware filed under Electrical is still the heat pump's answer.
+  assert.ok(exact('HVAC heat pump').includes('e-compressor-800v'), 'e-compressor demoted for a heat-pump query');
+  // A phrase does not leak through one of its words into another commodity.
+  assert.ok(!exact('steering wheel').some((id) => /tyre|tire|wheel-/.test(id) && id !== 'retractable-steering'), 'steering wheel leaked into wheel/tyre tech');
+  // A head noun in the same commodity is still relevant.
+  assert.ok(exact('wiring harness').includes('zonal-architecture'), 'zonal architecture is a wiring-harness answer');
+  // A part query does not list commodity-only matches as answers.
+  assert.ok(!exact('EDU stator assembly').includes('speed-reducer-2speed'), '2-speed gearbox listed as a stator answer');
+  // Plurals: "brakes" is not "brak".
+  assert.ok(exact('brakes').length > 0, 'plural brakes query found nothing');
+});

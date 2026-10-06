@@ -43,7 +43,10 @@ export async function searchPatents(title, description = '', { max = 5 } = {}, d
   if (cached && now() - cached.at < CACHE_TTL_MS) return { configured: true, query, patents: cached.results, cached: true };
 
   const body = {
-    q: { _or: [{ _text_any: { patent_title: query } }, { _text_any: { patent_abstract: query } }] },
+    // ALL words, not ANY (Oct 2026 review): _text_any matched patents carrying
+    // a single word of the query ("battery", "cells"), newest first, so the
+    // list — and the velocity chip below — mostly reflected generic words.
+    q: { _or: [{ _text_all: { patent_title: query } }, { _text_all: { patent_abstract: query } }] },
     f: ['patent_id', 'patent_title', 'patent_date', 'patent_abstract', 'assignees.assignee_organization'],
     o: { size: Math.min(Math.max(1, max), 10) },
     s: [{ patent_date: 'desc' }],
@@ -65,7 +68,7 @@ export async function searchPatents(title, description = '', { max = 5 } = {}, d
     url: p.patent_id ? `https://patents.google.com/patent/US${String(p.patent_id).replace(/^US/i, '')}` : '',
   })).filter(p => p.number);
   _cache.set(query, { at: now(), results: patents });
-  return { configured: true, query, patents };
+  return { configured: true, query, patents, matchMode: 'all query words in title or abstract — keyword match, relevance not reviewed' };
 }
 
 /**
@@ -96,7 +99,7 @@ export async function patentVelocity(query, { years = 5 } = {}, deps = {}) {
         _and: [
           { _gte: { patent_date: `${year}-01-01` } },
           { _lte: { patent_date: `${year}-12-31` } },
-          { _or: [{ _text_any: { patent_title: q } }, { _text_any: { patent_abstract: q } }] },
+          { _or: [{ _text_all: { patent_title: q } }, { _text_all: { patent_abstract: q } }] },
         ],
       },
       f: ['patent_id'],

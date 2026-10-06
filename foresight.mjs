@@ -85,7 +85,19 @@ export function horizonFor(trl, adoptionPct, regPullYear = null, now = REGISTER_
   const bi = H_ORDER.indexOf(base);
   const ri = H_ORDER.indexOf(regBucket);
   if (ri >= bi) return { horizon: base, regPulled: false };
-  return { horizon: H_ORDER[Math.max(ri, bi - 1)], regPulled: true };
+  // The maturity floor holds AFTER the pull too (Oct 2026 review): a law can
+  // make a decision more urgent, it cannot make a TRL-6 technology that has
+  // never been produced something to quote now. Before this, immersion-cooled
+  // packs (TRL 6, 0%) were filed "adopt/quote now" on a battery-safety rule.
+  const pulled = H_ORDER[Math.max(ri, bi - 1, H_ORDER.indexOf(maturityFloor))];
+  return { horizon: pulled, regPulled: pulled !== base };
+}
+
+/** Law that binds: in force or adopted. Proposals, revisions, repealed law and
+ *  consumer-test protocols (Euro NCAP) are context — they never pull a lane
+ *  and never make a technology "committed". One predicate, used everywhere. */
+export function isFirmAnchor(a) {
+  return !!a && (a.status === 'in-force' || a.status === 'adopted');
 }
 
 // ── Bass diffusion (cumulative) ──────────────────────────────────────────────
@@ -201,7 +213,11 @@ export function wrightCostIndex(cumulativeMultiple, learningRate = 0.15) {
 }
 
 // Curated cost-trend direction → Wright learning rate used for the index.
-export const TREND_LEARNING = { 'falling-fast': 0.22, falling: 0.12, flat: 0.03, rising: -0.05 };
+// 'flat' means flat: a curated flat cost trend used to fall 21% in 8 years.
+export const TREND_LEARNING = { 'falling-fast': 0.22, falling: 0.12, flat: 0, rising: -0.05 };
+
+/** Years of today's output assumed already produced, as Wright's starting base. */
+export const LEARNING_BASE_YEARS = 3;
 
 /**
  * Cumulative Bass adoption ∫₀ᵗ F(τ) dτ, in share-years (closed form).
@@ -234,7 +250,11 @@ export function costOutlook(tech, yearsAhead) {
   const ceiling = Math.max(Number(tech.ceiling ?? 90) || 0, 0.1);
   const F0 = Math.min(Math.max(tech.adoptionPct, 0.5) / ceiling, 0.999);
   const t0 = bassTimeFor(F0);
-  const cum0 = Math.max(bassCumulative(t0), F0 * 1);
+  // Starting base: at least THREE years of today's output (Oct 2026 review). One
+  // year gave a 1%-share technology ~7 cost halvings in 8 years (GaN inverter
+  // and silicon anode read 0.15) — doublings no supplier would quote. Three
+  // years is a stated assumption, not a fit; see LEARNING_BASE_YEARS.
+  const cum0 = Math.max(bassCumulative(t0), F0 * LEARNING_BASE_YEARS);
   // At saturation the curve is flat at the ceiling: output continues at that
   // rate, so cumulative volume still grows linearly — learning slows, it does
   // not stop.
@@ -242,8 +262,20 @@ export function costOutlook(tech, yearsAhead) {
     ? F0 * yearsAhead
     : bassCumulative(t0 + yearsAhead) - bassCumulative(t0));
   const multiple = Math.max(cum1 / cum0, 1);
-  return wrightCostIndex(multiple, lr);
+  const raw = wrightCostIndex(multiple, lr);
+  // A BOUND, not a fit (Oct 2026 review): on an uncurated 90% ceiling a 1%-share
+  // technology's modelled volume explodes and Wright's law returned 0.22 in
+  // eight years. The index is held at or above a per-trend floor over 8 years
+  // (scaled geometrically for shorter horizons) — the steepest decline the
+  // curated trend direction can defend.
+  const floor8 = COST_FLOOR_8Y[tech.costTrend];
+  if (floor8 == null || lr <= 0) return raw;
+  const floor = Math.round(Math.pow(floor8, yearsAhead / 8) * 100) / 100;
+  return Math.max(raw, floor);
 }
+
+/** Lowest modelled cost index allowed at +8 years per curated trend. */
+export const COST_FLOOR_8Y = { 'falling-fast': 0.5, falling: 0.65 };
 
 // ── Momentum ─────────────────────────────────────────────────────────────────
 /**
@@ -259,10 +291,10 @@ export function momentumScore(tech, { now = REGISTER_VINTAGE, anchors = REG_ANCH
   let regPts = 0;
   if (tech.regAnchor) {
     const a = anchors.find((x) => x.id === tech.regAnchor);
-    const firm = a && (a.status === 'in-force' || a.status === 'adopted' || a.status === undefined);
+    const firm = isFirmAnchor(a);
     regPts = !a ? 0 : !firm ? 3 : a.year <= now + 5 ? 10 : 5;   // proposals are weak momentum
   }
-  const prodPts = tech.firstProduction ? 10 : 0;
+  const prodPts = hasProductionEvidence(tech.firstProduction) ? 10 : 0;
   return Math.round(trlPts + adoptPts + trendPts + driverPts + regPts + prodPts);
 }
 
@@ -288,12 +320,32 @@ export function patentTrend(counts) {
 }
 
 // ── Confidence tiers (honesty architecture) ──────────────────────────────────
-/** committed: anchored to a regulation or named production programme.
+/** Words that mark a firstProduction string as NOT series production. */
+const NOT_PRODUCTION_RE = /\b(discontinu\w*|review\w*|research|concept\w*|announc\w*|prototype\w*|pilot\w*|delayed|planned|target\w*|slated|evaluat\w*|study|studies|patent\w*|R&D|demo\w*|trial\w*)\b/i;
+
+/** A named series-production programme — not a review paper, a pilot or a plan. */
+export function hasProductionEvidence(firstProduction) {
+  const t = typeof firstProduction === 'string' ? firstProduction.trim() : '';
+  return t !== '' && !/^none/i.test(t) && !NOT_PRODUCTION_RE.test(t);
+}
+
+/** committed: production-ready (TRL ≥ 7) AND anchored to binding law or a
+ *              named series-production programme.
  *  probable:  production-ready maturity (TRL ≥ 7) without a hard anchor.
- *  speculative: everything earlier — the UI labels these prominently. */
-export function confidenceTier(tech) {
-  if (tech.regAnchor || tech.firstProduction) return 'committed';
-  if (tech.trl >= 7) return 'probable';
+ *  speculative: everything earlier — the UI labels these prominently.
+ *
+ *  Oct 2026 review: ANY regulation link or ANY non-empty production string used
+ *  to qualify, so 137 of 180 entries (76%) wore the COMMITTED pill — a TRL-4
+ *  e-fuel linked to the very law that bans ICE, a discontinued pack, a "reviews
+ *  (2026)" literature citation. A tier that nearly everything earns says nothing. */
+export function confidenceTier(tech, anchors = REG_ANCHORS) {
+  if (tech.trl >= 7) {
+    const a = tech.regAnchor ? anchors.find((x) => x.id === tech.regAnchor) : null;
+    // A launch that never diffused (stalledSince) is not a commitment, however
+    // long ago it shipped — it would otherwise wear COMMITTED in an H3 lane.
+    if ((isFirmAnchor(a) || hasProductionEvidence(tech.firstProduction)) && stalledSince(tech) === null) return 'committed';
+    return 'probable';
+  }
   return 'speculative';
 }
 
@@ -347,20 +399,39 @@ function termPattern(term) {
   return re;
 }
 
+/**
+ * Commodity- and system-level words. They are real matchTerms (a "battery"
+ * query should see battery technologies) but they are not a PART: 31 entries
+ * carry "battery", 11 "edu". Scoring them like "stator" or "lamination" put a
+ * 2-speed gearbox level with laminations for "EDU stator assembly" (Oct 2026
+ * review). A hit on one of these is weak evidence — see GENERIC hits below.
+ */
+export const GENERIC_MATCH_TERMS = new Set(['battery', 'edu', 'e-motor', 'motor', 'interior', 'exterior', 'biw', 'chassis', 'electrical', 'electronics', 'hvac', 'adas', 'body', 'pack', 'cell', 'powertrain', 'driveline', 'thermal', 'system', 'software', 'safety', 'lighting', 'ice', 'bev', 'ev']);
+
+/** Words that qualify a query without naming a part. */
+const QUERY_QUALIFIERS = new Set(['hv', 'lv', 'high', 'low', 'voltage', 'assembly', 'assemblies', 'system', 'systems', 'unit', 'units', 'part', 'parts', 'module', 'modules', 'mhev', 'phev', 'hev', '48v', '800v', '400v', 'new', 'next', 'gen', 'the', 'and', 'for', 'of']);
+
 export function resolveParts(query, register = FORESIGHT_REGISTER) {
   const q = String(query ?? '').toLowerCase();
   if (!q.trim()) return [];
   const raw = q.split(/[^a-z0-9]+/).filter((w) => w.length >= 2);
   // Singular forms too, so "sensors" satisfies a multi-word term's "sensor".
-  const qTokens = new Set([...raw, ...raw.map((w) => w.replace(/(?:es|s)$/, '')).filter((w) => w.length >= 2)]);
+  // Both candidates: stripping "es" greedily turned "brakes" into "brak".
+  const qTokens = new Set([...raw,
+    ...raw.map((w) => w.replace(/s$/, '')).filter((w) => w.length >= 2),
+    ...raw.map((w) => w.replace(/es$/, '')).filter((w) => w.length >= 2)]);
   const scored = [];
   for (const tech of register) {
     let score = 0;
-    const hits = { multi: 0, single: 0, tokens: 0 };
+    const hits = { multi: 0, single: 0, tokens: 0, generic: 0, terms: [] };
     for (const term of tech.matchTerms) {
       // A multi-word exact hit ("electrical steel") is more specific than a
       // single generic word ("electrical") and must outrank it (2026 audit).
-      if (termPattern(term).test(q)) { const multi = term.includes(' '); score += multi ? 3 : 2; hits[multi ? 'multi' : 'single']++; }
+      if (termPattern(term).test(q)) {
+        const multi = term.includes(' ');
+        if (!multi && GENERIC_MATCH_TERMS.has(term)) { score += 0.5; hits.generic++; hits.terms.push(term); continue; }
+        score += multi ? 3 : 2; hits[multi ? 'multi' : 'single']++; hits.terms.push(term);
+      }
       // Multi-word terms need EVERY word present — a lone generic token like
       // "front" or "air" must not drag in unrelated technologies.
       else if (term.split(/\s+/).every((w) => qTokens.has(w))) { score += 1; hits.tokens++; }
@@ -406,6 +477,7 @@ const MIN_LANDSCAPE = 5;
 export const STALE_AFTER = 3;
 
 const EVIDENCE_YEAR_RE = /(20[12]\d)/g;
+const FORWARD_WORD_RE = /\b(watch|target\w*|expect\w*|plan\w*|aim\w*|slated|due|by|from|next|roadmap|until|scheduled|forecast\w*|projected)\b[^.;]*$/i;
 
 /**
  * The newest year this entry can actually prove, from `lastVerified` first and
@@ -420,10 +492,16 @@ export function evidenceYear(tech, { now = REGISTER_VINTAGE } = {}) {
   // count would have made the least-proven entries look the most current --
   // exactly backwards. Caught by a self-check during Phase 1: an unproduced
   // LMR entry scored evidenceYear 2028 and read as fresher than a shipping one.
-  for (const text of [tech?.firstProduction, tech?.note]) {
-    for (const m of String(text ?? '').matchAll(EVIDENCE_YEAR_RE)) {
+  for (const [field, text] of [['firstProduction', tech?.firstProduction], ['note', tech?.note]]) {
+    const str = String(text ?? '');
+    for (const m of str.matchAll(EVIDENCE_YEAR_RE)) {
       const y = Number(m[1]);
-      if (y <= now) max = Math.max(max, y);
+      if (y > now) continue;
+      // In prose, a year after a forward-looking word is a plan, not evidence
+      // ("watch pilot magnets 2026-27" made an unproduced entry read fresh —
+      // Oct 2026 review). firstProduction is evidence by definition.
+      if (field === 'note' && FORWARD_WORD_RE.test(str.slice(Math.max(0, m.index - 28), m.index))) continue;
+      max = Math.max(max, y);
     }
   }
   // `lastVerified` is a deliberate act with a date, not prose — it is trusted
@@ -514,12 +592,36 @@ export function isPrelaunch(adoptionPct, firstProduction, trl = null) {
 
 export const PRELAUNCH_BASIS = 'Not in series production anywhere yet. The diffusion model counts years from a launch this register does not date, so no adoption or cost figure is projected; the lane follows maturity.';
 
+/** Years without measurable share after first production that mark a technology as stalled. */
+export const STALL_YEARS = 5;
+
+/**
+ * In production for years yet still at 0% share: fuel-cell stacks (Mirai since
+ * 2014) were placed at the START of a fresh Bass ramp and projected "half its
+ * ceiling by 2031" (Oct 2026 review). The standard curve assumes a launch, and
+ * this technology launched long ago and did not diffuse — so nothing is
+ * projected. Returns the earliest production year, or null when not stalled.
+ */
+export function stalledSince(tech, now = REGISTER_VINTAGE) {
+  if (tech.adoptionPct !== 0 || !hasProductionEvidence(tech.firstProduction)) return null;   // an explicit 0% share, not a missing one
+  const years = [...String(tech.firstProduction).matchAll(/\b((?:19|20)\d{2})\b/g)].map((m) => Number(m[1])).filter((y) => y <= now);
+  if (!years.length) return null;
+  const first = Math.min(...years);
+  return first <= now - STALL_YEARS ? first : null;
+}
+
+export const stalledBasis = (year) => `In series production since ${year} but still at ~0% share — it has not diffused, so the standard diffusion curve (which assumes a launch) does not apply and no adoption or cost figure is projected; the lane follows maturity.`;
+
 /** The lane for one technology, by the same rule wherever it is needed. */
 export function laneFor(tech, now = REGISTER_VINTAGE, anchors = REG_ANCHORS) {
   const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
-  const pullYear = anchor && (anchor.status === 'in-force' || anchor.status === 'adopted') ? anchor.year : null;
+  const pullYear = isFirmAnchor(anchor) ? anchor.year : null;
   const ceilingPct = tech.ceiling ?? 90;
-  const decisionYear = isPrelaunch(tech.adoptionPct, tech.firstProduction, tech.trl)
+  // Stalled = launched long ago, never diffused: "track, don't commit" (H3),
+  // not the no-model "TRL ≥ 8 → quote now" fallback that put fuel-cell stacks
+  // (0% share, Mirai since 2014) in Horizon 1.
+  const decisionYear = stalledSince(tech, now) !== null ? 'stalled'
+    : isPrelaunch(tech.adoptionPct, tech.firstProduction, tech.trl)
     ? null
     : inflectionYears(tech.adoptionPct, { now, ceilingPct }).cross25;
   return horizonFor(tech.trl, tech.adoptionPct, pullYear, now, { decisionYear, ceilingPct });
@@ -529,13 +631,26 @@ function techCard(tech, now, anchors) {
   const anchor = tech.regAnchor ? anchors.find((a) => a.id === tech.regAnchor) ?? null : null;
   const ceilingPct = tech.ceiling ?? 90;
   const prelaunch = isPrelaunch(tech.adoptionPct, tech.firstProduction, tech.trl);
+  const stalled = prelaunch ? null : stalledSince(tech, now);
+  const noModel = prelaunch || stalled !== null;
   const adoption = { now: tech.adoptionPct };
   const costIndex = { now: 1 };
+  // Diffusion speed (q) is the least certain input, so every projected share
+  // carries the same q ±25% band the crossing years already had.
+  const adoptionBand = {};
   for (const y of PROJECTION_YEARS) {
-    adoption[`in${y}`] = prelaunch ? null : projectAdoption(tech.adoptionPct, y, { ceilingPct });
-    costIndex[`in${y}`] = prelaunch ? null : costOutlook(tech, y);
+    adoption[`in${y}`] = noModel ? null : projectAdoption(tech.adoptionPct, y, { ceilingPct });
+    adoptionBand[`in${y}`] = noModel ? null : [
+      projectAdoption(tech.adoptionPct, y, { ceilingPct, q: BASS_DEFAULTS.q * 0.75 }),
+      projectAdoption(tech.adoptionPct, y, { ceilingPct, q: BASS_DEFAULTS.q * 1.25 }),
+    ];
+    // No curated cost direction (an AI-researched promotion) → no cost index.
+    costIndex[`in${y}`] = noModel || !(tech.costTrend in TREND_LEARNING) ? null : costOutlook(tech, y);
   }
-  const crossings = prelaunch ? null : inflectionYears(tech.adoptionPct, { now, ceilingPct });
+  const crossings = noModel ? null : inflectionYears(tech.adoptionPct, { now, ceilingPct });
+  const ceilingNote = tech.ceiling != null
+    ? `a curated ~${ceilingPct}% segment ceiling`
+    : 'the default 90% segment ceiling (not curated)';
   // The lane follows the modelled decision year, not raw maturity (2026 fix).
   const { horizon, regPulled } = laneFor(tech, now, anchors);
   return {
@@ -545,13 +660,16 @@ function techCard(tech, now, anchors) {
     regPulled,
     currency: currencyOf(tech, { now }),
     momentum: momentumScore(tech, { now, anchors }),
-    confidence: confidenceTier(tech),
+    confidence: confidenceTier(tech, anchors),
     regAnchorDetail: anchor,
     projection: {
       basis: prelaunch
         ? PRELAUNCH_BASIS
-        : `Bass diffusion (p=0.03, q=0.38${ceilingPct !== 90 ? `, segment ceiling ~${ceilingPct}%` : ''}) + Wright learning on cumulative volume by cost trend — modelled, not measured`,
-      adoption, costIndex, crossings, prelaunch: prelaunch || undefined,
+        : stalled !== null
+          ? stalledBasis(stalled)
+          : `${tech.estimatedInputs ? 'AI-ESTIMATED TRL and adoption — modelled on estimates. ' : ''}Bass diffusion (p=0.03, q=0.38 ±25%) toward ${ceilingNote}${tech.costTrend in TREND_LEARNING ? ` + Wright learning on cumulative volume by cost trend (base ${LEARNING_BASE_YEARS} years of current output)` : '; cost trend not curated, so no cost index'} — modelled, not measured`,
+      adoption, adoptionBand, costIndex, crossings, prelaunch: prelaunch || undefined, stalled: stalled ?? undefined,
+      ceilingCurated: tech.ceiling != null,
     },
   };
 }
@@ -586,13 +704,53 @@ export function foresightFor({ query = '', commodity = null, powertrain = null, 
     // Where the user PICKED the part (the BOM browser) is ground truth; the
     // text classifier is a guess from the words ("lambda sensors" reads as
     // Electrical), so the hint wins when there is one.
-    const qDomain = usedCommodity ? null : (commodityHint ?? inferCommodityKey(query) ?? null);
+    // Phrase matches outvote the word classifier: "HVAC heat pump" reads as
+    // Interior to the classifier, but every multi-word hit is a thermal entry
+    // filed under Electrical — demoting the e-compressor as "not your part"
+    // (Oct 2026 review). The commodity most phrase hits agree on wins.
+    const phraseDomain = (() => {
+      const counts = {};
+      for (const m of matched) if (m.hits?.multi) counts[m.tech.commodity] = (counts[m.tech.commodity] ?? 0) + 1;
+      const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+      return best ? best[0] : null;
+    })();
+    const qDomain = usedCommodity ? null : (commodityHint ?? phraseDomain ?? inferCommodityKey(query) ?? null);
+    // Specific evidence elsewhere demotes weak matches to labelled context:
+    //  • an entry hit ONLY on generic system words ("battery", "edu");
+    //  • an entry hit only by single words that sit INSIDE a phrase another
+    //    entry matched whole ("steering wheel" → sensorised tyres via "wheel").
+    // Generic-only demotion applies when the query names a PART ("stator",
+    // "underbody"); a system-level query ("BEV HV battery") is about the whole
+    // commodity, so its generic matches stay answers.
+    const partWords = String(query).toLowerCase().split(/[^a-z0-9-]+/)
+      .filter((w) => w.length >= 2 && !GENERIC_MATCH_TERMS.has(w) && !QUERY_QUALIFIERS.has(w));
+    const specific = partWords.length > 0 && matched.some((m) => (m.hits?.multi ?? 0) + (m.hits?.single ?? 0) > 0);
+    // Phrase leaks only count ACROSS commodities: "harness" in a zonal entry is
+    // still about a wiring harness; "wheel" in a tyre entry is not about a
+    // steering wheel.
+    const phraseHits = matched.filter((m) => (m.hits?.terms ?? []).some((t) => t.includes(' ')));
+    const phraseWords = new Set(phraseHits.flatMap((m) => m.hits.terms.filter((t) => t.includes(' ')).flatMap((t) => t.split(/\s+/))));
+    const phraseCommodities = new Set(phraseHits.map((m) => m.tech.commodity));
+    const weakOnly = (m) => {
+      const h = m.hits ?? {};
+      if (h.multi) return false;
+      if (specific && !h.single && !h.tokens && h.generic) return true;
+      const singles = (h.terms ?? []).filter((t) => !t.includes(' ') && !GENERIC_MATCH_TERMS.has(t));
+      return phraseHits.length > 0 && !phraseCommodities.has(m.tech.commodity)
+        && singles.length > 0 && !h.tokens && singles.every((t) => phraseWords.has(t));
+    };
+    const weakMatches = matched.filter(weakOnly);
+    if (weakMatches.length && weakMatches.length < matched.length) {
+      matched = matched.filter((m) => !weakOnly(m));
+      for (const m of weakMatches) relatedIds.add(m.tech.id);
+      demotedTechs = weakMatches.map((m) => m.tech);
+    }
     if (qDomain) {
       const weak = (m) => m.tech.commodity !== qDomain && !m.hits?.multi && ((m.hits?.single ?? 0) + (m.hits?.tokens ?? 0)) < 2;
       const demoted = matched.filter(weak);
       matched = matched.filter((m) => !weak(m));
       for (const m of demoted) relatedIds.add(m.tech.id);
-      demotedTechs = demoted.map((m) => m.tech);
+      demotedTechs = [...demotedTechs, ...demoted.map((m) => m.tech)];
     }
     if (!matched.length && !usedCommodity) {
       // Free text that matched no terms: try the commodity classifier as a net.

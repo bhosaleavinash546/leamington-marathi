@@ -5,7 +5,7 @@ export type Segment = 'off-road' | 'luxury' | 'software';
 export type CostTrend = 'falling-fast' | 'falling' | 'flat' | 'rising';
 export type Driver = 'cost' | 'regulation' | 'performance' | 'weight' | 'software' | 'sustainability';
 
-export type AnchorStatus = 'in-force' | 'adopted' | 'proposed' | 'under-revision' | 'repealed';
+export type AnchorStatus = 'in-force' | 'adopted' | 'proposed' | 'under-revision' | 'repealed' | 'protocol';
 
 export interface RegAnchor {
   id: string;

@@ -13,10 +13,10 @@ import './foresight.css';
 // ICE/MHEV/PHEV/BEV. Every number on this page is deterministic (curated
 // register + S-curve/Bass/Wright cores); the AI writes the briefing only.
 
-interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision' | 'repealed'; effect: string; }
+interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision' | 'repealed' | 'protocol'; effect: string; }
 type Crossing = number | 'passed' | null;
 type CrossingBand = [number | null, number | null] | null;
-interface Projection { basis: string; prelaunch?: boolean; adoption: Record<string, number | null>; costIndex: Record<string, number | null>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand; share25?: number; share50?: number; ceiling?: number; peakGrowth?: Crossing }; }
+interface Projection { basis: string; prelaunch?: boolean; stalled?: number; ceilingCurated?: boolean; adoptionBand?: Record<string, [number, number] | null>; adoption: Record<string, number | null>; costIndex: Record<string, number | null>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand; share25?: number; share50?: number; ceiling?: number; peakGrowth?: Crossing }; }
 interface TechCard {
   id: string; name: string; commodity: string; powertrains: string[]; replaces: string;
   trl: number; adoptionPct: number; firstProduction?: string; drivers: string[];
@@ -43,7 +43,7 @@ interface LandscapeCurrency {
 interface DeepClaim {
   id: string; questionId: string; statement: string; metric: string; value: string; subject: string;
   quote: string; confidence: string; sourceUrl: string; sourceTitle: string; origin: string;
-  origins: number; independent: boolean; fromPatentClaims?: boolean;
+  origins: number; independent: boolean; fromPatentClaims?: boolean; sourceYear?: number | null;
 }
 interface DeepContradiction {
   metric: string; subject: string; spreadPct: number;
@@ -63,6 +63,8 @@ interface DeepResult {
   ledger: DeepLedgerRow[];
   patents?: { configured: boolean; read: number; note: string; patents: Array<{ number: string; title: string; assignee: string; date: string; url: string; parameterBasis: string }> };
   report: { summary: string; sections: Array<{ questionId: string; heading: string; findings: string }>; trajectory: string; couldNotEstablish: string } | null;
+  reportError?: string | null;
+  reportCheck?: { citations: number; sentences: number } | null;
   limitations: string[];
   candidates?: Array<{ name: string; promotionBasis: string; contested: boolean }>;
   stats: {
@@ -83,7 +85,7 @@ interface ForesightResult {
   windows: { H1: HorizonWindow; H2: HorizonWindow; H3: HorizonWindow };
   horizons: { H1: TechCard[]; H2: TechCard[]; H3: TechCard[] };
   anchors: RegAnchor[];
-  narrative: { briefing: string; signals: Array<{ techId: string; watch: string }> } | null;
+  narrative: { briefing: string; signals: Array<{ techId: string; watch: string }>; numbersChecked?: { droppedSentences: number; droppedSignals: number } } | null;
   narrativeNote?: string | null;
   researched?: ResearchedBlock | null;
   note?: string;
@@ -96,10 +98,12 @@ interface ResearchedCandidate {
   /** Phase 2 grounding: the verbatim sentence this rests on, whether we opened
    *  the page it came from, and the hard number it turns on. */
   sourceQuote?: string; sourceRead?: boolean; quantitativeSpec?: string;
+  /** Oct 2026: each field is stamped by the server only when found in the evidence text. */
+  quoteVerified?: boolean; specVerified?: boolean; productionVerified?: boolean;
 }
 interface ResearchedBlock {
   candidates: ResearchedCandidate[];
-  fromCache?: boolean; cacheAgeDays?: number;
+  fromCache?: boolean; cacheAgeDays?: number; offered?: boolean;
   landscapeNote?: string | null; evidenceGaps?: string | null; trigger?: string; note?: string;
   evidence?: {
     searches?: Array<{ title: string; url: string; source?: string; read?: boolean; chars?: number; publishedYear?: number; readError?: string }>;
@@ -151,6 +155,12 @@ interface LedgerRevisit {
 
 const EXAMPLES = ['BEV HV battery', 'EDU stator assembly', 'Inverter', 'Suspension', 'BIW underbody', 'Headlamps', 'Cockpit display', 'Seats', 'Wiring harness', 'HVAC / heat pump'];
 
+/** The rule behind each tier, verbatim from foresight.mjs confidenceTier. */
+const CONFIDENCE_DEF: Record<TechCard['confidence'], string> = {
+  committed: 'Committed: production-ready (TRL ≥ 7) AND tied to binding law or a named series-production programme.',
+  probable: 'Probable: production-ready (TRL ≥ 7) without binding law or named series production.',
+  speculative: 'Speculative: below TRL 7 — not yet production-ready.',
+};
 const CONFIDENCE_STYLE: Record<TechCard['confidence'], string> = {
   committed: 'bg-gold-500/15 border-gold-500/30 text-gold-300',
   probable: 'bg-teal-500/10 border-teal-500/30 text-teal-300',
@@ -291,11 +301,11 @@ function SCurveSpark({ phase }: { phase: string }) {
 
 /** Modelled adoption path (now → +8y) as a small drawn area chart. */
 function BassSpark({ adoption }: { adoption: Record<string, number | null> }) {
-  // Not in production anywhere: nothing was projected, so nothing is drawn.
+  const t = useChartTheme();   // hooks before any early return
+  // Pre-launch or stalled: nothing was projected, so nothing is drawn.
   if (adoption.in3 == null) {
-    return <span className="text-2xs text-slate-500 w-[118px] shrink-0 leading-tight">not in production — no curve projected</span>;
+    return <span className="text-2xs text-slate-500 w-[118px] shrink-0 leading-tight">no curve projected — see the basis below</span>;
   }
-  const t = useChartTheme();
   const vals = [adoption.now, adoption.in3, adoption.in5, adoption.in8].map(v => Number(v) || 0);
   const W = 118, H = 32, PAD = 5;
   const max = Math.max(...vals, 1);
@@ -324,7 +334,7 @@ function crossingLabel(v: Crossing, band?: CrossingBand): string {
 }
 
 const ANCHOR_STATUS_LABEL: Record<string, string> = {
-  proposed: 'proposed — not yet law', 'under-revision': 'under revision — weakening', repealed: 'repealed — no longer law',
+  proposed: 'proposed — not yet law', 'under-revision': 'under revision — weakening', repealed: 'repealed — no longer law', protocol: 'consumer test protocol — not law',
 };
 
 function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
@@ -390,7 +400,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             <span className="px-1.5 py-0.5 rounded-md border border-white/15 bg-white/5 text-slate-400 text-2xs font-semibold uppercase tracking-wider" title="Widened into this landscape from the same commodity — no direct term match on your query.">related</span>
           )}
           {c.currency && <CurrencyChip currency={c.currency} />}
-          <span className={`px-2 py-0.5 rounded-md border text-2xs font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
+          <span title={CONFIDENCE_DEF[c.confidence]} className={`px-2 py-0.5 rounded-md border text-2xs font-semibold uppercase tracking-wide ${CONFIDENCE_STYLE[c.confidence]} ${c.confidence === 'committed' ? 'hz-committed' : ''}`}>{c.confidence}</span>
         </span>
       </div>
       <div className="flex items-end justify-between gap-2 mb-2">
@@ -455,7 +465,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               <div className="flex items-end gap-1.5 mb-1" title="US patent filings per year matching this technology">
                 {evidence.velocity.map(v => (
                   <div key={v.year} className="flex flex-col items-center gap-0.5">
-                    <div className="w-6 rounded-sm bg-teal-500/60" style={{ height: `${Math.max(3, (v.count / maxCount) * 34)}px` }} />
+                    <div className="w-6 rounded-sm" style={{ height: `${Math.max(3, (v.count / maxCount) * 34)}px`, background: ct.accent }} />
                     <span className="text-slate-500 text-2xs">{String(v.year).slice(2)}</span>
                   </div>
                 ))}
@@ -465,6 +475,9 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
                   </span>
                 )}
               </div>
+              {/* Say what this list IS (Oct 2026 review): a keyword search, not a
+                  curated prior-art review. */}
+              <p className="text-slate-500 text-2xs mt-1">US filings whose title or abstract contains every word of this technology's name — a keyword match, relevance not reviewed.</p>
               {evidence.patents.length > 0 && (
                 <div className="space-y-1 mt-2">
                   {evidence.patents.map(p => (
@@ -523,9 +536,18 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               <tr>
                 <td className="text-slate-500 py-0.5">Adoption %</td>
                 <td className="text-right">{c.projection.adoption.now}</td>
-                <td className="text-right">{c.projection.adoption.in3 ?? '—'}</td>
-                <td className="text-right">{c.projection.adoption.in5 ?? '—'}</td>
-                <td className="text-right">{c.projection.adoption.in8 ?? '—'}</td>
+                {(['in3', 'in5', 'in8'] as const).map(k => {
+                  const v = c.projection.adoption[k];
+                  const b = c.projection.adoptionBand?.[k];
+                  // A modelled share is shown with its q ±25% band — a single
+                  // point read as a forecast it is not.
+                  return (
+                    <td key={k} className="text-right whitespace-nowrap">
+                      {v ?? '—'}
+                      {v != null && b && <span className="block text-slate-500">{Math.round(b[0])}–{Math.round(b[1])}</span>}
+                    </td>
+                  );
+                })}
               </tr>
               <tr>
                 <td className="text-slate-500 py-0.5">Cost index</td>
@@ -547,6 +569,9 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
                 <span className="text-slate-500"> (milestones = ¼ and ½ of its {c.projection.crossings.ceiling}% ceiling)</span>
               )}
             </p>
+          )}
+          {c.projection.ceilingCurated === false && !c.projection.prelaunch && !c.projection.stalled && (
+            <p className="text-amber-300 text-2xs mt-1.5">Saturation ceiling not curated for this technology — the default 90% is assumed, so long-range shares are an upper-bound shape, not a forecast.</p>
           )}
           <p className="text-slate-500 text-2xs mt-1.5">{c.projection.basis}</p>
         </div>
@@ -764,7 +789,7 @@ export default function ForesightPage() {
     try {
       const r = await fetch('/api/foresight/promote', {
         method: 'POST', headers: authHeaders,
-        body: JSON.stringify({ candidate: c, query: result.query, commodity: result.commodity || undefined }),
+        body: JSON.stringify({ candidate: c, query: result.query, commodity: result.commodity || undefined, powertrains: powertrain ? [powertrain] : undefined }),
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || 'Promotion failed');
@@ -800,7 +825,7 @@ export default function ForesightPage() {
     }
   }
 
-  async function predict(qOverride?: string, commodityHint?: string) {
+  async function predict(qOverride?: string, commodityHint?: string, deep?: boolean) {
     const q = qOverride ?? query;
     if (!q.trim() && !commodity && !segment) { setError('Type a part, pick a commodity, or choose a segment lens.'); return; }
     if (!token) { setError('Please sign in.'); return; }
@@ -812,7 +837,7 @@ export default function ForesightPage() {
       const r = await fetch('/api/foresight/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ query: q, commodity: qOverride ? undefined : (commodity || undefined), commodityHint, powertrain: powertrain || undefined, segment: segment || undefined, apiKey }),
+        body: JSON.stringify({ query: q, commodity: qOverride ? undefined : (commodity || undefined), commodityHint, powertrain: powertrain || undefined, segment: segment || undefined, apiKey, ...(deep ? { deep: true } : {}) }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Foresight failed.');
@@ -943,7 +968,7 @@ export default function ForesightPage() {
                 <p className="mt-2 text-2xs text-amber-200/80">
                   Most of this landscape has not been confirmed recently — {result.currency.stale} entries cite evidence
                   {result.currency.medianEvidenceYear ? ` around ${result.currency.medianEvidenceYear}` : ''} and {result.currency.undated} cite no year at all.
-                  {result?.researched ? ' Live research was triggered for exactly this reason; its findings sit below, separately.' : ' Live research would be triggered here with an API key configured.'}
+                  {result?.researched?.offered ? ' Live research is offered below for exactly this reason — it runs when you ask.' : result?.researched ? ' Live research was run for exactly this reason; its findings sit below, separately.' : ' Live research would be offered here with an API key configured.'}
                 </p>
               )}
             </div>
@@ -1020,7 +1045,7 @@ export default function ForesightPage() {
                 <div className="mt-1">
                   <p className="text-slate-500 text-2xs font-mono mb-3">
                     {deep.stats.rounds} rounds · {deep.stats.sourcesSeen} sources seen, {deep.stats.sourcesRead} read · {deep.stats.distinctOrigins} distinct origins ·
-                    {' '}{deep.stats.claims} claims ({deep.stats.claimsWithFigures} with figures, {deep.stats.independentClaims} independently corroborated)
+                    {' '}{deep.stats.claims} claims ({deep.stats.claimsWithFigures} with figures, {deep.stats.independentClaims} carried by more than one domain)
                   </p>
 
                   {deep.contradictions.length > 0 && (
@@ -1038,10 +1063,21 @@ export default function ForesightPage() {
                     </div>
                   )}
 
+                  {!deep.report && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3 mb-3 text-2xs text-amber-200">
+                      No report was written: {deep.reportError ?? 'the synthesis step returned nothing'}. The claims and sources below are still shown.
+                    </div>
+                  )}
                   {deep.report && (
                     <>
+                      <p className="text-slate-500 text-2xs mb-1.5">
+                        AI-written synthesis of the verified claims listed below — every sentence was checked in code
+                        {deep.reportCheck && deep.reportCheck.citations + deep.reportCheck.sentences > 0
+                          ? `; ${deep.reportCheck.sentences} sentence(s) with unsupported figures and ${deep.reportCheck.citations} citation(s) to non-existent claims were removed.`
+                          : '; nothing needed removing.'}
+                      </p>
                       <p className="text-slate-300 text-xs leading-relaxed mb-3">{deep.report.summary}</p>
-                      {deep.report.sections.map((sec, i) => (
+                      {(deep.report.sections ?? []).map((sec, i) => (
                         <div key={i} className="mb-3">
                           <h4 className="text-slate-100 text-xs font-semibold mb-1">{sec.heading}</h4>
                           <p className="text-slate-400 text-2xs leading-relaxed">{sec.findings}</p>
@@ -1058,6 +1094,25 @@ export default function ForesightPage() {
                     </>
                   )}
 
+                  {/* The [cN] citations resolve here: every claim, its figure, the
+                      verbatim quote it was checked against, and the source. */}
+                  <details className="mb-2" open>
+                    <summary className="text-slate-400 text-2xs cursor-pointer hover:text-teal-300">Verified claims behind the citations ({deep.claims.length})</summary>
+                    <ul className="mt-2 space-y-1.5">
+                      {deep.claims.map(c => (
+                        <li key={c.id} id={`claim-${c.id}`} className="text-2xs">
+                          <span className="font-mono text-slate-300">[{c.id}]</span>{' '}
+                          <span className="text-slate-300">{c.statement}</span>
+                          {c.value && <span className="font-mono text-slate-400"> · {c.value}</span>}
+                          {c.confidence === 'implied' && <span className="ml-1 text-amber-300">inferred, not stated</span>}
+                          <span className="block text-slate-500 italic">“{c.quote}”</span>
+                          <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-teal-400/80 hover:text-teal-300">{c.origin}</a>
+                          <span className="text-slate-500"> · {c.sourceYear ?? 'undated'}{c.origins > 1 ? ` · carried by ${c.origins} domains` : ''}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+
                   <details className="mb-2">
                     <summary className="text-slate-400 text-2xs cursor-pointer hover:text-teal-300">Source ledger — every source, read or skipped ({deep.ledger.length})</summary>
                     <ul className="mt-2 space-y-1">
@@ -1066,6 +1121,7 @@ export default function ForesightPage() {
                           <span className={r.read ? 'text-emerald-400' : 'text-slate-500'}>{r.read ? 'READ' : 'skip'}</span>
                           <span className="text-slate-500">r{r.round}</span>
                           <span className="text-slate-400">{r.claimsContributed} claims</span>
+                          <span className="text-slate-500">{r.publishedYear ?? 'undated'}</span>
                           <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-teal-400/80 hover:text-teal-300 truncate max-w-[38ch]">{r.origin}</a>
                           {!r.read && r.skippedBecause && <span className="text-slate-500">— {r.skippedBecause}</span>}
                         </li>
@@ -1102,11 +1158,32 @@ export default function ForesightPage() {
                   <span className="text-2xs uppercase tracking-wider text-teal-300/70 border border-teal-500/30 rounded px-1.5 py-0.5" title="Served from the knowledge cache — this research question was already answered and cost nothing to reuse.">cached {result.researched.cacheAgeDays ?? 0}d ago</span>
                 )}
               </div>
+              {result.researched.offered ? (
+                <div className="flex flex-wrap items-center gap-3 mb-1">
+                  <p className="text-slate-400 text-xs flex-1 min-w-[16rem]">
+                    {result.researched.trigger === 'stale-register-coverage'
+                      ? 'Most of the curated answer has not been confirmed recently.'
+                      : result.researched.trigger === 'no-future-lane'
+                        ? 'The curated register has nothing in a future lane for this query.'
+                        : 'The curated register is thin for this query.'}
+                    {' '}Live forward research can search current sources for what is coming — it takes 1–2 minutes and uses API credits, so it runs only when you ask.
+                  </p>
+                  <button type="button" onClick={() => predict(query, undefined, true)} disabled={loading}
+                    className="h-9 px-3 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold transition-colors disabled:opacity-50">
+                    Run forward research
+                  </button>
+                </div>
+              ) : (
               <p className="text-slate-400 text-2xs mb-3">
-                The curated register was thin for this query, so the tool searched live sources for what is coming.
-                TRL and adoption below are <span className="text-violet-300">AI estimates</span> — every projection built on them is
+                {result.researched.trigger === 'stale-register-coverage'
+                  ? 'Most of the curated answer has not been confirmed recently, so the tool searched live sources for what is coming.'
+                  : result.researched.trigger === 'no-future-lane'
+                    ? 'The curated register had nothing in a future lane, so the tool searched live sources for what is coming.'
+                    : 'The curated register was thin for this query, so the tool searched live sources for what is coming.'}
+                {' '}TRL and adoption below are <span className="text-violet-300">AI estimates</span> — every projection built on them is
                 modelled on estimated inputs, not measured. Uncited claims were dropped in code.
               </p>
+              )}
               {/* Phase 2: how deep the retrieval actually went. "We read the page"
                   and "a search engine showed us a blurb" are different evidence
                   and the reader is entitled to know which they are looking at. */}
@@ -1126,7 +1203,7 @@ export default function ForesightPage() {
                 </p>
               )}
               {result.researched.landscapeNote && <p className="text-slate-300 text-xs mb-3">{result.researched.landscapeNote}</p>}
-              {result.researched.candidates.length === 0 && (
+              {!result.researched.offered && result.researched.candidates.length === 0 && (
                 <p className="text-slate-500 text-xs">{result.researched.note}</p>
               )}
               <div className="space-y-3">
@@ -1150,14 +1227,19 @@ export default function ForesightPage() {
                     <p className="text-slate-300 text-xs mt-1.5">{c.whatItIs}</p>
                     {c.replaces && <p className="text-slate-500 text-2xs mt-1">Replaces: {c.replaces}</p>}
                     {c.whyItMatters && <p className="text-slate-400 text-2xs mt-0.5">Cost relevance: {c.whyItMatters}</p>}
-                    {c.earliestProduction && <p className="text-emerald-300/80 text-2xs mt-0.5">Earliest production cited: {c.earliestProduction}</p>}
-                    {c.quantitativeSpec && c.quantitativeSpec !== 'no figure in sources' && (
-                      <p className="text-teal-300/90 text-2xs mt-0.5 font-mono">Figure in evidence: {c.quantitativeSpec}</p>
+                    {/* Shown ONLY when the server found it in the evidence text
+                        (Oct 2026 review) — never as styled "evidence" on trust. */}
+                    {c.earliestProduction && c.productionVerified && <p className="text-slate-400 text-2xs mt-0.5">Earliest production in the source: {c.earliestProduction}</p>}
+                    {c.quantitativeSpec && c.specVerified && c.quantitativeSpec !== 'no figure in sources' && (
+                      <p className="text-slate-300 text-2xs mt-0.5 font-mono">Figure in the source: {c.quantitativeSpec}</p>
                     )}
-                    {c.sourceQuote && (
+                    {c.sourceQuote && c.quoteVerified !== false ? (
                       <blockquote className="mt-1.5 pl-2.5 border-l-2 border-violet-500/40 text-slate-400 text-2xs italic">
                         “{c.sourceQuote}”
+                        <span className="not-italic text-slate-500"> — {c.sourceRead ? 'checked against the page' : 'checked against the search snippet only'}</span>
                       </blockquote>
+                    ) : (
+                      <p className="text-slate-500 text-2xs mt-1">No verifiable quote — the supporting text was not found in the source we hold.</p>
                     )}
                     {c.players?.length > 0 && <p className="text-slate-500 text-2xs mt-0.5">Players named: {c.players.join(', ')}</p>}
                     {c.projection?.crossings && (
@@ -1418,6 +1500,15 @@ export default function ForesightPage() {
               <div className="bg-navy-900 border border-gold-500/20 rounded-2xl p-5 max-w-4xl mx-auto">
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Analyst briefing <span className="normal-case tracking-normal">(AI-written, grounded in the cards below)</span></p>
                 <p className="text-slate-300 text-sm leading-relaxed">{result.narrative.briefing}</p>
+                {/* Every number in the briefing was checked against the cards; say what was removed. */}
+                {result.narrative.numbersChecked && (
+                  <p className="text-slate-500 text-2xs mt-2">
+                    Every figure above is checked against the cards.
+                    {result.narrative.numbersChecked.droppedSentences + result.narrative.numbersChecked.droppedSignals > 0
+                      ? ` ${result.narrative.numbersChecked.droppedSentences} sentence(s) and ${result.narrative.numbersChecked.droppedSignals} signal(s) cited a number not in the data and were removed.`
+                      : ' Nothing needed removing.'}
+                  </p>
+                )}
               </div>
             )}
             {result.narrativeNote && <p className="text-center text-slate-500 text-xs max-w-xl mx-auto">{result.narrativeNote}</p>}

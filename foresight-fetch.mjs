@@ -129,8 +129,15 @@ export function normaliseForMatch(s) {
   return String(s ?? '').toLowerCase()
     .replace(/[‘’“”]/g, "'")
     .replace(/[–—]/g, '-')
+    // Symbols that carry meaning become tokens instead of vanishing, so "±5"
+    // and "5" or "µm" and "m" are not the same quote (Oct 2026 review).
+    .replace(/µ|μ/g, ' u').replace(/°/g, ' deg ').replace(/±/g, ' +- ')
+    // Thousands separators: "1,200" and "1200" are the same number.
+    .replace(/(\d),(?=\d{3}(?!\d))/g, '$1')
     .replace(/[^a-z0-9%€£$.,'\-\/ ]+/g, ' ')
     .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^['"]+|['"]+$/g, '')   // the quotation marks around a quote are not part of it
     .trim();
 }
 
@@ -144,20 +151,41 @@ export function normaliseForMatch(s) {
  * fragment matching "loosely" would verify nothing.
  */
 export function quoteSupported(quote, text) {
+  return matchQuote(quote, text).ok;
+}
+
+/** Numeric tokens of a normalised string. */
+const numTokens = (s) => [...String(s).matchAll(/\d+(?:\.\d+)?/g)].map((m) => String(Number(m[0])));
+
+/**
+ * The quote check, with the reason. Oct 2026 review: 70% of the words in a
+ * contiguous run validated the whole quote, so a changed number at either end
+ * or an inserted "never" passed and the UI showed the model's edited words in
+ * quotation marks. Now:
+ *   • the contiguous run must cover ≥ 90% of the quote's words, and
+ *   • EVERY number in the quote must lie inside the run that matched.
+ * Returns { ok, exact, coverage, reason }.
+ */
+export function matchQuote(quote, text) {
   const q = normaliseForMatch(quote);
   const t = normaliseForMatch(text);
-  if (!q || !t) return false;
-  if (q.length < 12) return false;              // too short to prove anything
-  if (t.includes(q)) return true;
+  if (!q || !t) return { ok: false, reason: 'empty quote or source' };
+  if (q.length < 12) return { ok: false, reason: 'quote too short to prove anything' };
+  if (t.includes(q)) return { ok: true, exact: true, coverage: 1 };
   const words = q.split(' ');
-  if (words.length < 8) return false;           // short quotes: all or nothing
-  // Allow the model to have trimmed either end, but require a substantial
-  // contiguous run — 70% of the words, in order.
-  const need = Math.max(6, Math.floor(words.length * 0.7));
-  for (let start = 0; start + need <= words.length; start++) {
-    if (t.includes(words.slice(start, start + need).join(' '))) return true;
+  if (words.length < 8) return { ok: false, reason: 'short quote not found verbatim' };
+  const need = Math.max(7, Math.ceil(words.length * 0.9));
+  const qNums = numTokens(q);
+  for (let len = words.length - 1; len >= need; len--) {
+    for (let start = 0; start + len <= words.length; start++) {
+      const run = words.slice(start, start + len).join(' ');
+      if (!t.includes(run)) continue;
+      const runNums = new Set(numTokens(run));
+      if (qNums.every((n) => runNums.has(n))) return { ok: true, exact: false, coverage: len / words.length };
+      return { ok: false, reason: 'a number in the quote is not in the matched source text' };
+    }
   }
-  return false;
+  return { ok: false, reason: 'quote not found in the source (≥90% verbatim required)' };
 }
 
 /**
@@ -165,7 +193,15 @@ export function quoteSupported(quote, text) {
  * Never throws: every failure mode comes back as `{ ok: false, error }` so the
  * caller can report honestly which sources were READ and which were not.
  */
-export async function fetchArticle(url, {
+export async function fetchArticle(url, opts = {}) {
+  // Callers look pages up by the URL they ASKED for; a redirect (http→https,
+  // www) used to make a page that was read look "could not be opened" because
+  // only the final URL came back (Oct 2026 review).
+  const out = await fetchArticleInner(url, opts);
+  return { ...out, requestedUrl: String(url) };
+}
+
+async function fetchArticleInner(url, {
   fetchImpl = globalThis.fetch,
   timeoutMs = FETCH_DEFAULTS.timeoutMs,
   maxBytes = FETCH_DEFAULTS.maxBytes,

@@ -47,11 +47,14 @@ export interface ForesightReportResearched {
 }
 export interface DeepReportData {
   subject: string; depth: string;
-  claims: Array<{ id: string; statement: string; metric: string; value: string; subject: string; quote: string; sourceUrl: string; origin: string; origins: number; independent: boolean }>;
+  claims: Array<{ id: string; statement: string; metric: string; value: string; subject: string; quote: string; sourceUrl: string; origin: string; origins: number; independent: boolean; confidence?: string; sourceYear?: number | null }>;
   contradictions: Array<{ metric: string; subject: string; spreadPct: number; low: { value: string; origin: string }; high: { value: string; origin: string } }>;
   ledger: Array<{ url: string; origin: string; round: number; read: boolean; claimsContributed: number; publishedYear: number | null; skippedBecause: string | null }>;
   report: { summary: string; sections: Array<{ heading: string; findings: string }>; trajectory: string; couldNotEstablish: string } | null;
   limitations: string[];
+  note?: string;
+  reportError?: string | null;
+  reportCheck?: { citations: number; sentences: number } | null;
   stats: { rounds: number; sourcesSeen: number; sourcesRead: number; claims: number; claimsWithFigures: number; independentClaims: number; distinctOrigins: number; contradictions: number };
 }
 
@@ -113,7 +116,7 @@ function palette(theme: ReportTheme) {
 type Palette = ReturnType<typeof palette>;
 
 const STANCE_RGB: Record<string, RGB> = { agree: [22, 163, 74], caution: [217, 119, 6], challenge: [220, 38, 38] };
-const STATUS_LABEL: Record<string, string> = { 'in-force': 'IN FORCE', adopted: 'ADOPTED', proposed: 'PROPOSED', 'under-revision': 'UNDER REVISION', repealed: 'REPEALED' };
+const STATUS_LABEL: Record<string, string> = { 'in-force': 'IN FORCE', adopted: 'ADOPTED', proposed: 'PROPOSED', 'under-revision': 'UNDER REVISION', repealed: 'REPEALED', protocol: 'TEST PROTOCOL' };
 
 function setFill(doc: jsPDF, rgb: RGB) { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
 function setColor(doc: jsPDF, rgb: RGB) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
@@ -280,15 +283,15 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   y += 1;
   wrapped('Every position is deterministic: technologies come from a curated register carrying an automotive TRL (1-9), a current adoption share, named production evidence and dated regulations. Lanes, S-curve phases, momentum and confidence tiers are computed by fixed rules.', 9, P.BODY);
   y += 1.5;
-  wrapped('Adoption and cost projections are MODELS (Bass diffusion, Wright’s law) — labelled as modelled, never measurements. AI layers (briefing, panel) are grounded in the computed cards and clearly marked; they never invent a number.', 9, P.BODY);
+  wrapped('Adoption and cost projections are MODELS (Bass diffusion, Wright’s law) — labelled as modelled, never measurements. AI layers (briefing, panel) are grounded in the computed cards and clearly marked; every number in AI text is checked against the cards in code, and a sentence citing one that is not there is removed.', 9, P.BODY);
   y += 1.5;
   mono(7.5, true); setColor(doc, P.GOLD); doc.text('CONFIDENCE', ML, y);
   sans(9); setColor(doc, P.BODY);
-  doc.text('COMMITTED = regulation or named programme   ·   PROBABLE = TRL >= 7   ·   SPECULATIVE = earlier', ML + 26, y);
+  doc.text('COMMITTED = TRL >= 7 + binding law or series production  ·  PROBABLE = TRL >= 7  ·  SPECULATIVE = earlier', ML + 26, y);
   y += 5;
   mono(7.5, true); setColor(doc, P.GOLD); doc.text('REG STATUS', ML, y);
   sans(9); setColor(doc, P.BODY);
-  doc.text('teal IN FORCE  ·  gold ADOPTED  ·  grey PROPOSED  ·  red UNDER REVISION / REPEALED — only law can pull a lane', ML + 26, y);
+  doc.text(fitText(doc, 'IN FORCE · ADOPTED pull lanes  ·  PROPOSED · TEST PROTOCOL · UNDER REVISION · REPEALED never do', CW - 28), ML + 26, y);
   y += 5;
   if (result.relatedCount) {
     mono(7.5, true); setColor(doc, P.GOLD); doc.text('SCOPE', ML, y);
@@ -754,7 +757,16 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
     sectionTitle('Deep research', `${dp.subject} — ${dp.depth} depth`);
     mono(7.5); setColor(doc, P.MUT);
     wrapped(`${dp.stats.rounds} research rounds · ${dp.stats.sourcesSeen} sources seen, ${dp.stats.sourcesRead} opened and read · ${dp.stats.distinctOrigins} distinct origins · `
-      + `${dp.stats.claims} claims (${dp.stats.claimsWithFigures} carrying figures, ${dp.stats.independentClaims} independently corroborated)`, 8, P.MUT);
+      + `${dp.stats.claims} claims (${dp.stats.claimsWithFigures} carrying figures, ${dp.stats.independentClaims} carried by more than one domain)`, 8, P.MUT);
+    y += 2;
+    // The status of this page, before anything on it (Oct 2026 review: the PDF
+    // dropped the on-screen "AI-conducted, not peer-reviewed" note).
+    mono(7.5, true); setColor(doc, P.GOLD);
+    doc.text('AI-CONDUCTED RESEARCH — NOT PEER-REVIEWED, NOT CURATED', ML, y); y += 4.5;
+    if (dp.note) { wrapped(dp.note, 8.4, P.MUT); y += 1; }
+    wrapped(dp.report
+      ? `AI-written synthesis of the verified claims listed on the claims page. Every sentence was checked in code${dp.reportCheck && dp.reportCheck.citations + dp.reportCheck.sentences > 0 ? `; ${dp.reportCheck.sentences} sentence(s) with unsupported figures and ${dp.reportCheck.citations} citation(s) to non-existent claims were removed` : ''}.`
+      : `No report was written: ${dp.reportError ?? 'the synthesis step returned nothing'}.`, 8.4, P.MUT);
     y += 2;
 
     if (dp.report?.summary) {
@@ -799,6 +811,20 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       mono(7.5, true); setColor(doc, P.GOLD); doc.text('WHAT THIS RESEARCH COULD NOT ESTABLISH', ML, y); y += 4.5;
       wrapped(dp.report.couldNotEstablish, 9, P.BODY);
       y += 3;
+    }
+
+    // ── Verified claims: what every [cN] in the report resolves to ───────────
+    if (dp.claims.length) {
+      newPage();
+      sectionTitle('Verified claims', 'What each [cN] citation resolves to — quote checked against the page');
+      for (const c of dp.claims) {
+        ensure(16);
+        sans(8.6, 'bold'); setColor(doc, P.INK);
+        doc.text(fitText(doc, `[${c.id}] ${c.statement}${c.value ? ` · ${c.value}` : ''}${c.confidence === 'implied' ? '  (inferred, not stated)' : ''}`, CW - 2), ML, y); y += 4.2;
+        sans(8); setColor(doc, P.MUT);
+        wrapped(`"${c.quote}" — ${c.origin}, ${c.sourceYear ?? 'undated'}${c.origins > 1 ? ` · carried by ${c.origins} domains` : ''}`, 8, P.MUT);
+        y += 1.5;
+      }
     }
 
     // ── Source ledger: the audit trail that makes the depth checkable ────────

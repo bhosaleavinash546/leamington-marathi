@@ -4853,3 +4853,39 @@ read the same theme:
   - The score dial.
 - **Bar tracks use `--tint-strong`.** The white-alpha track that disappeared
   on a white page is gone.
+
+## 124. Horizon: COMMITTED means production-ready and anchored; AI text is checked for numbers, not trusted
+
+October 2026 accuracy review before a demo to the President (full record in
+`docs/HORIZON-REVIEW-2026-10.md`). Decisions in it that would surprise a
+newcomer:
+
+- **COMMITTED needs TRL ≥ 7 plus binding law or a named series programme.**
+  - Reviews, pilots, announcements and stalled launches do not qualify.
+  - The old rule gave 76% of entries the pill, including TRL-4 entries.
+  - The register-wide share is still about 72%. That is honest: most entries
+    really are production-ready with named programmes.
+- **The maturity floor beats regulation.** A law can pull a lane earlier, but
+  never past what TRL allows.
+- **Statuses that never pull a lane:** proposed, under revision, repealed and
+  protocol. Only in-force and adopted law pulls. Euro NCAP is a protocol;
+  EU 2035 is under revision.
+- **Stalled technologies get no curve.** These are in production for 5+ years
+  at 0% share. The Bass model assumes a launch; this one launched and did not
+  diffuse.
+- **Cost curves:**
+  - Wright's law starts from 3 years of output.
+  - A per-trend floor applies (falling-fast ≥ 0.5, falling ≥ 0.65 at +8 years),
+    documented as a bound, not a fit.
+  - Flat means flat.
+- **Numbers in AI text are checked in code.** This covers the briefing,
+  signals and deep report. A sentence with a figure not in its grounding is
+  deleted and the deletion is counted on screen. The prompt still asks; the
+  code guarantees.
+- **Quote check:**
+  - The contiguous verbatim run must cover ≥ 90% of the quote.
+  - Every number in the quote must be inside that run.
+  - A claim's figure must appear in its own quote.
+- **Self-audit gates re-baselined to honest values** (118 flags, 69%
+  multi-region). Removing false evidence re-exposed debt that the false facts
+  had been hiding.

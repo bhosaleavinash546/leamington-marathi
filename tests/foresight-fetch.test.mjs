@@ -205,3 +205,22 @@ describe('the research pipeline reads pages and drops unsupported claims', () =>
     assert.equal(out.candidates[0].sourceRead, false);
   });
 });
+
+describe('quote verification — Oct 2026 hardening', () => {
+  const text = 'The new cells reach 255 Wh/kg at pack level and will not enter series production before 2027, according to the supplier.';
+  it('REJECTS a changed number at the end of a long quote', () => {
+    assert.equal(quoteSupported('The new cells reach 255 Wh/kg at pack level and will not enter series production before 2026', text), false);
+  });
+  it('REJECTS a changed number at the start of a long quote', () => {
+    assert.equal(quoteSupported('The new cells reach 300 Wh/kg at pack level and will not enter series production before 2027', text), false);
+  });
+  it('REJECTS an inserted negation', () => {
+    assert.equal(quoteSupported('The new cells reach 255 Wh/kg at pack level and will never not enter series production before 2027', text), false);
+  });
+  it('still accepts a lightly trimmed verbatim quote', () => {
+    assert.equal(quoteSupported('new cells reach 255 Wh/kg at pack level and will not enter series production before 2027', text), true);
+  });
+  it('treats 1,200 and 1200 as the same number', () => {
+    assert.equal(quoteSupported('yield strength of 1200 MPa in the hot-stamped B-pillar reinforcement', 'A yield strength of 1,200 MPa in the hot-stamped B-pillar reinforcement.'), true);
+  });
+});

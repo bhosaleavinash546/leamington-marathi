@@ -6,7 +6,7 @@ other two decide whether the research finds anything worth reporting.
 | Key | Cost | Without it |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | paid | Deep research refuses to run (it will not guess) |
-| `BRAVE_API_KEY` | free tier available | **The run finds zero sources and returns an empty report** |
+| `BRAVE_API_KEY` | free tier available | Search falls back to an instant-answer (encyclopedia) service: few, non-technical sources, and the report says so. A Brave error mid-run (bad key, rate limit) falls back the same way |
 | `PATENTSVIEW_API_KEY` | free | Patent claims — the best free technical source — are skipped |
 
 ## Getting the keys

@@ -42,7 +42,7 @@ test('register: every entry is structurally valid', () => {
 test('register: reg anchors are unique, dated, statused and cover every referenced id', () => {
   const ids = REG_ANCHORS.map((a) => a.id);
   assert.equal(new Set(ids).size, ids.length);
-  const statuses = new Set(['in-force', 'adopted', 'proposed', 'under-revision', 'repealed']);
+  const statuses = new Set(['in-force', 'adopted', 'proposed', 'under-revision', 'repealed', 'protocol']);
   for (const a of REG_ANCHORS) {
     assert.ok(a.year >= 2024 && a.year <= 2040, `${a.id}: implausible year ${a.year}`);
     assert.ok(a.name && a.region && a.effect, `${a.id}: missing fields`);
@@ -69,13 +69,14 @@ test('audit: ceilings are curated for niche techs and respected by the model', (
   assert.equal(float.projection.crossings.share50, 2.5);
   const f50 = float.projection.crossings.cross50;
   assert.ok(f50 === 'passed' || f50 === null || (typeof f50 === 'number' && f50 >= 2026), `float cross50=${f50}`);
-  assert.match(float.projection.basis, /ceiling ~5%/);
+  assert.match(float.projection.basis, /curated ~5% segment ceiling/);
 });
 
 test('audit: proposed/under-revision anchors give context but never pull a horizon', () => {
   const fakeTech = {
     id: 'fake-pfas-tech', name: 'X', commodity: 'Electrical', powertrains: ['BEV'], replaces: 'y',
-    trl: 6, adoptionPct: 1, drivers: ['regulation'], costTrend: 'flat', players: ['Z'],
+    // TRL 7: production-ready, so only the anchor's status decides the pull.
+    trl: 7, adoptionPct: 1, drivers: ['regulation'], costTrend: 'flat', players: ['Z'],
     note: 'n', matchTerms: ['zzz'], regAnchor: 'pfas',
   };
   const proposed = { id: 'pfas', name: 'PFAS', year: 2027, region: 'EU', status: 'proposed', effect: 'e' };
@@ -329,11 +330,13 @@ test('horizonFor: maturity sets the base bucket', () => {
   assert.deepEqual(horizonFor(4, 0), { horizon: 'H3', regPulled: false });
 });
 
-test('horizonFor: a near-term regulation pulls at most one horizon earlier', () => {
-  // TRL 6 (base H2) + regulation biting 2027 (H1 window) → pulled into H1.
-  assert.deepEqual(horizonFor(6, 1, 2027, 2025), { horizon: 'H1', regPulled: true });
-  // TRL 4 (base H3) + 2027 regulation → only pulled to H2, never two steps.
-  assert.deepEqual(horizonFor(4, 0, 2027, 2025), { horizon: 'H2', regPulled: true });
+test('horizonFor: a near-term regulation pulls at most one horizon earlier, never past the maturity floor', () => {
+  // TRL 7 (no model → base H2) + regulation biting 2027 (H1 window) → pulled into H1.
+  assert.deepEqual(horizonFor(7, 1, 2027, 2025), { horizon: 'H1', regPulled: true });
+  // Oct 2026 review: the maturity floor holds after the pull. TRL 6 can never be
+  // "adopt/quote now" (floor H2), TRL 4 never earlier than H3, whatever the law.
+  assert.deepEqual(horizonFor(6, 1, 2027, 2025), { horizon: 'H2', regPulled: false });
+  assert.deepEqual(horizonFor(4, 0, 2027, 2025), { horizon: 'H3', regPulled: false });
   // Regulation biting later than the base bucket does not pull.
   assert.deepEqual(horizonFor(9, 20, 2035, 2025), { horizon: 'H1', regPulled: false });
 });
@@ -491,10 +494,31 @@ test('momentumScore is bounded 0–100 and rewards maturity, trend and evidence'
 });
 
 test('confidenceTier follows the honesty rules', () => {
-  assert.equal(confidenceTier({ regAnchor: 'euro7', firstProduction: null, trl: 5 }), 'committed');
-  assert.equal(confidenceTier({ regAnchor: null, firstProduction: 'Tesla (2020)', trl: 6 }), 'committed');
+  // COMMITTED needs production-ready maturity AND binding law or series production.
+  assert.equal(confidenceTier({ regAnchor: 'euro7', firstProduction: null, trl: 7 }), 'committed');
+  assert.equal(confidenceTier({ regAnchor: null, firstProduction: 'Tesla (2020)', trl: 8 }), 'committed');
+  // Oct 2026 review: a link to a law or a programme name no longer lifts an
+  // immature technology, and reviews / pilots / announcements are not production.
+  assert.equal(confidenceTier({ regAnchor: 'euro7', firstProduction: null, trl: 5 }), 'speculative');
+  assert.equal(confidenceTier({ regAnchor: null, firstProduction: 'Tesla (2020)', trl: 6 }), 'speculative');
+  assert.equal(confidenceTier({ regAnchor: null, firstProduction: 'AI powertrain prognostics reviews (2026)', trl: 8 }), 'probable');
+  assert.equal(confidenceTier({ regAnchor: null, firstProduction: 'Tesla (announced)', trl: 8 }), 'probable');
+  assert.equal(confidenceTier({ regAnchor: 'us-epa-27', firstProduction: null, trl: 9 }), 'probable', 'repealed law commits nothing');
   assert.equal(confidenceTier({ regAnchor: null, firstProduction: null, trl: 8 }), 'probable');
   assert.equal(confidenceTier({ regAnchor: null, firstProduction: null, trl: 5 }), 'speculative');
+});
+
+test('register-wide: nothing immature or pre-launch reads COMMITTED, and COMMITTED is not the default', () => {
+  const r = foresightFor({});
+  const cards = [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3];
+  for (const c of cards) {
+    if (c.confidence === 'committed') {
+      assert.ok(c.trl >= 7, `${c.id}: committed at TRL ${c.trl}`);
+      assert.ok(!c.projection.prelaunch, `${c.id}: committed but pre-launch`);
+    }
+  }
+  // Pre-launch / immature entries can no longer be committed (was 137 of 180).
+  assert.ok(cards.some((c) => c.confidence !== 'committed' && c.trl >= 7), 'probable tier is reachable');
 });
 
 // ── Part resolution + assembler ──────────────────────────────────────────────
@@ -795,7 +819,7 @@ test('knowledge: promotion is validated like the register, merges with provenanc
     whyItMatters: 'Deletes vacuum switching hardware and one mount variant per programme.',
     replaces: 'Switchable hydraulic mounts', trlEstimate: 6, adoptionEstimatePct: 1, ceilingEstimatePct: 20,
     players: ['BWI', 'Vibracoustic'], sourceUrl: 'https://src.example/a',
-  }, { query: 'engine mounts' });
+  }, { query: 'engine mounts', powertrains: ['ICE', 'PHEV'] });   // the curator states powertrains
   const out = promoteCandidate(db, { entry, sourceUrl: 'https://src.example/a', promotedBy: 'u1' });
   assert.equal(out.ok, true, JSON.stringify(out));
 
@@ -881,7 +905,7 @@ test('ontology: promotion carries kind through and rejects an invalid one', asyn
     whyItMatters: 'Moves differentiation from the damper to the calibration.',
     replaces: 'Per-ECU calibration loops', trlEstimate: 8, adoptionEstimatePct: 2,
     ceilingEstimatePct: 50, players: ['ZF'], sourceUrl: 'https://x.example/a',
-  }, { query: 'suspension', commodity: 'Chassis' });
+  }, { query: 'suspension', commodity: 'Chassis', powertrains: ['BEV'] });
   assert.equal(e.kind, 'orchestration');
   assert.equal(validatePromotion(e).ok, true, JSON.stringify(validatePromotion(e).errors));
   assert.equal(validatePromotion({ ...e, kind: 'nonsense' }).ok, false);

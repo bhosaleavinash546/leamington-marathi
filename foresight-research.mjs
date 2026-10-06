@@ -330,7 +330,9 @@ export async function researchFutureTechnologies(query, deps) {
   const articles = fetchImpl && readCount > 0
     ? await fetchArticles(ranked.map((r) => r.url), { fetchImpl, concurrency, maxChars: perSourceChars })
     : [];
-  const readByUrl = new Map(articles.filter((a) => a?.ok).map((a) => [a.url, a]));
+  // Keyed by requested AND final URL — a redirect is not a failed read.
+  const readByUrl = new Map();
+  for (const a of articles) if (a?.ok) { readByUrl.set(a.url, a); if (a.requestedUrl) readByUrl.set(a.requestedUrl, a); }
   for (const r of searches) {
     const a = readByUrl.get(r.url);
     if (a) {
@@ -339,7 +341,7 @@ export async function researchFutureTechnologies(query, deps) {
       if (a.publishedYear) r.publishedYear = a.publishedYear;
       if (a.title && !r.title) r.title = sanitize(str(a.title, 160), 160);
     } else if (ranked.some((x) => x.url === r.url)) {
-      const failed = articles.find((a2) => a2?.url === r.url);
+      const failed = articles.find((a2) => a2?.requestedUrl === r.url || a2?.url === r.url);
       r.read = false;
       if (failed?.error) r.readError = String(failed.error).slice(0, 120);
     }
@@ -422,7 +424,34 @@ export async function researchFutureTechnologies(query, deps) {
       rejected.push({ name: str(c?.name, 80), why: 'its supporting quote is not present in the page we read' });
       continue;
     }
-    kept.push({ ...c, sourceRead: Boolean(article), sourceQuote: str(c?.sourceQuote, 240) });
+    // Oct 2026 review: everything ELSE on a candidate was unchecked, and the UI
+    // showed it in verified colours. Each field is now verified against the
+    // text we actually hold (the page if read, else the search snippet), and
+    // anything that is not there is blanked — never shown as evidence.
+    const snippet = searches.find((r) => r.url === url)?.snippet ?? patents.find((p) => p.url === url)?.abstract ?? '';
+    const evidenceText = article ? article.text : String(snippet);
+    const quoteVerified = article ? true : quoteSupported(c?.sourceQuote, snippet);
+    const inEvidence = (v) => {
+      const nums = [...String(v ?? '').replace(/(\d),(?=\d{3}(?!\d))/g, '$1').matchAll(/\d+(?:\.\d+)?/g)].map((m) => String(Number(m[0])));
+      if (!nums.length) return false;
+      const have = new Set([...String(evidenceText).replace(/(\d),(?=\d{3}(?!\d))/g, '$1').matchAll(/\d+(?:\.\d+)?/g)].map((m) => String(Number(m[0]))));
+      return nums.every((n) => have.has(n));
+    };
+    const lowerEvidence = String(evidenceText).toLowerCase();
+    const spec = str(c?.quantitativeSpec, 200);
+    const prod = str(c?.earliestProduction, 160);
+    kept.push({
+      ...c,
+      sourceRead: Boolean(article),
+      sourceQuote: quoteVerified ? str(c?.sourceQuote, 240) : '',
+      quoteVerified,
+      quantitativeSpec: spec && inEvidence(spec) ? spec : '',
+      specVerified: Boolean(spec && inEvidence(spec)),
+      earliestProduction: prod && inEvidence(prod) ? prod : '',
+      productionVerified: Boolean(prod && inEvidence(prod)),
+      // Players only where the name is printed in the evidence we hold.
+      players: (Array.isArray(c?.players) ? c.players : []).filter((p) => p && lowerEvidence.includes(String(p).toLowerCase().split(/[\s(/]/)[0])),
+    });
     if (kept.length >= 6) break;
   }
   const dropped = (raw?.candidates || []).length - kept.length;

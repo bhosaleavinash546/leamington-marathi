@@ -75,7 +75,7 @@ export function saveResearch(db, query, payload, { now = Date.now() } = {}) {
 // ── Promotion: candidate → live register entry, validated like the register ──
 
 const POWERTRAINS = new Set(['ICE', 'MHEV', 'PHEV', 'BEV']);
-const TRENDS = new Set(['falling-fast', 'falling', 'flat', 'rising']);
+const TRENDS = new Set(['falling-fast', 'falling', 'flat', 'rising', 'uncurated']);   // 'uncurated': an AI-researched promotion carries no cost direction
 const DRIVERS = new Set(['cost', 'regulation', 'performance', 'weight', 'software', 'sustainability']);
 
 /**
@@ -108,7 +108,10 @@ export function validatePromotion(t) {
  * the entry as probable/speculative, which is the honest tier for something
  * without a named production programme the curator has verified).
  */
-export function candidateToEntry(candidate, { query = '', commodity = null } = {}) {
+/** System-level words that must never become a promoted entry's match terms. */
+export const GENERIC_TERMS = new Set(['battery', 'batteries', 'motor', 'motors', 'system', 'systems', 'vehicle', 'vehicles', 'module', 'modules', 'pack', 'packs', 'cell', 'cells', 'electric', 'electrical', 'interior', 'exterior', 'chassis', 'body', 'power', 'drive', 'technology', 'advanced', 'next', 'generation', 'automotive', 'unit', 'units']);
+
+export function candidateToEntry(candidate, { query = '', commodity = null, powertrains = null } = {}) {
   const c = candidate ?? {};
   const name = String(c.name ?? '').slice(0, 120);
   // Commodity resolution ladder: explicit override → classifier net → the
@@ -122,18 +125,28 @@ export function candidateToEntry(candidate, { query = '', commodity = null } = {
     || null;
   const terms = new Set();
   const qn = normQuery(query);
-  if (qn) terms.add(qn);
-  for (const w of name.toLowerCase().split(/[^a-z0-9]+/)) if (w.length >= 4) terms.add(w);
+  if (qn && !GENERIC_TERMS.has(qn)) terms.add(qn);
+  // Generic system words ("battery", "motor", "system") made a promoted entry
+  // match every query in its commodity (Oct 2026 review) — they are not terms.
+  for (const w of name.toLowerCase().split(/[^a-z0-9]+/)) if (w.length >= 4 && !GENERIC_TERMS.has(w)) terms.add(w);
+  // Powertrains only when the research named them — never all four by default
+  // (that put ICE on an e-drive part). validatePromotion refuses an empty list.
+  const pts = (Array.isArray(powertrains) ? powertrains : Array.isArray(c.powertrains) ? c.powertrains : []).filter((p) => ['BEV', 'PHEV', 'MHEV', 'ICE'].includes(p));
   return {
     name,
     commodity: dom,
-    powertrains: ['BEV', 'PHEV', 'MHEV', 'ICE'],
+    powertrains: pts,
     replaces: String(c.replaces ?? '').slice(0, 160),
     trl: Math.min(9, Math.max(1, Math.round(Number(c.trl ?? c.trlEstimate) || 4))),
     adoptionPct: Math.min(40, Math.max(0, Number(c.adoptionPct ?? c.adoptionEstimatePct) || 0)),
     drivers: ['performance'],
     kind: TECH_KINDS.includes(c.kind) ? c.kind : 'substitution',
-    costTrend: 'falling',
+    // No curated cost direction exists for an AI-researched candidate, so none
+    // is invented: 'falling' was hard-coded and produced cost projections
+    // (index 0.67 in five years) on a guess. The engine projects no cost index
+    // for an uncurated trend and says so.
+    costTrend: 'uncurated',
+    estimatedInputs: true,
     players: (Array.isArray(c.players) ? c.players : []).slice(0, 6).map((p) => String(p).slice(0, 60)),
     note: [c.whatItIs, c.whyItMatters].filter(Boolean).map(String).join(' ').slice(0, 700),
     matchTerms: [...terms].slice(0, 8),
