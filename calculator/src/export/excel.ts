@@ -92,9 +92,24 @@ export async function exportToExcelBlob(
       ['Material Price', c(mat?.pricePerKg ?? 0), `${currency}/kg`, mat?.sourceNote ?? ''],
       ['Scrap Recovery Price', c(mat?.scrapRecoveryPricePerKg ?? 0), `${currency}/kg`, ''],
       ['Gross Material Cost', c(grossWeight * (mat?.pricePerKg ?? 0)), currency, `= gross × price/kg`],
-      ['Scrap Credit', c(scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0)), currency, `= scrap × recovery price`],
-      ['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= gross cost − scrap credit'],
     );
+    // Every item the engine puts in the material line, so the rows add up to its total (360 review: the
+    // sheet printed "= gross − scrap" beside a total that also held energy, consumables and bought-in).
+    const lossIsNotScrap = !!(input.rawMaterial as { lossIsNotScrap?: boolean }).lossIsNotScrap;
+    const credit = lossIsNotScrap ? 0 : scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0);
+    matDetail.push(['Scrap Credit', c(credit), currency, lossIsNotScrap ? 'none — melt loss is metal lost, not scrap sold' : `= scrap × recovery price`]);
+    const metalNet = grossWeight * (mat?.pricePerKg ?? 0) - credit;
+    const trace = (result as { traceability?: Array<{ field: string; value: number }> }).traceability ?? [];
+    const traced = (re: RegExp) => trace.filter(t => re.test(t.field)).reduce((sum, t) => sum + (Number(t.value) || 0), 0);
+    const consumables = input.rawMaterial.consumablesCostPerPart ?? 0;
+    const energy = traced(/^rawMaterial\.energyKwh\./);
+    const boughtIn = input.rawMaterial.boughtIn?.cost ?? 0;
+    if (consumables > 0) matDetail.push(['Consumables & services', c(consumables), currency, 'per part (cores, shell, heat treat, NDT …)']);
+    if (energy > 0) matDetail.push(['Process energy', c(energy), currency, 'kWh × the costing country tariff']);
+    if (boughtIn > 0) matDetail.push(['Bought-in content', c(boughtIn), currency, 'supplier price, no second overhead / margin']);
+    const other = result.breakdown.rawMaterial - metalNet - consumables - energy - boughtIn;
+    if (Math.abs(other) >= 0.005) matDetail.push(['Other material-line items', c(other), currency, 'engine adders not itemised above']);
+    matDetail.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= the rows above']);
   }
   matDetail.push(
     [],

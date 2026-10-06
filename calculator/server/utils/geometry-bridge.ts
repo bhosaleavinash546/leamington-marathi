@@ -355,7 +355,7 @@ const MAX_STL_BYTES = parseInt(process.env.CV_MAX_STL_BYTES ?? String(750 * 1024
 export async function extractSkinMesh(
   buffer: Buffer,
   filename: string,
-  opts: { timeoutMs?: number } = {},
+  opts: { timeoutMs?: number; unitScale?: number } = {},
 ): Promise<{ status: 'success'; mesh: SkinMeshFile } | { status: 'error'; error: string }> {
   const { timeoutMs = DEFAULT_TESS_TIMEOUT_MS } = opts;
   const id = randomBytes(8).toString('hex');
@@ -369,7 +369,10 @@ export async function extractSkinMesh(
       let stderr = '';
       let settled = false;
       const settle = (r: { status: string; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
-      const child = spawn(PYTHON_BIN, [PYTHON_SCRIPT, '--skin-mesh', inPath, outPath], { env: { ...process.env, CV_TESS_TIMEOUT_MS: String(timeoutMs) } });
+      const child = spawn(PYTHON_BIN, [PYTHON_SCRIPT, '--skin-mesh', inPath, outPath], { env: { ...process.env, CV_TESS_TIMEOUT_MS: String(timeoutMs),
+        // The skins in the units the geometry was measured in: an inch model answered "inch" was unfolded at
+        // 1x while measured at 25.4x — a blank ~1/645 of its area (360 review, Oct 2026).
+        ...(opts.unitScale && opts.unitScale !== 1 ? { CV_UNIT_SCALE: String(opts.unitScale) } : {}) } });
       const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Skin mesh timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
       child.stdout.on('data', (d: Buffer) => { if (stdout.length < MAX_STDOUT_BYTES) stdout += d.toString(); });
       child.stderr.on('data', (d: Buffer) => { if (stderr.length < 8192) stderr += d.toString(); });

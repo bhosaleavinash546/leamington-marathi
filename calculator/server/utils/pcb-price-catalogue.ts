@@ -66,7 +66,9 @@ PREFIX.sort((a, b) => b[0].length - a[0].length);   // longest first
  */
 export function catalogueEntry(mpn: string): CatalogueEntry | null {
   if (!mpn) return null;
-  if (/\b(CLASS|EST|UNKNOWN|GENERIC)\b/i.test(mpn)) return null;
+  // A hedged guess is not an orderable part: "assumed TLF35584" used to resolve to TLF35584 and the line
+  // was labelled catalogue-confirmed (360 review, Oct 2026). It stays a range, flagged to verify.
+  if (/\b(CLASS|EST|UNKNOWN|GENERIC|ASSUMED?|LIKELY|PROBABLY|POSSIBLY|SIMILAR|EQUIV(ALENT)?|TYPICAL|E\.?G\.?|OR)\b|[?~]/i.test(mpn)) return null;
   const lit = LITERAL.get(literalKey(mpn));
   if (lit) return lit;
   // Candidate tokens: the whole string AND each whitespace/comma token, so

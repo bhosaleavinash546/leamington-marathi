@@ -271,6 +271,21 @@ the commit message. The answers in `ANSWERS` are stated engineering judgements,
 not derivations, so they can be argued with. **It pins what the tool says, not
 what is true** — nothing here has been compared with a price JLR paid.
 
+## 360 review (Oct 2026) — read `docs/review-360-2026-10.md` before a demo
+- Accuracy is UNMEASURED: 0 real actuals in `npm run accuracy`. Say so.
+- Security invariants:
+  - the OTP is returned only to a same-machine request (`devOtpAllowed`) or with `CV_SHOW_DEV_OTP=1`;
+  - admin is promoted only when verified;
+  - `/api/sync/library` PUT and `/api/prices` override/refresh are admin-only;
+  - `/api/cad/tessellate` needs a session;
+  - DFM jobs read only `cv-dfm-<uuid>` temp files.
+- Escape every model / OCR / BOM / user string you put in `innerHTML` (`escHtml`).
+- The commodity ticker is a SIMULATION and no costing reads it — never describe it as live.
+- CAD demos are recordings (banner, not `occt`).
+- Casting melt loss is not credited as scrap (`rawMaterial.lossIsNotScrap`).
+- The uncertainty band keeps the bought-in carve-out.
+- Conformal scores are relative to the calibrated estimate.
+
 ## Working notes
 - Default dev branch is `claude/new-session-ts4byp`.
 - Before shipping a cost-logic change, prove it: unit test + `npm run accuracy`

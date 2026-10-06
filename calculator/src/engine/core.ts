@@ -20,6 +20,19 @@ export function validateStackInput(
 
   const rm = input.rawMaterial;
 
+  // Optional per-part adders: NaN passed through Math.max(0, NaN) into a NaN total, and Infinity into an
+  // infinite one, with no error (360 review, Oct 2026).
+  const optional: Array<[string, unknown]> = [
+    ['rawMaterial.consumablesCostPerPart', rm.consumablesCostPerPart],
+    ['rawMaterial.energyKwh.gas', rm.energyKwh?.gas],
+    ['rawMaterial.energyKwh.electricity', rm.energyKwh?.electricity],
+    ['rawMaterial.boughtIn.cost', rm.boughtIn?.cost],
+  ];
+  for (const [field, v] of optional) {
+    if (v !== undefined && v !== null && (typeof v !== 'number' || !Number.isFinite(v) || v < 0))
+      errors.push({ field, message: 'Must be a finite non-negative number' });
+  }
+
   if (rm.directCost !== undefined) {
     // directCost mode: skip weight/utilization checks; only validate the material exists for traceability
     if (!Number.isFinite(rm.directCost) || rm.directCost < 0)
@@ -142,7 +155,7 @@ export function computeUniversalStack(
 
     const grossWeight = input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization;
     const rmGross = grossWeight * mat.pricePerKg;
-    const scrapCredit = (grossWeight - input.rawMaterial.netWeightKg) * mat.scrapRecoveryPricePerKg;
+    const scrapCredit = input.rawMaterial.lossIsNotScrap ? 0 : (grossWeight - input.rawMaterial.netWeightKg) * mat.scrapRecoveryPricePerKg;
     rawMaterialCost = rmGross - scrapCredit;
 
     traceability.push({

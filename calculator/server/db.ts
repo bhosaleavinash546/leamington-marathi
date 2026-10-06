@@ -218,7 +218,9 @@ export const ADMIN_EMAILS = new Set(
 /** Promote a user to admin if their email is in ADMIN_EMAILS. Safe to call any time. */
 export function promoteAdminIfListed(email: string): void {
   const e = email.trim().toLowerCase();
-  if (ADMIN_EMAILS.has(e)) db.prepare('UPDATE users SET role = ? WHERE lower(email) = ?').run('admin', e);
+  // Only a VERIFIED account is promoted: promoting at sign-up let anyone who registered a listed
+  // admin address first (before its owner) claim admin without ever proving the mailbox (360 review).
+  if (ADMIN_EMAILS.has(e)) db.prepare('UPDATE users SET role = ? WHERE lower(email) = ? AND email_verified = 1').run('admin', e);
 }
 
 // Apply once at startup for accounts that already exist; auth also re-applies on

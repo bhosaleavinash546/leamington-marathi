@@ -118,6 +118,15 @@ export function runSensitivity(
   }
 
   // ── Per-operation drivers ────────────────────────────────────────────────
+  // A rate lever moves EVERY operation on that rate (the library entry is perturbed), so it is listed
+  // once per rate, named with the operations that share it — it was listed once per operation, four
+  // identical "Labour Rate" bars on a part whose four ops share one grade (360 review, Oct 2026).
+  const seenMachine = new Set<string>();
+  const seenLabour = new Set<string>();
+  const sharing = (pick: (o: typeof input.operations[number]) => string | undefined, id: string) =>
+    input.operations.filter(o => pick(o) === id).map(o => o.operationName);
+  const rateName = (opName: string, ops: string[], what: string) =>
+    ops.length > 1 ? `${what} — shared by ${ops.length} ops (${ops.join(', ')})` : `${opName}: ${what}`;
   for (let i = 0; i < input.operations.length; i++) {
     const op = input.operations[i];
 
@@ -126,10 +135,11 @@ export function runSensitivity(
     // part only through the OTHER operation that shares the machine, so the row
     // duplicated the paint line's own lever under the masking operation's name
     // — an identical ±2.4% listed twice, inviting a buyer to add them up.
-    const machine = op.benchOperation
+    const machine = op.benchOperation || seenMachine.has(op.machineId)
       ? undefined
       : library.machines.find(m => m.id === op.machineId);
     if (machine) {
+      seenMachine.add(op.machineId);
       try {
         const modLib = (factor: number): RateLibrary => ({
           ...library,
@@ -144,7 +154,7 @@ export function runSensitivity(
         const plusPct = ((plus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         const minusPct = ((minus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         drivers.push({
-          driver: `${op.operationName}: Machine Rate`,
+          driver: rateName(op.operationName, sharing(o => o.benchOperation ? undefined : o.machineId, op.machineId), 'Machine Rate'),
           parameter: `operations[${i}].machineId → computedRatePerHr`,
           baseValue: machine.computedRatePerHr,
           unit: '£/hr',
@@ -158,8 +168,9 @@ export function runSensitivity(
     }
 
     // Labour rate
-    const labour = library.labour.find(l => l.id === op.labourId);
+    const labour = seenLabour.has(op.labourId) ? undefined : library.labour.find(l => l.id === op.labourId);
     if (labour) {
+      seenLabour.add(op.labourId);
       try {
         const modLib = (factor: number): RateLibrary => ({
           ...library,
@@ -174,7 +185,7 @@ export function runSensitivity(
         const plusPct = ((plus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         const minusPct = ((minus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         drivers.push({
-          driver: `${op.operationName}: Labour Rate`,
+          driver: rateName(op.operationName, sharing(o => o.labourId, op.labourId), 'Labour Rate'),
           parameter: `operations[${i}].labourId → fullyLoadedRatePerHr`,
           baseValue: labour.fullyLoadedRatePerHr,
           unit: '£/hr',
@@ -252,8 +263,8 @@ export function runSensitivity(
   if (input.rawMaterial.directCost === undefined && input.rawMaterial.netWeightKg > 0) {
     tryDriver('Net weight (measured geometry)', 'rawMaterial.netWeightKg', input.rawMaterial.netWeightKg, 'kg',
       factor => ({ ...input, rawMaterial: { ...input.rawMaterial, netWeightKg: input.rawMaterial.netWeightKg * factor } }));
-    tryDriver('Material utilisation (stock allowance)', 'rawMaterial.materialUtilization', input.rawMaterial.materialUtilization, '',
-      factor => ({ ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: Math.min(0.99, Math.max(0.05, input.rawMaterial.materialUtilization * factor)) } }));
+    // Utilisation is already a lever above ("Material utilisation"); a second copy clamped at 0.99 made
+    // the +10% case of a fully-utilised part RAISE its cost (360 review).
   }
   input.operations.forEach((op, i) => {
     if ((op.partsPerCycle ?? 1) > 1) {

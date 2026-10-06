@@ -58,8 +58,9 @@ describe('1. runners and risers are remelted, not sold as scrap', () => {
   it('was £2.62 a part dearer on the Casting Bracket when gating and rejects went to the scrap yard', () => {
     const now = stack(computeCastingDrivers({ ...BASE, melt: { energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
     const old = stack(computeCastingDrivers({ ...BASE, melt: { lossFraction: 1, energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
-    // Gating and the 3% rejects, both remelted: £2.62 of metal on the bracket.
-    expect(old.breakdown.rawMaterial - now.breakdown.rawMaterial).toBeCloseTo(2.62, 1);
+    // Gating and the 3% rejects, both remelted: £2.57 of metal on the bracket (£2.62 while the melt loss
+    // was still credited at scrap — 360 review, Oct 2026: lost metal is not sold).
+    expect(old.breakdown.rawMaterial - now.breakdown.rawMaterial).toBeCloseTo(2.57, 1);
   });
 });
 
@@ -212,7 +213,8 @@ describe('B. melt energy is priced at the region the part is costed in', () => {
     const atUk = executeCalculateCost({ commodity: 'casting', params: { ...BASE, melt: { energyPricePerKwh: ukTariff } }, rateLibrary: cnLib } as never);
     const pour = 2.512 / 0.97 / 0.65;
     const kwh = meltFactsFor('mat-gs-c25')!.energyKwhPerKg;
-    expect(atUk.breakdown.rawMaterial - atRegion.breakdown.rawMaterial).toBeCloseTo(pour * kwh * (ukTariff - cnTariff), 4);
+    // 3 dp: executeCalculateCost rounds each bucket to 4 dp, so a difference of two carries up to 1e-4.
+    expect(atUk.breakdown.rawMaterial - atRegion.breakdown.rawMaterial).toBeCloseTo(pour * kwh * (ukTariff - cnTariff), 3);
   });
 });
 

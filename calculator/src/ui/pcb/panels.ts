@@ -114,11 +114,14 @@ export function buildASILBadge(r: PCBImageAnalysis): string {
   };
   const color = colors[level] ?? '#6b7280';
   const functions = r._asilSafetyFunctions ?? [];
+  // `r` is the screen's escapedForDisplay copy: every string is ALREADY escaped, so nothing here escapes
+  // again. The old `fnList.replace(raw, esc(raw))` escaped twice ("R&D" → "R&amp;amp;D") and read "$&"
+  // in model text as "insert the match" (360 review, Oct 2026).
   const fnList = functions.length > 0
     ? `<div style="margin-top:6px;font-size:0.62rem;color:var(--text-secondary)">Safety functions: ${functions.join(', ')}</div>`
     : '';
-  const esc = (t: string) => t.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]!));
-  // Model text: escaped. The guard's notes say why the costed level or the words differ from the classifier's.
+  const esc = (t: string) => t;
+  // Model text arrives escaped (escapedForDisplay). The guard's notes say why the costed level or the words differ.
   const rationale = r._asilRationale ? `<div style="margin-top:4px;font-size:0.62rem;color:var(--text-muted);font-style:italic">${esc(r._asilRationale)}</div>` : '';
   const claimed = r._asilClaimed && r._asilClaimed !== level ? ` <span style="font-size:0.62rem;color:var(--text-muted)">(classifier said ${esc(r._asilClaimed)})</span>` : '';
   const notes = (r._asilNotes ?? []).map(n => `<div style="margin-top:4px;font-size:0.62rem;color:var(--text-secondary)">${esc(n)}</div>`).join('');
@@ -127,7 +130,7 @@ export function buildASILBadge(r: PCBImageAnalysis): string {
       <span style="background:${color};color:#fff;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:4px">${level}</span>
       <span style="font-size:0.72rem;font-weight:600;color:${color}">ISO 26262 Safety Integrity Level — as costed</span>${claimed}
     </div>
-    ${notes}${rationale}${fnList.replace(functions.join(', '), esc(functions.join(', ')))}
+    ${notes}${rationale}${fnList}
   </div>`;
 }
 

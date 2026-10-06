@@ -871,12 +871,20 @@ export function renderShouldCostSections(
       ['Material Price',              c(mat?.pricePerKg ?? 0),                                `${currency}/kg`, mat?.sourceNote ?? ''],
       ['Scrap Recovery Price',        c(mat?.scrapRecoveryPricePerKg ?? 0),                   `${currency}/kg`, ''],
       ['Gross Material Cost',         c(grossWt * (mat?.pricePerKg ?? 0)),                    currency,       'Gross × price/kg'],
-      ['Scrap Credit',                `-${c(scrapValue)}`,                                    currency,       'Scrap × recovery price'],
     );
-    if ((input.rawMaterial.consumablesCostPerPart ?? 0) > 0) {
-      matRows.push(['Consumables (core / wax / shell)', c(input.rawMaterial.consumablesCostPerPart!), currency, 'Per-part recurring']);
-    }
-    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, 'Gross - scrap credit + consumables']);
+    // Every item the engine puts in the material line, so the rows add up to its total (360 review).
+    const lossIsNotScrap = !!(input.rawMaterial as { lossIsNotScrap?: boolean }).lossIsNotScrap;
+    const credit = lossIsNotScrap ? 0 : scrapValue;
+    matRows.push(['Scrap Credit', `-${c(credit)}`, currency, lossIsNotScrap ? 'None — melt loss is metal lost, not scrap sold' : 'Scrap × recovery price']);
+    const consumables = input.rawMaterial.consumablesCostPerPart ?? 0;
+    const energy = (result.traceability ?? []).filter(t => /^rawMaterial\.energyKwh\./.test(t.field)).reduce((sum, t) => sum + (Number(t.value) || 0), 0);
+    const boughtIn = input.rawMaterial.boughtIn?.cost ?? 0;
+    if (consumables > 0) matRows.push(['Consumables & services', c(consumables), currency, 'Per-part recurring']);
+    if (energy > 0) matRows.push(['Process energy', c(energy), currency, 'kWh × the costing country tariff']);
+    if (boughtIn > 0) matRows.push(['Bought-in content', c(boughtIn), currency, 'Supplier price, no second overhead / margin']);
+    const other = result.breakdown.rawMaterial - (grossWt * (mat?.pricePerKg ?? 0) - credit) - consumables - energy - boughtIn;
+    if (Math.abs(other) >= 0.005) matRows.push(['Other material-line items', c(other), currency, 'Engine adders not itemised above']);
+    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, 'The rows above']);
   }
   // A pass-through placeholder has no price of its own, so its date says nothing
   // about the cost: print the date of the library the commodity module priced from

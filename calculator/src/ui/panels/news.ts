@@ -133,11 +133,11 @@ function renderNewsCards(): void {
     </span>
   </div>`;
     if (isFeatured) {
-      return `<a class="news-card news-card--featured" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer" style="${borderStyle}">
+      return `<a class="news-card news-card--featured" href="${_newsEscHtml(/^https?:\/\//i.test(String(a.url)) ? String(a.url) : '#')}" target="_blank" rel="noopener noreferrer" style="${borderStyle}">
   ${imgHtml}<div class="news-card-body">${bodyContent}</div>
 </a>`;
     }
-    return `<a class="news-card" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer" style="${borderStyle}">
+    return `<a class="news-card" href="${_newsEscHtml(/^https?:\/\//i.test(String(a.url)) ? String(a.url) : '#')}" target="_blank" rel="noopener noreferrer" style="${borderStyle}">
   ${imgHtml}${bodyContent}
 </a>`;
   }).join('');
@@ -150,7 +150,7 @@ function updateNewsTicker(): void {
   const top = _newsArticles.slice(0, 20);
   const makeItems = () => top.map(a => {
     const color = NEWS_CAT_COLORS[a.category] ?? 'var(--accent)';
-    return `<a class="news-ticker-item" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer">` +
+    return `<a class="news-ticker-item" href="${_newsEscHtml(/^https?:\/\//i.test(String(a.url)) ? String(a.url) : '#')}" target="_blank" rel="noopener noreferrer">` +
       `<span class="news-ticker-cat" style="color:${color}">${_newsEscHtml(a.category)}</span>` +
       `<span>${_newsEscHtml(a.title)}</span>` +
       `</a><span class="news-ticker-sep" aria-hidden="true">◆</span>`;

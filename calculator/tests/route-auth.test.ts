@@ -107,6 +107,9 @@ describe('a scenario belongs to the user who saved it', () => {
   });
 
   it('records who changed the shared library from the session, not the request body', async () => {
+    // Replacing the shared library is admin-only (360 review): a plain account is refused.
+    expect((await call('PUT', '/api/sync/library', bob, { library: { v: 0 } })).status).toBe(403);
+    { const db = new Database(join(dir, 'should-cost.db')); try { db.prepare("UPDATE users SET role = 'admin' WHERE id = 'alice'").run(); } finally { db.close(); } }
     await call('PUT', '/api/sync/library', alice, { library: { v: 1 }, updatedBy: 'someone-else' });
     const lib = await (await call('GET', '/api/sync/library', bob)).json() as { updatedBy: string };
     expect(lib.updatedBy).toBe('alice@test');

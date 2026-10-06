@@ -7,7 +7,12 @@ export interface AuthenticatedRequest extends Request {
 }
 
 // Fail fast at startup — never use a guessable secret in production
-const JWT_SECRET = process.env.JWT_SECRET;
+// The .env.example placeholder counts as unset: accepting it in production let anyone who read the
+// example forge sessions (360 review, Oct 2026). A short secret is warned about, not refused.
+const RAW_JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = RAW_JWT_SECRET && !/^replace-with/i.test(RAW_JWT_SECRET) ? RAW_JWT_SECRET : undefined;
+if (RAW_JWT_SECRET && !JWT_SECRET) console.warn('⚠  JWT_SECRET is the .env.example placeholder — treated as unset.');
+else if (JWT_SECRET && JWT_SECRET.length < 32) console.warn('⚠  JWT_SECRET is shorter than 32 characters — use a long random secret.');
 if (!JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('FATAL: JWT_SECRET environment variable is not set. Set it in .env before starting the server.');

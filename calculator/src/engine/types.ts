@@ -173,6 +173,12 @@ export interface RawMaterialInput {
    */
   energyKwh?: { gas?: number; electricity?: number; basis?: string };
   /**
+   * The (gross − net) weight is metal LOST, not scrap to sell — no scrap credit on it. A casting buys
+   * good part + melt loss (its gating is remelted in-house); crediting the burnt-off metal at scrap
+   * value charged only ~82% of it (360 review, Oct 2026).
+   */
+  lossIsNotScrap?: boolean;
+  /**
    * Optional itemisation behind `directCost` — the BOM for a PCBA, the wire and
    * connector schedule for a harness, the sub-part list for a BIW assembly.
    *

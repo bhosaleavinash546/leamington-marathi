@@ -10,6 +10,7 @@
 
 import { Router } from 'express';
 import db from '../db.js';
+import { requireAdmin } from '../middleware/require-admin.js';
 import { fetchAndCachePrices, getLastPriceUpdate } from '../services/price-fetcher.js';
 
 const router = Router();
@@ -50,7 +51,9 @@ router.get('/status', (_req, res) => {
 
 // ─── POST /api/prices/refresh ──────────────────────────────────────────────
 
-router.post('/refresh', async (_req, res) => {
+// Admin only: a refresh spends the metal-price API quota, and an override changes prices for every
+// user (360 review).
+router.post('/refresh', requireAdmin, async (_req, res) => {
   try {
     const result = await fetchAndCachePrices(db);
     const lastUpdate = getLastPriceUpdate(db);
@@ -113,7 +116,7 @@ interface OverrideBody {
   confidence?: unknown;
 }
 
-router.patch('/override', (req, res) => {
+router.patch('/override', requireAdmin, (req, res) => {
   const body = req.body as OverrideBody;
   const { materialId, pricePerKg, confidence } = body;
 

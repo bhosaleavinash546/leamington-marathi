@@ -719,7 +719,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         // The coil is profiled to this gear and cuts no other — programme cost,
         // exactly like a broach.
         nreLines.push({
-          item: 'Induction coil', costGBP: N.inductorCoilGBP.value,
+          item: 'Induction coil', costGBP: Math.round(N.inductorCoilGBP.value * countryFactor('toolroom')),   // toolroom-made: moves with the country, as the fixture (360 review)
           reason: 'An induction coil is profiled to one gear geometry and cannot be reused on '
             + 'another, so its whole cost belongs to this programme.',
         });
@@ -729,7 +729,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         // The broach is the reason broaching needs volume. Charging none made the
         // advisor's own justification ("the volume carries the tool cost") empty.
         nreLines.push({
-          item: 'Broach', costGBP: N.broachCapitalGBP.value,
+          item: 'Broach', costGBP: Math.round(N.broachCapitalGBP.value * countryFactor('toolroom')),
           reason: 'A broach cuts one gear form and cannot be reground into another, so its whole '
             + 'cost belongs to this programme.',
         });
@@ -781,7 +781,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
       reason: 'Work-holding for the gear cutting operation.' },
     { item: 'Programming & first article', costGBP: Math.round(N.programmingAndPPAPGBP.value * countryFactor('engineer')),
       reason: 'CNC programming, trial cuts and PPAP approval before production.' },
-    { item: 'Inspection master', costGBP: N.inspectionMasterGBP.value,
+    { item: 'Inspection master', costGBP: Math.round(N.inspectionMasterGBP.value * countryFactor('toolroom')),
       reason: `Master gear / checking fixture for ISO class ${inputs.qualityClass} metrology.` },
   );
   const nreCostGBP = nreLines.reduce((s, l) => s + l.costGBP, 0);

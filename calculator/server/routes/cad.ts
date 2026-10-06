@@ -7,6 +7,7 @@ import type { CommodityType } from '../../src/engine/types.js';
 import rateLimit from 'express-rate-limit';
 import { createAnthropic, isAirGapped, aiDisabledBody, AI_DISABLED_MESSAGE } from '../utils/ai-client.js';
 import { requireAuth } from '../middleware/auth-middleware.js';
+import { resolveActiveRateBook } from './rate-library.js';
 import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh } from '../utils/geometry-store.js';
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
@@ -862,7 +863,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // a stretch-formed or drawn one is flagged on the blank itself. The DXF the
   // tool writes is held under the blank's hash for download and /reanalyze.
   if (!blankUpload && geo.status === 'success') {
-    const dev = await developBlankFromCad(buffer, originalname, geo);
+    const dev = await developBlankFromCad(buffer, originalname, geo, { unitScale });
     if (dev && 'blank' in dev) {
       geo = { ...geo, blank: dev.blank };
       blankHash = dev.blank.blankHash ?? null;
@@ -918,9 +919,11 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // deserve different behaviour on a commodity with no rules yet.
   const modeExplicit = typeof req.body?.mode === 'string' && req.body.mode.trim() !== '';
   const noCache = req.body?.noCache === true || req.body?.noCache === 'true';
+  // Guarded like the early parse above: a malformed string threw AFTER the kernel had run → a 500 (360 review).
   const decisionAnswers = parseDecisionAnswers(
     typeof req.body?.decisionAnswers === 'string'
-      ? JSON.parse(req.body.decisionAnswers) as unknown : req.body?.decisionAnswers);
+      ? (() => { try { return JSON.parse(req.body.decisionAnswers) as unknown; } catch { return null; } })()
+      : req.body?.decisionAnswers);
 
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
@@ -938,7 +941,11 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION,
+      // Inputs that change the result and were missing (360 review, Oct 2026): the file NAME (it carries
+      // material / part-name evidence), the FASTBLANK DXF, and the active company rate book (an admin's
+      // upload was not reflected until the cache expired).
+      filename: originalname, blankHash, rateBook: (() => { const b = resolveActiveRateBook(); return `${b.version}|${b.lastModified}`; })() })),
   ]);
   // `noCache` re-samples the model instead of serving the stored answer. Needed
   // for any A/B or variance measurement: without it a second run of the same
@@ -2561,7 +2568,8 @@ function respondAIError(res: Parameters<Parameters<typeof router.post>[1]>[1], e
   res.status(502).json({ error: `AI service error: ${msg.slice(0, 300)}` });
 }
 
-router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRoute(async (req, res): Promise<void> => {
+// Signed in like every other CAD route: it ran the kernel (up to 300 s, 2 workers) for anyone (360 review).
+router.post('/tessellate', requireAuth, tessellateLimiter, upload.single('cadFile'), asyncRoute(async (req, res): Promise<void> => {
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
   const ext = req.file.originalname.toLowerCase().split('.').pop() ?? '';
   if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'].includes(ext)) {

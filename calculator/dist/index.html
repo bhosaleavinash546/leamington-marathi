@@ -50,7 +50,7 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-D61wi8cQ.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-B_TMkmYm.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-DsdnaknN.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
@@ -358,7 +358,7 @@
 
     <!-- Live Commodity Ticker -->
     <div class="comm-ticker-outer" id="comm-ticker-outer">
-      <span class="comm-ticker-label"><svg class="ic ic-xs"><use href="#i-chart"/></svg> PRICES</span>
+      <span class="comm-ticker-label"><svg class="ic ic-xs"><use href="#i-chart"/></svg> PRICES · SIMULATED</span>
       <div class="comm-ticker-clip">
         <div class="comm-ticker-track" id="comm-ticker-track">
           <span class="comm-ticker-loading">Loading commodity prices…</span>
@@ -377,7 +377,7 @@
           <span class="comm-panel-title">Commodity Intelligence</span>
           <span class="comm-badge" id="comm-updated-badge" style="background:var(--text-muted,#64748b)">Benchmark</span>
           <span class="comm-updated" id="comm-updated-time"></span>
-          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="Prices are modelled benchmarks calibrated to market references. Not live feed data. Verify with broker for binding decisions."><svg class="ic ic-xs"><use href="#i-warn"/></svg> indicative only</span>
+          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="A simulated random walk around benchmark levels — not a market feed. No costing reads it."><svg class="ic ic-xs"><use href="#i-warn"/></svg> simulated — not a live feed</span>
         </div>
         <div class="comm-panel-controls">
           <select class="comm-filter-sel" id="comm-filter-cat" title="Filter by category">
@@ -444,7 +444,7 @@
       <!-- Forecast + Alert footer row -->
       <div class="comm-footer-row">
         <div class="comm-footer-note">
-          Commodity prices are indicative market values refreshed every 30 minutes, based on LME, SMM, ICIS, and Fastmarkets reference benchmarks. Not financial advice.
+          The commodity ticker is a SIMULATION: a random walk around benchmark levels taken from LME, SMM, ICIS and Fastmarkets references, re-seeded at each server start. It is not a market feed, and no costing reads it. Not financial advice.
         </div>
         <button class="btn btn-secondary btn-sm" id="comm-alert-btn" style="font-size:0.78rem;padding:4px 12px;white-space:nowrap"><svg class="ic ic-xs"><use href="#i-bell"/></svg> Price Alerts</button>
       </div>
@@ -1697,7 +1697,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
           <span style="background:#dc2626;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">ISO 26262 ASIL Safety</span>
           <span style="background:#d97706;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">Benchmark &amp; Deep-Dive Reports</span>
         </div>
-        <p style="margin:10px 0 0;padding:8px 10px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>Latest update (July 2026):</strong> now <strong>49 modules</strong> (43 core + 6 premium-trim options — active body control, premium audio/ANC, automated parking, climate, digital key, AR-HUD), <strong>one-click Demo Programmes</strong> for five real cars (Range Rover L460, BMW X7, Audi Q8, Mercedes GLS, Porsche Cayenne) across ICE/MHEV/PHEV/BEV, and four exportable <strong>comparison reports</strong>. Back-tested to a ±25–35% envelope (MAPE 24.9% vs 7 published programmes).</p>
+        <p style="margin:10px 0 0;padding:8px 10px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>Latest update (July 2026):</strong> now <strong>49 modules</strong> (43 core + 6 premium-trim options — active body control, premium audio/ANC, automated parking, climate, digital key, AR-HUD), <strong>one-click Demo Programmes</strong> for five real cars (Range Rover L460, BMW X7, Audi Q8, Mercedes GLS, Porsche Cayenne) across ICE/MHEV/PHEV/BEV, and four exportable <strong>comparison reports</strong>. Back-tested against 7 published programmes: MAPE 21.8% on the programme total (5 of 7 within ±35%), 75% on cost per vehicle.</p>
       </div>
 
       <!-- ▶ INTERACTIVE NARRATED DEMO ─────────────────────────────────────── -->
@@ -1763,13 +1763,13 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
             body:'<div class="swdemo-h">Step 3 · Complexity, Safety &amp; Reuse</div><div class="swdemo-mock">'+tile('Complexity','how hard to build')+tile('ASIL','ISO 26262 safety level')+tile('Reuse','fresh → platform',true)+'</div><div class="swdemo-sub" style="margin-top:10px">Reuse is the single biggest cost lever — platform reuse cuts a domain ~85%</div>',
             cap:'<b>Step 3 — Complexity, Safety &amp; Reuse.</b> Set each per domain. ASIL defaults to safe per-module ISO 26262 values, so you can leave it. <b>Reuse is the biggest lever</b> — reusing a proven platform can cut a domain\'s cost by ~85%.' },
           { ch:'Step 4', title:'Cost',
-            body:'<div class="swdemo-h">Step 4 · Effort &amp; cost by domain</div><div class="swdemo-mock">'+kpi('£601M','Total Programme','#60a5fa')+kpi('£752','Per Vehicle','#34d399')+kpi('£349M','Total NRE','#a78bfa')+'</div>',
-            cap:'<b>Step 4 — Cost.</b> The tool instantly shows engineering effort (person-months) and cost per domain, plus the headline totals. Here a full stack lands near <b>£601M</b> — right in the premium-EV band between Audi and BMW.' },
+            body:'<div class="swdemo-h">Step 4 · Effort &amp; cost by domain</div><div class="swdemo-mock">'+kpi('£494M','Total Programme','#60a5fa')+kpi('£618','Per Vehicle','#34d399')+kpi('£285M','Total NRE','#a78bfa')+'</div>',
+            cap:'<b>Step 4 — Cost.</b> The tool instantly shows engineering effort (person-months) and cost per domain, plus the headline totals. With the default modules it lands near <b>£494M</b> (engine output, October 2026 rates).' },
           { ch:'Step 5', title:'Review',
             body:'<div class="swdemo-h">Step 5 · Review &amp; fine-tune</div><div class="swdemo-mock">'+tile('Overhead ×','1.60')+tile('Senior fraction','0.50')+tile('UK base £/PM','28,000',true)+'</div><div class="swdemo-sub" style="margin-top:10px">Region swing: £120M → £430M · ASIL swing: £520M → £690M</div>',
             cap:'<b>Step 5 — Review.</b> Fine-tune commercial assumptions and see the sensitivity — how much cost moves if you change region or safety level. Most users leave the defaults; the sensitivity shows what really drives the number.' },
           { ch:'Step 6', title:'Report',
-            body:'<div class="swdemo-h">Step 6 · Final report</div><div class="swdemo-mock">'+kpi('£576M','P10','#34d399')+kpi('£624M','P50','#60a5fa')+kpi('£673M','P90','#f87171')+'</div><div class="swdemo-sub" style="margin-top:10px">Monte Carlo range · benchmarked vs 7 real OEM programmes</div>',
+            body:'<div class="swdemo-h">Step 6 · Final report</div><div class="swdemo-mock">'+kpi('£458M','P10','#34d399')+kpi('£511M','P50','#60a5fa')+kpi('£563M','P90','#f87171')+'</div><div class="swdemo-sub" style="margin-top:10px">Monte Carlo range · benchmarked vs 7 real OEM programmes</div>',
             cap:'<b>Step 6 — Report.</b> The full picture: a Monte Carlo <b>P10/P50/P90</b> range (not a false single number), phase timeline, OEM benchmarks, an AI executive summary, and one-click Excel/PDF export. This is what you take to a review.' },
           { ch:'Reports', title:'Benchmark &amp; deep-dive reports',
             body:'<div class="swdemo-h">Board-ready comparison reports</div><div class="swdemo-mock">'+tile('Competitive Benchmark','one car vs its rivals',true)+tile('Deep-Dive','all 49 modules, one car')+tile('All-Models','every module × 5 cars')+tile('Powertrain Study','5 cars × 4 drivetrains')+'</div>',
@@ -2240,11 +2240,11 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
     <div class="help-section" id="help-commodity-dashboard"><template data-cv-lazy>
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon"><svg class="ic" aria-hidden="true"><use href="#i-trend-up"/></svg></div>Live Commodity Price Dashboard</div>
-        <p>The <strong>Live Prices</strong> panel provides real-time commodity intelligence for 52 automotive-relevant materials. Access it by clicking <strong><svg class="ic" aria-hidden="true"><use href="#i-trend-up"/></svg> Live Prices</strong> in the navigation bar. The panel covers metals (steel, aluminium, copper, nickel, cobalt, lithium, rare earths), plastics (PP, ABS, PA66, PC, HDPE), and EV-specific materials (NMC, LFP, silicon carbide, electrical steel).</p>
+        <p>The <strong>Live Prices</strong> panel shows a <strong>simulated</strong> price ticker for 48 automotive-relevant materials (benchmark levels moved by a random walk — not market data). Access it by clicking <strong><svg class="ic" aria-hidden="true"><use href="#i-trend-up"/></svg> Live Prices</strong> in the navigation bar. The panel covers metals (steel, aluminium, copper, nickel, cobalt, lithium, rare earths), plastics (PP, ABS, PA66, PC, HDPE), and EV-specific materials (NMC, LFP, silicon carbide, electrical steel).</p>
       </div>
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon"><svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg></div>Live Ticker</div>
-        <p>A <strong>scrolling commodity ticker</strong> runs across the top of the screen (similar to a financial data terminal), showing current prices and 24h change for key materials. Colour coding: <span style="color:#22c55e">green = rising</span>, <span style="color:#ef4444">red = falling</span>, <span style="color:var(--text-muted)">grey = unchanged</span>. The ticker updates every 5 seconds with simulated live price movement.</p>
+        <p>A <strong>scrolling commodity ticker</strong> runs across the top of the screen (similar to a financial data terminal), showing current prices and 24h change for key materials. Colour coding: <span style="color:#22c55e">green = rising</span>, <span style="color:#ef4444">red = falling</span>, <span style="color:var(--text-muted)">grey = unchanged</span>. The ticker is a <strong>simulation</strong> (a bounded random walk around benchmark levels) refreshed from the server when the panel loads — it is not a market feed and no costing reads it.</p>
       </div>
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg></div>KPI Cards</div>
@@ -2265,9 +2265,9 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
         <div class="help-card-title"><div class="help-icon"><svg class="ic" aria-hidden="true"><use href="#i-trend-dn"/></svg></div>Sparklines &amp; Forecasting</div>
         <ul>
           <li><strong>Sparklines</strong> — mini price history charts showing 7, 30, or 90 days of price movement for each commodity.</li>
-          <li><strong>30-Day Forecast</strong> — AI-powered trend projection using Ornstein-Uhlenbeck mean-reversion modelling. Shown as a dashed line on the sparkline chart.</li>
+          <li><strong>30-Day Forecast</strong> — a straight-line extrapolation of the last 7 simulated days (no AI, no mean-reversion model). It extends the simulation; it is not a market forecast. Shown as a dashed line on the sparkline chart.</li>
           <li><strong>90-Day Forecast</strong> — longer range projection; wider confidence bands. Use for annual budget planning and should-cost stress-testing.</li>
-          <li>Forecasts are statistical models, not guaranteed prices. Always validate against live broker quotes for high-value sourcing decisions.</li>
+          <li>The ticker and its forecasts are a simulation, not market data. Use live broker quotes for any sourcing decision.</li>
         </ul>
       </div>
       <div class="help-card">
@@ -2289,7 +2289,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
           <li>Run "what-if" sensitivity analyses (e.g., "what if nickel rises 20%?")</li>
           <li>Identify which materials have the highest cost-risk for your portfolio</li>
         </ul>
-        <p style="margin-top:6px">The impact coefficient is automatically populated into the cost model when you select a commodity material — the calculator uses live prices as the material rate baseline.</p>
+        <p style="margin-top:6px">The impact coefficient is shown for information only: the calculator does <strong>not</strong> read these prices — every material rate comes from the dated rate library (Rate Database).</p>
       </div>
     </template></div>
 
@@ -2344,7 +2344,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
       </div>
       <div class="faq-item">
         <div class="faq-q" id="faq-q10">How accurate are the Live Commodity Prices?</div>
-        <div class="faq-a" id="faq-a10" style="display:none">The commodity prices are derived from publicly available market data and simulated using Ornstein-Uhlenbeck mean-reversion models calibrated against real LME, Fastmarkets, and Bloomberg spot prices. They are intended for <strong>should-cost benchmarking and trend analysis</strong>, not for financial trading or contract pricing. For binding sourcing decisions, always verify against your broker's live quote.</div>
+        <div class="faq-a" id="faq-a10" style="display:none">They are <strong>simulated</strong>: each commodity starts from a fixed benchmark level (set from LME, SMM, ICIS and Fastmarkets references) and moves by a bounded random walk (±25% of the benchmark), re-seeded every time the server starts. They are <strong>not a market feed</strong>, are not calibrated to live data, and <strong>no costing reads them</strong> — every cost uses the dated rate library (Rate Database). Treat the ticker as an illustration of price movement, never as a price.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" id="faq-q11">Can I export the full report as a single PDF?</div>
@@ -2398,7 +2398,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
       </div>
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">!</div>Live Commodity Prices appear stale or frozen</div>
-        <p>The commodity dashboard updates prices every 5 seconds via the browser's stochastic price engine. If values appear frozen: (1) check that the Live Prices panel is open and in the foreground (prices pause when the tab is hidden to save CPU); (2) reload the page — the price engine auto-restarts on load. The "last refreshed" timestamp in the panel header shows when data was last fetched from the server.</p>
+        <p>The ticker is a server-side simulation that moves every 30 minutes and is fetched when the page loads. Values that do not change between reloads within 30 minutes are expected. It is illustrative only; no costing reads it.</p>
       </div>
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">!</div>Price alert notification did not appear</div>
@@ -2427,7 +2427,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
           <li><strong>49 modules</strong> — the catalogue grew from 43 to 49 with <strong>6 premium-trim options</strong> (active body control, premium audio &amp; ANC, automated parking, climate control, digital key UWB, AR-HUD). They default to off so the validated 43-module baseline is unchanged.</li>
           <li><strong>Demo Programmes</strong> — one-click, fully-configured real vehicles: Range Rover L460, BMW X7, Audi Q8, Mercedes GLS and Porsche Cayenne, each across its real drivetrains (ICE / MHEV / PHEV / BEV). Every demo auto-computes and offers a <em>View full report</em>.</li>
           <li><strong>Four comparison reports</strong> — Competitive Benchmark, module-by-module Deep-Dive (all 49), All-Models Comparison, and a Powertrain Cost Study (5 cars × 4 drivetrains) — apple-to-apple on real drivetrains only, exportable to PDF.</li>
-          <li><strong>Accuracy stated</strong> — validated to a ±25–35% envelope (back-test MAPE 24.9%, 5 of 7 published programmes within ±35%). Every figure is live engine output.</li>
+          <li><strong>Accuracy stated</strong> — back-tested on 7 published programmes: MAPE 21.8% on the programme total (5 of 7 within ±35%), but 75% on cost per vehicle — use the programme total, not the per-vehicle figure, for decisions.</li>
           <li><strong>Engine refinements</strong> — ASIL-scaled testing effort, complexity broadened beyond the algorithm bucket, safety-effort reuse floor, and optional levers (schedule compression, NPV, cost-recovery window, ML-data cost, programme homologation).</li>
         </ul>
       </div>
@@ -2516,7 +2516,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
           </div>
           <ul class="changelog-items">
             <li><strong>New Costing &amp; Workflow Panel</strong> — gradient ⊕ button opens full-width commodity picker with 19+ processes; costing slides in as a 52%-width right panel</li>
-            <li><strong>Live Commodity Dashboard</strong> — real-time prices for 52 automotive commodities with sparklines, AI forecasts, and price alert thresholds</li>
+            <li><strong>Commodity Dashboard (simulated)</strong> — an illustrative price simulation for 48 automotive commodities with sparklines, trend extrapolation and alert thresholds — not market data</li>
             <li><strong>Luxury SUV Demo Gallery</strong> — 50+ pre-configured automotive examples across all commodity types, one-click load with full AI insights</li>
             <li><strong>AI Cost Assistant</strong> — floating chat with real-time manufacturing cost engineering chatbot, commodity-aware and context-sensitive</li>
           </ul>
@@ -2545,7 +2545,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
             <span class="changelog-tag major">Major</span>
           </div>
           <ul class="changelog-items">
-            <li><strong>CAD Analysis AI</strong> — upload STEP/STL/DXF/photos and get AI-powered should-cost estimates with manufacturability feedback</li>
+            <li><strong>CAD Analysis</strong> — upload STEP/STL/DXF/photos: the geometry is measured, the AI (when enabled) only helps read the part, and the cost is deterministic arithmetic on the rate library, with manufacturability feedback</li>
             <li><strong>Scenario Manager</strong> — save, compare, and version-control costing scenarios with full Δ analysis across all 8 cost buckets</li>
             <li><strong>Excel Export</strong> — 6-sheet workbooks with full rate buildup, sensitivity tables, and traceability records</li>
           </ul>
@@ -5068,7 +5068,7 @@ injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
       <button onclick="document.getElementById('cv-feedback-modal').style.display='none'" style="padding:8px 16px;border-radius:7px;border:1px solid #e2e8f0;background:#f8fafc;font-size:0.8rem;cursor:pointer;font-family:var(--font);color:#64748b">Cancel</button>
       <button id="cv-feedback-submit" style="padding:8px 20px;border-radius:7px;border:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:var(--font)">Send Feedback</button>
     </div>
-    <p id="cv-feedback-sent" style="display:none;text-align:center;color:#059669;font-size:0.82rem;margin-top:10px;font-weight:600">✓ Thank you! We'll review your feedback.</p>
+    <p id="cv-feedback-sent" style="display:none;text-align:center;color:#059669;font-size:0.82rem;margin-top:10px;font-weight:600">Copied to your clipboard — this build does not send feedback; paste it into an email to the CostVision team.</p>
   </div>
 </div>
 
@@ -5392,7 +5392,9 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.addEventListener('click', function() {
       var text = textarea ? textarea.value.trim() : '';
       if (!text) return;
-      // In a real app, POST to /api/feedback — here we just acknowledge
+      // This build has no feedback server. It used to say "Thank you! We'll review your feedback." and
+      // discard the text (360 review): now it copies the text and says so.
+      try { navigator.clipboard && navigator.clipboard.writeText(text); } catch (e) { /* clipboard blocked */ }
       if (sentEl) sentEl.style.display = 'block';
       if (submitBtn) submitBtn.style.display = 'none';
       setTimeout(function() {

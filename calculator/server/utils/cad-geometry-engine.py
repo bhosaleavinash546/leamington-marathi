@@ -28,7 +28,14 @@ def _set_alarm(seconds):
         signal.alarm(seconds)
 
 
-def _timeout(_s, _f): raise TimeoutError("Geometry analysis timed out")
+class GeometryTimeout(BaseException):
+    """The self-timeout. A BaseException on purpose: every analysis step guards itself with
+    `except Exception` and carries on, so a TimeoutError raised mid-step was swallowed and the part came
+    back as a "success" with that step (wall, topology, draft …) silently missing (360 review, Oct 2026).
+    This passes every step and reaches the job's own handler, which reports code 'timeout'."""
+
+
+def _timeout(_s, _f): raise GeometryTimeout("Geometry analysis timed out")
 
 
 if _HAS_ALARM:
@@ -3168,7 +3175,7 @@ def serve():
                 result = {"status": "success", "pong": True, "lru": len(_SHAPE_LRU)}
             else:
                 result = {"status": "error", "code": "bad_job", "error": f"unknown op {op!r}"}
-        except TimeoutError:
+        except (GeometryTimeout, TimeoutError):
             result = {"status": "error", "code": "timeout", "error": f"Geometry job exceeded {timeout_s}s"}
         except Exception as e:
             result = {"status": "error", "code": "crashed", "error": str(e)[:300]}
@@ -3369,6 +3376,9 @@ if __name__ == "__main__":
     if not os.path.exists(fp):
         print(json.dumps({"status": "error", "error": f"File not found: {fp}"}))
         sys.exit(1)
-    result = analyze(fp)
+    try:
+        result = analyze(fp)
+    except GeometryTimeout:
+        result = {"status": "error", "code": "timeout", "error": "Geometry analysis timed out — the part is too large or complex for the time allowed"}
     print(json.dumps(result))
     sys.exit(0 if result.get("status") == "success" else 1)

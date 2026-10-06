@@ -1244,7 +1244,7 @@ async function fetchCommodities(force = false): Promise<void> {
     // perpetual "Loading…" into an honest unavailable state so it never hangs.
     if (!_commData) {
       const track = document.getElementById('comm-ticker-track');
-      if (track) track.innerHTML = '<span class="comm-ticker-loading">Live commodity prices unavailable right now</span>';
+      if (track) track.innerHTML = '<span class="comm-ticker-loading">Commodity price simulation unavailable right now</span>';
     }
   }
 }
@@ -2784,8 +2784,8 @@ function renderComparePanel(): void {
     ${a.warnings?.length || b.warnings?.length ? `
     <div style="margin-top:12px">
       <div class="dash-section-title" style="margin-bottom:6px">Warnings</div>
-      ${a.warnings?.length ? `<div style="font-size:0.75rem;color:var(--amber);margin-bottom:4px"><strong>A:</strong> ${a.warnings.join('; ')}</div>` : ''}
-      ${b.warnings?.length ? `<div style="font-size:0.75rem;color:var(--amber)"><strong>B:</strong> ${b.warnings.join('; ')}</div>` : ''}
+      ${a.warnings?.length ? `<div style="font-size:0.75rem;color:var(--amber);margin-bottom:4px"><strong>A:</strong> ${escHtml(a.warnings.join('; '))}</div>` : ''}
+      ${b.warnings?.length ? `<div style="font-size:0.75rem;color:var(--amber)"><strong>B:</strong> ${escHtml(b.warnings.join('; '))}</div>` : ''}
     </div>` : ''}
   `;
 
@@ -6954,7 +6954,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         <tr><td>Operations</td><td>${(r.costInputSuggestions.estimatedOperations ?? []).map(o => escHtml(o.name)).join(', ')}</td></tr>
         ${toolingCost > 0 ? `<tr><td>${escHtml(toolingLabel)} (OCCT est.)</td><td>${_moneyG(toolingCost, 0)}</td></tr>
         <tr><td>Tooling/part @ ${annualVolume.toLocaleString()} pcs</td><td style="color:var(--accent)"><strong>${_moneyG(toolingPerPart, 3)}</strong></td></tr>` : ''}
-        ${totalMidWithTooling !== null && toolingCost > 0 ? `<tr style="border-top:1px solid var(--border)"><td><strong>Est. total/part (incl. tooling)</strong></td><td><strong style="color:var(--accent)">${_currFmt(totalMidWithTooling)}</strong></td></tr>` : ''}
+        ${totalMidWithTooling !== null && toolingCost > 0 ? `<tr style="border-top:1px solid var(--border)"><td><strong>AI ballpark/part + OCCT tooling est.</strong><br><span style="font-size:0.66rem;color:var(--text-muted)">not the should-cost — Apply &amp; Calc runs the engine</span></td><td><strong style="color:var(--accent)">${_currFmt(totalMidWithTooling)}</strong></td></tr>` : ''}
       </table>
     </div>`;
     })()}
@@ -7270,7 +7270,7 @@ function buildInlineDemoSection(commodity: string): string {
 
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────
 // Pre-computed results for two real-world automotive PCB examples.
-// All country costs were computed live from pcb-country-rates.ts engine.
+// Fixed sample figures (they are NOT recomputed — the card says so; 360 review, Oct 2026).
 
 function makeDemoCountry(
   id: string, name: string, flag: string,
@@ -7581,7 +7581,7 @@ function buildPCBDemoSection(): string {
           <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Engine Control Unit — 6-layer 150×100mm HDI, 290 SMT, 5 BGA, 5000 pcs/yr</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
             <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>14</strong></div>
-            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£48.50</strong></div>
+            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>${_moneyG(48.50)}</strong></div>
             <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">${_moneyG(ecuCN.totalPerBoard, 2)}</strong></div>
             <div><span style="color:var(--text-muted)">UK total:</span> <strong>${_moneyG(PCB_DEMO_ECU._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0, 2)}</strong></div>
           </div>
@@ -7600,7 +7600,7 @@ function buildPCBDemoSection(): string {
           <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Surround View Processor — 8-layer 80×80mm 2+N+2 HDI, 198 SMT, 8 BGA, 2000 pcs/yr</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
             <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>14</strong></div>
-            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£62.30</strong></div>
+            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>${_moneyG(62.30)}</strong></div>
             <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">${_moneyG(adasCN.totalPerBoard, 2)}</strong></div>
             <div><span style="color:var(--text-muted)">UK total:</span> <strong>${_moneyG(PCB_DEMO_ADAS._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0, 2)}</strong></div>
           </div>
@@ -7619,7 +7619,7 @@ function buildPCBDemoSection(): string {
           <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Bosch LRR5-type ACC/AEB Radar — 6-layer 100×70mm Rogers 4350B, AWR1843AOP + AURIX TC234</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
             <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>16</strong></div>
-            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£79.44</strong></div>
+            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>${_moneyG(79.44)}</strong></div>
             <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">${_moneyG(radarCN.totalPerBoard, 2)}</strong></div>
             <div><span style="color:var(--text-muted)">UK total:</span> <strong>${_moneyG(PCB_DEMO_BOSCH_RADAR._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0, 2)}</strong></div>
           </div>
@@ -7629,7 +7629,7 @@ function buildPCBDemoSection(): string {
         </div>
       </div>
       <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted);text-align:center">
-        All costs computed live from the 2026 14-country manufacturing database. Click a card to see the full analysis.
+        Illustrative example boards with fixed sample figures — not live results. Run Analyze on a photo (or Calculate) for a costing from the current rate tables.
       </div>
     </div>`;
 }
@@ -8529,14 +8529,18 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
   };
 
   // Collect BOM edits from table
-  const correctedBOM: PCBBOMItem[] = r.bom.map((item, i) => {
+  // Only the lines the engineer CHANGED (or pinned) go back as corrections (360 review, Oct 2026). Every
+  // row used to be sent: the server then priced the whole BOM as "engineer" (the "to verify" bucket
+  // emptied, prices froze at the old volume), and unlabelled lines (refDes "—") collapsed into one.
+  const correctedBOM: PCBBOMItem[] = r.bom.flatMap((item, i) => {
     const qtyInput = document.querySelector<HTMLInputElement>(`.pcb-edit-bom-qty[data-bom-idx="${i}"]`);
     const priceInput = document.querySelector<HTMLInputElement>(`.pcb-edit-bom-price[data-bom-idx="${i}"]`);
-    return {
-      ...item,
-      qty: Math.round(parseFloat(qtyInput?.value ?? '') || item.qty),
-      unitPriceGBP: parseFloat(priceInput?.value ?? '') || item.unitPriceGBP,
-    };
+    const q = parseFloat(qtyInput?.value ?? '');
+    const p = parseFloat(priceInput?.value ?? '');
+    const qty = Number.isFinite(q) && q >= 1 ? Math.round(q) : item.qty;
+    const unitPriceGBP = Number.isFinite(p) && p >= 0 ? p : item.unitPriceGBP;   // 0 is a valid price now
+    const changed = qty !== item.qty || Math.abs(unitPriceGBP - item.unitPriceGBP) > 0.0005 || pcbPinnedPrices.has(i);
+    return changed ? [{ ...item, qty, unitPriceGBP }] : [];
   });
 
   return { correctedSpec, correctedAssembly, correctedBOM };
@@ -8729,6 +8733,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const totalPlacements = a.smtPlacements;
   const totalBOMCost = c.totalBOMCostGBP.toFixed(2);
 
+  // `r` is escapedForDisplay's copy (buildPCBImagePanel's only caller): text is already escaped.
   const singleSourceRefDesSet = new Set((r._singleSourceWarnings ?? []).map(w => w.refDes));
   const bomRows = r.bom.map((item, i) => `
     <tr class="${item.highCost ? 'pcb-bom-row--high-cost' : ''}" data-bom-idx="${i}">
@@ -14948,8 +14953,20 @@ function handleAIAutofill(): void {
         if (!m) throw new Error('no json');
         const p = JSON.parse(m[0]);
         let filled = 0;
+        let refused = 0;
+        // AI never sets a cost input on its own (360 review, Oct 2026): a NUMBER is filled only when the
+        // user wrote it in the description — the model extracts, it does not estimate weight, volume,
+        // overhead or margin.
+        const said = inputEl.value.toLowerCase().replace(/,/g, '');
+        const stated = (v: unknown): boolean => {
+          const n = Number(v);
+          if (!Number.isFinite(n) || n <= 0) return false;
+          const forms = [String(n), n.toFixed(1), n.toFixed(2), n < 1 ? String(Math.round(n * 100)) : ''].filter(Boolean);
+          return forms.some(f => new RegExp(`(^|[^0-9.])${f.replace('.', '\\.')}(?![0-9])`).test(said));
+        };
         const setF = (id: string, v: unknown) => {
           if (v == null) return;
+          if (typeof v === 'number' && !stated(v)) { refused++; return; }
           const e = document.getElementById(id) as HTMLInputElement | null;
           if (e) { e.value = String(v); filled++; }
         };
@@ -14969,7 +14986,7 @@ function handleAIAutofill(): void {
           const wtId = wtMap[activeCommodity];
           if (wtId) setF(wtId, p.weightKg);
         }
-        showToast(`AI filled ${filled} field${filled !== 1 ? 's' : ''} — review and calculate.`, 'info');
+        showToast(`AI filled ${filled} field${filled !== 1 ? 's' : ''} from your description${refused ? ` (${refused} number${refused !== 1 ? 's' : ''} you did not state left alone)` : ''} — review and calculate.`, 'info');
       } catch { showToast('Could not parse AI response. Try a more specific description.', 'error'); }
     })
     .catch(() => showToast('AI autofill unavailable — check server API key.', 'error'))
@@ -16645,7 +16662,7 @@ function renderScenarios(): void {
         ${scenarios.length === 0 ? '<div style="color:#aaa;font-size:0.82rem">No scenarios saved yet. Calculate a result and click Save Scenario.</div>' : ''}
         ${scenarios.map(s => `
           <div class="scenario-card">
-            <div class="sc-name">${s.name}</div>
+            <div class="sc-name">${escHtml(String(s.name))}</div>
             <div class="sc-meta">${escHtml(REGIONAL_DATA[(s.region ?? 'UK') as ManufacturingRegion]?.name ?? s.region ?? 'United Kingdom')} · ${s.description ? escHtml(s.description) + ' · ' : ''}${new Date(s.createdAt).toLocaleDateString()}</div>
             <div class="sc-total">${fmt(s.result.total)}</div>
             <button class="btn btn-secondary btn-sm del-sc-btn" data-sc-id="${s.id}">Delete</button>
@@ -16739,8 +16756,8 @@ function renderCompareResult(comp: { baseline: { name: string; result: PartCostR
     <table class="compare-table">
       <thead><tr>
         <th>Bucket</th>
-        <th>${baseline.name}</th>
-        <th>${target.name}</th>
+        <th>${escHtml(String(baseline.name))}</th>
+        <th>${escHtml(String(target.name))}</th>
         <th>Delta</th>
       </tr></thead>
       <tbody>
@@ -16909,7 +16926,7 @@ async function printMasterPDF(): Promise<void> {
     doc.text('CAD Analysis Summary', mg + 8, y + 7);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
     doc.text(`Part: ${cadAnalysisResult.partName}`, mg + 8, y + 13);
-    doc.text(`Recommended: ${cadAnalysisResult.processRecommendations[0]?.commodityType ?? '—'}  ·  Manufacturability: ${cadAnalysisResult.manufacturabilityScore}/100  ·  Confidence: ${cadAnalysisResult.confidenceLevel}${cr ? `  ·  Cost range: ${cadFx(cr.low)}–${cadFx(cr.high)}` : ''}`, mg + 8, y + 19);
+    doc.text(`Recommended: ${cadAnalysisResult.processRecommendations[0]?.commodityType ?? '—'}  ·  Manufacturability: ${cadAnalysisResult.manufacturabilityScore}/100  ·  Confidence: ${cadAnalysisResult.confidenceLevel}${cr && cr.high > 0 ? `  ·  AI ballpark (not the should-cost): ${cadFx(cr.low)}–${cadFx(cr.high)}` : ''}`, mg + 8, y + 19);
     y += 30;
   }
 
@@ -17715,7 +17732,7 @@ function loadExample(): void {
       break;
 
     case 'cad_analysis':
-      el('cad-results').innerHTML = `<div style="padding:12px;font-size:0.8rem;color:var(--text-secondary);background:color-mix(in srgb, var(--warning) 8%, var(--surface));border-radius:6px;border:1px solid color-mix(in srgb, var(--warning) 35%, transparent)">Upload a STEP or IGES file and click "Analyze CAD File" to get AI-powered cost estimates.</div>`;
+      el('cad-results').innerHTML = `<div style="padding:12px;font-size:0.8rem;color:var(--text-secondary);background:color-mix(in srgb, var(--warning) 8%, var(--surface));border-radius:6px;border:1px solid color-mix(in srgb, var(--warning) 35%, transparent)">Upload a STEP or IGES file and click "Analyze CAD File": the geometry is measured and the cost is built from the rate library.</div>`;
       break;
 
     case 'assembly': {
@@ -19060,11 +19077,17 @@ function loadCADDemo(commodity: string): void {
     // Inject the pre-computed AI result into module state
     cadAnalysisResult = result;
     cadOCCTGeometry = null;          // no real OCCT geometry for demos
-    cadGeometrySource = 'occt';      // tag as high-confidence (geometry was used to derive these)
+    // A recording, not a measurement: it used to be tagged 'occt', so the results showed an "OCCT Kernel"
+    // badge on hand-written figures (360 review, Oct 2026).
+    cadGeometrySource = 'text_parsing';
     _cadDiff = null;                 // demos are recordings — there is nothing to compare
 
     const annVol = parseInt((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000', 10) || 100000;
     renderCADResults(result, false, annVol);
+    el('cad-results')?.insertAdjacentHTML('afterbegin',
+      '<div role="note" style="margin-bottom:10px;padding:8px 12px;border-radius:6px;font-size:0.76rem;font-weight:600;'
+      + 'background:color-mix(in srgb, var(--warning) 12%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 45%, transparent)">'
+      + 'DEMO — a pre-recorded example, not a measurement of your file. Upload a STEP file for a real analysis.</div>');
 
     // Scroll the results into view
     setTimeout(() => {
@@ -19091,8 +19114,13 @@ function openQuoteModal(): void {
 
 function addSupplierQuote(): void {
   const price = parseFloat((el<HTMLInputElement>('sq-price')).value) || 0;
-  const fxRate = parseFloat((el<HTMLInputElement>('sq-fx')).value) || 1;
+  const typedFx = parseFloat((el<HTMLInputElement>('sq-fx')).value);
   const currency = (el<HTMLSelectElement>('sq-currency')).value;
+  // A foreign quote left at the form's default rate of 1 was stored 1:1 (€100 → £100). Use the library's
+  // own rate (£ per unit) unless the user typed one (360 review, Oct 2026).
+  const libFx = FX_TO_GBP[currency];
+  const fxRate = currency !== 'GBP' && (!Number.isFinite(typedFx) || typedFx === 1) && libFx !== undefined ? libFx : (typedFx || 1);
+  if (currency !== 'GBP' && fxRate !== typedFx) showToast(`Converted at the rate library's ${currency}→GBP rate (${fxRate.toFixed(4)}) — type a rate to override.`, 'info');
   const quotedGBP = currency === 'GBP' ? price : price * fxRate;
   const quote: SupplierQuote = {
     supplierName: (el<HTMLInputElement>('sq-supplier')).value.trim() || 'Unnamed Supplier',
@@ -19278,7 +19306,7 @@ function renderSavedAssemblies(): void {
   container.innerHTML = list.map(a => {
     const rollup = computeAssemblyRollup(a);
     return `<div class="scenario-card" style="margin-bottom:6px">
-      <div class="sc-name">${a.name}</div>
+      <div class="sc-name">${escHtml(String(a.name))}</div>
       <div class="sc-meta">${a.lines.length} parts · ${fmt(rollup.totalPartsCost)} parts cost</div>
       <div class="sc-total">${fmt(rollup.total)} total</div>
       <button class="btn btn-secondary btn-sm del-asm-saved-btn" data-asm-id="${a.id}" style="font-size:0.7rem">Delete</button>

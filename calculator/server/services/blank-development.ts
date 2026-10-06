@@ -32,7 +32,8 @@ export async function developBlankFromCad(
   buffer: Buffer,
   filename: string,
   geo: OCCTGeometry,
-  opts: { timeoutMs?: number } = {},
+  /** unitScale: the inch answer (25.4) the geometry was measured at — the skins must be read at it too. */
+  opts: { timeoutMs?: number; unitScale?: number } = {},
 ): Promise<DevelopBlankResult | { error: string } | null> {
   if (geo.status !== 'success' || !BREP_EXT.test(filename)) return null;
   const sm = geo.sheetMetal;
@@ -46,7 +47,7 @@ export async function developBlankFromCad(
   if (!sm || !(bendGauge || thinShell)) return null;
 
   const t0 = Date.now();
-  const mesh = await extractSkinMesh(buffer, filename, { timeoutMs: opts.timeoutMs ?? 180_000 });
+  const mesh = await extractSkinMesh(buffer, filename, { timeoutMs: opts.timeoutMs ?? 180_000, unitScale: opts.unitScale });
   if (mesh.status !== 'success') return { error: mesh.error };
   let developed;
   try {

@@ -168,7 +168,10 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
     return {
       ref: refOf(l), description: tidyCaps(String(l.description || l.componentType || '')), partNumber: String(l.partNumber ?? ''),
       pkg: String(l.pkg ?? ''), qty: num(l.qty), unit, ext: unit * num(l.qty), source: priceSourceLabel(l),
-      verify: unit * num(l.qty) >= 1 && !(l.livePriced || (l.priceSource === 'catalogue' && l.catalogueConfidence === 'distributor')),
+      // The server's own flag when present, so the export's "to verify" list is the screen's (360 review);
+      // the £1 rule is the screen's too.
+      verify: unit * num(l.qty) >= 1 && (typeof l.needsVerification === 'boolean'
+        ? l.needsVerification : !(l.livePriced || (l.priceSource === 'catalogue' && l.catalogueConfidence === 'distributor'))),
     };
   });
   const bomTotal = bom.reduce((t, l) => t + l.ext, 0);

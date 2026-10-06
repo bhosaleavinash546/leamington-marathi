@@ -987,6 +987,17 @@ function computeProgramPricing(bomTotal: number, orderQty: number, domain: strin
   return { spotBOMTotal: Math.round(bomTotal * 100) / 100, programBOMTotal, savingsGBP, savingsPct, annualProgramVolume, pricingTier, multiplier };
 }
 
+/**
+ * Boards ordered, from a form field. parseInt read "1e7" (what a number input sends for 10,000,000) as 1 —
+ * a prototype costing — let 0 fall silently to 100, and passed a negative count into the volume maths
+ * (360 review, Oct 2026). Whole boards, 1 … 10,000,000; anything unreadable is the 100-board default.
+ */
+export function parseOrderQty(v: unknown): number {
+  const n = Number(typeof v === 'string' ? v.trim() : v);
+  if (!Number.isFinite(n) || n < 1) return 100;
+  return Math.min(10_000_000, Math.round(n));
+}
+
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -1565,9 +1576,19 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // view camera (4 of 5 ICs -Q1, the model's own title "automotive camera module") was costed as
     // "consumer IoT" — no automotive grade, consumer benchmarks (Oct 2026).
     if (!auto) {
-      const named = (Array.isArray(a.bom) ? a.bom as Array<Record<string, unknown>> : [])
-        .map(l => String(l.partNumber ?? '').trim().toUpperCase()).filter(pn => /[A-Z]/.test(pn) && /\d/.test(pn) && pn.length >= 6);
-      const aecq = named.filter(pn => /Q1$|-Q1\b|\/V\+?T?$|\/VY\+T?$/.test(pn));
+      // Only EVIDENCED codes count (360 review, Oct 2026): a line from the supplied BOM file, or a code an
+      // OCR marking agrees with. A "-Q1" the model added on its own flipped the board to automotive —
+      // class ranges, IATF / class-3 premiums and NRE — on nothing but its own text.
+      const marks = (ocrResult.icMarkings ?? []).map(m => String(m).toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(m => m.length >= 5);
+      const evidenced = (l: Record<string, unknown>, pn: string) => {
+        if (l.bomSource === 'file' || l.bomSource === 'image') return true;
+        const k = pn.replace(/[^A-Z0-9]/g, '');
+        return marks.some(m => k.startsWith(m) || m.startsWith(k.replace(/Q1$/, '')));
+      };
+      const lines = (Array.isArray(a.bom) ? a.bom as Array<Record<string, unknown>> : [])
+        .map(l => ({ l, pn: String(l.partNumber ?? '').trim().toUpperCase() })).filter(({ pn }) => /[A-Z]/.test(pn) && /\d/.test(pn) && pn.length >= 6);
+      const named = lines.map(x => x.pn);
+      const aecq = lines.filter(({ l, pn }) => /Q1$|-Q1\b|\/V\+?T?$|\/VY\+T?$/.test(pn) && evidenced(l, pn)).map(x => x.pn);
       if (aecq.length >= 2 && aecq.length >= named.length * 0.5) {
         domain = 'automotive_adas'; auto = true; out.domain = domain;
         warnings.push({ code: 'AUTOMOTIVE_FROM_BOM', severity: 'warn',
@@ -1615,7 +1636,13 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     //    the model dropped or renamed this time (it used to be lost).
     if (inp.correctedBOM && inp.correctedBOM.length) {
       const corr = new Map<string, Record<string, unknown>>();
-      for (const l of inp.correctedBOM) { const rd = String(l?.refDes ?? '').trim(); if (rd) corr.set(rd, l); }
+      // A placeholder ("—", "N/A", "U?") is not a designator: keyed on it, N unlabelled lines became N
+      // copies of the last one (360 review). Such a line is matched by its part number + description.
+      const keyOf = (l: Record<string, unknown>) => {
+        const rd = String(l?.refDes ?? '').trim();
+        return /^[A-Za-z_]+\d/.test(rd) ? rd : `pn:${String(l?.partNumber ?? '').trim()}|${String(l?.description ?? '').trim()}`;
+      };
+      for (const l of inp.correctedBOM) corr.set(keyOf(l), l);
       const used = new Set<string>();
       const fromCorr = (c: Record<string, unknown>, base: Record<string, unknown>) => {
         const price = Number(c.unitPriceGBP);
@@ -1626,9 +1653,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
           volumeAdjusted: false, automotiveGradeForced: false, userCorrected: true };
       };
       bom = bom.map(line => {
-        const rd = String(line.refDes ?? '').trim();
+        const rd = keyOf(line);
         const c = corr.get(rd);
-        if (!c) return line;
+        if (!c || used.has(rd)) return line;
         used.add(rd);
         return fromCorr(c, line) ?? line;
       });
@@ -1975,7 +2002,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
   const multiImageNote = multiImage
     ? `\n\nNOTE: ${imageFiles.length} PCB photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together for maximum accuracy — top side for component placement, bottom side for assembly type and solder joints, additional photos for close-up markings or specific areas of interest.`
     : '';
-  const reqOrderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  const reqOrderQty = parseOrderQty(req.body?.orderQty);
   const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain, reqOrderQty) + multiImageNote +
     (parsedBOM.length > 0 ? buildParsedBOMContext(parsedBOM) : '');
 
@@ -2124,7 +2151,7 @@ ${userPromptText}`;
     analysis: analysis as Record<string, unknown>, domain, asilLevel: asilClassification.asilLevel, ocrResult,
     asilRationale: asilClassification.asilRationale, asilSafetyFunctions: asilClassification.safetyFunctions,
     country: (req.body?.country as string | undefined) ?? 'cn',
-    orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
+    orderQty: parseOrderQty(req.body?.orderQty),
     parsedBOM, bomImageNotes: bomImage?.notes, files, tag: '', classificationFailed: stage1Result.failed === true,
   });
 
@@ -2353,7 +2380,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     analysis: analysis as Record<string, unknown>, domain, asilLevel: reanalAsil, ocrResult,
     asilRationale: String(req.body?.asilRationale ?? ''), asilSafetyFunctions: reanalFns,
     country: (req.body?.country as string | undefined) ?? 'cn',
-    orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
+    orderQty: parseOrderQty(req.body?.orderQty),
     correctedBOM: Array.isArray(correctedBOM) ? (correctedBOM as Array<Record<string, unknown>>) : null,
     tag: '/reanalyze',
   });
@@ -2397,19 +2424,25 @@ router.post('/reprice', async (req, res): Promise<void> => {
   const provider = ['octopart', 'rs'].includes(String(b.provider)) ? (b.provider as LivePricingProvider) : null;
   const domain = String(b.domain ?? 'general');
   const asil = (/^(ASIL-[ABCD]|QM)$/.test(String(b.asilLevel ?? '')) ? String(b.asilLevel) : 'Unknown') as ASILLevel;
-  const s4 = await runStage4({
-    analysis, domain, asilLevel: asil,
-    asilRationale: String(b.asilRationale ?? ''), asilSafetyFunctions: Array.isArray(b.asilSafetyFunctions) ? b.asilSafetyFunctions.map(String) : [],
-    ocrResult: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings.map(String) : [], refDesGroups: [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors.map(String) : [], boardText: [],
-      extractionQuality: /^(high|medium|low|none|failed)$/.test(String(b.ocrQuality ?? '')) ? String(b.ocrQuality) : 'medium' },
-    country: String(b.country ?? 'cn'), orderQty: parseInt(String(b.orderQty ?? '100'), 10) || 100,
-    live: provider && b.apiKey ? { provider, key: String(b.apiKey) } : undefined,
-    tag: '/reprice',
-  });
-  normalizePCBAnalysis(analysis);
-  res.json({ success: true, analysis, ...stage4Payload(s4),
-    stage1Classification: { domain, conf: 1, hints: [] },
-    ocrExtraction: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings : [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors : [], extractionQuality: String(b.ocrQuality ?? 'medium') } });
+  try {
+    const s4 = await runStage4({
+      analysis, domain, asilLevel: asil,
+      asilRationale: String(b.asilRationale ?? ''), asilSafetyFunctions: Array.isArray(b.asilSafetyFunctions) ? b.asilSafetyFunctions.map(String) : [],
+      ocrResult: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings.map(String) : [], refDesGroups: [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors.map(String) : [], boardText: [],
+        extractionQuality: /^(high|medium|low|none|failed)$/.test(String(b.ocrQuality ?? '')) ? String(b.ocrQuality) : 'medium' },
+      country: String(b.country ?? 'cn'), orderQty: parseOrderQty(b.orderQty),
+      live: provider && b.apiKey ? { provider, key: String(b.apiKey) } : undefined,
+      tag: '/reprice',
+    });
+    normalizePCBAnalysis(analysis);
+    res.json({ success: true, analysis, ...stage4Payload(s4),
+      stage1Classification: { domain, conf: 1, hints: [] },
+      ocrExtraction: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings : [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors : [], extractionQuality: String(b.ocrQuality ?? 'medium') } });
+  } catch (err) {
+    // Express 4 does not catch async errors: a throw here left the request hanging (360 review).
+    console.error('[pcb/reprice]', err);
+    res.status(500).json({ error: 'Re-pricing failed. Please try again; if it persists, re-run the analysis.' });
+  }
 });
 
 router.post('/live-pricing', async (req, res): Promise<void> => {
@@ -2622,13 +2655,16 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     });
     const s2Raw = textOf(s2Msg);
     const s2P = JSON.parse(extractJSON(s2Raw)) as OCRResult;
-    ocrResult = { icMarkings: s2P.icMarkings ?? [], refDesGroups: s2P.refDesGroups ?? [], connectors: s2P.connectors ?? [], boardText: s2P.boardText ?? [], extractionQuality: s2P.extractionQuality ?? 'low' };
+    // Arrays of strings only, as the non-streaming route: a string icMarkings threw outside any try and
+    // the SSE stream never sent complete or error (360 review).
+    const strs = (v: unknown): string[] => Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+    ocrResult = { icMarkings: strs(s2P.icMarkings), refDesGroups: Array.isArray(s2P.refDesGroups) ? s2P.refDesGroups : [], connectors: strs(s2P.connectors), boardText: strs(s2P.boardText), extractionQuality: s2P.extractionQuality ?? 'low' };
     emit('stage2', { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality });
   } catch { ocrResult.extractionQuality = 'failed'; emit('progress', { stage: 2, label: 'Stage 2 — OCR failed, continuing without chip markings', pct: 40 }); }
 
   // Stage 3
   emit('progress', { stage: 3, label: 'Stage 3 — Full BOM analysis (this takes ~20s)', pct: 50 });
-  const reqOrderQty2 = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  const reqOrderQty2 = parseOrderQty(req.body?.orderQty);
   // Same safety net as the non-stream path: Stage 1 sees only the top photo, so a
   // radar board with an S32R/TEF81x marking can come back rf_microwave/general —
   // which drops automotive pricing, ASIL and AEC-Q grading. The chip markings win.
@@ -2765,7 +2801,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     analysis: analysis as Record<string, unknown>, domain, asilLevel: streamAsilClassification.asilLevel, ocrResult,
     asilRationale: streamAsilClassification.asilRationale, asilSafetyFunctions: streamAsilClassification.safetyFunctions,
     country: (req.body?.country as string | undefined) ?? 'cn',
-    orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
+    orderQty: parseOrderQty(req.body?.orderQty),
     parsedBOM: parsedBOM2, bomImageNotes: bomImage2?.notes, files, tag: '/stream', classificationFailed: stage1Result.failed === true,
     onProgress: label => emit('progress', { stage: 4, label, pct: 90 }),
   });

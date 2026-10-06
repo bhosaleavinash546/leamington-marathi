@@ -214,7 +214,13 @@ export function computeCostUncertainty(
     for (let i = 0; i < trials; i++) {
       // Lognormal multiplier per base bucket → strictly positive, mean ≈ 1.
       const mult = (bucket: keyof Breakdown8Bucket): number => lognormalMult(baseCv * BUCKET_CV_FACTOR[bucket], rng);
-      const rm = b.rawMaterial * mult('rawMaterial');
+      const mRm = mult('rawMaterial');
+      const rm = b.rawMaterial * mRm;
+      // Bought-in content (inside raw material) takes handling, not overhead, and no margin —
+      // exactly as core.ts. The band used to add both, centring a BIW assembly's band ~15% above
+      // its own headline (360 review, Oct 2026).
+      const boughtIn = Math.max(0, input.rawMaterial?.boughtIn?.cost ?? 0) * mRm;
+      const handling = boughtIn * Math.max(0, input.rawMaterial?.boughtIn?.handlingPct ?? 0);
       const proc = b.process * mult('process');
       const lab = b.labour * mult('labour');
       const tool = b.tooling * mult('tooling');
@@ -224,9 +230,9 @@ export function computeCostUncertainty(
       // Recompose exactly as core.ts: overhead is a % of the factory-cost base
       // (material+process+labour+tooling); margin is a % of the subtotal.
       const factoryBase = rm + proc + lab + tool;
-      const overhead = input.overheadPct * factoryBase;
+      const overhead = input.overheadPct * (factoryBase - boughtIn) + handling;
       const subtotal = factoryBase + pack + log + overhead;
-      const margin = input.marginPct * subtotal;
+      const margin = input.marginPct * (subtotal - boughtIn);
       totals[i] = subtotal + margin;
     }
   }

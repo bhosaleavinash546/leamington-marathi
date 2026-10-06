@@ -282,7 +282,10 @@ export function computeConformalBand(
              empiricalCoverage: 0, segment: cal.segment, applied: false };
   }
   const bias = cal.biasFactor;
-  const scores = segRecs.map(r => Math.abs(r.actualCost - r.shouldCost * bias) / r.actualCost);
+  // Score relative to the CALIBRATED ESTIMATE — the band is applied as ± that share of the estimate, so
+  // a quote lies inside it exactly when its score ≤ the quantile. Scoring relative to the actual (as it
+  // was) left every under-estimate outside its own "guaranteed" band (360 review, Oct 2026).
+  const scores = segRecs.map(r => Math.abs(r.actualCost - r.shouldCost * bias) / (r.shouldCost * bias));
   const { score, guaranteed } = conformalQuantileScore(scores, targetCoverage);
   const halfWidthPct = round1(score * 100);
   const inside = scores.filter(x => x <= score).length;
@@ -297,5 +300,5 @@ export function computeConformalBand(
 /** Apply a conformal band to a calibrated estimate → absolute low/high bounds. */
 export function applyConformalBand(calibratedEstimate: number, band: ConformalBand): { low: number; high: number } {
   const w = calibratedEstimate * (band.halfWidthPct / 100);
-  return { low: round2(calibratedEstimate - w), high: round2(calibratedEstimate + w) };
+  return { low: round2(Math.max(0, calibratedEstimate - w)), high: round2(calibratedEstimate + w) };
 }

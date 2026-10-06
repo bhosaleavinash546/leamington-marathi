@@ -42,6 +42,26 @@ const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
+/**
+ * Whether a response may carry the OTP itself (the sign-in page's "dev code" banner). Only with no
+ * SMTP AND a same-machine request (the laptop install), or an operator's explicit CV_SHOW_DEV_OTP=1.
+ * It used to be returned whenever SMTP was unset — on a public deployment that handed anyone the
+ * reset code for any account (360 review, Oct 2026). A request forwarded by a proxy is never local.
+ */
+function devOtpAllowed(req: Request): boolean {
+  if (SMTP_CONFIGURED) return false;
+  if (process.env.CV_SHOW_DEV_OTP === '1') return true;
+  const addr = req.socket?.remoteAddress ?? '';
+  const loopback = addr === '127.0.0.1' || addr === '::1' || addr === '::ffff:127.0.0.1';
+  return loopback && !req.headers['x-forwarded-for'];
+}
+
+const PURPOSES = new Set(['signup', 'reset']);
+
+/** Wrong guesses per issued code; the code is burnt after this many (a 6-digit code must not be brute-forced). */
+const MAX_OTP_GUESSES = 5;
+const otpGuesses = new Map<string, number>();
+
 function generateOTP(): string {
   return String(crypto.randomInt(100000, 1000000));
 }
@@ -85,6 +105,11 @@ async function verifyOTP(email: string, otp: string, purpose: 'signup' | 'reset'
   const match = await bcrypt.compare(otp, row.otp_hash);
   if (match) {
     db.prepare(`UPDATE otp_tokens SET used = 1 WHERE id = ?`).run(row.id);
+    otpGuesses.delete(row.id);
+  } else {
+    const n = (otpGuesses.get(row.id) ?? 0) + 1;
+    if (n >= MAX_OTP_GUESSES) { db.prepare(`UPDATE otp_tokens SET used = 1 WHERE id = ?`).run(row.id); otpGuesses.delete(row.id); }
+    else otpGuesses.set(row.id, n);
   }
   return match;
 }
@@ -92,7 +117,8 @@ async function verifyOTP(email: string, otp: string, purpose: 'signup' | 'reset'
 // ─── POST /api/auth/signup ────────────────────────────────────────────────────
 
 router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<void> => {
-  const { email, password, fullName, companyName = '' } = req.body as {
+  let { email } = req.body as { email: string };
+  const { password, fullName, companyName = '' } = req.body as {
     email: string;
     password: string;
     fullName: string;
@@ -103,6 +129,9 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
     res.status(400).json({ error: 'Email, password, and full name are required.' });
     return;
   }
+  // One spelling everywhere: the lookup used the typed case and the insert the lower case, so
+  // "Name@x.com" missed an existing "name@x.com" and the insert threw a UNIQUE error (360 review).
+  email = email.trim().toLowerCase();
 
   if (!isValidEmail(email)) {
     res.status(400).json({ error: 'Please enter a valid email address.' });
@@ -132,7 +161,7 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
     await sendOTPEmail(email, otp, 'signup', fullName);
     res.json({
       message: 'Verification code resent. Please check your email.',
-      ...(!SMTP_CONFIGURED && { devOtp: otp }),
+      ...(devOtpAllowed(req) && { devOtp: otp }),
     });
     return;
   }
@@ -144,7 +173,6 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
     `INSERT INTO users (id, email, password_hash, full_name, company_name, email_verified, failed_attempts, created_at)
      VALUES (?, ?, ?, ?, ?, 0, 0, ?)`,
   ).run(id, email.toLowerCase(), passwordHash, fullName.trim(), companyName.trim(), new Date().toISOString());
-  promoteAdminIfListed(email);   // promote if this email is configured as an admin
 
   const otp = generateOTP();
   await storeOTP(email.toLowerCase(), otp, 'signup');
@@ -152,7 +180,7 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
 
   res.status(201).json({
     message: 'Account created. Please check your email for a verification code.',
-    ...(!SMTP_CONFIGURED && { devOtp: otp }),
+    ...(devOtpAllowed(req) && { devOtp: otp }),
   });
 });
 
@@ -255,8 +283,8 @@ router.post('/verify-otp', verifyLimiter, async (req: Request, res: Response): P
     purpose: 'signup' | 'reset';
   };
 
-  if (!email || !otp || !purpose) {
-    res.status(400).json({ error: 'Email, OTP, and purpose are required.' });
+  if (!email || !otp || !purpose || !PURPOSES.has(purpose)) {
+    res.status(400).json({ error: 'Email, OTP, and purpose (signup or reset) are required.' });
     return;
   }
 
@@ -269,6 +297,7 @@ router.post('/verify-otp', verifyLimiter, async (req: Request, res: Response): P
 
   if (purpose === 'signup') {
     db.prepare(`UPDATE users SET email_verified = 1 WHERE email = ?`).run(email.toLowerCase());
+    promoteAdminIfListed(email);   // now that the mailbox is proven (promotion needs a verified account)
     const user = db
       .prepare(`SELECT id, email, full_name FROM users WHERE email = ?`)
       .get(email.toLowerCase()) as { id: string; email: string; full_name: string } | undefined;
@@ -386,8 +415,8 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
 router.post('/resend-otp', otpLimiter, async (req: Request, res: Response): Promise<void> => {
   const { email, purpose } = req.body as { email: string; purpose: 'signup' | 'reset' };
 
-  if (!email || !purpose) {
-    res.status(400).json({ error: 'Email and purpose are required.' });
+  if (!email || !purpose || !PURPOSES.has(purpose)) {
+    res.status(400).json({ error: 'Email and purpose (signup or reset) are required.' });
     return;
   }
 
@@ -406,7 +435,7 @@ router.post('/resend-otp', otpLimiter, async (req: Request, res: Response): Prom
 
   res.json({
     message: 'New verification code sent. Please check your email.',
-    ...(!SMTP_CONFIGURED && { devOtp: otp }),
+    ...(devOtpAllowed(req) && { devOtp: otp }),
   });
 });
 

@@ -28,6 +28,8 @@ function checkTeamKey(req: AuthenticatedRequest, res: Response): boolean {
   return true;
 }
 
+import { requireAdmin } from '../middleware/require-admin.js';
+
 const owner = (req: AuthenticatedRequest): string => req.user!.userId;
 
 // GET /api/sync/library — retrieve shared rate library
@@ -44,7 +46,9 @@ router.get('/library', (req: AuthenticatedRequest, res: Response) => {
 });
 
 // PUT /api/sync/library — save shared rate library
-router.put('/library', (req: AuthenticatedRequest, res: Response) => {
+// Admin only, like the rate-library editor: with no TEAM_API_KEY any self-registered account could
+// replace the team's rates through this route (360 review).
+router.put('/library', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
   if (!checkTeamKey(req, res)) return;
   // Who changed it comes from the session, not from a field the caller fills in.
   const updatedBy = req.user!.email;

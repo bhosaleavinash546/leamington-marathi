@@ -105,7 +105,7 @@ describe('the money reconciles by hand', () => {
     //   poured        = effective net / castingYield  — runners and risers
     //   returns       = poured - good part            — gating AND rejects, remelted
     //   lost          = returns x meltLoss            — dross / oxidation per remelt
-    //   metal         = (good part + lost) x price - lost x scrap
+    //   metal         = (good part + lost) x price   — lost metal is gone, no scrap credit (360 review)
     //   melt energy   = poured x kWh/kg x £/kWh
     //
     // Until 2 Oct 2026 the returns were credited at the scrap price, as if sold:
@@ -115,7 +115,7 @@ describe('the money reconciles by hand', () => {
     const effectiveNet = 2.512 / (1 - 0.03);
     const poured = effectiveNet / 0.65;
     const lost = (poured - 2.512) * melt.lossFraction;
-    const byHand = (2.512 + lost) * mat.pricePerKg - lost * mat.scrapRecoveryPricePerKg
+    const byHand = (2.512 + lost) * mat.pricePerKg
       + poured * melt.energyKwhPerKg * tariffElectricityPerKwh()
       + (params.sand ? poured * MELT_SHOP.greenSandAdditionsPerKgPoured : 0);   // green-sand additions
 

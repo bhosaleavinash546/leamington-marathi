@@ -142,6 +142,8 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     materialId: inputs.materialId,
     netWeightKg: boughtNetKg,
     materialUtilization: boughtNetKg / (boughtNetKg + metalLostKg),
+    // Melt loss is gone, not sold — unless the melt shop is off (lossFraction 1: gating sold as scrap).
+    ...(lossFraction < 1 ? { lossIsNotScrap: true } : {}),
   };
   // Melt energy on every kg poured — kWh for the core to price at the costing
   // book's tariff (module-energy.ts); £ only when a tariff was typed.

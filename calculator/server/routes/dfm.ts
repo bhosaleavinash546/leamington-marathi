@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth-middleware.js';
 import { aiLimit } from '../middleware/ai-limit.js';
 import type { Request, Response } from 'express';
+import { tmpdir } from 'node:os';
+import { basename, dirname, resolve } from 'node:path';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { queueDFMJob, getDFMJob, requeueOrphans } from '../utils/dfm-job-runner.js';
 import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.js';
@@ -103,6 +105,14 @@ router.post('/jobs', requireAuth, (req: Request, res: Response) => {
   };
   if (!filePath || !commodity) {
     res.status(400).json({ error: 'filePath and commodity are required' });
+    return;
+  }
+  // Only a file this server staged for a DFM job (cv-dfm-<uuid>.<ext> in the temp folder). The path
+  // used to go straight to readFile: any signed-in user could read /app/.env into the kernel or kill the
+  // process with /dev/zero (360 review, Oct 2026).
+  const abs = resolve(filePath);
+  if (dirname(abs) !== resolve(tmpdir()) || !/^cv-dfm-[0-9a-f-]{36}\.[a-z0-9]{1,8}$/.test(basename(abs))) {
+    res.status(400).json({ error: 'filePath must be a file staged by this server for a DFM job' });
     return;
   }
   const id = queueDFMJob({
