@@ -31,7 +31,8 @@ describe('Calculate after Analyze = the analysis', () => {
     const lines = input.rawMaterial.lines!;
     const sum = lines.reduce((t, l) => t + l.qty * l.unitCost, 0);
     expect(sum).toBeCloseTo(11.97 + 0.64 + 3.26, 2);
-    expect(lines.map(l => l.ref)).toEqual(['Capacitor', 'Integrated circuit', 'Sensor', 'PCB', 'ASM']);
+    // A BOM's category column ("Capacitor") is not a designator: the part number, or a dash.
+    expect(lines.map(l => l.ref)).toEqual(['—', 'DS90UB935-Q1', '—', 'PCB', 'ASM']);
   });
   it('refuses to report an analysis that has no country breakdown', () => {
     expect(() => analysisStackInput({ bom: [], _selectedCountryBreakdown: null })).toThrow(/run Analyze/);

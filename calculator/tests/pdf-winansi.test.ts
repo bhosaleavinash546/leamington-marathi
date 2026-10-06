@@ -16,6 +16,12 @@ import { describe, it, expect } from 'vitest';
 import { winAnsiSafe } from '../src/export/pdf.js';
 
 describe('winAnsiSafe', () => {
+  it('keeps the base letter of a character WinAnsi lacks (the camera report printed "Wrocaw / ód")', () => {
+    // ó and ü ARE WinAnsi and stay; ł, Ł, ź, ń are not and keep their base letter.
+    expect(winAnsiSafe('Poland (Wrocław / Łódź / Poznań)')).toBe('Poland (Wroclaw / Lódz / Poznan)');
+    expect(winAnsiSafe('München — Kraków')).toBe('München — Kraków');
+  });
+
   it('replaces the arrow that garbled the live gear route note', () => {
     const note = 'Gear route: Gear hobbing → Chamfer and deburr → Harden and temper';
     expect(winAnsiSafe(note))

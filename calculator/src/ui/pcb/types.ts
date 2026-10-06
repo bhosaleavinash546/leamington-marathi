@@ -163,6 +163,12 @@ export interface PCBImageAnalysis {
   _asilLevel?: string;
   _asilRationale?: string;
   _asilSafetyFunctions?: string[];
+  /** The classifier's level when the guard costed a different one (pcb-asil-guard.ts). */
+  _asilClaimed?: string;
+  /** Why the costed ASIL or the rationale differs from the classifier's. */
+  _asilNotes?: string[];
+  /** The board's function read from its parts list: camera / radar / lidar / ecu / unknown. */
+  _boardFunction?: string;
   _automotiveNRE?: AutomotiveNRE;
   _automotiveGradeEnforcedCount?: number;
   _singleSourceWarnings?: SingleSourceWarning[];

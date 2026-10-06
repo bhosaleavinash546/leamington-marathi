@@ -14,6 +14,7 @@ import { computeRegionalComparisonExact } from '../engine/regional-comparison.js
 import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { exportFilename } from './filename.js';
+import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-report-data.js';
 import { brandRgb } from '../brand/index.js';
 
 /**
@@ -111,6 +112,13 @@ export interface CADReportMeta {
    * answer rather than an assumption.
    */
   checks?: ChecksAppliedMeta | null;
+  /**
+   * The PCB photo analysis, when the costing IS that analysis (Calculate on the PCB form after
+   * Analyze). The report then prints the populated board as the analysis costed it — build
+   * country, delivered UK, components / board / assembly / test, its own country table — not the
+   * machined-part sections (weight, operations, machine rates, metal indexation).
+   */
+  pcbAnalysis?: PcbaAnalysisLike | null;
 }
 
 export interface ChecksAppliedMeta {
@@ -258,6 +266,7 @@ function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
  * gear one. Characters that ARE in WinAnsi (x, em dash, degree, pound, ±)
  * pass through untouched.
  */
+const STROKED: Record<string, string> = { 'ł': 'l', 'Ł': 'L', 'đ': 'd', 'Đ': 'D', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H' };
 export function winAnsiSafe(s: string): string {
   return s
     .replace(/[\u2192\u2794\u27A1]/g, '->')      // arrows
@@ -271,7 +280,9 @@ export function winAnsiSafe(s: string): string {
     // typographic characters this codebase's prose is full of - em/en dash,
     // curly quotes, bullet, ellipsis, euro, trademark. Cutting at Latin-1
     // would silently mangle every existing report to fix one arrow.
-    .replace(/[^\u0020-\u00FF\u2013\u2014\u2018\u2019\u201A\u201C\u201D\u201E\u2020\u2021\u2022\u2026\u2030\u2039\u203A\u20AC\u2122\u0152\u0153\u0160\u0161\u0178\u017D\u017E\u0192\u02C6\u02DC]/g, '');
+    // A letter outside WinAnsi keeps its base letter (Wrocław → Wroclaw, Łódź → Lodz), not nothing.
+    .replace(/[^\u0020-\u00FF\u2013\u2014\u2018\u2019\u201A\u201C\u201D\u201E\u2020\u2021\u2022\u2026\u2030\u2039\u203A\u20AC\u2122\u0152\u0153\u0160\u0161\u0178\u017D\u017E\u0192\u02C6\u02DC]/g,
+      ch => STROKED[ch] ?? (/^[A-Za-z]$/.test(ch.normalize('NFD').charAt(0)) ? ch.normalize('NFD').charAt(0) : ''));
 }
 
 /** Draw a compact titled call-out box (tint fill + accent left rule + wrapped
@@ -368,7 +379,7 @@ function utilisationBenchmarkNote(commodity?: string): string {
  * photographs at all unless the vision analysis had run and populated its
  * separate C7 section.
  */
-function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): number {
+function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[], intro?: string): number {
   if (photos.length === 0) return y;
   // Break only if there is not room, rather than unconditionally. An
   // unconditional addPage() here left the Master report's PART A divider page
@@ -376,9 +387,9 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[]): 
   y = chk(doc, y, 100);
   y = secBar(doc, y, 'Source Photographs', `${photos.length} image${photos.length > 1 ? 's' : ''} the costing was built from`);
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-  for (const ln of doc.splitTextToSize(
-    'Every component identification in the bill of materials traces to a package marking legible in one of these images. '
-    + 'Lines flagged as estimated could not be read from any of them.', CW) as string[]) {
+  for (const ln of doc.splitTextToSize(intro ??
+    ('Every component identification in the bill of materials traces to a package marking legible in one of these images. '
+    + 'Lines flagged as estimated could not be read from any of them.'), CW) as string[]) {
     doc.text(ln, MG, y); y += 3.6;
   }
   y += 4;
@@ -1661,6 +1672,212 @@ export function renderShouldCostSections(
   return y;
 }
 
+/**
+ * Report body for a populated board costed from the PCB photo analysis (pcba-report-data.ts).
+ * Every figure is the analysis's (server Stage 4); this only lays it out. Sections that mean
+ * nothing on a bought-in board — material weight, operations, machine rates, a regional table
+ * that rescales a pass-through, embodied carbon at 0 kg, metal indexation — are not printed.
+ */
+function renderPcbaSections(
+  doc: jsPDF, y: number, rep: PcbaReport, c: (n: number) => string, cadMeta: CADReportMeta,
+  scenarios: Scenario[], total: number,
+): number {
+  const pct = (n: number) => `${n.toFixed(1)}%`;
+  const para = (text: string, size = 7.5, colour: RGB = GREY) => {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(size); doc.setTextColor(...colour);
+    for (const ln of doc.splitTextToSize(winAnsiSafe(text), CW) as string[]) { y = chk(doc, y, 4); doc.text(ln, MG, y); y += 3.6; }
+  };
+
+  // §1 — Cost breakdown: the analysis's own stack, rows summing to the headline.
+  y = chk(doc, y, 90);
+  y = secBar(doc, y, '§1 — Cost Breakdown per Board', `${rep.country}  ·  delivered UK, duty paid`);
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG },
+    head: [['Element', `Amount`, '% of total', 'Basis']],
+    body: rep.stack.map(s => [s.label, c(s.amount), pct(s.amount / rep.total * 100), s.basis]),
+    theme: 'plain',
+    headStyles: { ...TH.headStyles },
+    bodyStyles: { ...TH.bodyStyles, fontSize: 7.6 },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: {
+      0: { cellWidth: 52, fontStyle: 'bold', textColor: NAVY },
+      1: { cellWidth: 22, halign: 'right' },
+      2: { cellWidth: 20, halign: 'right', textColor: GREY },
+      3: { cellWidth: 88, textColor: GREY, fontSize: 7 },
+    },
+    didParseCell: (d) => {
+      if (d.section !== 'body') return;
+      if (rep.stack[d.row.index]?.kind === 'total') {
+        d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; d.cell.styles.fontSize = 8.5;
+      }
+    },
+  });
+  y = lastFinalY(doc) + 4;
+  para('Components, bare board and assembly are supplier prices: the fabricator\'s and the EMS\'s overhead and margin are inside them, so no further overhead or margin is added.');
+  y += 4;
+
+  // §2 — Basis, confidence and functional safety.
+  y = chk(doc, y, 40);
+  y = secBar(doc, y, '§2 — Basis & Confidence');
+  const basisRows: string[][] = [
+    ['Build country', rep.country, 'Annual volume', rep.annualVolume ? `${rep.annualVolume.toLocaleString('en-GB')} boards` : '—'],
+    ['Delivery', 'UK, import duty paid', 'Board type', rep.domainLabel],
+    ['Parts list from', rep.bomOrigin, 'Lines · parts', `${rep.bom.length} lines · ${rep.bomPieces} parts`],
+  ];
+  if (rep.confidence) basisRows.push(
+    ['Estimate confidence', rep.confidence.label, 'Likely range', `${c(rep.confidence.low)} – ${c(rep.confidence.high)}`],
+    ['Lines to verify', `${rep.confidence.verifyCount} (${c(rep.confidence.verifyValue)})`, 'Meaning', `${c(1)}+ lines with no distributor price`],
+  );
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG }, body: basisRows, theme: 'plain',
+    bodyStyles: { fontSize: 8, cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: { 0: { cellWidth: 40, textColor: GREY }, 1: { cellWidth: 51, fontStyle: 'bold', textColor: NAVY }, 2: { cellWidth: 36, textColor: GREY }, 3: { cellWidth: 55, fontStyle: 'bold', textColor: NAVY } },
+  });
+  y = lastFinalY(doc) + 6;
+  if (rep.safety) {
+    const sf = rep.safety;
+    const lines = [
+      `Costed as ${sf.costed}${sf.claimed ? ` (the photo classifier said ${sf.claimed})` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph — confirm it against the safety concept.`,
+      ...sf.notes,
+      ...(sf.rationale ? [`Classifier's reading: ${sf.rationale}`] : []),
+      ...(sf.functions.length ? [`Safety functions named: ${sf.functions.join('; ')}`] : []),
+    ];
+    y = calloutBox(doc, y, 'Functional Safety (ISO 26262)', lines, NAVY, HDR);
+  }
+
+  const big = (n: number) => c(n).replace(/\d{4,}(?=\.\d\d)/, m => Number(m).toLocaleString('en-GB'));
+  // §3 — Bill of materials, each line with what priced it.
+  y = chk(doc, y, 60);
+  y = secBar(doc, y, '§3 — Bill of Materials', `${rep.bom.length} lines  ·  ${rep.bomPieces} parts  ·  ${c(rep.bomTotal)}`);
+  // A designator column only when the parts list has designators (a category column is not one).
+  const withRef = rep.bom.some(l => l.ref);
+  const SRC = withRef ? 7 : 6;
+  const body = rep.bom.map((l, i) => [
+    String(i + 1), ...(withRef ? [l.ref || '—'] : []), l.description + (l.partNumber ? `\n${l.partNumber}` : ''), l.pkg, String(l.qty), c(l.unit), c(l.ext), l.source + (l.verify ? ' *' : ''),
+  ]);
+  body.push(['', ...(withRef ? [''] : []), 'COMPONENTS TOTAL', '', String(rep.bomPieces), '', c(rep.bomTotal), '']);
+  const cols: Array<{ cellWidth: number; [k: string]: unknown }> = [
+    { cellWidth: 8, textColor: GREY, halign: 'right' },
+    ...(withRef ? [{ cellWidth: 18, fontStyle: 'bold' }] : []),
+    { cellWidth: withRef ? 56 : 74 },
+    { cellWidth: 22, textColor: GREY },
+    { cellWidth: 12, halign: 'right' },
+    { cellWidth: 17, halign: 'right' },
+    { cellWidth: 17, halign: 'right', fontStyle: 'bold' },
+    { cellWidth: 32, textColor: GREY, fontSize: 6.4 },
+  ];
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG },
+    head: [['#', ...(withRef ? ['RefDes'] : []), 'Description / part number', 'Package', 'Qty', 'Unit', 'Ext', 'Priced from']],
+    body, theme: 'plain',
+    headStyles: { ...TH.headStyles, fontSize: 7, cellPadding: { top: 3, bottom: 3, left: 2, right: 2 } },
+    bodyStyles: { ...TH.bodyStyles, fontSize: 6.8, cellPadding: { top: 2.2, bottom: 2.2, left: 2, right: 2 } },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: Object.fromEntries(cols.map((cs, i) => [i, cs])) as never,
+    didParseCell: (d) => {
+      if (d.section !== 'body') return;
+      if (d.row.index === body.length - 1) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; }
+      else if (d.column.index === SRC && rep.bom[d.row.index]?.verify) d.cell.styles.textColor = AM;
+    },
+  });
+  y = lastFinalY(doc) + 4;
+  para(rep.bomReconciliation);
+  para(rep.sourceKey, 6.8);
+  y += 4;
+
+  // §4 — Bare board & assembly.
+  y = chk(doc, y, 50);
+  y = secBar(doc, y, '§4 — Board & Assembly');
+  autoTable(doc, {
+    startY: y, margin: { left: MG, right: MG }, body: rep.boardRows.map(([k, v]) => [k, v]), theme: 'plain',
+    bodyStyles: { fontSize: 7.8, cellPadding: { top: 2.6, bottom: 2.6, left: 4, right: 4 } },
+    alternateRowStyles: { fillColor: LIGHT },
+    columnStyles: { 0: { cellWidth: 52, textColor: GREY }, 1: { cellWidth: 130, textColor: NAVY } },
+  });
+  y = lastFinalY(doc) + 8;
+
+  // §5 — Country comparison: the board costed in each country, delivered UK.
+  if (rep.countries.length > 1) {
+    y = chk(doc, y, 60);
+    y = secBar(doc, y, '§5 — Build-Country Comparison', 'each row: this board built there, delivered UK, duty paid');
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Country', 'Components', 'Bare board', 'Assembly', 'Other', 'Freight + duty', 'Total', `vs ${rep.country.split(' (')[0]}`, 'Lead']],
+      body: rep.countries.map(r => [r.name, c(r.components), c(r.fab), c(r.assembly), c(r.other), c(r.logistics), c(r.total),
+        r.selected ? 'costed' : `${r.delta >= 0 ? '+' : '-'}${c(Math.abs(r.delta))}`, r.leadWeeks ? `${r.leadWeeks} wk` : '—']),
+      theme: 'plain',
+      headStyles: { ...TH.headStyles, fontSize: 6.8, cellPadding: { top: 2.5, bottom: 2.5, left: 2, right: 2 } },
+      bodyStyles: { ...TH.bodyStyles, fontSize: 7, cellPadding: { top: 2.2, bottom: 2.2, left: 2, right: 2 } },
+      alternateRowStyles: { fillColor: LIGHT },
+      columnStyles: {
+        0: { cellWidth: 38, fontStyle: 'bold' }, 1: { cellWidth: 19, halign: 'right' }, 2: { cellWidth: 18, halign: 'right' }, 3: { cellWidth: 17, halign: 'right' },
+        4: { cellWidth: 14, halign: 'right' }, 5: { cellWidth: 20, halign: 'right' }, 6: { cellWidth: 18, halign: 'right', fontStyle: 'bold' },
+        7: { cellWidth: 22, halign: 'right' }, 8: { cellWidth: 16, halign: 'right', textColor: GREY },
+      },
+      didParseCell: (d) => {
+        if (d.section !== 'body') return;
+        const row = rep.countries[d.row.index];
+        if (row?.selected) { d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; d.cell.styles.fontStyle = 'bold'; }
+        else if (d.column.index === 7) d.cell.styles.textColor = (row?.delta ?? 0) < 0 ? GN : RD;
+      },
+    });
+    y = lastFinalY(doc) + 4;
+    para('"Other" is energy, ESD packaging and cost of quality (rework and scrap at the country\'s defect rate). Components follow each country\'s sourcing index; labour, energy and duty are each country\'s own.', 6.8);
+    y += 4;
+  }
+
+  // §6 — One-time costs.
+  if (rep.nre.length) {
+    y = chk(doc, y, 34);
+    y = secBar(doc, y, '§6 — One-Time Automotive NRE', `${big(rep.nreTotal)}  ·  not in the unit cost`);
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      body: [...rep.nre.map(([k, v]) => [k, big(v), annualPer(v)]), ['Total NRE', big(rep.nreTotal), annualPer(rep.nreTotal)]],
+      head: [['Item', 'One-time', rep.annualVolume ? `Per board over one year (${rep.annualVolume.toLocaleString('en-GB')})` : 'Per board']],
+      theme: 'plain', headStyles: { ...TH.headStyles }, bodyStyles: { ...TH.bodyStyles }, alternateRowStyles: { fillColor: LIGHT },
+      columnStyles: { 0: { cellWidth: 82 }, 1: { cellWidth: 40, halign: 'right', fontStyle: 'bold' }, 2: { cellWidth: 60, halign: 'right', textColor: GREY } },
+      didParseCell: (d) => { if (d.section === 'body' && d.row.index === rep.nre.length) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; } },
+    });
+    y = lastFinalY(doc) + 8;
+  }
+  function annualPer(v: number): string { return rep.annualVolume ? c(v / rep.annualVolume) : '—'; }
+
+  // §7 — Where the cost sits and what to check.
+  y = chk(doc, y, 40);
+  y = secBar(doc, y, `§${rep.nre.length ? 7 : 6} — Cost Drivers & Next Steps`);
+  y = calloutBox(doc, y, 'What drives this board\'s cost', rep.drivers, NAVY, HDR);
+  y = calloutBox(doc, y, 'Not in this unit cost', rep.excluded, AM, OR_LT);
+  if (rep.warnings.length) y = calloutBox(doc, y, `Analysis checks (${rep.warnings.length})`, rep.warnings, AM, [254, 249, 231]);
+  if (rep.limitations.length) y = calloutBox(doc, y, 'Analysis limitations', rep.limitations, SLATE, LIGHT);
+
+  // Scenarios the engineer saved (each in its own country book).
+  if (scenarios.length > 0) {
+    y = chk(doc, y, 40);
+    y = secBar(doc, y, 'Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+      head: [['Scenario', 'Country', 'Total', 'vs this costing']],
+      body: scenarios.map(s => {
+        const delta = total > 0 ? ((s.result.total - total) / total) * 100 : 0;
+        return [s.name + (s.description ? ` — ${s.description}` : ''), s.region ?? 'UK', c(s.result.total), Math.abs(delta) < 0.05 ? '—' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`];
+      }),
+      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 7.5 },
+      bodyStyles: { fontSize: 8, cellPadding: 2.5 }, alternateRowStyles: { fillColor: LIGHT as RGB },
+    });
+    y = lastFinalY(doc) + 6;
+  }
+
+  // The photographs are the evidence for every line not on a supplied parts list — last, as an appendix.
+  if ((cadMeta.photos ?? []).length) {
+    doc.addPage(); y = 18;
+    y = renderSourcePhotographs(doc, y, cadMeta.photos ?? [], rep.bomOrigin === 'photos'
+      ? 'The parts list was read from these photographs: every line identified by a package marking traces to one of them; lines priced from a range could not be identified from any of them.'
+      : `The parts list came from the ${rep.bomOrigin} supplied with the analysis; the photographs gave the board's size, layer and assembly reading and any package the list left open.`);
+  }
+  return y;
+}
+
 export function printPDF(
   result: PartCostResult,
   input:  UniversalStackInput,
@@ -1686,6 +1903,12 @@ export function printPDF(
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
   const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }));
+  // A populated board costed from the PCB photo analysis gets its own body (pcba-report-data.ts).
+  let pcba: PcbaReport | null = null;
+  if (cadMeta.pcbAnalysis) {
+    try { pcba = buildPcbaReport(cadMeta.pcbAnalysis, { partName: result.partName, annualVolume: cadMeta.annualVolume, qualityGrade: cadMeta.functionalSafety?.qualityGrade, fmt: money }); }
+    catch (err) { console.warn('[pdf] PCBA report body unavailable:', err instanceof Error ? err.message : String(err)); }
+  }
 
   // ── Footer (added last) ──────────────────────────────────────────────────
   const addFooters = () => {
@@ -1751,8 +1974,8 @@ export function printPDF(
   const nameMaxW = CW - 12;
   let nameSize = 13;
   doc.setFontSize(nameSize);
-  while (doc.getTextWidth(result.partName) > nameMaxW && nameSize > 9) { nameSize -= 0.5; doc.setFontSize(nameSize); }
-  let partName = result.partName;
+  while (doc.getTextWidth(pcba?.partName ?? result.partName) > nameMaxW && nameSize > 9) { nameSize -= 0.5; doc.setFontSize(nameSize); }
+  let partName = pcba?.partName ?? result.partName;
   if (doc.getTextWidth(partName) > nameMaxW) {
     while (partName.length > 8 && doc.getTextWidth(partName + '...') > nameMaxW) partName = partName.slice(0, -1);
     partName = partName.replace(/\s+$/, '') + '...';
@@ -1760,7 +1983,12 @@ export function printPDF(
   doc.text(partName, MG + 6, y + 12);
 
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-  const meta = [
+  const meta = pcba ? [
+    'Populated PCB (PCBA) · from photo analysis',
+    `Built in: ${pcba.country}`,
+    'Delivered: UK, duty paid',
+    `Currency: ${currency}`,
+  ].join('   ·   ') : [
     `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
     `Currency: ${currency}`,
     `FX Rate: ${fxRate.toFixed(4)} to GBP`,
@@ -1770,7 +1998,10 @@ export function printPDF(
   doc.text(meta, MG + 6, y + 19);
 
   // Metrics chips row
-  const chips: [string, string, RGB][] = [
+  const chips: [string, string, RGB][] = pcba ? [
+    ['Delivered cost / board', `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
+    ...pcba.shares.map(sh => [sh.label, pct(sh.pct), SLATE] as [string, string, RGB]),
+  ] : [
     ['Total Should-Cost',   `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
     ['Material',            pct(pcts.rawMaterial), SLATE],
     ['Process',             pct(pcts.process), SLATE],
@@ -1807,7 +2038,10 @@ export function printPDF(
   // ── Confidence & traceability summary ────────────────────────────────────
   const highCount = result.traceability.filter(t => t.confidence === 'High').length;
   const allCount  = result.traceability.length;
-  const overallConf = allCount === 0 ? 'Medium'
+  // A PCBA's confidence is the analysis's own (how much of the BOM has a price behind it), not a
+  // count of machining operations — "Low · 0 traced operations" said nothing about the board.
+  const overallConf = pcba?.confidence ? pcba.confidence.label
+    : allCount === 0 ? 'Medium'
     : highCount / allCount >= 0.7 ? 'High'
     : highCount / allCount >= 0.4 ? 'Medium' : 'Low';
   const confColor: RGB = overallConf === 'High' ? GN : overallConf === 'Medium' ? AM : RD;
@@ -1815,11 +2049,13 @@ export function printPDF(
   doc.setFillColor(...HDR);
   doc.roundedRect(MG, y, CW, 11, 1.5, 1.5, 'F');
   doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-  doc.text('Model Confidence:', MG + 5, y + 7);
+  doc.text(pcba ? 'Estimate Confidence:' : 'Model Confidence:', MG + 5, y + 7);
   doc.setTextColor(...confColor);
   doc.text(overallConf, MG + 44, y + 7);
   doc.setTextColor(...GREY); doc.setFont('helvetica', 'normal');
-  doc.text(`·  ${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
+  doc.text(pcba?.confidence
+    ? `·  likely ${money(pcba.confidence.low)} – ${money(pcba.confidence.high)}  ·  ${pcba.bom.length} BOM lines, ${pcba.confidence.verifyCount} to verify with a quote`
+    : `·  ${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
   y += 17;
 
   // ── Engine warnings ───────────────────────────────────────────────────────
@@ -1827,9 +2063,12 @@ export function printPDF(
   // confidence, sub-30% utilisation, an overhead entered as 12 where 0.12 was
   // meant. They were computed and discarded; a report that hides its own
   // engine's caveats is not defensible.
-  if (result.warnings?.length) {
-    y = calloutBox(doc, y, `Engine Warnings (${result.warnings.length})`,
-      result.warnings, AM, [254, 249, 231]);
+  // The screen's "Costed from the PCB photo analysis … press Calculate" note is an instruction for the
+  // screen; the report states the same basis under Key Assumptions.
+  const coverWarnings = (result.warnings ?? []).filter(w => !(pcba && /^Costed from the PCB photo analysis/.test(w)));
+  if (coverWarnings.length) {
+    y = calloutBox(doc, y, `Engine Warnings (${coverWarnings.length})`,
+      coverWarnings, AM, [254, 249, 231]);
   }
 
   // ── Learning curve ────────────────────────────────────────────────────────
@@ -1892,6 +2131,17 @@ export function printPDF(
       + `(${(annVol * progYears).toLocaleString()} lifetime)   ·   Region: ${(input as { region?: string }).region ?? region}`
       + `   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`
     : `Annual volume: ${(annVol ?? '—').toLocaleString?.() ?? '—'}   ·   Region: ${(input as { region?: string }).region ?? region}   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`;
+  if (pcba) {
+    y = calloutBox(doc, y, 'Key Assumptions', [
+      pcba.basis + '.',
+      `Board: ${pcba.domainLabel}${pcba.safety ? ` · costed at ${pcba.safety.costed}` : ''} · parts list from the ${pcba.bomOrigin} (${pcba.bom.length} lines, ${pcba.bomPieces} parts).`,
+      'Component prices follow the parts bought (qty per board × boards); fabricator and EMS prices carry their own overhead and margin — none is added on top.',
+    ], NAVY, HDR);
+    y = renderPcbaSections(doc, y, pcba, money, cadMeta, scenarios, result.total);
+    addFooters();
+    doc.save(exportFilename('should-cost', result.partName, 'pdf'));
+    return;
+  }
   y = calloutBox(doc, y, 'Key Assumptions', [
     volLine,
     `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}${pinNote ? ` (${pinNote})` : ''}   ·   Net weight: ${input.rawMaterial.netWeightKg.toFixed(3)} kg${wtNote}`,

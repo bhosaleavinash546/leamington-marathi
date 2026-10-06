@@ -105,7 +105,8 @@ export function analysisStackInput(r: AnalysisLike, partName?: string, annualVol
   const bomDist = r.bom.reduce((t, l) => t + (Number(l.qty) || 0) * (Number(l.unitPriceGBP) || 0), 0);
   const sourcing = bomDist > 0 ? bd.bomCostPerBoard / bomDist : 1;   // the country's sourcing factor on the distributor BOM
   const lines: MaterialLineItem[] = r.bom.filter(l => (Number(l.qty) || 0) > 0).map(l => ({
-    ref: String(l.refDes || l.partNumber || '—'), description: String(l.description ?? ''), qty: Number(l.qty) || 0,
+    // A designator (R1, C1-C10, U3) — not a BOM's category column ("Capacitor").
+    ref: /\b[A-Z]{1,4}\d+/i.test(String(l.refDes ?? '')) ? String(l.refDes) : String(l.partNumber || '—'), description: String(l.description ?? ''), qty: Number(l.qty) || 0,
     unitCost: Math.round((Number(l.unitPriceGBP) || 0) * sourcing * 1e6) / 1e6, pkg: l.pkg || undefined, value: l.value || undefined,
     note: [l.partNumber, l.priceSource].filter(Boolean).join(' · ') || undefined,
   }));

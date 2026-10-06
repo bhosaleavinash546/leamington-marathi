@@ -27,6 +27,9 @@ export function attachPcbPayload(target: PCBImageAnalysis, data: Payload, fallba
   set('_asilLevel', d.asilLevel);
   set('_asilRationale', d.asilRationale);
   set('_asilSafetyFunctions', d.asilSafetyFunctions);
+  set('_asilClaimed', d.asilClaimed);
+  set('_asilNotes', d.asilNotes);
+  set('_boardFunction', d.boardFunction);
   set('_automotiveNRE', d.automotiveNRE);
   set('_automotiveGradeEnforcedCount', d.automotiveGradeEnforcedCount);
   set('_singleSourceWarnings', d.singleSourceWarnings);

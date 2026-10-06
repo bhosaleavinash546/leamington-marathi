@@ -179,3 +179,39 @@ Two readings of the actual:
 The radar demo board at 250k moves to **£52.90** with the material burden (was £50.97).
 
 **To confirm with a minute's look:** the UK duty on trade-tariff.service.gov.uk for 8529 90 92 from China, and whether the supplier is an EMS or a Tier-1.
+
+## 8. The live report reviewed page by page (6 Oct 2026, £15.68)
+
+The user's live run printed a 10-page should-cost report. The headline was right (the analysis, China, delivered UK).
+Almost everything around it was wrong, because the report body was the machined-part one.
+
+| Page | What it printed | Why it was wrong | Now |
+|---|---|---|---|
+| 1 | "Commodity: PCB FAB · Region: UK · Operations: 0" | The board is a PCBA built in China | "Populated PCB (PCBA) · Built in: China · Delivered: UK, duty paid" |
+| 1 | "Alloy/material: Virtual / Pass-through · Net weight 0.000 kg · utilisation 100%" | A placeholder for the costing engine, not the part | Basis, board type, ASIL as costed, where the parts list came from |
+| 1 | "Model confidence Low · 0 traced operations" | It counts machining operations | The analysis's own band (likely £ low–high) and lines to verify |
+| 1 | "…Edit a field and press Calculate" | An instruction for the screen | Not printed |
+| 2–3 | 8-bucket table, Process/Labour/Tooling £0, "Overhead base" | Buckets for a machined part | Components, EMS burden, bare board, automotive grade, SMT, test, energy/packaging/quality, freight, UK duty; summing to the headline |
+| 3 | "ASIL ASIL-C" twice, a **radar** rationale ("radar target detection, Doppler processing") | Stage 1b hallucinated a radar module from a camera board; **ASIL-C also put burn-in (~£0.61) into the price** | The ASIL guard (below): costed **ASIL-B**, the claim and the reason stated, the radar text withheld |
+| 3 | "Test/inspection multiplier ×1.50 applied to every operation in section 4" | There is no section 4 operation | Not printed |
+| 4 | §3 Material detail: mat-virtual, "Price is irrelevant", Region UK, 0 kg | The placeholder again | Not printed |
+| 4 | "13 lines · 82 pieces", RefDes "—" on every line | Counted the PCB and ASM lines as pieces; "Capacitor" is a category, not a designator | 11 lines · 80 parts; no RefDes column when the BOM has none; part number and "priced from" per line |
+| 5 | "Lines £14.99 against a £13.34 material bucket — £1.65 excess (bare board, yield, coating)" | Ignored the bought-in board and assembly | "The 11 lines total £12.70 — the components row of §1" (+ burden stated) |
+| 5–6 | Empty §4 Operations, §5 Machine rates; §6 with "Uni t", "Medi um" | Nothing to show | Not printed |
+| 7 | "Tooling amortisation carries the widest spread"; "excluded: import duty and freight" | No tooling; duty and freight ARE in the figure | "Not in this unit cost": NRE, Tier-1 margin, module housing |
+| 8 | §9 China **£1.79** (−89%), Germany £4.42 | Rescaled a pass-through; the headline IS China at £15.68 | §5 the board costed in each of 14 countries, delivered UK, sorted |
+| 8 | §10 Embodied carbon 0.00 kgCO2e | No mass on a pass-through | Not printed (no PCBA carbon model yet — stated as a gap, not a zero) |
+| 9 | "Material 95.6% exceeds the PCB fab benchmark ceiling of 40% — challenge layer count" | A bare-board benchmark on a populated board | Deterministic drivers: the 3 lines that carry 56%, the components share, the cheapest country, lines without a quote |
+| 9–10 | "Raw-material price indexation… metal/resin", generic DFM, an orphan bullet on p10 | Not this commodity | Not printed |
+| 6 | NRE not shown | — | §6 One-time automotive NRE (£16,200), per board over a year |
+
+**ASIL guard (`server/utils/pcb-asil-guard.ts`).** The parts list is the ground truth for the ASIL:
+- ASIL-C/D is costed only when the BOM carries the hardware such a design needs: a safety PMIC/SBC (TLF35584, FS84/85, VR5510…) or a lockstep safety MCU (AURIX, S32K3, S32R, RH850, TMS570).
+- Otherwise the board is costed at ASIL-B, with the claim and the reason in the response, on screen and in the report.
+- A rationale naming a function the BOM contradicts (radar text on an image sensor + serializer) is withheld.
+
+It runs in `runStage4`, so every route applies it. The radar demo board (S32R294 + a safety supervisor) keeps ASIL-C and £52.90.
+
+**Accuracy after the fix.** Removing burn-in puts the live run at about **£15.05**, against the actual **£17.00** (−11%). The figure is the EMS delivered price. The £17.00 is what the buyer pays. If that supplier is a Tier-1 or a distributor, its margin is the gap (§7: £16.1–16.7 with a Tier-1 margin). The actual sits inside the report's own likely range (£12.22–£19.77). Burn-in was not kept to close the gap: a surround-view camera module is QM–ASIL-B, and the parts list carries no ASIL-C hardware.
+
+Sample report from the stand-in run: `docs/pcb/screens/camera-report-2026-10-06.pdf` (5 pages, £15.26). `e2e/pcb-camera-live.ts` replays the live classifier (ASIL-C, radar text), exports this report and asserts on its text. `tests/pcba-report.test.ts` pins the guard and the report content.

@@ -185,6 +185,10 @@ never asks for a price. The response carries `stage1Classification` / `ocrExtrac
 (the client's `attachPcbPayload`), `analysis.rawBom` (so a re-price never applies volume or grading twice). Catalogue
 family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
 the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
+The ASIL is checked against the parts list in `runStage4` (`pcb-asil-guard.ts`): ASIL-C/D only with a safety PMIC/SBC or
+lockstep MCU in the BOM (else costed ASIL-B, claim kept as `asilClaimed`); a rationale contradicting the BOM's function is
+withheld. The should-cost PDF of an analysis-linked costing is a PCBA report (`src/export/pcba-report-data.ts` +
+`renderPcbaSections` in pdf.ts) — never the machined-part body; `docs/pcb/camera-board-360-2026-10.md` §8.
 **Calculate after Analyze = the analysis** (`src/ui/pcb/analysis-link.ts`, camera-board trial Oct 2026): the
 analysis fills the PCB fab form; Calculate with nothing edited reports the analysis (components itemised, board and
 assembly bought-in, no second overhead / margin); an edited field is written into the analysis's board spec and

@@ -33,6 +33,7 @@ import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpe
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
+import { guardAsil, type AsilLevel, type AsilGuardResult } from '../utils/pcb-asil-guard.js';
 
 // ── Volume BOM price correction ────────────────────────────────────────────
 // Pricing table is calibrated to 100K units. Multipliers scale cost up for
@@ -1486,6 +1487,9 @@ interface Stage4Input {
   classificationFailed?: boolean;
   /** A distributor key supplied by the user for this run (Fetch Live Prices). */
   live?: { provider: LivePricingProvider; key: string };
+  /** The classifier's words behind the ASIL — checked against the parts list. */
+  asilRationale?: string;
+  asilSafetyFunctions?: string[];
   tag: string;
 }
 
@@ -1514,11 +1518,14 @@ interface Stage4Output {
   /** The board's domain after the parts-list evidence (may upgrade the classifier's). */
   domain: string;
   programPricing: ProgramPricingResult | null;
+  /** The ASIL as claimed, as costed, and why they differ (pcb-asil-guard.ts). */
+  asil: AsilGuardResult | null;
   failed: boolean;
 }
 
 export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
-  const { analysis: a, asilLevel, ocrResult, orderQty, tag } = inp;
+  const { analysis: a, ocrResult, orderQty, tag } = inp;
+  let asilLevel = inp.asilLevel;
   let domain = inp.domain;
   const selectedCountry = inp.country;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
@@ -1529,6 +1536,8 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     catalogueVerifiedCount: 0, needsVerificationCount: 0, automotiveNRE: null, automotiveGradeEnforcedCount: 0,
     singleSourceWarnings: [], conformalCoatingCost: 0, automotiveAssemblyCost: null, automotiveFabAdjustment: null,
     bomCompleteness: null, programPricing: null, failed: false, domain: inp.domain,
+    // Unchanged until the parts list is known (a failed Stage 4 still reports what was claimed).
+    asil: guardAsil({ asil: inp.asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: [] }),
   };
   try {
     const boardSpec = (a.boardSpec ?? (a.boardSpec = {})) as Record<string, unknown>;
@@ -1570,6 +1579,12 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // and never applies the volume factor or the grading twice.
     if (Array.isArray(a.rawBom)) a.bom = JSON.parse(JSON.stringify(a.rawBom));
     else a.rawBom = JSON.parse(JSON.stringify(Array.isArray(a.bom) ? a.bom : []));
+    // The classifier's ASIL against the parts list (pcb-asil-guard.ts): ASIL-C/D is costed only
+    // with the safety hardware it needs, and a rationale the BOM contradicts is withheld.
+    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions,
+      bom: Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [] });
+    asilLevel = out.asil.costed as ASILLevel;
+    for (const n of out.asil.notes) warnings.push({ code: 'ASIL_CHECKED_AGAINST_BOM', severity: 'warn', message: n });
     // 2. One part, one line, whole-number quantities — across all the photos.
     const cons = consolidateBom(Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : []);
     warnings.push(...cons.warnings);
@@ -1762,7 +1777,8 @@ function pcbCacheKey(req: import('express').Request, files: Record<string, Expre
       // v9 (camera-board trial, Oct 2026): board-size band, ICT / X-ray / AOI at volume, EMS material burden,
       // imager / bead / choke classes, -Q1 lookup, automotive from the BOM. Bump on every costing change:
       // the cache persists across restarts and would otherwise replay a result costed by the old rules.
-      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 9,
+      // v10: the ASIL is checked against the parts list (pcb-asil-guard.ts).
+      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 10,
     })),
     ...(files?.bomFile ?? []).map(f => f.buffer),
     ...(files?.fabFiles ?? []).flatMap(f => [Buffer.from(f.originalname), f.buffer]),
@@ -1797,6 +1813,9 @@ function stage4Payload(s4: Stage4Output) {
     automotiveAssemblyCost: s4.automotiveAssemblyCost, automotiveFabAdjustment: s4.automotiveFabAdjustment,
     bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing,
     orderQty: s4.orderQty, costingFailed: s4.failed, boardDomain: s4.domain,
+    // The ASIL the costing used (the guard's), what the classifier claimed, and why they differ.
+    ...(s4.asil ? { asilLevel: s4.asil.costed, asilClaimed: s4.asil.claimed, asilRationale: s4.asil.rationale,
+      asilSafetyFunctions: s4.asil.safetyFunctions, asilNotes: s4.asil.notes, boardFunction: s4.asil.boardFunction } : {}),
   };
 }
 
@@ -2103,6 +2122,7 @@ ${userPromptText}`;
   // ── Stage 4: one implementation for every route (runStage4) ───────────────
   const s4 = await runStage4({
     analysis: analysis as Record<string, unknown>, domain, asilLevel: asilClassification.asilLevel, ocrResult,
+    asilRationale: asilClassification.asilRationale, asilSafetyFunctions: asilClassification.safetyFunctions,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
     parsedBOM, bomImageNotes: bomImage?.notes, files, tag: '', classificationFailed: stage1Result.failed === true,
@@ -2124,9 +2144,7 @@ ${userPromptText}`;
     // never does — a re-analysis then costed an automotive board as "general".
     stage1Classification: { domain: s4.domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true, ...(s4.domain !== domain ? { classifierDomain: domain } : {}) },
     ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
-    asilLevel: asilClassification.asilLevel,
-    asilRationale: asilClassification.asilRationale,
-    asilSafetyFunctions: asilClassification.safetyFunctions,
+    // ASIL fields come from stage4Payload: the level the costing used, checked against the BOM.
     fromCache: false,
   };
   // Never cache a hollow, salvaged or half-costed result — it would replay forever.
@@ -2330,8 +2348,10 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
   // The ASIL from the first analysis (the UI sends it back): burn-in and the NRE
   // tier depend on it, and a re-analysis used to reset it to Unknown.
   const reanalAsil = (/^(ASIL-[ABCD]|QM)$/.test(String(req.body?.asilLevel ?? '')) ? String(req.body?.asilLevel) : 'Unknown') as ASILLevel;
+  const reanalFns = (() => { try { const v = JSON.parse(String(req.body?.asilSafetyFunctions ?? '[]')); return Array.isArray(v) ? v.map(String) : []; } catch { return []; } })();
   const s4 = await runStage4({
     analysis: analysis as Record<string, unknown>, domain, asilLevel: reanalAsil, ocrResult,
+    asilRationale: String(req.body?.asilRationale ?? ''), asilSafetyFunctions: reanalFns,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
     correctedBOM: Array.isArray(correctedBOM) ? (correctedBOM as Array<Record<string, unknown>>) : null,
@@ -2345,7 +2365,6 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     ...stage4Payload(s4),
     stage1Classification: { domain, conf: 1, hints: [] },
     ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
-    asilLevel: reanalAsil,
   });
 });
 
@@ -2368,6 +2387,7 @@ router.get('/ecu-library', (req, res): void => {
 router.post('/reprice', async (req, res): Promise<void> => {
   const b = (req.body ?? {}) as {
     analysis?: Record<string, unknown>; domain?: string; asilLevel?: string; ocrMarkings?: string[]; ocrConnectors?: string[]; ocrQuality?: string;
+    asilRationale?: string; asilSafetyFunctions?: unknown[];
     country?: string; orderQty?: number | string; provider?: string; apiKey?: string;
   };
   if (!b.analysis || typeof b.analysis !== 'object' || !Array.isArray(b.analysis.rawBom ?? b.analysis.bom)) {
@@ -2379,6 +2399,7 @@ router.post('/reprice', async (req, res): Promise<void> => {
   const asil = (/^(ASIL-[ABCD]|QM)$/.test(String(b.asilLevel ?? '')) ? String(b.asilLevel) : 'Unknown') as ASILLevel;
   const s4 = await runStage4({
     analysis, domain, asilLevel: asil,
+    asilRationale: String(b.asilRationale ?? ''), asilSafetyFunctions: Array.isArray(b.asilSafetyFunctions) ? b.asilSafetyFunctions.map(String) : [],
     ocrResult: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings.map(String) : [], refDesGroups: [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors.map(String) : [], boardText: [],
       extractionQuality: /^(high|medium|low|none|failed)$/.test(String(b.ocrQuality ?? '')) ? String(b.ocrQuality) : 'medium' },
     country: String(b.country ?? 'cn'), orderQty: parseInt(String(b.orderQty ?? '100'), 10) || 100,
@@ -2386,7 +2407,7 @@ router.post('/reprice', async (req, res): Promise<void> => {
     tag: '/reprice',
   });
   normalizePCBAnalysis(analysis);
-  res.json({ success: true, analysis, ...stage4Payload(s4), asilLevel: asil,
+  res.json({ success: true, analysis, ...stage4Payload(s4),
     stage1Classification: { domain, conf: 1, hints: [] },
     ocrExtraction: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings : [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors : [], extractionQuality: String(b.ocrQuality ?? 'medium') } });
 });
@@ -2742,6 +2763,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   emit('progress', { stage: 4, label: 'Stage 4 — Cost breakdown & country comparison', pct: 85 });
   const s4 = await runStage4({
     analysis: analysis as Record<string, unknown>, domain, asilLevel: streamAsilClassification.asilLevel, ocrResult,
+    asilRationale: streamAsilClassification.asilRationale, asilSafetyFunctions: streamAsilClassification.safetyFunctions,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
     parsedBOM: parsedBOM2, bomImageNotes: bomImage2?.notes, files, tag: '/stream', classificationFailed: stage1Result.failed === true,
@@ -2756,9 +2778,6 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     stage1Classification: { domain: s4.domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true, ...(s4.domain !== domain ? { classifierDomain: domain } : {}) },
     ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
     fromCache: false,
-    asilLevel: streamAsilClassification.asilLevel,
-    asilRationale: streamAsilClassification.asilRationale,
-    asilSafetyFunctions: streamAsilClassification.safetyFunctions,
   };
   // Store so an identical re-run replays this exact result — never a hollow, salvaged or half-costed one.
   if (!bomIsEmpty(analysis) && !s4.failed && !(analysis as Record<string, unknown>)._salvaged) setCached(streamCacheKey, streamComplete);

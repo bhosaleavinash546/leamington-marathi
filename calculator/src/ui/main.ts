@@ -8349,6 +8349,13 @@ function injectPCBImagePanel(): void {
 
 /** The form fields as the analysis filled them — Calculate compares against this (analysis-link.ts). */
 let _pcbFabSnapshot: Record<string, string> | null = null;
+/** The analysis the last Calculate reported (analysis-link.ts) — the report prints it as a PCBA. */
+let _costedFromPcbAnalysis: PCBImageAnalysis | null = null;
+/** What a re-price / re-analysis sends back about the ASIL: the CLAIMED level and its words, so the
+ *  server's guard (pcb-asil-guard.ts) decides again on the current parts list. */
+function asilBody(r: PCBImageAnalysis): { asilLevel: string; asilRationale: string; asilSafetyFunctions: string[] } {
+  return { asilLevel: r._asilClaimed ?? r._asilLevel ?? 'Unknown', asilRationale: r._asilRationale ?? '', asilSafetyFunctions: r._asilSafetyFunctions ?? [] };
+}
 /**
  * The analysis fills the PCB fab form it sits on, so the fields show what was costed and
  * Calculate reports the same board (live trial, Oct 2026: Calculate costed the form's 200×150 mm
@@ -8379,7 +8386,7 @@ async function repricePcbFromForm(edited: string[]): Promise<void> {
   const resp = await fetch('/api/pcb/reprice', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      analysis, domain: patch.domain ?? r0.stage1Classification?.domain ?? 'general', asilLevel: r0._asilLevel ?? 'Unknown',
+      analysis, domain: patch.domain ?? r0.stage1Classification?.domain ?? 'general', ...asilBody(r0),
       ocrMarkings: r0.ocrExtraction?.icMarkings ?? [], ocrConnectors: r0.ocrExtraction?.connectors ?? [], ocrQuality: r0.ocrExtraction?.extractionQuality ?? '',
       country, orderQty,
     }),
@@ -8442,7 +8449,7 @@ async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        analysis: r0, domain: r0.stage1Classification?.domain ?? 'general', asilLevel: r0._asilLevel ?? 'Unknown',
+        analysis: r0, domain: r0.stage1Classification?.domain ?? 'general', ...asilBody(r0),
         ocrMarkings: r0.ocrExtraction?.icMarkings ?? [], ocrConnectors: r0.ocrExtraction?.connectors ?? [], ocrQuality: r0.ocrExtraction?.extractionQuality ?? '',
         country: r0._selectedCountry ?? 'cn', orderQty, provider, apiKey,
       }),
@@ -8571,7 +8578,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   formData.append('orderQty', orderQty);
   formData.append('deepAnalysis', String((document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
   // The ASIL from the first analysis: burn-in and the NRE tier depend on it.
-  if (pcbImageResult?._asilLevel) formData.append('asilLevel', pcbImageResult._asilLevel);
+  if (pcbImageResult) for (const [k, v] of Object.entries(asilBody(pcbImageResult))) formData.append(k, typeof v === 'string' ? v : JSON.stringify(v));
 
   try {
     const resp = await fetch('/api/pcb/reanalyze', {
@@ -14567,6 +14574,7 @@ function compute(): void {
       ? analysisStackInput(pcbImageResult as unknown as Parameters<typeof analysisStackInput>[0], (document.getElementById('part-name') as HTMLInputElement | null)?.value || undefined,
           pcbImageResult!._orderQty ?? (parseInt((document.getElementById('annual-volume') as HTMLInputElement | null)?.value ?? '', 10) || undefined))
       : collectInput();
+    _costedFromPcbAnalysis = pcbLinked ? pcbImageResult : null;
     if (pcbLinked) _smExtraWarnings.push(`Costed from the PCB photo analysis: the populated board (components, bare board, assembly) in ${pcbImageResult!._selectedCountryBreakdown?.countryName ?? 'the analysis country'} at ${pcbImageResult!._orderQty ?? '—'} boards a year — the same figures as the analysis above. Edit a field and press Calculate to re-price it.`);
   } catch (err) {
     calcBtn.disabled = false;
@@ -17557,6 +17565,9 @@ function buildCadReportMeta(): CADReportMeta {
     // Present only when the background job has landed. Omitted rather than
     // blocked on — the section is additive, never load-bearing.
     geometricDFM: cadGeometricDFM,
+    // The costing on screen IS the photo analysis (and it is still the loaded one): print it as a PCBA.
+    pcbAnalysis: _costedFromPcbAnalysis && _costedFromPcbAnalysis === pcbImageResult && activeCommodity === 'pcb_fab'
+      ? (_costedFromPcbAnalysis as unknown as NonNullable<CADReportMeta['pcbAnalysis']>) : null,
   };
   if (!cadAnalysisResult || !lastInput) return universal;
   const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
