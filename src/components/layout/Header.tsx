@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, Sun, Moon, Search } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, Sun, Moon, Search, Zap, FileText, Keyboard, KeyRound, CircleStop, CheckCircle2, CornerDownLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { OnboardingHeaderChip } from '../OnboardingChecklist';
@@ -9,6 +9,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { TOOLS, TOOL_GROUPS, SETTINGS_LINKS } from '../../config/tools';
 import { getAuthToken } from '../../services/auth';
 import { readJSON, pushRecent } from '../../lib/storage';
+import { rankCommands, usePageCommandList, openShortcutSheet, type Command } from '../../lib/commands';
+import { useRun, cancelRun, consumeRun } from '../../lib/run-store';
+import ShortcutSheet from './ShortcutSheet';
 
 const dropdownVariants = {
   hidden: { opacity: 0, y: -6, scale: 0.97 },
@@ -32,11 +35,15 @@ const HIT_LABEL: Record<ContentHit['kind'], string> = { idea: 'Idea', project: '
 const RECENTS_KEY = 'brainspark_palette_recents';
 
 type PaletteRow =
+  | { key: string; kind: 'action'; cmd: Command }
   | { key: string; kind: 'tool'; tool: typeof TOOLS[number] }
   | { key: string; kind: 'hit'; hit: ContentHit };
 
 function ToolSearch() {
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useTheme();
+  const run = useRun();
+  const pageCommands = usePageCommandList();
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -80,10 +87,32 @@ function ToolSearch() {
     return () => { clearTimeout(t); ctl.abort(); };
   }, [q]);
 
+  // Global actions, built from live state each time the palette opens, so a
+  // row exists only when it can run (no "Cancel" without a run, no "Open last
+  // result" without one).
+  const actions = useMemo<Command[]>(() => {
+    const list: Command[] = [];
+    if (run?.status === 'running') list.push({ id: 'run-cancel', group: 'Actions', label: `Cancel: ${run.label}`, keywords: 'stop abort analysis running', icon: CircleStop, run: cancelRun });
+    if (run?.status === 'done' && run.openRoute) {
+      const route = run.openRoute, id = run.id;
+      list.push({ id: 'run-open', group: 'Actions', label: `Open results: ${run.label}`, keywords: 'finished ready', icon: CheckCircle2, run: () => { consumeRun(); navigate(route, { state: { fromRun: id } }); } });
+    }
+    list.push({ id: 'new-analysis', group: 'Actions', label: 'New analysis', keywords: 'generate ideas start analyze create', icon: Zap, hint: 'Analyze', run: () => navigate('/analyze') });
+    let hasLast = false;
+    try { hasLast = !!sessionStorage.getItem('analysisResult'); } catch { /* storage blocked */ }
+    if (hasLast) list.push({ id: 'last-result', group: 'Actions', label: 'Open last result', keywords: 'results recent previous ideas', icon: FileText, run: () => navigate('/results') });
+    list.push({ id: 'theme', group: 'Actions', label: `Switch to ${isDark ? 'light' : 'dark'} theme`, keywords: 'theme dark light mode appearance', icon: isDark ? Sun : Moon, run: () => toggleTheme() });
+    list.push({ id: 'shortcuts', group: 'Actions', label: 'Keyboard shortcuts', keywords: 'keys help hotkeys', icon: Keyboard, hint: '?', run: openShortcutSheet });
+    list.push({ id: 'api-key', group: 'Actions', label: 'Set your Anthropic API key', keywords: 'settings key anthropic ai', icon: KeyRound, run: () => navigate('/settings/api-key') });
+    return list;
+  }, [run, isDark, toggleTheme, navigate, open]);   // eslint-disable-line react-hooks/exhaustive-deps
+  const rankedActions = useMemo(() => rankCommands([...pageCommands, ...actions], q, q.trim() ? 4 : 6), [pageCommands, actions, q]);
+
   const rows = useMemo<PaletteRow[]>(() => [
+    ...rankedActions.map(cmd => ({ key: `cmd-${cmd.id}`, kind: 'action' as const, cmd })),
     ...matches.map(tool => ({ key: `tool-${tool.id}`, kind: 'tool' as const, tool })),
     ...content.map(hit => ({ key: `${hit.kind}-${hit.id}`, kind: 'hit' as const, hit })),
-  ], [matches, content]);
+  ], [rankedActions, matches, content]);
   useEffect(() => { setActive(0); }, [q, rows.length]);
 
   // ⌘K / Ctrl+K focuses the jumper from anywhere.
@@ -110,11 +139,19 @@ function ToolSearch() {
   function go(row: PaletteRow) {
     if (row.kind === 'tool') setRecents(pushRecent(RECENTS_KEY, row.tool.id, 5));
     setQ(''); setOpen(false); inputRef.current?.blur();
+    if (row.kind === 'action') { row.cmd.run(); return; }
     navigate(row.kind === 'tool' ? row.tool.route : row.hit.route);
   }
 
   const showList = open && rows.length > 0;
   const showingRecents = !q.trim() && matches.length > 0;
+  // Section headings, shown where the row kind (or command group) changes.
+  const headingFor = (i: number): string | null => {
+    const r = rows[i], p = rows[i - 1];
+    const label = r.kind === 'action' ? r.cmd.group : r.kind === 'tool' ? (showingRecents ? 'Recent tools' : 'Tools') : 'Your content';
+    const prev = !p ? null : p.kind === 'action' ? p.cmd.group : p.kind === 'tool' ? (showingRecents ? 'Recent tools' : 'Tools') : 'Your content';
+    return label === prev ? null : label;
+  };
 
   return (
     <div ref={wrapRef} className="relative hidden md:block w-64 lg:w-80">
@@ -133,10 +170,10 @@ function ToolSearch() {
             else if (e.key === 'Enter' && rows[active]) go(rows[active]);
             else if (e.key === 'Escape') { setQ(''); setOpen(false); inputRef.current?.blur(); }
           }}
-          placeholder="Jump to a tool…"
+          placeholder="Search tools and actions…"
           className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none min-w-0"
           role="combobox"
-          aria-label="Jump to a tool"
+          aria-label="Search tools and actions"
           aria-expanded={showList}
           aria-controls={listId}
           aria-autocomplete="list"
@@ -150,20 +187,17 @@ function ToolSearch() {
             variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
             id={listId}
             role="listbox"
-            aria-label={showingRecents ? 'Recent tools' : 'Results'}
+            aria-label="Tools and actions"
             className="absolute top-full left-0 right-0 mt-1.5 rounded-xl bg-navy-800 border border-white/10 shadow-popover py-1 overflow-hidden z-popover"
           >
-            {showingRecents && (
-              <div className="px-3.5 pt-1.5 pb-1 text-2xs uppercase tracking-wider text-slate-500">Recent</div>
-            )}
             {rows.map((row, i) => {
               const isActive = i === active;
-              const base = `w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left transition-colors ${isActive ? 'bg-white/5 text-white' : 'text-slate-300 hover:text-white hover:bg-white/5'}`;
-              const firstHit = row.kind === 'hit' && (i === 0 || rows[i - 1].kind === 'tool');
+              const base = `w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left transition-colors ${isActive ? 'bg-tint text-white' : 'text-slate-300 hover:text-white hover:bg-tint'}`;
+              const heading = headingFor(i);
               return (
                 <div key={row.key}>
-                  {firstHit && (
-                    <div className="px-3.5 pt-2 pb-1 text-2xs uppercase tracking-wider text-slate-500 border-t border-white/8 mt-1">Your content</div>
+                  {heading && (
+                    <div className={`px-3.5 pt-2 pb-1 text-2xs uppercase tracking-wider text-slate-500 ${i > 0 ? 'border-t border-hairline mt-1' : ''}`}>{heading}</div>
                   )}
                   <button
                     id={`${listId}-${row.key}`}
@@ -173,7 +207,13 @@ function ToolSearch() {
                     onClick={() => go(row)}
                     className={base}
                   >
-                    {row.kind === 'tool' ? (
+                    {row.kind === 'action' ? (
+                      <>
+                        {row.cmd.icon ? <row.cmd.icon size={14} className="text-gold-400 shrink-0" aria-hidden="true" /> : <CornerDownLeft size={14} className="text-gold-400 shrink-0" aria-hidden="true" />}
+                        <span className="font-medium truncate">{row.cmd.label}</span>
+                        {row.cmd.hint && <span className="text-slate-500 text-xs ml-auto shrink-0">{row.cmd.hint}</span>}
+                      </>
+                    ) : row.kind === 'tool' ? (
                       <>
                         <row.tool.icon size={14} className="text-gold-400 shrink-0" />
                         <span className="font-medium whitespace-nowrap shrink-0">{row.tool.label}</span>
@@ -191,7 +231,7 @@ function ToolSearch() {
               );
             })}
             <div className="px-3.5 pt-1.5 pb-1 text-2xs text-slate-600 border-t border-white/8 mt-1 flex gap-3">
-              <span><kbd className="font-mono">↑↓</kbd> move</span><span><kbd className="font-mono">↵</kbd> open</span><span><kbd className="font-mono">esc</kbd> close</span>
+              <span><kbd className="font-mono">↑↓</kbd> move</span><span><kbd className="font-mono">↵</kbd> run</span><span><kbd className="font-mono">esc</kbd> close</span><span className="ml-auto"><kbd className="font-mono">?</kbd> shortcuts</span>
             </div>
           </motion.div>
         )}
@@ -256,7 +296,10 @@ export default function Header() {
           {/* Authenticated: quick tool jumper (the sidebar owns navigation).
               Guest: simple marketing links. */}
           {isAuthenticated ? (
-            <ToolSearch />
+            <>
+              <ToolSearch />
+              <ShortcutSheet />
+            </>
           ) : (
             <nav className="hidden md:flex items-center gap-1">
               {[{ path: '/', label: 'Home' }, { path: '/help', label: 'Help' }].map(({ path, label }) => (

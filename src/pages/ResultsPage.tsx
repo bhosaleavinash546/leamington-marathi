@@ -14,6 +14,7 @@ import {
   MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
   Square, Store, Layers, ThumbsUp, FileSearch, LayoutGrid, Rows3
 } from 'lucide-react';
+import { usePageCommands } from '../lib/commands';
 import PrismIcon from '../components/icons/PrismIcon';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -1025,6 +1026,17 @@ export default function ResultsPage() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  // ⌘K "This page" commands. The handlers are defined below the early return,
+  // so the commands call through a ref that the render keeps current.
+  const exportRef = useRef<Record<string, () => void>>({});
+  usePageCommands(result ? [
+    { id: 'res-pdf', group: 'This page', label: 'Export PDF report', keywords: 'download share print', icon: FileDown, run: () => exportRef.current.pdf?.() },
+    { id: 'res-pptx', group: 'This page', label: 'Export PowerPoint deck', keywords: 'slides pptx presentation download', icon: Presentation, run: () => exportRef.current.pptx?.() },
+    { id: 'res-excel', group: 'This page', label: 'Export Excel workbook', keywords: 'xlsx spreadsheet download', icon: FileSpreadsheet, run: () => exportRef.current.excel?.() },
+    { id: 'res-rfq', group: 'This page', label: 'Export RFQ pack', keywords: 'quote supplier request', icon: ClipboardList, run: () => exportRef.current.rfq?.() },
+    { id: 'res-view', group: 'This page', label: view === 'table' ? 'Show ideas as cards' : 'Show ideas as a table', keywords: 'view layout table cards', icon: view === 'table' ? LayoutGrid : Rows3, run: () => setView(v => v === 'table' ? 'cards' : 'table') },
+  ] : [], [!!result, view]);
+
   if (!result) {
     // A failed open must say so rather than rendering a blank page.
     if (!loadError) return null;
@@ -1132,6 +1144,7 @@ export default function ResultsPage() {
     { id: 'excel', label: 'Excel workbook', description: 'Summary, ideas and roadmap sheets', icon: FileSpreadsheet, onSelect: handleExcelExport, busy: exporting === 'excel' },
     { id: 'rfq', label: 'RFQ pack', description: 'Request-for-quote package of the approved ideas', icon: ClipboardList, onSelect: handleRfqExport, busy: exporting === 'rfq' },
   ];
+  exportRef.current = Object.fromEntries(exportItems.map(it => [it.id, it.onSelect]));
 
   const handleAnnotate = (ideaId: string, annotation: IdeaAnnotation) => {
     const updated = { ...annotations, [ideaId]: annotation };

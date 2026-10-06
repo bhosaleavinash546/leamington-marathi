@@ -190,9 +190,18 @@ and gated (DECISIONS 119).
 | Long-job experience | 6 | 8.5 | Background runs with a staged rail, cancel and notification |
 | **Overall** | **8.1** | **8.6** | |
 
+**Since §7 (6 Oct).**
+- **⌘K runs actions.** Global actions are New analysis, Open last result,
+  Cancel or open a run, Switch theme, Keyboard shortcuts and API key; Results
+  adds its four exports and the Cards/Table switch while it is mounted
+  (`lib/commands.ts`).
+- **A `?` shortcut sheet** lists only shortcuts the code binds; that is gated.
+- **Currency fix (DECISIONS 122).** Home no longer adds € figures as £, and
+  business cases record their currency.
+
 **Still open, in order:**
-1. ⌘K that runs actions, plus a `?` shortcut sheet.
-2. Provenance on hover: each € figure opens its engine calculation.
-3. A comparison tray for the selected ideas.
-4. Ideas streaming in during a run, before ranking.
-5. The light-theme Home input's inner fill.
+1. Provenance on hover: each € figure opens its engine calculation.
+2. A comparison tray for the selected ideas.
+3. Ideas streaming in during a run, before ranking.
+4. The light-theme Home input's inner fill.
+5. ⌘K on phones (the palette is desktop-only).
