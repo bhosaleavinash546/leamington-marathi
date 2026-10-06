@@ -1694,7 +1694,7 @@ function renderPcbaSections(
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     head: [['Element', `Amount`, '% of total', 'Basis']],
-    body: rep.stack.map(s => [s.label, c(s.amount), pct(s.amount / rep.total * 100), s.basis]),
+    body: rep.stack.map(s => [s.label, s.amount > 0 && s.amount < 0.005 ? `<${c(0.01)}` : c(s.amount), pct(s.amount / rep.total * 100), s.basis]),
     theme: 'plain',
     headStyles: { ...TH.headStyles },
     bodyStyles: { ...TH.bodyStyles, fontSize: 7.6 },
@@ -1707,8 +1707,11 @@ function renderPcbaSections(
     },
     didParseCell: (d) => {
       if (d.section !== 'body') return;
-      if (rep.stack[d.row.index]?.kind === 'total') {
+      const k = rep.stack[d.row.index]?.kind;
+      if (k === 'total') {
         d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; d.cell.styles.fontSize = 8.5;
+      } else if (k === 'sub') {
+        d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = HDR; d.cell.styles.textColor = NAVY;
       }
     },
   });
@@ -1741,7 +1744,7 @@ function renderPcbaSections(
       `Costed as ${sf.costed}${sf.claimed ? ` (the photo classifier said ${sf.claimed})` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph — confirm it against the safety concept.`,
       ...sf.notes,
       ...(sf.rationale ? [`Classifier's reading: ${sf.rationale}`] : []),
-      ...(sf.functions.length ? [`Safety functions named: ${sf.functions.join('; ')}`] : []),
+      ...(sf.functions.length ? [`Safety functions suggested by the photo classifier (unverified): ${sf.functions.join('; ')}`] : []),
     ];
     y = calloutBox(doc, y, 'Functional Safety (ISO 26262)', lines, NAVY, HDR);
   }
@@ -1770,7 +1773,7 @@ function renderPcbaSections(
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     head: [['#', ...(withRef ? ['RefDes'] : []), 'Description / part number', 'Package', 'Qty', 'Unit', 'Ext', 'Priced from']],
-    body, theme: 'plain',
+    body, theme: 'plain', rowPageBreak: 'avoid',   // a line and its part number stay on one page
     headStyles: { ...TH.headStyles, fontSize: 7, cellPadding: { top: 3, bottom: 3, left: 2, right: 2 } },
     bodyStyles: { ...TH.bodyStyles, fontSize: 6.8, cellPadding: { top: 2.2, bottom: 2.2, left: 2, right: 2 } },
     alternateRowStyles: { fillColor: LIGHT },
@@ -1799,27 +1802,27 @@ function renderPcbaSections(
 
   // §5 — Country comparison: the board costed in each country, delivered UK.
   if (rep.countries.length > 1) {
-    y = chk(doc, y, 60);
-    y = secBar(doc, y, '§5 — Build-Country Comparison', 'each row: this board built there, delivered UK, duty paid');
+    y = chk(doc, y, 24 + rep.countries.length * 7.6);   // keep the table on one page (a lone row spilled over)
+    y = secBar(doc, y, '§5 — Build-Country Comparison', 'each row: this board built there — ex-works, and delivered UK duty paid');
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
-      head: [['Country', 'Components', 'Bare board', 'Assembly', 'Other', 'Freight + duty', 'Total', `vs ${rep.country.split(' (')[0]}`, 'Lead']],
-      body: rep.countries.map(r => [r.name, c(r.components), c(r.fab), c(r.assembly), c(r.other), c(r.logistics), c(r.total),
+      head: [['Country', 'Components', 'Bare board', 'Assembly', 'Other', 'Ex-works', 'Freight + duty', 'Delivered', `vs ${rep.country.split(' (')[0]}`, 'Lead']],
+      body: rep.countries.map(r => [r.name, c(r.components), c(r.fab), c(r.assembly), c(r.other), c(r.exWorks), r.logistics > 0 && r.logistics < 0.005 ? `<${c(0.01)}` : c(r.logistics), c(r.total),
         r.selected ? 'costed' : `${r.delta >= 0 ? '+' : '-'}${c(Math.abs(r.delta))}`, r.leadWeeks ? `${r.leadWeeks} wk` : '—']),
       theme: 'plain',
       headStyles: { ...TH.headStyles, fontSize: 6.8, cellPadding: { top: 2.5, bottom: 2.5, left: 2, right: 2 } },
       bodyStyles: { ...TH.bodyStyles, fontSize: 7, cellPadding: { top: 2.2, bottom: 2.2, left: 2, right: 2 } },
       alternateRowStyles: { fillColor: LIGHT },
       columnStyles: {
-        0: { cellWidth: 38, fontStyle: 'bold' }, 1: { cellWidth: 19, halign: 'right' }, 2: { cellWidth: 18, halign: 'right' }, 3: { cellWidth: 17, halign: 'right' },
-        4: { cellWidth: 14, halign: 'right' }, 5: { cellWidth: 20, halign: 'right' }, 6: { cellWidth: 18, halign: 'right', fontStyle: 'bold' },
-        7: { cellWidth: 22, halign: 'right' }, 8: { cellWidth: 16, halign: 'right', textColor: GREY },
+        0: { cellWidth: 27, fontStyle: 'bold' }, 1: { cellWidth: 20, halign: 'right' }, 2: { cellWidth: 17, halign: 'right' }, 3: { cellWidth: 17, halign: 'right' },
+        4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: 18, halign: 'right', fontStyle: 'bold' }, 6: { cellWidth: 17, halign: 'right' },
+        7: { cellWidth: 18, halign: 'right', fontStyle: 'bold' }, 8: { cellWidth: 20, halign: 'right' }, 9: { cellWidth: 15, halign: 'right', textColor: GREY },
       },
       didParseCell: (d) => {
         if (d.section !== 'body') return;
         const row = rep.countries[d.row.index];
         if (row?.selected) { d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; d.cell.styles.fontStyle = 'bold'; }
-        else if (d.column.index === 7) d.cell.styles.textColor = (row?.delta ?? 0) < 0 ? GN : RD;
+        else if (d.column.index === 8) d.cell.styles.textColor = (row?.delta ?? 0) < 0 ? GN : RD;
       },
     });
     y = lastFinalY(doc) + 4;
@@ -1844,12 +1847,12 @@ function renderPcbaSections(
   function annualPer(v: number): string { return rep.annualVolume ? c(v / rep.annualVolume) : '—'; }
 
   // §7 — Where the cost sits and what to check.
-  y = chk(doc, y, 40);
+  y = chk(doc, y, 70);   // the heading never sits alone at the foot of a page
   y = secBar(doc, y, `§${rep.nre.length ? 7 : 6} — Cost Drivers & Next Steps`);
   y = calloutBox(doc, y, 'What drives this board\'s cost', rep.drivers, NAVY, HDR);
   y = calloutBox(doc, y, 'Not in this unit cost', rep.excluded, AM, OR_LT);
   if (rep.warnings.length) y = calloutBox(doc, y, `Analysis checks (${rep.warnings.length})`, rep.warnings, AM, [254, 249, 231]);
-  if (rep.limitations.length) y = calloutBox(doc, y, 'Analysis limitations', rep.limitations, SLATE, LIGHT);
+  if (rep.limitations.length) y = calloutBox(doc, y, 'Limitations stated by the photo reader', rep.limitations, SLATE, LIGHT);
 
   // Scenarios the engineer saved (each in its own country book).
   if (scenarios.length > 0) {
@@ -1999,8 +2002,9 @@ export function printPDF(
 
   // Metrics chips row
   const chips: [string, string, RGB][] = pcba ? [
-    ['Delivered cost / board', `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
-    ...pcba.shares.map(sh => [sh.label, pct(sh.pct), SLATE] as [string, string, RGB]),
+    [`Ex-works / board (${pcba.country.split(' (')[0]})`, money(pcba.exWorks), NAVY],
+    ['Delivered UK / board', `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
+    ...pcba.shares.slice(0, 3).map(sh => [sh.label, pct(sh.pct), SLATE] as [string, string, RGB]),
   ] : [
     ['Total Should-Cost',   `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
     ['Material',            pct(pcts.rawMaterial), SLATE],
@@ -2013,7 +2017,7 @@ export function printPDF(
     const cx = MG + i * chipW + 4;
     doc.setFontSize(6); doc.setFont('helvetica', 'normal'); doc.setTextColor(...LGREY);
     doc.text(lbl, cx, y + 26);
-    doc.setFontSize(i === 0 ? 10 : 9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
+    doc.setFontSize(i === 0 || (pcba && i === 1) ? 10 : 9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
     doc.text(val, cx, y + 32);
   });
 
@@ -2134,6 +2138,7 @@ export function printPDF(
   if (pcba) {
     y = calloutBox(doc, y, 'Key Assumptions', [
       pcba.basis + '.',
+      `Ex-works ${money(pcba.exWorks)} is the board built, tested and packed at the ${pcba.country.split(' (')[0]} factory gate; delivered ${money(pcba.total)} adds freight to the UK and UK import duty (${money(pcba.total - pcba.exWorks)}).`,
       `Board: ${pcba.domainLabel}${pcba.safety ? ` · costed at ${pcba.safety.costed}` : ''} · parts list from the ${pcba.bomOrigin} (${pcba.bom.length} lines, ${pcba.bomPieces} parts).`,
       'Component prices follow the parts bought (qty per board × boards); fabricator and EMS prices carry their own overhead and margin — none is added on top.',
     ], NAVY, HDR);

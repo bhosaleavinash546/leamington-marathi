@@ -184,7 +184,8 @@ async function main(): Promise<void> {
     if (process.env.CV_SHOT_DIR) writeFileSync(join(process.env.CV_SHOT_DIR, 'camera-report.pdf'), readFileSync(pdfPath));
     const pdf = pdfText(readFileSync(pdfPath));
     for (const must of ['Built in: China', 'Delivered: UK, duty paid', 'Cost Breakdown per Board', 'UK import duty', 'Bill of Materials',
-      'Build-Country Comparison', 'Costed as ASIL-B (the photo classifier said ASIL-C)', `£${headline.toFixed(2)}`]) {
+      'Build-Country Comparison', 'Costed as ASIL-B (the photo classifier said ASIL-C)', `£${headline.toFixed(2)}`,
+      'Ex-works / board (China)', 'Delivered UK / board', `£${(headline - bd.logisticsPerBoard).toFixed(2)}`]) {
       if (!pdf.includes(must)) fail(`report lacks "${must}"`);
     }
     for (const never of ['Pass-through', 'mat-virtual', 'Net weight', 'traced operations', 'Machine Rate', 'Indexation', 'Embodied Carbon',

@@ -215,3 +215,10 @@ It runs in `runStage4`, so every route applies it. The radar demo board (S32R294
 **Accuracy after the fix.** Removing burn-in puts the live run at about **£15.05**, against the actual **£17.00** (−11%). The figure is the EMS delivered price. The £17.00 is what the buyer pays. If that supplier is a Tier-1 or a distributor, its margin is the gap (§7: £16.1–16.7 with a Tier-1 margin). The actual sits inside the report's own likely range (£12.22–£19.77). Burn-in was not kept to close the gap: a surround-view camera module is QM–ASIL-B, and the parts list carries no ASIL-C hardware.
 
 Sample report from the stand-in run: `docs/pcb/screens/camera-report-2026-10-06.pdf` (5 pages, £15.26). `e2e/pcb-camera-live.ts` replays the live classifier (ASIL-C, radar text), exports this report and asserts on its text. `tests/pcba-report.test.ts` pins the guard and the report content.
+
+**Second live report (6 Oct 2026, £15.05).** The guard worked: ASIL-B costed, no radar text, £15.05 (≈ the predicted £15.05). Follow-ups:
+- **Ex-works and delivered on the cover.** Ex-works = the board built, tested and packed at the factory gate (total − freight − UK duty): £14.52 against £15.05 delivered. Also shown as a subtotal in §1 and as a column in the country table.
+- Freight that rounds to £0.00 now says it is under a penny a board by sea.
+- The photo reader's "ICs may be double counted" caveat is dropped when a parts list was supplied.
+- The classifier's safety functions are labelled unverified.
+- §7 no longer starts at the foot of a page, the country table stays on one page, and BOM rows are not split.

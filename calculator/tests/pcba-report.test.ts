@@ -101,8 +101,16 @@ describe('camera board, China, 250k — the live run through Stage 4', () => {
     it('the cost stack sums to the headline, which is the China row', () => {
       const rep = buildPcbaReport(analysis(), { annualVolume: 250_000 });
       const total = rep.stack.find(s => s.kind === 'total')!.amount;
-      const sum = rep.stack.filter(s => s.kind !== 'total').reduce((t, s) => t + s.amount, 0);
+      const sum = rep.stack.filter(s => !s.kind).reduce((t, s) => t + s.amount, 0);
       expect(sum).toBeCloseTo(total, 2);
+      // Ex-works = everything above the subtotal; delivered = ex-works + freight + UK duty.
+      const bd = c.s4.selectedCountryBreakdown!;
+      const sub = rep.stack.findIndex(s => s.kind === 'sub');
+      expect(rep.stack[sub].amount).toBe(rep.exWorks);
+      expect(rep.exWorks).toBeCloseTo(bd.totalPerBoard - bd.logisticsPerBoard, 2);
+      expect(rep.stack.slice(0, sub).reduce((t, s) => t + s.amount, 0)).toBeCloseTo(rep.exWorks, 2);
+      expect(rep.stack.slice(sub + 1, -1).reduce((t, s) => t + s.amount, 0)).toBeCloseTo(bd.logisticsPerBoard, 2);
+      for (const r of rep.countries) expect(r.exWorks + r.logistics).toBeCloseTo(r.total, 2);
       expect(total).toBe(c.s4.selectedCountryBreakdown!.totalPerBoard);
       expect(rep.countries.find(r => r.selected)!.total).toBe(total);
       expect(rep.country).toMatch(/China/);
@@ -143,6 +151,12 @@ describe('camera board, China, 250k — the live run through Stage 4', () => {
       for (let i = 1; i < rep.countries.length; i++) expect(rep.countries[i].total).toBeGreaterThanOrEqual(rep.countries[i - 1].total);
       expect(rep.countries.filter(r => r.selected).length).toBe(1);
       for (const r of rep.countries) expect(r.components + r.fab + r.assembly + r.other + r.logistics).toBeCloseTo(r.total, 1);
+    });
+
+    it('a supplied parts list drops the photo reader\'s "ICs may be double counted" caveat', () => {
+      const rep = buildPcbaReport({ ...(analysis() as object), analysisLimitations: [
+        'OCR quality was low, so up to two ICs may be double counted.', 'Via count is estimated; inner layers are not visible.'] } as never, {});
+      expect(rep.limitations).toEqual(['Via count is estimated; inner layers are not visible.']);
     });
 
     it('money follows the display currency', () => {

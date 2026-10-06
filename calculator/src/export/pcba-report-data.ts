@@ -50,7 +50,7 @@ export interface PcbaAnalysisLike {
 
 export interface PcbaStackRow { label: string; amount: number; basis: string; kind?: 'sub' | 'total' }
 export interface PcbaBomRow { ref: string; description: string; partNumber: string; pkg: string; qty: number; unit: number; ext: number; source: string; verify: boolean }
-export interface PcbaCountryRow { name: string; components: number; fab: number; assembly: number; other: number; logistics: number; total: number; delta: number; leadWeeks?: number; selected: boolean }
+export interface PcbaCountryRow { name: string; components: number; fab: number; assembly: number; other: number; logistics: number; exWorks: number; total: number; delta: number; leadWeeks?: number; selected: boolean }
 
 export interface PcbaReport {
   partName: string;
@@ -58,6 +58,8 @@ export interface PcbaReport {
   countryId: string;
   annualVolume: number | null;
   total: number;
+  /** Factory gate, packed — the total less freight and UK duty. */
+  exWorks: number;
   basis: string;
   domainLabel: string;
   /** Headline chips: components / board / assembly / logistics shares. */
@@ -131,7 +133,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const fabStd = r2(bd.pcbFabPerBoard - autoFab);
   const test = num(b.aoi);
   const asmStd = r2(bd.assemblyPerBoard - autoAsm - test);
-  const freight = num(b.logistics), duty = num(b.importDuty);
+  const duty = num(b.importDuty);
   const energy = num(b.energy), pack = num(b.packaging), yieldLoss = num(b.yieldLoss);
   const stack: PcbaStackRow[] = [
     { label: 'Components (as the EMS buys them)', amount: componentsAtCost, basis: `${a.bom.length} BOM lines at ${country} sourcing — see §3` },
@@ -142,12 +144,18 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
     { label: 'Test & inspection', amount: test, basis: 'AOI, X-ray, ICT (station time + fixture over the order)' },
     ...(autoAsm > 0 ? [{ label: 'Automotive assembly grade', amount: autoAsm, basis: 'IATF line, class 3 workmanship, serialisation' + (/ASIL-[CD]/.test(String(bd.automotiveGrade?.asil)) ? ', burn-in' : '') }] : []),
     ...(energy + pack + yieldLoss > 0 ? [{ label: 'Energy, packaging, cost of quality', amount: r2(energy + pack + yieldLoss), basis: `Energy ${money(energy)} · ESD packaging ${money(pack)} · rework/scrap ${money(yieldLoss)}` }] : []),
-    { label: 'Freight to the UK', amount: freight, basis: 'Sea at volume, air below 2,500 boards' },
-    { label: 'UK import duty', amount: duty, basis: 'On components + board + assembly (customs value)' },
   ];
+  // Ex-works = the board at the factory gate, packed: everything but freight and UK duty.
+  const exWorks = r2(bd.totalPerBoard - bd.logisticsPerBoard);
   const sum = stack.reduce((t, s) => t + s.amount, 0);
-  const rounding = r2(bd.totalPerBoard - sum);
+  const rounding = r2(exWorks - sum);
   if (Math.abs(rounding) >= 0.005) stack.push({ label: 'Rounding', amount: rounding, basis: 'Each figure is rounded to the penny on the server' });
+  stack.push({ label: `Ex-works cost (${country.split(' (')[0]} factory gate)`, amount: exWorks, basis: 'Built, tested and packed — before freight and import duty', kind: 'sub' });
+  // Freight is what the logistics figure holds beyond the duty, so the two rows sum to it exactly.
+  stack.push(
+    { label: 'Freight to the UK', amount: r2(bd.logisticsPerBoard - duty), basis: `Sea at volume, air below 2,500 boards${r2(bd.logisticsPerBoard - duty) < 0.005 && (qty ?? 0) >= 2500 ? ' — under a penny a board by sea at this size and volume' : ''}` },
+    { label: 'UK import duty', amount: duty, basis: 'On components + board + assembly (customs value)' },
+  );
   stack.push({ label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
 
   // ── BOM: the analysis's lines at the country's sourcing (the same factor the components bucket uses).
@@ -197,7 +205,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
       // "Poland", not "Poland (Wrocław / Łódź / Poznań)" — the city list wraps every row of the table.
       name: (c.countryName || c.countryId).split(' (')[0], components: c.bomCostPerBoard, fab: c.pcbFabPerBoard, assembly: c.assemblyPerBoard,
       other: r2(c.totalPerBoard - c.bomCostPerBoard - c.pcbFabPerBoard - c.assemblyPerBoard - c.logisticsPerBoard),
-      logistics: c.logisticsPerBoard, total: c.totalPerBoard, delta: c.totalPerBoard - bd.totalPerBoard, leadWeeks: c.leadTimeWeeks,
+      logistics: c.logisticsPerBoard, exWorks: r2(c.totalPerBoard - c.logisticsPerBoard), total: c.totalPerBoard, delta: c.totalPerBoard - bd.totalPerBoard, leadWeeks: c.leadTimeWeeks,
       selected: c.countryId === bd.countryId,
     }))
     .sort((x, y) => x.total - y.total);
@@ -244,7 +252,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const named = opts.partName && !/^unnamed part$/i.test(opts.partName.trim()) ? opts.partName : '';
   return {
     partName: named || a.partName || 'PCB assembly',
-    country, countryId: bd.countryId, annualVolume: qty, total: bd.totalPerBoard,
+    country, countryId: bd.countryId, annualVolume: qty, total: bd.totalPerBoard, exWorks,
     basis: `Populated board built in ${country}, delivered to the UK, import duty paid${qty ? `, at ${qty.toLocaleString('en-GB')} boards a year` : ''}`,
     domainLabel,
     shares: [
@@ -257,7 +265,10 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
     boardRows, countries, confidence, safety, nre, nreTotal: n?.totalNRE ?? 0,
     drivers, warnings,
     bomOrigin: a.bom.some(l => l.bomSource === 'image' || l.fromImage) ? 'BOM image' : a.bom.some(l => l.bomSource === 'file') ? 'BOM file' : 'photos',
-    limitations: (a.analysisLimitations ?? []).filter(Boolean),
+    // The photo reader's own caveats. With a supplied parts list, a caveat about the photo-read BOM
+    // ("ICs may be double counted") no longer applies: the list, not the photos, is the BOM.
+    limitations: (a.analysisLimitations ?? []).filter(Boolean)
+      .filter(t => !(a.bom.some(l => l.bomSource === 'file' || l.bomSource === 'image' || l.fromImage) && /double[- ]?count|duplicat|designators? (are|were) not visible|assigned by grouping/i.test(t))),
     excluded: [
       ...(nre.length ? [`One-time automotive NRE (${money(n!.totalNRE)} — PPAP, FMEA, DV/PV, audit) is not in the unit cost; see §6.`] : []),
       'Stencils, test fixtures and programming are inside the EMS price, spread over the order (no separate tooling line).',
