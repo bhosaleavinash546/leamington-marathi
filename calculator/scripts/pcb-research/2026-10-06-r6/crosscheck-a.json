@@ -1,0 +1,465 @@
+{
+ "domain": "r6-xa",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "TDA4VM88TGCALFRQ1",
+   "family": "TDA4VM",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TDA4VM88TGCALFRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 120.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA4VM88TGCALFRQ1/25559568",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key T&R 250 break; within 1.15x of Mouser 138.23."
+  },
+  {
+   "mpn": "MCIMX6Q6AVT10AD",
+   "family": "MCIMX6Q",
+   "mfr": "NXP",
+   "desc": "i.MX 6Quad automotive applications processor",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MCIMX6Q6AVT10AD",
+   "observations": [],
+   "notes": "Digi-Key/Mouser breaks found only up to 60 / 10 units; nothing >= 100."
+  },
+  {
+   "mpn": "TC397XX256F300SBDKXUMA2",
+   "family": "TC397XX",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 hexa-core TriCore 300 MHz",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TC397XX256F300SBDKXUMA2",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 62.92,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/SAK-TC397XX-256F300SBD?manufacturer=Infineon-Technologies-AG",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 58.52,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/SAK-TC397XX-256F300SBD?manufacturer=Infineon-Technologies-AG",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser T&R breaks per search summary (aggregator page); consistent with Digi-Key 55.64 EUR @100."
+  },
+  {
+   "mpn": "R7F702300BFABA-C#BC6",
+   "family": "RH850/U2A16",
+   "mfr": "Renesas",
+   "desc": "RH850/U2A multi-core domain MCU, 16MB flash",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "R7F702300BFABA-C#BC6",
+   "observations": [],
+   "notes": "Only single-unit prices found (Mouser 68.76 EUR, not stocked); nothing >= 100."
+  },
+  {
+   "mpn": "AR0820ATSC18XMEA0-DPBR",
+   "family": "AR0820AT",
+   "mfr": "onsemi",
+   "desc": "8.3 MP automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "AR0820ATSC18XMEA0-DPBR",
+   "observations": [],
+   "notes": "Mouser 39.42 USD and LCSC 51.86 USD seen but no quantity break stated; not recorded."
+  },
+  {
+   "mpn": "NVHL020N120SC1",
+   "family": "NVHL020N120SC1",
+   "mfr": "onsemi",
+   "desc": "Automotive SiC MOSFET 1200V 20mOhm",
+   "category": "through_hole",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "NVHL020N120SC1",
+   "observations": [],
+   "notes": "Arrow 35.26, Future 34.03 seen via Octopart but break not stated; not recorded. Consistent with Avnet 34.73."
+  },
+  {
+   "mpn": "IS46LQ32256AL",
+   "family": "IS46LQ32256",
+   "mfr": "ISSI",
+   "desc": "LPDDR4/4X 8Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "IS46LQ32256AL",
+   "observations": [],
+   "notes": "Only the existing Digi-Key figures (136 / 2500 T&R 28.32) surfaced; no second distributor."
+  },
+  {
+   "mpn": "AM2634COKFHMZCZRQ1",
+   "family": "AM2634-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM263x quad Cortex-R5F 400MHz",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "AM2634COKFHMZCZRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 19.06,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/hmz",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 17.4,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/hmz",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser breaks from search summary; no Mouser product URL in results (findchips page cited). 1.36x below Digi-Key 23.74 @1000."
+  },
+  {
+   "mpn": "MT53E512M32D1ZW-046 AUT:B",
+   "family": "MT53E512M32D1ZW",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 16Gb, automotive",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MT53E512M32D1ZW-046 AUT:B",
+   "observations": [],
+   "notes": "Digi-Key breaks only to 50 (out of stock); nothing >= 100 at a second distributor."
+  },
+  {
+   "mpn": "MPC5744PK1AMLQ9",
+   "family": "MPC5744P",
+   "mfr": "NXP",
+   "desc": "MPC5744P e200z4 lockstep 200 MHz, 2.5 MB",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MPC5744PK1AMLQ9",
+   "observations": [],
+   "notes": "Exact MPN not found at another distributor (only SPC5741P sibling, different flash); not recorded."
+  },
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "family": "AD2S1205",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 12-bit",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "AD2S1205WYSTZ",
+   "observations": [],
+   "notes": "Only non-W AD2S1205YSTZ at qty 1 found; not recorded."
+  },
+  {
+   "mpn": "SAK-TC277TP-64F200S DC",
+   "family": "TC277TP",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "SAK-TC277TP-64F200S DC",
+   "observations": [],
+   "notes": "Digi-Key 20.68 @1000 seen but for an unspecified variant; not recorded."
+  },
+  {
+   "mpn": "FS32K148UAT0VLQT",
+   "family": "S32K148",
+   "mfr": "NXP",
+   "desc": "S32K148 Cortex-M4F 112 MHz, 2 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "FS32K148UAT0VLQT",
+   "observations": [],
+   "notes": "LCSC only at 10+ (14.895 USD); nothing >= 100 at a second distributor."
+  },
+  {
+   "mpn": "SAK-TC264DA-40F200W BC",
+   "family": "TC264DA",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 dual-core TriCore 200 MHz, 2.5 MB",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "SAK-TC264DA-40F200W BC",
+   "observations": [],
+   "notes": "Only Infineon budgetary 15.94 EUR @1000 (manufacturer, not allowed) and brokers."
+  },
+  {
+   "mpn": "BQ79612PAPRQ1",
+   "family": "BQ79612-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "12S battery monitor/balancer",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "BQ79612PAPRQ1",
+   "observations": [],
+   "notes": "Only Digi-Key qty 1 and TI store; no second distributor."
+  },
+  {
+   "mpn": "TAS6424QDKQRQ1",
+   "family": "TAS6424-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "4-ch class-D audio amp 2MHz, automotive",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TAS6424QDKQRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 813.19,
+     "currency": "INR",
+     "url": "https://www.mouser.in/ProductDetail/Texas-Instruments/TAS6424QDKQRQ1?qs=/P2Ij7fVdhF%2B62rgpg8Pjw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 723.65,
+     "currency": "INR",
+     "url": "https://www.mouser.in/ProductDetail/Texas-Instruments/TAS6424QDKQRQ1?qs=/P2Ij7fVdhF%2B62rgpg8Pjw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 9.79,
+     "currency": "USD",
+     "url": "https://octopart.com/tas6424qdkqrq1-texas+instruments-75822412",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser India INR breaks + Mouser USD @100 via Octopart; ~1.2-1.3x below Digi-Key 11.08 @1000."
+  },
+  {
+   "mpn": "STM32H735IGK6",
+   "family": "STM32H735",
+   "mfr": "STMicroelectronics",
+   "desc": "STM32H735 Cortex-M7 550 MHz, 1 MB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "STM32H735IGK6",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 9.8186,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/microcontrollers-mcu-mpu-soc_stmicroelectronics-stm32h735igk6_C730164.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key USD 8.5565 @1008 also seen (same distributor as existing). Consistent."
+  },
+  {
+   "mpn": "BQ79718BQPAPRQ1",
+   "family": "BQ79718B-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "18S battery monitor/balancer",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "BQ79718BQPAPRQ1",
+   "observations": [],
+   "notes": "Only Digi-Key (existing distributor) breaks found."
+  },
+  {
+   "mpn": "LTC6813HLWE-1#3ZZPBF",
+   "family": "LTC6813-1",
+   "mfr": "Analog Devices",
+   "desc": "18-cell battery stack monitor, isoSPI",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "LTC6813HLWE-1#3ZZPBF",
+   "observations": [],
+   "notes": "Mouser not available; only LCSC (existing) and Rochester (excluded)."
+  },
+  {
+   "mpn": "MT25QL512ABB8ESF-0AUT",
+   "family": "MT25QL512",
+   "mfr": "Micron",
+   "desc": "512Mb 3V QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MT25QL512ABB8ESF-0AUT",
+   "observations": [],
+   "notes": "Exact -0AUT not found; only -0SIT/-0AAT siblings (different grade), not recorded."
+  },
+  {
+   "mpn": "R7F7016904AFP",
+   "family": "RH850/F1KM-S1",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KM-S1 automotive MCU",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "R7F7016904AFP-C#KA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 10.57,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/F701",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 9.39,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/F701",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser breaks per search summary; no Mouser product URL in results (findchips page cited). Consistent with Digi-Key 8.73 @1000."
+  },
+  {
+   "mpn": "UCC5870QDWJRQ1",
+   "family": "UCC5870-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Functional-safety isolated gate driver 30A",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "UCC5870QDWJRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 14.26,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Gate-Drive-ICs_Texas-Instruments-UCC5870QDWJRQ1_C2873577.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser 12.53 @100 / 11.53 @750 also in summary but no Mouser URL; not recorded. Part has a TI PDN (discontinuance)."
+  },
+  {
+   "mpn": "DRV3946QPWPRQ1",
+   "family": "DRV3946-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Dual contactor/solenoid driver with diagnostics",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "DRV3946QPWPRQ1",
+   "observations": [],
+   "notes": "Only Digi-Key (existing) and TI store; no second distributor."
+  },
+  {
+   "mpn": "88Q2112-A2-NYD2A000",
+   "family": "88Q2112",
+   "mfr": "Marvell (now Infineon)",
+   "desc": "1000BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "88Q2112-A2-NYD2A000",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 4.0664,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C5443938.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC 100+ is 2.08x BELOW Digi-Key 8.47 @100 (>2x disagreement). Mouser 8.88 @100 seen only via OEMsTrade (not allowed)."
+  },
+  {
+   "mpn": "MC33775ATA1AER2",
+   "family": "MC33775A",
+   "mfr": "NXP",
+   "desc": "Li-ion battery cell controller, ASIL D",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MC33775ATA1AER2",
+   "observations": [],
+   "notes": "Only Digi-Key (existing) found."
+  },
+  {
+   "mpn": "ADBMS6815WCSWZ",
+   "family": "ADBMS6815",
+   "mfr": "Analog Devices",
+   "desc": "12-ch multicell battery monitor, isoSPI",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "ADBMS6815WCSWZ",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 2.5,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/battery-management_analog-devices-adbms6815wcswz_C2940505.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC 1000+ is 2.77x BELOW Digi-Key 6.93 @1000 (>2x disagreement); verify."
+  }
+ ]
+}

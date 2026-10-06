@@ -43,11 +43,17 @@ export function normaliseMPN(raw: string): string {
 }
 
 // Exact keys (normalised mpn and family) → entry; family keys also serve as prefixes.
+// The literal orderable code ("2N7002,215") is tried before its normalised key, which drops a
+// ",215"-style suffix and would land on the family estimate "2N7002". On a shared normalised key a
+// distributor-priced entry wins over an estimate.
+const LITERAL = new Map<string, CatalogueEntry>();
+const literalKey = (s: string) => (s || '').toUpperCase().replace(/\s+/g, '');
 const EXACT = new Map<string, CatalogueEntry>();
 const PREFIX: Array<[string, CatalogueEntry]> = [];
 for (const e of CAT.parts) {
+  for (const k of [e.mpn, ...(e.aliases ?? [])]) if (k && !LITERAL.has(literalKey(k))) LITERAL.set(literalKey(k), e);
   const keys = new Set([normaliseMPN(e.mpn), normaliseMPN(e.family), ...(e.aliases ?? []).map(normaliseMPN)]);
-  for (const k of keys) if (k && !EXACT.has(k)) EXACT.set(k, e);
+  for (const k of keys) if (k && (!EXACT.has(k) || (EXACT.get(k)!.confidence !== 'distributor' && e.confidence === 'distributor' && normaliseMPN(e.mpn) === k))) EXACT.set(k, e);
   // A prefix must be specific enough to name a family: ≥4 chars with a digit.
   for (const k of keys) if (k.length >= 4 && /\d/.test(k)) PREFIX.push([k, e]);
 }
@@ -61,6 +67,8 @@ PREFIX.sort((a, b) => b[0].length - a[0].length);   // longest first
 export function catalogueEntry(mpn: string): CatalogueEntry | null {
   if (!mpn) return null;
   if (/\b(CLASS|EST|UNKNOWN|GENERIC)\b/i.test(mpn)) return null;
+  const lit = LITERAL.get(literalKey(mpn));
+  if (lit) return lit;
   // Candidate tokens: the whole string AND each whitespace/comma token, so
   // "NXP TJA1145" and "TJA1044GT/3" both resolve to the manufacturer part.
   const cands = new Set<string>([normaliseMPN(mpn)]);

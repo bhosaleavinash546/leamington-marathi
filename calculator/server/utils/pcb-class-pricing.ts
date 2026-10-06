@@ -96,6 +96,12 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'mcu_c', test: /(complex|32-?bit|cortex-m[47]|arm).*(mcu|micro)|(mcu|micro).*(complex|32-?bit|cortex-m[47])/i, row: R(1.5, 9, 'complex MCU QFN', [3, 18]) },
     { kind: 'mcu', test: /\bmcu\b|microcontroller/i, row: R(0.18, 1.8, 'simple MCU QFN', [3, 18]) },
     { kind: 'phy', test: /ethernet|\bphy\b|\bcan\b|\blin\b|interface/i, row: R(0.5, 5, 'interface / PHY QFN', [0.8, 9]) },
+    // The three rows below are the catalogue's own AEC-Q distributor prices (10th–90th percentile at 1k,
+    // 6 Oct 2026): QFN LDOs £0.61–1.4 median, DC-DC converters £1.16–2.07 median, bridge / LED / gate
+    // drivers £0.79–1.75. Before, these lines fell to "QFN IC (unidentified)" at £2–15.
+    { kind: 'dcdc', test: /buck|boost|dc-?dc|step-?down|converter|switching regulator|switcher/i, row: R(0.4, 2.5, 'DC-DC converter / controller QFN', [0.8, 4.5]) },
+    { kind: 'ldo', test: /\bldo\b|linear regulator|regulator/i, row: R(0.15, 1.2, 'LDO regulator QFN', [0.3, 2]) },
+    { kind: 'driver', test: /driver|h-?bridge|half-?bridge|high-?side|low-?side|gate drive/i, row: R(0.3, 2, 'driver IC QFN', [0.6, 3.5]) },
     { kind: 'any', row: R(0.5, 9, 'QFN IC (unidentified)', [2, 15]) },
   ],
   ic_bga: [
@@ -141,7 +147,7 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
 /** Discrete semiconductors have no component type of their own in the prompt's
  *  list, so they arrive as fuse_tvs / ic_soic / passive. Description wins. */
 const DISCRETE: Array<{ test: RegExp; row: Row }> = [
-  { test: /\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b.*\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt)\b|\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt)\b.*\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b/i,
+  { test: /\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b.*\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b|\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b.*\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b/i,
     row: R(0.015, 0.1, 'SOT-23 / SOD-123 discrete', [0.03, 0.12]) },   // BC847 $0.017–0.023, 2N7002 AEC $0.025–0.049, BSS138 $0.045–0.06 @3k (2026-10-01)
   { test: /\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak)\b.*(mosfet|fet|transistor)|(mosfet|fet|transistor).*\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak)\b/i,
     row: R(0.15, 1.5, 'power MOSFET DPAK-class', [0.35, 3]) },
@@ -206,7 +212,10 @@ export function classRange(line: { componentType?: unknown; description?: unknow
   const auto = automotiveBoard || line.automotive === true || /AEC-?Q|automotive/i.test(text);
   const ct = tableTypeOf(String(line.componentType ?? ''), String(line.pkg ?? ''), desc);
   let key: string; let row: Row;
-  const d = DISCRETE.find(x => x.test.test(text));
+  // An IC whose description names a diode or transistor ("ideal diode controller, SOT-23-6") is
+  // still an IC: it never takes the small-signal discrete range (LM74700-Q1 is £0.75, not £0.03–0.12).
+  const isIC = /controller|driver|regulator|\bldo\b|monitor|amplifier|supervisor|converter|transceiver|\bic\b/i.test(text);
+  const d = isIC ? undefined : DISCRETE.find(x => x.test.test(text));
   if (d) { key = `discrete.${d.row.label}`; row = d.row; }
   else {
     const p = pick(ct, text, String((line as { refDes?: unknown }).refDes ?? '')) ?? pick('ic_soic', '')!;

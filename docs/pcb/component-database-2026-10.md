@@ -6,15 +6,15 @@
 
 ## 1. Result
 
-| | Before (1 Oct) | Round 1 | Round 2 | Round 3 | Round 4 | **Round 5** |
-|---|---|---|---|---|---|---|
-| Parts in the catalogue | 458 | 549 | 653 | 687 | 796 | **823** |
-| Priced from distributors | 77 | 183 | 303 | 340 | 450 | **477** |
-| Engineering estimates | 381 | 366 | 350 | 347 | 346 | 346, of which **60 priced as a reviewed family member** |
-| Entries carrying raw observations and URLs | 0 | 107 | 228 | 265 | 398 | **425** |
-| Of those, priced by 2+ distributors | — | 24 | 88 | 118 | 160 | **168** |
-| Distributor prices with no URL (1 Oct pass) | 77 | 75 | 75 | 75 | 52 | **52** |
-| Listed parts still without a distributor price | — | 254 | 129 | 92 | 132 | **105** |
+| | Before (1 Oct) | R1 | R2 | R3 | R4 | R5 | **R6** |
+|---|---|---|---|---|---|---|---|
+| Parts in the catalogue | 458 | 549 | 653 | 687 | 796 | 823 | **836** |
+| Priced from distributors | 77 | 183 | 303 | 340 | 450 | 477 | **490** |
+| Engineering estimates | 381 | 366 | 350 | 347 | 346 | 346 | 346, of which **60 priced as a reviewed family member** |
+| Entries carrying raw observations and URLs | 0 | 107 | 228 | 265 | 398 | 425 | **438** |
+| Of those, priced by 2+ distributors | — | 24 | 88 | 118 | 160 | 168 | **185** |
+| Distributor prices with no URL (1 Oct pass) | 77 | 75 | 75 | 75 | 52 | 52 | **52** |
+| Listed parts still without a distributor price | — | 254 | 129 | 92 | 132 | 105 | **92** |
 | Volume breaks per part | 1k / 10k / 100k | 1k / 10k / 100k / **200k / 300k** |
 | ECU map by powertrain | none | **38 ECUs × 6 powertrains**, 52 sources |
 
@@ -48,6 +48,33 @@ Round 2 priced 122 of the 222 queued parts searched (raw files: `calculator/scri
 - **Spreads between distributors.** Some parts show a wide gap between distributors, for example CAT24C512 at Digi-Key $0.63 against LCSC and Newark $0.25. The 1k price is the median; the observations are on the entry.
 - **Aggregator summaries.** Some prices were read from aggregator summaries (Findchips, Octopart, Digipart) that named the franchised distributor and its break. The URL is the aggregator page.
 - **SiC MOSFETs.** The Wolfspeed SiC MOSFETs (C3M0032120K $7.37 @120, $6.65 @510 at Digi-Key; Mouser agrees) are well below older SiC prices. They are kept as listed.
+
+### Round 6: a second chance, cross-checks, and a whole-catalogue audit
+
+**Second chance.** Four searchers re-tried the 86 parts that could still be priced; the 19 NDA parts were skipped. For a code listed wrongly, they first found the real automotive orderable code and priced that. Examples:
+- LM393B-Q1 is sold as LM2903BQDRQ1.
+- TPS65313-Q1 is sold as O31310QRWGRQ1.
+- 5 mΩ in Vishay's WSLP2512 code is "5L000".
+- The 32 GB Kioxia eMMC is THGBMJG8C4LBAU8.
+
+They priced 13 more parts. Each entry's source names the code actually priced. Where the listed code does not exist, the real automotive orderable code is accepted (TPS7B8450 VSON, TPS61379 RTE, 74LVC2T45 DC). The B32776 film-capacitor series was rejected, because one example value cannot price a series.
+
+**Cross-checks.** 52 high-value parts that had a single distributor were searched again, and 14 gained a second source. These include TDA4VM, TC397, AM2634, TAS6424, STM32H735, the RH850, UCC5870, MAX96712, LT8645S, SJA1105 and the AEV contactor. Everything agreed within 1.5× except ADBMS6815 and 88Q2112: LCSC is 2–3× below Digi-Key on both, so both are marked DISPUTED. TC233LP is no longer disputed, because Mouser's $12.06 now sits beside LCSC's $9.34.
+
+**Whole-catalogue audit** (`scripts/pcb-catalogue-audit.ts`, run after every merge; it exits 1 on an error):
+- **Errors.** It checks every rule: the breaks are monotone; every observation is franchised, read on an allowed host, at 100 units or more and in a known currency; every stored price equals what its own observations give; every family link matches its member; every part number looks itself up; and no key resolves to two entries.
+  - **Found:** "2N7002,215" and "BAT54S,215" looked up as their family estimates. The lookup dropped the ",215" before matching.
+  - **Fixed:** in `pcb-price-catalogue.ts`, the literal orderable code is tried first, and on a shared key a distributor price beats an estimate. 0 errors now.
+- **Warnings, for a person to read:**
+  - 10 parts where distributors disagree by more than 2×. The median of the observations sets the 1k price; LCSC is usually the low one.
+  - 44 parts whose 1k price was moved up from breaks under 500 units.
+  - 8 disputed entries; 61 non-AEC-Q entries.
+  - 43 entries far outside the class range a BOM line of that kind would get. These pointed to three defects in the class table, which prices every BOM line the catalogue does not know:
+    1. "Ideal diode controller, SOT-23-6" took the small-signal discrete range (£0.03–0.12), though LM74700-Q1 costs £0.75. An IC whose description names a diode or transistor is now an IC.
+    2. "NPN … SOT-23" fell into the fuse row. NPN and PNP are now discrete transistors.
+    3. QFN LDOs, DC-DC converters and drivers fell to "QFN IC (unidentified)" at £2–15. They now have rows built from the catalogue's own AEC-Q distributor prices, 10th–90th percentile: LDO £0.3–2, DC-DC £0.8–4.5, driver £0.6–3.5.
+
+    `tests/pcb-class-range-review.test.ts` covers all three. The radar's headline does not move, because its unidentified lines are not of these kinds.
 
 ### Round 5: the remaining unpriced parts
 
@@ -215,7 +242,7 @@ Web search was the only route. Direct fetches of every distributor and manufactu
 More web search will not close these: they need a Purchasing quote or a BOM-tool export (Digi-Key, Mouser or Arrow), imported with `scripts/pcb-catalogue-import.ts`, or a Nexar key.
 
 **Other limits:**
-- 309 of the 477 distributor-priced parts have one distributor behind them, and 52 still carry the 1 October figure with no URL. They are real listings, not cross-checked.
+- 305 of the 490 distributor-priced parts have one distributor behind them, and 52 still carry the 1 October figure with no URL. They are real listings, not cross-checked.
 - Prices at 100k–300k a year are derived along the part's slope, not quoted. Contract prices at that volume are negotiated, and are usually lower again.
 
 **To finish (no code changes):**

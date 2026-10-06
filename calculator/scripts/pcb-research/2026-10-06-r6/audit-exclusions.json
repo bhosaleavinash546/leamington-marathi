@@ -1,0 +1,17 @@
+{
+ "note": "Audit of round 6 (6 Oct 2026). Where the listed code does not exist, a price on the real automotive orderable code is accepted and named in the source (TPS7B8450 VSON, TPS61379 RTE, 74LVC2T45 DC, LM2903B for LM393B, O31310 for TPS65313).",
+ "parts": {
+  "B32776": "a film-capacitor SERIES priced from one example value (B32776Z0206K000, 20 uF 1000 V); the series spans values and voltages, so one price would mislead"
+ },
+ "observations": [
+  {
+   "mpn": "TC375TP96F300W",
+   "url": "octopart.com",
+   "reason": "Mouser breaks attributed by a search summary; the Octopart page recorded was not shown to list those breaks"
+  }
+ ],
+ "disputed": {
+  "ADBMS6815WCSWZ": "LCSC $2.50 @1k is 2.8x below Digi-Key $6.93 @1k - verify with a quote",
+  "88Q2112-A2-NYD2A000": "LCSC $4.07 @100 is 2.1x below Digi-Key $8.47 @100 - verify with a quote"
+ }
+}

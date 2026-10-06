@@ -1,0 +1,499 @@
+{
+ "domain": "r6-xb",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "MT53E1G32D2FW-046 AUT:B",
+   "family": "MT53E1G32D2FW",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 32Gb x32 automotive",
+   "category": "ic_bga",
+   "pkg": "200-TFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser listing found but no price shown; only qty-1 Digi-Key / broker / JLCPCB prices seen."
+  },
+  {
+   "mpn": "AEV14012",
+   "family": "AEV14012",
+   "mfr": "Panasonic",
+   "desc": "HV DC EV relay/contactor 120A 12V",
+   "category": "relay_switch",
+   "pkg": "relay",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "PDU"
+   ],
+   "observedMpn": "AEV14012",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 79.19,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Panasonic-Industrial-Devices/AEV14012?qs=3tK3HY%2BtqaqYfAVRPL782A%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 6722.01,
+     "currency": "INR",
+     "url": "https://www.mouser.in/ProductDetail/Panasonic-Industrial-Devices/AEV14012?qs=3tK3HY%2BtqaqYfAVRPL782A%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Within 1.1x of Digi-Key 72.72 @100."
+  },
+  {
+   "mpn": "SPC5777CCK3MME3",
+   "family": "SPC5777C",
+   "mfr": "NXP",
+   "desc": "MPC5777C tri-core 264MHz 8MB powertrain MCU",
+   "category": "ic_bga",
+   "pkg": "416-MAPBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "EMS",
+    "powertrain"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser $60.93 seen via Octopart but break not stated; not recorded."
+  },
+  {
+   "mpn": "AWR6843ARBGALPRQ1",
+   "family": "AWR6843AOP",
+   "mfr": "Texas Instruments",
+   "desc": "60-64 GHz radar SoC, antenna-on-package",
+   "category": "ic_bga",
+   "pkg": "FCCSP",
+   "aecq": true,
+   "ecuRoles": [
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No second franchised distributor price found; Mouser hit was a different part (AWR6843ABGABLRQ1)."
+  },
+  {
+   "mpn": "MT25QU01GBBB8E12-0AUT",
+   "family": "MT25QU01G",
+   "mfr": "Micron",
+   "desc": "1Gb 1.8V serial NOR flash, automotive",
+   "category": "ic_bga",
+   "pkg": "24-TBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser non-stocked (quote only); Arrow $26.90 seen without a break; not recorded."
+  },
+  {
+   "mpn": "AWR1843ABGABLRQ1",
+   "family": "AWR1843",
+   "mfr": "Texas Instruments",
+   "desc": "AWR1843 77 GHz radar SoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA-161",
+   "aecq": true,
+   "ecuRoles": [
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Digi-Key prices seen are qty-1 only; not recorded."
+  },
+  {
+   "mpn": "TC375TP96F300W",
+   "family": "TC375",
+   "mfr": "Infineon",
+   "desc": "AURIX TC375 (3x TriCore, 6 MB)",
+   "category": "ic_bga",
+   "pkg": "LQFP-176",
+   "aecq": true,
+   "ecuRoles": [
+    "EMS",
+    "chassis",
+    "gateway"
+   ],
+   "observedMpn": "TC375TP96F300WAAKXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 25.33,
+     "currency": "USD",
+     "url": "https://octopart.com/part/infineon/TC375TP96F300WAAKXUMA1",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 500,
+     "price": 24.16,
+     "currency": "USD",
+     "url": "https://octopart.com/part/infineon/TC375TP96F300WAAKXUMA1",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser breaks reported by search summary over Octopart result; agrees with Digi-Key 25.18 @100."
+  },
+  {
+   "mpn": "MT29F4G08ABAFAWP-AAT",
+   "family": "MT29F4G08ABAFA",
+   "mfr": "Micron",
+   "desc": "4Gb SLC NAND x8, automotive",
+   "category": "ic_soic",
+   "pkg": "TSOP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Newark AAT:F breaks seen only up to 50 ($4.36), far below Digi-Key 21.07 - unverified; not recorded."
+  },
+  {
+   "mpn": "MAX96712GTB/V+T",
+   "family": "MAX96712",
+   "mfr": "Analog Devices (Maxim)",
+   "desc": "GMSL2 quad deserializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "camera"
+   ],
+   "observedMpn": "MAX96712GTB/V+T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 17.04,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/analog-devices-inc-maxim-integrated/MAX96712GTB-V-T/11314877",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key UK; marked discontinued at Digi-Key. Agrees with Mouser $22.91 @100."
+  },
+  {
+   "mpn": "LTC6811HG-1#PBF",
+   "family": "LTC6811-1",
+   "mfr": "Analog Devices",
+   "desc": "12-cell battery stack monitor, isoSPI, H grade",
+   "category": "ic_soic",
+   "pkg": "SSOP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser tiers in summary inconsistent (qty-1 lower than qty-10) and break unstated; not recorded."
+  },
+  {
+   "mpn": "MTFC16GAPALBH-AAT",
+   "family": "MTFC16GAPALBH",
+   "mfr": "Micron",
+   "desc": "eMMC 5.1 16GB, automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Summary gave Mouser $19.67 @100 (identical to the stored Digi-Key figure) but the only Mouser URL was mouser.in (INR) - could not attest; not recorded."
+  },
+  {
+   "mpn": "BQ79656PAPRQ1",
+   "family": "BQ79656-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "16S battery monitor/balancer",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only broker (Quarktwin) breaks found; not recorded."
+  },
+  {
+   "mpn": "AIMW120R045M1",
+   "family": "AIMW120R045M1",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 1200V 45mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Farnell/TME listings found without prices; only Digi-Key (existing distributor) priced."
+  },
+  {
+   "mpn": "ADBMS2950WFSCCSZ",
+   "family": "ADBMS2950",
+   "mfr": "Analog Devices",
+   "desc": "Battery pack monitor: dual current + voltage",
+   "category": "ic_qfn",
+   "pkg": "LQFP/QFN",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No second distributor price found."
+  },
+  {
+   "mpn": "R7F7016443AFP",
+   "family": "RH850/F1KM-S4",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KM-S4 automotive MCU",
+   "category": "ic_tqfp",
+   "pkg": "LQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "chassis"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only Digi-Key pricing found."
+  },
+  {
+   "mpn": "KSZ9563RNXV-VAO",
+   "family": "KSZ9563",
+   "mfr": "Microchip",
+   "desc": "3-port Gigabit Ethernet switch (automotive)",
+   "category": "ic_qfn",
+   "pkg": "QFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only industrial (RNXI) grade priced at Mouser; not the same part; not recorded."
+  },
+  {
+   "mpn": "UCD3138RGCR",
+   "family": "UCD3138",
+   "mfr": "Texas Instruments",
+   "desc": "Digital power controller, 64-VQFN 9x9",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC",
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser EUR 9.21 seen without a break; not recorded."
+  },
+  {
+   "mpn": "SAK-TC233LP-32F200F AC",
+   "family": "TC233",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 single-core TriCore 200 MHz, 2 MB",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "chassis"
+   ],
+   "observedMpn": "TC233LP32F200NACKXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 12.06,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TC233LP32F200NACKXUMA1?qs=QIiuLP2W41D8UVmfUbZ85A%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Sibling temperature grade (N vs F). Summary also said Mouser F variant $11.94 @1000 reel but without its own URL. 1.29x LCSC 9.34."
+  },
+  {
+   "mpn": "LT8645SEV#PBF",
+   "family": "LT8645S",
+   "mfr": "Analog Devices",
+   "desc": "65V 8A Silent Switcher buck",
+   "category": "ic_qfn",
+   "pkg": "LQFN-32",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "LT8645SEV#PBF",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 8.92,
+     "currency": "USD",
+     "url": "https://www.mouser.co.za/ProductDetail/Analog-Devices/LT8645SEVPBF?qs=5aG0NVq1C4yVdghZtNzgEg%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 8.75,
+     "currency": "USD",
+     "url": "https://www.mouser.co.za/ProductDetail/Analog-Devices/LT8645SEVPBF?qs=5aG0NVq1C4yVdghZtNzgEg%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Agrees with Digi-Key 9.11 @980."
+  },
+  {
+   "mpn": "MVR5510AMBA6ES",
+   "family": "VR5510",
+   "mfr": "NXP Semiconductors",
+   "desc": "PMIC for S32G, ASIL B",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only Digi-Key pricing found."
+  },
+  {
+   "mpn": "SJA1105QEL",
+   "family": "SJA1105",
+   "mfr": "NXP Semiconductors",
+   "desc": "5-port automotive Ethernet switch, TSN",
+   "category": "ic_bga",
+   "pkg": "LFBGA-159",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "SJA1105QELY",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 9.16,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/SJA1105QELY?qs=f9yNj16SXrLZEGrvctWgig%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 8.39,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/SJA1105QELY?qs=f9yNj16SXrLZEGrvctWgig%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Agrees with Digi-Key 9.16 @100."
+  },
+  {
+   "mpn": "MC33771CTA1AE",
+   "family": "MC33771C",
+   "mfr": "NXP",
+   "desc": "14-ch Li-ion battery cell controller, TPL",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Search summary gave Digi-Key 10.184 @160 / 9.659 @640 but no Digi-Key CTA1AE page URL in results (only CTA2AE); not recorded."
+  },
+  {
+   "mpn": "DS90UB927QSQX/NOPB",
+   "family": "DS90UB927Q-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III serializer 2.975 Gbps",
+   "category": "ic_qfn",
+   "pkg": "WQFN-40",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser 0 stock; only qty-1 prices seen."
+  },
+  {
+   "mpn": "TLE6240GP",
+   "family": "TLE6240",
+   "mfr": "Infineon",
+   "desc": "16-ch low-side switch, SPI",
+   "category": "ic_soic",
+   "pkg": "DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "EMS",
+    "body"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Obsolete at Digi-Key; LCSC $6.42 seen without break; not recorded."
+  },
+  {
+   "mpn": "LAN9372-I/ZMX",
+   "family": "LAN9372",
+   "mfr": "Microchip",
+   "desc": "Managed switch, 5x 100BASE-T1 PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Arrow $10.044 only at 90+ (below 100 break); not recorded."
+  },
+  {
+   "mpn": "MAX20096ATJ/VY+",
+   "family": "MAX20096",
+   "mfr": "Analog Devices",
+   "desc": "Dual buck LED controller",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "lighting"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "LCSC $1.95 'bulk' implausible vs 6.71 and break unstated - discarded."
+  }
+ ]
+}
