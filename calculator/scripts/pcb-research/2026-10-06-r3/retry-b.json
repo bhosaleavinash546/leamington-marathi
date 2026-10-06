@@ -1,0 +1,549 @@
+{
+ "domain": "r3-retry-b",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "ADUM4146WBRWZ",
+   "family": "ADUM4146",
+   "mfr": "Analog Devices",
+   "desc": "Isolated SiC MOSFET gate driver 11A, 5kVrms, DESAT",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC"
+   ],
+   "observedMpn": "ADUM4146WBRWZ",
+   "observations": [],
+   "notes": "Retry (-RL code at Mouser): no distributor qty-break price in results; only ADI 1k list $3.32 (manufacturer, excluded)."
+  },
+  {
+   "mpn": "INA241A1QDDFRQ1",
+   "family": "INA241A",
+   "mfr": "Texas Instruments",
+   "desc": "Bidirectional current-sense amplifier, -5V to 110V",
+   "category": "ic_soic",
+   "pkg": "SOT-23-8",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter",
+    "BMS",
+    "DC-DC"
+   ],
+   "observedMpn": "INA241A1QDDFRQ1",
+   "observations": [],
+   "notes": "Retry: Digi-Key page not in results; only ti.com $1.702 (manufacturer, excluded)."
+  },
+  {
+   "mpn": "PGA411QPHPRQ1",
+   "family": "PGA411",
+   "mfr": "Texas Instruments",
+   "desc": "Resolver sensor interface with exciter",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "PGA411QPHPRQ1",
+   "observations": [],
+   "notes": "Exact code not found; sibling PGA411QPAPRQ1 at Digi-Key $43.67 with no qty break stated; JLCPCB/Win Source excluded (not franchised / broker)."
+  },
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "family": "AD2S1205",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 12-bit",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-44",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "EPS"
+   ],
+   "observedMpn": "AD2S1205YSTZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 19.497,
+     "currency": "USD",
+     "url": "https://www.digikey.com/product-detail/en/AD2S1205YSTZ/AD2S1205YSTZ-ND/1551344",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Sibling: industrial (non-W/automotive) grade AD2S1205YSTZ; Digi-Key 1 @24.76, 10 @22.832, 160 @19.497. Automotive W grade not found."
+  },
+  {
+   "mpn": "AIMW120R045M1",
+   "family": "AIMW120R045M1",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 1200V 45mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "traction inverter"
+   ],
+   "observedMpn": "AIMW120R045M1XKSA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 120,
+     "price": 14.21992,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/AIMW120R045M1XKSA1/13618021",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 14.085,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/AIMW120R045M1XKSA1/13618021",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Orderable AIMW120R045M1XKSA1, tube of 240. Digi-Key 1 @25.44, 30 @16.233."
+  },
+  {
+   "mpn": "IMW120R045M1H",
+   "family": "IMW120R045M1H",
+   "mfr": "Infineon",
+   "desc": "CoolSiC MOSFET 1200V 45mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "charger"
+   ],
+   "observedMpn": "IMW120R045M1H",
+   "observations": [],
+   "notes": "Retry: no franchised qty-break price; LCSC range $9.72-13.56 seen without breaks (not recorded); IMW120R045M1 (non-H) listed EOL by Infineon."
+  },
+  {
+   "mpn": "NVHL020N120SC1",
+   "family": "NVHL020N120SC1",
+   "mfr": "onsemi",
+   "desc": "Automotive SiC MOSFET 1200V 20mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "traction inverter"
+   ],
+   "observedMpn": "NVHL020N120SC1",
+   "observations": [],
+   "notes": "Digi-Key only 1 @42.02, 30 @34.73 (breaks <100, not recorded); onsemi reference $31.95 (manufacturer)."
+  },
+  {
+   "mpn": "AIKW40N65DH5",
+   "family": "AIKW40N65DH5",
+   "mfr": "Infineon",
+   "desc": "Automotive IGBT 650V 40A with diode",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "PTC heater",
+    "compressor"
+   ],
+   "observedMpn": "AIKW40N65DH5",
+   "observations": [],
+   "notes": "Retry: no franchised distributor qty-break price in results; one unnamed source $7.45 (not recorded)."
+  },
+  {
+   "mpn": "SJA1105QEL",
+   "family": "SJA1105Q",
+   "mfr": "NXP Semiconductors",
+   "desc": "5-port automotive Ethernet switch, TSN",
+   "category": "ic_bga",
+   "pkg": "LFBGA-159",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "SJA1105QELY",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 9.1587,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SJA1105QELY/8344067",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 9.128,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SJA1105QELY/8344067",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 8.52911,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SJA1105QELY/8344067",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Orderable SJA1105QELY; 1000 is tape & reel."
+  },
+  {
+   "mpn": "S32K322NHT0VPBST",
+   "family": "S32K322",
+   "mfr": "NXP",
+   "desc": "S32K322 dual Cortex-M7 160 MHz, 2 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "HDQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "BMS",
+    "zone controller"
+   ],
+   "observedMpn": "S32K322NHT0VPBST",
+   "observations": [],
+   "notes": "Mouser $15.33 seen but quantity break not stated - not recorded."
+  },
+  {
+   "mpn": "TMS320F280039CPZSQ1",
+   "family": "F280039C",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU 120 MHz",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "inverter"
+   ],
+   "observedMpn": "TMS320F280039CPZSQ1",
+   "observations": [],
+   "notes": "Exact code not found; sibling F280039CPZQ1 Digi-Key $12.61 @1 only; no >=100 break."
+  },
+  {
+   "mpn": "TMS320F280049CPZSQ1",
+   "family": "F280049C",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU 100 MHz",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "inverter"
+   ],
+   "observedMpn": "TMS320F280049CPZSQ1",
+   "observations": [],
+   "notes": "Q1 code not found. Commercial F280049CPZS on mouser.in: 90 @9.09, 270 @8.57 (\"$\" in snippet, currency of the India site uncertain; non-automotive) - not recorded."
+  },
+  {
+   "mpn": "R7F701581",
+   "family": "RH850/F1KM-S1",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KM-S1 body MCU",
+   "category": "ic_tqfp",
+   "pkg": "LQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM"
+   ],
+   "observedMpn": "R7F701581",
+   "observations": [],
+   "notes": "Retry (R7F701581EAFP): no distributor price in results."
+  },
+  {
+   "mpn": "R7F701684",
+   "family": "RH850/F1KH",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KH body/gateway MCU",
+   "category": "ic_tqfp",
+   "pkg": "LQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway"
+   ],
+   "observedMpn": "R7F701684",
+   "observations": [],
+   "notes": "Retry: no part-specific distributor price in results."
+  },
+  {
+   "mpn": "SPC58NH92E7HMI0X",
+   "family": "SPC58NH92",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 Chorus powertrain MCU",
+   "category": "ic_bga",
+   "pkg": "BGA-302",
+   "aecq": true,
+   "ecuRoles": [
+    "EMS",
+    "TCU"
+   ],
+   "observedMpn": "SPC58NH92E7HMI0X",
+   "observations": [],
+   "notes": "Retry: only ST direct ($23.24 @500 via Findchips, manufacturer - excluded); no franchised distributor price."
+  },
+  {
+   "mpn": "MPC5744PK1AMLQ9",
+   "family": "MPC5744P",
+   "mfr": "NXP",
+   "desc": "MPC5744P e200z4 lockstep 200 MHz, 2.5 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "braking",
+    "chassis"
+   ],
+   "observedMpn": "SPC5744PK1AMLQ8",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 300,
+     "price": 21.4368,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SPC5744PK1AMLQ8/7648043",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Sibling SPC5744PK1AMLQ8 (Q8 speed/temperature variant, same 2.5 MB LQFP-144); exact MPC5744PK1AMLQ9 not found."
+  },
+  {
+   "mpn": "MPC5748GVMN6A",
+   "family": "MPC5748G",
+   "mfr": "NXP",
+   "desc": "MPC5748G e200z4/z2 gateway MCU, 6 MB flash",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-324",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "BCM"
+   ],
+   "observedMpn": "SPC5748GSK1MKU6R",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 38.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SPC5748GSK1MKU6R/6073560",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "CARE: sibling is the LQFP-176 package (SPC5748GSK1MKU6R, reel), not the BGA; same die/flash. Digi-Key SPC5748GGK1MMJ6 (BGA) $54.37 qty not stated."
+  },
+  {
+   "mpn": "MSPM0G3507QRHBRQ1",
+   "family": "MSPM0G3507-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "MSPM0 Cortex-M0+ 80MHz 128KB",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "sensor",
+    "actuator"
+   ],
+   "observedMpn": "M0G3507QRHBRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 1.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/M0G3507QRHBRQ1/24394786",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.2,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/M0G3507QRHBRQ1/24394786",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Digi-Key lists the orderable as M0G3507QRHBRQ1; also 250 @1.28, 500 @1.24."
+  },
+  {
+   "mpn": "dsPIC33CK256MP506-E/PT",
+   "family": "dsPIC33CK256MP506",
+   "mfr": "Microchip",
+   "desc": "dsPIC33CK DSC 100 MHz, 256 KB flash",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "motor control"
+   ],
+   "observedMpn": "dsPIC33CK256MP506-E/PT",
+   "observations": [],
+   "notes": "Retry: Digi-Key page for -E/PT exists but no qty-break price in results; -I/PT $2.31 and -E/MR $2.50 with no qty stated - not recorded."
+  },
+  {
+   "mpn": "PIC18F26Q83",
+   "family": "PIC18F26Q83",
+   "mfr": "Microchip",
+   "desc": "PIC18 8-bit with CAN FD",
+   "category": "ic_qfn",
+   "pkg": "SSOP-28 (observed)",
+   "aecq": false,
+   "ecuRoles": [
+    "body",
+    "sensor"
+   ],
+   "observedMpn": "PIC18F26Q83-I/SS",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 1.23,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/PIC18F26Q83-I-SS/17631078",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Observed industrial -I/SS (SSOP-28), not a QFN or -E/automotive code; 1 @1.48, 25 @1.36."
+  },
+  {
+   "mpn": "ATSAMC21J18A-AZTVAO",
+   "family": "ATSAMC21J18A",
+   "mfr": "Microchip",
+   "desc": "SAM C21 Cortex-M0+ 5V CAN FD",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "sensor",
+    "actuator"
+   ],
+   "observedMpn": "ATSAMC21J18A-AZTVAO",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1500,
+     "price": 3.26,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/atsamc21j18a",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser via Findchips/search summary: 1 @3.92, 25 @3.83, 1500 @3.26; Mouser product URL not returned."
+  },
+  {
+   "mpn": "S32G399AACK1VUCT",
+   "family": "S32G3",
+   "mfr": "NXP",
+   "desc": "S32G3 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA-525",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "zone controller"
+   ],
+   "observedMpn": "S32G399AACK1VUCT",
+   "observations": [],
+   "notes": "Not re-searched (budget). Earlier: only breaks <100 (Digi-Key 25 @131.98, Mouser 10 @129.60, Newark 10 @127.01)."
+  },
+  {
+   "mpn": "LMR14030SQDPRRQ1",
+   "family": "LMR14030-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 3.5A buck",
+   "category": "ic_qfn",
+   "pkg": "WSON-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "infotainment",
+    "ADAS"
+   ],
+   "observedMpn": "LMR14030SQDPRRQ1",
+   "observations": [],
+   "notes": "Only Digipart $1.4843 with no distributor/break named - not recorded."
+  },
+  {
+   "mpn": "TPS3850H01QDRCRQ1",
+   "family": "TPS3850-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Supervisor with window watchdog",
+   "category": "ic_qfn",
+   "pkg": "VSON-10",
+   "aecq": true,
+   "ecuRoles": [
+    "safety MCU supply"
+   ],
+   "observedMpn": "TPS3850H01QDRCRQ1",
+   "observations": [],
+   "notes": "Digi-Key $2.27 (out of stock) and Arrow $1.1693 seen without qty break - not recorded; ti.com $0.976 (manufacturer)."
+  },
+  {
+   "mpn": "TPS653850AQDCARQ1",
+   "family": "TPS653850A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Safety PMIC, ASIL D",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "braking",
+    "inverter"
+   ],
+   "observedMpn": "TPS653850AQDCARQ1",
+   "observations": [],
+   "notes": "Only ti.com $3.612 (manufacturer, excluded); TI orderable also shown as O3850AQDCARQ1."
+  },
+  {
+   "mpn": "TPS7B8450QDGNRQ1",
+   "family": "TPS7B84-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "40V 150mA LDO 5V",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-8",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor supply"
+   ],
+   "observedMpn": "TPS7B8450QDGNRQ1",
+   "observations": [],
+   "notes": "Exact code not found at Digi-Key; siblings only with qty-1 prices."
+  },
+  {
+   "mpn": "L5964",
+   "family": "L5964",
+   "mfr": "STMicroelectronics",
+   "desc": "Dual buck + LDO",
+   "category": "ic_qfn",
+   "pkg": "VFQFPN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "ADAS"
+   ],
+   "observedMpn": "L5964",
+   "observations": [],
+   "notes": "Searched L5964TR/L5964SR: no distributor price in results."
+  }
+ ]
+}

@@ -1,0 +1,464 @@
+{
+  "domain": "r3-crosscheck-a",
+  "researched": "2026-10-06",
+  "parts": [
+    {
+      "mpn": "SPC5777CCK3MME3",
+      "family": "MPC5777C",
+      "mfr": "NXP",
+      "desc": "MPC5777C tri-core 264MHz 8MB powertrain",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "SPC5777CCK3MME3",
+      "observations": [],
+      "notes": "Mouser bulk tier ($43.88) seen without a quantity; Arrow $44.67 only at 1+. Not recorded."
+    },
+    {
+      "mpn": "AWR6843ARBGALPRQ1",
+      "family": "AWR6843AOP",
+      "mfr": "Texas Instruments",
+      "desc": "60-64 GHz radar SoC, antenna-on-package",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AWR6843ARBGALPRQ1",
+      "observations": [],
+      "notes": "Search returned only the existing Digi-Key break; no second franchised price."
+    },
+    {
+      "mpn": "SAK-TC387QP-160F300S AE",
+      "family": "TC387QP",
+      "mfr": "Infineon",
+      "desc": "AURIX TC3 quad-core TriCore 300 MHz",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TC387QP160F300SAEKXUMA1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 43.09,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TC387QP160F300SAEKXUMA1?qs=GBLSl2AkirvtGeDhs79BJg%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser lists the Infineon SP code TC387QP160F300SAEKXUMA1 (same part). LCSC $14.47@100 discarded as implausible (2.5x below Rutronik 36.94@1000 and Mouser)."
+    },
+    {
+      "mpn": "AWR1843ARBGALPQ1",
+      "family": "AWR1843AOP",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz radar SoC, antenna-on-package",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AWR1843ARBGALPQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 32.15,
+          "currency": "USD",
+          "url": "https://ar.mouser.com/ProductDetail/Texas-Instruments/AWR1843ARBGALPQ1?qs=A6eO%2BMLsxmTCz6SDWZkWmQ%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 30.69,
+          "currency": "USD",
+          "url": "https://ar.mouser.com/ProductDetail/Texas-Instruments/AWR1843ARBGALPQ1?qs=A6eO%2BMLsxmTCz6SDWZkWmQ%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "SAK-TC377TX-96F300S AA",
+      "family": "TC377TX",
+      "mfr": "Infineon",
+      "desc": "AURIX TC3 tri-core TriCore 300 MHz, 6 MB",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "SAK-TC377TX-96F300S AA",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 34.0459,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C538867.html",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "AR0233ATSC17XUEA1-DRBR",
+      "family": "AR0233AT",
+      "mfr": "onsemi",
+      "desc": "2.6 MP 1/2.7in automotive HDR image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AR0233ATSC17XUEA1-DRBR",
+      "observations": [
+        {
+          "distributor": "Newark",
+          "qty": 100,
+          "price": 33.57,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/AR0233AT",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 250,
+          "price": 32.61,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/AR0233AT",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Newark breaks read via Findchips aggregator summary (no Newark page URL returned)."
+    },
+    {
+      "mpn": "IS46LQ32256AL",
+      "family": "IS46LQ32256AL",
+      "mfr": "ISSI",
+      "desc": "LPDDR4/4X 8Gb x32, automotive",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "IS46LQ32256AL",
+      "observations": [],
+      "notes": "Mouser 10k breaks seen ($18.15 / $10.73) but the summary did not tie them unambiguously to an ordering code; not recorded. $10.73 would be ~2.9x below Digi-Key 31.50@136."
+    },
+    {
+      "mpn": "AD2S1210WDSTZ",
+      "family": "AD2S1210",
+      "mfr": "Analog Devices",
+      "desc": "Resolver-to-digital converter 10-16 bit",
+      "category": "ic_tqfp",
+      "pkg": "LQFP",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AD2S1210WDSTZ",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 25.35,
+          "currency": "USD",
+          "url": "https://www.mouser.co.uk/ProductDetail/Analog-Devices/AD2S1210WDSTZ?qs=ZSGLvWohUNk0AkxKY2QFgw%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 250,
+          "price": 21.12,
+          "currency": "USD",
+          "url": "https://www.mouser.co.uk/ProductDetail/Analog-Devices/AD2S1210WDSTZ?qs=ZSGLvWohUNk0AkxKY2QFgw%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "AWR2243ABGABLQ1",
+      "family": "AWR2243",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz radar MMIC transceiver, 3TX/4RX",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AWR2243ABGABLQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 176,
+          "price": 36.77886,
+          "currency": "USD",
+          "url": "https://www.trustedparts.com/en/part/texas-instruments/AWR2243ABGABLQ1",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key tray break read via search summary."
+    },
+    {
+      "mpn": "AWR1642ABIGABLQ1",
+      "family": "AWR1642",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz radar SoC, 2TX/4RX, DSP+MCU",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AWR1642ABIGABLQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 29.4,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR1642ABIGABLQ1?qs=y6ZabgHbY%2Bw0150zvvVUEw%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 176,
+          "price": 28.41,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR1642ABIGABLQ1?qs=y6ZabgHbY%2Bw0150zvvVUEw%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "mpn": "IWR6843ARQGALPR",
+      "family": "IWR6843AOP",
+      "mfr": "Texas Instruments",
+      "desc": "60-64 GHz radar SoC, industrial (reference)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": false,
+      "ecuRoles": [],
+      "observedMpn": "IWR6843ARQGALPR",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 25.7,
+          "currency": "USD",
+          "url": "https://octopart.com/iwr6843arqgalpr-texas+instruments-117129608",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser 595-IWR6843ARQGALPR, read via search summary."
+    },
+    {
+      "mpn": "AM2634COKFHMZCZRQ1",
+      "family": "AM2634-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Sitara AM263x quad Cortex-R5F 400MHz",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "AM2634COKFHMZCZRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 17.4,
+          "currency": "USD",
+          "url": "https://www.ti.com/product/AM2634-Q1/part-details/AM2634COKFHMZCZRQ1",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 16.37,
+          "currency": "USD",
+          "url": "https://www.ti.com/product/AM2634-Q1/part-details/AM2634COKFHMZCZRQ1",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser 595-2634COKFHMZCZRQ1 breaks read via search summary; ~1.45x below Digi-Key 23.74@1000."
+    },
+    {
+      "mpn": "DS90UB960WRTDRQ1",
+      "family": "DS90UB960-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "FPD-Link III quad deserializer hub",
+      "category": "ic_qfn",
+      "pkg": "QFN",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "DS90UB960WRTDTQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 24.66,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB960WRTDTQ1/9490296",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Digi-Key price is the small-reel sibling DTQ1. LCSC $5.84@100 discarded as implausible (3.5x below Mouser 20.19)."
+    },
+    {
+      "mpn": "MT29F4G08ABAFAWP-AAT",
+      "family": "MT29F4G08ABAFAWP",
+      "mfr": "Micron",
+      "desc": "4Gb SLC NAND x8, automotive",
+      "category": "ic_soic",
+      "pkg": "SOIC/TSOP",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "MT29F4G08ABAFAWP-AAT",
+      "observations": [],
+      "notes": "Newark MT29F4G08ABAFAWP-AAT:F seen only to 50 pcs ($4.36@50) - below 100, not recorded; note it is ~4.8x below Digi-Key 21.07@960, the existing price should be checked."
+    },
+    {
+      "mpn": "SAK-TC275TP-64F200W DC",
+      "family": "TC275TP",
+      "mfr": "Infineon",
+      "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB",
+      "category": "ic_tqfp",
+      "pkg": "LQFP",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "TC275TP64F200WDCKXUMA1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 20.73,
+          "currency": "USD",
+          "url": "https://www.digipart.com/part/TC275TP-64F200W",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 500,
+          "price": 19.47,
+          "currency": "USD",
+          "url": "https://www.digipart.com/part/TC275TP-64F200W",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Mouser SP code TC275TP64F200WDCKXUMA1 (same part), read via search summary."
+    },
+    {
+      "mpn": "LTC6811HG-1#PBF",
+      "family": "LTC6811-1",
+      "mfr": "Analog Devices",
+      "desc": "12-cell battery stack monitor, isoSPI",
+      "category": "ic_soic",
+      "pkg": "SOIC/TSOP",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "LTC6811HG-1#PBF",
+      "observations": [],
+      "notes": "Mouser lowest tier $19.92 seen without a quantity; not recorded."
+    },
+    {
+      "mpn": "MTFC16GAPALBH-AAT",
+      "family": "MTFC16GAPALBH",
+      "mfr": "Micron",
+      "desc": "eMMC 5.1 16GB, automotive",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "MTFC16GAPALBH-AAT",
+      "observations": [],
+      "notes": "Not searched: search budget exhausted."
+    },
+    {
+      "mpn": "SAK-TC277TP-64F200S DC",
+      "family": "TC277TP",
+      "mfr": "Infineon",
+      "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "SAK-TC277TP-64F200S DC",
+      "observations": [],
+      "notes": "Only the existing LCSC break and Digi-Key sibling variants (BC) without breaks found."
+    },
+    {
+      "mpn": "SJA1110AEL/0Y",
+      "family": "SJA1110",
+      "mfr": "NXP",
+      "desc": "Automotive Ethernet switch, TSN",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "SJA1110AEL/0Y",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 15.85,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SJA1110AEL-0Y/17740104",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser India",
+          "qty": 250,
+          "price": 1477.83,
+          "currency": "INR",
+          "url": "https://www.mouser.in/ProductDetail/NXP-Semiconductors/SJA1110AEL-0Y?qs=u16ybLDytRaaUgjuYtH7qw%3D%3D",
+          "date": "2026-10-06"
+        },
+        {
+          "distributor": "Mouser India",
+          "qty": 1000,
+          "price": 1361.36,
+          "currency": "INR",
+          "url": "https://www.mouser.in/ProductDetail/NXP-Semiconductors/SJA1110AEL-0Y?qs=u16ybLDytRaaUgjuYtH7qw%3D%3D",
+          "date": "2026-10-06"
+        }
+      ],
+      "notes": "Summary says part is no longer manufactured (last stock)."
+    },
+    {
+      "mpn": "FS32K148UAT0VLQT",
+      "family": "S32K148",
+      "mfr": "NXP",
+      "desc": "S32K148 Cortex-M4F 112 MHz, 2 MB flash",
+      "category": "ic_tqfp",
+      "pkg": "LQFP",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "FS32K148UAT0VLQT",
+      "observations": [],
+      "notes": "Only Digi-Key (existing) and an unnamed distributor's $11.65@500 found; not recorded."
+    },
+    {
+      "mpn": "SAK-TC264DA-40F200W BC",
+      "family": "TC264DA",
+      "mfr": "Infineon",
+      "desc": "AURIX TC2 dual-core TriCore 200 MHz, 2.5 MB",
+      "category": "ic_tqfp",
+      "pkg": "LQFP",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "SAK-TC264DA-40F200W BC",
+      "observations": [],
+      "notes": "No second distributor price; Infineon budgetary EUR 15.94@1000 is a manufacturer figure, not recorded."
+    },
+    {
+      "mpn": "ADBMS2950WFSCCSZ",
+      "family": "ADBMS2950",
+      "mfr": "Analog Devices",
+      "desc": "Battery pack monitor: dual current + voltage",
+      "category": "ic_qfn",
+      "pkg": "QFN",
+      "aecq": true,
+      "ecuRoles": [],
+      "observedMpn": "ADBMS2950WFSCCSZ",
+      "observations": [],
+      "notes": "Not searched: search budget exhausted."
+    }
+  ]
+}
