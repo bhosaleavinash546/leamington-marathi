@@ -1,0 +1,86 @@
+{ "domain": "r3-crosscheck-b", "researched": "2026-10-06", "parts": [
+  { "mpn": "BQ79612PAPRQ1", "family": "BQ79612", "mfr": "Texas Instruments", "desc": "12S battery monitor/balancer, daisy-chain", "category": "ic_tqfp", "pkg": "HTQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "BQ79612PAPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 13.21, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79612PAPRQ1/14641468", "date": "2026-10-06" } ],
+    "notes": "Second (lower) break at the existing distributor; no Mouser price found in search." },
+  { "mpn": "KSZ9563RNXV-VAO", "family": "KSZ9563", "mfr": "Microchip", "desc": "3-port Gigabit Ethernet switch (automotive)", "category": "ic_qfn", "pkg": "VQFN-64", "aecq": true, "ecuRoles": ["gateway"], "observedMpn": "KSZ9563RNXV-VAO",
+    "observations": [], "notes": "Exact automotive MPN not found at Mouser; only industrial KSZ9563RNXI (different grade, no break) shown." },
+  { "mpn": "S32K314NHT0VPBST", "family": "S32K314", "mfr": "NXP", "desc": "S32K314 Cortex-M7 160MHz 4MB flash", "category": "ic_tqfp", "pkg": "MaxQFP-172", "aecq": true, "ecuRoles": ["BCM","gateway"], "observedMpn": "S32K314NHT1VPBST",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 420, "price": 11.18095, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/S32K314NHT1VPBST/18711311", "date": "2026-10-06" } ],
+    "notes": "Sibling code NHT1 (silicon revision) vs NHT0; exact NHT0 not found at Digi-Key." },
+  { "mpn": "MAX9295AGTJ/V+", "family": "MAX9295A", "mfr": "Analog Devices", "desc": "GMSL2 camera serializer", "category": "ic_qfn", "pkg": "TQFN-32", "aecq": true, "ecuRoles": ["ADAS","camera"], "observedMpn": "MAX9295AGTJ/V+T",
+    "observations": [
+      { "distributor": "LCSC", "qty": 100, "price": 7.0551, "currency": "USD", "url": "https://www.lcsc.com/product-detail/Serializers-Deserializers_Analog-Devices-Inc-Maxim-Integrated-MAX9295AGTJ-V-T_C2908051.html", "date": "2026-10-06" } ],
+    "notes": "Tape-and-reel sibling (+T). Digi-Key lists the non-reel /V+ as discontinued." },
+  { "mpn": "SPC584B70E3EHC0X", "family": "SPC584B70", "mfr": "STMicroelectronics", "desc": "SPC58 B-line body MCU e200z4", "category": "ic_tqfp", "pkg": "eTQFP-100", "aecq": true, "ecuRoles": ["BCM"], "observedMpn": "SPC584B70E3EHC0X",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 10.05, "currency": "USD", "url": "https://www.findchips.com/search/SPC584B70E3EHC0X", "date": "2026-10-06" },
+      { "distributor": "Newark", "qty": 1000, "price": 14.66, "currency": "USD", "url": "https://www.newark.com/stmicroelectronics/spc584b70e3ehc0x/mcu-32bit-120mhz-tqfp-ep-100-rohs/dp/39AH5584", "date": "2026-10-06" },
+      { "distributor": "Arrow", "qty": 1000, "price": 15.376, "currency": "USD", "url": "https://www.arrow.com/en/products/spc584b70e3ehc0x/stmicroelectronics", "date": "2026-10-06" } ],
+    "notes": "Newark/Arrow ~1.4-1.5x Digi-Key at 1k; within 2x. Mouser shows no price." },
+  { "mpn": "UCD3138RGCR", "family": "UCD3138", "mfr": "Texas Instruments", "desc": "Digital power controller, 64-VQFN 9x9", "category": "ic_qfn", "pkg": "VQFN-64", "aecq": false, "ecuRoles": ["DC-DC","charger"], "observedMpn": "UCD3138RGCR",
+    "observations": [], "notes": "Mouser EUR 9.21 / Avnet EUR 9.39 / Arrow EUR 6.05 seen but no quantity break stated; not recorded." },
+  { "mpn": "BQ79718BQPAPRQ1", "family": "BQ79718B", "mfr": "Texas Instruments", "desc": "18S battery monitor/balancer, daisy-chain", "category": "ic_tqfp", "pkg": "HTQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "BQ79718BQPAPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 10.36, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 500, "price": 9.69, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620", "date": "2026-10-06" } ],
+    "notes": "Lower breaks at the existing distributor only; no second distributor found. 1k matches existing 9.49." },
+  { "mpn": "BQ79616PAPRQ1", "family": "BQ79616", "mfr": "Texas Instruments", "desc": "16S battery monitor/balancer, daisy-chain", "category": "ic_tqfp", "pkg": "HTQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "BQ79616PAPRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 8.31, "currency": "USD", "url": "https://octopart.com/part/texas-instruments/BQ79616PAPRQ1", "date": "2026-10-06" } ],
+    "notes": "Mouser break via Octopart. Agrees with Digi-Key 9.40 @1k within 2x (Mouser 100-break lower than DK 1k)." },
+  { "mpn": "STM32H743ZIT6", "family": "STM32H743", "mfr": "STMicroelectronics", "desc": "STM32H743 Cortex-M7 480MHz 2MB", "category": "ic_tqfp", "pkg": "LQFP-144", "aecq": false, "ecuRoles": ["gateway","infotainment"], "observedMpn": "STM32H743ZIT6TR",
+    "observations": [
+      { "distributor": "Arrow", "qty": 1000, "price": 9.562, "currency": "USD", "url": "https://www.findchips.com/search/stm32h743zit6", "date": "2026-10-06" } ],
+    "notes": "Arrow price is for the TR packing variant. Mouser ~10.54 at top break mentioned but qty not explicit; not recorded." },
+  { "mpn": "LTC6813HLWE-1#3ZZPBF", "family": "LTC6813-1", "mfr": "Analog Devices", "desc": "18-cell battery stack monitor, isoSPI, H grade", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "LTC6813HLWE-1#3ZZPBF",
+    "observations": [
+      { "distributor": "Rochester Electronics", "qty": 1000, "price": 15.93, "currency": "USD", "url": "https://www.findchips.com/search/ltc6813", "date": "2026-10-06" },
+      { "distributor": "Rochester Electronics", "qty": 10000, "price": 14.99, "currency": "USD", "url": "https://www.findchips.com/search/ltc6813", "date": "2026-10-06" } ],
+    "notes": "Rochester is ADI-authorised (aftermarket) but not on the RULES list; ~1.5x the LCSC 100-break. No Digi-Key/Mouser break in results." },
+  { "mpn": "MT25QL512ABB8ESF-0AUT", "family": "MT25QL512", "mfr": "Micron", "desc": "512Mb 3V QSPI NOR flash, automotive", "category": "ic_soic", "pkg": "SOP2-16", "aecq": true, "ecuRoles": ["ADAS","infotainment","gateway"], "observedMpn": "MT25QL512ABB8ESF-0AUT",
+    "observations": [], "notes": "Exact -0AUT not found at Digi-Key. Siblings there are far higher (industrial -0SIT-TR $31.54 @1k; -0AAT-TR $47 @50) - >3x the existing Mouser $9 @1k; existing price should be re-verified." },
+  { "mpn": "MVR5510AMBA6ES", "family": "VR5510", "mfr": "NXP Semiconductors", "desc": "PMIC for S32G, ASIL B, 3 buck + boost", "category": "ic_qfn", "pkg": "QFN-56", "aecq": true, "ecuRoles": ["gateway","ADAS"], "observedMpn": "MVR5510AMBA6ES",
+    "observations": [], "notes": "Exact MPN not found at Mouser; only OTP-variant MVR5510AMBA0ESR2 ($8.05 @4000) seen - different configuration, not recorded." },
+  { "mpn": "UCC5870QDWJRQ1", "family": "UCC5870-Q1", "mfr": "Texas Instruments", "desc": "Functional-safety isolated gate driver 30A", "category": "ic_soic", "pkg": "SSOP-36", "aecq": true, "ecuRoles": ["inverter"], "observedMpn": "UCC5870QDWJRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 12.53, "currency": "USD", "url": "https://www.oemstrade.com/search/ucc5870qdwjrq1", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 750, "price": 11.53, "currency": "USD", "url": "https://www.oemstrade.com/search/ucc5870qdwjrq1", "date": "2026-10-06" } ],
+    "notes": "Mouser via OEMsTrade; ~1.3x Digi-Key 9.71 @100." },
+  { "mpn": "MC33772CTA1AE", "family": "MC33772C", "mfr": "NXP", "desc": "6-ch Li-ion battery cell controller, TPL", "category": "ic_tqfp", "pkg": "LQFP-48", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "MC33772CTA1AE",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 6.87, "currency": "USD", "url": "https://octopart.com/part/nxp-semiconductors/MC33772CTA1AE", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 6.11, "currency": "USD", "url": "https://octopart.com/part/nxp-semiconductors/MC33772CTA1AE", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 6.25, "currency": "USD", "url": "https://octopart.com/part/nxp-semiconductors/MC33772CTA1AE", "date": "2026-10-06" } ],
+    "notes": "Via Octopart. Existing Newark 8.92 @500 is ~1.4x these; within 2x." },
+  { "mpn": "MC33771CTA1AE", "family": "MC33771C", "mfr": "NXP", "desc": "14-ch Li-ion battery cell controller, TPL", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "MC33771CTA1AE",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 640, "price": 9.65945, "currency": "USD", "url": "https://www.alldatasheet.com/distributor/view.jsp?Searchword=MC33771", "date": "2026-10-06" } ],
+    "notes": "Digi-Key break reported via aggregator; agrees with Mouser 8.79 @250." },
+  { "mpn": "L5965", "family": "L5965", "mfr": "STMicroelectronics", "desc": "Safety multi-rail PMIC, ASIL B/D, vision", "category": "ic_qfn", "pkg": "VFQFPN-48", "aecq": true, "ecuRoles": ["ADAS","camera"], "observedMpn": "L5965SQ-V0T",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 7.33, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/L5965SQ-V0T?qs=vLWxofP3U2wnxOp28hVAGw%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 2500, "price": 6.95, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/L5965SQ-V0T?qs=vLWxofP3U2wnxOp28hVAGw%3D%3D", "date": "2026-10-06" } ],
+    "notes": "Agrees with Digi-Key 7.23 @2500." },
+  { "mpn": "TLE6240GP", "family": "TLE6240", "mfr": "Infineon", "desc": "16-ch low-side switch, SPI", "category": "ic_soic", "pkg": "PG-DSO-36", "aecq": true, "ecuRoles": ["engine ECU"], "observedMpn": "TLE6240GP",
+    "observations": [
+      { "distributor": "Mouser", "qty": 250, "price": 8.59, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE6240GP?qs=mzcOS1kGbgeKpMCv3zq/WA%3D%3D", "date": "2026-10-06" } ],
+    "notes": "Lower break at existing distributor; Digi-Key lists TLE6240GPAUMA1 as obsolete." },
+  { "mpn": "MC33775ATA1AER2", "family": "MC33775A", "mfr": "NXP", "desc": "18-ch Li-ion battery cell controller, ASIL D", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "MC33775ATA1AER2",
+    "observations": [], "notes": "Only the existing 7.315 @1500 reel price resurfaced; non-reel MC33775ATA1AE at Digi-Key only to qty 25." },
+  { "mpn": "MC33PF8200D2ES", "family": "PF8200", "mfr": "NXP Semiconductors", "desc": "PMIC 7 buck + 4 LDO for i.MX 8, automotive", "category": "ic_qfn", "pkg": "QFN-56", "aecq": true, "ecuRoles": ["infotainment","ADAS"], "observedMpn": "MC33PF8200D2ES",
+    "observations": [
+      { "distributor": "Mouser", "qty": 260, "price": 10.04, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/MC33PF8200D2ES?qs=l7cgNqFNU1jbGLspBRBZww%3D%3D", "date": "2026-10-06" } ],
+    "notes": "~1.34x Digi-Key 7.48 @520; within 2x. JLCPCB $2.54 ignored (not franchised)." },
+  { "mpn": "DRV3245AQPHPRQ1", "family": "DRV3245Q-Q1", "mfr": "Texas Instruments", "desc": "3-phase gate driver for EPS/BLDC", "category": "ic_tqfp", "pkg": "HTQFP-64", "aecq": true, "ecuRoles": ["EPS","pump"], "observedMpn": "DRV3245AQPHPRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 6.21, "currency": "USD", "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/DRV3245AQPHPRQ1?qs=zEmsApcVOkVWy7lAqD24ig%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 4.20, "currency": "EUR", "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/DRV3245AQPHPRQ1?qs=zEmsApcVOkVWy7lAqD24ig%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 2000, "price": 4.05, "currency": "EUR", "url": "https://eu.mouser.com/ProductDetail/Texas-Instruments/DRV3245AQPHPRQ1?qs=zEmsApcVOkVWy7lAqD24ig%3D%3D", "date": "2026-10-06" } ],
+    "notes": "Mouser EU 1k (~USD 4.9) is ~0.7x Digi-Key 7.12 @1k; within 2x." },
+  { "mpn": "LAN9372-I/ZMX", "family": "LAN9372", "mfr": "Microchip", "desc": "Managed switch, 5x 100BASE-T1 PHY", "category": "ic_qfn", "pkg": "VQFN-128", "aecq": false, "ecuRoles": ["gateway"], "observedMpn": "LAN9372-I/ZMX",
+    "observations": [], "notes": "Not searched: 20-search budget exhausted." },
+  { "mpn": "ADBMS6815WCSWZ", "family": "ADBMS6815", "mfr": "Analog Devices", "desc": "12-ch multicell battery monitor, isoSPI", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "ADBMS6815WCSWZ",
+    "observations": [], "notes": "Not searched: 20-search budget exhausted." }
+] }

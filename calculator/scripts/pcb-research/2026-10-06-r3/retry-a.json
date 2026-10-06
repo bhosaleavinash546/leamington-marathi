@@ -1,0 +1,81 @@
+{ "domain": "r3-retry-a", "researched": "2026-10-06", "parts": [
+  { "mpn": "W25Q256JVEIQ", "family": "W25Q256JV", "mfr": "Winbond", "desc": "256Mb serial NOR flash, 3V, quad SPI", "category": "ic_qfn", "pkg": "WSON-8 8x6", "aecq": false, "ecuRoles": ["infotainment","cluster","gateway"], "observedMpn": "W25Q256JVEIQ TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.48779, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/winbond-electronics/W25Q256JVEIQ-TR/5803969", "date": "2026-10-06" }
+    ],
+    "notes": "Tape & reel code. Non-TR W25Q256JVEIQ (cut tape/Digi-Reel) shows $4.82163 @1000 on Digi-Key; TR is the volume price. Industrial grade, not AEC-Q100." },
+  { "mpn": "MT25QU01GBBB8E12-0AUT", "family": "MT25QU01G", "mfr": "Micron", "desc": "1Gb 1.8V serial NOR flash, automotive", "category": "ic_bga", "pkg": "TPBGA-24 6x8", "aecq": true, "ecuRoles": ["ADAS","infotainment","cluster"], "observedMpn": "MT25QU01GBBB8E12-0AUT", "observations": [],
+    "notes": "Results gave Digi-Key $36.39 @1, Arrow $26.90, Avnet $12.82, Newark $17.97 with no quantity break; Mouser non-stocked. Not recorded." },
+  { "mpn": "MT41K256M16TW-107 AAT:P", "family": "MT41K256M16TW", "mfr": "Micron", "desc": "DDR3L 4Gb x16 SDRAM, automotive", "category": "ic_bga", "pkg": "FBGA-96", "aecq": true, "ecuRoles": ["infotainment","cluster","telematics"], "observedMpn": "MT41K256M16TW-107 AAT:P TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 7.68, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT41K256M16TW-107-AAT-P-TR/6036709", "date": "2026-10-06" }
+    ],
+    "notes": "Only break >=100 is 100 on the TR code. Tray code showed $47.23 @1 / $41.92 @50 in the same summary - large inconsistency vs TR $8.94 @1; treat with care." },
+  { "mpn": "MT40A1G16TB", "family": "MT40A1G16", "mfr": "Micron", "desc": "DDR4 16Gb x16 SDRAM, automotive", "category": "ic_bga", "pkg": "FBGA-96", "aecq": true, "ecuRoles": ["ADAS","infotainment"], "observedMpn": "", "observations": [],
+    "notes": "Orderable automotive TB code not found; results only for MT40A1G16TD-062E AIT:F ($129.45, qty unclear) and AAT:F ($192.45 @?), a different die/package - not recorded." },
+  { "mpn": "MT53E512M32D1ZW-046 AUT:B", "family": "MT53E512M32D1ZW", "mfr": "Micron", "desc": "LPDDR4X 16Gb, automotive", "category": "ic_bga", "pkg": "TFBGA-200", "aecq": true, "ecuRoles": ["ADAS","infotainment","cluster"], "observedMpn": "MT53E512M32D1ZW-046 AUT:B",
+    "observations": [
+      { "distributor": "Newark", "qty": 250, "price": 22.90, "currency": "USD", "url": "https://www.newark.com/micron/mt53e512m32d1zw-046-aut-b/dram-512m-x-32bit-40-to-125deg/dp/32AK0853", "date": "2026-10-06" }
+    ],
+    "notes": "Newark $27.37 @1 to $22.90 @250+. Digi-Key listed $200.61 (out of stock) and LCSC $33.50 (qty unstated) - not recorded; wide spread, treat with care." },
+  { "mpn": "MT53E1G32D2FW-046 AUT:B", "family": "MT53E1G32D2FW", "mfr": "Micron", "desc": "LPDDR4X 32Gb, automotive", "category": "ic_bga", "pkg": "TFBGA-200 10x14.5", "aecq": true, "ecuRoles": ["ADAS","infotainment"], "observedMpn": "MT53E1G32D2FW-046 AUT:B", "observations": [],
+    "notes": "Digi-Key only $231.42 @1 / GBP 162.33 @10, out of stock; no break >=100." },
+  { "mpn": "MT62F1G32D2DS", "family": "MT62F1G32D2DS", "mfr": "Micron", "desc": "LPDDR5 32Gb, automotive", "category": "ic_bga", "pkg": "TFBGA-315", "aecq": true, "ecuRoles": ["ADAS","infotainment"], "observedMpn": "", "observations": [],
+    "notes": "Digi-Key variants (-023 AUT:C, -020 AUT:F $218.99, -023 AAT:C $170.25) at unstated quantity; no break recorded." },
+  { "mpn": "MTFC32GAPALBH-AAT", "family": "MTFC32GAPAL", "mfr": "Micron", "desc": "eMMC 32GB, automotive", "category": "ic_bga", "pkg": "TFBGA-153", "aecq": true, "ecuRoles": ["infotainment","telematics","cluster"], "observedMpn": "MTFC32GAPALBH-AAT", "observations": [],
+    "notes": "Obsolete at Digi-Key, no price shown; $32.72 @250 figure had no named franchised distributor." },
+  { "mpn": "MTFC64GAPALNA-AAT", "family": "MTFC64GAPAL", "mfr": "Micron", "desc": "eMMC 64GB, automotive", "category": "ic_bga", "pkg": "VFBGA-100", "aecq": true, "ecuRoles": ["infotainment","telematics"], "observedMpn": "MTFC64GAPALNA-AAT", "observations": [],
+    "notes": "No longer at Digi-Key; $56.89 @1k / $47.98 @50k and $19.65 @980 figures had no named distributor - not recorded." },
+  { "mpn": "THGBMJG8C2LBAU8", "family": "THGBMJG8C2LBAU8", "mfr": "Kioxia", "desc": "eMMC 32GB, automotive", "category": "ic_bga", "pkg": "FBGA-153", "aecq": true, "ecuRoles": ["infotainment","telematics"], "observedMpn": "", "observations": [],
+    "notes": "No distributor listing found in search results." },
+  { "mpn": "MCIMX6Q6AVT10AD", "family": "i.MX6Q", "mfr": "NXP", "desc": "i.MX 6Quad automotive applications processor", "category": "ic_bga", "pkg": "FCBGA-624", "aecq": true, "ecuRoles": ["infotainment","cluster","telematics"], "observedMpn": "MCIMX6Q6AVT10AD", "observations": [],
+    "notes": "Digi-Key $117.98 @1 / $90.91 @60, Mouser $119.49 @25; no break >=100." },
+  { "mpn": "UCC28180QDRQ1", "family": "UCC28180", "mfr": "Texas Instruments", "desc": "CCM PFC controller", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["OBC"], "observedMpn": "", "observations": [],
+    "notes": "Q1 code not found; only commercial UCC28180DR (Digi-Key $0.83385 @1000) - different grade, not recorded. Q1 orderable code unverified." },
+  { "mpn": "UCC14140QDWNRQ1", "family": "UCC14140-Q1", "mfr": "Texas Instruments", "desc": "Isolated DC/DC bias module 1.5W, integrated transformer", "category": "power_module", "pkg": "SSOP-36", "aecq": true, "ecuRoles": ["traction inverter","OBC","BMS"], "observedMpn": "", "observations": [],
+    "notes": "Summary attributed Digi-Key $7.06323 @750 to this MPN but the only Digi-Key link was UCC14141QDWNRQ1 again; cannot tie to this MPN - not recorded." },
+  { "mpn": "AMC0330RQDWERQ1", "family": "AMC0330R-Q1", "mfr": "Texas Instruments", "desc": "Isolated voltage amplifier with integrated DC/DC", "category": "ic_soic", "pkg": "SOIC-16", "aecq": true, "ecuRoles": ["OBC","BMS","traction inverter"], "observedMpn": "", "observations": [],
+    "notes": "MPN not found; only AMC3330QDWERQ1 ($6.95 @1). No break recorded." },
+  { "mpn": "ISO224BQDWVRQ1", "family": "ISO224", "mfr": "Texas Instruments", "desc": "Isolated +/-12V single-ended voltage amplifier", "category": "ic_soic", "pkg": "SOIC-8 wide", "aecq": true, "ecuRoles": ["BMS","OBC"], "observedMpn": "", "observations": [],
+    "notes": "Q1 code not found (may not exist); only ISO224BDWVR at qty 1 ($16.67-$19.69 Mouser)." },
+  { "mpn": "DRV3946QPWPRQ1", "family": "DRV3946-Q1", "mfr": "Texas Instruments", "desc": "Dual contactor/solenoid driver with diagnostics", "category": "ic_soic", "pkg": "HTSSOP", "aecq": true, "ecuRoles": ["BMS","BDU"], "observedMpn": "DRV3946QPWPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 2500, "price": 7.56, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/DRV3946QPWPRQ1/22119522", "date": "2026-10-06" }
+    ],
+    "notes": "Listed code DRV3946QDGQRQ1 not found; the orderable automotive code on Digi-Key/TI is DRV3946QPWPRQ1 (HTSSOP), used as mpn. $12.58 @1, $9.89 @10." },
+  { "mpn": "MAX17853", "family": "MAX17853", "mfr": "Analog Devices", "desc": "14-ch battery monitor (data acquisition)", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "", "observations": [],
+    "notes": "No distributor price found; ADI shows 1ku price unavailable. Orderable code unverified." },
+  { "mpn": "ADBMS6830BCSWZ", "family": "ADBMS6830B", "mfr": "Analog Devices", "desc": "16-ch multicell battery monitor, isoSPI", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "ADBMS6830BCSWZ",
+    "observations": [
+      { "distributor": "Newark", "qty": 100, "price": 15.64, "currency": "USD", "url": "https://www.findchips.com/search/ADBMS6830", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 119, "price": 15.6375, "currency": "USD", "url": "https://www.findchips.com/search/ADBMS6830", "date": "2026-10-06" }
+    ],
+    "notes": "Via Findchips aggregator naming distributor and break. ADI 1ku list $15.83 (manufacturer, not recorded) is consistent. A $12.47 @440 figure had no named distributor." },
+  { "mpn": "DRV8343SQPHPRQ1", "family": "DRV8343-Q1", "mfr": "Texas Instruments", "desc": "3-phase smart gate driver, SPI", "category": "ic_tqfp", "pkg": "HTQFP-52", "aecq": true, "ecuRoles": ["EPS","pumps","fans"], "observedMpn": "", "observations": [],
+    "notes": "Only hardware variant DRV8343HPHPRQ1 found (Digi-Key India INR 471.36 @1000) - different functional variant, not recorded." },
+  { "mpn": "TLE9562QXXUMA1", "family": "TLE9562", "mfr": "Infineon", "desc": "BLDC gate driver with SBC (LDO, CAN FD, LIN)", "category": "ic_qfn", "pkg": "VQFN-48", "aecq": true, "ecuRoles": ["pumps","fans","seat","window"], "observedMpn": "", "observations": [],
+    "notes": "Future $1.97 at unstated qty (looks low), Digi-Key AU AUD 3.54 and RS AU AUD 6.21 without breaks - not recorded." },
+  { "mpn": "TLE94112ELXUMA1", "family": "TLE94112EL", "mfr": "Infineon", "desc": "12-half-bridge driver, SPI", "category": "ic_soic", "pkg": "SSOP-24", "aecq": true, "ecuRoles": ["HVAC","flaps","mirrors"], "observedMpn": "", "observations": [],
+    "notes": "Only Win Source (broker, rejected) and Rochester Electronics ($1.67 @1000, $1.57 @10k - aftermarket, not on accepted list and looks low) - not recorded." },
+  { "mpn": "L9907TR", "family": "L9907", "mfr": "STMicroelectronics", "desc": "3-phase FET pre-driver", "category": "ic_tqfp", "pkg": "TQFP-64", "aecq": true, "ecuRoles": ["EPS","pumps","fans"], "observedMpn": "L9907TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 250, "price": 6.92892, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L9907TR/7312918", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 6.38877, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L9907TR/7312918", "date": "2026-10-06" }
+    ],
+    "notes": "1000 is the T&R break; 250 is cut tape. Mouser $10.56 @1." },
+  { "mpn": "TLE88881QKXUMA1", "family": "TLE8888-1", "mfr": "Infineon", "desc": "Engine management system IC", "category": "ic_tqfp", "pkg": "LQFP-100", "aecq": true, "ecuRoles": ["ECM"], "observedMpn": "", "observations": [],
+    "notes": "Obsolete. Breaks $10.78 @1000 / $10.14 @10k appear to be Rochester (aftermarket) or unnamed - not recorded. Successor TLE8888QKXUMA1 $22.82 at Digi-Key, qty unstated." },
+  { "mpn": "NCV7517FTR2G", "family": "NCV7517", "mfr": "onsemi", "desc": "Hex low-side MOSFET pre-driver", "category": "ic_tqfp", "pkg": "LQFP-32", "aecq": true, "ecuRoles": ["ECM","transmission"], "observedMpn": "", "observations": [],
+    "notes": "Not re-searched: obsolete per earlier run; search budget kept for active parts." },
+  { "mpn": "L9788", "family": "L9788", "mfr": "STMicroelectronics", "desc": "Engine management system IC", "category": "ic_tqfp", "pkg": "TQFP-100", "aecq": true, "ecuRoles": ["ECM"], "observedMpn": "", "observations": [],
+    "notes": "Not searched: shared search budget (26) exhausted. Orderable code unverified." },
+  { "mpn": "TPS92633QPWPRQ1", "family": "TPS92633-Q1", "mfr": "Texas Instruments", "desc": "3-ch linear LED driver", "category": "ic_soic", "pkg": "HTSSOP-20", "aecq": true, "ecuRoles": ["lighting","rear lamp"], "observedMpn": "TPS92633QPWPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.23057, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS92633QPWPRQ1/14544354", "date": "2026-10-06" }
+    ],
+    "notes": "$2.30 @1." },
+  { "mpn": "LT3964HUHE#PBF", "family": "LT3964", "mfr": "Analog Devices", "desc": "Dual synchronous LED driver, I2C", "category": "ic_qfn", "pkg": "QFN-36 5x6", "aecq": false, "ecuRoles": ["lighting"], "observedMpn": "", "observations": [],
+    "notes": "No volume break found in results (earlier: Digi-Key list $11.23 E / $12.33 I at unstated qty)." },
+  { "mpn": "ISO1044BQDRQ1", "family": "ISO1044", "mfr": "Texas Instruments", "desc": "Isolated CAN FD transceiver, SOIC-8", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["BMS","OBC"], "observedMpn": "", "observations": [],
+    "notes": "Q1 code not found; only commercial ISO1044BD $3.99 @1 / ISO1044BDR $3.09 @1. Orderable automotive code unverified." }
+] }

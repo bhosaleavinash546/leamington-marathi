@@ -1,0 +1,102 @@
+{ "domain": "r3-unsearched-b", "researched": "2026-10-06", "parts": [
+  { "mpn": "CAB425M12XM3", "family": "CAB425M12XM3", "mfr": "Wolfspeed", "desc": "1200V 425A SiC half-bridge module XM3", "category": "power_module", "pkg": "XM3", "aecq": false, "ecuRoles": ["traction inverter"], "observedMpn": "CAB425M12XM3",
+    "observations": [],
+    "notes": "Only qty-1 prices found: Digi-Key $706.25, Mouser $706.24 (USD, 2026-10-06). No break >= 100; not recorded per power-module rule." },
+  { "mpn": "NVH820S75L4SPB", "family": "NVH820S75L4", "mfr": "onsemi", "desc": "VE-Trac Direct 750V 820A IGBT six-pack module", "category": "power_module", "pkg": "SSDC module", "aecq": true, "ecuRoles": ["traction inverter"], "observedMpn": "NVH820S75L4SPB",
+    "observations": [],
+    "notes": "Only qty-1 prices: Mouser $606.84, Digi-Key $523.40 (tray; DK marks discontinued). No break >= 100." },
+  { "mpn": "ADP480120W3", "family": "ADP480120W3", "mfr": "STMicroelectronics", "desc": "ACEPACK DRIVE 1200V SiC six-pack module", "category": "power_module", "pkg": "ACEPACK DRIVE", "aecq": true, "ecuRoles": ["traction inverter"], "observedMpn": "ADP480120W3",
+    "observations": [],
+    "notes": "Only qty-1 prices: Digi-Key AT EUR 1182.07; ADP480120W3-L Digi-Key UK GBP 913.50. No break >= 100." },
+  { "mpn": "HAH3DR 800-S07/SP3", "family": "HAH3DR 800-S07", "mfr": "LEM", "desc": "Open-loop Hall current transducer, 3-phase, automotive", "category": "mechanical", "pkg": "module", "aecq": true, "ecuRoles": ["traction inverter"], "observedMpn": "HAH3DR 800-S07/SP3",
+    "observations": [],
+    "notes": "Representative orderable /SP3. Digi-Key snippet: $43.14 (qty 1?) and $60.95 @72 (inconsistent); /SP4 $44.30 @66. No break >= 100; not recorded." },
+  { "mpn": "B32776G4506K000", "family": "B32776", "mfr": "TDK EPCOS", "desc": "DC-link MKP film capacitor", "category": "through_hole", "pkg": "radial box", "aecq": false, "ecuRoles": ["inverter","OBC"], "observedMpn": "B32776G4506K000",
+    "observations": [],
+    "notes": "Series code; representative 50uF 450V B32776G4506K000: Digi-Key $19.74, Mouser $18.29 (qty not stated, likely qty 1). B32776G0206K000 DK $9.85 qty unknown. No >= 100 break found." },
+  { "mpn": "C4AQCBU4560A1XJ", "family": "C4AQ", "mfr": "KEMET", "desc": "Automotive DC-link film capacitor", "category": "through_hole", "pkg": "radial box", "aecq": true, "ecuRoles": ["inverter","OBC","DCDC"], "observedMpn": "C4AQCBU4560A1XJ",
+    "observations": [],
+    "notes": "Series code; representative 5.6uF 650V C4AQCBU4560A1XJ: Mouser $2.93 qty 1 only. Digi-Key series snippet $2.43-3.41 (1-3uF, qty unstated). No >= 100 break found." },
+  { "mpn": "B32922C3104M000", "family": "B32922C", "mfr": "TDK EPCOS", "desc": "X2 MKP film suppression capacitor 0.1uF 305VAC", "category": "through_hole", "pkg": "radial 15mm", "aecq": false, "ecuRoles": ["OBC","charger EMI filter"], "observedMpn": "B32922C3104M000",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.17041, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/tdk/B32922C3104M000/778981", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 0.165, "currency": "USD", "url": "https://www.mouser.co.uk/ProductDetail/EPCOS-TDK/B32922C3104M?qs=Gus83tocK7tXmAPOcCQANQ%3D%3D", "date": "2026-10-06" },
+      { "distributor": "TTI", "qty": 1000, "price": 0.154, "currency": "USD", "url": "https://www.digipart.com/part/B32922-C3104-M", "date": "2026-10-06" }
+    ],
+    "notes": "Series code; representative 0.1uF X2 B32922C3104M000 (Mouser code B32922C3104M). Standard (non-AEC) grade. LCSC $0.101 @1000 seen, not recorded (source of stock unclear)." },
+  { "mpn": "V23720A0001A001", "family": "EVC 250", "mfr": "TE Connectivity", "desc": "HV DC contactor 250A, 12V single coil", "category": "relay_switch", "pkg": "contactor", "aecq": false, "ecuRoles": ["BDU","BMS"], "observedMpn": "V23720A0001A001",
+    "observations": [],
+    "notes": "Representative EVC 250 orderable. Mouser $129.02 qty 1, 'down to $95.89' (break qty not stated); Digi-Key $142.36 (qty 1). Double-coil V23720A0002A001 Mouser $134.61 -> $106.46. No confirmed >= 100 break." },
+  { "mpn": "AEV14012", "family": "AEV", "mfr": "Panasonic", "desc": "HV DC EV relay/contactor 120A 12V", "category": "relay_switch", "pkg": "contactor", "aecq": false, "ecuRoles": ["BDU","charger"], "observedMpn": "AEV14012",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 72.72, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/panasonic-electric-works/AEV14012/4756663", "date": "2026-10-06" }
+    ],
+    "notes": "Representative AEV orderable (120A). DK $92.11 qty 1. Newark $183.94 @50 (much higher, below 100, not recorded). AEV18012 DK $144.89 @50." },
+  { "mpn": "MAX96712GTB/V+T", "family": "MAX96712", "mfr": "Analog Devices (Maxim)", "desc": "GMSL2 quad deserializer", "category": "ic_qfn", "pkg": "TQFN-64", "aecq": true, "ecuRoles": ["ADAS","camera domain"], "observedMpn": "MAX96712GTB/V+",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 22.91, "currency": "USD", "url": "https://www.digipart.com/part/MAX96712GTB/V+", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 260, "price": 21.86, "currency": "USD", "url": "https://www.digipart.com/part/MAX96712GTB/V+", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser breaks via aggregator snippet (tray code /V+). Digi-Key lists /V+ and /V+T discontinued. LCSC $9.65 @100 seen (2.4x lower, not recorded). Findchips $3.55 @1000 discarded (unattributed)." },
+  { "mpn": "TJA1081BTS,118", "family": "TJA1081B", "mfr": "NXP Semiconductors", "desc": "FlexRay node transceiver", "category": "ic_soic", "pkg": "SSOP-14", "aecq": true, "ecuRoles": ["chassis","gateway"], "observedMpn": "TJA1081BTS,118",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 4.59, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1081BTS-118/3679541", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 2000, "price": 4.13, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1081BTS-118/3679541", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 2000, "price": 4.02, "currency": "USD", "url": "https://www.mouser.com/en/ProductDetail/NXP-Semiconductors/TJA1081BTS118?qs=O0BhuZj9Wkyl1%2BkODtRCqQ%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser also $4.24 @100, $4.08 @250." },
+  { "mpn": "TJA1085GHN/0Z", "family": "TJA1085G", "mfr": "NXP Semiconductors", "desc": "FlexRay active star transceiver", "category": "ic_qfn", "pkg": "HVQFN-44", "aecq": true, "ecuRoles": ["gateway","chassis"], "observedMpn": "TJA1085GHN/0Z",
+    "observations": [
+      { "distributor": "LCSC", "qty": 1000, "price": 6.7938, "currency": "USD", "url": "https://www.lcsc.com/product-detail/C3226279.html", "date": "2026-10-06" }
+    ],
+    "notes": "Aggregator snippet gave two contradictory Digi-Key 1000 prices ($9.52 and $5.08) - discarded. Newark from $9.55, Avnet from $8.90 (qty not stated)." },
+  { "mpn": "R7F702300BFABA-C#BC6", "family": "R7F702300", "mfr": "Renesas", "desc": "RH850/U2A multi-core domain MCU, 16MB flash, 292-FBGA", "category": "ic_bga", "pkg": "FBGA-292", "aecq": true, "ecuRoles": ["domain controller","gateway","chassis"], "observedMpn": "R7F702300BFABA-C#BC6",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 59.50, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F702300BFABA-C-BC6/19235696", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key UK GBP 40.71 @100. No 1k break published." },
+  { "mpn": "TDA4VM88TGCALFRQ1", "family": "TDA4VM", "mfr": "Texas Instruments", "desc": "Jacinto 7 ADAS SoC", "category": "ic_bga", "pkg": "FCBGA-827", "aecq": true, "ecuRoles": ["ADAS","domain controller"], "observedMpn": "TDA4VM88TGCALFRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 250, "price": 138.23, "currency": "USD", "url": "https://www.mouser.com/datasheet/2/405/1/spruis4b-2507423.pdf", "date": "2026-10-06" }
+    ],
+    "notes": "Snippet attributed to Mouser; URL is the result page the search returned (Mouser domain), not the product page. Also: Mouser TDA4VM88TGCALFR $131.33 @250; Digi-Key TDA4VM88TGBALFR $151.02 @250; TI.com list $93.80 (TGCALFR, manufacturer store, not recorded)." },
+  { "mpn": "MIMX8ML8DVNLZAB", "family": "i.MX 8M Plus", "mfr": "NXP", "desc": "i.MX 8M Plus applications processor quad A53 1.8GHz", "category": "ic_bga", "pkg": "LFBGA-548", "aecq": false, "ecuRoles": ["infotainment","telematics"], "observedMpn": "MIMX8ML8DVNLZAB",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 126, "price": 34.63, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MIMX8ML8DVNLZAB/13897870", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 252, "price": 33.79, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MIMX8ML8DVNLZAB/13897870", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 252, "price": 35.49, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/MIMX8ML8DVNLZAB?qs=DPoM0jnrROWJSBb5HwqVeg%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "Consumer-grade (D) code, not the automotive A-grade. Mouser $36.72 @100." },
+  { "mpn": "TC397XX256F300SBDKXUMA2", "family": "TC397XX-256F300S", "mfr": "Infineon", "desc": "AURIX TC3 hexa-core TriCore 300 MHz, 16 MB flash", "category": "ic_bga", "pkg": "LFBGA-292", "aecq": true, "ecuRoles": ["domain controller","ADAS","powertrain"], "observedMpn": "TC397XX256F300SBDKXUMA2",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 55.64, "currency": "EUR", "url": "https://www.digikey.at/en/products/detail/infineon-technologies/TC397XX256F300SBDKXUMA2/20841755", "date": "2026-10-06" }
+    ],
+    "notes": "Orderable SAK-TC397XX-256F300S BD = TC397XX256F300SBDKXUMA2. LCSC $35.05 @30 (below 100, not recorded) - LCSC is ~37% under DK; treat the low LCSC figure with caution." },
+  { "mpn": "MAX20098ATEC/VY+", "family": "MAX20098", "mfr": "Analog Devices", "desc": "Sync buck controller automotive", "category": "ic_qfn", "pkg": "TQFN-16", "aecq": true, "ecuRoles": ["body","infotainment","ADAS"], "observedMpn": "MAX20098ATEC/VY+",
+    "observations": [
+      { "distributor": "Mouser", "qty": 5000, "price": 2.15, "currency": "USD", "url": "https://mouser.com/ProductDetail/Analog-Devices-Maxim-Integrated/MAX20098ATEC-VY+?qs=xZ%2FP+a9zWqbH2xYwof%2FqTA%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "MAX20098ATCA/VY+ not found; sibling ATEC/VY+ used. Mouser ATED/VY+ $2.11 @1000." },
+  { "mpn": "MAX20004AFOC/VY+", "family": "MAX20004", "mfr": "Analog Devices", "desc": "36V 4A sync buck", "category": "ic_qfn", "pkg": "FC2QFN-17", "aecq": true, "ecuRoles": ["ADAS","infotainment","camera"], "observedMpn": "MAX20004AFOC/VY+",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1260, "price": 2.76, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/maxim-integrated/MAX20004AFOC-VY/10249518", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 420, "price": 3.05, "currency": "USD", "url": "https://www.mouser.com/en/ProductDetail/Analog-Devices-Maxim-Integrated/MAX20004AFOC-VY%2b?qs=gZXFycFWdAM2Ojy4bX5E6A%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser '$3.98 @1000' discarded (higher than its 420 break). Octopart $2.058 @1000 for AFOA (no named distributor) not recorded." },
+  { "mpn": "MAX16141AAF/V+T", "family": "MAX16141", "mfr": "Analog Devices", "desc": "Ideal diode controller with circuit breaker", "category": "ic_qfn", "pkg": "TQFN-12", "aecq": true, "ecuRoles": ["BCM","zone controller","ADAS"], "observedMpn": "MAX16141AAF/V+T",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 2500, "price": 3.82, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX16141AAF-V-T/9833443", "date": "2026-10-06" }
+    ],
+    "notes": "Non-auto MAX16141AAF+ Digi-Key $3.33 @1050, $3.24 @2550." },
+  { "mpn": "LT8645SEV#PBF", "family": "LT8645S", "mfr": "Analog Devices", "desc": "65V 8A Silent Switcher buck", "category": "ic_qfn", "pkg": "LQFN-32", "aecq": false, "ecuRoles": ["ADAS","zone controller"], "observedMpn": "LT8645SEV#PBF",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 980, "price": 9.10563, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8645SEV-PBF/7202035", "date": "2026-10-06" }
+    ],
+    "notes": "'LT8645S-1' is not an orderable code (variants are LT8645S and LT8645S-2); E-grade sibling used. Automotive LT8645SJV-2#PBF: Digi-Key $15.17 @980 vs Mouser $9.87 @1000 (contradictory, not recorded)." },
+  { "mpn": "LTC7803EUD#PBF", "family": "LTC7803", "mfr": "Analog Devices", "desc": "40V low-Iq sync buck controller", "category": "ic_qfn", "pkg": "QFN-16 3x3", "aecq": false, "ecuRoles": ["body","infotainment"], "observedMpn": "LTC7803EUD#PBF",
+    "observations": [],
+    "notes": "Digi-Key $5.29 qty 1 only. An unattributed '$2.72 @1,089' and JLCPCB $1.10 @1000 (not franchised) not recorded; Mouser LTC7803JUD $0.534 @1000 discarded as implausible." },
+  { "mpn": "TPS65313QRWGRQ1", "family": "TPS65313-Q1", "mfr": "Texas Instruments", "desc": "Safety PMIC 3 buck + boost, ASIL B, radar/ADAS", "category": "ic_qfn", "pkg": "VQFN-56", "aecq": true, "ecuRoles": ["radar","ADAS"], "observedMpn": "TPS65313QRWGRQ1",
+    "observations": [],
+    "notes": "Two searches returned no distributor listing. Earlier: TI.com list $4.16 (manufacturer store, qty not stated) - not recorded." }
+] }
