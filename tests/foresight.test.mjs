@@ -42,7 +42,7 @@ test('register: every entry is structurally valid', () => {
 test('register: reg anchors are unique, dated, statused and cover every referenced id', () => {
   const ids = REG_ANCHORS.map((a) => a.id);
   assert.equal(new Set(ids).size, ids.length);
-  const statuses = new Set(['in-force', 'adopted', 'proposed', 'under-revision']);
+  const statuses = new Set(['in-force', 'adopted', 'proposed', 'under-revision', 'repealed']);
   for (const a of REG_ANCHORS) {
     assert.ok(a.year >= 2024 && a.year <= 2040, `${a.id}: implausible year ${a.year}`);
     assert.ok(a.name && a.region && a.effect, `${a.id}: missing fields`);
@@ -86,6 +86,9 @@ test('audit: proposed/under-revision anchors give context but never pull a horiz
   const rA = foresightFor({}, { register: [fakeTech], anchors: [{ ...proposed, status: 'adopted' }] });
   const cA = rA.horizons.H1[0];
   assert.ok(cA && cA.regPulled === true, 'adopted anchor should pull');
+  // Repealed law (the US EPA GHG rule, Feb 2026) is context only, like a proposal.
+  const rR = foresightFor({}, { register: [fakeTech], anchors: [{ ...proposed, status: 'repealed' }] });
+  assert.ok(rR.horizons.H2[0] && rR.horizons.H2[0].regPulled === false, 'repealed anchor must not pull');
 });
 
 test('audit: crossing bands are ordered and only present on real crossings', () => {
@@ -268,7 +271,11 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // HARDENED to named entities only (generic "Chinese …" no longer clears the
   // flag — that is how the gate got gamed), so the measured baseline moved.
   // Future edits must not regress from here.
-  assert.ok(a.multiRegionPct >= 71, `multi-region coverage fell to ${a.multiRegionPct}%`);
+  // 71 → 69 at the October 2026 web fact-check: removing named programmes that
+  // were wrong (GM CFRP propshafts, Zeekr/Tesla as the first M3P cars) also
+  // removed the region they appeared to cover. Same rule as the debt gate: a
+  // region "covered" by a false name was never covered.
+  assert.ok(a.multiRegionPct >= 69, `multi-region coverage fell to ${a.multiRegionPct}%`);
   // Re-baselined when the frontier check went region-neutral (single-region-view
   // replaced no-china-frontier): the flag MEANS something different, so the old
   // 129 number does not transfer. 119 was the measured value at that changeover.
@@ -280,13 +287,15 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // correctly flagged. A gate must move when the measurement gets more honest —
   // what it must never do is move because someone wanted a green build.
   // Ratcheted 120 → 115 by the first worst-first re-curation pass (Aug 2026).
-  // Re-baselined 115 → 117 by the October 2026 web fact-check, and the +2 is
+  // Re-baselined 115 → 118 by the October 2026 web fact-check, and the +3 is
   // an HONESTY gain: four entries had been clearing their flags with specifics
   // that were false or unsourceable (a "Rivian RAD (2025)" crawl claim, an
-  // unsourced "2024-25", unverifiable NIO/XPeng names). Removing the false
+  // unsourced "2024-25", unverifiable NIO/XPeng names; Lucid listed as a
+  // 25-30k rpm player at 20k rpm, Tesla as a disconnect supplier, "M&M" as an
+  // immersion-cooling player). Removing the false
   // evidence correctly re-exposes the debt. A flag cleared by a wrong fact is
   // worse than a flag.
-  assert.ok(a.flaggedCount <= 117, `curation debt grew to ${a.flaggedCount}`);
+  assert.ok(a.flaggedCount <= 118, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 

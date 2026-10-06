@@ -113,7 +113,7 @@ function palette(theme: ReportTheme) {
 type Palette = ReturnType<typeof palette>;
 
 const STANCE_RGB: Record<string, RGB> = { agree: [22, 163, 74], caution: [217, 119, 6], challenge: [220, 38, 38] };
-const STATUS_LABEL: Record<string, string> = { 'in-force': 'IN FORCE', adopted: 'ADOPTED', proposed: 'PROPOSED', 'under-revision': 'UNDER REVISION' };
+const STATUS_LABEL: Record<string, string> = { 'in-force': 'IN FORCE', adopted: 'ADOPTED', proposed: 'PROPOSED', 'under-revision': 'UNDER REVISION', repealed: 'REPEALED' };
 
 function setFill(doc: jsPDF, rgb: RGB) { doc.setFillColor(rgb[0], rgb[1], rgb[2]); }
 function setColor(doc: jsPDF, rgb: RGB) { doc.setTextColor(rgb[0], rgb[1], rgb[2]); }
@@ -218,7 +218,7 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
     }
   }
   const confColor = (c: string): RGB => c === 'committed' ? P.GOLD : c === 'probable' ? P.TEAL : P.MUT;
-  const statusColor = (s?: string): RGB => s === 'in-force' ? P.TEAL : s === 'adopted' ? P.GOLD : s === 'under-revision' ? [248, 113, 113] : P.MUT;
+  const statusColor = (s?: string): RGB => s === 'in-force' ? P.TEAL : s === 'adopted' ? P.GOLD : s === 'under-revision' || s === 'repealed' ? [248, 113, 113] : P.MUT;
 
   // ═══ COVER ═════════════════════════════════════════════════════════════════
   paintPage();
@@ -288,7 +288,7 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
   y += 5;
   mono(7.5, true); setColor(doc, P.GOLD); doc.text('REG STATUS', ML, y);
   sans(9); setColor(doc, P.BODY);
-  doc.text('teal IN FORCE  ·  gold ADOPTED  ·  grey PROPOSED  ·  red UNDER REVISION — only law can pull a lane', ML + 26, y);
+  doc.text('teal IN FORCE  ·  gold ADOPTED  ·  grey PROPOSED  ·  red UNDER REVISION / REPEALED — only law can pull a lane', ML + 26, y);
   y += 5;
   if (result.relatedCount) {
     mono(7.5, true); setColor(doc, P.GOLD); doc.text('SCOPE', ML, y);

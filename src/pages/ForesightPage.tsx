@@ -13,7 +13,7 @@ import './foresight.css';
 // ICE/MHEV/PHEV/BEV. Every number on this page is deterministic (curated
 // register + S-curve/Bass/Wright cores); the AI writes the briefing only.
 
-interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision'; effect: string; }
+interface RegAnchor { id: string; name: string; year: number; region: string; status?: 'in-force' | 'adopted' | 'proposed' | 'under-revision' | 'repealed'; effect: string; }
 type Crossing = number | 'passed' | null;
 type CrossingBand = [number | null, number | null] | null;
 interface Projection { basis: string; prelaunch?: boolean; adoption: Record<string, number | null>; costIndex: Record<string, number | null>; crossings?: { cross25: Crossing; cross50: Crossing; band25?: CrossingBand; band50?: CrossingBand; share25?: number; share50?: number; ceiling?: number; peakGrowth?: Crossing }; }
@@ -324,7 +324,7 @@ function crossingLabel(v: Crossing, band?: CrossingBand): string {
 }
 
 const ANCHOR_STATUS_LABEL: Record<string, string> = {
-  proposed: 'proposed — not yet law', 'under-revision': 'under revision — weakening',
+  proposed: 'proposed — not yet law', 'under-revision': 'under revision — weakening', repealed: 'repealed — no longer law',
 };
 
 function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
