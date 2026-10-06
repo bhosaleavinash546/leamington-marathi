@@ -100,3 +100,24 @@ The live check needs a key in your `calculator/.env`: `ANTHROPIC_API_KEY=…`. T
 - Changing a field (for example layers) and pressing Calculate re-prices the analysis.
 
 The model's reading of a real photo can differ from the recorded one. Its accuracy is not measured, because there is no labelled board yet.
+
+## 6. The actual: £17.00 from the supplier
+
+The engineer reports buying this board at **£17.00**. It is recorded in `calculator/scripts/actuals/pcb-actuals.csv` (`npx tsx scripts/accuracy-report.ts scripts/actuals/pcb-actuals.csv`), which reports "insufficient": one board cannot claim accuracy, and no rate is tuned to it.
+
+| | £ / board | vs £17.00 |
+|---|---|---|
+| Tool | 19.82 | +16.6% |
+| Tool, without UK duty and freight (if £17 is ex-works / FOB China) | 19.12 | +12.5% |
+| Manual should-cost | 18.10 | +6.5% |
+
+**Where the gap is likely to be, largest first:**
+1. **The image sensor.** It is £10.56 in the tool, about half the board. Its part number is not on the BOM, and the only listings are $12–18 with no volume break. A 1–2 MP automotive imager on a 250k contract is plausibly £6–8, and at £7 the tool would be about £16.7.
+2. **Contract versus distributor pricing.** The named ICs (£7.1 together) are distributor breaks extrapolated to 250k. Tier-1 / EMS contract prices are typically 10–30% lower.
+3. **Passives with no part number** are priced from class ranges: about £0.8 above a named-part build-up.
+4. **Terms.** The tool's figure is delivered to the UK, with duty and freight of £0.70.
+
+**To close it with evidence, not by tuning:**
+- read the sensor's marking (or get its part number from the supplier);
+- confirm the Incoterm and the annual volume;
+- log further boards' actuals. With five or more PCBA actuals the calibration layer (`src/engine/calibration.ts`) can measure and correct the bias.
