@@ -270,13 +270,13 @@ function _applyHeroParallax(): void {
 
 function _applyTickerHover(): void {
   document.addEventListener('pointerenter', (e: Event) => {
-    const item = _closest(e as PointerEvent, '.comm-ticker-item, .ticker-item');
+    const item = _closest(e as PointerEvent, '.ticker-item');
     if (!item) return;
     animate(item, { scale: 1.06, y: -2 }, OPT_STIFF);
   }, { capture: true, passive: true });
 
   document.addEventListener('pointerleave', (e: Event) => {
-    const item = _closest(e as PointerEvent, '.comm-ticker-item, .ticker-item');
+    const item = _closest(e as PointerEvent, '.ticker-item');
     if (!item) return;
     animate(item, { scale: 1, y: 0 }, OPT_SMOOTH);
   }, { capture: true, passive: true });

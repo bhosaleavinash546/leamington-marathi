@@ -54,7 +54,7 @@ const PROTECTED: Array<[string, string, unknown?]> = [
   ['POST', '/api/aichat', { message: 'hi' }], ['POST', '/api/agent/chat', { message: 'hi' }],
   ['GET', '/api/sync/scenarios'], ['POST', '/api/sync/scenarios', { id: 'a', name: 'a' }],
   ['DELETE', '/api/sync/scenarios/a'], ['GET', '/api/sync/library'], ['PUT', '/api/sync/library', { library: {} }],
-  ['GET', '/api/news'], ['POST', '/api/news/refresh'], ['GET', '/api/commodities'],
+  ['GET', '/api/news'], ['POST', '/api/news/refresh'],
   ['GET', '/api/prices/status'], ['POST', '/api/prices/refresh'],
   ['POST', '/api/dfm/analyze', {}], ['GET', '/api/telemetry/recent'],
 ];

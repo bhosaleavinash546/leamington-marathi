@@ -280,7 +280,8 @@ what is true** — nothing here has been compared with a price JLR paid.
   - `/api/cad/tessellate` needs a session;
   - DFM jobs read only `cv-dfm-<uuid>` temp files.
 - Escape every model / OCR / BOM / user string you put in `innerHTML` (`escHtml`).
-- The commodity ticker is a SIMULATION and no costing reads it — never describe it as live.
+- The simulated commodity ticker / dashboard / price alerts were REMOVED (Oct 2026): no `/api/commodities`, no ticker. The causal
+  model names the index category only (`COMMODITY_INDEX_CATEGORIES`) — never reintroduce a price that is not from a real source.
 - CAD demos are recordings (banner, not `occt`).
 - Casting melt loss is not credited as scrap (`rawMaterial.lossIsNotScrap`).
 - The uncertainty band keeps the bought-in carve-out.
@@ -518,6 +519,6 @@ what is true** — nothing here has been compared with a price JLR paid.
   `html:not([data-theme="light"])` (`tests/dark-theme-scope.test.ts`). One green accent (#22C55E, dark ink on
   green fills); success / saving is TEAL in dark (green is the accent). Prove a theme change with
   `e2e/theme-shots.ts` (shoot before/after, `--diff`: light must be 0 px).
-- Live commodity prices in `server/routes/commodities.ts` are a **seeded random
-  walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
-  writes a display-only override table read by no costing path.
+- There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
+  removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
+  path (its routes are admin-only).

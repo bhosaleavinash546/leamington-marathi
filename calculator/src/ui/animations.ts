@@ -219,7 +219,6 @@ export function onDashboardRendered(): void {
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
 
   // Ticker banner
-  tl.from('.comm-ticker-outer', { autoAlpha: 0, y: -12, duration: 0.35 }, 0);
 
   // KPI cards stagger
   const kpiCards = document.querySelectorAll('.dash-kpi-card');
@@ -417,16 +416,6 @@ export function dismissToast(toast: HTMLElement, onDone: () => void): void {
     x: 80, autoAlpha: 0, duration: 0.28, ease: 'power2.in',
     onComplete: onDone
   });
-}
-
-// ── COMMODITY PRICE PULSE ─────────────────────────────────────────────────────
-
-export function animateCommPriceChange(card: HTMLElement, dir: 'up' | 'down'): void {
-  if (PREFERS_REDUCED_MOTION) return;
-  const col = dir === 'up' ? '#10b981' : '#ef4444';
-  gsap.timeline()
-    .to(card, { boxShadow: `0 0 22px 5px ${col}60`, duration: 0.18 })
-    .to(card, { boxShadow: 'none',                   duration: 0.7  });
 }
 
 // ── PCB / RESULTS SECTION REVEALS ────────────────────────────────────────────

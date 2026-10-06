@@ -17,12 +17,19 @@
  * even when the commodity feed is an indicative benchmark rather than a live tick.
  */
 
-/** A commodity price index the model can reason about (from the live commodity panel). */
+/**
+ * A commodity index the model reasons about. The level is optional: the model's figure — the piece-price
+ * move per 1% index move — needs only the part's material £. The simulated price feed that used to supply
+ * a level was removed (Oct 2026), so the sentence names the index without quoting a price.
+ */
 export interface CommodityIndexRef {
   category: string;       // 'Steel', 'Aluminium', 'Copper', …
-  currentPrice: number;   // current index level
+  currentPrice?: number;  // index level, only if a real source supplies one
   unit?: string;          // '£/t', '£/kg', …
 }
+
+/** Every index category a material family maps to (FAMILY_TO_INDEX's values). */
+export const COMMODITY_INDEX_CATEGORIES = ['Steel', 'Aluminium', 'Copper', 'Magnesium', 'Titanium', 'Zinc', 'Nickel'];
 
 /** Map a rate-library material family to a commodity index category. */
 const FAMILY_TO_INDEX: Record<string, string> = {
@@ -46,7 +53,7 @@ export function indexCategoryForFamily(family: string | undefined): string | nul
 export interface CausalDriver {
   family: string;            // the material family as costed
   indexCategory: string;     // matched commodity index category
-  currentPrice: number;      // current index level
+  currentPrice?: number;     // index level, when a real source supplies one
   unit: string;
   materialCostGBP: number;   // the raw-material £ this driver explains
   passThrough: number;       // (1 + overhead%)(1 + margin%) — material→total amplifier
@@ -128,7 +135,8 @@ export function impliedIndexPremiumPct(model: CausalCostModel, supplierQuote: nu
 export function coachSentence(model: CausalCostModel, supplierQuote: number | null, fmt: (n: number) => string): string | null {
   const d = model.driver;
   if (!d) return null;
-  const base = `Material is ${fmt(d.materialCostGBP)} of this part, driven by ${d.indexCategory} at ${d.currentPrice.toLocaleString()}${d.unit ? ' ' + d.unit : ''}. Every 1% move in the ${d.indexCategory} index shifts the piece price by ${fmt(d.gbpPer1pctIndex)}.`;
+  const level = typeof d.currentPrice === 'number' && Number.isFinite(d.currentPrice) ? ` at ${d.currentPrice.toLocaleString()}${d.unit ? ' ' + d.unit : ''}` : '';
+  const base = `Material is ${fmt(d.materialCostGBP)} of this part, driven by the ${d.indexCategory} index${level}. Every 1% move in the ${d.indexCategory} index shifts the piece price by ${fmt(d.gbpPer1pctIndex)}.`;
   if (supplierQuote && supplierQuote > model.partTotal) {
     const prem = impliedIndexPremiumPct(model, supplierQuote);
     if (prem !== null && prem > 0) {
