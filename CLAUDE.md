@@ -473,6 +473,10 @@ what is true** — nothing here has been compared with a price JLR paid.
   Help sections and the demo gallery live in `<template data-cv-lazy>` and are built on first open
   (`lazy-blocks.ts`) — code that reaches inside them must run after the modal opens; demo cards use ONE delegated
   handler. No light colour literals in in-app panels (`tests/ui-polish.test.ts`); use theme tokens.
+  Dark theme = black + green (Oct 2026): `src/ui/styles/dark-green.css`, loaded LAST, every selector scoped to
+  `html:not([data-theme="light"])` (`tests/dark-theme-scope.test.ts`). One green accent (#22C55E, dark ink on
+  green fills); success / saving is TEAL in dark (green is the accent). Prove a theme change with
+  `e2e/theme-shots.ts` (shoot before/after, `--diff`: light must be 0 px).
 - Live commodity prices in `server/routes/commodities.ts` are a **seeded random
   walk** (labelled "indicative"), not a real feed; the live-metal `price-fetcher.ts`
   writes a display-only override table read by no costing path.

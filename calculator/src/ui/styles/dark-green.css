@@ -1,0 +1,144 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dark theme — black + green (Oct 2026). Loaded LAST.
+
+   EVERY rule here is scoped to html:not([data-theme="light"]) — the light theme
+   cannot be touched by this file (checked pixel by pixel: e2e/theme-shots.ts).
+
+   The look: a near-black, neutral (green-tinted) base with clearly stepped
+   surfaces; ONE green accent, used for the primary action, the active place
+   (nav, tab), links, focus and selection — everything else is neutral grey.
+   Green is the accent, so "good" (saving, cheaper, verified) moves to TEAL here,
+   always beside an icon or sign; amber warns, red is an error.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+html:not([data-theme="light"]) {
+  /* Base: off-black, never #000 (white text on pure black is harsh and loses depth). */
+  --bg: #090b0a;
+  --bg-secondary: #0c0f0d;
+  --surface: #111513;
+  --surface-raised: #141916;
+  --surface-elevated: #171c19;
+  --surface-hover: #1e2521;
+  --card-bg: var(--surface);
+  --border: rgba(178, 204, 186, 0.10);
+  --border-strong: rgba(178, 204, 186, 0.22);
+
+  /* Text ramp — AA on --surface (muted 5.0:1, secondary 8.9:1, primary 16:1). */
+  --text-primary: #eef3ef;
+  --text-secondary: #a9b6ad;
+  --text-muted: #85928a;
+
+  /* The one accent. #22C55E on --surface ≈ 8.2:1; dark ink on a green fill ≈ 9:1. */
+  --accent: #22c55e;
+  --accent-dark: #16a34a;
+  --accent-light: rgba(34, 197, 94, 0.12);
+  --accent-ink: #4ade80;
+  --on-accent: #04130a;
+  --accent-glow: 0 0 0 1px rgba(34, 197, 94, 0.35), 0 4px 18px rgba(34, 197, 94, 0.18);
+  --accent2: #a78bfa;
+  --accent3: #2dd4bf;
+  --logo-glow: 0 0 14px rgba(34, 197, 94, 0.28);
+
+  /* Status: success / saving is TEAL in this theme (green is the accent). */
+  --green: #2dd4bf;           --green-bg: rgba(45, 212, 191, 0.13);
+  --success: var(--green);    --success-bg: var(--green-bg);    --success-border: rgba(45, 212, 191, 0.40);
+  --red: #f87171;             --red-bg: rgba(248, 113, 113, 0.13);
+  --amber: #fbbf24;           --amber-bg: rgba(251, 191, 36, 0.13);
+  --blue: #93a4bd;            --blue-bg: rgba(147, 164, 189, 0.13);   /* info: a neutral slate, not a second accent */
+  --info: var(--blue);        --info-bg: var(--blue-bg);        --info-border: rgba(147, 164, 189, 0.40);
+
+  /* A solid accent, not a green → violet gradient. */
+  --grad-primary: linear-gradient(0deg, var(--accent), var(--accent));
+  --grad-indigo: linear-gradient(0deg, var(--accent-dark), var(--accent-dark));
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 44px rgba(0, 0, 0, 0.65);
+  --glass-bg: rgba(17, 21, 19, 0.94);
+  --glass-border: rgba(178, 204, 186, 0.14);
+  color-scheme: dark;
+}
+html:not([data-theme="light"]) body { background: var(--bg); }
+html:not([data-theme="light"]) ::selection { background: rgba(34, 197, 94, 0.30); color: var(--text-primary); }
+
+/* ── Primary action: solid green, dark ink, no blue halo ───────────────────── */
+html:not([data-theme="light"]) .btn-primary,
+html:not([data-theme="light"]) .btn-primary:hover,
+html:not([data-theme="light"]) #new-costing-btn,
+html:not([data-theme="light"]) #calc-btn {
+  background: var(--accent) !important;
+  color: var(--on-accent) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+html:not([data-theme="light"]) .btn-primary:hover,
+html:not([data-theme="light"]) #new-costing-btn:hover,
+html:not([data-theme="light"]) #calc-btn:hover {
+  background: #2fd16a !important;
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.45), 0 6px 20px rgba(34, 197, 94, 0.20) !important;
+}
+html:not([data-theme="light"]) .btn-primary:disabled,
+html:not([data-theme="light"]) #calc-btn:disabled {
+  background: var(--surface-hover) !important; color: var(--text-muted) !important; border-color: var(--border) !important; box-shadow: none !important;
+}
+html:not([data-theme="light"]) .btn-primary .ic,
+html:not([data-theme="light"]) #new-costing-btn .ic { color: var(--on-accent); }
+
+/* Secondary buttons stay neutral; green only on hover / focus. */
+html:not([data-theme="light"]) .btn-secondary,
+html:not([data-theme="light"]) .btn-outline {
+  background: var(--surface-elevated) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-strong) !important;
+}
+html:not([data-theme="light"]) .btn-secondary:hover,
+html:not([data-theme="light"]) .btn-outline:hover {
+  border-color: rgba(34, 197, 94, 0.55) !important; color: var(--accent-ink) !important; background: var(--surface-hover) !important;
+}
+
+/* ── Focus: one green ring everywhere ─────────────────────────────────────── */
+html:not([data-theme="light"]) :focus-visible { outline-color: var(--accent); }
+html:not([data-theme="light"]) input:focus,
+html:not([data-theme="light"]) select:focus,
+html:not([data-theme="light"]) textarea:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18) !important;
+  outline: none;
+}
+
+/* ── Links ────────────────────────────────────────────────────────────────── */
+html:not([data-theme="light"]) a:not(.btn) { color: var(--accent-ink); }
+
+/* ── Logo: the badge keeps its own colours; the wordmark goes green ───────── */
+html:not([data-theme="light"]) .logo-name,
+html:not([data-theme="light"]) .brand-name { color: var(--text-primary); }
+
+/* ── Shell: header and sidebar on the base, hairline borders ───────────────── */
+html:not([data-theme="light"]) .header,
+html:not([data-theme="light"]) header.header {
+  background: rgba(12, 15, 13, 0.94) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+/* ── Figures are white; green is for actions and the active place ─────────── */
+html:not([data-theme="light"]) .summary-card .card-value { color: var(--text-primary) !important; }
+
+/* ── Self-audit findings: tinted panels, not light-theme cards on black ────── */
+html:not([data-theme="light"]) .sa-row { border-radius: 8px !important; }
+html:not([data-theme="light"]) .sa-row--high   { background: var(--red-bg) !important;   border-color: rgba(248, 113, 113, 0.38) !important; }
+html:not([data-theme="light"]) .sa-row--medium { background: var(--amber-bg) !important; border-color: rgba(251, 191, 36, 0.38) !important; }
+html:not([data-theme="light"]) .sa-row--low    { background: var(--surface-elevated) !important; border-color: var(--border-strong) !important; }
+html:not([data-theme="light"]) .sa-row--high .sa-sev,   html:not([data-theme="light"]) .sa-row--high .sa-title   { color: var(--red) !important; }
+html:not([data-theme="light"]) .sa-row--medium .sa-sev, html:not([data-theme="light"]) .sa-row--medium .sa-title { color: var(--amber) !important; }
+html:not([data-theme="light"]) .sa-row--low .sa-sev,    html:not([data-theme="light"]) .sa-row--low .sa-title    { color: var(--text-secondary) !important; }
+html:not([data-theme="light"]) .sa-msg { color: var(--text-secondary) !important; }
+html:not([data-theme="light"]) .sa-exp { color: var(--text-muted) !important; }
+
+/* ── Words and gradients that name or use the accent ──────────────────────── */
+html:not([data-theme="light"]) .ck-light { display: none; }
+html:not([data-theme="light"]) .ck-dark { display: inline; }
+html:not([data-theme="light"]) .cv-hl { background: linear-gradient(120deg, #22c55e, #2dd4bf); -webkit-background-clip: text; background-clip: text; }
+
+/* PCB photo tiles: top side takes the accent (green); the bottom side moves off teal (too close
+   to green here) to blue, which is no longer the accent in this theme. */
+html:not([data-theme="light"]) .pcb-slots { --slot-teal: #60a5fa; }

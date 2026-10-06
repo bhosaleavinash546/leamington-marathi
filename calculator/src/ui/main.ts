@@ -14,6 +14,7 @@ import './styles/calculator.css';
 import './styles/brand.css';
 // UI/UX review (Oct 2026): the review's layout and polish, loaded last — docs/ui/ui-ux-review-2026-10.md.
 import './styles/saas-polish.css';
+import './styles/dark-green.css';   // dark theme only: black + green (every rule scoped to not-light)
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
@@ -15600,10 +15601,11 @@ function renderSelfAudit(result: PartCostResult, input: UniversalStackInput): vo
     const rows = findings.map((f, i) => {
       const [bg, bd, fg] = sevColor[f.severity];
       const fix = f.correction ? `<button class="btn btn-sm sa-fix" data-i="${i}" style="margin-left:auto;font-size:0.7rem;padding:3px 10px">Apply fix</button>` : '';
-      return `<div style="background:${bg};border:1px solid ${bd};border-radius:6px;padding:8px 12px;margin-top:6px">
-        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:0.62rem;font-weight:700;color:${fg};letter-spacing:0.04em">${f.severity.toUpperCase()}</span><strong style="font-size:0.8rem;color:${fg}">${escHtml(f.title)}</strong>${fix}</div>
-        <div style="font-size:0.75rem;color:#333;margin-top:3px">${escHtml(f.message)}</div>
-        ${f.expected ? `<div style="font-size:0.7rem;color:#666;margin-top:2px">expected <strong>${escHtml(f.expected)}</strong> · actual ${escHtml(f.actual ?? '')}</div>` : ''}
+      // Classes let the dark theme restyle a finding (dark-green.css); the light colours stay inline.
+      return `<div class="sa-row sa-row--${f.severity}" style="background:${bg};border:1px solid ${bd};border-radius:6px;padding:8px 12px;margin-top:6px">
+        <div style="display:flex;align-items:center;gap:8px"><span class="sa-sev" style="font-size:0.62rem;font-weight:700;color:${fg};letter-spacing:0.04em">${f.severity.toUpperCase()}</span><strong class="sa-title" style="font-size:0.8rem;color:${fg}">${escHtml(f.title)}</strong>${fix}</div>
+        <div class="sa-msg" style="font-size:0.75rem;color:#333;margin-top:3px">${escHtml(f.message)}</div>
+        ${f.expected ? `<div class="sa-exp" style="font-size:0.7rem;color:#666;margin-top:2px">expected <strong>${escHtml(f.expected)}</strong> · actual ${escHtml(f.actual ?? '')}</div>` : ''}
       </div>`;
     }).join('');
     div.innerHTML = `<div style="font-size:0.82rem;font-weight:700;color:var(--text-primary,#222);display:flex;align-items:center;gap:6px">
