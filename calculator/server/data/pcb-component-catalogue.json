@@ -1275,15 +1275,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 16.4706,
-"q10k": 14,
-"q100k": 11.9,
-"q200k": 11.3318,
-"q300k": 11.0121
+"q1k": 10.2834,
+"q10k": 8.7409,
+"q100k": 7.4298,
+"q200k": 7.075,
+"q300k": 6.8754
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC264DA-40F200W BC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £16.4706 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TC275",
@@ -1294,15 +1299,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 18.8235,
-"q10k": 16,
-"q100k": 13.6,
-"q200k": 12.9507,
-"q300k": 12.5853
+"q1k": 14.0844,
+"q10k": 12.8759,
+"q100k": 11.771,
+"q200k": 11.4574,
+"q300k": 11.2778
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC275TP-64F200W DC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £18.8235 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.039,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 500
+}
 },
 {
 "mpn": "TC277",
@@ -1313,15 +1323,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 21.1765,
-"q10k": 18,
-"q100k": 15.3,
-"q200k": 14.5695,
-"q300k": 14.1584
+"q1k": 12.5569,
+"q10k": 10.6733,
+"q100k": 9.0723,
+"q200k": 8.6392,
+"q300k": 8.3954
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC277TP-64F200S DC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £21.1765 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TC297",
@@ -1332,15 +1347,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 25.8824,
-"q10k": 22,
-"q100k": 18.7,
-"q200k": 17.8072,
-"q300k": 17.3048
+"q1k": 23.0933,
+"q10k": 19.6293,
+"q100k": 16.6849,
+"q200k": 15.8883,
+"q300k": 15.44
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC297TP-128F300S BC (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £25.8824 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TC334",
@@ -1370,15 +1390,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 21.1765,
-"q10k": 18,
-"q100k": 15.3,
-"q200k": 14.5695,
-"q300k": 14.1584
+"q1k": 14.0679,
+"q10k": 11.9577,
+"q100k": 10.164,
+"q200k": 9.6787,
+"q300k": 9.4057
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC364DP-64F300W AA (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £21.1765 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TC377",
@@ -1389,15 +1414,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 28.2353,
-"q10k": 24,
-"q100k": 20.4,
-"q200k": 19.426,
-"q300k": 18.8779
+"q1k": 25.8123,
+"q10k": 21.9405,
+"q100k": 18.6494,
+"q200k": 17.759,
+"q300k": 17.258
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC377TX-96F300S AA (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £28.2353 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TC387",
@@ -1408,15 +1438,20 @@
 "pkg": "LFBGA",
 "aecq": true,
 "gbp": {
-"q1k": 35.2941,
-"q10k": 30,
-"q100k": 25.5,
-"q200k": 24.2825,
-"q300k": 23.5974
+"q1k": 27.9008,
+"q10k": 23.7157,
+"q100k": 20.1583,
+"q200k": 19.1958,
+"q300k": 18.6543
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SAK-TC387QP-160F300S AE (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £35.2941 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TC397",
@@ -1427,15 +1462,20 @@
 "pkg": "LFBGA",
 "aecq": true,
 "gbp": {
-"q1k": 49.4118,
-"q10k": 42,
-"q100k": 35.7,
-"q200k": 33.9955,
-"q300k": 33.0364
+"q1k": 40.5972,
+"q10k": 34.5076,
+"q100k": 29.3315,
+"q200k": 27.931,
+"q300k": 27.143
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TC397XX256F300SBDKXUMA2 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £49.4118 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
 },
 {
 "mpn": "TC499",
@@ -1484,15 +1524,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 9.4118,
-"q10k": 8,
-"q100k": 6.8,
-"q200k": 6.4753,
-"q300k": 6.2926
+"q1k": 9.3317,
+"q10k": 8.5486,
+"q100k": 7.8312,
+"q200k": 7.6273,
+"q300k": 7.5105
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SPC584B70E3EHC0X (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £9.4118 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0381,
+"basis": "slope from the part's own breaks (2 pairs)",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "SPC58EC",
@@ -1661,15 +1706,20 @@
 "pkg": "FCBGA",
 "aecq": true,
 "gbp": {
-"q1k": 56.4706,
-"q10k": 48,
-"q100k": 40.8,
-"q200k": 38.852,
-"q300k": 37.7559
+"q1k": 57.7364,
+"q10k": 49.076,
+"q100k": 41.7146,
+"q200k": 39.7229,
+"q300k": 38.6022
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member S32G274AABK0VUCT (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £56.4706 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 8400
+}
 },
 {
 "mpn": "S32G399",
@@ -2013,15 +2063,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 8.2353,
-"q10k": 7,
-"q100k": 5.95,
-"q200k": 5.6659,
-"q300k": 5.5061
+"q1k": 7.1244,
+"q10k": 6.0557,
+"q100k": 5.1474,
+"q200k": 4.9016,
+"q300k": 4.7633
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member STM32H743ZIT6 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £8.2353 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1020
+}
 },
 {
 "mpn": "STM32F407",
@@ -2051,15 +2106,20 @@
 "pkg": "LQFP",
 "aecq": true,
 "gbp": {
-"q1k": 4.7059,
-"q10k": 4,
-"q100k": 3.4,
-"q200k": 3.2377,
-"q300k": 3.1463
+"q1k": 4.6501,
+"q10k": 3.9526,
+"q100k": 3.3597,
+"q200k": 3.1993,
+"q300k": 3.109
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member STM32G474RET3 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £4.7059 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "STM32L4",
@@ -2203,15 +2263,20 @@
 "pkg": "eWLB",
 "aecq": true,
 "gbp": {
-"q1k": 16.4706,
-"q10k": 14,
-"q100k": 11.9,
-"q200k": 11.3318,
-"q300k": 11.0121
+"q1k": 20.6906,
+"q10k": 17.587,
+"q100k": 14.949,
+"q200k": 14.2352,
+"q300k": 13.8336
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels; NDA part, no public price",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TEF8232EN1/N1/ZUZ (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £16.4706 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
 },
 {
 "mpn": "MAX20430",
@@ -2679,15 +2744,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 0.9412,
-"q10k": 0.8,
-"q100k": 0.68,
-"q200k": 0.6475,
-"q300k": 0.6293
+"q1k": 0.7334,
+"q10k": 0.6111,
+"q100k": 0.5092,
+"q200k": 0.482,
+"q300k": 0.4667
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TCAN1043ADRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.9412 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0792,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2500
+}
 },
 {
 "mpn": "TCAN1051HGVDRQ1",
@@ -2917,15 +2987,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 0.5294,
-"q10k": 0.45,
-"q100k": 0.3825,
-"q200k": 0.3642,
-"q300k": 0.354
+"q1k": 0.7004,
+"q10k": 0.6634,
+"q100k": 0.6284,
+"q200k": 0.6182,
+"q300k": 0.6124
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLE9251VSJXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.5294 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0235,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 5000
+}
 },
 {
 "mpn": "TLE9252",
@@ -2955,15 +3030,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 1.0588,
-"q10k": 0.9,
-"q100k": 0.765,
-"q200k": 0.7285,
-"q300k": 0.7079
+"q1k": 1.1829,
+"q10k": 1.0054,
+"q100k": 0.8546,
+"q200k": 0.8138,
+"q300k": 0.7909
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLE9255WSKXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.0588 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2500
+}
 },
 {
 "mpn": "TLE9262",
@@ -2993,15 +3073,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 2.3529,
-"q10k": 2,
-"q100k": 1.7,
-"q200k": 1.6188,
-"q300k": 1.5732
+"q1k": 2.4052,
+"q10k": 2.0444,
+"q100k": 1.7378,
+"q200k": 1.6548,
+"q300k": 1.6081
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLE92633QXXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.3529 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2500
+}
 },
 {
 "mpn": "TLE9271",
@@ -3031,15 +3116,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 2.5882,
-"q10k": 2.2,
-"q100k": 1.87,
-"q200k": 1.7807,
-"q300k": 1.7305
+"q1k": 1.3709,
+"q10k": 1.269,
+"q100k": 1.1748,
+"q200k": 1.1478,
+"q300k": 1.1323
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLE94713ESXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.5882 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0335,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 3000
+}
 },
 {
 "mpn": "UJA1169ATK/F/3Z",
@@ -3310,15 +3400,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 8.8235,
-"q10k": 7.5,
-"q100k": 6.375,
-"q200k": 6.0706,
-"q300k": 5.8994
+"q1k": 4.9019,
+"q10k": 4.4619,
+"q100k": 4.0614,
+"q200k": 3.948,
+"q300k": 3.8832
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member L9963E-TR (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £8.8235 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0408,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "MC33772",
@@ -3329,15 +3424,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 7.6471,
-"q10k": 6.5,
-"q100k": 5.525,
-"q200k": 5.2612,
-"q300k": 5.1128
+"q1k": 4.7206,
+"q10k": 4.1984,
+"q100k": 3.7339,
+"q200k": 3.6045,
+"q300k": 3.5308
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member MC33772CTA1AE (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.6471 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0509,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "BQ79616",
@@ -3348,15 +3448,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 10,
-"q10k": 8.5,
-"q100k": 7.225,
-"q200k": 6.88,
-"q300k": 6.6859
+"q1k": 7.0998,
+"q10k": 6.4921,
+"q100k": 5.9363,
+"q200k": 5.7785,
+"q300k": 5.6882
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member BQ79616PAPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £10 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0389,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "LTC6813",
@@ -3367,15 +3472,20 @@
 "pkg": "SOIC/VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 12.9412,
-"q10k": 11,
-"q100k": 9.35,
-"q200k": 8.9036,
-"q300k": 8.6524
+"q1k": 6.9455,
+"q10k": 5.9036,
+"q100k": 5.0181,
+"q200k": 4.7785,
+"q300k": 4.6437
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member LTC6813HLWE-1#3ZZPBF (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £12.9412 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
 },
 {
 "mpn": "TJA1100",
@@ -3405,15 +3515,20 @@
 "pkg": "VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 1.6471,
-"q10k": 1.4,
-"q100k": 1.19,
-"q200k": 1.1332,
-"q300k": 1.1012
+"q1k": 1.7857,
+"q10k": 1.6345,
+"q100k": 1.4961,
+"q200k": 1.4568,
+"q300k": 1.4342
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TJA1101BHN (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.6471 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0384,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 4000
+}
 },
 {
 "mpn": "TJA1102HN",
@@ -3618,15 +3733,20 @@
 "pkg": "VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 2,
-"q10k": 1.7,
-"q100k": 1.445,
-"q200k": 1.376,
-"q300k": 1.3372
+"q1k": 3.8973,
+"q10k": 3.3127,
+"q100k": 2.8158,
+"q200k": 2.6814,
+"q300k": 2.6057
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member DP83TC811SWRNDRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "DP83TG720",
@@ -3637,15 +3757,20 @@
 "pkg": "VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 3.8824,
-"q10k": 3.3,
-"q100k": 2.805,
-"q200k": 2.6711,
-"q300k": 2.5957
+"q1k": 2.7325,
+"q10k": 2.3226,
+"q100k": 1.9742,
+"q200k": 1.88,
+"q300k": 1.8269
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member DP83TG720SWRHARQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.8824 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "DP83822",
@@ -3694,15 +3819,20 @@
 "pkg": "VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 7.0588,
-"q10k": 6,
-"q100k": 5.1,
-"q200k": 4.8565,
-"q300k": 4.7195
+"q1k": 6.442,
+"q10k": 5.9992,
+"q100k": 5.5868,
+"q200k": 5.4683,
+"q300k": 5.4001
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SJA1105QEL (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.0588 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0309,
+"basis": "slope from the part's own breaks (3 pairs)",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "SJA1110",
@@ -3713,15 +3843,20 @@
 "pkg": "VQFN",
 "aecq": true,
 "gbp": {
-"q1k": 15.2941,
-"q10k": 13,
-"q100k": 11.05,
-"q200k": 10.5224,
-"q300k": 10.2255
+"q1k": 10.703,
+"q10k": 9.9582,
+"q100k": 9.2652,
+"q200k": 9.0661,
+"q300k": 8.9517
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member SJA1110AEL/0Y (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £15.2941 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0313,
+"basis": "slope from the part's own breaks (2 pairs)",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TPS7B82",
@@ -4092,15 +4227,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 0.8824,
-"q10k": 0.75,
-"q100k": 0.6375,
-"q200k": 0.6071,
-"q300k": 0.5899
+"q1k": 0.7488,
+"q10k": 0.6365,
+"q100k": 0.541,
+"q200k": 0.5152,
+"q300k": 0.5006
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member LM74700QDBVRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.8824 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "LM74610",
@@ -4168,15 +4308,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 9.4118,
-"q10k": 8,
-"q100k": 6.8,
-"q200k": 6.4753,
-"q300k": 6.2926
+"q1k": 2.5605,
+"q10k": 2.1764,
+"q100k": 1.8499,
+"q200k": 1.7616,
+"q300k": 1.7119
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TPS65381AQDAPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £9.4118 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TPS653850",
@@ -4244,15 +4389,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 2.5882,
-"q10k": 2.2,
-"q100k": 1.87,
-"q200k": 1.7807,
-"q300k": 1.7305
+"q1k": 2.4547,
+"q10k": 2.0981,
+"q100k": 1.7933,
+"q200k": 1.7106,
+"q300k": 1.6639
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member UCC21520AQDWRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.5882 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0682,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2000
+}
 },
 {
 "mpn": "UCC5320",
@@ -4339,15 +4489,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 2.2353,
-"q10k": 1.9,
-"q100k": 1.615,
-"q200k": 1.5379,
-"q300k": 1.4945
+"q1k": 1.2419,
+"q10k": 1.0556,
+"q100k": 0.8973,
+"q200k": 0.8545,
+"q300k": 0.8304
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member DRV8873HQPWPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2.2353 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "DRV8912",
@@ -4377,15 +4532,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 1,
-"q10k": 0.85,
-"q100k": 0.7225,
-"q200k": 0.688,
-"q300k": 0.6686
+"q1k": 1.1428,
+"q10k": 0.9714,
+"q100k": 0.8257,
+"q200k": 0.7862,
+"q300k": 0.764
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member BTS70021EPPXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
 },
 {
 "mpn": "BTS7006",
@@ -4396,15 +4556,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 0.8824,
-"q10k": 0.75,
-"q100k": 0.6375,
-"q200k": 0.6071,
-"q300k": 0.5899
+"q1k": 0.7561,
+"q10k": 0.6427,
+"q100k": 0.5463,
+"q200k": 0.5202,
+"q300k": 0.5055
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member BTS70061EPPXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.8824 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "BTS7040",
@@ -4415,15 +4580,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 1.5294,
-"q10k": 1.3,
-"q100k": 1.105,
-"q200k": 1.0522,
-"q300k": 1.0226
+"q1k": 0.5894,
+"q10k": 0.5628,
+"q100k": 0.5375,
+"q200k": 0.5301,
+"q300k": 0.5258
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member BTS70402EPAXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.5294 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 9000
+}
 },
 {
 "mpn": "BTS50085",
@@ -4472,15 +4642,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 1,
-"q10k": 0.85,
-"q100k": 0.7225,
-"q200k": 0.688,
-"q300k": 0.6686
+"q1k": 1.5861,
+"q10k": 1.3482,
+"q100k": 1.146,
+"q200k": 1.0913,
+"q300k": 1.0605
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member BTT60302ERAXUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
 },
 {
 "mpn": "BTF3050",
@@ -4529,15 +4704,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 1.1765,
-"q10k": 1,
-"q100k": 0.85,
-"q200k": 0.8094,
-"q300k": 0.7866
+"q1k": 0.8896,
+"q10k": 0.8319,
+"q100k": 0.778,
+"q200k": 0.7624,
+"q300k": 0.7535
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member VN7016AJTR (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.1765 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0291,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 7500
+}
 },
 {
 "mpn": "NCV7805",
@@ -4643,15 +4823,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 0.7647,
-"q10k": 0.65,
-"q100k": 0.5525,
-"q200k": 0.5261,
-"q300k": 0.5113
+"q1k": 1.66,
+"q10k": 1.411,
+"q100k": 1.1994,
+"q200k": 1.1421,
+"q300k": 1.1099
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLS850D0TAV50ATMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.7647 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
 },
 {
 "mpn": "TLS4120",
@@ -4681,15 +4866,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 0.6471,
-"q10k": 0.55,
-"q100k": 0.4675,
-"q200k": 0.4452,
-"q300k": 0.4326
+"q1k": 0.5703,
+"q10k": 0.4847,
+"q100k": 0.412,
+"q200k": 0.3923,
+"q300k": 0.3813
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLE42754GATMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.6471 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "MCP1703",
@@ -4857,15 +5047,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 3.7647,
-"q10k": 3.2,
-"q100k": 2.72,
-"q200k": 2.5901,
-"q300k": 2.5171
+"q1k": 3.5301,
+"q10k": 3.0006,
+"q100k": 2.5505,
+"q200k": 2.4287,
+"q300k": 2.3602
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TPS92662AQPHPRQ1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.7647 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TLD5099",
@@ -6110,15 +6305,20 @@
 "pkg": "QFN/LGA",
 "aecq": true,
 "gbp": {
-"q1k": 2,
-"q10k": 1.7,
-"q100k": 1.445,
-"q200k": 1.376,
-"q300k": 1.3372
+"q1k": 1.7301,
+"q10k": 1.4706,
+"q100k": 1.25,
+"q200k": 1.1903,
+"q300k": 1.1567
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TLE5012BE1000XUMA1 (distributor-priced, 2026-10-06). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £2 @1k.",
+"asOf": "2026-10-06",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "TLE4998",
@@ -6542,14 +6742,14 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.17647,
-"q10k": 0.15,
-"q100k": 0.1275,
-"q200k": 0.1214,
-"q300k": 0.118
+"q1k": 0.14508,
+"q10k": 0.12332,
+"q100k": 0.10446,
+"q200k": 0.0995,
+"q300k": 0.0967
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.186 @1k (2026-10-01)",
+"source": "Family key priced as its catalogued member ECS-250-20-3X-TR (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.17647 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -6580,14 +6780,14 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.42353,
-"q10k": 0.36,
-"q100k": 0.306,
-"q200k": 0.2914,
-"q300k": 0.2832
+"q1k": 0.3588,
+"q10k": 0.30498,
+"q100k": 0.25834,
+"q200k": 0.246,
+"q300k": 0.2391
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on TXC $0.46 @1k (2026-10-01)",
+"source": "Family key priced as its catalogued member 7V-25.000MAAE-T (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.42353 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -6656,14 +6856,14 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.70588,
-"q10k": 0.6,
-"q100k": 0.51,
-"q200k": 0.4856,
-"q300k": 0.4719
+"q1k": 0.585,
+"q10k": 0.49725,
+"q100k": 0.4212,
+"q200k": 0.4011,
+"q300k": 0.3898
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.67–0.84 @1k (2026-10-01)",
+"source": "Family key priced as its catalogued member SIT8008BI-71-33E-25.000000 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.70588 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -6770,14 +6970,14 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.2,
-"q10k": 0.17,
-"q100k": 0.1445,
-"q200k": 0.1376,
-"q300k": 0.1337
+"q1k": 0.1794,
+"q10k": 0.15249,
+"q100k": 0.12917,
+"q200k": 0.123,
+"q300k": 0.1195
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.19–0.30 @3k (2026-10-01)",
+"source": "Family key priced as its catalogued member ABS07-32.768KHZ-T (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.2 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -6998,14 +7198,14 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.02471,
-"q10k": 0.021,
-"q100k": 0.01785,
-"q200k": 0.017,
-"q300k": 0.0165
+"q1k": 0.03596,
+"q10k": 0.03057,
+"q100k": 0.02589,
+"q200k": 0.0247,
+"q300k": 0.024
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.046 @3k / £0.021 UK (2026-10-01)",
+"source": "Family key priced as its catalogued member BAT54S,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.02471 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7074,14 +7274,14 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.08471,
-"q10k": 0.072,
-"q100k": 0.0612,
-"q200k": 0.0583,
-"q300k": 0.0566
+"q1k": 0.06958,
+"q10k": 0.05914,
+"q100k": 0.0501,
+"q200k": 0.0477,
+"q300k": 0.0464
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.089–0.10 @3k (2026-10-01)",
+"source": "Family key priced as its catalogued member PMEG4010ER,115 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08471 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7245,14 +7445,14 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.02353,
-"q10k": 0.02,
-"q100k": 0.017,
-"q200k": 0.0162,
-"q300k": 0.0157
+"q1k": 0.03822,
+"q10k": 0.03249,
+"q100k": 0.02752,
+"q200k": 0.0262,
+"q300k": 0.0255
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on Nexperia $0.025–0.049 @3k (2026-10-01)",
+"source": "Family key priced as its catalogued member 2N7002,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.02353 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7264,14 +7464,14 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.01529,
-"q10k": 0.013,
-"q100k": 0.01105,
-"q200k": 0.0105,
-"q300k": 0.0102
+"q1k": 0.01825,
+"q10k": 0.01551,
+"q100k": 0.01314,
+"q200k": 0.0125,
+"q300k": 0.0122
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on BC847B $0.017–0.023 @3k (2026-10-01)",
+"source": "Family key priced as its catalogued member BC847B,215 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.01529 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7397,14 +7597,14 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.08235,
-"q10k": 0.07,
-"q100k": 0.0595,
-"q200k": 0.0567,
-"q300k": 0.0551
+"q1k": 0.0702,
+"q10k": 0.05967,
+"q100k": 0.05054,
+"q200k": 0.0481,
+"q300k": 0.0468
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.075–0.17 @3k (2026-10-01)",
+"source": "Family key priced as its catalogued member SI2301CDS-T1-GE3 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08235 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -7416,14 +7616,14 @@
 "pkg": "SOT-23/DPAK",
 "aecq": true,
 "gbp": {
-"q1k": 0.0941,
-"q10k": 0.08,
-"q100k": 0.068,
-"q200k": 0.0648,
-"q300k": 0.0629
+"q1k": 0.08057,
+"q10k": 0.06848,
+"q100k": 0.05801,
+"q200k": 0.0552,
+"q300k": 0.0537
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
+"source": "Family key priced as its catalogued member IRLML6344TRPBF (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0941 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -8404,14 +8604,14 @@
 "pkg": "SMD/THT",
 "aecq": true,
 "gbp": {
-"q1k": 0.22353,
-"q10k": 0.19,
-"q100k": 0.1615,
-"q200k": 0.1538,
-"q300k": 0.1495
+"q1k": 0.19172,
+"q10k": 0.16296,
+"q100k": 0.13804,
+"q200k": 0.1314,
+"q300k": 0.1277
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on $0.246 @1k (2026-10-01)",
+"source": "Family key priced as its catalogued member SRN6045TA-4R7M (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.22353 @1k.",
 "asOf": "2026-10-01"
 },
 {
@@ -19504,7 +19704,7 @@
 "q300k": 1.7613
 },
 "confidence": "distributor",
-"source": "Priced on the sibling orderable code W25Q256JVEIQ TR (the listed code was not found at a distributor). Digi-Key $3.48779 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"source": "Priced on the sibling orderable code W25Q256JVEIQ (the listed code was not found at a distributor). Digi-Key $3.48779 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
 "asOf": "2026-10-06",
 "ecuRoles": [
 "infotainment",

@@ -1,0 +1,158 @@
+{
+ "note": "Reviewed family links (rule 9 of scripts/pcb-catalogue-research-merge.ts): an estimate named by a family key is priced as this catalogued, distributor-priced member and stays an estimate. Left out on purpose: CAT24C (only member is 512 Kb, not representative), MT53E (density unknown), STM32H7 (two different members), L9963 links to L9963E (the monitor) not L9963T (a transceiver).",
+ "links": {
+  "TC264": {
+   "member": "SAK-TC264DA-40F200W BC"
+  },
+  "TC275": {
+   "member": "SAK-TC275TP-64F200W DC"
+  },
+  "TC277": {
+   "member": "SAK-TC277TP-64F200S DC"
+  },
+  "TC297": {
+   "member": "SAK-TC297TP-128F300S BC"
+  },
+  "TC364": {
+   "member": "SAK-TC364DP-64F300W AA"
+  },
+  "TC377": {
+   "member": "SAK-TC377TX-96F300S AA"
+  },
+  "TC387": {
+   "member": "SAK-TC387QP-160F300S AE"
+  },
+  "TC397": {
+   "member": "TC397XX256F300SBDKXUMA2"
+  },
+  "SPC584B": {
+   "member": "SPC584B70E3EHC0X"
+  },
+  "S32G274": {
+   "member": "S32G274AABK0VUCT"
+  },
+  "STM32H743": {
+   "member": "STM32H743ZIT6"
+  },
+  "STM32G474": {
+   "member": "STM32G474RET3"
+  },
+  "TEF8232": {
+   "member": "TEF8232EN1/N1/ZUZ"
+  },
+  "TCAN1043": {
+   "member": "TCAN1043ADRQ1"
+  },
+  "TLE9251": {
+   "member": "TLE9251VSJXUMA1"
+  },
+  "TLE9255": {
+   "member": "TLE9255WSKXUMA1"
+  },
+  "TLE9263": {
+   "member": "TLE92633QXXUMA1"
+  },
+  "TLE9471": {
+   "member": "TLE94713ESXUMA1"
+  },
+  "L9963": {
+   "member": "L9963E-TR"
+  },
+  "MC33772": {
+   "member": "MC33772CTA1AE"
+  },
+  "BQ79616": {
+   "member": "BQ79616PAPRQ1"
+  },
+  "LTC6813": {
+   "member": "LTC6813HLWE-1#3ZZPBF"
+  },
+  "TJA1101": {
+   "member": "TJA1101BHN"
+  },
+  "DP83TC811": {
+   "member": "DP83TC811SWRNDRQ1"
+  },
+  "DP83TG720": {
+   "member": "DP83TG720SWRHARQ1"
+  },
+  "SJA1105": {
+   "member": "SJA1105QEL"
+  },
+  "SJA1110": {
+   "member": "SJA1110AEL/0Y"
+  },
+  "LM74700": {
+   "member": "LM74700QDBVRQ1"
+  },
+  "TPS65381": {
+   "member": "TPS65381AQDAPRQ1"
+  },
+  "UCC21520": {
+   "member": "UCC21520AQDWRQ1"
+  },
+  "DRV8873": {
+   "member": "DRV8873HQPWPRQ1"
+  },
+  "BTS7002": {
+   "member": "BTS70021EPPXUMA1"
+  },
+  "BTS7006": {
+   "member": "BTS70061EPPXUMA1"
+  },
+  "BTS7040": {
+   "member": "BTS70402EPAXUMA1"
+  },
+  "BTT6030": {
+   "member": "BTT60302ERAXUMA1"
+  },
+  "VN7016": {
+   "member": "VN7016AJTR"
+  },
+  "TLS850": {
+   "member": "TLS850D0TAV50ATMA1"
+  },
+  "TLE42754": {
+   "member": "TLE42754GATMA1"
+  },
+  "TPS92662": {
+   "member": "TPS92662AQPHPRQ1"
+  },
+  "TLE5012B": {
+   "member": "TLE5012BE1000XUMA1"
+  },
+  "ECS-250": {
+   "member": "ECS-250-20-3X-TR"
+  },
+  "7V-25.000": {
+   "member": "7V-25.000MAAE-T"
+  },
+  "SIT8008": {
+   "member": "SIT8008BI-71-33E-25.000000"
+  },
+  "ABS07": {
+   "member": "ABS07-32.768KHZ-T"
+  },
+  "BAT54S": {
+   "member": "BAT54S,215"
+  },
+  "PMEG4010": {
+   "member": "PMEG4010ER,115"
+  },
+  "2N7002": {
+   "member": "2N7002,215"
+  },
+  "BC847": {
+   "member": "BC847B,215"
+  },
+  "SI2301": {
+   "member": "SI2301CDS-T1-GE3"
+  },
+  "IRLML6344": {
+   "member": "IRLML6344TRPBF"
+  },
+  "SRN6045": {
+   "member": "SRN6045TA-4R7M"
+  }
+ }
+}

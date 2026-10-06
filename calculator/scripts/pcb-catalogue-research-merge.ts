@@ -32,7 +32,10 @@
  *     research on a part already priced from distributor observations ADDS to them (a
  *     cross-check never discards the earlier listing; a repeated distributor + break is kept
  *     once) and the part is re-priced from the union. A distributor entry without stored
- *     observations is replaced only when the new research has more distributors behind it.
+ *     observations (the 1 Oct pass kept no URL) is replaced by research that has them.
+ *  9. Family keys (an estimate named by a family, "TC387", "LM74700") take the price of the
+ *     catalogued member named in scripts/pcb-research/family-links.json — a reviewed list, never
+ *     a guess. They stay labelled estimates (the BOM line does not say which variant) and say so.
  */
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -153,11 +156,10 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
           observations: entry.observations, volumeModel: entry.volumeModel, aliases: aliases.length ? aliases : undefined };
         report.updated.push(`${entry.mpn} (cross-checked: ${priced.distributors.join(', ')})`);
       } else report.keptExisting.push(`${entry.mpn} (no new observation)`);
-    } else if (1 < priced.distributors.length) {
-      catalogue.parts[hit] = { ...entry, family: old.family || entry.family, aliases: aliases.length ? aliases : undefined };
-      report.updated.push(entry.mpn);
     } else {
-      report.keptExisting.push(`${entry.mpn} (existing ${old.source.slice(0, 60)}…)`);
+      // An older distributor price kept no URL: a listing that can be re-checked replaces it.
+      catalogue.parts[hit] = { ...entry, family: old.family || entry.family, aliases: aliases.length ? aliases : undefined };
+      report.updated.push(`${entry.mpn} (URL-backed; was £${old.gbp.q1k} @1k unsourced → £${entry.gbp.q1k})`);
     }
   }
   // Entries researched earlier are re-priced from their stored observations, so one rule set
@@ -169,7 +171,8 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
     const sib = /^Priced on the sibling orderable code (\S+) /.exec(e.source)?.[1];
     if (JSON.stringify(p.gbp) !== JSON.stringify(e.gbp)) report.repriced.push(`${e.mpn}: 1k £${e.gbp.q1k} → £${p.gbp.q1k}, b ${e.volumeModel?.b} → ${p.b}`);
     if (p.obs.length !== e.observations.length) report.repriced.push(`${e.mpn}: observations ${e.observations.length} → ${p.obs.length} (${p.dropped.join('; ')})`);
-    e.gbp = p.gbp; e.source = sourceText(p, sib);
+    const disputed = /( DISPUTED: .*)$/.exec(e.source)?.[1] ?? '';   // an audit's dispute stays until a quote settles it
+    e.gbp = p.gbp; e.source = sourceText(p, sib) + disputed;
     e.observations = p.obs.map(o => ({ distributor: o.distributor, qty: o.qty, price: o.price, currency: o.currency.toUpperCase(), url: o.url, date: o.date, gbp: r4(o.gbp) }));
     e.volumeModel = { b: p.b, basis: p.basis, derivedAbove: Math.max(...p.obs.map(o => o.qty)) };
   }
@@ -184,6 +187,24 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
     e.gbp.q300k = r4(e.gbp.q100k * Math.pow(3, -b));
   }
   return report;
+}
+
+/** Rule 9: a family key priced as its reviewed catalogued member. */
+export function applyFamilyLinks(catalogue: { parts: Entry[] }, links: Record<string, { member: string; why?: string }>) {
+  const out: string[] = [];
+  for (const [key, l] of Object.entries(links)) {
+    const e = catalogue.parts.find(p => p.mpn === key);
+    const m = catalogue.parts.find(p => p.mpn === l.member);
+    if (!e || !m || e.confidence !== 'estimate' || m.confidence !== 'distributor') { out.push(`${key}: link not applied (${!e ? 'no key' : !m ? 'no member' : 'confidence'})`); continue; }
+    const was = e.gbp.q1k;
+    e.gbp = { ...m.gbp };
+    e.volumeModel = m.volumeModel ? { ...m.volumeModel } : undefined;
+    e.source = `Family key priced as its catalogued member ${m.mpn} (distributor-priced, ${m.asOf}${l.why ? `; ${l.why}` : ''}). `
+      + `A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £${was} @1k.`;
+    e.asOf = m.asOf;
+    out.push(`${key}: £${was} → £${m.gbp.q1k} (${m.mpn})`);
+  }
+  return out;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -206,6 +227,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   const date = new Date().toISOString().slice(0, 10);
   const report = mergeResearch(cat, research, date);
+  const linksFile = new URL('./pcb-research/family-links.json', import.meta.url);
+  try { (report as Record<string, string[]>).familyLinked = applyFamilyLinks(cat, JSON.parse(readFileSync(linksFile, 'utf8')).links); } catch { /* no link file */ }
   for (const [mpn, why] of Object.entries(audit.disputed ?? {})) {
     const e = cat.parts.find((p: Entry) => p.mpn === mpn);
     if (e && !e.source.includes('DISPUTED:')) e.source = `${e.source} DISPUTED: ${why}.`;

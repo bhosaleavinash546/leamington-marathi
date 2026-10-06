@@ -30,7 +30,7 @@ describe('catalogue data', () => {
 });
 
 describe('the October 2026 research (docs/pcb/component-database-2026-10.md)', () => {
-  const researched = raw.parts.filter(p => p.asOf === '2026-10-06');
+  const researched = raw.parts.filter(p => p.asOf === '2026-10-06' && p.confidence === 'distributor');
   it('every researched entry carries its distributor observations, URLs and volume model', () => {
     expect(researched.length).toBeGreaterThanOrEqual(220);
     for (const p of researched) {
@@ -123,7 +123,7 @@ describe('grounding with the catalogue', () => {
   });
 });
 
-import { priceFromObservations, mergeResearch, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
+import { priceFromObservations, mergeResearch, applyFamilyLinks, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
 describe('the research merge rules', () => {
   const o = (distributor: string, qty: number, price: number, currency = 'USD') => ({ distributor, qty, price, currency, url: 'https://x', date: '2026-10-06' });
   it('uses the part\'s own slope from one distributor\'s two breaks', () => {
@@ -168,6 +168,25 @@ describe('the research merge rules', () => {
     for (const mpn of Object.keys(audit.disputed)) expect(raw.parts.find(p => p.mpn === mpn)!.source, mpn).toMatch(/DISPUTED:/);
     const phy = raw.parts.find(p => p.mpn === '88Q2112-A2-NYD2A000')!;
     expect(phy.observations!.some(o => /oemstrade/.test(o.url))).toBe(false);
+  });
+  it('a family key takes its reviewed member\'s price and stays an estimate', () => {
+    const m = priceFromObservations([o('Digi-Key', 1000, 10)])!;
+    const cat = { parts: [
+      { mpn: 'FAM1', family: 'FAM1', mfr: 'X', desc: 'd', category: 'ic_qfn', pkg: '', aecq: true, gbp: { q1k: 20, q10k: 17, q100k: 14 }, confidence: 'estimate' as const, source: 'est', asOf: '2026-10-01' },
+      { mpn: 'FAM1ABQ1', family: 'FAM1', mfr: 'X', desc: 'd', category: 'ic_qfn', pkg: '', aecq: true, gbp: m.gbp, confidence: 'distributor' as const, source: 'dk', asOf: '2026-10-06' }] };
+    const out = applyFamilyLinks(cat, { FAM1: { member: 'FAM1ABQ1' }, NOPE: { member: 'FAM1ABQ1' } });
+    expect(cat.parts[0].gbp.q1k).toBe(m.gbp.q1k);
+    expect(cat.parts[0].confidence).toBe('estimate');
+    expect(cat.parts[0].source).toMatch(/Family key priced as its catalogued member FAM1ABQ1/);
+    expect(out[1]).toMatch(/not applied/);
+  });
+  it('every family link in the catalogue points at a distributor-priced member', () => {
+    const links = JSON.parse(readFileSync(new URL('../scripts/pcb-research/family-links.json', import.meta.url), 'utf8')).links as Record<string, { member: string }>;
+    for (const [k, l] of Object.entries(links)) {
+      const e = raw.parts.find(p => p.mpn === k)!, m = raw.parts.find(p => p.mpn === l.member)!;
+      expect(m.confidence, k).toBe('distributor');
+      expect(e.gbp.q1k, k).toBe(m.gbp.q1k);
+    }
   });
   it('a price read on a sibling orderable code says so in the source', () => {
     const e = raw.parts.find(p => p.mpn === 'KSZ9563RNXV-VAO')!;
