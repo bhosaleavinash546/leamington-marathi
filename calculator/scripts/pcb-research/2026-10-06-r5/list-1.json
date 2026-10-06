@@ -1,0 +1,70 @@
+{ "domain": "r5-1", "researched": "2026-10-06", "parts": [
+  { "mpn": "DRA821U", "family": "DRA821U", "mfr": "Texas Instruments", "desc": "Gateway/cluster processor (Jacinto 7)", "category": "ic_bga", "pkg": "FCBGA-433", "aecq": true, "ecuRoles": ["gateway","cluster"], "observedMpn": "", "observations": [],
+    "notes": "Mouser DRA821U4TGBALM snippet now says $60.07 @100, but the earlier read showed an extended price implying qty 25, and this code has no Q1 suffix (not the automotive DRA821U4TCBALMRQ1). Conflicting and wrong grade - not recorded. TI store excluded." },
+  { "mpn": "TLE5014SP16XUMA1", "family": "TLE5014SP16", "mfr": "Infineon", "desc": "GMR angle sensor, SPC interface, dual die TDSO-16", "category": "ic_soic", "pkg": "TDSO-16", "aecq": true, "ecuRoles": ["EPS","throttle","pedal"], "observedMpn": "TLE5014SP16E0001XUMA1",
+    "observations": [
+      { "distributor": "Newark", "qty": 1000, "price": 2.93, "currency": "USD", "url": "https://www.newark.com/infineon/tle5014sp16e0001xuma1/igmr-based-angle-sensor-40-to/dp/69AH2984", "date": "2026-10-06" },
+      { "distributor": "Farnell", "qty": 1000, "price": 2.79, "currency": "EUR", "url": "https://nl.farnell.com/en-NL/infineon/tle5014sp16e0001xuma1/igmr-based-angle-sensor-40-to/dp/3404701", "date": "2026-10-06" }
+    ],
+    "notes": "TLE5014SP16XUMA1 is not an orderable code; the SPC variant is sold as TLE5014SP16E000xXUMA1 (E000x = factory configuration, same die/grade/package). Priced E0001. LCSC lists E0002 at $2.6147 @1000 (not recorded, other config)." },
+  { "mpn": "CAB425M12XM3", "family": "CAB425M12XM3", "mfr": "Wolfspeed", "desc": "1200V 425A SiC half-bridge module XM3", "category": "power_module", "pkg": "XM3", "aecq": false, "ecuRoles": ["traction inverter"], "observedMpn": "", "observations": [],
+    "notes": "Octopart/Digi-Key show only single-unit prices (DK $706.25, Mouser $706.24, Richardson $702.17); no break >= 100 published." },
+  { "mpn": "EVC 250", "family": "EVC 250", "mfr": "TE Connectivity", "desc": "HV DC contactor 250A", "category": "relay_switch", "pkg": "chassis mount", "aecq": false, "ecuRoles": ["BDU","BMS"], "observedMpn": "V23720A0001A001", "observations": [],
+    "notes": "Digi-Key V23720A0001A001 breaks stop at 50 ($113.43 @50; $136.12 @1). No break >= 100 found - not recorded." },
+  { "mpn": "MT53E1G32D2FW-046 AUT:B", "family": "MT53E1G32D2FW-046", "mfr": "Micron", "desc": "LPDDR4X 32Gb x32 automotive, 200-TFBGA", "category": "ic_bga", "pkg": "TFBGA-200", "aecq": true, "ecuRoles": ["ADAS","infotainment","cluster"], "observedMpn": "MT53E1G32D2FW-046 AAT:B TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 2000, "price": 105.36178, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT53E1G32D2FW-046-AAT-B-TR/17632040", "date": "2026-10-06" }
+    ],
+    "notes": "AUT:B (-40..125C) has no break >= 100. Sibling AAT:B (same die, automotive -40..105C temperature grade) tape&reel priced. LCSC AAT:B $25.90 (break unstated) and TME $176.47 not recorded - inconsistent. Use with care: memory pricing volatile." },
+  { "mpn": "UCC28180QDRQ1", "family": "UCC28180", "mfr": "Texas Instruments", "desc": "CCM PFC controller", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["OBC"], "observedMpn": "", "observations": [],
+    "notes": "No -Q1 orderable code found at any distributor (likely does not exist); only commercial UCC28180DR/D - different grade, not recorded." },
+  { "mpn": "TLE9562QXXUMA1", "family": "TLE9562QX", "mfr": "Infineon", "desc": "BLDC gate driver with SBC (LDO, CAN FD, LIN)", "category": "ic_qfn", "pkg": "VQFN-48", "aecq": true, "ecuRoles": ["pump","fan","seat"], "observedMpn": "", "observations": [],
+    "notes": "Only AUD prices (Digi-Key AU AUD 3.53662 @2500; RS AU AUD 5.728 @500) - currency not accepted. Findchips shows no pricing; part marked EOL/last-time-buy." },
+  { "mpn": "ISO1044BQDRQ1", "family": "ISO1044", "mfr": "Texas Instruments", "desc": "Isolated CAN FD transceiver, SOIC-8", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["BMS","OBC"], "observedMpn": "", "observations": [],
+    "notes": "No Q1 orderable code found at distributors; only commercial ISO1044BD/BDR (different grade, not recorded)." },
+  { "mpn": "AIKW40N65DH5", "family": "AIKW40N65DH5", "mfr": "Infineon", "desc": "Automotive IGBT 650V 40A with diode, TO-247-3", "category": "through_hole", "pkg": "TO-247-3", "aecq": true, "ecuRoles": ["OBC","DC-DC","PTC heater"], "observedMpn": "AIKW40N65DH5XKSA1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 100, "price": 3.41, "currency": "USD", "url": "https://www.findchips.com/search/ikw40n65", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 480, "price": 3.13, "currency": "USD", "url": "https://www.findchips.com/search/ikw40n65", "date": "2026-10-06" },
+      { "distributor": "TME", "qty": 480, "price": 5.00, "currency": "USD", "url": "https://www.findchips.com/search/ikw40n65", "date": "2026-10-06" }
+    ],
+    "notes": "Findchips listing for AIKW40N65DH5XKSA1 (orderable code). TME is ~60% above Mouser at the same break. Infineon budgetary EUR 2.4 @1000 (manufacturer, not recorded)." },
+  { "mpn": "SPC58NH92E7HMI0X", "family": "SPC58NH92", "mfr": "STMicroelectronics", "desc": "SPC58 Chorus powertrain MCU", "category": "ic_bga", "pkg": "BGA", "aecq": true, "ecuRoles": ["powertrain","gateway"], "observedMpn": "", "observations": [],
+    "notes": "Not re-searched this round (budget); previous retry found only ST direct ($23.24 @500, manufacturer - excluded)." },
+  { "mpn": "TPS653850AQDCARQ1", "family": "TPS65385x-Q1", "mfr": "Texas Instruments", "desc": "Safety PMIC, ASIL D", "category": "ic_soic", "pkg": "HTSSOP-32", "aecq": true, "ecuRoles": ["EPS","brake","powertrain"], "observedMpn": "", "observations": [],
+    "notes": "Two further searches (exact code, Findchips/Octopart/DK/Mouser/Arrow) returned no distributor listing; only ti.com $3.612 (manufacturer, excluded)." },
+  { "mpn": "BQ79631-Q1", "family": "BQ79631-Q1", "mfr": "Texas Instruments", "desc": "BMS device", "category": "ic_tqfp", "pkg": "", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only" },
+  { "mpn": "MSE1022", "family": "MSE1022", "mfr": "Vertexcom", "desc": "HomePlug Green PHY (CCS PLC) modem", "category": "ic_qfn", "pkg": "QFN", "aecq": false, "ecuRoles": ["EVCC","OBC"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only" },
+  { "mpn": "R8A77960", "family": "R-Car M3", "mfr": "Renesas", "desc": "R-Car M3 SoC", "category": "ic_bga", "pkg": "FCBGA", "aecq": true, "ecuRoles": ["infotainment","cluster"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only" },
+  { "mpn": "SA8295P", "family": "SA8295P", "mfr": "Qualcomm", "desc": "Cockpit SoC", "category": "ic_bga", "pkg": "BGA", "aecq": true, "ecuRoles": ["cockpit"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only" },
+  { "mpn": "i.MX 8QuadMax automotive", "family": "i.MX 8QM", "mfr": "NXP", "desc": "i.MX 8QuadMax automotive applications processor", "category": "ic_bga", "pkg": "FCPBGA", "aecq": true, "ecuRoles": ["infotainment","cluster"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only (no orderable code picked)" },
+  { "mpn": "BUK9M6R3-40HX", "family": "BUK9M6R3-40H", "mfr": "Nexperia", "desc": "N-MOSFET 40 V 6.3 mOhm logic level, Trench 9, LFPAK33", "category": "ic_qfn", "pkg": "LFPAK33", "aecq": true, "ecuRoles": ["body","motor drive"], "observedMpn": "", "observations": [],
+    "notes": "Code not found at distributors or on nexperia.com in 2 searches - likely does not exist (series has BUK9M3R3-40H, BUK9M4R3-40H). Different Rds(on) parts are not siblings; not recorded. BUK9M3R3-40HX: Mouser $0.817 @1000 for reference only." },
+  { "mpn": "REF3033AQDBZRQ1", "family": "REF30xx-Q1", "mfr": "Texas Instruments", "desc": "3.3 V series voltage reference, 50 ppm, SOT-23-3", "category": "ic_soic", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["sensor supply"], "observedMpn": "", "observations": [],
+    "notes": "Exact code not listed by distributors. Sibling REF3033AIDBZRQ1 on Digi-Key BG: EUR 1.91 (unit) vs EUR 4.42515 @3000 reel - reel above unit price, implausible, discarded. Elextrino is a broker." },
+  { "mpn": "A1220LLHLT-T", "family": "A1220", "mfr": "Allegro MicroSystems", "desc": "Chopper-stabilised bipolar Hall latch, SOT-23W", "category": "ic_soic", "pkg": "SOT-23W", "aecq": true, "ecuRoles": ["BLDC commutation","window lift"], "observedMpn": "A1220LLHLT-T",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 0.749, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Allegro-MicroSystems/A1220LLHLT-T?qs=pUKx8fyJudCDO9RMVtvOMA%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 0.684, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Allegro-MicroSystems/A1220LLHLT-T?qs=pUKx8fyJudCDO9RMVtvOMA%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.74634, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/A1220LLHLT-T/1987544", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key also $0.78957 @1000. LCSC $0.423 @1000 seen (not recorded, budget of 3)." },
+  { "mpn": "TPS25762CQRQLRQ1", "family": "TPS25762-Q1", "mfr": "Texas Instruments", "desc": "USB-PD 3.0 controller with integrated buck-boost", "category": "ic_qfn", "pkg": "VQFN-HR-29", "aecq": true, "ecuRoles": ["USB charger","infotainment"], "observedMpn": "TPS25762CQRQLRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.99396, "currency": "EUR", "url": "https://www.digikey.at/en/products/detail/texas-instruments/TPS25762CQRQLRQ1/17394914", "date": "2026-10-06" }
+    ],
+    "notes": "TI store $3.35 (manufacturer, excluded); LionCircuits not franchised." },
+  { "mpn": "UCZ1H101MCL1GS", "family": "UCZ", "mfr": "Nichicon", "desc": "Al electrolytic SMD 100uF 50V 10x10, UCZ 125C automotive", "category": "through_hole", "pkg": "SMD 10x10", "aecq": true, "ecuRoles": ["power input filter"], "observedMpn": "UCZ1H101MCL1GS",
+    "observations": [
+      { "distributor": "RS Components", "qty": 100, "price": 0.706, "currency": "GBP", "url": "https://uk.rs-online.com/web/p/aluminium-capacitors/2437281", "date": "2026-10-06" },
+      { "distributor": "RS Components", "qty": 500, "price": 0.306, "currency": "GBP", "url": "https://uk.rs-online.com/web/p/aluminium-capacitors/2437281", "date": "2026-10-06" }
+    ],
+    "notes": "RS UK 243-7281: GBP 0.706 @100 (cut tape) and GBP 0.306 @500 (full reel, GBP 153/reel). Steep step cut tape -> reel; reel price is the volume-relevant one." },
+  { "mpn": "FA-128", "family": "FA-128", "mfr": "Epson", "desc": "Crystal 2016 (FA-128), automotive", "category": "crystal_osc", "pkg": "2016", "aecq": true, "ecuRoles": ["MCU clock"], "observedMpn": "", "observations": [],
+    "notes": "No automotive (AEC-Q200) orderable code identified; distributor FA-128 prices found are commercial codes (e.g. Farnell Q22FA12800025 GBP 0.192 @1000, DK FA-128 32.0000MF20X-K3 $0.718 @1250) - frequency/grade unknown vs listed part, not recorded." }
+] }
