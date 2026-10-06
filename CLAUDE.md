@@ -147,8 +147,8 @@ precedence catalogue → OCR-named part range → function range → class range
 line carrying `priceSource` / `priceBasis` / `priceNote`, `pcb-bom-grounding.ts`).
 Chip markings OCR read are attached to the BOM line of the same function
 (`pcb-ocr-reconcile.ts`). The offline catalogue is **data**:
-`server/data/pcb-component-catalogue.json` (796 parts, 1k–300k GBP breaks, a
-source and date on every entry — 450 from distributor listings, the rest labelled
+`server/data/pcb-component-catalogue.json` (823 parts, 1k–300k GBP breaks, a
+source and date on every entry — 477 from distributor listings, the rest labelled
 engineering estimates; see `docs/pcb/component-database-2026-10.md`), loaded
 by `pcb-price-catalogue.ts` (`catalogueEntry` / `cataloguePriceAt`, aliases for chip
 top marks) and refreshed with `scripts/pcb-catalogue-import.ts` from a distributor
@@ -182,7 +182,7 @@ never asks for a price. The response carries `stage1Classification` / `ocrExtrac
 family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
 the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
 
-**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 796 parts, 450 distributor-priced, 160 by 2+ distributors (four research rounds incl. a gap analysis of common automotive parts; unpriced parts with their last result in `queue.json`); family-key estimates ("TC387") take a REVIEWED member's price from `scripts/pcb-research/family-links.json` and stay estimates;
+**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 823 parts, 477 distributor-priced, 168 by 2+ distributors (five research rounds incl. a gap analysis of common automotive parts; unpriced parts with their last result in `queue.json`); family-key estimates ("TC387") take a REVIEWED member's price from `scripts/pcb-research/family-links.json` and stay estimates;
 researched entries carry `observations` (distributor, qty ≥ 100, price, URL, date) and `volumeModel` (slope b). Breaks are
 1k/10k/100k/200k/300k — above the largest published break they are DERIVED (`P1k × (Q/1000)^−b`), not quotes; lookups
 follow parts bought (qty × boards) and stay flat above 300k. Add prices only through `scripts/pcb-catalogue-research-merge.ts`

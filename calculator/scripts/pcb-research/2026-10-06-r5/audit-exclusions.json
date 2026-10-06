@@ -1,0 +1,11 @@
+{
+ "note": "Audit of round 5 (6 Oct 2026); applied by scripts/pcb-catalogue-research-merge.ts.",
+ "parts": {},
+ "observations": [],
+ "disputed": {
+  "MT53E1G32D2FW-046 AUT:B": "priced on the AAT:B (105 C) sibling at Digi-Key $105.36 @2,000; other listings for that code ran $25.90 (LCSC) to $176.47 (TME) - verify with a quote",
+  "MT25QU01GBBB8E12-0AUT": "the only break >= 100 is the Digi-Key reel at $31.97 @2,500, equal to its 50-piece price on an out-of-stock listing - a list price, likely above volume",
+  "MT41K256M16TW-107 AAT:P": "LCSC $3.67 @1k is ~40% below Mouser ~$6.28 @1k (seen without a page) and far below the Digi-Key tray $41.92 @50 - verify with a quote",
+  "SAK-TC233LP-32F200F AC": "LCSC $9.34 @1k read from a single search summary - verify"
+ }
+}

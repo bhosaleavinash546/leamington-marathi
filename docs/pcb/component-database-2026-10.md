@@ -6,15 +6,15 @@
 
 ## 1. Result
 
-| | Before (1 Oct) | Round 1 | Round 2 | Round 3 | **Round 4** |
-|---|---|---|---|---|---|
-| Parts in the catalogue | 458 | 549 | 653 | 687 | **796** |
-| Priced from distributors | 77 | 183 | 303 | 340 | **450** |
-| Engineering estimates | 381 | 366 | 350 | 347 | 346, of which **60 now priced as a reviewed family member** |
-| Entries carrying raw observations and URLs | 0 | 107 | 228 | 265 | **398** |
-| Of those, priced by 2+ distributors | — | 24 | 88 | 118 | **160** |
-| Distributor prices with no URL (1 Oct pass) | 77 | 75 | 75 | 75 | **52** |
-| Listed parts still without a distributor price | — | 254 | 129 | 92 | 92 + 40 from the round-4 gap list |
+| | Before (1 Oct) | Round 1 | Round 2 | Round 3 | Round 4 | **Round 5** |
+|---|---|---|---|---|---|---|
+| Parts in the catalogue | 458 | 549 | 653 | 687 | 796 | **823** |
+| Priced from distributors | 77 | 183 | 303 | 340 | 450 | **477** |
+| Engineering estimates | 381 | 366 | 350 | 347 | 346 | 346, of which **60 priced as a reviewed family member** |
+| Entries carrying raw observations and URLs | 0 | 107 | 228 | 265 | 398 | **425** |
+| Of those, priced by 2+ distributors | — | 24 | 88 | 118 | 160 | **168** |
+| Distributor prices with no URL (1 Oct pass) | 77 | 75 | 75 | 75 | 52 | **52** |
+| Listed parts still without a distributor price | — | 254 | 129 | 92 | 132 | **105** |
 | Volume breaks per part | 1k / 10k / 100k | 1k / 10k / 100k / **200k / 300k** |
 | ECU map by powertrain | none | **38 ECUs × 6 powertrains**, 52 sources |
 
@@ -48,6 +48,39 @@ Round 2 priced 122 of the 222 queued parts searched (raw files: `calculator/scri
 - **Spreads between distributors.** Some parts show a wide gap between distributors, for example CAT24C512 at Digi-Key $0.63 against LCSC and Newark $0.25. The 1k price is the median; the observations are on the entry.
 - **Aggregator summaries.** Some prices were read from aggregator summaries (Findchips, Octopart, Digipart) that named the franchised distributor and its break. The URL is the aggregator page.
 - **SiC MOSFETs.** The Wolfspeed SiC MOSFETs (C3M0032120K $7.37 @120, $6.65 @510 at Digi-Key; Mouser agrees) are well below older SiC prices. They are kept as listed.
+
+### Round 5: the remaining unpriced parts
+
+Six searchers worked through the 132 unpriced parts. Each had the part's last result, and each tried different routes:
+- the full orderable code with its packing suffix;
+- reel and tray variants;
+- LCSC, Farnell, TME, RS and Findchips.
+
+They priced 27. These include:
+- **Processors:** AURIX TC233LP, the i.MX 6Quad.
+- **Power and drivers:** the FS84 safety PMIC, DRV8714, NCV7471, VN7140AS, VN9D30Q100F (from Arrow, a different source from the RS figures rejected in round 3), TPS25762, TPS389033.
+- **Power semiconductors:** the NVHL020N120SC1 SiC MOSFET, the AIKW40N65DH5 IGBT, the IAUC120N04S6L008 and NVMFS5C628NL MOSFETs.
+- **Sensors:** TLE5014SP16, A1220, TLE4946, TLE4964.
+- **Passives, LEDs and relays:** XAL6060, DLW43SH510, UCZ capacitor, 0466 fuse, OSRAM LT QH9G LED, TLD1114, ACJ1112 relay.
+- **Memory:** three memory parts.
+
+Four new prices are marked **DISPUTED** (`2026-10-06-r5/audit-exclusions.json`):
+- **MT53E1G32 LPDDR4X:** priced on its 105 °C sibling at $105 @2,000, while other listings ran $26–176.
+- **MT25QU01G NOR:** a list price on an out-of-stock reel.
+- **MT41K256M16 DDR3L:** LCSC is about 40% below Mouser.
+- **TC233LP:** from a single search summary.
+
+Together with MT25QL256/512 and MT29F4G08, the catalogue's automotive memory prices are its weakest. Confirm them with a quote before relying on them.
+
+**What remains (105).** `queue.json` now groups the parts:
+
+| Group | Parts | What closes it |
+|---|---|---|
+| NDA or direct only | 19 | A supplier quote: these have no public price |
+| Listed only below 100 units | 13 | Traction modules, contactors, film capacitors, AWR2944: a quote, or a distributor's volume quote |
+| Code as listed is probably not orderable | 14 | Find the real automotive code. For example, TI's automotive LM393B is LM2903B-Q1, and the B32776 / B32922 series need a value. |
+| Searched, no usable price | 50 | Brokers only, quantities not stated, or contradictory figures. Needs a BOM-tool export. |
+| Not re-searched (budget) | 9 | One more round |
 
 ### Round 4: the gap analysis, and a review of the existing prices
 
@@ -182,7 +215,7 @@ Web search was the only route. Direct fetches of every distributor and manufactu
 More web search will not close these: they need a Purchasing quote or a BOM-tool export (Digi-Key, Mouser or Arrow), imported with `scripts/pcb-catalogue-import.ts`, or a Nexar key.
 
 **Other limits:**
-- 290 of the 450 distributor-priced parts have one distributor behind them, and 52 still carry the 1 October figure with no URL. They are real listings, not cross-checked.
+- 309 of the 477 distributor-priced parts have one distributor behind them, and 52 still carry the 1 October figure with no URL. They are real listings, not cross-checked.
 - Prices at 100k–300k a year are derived along the part's slope, not quoted. Contract prices at that volume are negotiated, and are usually lower again.
 
 **To finish (no code changes):**

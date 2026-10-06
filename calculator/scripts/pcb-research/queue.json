@@ -1,535 +1,530 @@
 {
- "note": "Listed parts still WITHOUT a franchised-distributor price after three research rounds (6 Oct 2026); why = the last result. Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key, not more web search. round4GapNotPriced = important automotive parts added to the search in round 4 (gap analysis) that got no usable price.",
+ "note": "Listed parts still WITHOUT a franchised-distributor price after five research rounds (6 Oct 2026); why = the last result. group: ndaOrDirect (no public price), qty1Only (listed only below 100 units), codeMayNotExist (the code as listed is not orderable - find the real automotive code), noUsablePrice (searched; brokers / unstated quantities / contradictory), notReSearched (budget). Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key.",
  "remaining": [
   {
    "mpn": "DRA821U",
-   "why": "Mouser DRA821U4TGBALM snippet: $60.07 at a break whose extended price ($1,501.75) implies qty 25, not 100 - discarded. TI store lists DRA821U4TCBALMRQ1 $30.99 (manufacturer, qty unstated) - not recorded. No >=100 franchi"
-  },
-  {
-   "mpn": "AR0147ATSC00XUEA0-DPBR",
-   "why": "DK breaks only to 25 ($16.17/25); DK marks it obsolete. No >=100 break found."
-  },
-  {
-   "mpn": "BQ79731PHPRQ1",
-   "why": "Digi-Key Norway, NOK ex VAT, T&R, non-stock (26 wk). TI store $5.99 (qty unstated) not recorded; DK NOK figure is ~1.4x that."
-  },
-  {
-   "mpn": "GCM31CR71E106KA64L",
-   "why": "Exact MPN not found; only 16V sibling GCM31CR71C106KA64L (different voltage) - not used."
-  },
-  {
-   "mpn": "GCJ31CR71H105KA01L",
-   "why": "No distributor price for exact MPN in two rounds of results."
-  },
-  {
-   "mpn": "CGA5L1X7R1H475K160AC",
-   "why": "Exact MPN not found. Mouser CGA5L3X7R1H475K160AE (different thickness/termination code) $0.217 at reel - not used."
-  },
-  {
-   "mpn": "TLE5014SP16XUMA1",
-   "why": "SP16 code not found in 2 searches. Other interface variants (not packing siblings, not used): Mouser TLE5014S16XUMA1 $3.50/2500; DK TLE5014P16DXUMA1 $5.5188/2500."
-  },
-  {
-   "mpn": "IAM-20685",
-   "why": "Only broker (Worldway via Octopart, $4.19-4.40) found - not allowed. MOQ 5000 per Octopart."
-  },
-  {
-   "mpn": "DRV8714SQPHPRQ1",
-   "why": "No franchised distributor price in 2 searches. TI store $2.681 (qty unstated) and JAK Electronics (broker) $4.09/1000 not recorded."
-  },
-  {
-   "mpn": "FS820R08A6P2B",
-   "why": "Representative orderable FS820R08A6P2BBPSA1. Only qty-1 prices seen: DK $682.50, Mouser $680.22, Arrow $683.41, Farnell $579.45 (via Octopart). No >=100 break."
-  },
-  {
-   "mpn": "FS950R08A6P2B",
-   "why": "Representative orderable FS950R08A6P2BBPSA1. Only qty-1 prices seen: DK $917.70, Mouser $917.60. No >=100 break."
-  },
-  {
-   "mpn": "FS03MR12A6MA1B",
-   "why": "Representative orderable FS03MR12A6MA1BBPSA1. Only qty-1 prices seen: DK $2,004.05 (39 wk lead), Farnell UK GBP 1,767.00. No >=100 break."
+   "group": "noUsablePrice",
+   "why": "Mouser DRA821U4TGBALM snippet now says $60.07 @100, but the earlier read showed an extended price implying qty 25, and this code has no Q1 suffix (not the automotive DRA821U4TCBALMRQ1). Conflicting and wrong grade - not recorded. TI store e"
   },
   {
    "mpn": "CAB425M12XM3",
-   "why": "Only qty-1 prices found: Digi-Key $706.25, Mouser $706.24 (USD, 2026-10-06). No break >= 100; not recorded per power-module rule."
-  },
-  {
-   "mpn": "NVH820S75L4SPB",
-   "why": "Only qty-1 prices: Mouser $606.84, Digi-Key $523.40 (tray; DK marks discontinued). No break >= 100."
-  },
-  {
-   "mpn": "ADP480120W3",
-   "why": "Only qty-1 prices: Digi-Key AT EUR 1182.07; ADP480120W3-L Digi-Key UK GBP 913.50. No break >= 100."
-  },
-  {
-   "mpn": "HAH3DR 800-S07",
-   "why": "Representative orderable /SP3. Digi-Key snippet: $43.14 (qty 1?) and $60.95 @72 (inconsistent); /SP4 $44.30 @66. No break >= 100; not recorded."
-  },
-  {
-   "mpn": "B32776",
-   "why": "Series code; representative 50uF 450V B32776G4506K000: Digi-Key $19.74, Mouser $18.29 (qty not stated, likely qty 1). B32776G0206K000 DK $9.85 qty unknown. No >= 100 break found."
-  },
-  {
-   "mpn": "C4AQ",
-   "why": "Series code; representative 5.6uF 650V C4AQCBU4560A1XJ: Mouser $2.93 qty 1 only. Digi-Key series snippet $2.43-3.41 (1-3uF, qty unstated). No >= 100 break found."
+   "group": "qty1Only",
+   "why": "Octopart/Digi-Key show only single-unit prices (DK $706.25, Mouser $706.24, Richardson $702.17); no break >= 100 published."
   },
   {
    "mpn": "EVC 250",
-   "why": "Representative V23720A0001A001: Mouser $129.02 qty 1 ('down to $95.89', break not stated), Digi-Key $142.36 qty 1. No confirmed break >= 100."
-  },
-  {
-   "mpn": "LTC7803",
-   "why": "Digi-Key $5.29 qty 1 only. An unattributed '$2.72 @1,089' and JLCPCB $1.10 @1000 (not franchised) not recorded; Mouser LTC7803JUD $0.534 @1000 discarded as implausible."
-  },
-  {
-   "mpn": "TPS65313QRWGRQ1",
-   "why": "Two searches returned no distributor listing. Earlier: TI.com list $4.16 (manufacturer store, qty not stated) - not recorded."
-  },
-  {
-   "mpn": "MT25QU01GBBB8E12-0AUT",
-   "why": "Results gave Digi-Key $36.39 @1, Arrow $26.90, Avnet $12.82, Newark $17.97 with no quantity break; Mouser non-stocked. Not recorded."
-  },
-  {
-   "mpn": "MT41K256M16TW-107 AAT:P",
-   "why": "Digi-Key reel code $7.68 @100 while the tray code of the same die showed $41-47 in the same search - a 5x packing gap is not credible, not used"
-  },
-  {
-   "mpn": "MT40A1G16TB",
-   "why": "Orderable automotive TB code not found; results only for MT40A1G16TD-062E AIT:F ($129.45, qty unclear) and AAT:F ($192.45 @?), a different die/package - not recorded."
-  },
-  {
-   "mpn": "MT53E1G32D2FW-046 AUT:B",
-   "why": "Digi-Key only $231.42 @1 / GBP 162.33 @10, out of stock; no break >=100."
-  },
-  {
-   "mpn": "MT62F1G32D2DS",
-   "why": "Digi-Key variants (-023 AUT:C, -020 AUT:F $218.99, -023 AAT:C $170.25) at unstated quantity; no break recorded."
-  },
-  {
-   "mpn": "MTFC32GAPALBH-AAT",
-   "why": "Obsolete at Digi-Key, no price shown; $32.72 @250 figure had no named franchised distributor."
-  },
-  {
-   "mpn": "MTFC64GAPALNA-AAT",
-   "why": "No longer at Digi-Key; $56.89 @1k / $47.98 @50k and $19.65 @980 figures had no named distributor - not recorded."
-  },
-  {
-   "mpn": "THGBMJG8C2LBAU8",
-   "why": "No distributor listing found in search results."
-  },
-  {
-   "mpn": "MCIMX6Q6AVT10AD",
-   "why": "Digi-Key $117.98 @1 / $90.91 @60, Mouser $119.49 @25; no break >=100."
+   "group": "noUsablePrice",
+   "why": "Digi-Key V23720A0001A001 breaks stop at 50 ($113.43 @50; $136.12 @1). No break >= 100 found - not recorded."
   },
   {
    "mpn": "UCC28180QDRQ1",
-   "why": "Q1 code not found; only commercial UCC28180DR (Digi-Key $0.83385 @1000) - different grade, not recorded. Q1 orderable code unverified."
-  },
-  {
-   "mpn": "UCC14140QDWNRQ1",
-   "why": "Summary attributed Digi-Key $7.06323 @750 to this MPN but the only Digi-Key link was UCC14141QDWNRQ1 again; cannot tie to this MPN - not recorded."
-  },
-  {
-   "mpn": "AMC0330RQDWERQ1",
-   "why": "MPN not found; only AMC3330QDWERQ1 ($6.95 @1). No break recorded."
-  },
-  {
-   "mpn": "ISO224BQDWVRQ1",
-   "why": "Q1 code not found (may not exist); only ISO224BDWVR at qty 1 ($16.67-$19.69 Mouser)."
-  },
-  {
-   "mpn": "MAX17853",
-   "why": "No distributor price found; ADI shows 1ku price unavailable. Orderable code unverified."
-  },
-  {
-   "mpn": "DRV8343SQPHPRQ1",
-   "why": "Only hardware variant DRV8343HPHPRQ1 found (Digi-Key India INR 471.36 @1000) - different functional variant, not recorded."
+   "group": "codeMayNotExist",
+   "why": "No -Q1 orderable code found at any distributor (likely does not exist); only commercial UCC28180DR/D - different grade, not recorded."
   },
   {
    "mpn": "TLE9562QXXUMA1",
-   "why": "Future $1.97 at unstated qty (looks low), Digi-Key AU AUD 3.54 and RS AU AUD 6.21 without breaks - not recorded."
-  },
-  {
-   "mpn": "TLE94112ELXUMA1",
-   "why": "Only Win Source (broker, rejected) and Rochester Electronics ($1.67 @1000, $1.57 @10k - aftermarket, not on accepted list and looks low) - not recorded."
-  },
-  {
-   "mpn": "TLE88881QKXUMA1",
-   "why": "Obsolete. Breaks $10.78 @1000 / $10.14 @10k appear to be Rochester (aftermarket) or unnamed - not recorded. Successor TLE8888QKXUMA1 $22.82 at Digi-Key, qty unstated."
-  },
-  {
-   "mpn": "NCV7517FTR2G",
-   "why": "Not re-searched: obsolete per earlier run; search budget kept for active parts."
-  },
-  {
-   "mpn": "L9788",
-   "why": "Not searched: shared search budget (26) exhausted. Orderable code unverified."
-  },
-  {
-   "mpn": "LT3964HUHE#PBF",
-   "why": "No volume break found in results (earlier: Digi-Key list $11.23 E / $12.33 I at unstated qty)."
+   "group": "noUsablePrice",
+   "why": "Only AUD prices (Digi-Key AU AUD 3.53662 @2500; RS AU AUD 5.728 @500) - currency not accepted. Findchips shows no pricing; part marked EOL/last-time-buy."
   },
   {
    "mpn": "ISO1044BQDRQ1",
-   "why": "Q1 code not found; only commercial ISO1044BD $3.99 @1 / ISO1044BDR $3.09 @1. Orderable automotive code unverified."
-  },
-  {
-   "mpn": "ADUM4146WBRWZ",
-   "why": "Retry (-RL code at Mouser): no distributor qty-break price in results; only ADI 1k list $3.32 (manufacturer, excluded)."
-  },
-  {
-   "mpn": "INA241A1QDDFRQ1",
-   "why": "Retry: Digi-Key page not in results; only ti.com $1.702 (manufacturer, excluded)."
-  },
-  {
-   "mpn": "PGA411QPHPRQ1",
-   "why": "Exact code not found; sibling PGA411QPAPRQ1 at Digi-Key $43.67 with no qty break stated; JLCPCB/Win Source excluded (not franchised / broker)."
-  },
-  {
-   "mpn": "IMW120R045M1H",
-   "why": "Retry: no franchised qty-break price; LCSC range $9.72-13.56 seen without breaks (not recorded); IMW120R045M1 (non-H) listed EOL by Infineon."
-  },
-  {
-   "mpn": "NVHL020N120SC1",
-   "why": "Digi-Key only 1 @42.02, 30 @34.73 (breaks <100, not recorded); onsemi reference $31.95 (manufacturer)."
-  },
-  {
-   "mpn": "AIKW40N65DH5",
-   "why": "Retry: no franchised distributor qty-break price in results; one unnamed source $7.45 (not recorded)."
-  },
-  {
-   "mpn": "S32K322NHT0VPBST",
-   "why": "Mouser $15.33 seen but quantity break not stated - not recorded."
-  },
-  {
-   "mpn": "TMS320F280039CPZSQ1",
-   "why": "Exact code not found; sibling F280039CPZQ1 Digi-Key $12.61 @1 only; no >=100 break."
-  },
-  {
-   "mpn": "TMS320F280049CPZSQ1",
-   "why": "Q1 code not found. Commercial F280049CPZS on mouser.in: 90 @9.09, 270 @8.57 (\"$\" in snippet, currency of the India site uncertain; non-automotive) - not recorded."
-  },
-  {
-   "mpn": "R7F701581",
-   "why": "Retry (R7F701581EAFP): no distributor price in results."
-  },
-  {
-   "mpn": "R7F701684",
-   "why": "Retry: no part-specific distributor price in results."
+   "group": "noUsablePrice",
+   "why": "No Q1 orderable code found at distributors; only commercial ISO1044BD/BDR (different grade, not recorded)."
   },
   {
    "mpn": "SPC58NH92E7HMI0X",
-   "why": "Retry: only ST direct ($23.24 @500 via Findchips, manufacturer - excluded); no franchised distributor price."
-  },
-  {
-   "mpn": "MPC5748GVMN6A",
-   "why": "only price found is SPC5748GSK1MKU6R, the LQFP-176 package, not the listed MAPBGA - a different package is not a sibling code"
-  },
-  {
-   "mpn": "dsPIC33CK256MP506-E/PT",
-   "why": "Retry: Digi-Key page for -E/PT exists but no qty-break price in results; -I/PT $2.31 and -E/MR $2.50 with no qty stated - not recorded."
-  },
-  {
-   "mpn": "S32G399AACK1VUCT",
-   "why": "Not re-searched (budget). Earlier: only breaks <100 (Digi-Key 25 @131.98, Mouser 10 @129.60, Newark 10 @127.01)."
-  },
-  {
-   "mpn": "LMR14030SQDPRRQ1",
-   "why": "Only Digipart $1.4843 with no distributor/break named - not recorded."
-  },
-  {
-   "mpn": "TPS3850H01QDRCRQ1",
-   "why": "Digi-Key $2.27 (out of stock) and Arrow $1.1693 seen without qty break - not recorded; ti.com $0.976 (manufacturer)."
+   "group": "notReSearched",
+   "why": "Not re-searched this round (budget); previous retry found only ST direct ($23.24 @500, manufacturer - excluded)."
   },
   {
    "mpn": "TPS653850AQDCARQ1",
-   "why": "Only ti.com $3.612 (manufacturer, excluded); TI orderable also shown as O3850AQDCARQ1."
-  },
-  {
-   "mpn": "TPS7B8450QDGNRQ1",
-   "why": "Exact code not found at Digi-Key; siblings only with qty-1 prices."
-  },
-  {
-   "mpn": "L5964",
-   "why": "Searched L5964TR/L5964SR: no distributor price in results."
-  },
-  {
-   "mpn": "88Q2220M",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "AWR2944ABGALTRQ1",
-   "why": "Digi-Key $49.92 single-unit only; Mouser AWR2944ABGALTQ1 (tray) $60.80 at qty 1 with unstated bulk breaks. No >=100 break visible in any snippet."
-  },
-  {
-   "mpn": "BCM89811",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
+   "group": "codeMayNotExist",
+   "why": "Two further searches (exact code, Findchips/Octopart/DK/Mouser/Arrow) returned no distributor listing; only ti.com $3.612 (manufacturer, excluded)."
   },
   {
    "mpn": "BQ79631-Q1",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "CAL60S244-AB",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "IMX490",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "K4F6E3S4HM",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "MC33FS8410",
-   "why": "Arrow lists MC33FS8410G3ES but no price in the snippet; no Digi-Key/Mouser price found. Base code is not orderable - needs full suffix (e.g. MC33FS8410G3ES / ...R2)."
-  },
-  {
-   "mpn": "MPF5020",
-   "why": "Digi-Key $6.32 at qty 1 (tray) only, no >=100 break in snippet. Rochester Electronics $3.50/25 to $2.80/10000 seen but Rochester is not on the accepted franchised list - not recorded."
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
   },
   {
    "mpn": "MSE1022",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "OX03C10-EXAL-BA0B",
-   "why": "Digi-Key lists OX03C10-EXAL-BA0B and E66Y variants at $20.02 unit price with no quantity break shown; most variants discontinued / not stocked. Verical $18.35 at qty 10 only. No >=100 break."
-  },
-  {
-   "mpn": "OX08B40-B86Y-001F",
-   "why": "Digi-Key $37.34 (also -00LE, -001D) with no quantity break in snippet; not stocked. Mouser lists only Leopard Imaging camera modules ($539-649), not the sensor."
-  },
-  {
-   "mpn": "QCA7005",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "QCA7006AQ",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "R8A77951",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
   },
   {
    "mpn": "R8A77960",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "R8A77980",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "S32E288",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "S32R418AAUK0MUFT",
-   "why": "No franchised-distributor listing returned for the exact code; earlier aggregator breaks ($27.50/100) had no named franchised distributor."
-  },
-  {
-   "mpn": "S32R458AASK0MUDT",
-   "why": "No Digi-Key/Mouser/Arrow listing returned. Earlier: Rochester $73.83 (no break, not accepted list), NXP site $130 (manufacturer)."
-  },
-  {
-   "mpn": "SA8155P",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
   },
   {
    "mpn": "SA8295P",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "SAK-TC233LP-32F200F AC",
-   "why": "Mouser $18.20 at qty 1 only (no >=100 break in snippet); LCSC 'from $9.3352' with no quantity; Digi-Key no longer available; Win Source is a broker. N-variant (SAK-TC233LP-32F200N AC) is the current orderable code at Dig"
-  },
-  {
-   "mpn": "SI82390AD-AS3",
-   "why": "Search returned only the Skyworks product page; no Digi-Key/Mouser/other franchised price with a >=100 break in any snippet."
-  },
-  {
-   "mpn": "SR6P3",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "TLF4277ELXUMA1",
-   "why": "Snippet gave breaks 100 $1.34 / 1000 $1.11 / 10000 $0.9916 but from an unnamed distributor (Digipart/aggregator context) - not recorded. TME page lists the part without a price in the snippet."
-  },
-  {
-   "mpn": "VN9D30Q100FTR",
-   "why": "RS Austria EUR 1.79 @500 vs RS Germany EUR 2.612 @3,000: the reel dearer than the smaller break on two regional sites - inconsistent, not used"
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
   },
   {
    "mpn": "i.MX 8QuadMax automotive",
-   "why": "No public distributor price: sold under NDA / direct (searched in round 1, or no franchised listing exists)."
-  },
-  {
-   "mpn": "TLD11141EPXUMA1",
-   "why": "only price was Rochester Electronics (aftermarket), removed from the accepted distributors in round 3"
-  }
- ],
- "round4GapNotPriced": [
-  {
-   "mpn": "NCV7471DQ5R2G",
-   "why": "Representative pick of orderable code. No franchised-distributor price found in search results."
-  },
-  {
-   "mpn": "MC33FS6510CAE",
-   "why": "Breaks read from an aggregator page (omo-ic) that names Digi-Key and Avnet; not seen on the distributor page itself - verify."
-  },
-  {
-   "mpn": "VN7140ASTR",
-   "why": "Representative T&R code. Digi-Key VN7140AS-E out of stock; VN7140ASTR $1.34-1.51 shown without a quantity; other figures from brokers - none recorded."
-  },
-  {
-   "mpn": "BUK9Y4R4-40HX",
-   "why": "Representative orderable code. Only the older BUK9Y4R4-40E (different generation) was found ($0.48 @3k Digi-Key) - not recorded."
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only (no orderable code picked)"
   },
   {
    "mpn": "BUK9M6R3-40HX",
-   "why": "Representative orderable code. No distributor price found in search results."
-  },
-  {
-   "mpn": "IAUC120N04S6L008ATMA1",
-   "why": "Exact code not found. Siblings seen: IAUC120N04S6N008 (normal level) Mouser $1.04 @1k; IAUC120N04S6L012 Mouser $0.779 @1k - not recorded (different parts)."
-  },
-  {
-   "mpn": "NVMFS5C628NLT1G",
-   "why": "$1.52 @1k seen with no named distributor - not recorded. Non-automotive NTMFS5C628NLT1G is Digi-Key $0.49 @1.5k (not recorded)."
-  },
-  {
-   "mpn": "LM393BQDRQ1",
-   "why": "No distributor price for the Q1 code found; only commercial LM393B/LM393DR returned (not used)."
-  },
-  {
-   "mpn": "INA199A1QDCKRQ1",
-   "why": "Representative automotive pick for generic INA199A1. No distributor price for the Q1 code found; commercial INA199A1DCKR ($0.26981 @1k DigiKey) not used."
-  },
-  {
-   "mpn": "TLV431AQDBZRQ1",
-   "why": "Search returned $0.213@1k from an unnamed distributor and Mouser $0.466@1k for TLV431AQDBVRQ1 (SOT-23-5, different package) - neither usable."
+   "group": "codeMayNotExist",
+   "why": "Code not found at distributors or on nexperia.com in 2 searches - likely does not exist (series has BUK9M3R3-40H, BUK9M4R3-40H). Different Rds(on) parts are not siblings; not recorded. BUK9M3R3-40HX: Mouser $0.817 @1000 for reference only."
   },
   {
    "mpn": "REF3033AQDBZRQ1",
-   "why": "No distributor result for this code in search."
-  },
-  {
-   "mpn": "74LVC2T45GW-Q100H",
-   "why": "GW (TSSOP8) code not found. Sibling 74LVC2T45GS-Q100X (XSON8, different package): DigiKey $0.16243@1k, Mouser $0.215@5k - not recorded as observations."
-  },
-  {
-   "mpn": "TCA9555QPWRQ1",
-   "why": "Representative pick for generic auto PCA9555; existence of this exact Q1 code not confirmed in search. Only commercial TCA9555PWR found (Mouser $0.912@1k) - not used."
-  },
-  {
-   "mpn": "TCA9406QDCURQ1",
-   "why": "No distributor price for the Q1 code; only commercial TCA9406DCUR returned."
-  },
-  {
-   "mpn": "TLE49643MXTSA1",
-   "why": "Representative orderable code. Only TLE4964-1M sibling priced (Mouser $0.296@3k, DigiKey $0.28655@10k - different switching threshold variant, not recorded); a -3M figure came from Chip One Stop (not an allowed source)."
-  },
-  {
-   "mpn": "TLE4946-2K",
-   "why": "Not searched - search budget exhausted."
-  },
-  {
-   "mpn": "A1220LLHLT-T",
-   "why": "Representative orderable code (A1220LLHLT given). Not searched - search budget exhausted."
-  },
-  {
-   "mpn": "TPS389033QDSERQ1",
-   "why": "Representative pick. No franchised-distributor break found in search (only TI store price, not allowed)."
-  },
-  {
-   "mpn": "TPS7B4253QDBVRQ1",
-   "why": "No distributor price returned in search."
-  },
-  {
-   "mpn": "LMR51420QDBVRQ1",
-   "why": "Listed code not found at any distributor in search (only commercial LMR51420x DDCR codes, ~$0.64-0.68 @3k at Digi-Key, not recorded). Automotive orderable code unconfirmed."
-  },
-  {
-   "mpn": "TPS61379QWRWLRQ1",
-   "why": "No distributor price returned in search."
-  },
-  {
-   "mpn": "LM5156QRTERQ1",
-   "why": "No franchised-distributor price returned in search (only a broker figure for a non-auto code, discarded)."
-  },
-  {
-   "mpn": "TPS25762CQRQLRQ1",
-   "why": "Representative pick. Only a qty-1 Digi-Key EU price (EUR 6.73) and TI store prices were found; neither usable."
-  },
-  {
-   "mpn": "MAX25014ATG/VY+T",
-   "why": "Representative pick (side-wettable /VY+T). No distributor price returned in search."
-  },
-  {
-   "mpn": "DLW43SH510XK2L",
-   "why": "Mouser breaks attributed by search summary; no Mouser product URL in result links (URL is the Mouser search for the MPN). Verify before merge."
-  },
-  {
-   "mpn": "NFM21PC105R1C3D",
-   "why": "No distributor price found for the exact code; search returned only B1C3D/B1A3D siblings without a quantity break."
-  },
-  {
-   "mpn": "XAL6060-472MEB",
-   "why": "No franchised price: DK discontinued MEB listing; only broker prices (Quest etc.) found. AEC code XAL6060-472MEC not priced."
-  },
-  {
-   "mpn": "WSLP2512R0050FEA",
-   "why": "Representative pick for WSLP2512; no distributor price found for this code (search returned other values only)."
-  },
-  {
-   "mpn": "UCZ1H101MCL1GS",
-   "why": "No UCZ1H101MCL1GS price found; search returned UCM1H101MCL1GS (different series) - not used."
-  },
-  {
-   "mpn": "875105244",
-   "why": "No distributor price in search results. Value/series not confirmed."
-  },
-  {
-   "mpn": "T598D107M010ATE040",
-   "why": "Only Arrow price $0.5737 with no stated quantity break (25 in stock) - not recorded."
-  },
-  {
-   "mpn": "TPSD107K016R0080",
-   "why": "Exact code not found; only TPSD107K016R0125V (different ESR) seen - not used. TPS is not the AVX automotive (TAJ/TRJ auto) line - verify AEC-Q."
-  },
-  {
-   "mpn": "GRT188R71H104KE13D",
-   "why": "No price in search results."
-  },
-  {
-   "mpn": "XRCGB24M000F2P51R0",
-   "why": "Exact code not found. Consumer sibling XRCGB24M000F2P00R0 Mouser reel 3k $0.185 seen - not recorded (different spec code, not packing)."
+   "group": "noUsablePrice",
+   "why": "Exact code not listed by distributors. Sibling REF3033AIDBZRQ1 on Digi-Key BG: EUR 1.91 (unit) vs EUR 4.42515 @3000 reel - reel above unit price, implausible, discarded. Elextrino is a broker."
   },
   {
    "mpn": "FA-128",
-   "why": "not searched (budget). No orderable code picked."
+   "group": "noUsablePrice",
+   "why": "No automotive (AEC-Q200) orderable code identified; distributor FA-128 prices found are commercial codes (e.g. Farnell Q22FA12800025 GBP 0.192 @1000, DK FA-128 32.0000MF20X-K3 $0.718 @1250) - frequency/grade unknown vs listed part, not reco"
   },
   {
-   "mpn": "LT QH9G",
-   "why": "not searched (budget). No orderable code picked."
+   "mpn": "AR0147ATSC00XUEA0-DPBR",
+   "group": "notReSearched",
+   "why": "Not re-searched this round (budget; prior round: Digi-Key breaks only to 25, marked obsolete). No >=100 break."
+  },
+  {
+   "mpn": "IAM-20685",
+   "group": "noUsablePrice",
+   "why": "Digi-Key/Mouser search returned no price; only broker (Worldway) seen previously. Not recorded."
+  },
+  {
+   "mpn": "NVH820S75L4SPB",
+   "group": "qty1Only",
+   "why": "Not re-searched (budget; prior: qty-1 only, Mouser $606.84, DK $523.40, DK discontinued). No >=100 break."
+  },
+  {
+   "mpn": "LTC7803",
+   "group": "noUsablePrice",
+   "why": "Search summary gave Digi-Key $2.95 @2500 T&R for LTC7803EUD#TRPBF, but the only page carrying it was JLCPCB (not franchised) - no Digi-Key URL for that code, not recorded. JLCPCB $1.10 @1000 and Ovaga/Digipart broker figures ignored."
+  },
+  {
+   "mpn": "MT62F1G32D2DS",
+   "group": "notReSearched",
+   "why": "Not re-searched (budget; prior: Digi-Key unit prices with no quantity break)."
+  },
+  {
+   "mpn": "UCC14140QDWNRQ1",
+   "group": "noUsablePrice",
+   "why": "Digi-Key $16.62 unit price (312 stock) seen but no >=100 break; 750-reel price not found. Not recorded."
+  },
+  {
+   "mpn": "TLE94112ELXUMA1",
+   "group": "noUsablePrice",
+   "why": "Findchips/LCSC/TME/RS searches show only Win Source (broker, rejected); RS lists only TLE94112ESXUMA1 (TSDSO-24, different package). Not recorded."
+  },
+  {
+   "mpn": "ADUM4146WBRWZ",
+   "group": "noUsablePrice",
+   "why": "Findchips and Mouser/Digi-Key searches (incl. -RL) returned no distributor break; only ADI 1k list $3.32 (manufacturer, excluded)."
+  },
+  {
+   "mpn": "S32K322NHT0VPBST",
+   "group": "qty1Only",
+   "why": "Farnell JP page found but no break in snippet; JLCPCB $18.43-19.56 qty 1 (not franchised); EUR 18.55 unattributed. No >=100 break."
+  },
+  {
+   "mpn": "MPC5748GVMN6A",
+   "group": "noUsablePrice",
+   "why": "Search (incl. R reel code) returned only DEVKIT-MPC5748G prices; no device price. LQFP SPC5748G not a sibling."
+  },
+  {
+   "mpn": "TPS7B8450QDGNRQ1",
+   "group": "codeMayNotExist",
+   "why": "Exact code still not found at any distributor; only other TPS7B8x codes (different part/voltage). Not recorded."
+  },
+  {
+   "mpn": "CAL60S244-AB",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only."
+  },
+  {
+   "mpn": "OX03C10-EXAL-BA0B",
+   "group": "qty1Only",
+   "why": "Not re-searched (budget; prior: Digi-Key $20.02 with no break, Verical qty 10)."
+  },
+  {
+   "mpn": "R8A77980",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only."
+  },
+  {
+   "mpn": "74LVC2T45GW-Q100H",
+   "group": "codeMayNotExist",
+   "why": "GW code not found at any distributor (may not be an orderable code). Only GS-Q100X (XSON8) and DC-Q100H (VSSOP8) listed - different packages, not recorded."
+  },
+  {
+   "mpn": "MAX25014ATG/VY+T",
+   "group": "noUsablePrice",
+   "why": "Only ADI 1k list $3.68 found (manufacturer, excluded). No distributor break."
+  },
+  {
+   "mpn": "875105244",
+   "group": "noUsablePrice",
+   "why": "Search returned no result for this code (only Wurth tools); code may be wrong. Not recorded."
+  },
+  {
+   "mpn": "BQ79731PHPRQ1",
+   "group": "noUsablePrice",
+   "why": "Retry (mouser/digikey reel query): only Mouser new-product page, no price or break in results. Earlier DK Norway NOK figure not used."
+  },
+  {
+   "mpn": "ADP480120W3",
+   "group": "qty1Only",
+   "why": "Not re-searched (budget); prior round found only qty-1 prices (DK AT EUR 1182.07). No break >= 100."
+  },
+  {
+   "mpn": "TPS65313QRWGRQ1",
+   "group": "noUsablePrice",
+   "why": "Retry (findchips/digikey/mouser 1000): no listing for this code. TPS65311QRVJRQ1 Mouser $5.67 @1000 seen - different device, not recorded."
+  },
+  {
+   "mpn": "MTFC32GAPALBH-AAT",
+   "group": "notReSearched",
+   "why": "Not re-searched (budget); obsolete at Digi-Key, no franchised break found previously."
+  },
+  {
+   "mpn": "AMC0330RQDWERQ1",
+   "group": "qty1Only",
+   "why": "Retry: code not found at DK/Mouser. AMC0330SQDWVRQ1 (Mouser $4.91 @1) and AMC3330QDWERQ1 are different devices/packages; qty-1 only. Not recorded."
+  },
+  {
+   "mpn": "TLE88881QKXUMA1",
+   "group": "notReSearched",
+   "why": "Not re-searched (budget); obsolete, prior breaks were Rochester/unnamed. TLE8888QKXUMA1 is a different device, not a sibling."
+  },
+  {
+   "mpn": "INA241A1QDDFRQ1",
+   "group": "noUsablePrice",
+   "why": "Retry: Digi-Key has INA241A5QDDFRQ1 (different gain, not a sibling) and INA241A1IDDFR (non-automotive); no price for A1 Q1. ti.com $1.702 excluded."
+  },
+  {
+   "mpn": "TMS320F280039CPZSQ1",
+   "group": "noUsablePrice",
+   "why": "Retry: exact code not found; only F280039CSPZ (non-Q1, TI price) - not recorded."
+  },
+  {
+   "mpn": "dsPIC33CK256MP506-E/PT",
+   "group": "noUsablePrice",
+   "why": "Two retries: only -I/PT (industrial grade, not a sibling) priced (DK $1.91 @100). A '$2.22 @1000' for -E/PT came from an Octopart -I/PT page with no distributor named - not recorded."
+  },
+  {
+   "mpn": "L5964",
+   "group": "noUsablePrice",
+   "why": "Orderable L5964Q-V0Y listed at Mouser (511-L5964Q-V0Y) without price in results; no longer at Digi-Key. Only ICPartonline (not franchised) $1.926 @1000 - not recorded."
+  },
+  {
+   "mpn": "IMX490",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "OX08B40-B86Y-001F",
+   "group": "ndaOrDirect",
+   "why": "Not re-searched (budget); prior DK $37.34 had no qty break; effectively direct/NDA."
+  },
+  {
+   "mpn": "S32E288",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "SI82390AD-AS3",
+   "group": "noUsablePrice",
+   "why": "Retry: no price for AD-AS3/AS3R. LCSC SI82390CD-AS3 $3.7375 is the 5 kV (CD) rating - not a sibling, not recorded."
+  },
+  {
+   "mpn": "TCA9555QPWRQ1",
+   "group": "codeMayNotExist",
+   "why": "Retry: no Q1 code at Digi-Key/Mouser (TI TCA9555 series lists only commercial TCA9555PWR). This automotive code likely does not exist; commercial price not used."
+  },
+  {
+   "mpn": "TPS7B4253QDBVRQ1",
+   "group": "noUsablePrice",
+   "why": "Two retries (findchips/mouser): no distributor price for DBV or DDA codes in results."
+  },
+  {
+   "mpn": "T598D107M010ATE040",
+   "group": "noUsablePrice",
+   "why": "Two retries: only Arrow $0.5737 with no stated qty, and an unnamed '$0.36 @1000'; not on Digi-Key in results. Not recorded."
   },
   {
    "mpn": "KW DMLQ31.SG",
-   "why": "not searched (budget)."
+   "group": "noUsablePrice",
+   "why": "Summary gave $0.7581 @100+ apparently LCSC C2842552, but no LCSC product page in results (datasheet PDF only) and binning suffix unknown - not recorded."
+  },
+  {
+   "mpn": "GCM31CR71E106KA64L",
+   "group": "noUsablePrice",
+   "why": "Round 5: exact code not listed at Digi-Key/Mouser in search; only 16V GCM31CR71C106KA64L, GRM (non-auto) and GCM31CC71E106MA03K (X7S, M tol) returned - none are siblings. Not recorded."
+  },
+  {
+   "mpn": "FS820R08A6P2B",
+   "group": "noUsablePrice",
+   "why": "Round 5: Future Electronics tray $295.87 @6 / $290.43 @12; Digi-Key $281.61 (qty unstated); Newark $331.35 @1. No break >= 100 seen; Octopart summary figures ($630-683) inconsistent. Not recorded."
+  },
+  {
+   "mpn": "HAH3DR 800-S07",
+   "group": "noUsablePrice",
+   "why": "Round 5: Digi-Key /SP3 $43.14 vs $60.95 @72 and /SP4 $27.83 vs $65.16 in snippets - inconsistent, no break >= 100. Not recorded."
+  },
+  {
+   "mpn": "MTFC64GAPALNA-AAT",
+   "group": "noUsablePrice",
+   "why": "Round 5: no longer available at Digi-Key (TR page exists, no price in snippet). Only MTFC64GAPALBH-AAT (different package) figures from omo-ic/unnamed sources - excluded. Not recorded."
+  },
+  {
+   "mpn": "ISO224BQDWVRQ1",
+   "group": "codeMayNotExist",
+   "why": "Round 5: no Q1 orderable found (ISO224-Q1 may not exist). Commercial ISO224BDWVR Digi-Key $14.97 @100 is non-automotive - not recorded."
+  },
+  {
+   "mpn": "NCV7517FTR2G",
+   "group": "codeMayNotExist",
+   "why": "Round 5: search returned no distributor listing; part believed obsolete. Not recorded."
+  },
+  {
+   "mpn": "PGA411QPHPRQ1",
+   "group": "qty1Only",
+   "why": "Listed PHP code not found; PGA411-Q1 orderable is PGA411QPAPRQ1 (HTQFP-64). Findchips shows Digi-Key $75.50 @1000 TR vs $70.07 @1 cut tape, status OBSOLETE, 0 stock - reel price above single-unit, discarded as implausible. Rochester exclude"
+  },
+  {
+   "mpn": "TMS320F280049CPZSQ1",
+   "group": "noUsablePrice",
+   "why": "Listed code not found; automotive orderable is F280049CPZQR (Arrow $12.60 @1 only). Summaries quoted DK $7.67-8.09 / Mouser $7.20-7.34 @1000 but every URL was F280049PZQR (non-C device, no CLB) and the two searches disagreed - not a sibling"
+  },
+  {
+   "mpn": "S32G399AACK1VUCT",
+   "group": "qty1Only",
+   "why": "Not re-searched (budget). Earlier: only breaks < 100 (Digi-Key 25 @131.98, Mouser 10 @129.60, Newark 10 @127.01)."
+  },
+  {
+   "mpn": "88Q2220M",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "K4F6E3S4HM",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "QCA7005",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "S32R418AAUK0MUFT",
+   "group": "notReSearched",
+   "why": "Not re-searched (budget). Earlier: no franchised listing for the exact code; aggregator breaks had no named franchised distributor."
+  },
+  {
+   "mpn": "SR6P3",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "MC33FS6510CAE",
+   "group": "noUsablePrice",
+   "why": "Round 5: Mouser lists it (1,482 in stock, tray 250) but no price in snippet; the only break ($5.202 @250 'Digi-Key') comes from omo-ic (excluded broker page). Not recorded."
+  },
+  {
+   "mpn": "LM393BQDRQ1",
+   "group": "codeMayNotExist",
+   "why": "Round 5: code not found at any distributor; likely does not exist (TI automotive B-grade dual comparator is LM2903B-Q1). Not recorded."
+  },
+  {
+   "mpn": "TCA9406QDCURQ1",
+   "group": "codeMayNotExist",
+   "why": "Round 5: no Q1 code found (may not exist). Commercial TCA9406DCUR Mouser $0.56 @1000, Digi-Key $0.509 @3000 - non-automotive, not recorded."
+  },
+  {
+   "mpn": "LMR51420QDBVRQ1",
+   "group": "noUsablePrice",
+   "why": "Round 5: TI datasheet lists only commercial LMR51420x DDCR codes; no automotive DBV/Q1 orderable found. Not recorded."
+  },
+  {
+   "mpn": "NFM21PC105R1C3D",
+   "group": "noUsablePrice",
+   "why": "Round 5: one summary gave '$0.04851 @40000' with no page for the R code (links were B1C3D) - untrusted. NFM21PC105B1C3D Digi-Key $0.05858 @4000 is a different dielectric characteristic (B vs R), not a sibling. Not recorded."
+  },
+  {
+   "mpn": "TPSD107K016R0080",
+   "group": "noUsablePrice",
+   "why": "Round 5: exact code not found; only TPSD107M020R0085 (20V, M tol) and TPSD107K016R0125V (125 mOhm) - not siblings. Not recorded."
   },
   {
    "mpn": "G8NB-17SR",
-   "why": "No franchised price at >=100: only Quest (broker) and a DigiKey figure for a different variant - not used."
+   "group": "noUsablePrice",
+   "why": "Round 5: only Quest (broker, $2.75 @1000) and eBay listings; no franchised distributor price. Not recorded."
   },
   {
-   "mpn": "ACJ1112",
-   "why": "not searched (budget)."
+   "mpn": "GCJ31CR71H105KA01L",
+   "group": "codeMayNotExist",
+   "why": "Round 3: exact MPN not found at any franchised distributor in 2 searches; only GCJ31CR72A105KA01L (100V, not a sibling) priced - not used."
   },
   {
-   "mpn": "0466002.NR",
-   "why": "not searched (budget)."
+   "mpn": "FS950R08A6P2B",
+   "group": "qty1Only",
+   "why": "Not re-searched this round (budget); earlier only qty-1 prices (DK $917.70, Mouser $917.60), no >=100 break."
+  },
+  {
+   "mpn": "B32776",
+   "group": "codeMayNotExist",
+   "why": "Series code, not orderable; not re-searched this round (budget). Earlier prices had no stated qty."
+  },
+  {
+   "mpn": "THGBMJG8C2LBAU8",
+   "group": "codeMayNotExist",
+   "why": "Not re-searched this round (budget); no distributor listing found earlier."
+  },
+  {
+   "mpn": "MAX17853",
+   "group": "noUsablePrice",
+   "why": "Searched MAX17853GCB and /V+T: no distributor price; only MAX17823B (different part) priced. RS UK lists MAX17853ACB/V+ without price in snippet."
+  },
+  {
+   "mpn": "L9788",
+   "group": "noUsablePrice",
+   "why": "Digi-Key and Arrow list L9788 (orderable code L9788, 100-LQFP-EP) but no price in results; only EVAL-L9788 board priced."
+  },
+  {
+   "mpn": "IMW120R045M1H",
+   "group": "qty1Only",
+   "why": "No franchised qty-break price; only IMW120R045M1XKSA1 (non-H, obsolete) DK $18.91 qty 1 - not a sibling, not used."
+  },
+  {
+   "mpn": "R7F701581",
+   "group": "notReSearched",
+   "why": "Not re-searched this round (budget); no distributor price earlier for R7F701581EAFP."
+  },
+  {
+   "mpn": "LMR14030SQDPRRQ1",
+   "group": "noUsablePrice",
+   "why": "Search summary cites Mouser (595-LMR14030SQDPRRQ1) $3.40@1 -> $2.09 top break, but no Mouser page URL returned and the break qty unconfirmed - not recorded. TI direct $1.544 (manufacturer, not allowed)."
+  },
+  {
+   "mpn": "AWR2944ABGALTRQ1",
+   "group": "qty1Only",
+   "why": "Only DK single-unit prices again ($49.92 TR, $53.31 tray); TI direct $35.60 (manufacturer). No >=100 break."
+  },
+  {
+   "mpn": "QCA7006AQ",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "S32R458AASK0MUDT",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only (no franchised listing in earlier rounds)."
+  },
+  {
+   "mpn": "TLF4277ELXUMA1",
+   "group": "noUsablePrice",
+   "why": "Breaks 100 $1.34 / 1k $1.11 / 10k $0.9916 / 100k $0.8308 seen again only via Digipart without a named distributor - not recorded. TME page lists part, no price in snippet."
+  },
+  {
+   "mpn": "INA199A1QDCKRQ1",
+   "group": "codeMayNotExist",
+   "why": "Two searches: Q1 code not found at any franchised distributor (TI lists INA199C1QDCKRQ1 etc.); commercial INA199A1DCKR not a sibling."
+  },
+  {
+   "mpn": "TPS61379QWRWLRQ1",
+   "group": "noUsablePrice",
+   "why": "Exact code not found. Only TPS61379QWRTERQ1 (WQFN-16 RTE, different package - not a sibling) priced (DK $2.98 -> $1.631, Mouser -> $1.55, breaks unstated) - not used."
+  },
+  {
+   "mpn": "GRT188R71H104KE13D",
+   "group": "noUsablePrice",
+   "why": "Only JLCPCB $0.02 (assembler, not a franchised distributor, no break) - not used. No DK/Mouser/LCSC listing in results."
+  },
+  {
+   "mpn": "CGA5L1X7R1H475K160AC",
+   "group": "noUsablePrice",
+   "why": "Exact code not found in 2 searches; only 25V (1E) and 100V (2A) voltage variants returned - different voltage, not siblings."
+  },
+  {
+   "mpn": "FS03MR12A6MA1B",
+   "group": "qty1Only",
+   "why": "Not re-searched this round (budget); prior: only qty-1 prices (DK $2,004.05, Farnell GBP 1,767), no >=100 break."
+  },
+  {
+   "mpn": "C4AQ",
+   "group": "qty1Only",
+   "why": "Not re-searched (series code, no single orderable value; budget). Prior: Mouser qty-1 only."
+  },
+  {
+   "mpn": "MT40A1G16TB",
+   "group": "notReSearched",
+   "why": "Not re-searched (budget); orderable automotive TB code not found previously, TD die/package is not a sibling."
+  },
+  {
+   "mpn": "DRV8343SQPHPRQ1",
+   "group": "noUsablePrice",
+   "why": "Exact code not found; only DRV8343HPHPRQ1 (hardware variant, broker/ti.com) and DRV8343SPHPRQ1 from a broker (YLF) - neither usable."
+  },
+  {
+   "mpn": "LT3964HUHE#PBF",
+   "group": "noUsablePrice",
+   "why": "Searched LT3964EUHE#PBF: only brokers (micro-semiconductor, ariat-tech) and unstated-qty unit prices; no franchised >=100 break."
+  },
+  {
+   "mpn": "R7F701684",
+   "group": "notReSearched",
+   "why": "Not re-searched this round (budget); prior retry found no part-specific distributor price."
+  },
+  {
+   "mpn": "TPS3850H01QDRCRQ1",
+   "group": "noUsablePrice",
+   "why": "Arrow $1.1693 (T&R) seen without qty break; '$0.981 @1000' attributed to Octopart without a named distributor and the Octopart link was for non-Q1 TPS3850H01DRCR - not recorded. ti.com $0.976 is manufacturer."
+  },
+  {
+   "mpn": "BCM89811",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "MPF5020",
+   "group": "noUsablePrice",
+   "why": "Searched MPF5020AMMA0ES: only brokers (avaq, perceptive-ic); part NRND. No franchised >=100 break. Rochester excluded."
+  },
+  {
+   "mpn": "R8A77951",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "SA8155P",
+   "group": "ndaOrDirect",
+   "why": "not searched: NDA/direct only"
+  },
+  {
+   "mpn": "BUK9Y4R4-40HX",
+   "group": "noUsablePrice",
+   "why": "Exact H-generation code not found; only BUK9Y4R4-40E,115 (older Trench generation, Digi-Key $0.59007 @1500) and other H values (1R9/2R4/2R8) - not siblings, not recorded."
+  },
+  {
+   "mpn": "TLV431AQDBZRQ1",
+   "group": "noUsablePrice",
+   "why": "Summaries gave Digi-Key $0.2843 @1000 and Mouser $0.2850 @1000, but they were conflated with TL431AQDBZRQ1 and the only Findchips URL returned was for tl431aqdbzrq1 (a different part) - not recorded."
+  },
+  {
+   "mpn": "LM5156QRTERQ1",
+   "group": "noUsablePrice",
+   "why": "Three searches returned no listing of this code at any distributor (only LM5156HQPWPRQ1 HTSSOP, different package). Code may not be an orderable TI number - verify."
+  },
+  {
+   "mpn": "WSLP2512R0050FEA",
+   "group": "noUsablePrice",
+   "why": "Exact 5 mOhm code not found; only WSLP2512L5000FEA (0.5 mOhm, different value) returned - not recorded."
+  },
+  {
+   "mpn": "XRCGB24M000F2P51R0",
+   "group": "noUsablePrice",
+   "why": "Exact automotive code (P51) not found; only consumer F2P00R0 (LCSC/Mouser/Future/Newark) - different spec code, not a packing sibling."
   }
  ]
 }

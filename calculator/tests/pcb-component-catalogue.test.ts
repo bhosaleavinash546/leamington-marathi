@@ -170,7 +170,14 @@ describe('the research merge rules', () => {
   });
   it('round 3 audit decisions are in the catalogue (2026-10-06-r3/audit-exclusions.json)', () => {
     const audit = JSON.parse(readFileSync(new URL('../scripts/pcb-research/2026-10-06-r3/audit-exclusions.json', import.meta.url), 'utf8'));
-    for (const mpn of Object.keys(audit.parts)) expect(raw.parts.find(p => p.mpn === mpn && p.confidence === 'distributor'), mpn).toBeUndefined();
+    // The observations the audit rejected never enter the catalogue (a later round may price the part from another source).
+    const r3 = ['hard', 'retry-a', 'retry-b', 'unsearched-a', 'unsearched-b'].flatMap(f =>
+      JSON.parse(readFileSync(new URL(`../scripts/pcb-research/2026-10-06-r3/${f}.json`, import.meta.url), 'utf8')).parts as Array<{ mpn: string; observations: Array<{ url: string }> }>);
+    for (const mpn of Object.keys(audit.parts)) {
+      const rejected = new Set(r3.filter(p => p.mpn === mpn).flatMap(p => p.observations.map(o => o.url)));
+      const e = raw.parts.find(p => p.mpn === mpn);
+      for (const o of e?.observations ?? []) expect(rejected.has(o.url), `${mpn} ${o.url}`).toBe(false);
+    }
     for (const mpn of Object.keys(audit.disputed)) expect(raw.parts.find(p => p.mpn === mpn)!.source, mpn).toMatch(/DISPUTED:/);
     const phy = raw.parts.find(p => p.mpn === '88Q2112-A2-NYD2A000')!;
     expect(phy.observations!.some(o => /oemstrade/.test(o.url))).toBe(false);
