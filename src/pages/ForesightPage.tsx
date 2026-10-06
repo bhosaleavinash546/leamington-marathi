@@ -317,7 +317,9 @@ function BassSpark({ adoption }: { adoption: Record<string, number | null> }) {
 function crossingLabel(v: Crossing, band?: CrossingBand): string {
   if (v === 'passed') return 'already passed';
   if (v === null) return 'beyond 15y';
-  const range = band ? ` (${band[0] ?? '…'}–${band[1] ?? '…'})` : '';
+  // A band that collapses to the point year adds nothing ("≈ 2026 (2026–2026)"
+  // read as a bug in review); print the range only when it is a range.
+  const range = band && !(band[0] === v && band[1] === v) ? ` (${band[0] ?? '…'}–${band[1] ?? '…'})` : '';
   return `≈ ${v}${range}`;
 }
 
@@ -539,7 +541,9 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
               {c.projection.crossings.peakGrowth !== undefined && (
                 <> · <span className="text-gold-300/90">peak growth {crossingLabel(c.projection.crossings.peakGrowth)}</span></>
               )}
-              {typeof c.projection.crossings.ceiling === 'number' && c.projection.crossings.ceiling < 90 && (
+              {/* Explain the milestones whenever they are not plain 25% / 50%:
+                  at a 90% ceiling they read 22.5% / 45% and said nothing why. */}
+              {typeof c.projection.crossings.ceiling === 'number' && c.projection.crossings.ceiling < 100 && (
                 <span className="text-slate-500"> (milestones = ¼ and ½ of its {c.projection.crossings.ceiling}% ceiling)</span>
               )}
             </p>

@@ -280,7 +280,13 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // correctly flagged. A gate must move when the measurement gets more honest —
   // what it must never do is move because someone wanted a green build.
   // Ratcheted 120 → 115 by the first worst-first re-curation pass (Aug 2026).
-  assert.ok(a.flaggedCount <= 115, `curation debt grew to ${a.flaggedCount}`);
+  // Re-baselined 115 → 117 by the October 2026 web fact-check, and the +2 is
+  // an HONESTY gain: four entries had been clearing their flags with specifics
+  // that were false or unsourceable (a "Rivian RAD (2025)" crawl claim, an
+  // unsourced "2024-25", unverifiable NIO/XPeng names). Removing the false
+  // evidence correctly re-exposes the debt. A flag cleared by a wrong fact is
+  // worse than a flag.
+  assert.ok(a.flaggedCount <= 117, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 

@@ -257,9 +257,12 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
       value: String(result.exactCount ?? result.count),
       rgb: theme === 'dark' ? P.PANEL : P.INK,
     },
-    { label: result.windows.H1.label.toUpperCase(), value: String(result.horizons.H1.length), rgb: [180, 121, 10] },
-    { label: result.windows.H2.label.toUpperCase(), value: String(result.horizons.H2.length), rgb: [15, 118, 110] },
-    { label: result.windows.H3.label.toUpperCase(), value: String(result.horizons.H3.length), rgb: [91, 33, 182] },
+    // Lane tiles count the same thing as the headline — direct matches only —
+    // so the cover adds up (11 = 7 + 4 + 0). They used to include landscape
+    // rows, and a reader summing "7 + 6" got 13 against "11 MATCHING".
+    { label: result.windows.H1.label.toUpperCase(), value: String(result.horizons.H1.filter(c => !c.related).length), rgb: [180, 121, 10] },
+    { label: result.windows.H2.label.toUpperCase(), value: String(result.horizons.H2.filter(c => !c.related).length), rgb: [15, 118, 110] },
+    { label: result.windows.H3.label.toUpperCase(), value: String(result.horizons.H3.filter(c => !c.related).length), rgb: [91, 33, 182] },
   ];
   const boxW = (CW - 9) / 4;
   metrics.forEach((m, i) => {
@@ -597,7 +600,8 @@ export function exportForesightPdf(data: ForesightReportData, panelIn?: Foresigh
         const lbl = (v: number | 'passed' | null | undefined, band?: [number | null, number | null] | null) => {
           if (v === 'passed') return 'PASSED';
           if (v === null || v === undefined) return 'NOT IN 15Y';
-          return `~${v}${band ? ` ('${String(band[0] ?? '..').slice(2)}-'${String(band[1] ?? '..').slice(2)})` : ''}`;
+          const collapsed = band && band[0] === v && band[1] === v;   // "('26-'26)" adds nothing
+          return `~${v}${band && !collapsed ? ` ('${String(band[0] ?? '..').slice(2)}-'${String(band[1] ?? '..').slice(2)})` : ''}`;
         };
         mono(7.4, true); setColor(doc, P.TEAL);
         ensure(6);
