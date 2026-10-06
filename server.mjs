@@ -585,6 +585,11 @@ try { db.prepare('ALTER TABLE llm_calls ADD COLUMN route TEXT').run(); } catch {
 // Idea lifecycle linking: a business case / VAVE action remembers which
 // marketplace idea spawned it, so the pipeline shows idea → BC → action chains.
 try { db.exec('ALTER TABLE idea_business_cases ADD COLUMN sourceIdeaId TEXT'); } catch { /* exists */ }
+// The currency the case's money was ENTERED in. The form is in pounds, and
+// every case before this column was entered in pounds, hence the default; the
+// KPI aggregate converts any other currency to GBP rather than adding it in
+// as if it were pounds (DECISIONS 122).
+try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN currency TEXT DEFAULT 'GBP'"); } catch { /* exists */ }
 try { db.exec('ALTER TABLE vave_actions ADD COLUMN sourceIdeaId TEXT'); } catch { /* exists */ }
 db.exec(`CREATE TABLE IF NOT EXISTS idea_votes (
   ideaId TEXT NOT NULL,
@@ -4033,7 +4038,9 @@ app.post('/api/projects', requireAuth, (req, res) => {
 
 app.get('/api/projects', requireAuth, (req, res) => {
   const rows = db.prepare(
-    'SELECT id, systemName, subassemblyName, partName, vehicleType, summary, annotations, generatedAt, createdAt FROM projects WHERE userId = ? ORDER BY createdAt DESC LIMIT 50'
+    // currency: the run's own, so a client summing savings across runs can
+    // convert a figure whose text carries no symbol (DECISIONS 122).
+    "SELECT id, systemName, subassemblyName, partName, vehicleType, summary, annotations, generatedAt, createdAt, json_extract(config, '$.currency') AS currency FROM projects WHERE userId = ? ORDER BY createdAt DESC LIMIT 50"
   ).all(req.user.id);
   res.json(rows.map(r => ({ ...r, summary: JSON.parse(r.summary), annotations: JSON.parse(r.annotations || '{}') })));
 });
@@ -4660,10 +4667,12 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
     ideaTitle, ideaSource = 'manual', commodityName = '', systemName = '',
     vehicleData = [], savingPerPart = 0, toolingCost = 0, tvCost = 0,
     implementationYear = new Date().getFullYear() + 1, implementationMonths = 12,
-    gate = 'G0', notes = '', ideaData, sourceIdeaId,
+    gate = 'G0', notes = '', ideaData, sourceIdeaId, currency = 'GBP',
   } = req.body;
 
   if (!ideaTitle?.trim()) return res.status(400).json({ error: 'ideaTitle is required' });
+  const cur = String(currency || 'GBP').toUpperCase();
+  if (!FX_CURRENCIES.includes(cur)) return res.status(400).json({ error: `currency must be one of ${FX_CURRENCIES.join(', ')}` });
   if (!Array.isArray(vehicleData) || vehicleData.length === 0)
     return res.status(400).json({ error: 'At least one vehicle must be selected' });
 
@@ -4679,13 +4688,13 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
       (id, userId, userName, ideaTitle, ideaSource, commodityName, systemName,
        vehicleData, savingPerPart, totalAnnualSaving, toolingCost, tvCost,
        roi, irr, paybackMonths, implementationYear, implementationMonths,
-       gate, ideaNumber, notes, ideaData, sourceIdeaId, createdAt, updatedAt)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       gate, ideaNumber, notes, ideaData, sourceIdeaId, currency, createdAt, updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(
     id, userId, userName, ideaTitle.trim(), ideaSource, commodityName, systemName,
     JSON.stringify(vehicleData), savingPerPart, metrics.totalAnnualSaving,
     toolingCost, tvCost, metrics.roi, metrics.irr, metrics.paybackMonths,
-    implementationYear, implementationMonths, gate, ideaNumber, notes, ideaData || null, String(sourceIdeaId || '') || null, now, now,
+    implementationYear, implementationMonths, gate, ideaNumber, notes, ideaData || null, String(sourceIdeaId || '') || null, cur, now, now,
   );
 
   const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(id);
@@ -4703,9 +4712,23 @@ app.get('/api/business-cases', requireAuth, (req, res) => {
 });
 
 // KPI aggregates for dashboard (scoped to the signed-in user).
-app.get('/api/business-cases/kpi', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
+app.get('/api/business-cases/kpi', requireAuth, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
+  // Every figure below is GBP. A case entered in another currency is converted
+  // at the shared rates (EUR-based) — never summed as if it were pounds.
+  const fx = await getFxRates();
+  const toGbp = (v, cur) => {
+    const c = (cur || 'GBP').toUpperCase();
+    if (c === 'GBP') return v || 0;
+    const perEur = c === 'EUR' ? 1 : Number(fx.rates?.[c]);
+    return perEur > 0 ? ((v || 0) / perEur) * Number(fx.rates.GBP) : 0;
+  };
+  let convertedCases = 0;
   const rows = db.prepare('SELECT * FROM idea_business_cases WHERE userId = ?').all(req.user.id)
-    .map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]') }));
+    .map(r => {
+      const c = (r.currency || 'GBP').toUpperCase();
+      if (c !== 'GBP') convertedCases++;
+      return { ...r, vehicleData: JSON.parse(r.vehicleData || '[]'), totalAnnualSaving: toGbp(r.totalAnnualSaving, c), savingPerPart: toGbp(r.savingPerPart, c) };
+    });
 
   const gates = ['G0', 'G1', 'G2', 'G3'];
   const gateSavings = Object.fromEntries(gates.map(g => [g, 0]));
@@ -4741,6 +4764,8 @@ app.get('/api/business-cases/kpi', requireAuth, rateLimit(120, 60 * 60 * 1000), 
     inProgressSaving: (gateSavings.G1 || 0) + (gateSavings.G2 || 0),
     gateSavings, gateCount, vehicleSavings, commoditySavings, yearTimeline,
     topIdeas, totalCases: rows.length,
+    currency: 'GBP',
+    ...(convertedCases ? { convertedCases, fx: { source: fx.source, date: fx.date, stale: fx.stale } } : {}),
   });
 });
 

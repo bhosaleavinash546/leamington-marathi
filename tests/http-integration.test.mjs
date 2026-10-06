@@ -400,6 +400,21 @@ describe('http integration', () => {
     assert.equal(ok.status, 200);
   });
 
+  it('business cases record their currency; the KPI converts to GBP instead of adding € as £', async () => {
+    const H = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+    const post = (b) => fetch(`${BASE}/api/business-cases`, { method: 'POST', headers: H, body: JSON.stringify({ vehicleData: [{ model: 'M', volume: 1000 }], gate: 'G3', ...b }) });
+    const fx = await (await fetch(`${BASE}/api/fx`)).json();
+    const before = await (await fetch(`${BASE}/api/business-cases/kpi`, { headers: H })).json();
+    const a = await (await post({ ideaTitle: 'GBP case', savingPerPart: 10 })).json();
+    assert.equal(a.currency, 'GBP', 'the form is in pounds, so the default is GBP');
+    assert.equal((await post({ ideaTitle: 'EUR case', savingPerPart: 10, currency: 'EUR' })).status, 201);
+    assert.equal((await post({ ideaTitle: 'Bad', savingPerPart: 1, currency: 'XYZ' })).status, 400);
+    const k = await (await fetch(`${BASE}/api/business-cases/kpi`, { headers: H })).json();
+    assert.equal(k.currency, 'GBP');
+    assert.ok(Math.abs((k.confirmedSaving - before.confirmedSaving) - (10000 + 10000 * fx.rates.GBP)) < 0.01, 'EUR case converted at the shared rate');
+    assert.ok(k.convertedCases >= 1 && k.fx?.source, 'and it says which rate it used');
+  });
+
   it('a thrown handler error returns JSON 500, and the server SURVIVES', async () => {
     // Malformed JSON body → express.json throws → error middleware, not a crash.
     const r = await fetch(`${BASE}/api/interest`, {

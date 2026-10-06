@@ -4764,3 +4764,30 @@ it, Horizon used gold, emerald, violet and teal for four options of one
 segmented control, so the colour implied a meaning the options did not have.
 Colour has a job: gold marks the user's choice and action, teal marks the
 engine's measurement. A selected chip is the user's choice.
+
+## 122. Savings summed across runs or cases are converted to GBP; a figure that cannot be converted is left out and counted
+
+Two places added money without asking what currency it was in.
+
+**Home's "not yet business cases" line** summed idea values from every saved
+analysis with a private parser. That parser stripped `€ £ $` and treated
+everything as pounds, so a €2.0M idea from a EUR run and a £2.0M idea from a
+GBP run made "£4.0M". It now uses the shared `parseMoney` (the twin of the
+server's ranking parser) plus `moneyCurrency`, which reports the currency the
+figure is *written* in. When the text names none, it falls back to the run's
+own currency, which `/api/projects` now returns. Figures are converted at the
+shared `/api/fx` snapshot (`sumInGbp`). A figure with no rate, or no known
+currency, is left out, and the line says how many were left out. No rate is
+ever guessed.
+
+**Business cases** never recorded their currency. The form is in pounds, so
+in practice every case was GBP, but nothing said so. `idea_business_cases`
+now has a `currency` column:
+- It defaults to GBP, matching every existing row and the form.
+- It is validated against `FX_CURRENCIES`.
+- `/api/business-cases/kpi` converts any non-GBP case at the server's rates
+  and returns `convertedCases` plus the rate's source and date.
+- The Home tile prints that conversion in its source line.
+
+Gated by `tests/dashboard-kpis.test.mjs` and the HTTP integration test (a €
+case adds `10,000 × rate`, not 10,000).

@@ -307,6 +307,8 @@ export default function BusinessCaseModal({
       systemName,
       vehicleData,
       savingPerPart,
+      // The form's money fields are in pounds; say so, so the record does.
+      currency: 'GBP',
       totalAnnualSaving,
       toolingCost,
       tvCost,

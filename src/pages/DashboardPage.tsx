@@ -1,5 +1,7 @@
 import Chip from '../components/ui/Chip';
-import { dashboardKpis } from '../lib/dashboard-kpis';
+import { dashboardKpis, sumInGbp } from '../lib/dashboard-kpis';
+import { parseMoney, moneyCurrency } from '../services/report-core.mjs';
+import { useFx } from '../hooks/useFx';
 import { useEffect, useState, useMemo, type FormEvent } from 'react';
 import { writeJSON } from '../lib/storage';
 import { Link, useNavigate } from 'react-router-dom';
@@ -46,6 +48,8 @@ interface ServerProject {
   summary: { totalIdeas: number; quickWins: number; strategicItems: number };
   annotations?: Record<string, { status: string }>;
   generatedAt: string;
+  /** The run's currency (from its saved config). */
+  currency?: string | null;
 }
 
 // ── helpers shared between PipelineKpiSection and module ──────────────────────
@@ -230,7 +234,8 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0, committedSavings: 0, investigatingSavings: 0 });
+  const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0, committedSavings: 0, investigatingSavings: 0, unconverted: 0 });
+  const fx = useFx();
   const [pipelineKpi, setPipelineKpi] = useState<PipelineKpi | null>(null);
   // When the figures were last read from the server — shown as "As of" on the
   // KPI strip, so a number is never older than it admits. Refresh re-reads.
@@ -306,19 +311,12 @@ export default function DashboardPage() {
   }, [token, loading, signOut, navigate, reloadKey]);
 
   useEffect(() => {
-    function parseAnnual(val?: string): number {
-      if (!val) return 0;
-      const c = (val || '').toLowerCase().replace(/[€€$¥₹£,\s%]/g, '');
-      const parts = c.split(/[–—]/);
-      const parseOne = (s: string) => {
-        const m = s.match(/([\d.]+)\s*([mk]?)/);
-        if (!m) return 0;
-        return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
-      };
-      return parts.length >= 2 ? (parseOne(parts[0]) + parseOne(parts[1])) / 2 : parseOne(c);
-    }
-
-    let total = 0, investigating = 0, approved = 0, committedSavings = 0, investigatingSavings = 0;
+    // The shared money parser (the server's ranking parser's twin), and the
+    // currency each figure was WRITTEN in — runs in EUR and GBP are summed
+    // here, so the symbol matters (lib/dashboard-kpis sumInGbp).
+    let total = 0, investigating = 0, approved = 0;
+    const approvedItems: Array<{ value: number; currency: string | null }> = [];
+    const investigatingItems: Array<{ value: number; currency: string | null }> = [];
     serverProjects.forEach(p => {
       let annotations: Record<string, { status: string }> = {};
       let ideas: Array<{ id: string; costSavingPotential?: { annualValue?: string } }> = [];
@@ -333,18 +331,22 @@ export default function DashboardPage() {
       if (!usedLocalAnnotations && p.annotations) annotations = p.annotations;
       try { ideas = JSON.parse(localStorage.getItem(`brainspark_ideas_${p.id}`) || '[]'); } catch {}
 
-      const ideaValueMap: Record<string, number> = {};
-      ideas.forEach(i => { ideaValueMap[i.id] = parseAnnual(i.costSavingPotential?.annualValue); });
+      const ideaValueMap: Record<string, { value: number; currency: string | null }> = {};
+      ideas.forEach(i => {
+        const v = i.costSavingPotential?.annualValue;
+        ideaValueMap[i.id] = { value: parseMoney(v), currency: moneyCurrency(v) ?? p.currency ?? null };
+      });
 
       total += p.summary?.totalIdeas || 0;
       Object.entries(annotations).forEach(([ideaId, ann]) => {
-        const val = ideaValueMap[ideaId] || 0;
-        if (ann.status === 'approved') { approved++; committedSavings += val; }
-        if (ann.status === 'investigating') { investigating++; investigatingSavings += val; }
+        const item = ideaValueMap[ideaId];
+        if (ann.status === 'approved') { approved++; if (item) approvedItems.push(item); }
+        if (ann.status === 'investigating') { investigating++; if (item) investigatingItems.push(item); }
       });
     });
-    setSavingsPipeline({ total, investigating, approved, committedSavings, investigatingSavings });
-  }, [serverProjects]);
+    const ap = sumInGbp(approvedItems, fx), inv = sumInGbp(investigatingItems, fx);
+    setSavingsPipeline({ total, investigating, approved, committedSavings: ap.total, investigatingSavings: inv.total, unconverted: ap.skipped + inv.skipped });
+  }, [serverProjects, fx]);
 
   async function deleteProject(id: string) {
     if (!token) return;
@@ -511,7 +513,7 @@ export default function DashboardPage() {
               </div>
               {(savingsPipeline.committedSavings > 0 || savingsPipeline.investigatingSavings > 0) && (
                 <p className="mt-3 text-xs text-slate-500 measure">
-                  <span className="text-slate-400">Not yet business cases:</span> {savingsPipeline.approved} idea{savingsPipeline.approved === 1 ? '' : 's'} approved in your analyses ({fmtM(savingsPipeline.committedSavings)}/yr) and {savingsPipeline.investigating} under investigation ({fmtM(savingsPipeline.investigatingSavings)}/yr) — AI-estimated from the idea text, so they are not counted above.
+                  <span className="text-slate-400">Not yet business cases:</span> {savingsPipeline.approved} idea{savingsPipeline.approved === 1 ? '' : 's'} approved in your analyses ({fmtM(savingsPipeline.committedSavings)}/yr) and {savingsPipeline.investigating} under investigation ({fmtM(savingsPipeline.investigatingSavings)}/yr) — AI-estimated from the idea text, converted to GBP at the shared rate, so they are not counted above.{savingsPipeline.unconverted > 0 && <> {savingsPipeline.unconverted} figure{savingsPipeline.unconverted === 1 ? '' : 's'} in another currency could not be converted (no live rate) and {savingsPipeline.unconverted === 1 ? 'is' : 'are'} left out.</>}
                 </p>
               )}
             </motion.section>

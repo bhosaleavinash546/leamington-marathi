@@ -55,6 +55,21 @@ export function parseMoney(val) {
 }
 
 /**
+ * The currency a money string is WRITTEN in: the first symbol (€ £ $ ¥ ₹) or
+ * ISO code it carries, else null. parseMoney reads the number and ignores the
+ * symbol, which is right for ranking one run (one currency) and wrong for
+ * adding figures across runs: "€2.0M" and "£2.0M" are not the same saving.
+ * A caller that sums across runs converts with this, or says it could not.
+ */
+const SYMBOL_ISO = { '€': 'EUR', '£': 'GBP', '$': 'USD', '¥': 'CNY', '₹': 'INR' };
+export function moneyCurrency(val) {
+  if (!val || typeof val !== 'string') return null;
+  const m = /[€£$¥₹]|\b(EUR|GBP|USD|CNY|INR)\b/.exec(val);
+  if (!m) return null;
+  return m[1] ?? SYMBOL_ISO[m[0]];
+}
+
+/**
  * Implementation difficulty → semantic tone. The renderer picks the colour, so
  * a deck and a PDF cannot drift into disagreeing about what "Medium" looks
  * like, and an unrecognised value degrades to the most cautious reading rather

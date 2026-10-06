@@ -14,6 +14,7 @@ export interface PortfolioValue {
 }
 
 export function parseMoney(val: string | null | undefined): number;
+export function moneyCurrency(val: string | null | undefined): 'EUR' | 'GBP' | 'USD' | 'CNY' | 'INR' | null;
 export function difficultyTone(difficulty: string | null | undefined): DifficultyTone;
 export function roiRanked<T extends ValuedIdea>(ideas: T[] | null | undefined): T[];
 export function colPositions(widths: number[], ml: number): number[];
