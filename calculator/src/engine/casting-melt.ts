@@ -53,7 +53,10 @@ export function castingAlloyOf(materialId: string): AlloyFamily | null {
   const c = `${m.category} ${m.grade}`.toLowerCase();
   if (/inconel|superalloy|nickel/.test(c)) return 'superalloy';
   if (/stainless|cf8|cf3/.test(c)) return 'stainless-steel';
-  if (/ductile|gjs|spheroidal|cgi|adi/.test(c)) return 'ductile-iron';
+  // Compacted graphite (EN-GJV) is Mg-treated like ductile iron and melts and pours as it — its nearest
+  // family. The grade text says "Compacted Graphite Iron", never "cgi" or "cast iron", so EN-GJV-450
+  // used to fall through to null: no melt loss, no melt energy, no advisor alloy (casting grade gap review).
+  if (/ductile|gjs|spheroidal|cgi|\badi\b|gjv|compacted graphite/.test(c)) return 'ductile-iron';
   if (/grey|gjl|cast iron/.test(c)) return 'grey-iron';
   if (/steel/.test(c)) return 'carbon-steel';
   if (/magnes/.test(c)) return 'magnesium';

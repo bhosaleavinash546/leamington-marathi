@@ -83,7 +83,9 @@ function keysOf(grade: string): RegExp[] {
   for (const chunk of grade.toLowerCase().split(/[/(),;]+/)) {
     const parts = chunk.replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean);
     for (let i = 0; i < parts.length; i++) {
-      for (let j = i + 1; j <= Math.min(parts.length, i + 3); j++) {
+      // Up to four tokens, so a full designation ("en gjs 500 7") outranks its stem ("en gjs 500"),
+      // which EN-GJS-500-14 shares (casting grade gap review, Oct 2026).
+      for (let j = i + 1; j <= Math.min(parts.length, i + 4); j++) {
         const seq = parts.slice(i, j);
         const joined = seq.join('');
         if (!/\d/.test(joined)) continue;
@@ -97,15 +99,24 @@ function keysOf(grade: string): RegExp[] {
   return keys.sort((a, b) => b.source.length - a.source.length);
 }
 
+/** Length of a grade's first designation ("EN-GJS-500-7" from "EN-GJS-500-7 (Ductile Iron)"). */
+const designationLength = (grade: string) => grade.split(/[/(),;]+/)[0].trim().length;
+
 const norm = (s: string) => ` ${s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()} `;
 
 /** The best candidate a text names, by the longest designation key it contains. */
 function gradeNamedIn(text: string, candidates: MaterialRate[]): MaterialRate | null {
   const t = norm(text);
-  let best: { m: MaterialRate; len: number } | null = null;
+  let best: { m: MaterialRate; len: number; base: number } | null = null;
   for (const m of candidates) {
     for (const k of keysOf(m.grade)) {
-      if (k.test(t)) { if (!best || k.source.length > best.len) best = { m, len: k.source.length }; break; }
+      // A tie (a bare "GJS-500" names 500-7 and 500-14 alike) goes to the shorter designation —
+      // the base grade, not its variant.
+      if (k.test(t)) {
+        const len = k.source.length, base = designationLength(m.grade);
+        if (!best || len > best.len || (len === best.len && base < best.base)) best = { m, len, base };
+        break;
+      }
     }
   }
   return best?.m ?? null;

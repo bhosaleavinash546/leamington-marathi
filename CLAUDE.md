@@ -394,6 +394,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   part. Re-route questions must use id `commodity.route` — nothing else re-routes. See `docs/cad/aluminium-extrusion-build-2026-10.md`,
   `docs/cad/extrusion-review-2026-10.md`, `tests/aluminium-extrusion-build.test.ts`, `tests/extrusion-review.test.ts`;
   parts in `cad-audit/parts/AL_*`.
+- Casting grade gap (Oct 2026, `docs/cad/casting-grade-gap-2026-10.md`, `tests/casting-grade-gap.test.ts`): 11 grades
+  added (`CASTING_GAP_GRADES`: EN AC-46200 / 45300, LM13, GJL-150, GJS-350-22-LT, GJS-500-14, GJV-500, Ni-Resist D-5S,
+  A216 WCB, 1.4848, CuSn12), sibling + alloy content, every country by `buildRegionalLibrary`. A new casting grade =
+  library entry + `GRADES` in casting-material-taxonomy.ts; family, advisor alloy and melt follow its category. CGI
+  (EN-GJV) melts as ductile iron (`castingAlloyOf` returned null for it). Designation keys run to 4 tokens (EN-GJS-500-7
+  v 500-14). Review-added grades are HELD by the refresh's catch-all — give them alloy drivers in the next config.
 - Casting & forging materials (review, Oct 2026): the GRADE is an advisory question `material.grade`
   (`derive/grade.ts`) — the representative grade is costed until it is answered; an answered, pinned (CAD panel →
   `answersFromContext`) or DECLARED (STEP material designation) grade sets the £/kg, the mass (its density) and the
