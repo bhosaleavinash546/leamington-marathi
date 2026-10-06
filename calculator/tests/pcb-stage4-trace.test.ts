@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runStage4, applyAutomotiveGrade, bomAtQty } from '../server/routes/pcb.js';
-import { computePCBCountryCost, PCB_COUNTRY_RATES } from '../server/data/pcb-country-rates.js';
+import { computePCBCountryCost, PCB_COUNTRY_RATES, materialBurdenFor } from '../server/data/pcb-country-rates.js';
 
 const R = JSON.parse(readFileSync('e2e/fixtures/pcb-radar-replies.json', 'utf8'));
 const QTY = 250_000;
@@ -30,12 +30,12 @@ describe('radar board, China, 250k, ASIL-C — every figure from the headline', 
     for (const l of bom()) expect(allowed.has(String(l.priceSource)), `${l.refDes} ${l.priceSource}`).toBe(true);
   });
 
-  it('BOM total = Σ line totals; country BOM = BOM × the sourcing factor', () => {
+  it('BOM total = Σ line totals; country BOM = BOM × the sourcing factor × (1 + the EMS material burden)', () => {
     const sum = bom().reduce((t, l) => t + Number(l.lineTotalGBP), 0);
     const ce = a.costEstimates as Record<string, number>;
     expect(ce.totalBOMCostGBP).toBeCloseTo(sum, 2);
     expect(ce.confirmedBOMCostGBP + ce.unverifiedBOMCostGBP).toBeCloseTo(ce.totalBOMCostGBP, 2);
-    expect(s4.selectedCountryBreakdown!.bomCostPerBoard).toBeCloseTo(ce.totalBOMCostGBP * PCB_COUNTRY_RATES.cn.components.priceMultiplier, 2);
+    expect(s4.selectedCountryBreakdown!.bomCostPerBoard).toBeCloseTo(ce.totalBOMCostGBP * PCB_COUNTRY_RATES.cn.components.priceMultiplier * (1 + materialBurdenFor(250000)), 2);
   });
 
   it('the headline is the sum of its parts', () => {

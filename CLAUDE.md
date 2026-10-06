@@ -194,6 +194,10 @@ with no analysis. Board size is kept unless its placement density is unbuildable
 price; BOM rows named by kind ("Ferrite", "Common Mode Choke", "Image sensor") take bead / choke / imager ranges, "≤ 1206"
 is a size limit; TI "XXXX-Q1" finds the catalogued …Q1 orderable; ≥ 2 named AEC-Q100 ICs (≥ half of them) make the board
 automotive (`AUTOMOTIVE_FROM_BOM`); a BOM without designators is checked by count and is never "missing passives".
+AOI, ICT and X-ray are all station time + programme / fixture over the order (table price = small-batch ceiling); the
+components carry an EMS material burden (`materialBurdenFor`: 5% ≥ 100k, 7% ≥ 10k, 10% below — inside `bomCostPerBoard`,
+shown as `breakdown.materialBurden`); imagers are priced at automotive volume ASPs (£3–15), not distributor listings.
+Real purchase prices go in `scripts/actuals/pcb-actuals.csv` (`npx tsx scripts/accuracy-report.ts <csv>`) — never tune to one.
 `npm run test:e2e:pcb-camera` drives that board end to end; see `docs/pcb/camera-board-360-2026-10.md`.
 `expandRefDes` counts only real designators (U1, R12A, C_BULK1) — a placeholder ("—", "N/A", "U?") is
 not one (it once made 13 unlabelled lines read as duplicate views). File inputs are never written back

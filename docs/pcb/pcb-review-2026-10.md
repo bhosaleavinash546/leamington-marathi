@@ -345,3 +345,6 @@ Two of the AI's three identity errors are now caught by the cross-check with wha
 ## 11. Camera-board trial (6 Oct 2026)
 
 Calculate now reports the photo analysis (and re-prices it with edited fields). Board size, ICT / X-ray at volume, BOM lines named by kind, TI "-Q1" names and the automotive domain from the parts list were fixed. The radar headline is now **£50.97** at 250k a year (it was £55.82 with a flat £2.64 ICT and £1.27 X-ray per board). Full write-up and manual should-cost: `camera-board-360-2026-10.md`.
+
+
+Update (same day): with the image sensor priced at volume (automotive CIS $3–8 for 1–2 MP), an EMS material burden on components (5% at ≥ 100k) and AOI at volume, the camera board costs **£15.26** (supplier price £17.00 delivered UK; manual should-cost £14.9) and the radar **£52.90**.

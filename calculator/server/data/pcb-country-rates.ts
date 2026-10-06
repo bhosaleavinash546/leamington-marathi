@@ -1053,6 +1053,9 @@ export interface PCBCountryCostBreakdown {
     smtAssembly: number;
     thAssembly: number;
     aoi: number;
+    /** EMS material burden on the components (inside bomCostPerBoard), and its rate */
+    materialBurden?: number;
+    materialBurdenPct?: number;
     logistics: number;
     importDuty: number;
     /** Fab + assembly electricity at the country's actual tariff (audit fix) */
@@ -1127,6 +1130,16 @@ export const ICT_FIXTURE_GBP = 5000;
 export const XRAY_SECONDS_PER_BOARD = 20;
 /** X-ray programme per board design, GBP — an engineering figure, spread over the order. */
 export const XRAY_SETUP_GBP = 300;
+/** In-line AOI time per board (both sides), seconds, and the AOI programme per design — engineering figures. */
+export const AOI_SECONDS_PER_BOARD = 20;
+export const AOI_PROGRAM_GBP = 200;
+/**
+ * EMS material burden (procurement, inventory carrying, attrition and margin on the components it buys),
+ * as a fraction of the component cost, by annual volume — an engineering figure, lower on larger programmes.
+ */
+export function materialBurdenFor(qty: number): number {
+  return qty >= 100_000 ? 0.05 : qty >= 10_000 ? 0.07 : 0.10;
+}
 
 export function computePCBCountryCost(input: PCBCostInput, countryId: string): PCBCountryCostBreakdown {
   const rate = PCB_COUNTRY_RATES[countryId];
@@ -1175,7 +1188,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     (input.smtPlacements > 0 ? a.batchSetupGBP / Math.max(input.orderQuantity, 1) : 0);
   const thAssembly = input.throughHoleJoints * a.thRatePerJoint;
   const manualAssembly = input.manualJoints * a.manualSolderPerJoint;
-  const aoiCost = input.aoiRequired ? a.aoiPerBoard : 0;
+  // AOI on the same basis as ICT / X-ray (Oct 2026): in-line inspection time at volume, the table's
+  // small-batch price as the ceiling (a 250k camera board paid the flat £0.37).
+  const aoiCost = input.aoiRequired ? Math.min(a.aoiPerBoard, (AOI_SECONDS_PER_BOARD / 3600) * 2 * a.labourRatePerHr + AOI_PROGRAM_GBP / Math.max(input.orderQuantity, 1)) : 0;
   // X-ray of BGA / CSP joints, same basis as ICT: station time (XRAY_SECONDS_PER_BOARD at 2 × the labour
   // rate) at volume, the table's small-batch cabinet price as the ceiling (Oct 2026: a 250k camera board
   // with one CSP imager was charged £1.27 a board).
@@ -1192,7 +1207,14 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
 
   // Component sourcing (audit fix): BOM varies by country via the sourcing
   // index — local availability/spot-market access, NOT an FX conversion.
-  const bomSourced = input.totalBOMCostGBP * (rate.components?.priceMultiplier ?? 1);
+  // The EMS buys the components and charges for doing so: procurement, inventory carrying, scrap and a
+  // margin on material (cost-plus EMS practice — Venture Outsource, EMSNow; the rate falls on larger
+  // programmes). It was missing: components passed through at cost, so every board sat below a real
+  // quote. MATERIAL_BURDEN is an engineering figure by volume, stated in the breakdown.
+  const materialBurdenPct = materialBurdenFor(input.orderQuantity);
+  const bomAtCost = input.totalBOMCostGBP * (rate.components?.priceMultiplier ?? 1);
+  const materialBurden = bomAtCost * materialBurdenPct;
+  const bomSourced = bomAtCost + materialBurden;
 
   // Logistics. Sea freight applies at volume (>= 2500 boards/order) where a
   // sea rate exists (audit fix: seaFreightPerKgGBP was defined but never used,
@@ -1261,6 +1283,8 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       aoi: Math.round((aoiCost + xrayCost + ictCost + confCost) * 100) / 100,
       logistics: Math.round(freight * 100) / 100,
       importDuty: Math.round(importDuty * 100) / 100,
+      materialBurden: Math.round(materialBurden * 100) / 100,
+      materialBurdenPct,
       energy: Math.round(energyCost * 100) / 100,
       packaging: Math.round(packagingCost * 100) / 100,
       yieldLoss: Math.round(yieldLossCost * 100) / 100,

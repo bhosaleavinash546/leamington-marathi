@@ -107,10 +107,11 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   ],
   ic_bga: [
     { kind: 'adas', test: /adas|vision processor|radar processor/i, row: R(60, 400, 'ADAS processor') },
-    // Automotive CMOS imagers, catalogue and listings (6 Oct 2026): AR0233 £23.8, AR0820 £26.3 @1k;
-    // OX01F10 $12–18 (Digi-Key, no volume break). A camera's sensor is its largest line — it must
-    // never fall to a generic IC range.
-    { kind: 'imager', test: /image sensor|cmos sensor|camera sensor|imager\b/i, row: R(3, 20, 'CMOS image sensor', [6, 30]) },
+    // Automotive CMOS imagers AT VOLUME (camera-board trial, Oct 2026; docs/pcb/research/camera-board-evidence-2026-10.md):
+    // 1–2 MP automotive sensors US$3–8, 8 MP > US$10 (China industry press 2025); Yole: low-resolution automotive
+    // prices falling. Distributor single-unit listings (OX01F10 $12–18, AR0233 £24) are NOT volume prices.
+    // A camera's sensor is its largest line — it must never fall to a generic IC range.
+    { kind: 'imager', test: /image sensor|cmos sensor|camera sensor|imager\b/i, row: R(2.5, 12, 'CMOS image sensor', [3, 15]) },
     { kind: 'fpga_l', test: /fpga.*(large|ultrascale|kintex|virtex|stratix|arria)/i, row: R(30, 250, 'large FPGA') },
     { kind: 'fpga', test: /fpga|cpld/i, row: R(6, 40, 'small FPGA', [12, 60]) },
     { kind: 'ddr', test: /ddr|lpddr|sdram|dram|emmc|nand/i, row: R(1.5, 12, 'DDR / NAND memory BGA', [3, 20]) },

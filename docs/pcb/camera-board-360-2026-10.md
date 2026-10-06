@@ -121,3 +121,61 @@ The engineer reports buying this board at **£17.00**. It is recorded in `calcul
 - read the sensor's marking (or get its part number from the supplier);
 - confirm the Incoterm and the annual volume;
 - log further boards' actuals. With five or more PCBA actuals the calibration layer (`src/engine/calibration.ts`) can measure and correct the bias.
+
+## 7. Re-cost with evidence (delivered UK, 250k a year, sensor from its photo)
+
+The engineer confirmed:
+- the £17.00 is **delivered to the UK**;
+- the volume is **250,000 a year**;
+- the image sensor's part number is **not available**.
+
+The faint diagonal marks on the sensor, the QFN and the board read "A2MAC1": the watermark of the teardown service, not chip markings. The evidence is in `research/camera-board-evidence-2026-10.md`. It comes from search summaries, because this environment blocks the pages themselves and the UK tariff service.
+
+**The sensor, from its photo.**
+- **Size:** at 17 px/mm (the 20 mm board is 341 px wide), the package is about **9.5 × 7.5 mm** and the optical window about **5.9 × 4.4 mm**.
+- **Resolution class:** that window is about 1/2.7"–1/3" class, i.e. **2–3 MP**. Nearest stated active areas: Sony ISX031 5.81 × 4.66 mm (3 MP), then OmniVision OX03C10 (2.5 MP). The DS90UB935 serializer carries up to that class.
+- **Price:** automotive CIS at volume is **US$3–8 for 1–2 MP**, over $10 for 8 MP (China industry press, 2025). Yole reports low-resolution automotive prices falling. A 2–3 MP part sits in the upper half: **$7 central** (£5.29), range $5–9.
+
+### Manual should-cost (EMS level)
+
+| Element | Basis | £ |
+|---|---|---|
+| Image sensor (2–3 MP automotive, CSP) | $7 at volume (range $5–9) | 5.29 |
+| DS90UB935-Q1 | TI list $3.707 (large reel) × 0.85 contract | 2.38 |
+| LM53600-Q1 | Mouser $2.78 @1k → 250k (catalogue) | 1.50 |
+| TPS62422-Q1 | TI list $1.061 × 0.85 | 0.68 |
+| TLV702-Q1 | TI list $0.266 × 0.85 | 0.17 |
+| BQ24025 | Digi-Key $4.32 @3k → 250k (no TI list found; upper end) | 2.39 |
+| 49 MLCC, 7 beads, 10 µH inductor, PoC choke, 16 resistors | volume prices (§1) | 0.66 |
+| **Components** | | **13.07** |
+| EMS material burden | 5% at ≥ 100k (engineering figure; cost-plus EMS practice) | 0.65 |
+| Bare board | 8-layer 900–1,260 CNY/m² at volume (1,800 list less 30–50%) on 4 cm² at 70% panel use, plus 2 oz copper and automotive fab | 0.15 |
+| Assembly | 73 points × 0.012 CNY + 7 fine-pitch × 0.03 CNY (Shenzhen EMS quotes) = £0.12; AOI £0.05, X-ray £0.06, ICT £0.17, IATF premium £0.15 | 0.55 |
+| Yield / rework, packaging, freight, energy | | 0.24 |
+| UK import duty | 8529 90 92 is the likely code; its rate could not be confirmed here (0–3.7% → £0–0.54) | 0.27 |
+| **Manual should-cost, delivered UK** | | **≈ £14.9** (range £13.2–16.7) |
+
+Two readings of the actual:
+- **EMS bought directly:** £17.00 is **+14%** over the should-cost, room to negotiate.
+- **Tier-1 module supplier:** add its SG&A and profit (typically 8–12%). That gives **≈ £16.1–16.7**, and £17 is close.
+
+### What changed in the tool (evidence, not tuning)
+
+| Change | Evidence | Effect on this board |
+|---|---|---|
+| Imager class range £3–15 automotive (was £6–30) | 1–2 MP $3–8 at volume, 8 MP > $10; distributor single-unit listings are not volume prices | sensor £10.56 → **£5.28** |
+| EMS material burden on components: 5% (≥ 100k), 7% (10k–100k), 10% (< 10k), stated in the breakdown | EMS quotes carry a material margin that falls on larger programmes (Venture Outsource; EMSNow cost-plus) | **+£0.64** |
+| AOI at volume (station time + programme, table price as ceiling), as ICT and X-ray | same basis as the ICT / X-ray fix | AOI £0.37 → ~£0.08 |
+| Not changed: fab £/dm², SMT £/placement, UK duty rate | evidence too weak to move a table (a single older 8-layer figure; vendor-page placement quotes; the tariff rate unread). The tool's fab (£0.41) is likely high and its placement price about 2× the Shenzhen quotes — together about £0.4 on this board | — |
+
+**Result:**
+
+| | £ / board | vs £17.00 |
+|---|---|---|
+| Tool | **15.26** | −10.2% |
+| Manual should-cost (EMS level) | 14.9 | −12% |
+| Manual + Tier-1 margin | 16.1–16.7 | −2 to −5% |
+
+The radar demo board at 250k moves to **£52.90** with the material burden (was £50.97).
+
+**To confirm with a minute's look:** the UK duty on trade-tariff.service.gov.uk for 8529 90 92 from China, and whether the supplier is an EMS or a Tier-1.
