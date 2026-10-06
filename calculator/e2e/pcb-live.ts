@@ -92,7 +92,8 @@ async function main(): Promise<void> {
     await page.click('#new-costing-btn', { timeout: 15_000 });
     await page.click('.cpicker-tile[data-commodity="pcb_fab"]', { timeout: 15_000 });
     await page.waitForSelector('#pcb-img-input-0', { state: 'attached', timeout: 15_000 });
-    const labels = ['top', 'bottom', 'c1', 'c2', 'c3', 'c4', 'c5'];
+    // All 8 photo slots (top, bottom, 6 close-ups), as the screen allows.
+    const labels = ['top', 'bottom', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
     for (let i = 0; i < labels.length; i++) {
       if (await page.$(`#pcb-img-input-${i}`)) await page.setInputFiles(`#pcb-img-input-${i}`, { name: `${labels[i]}.png`, mimeType: 'image/png', buffer: PNG });
     }
@@ -102,6 +103,19 @@ async function main(): Promise<void> {
     await page.waitForSelector('#pcb-headline-total', { timeout: 120_000 });
     const results = page.locator('#pcb-img-results');
     const text = await results.textContent() ?? '';
+    if (process.env.CV_SHOT_DIR) {
+      // Screens for the review: the summary, and the BOM table with its badges.
+      await page.waitForTimeout(800);
+      await page.locator('#pcb-img-results').scrollIntoViewIfNeeded();
+      await page.evaluate(() => document.getElementById('pcb-img-results')?.scrollIntoView({ block: 'start' }));
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: join(process.env.CV_SHOT_DIR, 'pcb-radar-result.png'), fullPage: false });
+      await page.evaluate(() => document.getElementById('pcb-headline-total')?.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: join(process.env.CV_SHOT_DIR, 'pcb-radar-headline.png'), fullPage: false });
+      const bomTable = page.locator('#pcb-img-results table').first();
+      if (await bomTable.count()) { await bomTable.scrollIntoViewIfNeeded(); await page.waitForTimeout(300); await page.screenshot({ path: join(process.env.CV_SHOT_DIR, 'pcb-radar-bom.png'), fullPage: false }); }
+    }
 
     // ── The headline is the country total, automotive grade, and it adds up ──
     const headline = Number(await page.getAttribute('#pcb-headline-total', 'data-total'));
@@ -113,7 +127,7 @@ async function main(): Promise<void> {
       // screen must show exactly what the server computed.
       const fd = new FormData();
       const png = new Blob([new Uint8Array(bytes)], { type: 'image/png' });
-      for (const n of ['top', 'bottom', 'c1', 'c2', 'c3', 'c4', 'c5']) fd.append('pcbImages', png, `${n}.png`);
+      for (const n of ['top', 'bottom', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']) fd.append('pcbImages', png, `${n}.png`);
       fd.append('orderQty', '250000'); fd.append('country', 'cn');
       const r = await fetch('/api/pcb/analyze-image-stream', { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }, body: fd });
       const raw = await r.text();

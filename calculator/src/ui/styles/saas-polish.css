@@ -263,3 +263,21 @@ input.cv-field-invalid, input[aria-invalid="true"] {
 #cv-result-hero { background: var(--surface) !important; backdrop-filter: none !important; }
 .bd-split > .bd-table { min-width: min(460px, 100%) !important; }
 .bd-split > .bd-chart { max-width: 100%; }
+
+/* ── F18  One full-width column when the result lives in the form ───────────────
+   PCB photo → cost, CAD → cost, the AI agent and the software model render their
+   results inside the form area; in the two-pane layout they were squeezed into the
+   input column. form-wide.ts sets cv-form-wide; the workspace is then one column. */
+@media (min-width: 1280px) {
+  body.cv-new-costing.cv-form-wide #costing-view {
+    display: flex !important; flex-direction: column;
+    overflow-y: auto !important;
+  }
+  body.cv-new-costing.cv-form-wide #costing-view > .input-panel,
+  body.cv-new-costing.cv-form-wide #costing-view > .results-panel {
+    overflow-y: visible !important; min-height: auto; border-right: none;
+  }
+  body.cv-new-costing.cv-form-wide #costing-view > .input-panel { padding: 16px 22px 0; }
+  body.cv-new-costing.cv-form-wide #costing-view > .results-panel { padding: 16px 22px 28px; }
+  body.cv-new-costing.cv-form-wide #cv-result-hero { margin-top: 0; box-shadow: 0 6px 24px rgba(15, 23, 42, 0.07); clip-path: none; }
+}

@@ -21,6 +21,7 @@ import { beginBusy } from './busy.js';
 import { initCommoditySwitcher } from './commodity-switcher.js';
 import { initFieldValidation } from './field-validation.js';
 import { hydrateOnShow } from './lazy-blocks.js';
+import { watchFormWide, updateFormWide } from './form-wide.js';
 import {
   computeUniversalStack, validateStackInput, breakdownPercentages, overheadBaseOf, overheadRateOf,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
@@ -8387,7 +8388,7 @@ async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         analysis: r0, domain: r0.stage1Classification?.domain ?? 'general', asilLevel: r0._asilLevel ?? 'Unknown',
-        ocrMarkings: r0.ocrExtraction?.icMarkings ?? [], ocrQuality: r0.ocrExtraction?.extractionQuality ?? '',
+        ocrMarkings: r0.ocrExtraction?.icMarkings ?? [], ocrConnectors: r0.ocrExtraction?.connectors ?? [], ocrQuality: r0.ocrExtraction?.extractionQuality ?? '',
         country: r0._selectedCountry ?? 'cn', orderQty, provider, apiKey,
       }),
     });
@@ -8510,6 +8511,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   formData.append('domain', pcbImageResult.stage1Classification?.domain ?? 'general');
   formData.append('ocrMarkings', JSON.stringify(pcbImageResult.ocrExtraction?.icMarkings ?? []));
   formData.append('ocrQuality', pcbImageResult.ocrExtraction?.extractionQuality ?? '');
+  formData.append('ocrConnectors', JSON.stringify(pcbImageResult.ocrExtraction?.connectors ?? []));
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
   formData.append('deepAnalysis', String((document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
@@ -8673,7 +8675,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${pcbUnitFmt(item.unitPriceGBP)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem"></span>' : ''}`}</td>
       <td>&#163;${pcbLineFmt(Number((item as unknown as { lineTotalGBP?: number }).lineTotalGBP ?? item.qty * item.unitPriceGBP))}</td>
-      <td>${pcbPriceBasisBadge(item)}${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Priced by a distributor during this analysis">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
+      <td>${pcbPriceBasisBadge(item)}${(item as unknown as { ocrCheck?: string }).ocrCheck ? `<span class="pcb-badge" style="background:#b45309;color:#fff" title="${escHtml(String((item as unknown as { ocrCheck?: string }).ocrCheck))}">CHECK</span>` : ''}${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Priced by a distributor during this analysis">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>' : '<svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
     </tr>`).join('');
 
   const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
@@ -8781,7 +8783,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
                 if (ce && typeof ce.unverifiedBOMCostGBP === 'number' && ce.unverifiedBOMCostGBP > 0.01) {
                   return `<div style="font-size:0.58rem;margin-top:3px;line-height:1.3">`
                     + `<span style="color:#0e9f6e" title="Catalogue prices, parts read off the chips, and small lines priced by count from the table">&#10003; &#163;${(ce.confirmedBOMCostGBP ?? 0).toFixed(2)} priced</span>`
-                    + ` · <span style="color:#b45309" title="Lines worth £1+ per board with no quote behind the price — confirm these">&#163;${ce.unverifiedBOMCostGBP.toFixed(2)} to verify${nvc ? ` (${nvc} lines)` : ''}</span></div>`;
+                    + ` · <span style="color:#b45309" title="Lines worth £1+ per board with no quote behind the price — confirm these">&#163;${ce.unverifiedBOMCostGBP.toFixed(2)} to verify${nvc ? ` (${nvc} lines)` : ''}</span>`
+                    // These split the distributor-level BOM; the figure above is after the country's sourcing factor.
+                    + `<div style="color:var(--text-muted)">of the &#163;${((ce.confirmedBOMCostGBP ?? 0) + ce.unverifiedBOMCostGBP).toFixed(2)} distributor-level BOM, before the ${escHtml(r._selectedCountryBreakdown?.countryName?.split(' (')[0] ?? 'country')} sourcing factor</div></div>`;
                 }
                 return '';
               })()}
@@ -11666,6 +11670,7 @@ function switchCommodity(type: CommodityType): void {
   breadcrumb(`commodity:${type}`);
   activeCommodity = type;
   setPanelTitle(type);
+  updateFormWide(type);
   // A new form opens at its top — it kept the previous one's scroll (the CAD form opened
   // scrolled to its action bar; UI/UX review, Oct 2026).
   for (const sel of ['#costing-view', '#costing-view .input-panel', '#costing-view .results-panel']) {
@@ -19720,6 +19725,8 @@ async function init(): Promise<void> {
   initCommoditySwitcher();
   // Numeric fields are checked against their limits as they are typed (field-validation.ts).
   initFieldValidation();
+  // A result that lives in the form (PCB photo, CAD analysis) gets the full width (form-wide.ts).
+  watchFormWide(() => activeCommodity);
 
   // Start on machining
   switchCommodity('machining');

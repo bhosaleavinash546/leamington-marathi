@@ -142,7 +142,7 @@ export interface PCBImageAnalysis {
   confidenceLevel: 'High' | 'Medium' | 'Low';
   analysisLimitations: string[];
   stage1Classification?: { domain: string; conf: number; hints: string[]; failed?: boolean };
-  ocrExtraction?: { icMarkings: string[]; extractionQuality: string };
+  ocrExtraction?: { icMarkings: string[]; connectors?: string[]; extractionQuality: string };
   complexityScore?: PCBComplexityScore;
   // Country-aware cost data (added by server Stage 4)
   _selectedCountry?: string;

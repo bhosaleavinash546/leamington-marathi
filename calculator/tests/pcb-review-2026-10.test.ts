@@ -103,3 +103,26 @@ describe('BOM file quantities', () => {
     expect(q).toEqual({ J1: 1000, U1: 2, L1: 2 });
   });
 });
+
+import { ocrChipCounts, crossCheckWithOcr } from '../server/utils/pcb-ocr-reconcile.js';
+describe('what OCR saw vs the parts list (real radar reading)', () => {
+  const markings = ['NXP FS32R294KCMJD 0P68C QMR2445D', 'TEF8105 TR7YC228 sKN2437', 'MAX20431A R/V 446 +BVFK', 'winbond 25Q32JWNSM 2438', 'TI 1044AV 4AB ARYS', 'TI 1044AV 4AB ARYS', 'S32R294 radar'];
+  it('counts physical chips: two CAN chips, one S32R294 (described twice)', () => {
+    const c = ocrChipCounts(markings);
+    expect(c.get('1044AV')).toBe(2);
+    expect(c.get('FS32R294KCMJD')).toBe(1);
+    expect(c.has('S32R294')).toBe(false);
+  });
+  it('flags the PMIC listed twice and the CAN listed once; leaves the S32R294 alone', () => {
+    const x = crossCheckWithOcr([
+      { refDes: 'U1', partNumber: 'S32R294', qty: 1 }, { refDes: 'U6, U7', partNumber: 'MAX20431A', qty: 2 },
+      { refDes: 'U8', partNumber: '1044AV', qty: 1 }, { refDes: 'U3', partNumber: '25Q32JWNSM', qty: 1 },
+    ], markings, []);
+    expect(x.map(c => c.refDes).sort()).toEqual(['U6, U7', 'U8']);
+  });
+  it('flags a priced connector when the photos show only pads and unpopulated holes', () => {
+    const x = crossCheckWithOcr([{ refDes: 'J1', componentType: 'connector_smt', description: 'Sealed automotive SMT connector', qty: 1, unitPriceGBP: 5.28 }], [],
+      ['Edge pad row, 2 x 10 contacts (board-to-board / spring contacts)', '2 x 7 plated through-holes, unpopulated']);
+    expect(x.map(c => c.code)).toEqual(['OCR_NO_CONNECTOR_SEEN']);
+  });
+});

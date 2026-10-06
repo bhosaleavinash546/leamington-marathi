@@ -156,3 +156,56 @@ export function verifyOcrClaims(bom: BomLine[], markings: string[]): { bom: BomL
   });
   return { bom: out, revoked };
 }
+
+/**
+ * Cross-checks of the parts list against what the OCR stage actually SAW (PCB review,
+ * Oct 2026 — measured on the real radar reading: the model listed 2 × MAX20431A where
+ * OCR read one, 1 × TCAN1044 where OCR read two, and a £5.28 "sealed connector" where
+ * OCR saw only an edge pad row and unpopulated holes). Flags only — a quantity or a
+ * part is never changed on this evidence, because a chip photographed twice can be read
+ * twice and a connector can sit outside every photo.
+ */
+export interface OcrCrossCheck { refDes: string; code: 'OCR_QTY_MISMATCH' | 'OCR_NO_CONNECTOR_SEEN'; message: string }
+
+/** Physical chips per part token. A marking with no lot/date code whose part token sits
+ *  inside another marking's ("S32R294 radar" next to "FS32R294KCMJD 0P68C …") is the
+ *  same chip described again and is not counted. */
+export function ocrChipCounts(markings: string[]): Map<string, number> {
+  const parts = markings.map(m => {
+    const toks = m.toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
+    const core = coreToken(m);
+    const others = toks.filter(t => t !== core && /\d/.test(t));
+    return { core, hasCode: others.length > 0 };
+  }).filter(p => p.core.length >= 4);
+  const counts = new Map<string, number>();
+  for (const p of parts) {
+    if (!p.hasCode && parts.some(q => q !== p && q.core !== p.core && q.core.includes(p.core))) continue;
+    counts.set(p.core, (counts.get(p.core) ?? 0) + 1);
+  }
+  return counts;
+}
+
+export function crossCheckWithOcr(bom: BomLine[], markings: string[], connectors: string[]): OcrCrossCheck[] {
+  const out: OcrCrossCheck[] = [];
+  const counts = ocrChipCounts(markings ?? []);
+  for (const l of bom) {
+    const pn = squash(String(l.partNumber ?? ''));
+    if (pn.length < 4) continue;
+    let seen = 0;
+    for (const [core, n] of counts) if (core.includes(pn) || pn.includes(core)) seen += n;
+    const qty = Number(l.qty) || 0;
+    if (seen > 0 && qty !== seen) out.push({ refDes: String(l.refDes ?? l.partNumber), code: 'OCR_QTY_MISMATCH',
+      message: `${String(l.refDes ?? '')} ${String(l.partNumber)}: the parts list says ${qty}, the chip-marking stage read ${seen} chip${seen === 1 ? '' : 's'} with this marking. Count them on the board.` });
+  }
+  const conn = (connectors ?? []).filter(c => c.trim());
+  const padsOnly = conn.length > 0 && conn.every(c => /\bpads?\b|unpopulated|not fitted|no connector|test points?/i.test(c));
+  if (padsOnly) {
+    for (const l of bom) {
+      const isConn = /^connector/.test(String(l.componentType ?? '')) || /\b(connector|header|receptacle|socket)\b/i.test(String(l.description ?? ''));
+      if (!isConn || l.notFitted === true || Number(l.unitPriceGBP) === 0) continue;
+      out.push({ refDes: String(l.refDes ?? '?'), code: 'OCR_NO_CONNECTOR_SEEN',
+        message: `${String(l.refDes ?? '')} is priced as a connector, but the photos show only: ${conn.join('; ')}. Confirm a connector is fitted before trusting this line.` });
+    }
+  }
+  return out;
+}

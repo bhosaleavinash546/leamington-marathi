@@ -21,7 +21,7 @@ import {
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
-import { reconcileOcrMarkings, verifyOcrClaims } from '../utils/pcb-ocr-reconcile.js';
+import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { isNotFitted } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
@@ -1597,6 +1597,17 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     }
     const grounded = groundAndSplit(bom, prices, knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier });
     bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false } : l)) as Array<Record<string, unknown>>;
+    // What the OCR stage SAW against the parts list: a quantity that differs from the
+    // chips read, a connector where only pads were seen. Flagged to verify, never changed.
+    {
+      const xc = crossCheckWithOcr(bom, ocrResult.icMarkings, ocrResult.connectors ?? []);
+      const flag = new Set(xc.map(c => c.refDes));
+      if (xc.length) {
+        bom = bom.map(l => (flag.has(String(l.refDes ?? l.partNumber)) && l.userCorrected !== true
+          ? { ...l, needsVerification: true, ocrCheck: xc.filter(c => c.refDes === String(l.refDes ?? l.partNumber)).map(c => c.message).join(' ') } : l));
+        for (const c of xc) warnings.push({ code: c.code, severity: 'warn', message: c.message });
+      }
+    }
     a.bom = bom;
     const sum = (f: (l: Record<string, unknown>) => boolean) => Math.round(bom.filter(f).reduce((t, l) => t + (Number(l.lineTotalGBP) || 0), 0) * 100) / 100;
     const bomTotal = sum(() => true);
@@ -2058,7 +2069,7 @@ ${userPromptText}`;
     // markings used to come back only if the MODEL echoed them, which structured output
     // never does — a re-analysis then costed an automotive board as "general".
     stage1Classification: { domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true },
-    ocrExtraction: { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality },
+    ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
     asilLevel: asilClassification.asilLevel,
     asilRationale: asilClassification.asilRationale,
     asilSafetyFunctions: asilClassification.safetyFunctions,
@@ -2143,7 +2154,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
   const ocrResult: OCRResult = {
     icMarkings: ocrMarkings,
     refDesGroups: [],
-    connectors: [],
+    connectors: (() => { try { const c = JSON.parse(String(req.body?.ocrConnectors ?? '[]')); return Array.isArray(c) ? c.map(String) : []; } catch { return []; } })(),
     boardText: [],
     // The first analysis's OCR quality (the UI sends it back); 'high' was hard-coded,
     // which narrowed the confidence band on every re-analysis.
@@ -2279,7 +2290,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
     analysis,
     ...stage4Payload(s4),
     stage1Classification: { domain, conf: 1, hints: [] },
-    ocrExtraction: { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality },
+    ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
     asilLevel: reanalAsil,
   });
 });
@@ -2293,7 +2304,7 @@ router.post('/reanalyze', aiLimit('pcbVision'), upload.fields([
  */
 router.post('/reprice', async (req, res): Promise<void> => {
   const b = (req.body ?? {}) as {
-    analysis?: Record<string, unknown>; domain?: string; asilLevel?: string; ocrMarkings?: string[]; ocrQuality?: string;
+    analysis?: Record<string, unknown>; domain?: string; asilLevel?: string; ocrMarkings?: string[]; ocrConnectors?: string[]; ocrQuality?: string;
     country?: string; orderQty?: number | string; provider?: string; apiKey?: string;
   };
   if (!b.analysis || typeof b.analysis !== 'object' || !Array.isArray(b.analysis.rawBom ?? b.analysis.bom)) {
@@ -2305,7 +2316,7 @@ router.post('/reprice', async (req, res): Promise<void> => {
   const asil = (/^(ASIL-[ABCD]|QM)$/.test(String(b.asilLevel ?? '')) ? String(b.asilLevel) : 'Unknown') as ASILLevel;
   const s4 = await runStage4({
     analysis, domain, asilLevel: asil,
-    ocrResult: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings.map(String) : [], refDesGroups: [], connectors: [], boardText: [],
+    ocrResult: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings.map(String) : [], refDesGroups: [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors.map(String) : [], boardText: [],
       extractionQuality: /^(high|medium|low|none|failed)$/.test(String(b.ocrQuality ?? '')) ? String(b.ocrQuality) : 'medium' },
     country: String(b.country ?? 'cn'), orderQty: parseInt(String(b.orderQty ?? '100'), 10) || 100,
     live: provider && b.apiKey ? { provider, key: String(b.apiKey) } : undefined,
@@ -2314,7 +2325,7 @@ router.post('/reprice', async (req, res): Promise<void> => {
   normalizePCBAnalysis(analysis);
   res.json({ success: true, analysis, ...stage4Payload(s4), asilLevel: asil,
     stage1Classification: { domain, conf: 1, hints: [] },
-    ocrExtraction: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings : [], extractionQuality: String(b.ocrQuality ?? 'medium') } });
+    ocrExtraction: { icMarkings: Array.isArray(b.ocrMarkings) ? b.ocrMarkings : [], connectors: Array.isArray(b.ocrConnectors) ? b.ocrConnectors : [], extractionQuality: String(b.ocrQuality ?? 'medium') } });
 });
 
 router.post('/live-pricing', async (req, res): Promise<void> => {
@@ -2677,7 +2688,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     analysis,
     ...stage4Payload(s4),
     stage1Classification: { domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true },
-    ocrExtraction: { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality },
+    ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
     fromCache: false,
     asilLevel: streamAsilClassification.asilLevel,
     asilRationale: streamAsilClassification.asilRationale,

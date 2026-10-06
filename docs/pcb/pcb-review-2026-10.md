@@ -274,3 +274,52 @@ The headline falls by £11.01 on this case (£83.04 → £72.03). That is the pl
 - **The checks were written after the review**, from its findings. 100% means "the faults the review found are fixed and stay fixed", not "the tool is right". The faults are planted, not sampled from real runs.
 - **It does not score photo-reading accuracy.** A stand-in model reads nothing. Whether the model finds the right parts on a real board stays unmeasured until labelled boards exist (§5). That is the score that matters most for the demo.
 - **One judgement in the setup:** the stand-in answers in the structured-output shape, without the domain and markings echo the 29 September recording carried. With the echo left in, the old code passes D6 (the re-analysis grade) and scores 7/25.
+
+---
+
+## 9. Re-verification on the radar board (6 October 2026) — the genuine answer
+
+Everything below was re-run on the final code. The model's reading is the real 29 September reading of the radar photos; China, 250,000 boards/yr, ASIL-C.
+
+### Proven
+
+| Claim | How it was checked | Result |
+|---|---|---|
+| **The engine is arithmetic** | A separate Python implementation, from the rate data only (no engine code), recomputed every line price and every cost element | Agrees on every line; headline **£57.82** (independent £57.816) |
+| **The AI does not set a price** | Each of the 17 lines checked against its source | 6 lines = the catalogue's dated price exactly. 10 lines inside the tool's class range. 1 not-fitted line at £0. **0 lines at a model price.** Where the model's estimate was above the range it was clamped (diodes: model £0.176, cap £0.1056). |
+| **Every figure reconciles** | Browser, real server, 8 photos | Headline = China row = server total = PDF = library. Every country row's columns add up. |
+| **The workflow is correct** | Scorecard: same faulty case through the real server | 25 / 25 (it was 6 / 25) |
+
+One honest qualification of "the AI doesn't set the price": on a table-priced line, the model's estimate still picks the point **inside** the tool's range. For example, J1 at £5.28 sits in £2.64–£15.84, and U9 at £2.82 in £1.76–£13.20. The tool sets the bounds; the model chooses where within them. Those lines are flagged when they are worth £1 or more.
+
+### Measured: how well the AI read this board
+
+The only reference available is a **careful hand reading of the same photos** (`radar-live-run-2026-09-29.md`). It is not the maker's BOM, and its passive counts are ±15%. Against it:
+
+| | AI reading | Hand reading | Effect on BOM |
+|---|---|---|---|
+| Named chips (S32R294, TEF8105, MAX20431A, W25Q32, TCAN1044) | 5 / 5 found, all read off the chip and catalogue-priced | 5 | — |
+| PMIC MAX20431A | **2** | 1 | +£3.06. Now caught: **CHECK** "OCR read 1 chip" |
+| CAN TCAN1044 | **1** | 2 | −£0.30. Now caught: **CHECK** "OCR read 2 chips" |
+| J1 "sealed connector" | **£5.28** | none (edge pad row) | +£5.28. Now caught: **CHECK** "photos show only pads" |
+| Small ICs | 4 unnamed ICs, £6.34 | 5 small ICs, £1.72 | +£4.6 |
+| Crystal | "TCXO" £1.76 | crystal £0.31 | +£1.45 |
+| Passives | **190** | ~282 | −£2.4 |
+| Inductors / ferrites | 10 | 6 + 8 | −£2.3 |
+| Shield cans | missed | 2 | −£0.42 |
+| Placements | **222** | 328 | assembly −£0.42 |
+| Vias and copper weight (a photo cannot show these) | 220 vias, 1 oz | ~1,000 vias, 2 oz outer layers | fab −£2.20 |
+
+Headline from the **AI reading £57.82** vs **hand reading + measured board facts £52.36**: the AI's reading is **10% high** on this board. The main causes are one invented connector, one doubled PMIC and over-priced generic ICs, partly offset by ~100 missed passives.
+
+Two of the AI's three identity errors are now caught by the cross-check with what the OCR stage saw (`crossCheckWithOcr`). They are flagged **CHECK** and listed "to verify"; nothing is silently changed.
+
+### What still cannot be claimed
+
+- **"No hallucinations at all."** The model still invented a connector and doubled a chip on this board. The tool now **catches and flags** those it can test against the OCR evidence. It **bounds the price** of every line to its own tables, and it **labels the source** of every price. It cannot stop a model from misreading a photo.
+- **A measured accuracy across boards.** This is one board, against a hand reading. 3–5 boards with their real BOMs are still needed for a number that can be quoted.
+
+**For the demo, show:**
+1. The radar board, photo-only: £57.82, with every line labelled CAT / CAT est. / TABLE / CHECK.
+2. The same board with the BOM file and drill/Gerber files attached. The parts come from the file and the board build is measured; the earlier run of that case landed within 10% of the hand reading.
+3. Say it plainly: *"The AI reads the board; the tool prices it from dated catalogue and rate tables, and flags anything it could not confirm."*
