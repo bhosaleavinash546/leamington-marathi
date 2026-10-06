@@ -112,3 +112,28 @@ These are the commonest automotive grades, so the engineer refines rather than s
 
 - No price, density or cost rule.
 - The library's categories, so the material scope is unchanged.
+
+## Extended to blow moulding, thermoforming and extrusion (Oct 2026)
+
+All four plastics forms now use one list of polymers and families, with one grade table per form. Each form buys a different form of the polymer, so its grades differ:
+
+| Form | What it buys | Number of grades | Family default grades |
+|---|---|---|---|
+| Blow moulding (`bm-mat`) | blow grades, plus the TPE pellets the form also offers | 19 | HDPE blow, PA6 blow (charge-air ducts), PC, PET stretch-blow, PVC, TPV |
+| Thermoforming (`tf-mat`) | extruded sheet | 18 | HDPE, ABS, PC, PETG, rigid PVC, PEI, PMMA |
+| Extrusion (`ext-mat`) | pipe, profile, tube, sheet and cable compounds | 29 | PE100 pipe, PA12 tube, ABS sheet, PC sheet, PVC-U window profile, POM rod, PVDF, TPV weatherseal, PMMA |
+
+Changes to the shared lists:
+- **New family "PVC (vinyls)".** PVC is most of extrusion. Injection moulding's uPVC and fPVC moved into it from "Other".
+- **New polymers:** PE-X, EVA (ISO code EVAC), PA11, PETG, Tritan-type copolyester, co-extruded ABS sheet, PVDF, and a TPE whose type is given only in its datasheet.
+
+How the info line changes:
+- **Drying wording** follows the process: "dry before moulding", "dry before extrusion", or, for sheet, "hygroscopic — sheet may need pre-drying".
+- **Morphology:** APET is shown as amorphous sheet, unlike its polymer, PET.
+- **No marking** is written for:
+  - multilayer stock (the coex fuel-tank grade, PETG/EVOH, co-extruded ABS sheet);
+  - foams;
+  - PE80, which may be MDPE or HDPE;
+  - PETG and the copolyester, where I'm not certain of the ISO code.
+
+Rotational moulding is not included: its five powders are all polyethylene except PP and PA12, so a picker adds nothing.

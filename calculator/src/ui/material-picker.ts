@@ -1,6 +1,7 @@
 /**
  * Material picker: Family → Standard → Grade, for the casting, cast + machine and forging forms,
- * and Family → Polymer → Grade for injection moulding (material picker, Oct 2026). The taxonomies are data in src/engine/*-material-taxonomy.ts.
+ * and Family → Polymer → Grade for injection moulding, blow moulding, thermoforming and extrusion
+ * (material picker, Oct 2026). The taxonomies are data in src/engine/*-material-taxonomy.ts.
  *
  * The form's own grade <select> (`cast-mat`, `cam-mat`, `forge-mat`) stays the one value holder —
  * the CAD rules, drafts, demos and the collectors all read and write it — and becomes the "Grade"
@@ -12,7 +13,7 @@
 import { familyLabelOf, groupGrades, type MaterialTaxonomy } from '../engine/material-taxonomy.js';
 import { CASTING_TAXONOMY } from '../engine/casting-material-taxonomy.js';
 import { FORGING_TAXONOMY } from '../engine/forging-material-taxonomy.js';
-import { MOULDING_TAXONOMY } from '../engine/moulding-material-taxonomy.js';
+import { BLOW_TAXONOMY, EXTRUSION_TAXONOMY, FORMING_TAXONOMY, MOULDING_TAXONOMY } from '../engine/polymer-material-taxonomy.js';
 
 type Mat = { id: string; grade: string; category: string; pricePerKg: number; densityKgPerM3: number };
 
@@ -22,6 +23,9 @@ export const MATERIAL_PICKERS: Record<string, { tax: MaterialTaxonomy; subtype?:
   'cam-mat': { tax: CASTING_TAXONOMY, subtype: 'cam-cast-subtype' },
   'forge-mat': { tax: FORGING_TAXONOMY },
   'imm-mat': { tax: MOULDING_TAXONOMY },
+  'bm-mat': { tax: BLOW_TAXONOMY },
+  'tf-mat': { tax: FORMING_TAXONOMY },
+  'ext-mat': { tax: EXTRUSION_TAXONOMY },
 };
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

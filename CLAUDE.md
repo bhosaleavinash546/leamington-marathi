@@ -408,9 +408,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   `<optgroup>`s, and setting its value (by code or hand) moves both to the grade's own. A new library casting or forging
   grade must be filed in its `GRADES` (`tests/{casting,forging}-material-taxonomy.test.ts`); an unknown company grade
   lands under "Other / company grades". The CAD panel's material pin is grouped the same way.
-  Injection moulding (`imm-mat`) is Family → POLYMER → Grade (`moulding-material-taxonomy.ts`, `levelLabel: 'Polymer'`):
-  plastics have no grade standard — a resin is its ISO 1043 polymer + filler; the info line gives morphology, drying
-  and the ISO 11469 marking (written only where unambiguous). See `docs/cad/moulding-material-picker-plan-2026-10.md`.
+  Plastics — injection moulding, blow moulding, thermoforming, extrusion (`imm-mat`, `bm-mat`, `tf-mat`, `ext-mat`) —
+  are Family → POLYMER → Grade (`polymer-material-taxonomy.ts`: ONE polymer list + family list, one grade table per
+  form because each buys a different form — pellets, blow grades, sheet, pipe / profile compounds). Plastics have no
+  grade standard: a resin is its ISO 1043 polymer + filler; the info line gives morphology, drying and the ISO 11469
+  marking (written only where unambiguous). See `docs/cad/moulding-material-picker-plan-2026-10.md`.
 - Material scope (review, Oct 2026): `src/engine/material-scope.ts` is the ONE table of which library categories each
   commodity buys (exact category match). The forms' drop-downs (`src/ui/material-scope.ts` → `SELECT_COMMODITY`), the
   CAD panel lists (`cad-options.ts`), the grade / resin / compound questions and `toCostParams::resolveMaterialId` all

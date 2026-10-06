@@ -9,9 +9,10 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../src/engine/material-scope.js';
 import {
   MOULD_FAMILIES, MOULD_STANDARDS, MOULDING_TAXONOMY, POLYMERS, describeMouldGrade, groupMouldingGrades,
   mouldFamilyDefaultGrade, mouldGradeFacts, mouldGradeInfo,
-} from '../src/engine/moulding-material-taxonomy.js';
-import { OTHER_STANDARD } from '../src/engine/material-taxonomy.js';
+} from '../src/engine/polymer-material-taxonomy.js';
+import { OTHER_STANDARD, groupGrades } from '../src/engine/material-taxonomy.js';
 import { MATERIAL_PICKERS, materialOptionsHtml } from '../src/ui/material-picker.js';
+import { POLYMER_TAXONOMIES, POLYMER_FAMILIES } from '../src/engine/polymer-material-taxonomy.js';
 
 const resins = DEFAULT_RATE_LIBRARY.materials.filter(m => MATERIAL_SCOPE_BY_COMMODITY.injection_moulding.test(m.category));
 
@@ -82,5 +83,61 @@ describe('moulding material taxonomy', () => {
     expect((html.match(/<option /g) ?? []).length).toBe(resins.length);
     expect(html).toContain('<optgroup label="Polyamides (nylon) · PA66 — polyamide 66" data-fam="polyamide"');
     expect(html).toMatch(/<option value="mat-pa66gf30" data-fam="polyamide"[^>]*>PA66 GF30 — £[\d.]+\/kg<\/option>/);
+  });
+});
+
+/** Blow moulding, thermoforming and extrusion: same polymer list, each with its own grade table. */
+describe.each([
+  ['blow_moulding', 'bm-mat'], ['thermoforming', 'tf-mat'], ['extrusion', 'ext-mat'],
+] as const)('%s material taxonomy', (commodity, selectId) => {
+  const tax = POLYMER_TAXONOMIES[commodity];
+  const grades = DEFAULT_RATE_LIBRARY.materials.filter(m => MATERIAL_SCOPE_BY_COMMODITY[commodity].test(m.category));
+
+  it('its form uses it, with the Polymer step', () => {
+    expect(MATERIAL_PICKERS[selectId].tax).toBe(tax);
+    expect(tax.levelLabel).toBe('Polymer');
+  });
+
+  it('files every library grade in scope (none in "Other / company grades"), each grade once', () => {
+    expect(grades.filter(m => !tax.info(m).known).map(m => m.id), `add these to the ${commodity} rows`).toEqual([]);
+    const groups = groupGrades(tax, grades);
+    expect(groups.flatMap(g => g.grades.map(m => m.id)).sort()).toEqual(grades.map(m => m.id).sort());
+  });
+
+  it('every marking starts with its polymer code; every polymer is in the shared list', () => {
+    for (const m of grades) {
+      const f = tax.facts(m.id)!;
+      expect(POLYMERS[f.polymer], f.polymer).toBeDefined();
+      if (!f.marking) continue;
+      const code = f.polymer === 'PE' ? 'PE-' : f.polymer === 'EVA' ? 'EVAC' : f.polymer;
+      expect(f.marking.startsWith(`>${code}`), `${m.id} ${f.marking}`).toBe(true);
+    }
+  });
+
+  it('a family default, where stated, is a grade of that family', () => {
+    for (const fam of POLYMER_FAMILIES) {
+      const id = tax.defaultGrade(fam.id);
+      if (!id) continue;
+      const m = grades.find(x => x.id === id);
+      expect(m, `${fam.id} → ${id}`).toBeDefined();
+      expect(tax.info(m!).family).toBe(fam.id);
+    }
+  });
+
+  it('the info line names the polymer, morphology, drying and density', () => {
+    const m = grades[0];
+    const line = tax.describe!(m.id, m.densityKgPerM3)!;
+    expect(line).toContain(tax.facts(m.id)!.polymer);
+    expect(line).toMatch(/kg\/m³/);
+    expect(line).toMatch(/dry|hygroscopic|datasheet/);
+  });
+});
+
+describe('the process wording of the drying note', () => {
+  it('moulding and extrusion say dry before; forming speaks of the sheet', () => {
+    expect(POLYMER_TAXONOMIES.extrusion.describe!('mat-pa12-ext-tube', 1010)).toContain('dry before extrusion');
+    expect(POLYMER_TAXONOMIES.thermoforming.describe!('mat-pc-tf', 1200)).toContain('sheet may need pre-drying');
+    expect(POLYMER_TAXONOMIES.thermoforming.describe!('mat-apet-tf', 1340)).toContain('amorphous');   // APET is the amorphous sheet
+    expect(POLYMER_TAXONOMIES.blow_moulding.describe!('mat-tpe-bm', 900)).toContain('drying per datasheet');
   });
 });

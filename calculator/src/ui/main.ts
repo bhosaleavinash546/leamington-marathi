@@ -5,7 +5,7 @@ import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
 import { MATERIAL_PICKERS, materialOptionsHtml, wireMaterialPicker } from './material-picker.js';
 import { CASTING_TAXONOMY } from '../engine/casting-material-taxonomy.js';
 import { FORGING_TAXONOMY } from '../engine/forging-material-taxonomy.js';
-import { MOULDING_TAXONOMY } from '../engine/moulding-material-taxonomy.js';
+import { POLYMER_TAXONOMIES } from '../engine/polymer-material-taxonomy.js';
 import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fieldLabel } from './field-labels.js';
@@ -5829,7 +5829,7 @@ function _buildCadMaterialOptions(commodity: string): string {
   if (!mats.length) return '<option value="">— AI selects material —</option>';
   // Casting, forging and moulding grades are grouped family · standard (or polymer), as on their forms.
   const tax = commodity === 'casting' || commodity === 'cast_and_machine' ? CASTING_TAXONOMY
-    : commodity === 'forging' ? FORGING_TAXONOMY : commodity === 'injection_moulding' ? MOULDING_TAXONOMY : null;
+    : commodity === 'forging' ? FORGING_TAXONOMY : POLYMER_TAXONOMIES[commodity] ?? null;
   if (tax) {
     const scope = MATERIAL_SCOPE_BY_COMMODITY[commodity];
     return '<option value="">— AI selects material —</option>'
