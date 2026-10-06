@@ -1,0 +1,103 @@
+{ "domain": "r3-unsearched-a", "researched": "2026-10-06", "parts": [
+  { "mpn": "DRA821U4TGBALMRQ1", "family": "DRA821U", "mfr": "Texas Instruments", "desc": "Jacinto 7 gateway/cluster processor", "category": "ic_bga", "pkg": "FCBGA-433", "aecq": true, "ecuRoles": ["gateway","cluster"], "observedMpn": "DRA821U4TGBALM",
+    "observations": [],
+    "notes": "Mouser DRA821U4TGBALM snippet: $60.07 at a break whose extended price ($1,501.75) implies qty 25, not 100 - discarded. TI store lists DRA821U4TCBALMRQ1 $30.99 (manufacturer, qty unstated) - not recorded. No >=100 franchised break found." },
+  { "mpn": "AP0202AT2L00XPGA0-TR", "family": "AP0202AT", "mfr": "onsemi", "desc": "Automotive HDR image signal processor", "category": "ic_bga", "pkg": "VFBGA-100", "aecq": true, "ecuRoles": ["camera","ADAS"], "observedMpn": "AP0202AT2L00XPGA0-TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 500, "price": 6.80, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/AP0202AT2L00XPGA0-DR/7221063", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 6.80, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/AP0202AT2L00XPGA0-TR/7220384", "date": "2026-10-06" }
+    ],
+    "notes": "500 break is the -DR (dry pack) code; 3000 is the reel. Flat 500->3000." },
+  { "mpn": "AR0820ATSC18XMEA0-DPBR", "family": "AR0820AT", "mfr": "onsemi", "desc": "8.3 MP 1/2in automotive HDR image sensor", "category": "ic_bga", "pkg": "IBGA-95", "aecq": true, "ecuRoles": ["camera","ADAS"], "observedMpn": "AR0820ATSC18XMEA0-DRBR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 40.9808, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/onsemi/AR0820ATSC18XMEA0-DRBR/17629347", "date": "2026-10-06" }
+    ],
+    "notes": "Sibling packing code DRBR. DPBR itself: DK $35.13/25, Mouser $39.42 (break unstated) - below 100, not recorded." },
+  { "mpn": "AR0147ATSC00XUEA0-DPBR", "family": "AR0147AT", "mfr": "onsemi", "desc": "1.3 MP 1/4in automotive HDR image sensor", "category": "ic_bga", "pkg": "IBGA", "aecq": true, "ecuRoles": ["camera","surround view"], "observedMpn": "AR0147ATSC00XUEA0-DPBR",
+    "observations": [],
+    "notes": "DK breaks only to 25 ($16.17/25); DK marks it obsolete. No >=100 break found." },
+  { "mpn": "BQ79731PHPRQ1", "family": "BQ79731", "mfr": "Texas Instruments", "desc": "HV pack monitor: pack voltage, current, isolation", "category": "ic_tqfp", "pkg": "HTQFP-48", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "BQ79731PHPRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 88.97127, "currency": "NOK", "url": "https://www.digikey.no/en/products/detail/texas-instruments/BQ79731PHPRQ1/25811558", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key Norway, NOK ex VAT, T&R, non-stock (26 wk). TI store $5.99 (qty unstated) not recorded; DK NOK figure is ~1.4x that." },
+  { "mpn": "GCM31CR71E106KA64L", "family": "GCM31CR71E106", "mfr": "Murata", "desc": "MLCC 10uF 25V X7R 1206 AEC-Q200", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["general"], "observedMpn": "",
+    "observations": [],
+    "notes": "Exact MPN not found; only 16V sibling GCM31CR71C106KA64L (different voltage) - not used." },
+  { "mpn": "GCJ31CR71H105KA01L", "family": "GCJ31CR71H105", "mfr": "Murata", "desc": "MLCC 1uF 50V X7R 1206 soft termination AEC-Q200", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["general"], "observedMpn": "",
+    "observations": [],
+    "notes": "No distributor price for exact MPN in two rounds of results." },
+  { "mpn": "CGA5L1X7R1H475K160AC", "family": "CGA5L1X7R1H475", "mfr": "TDK", "desc": "MLCC 4.7uF 50V X7R 1206 AEC-Q200", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["general"], "observedMpn": "",
+    "observations": [],
+    "notes": "Exact MPN not found. Mouser CGA5L3X7R1H475K160AE (different thickness/termination code) $0.217 at reel - not used." },
+  { "mpn": "MAX20096ATJ/VY+", "family": "MAX20096", "mfr": "Analog Devices", "desc": "Dual buck LED controller", "category": "ic_qfn", "pkg": "TQFN-32", "aecq": true, "ecuRoles": ["lighting"], "observedMpn": "MAX20096ATJ/VY+",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 980, "price": 6.71189, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20096ATJ-VY/9833498", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1470, "price": 6.63316, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20096ATJ-VY/9833498", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 2500, "price": 7.3304, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20096ATJ-VY-T/9833499", "date": "2026-10-06" }
+    ],
+    "notes": "Tray breaks 490/980/1470; reel (+T) 2500 is priced ABOVE the tray 1k - inverted slope. LCSC $1.95 discarded as implausible." },
+  { "mpn": "TLE5014SP16XUMA1", "family": "TLE5014SP16", "mfr": "Infineon", "desc": "GMR angle sensor (SPC)", "category": "ic_soic", "pkg": "TDSO-16", "aecq": true, "ecuRoles": ["EPS","throttle","motor position"], "observedMpn": "",
+    "observations": [],
+    "notes": "SP16 code not found in 2 searches. Other interface variants (not packing siblings, not used): Mouser TLE5014S16XUMA1 $3.50/2500; DK TLE5014P16DXUMA1 $5.5188/2500." },
+  { "mpn": "A1335LLETR-T", "family": "A1335", "mfr": "Allegro MicroSystems", "desc": "Magnetic angle sensor", "category": "ic_soic", "pkg": "TSSOP-14", "aecq": true, "ecuRoles": ["EPS","motor position"], "observedMpn": "A1335LLETR-T",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 3.60, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/A1335LLETR-T/5774396", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.22, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/A1335LLETR-T/5774396", "date": "2026-10-06" }
+    ],
+    "notes": "Orderable chosen: A1335LLETR-T (TSSOP-14 reel)." },
+  { "mpn": "MLX90363KDC-ABB-000-RE", "family": "MLX90363", "mfr": "Melexis", "desc": "Triaxis position sensor SPI", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["pedal","throttle","EPS"], "observedMpn": "MLX90363KDC-ABB-000-RE",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.49041, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/melexis-technologies-nv/MLX90363KDC-ABB-000-RE/4157068", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 1.67, "currency": "USD", "url": "https://www.mouser.com/en/ProductDetail/Melexis/MLX90363KDC-ABB-000-TU?qs=KuGPmAKtFKXIfQFOyMBszg%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser figure is the tube code -TU. Dual-die TSSOP-16 KGO variant: DK $2.5347/1000." },
+  { "mpn": "MLX90381GLW-ACA-000-SP", "family": "MLX90381", "mfr": "Melexis", "desc": "Analog resolver/angle sensor", "category": "ic_qfn", "pkg": "DFN-6", "aecq": true, "ecuRoles": ["motor position","e-motor"], "observedMpn": "MLX90381GLW-ACA-000-SP",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 1.37207, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/melexis-technologies-nv/MLX90381GLW-ACA-000-SP/16876457", "date": "2026-10-06" }
+    ],
+    "notes": "Only orderable found is the DFN-6 code (list category was ic_soic). DK stock 0 at read." },
+  { "mpn": "TLE4999C8XUMA1", "family": "TLE4999C8", "mfr": "Infineon", "desc": "Dual linear Hall sensor", "category": "ic_soic", "pkg": "TDSO-8", "aecq": true, "ecuRoles": ["pedal","throttle","steering"], "observedMpn": "TLE4999C8XUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.27, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE4999C8XUMA1/13919225", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 2500, "price": 3.15, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE4999C8XUMA1/13919225", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 3.07, "currency": "EUR", "url": "https://www.mouser.com.tr/ProductDetail/Infineon-Technologies/TLE4999C8XUMA1/?qs=/ha2pyFadujCX9tnQ/XFftjF/GghoMqNpNoiQ7fHJvA%3D", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser also EUR 3.02/2500." },
+  { "mpn": "TLE4966GHTSA1", "family": "TLE4966", "mfr": "Infineon", "desc": "Dual Hall switch (speed/direction)", "category": "ic_soic", "pkg": "TSOP-6", "aecq": true, "ecuRoles": ["window lift","seat","sunroof"], "observedMpn": "TLE4966GHTSA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.42082, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE4966GHTSA1/11500401", "date": "2026-10-06" }
+    ],
+    "notes": "Representative orderable chosen: TLE4966GHTSA1 (TSOP-6). Mouser TLE4966-3K (other variant/package) $0.417/3000 - not recorded." },
+  { "mpn": "KP236N6165XTMA1", "family": "KP236", "mfr": "Infineon", "desc": "Analog barometric/MAP pressure sensor", "category": "ic_soic", "pkg": "DSOF-8", "aecq": true, "ecuRoles": ["engine","BCM"], "observedMpn": "KP236N6165XTMA1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1500, "price": 3.31, "currency": "USD", "url": "https://www.mouser.in/ProductDetail/Infineon-Technologies/KP236N6165XTMA1?qs=OwbwYO03UsI0xxGcbH7orQ%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 6000, "price": 3.55, "currency": "USD", "url": "https://www.digikey.fr/htmldatasheets/production/1807750/0/0/1/kp236n6165.html", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser figure from search summary of Mouser KP236N6165 pages (exact page code KP236N6165 / XTMA1 unclear). DK URL is a datasheet page; snippet price may be stale." },
+  { "mpn": "SMI230", "family": "SMI230", "mfr": "Bosch", "desc": "6-axis inertial sensor (automotive)", "category": "ic_qfn", "pkg": "LGA-16", "aecq": true, "ecuRoles": ["airbag","ESC","telematics"], "observedMpn": "SMI230",
+    "observations": [
+      { "distributor": "Future Electronics", "qty": 5000, "price": 4.55, "currency": "USD", "url": "https://www.futureelectronics.com/p/semiconductors--analog--sensors--combo-sensors/smi230-bosch-sensortec-7179154", "date": "2026-10-06" }
+    ],
+    "notes": "Reel. LCSC $5.79 at qty 1 not recorded." },
+  { "mpn": "IAM-20685", "family": "IAM-20685", "mfr": "TDK InvenSense", "desc": "6-axis automotive IMU", "category": "ic_qfn", "pkg": "LGA-24", "aecq": true, "ecuRoles": ["ADAS","telematics"], "observedMpn": "",
+    "observations": [],
+    "notes": "Only broker (Worldway via Octopart, $4.19-4.40) found - not allowed. MOQ 5000 per Octopart." },
+  { "mpn": "DRV8705SQRHBRQ1", "family": "DRV8705-Q1", "mfr": "Texas Instruments", "desc": "H-bridge smart gate driver", "category": "ic_qfn", "pkg": "VQFN-32", "aecq": true, "ecuRoles": ["BCM","pump","seat"], "observedMpn": "DRV8705SQRHBRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 1.64, "currency": "USD", "url": "https://octopart.com/part/texas-instruments/DRV8705SQRHBRQ1", "date": "2026-10-06" }
+    ],
+    "notes": "Mouser 1k via Octopart aggregator snippet - treat with care. DK $2.77 seen without break. OVAGA $1.368 (broker) not used." },
+  { "mpn": "DRV8714SQPHPRQ1", "family": "DRV8714-Q1", "mfr": "Texas Instruments", "desc": "4-half-bridge smart gate driver", "category": "ic_tqfp", "pkg": "HTQFP-48", "aecq": true, "ecuRoles": ["BCM","door","seat"], "observedMpn": "",
+    "observations": [],
+    "notes": "No franchised distributor price in 2 searches. TI store $2.681 (qty unstated) and JAK Electronics (broker) $4.09/1000 not recorded." },
+  { "mpn": "FS820R08A6P2BBPSA1", "family": "FS820R08A6P2B", "mfr": "Infineon", "desc": "HybridPACK Drive 750V 820A IGBT six-pack module", "category": "power_module", "pkg": "HybridPACK Drive", "aecq": true, "ecuRoles": ["traction inverter"], "observedMpn": "FS820R08A6P2BBPSA1",
+    "observations": [],
+    "notes": "Representative orderable FS820R08A6P2BBPSA1. Only qty-1 prices seen: DK $682.50, Mouser $680.22, Arrow $683.41, Farnell $579.45 (via Octopart). No >=100 break." },
+  { "mpn": "FS950R08A6P2BBPSA1", "family": "FS950R08A6P2B", "mfr": "Infineon", "desc": "HybridPACK Drive 750V 950A IGBT six-pack module", "category": "power_module", "pkg": "HybridPACK Drive", "aecq": true, "ecuRoles": ["traction inverter"], "observedMpn": "FS950R08A6P2BBPSA1",
+    "observations": [],
+    "notes": "Representative orderable FS950R08A6P2BBPSA1. Only qty-1 prices seen: DK $917.70, Mouser $917.60. No >=100 break." },
+  { "mpn": "FS03MR12A6MA1BBPSA1", "family": "FS03MR12A6MA1B", "mfr": "Infineon", "desc": "HybridPACK Drive 1200V CoolSiC six-pack module", "category": "power_module", "pkg": "HybridPACK Drive", "aecq": true, "ecuRoles": ["traction inverter","800V"], "observedMpn": "FS03MR12A6MA1BBPSA1",
+    "observations": [],
+    "notes": "Representative orderable FS03MR12A6MA1BBPSA1. Only qty-1 prices seen: DK $2,004.05 (39 wk lead), Farnell UK GBP 1,767.00. No >=100 break." }
+] }
