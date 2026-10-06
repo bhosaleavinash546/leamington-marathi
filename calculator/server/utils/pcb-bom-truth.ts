@@ -73,9 +73,10 @@ export function bomFromFile(lines: ParsedBOMLine[], aiBom: BomLine[], automotive
       unitPriceGBP: Number.isFinite(aiPrice) && aiPrice > 0 ? aiPrice : 0,
       aiEstimatedPriceGBP: Number.isFinite(aiPrice) && aiPrice > 0 ? aiPrice : undefined,
       automotive: automotiveBoard || ai?.automotive === true,
-      lineConf: l.partNumber ? 0.95 : 0.85,
+      // A transcribed picture can misread a character: one notch below a file.
+      lineConf: (l.partNumber ? 0.95 : 0.85) - (l.fromImage ? 0.1 : 0),
       ocrExtracted: false,
-      bomSource: 'file',
+      bomSource: l.fromImage ? 'image' : 'file',
       notFitted: notFitted || undefined,
     };
   });

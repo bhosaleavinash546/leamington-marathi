@@ -359,5 +359,173 @@
    ],
    "extractionQuality": "high"
   }
+ },
+ "bomImage": {
+  "isBomTable": true,
+  "unreadable": [],
+  "rows": [
+   {
+    "refDes": "Designator",
+    "qty": 0,
+    "partNumber": "MPN",
+    "manufacturer": "Manufacturer",
+    "description": "Description",
+    "value": "Value",
+    "pkg": "Package"
+   },
+   {
+    "refDes": "U1",
+    "qty": 1,
+    "partNumber": "S32R294",
+    "manufacturer": "NXP",
+    "description": "Radar MCU",
+    "value": "",
+    "pkg": "FCBGA"
+   },
+   {
+    "refDes": "U2",
+    "qty": 1,
+    "partNumber": "TEF8232EN1/N1/ZUZ",
+    "manufacturer": "NXP",
+    "description": "77 GHz radar transceiver",
+    "value": "",
+    "pkg": "HTQFP"
+   },
+   {
+    "refDes": "U3",
+    "qty": 1,
+    "partNumber": "S25FL128LAGMFV010",
+    "manufacturer": "Infineon",
+    "description": "128 Mb serial NOR, automotive",
+    "value": "",
+    "pkg": "SOIC-8"
+   },
+   {
+    "refDes": "U4, U5",
+    "qty": 2,
+    "partNumber": "TPS7B6950QDBVRQ1",
+    "manufacturer": "Texas Instruments",
+    "description": "LDO 5 V 150 mA",
+    "value": "",
+    "pkg": "SOT-23-5"
+   },
+   {
+    "refDes": "U6",
+    "qty": 1,
+    "partNumber": "TLF35584QVVS2",
+    "manufacturer": "Infineon",
+    "description": "Safety PMIC",
+    "value": "",
+    "pkg": "LQFP-48"
+   },
+   {
+    "refDes": "U8",
+    "qty": 1,
+    "partNumber": "TCAN1043ADRQ1",
+    "manufacturer": "Texas Instruments",
+    "description": "CAN FD transceiver",
+    "value": "",
+    "pkg": "SOIC-8"
+   },
+   {
+    "refDes": "U9",
+    "qty": 1,
+    "partNumber": "LMR33630BQRNXRQ1",
+    "manufacturer": "Texas Instruments",
+    "description": "36 V 3 A buck",
+    "value": "",
+    "pkg": "VQFN-12"
+   },
+   {
+    "refDes": "U10",
+    "qty": 1,
+    "partNumber": "TJA1021T/20/C,118",
+    "manufacturer": "NXP",
+    "description": "LIN transceiver",
+    "value": "",
+    "pkg": "SOIC-8"
+   },
+   {
+    "refDes": "D1, D2",
+    "qty": 2,
+    "partNumber": "SZNUP2105LT1G",
+    "manufacturer": "onsemi",
+    "description": "CAN bus TVS",
+    "value": "",
+    "pkg": "SOT-23"
+   },
+   {
+    "refDes": "Q1-Q4",
+    "qty": 4,
+    "partNumber": "BC847B,215",
+    "manufacturer": "Nexperia",
+    "description": "NPN 45 V",
+    "value": "",
+    "pkg": "SOT-23"
+   },
+   {
+    "refDes": "Y1",
+    "qty": 1,
+    "partNumber": "SIT8008BI-71-33E-25.000000",
+    "manufacturer": "SiTime",
+    "description": "25 MHz MEMS oscillator",
+    "value": "25MHz",
+    "pkg": "2016"
+   },
+   {
+    "refDes": "R1-R70",
+    "qty": 70,
+    "partNumber": "CRCW040210K0FKED",
+    "manufacturer": "Vishay",
+    "description": "Thick-film resistor AEC-Q200",
+    "value": "10k",
+    "pkg": "0402"
+   },
+   {
+    "refDes": "C1-C90",
+    "qty": 90,
+    "partNumber": "GCM155R71H104KE02D",
+    "manufacturer": "Murata",
+    "description": "MLCC X7R AEC-Q200",
+    "value": "100nF",
+    "pkg": "0402"
+   },
+   {
+    "refDes": "C91-C120",
+    "qty": 30,
+    "partNumber": "GCM188R71C105KA64D",
+    "manufacturer": "Murata",
+    "description": "MLCC X7R AEC-Q200",
+    "value": "1uF",
+    "pkg": "0603"
+   },
+   {
+    "refDes": "L1-L10",
+    "qty": 10,
+    "partNumber": "BLM18KG601SH1D",
+    "manufacturer": "Murata",
+    "description": "Ferrite bead",
+    "value": "600R",
+    "pkg": "0603"
+   },
+   {
+    "refDes": "J1",
+    "qty": 1,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "Sealed automotive connector",
+    "value": "",
+    "pkg": "SMT"
+   },
+   {
+    "refDes": "",
+    "qty": 0,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "TOTAL",
+    "value": "",
+    "pkg": ""
+   }
+  ]
  }
 }

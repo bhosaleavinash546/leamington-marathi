@@ -7697,10 +7697,10 @@ function buildPCBImageUploadZone(): string {
         <!-- BOM/netlist file upload — attaching a BOM file significantly improves cost accuracy -->
         <div style="margin-top:10px;padding:10px 12px;background:rgba(230,81,0,0.06);border:1px dashed rgba(230,81,0,0.35);border-radius:8px">
           <div style="font-size:0.72rem;font-weight:600;color:var(--accent);margin-bottom:4px">Attach BOM File — Recommended for better cost accuracy</div>
-          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">Uploading your BOM (.csv / .xml / .txt) locks in real part numbers and quantities, removing AI guesswork on component pricing. Without a BOM, AI extracts from the image only.</div>
+          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">Uploading your BOM locks in real part numbers and quantities, removing AI guesswork on component pricing. Use a file (.csv / .xml / .txt) or a picture of the BOM table (.png / .jpg / .webp — a screenshot or photo): a picture is transcribed by the reader, never priced by it, and its lines are marked so you can check them. Without a BOM, AI extracts from the board photos only.</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <input type="file" id="pcb-bom-input" accept=".csv,.xml,.txt" style="display:none"/>
-            <button class="btn btn-primary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.68rem;padding:4px 12px">Attach BOM File</button>
+            <input type="file" id="pcb-bom-input" accept=".csv,.xml,.txt,.png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" style="display:none"/>
+            <button class="btn btn-primary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.68rem;padding:4px 12px">Attach BOM (file or image)</button>
             <span id="pcb-bom-filename" style="font-size:0.66rem;color:var(--text-secondary);font-style:italic">No file selected — AI will infer BOM from image</span>
           </div>
         </div>
@@ -7859,8 +7859,9 @@ function wirePCBImageZone(): void {
   bomInput?.addEventListener('change', () => {
     const bf = bomInput?.files?.[0] ?? null;
     pcbBOMFile = bf;
+    const isImg = !!bf && (/^image\//.test(bf.type) || /\.(png|jpe?g|webp)$/i.test(bf.name));
     if (bomLabel) bomLabel.textContent = bf
-      ? `${bf.name} (${(bf.size / 1024).toFixed(0)} KB) — used as ground truth`
+      ? `${bf.name} (${(bf.size / 1024).toFixed(0)} KB) — ${isImg ? 'BOM image: rows transcribed and used as the BOM' : 'used as ground truth'}`
       : 'No file — AI will extract BOM from image';
   });
 
@@ -8613,7 +8614,7 @@ function pcbPriceBasisLabel(item: PCBBOMItem): string {
     'catalogue': 'Catalogue', 'known-range': 'Named-part range', 'function-range': 'Function range',
     'class-range': 'Class table', 'not-fitted': 'Not fitted (£0)', 'ai-estimate': 'AI estimate', 'user': 'User entered',
   };
-  return `${x.bomSource === 'file' ? 'BOM file · ' : ''}${src[String(x.priceSource ?? '')] ?? '—'}`;
+  return `${x.bomSource === 'file' ? 'BOM file · ' : x.bomSource === 'image' ? 'BOM image · ' : ''}${src[String(x.priceSource ?? '')] ?? '—'}`;
 }
 
 /** Where a BOM line's price came from — every line says, so the total is arguable line by line. */
@@ -8636,7 +8637,8 @@ function pcbSpecLine(item: PCBBOMItem): string {
 function pcbPriceBasisBadge(item: PCBBOMItem): string {
   const src = String((item as unknown as { priceSource?: string }).priceSource ?? '');
   const note = String((item as unknown as { priceNote?: string }).priceNote ?? '').replace(/"/g, '&quot;');
-  const file = (item as unknown as { bomSource?: string }).bomSource === 'file';
+  const bomSrc = (item as unknown as { bomSource?: string }).bomSource;
+  const file = bomSrc === 'file';
   const map: Record<string, [string, string, string]> = {
     'catalogue':      ['CAT',   '#16a34a', 'Catalogue price for this part number (distributor-sourced, dated)'],
     'known-range':    ['RANGE', '#2563eb', 'Part read off the chip; held in the tool\'s price range for it'],
@@ -8652,7 +8654,9 @@ function pcbPriceBasisBadge(item: PCBBOMItem): string {
   if (src === 'catalogue' && x.catalogueConfidence === 'estimate') m = ['CAT est.', '#0f766e', 'Catalogue engineering estimate for this part (not a distributor quote)'];
   const priced = src === 'catalogue' && x.catalogueMpn && x.catalogueExact === false ? ` — priced as catalogue part ${x.catalogueMpn}` : '';
   const badge = m ? `<span class="pcb-badge" style="background:${m[1]};color:#fff" title="${(note || m[2]) + priced.replace(/"/g, '&quot;')}">${m[0]}</span>` : '';
-  return `${file ? '<span class="pcb-badge" style="background:#0f766e;color:#fff" title="From your BOM file">FILE</span>' : ''}${badge}`;
+  const fileBadge = file ? '<span class="pcb-badge" style="background:#0f766e;color:#fff" title="From your BOM file">FILE</span>'
+    : bomSrc === 'image' ? '<span class="pcb-badge" style="background:#0f766e;color:#fff" title="Transcribed from your BOM image — check the part number against the picture">IMG</span>' : '';
+  return `${fileBadge}${badge}`;
 }
 
 function buildPCBImagePanel(r: PCBImageAnalysis): string {

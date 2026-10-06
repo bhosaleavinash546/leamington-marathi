@@ -184,6 +184,28 @@ async function main(): Promise<void> {
     });
     if (saved != null && Math.abs(saved - headline) > 0.005) fail(`library saved £${saved}, headline £${headline}`);
 
+    // ── The BOM as a picture (Oct 2026): a screenshot of the BOM table is transcribed (no prices)
+    //    and becomes the BOM, exactly as a .csv would. The stand-in returns the radar BOM table
+    //    with a header and a TOTAL row, which must not become parts. ──
+    await page.setInputFiles('#pcb-bom-input', { name: 'radar-bom-scan.png', mimeType: 'image/png', buffer: PNG });
+    await page.click('#pcb-img-analyze-btn', { timeout: 15_000 });
+    await page.waitForFunction(() => /BOM taken from your BOM image/.test(document.getElementById('pcb-img-results')?.textContent ?? ''), null, { timeout: 120_000 })
+      .catch(() => fail('the BOM image was not used as the BOM'));
+    const imgHeadline = Number(await page.getAttribute('#pcb-headline-total', 'data-total'));
+    const imgCn = Number((await page.textContent('[data-country-total="cn"]') ?? '').replace(/[^0-9.]/g, ''));
+    const imgBadges = await page.locator('#pcb-img-results .pcb-badge').allTextContents();
+    const imgText = await page.locator('#pcb-img-results').textContent() ?? '';
+    if (!imgBadges.includes('IMG')) fail('BOM-image lines carry no IMG badge');
+    if (/\bTOTAL\b.*\bTOTAL\b/.test(imgText) || /Designator.*MPN.*Manufacturer/.test(imgText)) fail('a header or TOTAL row of the BOM picture became a part');
+    if (Math.abs(imgHeadline - imgCn) > 0.005) fail(`BOM-image run: headline £${imgHeadline} ≠ China row £${imgCn}`);
+    const catLines = imgBadges.filter(x => x === 'CAT').length;
+    log(`BOM image: headline £${imgHeadline} = China row; ${imgBadges.filter(x => x === 'IMG').length} lines from the picture, ${catLines} priced from the catalogue by their transcribed part numbers`);
+    if (process.env.CV_SHOT_DIR) {
+      await page.evaluate(() => document.getElementById('pcb-headline-total')?.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: join(process.env.CV_SHOT_DIR, 'pcb-radar-bom-image.png'), fullPage: false });
+    }
+
     if (failures.length) throw new Error(`${failures.length} failure(s)`);
     log('PCB LIVE PASSED — photos → BOM → deterministic cost → screen = PDF = library, automotive grade in the headline');
   } finally {

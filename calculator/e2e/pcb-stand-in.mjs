@@ -20,7 +20,8 @@ http.createServer((req, res) => {
     const sys = typeof j.system === 'string' ? j.system : JSON.stringify(j.system ?? '');
     const text = JSON.stringify(j.messages ?? '').slice(-4000);
     let out;
-    if (/classification expert/i.test(sys)) out = R.stage1;
+    if (/transcribe bill-of-materials/i.test(sys)) out = R.bomImage;   // the BOM-image reader (pcb-bom-image.ts)
+    else if (/classification expert/i.test(sys)) out = R.stage1;
     else if (/reading (PCB )?text|reading text from PCB|reading PCB text/i.test(sys)) out = R.ocr;
     else if (/asilLevel/.test(text) || (/ASIL/i.test(sys.slice(0, 300)) && !/cost engineer/i.test(sys))) out = R.asil;
     else out = R.analysis;

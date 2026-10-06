@@ -26,6 +26,7 @@ import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { ecuLibrary } from '../utils/pcb-ecu-library.js';
 import { isNotFitted } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
+import { readBomImage, isBomImage } from '../utils/pcb-bom-image.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
 import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
 import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec } from '../utils/pcb-boardspec-stabilise.js';
@@ -204,13 +205,14 @@ export function applyGroundTruth(
     const aiBom = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
     const t = bomFromFile(parsed, aiBom, domain === 'automotive_adas');
     a.bom = t.bom;
-    a.bomSource = 'file';
+    const fromImage = parsed.some(l => (l as { fromImage?: boolean }).fromImage);
+    a.bomSource = fromImage ? 'image' : 'file';
     if (t.smtPlacements > 0) asm.smtPlacements = t.smtPlacements;
     if (t.bgaCount > 0) asm.bgaCount = t.bgaCount;
     if (t.throughHoleLines > 0 && !(Number(asm.throughHoleJoints) > 0)) asm.throughHoleJoints = t.throughHoleLines * 2;
     if (t.bottomSide && Number(asm.reflowSides ?? 1) < 2) asm.reflowSides = 2;
     warnings.push({ code: 'BOM_FROM_FILE', severity: 'warn',
-      message: `BOM taken from your file: ${t.bom.length} lines, ${t.smtPlacements} SMT placements. The photos were used for the board build and to fill gaps, not to write the BOM.` });
+      message: `BOM taken from your ${fromImage ? 'BOM image (transcribed by the reader, never priced by it)' : 'file'}: ${t.bom.length} lines, ${t.smtPlacements} SMT placements. The photos were used for the board build and to fill gaps, not to write the BOM.` });
     if (t.aiOnly.length) warnings.push({ code: 'AI_PARTS_NOT_IN_BOM_FILE', severity: 'warn',
       message: `The photos show parts your BOM file does not list: ${t.aiOnly.slice(0, 12).join(', ')}${t.aiOnly.length > 12 ? ', …' : ''}. If they are fitted, the file is short.` });
   }
@@ -230,6 +232,25 @@ export function applyGroundTruth(
  * proxy that rejects the parameter (400 naming it) gets the plain call, and the
  * salvage / repair path behind it stays as the second line.
  */
+/**
+ * A BOM uploaded as a picture: transcribed (pcb-bom-image.ts — no prices) and cleaned. null when the
+ * upload is not an image. A picture that is not a BOM table, or a failed read, returns no lines and a
+ * note saying so — the BOM is then read from the board photos as if no BOM had been attached.
+ */
+async function bomFromImageUpload(anthropic: Anthropic, upload: Express.Multer.File | undefined, deep: boolean, tag: string):
+  Promise<{ lines: ParsedBOMLine[]; notes: string[] } | null> {
+  if (!upload || !isBomImage(upload)) return null;
+  try {
+    const r = await readBomImage(anthropic, upload, deep ? DEEP_EXTRACT_MODEL : OCR_MODEL);
+    console.log(`[PCB${tag}] BOM image read: ${r.lines.length} lines from ${upload.originalname}`);
+    if (!r.isBomTable) return { lines: [], notes: ['the attached picture was not read as a BOM table, so the BOM comes from the board photos', ...r.notes] };
+    return { lines: r.lines, notes: [`${r.lines.length} rows transcribed from ${upload.originalname} — check part numbers against the picture`, ...r.notes] };
+  } catch (err) {
+    console.warn(`[PCB${tag}] BOM image read failed:`, (err as Error).message);
+    return { lines: [], notes: [`the BOM picture could not be read (${(err as Error).message.slice(0, 80)}), so the BOM comes from the board photos`] };
+  }
+}
+
 type Stage3Params = { model: string; max_tokens: number; system: string; messages: Anthropic.MessageParam[] };
 // Streamed: the API reference requires streaming above ~16K output tokens, and a
 // full automotive BOM is asked for with 32K. The whole message is still awaited.
@@ -974,8 +995,9 @@ const upload = multer({
       return;
     }
     if (file.fieldname === 'bomFile') {
-      if (/\.(csv|xml|txt)$/i.test(file.originalname) || /^(text\/|application\/(xml|csv|vnd\.ms-excel))/i.test(file.mimetype)) cb(null, true);
-      else cb(new Error('BOM file must be .csv, .xml or .txt'));
+      // A BOM may also be a picture of the BOM table (pcb-bom-image.ts): PNG / JPEG / WebP.
+      if (/\.(csv|xml|txt)$/i.test(file.originalname) || /^(text\/|application\/(xml|csv|vnd\.ms-excel))/i.test(file.mimetype) || isBomImage(file)) cb(null, true);
+      else cb(new Error('BOM file must be .csv, .xml, .txt, or an image of the BOM (.png / .jpg / .webp)'));
       return;
     }
     if (/^image\/(jpeg|jpg|png|webp)$/i.test(file.mimetype)) cb(null, true);
@@ -1448,6 +1470,8 @@ interface Stage4Input {
   orderQty: number;
   /** Ground truth: a parsed BOM file and the uploaded fab files (first analysis only). */
   parsedBOM?: ParsedBOMLine[];
+  /** What the BOM-image reader reported (rows not used, quantities fixed, cells unreadable). */
+  bomImageNotes?: string[];
   files?: Record<string, Express.Multer.File[]>;
   /** /reanalyze: the engineer's edited lines, authoritative. */
   correctedBOM?: Array<Record<string, unknown>> | null;
@@ -1518,6 +1542,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       message: 'The chip-marking (OCR) stage failed, so no marking was read separately: part numbers come only from the BOM stage and more lines are priced from class tables. Run again for a full read.' });
     // 1. Ground truth (a BOM file, measured fab data) before anything the model said.
     if (inp.parsedBOM || inp.files) warnings.push(...applyGroundTruth(a, inp.parsedBOM ?? [], measureUploadedFabData(inp.files), domain));
+    if (inp.bomImageNotes?.length) warnings.push({ code: 'BOM_IMAGE_READING', severity: 'warn', message: `BOM image: ${inp.bomImageNotes.join(' · ')}.` });
     // The BOM as read (after any BOM file), kept so a re-price (/reprice) starts from it
     // and never applies the volume factor or the grading twice.
     if (Array.isArray(a.rawBom)) a.bom = JSON.parse(JSON.stringify(a.rawBom));
@@ -1781,7 +1806,7 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
 
   // Optional user-provided BOM file — parsed and injected as ground truth.
   let parsedBOM: ParsedBOMLine[] = [];
-  if (bomFileUpload) {
+  if (bomFileUpload && !isBomImage(bomFileUpload)) {
     try {
       parsedBOM = parseBOMFile(bomFileUpload.buffer.toString('utf-8'), bomFileUpload.originalname);
       console.log(`[PCB] BOM file parsed: ${parsedBOM.length} lines from ${bomFileUpload.originalname}`);
@@ -1799,6 +1824,8 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
 
   const anthropic = createAnthropic(apiKey);
   console.log(`[PCB] ${imageFiles.length} image(s) received: ${imageLabels.slice(0, imageFiles.length).join(', ')}`);
+  const bomImage = await bomFromImageUpload(anthropic, bomFileUpload, deepAnalysis, '');
+  if (bomImage) parsedBOM = bomImage.lines;
 
   // ── Stage 1: Board domain classification (Haiku) ───────────────────────
   let stage1Result: Stage1Result = { domain: 'general', conf: 0.5, hints: [] };
@@ -2052,7 +2079,7 @@ ${userPromptText}`;
     analysis: analysis as Record<string, unknown>, domain, asilLevel: asilClassification.asilLevel, ocrResult,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
-    parsedBOM, files, tag: '', classificationFailed: stage1Result.failed === true,
+    parsedBOM, bomImageNotes: bomImage?.notes, files, tag: '', classificationFailed: stage1Result.failed === true,
   });
 
   // ── Structural guarantee for the client ─────────────────────────────────
@@ -2572,9 +2599,12 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   const multiNote = multiImage ? `\n\nNOTE: ${imageFiles.length} photos (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together.` : '';
   let parsedBOM2: ParsedBOMLine[] = [];
   const bomFileUpload2 = files?.bomFile?.[0];
-  if (bomFileUpload2) {
+  if (bomFileUpload2 && !isBomImage(bomFileUpload2)) {
     try { parsedBOM2 = parseBOMFile(bomFileUpload2.buffer.toString('utf-8'), bomFileUpload2.originalname); } catch { /* ignore */ }
   }
+  if (bomFileUpload2 && isBomImage(bomFileUpload2)) emit('progress', { stage: 2, label: 'Reading the BOM image', pct: 40 });
+  const bomImage2 = await bomFromImageUpload(anthropic, bomFileUpload2, deepAnalysis, '/stream');
+  if (bomImage2) parsedBOM2 = bomImage2.lines;
   const userPromptText2 = buildUserPrompt(ocrResult, stage1Result, domain, reqOrderQty2) + multiNote + (parsedBOM2.length > 0 ? buildParsedBOMContext(parsedBOM2) : '');
 
   let analysis: unknown;
@@ -2688,7 +2718,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     analysis: analysis as Record<string, unknown>, domain, asilLevel: streamAsilClassification.asilLevel, ocrResult,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseInt(req.body?.orderQty as string ?? '100', 10) || 100,
-    parsedBOM: parsedBOM2, files, tag: '/stream', classificationFailed: stage1Result.failed === true,
+    parsedBOM: parsedBOM2, bomImageNotes: bomImage2?.notes, files, tag: '/stream', classificationFailed: stage1Result.failed === true,
     onProgress: label => emit('progress', { stage: 4, label, pct: 90 }),
   });
   normalizePCBAnalysis(analysis as Record<string, unknown>);

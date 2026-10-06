@@ -323,3 +323,20 @@ Two of the AI's three identity errors are now caught by the cross-check with wha
 1. The radar board, photo-only: £57.82, with every line labelled CAT / CAT est. / TABLE / CHECK.
 2. The same board with the BOM file and drill/Gerber files attached. The parts come from the file and the board build is measured; the earlier run of that case landed within 10% of the hand reading.
 3. Say it plainly: *"The AI reads the board; the tool prices it from dated catalogue and rate tables, and flags anything it could not confirm."*
+
+
+## 10. After the demo trials (6 Oct 2026)
+
+**Calculate failed with photos chosen.** "Calculation error: Failed to set the 'value' property on 'HTMLInputElement': This input element accepts a filename…".
+- **Cause:** the comparison re-cost (`country-recost.ts`) saved and restored every input, and that included the photo / BOM / Gerber file inputs, whose chosen path a page may not write.
+- **Fix:** file inputs are no longer touched. `e2e/pcb-live.ts` now presses Calculate with the photos chosen; on the old bundle it reproduced the error.
+
+**Unlabelled lines dropped as duplicates.** A live board reported "13 line(s) repeated a part already listed from another photo and were removed: —, —, …" and "SMT placements set to 1 (the AI reported 80)".
+- **Cause:** `expandRefDes` turned the placeholder the model writes for an illegible silkscreen ("—", "N/A", "U?") into a designator, so every later unlabelled line looked like a duplicate.
+- **Fix:** only real designators count, and a line without one is never deduplicated.
+
+**BOM as a picture.** The BOM picker takes a screenshot or photo of the BOM table (`pcb-bom-image.ts`).
+- **How it is read:** one structured-output call transcribes designators, quantity, MPN, manufacturer, description, value and package. The schema has no price field, and the prompt says to ignore price columns.
+- **Clean-up and pricing:** a deterministic pass removes header and total rows and takes the quantity from the designators where it is missing or not whole. The lines then follow the BOM-file path exactly. Every line is marked IMG, and its confidence is one notch below a file's.
+- **Radar check:** the browser run attaches the radar BOM as a picture. 16 lines, 13 of them priced from the catalogue by their transcribed part numbers, give **£47.47** per board in China, against £55.82 from the board photos alone. The difference is exact parts replacing class ranges. Screenshot: `screens/radar-bom-image-2026-10-06.png`.
+- **What is measured:** the transcription accuracy of a real BOM picture is not measured yet. The run uses a recorded reply.

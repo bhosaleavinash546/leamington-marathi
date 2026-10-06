@@ -12,10 +12,12 @@ export interface ParsedBOMLine {
   pkg: string;
   qty: number;
   manufacturer?: string;
+  /** Transcribed from a picture of the BOM (pcb-bom-image.ts), not read from a file. */
+  fromImage?: boolean;
 }
 
 // ─── Column header synonyms (lower-case) ───────────────────────────────────
-const HEADER_SYNONYMS: Record<keyof Omit<ParsedBOMLine, never>, string[]> = {
+const HEADER_SYNONYMS: Record<keyof Omit<ParsedBOMLine, 'fromImage'>, string[]> = {
   refDes:       ['refdes', 'ref', 'reference', 'references', 'designator', 'designators'],
   partNumber:   ['mpn', 'part_number', 'part number', 'partnumber', 'manufacturer part number', 'manufacturer_part_number', 'manufacturerpartnumber'],
   description:  ['description', 'desc', 'comment'],
@@ -67,7 +69,7 @@ function mapHeaders(headerCells: string[]): Partial<Record<keyof ParsedBOMLine, 
   const map: Partial<Record<keyof ParsedBOMLine, number>> = {};
   headerCells.forEach((raw, idx) => {
     const h = raw.toLowerCase().trim();
-    for (const field of Object.keys(HEADER_SYNONYMS) as (keyof ParsedBOMLine)[]) {
+    for (const field of Object.keys(HEADER_SYNONYMS) as (keyof typeof HEADER_SYNONYMS)[]) {
       if (map[field] !== undefined) continue;
       if (HEADER_SYNONYMS[field].includes(h)) { map[field] = idx; break; }
     }

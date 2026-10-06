@@ -138,7 +138,11 @@ Docker — a local STEP run needs cadquery on your own `python3` (`make dev` war
 Vision pipeline: photo → BOM + fab spec → should-cost. **Ground truth first, the
 photo second**: a supplied BOM file IS the BOM (`pcb-bom-truth.ts` — identity and
 quantity from the file, the photo only fills a package or estimates a price for the
-same ref-des), and drill/Gerber `fabFiles` are measured for size, layer count and via
+same ref-des). The BOM may also be a PICTURE of the BOM table (PNG/JPEG/WebP under the same
+`bomFile` field): `pcb-bom-image.ts` transcribes it in one structured-output call whose schema
+has NO price field, cleans it deterministically (header/total rows dropped, qty from the
+designators when missing) and returns the same `ParsedBOMLine`s a .csv gives, marked `fromImage`
+(`bomSource: 'image'`, IMG badge, lineConf −0.1) — one helper `bomFromImageUpload` in both routes; and drill/Gerber `fabFiles` are measured for size, layer count and via
 count (`pcb-fab-data.ts`, no AI) and override the guess (`dimensionsSource` /
 `layersSource` / `viasSource: 'measured'` switch off the stabiliser's clamps).
 **The model never sets a price**: its `unitPriceGBP` is an estimate that only picks a
@@ -181,6 +185,9 @@ never asks for a price. The response carries `stage1Classification` / `ocrExtrac
 (the client's `attachPcbPayload`), `analysis.rawBom` (so a re-price never applies volume or grading twice). Catalogue
 family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
 the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
+`expandRefDes` counts only real designators (U1, R12A, C_BULK1) — a placeholder ("—", "N/A", "U?") is
+not one (it once made 13 unlabelled lines read as duplicate views). File inputs are never written back
+(`country-recost.ts` — restoring a chosen photo's path threw and failed Calculate on the PCB form).
 
 **Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 836 parts, 490 distributor-priced, 185 by 2+ distributors (six research rounds incl. a gap analysis of common automotive parts; unpriced parts with their last result in `queue.json`); run `npx tsx scripts/pcb-catalogue-audit.ts` after every merge (0 errors required; warnings are for a person); the literal orderable code is looked up before its normalised key; family-key estimates ("TC387") take a REVIEWED member's price from `scripts/pcb-research/family-links.json` and stay estimates;
 researched entries carry `observations` (distributor, qty ≥ 100, price, URL, date) and `volumeModel` (slope b). Breaks are
