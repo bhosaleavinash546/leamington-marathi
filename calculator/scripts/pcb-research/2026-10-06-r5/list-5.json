@@ -1,0 +1,67 @@
+{ "domain": "r5-5", "researched": "2026-10-06", "parts": [
+  { "mpn": "GCJ31CR71H105KA01L", "family": "GCJ31CR71H105", "mfr": "Murata", "desc": "MLCC 1uF 50V X7R 1206 soft-termination AEC-Q200", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["general"], "observedMpn": "GCJ31CR71H105KA01L", "observations": [],
+    "notes": "Round 3: exact MPN not found at any franchised distributor in 2 searches; only GCJ31CR72A105KA01L (100V, not a sibling) priced - not used." },
+  { "mpn": "FS950R08A6P2B", "family": "FS950R08A6P2B", "mfr": "Infineon", "desc": "HybridPACK Drive 750V 950A IGBT six-pack module", "category": "power_module", "pkg": "HybridPACK Drive", "aecq": true, "ecuRoles": ["traction inverter"], "observedMpn": "FS950R08A6P2BBPSA1", "observations": [],
+    "notes": "Not re-searched this round (budget); earlier only qty-1 prices (DK $917.70, Mouser $917.60), no >=100 break." },
+  { "mpn": "B32776", "family": "B32776", "mfr": "TDK EPCOS", "desc": "DC-link MKP film capacitor", "category": "through_hole", "pkg": "radial box", "aecq": true, "ecuRoles": ["inverter","OBC"], "observedMpn": "", "observations": [],
+    "notes": "Series code, not orderable; not re-searched this round (budget). Earlier prices had no stated qty." },
+  { "mpn": "MT41K256M16TW-107 AAT:P", "family": "MT41K256M16TW-107 AAT", "mfr": "Micron", "desc": "DDR3L 4Gb x16 automotive (-40..105C), FBGA-96", "category": "ic_bga", "pkg": "FBGA-96", "aecq": true, "ecuRoles": ["ADAS","infotainment","gateway"], "observedMpn": "MT41K256M16TW-107 AAT:P",
+    "observations": [
+      { "distributor": "LCSC", "qty": 1000, "price": 3.6704, "currency": "USD", "url": "https://www.lcsc.com/product-detail/ddr-sdram_micron-mt41k256m16tw-107-aat-p_C524865.html", "date": "2026-10-06" }
+    ],
+    "notes": "CARE: LCSC $3.67@1k (from $10.01@1) is ~40% below other franchised figures seen without usable URL/break (Mouser $8.01@1 -> $6.28@1k per search summary; Arrow $7.78@1; DK tray $41.92@50 is an outlier). Treat as low end." },
+  { "mpn": "THGBMJG8C2LBAU8", "family": "THGBMJG8C2LBAU8", "mfr": "Kioxia", "desc": "eMMC 32GB automotive", "category": "ic_bga", "pkg": "FBGA-153", "aecq": true, "ecuRoles": ["infotainment","telematics"], "observedMpn": "", "observations": [],
+    "notes": "Not re-searched this round (budget); no distributor listing found earlier." },
+  { "mpn": "MAX17853", "family": "MAX17853", "mfr": "Analog Devices", "desc": "14-ch battery monitor (data acquisition)", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS"], "observedMpn": "MAX17853GCB/V+T", "observations": [],
+    "notes": "Searched MAX17853GCB and /V+T: no distributor price; only MAX17823B (different part) priced. RS UK lists MAX17853ACB/V+ without price in snippet." },
+  { "mpn": "L9788", "family": "L9788", "mfr": "STMicroelectronics", "desc": "Engine management system IC", "category": "ic_tqfp", "pkg": "LQFP-100-EP", "aecq": true, "ecuRoles": ["ECM"], "observedMpn": "L9788", "observations": [],
+    "notes": "Digi-Key and Arrow list L9788 (orderable code L9788, 100-LQFP-EP) but no price in results; only EVAL-L9788 board priced." },
+  { "mpn": "IMW120R045M1H", "family": "IMW120R045M1H", "mfr": "Infineon", "desc": "CoolSiC MOSFET 1200V 45mOhm TO-247-3", "category": "through_hole", "pkg": "TO-247-3", "aecq": false, "ecuRoles": ["OBC","DC-DC"], "observedMpn": "IMW120R045M1HXKSA1", "observations": [],
+    "notes": "No franchised qty-break price; only IMW120R045M1XKSA1 (non-H, obsolete) DK $18.91 qty 1 - not a sibling, not used." },
+  { "mpn": "R7F701581", "family": "R7F701581", "mfr": "Renesas", "desc": "RH850/F1KM-S1 body MCU", "category": "ic_tqfp", "pkg": "LQFP", "aecq": true, "ecuRoles": ["BCM"], "observedMpn": "", "observations": [],
+    "notes": "Not re-searched this round (budget); no distributor price earlier for R7F701581EAFP." },
+  { "mpn": "LMR14030SQDPRRQ1", "family": "LMR14030-Q1", "mfr": "Texas Instruments", "desc": "40V 3.5A buck, WSON-10", "category": "ic_qfn", "pkg": "WSON-10", "aecq": true, "ecuRoles": ["general"], "observedMpn": "LMR14030SQDPRRQ1", "observations": [],
+    "notes": "Search summary cites Mouser (595-LMR14030SQDPRRQ1) $3.40@1 -> $2.09 top break, but no Mouser page URL returned and the break qty unconfirmed - not recorded. TI direct $1.544 (manufacturer, not allowed)." },
+  { "mpn": "AWR2944ABGALTRQ1", "family": "AWR2944", "mfr": "Texas Instruments", "desc": "77-81 GHz radar SoC, 4TX/4RX, DSP+MCU", "category": "ic_bga", "pkg": "FCBGA", "aecq": true, "ecuRoles": ["radar"], "observedMpn": "AWR2944ABGALTRQ1", "observations": [],
+    "notes": "Only DK single-unit prices again ($49.92 TR, $53.31 tray); TI direct $35.60 (manufacturer). No >=100 break." },
+  { "mpn": "MC33FS8410", "family": "MC33FS8410", "mfr": "NXP Semiconductors", "desc": "Safety PMIC FS84 for S32 processors, HVQFN-56", "category": "ic_qfn", "pkg": "HVQFN-56", "aecq": true, "ecuRoles": ["ADAS","gateway","domain controller"], "observedMpn": "MC33FS8410G3ES",
+    "observations": [
+      { "distributor": "element14 India", "qty": 260, "price": 604.46, "currency": "INR", "url": "https://in.element14.com/nxp/mc33fs8410g3es/high-voltage-pmic-40-to-125deg/dp/3407368", "date": "2026-10-06" },
+      { "distributor": "Arrow", "qty": 780, "price": 4.669, "currency": "USD", "url": "https://www.arrow.com/en/products/mc33fs8410g3es/nxp-semiconductors", "date": "2026-10-06" }
+    ],
+    "notes": "Tray code G3ES (R2 = reel sibling). Summary also gave DK EUR 5.47@1040 and Mouser $6.17@520 without page URLs - not recorded. Arrow is the low end." },
+  { "mpn": "QCA7006AQ", "family": "QCA7006", "mfr": "Qualcomm", "desc": "HomePlug Green PHY (CCS PLC) modem, automotive", "category": "ic_qfn", "pkg": "QFN", "aecq": true, "ecuRoles": ["OBC","EVCC"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only" },
+  { "mpn": "S32R458AASK0MUDT", "family": "S32R45", "mfr": "NXP", "desc": "Imaging-radar processor, A53+M7+SPT", "category": "ic_bga", "pkg": "FCBGA", "aecq": true, "ecuRoles": ["radar"], "observedMpn": "", "observations": [],
+    "notes": "not searched: NDA/direct only (no franchised listing in earlier rounds)." },
+  { "mpn": "TLF4277ELXUMA1", "family": "TLF4277", "mfr": "Infineon Technologies", "desc": "Adjustable LDO 300mA with current monitor", "category": "ic_soic", "pkg": "SSOP-14", "aecq": true, "ecuRoles": ["sensor supply"], "observedMpn": "TLF4277ELXUMA1", "observations": [],
+    "notes": "Breaks 100 $1.34 / 1k $1.11 / 10k $0.9916 / 100k $0.8308 seen again only via Digipart without a named distributor - not recorded. TME page lists part, no price in snippet." },
+  { "mpn": "VN7140ASTR", "family": "VN7140AS", "mfr": "STMicroelectronics", "desc": "Single high-side driver 140 mOhm, VIPower M0-7, SO-8", "category": "ic_soic", "pkg": "SO-8", "aecq": true, "ecuRoles": ["BCM"], "observedMpn": "VN7140ASTR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 0.7841, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/VN7140ASTR/5402881", "date": "2026-10-06" }
+    ],
+    "notes": "DK cut-tape breaks: 1 $1.34, 10 $0.977, 25 $0.8848, 100 $0.7841. Reel break not seen." },
+  { "mpn": "INA199A1QDCKRQ1", "family": "INA199-Q1", "mfr": "Texas Instruments", "desc": "Current-shunt monitor, gain 50, SC-70-6", "category": "ic_soic", "pkg": "SC-70-6", "aecq": true, "ecuRoles": ["general"], "observedMpn": "", "observations": [],
+    "notes": "Two searches: Q1 code not found at any franchised distributor (TI lists INA199C1QDCKRQ1 etc.); commercial INA199A1DCKR not a sibling." },
+  { "mpn": "TLE49643MXTSA1", "family": "TLE4964-3M", "mfr": "Infineon", "desc": "Unipolar Hall switch, high precision, SOT-23-3", "category": "ic_soic", "pkg": "SOT-23-3", "aecq": true, "ecuRoles": ["BCM","seat","window"], "observedMpn": "TLE49643MXTSA1",
+    "observations": [
+      { "distributor": "RS Components", "qty": 500, "price": 0.325, "currency": "GBP", "url": "https://uk.rs-online.com/web/p/motion-sensor-ics/2238582", "date": "2026-10-06" }
+    ],
+    "notes": "RS UK £0.425 @20 -> £0.325 @500+. RS India INR 29.01 is pack of 20 (qty < 100) - not used." },
+  { "mpn": "TPS61379QWRWLRQ1", "family": "TPS61379-Q1", "mfr": "Texas Instruments", "desc": "Synchronous boost with input-to-output bypass", "category": "ic_qfn", "pkg": "VQFN-HR (RWL)", "aecq": true, "ecuRoles": ["general"], "observedMpn": "", "observations": [],
+    "notes": "Exact code not found. Only TPS61379QWRTERQ1 (WQFN-16 RTE, different package - not a sibling) priced (DK $2.98 -> $1.631, Mouser -> $1.55, breaks unstated) - not used." },
+  { "mpn": "XAL6060-472MEB", "family": "XAL6060-472", "mfr": "Coilcraft", "desc": "Molded power inductor 4.7uH 11A, 6.7x6.5x6.1mm", "category": "passive_1206", "pkg": "6.7x6.5x6.1mm SMD", "aecq": true, "ecuRoles": ["DC-DC"], "observedMpn": "XAL6060-472MEC",
+    "observations": [
+      { "distributor": "Farnell", "qty": 100, "price": 2.39, "currency": "GBP", "url": "https://uk.farnell.com/coilcraft/xal6060-472mec/inductor-4-7uh-11a-20-pwr-21mhz/dp/2289085", "date": "2026-10-06" },
+      { "distributor": "Farnell", "qty": 2500, "price": 1.94, "currency": "GBP", "url": "https://uk.farnell.com/coilcraft/xal6060-472mec/inductor-4-7uh-11a-20-pwr-21mhz/dp/2289085", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 100, "price": 2.42, "currency": "GBP", "url": "https://www.mouser.co.uk/ProductDetail/Coilcraft/XAL6060-472MEC?qs=zCSbvcPd3pajUkm1Owi1LA%3D%3D", "date": "2026-10-06" }
+    ],
+    "notes": "MEC = same inductor, current AEC-Q200 termination/packing code replacing discontinued MEB. Farnell breaks 100 £2.39 / 250 £2.02 / 1250 £1.98 / 2500 £1.94. TrustedParts 'Mouser $1.72@100' conflicts with Mouser UK £2.42 - not used." },
+  { "mpn": "GRT188R71H104KE13D", "family": "GRT188R71H104", "mfr": "Murata", "desc": "MLCC 0.1uF 50V X7R 0603, GRT AEC-Q200", "category": "passive_0603", "pkg": "0603", "aecq": true, "ecuRoles": ["general"], "observedMpn": "", "observations": [],
+    "notes": "Only JLCPCB $0.02 (assembler, not a franchised distributor, no break) - not used. No DK/Mouser/LCSC listing in results." },
+  { "mpn": "ACJ1112", "family": "ACJ1112", "mfr": "Panasonic", "desc": "Automotive relay 20A 12V 1 Form C, PCB", "category": "relay_switch", "pkg": "THT", "aecq": false, "ecuRoles": ["BCM","fuse box"], "observedMpn": "ACJ1112J",
+    "observations": [
+      { "distributor": "TME", "qty": 2800, "price": 2.27, "currency": "USD", "url": "https://www.tme.com/sg/en/details/acj1112/miniature-electromagnetic-relays/panasonic/acj1112j/", "date": "2026-10-06" }
+    ],
+    "notes": "CARE: TME's code ACJ1112J (TME page under 'acj1112'; J suffix meaning unverified, assumed packing). TME $4.17@1 -> $2.27@2800. DK EU lists ACJ1112 at EUR 2.36 @1 only." }
+] }
