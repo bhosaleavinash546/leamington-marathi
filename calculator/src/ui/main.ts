@@ -11581,7 +11581,7 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
 function snapshotFormFields(): Record<string, string> {
   const out: Record<string, string> = {};
   document.getElementById('commodity-form-area')?.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[id], select[id]')
-    .forEach(f => { out[f.id] = (f as HTMLInputElement).type === 'checkbox' ? String((f as HTMLInputElement).checked) : f.value; });
+    .forEach(f => { if ((f as HTMLInputElement).type === 'file') return; out[f.id] = (f as HTMLInputElement).type === 'checkbox' ? String((f as HTMLInputElement).checked) : f.value; });
   return out;
 }
 
@@ -20340,6 +20340,7 @@ function restoreDraft(): void {
       if (DRAFT_SKIP.has(id)) return;
       const elm = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
       if (!elm) return;
+      if (elm instanceof HTMLInputElement && (elm.type === 'file' || elm.type === 'button')) return;   // never writable
       if (elm instanceof HTMLInputElement && elm.type === 'checkbox') elm.checked = val === '1';
       else if (val !== '') elm.value = val;
     });

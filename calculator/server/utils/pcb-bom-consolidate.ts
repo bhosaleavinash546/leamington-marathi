@@ -30,7 +30,8 @@ export function consolidateBom(bom: BomLine[]): { bom: BomLine[]; warnings: Cons
   const out: BomLine[] = [];
 
   for (const line of bom) {
-    const label = String(line.refDes ?? line.partNumber ?? line.description ?? '?').slice(0, 40);
+    // Name the line by what a reader recognises: its designators if it has real ones, else its part / description.
+    const label = String(expandRefDes(line.refDes).length ? line.refDes : (line.partNumber || line.description || line.refDes || '?')).slice(0, 40);
     const notFitted = isNotFitted(line);
     let qty = Number(line.qty);
     if (!Number.isFinite(qty) || qty < 0 || (qty === 0 && !notFitted) || !Number.isInteger(qty)) {

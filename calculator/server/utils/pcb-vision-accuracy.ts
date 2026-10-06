@@ -42,7 +42,7 @@ export function expandRefDes(refDes: unknown): string[] {
   const raw = norm(refDes);
   if (!raw) return [];
   const out: string[] = [];
-  for (const token of raw.split(/[,\s]+/).filter(Boolean)) {
+  for (const token of raw.split(/[,;/\s]+/).filter(Boolean)) {
     const m = /^([A-Z]+)(\d+)[-–]([A-Z]*)(\d+)$/.exec(token);
     if (m && (m[3] === '' || m[3] === m[1])) {
       const prefix = m[1];
@@ -52,7 +52,12 @@ export function expandRefDes(refDes: unknown): string[] {
         continue;
       }
     }
-    out.push(token);
+    // Only a real designator counts. A placeholder the model writes when the silkscreen is
+    // not legible ("—", "-", "N/A", "?", "U?", "various") is not one: it used to become a
+    // "designator", so every later unlabelled line read as a duplicate view and was dropped
+    // (a live board lost 13 of 14 lines and costed at 1 placement).
+    // A malformed or absurd range ("R10-R1", "R1-C9") stays one raw token, as before.
+    if (/^[A-Z][A-Z_]*\d+[A-Z]?$/.test(token) || /^[A-Z][A-Z_]*\d+[-–][A-Z_]*\d+$/.test(token)) out.push(token);
   }
   return out;
 }

@@ -117,6 +117,16 @@ async function main(): Promise<void> {
       if (await bomTable.count()) { await bomTable.scrollIntoViewIfNeeded(); await page.waitForTimeout(300); await page.screenshot({ path: join(process.env.CV_SHOT_DIR, 'pcb-radar-bom.png'), fullPage: false }); }
     }
 
+    // ── The main Calculate, with the photos still chosen (a live report, Oct 2026): the
+    //    comparison re-cost wrote the photo input's path back and threw "This input element
+    //    accepts a filename…". It must cost the board, not error. ──
+    await page.click('#calc-btn', { timeout: 15_000 });
+    await page.waitForTimeout(2500);
+    const calcErr = await page.evaluate(() => Array.from(document.querySelectorAll('*'))
+      .map(e => (e as HTMLElement).innerText ?? '').find(t => /^Calculation error:/.test(t.trim())) ?? '');
+    if (calcErr) fail(`Calculate with photos chosen: ${calcErr.slice(0, 200)}`);
+    else console.log('[pcb-e2e] Calculate with the photos still chosen: no error');
+
     // ── The headline is the country total, automotive grade, and it adds up ──
     const headline = Number(await page.getAttribute('#pcb-headline-total', 'data-total'));
     const cnRow = Number((await page.textContent('[data-country-total="cn"]') ?? '').replace(/[^0-9.]/g, ''));

@@ -75,7 +75,11 @@ type Field = HTMLInputElement | HTMLSelectElement;
 /** The part costed as if each of `regions` were selected. A country whose collection fails is left out. */
 export function recostInCountries(regions: ManufacturingRegion[], d: RecostDeps): Map<ManufacturingRegion, CountryCosting> {
   const out = new Map<ManufacturingRegion, CountryCosting>();
-  const fields = Array.from(d.root.querySelectorAll<Field>('input[id], select[id]'));
+  // A file input (the PCB photos, BOM and Gerber pickers) holds the chosen file's path, which a
+  // page may not write back — restoring it threw "This input element accepts a filename…" and
+  // failed Calculate on the PCB form. Files never enter a cost, so they are neither changed nor restored.
+  const fields = Array.from(d.root.querySelectorAll<Field>('input[id], select[id]'))
+    .filter(f => !(f instanceof HTMLInputElement && (f.type === 'file' || f.type === 'button' || f.type === 'submit')));
   const shopIds = ['overhead-pct', 'packaging', 'logistics'];
   const shop = shopIds.map(id => document.getElementById(id) as HTMLInputElement | null);
   const saved = new Map<Field, { value: string; checked?: boolean }>();
@@ -92,7 +96,7 @@ export function recostInCountries(regions: ManufacturingRegion[], d: RecostDeps)
   const restore = () => {
     for (const [c, v] of controls) c.value = v;
     for (const [f, v] of saved) {
-      f.value = v.value;
+      if (f.value !== v.value) f.value = v.value;
       if (v.checked !== undefined) (f as HTMLInputElement).checked = v.checked;
     }
     d.setLibrary(d.currentLibrary);

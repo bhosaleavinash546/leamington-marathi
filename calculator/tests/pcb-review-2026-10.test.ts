@@ -78,6 +78,20 @@ describe('8 views of one board: a part is counted once', () => {
     expect(r.bom).toHaveLength(1);
     expect(r.warnings.map(w => w.code)).toContain('BOM_DUPLICATE_VIEWS');
   });
+  it('lines with no legible designator ("—", "N/A", "U?") are never read as duplicates of each other', () => {
+    // A live board (Oct 2026): the model wrote "—" on 14 lines; 13 were dropped as "repeated from
+    // another photo" and the board costed at 1 placement instead of ~80.
+    const bom = Array.from({ length: 14 }, (_, i) => ({ refDes: i % 3 ? '—' : i % 2 ? 'N/A' : 'U?', description: `part ${i}`, qty: 2 }));
+    const r = consolidateBom(bom);
+    expect(r.bom).toHaveLength(14);
+    expect(r.bom.reduce((a, l) => a + Number(l.qty), 0)).toBe(28);
+    expect(r.warnings.map(w => w.code)).not.toContain('BOM_DUPLICATE_VIEWS');
+  });
+  it('a duplicate warning names the part, never a placeholder', () => {
+    const r = consolidateBom([{ refDes: 'U1', partNumber: 'TJA1044GT', qty: 1 }, { refDes: 'U1', partNumber: 'TJA1044GT', qty: 1 }]);
+    expect(r.warnings[0].message).toContain('U1');
+    expect(r.warnings[0].message).not.toMatch(/—/);
+  });
   it('overlapping ranges count each designator once', () => {
     const r = consolidateBom([{ refDes: 'C1-C10', qty: 10 }, { refDes: 'C8-C12', qty: 5 }]);
     expect(r.bom.reduce((s, l) => s + Number(l.qty), 0)).toBe(12);

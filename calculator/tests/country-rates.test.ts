@@ -703,6 +703,22 @@ describe('15. comparison rows are the part as costed with each country selected'
     expect(Number(seen.DE.oh)).toBeCloseTo(Math.round(RR.regionalShopDefaults('DE').overheadPct * 1000) / 10, 6);
     expect([die.value, typed.value, nre.value, shop['overhead-pct'].value]).toEqual(['4076', '2500', '2000', '9']);   // restored
   });
+  it('a file input (PCB photos) is neither changed nor restored — writing its path back threw and failed Calculate', () => {
+    // A browser file input: its value is the chosen path, and only '' may be written to it.
+    const photo = Object.assign(new FakeInput(), { id: 'pcb-image-input', type: 'file' });
+    let path = 'C:\\fakepath\\board.jpg';
+    Object.defineProperty(photo, 'value', { get: () => path,
+      set: (x: string) => { if (x !== '') throw new Error("Failed to set the 'value' property on 'HTMLInputElement'"); path = x; } });
+    const vol = inp('annual-volume', '10000');
+    g.document = { getElementById: () => null };
+    const base = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+    expect(() => R.recostInCountries(['DE'] as never, {
+      root: { querySelectorAll: () => [photo, vol] } as never, sourceRegion: 'UK', baseLibrary: base, currentLibrary: base,
+      setLibrary: () => undefined, collect: () => { throw new Error('stop'); },
+      fillSource: {}, fillsByRegion: {}, shopFor: r => RR.regionalShopDefaults(r),
+    })).not.toThrow();
+    expect(photo.value).toBe('C:\\fakepath\\board.jpg');
+  });
   it('the engine uses the re-collected costing for a row, and the screen, the PDF and the server are wired to it', async () => {
     const { computeRegionalComparisonExact } = await import('../src/engine/regional-comparison.js');
     const input = { partName: 'x', rawMaterial: { materialId: 'mat-al6061', netWeightKg: 1, materialUtilization: 0.8 }, operations: [],
