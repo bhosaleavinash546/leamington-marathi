@@ -1759,7 +1759,10 @@ function pcbCacheKey(req: import('express').Request, files: Record<string, Expre
     Buffer.from(JSON.stringify({
       country: req.body?.country ?? 'cn', orderQty: req.body?.orderQty ?? '100',
       nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
-      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 8,
+      // v9 (camera-board trial, Oct 2026): board-size band, ICT / X-ray / AOI at volume, EMS material burden,
+      // imager / bead / choke classes, -Q1 lookup, automotive from the BOM. Bump on every costing change:
+      // the cache persists across restarts and would otherwise replay a result costed by the old rules.
+      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 9,
     })),
     ...(files?.bomFile ?? []).map(f => f.buffer),
     ...(files?.fabFiles ?? []).flatMap(f => [Buffer.from(f.originalname), f.buffer]),
