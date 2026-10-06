@@ -1,5 +1,6 @@
 import { useReducedMotion } from 'framer-motion';
 import { scoreTone, TONE_TEXT, TONE_LABEL } from '../../lib/motion';
+import { STATUS } from '../../lib/chart-palette';
 
 /**
  * THE SCORE, AS A SWEPT GAUGE.
@@ -40,10 +41,10 @@ export default function ScoreRing({
   const total = circumference * arc;
   const offset = total * (1 - value / 100);
 
-  const strokeClass =
-    tone === 'good' ? 'stroke-emerald-400'
-      : tone === 'watch' ? 'stroke-amber-400'
-        : tone === 'poor' ? 'stroke-red-400' : 'stroke-slate-700';
+  // A meter: the fill carries the state, from the fixed status palette
+  // (lib/chart-palette STATUS), with the tone's label printed beside it — the
+  // colour is never the only signal.
+  const statusStroke = tone === 'good' ? STATUS.good : tone === 'watch' ? STATUS.warning : tone === 'poor' ? STATUS.critical : undefined;
 
   return (
     <div className="flex items-center gap-3">
@@ -62,9 +63,10 @@ export default function ScoreRing({
               // than silently jumping to the new number.
               key={value}
               cx={size / 2} cy={size / 2} r={r}
-              className={`${strokeClass} ${reduced ? '' : 'dfm-gauge-value'}`}
+              className={reduced ? '' : 'dfm-gauge-value'}
               fill="none" strokeWidth={stroke} strokeLinecap="round"
               style={{
+                stroke: statusStroke,
                 strokeDasharray: `${total} ${circumference}`,
                 strokeDashoffset: offset,
                 // Consumed by the keyframes; a CSS animation outranks these

@@ -44,3 +44,21 @@ test('axis ticks are round numbers', () => {
   assert.deepEqual(niceTicks(16), [0, 5, 10, 15, 20]);
   assert.deepEqual(niceTicks(0), [0, 1]);
 });
+
+test('hand-drawn charts (Horizon, Prism, DFM, Innovation, score dial) use the theme too', () => {
+  const read = (p) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8');
+  const svgFiles = ['pages/ForesightPage.tsx', 'pages/PrismPage.tsx', 'pages/DfmStudioPage.tsx', 'pages/InnovationStudioPage.tsx', 'components/dfm/ScoreRing.tsx'];
+  // A literal colour on an SVG mark; #ffffff is allowed only as text set inside a filled mark.
+  const lit = /\b(fill|stroke)\s*=\s*\{?\s*['"](?!#ffffff)(#[0-9a-fA-F]{3,8}|rgba?\()/;
+  for (const f of svgFiles) {
+    const s = read(f);
+    assert.ok(s.includes('chart-theme') || s.includes('chart-palette'), `${f} imports the chart theme`);
+    assert.ok(!lit.test(s), `${f} has a literal colour on an SVG mark`);
+  }
+  // Data bars are solid: no gradient fill, no glow, no colour-by-rank.
+  const prism = read('pages/PrismPage.tsx');
+  assert.ok(!/bg-gradient-to-r from-(teal|gold|slate)-\d+\/\d+ to-/.test(prism), 'Prism bars are solid');
+  assert.ok(!/shadow-\[0_0_14px/.test(prism), 'no glow on the entitlement bar');
+  assert.ok(!read('pages/ForesightPage.tsx').includes('bg-gradient-to-r from-teal-500 to-gold-400'), 'momentum bar is solid');
+  assert.ok(!/bg-white\/5 overflow-hidden/.test(read('pages/ForesightPage.tsx')), 'bar tracks flip with the theme');
+});

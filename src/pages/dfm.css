@@ -276,11 +276,11 @@
 }
 
 /* ── DATA VIZ ─────────────────────────────────────────────────────────────── */
-.dfm-gauge-track { stroke: rgb(255 255 255 / 0.07); }
+.dfm-gauge-track { stroke: var(--tint-strong); }   /* flips with the theme; white alpha vanished on a light page */
 .dfm-bar {
   height: 5px;
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.07);
+  background: var(--tint-strong);   /* theme-flipping track (DECISIONS 123) */
   overflow: hidden;
 }
 .dfm-bar > span {

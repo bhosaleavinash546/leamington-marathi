@@ -1,3 +1,4 @@
+import { useChartTheme, STATUS } from '../lib/chart-theme';
 import Chip from '../components/ui/Chip';
 import PageHeader from '../components/ui/PageHeader';
 import { useEffect, useState } from 'react';
@@ -268,7 +269,8 @@ const logisticY = (x: number) => 1 / (1 + Math.exp(-9 * (x - 0.5)));
 
 /** Tiny S-curve that draws itself, with a marker at THIS tech's phase. */
 function SCurveSpark({ phase }: { phase: string }) {
-  const W = 78, H = 24, PAD = 3;
+  const t = useChartTheme();
+  const W = 78, H = 24, PAD = 4;
   const pts: string[] = [];
   for (let i = 0; i <= 26; i++) {
     const x = i / 26;
@@ -279,9 +281,10 @@ function SCurveSpark({ phase }: { phase: string }) {
   const cy = H - PAD - logisticY(mx) * (H - 2 * PAD);
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="shrink-0" aria-label={`S-curve position: ${phase}`} role="img">
-      <polyline points={pts.join(' ')} fill="none" stroke="rgba(148,163,184,0.35)" strokeWidth="1.5" strokeLinecap="round" className="hz-draw" />
-      <circle cx={cx} cy={cy} r="5.5" fill="none" stroke="rgba(245,158,11,0.35)" strokeWidth="1" className="hz-marker" />
-      <circle cx={cx} cy={cy} r="2.8" fill="#f59e0b" className="hz-marker" />
+      {/* The curve is context (baseline ink); the marker is THIS technology —
+          accent fill with a 2 px surface ring so it reads where it sits on the line. */}
+      <polyline points={pts.join(' ')} fill="none" stroke={t.baseline} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="hz-draw" />
+      <circle cx={cx} cy={cy} r="4" fill={t.accent} stroke={t.surface} strokeWidth="2" className="hz-marker" />
     </svg>
   );
 }
@@ -292,17 +295,21 @@ function BassSpark({ adoption }: { adoption: Record<string, number | null> }) {
   if (adoption.in3 == null) {
     return <span className="text-2xs text-slate-500 w-[118px] shrink-0 leading-tight">not in production — no curve projected</span>;
   }
+  const t = useChartTheme();
   const vals = [adoption.now, adoption.in3, adoption.in5, adoption.in8].map(v => Number(v) || 0);
-  const W = 118, H = 32, PAD = 4;
+  const W = 118, H = 32, PAD = 5;
   const max = Math.max(...vals, 1);
   const px = (i: number) => PAD + (i / 3) * (W - 2 * PAD);
   const py = (v: number) => H - PAD - (v / max) * (H - 2 * PAD);
   const line = vals.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="shrink-0" aria-label="Modelled adoption path" role="img">
-      <polygon points={`${PAD},${H - PAD} ${line} ${W - PAD},${H - PAD}`} fill="rgba(45,212,191,0.12)" />
-      <polyline points={line} fill="none" stroke="#2dd4bf" strokeWidth="1.5" strokeLinecap="round" className="hz-draw" />
-      {vals.map((v, i) => <circle key={i} cx={px(i)} cy={py(v)} r="2" fill="#2dd4bf" className="hz-marker" />)}
+      {/* One series: 2 px accent line, a ~10% wash, and an end dot (the +8y
+          figure) — not a dot on every point. */}
+      <line x1={PAD} x2={W - PAD} y1={H - PAD} y2={H - PAD} stroke={t.baseline} strokeWidth="1" />
+      <polygon points={`${PAD},${H - PAD} ${line} ${W - PAD},${H - PAD}`} fill={t.wash} />
+      <polyline points={line} fill="none" stroke={t.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="hz-draw" />
+      <circle cx={px(3)} cy={py(vals[3])} r="3.5" fill={t.accent} stroke={t.surface} strokeWidth="2" className="hz-marker" />
     </svg>
   );
 }
@@ -319,6 +326,7 @@ const ANCHOR_STATUS_LABEL: Record<string, string> = {
 };
 
 function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; critiques?: Array<{ persona: string } & PanelCritique> }) {
+  const ct = useChartTheme();
   const { token } = useAuth();
   const [open, setOpen] = useState(false);
   const [evidence, setEvidence] = useState<Evidence | null>(null);
@@ -363,9 +371,10 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
   return (
     <div className="hz-card bg-navy-900 border border-white/10 rounded-2xl p-4 hover:border-gold-500/25" onMouseMove={trackSpot}>
       <div className="hz-spot" aria-hidden="true" />
-      <div className="flex items-start justify-between gap-2 mb-1.5">
-        <h3 className="text-white font-semibold text-sm leading-snug">{c.name}</h3>
-        <span className="flex shrink-0 items-center gap-1.5">
+      {/* Badges wrap under a long title instead of crushing it to one word per line. */}
+      <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5 mb-1.5">
+        <h3 className="text-white font-semibold text-sm leading-snug min-w-[10rem] flex-1">{c.name}</h3>
+        <span className="flex flex-wrap items-center gap-1.5">
           {c.origin === 'promoted' && (
             <span className="px-1.5 py-0.5 rounded-md border border-violet-500/40 bg-violet-500/10 text-violet-300 text-2xs font-semibold uppercase tracking-wider" title={`Curator-promoted from AI research${c.sourceUrl ? ` — source: ${c.sourceUrl}` : ''}. Not yet part of the shipped curated register.`}>promoted</span>
           )}
@@ -393,15 +402,16 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
       </div>
       {/* Momentum bar — deterministic 0-100, sweeps in from zero */}
       <div className="flex items-center gap-2 mb-2" title="Momentum: maturity + adoption + cost trajectory + drivers + regulation + production evidence">
-        <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+        <div className="flex-1 h-1.5 rounded-full bg-tint-strong overflow-hidden">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-teal-500 to-gold-400"
+            className="h-full rounded-full"
+            style={{ background: ct.accent }}
             initial={reduced ? { width: `${c.momentum}%` } : { width: 0 }}
             animate={{ width: `${c.momentum}%` }}
             transition={{ duration: 0.9, delay: 0.25, ease: 'easeOut' }}
           />
         </div>
-        <span className="text-slate-500 text-2xs w-14 text-right font-mono">momentum <TickNumber value={c.momentum} /></span>
+        <span className="text-slate-500 text-2xs text-right font-mono whitespace-nowrap">momentum <span className="text-slate-300"><TickNumber value={c.momentum} /></span></span>
       </div>
       <p className="text-slate-400 text-xs leading-relaxed mb-1.5">{c.note}</p>
       <p className="text-slate-500 text-2xs mb-1"><span className="text-slate-500">Replaces:</span> {c.replaces}</p>
@@ -552,6 +562,7 @@ const COMPUTE_STAGES = [
 ];
 
 export default function ForesightPage() {
+  const ct = useChartTheme();
   const { token } = useAuth();
   const reduced = useReducedMotion();
   const [catalogue, setCatalogue] = useState<Catalogue | null>(null);
@@ -876,7 +887,7 @@ export default function ForesightPage() {
               : <><Sparkles size={18} /> Predict Future Technologies</>}
           </button>
           {loading && (
-            <div className="mt-3 h-0.5 rounded-full bg-white/5 overflow-hidden" aria-hidden="true">
+            <div className="mt-3 h-0.5 rounded-full bg-tint-strong overflow-hidden" aria-hidden="true">
               <div className="h-full w-full hz-scanline bg-gold-500/20" />
             </div>
           )}
@@ -911,14 +922,17 @@ export default function ForesightPage() {
             <div className="rounded-2xl border border-white/10 bg-navy-900 px-4 py-3">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-2xs">
                 <span className="font-mono uppercase tracking-wider text-slate-500">Evidence currency</span>
-                <span className="text-emerald-300">{result.currency.fresh} fresh</span>
-                <span className="text-amber-300">{result.currency.stale} stale</span>
-                <span className="text-slate-400">{result.currency.undated} undated</span>
+                {/* State, so the status palette — and each count in ink beside its swatch. */}
+                {([['fresh', STATUS.good, result.currency.fresh], ['stale', STATUS.warning, result.currency.stale], ['undated', ct.neutral, result.currency.undated]] as const).map(([l, c, n]) => (
+                  <span key={l} className="inline-flex items-center gap-1.5 text-slate-400"><span className="w-2 h-2 rounded-sm" style={{ background: c }} aria-hidden="true" /><span className="text-slate-200">{n}</span> {l}</span>
+                ))}
                 {result.currency.medianEvidenceYear && (
                   <span className="text-slate-400">median evidence <span className="font-mono text-slate-300">{result.currency.medianEvidenceYear}</span></span>
                 )}
-                <span className="ml-auto flex-1 min-w-[120px] max-w-[220px] h-1.5 rounded-full bg-white/5 overflow-hidden" aria-hidden="true">
-                  <span className="block h-full bg-emerald-400/70" style={{ width: `${Math.round((result.currency.fresh / result.currency.total) * 100)}%` }} />
+                <span className="ml-auto flex-1 min-w-[120px] max-w-[220px] h-1.5 flex gap-[2px]" aria-hidden="true">
+                  {([[STATUS.good, result.currency.fresh], [STATUS.warning, result.currency.stale], [ct.neutral, result.currency.undated]] as const).map(([c, n], i) => n > 0 && (
+                    <span key={i} className="block h-full rounded-full" style={{ width: `${(n / Math.max(1, result.currency?.total ?? 0)) * 100}%`, background: c }} />
+                  ))}
                 </span>
               </div>
               {result.currency.notFreshShare > 0.5 && (

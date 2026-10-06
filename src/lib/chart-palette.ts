@@ -44,6 +44,8 @@ export interface ChartTheme {
   tooltipBorder: string;
   /** Recharts hover band behind a bar. */
   cursor: string;
+  /** Neutral mark: a reference value (a supplier quote), "low", "undated", a remainder. */
+  neutral: string;
   font: string;
 }
 
@@ -52,13 +54,13 @@ export function chartTheme(isDark: boolean): ChartTheme {
     isDark, series: CATEGORICAL.dark, accent: CATEGORICAL.dark[0], wash: 'rgba(57,135,229,0.12)',
     surface: '#111827', grid: '#1f2937', baseline: '#374151',
     ink: '#f9fafb', ink2: '#cbd5e1', muted: '#8b95a7',
-    tooltipBg: '#1a2235', tooltipBorder: 'rgba(255,255,255,0.10)', cursor: 'rgba(255,255,255,0.04)',
+    tooltipBg: '#1a2235', tooltipBorder: 'rgba(255,255,255,0.10)', cursor: 'rgba(255,255,255,0.04)', neutral: '#6b7280',
     font: 'IBM Plex Sans, system-ui, sans-serif',
   } : {
     isDark, series: CATEGORICAL.light, accent: CATEGORICAL.light[0], wash: 'rgba(42,120,214,0.10)',
     surface: '#ffffff', grid: '#e8eaee', baseline: '#c9ced6',
     ink: '#111827', ink2: '#4b5563', muted: '#6b7280',
-    tooltipBg: '#ffffff', tooltipBorder: 'rgba(17,24,39,0.12)', cursor: 'rgba(17,24,39,0.04)',
+    tooltipBg: '#ffffff', tooltipBorder: 'rgba(17,24,39,0.12)', cursor: 'rgba(17,24,39,0.04)', neutral: '#9ca3af',
     font: 'IBM Plex Sans, system-ui, sans-serif',
   };
 }
@@ -66,7 +68,7 @@ export function chartTheme(isDark: boolean): ChartTheme {
 
 /** The colour of a fixed slot; null → the neutral remainder grey. */
 export function slotColor(slot: number | null, t: ChartTheme): string {
-  return slot === null ? (t.isDark ? '#6b7280' : '#9ca3af') : t.series[slot % t.series.length];
+  return slot === null ? t.neutral : t.series[slot % t.series.length];
 }
 
 /** Categorical colours for N categories in fixed order; past 8 the caller folds into "Other". */

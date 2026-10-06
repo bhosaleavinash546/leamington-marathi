@@ -1,3 +1,4 @@
+import { useChartTheme, STATUS } from '../lib/chart-theme';
 import PageHeader from '../components/ui/PageHeader';
 import { useMemo, useRef, useState } from 'react';
 import { Money, FxNote } from '../components/ui/Money';
@@ -766,6 +767,7 @@ function MethodPreview({ method, result }: { method: Method; result: Result | nu
 // One source, N lenses, one convergence — drawn, not decorated. Before a run the
 // right-hand node is hollow; after one it carries the real idea count.
 function DivergenceFan({ lenses, converged }: { lenses: number; converged: number | null }) {
+  const t = useChartTheme();
   const n = Math.min(lenses, 7);
   const H = 108, W = 176, midY = H / 2;
   const ys = Array.from({ length: n }, (_, i) => 14 + (i * (H - 28)) / Math.max(1, n - 1));
@@ -774,24 +776,26 @@ function DivergenceFan({ lenses, converged }: { lenses: number; converged: numbe
       role="img" aria-label={`This method opens one problem into ${lenses} lenses${converged != null ? `, which returned ${converged} ideas` : ''}.`}>
       {ys.map((y, i) => (
         <path key={`a${i}`} className="iv-fan-line" d={`M 20 ${midY} C 60 ${midY}, 60 ${y}, 88 ${y}`}
-          stroke="rgba(245,158,11,0.45)" strokeWidth="1.2" fill="none"
+          stroke={t.baseline} strokeWidth="1.2" fill="none"
           style={{ animationDelay: `${i * 60}ms` }} />
       ))}
       {ys.map((y, i) => (
         <path key={`b${i}`} className="iv-fan-line" d={`M 88 ${y} C 116 ${y}, 116 ${midY}, 156 ${midY}`}
-          stroke="rgba(139,92,246,0.4)" strokeWidth="1.2" fill="none"
+          stroke={t.baseline} strokeWidth="1.2" fill="none"
           style={{ animationDelay: `${240 + i * 60}ms` }} />
       ))}
-      <circle cx="20" cy={midY} r="5" style={{ fill: 'rgb(var(--navy-900))' }} stroke="rgba(245,158,11,0.9)" strokeWidth="1.5" />
+      {/* Two inks only: the paths are structure (baseline), the nodes are the
+          method's units (accent) — not gold-in, violet-out. */}
+      <circle cx="20" cy={midY} r="5" fill={t.surface} stroke={t.ink2} strokeWidth="1.5" />
       {ys.map((y, i) => (
         <circle key={`n${i}`} className="iv-fan-node" cx="88" cy={y} r="3"
-          fill="rgba(245,158,11,0.75)" style={{ animationDelay: `${200 + i * 60}ms` }} />
+          fill={t.accent} style={{ animationDelay: `${200 + i * 60}ms` }} />
       ))}
       <circle cx="156" cy={midY} r={converged != null ? 8 : 5}
-        style={{ fill: converged != null ? 'rgba(139,92,246,0.22)' : 'rgb(var(--navy-900))' }}
-        stroke="rgba(139,92,246,0.9)" strokeWidth="1.5" />
+        fill={converged != null ? t.accent : t.surface}
+        stroke={converged != null ? t.surface : t.ink2} strokeWidth={converged != null ? 2 : 1.5} />
       {converged != null && (
-        <text x="156" y={midY + 3.5} textAnchor="middle" fontSize="9" fontWeight="700" fill="#c4b5fd">{converged}</text>
+        <text x="156" y={midY + 3.5} textAnchor="middle" fontSize="9" fontWeight="700" fill="#ffffff">{converged}</text>
       )}
     </svg>
   );
@@ -931,15 +935,16 @@ function IdeaRow({ idea, n, order, onPipeline }: { idea: Idea; n: number; order:
 // a 300% outlier does not wrap round and read as 0 — the number beside it is the
 // authority, this is the glance.
 function VerdictRing({ pct, confirmed }: { pct: number; confirmed: boolean }) {
+  const t = useChartTheme();
   const C = 2 * Math.PI * 8;                        // r = 8
   const frac = Math.min(1, Math.abs(pct) / 100);
   const rest = C * (1 - frac);
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" className="iv-verdict-ring shrink-0" aria-hidden="true">
-      <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(148,163,184,0.22)" strokeWidth="2.4" />
+      <circle cx="10" cy="10" r="8" fill="none" stroke={t.grid} strokeWidth="2.4" />
       <circle
         cx="10" cy="10" r="8" fill="none" strokeWidth="2.4" strokeLinecap="round"
-        stroke={confirmed ? '#34d399' : '#fbbf24'}
+        stroke={confirmed ? STATUS.good : STATUS.warning}
         className="iv-verdict-arc"
         style={{ strokeDasharray: C, strokeDashoffset: rest, ['--arc-rest' as string]: rest }} />
     </svg>

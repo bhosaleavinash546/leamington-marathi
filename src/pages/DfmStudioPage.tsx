@@ -1,3 +1,4 @@
+import { useChartTheme, STATUS } from '../lib/chart-theme';
 import PageHeader from '../components/ui/PageHeader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -241,6 +242,7 @@ const SEV_STYLE: Record<string, string> = {
 };
 
 export default function DfmStudioPage() {
+  const ct = useChartTheme();
   const { token } = useAuth();
   // The page's motion vocabulary, already resolved against the reader's
   // reduced-motion preference — see src/lib/motion.ts.
@@ -2328,20 +2330,30 @@ export default function DfmStudioPage() {
                       </p>
                       <p className="dfm-label text-slate-500 mt-1.5">{k.label}</p>
                       {k.viz === 'severity' && summary.findings > 0 && (
-                        <div className="dfm-bar mt-2 flex" role="img"
-                          aria-label={`${summary.high} high, ${summary.medium} medium, ${summary.low} low severity`}>
-                          {([['bg-red-500', summary.high], ['bg-amber-500', summary.medium], ['bg-teal-500', summary.low]] as const)
-                            .map(([cls, n], i) => n > 0 && (
-                              <motion.span key={i} className={cls}
-                                initial={{ width: 0 }}
-                                animate={{ width: `${(n / summary.findings) * 100}%` }}
-                                transition={m.t(0.7, m.beat(3) + i * 0.06)} />
+                        <>
+                          {/* Severity is STATE, so the fixed status palette —
+                              critical / warning, and neutral for low — with a
+                              2 px gap between segments and a legend in ink. */}
+                          <div className="mt-2 flex gap-[2px] h-[5px]" role="img"
+                            aria-label={`${summary.high} high, ${summary.medium} medium, ${summary.low} low severity`}>
+                            {([[STATUS.critical, summary.high], [STATUS.warning, summary.medium], [ct.neutral, summary.low]] as const)
+                              .map(([color, n], i) => n > 0 && (
+                                <motion.span key={i} className="block h-full rounded-full" style={{ background: color }}
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${(n / summary.findings) * 100}%` }}
+                                  transition={m.t(0.7, m.beat(3) + i * 0.06)} />
+                              ))}
+                          </div>
+                          <div className="mt-1.5 flex gap-3 text-2xs text-slate-500">
+                            {([['High', STATUS.critical, summary.high], ['Medium', STATUS.warning, summary.medium], ['Low', ct.neutral, summary.low]] as const).map(([l, c, n]) => (
+                              <span key={l} className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ background: c }} aria-hidden="true" />{l} <span className="text-slate-300">{n}</span></span>
                             ))}
-                        </div>
+                          </div>
+                        </>
                       )}
                       {k.viz === 'coverage' && summary.ruleCount > 0 && (
                         <div className="dfm-bar mt-2">
-                          <motion.span className="bg-slate-400/70"
+                          <motion.span style={{ background: ct.accent }}
                             initial={{ width: 0 }}
                             animate={{ width: `${(summary.evaluated / summary.ruleCount) * 100}%` }}
                             transition={m.t(0.7, m.beat(3))} />

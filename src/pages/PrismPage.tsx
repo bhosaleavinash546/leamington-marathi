@@ -12,6 +12,7 @@
 // useDfmMotion): glass panels on squared paper, a travelling step rail, bars
 // and count-ups that can only land on engine-measured values, and full
 // reduced-motion discipline. No second motion vocabulary is invented here.
+import { useChartTheme, STATUS } from '../lib/chart-theme';
 import RunPanel from '../components/analyze/RunPanel';
 import { useRun, startRun, cancelRun, consumeRun } from '../lib/run-store';
 import { useAiAvailable } from '../hooks/useAiAvailable';
@@ -199,6 +200,7 @@ function LogLine({ text, active }: { text: string; active: boolean }) {
 }
 
 export default function Part360Page() {
+  const ct = useChartTheme();
   const navigate = useNavigate();
   const { token } = useAuth();
   const apiKey = localStorage.getItem('brainspark_api_key') || '';
@@ -1040,7 +1042,8 @@ export default function Part360Page() {
                     <motion.div key={sb.subassembly} variants={m.slideIn} className="grid grid-cols-[130px_1fr_150px] items-center gap-3">
                       <span className="text-xs text-slate-300 text-right">{sb.subassembly}</span>
                       <div className="dfm-bar !h-[16px] rounded-md">
-                        <motion.span className={i === 0 ? 'bg-gradient-to-r from-gold-500/80 to-gold-400/80' : 'bg-gradient-to-r from-teal-500/60 to-teal-400/60'}
+                        {/* One series (share of the roll-up): one colour, not gold-for-first. */}
+                        <motion.span className="!rounded-md" style={{ background: ct.accent }}
                           initial={{ width: 0 }} animate={{ width: `${sb.sharePct ?? 0}%` }} transition={m.t(0.5, m.beat(i))} />
                       </div>
                       <span className="dfm-num text-xs text-right text-white"><Money eur={sb.eur} /> <span className="text-slate-500">({sb.sharePct}%)</span></span>
@@ -1160,11 +1163,11 @@ export default function Part360Page() {
                               <div className="dfm-num text-xs text-teal-300 w-24 text-right">entitle {money(row.entitlementEur)}</div>
                               <div className="w-36 hidden sm:block">
                                 <div className="dfm-bar">
-                                  <motion.span className="bg-gold-400/80" initial={{ width: 0 }}
+                                  <motion.span style={{ background: ct.accent }} initial={{ width: 0 }}
                                     animate={{ width: `${((row.annualGapEur ?? 0) / maxGap) * 100}%` }} transition={m.t(0.4, i * 0.06)} />
                                 </div>
                               </div>
-                              <div className="dfm-num text-xs text-gold-400 font-semibold w-28 text-right">
+                              <div className="dfm-num text-xs text-slate-200 font-semibold w-28 text-right">
                                 {row.annualGapEur != null ? <Money eur={row.annualGapEur} decimals={0} suffix="/yr" /> : '—'}
                               </div>
                               <motion.button {...m.press}
@@ -1633,7 +1636,7 @@ export default function Part360Page() {
                       <div className="text-xs text-slate-300 text-right">Supplier quote</div>
                       <div className="dfm-bar !h-[18px] rounded-md">
                         <motion.span
-                          className="!rounded-md bg-gradient-to-r from-slate-500/70 to-slate-400/70"
+                          className="!rounded-md" style={{ background: ct.neutral }}
                           initial={{ width: 0 }} animate={{ width: `${pct(wf.quoteEur)}%` }}
                           transition={m.t(0.5, m.beat(0))}
                         />
@@ -1658,26 +1661,26 @@ export default function Part360Page() {
                       ) : (
                         <div className="dfm-bar !h-[18px] rounded-md relative">
                           <motion.span
-                            className="absolute left-0 top-0 h-full !rounded-md bg-gradient-to-r from-teal-500/60 to-teal-400/60"
+                            className="absolute left-0 top-0 h-full !rounded-md" style={{ background: ct.accent }}
                             initial={{ width: 0 }} animate={{ width: `${pct(s.toEur)}%` }}
                             transition={m.t(0.5, m.beat(i + 1))}
                           />
                           <motion.span
                             title={`${s.name}: ${money(Math.abs(s.deltaEur))} ${s.deltaEur >= 0 ? 'removable premium' : 'below the model'}`}
-                            className={`absolute top-0 h-full ${s.deltaEur >= 0 ? 'bg-gradient-to-r from-gold-500/75 to-gold-400/75' : 'bg-emerald-500/60'}`}
-                            style={{ left: `${pct(Math.min(s.toEur, s.fromEur))}%`, borderRadius: '0 6px 6px 0' }}
+                            className="absolute top-0 h-full"
+                            style={{ left: `calc(${pct(Math.min(s.toEur, s.fromEur))}% + 2px)`, borderRadius: '0 6px 6px 0', background: s.deltaEur >= 0 ? ct.series[1] : ct.neutral }}
                             initial={{ width: 0 }} animate={{ width: `${Math.abs(pct(s.fromEur) - pct(s.toEur))}%` }}
                             transition={m.t(0.5, m.beat(i + 1) + 0.12)}
                           />
                         </div>
                       )}
-                      <div className={`dfm-num text-xs font-semibold text-right ${s.skipped ? 'text-slate-500' : s.deltaEur > 0 ? 'text-gold-400' : 'text-slate-400'}`}>
+                      <div className={`dfm-num text-xs font-semibold text-right ${s.skipped ? 'text-slate-500' : s.deltaEur > 0 ? 'text-slate-200' : 'text-slate-400'}`}>
                         {s.skipped ? '—' : <>
                           {Math.abs(s.deltaEur) < 0.005 ? '' : s.deltaEur < 0 ? '+' : '−'}<Money tick eur={Math.abs(s.deltaEur)} decimals={2} delay={m.beat(i + 1)} />
                           {Number.isFinite(s.co2DeltaKg) && (
                             <span
                               title={s.co2Basis ?? undefined}
-                              className={`block mt-0.5 text-2xs font-medium ${(s.co2DeltaKg as number) <= 0 ? 'text-emerald-400/90' : 'text-amber-400/90'}`}
+                              className="block mt-0.5 text-2xs font-medium text-slate-500"
                             >
                               {(s.co2DeltaKg as number) > 0 ? '+' : ''}{s.co2DeltaKg} kgCO₂e
                             </span>
@@ -1686,22 +1689,27 @@ export default function Part360Page() {
                       </div>
                     </div>
                   ))}
-                  <div className="grid grid-cols-[130px_1fr_84px] items-center gap-3 pt-1 border-t border-white/[0.06]">
-                    <div className="text-xs text-teal-300 font-semibold text-right">Entitlement</div>
+                  <div className="grid grid-cols-[130px_1fr_84px] items-center gap-3 pt-1 border-t border-hairline">
+                    <div className="text-xs text-white font-semibold text-right">Entitlement</div>
                     <div className="dfm-bar !h-[18px] rounded-md">
                       <motion.span
-                        className="!rounded-md bg-gradient-to-r from-teal-400/85 to-teal-300/85 shadow-[0_0_14px_-2px_rgb(45_212_191/0.5)]"
+                        className="!rounded-md" style={{ background: ct.accent }}
                         initial={{ width: 0 }} animate={{ width: `${pct(wf.entitlementEur)}%` }}
                         transition={m.t(0.5, m.beat(wf.steps.length + 1))}
                       />
                     </div>
-                    <div className="dfm-num text-xs text-teal-300 font-bold text-right">
+                    <div className="dfm-num text-xs text-white font-bold text-right">
                       <Money tick eur={wf.entitlementEur} decimals={2} delay={m.beat(wf.steps.length + 1)} />
                     </div>
                   </div>
                 </div>
 
-                <div className="text-sm font-semibold text-gold-400 mb-4">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-2xs text-slate-500 mb-3 pl-[142px]">
+                  {([['Supplier quote', ct.neutral], ['Engine cost after the step', ct.accent], ['Removable premium', ct.series[1]]] as const).map(([l, c]) => (
+                    <span key={l} className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: c }} aria-hidden="true" />{l}</span>
+                  ))}
+                </div>
+                <div className="text-sm font-semibold text-white mb-4">
                   {wf.quoteEur != null
                     ? <>Quote {money(wf.quoteEur)} → engine entitlement {money(wf.entitlementEur)} (gap {money(wf.totalGapEur)})</>
                     : <>Engine entitlement {money(wf.entitlementEur)} — no quote supplied, commercial step not evaluated</>}
@@ -1823,11 +1831,11 @@ export default function Part360Page() {
                               {ratio != null ? (
                                 <div className="dfm-bar relative" title={`quote is ${(r.ratio! * 100).toFixed(0)}% of the engine bucket`}>
                                   <motion.span
-                                    className={`${r.verdict === 'above-model' ? 'bg-gold-400/80' : r.verdict === 'below-model' ? 'bg-emerald-400/80' : 'bg-teal-400/80'}`}
+                                    style={{ background: r.verdict === 'above-model' ? STATUS.warning : r.verdict === 'below-model' ? ct.neutral : ct.accent }}
                                     initial={{ width: 0 }} animate={{ width: `${(ratio / 2) * 100}%` }}
                                     transition={m.t(0.4, 0.1 + i * 0.05)}
                                   />
-                                  <span className="absolute left-1/2 top-[-2px] bottom-[-2px] w-px bg-white/30" aria-hidden="true" />
+                                  <span className="absolute left-1/2 top-[-2px] bottom-[-2px] w-px" style={{ background: ct.ink2 }} aria-hidden="true" />
                                 </div>
                               ) : <div className="text-2xs text-slate-500 text-center">unmapped</div>}
                             </div>

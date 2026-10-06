@@ -4835,3 +4835,21 @@ The rules:
 
 Gated by `tests/chart-theme.test.mjs`: every Recharts file uses the theme, no
 chart file hard-codes a mark, grid or tooltip colour, and grids are solid.
+
+**Hand-drawn charts follow the same palette.** Horizon, Prism, DFM Studio,
+Innovation Studio and the score dial draw their own SVG or div bars. They now
+read the same theme:
+- **Horizon:** the S-curve is baseline ink with one ringed accent marker.
+  The adoption spark is a 2 px accent line with an end dot. The momentum bar
+  is solid accent; it was a teal-to-gold gradient with no meaning.
+- **Prism waterfall:** the supplier quote is neutral grey, the engine level is
+  accent, and the removable premium is categorical slot 2, with a legend.
+  The gradients, the entitlement glow and the roll-up's gold-for-first bar
+  are gone.
+- **State uses the fixed status palette, labelled:**
+  - DFM severity: critical, warning, and neutral for low.
+  - Evidence currency: fresh good, stale warning, undated neutral.
+  - Quote above model: warning.
+  - The score dial.
+- **Bar tracks use `--tint-strong`.** The white-alpha track that disappeared
+  on a white page is gone.
