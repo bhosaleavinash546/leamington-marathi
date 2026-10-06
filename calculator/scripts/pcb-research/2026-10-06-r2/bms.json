@@ -1,0 +1,98 @@
+{ "domain": "bms", "researched": "2026-10-06", "parts": [
+  { "mpn": "INA228AQDGSRQ1", "family": "INA228-Q1", "mfr": "Texas Instruments", "desc": "85V 20-bit power/energy monitor, I2C", "category": "ic_soic", "pkg": "VSSOP-10", "aecq": true, "ecuRoles": ["BMS","DCDC","OBC"], "observedMpn": "INA228AQDGSRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.0255, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA228AQDGSRQ1/14641472", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 3.03, "currency": "USD", "url": "https://www.findchips.com/search/INA228AQDGSRQ1", "date": "2026-10-06" } ],
+    "notes": "Mouser break read via Findchips snippet." },
+  { "mpn": "INA229AQDGSRQ1", "family": "INA229-Q1", "mfr": "Texas Instruments", "desc": "85V 20-bit power/energy monitor, SPI", "category": "ic_soic", "pkg": "VSSOP-10", "aecq": true, "ecuRoles": ["BMS","DCDC","OBC"], "observedMpn": "INA229AQDGSRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 3.49, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/INA229AQDGSRQ1?qs=QNEnbhJQKvYTGkxSAfXBrQ%3D%3D", "date": "2026-10-06" } ],
+    "notes": "Digi-Key 1k break not shown in results." },
+  { "mpn": "SN6505BQDBVRQ1", "family": "SN6505B-Q1", "mfr": "Texas Instruments", "desc": "Push-pull transformer driver for isolated supplies", "category": "ic_soic", "pkg": "SOT-23-6", "aecq": true, "ecuRoles": ["BMS","inverter","OBC"], "observedMpn": "SN6505BQDBVRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 1.35, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/SN6505BQDBVRQ1?qs=PqoDHHvF64%252B74AsAsc7l4g%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 500, "price": 1.57284, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN6505BQDBVRQ1/10715528", "date": "2026-10-06" } ],
+    "notes": "" },
+  { "mpn": "UCC28740QDRQ1", "family": "UCC28740-Q1", "mfr": "Texas Instruments", "desc": "Constant-voltage/current flyback controller, opto feedback", "category": "ic_soic", "pkg": "SOIC-7", "aecq": true, "ecuRoles": ["OBC","DCDC","BMS"], "observedMpn": "UCC28740QDRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.9486, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC28740QDRQ1/11308851", "date": "2026-10-06" } ],
+    "notes": "Mouser price not shown." },
+  { "mpn": "UCC28180QDRQ1", "family": "UCC28180-Q1", "mfr": "Texas Instruments", "desc": "CCM PFC controller, 8-pin", "category": "ic_soic", "pkg": "SOIC-8", "aecq": true, "ecuRoles": ["OBC"], "observedMpn": "",
+    "observations": [],
+    "notes": "Exact automotive MPN not found; only commercial UCC28180DR/D priced (not recorded, not AEC-Q100)." },
+  { "mpn": "UCC28951QPWRQ1", "family": "UCC28951-Q1", "mfr": "Texas Instruments", "desc": "Phase-shifted full-bridge controller with sync rectification", "category": "ic_soic", "pkg": "TSSOP-24", "aecq": true, "ecuRoles": ["DCDC","OBC"], "observedMpn": "UCC28951QPWRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.47604, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/texas-instruments/UCC28951QPWRQ1/296-45048-1-ND/6553925", "date": "2026-10-06" } ],
+    "notes": "Mouser $6.47 seen without a quantity break (not recorded)." },
+  { "mpn": "UCC256404DDBR", "family": "UCC256404", "mfr": "Texas Instruments", "desc": "LLC resonant controller with integrated HV gate driver", "category": "ic_soic", "pkg": "SOIC-14 (DDB)", "aecq": false, "ecuRoles": ["OBC","charger"], "observedMpn": "UCC256404DDBR",
+    "observations": [
+      { "distributor": "Mouser", "qty": 2500, "price": 1.40, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/UCC256404DDBR?qs=wnTfsH77Xs4MRQbGIRn41Q%3D%3D", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 500, "price": 1.3894, "currency": "EUR", "url": "https://www.digikey.at/en/products/detail/texas-instruments/UCC256404DDBR/11308751", "date": "2026-10-06" } ],
+    "notes": "No -Q1 orderable found; commercial grade. Broker price (TCCOIL) discarded." },
+  { "mpn": "UCD3138RGCR", "family": "UCD3138", "mfr": "Texas Instruments", "desc": "Digital power controller, 64-VQFN 9x9", "category": "ic_qfn", "pkg": "VQFN-64", "aecq": false, "ecuRoles": ["OBC","DCDC"], "observedMpn": "UCD3138RGCT",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 100, "price": 8.88, "currency": "GBP", "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/UCD3138RGCT/3451635", "date": "2026-10-06" } ],
+    "notes": "Small-reel RGCT price; RGCR (large reel) break not shown. No Q1 variant priced." },
+  { "mpn": "UCC14240QDWNRQ1", "family": "UCC14240-Q1", "mfr": "Texas Instruments", "desc": "Isolated DC/DC bias module 2W, integrated transformer", "category": "power_module", "pkg": "SSOP-36 (DWN)", "aecq": true, "ecuRoles": ["inverter","BMS","OBC"], "observedMpn": "UCC14240QDWNRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1500, "price": 5.69335, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/UCC14240QDWNRQ1/17395000", "date": "2026-10-06" } ],
+    "notes": "Unnamed distributor $11.87 @1k discarded." },
+  { "mpn": "UCC14140QDWNRQ1", "family": "UCC14140-Q1", "mfr": "Texas Instruments", "desc": "Isolated DC/DC bias module 1.5W, integrated transformer", "category": "power_module", "pkg": "SSOP-36 (DWN)", "aecq": true, "ecuRoles": ["inverter","BMS","OBC"], "observedMpn": "UCC14140QDWNRQ1",
+    "observations": [],
+    "notes": "Digi-Key breaks in results could not be tied to this MPN (link was UCC14141QDWNRQ1); discarded." },
+  { "mpn": "AMC3330QDWERQ1", "family": "AMC3330-Q1", "mfr": "Texas Instruments", "desc": "Isolated voltage amplifier, ±1V input, integrated DC/DC", "category": "ic_soic", "pkg": "SOIC-16 wide", "aecq": true, "ecuRoles": ["BMS","inverter","OBC"], "observedMpn": "AMC3330QDWERQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 4.96484, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/AMC3330QDWERQ1/15857280", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 2000, "price": 4.51789, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/AMC3330QDWERQ1/15857280", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 4.10, "currency": "USD", "url": "https://www.mouser.com/en/c/semiconductors/amplifier-ics/isolation-amplifiers/?series=AMC3330", "date": "2026-10-06" } ],
+    "notes": "2000 break inferred from extended price $9,035.78." },
+  { "mpn": "AMC0330RQDWERQ1", "family": "AMC0330R-Q1", "mfr": "Texas Instruments", "desc": "Isolated voltage amplifier", "category": "ic_soic", "pkg": "SOIC-16 wide", "aecq": true, "ecuRoles": ["BMS","OBC"], "observedMpn": "",
+    "observations": [],
+    "notes": "Exact MPN not found in distributor results." },
+  { "mpn": "ISO224BQDWVRQ1", "family": "ISO224-Q1", "mfr": "Texas Instruments", "desc": "Isolated amplifier, ±12V single-ended input", "category": "ic_soic", "pkg": "SOIC-8 wide (DWV)", "aecq": true, "ecuRoles": ["BMS","inverter"], "observedMpn": "",
+    "observations": [],
+    "notes": "Exact Q1 MPN not found; only commercial ISO224BDWVR seen (not recorded)." },
+  { "mpn": "DRV3946QDGQRQ1", "family": "DRV3946-Q1", "mfr": "Texas Instruments", "desc": "Dual-channel contactor/solenoid driver", "category": "ic_soic", "pkg": "HVSSOP-10 (DGQ)", "aecq": true, "ecuRoles": ["BMS","BDU"], "observedMpn": "",
+    "observations": [],
+    "notes": "Not found at Digi-Key/Mouser in results." },
+  { "mpn": "TLE9012DQUXUMA1", "family": "TLE9012DQU", "mfr": "Infineon", "desc": "12-cell Li-ion battery monitor and balancing IC", "category": "ic_tqfp", "pkg": "PG-TQFP-48", "aecq": true, "ecuRoles": ["BMS","CMU"], "observedMpn": "TLE9012DQUXUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 4.07024, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9012DQUXUMA1/15998980", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.64941, "currency": "GBP", "url": "https://www.digikey.co.uk/en/products/detail/infineon-technologies/TLE9012DQUXUMA1/15998980", "date": "2026-10-06" } ],
+    "notes": "Same distributor, US and UK sites." },
+  { "mpn": "TLE9015DQUXUMA1", "family": "TLE9015DQU", "mfr": "Infineon", "desc": "iso-UART transceiver for BMS daisy chain", "category": "ic_tqfp", "pkg": "PG-TQFP-48", "aecq": true, "ecuRoles": ["BMS","BMU"], "observedMpn": "TLE9015DQUXUMA1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.36381, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9015DQUXUMA1/15998982", "date": "2026-10-06" },
+      { "distributor": "Avnet", "qty": 2500, "price": 2.7751, "currency": "USD", "url": "https://www.findchips.com/search/9015", "date": "2026-10-06" } ],
+    "notes": "Package is TQFP-48 (RS listing), not SOIC. Avnet Americas range $2.7751-$2.6340 for 2.5k-40k via aggregator snippet." },
+  { "mpn": "MAX17853", "family": "MAX17853", "mfr": "Analog Devices", "desc": "14-channel battery monitor / data acquisition", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS","CMU"], "observedMpn": "MAX17853ACB/V+",
+    "observations": [],
+    "notes": "Digi-Key lists MAX17853ACB/V+ as discontinued; $1.86 with no break looked implausible, discarded." },
+  { "mpn": "MAX17841BGUE/V+", "family": "MAX17841B", "mfr": "Analog Devices", "desc": "SPI to UART BMS communication interface", "category": "ic_soic", "pkg": "TSSOP-24", "aecq": true, "ecuRoles": ["BMS","BMU"], "observedMpn": "MAX17841BGUE/V+",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 5.6011, "currency": "USD", "url": "https://www.findchips.com/search/max17841", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1056, "price": 6.34, "currency": "USD", "url": "https://au.mouser.com/ProductDetail/Analog-Devices-Maxim-Integrated/MAX17841BGUE-V+?qs=SFtkwOqhfflVPuWo%2BN2y5A%3D%3D", "date": "2026-10-06" } ],
+    "notes": "Digi-Key break via Findchips snippet." },
+  { "mpn": "LTC6820HMS#TRPBF", "family": "LTC6820", "mfr": "Analog Devices", "desc": "isoSPI isolated communications interface", "category": "ic_soic", "pkg": "MSOP-16", "aecq": true, "ecuRoles": ["BMS","BMU"], "observedMpn": "LTC6820HMS#TRPBF",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 5.03, "currency": "USD", "url": "https://www.findchips.com/search/ltc6820", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 250, "price": 5.32, "currency": "USD", "url": "https://www.findchips.com/search/ltc6820", "date": "2026-10-06" } ],
+    "notes": "Read via aggregator snippets." },
+  { "mpn": "MC33665ATS4AE", "family": "MC33665A", "mfr": "NXP", "desc": "BMS TPL communication gateway/transceiver", "category": "ic_tqfp", "pkg": "HLQFP-48 7x7", "aecq": true, "ecuRoles": ["BMS","BMU"], "observedMpn": "MC33665ATS4AE",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 5.89529, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33665ATS4AE/16669298", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 5.69, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/MC33665ATS4AE?qs=Znm5pLBrcALlwOCzS5prnQ%3D%3D", "date": "2026-10-06" } ],
+    "notes": "" },
+  { "mpn": "ADBMS6830BCSWZ", "family": "ADBMS6830B", "mfr": "Analog Devices", "desc": "16-channel multicell battery monitor", "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": true, "ecuRoles": ["BMS","CMU"], "observedMpn": "ADBMS6830BCSWZ",
+    "observations": [],
+    "notes": "Digi-Key shows small-qty breaks only (unclear '119' break, ~$15.64) and discontinued status; not recorded. Reel code ADBMS6830BCSWZ-RL exists." },
+  { "mpn": "L9963T-TR", "family": "L9963T", "mfr": "STMicroelectronics", "desc": "SPI to isolated SPI transceiver for BMS", "category": "ic_soic", "pkg": "SSOP-10", "aecq": true, "ecuRoles": ["BMS","BMU"], "observedMpn": "L9963T-TR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.74252, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L9963T-TR/15295951", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 1000, "price": 4.18, "currency": "USD", "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/L9963T?qs=CiayqK2gdcKd49UyNiHRcw%3D%3D", "date": "2026-10-06" } ],
+    "notes": "Mouser listing is L9963T (tube) sibling." },
+  { "mpn": "BQ79731PHPRQ1", "family": "BQ79731-Q1", "mfr": "Texas Instruments", "desc": "HV pack monitor", "category": "ic_tqfp", "pkg": "HTQFP-48", "aecq": true, "ecuRoles": ["BMS","BJB"], "observedMpn": "", "observations": [], "notes": "not searched (budget)" },
+  { "mpn": "GCM31CR71E106KA64L", "family": "GCM31CR71E106KA64", "mfr": "Murata", "desc": "MLCC 10uF 25V X7R 1206 automotive", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["BMS","general"], "observedMpn": "", "observations": [], "notes": "not searched (budget)" },
+  { "mpn": "GCJ31CR71H105KA01L", "family": "GCJ31CR71H105KA01", "mfr": "Murata", "desc": "MLCC 1uF 50V X7R 1206 soft termination", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["BMS","general"], "observedMpn": "", "observations": [], "notes": "not searched (budget)" },
+  { "mpn": "CGA5L1X7R1H475K160AC", "family": "CGA5L1X7R1H475K", "mfr": "TDK", "desc": "MLCC 4.7uF 50V X7R 1206 automotive", "category": "passive_1206", "pkg": "1206", "aecq": true, "ecuRoles": ["BMS","general"], "observedMpn": "", "observations": [], "notes": "not searched (budget)" }
+] }
