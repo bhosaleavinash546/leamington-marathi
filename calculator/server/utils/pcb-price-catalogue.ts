@@ -77,6 +77,14 @@ export function catalogueEntry(mpn: string): CatalogueEntry | null {
     if (t.length >= 4) cands.add(t);
   }
   for (const c of cands) { const e = EXACT.get(c); if (e) return e; }
+  // TI's family form "DS90UB935-Q1" names the automotive grade of a family whose orderable
+  // codes are DS90UB935TRHBRQ1 / …RHBTQ1: the catalogued code that starts with the family and
+  // ends in Q1 (the AEC-Q100 suffix) is that part. Only when exactly one such code is catalogued.
+  const q1 = /^([A-Z0-9]{5,})-?Q1$/.exec(literalKey(mpn).replace(/[^A-Z0-9-]/g, ''));
+  if (q1) {
+    const hits = [...new Set(CAT.parts.filter(p => { const k = normaliseMPN(p.mpn); return k.startsWith(q1[1]) && /Q1$/.test(k) && k.length > q1[1].length + 2; }))];
+    if (hits.length === 1) return hits[0];
+  }
   for (const c of cands) for (const [pre, e] of PREFIX) if (c.startsWith(pre) && orderingSuffix(c.slice(pre.length))) return e;
   return null;
 }

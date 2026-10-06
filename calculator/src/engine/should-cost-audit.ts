@@ -303,6 +303,9 @@ const checkZeroConversion: Check = (ctx) => {
   // A declared price (PCB fabrication from a fab's price table) has no routing
   // by design, so "no routing was entered" is not the issue. The ECU lesson
   // still is: a populated board priced as a bare one under-states it.
+  // A populated board bought complete (the PCB photo analysis: components itemised, the board and
+  // the assembly as fabricator / EMS prices) has its conversion inside those prices — not this lesson.
+  if (ctx.input.priceBasis === 'market_price' && (ctx.input.rawMaterial?.boughtIn?.cost ?? 0) > 0 && (ctx.input.rawMaterial?.lines?.length ?? 0) > 0) return null;
   if (ctx.input.priceBasis === 'market_price') {
     return {
       id: 'zero-conversion-cost',

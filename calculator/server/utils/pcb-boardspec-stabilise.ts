@@ -29,9 +29,15 @@ const STD_LAYERS = [1, 2, 4, 6, 8, 10, 12, 14, 16];
 const PLACEMENT_DENSITY_PER_CM2 = 1.6;
 const AREA_MIN_CM2 = 6;
 const AREA_MAX_CM2 = 600;
-/** How far the model's area may stray from the density anchor before it's clamped. */
-const AREA_BAND_LO = 0.70;
-const AREA_BAND_HI = 1.40;
+/**
+ * The physical density band an ESTIMATED size must sit in (placements per cm² per populated side).
+ * It used to be ±30–40% around 1.6/cm² — right for a sparse ECU, but it turned a 20×20 mm automotive
+ * camera module (80 parts on two sides, ~10/cm² a side; board data sheet: 20.0 × 20.0 mm) into
+ * 59×59 mm, 8.7× the area, and the fab price with it (Oct 2026). A size is now changed only when
+ * the density it implies is not buildable (denser than a phone board) or not credible (near-empty).
+ */
+const MAX_DENSITY_PER_SIDE_CM2 = 30;
+const MIN_DENSITY_CM2 = 0.4;
 
 const n = (v: unknown, d = 0): number => { const x = Number(v); return Number.isFinite(x) ? x : d; };
 
@@ -94,9 +100,13 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
     && modelAreaCm2 >= AREA_MIN_CM2 && modelAreaCm2 <= AREA_MAX_CM2;
   let areaCm2 = modelAreaCm2;
   if (!measured) {
-    if (modelAreaCm2 < anchorAreaCm2 * AREA_BAND_LO) areaCm2 = anchorAreaCm2 * AREA_BAND_LO;
-    else if (modelAreaCm2 > anchorAreaCm2 * AREA_BAND_HI) areaCm2 = anchorAreaCm2 * AREA_BAND_HI;
-    areaCm2 = Math.min(AREA_MAX_CM2, Math.max(AREA_MIN_CM2, areaCm2));
+    const sides = Math.max(1, Math.min(2, Math.round(n(asm.reflowSides, 1)) || 1));
+    const minArea = placements > 0 ? placements / (MAX_DENSITY_PER_SIDE_CM2 * sides) : AREA_MIN_CM2;
+    const maxArea = placements > 0 ? Math.max(minArea, placements / MIN_DENSITY_CM2) : AREA_MAX_CM2;
+    if (!(modelAreaCm2 > 0)) areaCm2 = anchorAreaCm2;
+    else if (modelAreaCm2 < minArea) areaCm2 = minArea;
+    else if (modelAreaCm2 > maxArea) areaCm2 = maxArea;
+    areaCm2 = Math.min(AREA_MAX_CM2, Math.max(Math.min(AREA_MIN_CM2, modelAreaCm2 > 0 ? modelAreaCm2 : AREA_MIN_CM2), areaCm2));
     // rebuild width/height at the stabilised area, preserving the model's aspect ratio
     const areaMm2 = areaCm2 * 100;
     const height = Math.sqrt(areaMm2 / aspect);

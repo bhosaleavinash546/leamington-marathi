@@ -185,6 +185,16 @@ never asks for a price. The response carries `stage1Classification` / `ocrExtrac
 (the client's `attachPcbPayload`), `analysis.rawBom` (so a re-price never applies volume or grading twice). Catalogue
 family matches need an ordering suffix (`orderingSuffix`). `tests/pcb-stage4-trace.test.ts` reconciles every figure on
 the radar board to the headline. Photo-reading accuracy is NOT measured: no labelled board in `tests/fixtures/pcb-boards/`.
+**Calculate after Analyze = the analysis** (`src/ui/pcb/analysis-link.ts`, camera-board trial Oct 2026): the
+analysis fills the PCB fab form; Calculate with nothing edited reports the analysis (components itemised, board and
+assembly bought-in, no second overhead / margin); an edited field is written into the analysis's board spec and
+re-priced via `/reprice` first (a quality grade sets automotive / general). The form's own bare-board model is used only
+with no analysis. Board size is kept unless its placement density is unbuildable (> 30/cm² a side) or not credible
+(< 0.4/cm²); ICT and X-ray are station time + fixture / programme over the order, capped at the table's small-batch
+price; BOM rows named by kind ("Ferrite", "Common Mode Choke", "Image sensor") take bead / choke / imager ranges, "≤ 1206"
+is a size limit; TI "XXXX-Q1" finds the catalogued …Q1 orderable; ≥ 2 named AEC-Q100 ICs (≥ half of them) make the board
+automotive (`AUTOMOTIVE_FROM_BOM`); a BOM without designators is checked by count and is never "missing passives".
+`npm run test:e2e:pcb-camera` drives that board end to end; see `docs/pcb/camera-board-360-2026-10.md`.
 `expandRefDes` counts only real designators (U1, R12A, C_BULK1) — a placeholder ("—", "N/A", "U?") is
 not one (it once made 13 unlabelled lines read as duplicate views). File inputs are never written back
 (`country-recost.ts` — restoring a chosen photo's path threw and failed Calculate on the PCB form).

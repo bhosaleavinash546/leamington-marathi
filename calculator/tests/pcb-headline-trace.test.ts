@@ -5,7 +5,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computePCBCountryCost, PCB_COUNTRY_RATES, type PCBCostInput } from '../server/data/pcb-country-rates.js';
+import { computePCBCountryCost, PCB_COUNTRY_RATES, ICT_FIXTURE_GBP, XRAY_SECONDS_PER_BOARD, XRAY_SETUP_GBP, type PCBCostInput } from '../server/data/pcb-country-rates.js';
+const ICT_SEC = 90;   // the radar input's ictTimeSec
 import { applyAutomotiveGrade, derivePlacementsFromBOM, setDeterministicCostEstimates, gradeVolumeCurve, EXTRACT_MODEL, DEEP_EXTRACT_MODEL, OCR_MODEL } from '../server/routes/pcb.js';
 
 // The radar board as the corrected pipeline saw it (real-model run, 2026-09-29).
@@ -37,7 +38,10 @@ describe('China breakdown by hand (rates as of 2026-09-29)', () => {
   it('assembly: placements at the line rate + AOI + X-ray + ICT', () => {
     const smt = 222 / 3600 * r.assembly.smtLineRatePerHr + r.assembly.batchSetupGBP / 250000;
     const th = 4 * r.assembly.thRatePerJoint;
-    const test = r.assembly.aoiPerBoard + r.assembly.xrayPerBoard + r.assembly.ictPerBoard;
+    // ICT at volume: test time × (2 × labour £/h) + the fixture over the order, capped at the table price.
+    const ict = Math.min(r.assembly.ictPerBoard, ICT_SEC / 3600 * 2 * r.assembly.labourRatePerHr + ICT_FIXTURE_GBP / 250000);
+    const xray = Math.min(r.assembly.xrayPerBoard, XRAY_SECONDS_PER_BOARD / 3600 * 2 * r.assembly.labourRatePerHr + XRAY_SETUP_GBP / 250000);
+    const test = r.assembly.aoiPerBoard + xray + ict;
     expect(bd.assemblyPerBoard).toBeCloseTo(smt + th + test, 2);
   });
   it('components sourced in China at the country multiplier; duty on the customs value', () => {

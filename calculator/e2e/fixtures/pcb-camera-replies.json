@@ -1,0 +1,418 @@
+{
+ "stage1": {
+  "domain": "consumer_iot",
+  "conf": 0.62,
+  "hints": [
+   "small camera module",
+   "image sensor"
+  ]
+ },
+ "asil": {
+  "asilLevel": "Unknown",
+  "asilRationale": "",
+  "safetyFunctions": []
+ },
+ "ocr": {
+  "icMarkings": [
+   "AZY",
+   "24220 47B 5439"
+  ],
+  "refDesGroups": [],
+  "connectors": [],
+  "boardText": [
+   "8",
+   "UMT"
+  ],
+  "extractionQuality": "low"
+ },
+ "analysis": {
+  "partName": "8-layer 20×20mm FPD-Link III automotive camera module PCB (image sensor + serializer + power)",
+  "boardSpec": {
+   "estimatedLayers": 8,
+   "widthMm": 20,
+   "heightMm": 20,
+   "dimensionsSource": "estimated",
+   "surfaceFinish": "osp",
+   "solderMaskColour": "green",
+   "silkscreenSides": 2,
+   "throughVias": 120,
+   "blindVias": 0,
+   "buriedVias": 0,
+   "microVias": 0,
+   "bgaDetected": false,
+   "minTraceSpaceMm": 0.1,
+   "technologyType": "RF_MICRO",
+   "hdiStructure": "none",
+   "impedanceControlRequired": true,
+   "copperWeightOz": 2,
+   "copperOzByLayer": [
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2
+   ],
+   "boardWeightG": 2.5,
+   "qualityGrade": "auto_grade2",
+   "panelUtilisation": 0.7,
+   "conformalCoating": false
+  },
+  "bom": [
+   {
+    "refDes": "C1-C25",
+    "componentType": "passive_0402",
+    "description": "MLCC decoupling",
+    "pkg": "0402",
+    "value": "",
+    "qty": 25,
+    "unitPriceGBP": 0.01,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "C26-C49",
+    "componentType": "passive_0603",
+    "description": "MLCC bulk",
+    "pkg": "0603",
+    "value": "",
+    "qty": 24,
+    "unitPriceGBP": 0.02,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "R1-R16",
+    "componentType": "passive_0402",
+    "description": "Resistor",
+    "pkg": "0402",
+    "value": "",
+    "qty": 16,
+    "unitPriceGBP": 0.005,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "FB1-FB7",
+    "componentType": "passive_0603",
+    "description": "Ferrite bead",
+    "pkg": "0603",
+    "value": "",
+    "qty": 7,
+    "unitPriceGBP": 0.03,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "L1",
+    "componentType": "passive_1206",
+    "description": "Power inductor 10uH (\"100\")",
+    "pkg": "1210",
+    "value": "10uH",
+    "qty": 1,
+    "unitPriceGBP": 0.15,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "L2",
+    "componentType": "transformer",
+    "description": "Common mode choke (PoC)",
+    "pkg": "1206",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 0.3,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "U1",
+    "componentType": "ic_qfn",
+    "description": "FPD-Link III serializer (32-pin QFN, bottom side)",
+    "pkg": "QFN-32",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 4.0,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "U2",
+    "componentType": "ic_qfn",
+    "description": "Buck converter (WSON, bottom side)",
+    "pkg": "WSON-10",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 1.2,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "U3",
+    "componentType": "ic_soic",
+    "description": "Dual step-down \"AZY\" (MSOP-10)",
+    "pkg": "MSOP-10",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 0.9,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "U4",
+    "componentType": "ic_qfn",
+    "description": "LDO (WSON-6)",
+    "pkg": "WSON-6",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 0.3,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "U5",
+    "componentType": "ic_qfn",
+    "description": "Charger / PMIC \"24220\" (VSON-10)",
+    "pkg": "VSON-10",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 1.5,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   },
+   {
+    "refDes": "IC1",
+    "componentType": "ic_bga",
+    "description": "CMOS image sensor (glass-lid CSP, top side)",
+    "pkg": "CSP",
+    "value": "",
+    "qty": 1,
+    "unitPriceGBP": 9.0,
+    "partNumber": "",
+    "ocrExtracted": false,
+    "lineConf": 0.6,
+    "automotive": false
+   }
+  ],
+  "assembly": {
+   "smtPlacements": 80,
+   "throughHoleJoints": 0,
+   "manualJoints": 0,
+   "bgaCount": 0,
+   "complexity": "medium",
+   "reflowSides": 2,
+   "aoiRequired": true,
+   "ictTimeSec": 60
+  },
+  "costEstimates": {},
+  "aiInsights": [
+   "20×20 mm board with 8 layers and mixed 2oz/1oz copper indicates a compact automotive-style camera module with FPD-Link III coax link"
+  ],
+  "dfmIssues": [
+   "Fine-pitch 32-pin QFN and 10-pin VSON with thermal pads need tight stencil control"
+  ],
+  "highCostComponents": [
+   "FPD-Link III serializer",
+   "CMOS image sensor"
+  ],
+  "optimisationSuggestions": [
+   "Panelise in arrays with tooling rails"
+  ],
+  "confidenceLevel": "Medium",
+  "analysisLimitations": [
+   "The image sensor model is unknown"
+  ]
+ },
+ "bomImage": {
+  "isBomTable": true,
+  "unreadable": [],
+  "rows": [
+   {
+    "refDes": "Capacitor",
+    "qty": 49,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Capacitor",
+    "qty": 49,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "Ceramic Capacitor",
+    "value": "",
+    "pkg": "<= 1206"
+   },
+   {
+    "refDes": "Ferrite",
+    "qty": 7,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Ferrite",
+    "qty": 7,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "Ferrite",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Inductor",
+    "qty": 2,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Inductor",
+    "qty": 1,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "Common Mode Choke",
+    "value": "10uH",
+    "pkg": ""
+   },
+   {
+    "refDes": "Inductor",
+    "qty": 1,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "Common Mode Choke",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Integrated circuit",
+    "qty": 5,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Integrated circuit",
+    "qty": 1,
+    "partNumber": "DS90UB935-Q1",
+    "manufacturer": "Texas Instruments",
+    "description": "FPD-Link III Serializer With CSI-2 Interface",
+    "value": "",
+    "pkg": "VQFN-32"
+   },
+   {
+    "refDes": "Integrated circuit",
+    "qty": 1,
+    "partNumber": "LM53600MQDSXRQ1",
+    "manufacturer": "Texas Instruments",
+    "description": "Automotive Step Down DC-DC Converter",
+    "value": "",
+    "pkg": "WSON-10"
+   },
+   {
+    "refDes": "Integrated circuit",
+    "qty": 1,
+    "partNumber": "TPS62422QDRCRQ1",
+    "manufacturer": "Texas Instruments",
+    "description": "2.25-MHz Fixed VOUT Dual 1000mA/400mA Step-Down",
+    "value": "",
+    "pkg": "MSOP-10"
+   },
+   {
+    "refDes": "Integrated circuit",
+    "qty": 1,
+    "partNumber": "TLV70233QDSERQ1",
+    "manufacturer": "Texas Instruments",
+    "description": "300-mA, Low-IQ, Low-Dropout Regulator",
+    "value": "",
+    "pkg": "WSON-6"
+   },
+   {
+    "refDes": "Integrated circuit",
+    "qty": 1,
+    "partNumber": "BQ24025DRCR",
+    "manufacturer": "Texas Instruments",
+    "description": "LI-ION AND LI-POL CHARGER IC",
+    "value": "7V ; 500 mA",
+    "pkg": "VSON(DRC)10"
+   },
+   {
+    "refDes": "Resistor",
+    "qty": 16,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Resistor",
+    "qty": 16,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "Resistor",
+    "value": "",
+    "pkg": "<= 1206"
+   },
+   {
+    "refDes": "Sensor",
+    "qty": 1,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Sensor",
+    "qty": 1,
+    "partNumber": "",
+    "manufacturer": "N/A",
+    "description": "Image sensor",
+    "value": "",
+    "pkg": ""
+   },
+   {
+    "refDes": "Connector",
+    "qty": 0,
+    "partNumber": "",
+    "manufacturer": "",
+    "description": "",
+    "value": "",
+    "pkg": ""
+   }
+  ]
+ }
+}

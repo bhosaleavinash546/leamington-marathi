@@ -213,6 +213,11 @@ export function applyGroundTruth(
     if (t.bottomSide && Number(asm.reflowSides ?? 1) < 2) asm.reflowSides = 2;
     warnings.push({ code: 'BOM_FROM_FILE', severity: 'warn',
       message: `BOM taken from your ${fromImage ? 'BOM image (transcribed by the reader, never priced by it)' : 'file'}: ${t.bom.length} lines, ${t.smtPlacements} SMT placements. The photos were used for the board build and to fill gaps, not to write the BOM.` });
+    // A BOM without designators is checked by count: the photos counting clearly more parts than the
+    // BOM lists is the signal (its own count stays the costed one).
+    const fileParts = t.bom.reduce((n, l) => n + (Number(l.qty) || 0), 0);
+    if (!t.fileHasDesignators && t.aiPlacements > fileParts * 1.2 + 2) warnings.push({ code: 'AI_COUNT_ABOVE_BOM_FILE', severity: 'warn',
+      message: `Your BOM lists ${fileParts} parts with no designators; the photos count about ${t.aiPlacements}. The BOM's count is costed — check it is complete.` });
     if (t.aiOnly.length) warnings.push({ code: 'AI_PARTS_NOT_IN_BOM_FILE', severity: 'warn',
       message: `The photos show parts your BOM file does not list: ${t.aiOnly.slice(0, 12).join(', ')}${t.aiOnly.length > 12 ? ', …' : ''}. If they are fitted, the file is short.` });
   }
@@ -920,9 +925,9 @@ interface BOMCompletenessResult {
   missingEstimateBreakdown: { decouplingCaps: number; pullResistors: number; ferriteBeads: number; esdArrays: number };
   completenessScore: number;
 }
-function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlacements: number): BOMCompletenessResult {
-  const icTypes = new Set(['ic_bga', 'ic_tqfp', 'ic_qfp', 'ic_soic', 'ic_sot', 'power_module', 'ic_other']);
-  const passiveTypes = new Set(['passive_0402', 'passive_0603', 'passive_0805', 'passive_other']);
+function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlacements: number, bomIsSupplied = false): BOMCompletenessResult {
+  const icTypes = new Set(['ic_bga', 'ic_qfn', 'ic_tqfp', 'ic_qfp', 'ic_soic', 'ic_sot', 'power_module', 'ic_other']);
+  const passiveTypes = new Set(['passive_0402', 'passive_0603', 'passive_0805', 'passive_1206', 'passive_other', 'transformer']);
   let icCount = 0; let passiveCount = 0; let identifiedTotal = 0;
   for (const line of bom) {
     const ct = String(line.componentType ?? '');
@@ -940,10 +945,11 @@ function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlaceme
   const expectedFerrites = Math.round(icCount * 0.4);
   const expectedESD = Math.round(icCount * 0.3);
   const totalExpectedPassives = expectedDecoupling + expectedPullResistors + expectedFerrites + expectedESD;
-  const missingPassives = Math.max(0, totalExpectedPassives - passiveCount);
+  // A supplied BOM (file or picture) IS the parts list: nothing is "missing" by rule of thumb.
+  const missingPassives = bomIsSupplied ? 0 : Math.max(0, totalExpectedPassives - passiveCount);
   const estimatedMissingCostGBP = Math.round(missingPassives * 0.012 * 100) / 100;
-  const completenessScore = smtPlacements > 0 ? Math.min(100, Math.round((identifiedTotal / smtPlacements) * 100)) : identifiedTotal > 0 ? 75 : 0;
-  const decouplingMissing = Math.max(0, expectedDecoupling - passiveCount);
+  const completenessScore = bomIsSupplied ? 100 : smtPlacements > 0 ? Math.min(100, Math.round((identifiedTotal / smtPlacements) * 100)) : identifiedTotal > 0 ? 75 : 0;
+  const decouplingMissing = bomIsSupplied ? 0 : Math.max(0, expectedDecoupling - passiveCount);
   const remaining = Math.max(0, missingPassives - decouplingMissing);
   return {
     identifiedLineCount: bom.length, identifiedICCount: icCount, identifiedPassiveCount: passiveCount,
@@ -1505,21 +1511,24 @@ interface Stage4Output {
   automotiveAssemblyCost: AutomotiveAssemblyCost | null;
   automotiveFabAdjustment: AutomotiveFabAdjustment | null;
   bomCompleteness: BOMCompletenessResult | null;
+  /** The board's domain after the parts-list evidence (may upgrade the classifier's). */
+  domain: string;
   programPricing: ProgramPricingResult | null;
   failed: boolean;
 }
 
 export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
-  const { analysis: a, domain, asilLevel, ocrResult, orderQty, tag } = inp;
+  const { analysis: a, asilLevel, ocrResult, orderQty, tag } = inp;
+  let domain = inp.domain;
   const selectedCountry = inp.country;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
-  const auto = domain === 'automotive_adas';
+  let auto = domain === 'automotive_adas';
   const out: Stage4Output = {
     selectedCountry, orderQty, volumeMultiplier, selectedCountryBreakdown: null, countryComparison: [], volumeCurves: {},
     complexityScore: null, confidenceBand: null, sanityWarnings: [], npiBreakdown: null, livePriceHits: 0,
     catalogueVerifiedCount: 0, needsVerificationCount: 0, automotiveNRE: null, automotiveGradeEnforcedCount: 0,
     singleSourceWarnings: [], conformalCoatingCost: 0, automotiveAssemblyCost: null, automotiveFabAdjustment: null,
-    bomCompleteness: null, programPricing: null, failed: false,
+    bomCompleteness: null, programPricing: null, failed: false, domain: inp.domain,
   };
   try {
     const boardSpec = (a.boardSpec ?? (a.boardSpec = {})) as Record<string, unknown>;
@@ -1542,6 +1551,20 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       message: 'The chip-marking (OCR) stage failed, so no marking was read separately: part numbers come only from the BOM stage and more lines are priced from class tables. Run again for a full read.' });
     // 1. Ground truth (a BOM file, measured fab data) before anything the model said.
     if (inp.parsedBOM || inp.files) warnings.push(...applyGroundTruth(a, inp.parsedBOM ?? [], measureUploadedFabData(inp.files), domain));
+    // The parts list is evidence of the grade: a board whose named ICs are mostly AEC-Q100 orderable
+    // codes (TI "…Q1", ADI "/V") is automotive whatever the photo classifier guessed. A 360° surround-
+    // view camera (4 of 5 ICs -Q1, the model's own title "automotive camera module") was costed as
+    // "consumer IoT" — no automotive grade, consumer benchmarks (Oct 2026).
+    if (!auto) {
+      const named = (Array.isArray(a.bom) ? a.bom as Array<Record<string, unknown>> : [])
+        .map(l => String(l.partNumber ?? '').trim().toUpperCase()).filter(pn => /[A-Z]/.test(pn) && /\d/.test(pn) && pn.length >= 6);
+      const aecq = named.filter(pn => /Q1$|-Q1\b|\/V\+?T?$|\/VY\+T?$/.test(pn));
+      if (aecq.length >= 2 && aecq.length >= named.length * 0.5) {
+        domain = 'automotive_adas'; auto = true; out.domain = domain;
+        warnings.push({ code: 'AUTOMOTIVE_FROM_BOM', severity: 'warn',
+          message: `Costed as an automotive board: ${aecq.length} of ${named.length} named ICs are AEC-Q100 automotive codes (${aecq.slice(0, 4).join(', ')}${aecq.length > 4 ? ', …' : ''}), although the photo classifier said "${inp.domain}".` });
+      }
+    }
     if (inp.bomImageNotes?.length) warnings.push({ code: 'BOM_IMAGE_READING', severity: 'warn', message: `BOM image: ${inp.bomImageNotes.join(' · ')}.` });
     // The BOM as read (after any BOM file), kept so a re-price (/reprice) starts from it
     // and never applies the volume factor or the grading twice.
@@ -1698,7 +1721,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     out.confidenceBand = anchorBandToHeadline(out.confidenceBand, bd) ?? out.confidenceBand;
     setDeterministicCostEstimates(a, bd, bomTotal);
     // Panels that quote a "production" or "programme" figure start from the headline.
-    out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0);
+    out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0, a.bomSource === 'file' || a.bomSource === 'image');
     out.programPricing = computeProgramPricing(bd.bomCostPerBoard, orderQty, domain);
     out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard);
 
@@ -1770,7 +1793,7 @@ function stage4Payload(s4: Stage4Output) {
     singleSourceWarnings: s4.singleSourceWarnings, conformalCoatingCost: s4.conformalCoatingCost,
     automotiveAssemblyCost: s4.automotiveAssemblyCost, automotiveFabAdjustment: s4.automotiveFabAdjustment,
     bomCompleteness: s4.bomCompleteness, programPricing: s4.programPricing,
-    orderQty: s4.orderQty, costingFailed: s4.failed,
+    orderQty: s4.orderQty, costingFailed: s4.failed, boardDomain: s4.domain,
   };
 }
 
@@ -2096,7 +2119,7 @@ ${userPromptText}`;
     // What the earlier stages found, for /reanalyze and the screen: the domain and the
     // markings used to come back only if the MODEL echoed them, which structured output
     // never does — a re-analysis then costed an automotive board as "general".
-    stage1Classification: { domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true },
+    stage1Classification: { domain: s4.domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true, ...(s4.domain !== domain ? { classifierDomain: domain } : {}) },
     ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
     asilLevel: asilClassification.asilLevel,
     asilRationale: asilClassification.asilRationale,
@@ -2727,7 +2750,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   const streamComplete = {
     analysis,
     ...stage4Payload(s4),
-    stage1Classification: { domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true },
+    stage1Classification: { domain: s4.domain, conf: stage1Result.conf, hints: stage1Result.hints, failed: stage1Result.failed === true, ...(s4.domain !== domain ? { classifierDomain: domain } : {}) },
     ocrExtraction: { icMarkings: ocrResult.icMarkings, connectors: ocrResult.connectors ?? [], extractionQuality: ocrResult.extractionQuality },
     fromCache: false,
     asilLevel: streamAsilClassification.asilLevel,

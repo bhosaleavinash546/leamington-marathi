@@ -14,27 +14,47 @@ describe('stabiliseBoardSpec — deterministic fab drivers', () => {
   const runB = { widthMm: 220, heightMm: 140, estimatedLayers: 6, throughVias: 400,
     surfaceFinish: 'enig', hdiStructure: 'none', technologyType: 'FR4_HTg', impedanceControlRequired: false, bgaDetected: true };
 
-  it('collapses two divergent area reads (176 vs 308 cm²) to the same area', () => {
-    stabiliseBoardSpec(runA, asm, 'automotive_adas');
-    stabiliseBoardSpec(runB, asm, 'automotive_adas');
-    expect(Math.abs(area(runA) - area(runB))).toBeLessThan(1);   // same board → same area
+  it('keeps each plausible size read as it is (no pull toward a 1.6/cm² anchor)', () => {
+    // Oct 2026: the old ±30–40% band around 1.6 placements/cm² made a 20×20 mm camera module
+    // 59×59 mm. A size is now changed only when its density is not buildable or not credible.
+    const a = { ...runA }, b = { ...runB };
+    stabiliseBoardSpec(a, asm, 'automotive_adas');
+    stabiliseBoardSpec(b, asm, 'automotive_adas');
+    expect(area(a)).toBeCloseTo(176, -1);
+    expect(area(b)).toBeCloseTo(308, -1);
+  });
+
+  it('keeps a dense 20×20 mm two-sided camera module (80 parts, ~10/cm² a side)', () => {
+    const s = { widthMm: 20, heightMm: 20, estimatedLayers: 8, throughVias: 120, surfaceFinish: 'osp', hdiStructure: 'none' };
+    stabiliseBoardSpec(s, { smtPlacements: 80, reflowSides: 2 }, 'general');
+    expect([s.widthMm, s.heightMm]).toEqual([20, 20]);
+  });
+
+  it('moves an impossible size to the edge of the physical band', () => {
+    const tiny = { widthMm: 10, heightMm: 10, estimatedLayers: 4, surfaceFinish: 'enig', hdiStructure: 'none' };   // 300 parts on 1 cm²
+    stabiliseBoardSpec(tiny, { smtPlacements: 300, reflowSides: 1 }, 'general');
+    expect(area(tiny)).toBeCloseTo(10, 0);                          // 300 / 30 per cm²
+    const empty = { widthMm: 400, heightMm: 300, estimatedLayers: 4, surfaceFinish: 'enig', hdiStructure: 'none' };   // 20 parts on 1,200 cm²
+    stabiliseBoardSpec(empty, { smtPlacements: 20, reflowSides: 1 }, 'general');
+    expect(area(empty)).toBeCloseTo(50, 0);                         // 20 / 0.4 per cm²
   });
 
   it('derives the SAME technology + layers regardless of the model guess', () => {
+    stabiliseBoardSpec(runA, asm, 'automotive_adas');
+    stabiliseBoardSpec(runB, asm, 'automotive_adas');
     expect(runA.technologyType).toBe(runB.technologyType);
     expect(runA.technologyType).toBe('FR4_HTg');                  // 6-layer automotive BGA
     expect(runA.estimatedLayers).toBe(runB.estimatedLayers);
   });
 
-  it('yields an identical deterministic fab for both reads (the headline stabiliser)', () => {
-    const fabA = stableFabMid(runA, asm, 10000, 'cn');
-    const fabB = stableFabMid(runB, asm, 10000, 'cn');
-    expect(fabA).toBeGreaterThan(0);
-    expect(Math.abs(fabA - fabB)).toBeLessThan(0.5);             // within pennies → stable headline
+  it('the fab follows the size it was given, deterministically', () => {
+    const a1 = { ...runA }, a2 = { ...runA };
+    stabiliseBoardSpec(a1, asm, 'automotive_adas'); stabiliseBoardSpec(a2, asm, 'automotive_adas');
+    expect(stableFabMid(a1, asm, 10000, 'cn')).toBe(stableFabMid(a2, asm, 10000, 'cn'));
   });
 
   it('preserves a plausible board that is already in-band', () => {
-    // 158 placements → anchor ~99 cm², band [69, 138]; a 100 cm² read is kept
+    // 158 placements: any size between ~5 and ~395 cm² is buildable; a 100 cm² read is kept
     const s = { widthMm: 120, heightMm: 83, estimatedLayers: 4, throughVias: 200, surfaceFinish: 'enig', hdiStructure: 'none' };
     const before = area(s);
     stabiliseBoardSpec(s, asm, 'automotive_adas');

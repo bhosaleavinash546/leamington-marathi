@@ -1121,6 +1121,13 @@ export function normaliseFinish(raw: unknown): string {
   return ALIAS[k] ?? k;
 }
 
+/** One bed-of-nails ICT fixture, GBP — an engineering figure (typical £3k–8k), spread over the order. */
+export const ICT_FIXTURE_GBP = 5000;
+/** In-line X-ray (AXI) time per board with BGA / CSP parts, seconds — an engineering figure. */
+export const XRAY_SECONDS_PER_BOARD = 20;
+/** X-ray programme per board design, GBP — an engineering figure, spread over the order. */
+export const XRAY_SETUP_GBP = 300;
+
 export function computePCBCountryCost(input: PCBCostInput, countryId: string): PCBCountryCostBreakdown {
   const rate = PCB_COUNTRY_RATES[countryId];
   if (!rate) throw new Error(`Unknown country: ${countryId}`);
@@ -1169,8 +1176,17 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const thAssembly = input.throughHoleJoints * a.thRatePerJoint;
   const manualAssembly = input.manualJoints * a.manualSolderPerJoint;
   const aoiCost = input.aoiRequired ? a.aoiPerBoard : 0;
-  const xrayCost = input.bgaCount > 0 ? a.xrayPerBoard : 0;
-  const ictCost = input.ictTimeSec > 0 ? a.ictPerBoard : 0;
+  // X-ray of BGA / CSP joints, same basis as ICT: station time (XRAY_SECONDS_PER_BOARD at 2 × the labour
+  // rate) at volume, the table's small-batch cabinet price as the ceiling (Oct 2026: a 250k camera board
+  // with one CSP imager was charged £1.27 a board).
+  const xrayCost = input.bgaCount > 0 ? Math.min(a.xrayPerBoard, (XRAY_SECONDS_PER_BOARD / 3600) * 2 * a.labourRatePerHr + XRAY_SETUP_GBP / Math.max(input.orderQuantity, 1)) : 0;
+  // ICT at volume (Oct 2026): the table's ictPerBoard is a small-batch price (it carries the bed-of-nails
+  // fixture). At volume a board costs its TEST TIME on the station plus the fixture spread over the
+  // order: station = operator + tester ≈ 2 × the country's assembly labour rate; fixture
+  // ICT_FIXTURE_GBP (an engineering figure, stated). The table price stays the ceiling for small runs.
+  // A 250k camera board was charged the flat £2.64 — 15× its £0.17 build-up.
+  const ictBuildUp = (input.ictTimeSec / 3600) * 2 * a.labourRatePerHr + ICT_FIXTURE_GBP / Math.max(input.orderQuantity, 1);
+  const ictCost = input.ictTimeSec > 0 ? Math.min(a.ictPerBoard, ictBuildUp) : 0;
   const confCost = input.conformalCoatAreaCm2 * a.conformalCoatPerCm2;
   const assemblyPerBoard = smtAssembly + thAssembly + manualAssembly + aoiCost + xrayCost + ictCost + confCost;
 
@@ -1211,7 +1227,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // touch-ups (rework ≈ 20% of assembly + half an ICT retest), 5% true scrap
   // losing fab + assembly + components.
   const lambda = Math.min(0.30, input.smtPlacements * a.dppm / 1_000_000);
-  const reworkCost = 0.2 * assemblyPerBoard + 0.5 * a.ictPerBoard;
+  const reworkCost = 0.2 * assemblyPerBoard + 0.5 * ictCost;
   const scrapCost = pcbFabPerBoard + assemblyPerBoard + bomSourced;
   const yieldLossCost = lambda * (0.95 * reworkCost + 0.05 * scrapCost);
 

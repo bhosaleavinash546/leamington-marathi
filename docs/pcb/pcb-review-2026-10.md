@@ -340,3 +340,8 @@ Two of the AI's three identity errors are now caught by the cross-check with wha
 - **Clean-up and pricing:** a deterministic pass removes header and total rows and takes the quantity from the designators where it is missing or not whole. The lines then follow the BOM-file path exactly. Every line is marked IMG, and its confidence is one notch below a file's.
 - **Radar check:** the browser run attaches the radar BOM as a picture. 16 lines, 13 of them priced from the catalogue by their transcribed part numbers, give **£47.47** per board in China, against £55.82 from the board photos alone. The difference is exact parts replacing class ranges. Screenshot: `screens/radar-bom-image-2026-10-06.png`.
 - **What is measured:** the transcription accuracy of a real BOM picture is not measured yet. The run uses a recorded reply.
+
+
+## 11. Camera-board trial (6 Oct 2026)
+
+Calculate now reports the photo analysis (and re-prices it with edited fields). Board size, ICT / X-ray at volume, BOM lines named by kind, TI "-Q1" names and the automotive domain from the parts list were fixed. The radar headline is now **£50.97** at 250k a year (it was £55.82 with a flat £2.64 ICT and £1.27 X-ray per board). Full write-up and manual should-cost: `camera-board-360-2026-10.md`.

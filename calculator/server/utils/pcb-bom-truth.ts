@@ -25,6 +25,10 @@ export interface BomTruthResult {
   smtPlacements: number;
   throughHoleLines: number;
   bgaCount: number;
+  /** The BOM names designators; when it does not, the photo check is by count only. */
+  fileHasDesignators: boolean;
+  /** Parts the photo reading counted, for the count comparison. */
+  aiPlacements: number;
 }
 
 const NOT_FITTED = /\b(DNP|DNF|DNI|not fitted|not populated|no[- ]?pop|omit)\b/i;
@@ -83,6 +87,11 @@ export function bomFromFile(lines: ParsedBOMLine[], aiBom: BomLine[], automotive
   // "Not in the file" means none of the photo line's ref-des is in the file —
   // the photo's R1-R70 inside the file's R1-R90 is not a missing part.
   const fileRefs = new Set(lines.flatMap(l => expandRefDes(l.refDes).map(refKey)));
-  const aiOnly = aiBom.filter(l => !used.has(l) && ![...(aiRefs.get(l) ?? [])].some(r => fileRefs.has(r))).map(l => String(l.refDes ?? '?'));
-  return { bom, bottomSide, aiOnly, smtPlacements: smt, throughHoleLines: th, bgaCount: bga };
+  // A BOM with no designators at all (a part list by type: "Capacitor ×49") cannot be compared
+  // designator by designator — every photo part would read as "not in your BOM". It is compared
+  // by count instead (aiPlacements vs the file's placements, reported by the caller).
+  const aiOnly = fileRefs.size === 0 ? []
+    : aiBom.filter(l => !used.has(l) && ![...(aiRefs.get(l) ?? [])].some(r => fileRefs.has(r))).map(l => String(l.refDes ?? '?'));
+  const aiPlacements = aiBom.reduce((t, l) => t + (Number(l.qty) > 0 ? Number(l.qty) : 0), 0);
+  return { bom, bottomSide, aiOnly, smtPlacements: smt, throughHoleLines: th, bgaCount: bga, fileHasDesignators: fileRefs.size > 0, aiPlacements };
 }

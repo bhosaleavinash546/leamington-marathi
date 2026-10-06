@@ -17,6 +17,7 @@ import './styles/saas-polish.css';
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
+import { analysisStackInput, snapshotFields, editedFields, boardSpecPatch } from './pcb/analysis-link.js';
 import { ecuLibraryShell, wireEcuLibrary } from './pcb/ecu-library.js';
 import { beginBusy } from './busy.js';
 import { initCommoditySwitcher } from './commodity-switcher.js';
@@ -8343,6 +8344,56 @@ function injectPCBImagePanel(): void {
       }
     });
   });
+  linkPcbAnalysisToForm();
+}
+
+/** The form fields as the analysis filled them — Calculate compares against this (analysis-link.ts). */
+let _pcbFabSnapshot: Record<string, string> | null = null;
+/**
+ * The analysis fills the PCB fab form it sits on, so the fields show what was costed and
+ * Calculate reports the same board (live trial, Oct 2026: Calculate costed the form's 200×150 mm
+ * defaults in the UK, £83.33, under a £16.74 China analysis of a 20×20 mm board).
+ */
+function linkPcbAnalysisToForm(): void {
+  if (!pcbImageResult || activeCommodity !== 'pcb_fab') return;
+  fillFabFormFromAnalysis();
+  const qty = pcbImageResult._orderQty ?? parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement | null)?.value ?? '', 10);
+  const vol = document.getElementById('annual-volume') as HTMLInputElement | null;
+  if (vol && qty > 0) { vol.value = String(qty); vol.classList.add('ai-filled'); }
+  const region = document.getElementById('pcbf-region') as HTMLSelectElement | null;
+  const want = ({ cn: 'china', in: 'india', us: 'na', mx: 'na', uk: 'uk', de: 'eu', pl: 'eu', cz: 'eu' } as Record<string, string>)[pcbImageResult._selectedCountry ?? 'cn'];
+  if (region && want && Array.from(region.options).some(o => o.value === want)) region.value = want;
+  _pcbFormFilledFrom = { result: pcbImageResult, commodity: 'pcb_fab' };
+  _pcbFabSnapshot = snapshotFields();
+}
+
+/** Edited fields → the analysis's board spec → Stage 4 on the server again (/reprice), then Calculate. */
+async function repricePcbFromForm(edited: string[]): Promise<void> {
+  const r0 = pcbImageResult;
+  if (!r0) return;
+  const patch = boardSpecPatch(edited);
+  const analysis = JSON.parse(JSON.stringify(r0)) as PCBImageAnalysis;
+  Object.assign(analysis.boardSpec as unknown as Record<string, unknown>, patch.spec);
+  const orderQty = parseInt((document.getElementById('annual-volume') as HTMLInputElement | null)?.value ?? '', 10) || r0._orderQty || 100;
+  const country = r0._selectedCountry ?? 'cn';
+  const resp = await fetch('/api/pcb/reprice', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      analysis, domain: patch.domain ?? r0.stage1Classification?.domain ?? 'general', asilLevel: r0._asilLevel ?? 'Unknown',
+      ocrMarkings: r0.ocrExtraction?.icMarkings ?? [], ocrConnectors: r0.ocrExtraction?.connectors ?? [], ocrQuality: r0.ocrExtraction?.extractionQuality ?? '',
+      country, orderQty,
+    }),
+  });
+  const data = await resp.json() as { analysis?: PCBImageAnalysis; error?: string };
+  if (!resp.ok || !data.analysis) throw new Error(data.error ?? resp.statusText);
+  normalizePCBPayloadForRender(data.analysis as unknown as Record<string, unknown>);
+  const keep = { prev: r0._previousVersion, orig: r0._originalAIValues ?? JSON.parse(JSON.stringify(r0)) as PCBImageAnalysis };
+  pcbImageResult = data.analysis;
+  attachPcbPayload(pcbImageResult, data as unknown as Parameters<typeof attachPcbPayload>[1], country);
+  pcbImageResult._previousVersion = keep.prev; pcbImageResult._originalAIValues = keep.orig;
+  injectPCBImagePanel();   // re-renders the analysis and re-links the form (new snapshot)
+  if (patch.notes.length) showToast(patch.notes[0], 'info');
+  showToast(`Re-priced with your edits (${edited.length} field${edited.length === 1 ? '' : 's'}) — ${_moneyG(pcbImageResult._selectedCountryBreakdown?.totalPerBoard ?? 0, 2)}/board`, 'info');
 }
 
 /**
@@ -9915,6 +9966,15 @@ function saveLastResultToLibrary(): void {
 
 function applyPCBImageToFab(): void {
   if (!pcbImageResult) return;
+  fillFabFormFromAnalysis();
+  switchCommodity('pcb_fab');
+  _pcbFormFilledFrom = { result: pcbImageResult, commodity: 'pcb_fab' };
+  linkPcbAnalysisToForm();
+}
+
+/** The analysis's board spec into the PCB fab form's fields (no commodity switch). */
+function fillFabFormFromAnalysis(): void {
+  if (!pcbImageResult) return;
   const b = pcbImageResult.boardSpec;
 
   const setF = (id: string, val: string | number) => {
@@ -10019,13 +10079,10 @@ function applyPCBImageToFab(): void {
   setF('logistics', estimatePCBFabLogisticsPerPart(fabAreaCm2).toFixed(2));
 
   const partNameEl = el<HTMLInputElement>('part-name');
-  if (partNameEl && pcbImageResult.partName) {
+  if (partNameEl && pcbImageResult.partName && !partNameEl.value) {
     partNameEl.value = pcbImageResult.partName;
     partNameEl.classList.add('ai-filled');
   }
-
-  switchCommodity('pcb_fab');
-  _pcbFormFilledFrom = { result: pcbImageResult, commodity: 'pcb_fab' };
 }
 
 function applyPCBImageToPCBA(): void {
@@ -14489,8 +14546,28 @@ function compute(): void {
 
   _smExtraWarnings = [];
   let input: UniversalStackInput;
+  // A photo analysis on the PCB fab form IS the costing: Calculate reports it, or re-prices it on
+  // the server with the fields the engineer edited (analysis-link.ts). The form's own bare-board
+  // model is used only when there is no analysis.
+  const pcbLinked = activeCommodity === 'pcb_fab' && !!pcbImageResult && !!_pcbFabSnapshot && _pcbFormFilledFrom?.result === pcbImageResult;
+  if (pcbLinked) {
+    const edited = editedFields(_pcbFabSnapshot!);
+    if (edited.length) {
+      repricePcbFromForm(edited).then(() => { calcBtn.disabled = false; calcBtn.textContent = originalLabel; compute(); })
+        .catch(err => {
+          calcBtn.disabled = false; calcBtn.textContent = originalLabel;
+          errBox.style.display = 'block';
+          errBox.innerHTML = `<strong>Re-pricing the analysis with your edits failed:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
+        });
+      return;
+    }
+  }
   try {
-    input = collectInput();
+    input = pcbLinked
+      ? analysisStackInput(pcbImageResult as unknown as Parameters<typeof analysisStackInput>[0], (document.getElementById('part-name') as HTMLInputElement | null)?.value || undefined,
+          pcbImageResult!._orderQty ?? (parseInt((document.getElementById('annual-volume') as HTMLInputElement | null)?.value ?? '', 10) || undefined))
+      : collectInput();
+    if (pcbLinked) _smExtraWarnings.push(`Costed from the PCB photo analysis: the populated board (components, bare board, assembly) in ${pcbImageResult!._selectedCountryBreakdown?.countryName ?? 'the analysis country'} at ${pcbImageResult!._orderQty ?? '—'} boards a year — the same figures as the analysis above. Edit a field and press Calculate to re-price it.`);
   } catch (err) {
     calcBtn.disabled = false;
     calcBtn.textContent = originalLabel;

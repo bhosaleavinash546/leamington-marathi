@@ -48,14 +48,22 @@ export function inferComponentType(input: {
   refDes?: string; pkg?: string; value?: string; description?: string;
 }): string {
   const ref = String(input.refDes ?? '').trim().toUpperCase();
-  const pkg = String(input.pkg ?? '').toLowerCase();
+  // "<= 1206" / "≤1206" in a BOM is a size LIMIT (any chip up to 1206), not a 1206 part.
+  const pkg = String(input.pkg ?? '').toLowerCase().replace(/(<=|≤|=<|up to|max\.?)\s*(01005|0201|0402|0603|0805|1206|1210)/g, ' ');
   const desc = String(input.description ?? '').toLowerCase();
 
   let cls: ComponentClass = 'unknown';
   for (const [re, c] of REFDES_PREFIX) { if (re.test(ref)) { cls = c; break; } }
 
   if (cls === 'unknown') {
-    if (/conn|header|socket|receptacle|usb|rj45|smd_conn/.test(pkg + desc)) cls = 'connector';
+    // A BOM row named by its kind ("Ferrite", "Common Mode Choke", "Image sensor") with no
+    // package: the words decide. They used to fall to "unknown" → the SOIC IC range
+    // (a ferrite bead at £0.45, an image sensor at £0.45 — a camera-board BOM, Oct 2026).
+    if (/ferrite|\bbead\b/.test(desc)) cls = 'ferrite';
+    else if (/common[- ]?mode|\bchoke\b/.test(desc)) cls = 'transformer';
+    else if (/inductor/.test(desc)) cls = 'inductor';
+    else if (/image sensor|cmos sensor|camera sensor|imager\b/.test(desc)) cls = 'ic';
+    else if (/conn|header|socket|receptacle|usb|rj45|smd_conn/.test(pkg + desc)) cls = 'connector';
     else if (/qfn|qfp|bga|soic|sot|tssop|dfn|son|lga|dpak/.test(pkg)) cls = 'ic';
     else if (/led/.test(pkg + desc)) cls = 'led';
     else if (/diode|sod|sma|smb|smc/.test(pkg + desc)) cls = 'diode';

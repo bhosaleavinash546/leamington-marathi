@@ -27192,7 +27192,7 @@
 "q300k": 55.8743
 },
 "confidence": "distributor",
-"source": "Priced on the sibling orderable code MT53E1G32D2FW-046 AAT:B TR (the listed code was not found at a distributor). Digi-Key $105.36178 @2,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: priced on the AAT:B (105 C) sibling at Digi-Key $105.36 @2,000; other listings for that code ran $25.90 (LCSC) to $176.47 (TME) - verify with a quote.",
+"source": "Priced on the sibling orderable code MT53E1G32D2FW-046 (the listed code was not found at a distributor). Digi-Key $105.36178 @2,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: priced on the AAT:B (105 C) sibling at Digi-Key $105.36 @2,000; other listings for that code ran $25.90 (LCSC) to $176.47 (TME) - verify with a quote.",
 "asOf": "2026-10-06",
 "ecuRoles": [
 "ADAS",
@@ -27873,7 +27873,7 @@
 "q300k": 17.2233
 },
 "confidence": "distributor",
-"source": "Priced on the sibling orderable code MT25QU01GBBB8E12-0AUT TR (the listed code was not found at a distributor). Digi-Key $31.9704 @2,500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: the only break >= 100 is the Digi-Key reel at $31.97 @2,500, equal to its 50-piece price on an out-of-stock listing - a list price, likely above volume.",
+"source": "Priced on the sibling orderable code MT25QU01GBBB8E12-0AUT (the listed code was not found at a distributor). Digi-Key $31.9704 @2,500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: the only break >= 100 is the Digi-Key reel at $31.97 @2,500, equal to its 50-piece price on an out-of-stock listing - a list price, likely above volume.",
 "asOf": "2026-10-06",
 "ecuRoles": [
 "ADAS",
@@ -29031,6 +29031,334 @@
 "aliases": [
 "WSLP25125L000FEA"
 ]
+},
+{
+"mpn": "DS90UB935TRHBRQ1",
+"family": "DS90UB935",
+"mfr": "Texas Instruments",
+"desc": "FPD-Link III serializer, CSI-2 input, 3 Gbps",
+"category": "ic_qfn",
+"pkg": "VQFN-32 (5x5)",
+"aecq": true,
+"gbp": {
+"q1k": 3.5121,
+"q10k": 2.8516,
+"q100k": 2.3153,
+"q200k": 2.1746,
+"q300k": 2.0962
+},
+"confidence": "distributor",
+"source": "Digi-Key $4.65 @1,000; Digi-Key $4.21 @3,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0905, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"surround-view",
+"ADAS"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 4.65,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB935TRHBRQ1/9555497",
+"date": "2026-10-06",
+"gbp": 3.5121
+},
+{
+"distributor": "Digi-Key",
+"qty": 3000,
+"price": 4.21,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB935TRHBRQ1/9555497",
+"date": "2026-10-06",
+"gbp": 3.1798
+}
+],
+"volumeModel": {
+"b": 0.0905,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "LM53600MQDSXRQ1",
+"family": "LM53600",
+"mfr": "Texas Instruments",
+"desc": "0.65 A synchronous buck, 3.3 V fixed, 36 V in, spread spectrum",
+"category": "ic_qfn",
+"pkg": "WSON-10",
+"aecq": true,
+"gbp": {
+"q1k": 2.2052,
+"q10k": 1.8744,
+"q100k": 1.5933,
+"q200k": 1.5172,
+"q300k": 1.4744
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.70182 @3,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"power"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 3000,
+"price": 2.70182,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/LM53600MQDSXRQ1/6572073",
+"date": "2026-10-06",
+"gbp": 2.0407
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "TPS62422QDRCRQ1",
+"family": "TPS62422",
+"mfr": "Texas Instruments",
+"desc": "Dual step-down converter 1 A / 600 mA, 2.25 MHz",
+"category": "ic_qfn",
+"pkg": "VSON-10 (DRC)",
+"aecq": true,
+"gbp": {
+"q1k": 1.1405,
+"q10k": 1.0476,
+"q100k": 0.9622,
+"q200k": 0.9379,
+"q300k": 0.924
+},
+"confidence": "distributor",
+"source": "Mouser $1.51 @1,000; Mouser $1.45 @3,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0369, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"power"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 1.51,
+"currency": "USD",
+"url": "https://www.digipart.com/part/TPS62422QDRCRQ1",
+"date": "2026-10-06",
+"gbp": 1.1405
+},
+{
+"distributor": "Mouser",
+"qty": 3000,
+"price": 1.45,
+"currency": "USD",
+"url": "https://www.digipart.com/part/TPS62422QDRCRQ1",
+"date": "2026-10-06",
+"gbp": 1.0952
+}
+],
+"volumeModel": {
+"b": 0.0369,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "TLV70233QDSERQ1",
+"family": "TLV70233",
+"mfr": "Texas Instruments",
+"desc": "300 mA LDO, 3.3 V fixed",
+"category": "ic_qfn",
+"pkg": "WSON-6 (1.5x1.5)",
+"aecq": true,
+"gbp": {
+"q1k": 0.2817,
+"q10k": 0.2394,
+"q100k": 0.2035,
+"q200k": 0.1938,
+"q300k": 0.1883
+},
+"confidence": "distributor",
+"source": "Mouser $0.317 @10,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"power"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 10000,
+"price": 0.317,
+"currency": "USD",
+"url": "https://octopart.com/search?q=TLV70233",
+"date": "2026-10-06",
+"gbp": 0.2394
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 10000
+}
+},
+{
+"mpn": "BQ24025DRCR",
+"family": "BQ24025",
+"mfr": "Texas Instruments",
+"desc": "Single-cell Li-ion/Li-pol linear charger, 1 A, dual input",
+"category": "ic_qfn",
+"pkg": "VSON-10 (3x3)",
+"aecq": false,
+"gbp": {
+"q1k": 3.5221,
+"q10k": 2.9938,
+"q100k": 2.5447,
+"q200k": 2.4232,
+"q300k": 2.3549
+},
+"confidence": "distributor",
+"source": "Digi-Key $4.31529 @3,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"backup-power"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 3000,
+"price": 4.31529,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ24025DRCR/593925",
+"date": "2026-10-06",
+"gbp": 3.2593
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "DFE201610E-100M=P2",
+"family": "DFE201610E",
+"mfr": "Murata",
+"desc": "10 uH shielded metal-alloy power inductor, 650 mA",
+"category": "passive_0805",
+"pkg": "2016 metric (0806)",
+"aecq": false,
+"gbp": {
+"q1k": 0.1022,
+"q10k": 0.0855,
+"q100k": 0.0715,
+"q200k": 0.0678,
+"q300k": 0.0657
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.13528 @1,000; Digi-Key $0.12571 @3,000; Digi-Key $0.10969 @15,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0774, slope from the part's own breaks (3 pairs). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"power"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 0.13528,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE201610E-100M-P2/7927532",
+"date": "2026-10-06",
+"gbp": 0.1022
+},
+{
+"distributor": "Digi-Key",
+"qty": 3000,
+"price": 0.12571,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE201610E-100M-P2/7927532",
+"date": "2026-10-06",
+"gbp": 0.0949
+},
+{
+"distributor": "Digi-Key",
+"qty": 15000,
+"price": 0.10969,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE201610E-100M-P2/7927532",
+"date": "2026-10-06",
+"gbp": 0.0828
+}
+],
+"volumeModel": {
+"b": 0.0774,
+"basis": "slope from the part's own breaks (3 pairs)",
+"derivedAbove": 15000
+}
+},
+{
+"mpn": "DLW21SH900HQ2L",
+"family": "DLW21SH",
+"mfr": "Murata",
+"desc": "Common-mode choke, 2-line, 90 ohm @100 MHz",
+"category": "passive_0805",
+"pkg": "0805 (2012 metric), 4-pin",
+"aecq": false,
+"gbp": {
+"q1k": 0.2178,
+"q10k": 0.1735,
+"q100k": 0.1381,
+"q200k": 0.129,
+"q300k": 0.1239
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.28837 @1,000; Digi-Key $0.26927 @2,000; TME $0.2 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0989, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-06",
+"ecuRoles": [
+"camera",
+"data-line EMI"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 0.28837,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/murata-electronics/DLW21SH900HQ2L/16902304",
+"date": "2026-10-06",
+"gbp": 0.2178
+},
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 0.26927,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/murata-electronics/DLW21SH900HQ2L/16902304",
+"date": "2026-10-06",
+"gbp": 0.2034
+},
+{
+"distributor": "TME",
+"qty": 1000,
+"price": 0.2,
+"currency": "USD",
+"url": "https://www.tme.com/us/en-us/details/dlw21sh900hq2l/smd-suppression-filters/murata/",
+"date": "2026-10-06",
+"gbp": 0.1511
+}
+],
+"volumeModel": {
+"b": 0.0989,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2000
+}
 }
 ]
 }

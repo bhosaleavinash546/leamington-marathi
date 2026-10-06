@@ -1,0 +1,67 @@
+{ "domain": "camera-board", "researched": "2026-10-06", "parts": [
+  { "mpn": "DS90UB935TRHBRQ1", "family": "DS90UB935", "mfr": "Texas Instruments",
+    "desc": "FPD-Link III serializer, CSI-2 input, 3 Gbps", "category": "ic_qfn", "pkg": "VQFN-32 (5x5)", "aecq": true,
+    "ecuRoles": ["camera", "surround-view", "ADAS"], "observedMpn": "DS90UB935TRHBRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 4.65, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB935TRHBRQ1/9555497", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 4.21, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB935TRHBRQ1/9555497", "date": "2026-10-06" }
+    ],
+    "notes": "BOM writes DS90UB935-Q1; orderable code is DS90UB935TRHBRQ1." },
+  { "mpn": "LM53600MQDSXRQ1", "family": "LM53600", "mfr": "Texas Instruments",
+    "desc": "0.65 A synchronous buck, 3.3 V fixed, 36 V in, spread spectrum", "category": "ic_qfn", "pkg": "WSON-10", "aecq": true,
+    "ecuRoles": ["camera", "power"], "observedMpn": "LM53600MQDSXRQ1",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 2.70182, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM53600MQDSXRQ1/6572073", "date": "2026-10-06" }
+    ],
+    "notes": "Digi-Key T&R, MOQ 3,000, non-stocked. Mouser sibling LM53600AQDSXRQ1 reel $2.78 (not recorded, different code)." },
+  { "mpn": "TPS62422QDRCRQ1", "family": "TPS62422", "mfr": "Texas Instruments",
+    "desc": "Dual step-down converter 1 A / 600 mA, 2.25 MHz", "category": "ic_qfn", "pkg": "VSON-10 (DRC)", "aecq": true,
+    "ecuRoles": ["camera", "power"], "observedMpn": "TPS62422QDRCRQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 1000, "price": 1.51, "currency": "USD", "url": "https://www.digipart.com/part/TPS62422QDRCRQ1", "date": "2026-10-06" },
+      { "distributor": "Mouser", "qty": 3000, "price": 1.45, "currency": "USD", "url": "https://www.digipart.com/part/TPS62422QDRCRQ1", "date": "2026-10-06" }
+    ],
+    "notes": "BOM writes MSOP-10 but DRC is VSON-10 3x3. Digipart also showed Arrow/Verical 1k $0.53 — discarded: below TI's own 1ku list for sibling TPS62420-Q1 ($0.964), likely marketplace lot." },
+  { "mpn": "TLV70233QDSERQ1", "family": "TLV70233", "mfr": "Texas Instruments",
+    "desc": "300 mA LDO, 3.3 V fixed", "category": "ic_qfn", "pkg": "WSON-6 (1.5x1.5)", "aecq": true,
+    "ecuRoles": ["camera", "power"], "observedMpn": "TLV70233QDSERQ1",
+    "observations": [
+      { "distributor": "Mouser", "qty": 10000, "price": 0.317, "currency": "USD", "url": "https://octopart.com/search?q=TLV70233", "date": "2026-10-06" }
+    ],
+    "notes": "Octopart summary of Mouser 595-TLV70233QDSERQ1: $0.720 @1 down to $0.317 @10k; intermediate tiers ($0.514/$0.404/$0.330) had no stated quantities so not recorded. A Digipart summary gave Mouser 1k $0.309 / LCSC 1k $0.255 but page was the generic TLV70233 family, so not recorded." },
+  { "mpn": "BQ24025DRCR", "family": "BQ24025", "mfr": "Texas Instruments",
+    "desc": "Single-cell Li-ion/Li-pol linear charger, 1 A, dual input", "category": "ic_qfn", "pkg": "VSON-10 (3x3)", "aecq": false,
+    "ecuRoles": ["camera", "backup-power"], "observedMpn": "BQ24025DRCR",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 3000, "price": 4.31529, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ24025DRCR/593925", "date": "2026-10-06" }
+    ],
+    "notes": "Commercial grade. Octopart/Digipart summary showed an unnamed distributor at $2.94 @10k and Rochester $3.40 — not recorded (unnamed / Rochester excluded)." },
+  { "mpn": "AR0147ATSC00XUEA0-DRBR", "family": "AR0147", "mfr": "onsemi",
+    "desc": "1.3 MP automotive CMOS image sensor, 1344x968, 3 um", "category": "ic_bga", "pkg": "iBGA-80 (9x9)", "aecq": true,
+    "ecuRoles": ["camera", "surround-view"], "observedMpn": "AR0147ATSC00XUEA0-DRBR",
+    "observations": [],
+    "notes": "Digi-Key lists as OBSOLETE, only marketplace stock (320 pcs); no franchised price at >=100 found. Bounding reference only." },
+  { "mpn": "OX01F10", "family": "OX01F10", "mfr": "OmniVision",
+    "desc": "1.3 MP automotive CMOS image sensor, HDR/LFM", "category": "ic_bga", "pkg": "BGA/CSP (variant)", "aecq": true,
+    "ecuRoles": ["camera", "surround-view"], "observedMpn": "OX01F10-E48A-1D",
+    "observations": [],
+    "notes": "Digi-Key lists OX01F10-E48A-1D $12.08 and OX01F10-B58Y-RC $18.00 (non-stocked, 4-8 wk) but the quantity break was not stated in the result, so not recorded. Bounding reference: ~$12-18 per sensor." },
+  { "mpn": "DFE201610E-100M=P2", "family": "DFE201610E", "mfr": "Murata",
+    "desc": "10 uH shielded metal-alloy power inductor, 650 mA", "category": "passive_0805", "pkg": "2016 metric (0806)", "aecq": false,
+    "ecuRoles": ["camera", "power"], "observedMpn": "DFE201610E-100M=P2",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.13528, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE201610E-100M-P2/7927532", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 3000, "price": 0.12571, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE201610E-100M-P2/7927532", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 15000, "price": 0.10969, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE201610E-100M-P2/7927532", "date": "2026-10-06" }
+    ],
+    "notes": "Commercial DFE201610E (automotive sibling is DFE201610R/DFE2016CKA, not priced). TDK VLS201610HBX-100M-1 not searched (budget)." },
+  { "mpn": "DLW21SH900HQ2L", "family": "DLW21SH", "mfr": "Murata",
+    "desc": "Common-mode choke, 2-line, 90 ohm @100 MHz", "category": "passive_0805", "pkg": "0805 (2012 metric), 4-pin", "aecq": false,
+    "ecuRoles": ["camera", "data-line EMI"], "observedMpn": "DLW21SH900HQ2L",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 0.28837, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/murata-electronics/DLW21SH900HQ2L/16902304", "date": "2026-10-06" },
+      { "distributor": "Digi-Key", "qty": 2000, "price": 0.26927, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/murata-electronics/DLW21SH900HQ2L/16902304", "date": "2026-10-06" },
+      { "distributor": "TME", "qty": 1000, "price": 0.20, "currency": "USD", "url": "https://www.tme.com/us/en-us/details/dlw21sh900hq2l/smd-suppression-filters/murata/", "date": "2026-10-06" }
+    ],
+    "notes": "Arrow $0.2517 seen without a quantity break, not recorded. TDK ACM2012D-900-2P-T00 not searched (budget)." }
+] }

@@ -19,10 +19,10 @@ describe('board size: measured is kept, estimated is stabilised', () => {
     stabiliseBoardSpec(s, radarAsm, 'automotive_adas');
     expect([s.widthMm, s.heightMm]).toEqual([87.8, 48.9]);
   });
-  it('still stabilises the same size when it is only an AI estimate', () => {
+  it('an AI-estimated size that is physically plausible is kept too (it used to be inflated >1.5×)', () => {
     const s = { ...radarSpec(), dimensionsSource: 'estimated' };
     stabiliseBoardSpec(s, radarAsm, 'automotive_adas');
-    expect(Number(s.widthMm) * Number(s.heightMm)).toBeGreaterThan(87.8 * 48.9 * 1.5);
+    expect(Number(s.widthMm) * Number(s.heightMm)).toBeCloseTo(88 * 49, -2);
   });
 });
 

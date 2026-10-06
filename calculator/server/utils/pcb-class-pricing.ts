@@ -59,7 +59,8 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'dcdc', row: R(1.2, 7, 'DC-DC module', [4, 25]) },
   ],
   transformer: [
-    { kind: 'cmc', test: /common[- ]?mode|choke/i, row: R(0.12, 1.2, 'common-mode choke', [0.6, 3.5]) },
+    // Signal / coax-PoC CMCs are £0.15–0.30 (DLW21SH900 $0.29, TME $0.20 @1k); a CAN CMC £0.64 (ACT45B).
+    { kind: 'cmc', test: /common[- ]?mode|choke/i, row: R(0.08, 0.9, 'common-mode choke', [0.12, 0.9]) },
     { kind: 'pwr', test: /power/i, row: R(1, 7, 'SMD power transformer', [2, 12]) },
     { kind: 'sig', row: R(0.35, 2, 'signal transformer', [0.8, 4]) },
   ],
@@ -106,6 +107,10 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   ],
   ic_bga: [
     { kind: 'adas', test: /adas|vision processor|radar processor/i, row: R(60, 400, 'ADAS processor') },
+    // Automotive CMOS imagers, catalogue and listings (6 Oct 2026): AR0233 £23.8, AR0820 £26.3 @1k;
+    // OX01F10 $12–18 (Digi-Key, no volume break). A camera's sensor is its largest line — it must
+    // never fall to a generic IC range.
+    { kind: 'imager', test: /image sensor|cmos sensor|camera sensor|imager\b/i, row: R(3, 20, 'CMOS image sensor', [6, 30]) },
     { kind: 'fpga_l', test: /fpga.*(large|ultrascale|kintex|virtex|stratix|arria)/i, row: R(30, 250, 'large FPGA') },
     { kind: 'fpga', test: /fpga|cpld/i, row: R(6, 40, 'small FPGA', [12, 60]) },
     { kind: 'ddr', test: /ddr|lpddr|sdram|dram|emmc|nand/i, row: R(1.5, 12, 'DDR / NAND memory BGA', [3, 20]) },
@@ -178,8 +183,10 @@ function pick(ct: string, text: string, refDes = ''): { key: string; row: Row } 
 /** Map a component type the AI or the BOM-file inference produced onto a table key. */
 export function tableTypeOf(componentType: string, pkg = '', description = ''): string {
   const ct = (componentType || '').toLowerCase();
-  const p = `${pkg} ${description}`.toLowerCase();
+  // "<= 1206" is a size limit, not a size (see inferComponentType).
+  const p = `${pkg} ${description}`.toLowerCase().replace(/(<=|≤|=<|up to|max\.?)\s*(01005|0201|0402|0603|0805|1206|1210)/g, ' ');
   if (TABLE[ct]) return ct;
+  if (/image sensor|cmos sensor|camera sensor|imager\b/.test(p)) return 'ic_bga';   // CSP / BGA imagers
   // Hardware the ref-des prefixes do not know (SH1 shield can, MP1 standoff).
   if (/shield can|\bshield\b|\bcan\b|screw|standoff|spacer|heatsink|heat sink|bracket|\blabel\b|gasket|clip|mechanical/.test(p)) return 'mechanical';
   const size = (/(?:^|[^0-9])(0402|0603|0805|1206|1210|2512)(?![0-9])/.exec(`${ct} ${p}`) ?? [])[1];

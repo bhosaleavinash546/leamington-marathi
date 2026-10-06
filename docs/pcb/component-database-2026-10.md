@@ -290,3 +290,6 @@ The new 200k/300k breaks apply to every catalogue line bought at 250k: the radar
   - powertrain coverage (no engine ECU on a BEV);
   - every claim carries a URL or "engineering judgement";
   - named-chip links equal the catalogue price at the requested volume.
+
+
+> **Update, 6 Oct 2026 (camera-board trial):** ICT and X-ray are now costed at volume (station time + fixture over the order, table price as the ceiling). The radar headline at 250k a year is now **£50.97** (assembly £6.91 → £2.57). See `camera-board-360-2026-10.md` §4.
