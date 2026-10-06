@@ -1,0 +1,933 @@
+{
+ "domain": "interface",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "TJA1021T/20/C,118",
+   "family": "TJA1021",
+   "mfr": "NXP",
+   "desc": "LIN 2.x/SAE J2602 transceiver",
+   "category": "ic_soic",
+   "pkg": "SO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TJA1021T/20/C,118",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.70785,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1021T-20-C-118/2034448",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.708,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TJA1021T-10-C118?qs=6YAT8rHPFU8WHsH00sCR8Q%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey shows several listings ($0.708/$0.808 at 1k); lower T&R figure taken. Mouser URL in result is the /10 sibling page; price attributed to /20/C,118 by summary."
+  },
+  {
+   "mpn": "TLIN1029DRQ1",
+   "family": "TLIN1029",
+   "mfr": "Texas Instruments",
+   "desc": "LIN transceiver, 45 V bus fault",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TLIN1029DRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.78795,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TLIN1029DRQ1/8037905",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.9331,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Interface-LIN-transceiver_Texas-Instruments-Texas-Instruments-TLIN1029DRQ1_C190544.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TJA1027T/20/1J",
+   "family": "TJA1027",
+   "mfr": "NXP",
+   "desc": "LIN 2.2A transceiver",
+   "category": "ic_soic",
+   "pkg": "SO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TJA1027T/20/1J",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.68835,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1027T-20-1J/5035816",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.568,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TJA1027T-20-1J?qs=8qdoF/2f1vr94fCG5MNBhg%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "NCV7344D10R2G",
+   "family": "NCV7344",
+   "mfr": "onsemi",
+   "desc": "HS-CAN / CAN FD transceiver, 5 Mbps",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "BMS",
+    "ECU"
+   ],
+   "observedMpn": "NCV7344D10R2G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.28506,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/onsemi/NCV7344D10R2G/7931476",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 0.311,
+     "currency": "USD",
+     "url": "https://nz.mouser.com/ProductDetail/onsemi/NCV7344D10R2G?qs=chTDxNqvsymG%2BrxwO2luhw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 0.285,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/NCV7344D10R2G",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Newark break read via Findchips aggregator summary."
+  },
+  {
+   "mpn": "MCP2003B-E/SN",
+   "family": "MCP2003B",
+   "mfr": "Microchip",
+   "desc": "LIN transceiver",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "MCP2003B-E/SN",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 0.69,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/MCP2003B-E-SN/5810587",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.796,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Interface-LIN-transceiver_Microchip-Tech-MCP2003B-E-SN_C152207.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "No DigiKey/Mouser 1k break in results."
+  },
+  {
+   "mpn": "TLE7259-3GE",
+   "family": "TLE7259-3",
+   "mfr": "Infineon",
+   "desc": "LIN transceiver",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TLE72593GEXUMA3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.68,
+     "currency": "USD",
+     "url": "https://octopart.com/tle72593gexuma3-infineon-76983729",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.63,
+     "currency": "USD",
+     "url": "https://octopart.com/tle72593gexuma3-infineon-76983729",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.4305,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/LIN-Transceivers_Infineon-Technologies-TLE7259-3GE_C540020.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey/Mouser breaks are for orderable TLE72593GEXUMA3 (read via Octopart summary); TLE7259-3GE marked obsolete at Mouser."
+  },
+  {
+   "mpn": "ATA6563-GAQW1",
+   "family": "ATA6563",
+   "mfr": "Microchip",
+   "desc": "CAN FD transceiver with standby",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "ECU"
+   ],
+   "observedMpn": "ATA6563-GAQW1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/base-product/microchip-technology/150/ATA6563/119579",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 0.36,
+     "currency": "USD",
+     "url": "https://octopart.com/ata6563-gaqw1-microchip-89409130",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.464,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C5127614.html",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TJA1101BHN",
+   "family": "TJA1101B",
+   "mfr": "NXP",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "TJA1101BHN/0Z",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.42812,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1101BHN-0Z/14681559",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.24162,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1101BHN-0Z/14681559",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 2.45,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/TJA1101",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "DP83TC811SWRNDRQ1",
+   "family": "DP83TC811S",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "DP83TC811SWRNDRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.3799,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TC811SWRNDRQ1/9356563",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 5.94,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/dp83tc",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "DP83TG720SWRHARQ1",
+   "family": "DP83TG720S",
+   "mfr": "Texas Instruments",
+   "desc": "1000BASE-T1 Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "zonal"
+   ],
+   "observedMpn": "DP83TG720SWRHARQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.6178,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TG720SWRHARQ1/14004361",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Summary's Mouser $12.32@100 / $11.71@250 discarded as implausible vs DigiKey $3.62@1k (likely different listing)."
+  },
+  {
+   "mpn": "DP83TC813SRHFRQ1",
+   "family": "DP83TC813S",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 Ethernet PHY, small package",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "camera",
+    "zonal"
+   ],
+   "observedMpn": "DP83TC813SRHFRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.861,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/dp83tc",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 1.8,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/dp83tc",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Read via Findchips summary; an unattributed ladder also showed 3k $1.79."
+  },
+  {
+   "mpn": "TJA1102HN",
+   "family": "TJA1102",
+   "mfr": "NXP",
+   "desc": "Dual 100BASE-T1 Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "TJA1102HN/0Z",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.3194,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1102HN-0Z/568-13848-1-ND/8445289",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 4.71482,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1102HN-0Z/568-13848-1-ND/8445289",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TJA1103AHN/0Z",
+   "family": "TJA1103",
+   "mfr": "NXP",
+   "desc": "100BASE-T1 Ethernet PHY, ASIL B, MACsec-ready",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "zonal"
+   ],
+   "observedMpn": "TJA1103AHN/0Z",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 1.46233,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1103AHN-0Z/17128756",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 1.41,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/NXP-Semiconductors/TJA1103AHN-0Z?qs=Y0Uzf4wQF3n0fLCkE4jjmw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TJA1120AHN/0J",
+   "family": "TJA1120",
+   "mfr": "NXP",
+   "desc": "1000BASE-T1 Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "zonal"
+   ],
+   "observedMpn": "TJA1120AHN/0J",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 2.67,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1120AHN-0J/25972814",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.46,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1120AHN-0J/25972814",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "KSZ9563RNXV-VAO",
+   "family": "KSZ9563",
+   "mfr": "Microchip",
+   "desc": "3-port Gigabit Ethernet switch (automotive)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "telematics",
+    "infotainment"
+   ],
+   "observedMpn": "KSZ9563RNXI-TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 10.9004,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/KSZ9563RNXI-TR/8536611",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Automotive -VAO code not found; industrial-grade sibling KSZ9563RNXI-TR price (AEC grade may cost more)."
+  },
+  {
+   "mpn": "LAN9372-I/ZMX",
+   "family": "LAN9372",
+   "mfr": "Microchip",
+   "desc": "Managed switch, 5x 100BASE-T1 PHY + 100BASE-TX",
+   "category": "ic_qfn",
+   "pkg": "VQFN-128",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "LAN9372-I/ZMX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 8.3625,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN9372-I-ZMX/16915526",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Automotive (V/ZMX-VAO) code not searched; industrial -I/ZMX price."
+  },
+  {
+   "mpn": "SJA1105QEL",
+   "family": "SJA1105Q",
+   "mfr": "NXP",
+   "desc": "5-port automotive Ethernet switch, TSN",
+   "category": "ic_bga",
+   "pkg": "LFBGA-159",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "SJA1105QELY",
+   "observations": [],
+   "notes": "Only Mouser qty-1 price ($13.55) found; aggregate unattributed breaks discarded."
+  },
+  {
+   "mpn": "SJA1110AEL/0Y",
+   "family": "SJA1110A",
+   "mfr": "NXP",
+   "desc": "Automotive Ethernet switch, TSN, integrated 100BASE-T1 PHYs",
+   "category": "ic_bga",
+   "pkg": "LFBGA-256",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "SJA1110AEL/0Y",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 15.9,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SJA1110AEL-0Y/17740104",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 15.85,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SJA1110AEL-0Y/17740104",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey marks this orderable code no longer manufactured."
+  },
+  {
+   "mpn": "DS90UB953TRHBRQ1",
+   "family": "DS90UB953-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III CSI-2 camera serializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "camera"
+   ],
+   "observedMpn": "DS90UB953TRHBRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 8.8593,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB953TRHBRQ1/8105872",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 9.01,
+     "currency": "USD",
+     "url": "https://octopart.com/ds90ub953trhbrq1-texas+instruments-75529718",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "DS90UB954TRGZRQ1",
+   "family": "DS90UB954-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III dual deserializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "DS90UB954TRGZRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 10.79,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB954TRGZRQ1/7784263",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 14.78,
+     "currency": "USD",
+     "url": "https://eu.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB954TRGZRQ1?qs=OEYMhS7p3YakyN2XNYLSBg%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "DS90UB960WRTDRQ1",
+   "family": "DS90UB960-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III quad deserializer hub",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "DS90UB960WRTDRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 20.19,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB960WRTDRQ1?qs=EU6FO9ffTwdY8goEJWiHUg%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "DigiKey $23.09 figure discarded: quantity inconsistent (extended price implies 250). Mouser non-stocked, 26 wk."
+  },
+  {
+   "mpn": "DS90UB941ASRTDRQ1",
+   "family": "DS90UB941AS-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III DSI serializer",
+   "category": "ic_qfn",
+   "pkg": "WQFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cluster",
+    "display"
+   ],
+   "observedMpn": "DS90UB941ASRTDRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 25.2,
+     "currency": "USD",
+     "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/DS90UB941ASRTDRQ1/10273187",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 24.32,
+     "currency": "USD",
+     "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/DS90UB941ASRTDRQ1/10273187",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 20.8,
+     "currency": "USD",
+     "url": "https://octopart.com/ds90ub941asrtdrq1-texas+instruments-102775867",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "DS90UB948TNKDRQ1",
+   "family": "DS90UB948-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III to OpenLDI dual deserializer",
+   "category": "ic_qfn",
+   "pkg": "WQFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "display",
+    "cluster",
+    "infotainment"
+   ],
+   "observedMpn": "DS90UB948TNKDRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 15.94,
+     "currency": "USD",
+     "url": "https://www.digikey.at/en/products/detail/texas-instruments/DS90UB948TNKDRQ1/5931032",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 10.87,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/DS90UB948TNKDRQ1?qs=pqSajtDZXRXoWM9IpXv2Rw%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 10.56,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/DS90UB948TNKDRQ1?qs=pqSajtDZXRXoWM9IpXv2Rw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "MAX9295AGTJ/V+",
+   "family": "MAX9295A",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 camera serializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "camera"
+   ],
+   "observedMpn": "MAX9295AGTJ/V+",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 500,
+     "price": 10.63,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/MAX9295AGTJ",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "LCSC $4.03@1k discarded as implausible vs Mouser; Win Source/Bristol excluded (brokers)."
+  },
+  {
+   "mpn": "MAX9296AGTM/V+",
+   "family": "MAX9296A",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 dual deserializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "MAX9296AGTM/V+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 520,
+     "price": 14.7923,
+     "currency": "USD",
+     "url": "https://www.digikey.in/en/products/detail/analog-devices-inc-maxim-integrated/MAX9296AGTM-V/10451975",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 13.64,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Trinamic/MAX9296AGTM-V%2B?qs=QNEnbhJQKvbQ1HCm4T%252BdKw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser summary partly contradictory (also says not available)."
+  },
+  {
+   "mpn": "MAX96717GTJ/VY+",
+   "family": "MAX96717",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 CSI-2 serializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "camera"
+   ],
+   "observedMpn": "MAX96717GTJ/VY+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.3454,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96717GTJ-VY/16675118",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 980,
+     "price": 9.47476,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96717GTJ-VY/16675118",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 490,
+     "price": 9.47,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/max9671",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "MAX96712/V",
+   "family": "MAX96712",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 quad deserializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "MAX96712/V",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "TJA1081BTS",
+   "family": "TJA1081B",
+   "mfr": "NXP",
+   "desc": "FlexRay node transceiver",
+   "category": "ic_soic",
+   "pkg": "SSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "chassis",
+    "powertrain",
+    "gateway"
+   ],
+   "observedMpn": "TJA1081BTS",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "TJA1085G",
+   "family": "TJA1085",
+   "mfr": "NXP",
+   "desc": "FlexRay active star coupler",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-44",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "chassis"
+   ],
+   "observedMpn": "TJA1085G",
+   "observations": [],
+   "notes": "not searched (budget)"
+  }
+ ]
+}

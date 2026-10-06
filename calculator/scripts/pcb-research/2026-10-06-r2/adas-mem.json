@@ -1,0 +1,731 @@
+{
+ "domain": "adas-mem",
+ "researched": "2026-10-06",
+ "parts": [
+  {
+   "mpn": "M24C64-RMN6TP",
+   "family": "M24C64",
+   "mfr": "STMicroelectronics",
+   "desc": "64Kb I2C EEPROM, 1.8-5.5V",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "ECU config",
+    "camera"
+   ],
+   "observedMpn": "M24C64-RMN6P",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.244,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/M24C64-RMN6P?qs=%2B9pWl1iD4MUYBZZn2bF5hw%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Price is the tube sibling RMN6P; TP (T&R) not priced in results. Industrial grade; automotive is M24C64-DRMN3TP/K."
+  },
+  {
+   "mpn": "AT24C256C-SSHL-T",
+   "family": "AT24C256C",
+   "mfr": "Microchip",
+   "desc": "256Kb I2C EEPROM",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "ECU config"
+   ],
+   "observedMpn": "AT24C256C-SSHL-T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 0.504,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/AT24C256C-SSHL-T/2271166",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 0.504,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Microchip-Technology/AT24C256C-SSHL-T?qs=fzsaQExJLyR3ptk4tHE3tA%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Full-reel 4k break. -SSHL is industrial; automotive is AT24C256C-SSHL-E / -B grade not priced."
+  },
+  {
+   "mpn": "M95256-DRMN3TP/K",
+   "family": "M95256",
+   "mfr": "STMicroelectronics",
+   "desc": "256Kb SPI EEPROM, automotive 125C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "ADAS",
+    "ECU config"
+   ],
+   "observedMpn": "M95256-DRMN3TP/K",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 7500,
+     "price": 1.01566,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/M95256-DRMN3TP-K/4729256",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 5000,
+     "price": 1.11,
+     "currency": "USD",
+     "url": "https://www.newark.com/stmicroelectronics/m95256-drmn3tp-k/eeprom-aec-q100-256kbit-10mhz/dp/51AC9320",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 2500,
+     "price": 1.1322,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/m95256-drmn3tpk/stmicroelectronics",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Avnet 2500+ $0.788 also seen (https://www.avnet.com/americas/product/stmicroelectronics/m95256-drmn3tp-k/evolve-5213316/)."
+  },
+  {
+   "mpn": "25LC256T-E/SN",
+   "family": "25LC256",
+   "mfr": "Microchip",
+   "desc": "256Kb SPI EEPROM, extended temp",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "ECU config"
+   ],
+   "observedMpn": "25LC256T-E/SN",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3300,
+     "price": 1.525,
+     "currency": "USD",
+     "url": "https://www.digikey.com/product-detail/en/microchip-technology/25LC256T-E-SN/25LC256T-E-SNCT-ND/5147238",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.3741,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/EEPROM_Microchip-Tech-25LC256T-E-SN_C159741.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 1.04,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/2c746",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Newark figure read via Findchips snippet (reel MOQ 3300); wide spread vs Digi-Key."
+  },
+  {
+   "mpn": "CAT24C512WI-GT3",
+   "family": "CAT24C512",
+   "mfr": "onsemi",
+   "desc": "512Kb I2C EEPROM",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "ECU config"
+   ],
+   "observedMpn": "CAT24C512WI-GT3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.6296,
+     "currency": "USD",
+     "url": "https://www.digikey.com.mx/en/products/detail/onsemi/CAT24C512WI-GT3/2683757",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.2518,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/EEPROM_onsemi-CAT24C512WI-GT3_C79986.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 3000,
+     "price": 0.253,
+     "currency": "USD",
+     "url": "https://www.newark.com/onsemi/cat24c512wi-gt3/serial-eeprom-512kbit-1mhz-soic/dp/29AC3017",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Industrial grade; automotive NV24C512 not searched. Large Digi-Key vs LCSC/Newark spread."
+  },
+  {
+   "mpn": "S25FL128LAGMFV010",
+   "family": "S25FL128L",
+   "mfr": "Infineon",
+   "desc": "128Mb QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster",
+    "gateway"
+   ],
+   "observedMpn": "S25FL128LAGMFV010",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 2.33,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/s25fl128lagmfv010",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1120,
+     "price": 2.3796,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/S25FL128LAGMFV010/7100880",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 2.02,
+     "currency": "USD",
+     "url": "https://www.tme.com/us/en-us/details/s25fl128lagmfv010/serial-flash-memories-integrated-circ/infineon-technologies/",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser break read via Findchips snippet."
+  },
+  {
+   "mpn": "S25FL512SAGMFV011",
+   "family": "S25FL512S",
+   "mfr": "Infineon",
+   "desc": "512Mb QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster",
+    "gateway"
+   ],
+   "observedMpn": "S25FL512SAGMFI011",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 7.93,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/S25FL512SAGMFI011?qs=rDGpJoRV1kJ%252BPU3pl%252BHK1A%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 705,
+     "price": 6.91,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/S25FL512SAGMFI011?qs=rDGpJoRV1kJ%252BPU3pl%252BHK1A%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Industrial-temp sibling FI011 (V011 only seen at qty 1, $8.46 Digi-Key)."
+  },
+  {
+   "mpn": "IS25LP128-JBLA3",
+   "family": "IS25LP128",
+   "mfr": "ISSI",
+   "desc": "128Mb QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 (208mil)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster",
+    "telematics"
+   ],
+   "observedMpn": "IS25LP128F-JBLA3",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1080,
+     "price": 2.96912,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/issi-integrated-silicon-solution-inc/IS25LP128F-JBLA3/11568723",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 2.713,
+     "currency": "USD",
+     "url": "https://www.digipart.com/part/IS25LP128F-JBLA3",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Priced as F-revision successor IS25LP128F-JBLA3. LCSC figure from search summary; URL is the aggregator result."
+  },
+  {
+   "mpn": "W25Q256JVEIQ",
+   "family": "W25Q256JV",
+   "mfr": "Winbond",
+   "desc": "256Mb QSPI NOR flash",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 8x6",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment",
+    "cluster",
+    "telematics"
+   ],
+   "observedMpn": "W25Q256JVEIQ",
+   "observations": [],
+   "notes": "Digi-Key 1k snippet gave two conflicting values ($4.82 T&R, $3.49 Digi-Reel) and Mouser qty1 $3.46; discarded as unreliable."
+  },
+  {
+   "mpn": "MX25L25645GZ2I-08G",
+   "family": "MX25L25645G",
+   "mfr": "Macronix",
+   "desc": "256Mb QSPI NOR flash",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 8x6",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment",
+    "cluster",
+    "telematics"
+   ],
+   "observedMpn": "MX25L25645GZ2I-08G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.81534,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/macronix/MX25L25645GZ2I-08G/7914978",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 5.7635,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/NOR-FLASH_MXIC-Macronix-MX25L25645GZ2I-08G_C2802978.html",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Future",
+     "qty": 200,
+     "price": 2.43,
+     "currency": "USD",
+     "url": "https://octopart.com/mx25l25645gz2i-08g-macronix-77813211",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Future break via Octopart snippet, likely stale (half of DK/LCSC 1k). Industrial grade."
+  },
+  {
+   "mpn": "MT25QL512ABB8ESF-0AUT",
+   "family": "MT25QL512",
+   "mfr": "Micron",
+   "desc": "512Mb 3V QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster",
+    "gateway"
+   ],
+   "observedMpn": "MT25QL512ABB8ESF-0AAT",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 9.0,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Micron/MT25QL512ABB8ESF-0AAT?qs=rrS6PyfT74da2PZ8DoLIJg%3D%3D",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "-0AUT not listed; priced as temp-grade sibling -0AAT."
+  },
+  {
+   "mpn": "MT25QU01GBBB8E12-0AUT",
+   "family": "MT25QU01G",
+   "mfr": "Micron",
+   "desc": "1Gb 1.8V QSPI NOR flash, automotive",
+   "category": "ic_bga",
+   "pkg": "T-PBGA-24 6x8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller"
+   ],
+   "observedMpn": "MT25QU01GBBB8E12-0AUT",
+   "observations": [],
+   "notes": "Digi-Key only up to qty 50 ($31.97); Avnet/Newark ranges without breaks. No >=100 break."
+  },
+  {
+   "mpn": "MT29F4G08ABAFAWP-AAT",
+   "family": "MT29F4G08ABAFA",
+   "mfr": "Micron",
+   "desc": "4Gb SLC NAND x8, automotive",
+   "category": "ic_soic",
+   "pkg": "TSOP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "MT29F4G08ABAFAWP-IT:F",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 960,
+     "price": 21.06951,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT29F4G08ABAFAWP-IT-F-TR/10321012",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "AAT:F not priced; industrial-temp sibling IT:F. Category ic_soic per hint (TSOP-48)."
+  },
+  {
+   "mpn": "MT41K256M16TW-107 AAT:P",
+   "family": "MT41K256M16TW",
+   "mfr": "Micron",
+   "desc": "DDR3L 4Gb x16, automotive",
+   "category": "ic_bga",
+   "pkg": "FBGA-96",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "infotainment",
+    "cluster"
+   ],
+   "observedMpn": "MT41K256M16TW-107 AAT:P",
+   "observations": [],
+   "notes": "Digi-Key snippets contradictory (tray $41.92/50 vs cut-tape $7.06/1000); discarded."
+  },
+  {
+   "mpn": "MT40A1G16TB",
+   "family": "MT40A1G16",
+   "mfr": "Micron",
+   "desc": "DDR4 16Gb x16",
+   "category": "ic_bga",
+   "pkg": "FBGA-96",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller"
+   ],
+   "observedMpn": "MT40A1G16TB-062E AUT:F",
+   "observations": [],
+   "notes": "AUT:F not found; TB-062E:F obsolete; only qty-1 prices for IT:F/:F."
+  },
+  {
+   "mpn": "MT53E256M32D1KS-046 AUT:L",
+   "family": "MT53E256M32D1KS",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 8Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "VFBGA-200 10x14.5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster",
+    "infotainment"
+   ],
+   "observedMpn": "MT53E256M32D1KS-046 AUT:L",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 18.22,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Micron/MT53E256M32D1KS-046-ITL-TR?qs=9vOqFld9vZX9v0r3ogdw4g%3D%3D",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1360,
+     "price": 28.03971,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT53E256M32D1KS-046-AUT-L/18996630",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Mouser URL in results was the IT:L listing though summary named AUT:L; DK 1360 figure > Mouser 250 (likely post-2026 memory rise). Treat with care."
+  },
+  {
+   "mpn": "MT53E512M32D1ZW-046 AUT:B",
+   "family": "MT53E512M32D1ZW",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 16Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller",
+    "infotainment"
+   ],
+   "observedMpn": "MT53E512M32D1ZW-046 AUT:B",
+   "observations": [],
+   "notes": "Digi-Key only to qty 50 ($174.05), out of stock. No >=100 break."
+  },
+  {
+   "mpn": "MT53E1G32D2FW-046 AUT:B",
+   "family": "MT53E1G32D2FW",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 32Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller"
+   ],
+   "observedMpn": "MT53E1G32D2FW-046 AUT:B",
+   "observations": [],
+   "notes": "Digi-Key only qty 1/10 ($231.42/$219.07), out of stock. No >=100 break."
+  },
+  {
+   "mpn": "MT62F1G32D2DS",
+   "family": "MT62F1G32D2DS",
+   "mfr": "Micron",
+   "desc": "LPDDR5 32Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-315",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller"
+   ],
+   "observedMpn": "MT62F1G32D2DS-023 AUT:C",
+   "observations": [],
+   "notes": "Digi-Key prices seen without quantity break (AUT:C AUD 206.12; AUT:F $218.99). Not recorded."
+  },
+  {
+   "mpn": "IS46LQ32256AL",
+   "family": "IS46LQ32256AL",
+   "mfr": "ISSI",
+   "desc": "LPDDR4/4X 8Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "cluster"
+   ],
+   "observedMpn": "IS46LQ32256AL-062BLA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 136,
+     "price": 31.49537,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/base-product/issi-integrated-silicon-solution-inc/706/IS46LQ32256/730926",
+     "date": "2026-10-06"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 28.32424,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/base-product/issi-integrated-silicon-solution-inc/706/IS46LQ32256/730926",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "2500 break is the -TR reel. Mouser 10k $18.15 seen in unclear source, not recorded."
+  },
+  {
+   "mpn": "MTFC16GAPALBH-AAT",
+   "family": "MTFC16GAPALBH",
+   "mfr": "Micron",
+   "desc": "eMMC 5.1 16GB, automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics",
+    "cluster"
+   ],
+   "observedMpn": "MTFC16GAPALBH-AAT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 19.67,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MTFC16GAPALBH-AAT/7918870",
+     "date": "2026-10-06"
+    }
+   ],
+   "notes": "Listed obsolete. Mouser shown with identical tiers in summary (possible duplication), not recorded."
+  },
+  {
+   "mpn": "MTFC32GAPALBH-AAT",
+   "family": "MTFC32GAPALBH",
+   "mfr": "Micron",
+   "desc": "eMMC 5.1 32GB, automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics",
+    "cluster"
+   ],
+   "observedMpn": "MTFC32GAPALBH-AAT",
+   "observations": [],
+   "notes": "Only broker (Win Source) prices found; rejected."
+  },
+  {
+   "mpn": "MTFC64GAPALNA-AAT",
+   "family": "MTFC64GAPALNA",
+   "mfr": "Micron",
+   "desc": "eMMC 5.1 64GB, automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-100 14x18",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "ADAS"
+   ],
+   "observedMpn": "MTFC64GAPALNA-AAT",
+   "observations": [],
+   "notes": "Digi-Key CA CAD 69.65 seen without quantity break, non-stock. Not recorded."
+  },
+  {
+   "mpn": "THGBMJG8C2LBAU8",
+   "family": "THGBMJG8C2LBAU8",
+   "mfr": "Kioxia",
+   "desc": "eMMC 32GB, automotive",
+   "category": "ic_bga",
+   "pkg": "BGA-153",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "THGBMJG8C2LBAU8",
+   "observations": [],
+   "notes": "No distributor listing found in search."
+  },
+  {
+   "mpn": "MCIMX6Q6AVT10AD",
+   "family": "MCIMX6Q",
+   "mfr": "NXP",
+   "desc": "i.MX 6Quad 4x Cortex-A9 1GHz, automotive",
+   "category": "ic_bga",
+   "pkg": "FCBGA-624",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "cluster",
+    "telematics"
+   ],
+   "observedMpn": "MCIMX6Q6AVT10AD",
+   "observations": [],
+   "notes": "Digi-Key max break 60 ($90.91), Mouser max 25 ($119.49). No >=100 break."
+  },
+  {
+   "mpn": "DRA821U",
+   "family": "DRA821U",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 gateway processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA-433",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "domain controller"
+   ],
+   "observedMpn": "DRA821U4TGBALMRQ1",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "AP0202AT",
+   "family": "AP0202AT",
+   "mfr": "onsemi",
+   "desc": "Automotive image signal processor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "ADAS"
+   ],
+   "observedMpn": "AP0202AT",
+   "observations": [],
+   "notes": "not searched (budget)"
+  },
+  {
+   "mpn": "AR0820ATSC18XMEA0-DPBR",
+   "family": "AR0820AT",
+   "mfr": "onsemi",
+   "desc": "8.3MP automotive image sensor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "ADAS"
+   ],
+   "observedMpn": "AR0820ATSC18XMEA0-DPBR",
+   "observations": [],
+   "notes": "not searched (budget); round 1 Digi-Key DRBR $40.98/100 not re-confirmed this round"
+  },
+  {
+   "mpn": "AR0147ATSC00XUEA0-DPBR",
+   "family": "AR0147AT",
+   "mfr": "onsemi",
+   "desc": "1.3MP automotive image sensor",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "surround view"
+   ],
+   "observedMpn": "AR0147ATSC00XUEA0-DPBR",
+   "observations": [],
+   "notes": "not searched (budget)"
+  }
+ ]
+}
