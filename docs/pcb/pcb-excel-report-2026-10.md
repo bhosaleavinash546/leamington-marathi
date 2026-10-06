@@ -37,8 +37,9 @@ analysis's; totals, percentages and deltas are live formulas with cached results
    read as zero, a clipped column). All fixed and re-audited: **8/10** (11 print-polish items: Countries chart onto its own page, header rows
    repeated on continuation pages, Summary page 1 with the top drivers, freight shown as £0.00 rather than a
    formatted "<£0.01" over a stored zero, a log axis bounded to the data…), fixed, then **9/10 — no Critical,
-   High or Medium issues; ready to ship**. Open (Low, accepted): the range caveat appears in three places on the
-   Summary; volume-chart y labels sit close to the plot edge; the donut could be smaller.
+   High or Medium issues; ready to ship**. The three Low notes left after that were fixed too: the "priced from a range"
+   caveat is said once (under To verify), the volume chart has a plot inset so its axis labels clear the border,
+   and the donut is ~25% smaller.
 
 Sample: `docs/pcb/screens/camera-report-2026-10-06.xlsx` (`npx tsx scripts/pcb-workbook-sample.ts out.xlsx`).
 Tests: `tests/pcb-workbook.test.ts`; the camera e2e downloads both reports and checks them.

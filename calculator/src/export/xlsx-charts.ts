@@ -126,7 +126,10 @@ export function chartXml(spec: ChartSpec): string {
     : `<c:legend><c:legendPos val="${spec.legend}"/><c:overlay val="0"/>${txPr(900)}</c:legend>`;
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <c:chartSpace ${NS}><c:date1904 val="0"/><c:lang val="en-GB"/><c:roundedCorners val="0"/>
-<c:chart>${spec.title ? richTitle(spec.title) : ''}<c:autoTitleDeleted val="${spec.title ? 0 : 1}"/><c:plotArea><c:layout/>${plot}<c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr></c:plotArea>${legend}<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>
+<c:chart>${spec.title ? richTitle(spec.title) : ''}<c:autoTitleDeleted val="${spec.title ? 0 : 1}"/><c:plotArea>${spec.kind === 'scatter'
+    // An inner plot inset so the value-axis labels sit clear of the plot border.
+    ? '<c:layout><c:manualLayout><c:layoutTarget val="inner"/><c:xMode val="edge"/><c:yMode val="edge"/><c:x val="0.1"/><c:y val="0.13"/><c:w val="0.86"/><c:h val="0.62"/></c:manualLayout></c:layout>'
+    : '<c:layout/>'}${plot}<c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr></c:plotArea>${legend}<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>
 <c:spPr>${solid('FFFFFF')}<a:ln><a:noFill/></a:ln></c:spPr>${txPr(900)}
 </c:chartSpace>`;
 }

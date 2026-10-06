@@ -480,7 +480,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
     { c: 2, label: 'DELIVERED / BOARD', v: formula(`'Cost Breakdown'!D${totalRow}`, m(rep.total)), fmtS: NF.money, cap: `${countryShort} build · UK, duty paid`, color: C.navy },
     { c: 5, label: 'EX-WORKS / BOARD', v: formula(`'Cost Breakdown'!D${exwRow}`, m(rep.exWorks)), fmtS: NF.money, cap: `${countryShort} factory gate, packed`, color: C.navy },
     { c: 8, label: 'LIKELY RANGE', v: rep.confidence ? formula(`"${sym}"&TEXT(O9,"0.00")&" – ${sym}"&TEXT(P9,"0.00")`, `${fmtMoney(rep.confidence.low)} – ${fmtMoney(rep.confidence.high)}`) : 'n/a',
-      cap: rep.confidence ? `${rep.confidence.label} confidence · ${rep.confidence.verifyCount} line${rep.confidence.verifyCount === 1 ? '' : 's'} to verify` : 'band not computed', color: C.amber },
+      cap: rep.confidence ? `${rep.confidence.label} confidence · see To verify` : 'band not computed', color: C.amber },
     rep.nre.length
       ? { c: 11, label: 'ONE-TIME NRE', v: m(rep.nreTotal), fmtS: NF.whole, cap: 'PPAP · FMEA · DV/PV · audit — not in unit cost', color: C.navy }
       : { c: 11, label: 'BOM', v: `${rep.bom.length} lines · ${rep.bomPieces} parts`, cap: `from the ${rep.bomOrigin}`, color: C.navy },
@@ -550,7 +550,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   charts.push({
     sheet: 'Summary', kind: 'doughnut', title: `Delivered ${fmtMoney(rep.total)} per board`, holeSize: 60, labels: 'percent', legend: 'none', hideLabelBelow: 0.05,
     series: [{ name: 'Cost composition', catRef: `'Summary'!$C$${k0}:$C$${kN}`, cats: buckets.map(b => b.name), valRef: `'Summary'!$E$${k0}:$E$${kN}`, vals: buckets.map(b => m(b.amount)), colors: buckets.map(b => b.color) }],
-    from: { col: 7, row: 12 }, to: { col: 13, row: tdEnd },
+    from: { col: 8, row: 13 }, to: { col: 12, row: Math.max(14, tdEnd - 2) },
   });
   // Page 2: key facts and what to verify side by side, then what it tells you and the exclusions.
   const kf = tdEnd + 2;
@@ -585,7 +585,8 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   }
   let dr = Math.max(kf + 1 + facts.length, vr) + 1;
   bar(s, dr, 2, 13, 'What this tells you'); dr++;
-  for (const d of rep.drivers) { note(s, dr, 2, 13, `•  ${d}`, { size: 10, color: C.slate }); dr++; }
+  // The "priced from a range" caveat is said once, under To verify (the audit found it three times).
+  for (const d of rep.drivers.filter(x => !/priced from a range, not a quote/.test(x))) { note(s, dr, 2, 13, `•  ${d}`, { size: 10, color: C.slate }); dr++; }
   dr++;
   bar(s, dr, 2, 13, 'Not in this unit cost'); dr++;
   for (const t of rep.excluded) { note(s, dr, 2, 13, `•  ${t}`, { size: 9.5, color: C.slate, fillHex: C.page }); dr++; }
