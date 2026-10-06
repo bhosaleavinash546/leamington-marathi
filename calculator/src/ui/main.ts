@@ -6504,6 +6504,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
         <div>${escHtml(cadErrMsg)}</div>
         <div class="risk-suggestion">${analysisErrorHint(cadErrMsg)}</div>
       </div>`;
+    // The panel sits under the 3D viewer — bring the error into view, or it looks like nothing happened.
+    cadErrEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } finally {
     clearTimeout(timeoutId);
     analyzeBtn?.removeAttribute('disabled');

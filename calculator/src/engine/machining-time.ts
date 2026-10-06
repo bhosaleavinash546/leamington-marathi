@@ -340,6 +340,50 @@ export function nearNetMachiningTime(rows: FeatureRow[], family: MaterialFamily,
   };
 }
 
+/** Below this outside area on the turned axis there is nothing a lathe operation is worth setting up for. */
+export const MIN_NEAR_NET_TURNED_CM2 = 20;
+/**
+ * …and below this share of the part's surface the "turned axis" is a cast boss's outside, which is
+ * cast to size, not a spindle (engineering threshold: the stub axle's spindle is 16.5% of its surface,
+ * a steering knuckle's 9%; the Casting Bracket's one Ø40 boss is 4.8% and is not turned).
+ */
+export const MIN_NEAR_NET_TURNED_SHARE = 0.08;
+
+/**
+ * Turning the OUTSIDE of a near-net part's revolved axis on a CNC lathe — a stub axle's
+ * spindle: its bearing journals, taper, shoulders' fillets and register. A casting or
+ * forging cannot hold a bearing seat as-made, so these are always turned (stub axle
+ * live run, Oct 2026: the near-net path machined only flats and holes, and the
+ * 226 cm² spindle was not costed at all). The kernel's turning signature gives the
+ * family's external area (FORWARD cylinders / cones / tori — its bores are holes and
+ * are finish-bored separately). Rough: the cast / forged-on stock at the metal's turning
+ * rate; finish: the area at the finishing-insert rate. Ground bearing seats, where a
+ * drawing calls them, are not included — that is stated, not assumed away.
+ */
+export function nearNetTurningTime(externalAreaCm2: number, family: MaterialFamily, stockMm: number, maxDiaMm: number): CuttingTime {
+  const cd = cuttingDataFor(family);
+  const stockCm3 = externalAreaCm2 * stockMm / 10;
+  const roughMin = stockCm3 / cd.turnRoughCm3PerMin;
+  const finishRate = FINISH_RATE_CM2_PER_MIN.turning / cd.timeFactor;
+  const finishMin = externalAreaCm2 / finishRate;
+  const tools = 3;   // rough, finish, groove / thread
+  const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
+  return {
+    roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: 0, holeMin: 0,
+    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(roughMin + finishMin + toolChangeMin),
+    basis: `outside of the turned axis ${externalAreaCm2.toFixed(0)} cm² (journals, taper, fillets; up to Ø${maxDiaMm.toFixed(0)} mm): `
+      + `rough ${stockCm3.toFixed(0)} cm³ of ${stockMm} mm-a-side stock at ${cd.turnRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
+      + `finish at ${finishRate.toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; ${tools} tools × ${TOOL_CHANGE_SEC} s `
+      + `(${family}; ground bearing seats, if the drawing calls them, are extra)`,
+  };
+}
+
+/** Outside turned area of a near-net part, cm² — 0 below the threshold or with no measurement. */
+export function nearNetTurnedAreaCm2(turning: { externalAreaMm2?: number } | null | undefined, totalAreaCm2: number): number {
+  const a = (turning?.externalAreaMm2 ?? 0) / 100;
+  return a >= MIN_NEAR_NET_TURNED_CM2 && totalAreaCm2 > 0 && a / totalAreaCm2 >= MIN_NEAR_NET_TURNED_SHARE ? a : 0;
+}
+
 /** Metal a near-net part carries for machining, cm³: machined faces and cored bores × the per-side stock. */
 export function nearNetStockCm3(rows: FeatureRow[], stockMm: number, coredAboveMm: number): number {
   let mm3 = 0;

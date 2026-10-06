@@ -170,7 +170,11 @@ export function computeUniversalStack(
       field: 'rawMaterial.consumablesCostPerPart',
       value: input.rawMaterial.consumablesCostPerPart,
       unit: '£',
-      rateSource: 'Per-part consumable (core/wax/shell)',
+      // Itemised when the module says what it is made of — a casting's is often mostly services
+      // (X-ray, heat treatment, tool wear), not cores (stub axle live run, Oct 2026).
+      rateSource: input.rawMaterial.consumablesItems?.length
+        ? `Per-part consumables & services: ${input.rawMaterial.consumablesItems.map(i => `${i.label} £${i.gbp.toFixed(2)}`).join(' · ')}`
+        : 'Per-part consumable (core/wax/shell)',
       rateId: input.rawMaterial.materialId,
       confidence: 'Medium',
     });

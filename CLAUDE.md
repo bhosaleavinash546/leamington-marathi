@@ -311,6 +311,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   Rule-built ops carry `measured: true`; the near-net guard caps AI times only. Bench ops are
   labour only (`cycleTimeHr` 0). See `docs/cad/machining-review-2026-10.md`,
   `tests/machining-review.test.ts`; modelled parts in `cad-audit/parts/MACH_*`.
+  Near-net spindles (stub axle live run, Oct 2026): the kernel's `turning.externalAreaMm2` (FORWARD revolved faces —
+  bores stay holes) ≥ 20 cm² and ≥ 8% of the surface is turned on the CNC lathe in its own fixturing, its stock cast
+  (`nearNetTurningTime`); a mesh's triangles are never faces (`bRepFaceCount`). Safety-critical cast iron is ductile
+  EN-GJS-500-7 (safety asked before the grade; `castIronDefaultGrade`); the mass follows the costed grade. See
+  `docs/cad/stub-axle-live-run-2026-10.md`, `tests/stub-axle-live.test.ts`.
 - Forging (`cost-input-rules/commodities/forging.ts`, `modules/forging.ts`): the cycle is the forge-line
   takt (`forgeLine`: load + hits × hit time), never the kernel's `forgeStrokes`; flash-making routes
   trim in line (`trimPress`, stamping ladder); crew, labour, scrap and furnace are rules; die sets are

@@ -72,7 +72,9 @@ export interface OCCTGeometry {
    *  tessellated and rasterised by the kernel. Absent on older measurements. */
   projectedArea?: { xMm2?: number; yMm2?: number; zMm2?: number; alongDrawMm2?: number | null; method?: string } | null;
   /** Largest coaxial family of revolved surfaces (kernel `_turning_signature`): what a lathe would cut. */
-  turning?: { fraction: number; revolvedFraction?: number; maxDiaMm: number; axis: number[] | null } | null;
+  turning?: { fraction: number; revolvedFraction?: number; maxDiaMm: number; axis: number[] | null;
+    /** The turned axis's OUTSIDE surfaces (journals, tapers, fillets) and their largest diameter. */
+    externalAreaMm2?: number; externalMaxDiaMm?: number } | null;
   fillRatio?: number;
   /** Sealed-hollow-body vs open-drape topology (distinguishes a fuel tank from a bumper). */
   topology?: {

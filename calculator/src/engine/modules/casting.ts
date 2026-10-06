@@ -265,14 +265,16 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   // Cores, wax and shell are consumed by every casting poured, rejects included,
   // so they carry the same reject uplift as the metal and the line time.
   let consumablesCostPerPart = 0;
+  const items: Array<{ label: string; gbp: number }> = [];
+  const item = (label: string, gbp: number) => { if (gbp > 0) { items.push({ label, gbp }); consumablesCostPerPart += gbp; } };
   if (inputs.subtype === 'sand' && inputs.sand) {
-    consumablesCostPerPart = inputs.sand.coreCostPerPart * rejectUplift;
+    item('cores', inputs.sand.coreCostPerPart * rejectUplift);
   } else if (inputs.subtype === 'investment' && inputs.investment) {
     const waxRecovery = inputs.investment.waxRecoveryFraction ?? 0.80;
     const effectiveWaxCost = inputs.investment.waxCostPerPart * (1 - waxRecovery);
-    consumablesCostPerPart = (effectiveWaxCost + inputs.investment.shellBuildCostPerPart) * rejectUplift;
+    item('wax and shell', (effectiveWaxCost + inputs.investment.shellBuildCostPerPart) * rejectUplift);
   }
-  consumablesCostPerPart += meltEnergyCostPerPart;
+  item('melt energy (typed tariff)', meltEnergyCostPerPart);
 
   // Post-cast: fettling is an operator at a grinder, so it is labour; heat
   // treatment, blast, impregnation and NDT are priced per kg / per part as the
@@ -306,7 +308,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     });
   }
   if (inputs.subtype === 'sand' && lossFraction < 1) {
-    consumablesCostPerPart += pourKg * MELT_SHOP.greenSandAdditionsPerKgPoured;
+    item('green-sand additions', pourKg * MELT_SHOP.greenSandAdditionsPerKgPoured);
   }
   if (inputs.leakTestSec && inputs.leakTestSec > 0) {
     const hr = inputs.leakTestSec / 3600;
@@ -318,11 +320,11 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       labourTimeHr: hr, labourEfficiency: inputs.labourEfficiency,
     });
   }
-  consumablesCostPerPart += (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg
-    + (inputs.shotBlastCostPerPart ?? 0)
-    + (inputs.impregnationCostPerPart ?? 0)
-    + (inputs.ndtCostPerPart ?? 0)
-    + (inputs.secondaryMachiningConsumablesPerPart ?? 0);
+  item('heat treatment', (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg);
+  item('shot blast', inputs.shotBlastCostPerPart ?? 0);
+  item('impregnation', inputs.impregnationCostPerPart ?? 0);
+  item('NDT', inputs.ndtCostPerPart ?? 0);
+  item('machining consumables', inputs.secondaryMachiningConsumablesPerPart ?? 0);
 
   // Feature-based secondary machining (geometry-driven) — appended on top of
   // the casting process. Near-net → machining TIME only; no extra material.
@@ -345,12 +347,13 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     productForm: 'cast_hpdc',
   });
   if (finishing) operations.push(...finishing.operations);
+  if (finishing?.consumablesPerPart) items.push({ label: 'surface finishing', gbp: finishing.consumablesPerPart });
   const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
 
   return {
     rawMaterial: {
       ...rawMaterial,
-      ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables } : {}),
+      ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables, consumablesItems: items } : {}),
       ...(meltEnergy.kwh ? { energyKwh: meltEnergy.kwh } : {}),
     },
     operations,

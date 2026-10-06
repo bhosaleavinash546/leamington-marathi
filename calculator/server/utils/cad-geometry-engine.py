@@ -1365,6 +1365,7 @@ def _turning_signature(faces, total_area_mm2: float):
     from OCP.GProp import GProp_GProps
     from OCP.GeomAdaptor import GeomAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_Cylinder, GeomAbs_Cone, GeomAbs_Torus, GeomAbs_Sphere, GeomAbs_Plane
+    from OCP.TopAbs import TopAbs_REVERSED
     if total_area_mm2 <= 0:
         return None
     revolved, planes = [], []
@@ -1391,7 +1392,11 @@ def _turning_signature(faces, total_area_mm2: float):
             else:
                 continue
             o, d = ax.Location(), ax.Direction()
-            revolved.append(((o.X(), o.Y(), o.Z()), (d.X(), d.Y(), d.Z()), r, area))
+            # A cylinder / cone's surface normal points away from its axis; a FORWARD face keeps it, so the
+            # material is inside — an external (turned) surface. A REVERSED one is a bore. Tori are fillets
+            # and grooves either way; they count as external when forward.
+            external = face.wrapped.Orientation() != TopAbs_REVERSED
+            revolved.append(((o.X(), o.Y(), o.Z()), (d.X(), d.Y(), d.Z()), r, area, external))
         except Exception:
             pass
     if not revolved:
@@ -1406,15 +1411,18 @@ def _turning_signature(faces, total_area_mm2: float):
         cx = (v[1]*d1[2]-v[2]*d1[1], v[2]*d1[0]-v[0]*d1[2], v[0]*d1[1]-v[1]*d1[0])
         return (cx[0]**2 + cx[1]**2 + cx[2]**2) ** 0.5 < 0.5
 
-    families = []   # [line, area, max_r]
-    for o, d, r, a in revolved:
+    families = []   # [line, area, max_r, external area, external max_r]
+    for o, d, r, a, ext in revolved:
         for f in families:
             if same_line(f[0], (o, d)):
                 f[1] += a
                 f[2] = max(f[2], r)
+                if ext:
+                    f[3] += a
+                    f[4] = max(f[4], r)
                 break
         else:
-            families.append([(o, d), a, r])
+            families.append([(o, d), a, r, a if ext else 0.0, r if ext else 0.0])
     best = max(families, key=lambda f: f[1])
     (o, d) = best[0]
     square = sum(a for pl in planes if pl is not None for (n, a) in [pl]
@@ -1423,6 +1431,10 @@ def _turning_signature(faces, total_area_mm2: float):
         "fraction": round(min(1.0, (best[1] + square) / total_area_mm2), 3),
         "revolvedFraction": round(min(1.0, best[1] / total_area_mm2), 3),
         "maxDiaMm": round(2 * best[2], 2),
+        # The family's OUTSIDE surfaces (journals, tapers, shoulders' fillets) — what a lathe turns on a
+        # near-net casting or forging; its bores are holes and are finish-bored separately.
+        "externalAreaMm2": round(best[3], 1),
+        "externalMaxDiaMm": round(2 * best[4], 2),
         "axis": [round(d[0], 4), round(d[1], 4), round(d[2], 4)],
     }
 

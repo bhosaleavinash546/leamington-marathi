@@ -217,10 +217,22 @@ export async function analyzeGeometry(
   }
 }
 
+/** The part's name: the kernel's, unless that is only the random temp copy it read ("cv-cad-…"). */
+export function partNameFor(kernelName: string | undefined, filename: string): string | undefined {
+  if (kernelName && !/^cv-cad-[0-9a-f]+$/i.test(kernelName)) return kernelName;
+  const stem = filename.replace(/\.[^.]+$/, '').trim();
+  return stem || kernelName;
+}
+
 /** Attach what the file says about itself — names, header path, declared material — to a
  *  successful measurement, so every consumer of the geometry sees the same evidence. */
 function withMetadata(geo: OCCTGeometry, buffer: Buffer, filename: string): OCCTGeometry {
   if (geo.status !== 'success') return geo;
+  // The kernel names the part after the file it read — the random temp copy ("cv-cad-7f1b…").
+  // The part is the engineer's file: name it after that (stub axle live run, Oct 2026: the
+  // costing and its Excel report were titled "cv-cad-7f1b2d1f3d7a7e74").
+  const name = partNameFor((geo as OCCTGeometry & { partName?: string }).partName, filename);
+  if (name) geo = { ...geo, partName: name } as OCCTGeometry;
   try { return { ...geo, cadMetadata: readCadMetadata(buffer, filename) }; } catch { return geo; }
 }
 

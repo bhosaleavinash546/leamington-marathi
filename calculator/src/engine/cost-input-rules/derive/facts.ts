@@ -31,6 +31,17 @@ export function geometryQuality(ctx: RuleContext): GeometryQuality {
   return ctx.geometryQuality ?? (ctx.geo.status === 'success' ? 'occt' : 'text');
 }
 
+/**
+ * B-rep faces, or null on a mesh. An STL's "faces" are its TRIANGLES — 208,858 on the stub axle —
+ * and a rule that reads them as faces costs nonsense (a £302 deburr line, Oct 2026).
+ */
+export function bRepFaceCount(ctx: RuleContext): number | null {
+  return geometryQuality(ctx) === 'occt' ? (ctx.geo.faces?.total ?? 0) : null;
+}
+
+/** Faces a deburr allowance assumes when a mesh has none to count — a typical machined casting / forging. */
+export const MESH_DEBURR_FACE_ALLOWANCE = 250;
+
 /** Blocking decision for a feature a mesh cannot see. `answers[id]` (a number) satisfies it. */
 export function meshFeatureGap(id: string, what: string, unit = 'count'): Decision {
   return {

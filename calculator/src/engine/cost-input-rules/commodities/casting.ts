@@ -37,7 +37,7 @@ import {
 } from '../../casting-tooling.js';
 import { projectedAreaCm2 } from '../derive/envelope.js';
 import { toCastingAlloyFamily, representativeMaterialId } from '../derive/material.js';
-import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID } from '../derive/grade.js';
+import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, BRITTLE_IRON, castIronDefaultGrade } from '../derive/grade.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
   answeredBool, answeredToleranceClass, assumedNote,
@@ -101,7 +101,10 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
 
   // An answered or declared GRADE names the alloy exactly (grey v ductile iron,
   // stainless, superalloy); the family alone falls back to its default alloy.
-  const alloy = castingAlloyForGrade(mat.gradeId) ?? toCastingAlloyFamily(mat.family!);
+  // Cast iron with no grade answered: the default grade costed (grey, or ductile when safety-critical)
+  // also names the alloy, so the process plan and the £/kg are the same iron.
+  const alloy = castingAlloyForGrade(mat.gradeId ?? (mat.family === 'cast iron' ? castIronDefaultGrade(ctx).id : null))
+    ?? toCastingAlloyFamily(mat.family!);
   if (!alloy) {
     return {
       blocked: ask({
@@ -261,7 +264,18 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const mat = materialFacts(ctx);
         if (mat.decision) return ask(mat.decision);
         // The engineer's grade, or one the file declares, is the grade (review, Oct 2026).
-        if (mat.gradeId) return decided('casting.materialId', mat.gradeId, 'engineer', `${mat.gradeId}: ${mat.basis}`, 1);
+        if (mat.gradeId) {
+          // Honoured as chosen — but grey / malleable / white iron on a part answered safety-critical is said.
+          const brittle = BRITTLE_IRON.test(mat.gradeId) && answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID) === true;
+          return decided('casting.materialId', mat.gradeId, 'engineer', `${mat.gradeId}: ${mat.basis}`
+            + (brittle ? ' — CHECK: a brittle iron on a part answered safety-critical; ductile EN-GJS-500-7 is the norm for steering / suspension parts' : ''),
+            brittle ? 0.6 : 1);
+        }
+        // Cast iron: grey unless the part is safety-critical, then ductile (stub axle live run, Oct 2026).
+        if (mat.family === 'cast iron') {
+          const g = castIronDefaultGrade(ctx);
+          return decided('casting.materialId', g.id, 'geometry', `cast iron → ${g.id} (${g.why})`, 0.85);
+        }
         // The aluminium grade follows the process: ADC12 is a die-casting alloy
         // and is not solution-treatable, so a gravity or sand casting — which is
         // T6 treated — gets the A356 / LM25 family. One grade for every route
@@ -286,8 +300,13 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if (ctx.answers[GRADE_DECISION_ID] !== undefined) return decided('casting.q.grade', String(ctx.answers[GRADE_DECISION_ID]), 'engineer', 'answered', 1);
         const r = advise(ctx);
         const subtype = 'blocked' in r ? null : r.advice.subtype;
+        // Cast iron: whether the part is safety-critical decides grey v ductile, so that is asked first.
+        if (mat.family === 'cast iron' && !mat.gradeId && answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID) === null) {
+          return ask(safetyCriticalDecision(ctx));
+        }
         const def = mat.gradeId
-          ?? (mat.family === 'aluminium' && subtype && subtype !== 'hpdc' ? 'mat-lm25' : representativeMaterialId('casting', mat.family!) ?? '');
+          ?? (mat.family === 'cast iron' ? castIronDefaultGrade(ctx).id
+            : mat.family === 'aluminium' && subtype && subtype !== 'hpdc' ? 'mat-lm25' : representativeMaterialId('casting', mat.family!) ?? '');
         const d = gradeDecision(ctx, mat.family!, def, subtype);
         return d ? ask(d) : decided('casting.q.grade', def, 'rule', 'one grade for this route', 1);
       },

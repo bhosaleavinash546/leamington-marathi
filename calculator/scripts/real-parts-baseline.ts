@@ -73,10 +73,14 @@ export const ANSWERS: Record<string, {
                'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' },
   },
   'PRCR002.stp': {
-    note: '277 mm envelope at 9% fill, 15.1 mm bulk wall — a substantial cast housing. '
-        + 'Assumed not pressure-tight; if it carries fluid, change this and the cost rises.',
-    answers: { 'material.family': 'aluminium', 'commodity.route': 'cast_and_machine', 'service.pressureTight': 'no',
-               'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' },
+    // Corrected Oct 2026: this is a STEERING STUB AXLE (the user's "Stub_Axle.stp" is this exact file —
+    // same SHA-256): tapered spindle with bearing journals, a bolted flange and two kingpin bosses. It was
+    // recorded as "a cast housing" in aluminium, not safety-critical — wrong on all three.
+    note: 'Steering stub axle: spindle (bearing journals, taper, thread), flange with bolt circle, kingpin bosses. '
+        + 'Cast in ductile iron and machined (a forged-steel stub axle is the other common route). '
+        + 'Safety-critical (steering): X-ray, stress relief, ductile iron. Not pressure-tight.',
+    answers: { 'material.family': 'cast iron', 'commodity.route': 'cast_and_machine', 'service.pressureTight': 'no',
+               'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes' },
   },
   'Seat_Locking_Bracket.stp': {
     note: 'The one genuine pressing: 1.55 mm wall throughout, 15 measured bends, 4% fill.',

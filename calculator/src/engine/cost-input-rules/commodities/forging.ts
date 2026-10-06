@@ -33,6 +33,7 @@
  *    ring rolling and open-die forging produce none — the advisor's own route
  *    text says so ("no flash"). The prompt charged all five routes 10%.
  */
+import { bRepFaceCount } from '../derive/facts.js';
 import { representativeMaterialId } from '../derive/material.js';
 import type { MaterialFamily } from '../../material-family.js';
 import {
@@ -117,7 +118,7 @@ export function isRevolutionDominant(ctx: RuleContext): boolean {
 export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
   const freeForm = ctx.geo.features?.freeFormFaceCount ?? 0;
   const undercuts = ctx.geo.draftAnalysis?.undercutFaceCount ?? 0;
-  const faces = ctx.geo.faces?.total ?? 0;
+  const faces = bRepFaceCount(ctx) ?? 0;   // a mesh's triangles are not faces
   let score = 0;
   if (freeForm >= 8) score += 2; else if (freeForm >= 3) score += 1;
   if (undercuts >= 4) score += 1;

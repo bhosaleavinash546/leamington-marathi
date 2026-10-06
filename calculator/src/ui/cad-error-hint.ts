@@ -30,6 +30,17 @@ export function analysisErrorHint(message: string): string {
       + 'shell has none — re-export it as a solid body, or stitch and thicken the '
       + 'surfaces in CAD first.';
   }
+  // The geometry kernel is not installed where the server runs (stub axle live run, Oct 2026: the
+  // 3D view showed the part, then "OCP not available … Check the API server is running" — the
+  // server WAS running; what was missing was the kernel, and nothing said how to fix it).
+  if (/OCP not available|No module named ['"]?OCP|kernel (is )?(not installed|unavailable)/i.test(message)) {
+    return 'The CAD geometry kernel (OpenCASCADE — the Python package <code>cadquery-ocp-novtk</code>) is not '
+      + 'installed where the server runs, so a STEP / IGES file cannot be measured or costed. Fix: install it '
+      + 'in the Python the server uses (<code>pip install -r requirements.txt</code>; set <code>PYTHON_BIN</code> '
+      + 'if that is not <code>python3</code>), or run the CAD Docker image. An <b>STL</b> export can be costed '
+      + 'without the kernel, but only in part: a mesh gives the volume and weight (so the casting or material), '
+      + 'not the machined faces, holes or turned diameters — the machining half would be understated.';
+  }
   if (/timed out|timeout/i.test(message)) {
     return 'The geometry kernel took too long on this model. Try again, or simplify '
       + 'the file — very large assemblies can exceed the limit.';

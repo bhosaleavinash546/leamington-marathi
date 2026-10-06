@@ -153,6 +153,8 @@ export interface RawMaterialInput {
   directCost?: number;
   /** Per-part recurring consumable cost (cores, wax patterns, shell, etc.) added to raw material cost line. */
   consumablesCostPerPart?: number;
+  /** What `consumablesCostPerPart` is made of, £ each — printed in the cost trace (it is often mostly services). */
+  consumablesItems?: Array<{ label: string; gbp: number }>;
   /**
    * Bought-in components priced at their supplier's price — which already
    * carries that supplier's overhead and margin. Shown in the material line, but

@@ -23,13 +23,15 @@
  * (`nearNetCut`): the measured faces and holes, at the metal's cutting rate.
  */
 import {
-  castMachiningStockMm, nearNetStockCm3, CORED_ABOVE_MM,
+  castMachiningStockMm, nearNetStockCm3, nearNetTurnedAreaCm2, CORED_ABOVE_MM,
 } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { decided, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
 import { CASTING_RULES, castingSubtypeFor } from './casting.js';
 import { machiningRuleDefs, nearNetCut } from './machining.js';
-import { materialFacts } from '../derive/material.js';
+// The GRADED facts: the cast weight starts from the same finished mass (the grade's density) the
+// finished-weight rule states — it used the family's mid density, 0.7% off on ductile iron.
+import { gradedMaterialFacts as materialFacts } from '../derive/grade.js';
 
 /**
  * Where each half's field lands on the combined form.
@@ -131,13 +133,17 @@ const CAST_WEIGHT_RULE: RuleDef = {
     const stockMm = castMachiningStockMm(sub, mat.family ?? null);
     const faceCm3 = nearNetStockCm3((ctx.geo.featureTable ?? []) as FeatureRow[], stockMm,
       sub === 'hpdc' ? CORED_ABOVE_MM.hpdc : DRILLED_FROM_SOLID_MM);
-    const kg = mat.massKg + (drilled.cm3 + faceCm3) * density;
+    // The turned axis (a spindle) is cast with the same stock on its outside: it is poured and paid for.
+    const turnedCm2 = nearNetTurnedAreaCm2(ctx.geo.turning, ctx.geo.surfaceArea?.cm2 ?? 0);
+    const turnCm3 = Math.round(turnedCm2 * stockMm / 10 * 10) / 10;
+    const kg = mat.massKg + (drilled.cm3 + faceCm3 + turnCm3) * density;
     return decided('castAndMachine.castPartWeightKg', Math.round(kg * 1000) / 1000, 'geometry',
       `${fmt(mat.massKg, 3)} kg finished`
       + (drilled.holes > 0 ? ` + ${fmt(drilled.cm3, 1)} cm³ of ${drilled.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid`
         : sub === 'hpdc' ? ' (HPDC cores its holes)' : '')
       + ` + ${fmt(faceCm3, 1)} cm³ machining stock (${stockMm} mm a side on the machined faces and cored bores, `
-      + `${sub ?? 'casting'} — ISO 8062-3 RMA typical; the drawing's RMA replaces it)`, 0.7);
+      + `${sub ?? 'casting'} — ISO 8062-3 RMA typical; the drawing's RMA replaces it)`
+      + (turnCm3 > 0 ? ` + ${fmt(turnCm3, 1)} cm³ turning stock on the ${fmt(turnedCm2, 0)} cm² spindle (${stockMm} mm a side)` : ''), 0.7);
   },
 };
 

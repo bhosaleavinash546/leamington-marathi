@@ -33,6 +33,23 @@ import { castingAlloyOf } from '../../casting-melt.js';
 import type { Decision, RuleContext } from '../types.js';
 import { familyFromMaterialId, materialFacts, type MaterialFacts } from './material.js';
 import { partNames } from './part-evidence.js';
+import { answeredBool, SAFETY_CRITICAL_DECISION_ID } from './service-context.js';
+
+/** Grey (flake), malleable and white irons — brittle: not a material for a safety-critical, fatigue-loaded part. */
+export const BRITTLE_IRON = /^mat-(gjl|gjmb|hicr-white)/;
+
+/**
+ * The cast-iron grade costed until the grade is answered. A part answered safety-critical
+ * is ductile EN-GJS-500-7 — the grade the library itself names for steering knuckles and
+ * hubs — never grey iron (stub axle live run, Oct 2026: a steering stub axle answered
+ * "safety-critical: yes" was still costed as EN-GJL-250 grey iron, because grey is the
+ * workhorse default and nothing tied the two answers together).
+ */
+export function castIronDefaultGrade(ctx: RuleContext): { id: string; why: string } {
+  return answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID) === true
+    ? { id: 'mat-gjs500', why: 'safety-critical / fatigue-loaded → ductile EN-GJS-500-7 (grey iron is brittle)' }
+    : { id: 'mat-gjl250', why: 'the grey-iron workhorse — not a drawing callout' };
+}
 
 export const GRADE_DECISION_ID = 'material.grade';
 
@@ -134,7 +151,20 @@ export function gradedMaterialFacts(ctx: RuleContext): MaterialFacts & { gradeId
   const mat = materialFacts(ctx);
   if (mat.decision || !mat.family) return { ...mat, gradeId: null };
   const g = explicitGrade(ctx, mat.family);
-  if (!g) return { ...mat, gradeId: null };
+  if (!g) {
+    // Cast iron: the default grade costed is grey or ductile (castIronDefaultGrade) — the mass is that
+    // iron's too, not the family's mid density (the £/kg and the kg are the same metal).
+    if (mat.family === 'cast iron' && mat.massKg !== null) {
+      const def = castIronDefaultGrade(ctx);
+      const m = DEFAULT_RATE_LIBRARY.materials.find(x => x.id === def.id);
+      const cm3 = ctx.geo.volume?.cm3 ?? 0;
+      if (m && cm3 > 0) {
+        return { ...mat, gradeId: null, massKg: Math.round(cm3 * m.densityKgPerM3 / 1e6 * 1000) / 1000,
+          basis: `${cm3.toFixed(0)} cm³ × ${m.densityKgPerM3} kg/m³ (${m.grade}, the default grade — ${def.why})` };
+      }
+    }
+    return { ...mat, gradeId: null };
+  }
   const m = DEFAULT_RATE_LIBRARY.materials.find(x => x.id === g.id)!;
   const cm3 = ctx.geo.volume?.cm3 ?? 0;
   return {
@@ -175,6 +205,7 @@ export function gradeDecision(ctx: RuleContext, family: MaterialFamily, defaultI
   const ev = gradeEvidence(ctx, gradeCandidates(ctx.commodity, family));
   const lean = ev && candidates.some(m => m.id === ev.id) ? ev.id : defaultId;
   const lo = candidates[0]; const hi = candidates[candidates.length - 1];
+  const safety = family === 'cast iron' && answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID) === true;
   return {
     id: GRADE_DECISION_ID, kind: 'material_grade',
     question: `Which ${family} grade?`,
@@ -184,7 +215,8 @@ export function gradeDecision(ctx: RuleContext, family: MaterialFamily, defaultI
       + `Until it is answered the part is costed at ${DEFAULT_RATE_LIBRARY.materials.find(m => m.id === (ev?.source === 'declared' ? ev.id : defaultId))?.grade}.`,
     options: candidates.map(m => ({
       value: m.id, label: m.grade,
-      consequence: `£${m.pricePerKg.toFixed(2)}/kg · ${(cm3 * m.densityKgPerM3 / 1e6).toFixed(2)} kg`,
+      consequence: `£${m.pricePerKg.toFixed(2)}/kg · ${(cm3 * m.densityKgPerM3 / 1e6).toFixed(2)} kg`
+        + (safety && BRITTLE_IRON.test(m.id) ? ' · brittle — not for a safety-critical part' : ''),
       leaning: m.id === lean,
     })),
     blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',

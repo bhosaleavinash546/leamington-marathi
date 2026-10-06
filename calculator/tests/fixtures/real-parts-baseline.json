@@ -10,7 +10,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3b6769469f4b4e32",
+      "partName": "AL_Battery_Can",
       "boundingBox": {
         "xMm": 46,
         "yMm": 46,
@@ -77,6 +77,8 @@
         "fraction": 1,
         "revolvedFraction": 0.872,
         "maxDiaMm": 46,
+        "externalAreaMm2": 11561.1,
+        "externalMaxDiaMm": 46,
         "axis": [
           0,
           0,
@@ -580,7 +582,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8d9680b45f492d5d",
+      "partName": "AL_Battery_Rail",
       "boundingBox": {
         "xMm": 1800,
         "yMm": 150,
@@ -969,7 +971,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-96113627c9e3f0fb",
+      "partName": "AL_Bumper_Beam",
       "boundingBox": {
         "xMm": 1300,
         "yMm": 140,
@@ -1330,7 +1332,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f5ebfc78cac0f63b",
+      "partName": "AL_Busbar",
       "boundingBox": {
         "xMm": 400,
         "yMm": 40,
@@ -1421,6 +1423,8 @@
         "fraction": 0.778,
         "revolvedFraction": 0.008,
         "maxDiaMm": 11,
+        "externalAreaMm2": 0,
+        "externalMaxDiaMm": 0,
         "axis": [
           0,
           0,
@@ -1668,7 +1672,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-59158739c1724806",
+      "partName": "AL_Crash_Box",
       "boundingBox": {
         "xMm": 400,
         "yMm": 120,
@@ -1759,6 +1763,8 @@
         "fraction": 0.497,
         "revolvedFraction": 0.001,
         "maxDiaMm": 10,
+        "externalAreaMm2": 0,
+        "externalMaxDiaMm": 0,
         "axis": [
           0,
           0,
@@ -2079,7 +2085,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a8706566fa7b4257",
+      "partName": "AL_Heat_Sink",
       "boundingBox": {
         "xMm": 150,
         "yMm": 120,
@@ -2588,7 +2594,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6fd10b67e3fcf336",
+      "partName": "AL_Machined_Bracket",
       "boundingBox": {
         "xMm": 400,
         "yMm": 80,
@@ -2679,6 +2685,8 @@
         "fraction": 0.549,
         "revolvedFraction": 0.002,
         "maxDiaMm": 12,
+        "externalAreaMm2": 0,
+        "externalMaxDiaMm": 0,
         "axis": [
           0,
           0,
@@ -2971,7 +2979,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8db089d5a6a1e94b",
+      "partName": "AL_Seal_Carrier",
       "boundingBox": {
         "xMm": 2000,
         "yMm": 30,
@@ -3350,7 +3358,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2b2b9f5e61b04a22",
+      "partName": "AL_Trim_Channel",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 40,
@@ -3701,7 +3709,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-aeb93c6955230234",
+      "partName": "BIW_Floor_Reinforcement",
       "boundingBox": {
         "xMm": 500,
         "yMm": 350,
@@ -3772,6 +3780,8 @@
         "fraction": 0.021,
         "revolvedFraction": 0.019,
         "maxDiaMm": 16,
+        "externalAreaMm2": 5497.7,
+        "externalMaxDiaMm": 16,
         "axis": [
           1,
           0,
@@ -4487,7 +4497,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-f1bef17bb6d286af",
+      "partName": "BIW_Inner_Panel",
       "boundingBox": {
         "xMm": 1160,
         "yMm": 760,
@@ -4558,6 +4568,8 @@
         "fraction": 0.02,
         "revolvedFraction": 0.019,
         "maxDiaMm": 30,
+        "externalAreaMm2": 25305,
+        "externalMaxDiaMm": 30,
         "axis": [
           1,
           0,
@@ -5209,7 +5221,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1290b352092c8281",
+      "partName": "BIW_Reinf_Channel",
       "boundingBox": {
         "xMm": 240,
         "yMm": 60,
@@ -5300,6 +5312,8 @@
         "fraction": 0.055,
         "revolvedFraction": 0.046,
         "maxDiaMm": 10,
+        "externalAreaMm2": 1885,
+        "externalMaxDiaMm": 10,
         "axis": [
           1,
           0,
@@ -5806,7 +5820,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-9ee5274df1f609fe",
+      "partName": "BM_Air_Duct",
       "boundingBox": {
         "xMm": 405,
         "yMm": 455,
@@ -5875,6 +5889,8 @@
         "fraction": 0.406,
         "revolvedFraction": 0.405,
         "maxDiaMm": 70,
+        "externalAreaMm2": 65973.4,
+        "externalMaxDiaMm": 70,
         "axis": [
           0,
           1,
@@ -7147,7 +7163,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d1f83b41b41fd3c5",
+      "partName": "BM_Washer_Reservoir",
       "boundingBox": {
         "xMm": 220,
         "yMm": 160,
@@ -7216,6 +7232,8 @@
         "fraction": 0.178,
         "revolvedFraction": 0.035,
         "maxDiaMm": 40,
+        "externalAreaMm2": 5654.9,
+        "externalMaxDiaMm": 40,
         "axis": [
           1,
           0,
@@ -8210,7 +8228,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-3f4cc9bf76468a70",
+      "partName": "COMP_Battery_Lid",
       "boundingBox": {
         "xMm": 700,
         "yMm": 500,
@@ -8279,6 +8297,8 @@
         "fraction": 0.116,
         "revolvedFraction": 0.028,
         "maxDiaMm": 30,
+        "externalAreaMm2": 15786.5,
+        "externalMaxDiaMm": 30,
         "axis": [
           1,
           0,
@@ -8814,7 +8834,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-ae10f9185e36df92",
+      "partName": "COMP_Hat_Stiffener",
       "boundingBox": {
         "xMm": 398.29,
         "yMm": 120,
@@ -8907,6 +8927,8 @@
         "fraction": 0.036,
         "revolvedFraction": 0.036,
         "maxDiaMm": 12,
+        "externalAreaMm2": 3656.8,
+        "externalMaxDiaMm": 12,
         "axis": [
           1,
           0,
@@ -9612,7 +9634,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-62b5d769eab92164",
+      "partName": "COMP_Roof_Panel",
       "boundingBox": {
         "xMm": 1200,
         "yMm": 900,
@@ -9681,6 +9703,8 @@
         "fraction": 0.094,
         "revolvedFraction": 0.047,
         "maxDiaMm": 80,
+        "externalAreaMm2": 70371.7,
+        "externalMaxDiaMm": 80,
         "axis": [
           1,
           0,
@@ -10000,7 +10024,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-d2fc56354f20270c",
+      "partName": "Casting_Braket",
       "boundingBox": {
         "xMm": 132,
         "yMm": 120,
@@ -10075,6 +10099,8 @@
         "fraction": 0.289,
         "revolvedFraction": 0.107,
         "maxDiaMm": 40,
+        "externalAreaMm2": 2999.4,
+        "externalMaxDiaMm": 40,
         "axis": [
           0,
           0,
@@ -10770,7 +10796,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-989b8fc9311aafb2",
+      "partName": "EXT_Fuel_Line_Tube",
       "boundingBox": {
         "xMm": 600,
         "yMm": 8,
@@ -10861,6 +10887,8 @@
         "fraction": 1,
         "revolvedFraction": 0.998,
         "maxDiaMm": 8,
+        "externalAreaMm2": 15079.6,
+        "externalMaxDiaMm": 8,
         "axis": [
           1,
           0,
@@ -11278,7 +11306,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-2b2c156c4f64f2e2",
+      "partName": "EXT_Twin_Chamber_Profile",
       "boundingBox": {
         "xMm": 2000,
         "yMm": 40,
@@ -11623,7 +11651,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6fbcb0ce2007d701",
+      "partName": "EXT_Vent_Pipe",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 32,
@@ -11714,6 +11742,8 @@
         "fraction": 1,
         "revolvedFraction": 0.997,
         "maxDiaMm": 32,
+        "externalAreaMm2": 100531,
+        "externalMaxDiaMm": 32,
         "axis": [
           1,
           0,
@@ -12133,7 +12163,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bc9ecb018692bd6c",
+      "partName": "FORGE_Control_Arm_Yoke",
       "boundingBox": {
         "xMm": 250,
         "yMm": 50,
@@ -12226,6 +12256,8 @@
         "fraction": 0.653,
         "revolvedFraction": 0.136,
         "maxDiaMm": 50,
+        "externalAreaMm2": 4115.3,
+        "externalMaxDiaMm": 50,
         "axis": [
           0,
           0,
@@ -12573,7 +12605,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-c00c1ec9b165cc8a",
+      "partName": "FORGE_Hub_Flange",
       "boundingBox": {
         "xMm": 140,
         "yMm": 140,
@@ -12640,6 +12672,8 @@
         "fraction": 0.911,
         "revolvedFraction": 0.475,
         "maxDiaMm": 140,
+        "externalAreaMm2": 15959.3,
+        "externalMaxDiaMm": 140,
         "axis": [
           0,
           0,
@@ -12926,7 +12960,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-6ab756b59d75b706",
+      "partName": "IM_Cable_Clip",
       "boundingBox": {
         "xMm": 40,
         "yMm": 25,
@@ -12993,6 +13027,8 @@
         "fraction": 0.442,
         "revolvedFraction": 0.007,
         "maxDiaMm": 5.2,
+        "externalAreaMm2": 0,
+        "externalMaxDiaMm": 0,
         "axis": [
           0,
           0,
@@ -13270,7 +13306,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-4c0a1797bc181e41",
+      "partName": "IM_ECU_Cover",
       "boundingBox": {
         "xMm": 180,
         "yMm": 120,
@@ -13339,6 +13375,8 @@
         "fraction": 0.384,
         "revolvedFraction": 0.009,
         "maxDiaMm": 7,
+        "externalAreaMm2": 692.7,
+        "externalMaxDiaMm": 7,
         "axis": [
           0,
           0,
@@ -14112,7 +14150,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b51acbeeff529b36",
+      "partName": "IM_Storage_Tray",
       "boundingBox": {
         "xMm": 600,
         "yMm": 400,
@@ -14181,6 +14219,8 @@
         "fraction": 0.065,
         "revolvedFraction": 0.009,
         "maxDiaMm": 10,
+        "externalAreaMm2": 4501.3,
+        "externalMaxDiaMm": 10,
         "axis": [
           1,
           0,
@@ -14811,7 +14851,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-1db4b788711ea221",
+      "partName": "MACH_Hydraulic_Manifold",
       "boundingBox": {
         "xMm": 120,
         "yMm": 80,
@@ -14878,6 +14918,8 @@
         "fraction": 0.198,
         "revolvedFraction": 0.035,
         "maxDiaMm": 18,
+        "externalAreaMm2": 0,
+        "externalMaxDiaMm": 0,
         "axis": [
           1,
           0,
@@ -15274,7 +15316,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-efd87f7178216a83",
+      "partName": "MACH_Stepped_Shaft",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -15365,6 +15407,8 @@
         "fraction": 0.951,
         "revolvedFraction": 0.821,
         "maxDiaMm": 40,
+        "externalAreaMm2": 16190.8,
+        "externalMaxDiaMm": 40,
         "axis": [
           0,
           0,
@@ -15681,17 +15725,17 @@
   {
     "part": "PRCR002.stp",
     "sha256": "e18406b344224a0c",
-    "note": "277 mm envelope at 9% fill, 15.1 mm bulk wall — a substantial cast housing. Assumed not pressure-tight; if it carries fluid, change this and the cost rises.",
+    "note": "Steering stub axle: spindle (bearing journals, taper, thread), flange with bolt circle, kingpin bosses. Cast in ductile iron and machined (a forged-steel stub axle is the other common route). Safety-critical (steering): X-ray, stress relief, ductile iron. Not pressure-tight.",
     "answers": {
-      "material.family": "aluminium",
+      "material.family": "cast iron",
       "commodity.route": "cast_and_machine",
       "service.pressureTight": "no",
       "service.toleranceClass": "standard",
-      "service.safetyCritical": "no"
+      "service.safetyCritical": "yes"
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-a4981f98214be3bc",
+      "partName": "PRCR002",
       "boundingBox": {
         "xMm": 274.51,
         "yMm": 222.36,
@@ -15764,6 +15808,8 @@
         "fraction": 0.35,
         "revolvedFraction": 0.194,
         "maxDiaMm": 120.4,
+        "externalAreaMm2": 22575.2,
+        "externalMaxDiaMm": 114,
         "axis": [
           1,
           0,
@@ -16727,16 +16773,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 49.78,
+      "total": 85.15,
       "breakdown": {
-        "rawMaterial": 14.46,
-        "process": 17.79,
-        "labour": 8.04,
-        "tooling": 0.43,
-        "packaging": 0.18,
-        "logistics": 0.3,
-        "overhead": 4.89,
-        "margin": 3.69
+        "rawMaterial": 25.06,
+        "process": 28.02,
+        "labour": 15.11,
+        "tooling": 1.25,
+        "packaging": 0.36,
+        "logistics": 0.71,
+        "overhead": 8.33,
+        "margin": 6.31
       }
     }
   },
@@ -16750,7 +16796,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-e27a1b36a1655f74",
+      "partName": "Part1",
       "boundingBox": {
         "xMm": 58.19,
         "yMm": 270,
@@ -16823,6 +16869,8 @@
         "fraction": 0.272,
         "revolvedFraction": 0.107,
         "maxDiaMm": 70,
+        "externalAreaMm2": 3945.5,
+        "externalMaxDiaMm": 70,
         "axis": [
           1,
           0,
@@ -17547,7 +17595,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-5e9e68f50af63d23",
+      "partName": "ROTO_Coolant_Tank",
       "boundingBox": {
         "xMm": 450,
         "yMm": 320,
@@ -17616,6 +17664,8 @@
         "fraction": 0.193,
         "revolvedFraction": 0.027,
         "maxDiaMm": 60,
+        "externalAreaMm2": 18378.3,
+        "externalMaxDiaMm": 60,
         "axis": [
           1,
           0,
@@ -17983,7 +18033,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-989a6385310437ef",
+      "partName": "ROTO_Header_Tank",
       "boundingBox": {
         "xMm": 240,
         "yMm": 160,
@@ -18052,6 +18102,8 @@
         "fraction": 0.192,
         "revolvedFraction": 0.025,
         "maxDiaMm": 30,
+        "externalAreaMm2": 4948,
+        "externalMaxDiaMm": 30,
         "axis": [
           1,
           0,
@@ -19009,7 +19061,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-4c540551b6444b48",
+      "partName": "RUB_AV_Mount",
       "boundingBox": {
         "xMm": 60,
         "yMm": 60,
@@ -19078,6 +19130,8 @@
         "fraction": 0.372,
         "revolvedFraction": 0.074,
         "maxDiaMm": 10,
+        "externalAreaMm2": 0,
+        "externalMaxDiaMm": 0,
         "axis": [
           0,
           0,
@@ -19347,7 +19401,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7baf335997f7875f",
+      "partName": "RUB_Door_Seal",
       "boundingBox": {
         "xMm": 1000,
         "yMm": 18,
@@ -19438,6 +19492,8 @@
         "fraction": 0.649,
         "revolvedFraction": 0.646,
         "maxDiaMm": 14,
+        "externalAreaMm2": 40958.9,
+        "externalMaxDiaMm": 14,
         "axis": [
           1,
           0,
@@ -19775,7 +19831,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-41b68277d934971d",
+      "partName": "RUB_Grommet",
       "boundingBox": {
         "xMm": 40,
         "yMm": 40,
@@ -19842,6 +19898,8 @@
         "fraction": 1,
         "revolvedFraction": 0.495,
         "maxDiaMm": 40,
+        "externalAreaMm2": 1784.4,
+        "externalMaxDiaMm": 40,
         "axis": [
           0,
           0,
@@ -20132,7 +20190,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-bd7771f4289ec547",
+      "partName": "Seat_Locking_Bracket",
       "boundingBox": {
         "xMm": 255.77,
         "yMm": 226.07,
@@ -20203,6 +20261,8 @@
         "fraction": 0.019,
         "revolvedFraction": 0.013,
         "maxDiaMm": 15.2,
+        "externalAreaMm2": 680.2,
+        "externalMaxDiaMm": 15.2,
         "axis": [
           0,
           1,
@@ -22670,7 +22730,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-8f9279e99a95cb30",
+      "partName": "TF_Battery_Box_Lid",
       "boundingBox": {
         "xMm": 900,
         "yMm": 600,
@@ -22739,6 +22799,8 @@
         "fraction": 0.215,
         "revolvedFraction": 0.024,
         "maxDiaMm": 50,
+        "externalAreaMm2": 33379.4,
+        "externalMaxDiaMm": 50,
         "axis": [
           1,
           0,
@@ -23053,7 +23115,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-e8a4ed9c5466b6b8",
+      "partName": "TF_Trim_Cover",
       "boundingBox": {
         "xMm": 300,
         "yMm": 200,
@@ -23122,6 +23184,8 @@
         "fraction": 0.153,
         "revolvedFraction": 0.03,
         "maxDiaMm": 16,
+        "externalAreaMm2": 3568.8,
+        "externalMaxDiaMm": 16,
         "axis": [
           1,
           0,
@@ -23944,7 +24008,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-7b86649824d0872b",
+      "partName": "steering_knuckle_RH",
       "boundingBox": {
         "xMm": 114.4,
         "yMm": 236.4,
@@ -24019,6 +24083,8 @@
         "fraction": 0.381,
         "revolvedFraction": 0.246,
         "maxDiaMm": 120,
+        "externalAreaMm2": 7072.1,
+        "externalMaxDiaMm": 90,
         "axis": [
           1,
           0,
@@ -24932,7 +24998,7 @@
     },
     "geometry": {
       "status": "success",
-      "partName": "cv-cad-b2a6f7b36ef69d17",
+      "partName": "test-gear-m3-z38",
       "boundingBox": {
         "xMm": 120,
         "yMm": 119.76,
@@ -25025,6 +25091,8 @@
         "fraction": 0.561,
         "revolvedFraction": 0.148,
         "maxDiaMm": 120,
+        "externalAreaMm2": 2588.5,
+        "externalMaxDiaMm": 120,
         "axis": [
           0,
           0,

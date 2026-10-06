@@ -57,3 +57,14 @@ describe('the hint matches the failure', () => {
     expect(analysisErrorHint('socket hang up')).toMatch(/npm run server/);
   });
 });
+
+describe('a missing geometry kernel says what is missing and how to fix it', () => {
+  it('names the kernel, the install, and the STL workaround — not "check the server is running"', async () => {
+    const { analysisErrorHint } = await import('../src/ui/cad-error-hint.js');
+    const h = analysisErrorHint("OCP not available: No module named 'OCP'");
+    expect(h).toMatch(/cadquery-ocp-novtk/);
+    expect(h).toMatch(/pip install -r requirements\.txt/);
+    expect(h).toMatch(/STL/);
+    expect(h).not.toMatch(/API server is running/);
+  });
+});

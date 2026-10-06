@@ -133,10 +133,20 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     (inputs.ndtCostPerPart ?? 0) +
     (inputs.machiningToolWearCostPerPart ?? 0);
 
+  const postItems = ([
+    ['heat treatment', (inputs.heatTreatmentCostPerKg ?? 0) * inputs.castPartWeightKg],
+    ['HIP', (inputs.hipCostPerKg ?? 0) * inputs.castPartWeightKg],
+    ['shot blast', inputs.shotBlastCostPerPart ?? 0],
+    ['impregnation', inputs.impregnationCostPerPart ?? 0],
+    ['deburring', inputs.deburringCostPerPart ?? 0],
+    ['NDT', inputs.ndtCostPerPart ?? 0],
+    ['cutting-tool wear', inputs.machiningToolWearCostPerPart ?? 0],
+  ] as Array<[string, number]>).filter(([, g]) => g > 0).map(([label, gbp]) => ({ label, gbp }));
   const finalRawMaterial = postCastCost > 0
     ? {
         ...castDrivers.rawMaterial,
         consumablesCostPerPart: (castDrivers.rawMaterial.consumablesCostPerPart ?? 0) + postCastCost,
+        consumablesItems: [...(castDrivers.rawMaterial.consumablesItems ?? []), ...postItems],
       }
     : castDrivers.rawMaterial;
 
