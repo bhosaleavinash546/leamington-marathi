@@ -415,6 +415,15 @@ describe('http integration', () => {
     assert.ok(k.convertedCases >= 1 && k.fx?.source, 'and it says which rate it used');
   });
 
+  it('a Horizon ledger snapshot revisited immediately shows no drift (same register, same inputs)', async () => {
+    const H = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+    const saved = await (await fetch(`${BASE}/api/foresight/ledger`, { method: 'POST', headers: H, body: JSON.stringify({ query: 'air suspension', commodityHint: 'Chassis' }) })).json();
+    assert.ok(saved.id, JSON.stringify(saved));
+    const back = await (await fetch(`${BASE}/api/foresight/ledger/${saved.id}`, { headers: H })).json();
+    assert.deepEqual(back.addedTechIds, [], 'an immediate revisit must not report added technologies');
+    assert.ok(back.drift.every((d) => !d.horizonMoved && !d.removed && d.momentumDelta === 0), 'an immediate revisit must not report drift');
+  });
+
   it('a thrown handler error returns JSON 500, and the server SURVIVES', async () => {
     // Malformed JSON body → express.json throws → error middleware, not a crash.
     const r = await fetch(`${BASE}/api/interest`, {

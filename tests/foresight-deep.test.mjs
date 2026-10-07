@@ -318,3 +318,23 @@ it('figure and unit parsing no longer manufacture disagreements', () => {
   assert.equal(unitOf2('140 kWh'), 'kwh');
   assert.equal(unitOf2('€4.20/kg'), 'eur/kg');
 });
+
+import { assessIndependence as assessIndependence2, quoteSimilarity } from '../foresight-deep.mjs';
+it('syndicated copy on another domain is NOT an independent confirmation (Oct 2026)', () => {
+  const q = 'The supplier said its new cells reach 255 Wh/kg at pack level and enter production in 2027.';
+  const claims = [
+    { id: 'c1', metric: 'energy density', subject: 'supplier cell', value: '255 Wh/kg', quote: q, origin: 'a.example' },
+    { id: 'c2', metric: 'energy density', subject: 'supplier cell', value: '255 Wh/kg', quote: q.replace('The supplier said', 'Reportedly'), origin: 'b.example' },
+    { id: 'c3', metric: 'energy density', subject: 'supplier cell', value: '255 Wh/kg', quote: 'Independent testing measured pack-level density of 255 Wh/kg on the production cell.', origin: 'c.example' },
+  ];
+  assert.ok(quoteSimilarity(claims[0].quote, claims[1].quote) >= 0.6);
+  const out = assessIndependence2(claims);
+  assert.equal(out[0].origins, 2, 'a + c are independent; b is a copy of a');
+  assert.equal(out[0].syndicatedCopies, 1);
+});
+
+it('patent claims are found under a Google Patents "Claims (N)" heading (Oct 2026)', () => {
+  const body = '1. A stator comprising laminations of 0.15 mm electrical steel bonded by an adhesive layer, wherein the stack has a yield strength of at least 600 MPa and the rotor runs above 20000 rpm.';
+  const page = `\nAbstract\nA stator.\nClaims (20)\n${body}\nDescription\nBackground...`;
+  assert.match(extractClaims(page) ?? '', /0\.15 mm electrical steel/);
+});

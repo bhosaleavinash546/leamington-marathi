@@ -87,12 +87,14 @@ export function extractClaims(text) {
   const src = String(text ?? '');
   if (!src) return null;
   // Patent pages mark the section in a small number of predictable ways.
-  const start = /\n\s*(claims?|what is claimed is|we claim|i claim)\s*[:.]?\s*\n/i.exec(src);
+  // Google Patents headings read "Claims (20)" — the count in brackets used to
+  // defeat the match, so 'claims' basis was rarely reached (Oct 2026 review).
+  const start = /\n\s*(claims?(?:\s*\(\d+\))?|what is claimed is|we claim|i claim)\s*[:.]?\s*\n/i.exec(src);
   if (!start) return null;
   const from = start.index + start[0].length;
   const rest = src.slice(from);
   // Claims usually end where the description or citations begin.
-  const end = /\n\s*(description|detailed description|references cited|patent citations|similar documents|priority and related applications)\s*\n/i.exec(rest);
+  const end = /\n\s*(description(?:\s*\(\w+\))?|detailed description|references cited|patent citations(?:\s*\(\d+\))?|cited by(?:\s*\(\d+\))?|similar documents|priority and related applications)\s*\n/i.exec(rest);
   const claims = (end ? rest.slice(0, end.index) : rest).trim();
   if (claims.length < 120) return null;
   return claims.slice(0, 12_000);

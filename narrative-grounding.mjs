@@ -60,3 +60,35 @@ export function groundNarrative(narrative, allText, cardTextById = {}) {
     numbersChecked: { droppedSentences: b.dropped, droppedSignals },
   };
 }
+
+/**
+ * SNIPPET-LEVEL RESEARCH IS CHECKED AGAINST THE SNIPPETS (Oct 2026 review).
+ *
+ * The per-card deep-dive and part-research paths synthesise from search-result
+ * snippets and only checked that a finding's url was retrieved. Now:
+ *   • a finding is kept only if every number in it appears in the snippet /
+ *     title / abstract of the source it cites;
+ *   • prose fields keep only sentences whose numbers appear somewhere in the
+ *     retrieved evidence.
+ * `evidence` = [{ url, text }].
+ */
+export function groundSnippetResearch(research, evidence, proseFields = []) {
+  const byUrl = new Map((evidence ?? []).filter((e) => e?.url).map((e) => [e.url, e.text ?? '']));
+  const allText = (evidence ?? []).map((e) => e.text ?? '').join(' ');
+  const allowedAll = numberTokens(allText);
+  let droppedFindings = 0, droppedSentences = 0;
+  const developments = (research?.developments ?? []).filter((d) => {
+    if (!byUrl.has(d?.url)) { droppedFindings++; return false; }
+    const allowed = numberTokens(`${byUrl.get(d.url)} ${d.sourceTitle ?? ''}`);
+    const ok = [...numberTokens(d.finding)].every((n) => allowed.has(n));
+    if (!ok) droppedFindings++;
+    return ok;
+  });
+  const out = { ...research, developments };
+  for (const f of proseFields) {
+    if (typeof out[f] !== 'string') continue;
+    const r = keepGroundedSentences(out[f], allowedAll);
+    out[f] = r.text; droppedSentences += r.dropped;
+  }
+  return { research: out, droppedFindings, droppedSentences };
+}

@@ -107,3 +107,12 @@ it('scope (Oct 2026): system-level queries keep their commodity; part queries ke
   // Plurals: "brakes" is not "brak".
   assert.ok(exact('brakes').length > 0, 'plural brakes query found nothing');
 });
+
+it('scope (7 Oct 2026): the coverage gaps are filled with sourced entries', () => {
+  const exact = (q) => { const r = foresightFor({ query: q }); return [...r.horizons.H1, ...r.horizons.H2, ...r.horizons.H3].filter((c) => !c.related).map((c) => c.id); };
+  assert.ok(exact('headlamps').length >= 3, 'headlamps');
+  assert.ok(exact('inverter').length >= 6, 'inverter');
+  assert.ok(exact('steering').length >= 4, 'steering');
+  assert.ok(exact('BIW underbody').length >= 4, 'BIW underbody');
+  assert.ok(exact('lighting').length >= 5, 'lighting');
+});

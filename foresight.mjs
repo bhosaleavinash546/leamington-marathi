@@ -406,7 +406,7 @@ function termPattern(term) {
  * 2-speed gearbox level with laminations for "EDU stator assembly" (Oct 2026
  * review). A hit on one of these is weak evidence — see GENERIC hits below.
  */
-export const GENERIC_MATCH_TERMS = new Set(['battery', 'edu', 'e-motor', 'motor', 'interior', 'exterior', 'biw', 'chassis', 'electrical', 'electronics', 'hvac', 'adas', 'body', 'pack', 'cell', 'powertrain', 'driveline', 'thermal', 'system', 'software', 'safety', 'lighting', 'ice', 'bev', 'ev']);
+export const GENERIC_MATCH_TERMS = new Set(['battery', 'edu', 'e-motor', 'motor', 'interior', 'exterior', 'biw', 'chassis', 'electrical', 'electronics', 'hvac', 'adas', 'body', 'pack', 'cell', 'powertrain', 'driveline', 'thermal', 'system', 'software', 'safety', 'ice', 'bev', 'ev']);
 
 /** Words that qualify a query without naming a part. */
 const QUERY_QUALIFIERS = new Set(['hv', 'lv', 'high', 'low', 'voltage', 'assembly', 'assemblies', 'system', 'systems', 'unit', 'units', 'part', 'parts', 'module', 'modules', 'mhev', 'phev', 'hev', '48v', '800v', '400v', 'new', 'next', 'gen', 'the', 'and', 'for', 'of']);

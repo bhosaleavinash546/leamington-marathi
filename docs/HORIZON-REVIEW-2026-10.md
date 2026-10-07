@@ -131,8 +131,9 @@ Limits:
    - "HVAC heat pump" (5)
    - "wiring harness" (5)
    - "EDU stator assembly" (3 exact plus labelled landscape)
-4. **Thin queries to avoid:** headlamps (1 exact), steering wheel (1), BIW
-   underbody (3), inverter (3). They are honest but sparse.
+4. **Formerly thin queries are now covered** (7 Oct follow-up): inverter
+   (7 exact), lighting (6), steering (4), BIW underbody (4), headlamps (3).
+   "Steering wheel" (2) and "tail lamp" (2) are still sparse.
 5. **Deep research takes 2–10 minutes.** Run it before the meeting and open
    the cached result.
 
@@ -163,3 +164,27 @@ Limits:
 **Engine (S3)**
 - Ledger snapshots are taken on the static register.
 - The stale-evidence tooltip uses the browser clock.
+
+## Follow-up, 7 October 2026 (pending items 1–7)
+
+| # | Item | Done |
+|---|---|---|
+| 1 | Search failures visible | Brave errors are named and counted in every research report ("k of n searches fell back: Brave 429"). Brave calls are spaced to about 1 per second, with one retry on a 429. |
+| 2 | Older snippet paths | The per-card deep-dive and part research keep a finding only if its numbers are in the snippet it cites, and prose only if its numbers are in the evidence. URLs are safety-checked, results are labelled "snippet-level, not page-verified", and the verdict is marked as an AI judgement. |
+| 3 | Syndicated copy | Agreeing claims with near-identical quotes (3-gram Jaccard ≥ 0.6) count as one origin (`syndicatedCopies`). |
+| 4 | Ledger snapshot | The snapshot uses the merged register and the BOM commodity hint. An immediate revisit shows no drift (integration test). |
+| 5 | Small fixes | The stale tooltip age is taken from the register vintage. Patent and catalogue failures now show messages. The Google Patents "Claims (N)" heading is detected. Deep-sweep URLs are http(s) only. The invented "60+" placeholder count is gone. |
+| 6 | 9 unchecked claims | 7 corrected and 1 confirmed correct. Ninth claim (in-wheel motors): TRL 6 → 7, with Lordstown and Lightyear stated as limited, failed series use. Other corrections: hairpin origin (Delco Remy; GM two-mode 2008); Niron (pilot 2024, Sartell 2027); Hyundai Mobis e-Corner (not Uni Wheel); halfshaft and cylinder-deactivation figures softened; Magna supplies the G 580 low-range drives (not ZF/BorgWarner); Hyundai's NA EREV is the Santa Fe in H1 2027. |
+| 7 | Thin coverage | 12 new sourced entries:<br>• inverter: double-sided cooling, silver-sinter packaging, boost charging, OEM in-house modules;<br>• BIW: hot-stamped mega-blank underbody, low-temp e-coat;<br>• lighting: US ADB, ADS marker lamps, micro-optics;<br>• steering: redundant EPS, capacitive hands-on wheels, high-output EPS.<br>Weakly sourced players were dropped. Adoption shares are conservative estimates (none was published). |
+
+Quotes for the new entries and for the nine checks are mostly search-result
+text, because the proxy blocked the pages. Click the `evidenceUrl` links
+before the demo.
+
+The self-audit gate moved 118 → 131: +2 from honest corrections, +11 from the
+new entries, whose first production is genuinely 2021–22.
+
+Still open:
+- adoption ceilings for the uncurated entries (needs engineering sign-off);
+- refreshing the worst stale entries;
+- a US FMVSS 108 ADB regulatory anchor (it does not exist in REG_ANCHORS yet).

@@ -76,6 +76,7 @@ interface DeepResult {
 }
 interface HorizonWindow { label: string; from: number; to: number | null; }
 interface ForesightResult {
+  commodityHint?: string | null;
   query: string; commodity: string | null; powertrain: string | null;
   segment?: string | null;
   benchmarks?: BenchmarkVehicle[];
@@ -108,12 +109,14 @@ interface ResearchedBlock {
   evidence?: {
     searches?: Array<{ title: string; url: string; source?: string; read?: boolean; chars?: number; publishedYear?: number; readError?: string }>;
     patents?: Array<{ title: string; url: string; assignee?: string }>;
-    provider?: { configured: boolean; note: string | null };
+    provider?: { configured: boolean; note: string | null; fallbackNote?: string | null };
     readCount?: number; readNote?: string;
   };
   rejected?: Array<{ name: string; why: string }>;
 }
 interface BenchmarkVehicle { vehicle: string; brand: string; year: number; powertrains: string[]; signature: string[]; watch: string; }
+/** The register vintage the engine scores currency against (foresight.mjs REGISTER_VINTAGE). */
+const REGISTER_VINTAGE_UI = 2026;
 interface Catalogue { commodities: string[]; powertrains: string[]; segments?: string[]; technologies: number; vintage: number; bom?: Record<string, Record<string, string[]>>; analyzeSystems?: Record<string, string[]>; }
 interface PartResearch {
   research: { summary: string; developments: Array<{ finding: string; sourceTitle: string; url: string }>; outlook: string; risks: string } | null;
@@ -190,7 +193,9 @@ function CurrencyChip({ currency }: { currency: Currency }) {
   const title = currency.tier === 'fresh'
     ? `Currency: ${currency.basis}.`
     : currency.tier === 'stale'
-      ? `Currency: ${currency.basis} — older than ${new Date().getFullYear() - (currency.evidenceYear ?? 0)} years. It may still be true, but nothing here has confirmed it recently.`
+      // Age against the REGISTER VINTAGE (the engine's clock), stated exactly —
+      // "older than N years" used the browser clock and was off by one.
+      ? `Currency: ${currency.basis} — ${REGISTER_VINTAGE_UI - (currency.evidenceYear ?? REGISTER_VINTAGE_UI)} years old against the ${REGISTER_VINTAGE_UI} register (stale after 3 years). It may still be true, but nothing here has confirmed it recently.`
       : 'Currency: this entry cites no dated evidence at all. Absent is not the same as current.';
   return (
     <span className={`px-1.5 py-0.5 rounded-md border text-2xs font-semibold uppercase tracking-wide ${style}`} title={title}>
@@ -343,6 +348,7 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
   const [open, setOpen] = useState(false);
   const [evidence, setEvidence] = useState<Evidence | null>(null);
   const [evLoading, setEvLoading] = useState(false);
+  const [evError, setEvError] = useState('');
   const [dive, setDive] = useState<DeepDive | null>(null);
   const [diveLoading, setDiveLoading] = useState(false);
   const [diveError, setDiveError] = useState('');
@@ -356,9 +362,12 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ techId: c.id }),
       });
-      const d = await r.json();
-      if (r.ok) setEvidence(d);
-    } finally { setEvLoading(false); }
+      const d = await r.json().catch(() => ({}));
+      // A failure says so (Oct 2026 review: the button just stopped spinning).
+      if (r.ok) { setEvidence(d); setEvError(''); }
+      else setEvError(d.error || `Patent evidence could not be loaded (HTTP ${r.status}).`);
+    } catch { setEvError('Patent evidence could not be loaded — the server did not respond.'); }
+    finally { setEvLoading(false); }
   }
 
   async function loadDeepDive() {
@@ -495,10 +504,11 @@ function TechCardView({ c, signal, critiques }: { c: TechCard; signal?: string; 
             {diveLoading ? <ButtonSpinner size={10} /> : <Microscope size={12} />} Deep research (AI, cited sources)
           </button>
           {diveError && <p className="text-red-400 text-2xs mt-1">{diveError}</p>}
+          {evError && <p className="text-red-400 text-2xs mt-1">{evError}</p>}
           {dive && !dive.research && <p className="text-slate-500 text-2xs mt-1">{dive.note}</p>}
           {dive?.research && (
             <div className="mt-2 space-y-1.5">
-              <span className={`inline-block px-1.5 py-0.5 rounded border text-2xs ${VERDICT_STYLE[dive.research.registerVerdict]}`}>evidence {dive.research.registerVerdict === 'supports' ? 'supports' : dive.research.registerVerdict === 'challenges' ? 'challenges' : 'is mixed on'} the register position</span>
+              <span className={`inline-block px-1.5 py-0.5 rounded border text-2xs ${VERDICT_STYLE[dive.research.registerVerdict]}`}>evidence {dive.research.registerVerdict === 'supports' ? 'supports' : dive.research.registerVerdict === 'challenges' ? 'challenges' : 'is mixed on'} the register position <span className="text-slate-500">(AI judgement)</span></span>
               {dive.research.developments.map((d, i) => (
                 <p key={i} className="text-slate-400 text-2xs leading-relaxed">
                   {d.finding}{' '}
@@ -595,6 +605,7 @@ export default function ForesightPage() {
   const { token } = useAuth();
   const reduced = useReducedMotion();
   const [catalogue, setCatalogue] = useState<Catalogue | null>(null);
+  const [catalogueError, setCatalogueError] = useState(false);
   const [query, setQuery] = useState('');
   const [commodity, setCommodity] = useState('');
   const [powertrain, setPowertrain] = useState('');
@@ -633,7 +644,10 @@ export default function ForesightPage() {
   const [stage, setStage] = useState(0);
 
   useEffect(() => {
-    fetch('/api/foresight/catalogue').then(r => r.json()).then(setCatalogue).catch(() => {});
+    fetch('/api/foresight/catalogue')
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(setCatalogue)
+      .catch(() => setCatalogueError(true));
   }, []);
 
   // Staged "computing the future" loader — advances through the real pipeline
@@ -730,7 +744,7 @@ export default function ForesightPage() {
     try {
       const r = await fetch('/api/foresight/ledger', {
         method: 'POST', headers: authHeaders,
-        body: JSON.stringify({ query: result.query, commodity: result.commodity || undefined, powertrain: result.powertrain || undefined, segment: result.segment || undefined }),
+        body: JSON.stringify({ query: result.query, commodity: result.commodity || undefined, powertrain: result.powertrain || undefined, segment: result.segment || undefined, commodityHint: result.commodityHint || undefined }),
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Could not save.');
@@ -869,7 +883,7 @@ export default function ForesightPage() {
             dish, orbits, perspective grid, gradient title) made Horizon read as
             a landing page inside the product; the grid backdrop stays. */}
         <PageHeader tool="horizon" className="mb-6"
-          subtitle={<>{catalogue ? <TickNumber value={catalogue.technologies} duration={1200} /> : '60+'} technologies on deterministic adoption curves — when will each reshape this part?</>} />
+          subtitle={<>{catalogue ? <><TickNumber value={catalogue.technologies} duration={1200} /> technologies</> : 'Curated technologies'} on deterministic adoption curves — when will each reshape this part?</>} />
 
         {/* Input */}
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-6 mb-6">
@@ -883,6 +897,9 @@ export default function ForesightPage() {
               {(catalogue?.commodities ?? []).map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
+          {catalogueError && (
+            <p className="text-amber-300 text-xs mt-2">The technology catalogue could not be loaded, so the commodity and BOM pickers are empty — type a part name instead.</p>
+          )}
           {/* Segment lens — the dedicated Off-Road / Luxury SUV category */}
           <div className="flex flex-wrap items-center gap-2 mt-3">
             <span className="text-slate-500 text-xs mr-1">Segment:</span>
@@ -1193,6 +1210,9 @@ export default function ForesightPage() {
                   <span className="text-slate-400">{result.researched.evidence.readNote}</span>
                   {result.researched.evidence.provider && !result.researched.evidence.provider.configured && (
                     <span className="text-amber-300/80"> No web-search provider is configured, so coverage is materially weaker than it would be with a search key.</span>
+                  )}
+                  {result.researched.evidence.provider?.fallbackNote && (
+                    <span className="text-amber-300/80"> {result.researched.evidence.provider.fallbackNote}</span>
                   )}
                 </p>
               )}

@@ -392,28 +392,58 @@ export function numericConflicts(claims, { tolerance = 0.05 } = {}) {
  * gets `origins` (how many distinct domains carry it) and `independent`
  * (whether more than one does).
  */
+/** Word 3-gram shingles of a quote, for near-duplicate (syndication) detection. */
+function shingles(text) {
+  const w = String(text ?? '').toLowerCase().replace(/[^a-z0-9.%]+/g, ' ').trim().split(' ').filter(Boolean);
+  const out = new Set();
+  for (let i = 0; i + 3 <= w.length; i++) out.add(w.slice(i, i + 3).join(' '));
+  return out;
+}
+/** Jaccard overlap of two quotes' shingles (0..1). */
+export function quoteSimilarity(a, b) {
+  const A = shingles(a), B = shingles(b);
+  if (!A.size || !B.size) return 0;
+  let inter = 0;
+  for (const x of A) if (B.has(x)) inter++;
+  return inter / (A.size + B.size - inter);
+}
+/** At or above this overlap two quotes are the same text republished. */
+export const SYNDICATION_SIMILARITY = 0.6;
+
 export function assessIndependence(claims) {
   const list = claims ?? [];
   const originsFor = new Map();     // claim -> Set(origins agreeing with it)
+  const syndicatedFor = new Map();  // claim -> number of agreeing domains collapsed as copies
   for (const cluster of clusterClaims(list)) {
     // Within a comparable cluster, agreement means the SAME figure (within
     // rounding) — two sources disagreeing do not corroborate each other.
     for (const c of cluster) {
       const f = parseFigure(c.value);
       const agree = new Set();
+      // Distinct DOMAINS are not distinct ORIGINS (Oct 2026 review): the same
+      // article syndicated to three sites used to count as three independent
+      // confirmations. An agreeing claim whose quote is near-identical text to
+      // one already counted is the same origin republished.
+      const counted = [];   // quotes of origins already counted
+      let syndicated = 0;
       for (const other of cluster) {
         const g = parseFigure(other.value);
         const same = (f === null || g === null)
           ? String(c.value ?? '').toLowerCase() === String(other.value ?? '').toLowerCase()
           : Math.abs(f - g) <= Math.max(Math.abs(f), 1e-9) * 0.02;   // 2% = rounding
-        if (same && other.origin) agree.add(other.origin);
+        if (!same || !other.origin || agree.has(other.origin)) continue;
+        if (counted.some((q) => quoteSimilarity(q, other.quote) >= SYNDICATION_SIMILARITY)) { syndicated++; continue; }
+        agree.add(other.origin);
+        counted.push(other.quote);
       }
       originsFor.set(c, agree);
+      syndicatedFor.set(c, syndicated);
     }
   }
   return list.map((c) => {
     const origins = originsFor.get(c)?.size ?? (c.origin ? 1 : 0);
-    return { ...c, origins, independent: origins > 1 };
+    const syndicated = syndicatedFor.get(c) ?? 0;
+    return { ...c, origins, independent: origins > 1, ...(syndicated ? { syndicatedCopies: syndicated } : {}) };
   });
 }
 
@@ -483,6 +513,7 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
   if (typeof messagesJson !== 'function' || !client) throw new Error('deepResearch needs a model client');
 
   const limitations = [];
+  let searchTotal = 0, searchFellBack = 0; const searchReasons = new Set();
   if (!searchApiKey) limitations.push('No web-search provider was configured, so retrieval fell back to whatever the default helper returns — coverage is materially weaker than a configured search key gives.');
   if (!fetchImpl) limitations.push('Page fetching was unavailable, so sources could not be opened and every claim rests on search snippets.');
   limitations.push('Paid engineering databases (SAE Mobilus, IEEE Xplore, ScienceDirect) require a subscription and were NOT searched. Patent claims and open technical sources carry that weight instead, and some peer-reviewed detail is therefore out of reach.');
@@ -557,8 +588,12 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
     for (const probe of fresh) {
       triedTerms.add(probe.term.toLowerCase());
       const hits = await Promise.resolve(performSearch?.(probe.term, searchApiKey, {})).catch(() => []);
+      searchTotal++;
+      if (searchApiKey && hits?.provider && hits.provider !== 'brave') { searchFellBack++; if (hits.fallbackReason) searchReasons.add(hits.fallbackReason); }
       for (const h of (hits ?? []).slice(0, 6)) {
-        const url = String(h?.url ?? '');
+        // Only http(s) URLs reach an href or a fetch (Oct 2026 review).
+        let url = '';
+        try { const u = new URL(String(h?.url ?? '')); if (u.protocol === 'http:' || u.protocol === 'https:') url = u.toString(); } catch { /* not a URL */ }
         if (!url || seenUrls.has(url)) continue;
         seenUrls.add(url);
         found.push({
@@ -662,6 +697,8 @@ export async function deepResearch(subject, deps = {}, opts = {}) {
       });
     if (!activeProbes.length) break;
   }
+
+  if (searchFellBack) limitations.push(`${searchFellBack} of ${searchTotal} searches fell back from Brave to an instant-answer service (${[...searchReasons].join('; ')}) — those probes returned encyclopedia-level results, not technical sources.`);
 
   // ── PATENTS ────────────────────────────────────────────────────────────────
   let patentBlock = { configured: false, patents: [], read: 0, note: 'Patent mining was not requested for this depth.' };

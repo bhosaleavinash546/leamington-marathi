@@ -296,7 +296,13 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // immersion-cooling player). Removing the false
   // evidence correctly re-exposes the debt. A flag cleared by a wrong fact is
   // worse than a flag.
-  assert.ok(a.flaggedCount <= 118, `curation debt grew to ${a.flaggedCount}`);
+  // 118 → 131 (7 Oct 2026), all honest: +2 from the second fact-check pass
+  // (ZF/BorgWarner removed from BEV low-range — Magna supplies it; in-wheel
+  // motors lost a TRL it had not earned), +11 from TWELVE NEW sourced entries
+  // (lighting, steering, inverters, BIW), mostly "stale" because their first
+  // production really is 2021-22. New coverage brings its own debt; the gate
+  // still forbids any EXISTING entry getting worse unnoticed.
+  assert.ok(a.flaggedCount <= 131, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 

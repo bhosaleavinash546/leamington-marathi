@@ -2448,6 +2448,20 @@ const emitIdeasTool = {
   },
 };
 
+// Brave's free tier allows roughly one query per second; a deep run issues
+// 13-40, so calls are spaced and a 429 is retried once (Oct 2026 review).
+let braveNextAt = 0;
+async function braveSlot() {
+  const now = Date.now();
+  const at = Math.max(now, braveNextAt);
+  braveNextAt = at + 1100;
+  if (at > now) await new Promise((r) => setTimeout(r, at - now));
+}
+// The provider that ANSWERED, and why Brave did not, ride on the returned array
+// (`results.provider`, `results.fallbackReason`) so callers keep their array
+// contract while research reports can say "k of n searches fell back".
+const tagResults = (arr, provider, fallbackReason = null) => Object.assign(arr, { provider, fallbackReason });
+
 async function performSearch(query, braveApiKey, opts = {}) {
   // Locale matters for foresight: an English-only query answered from an
   // English-only index returns the Anglophone view of a global industry. Brave
@@ -2458,17 +2472,28 @@ async function performSearch(query, braveApiKey, opts = {}) {
     opts.country ? `&country=${encodeURIComponent(opts.country)}` : '',
     opts.searchLang ? `&search_lang=${encodeURIComponent(opts.searchLang)}` : '',
   ].join('');
+  let fallbackReason = braveApiKey?.trim() ? null : 'no Brave key configured';
   if (braveApiKey?.trim()) {
-    try {
-      const resp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=6${locale}`, {
-        headers: { Accept: 'application/json', 'X-Subscription-Token': braveApiKey.trim() },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        return (data.web?.results || []).map(r => ({ title: r.title, url: r.url, snippet: r.description || '', source: new URL(r.url).hostname.replace('www.', '') }));
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        await braveSlot();
+        const resp = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=6${locale}`, {
+          headers: { Accept: 'application/json', 'X-Subscription-Token': braveApiKey.trim() },
+          signal: AbortSignal.timeout(8000),
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          return tagResults((data.web?.results || []).map(r => ({ title: r.title, url: r.url, snippet: r.description || '', source: new URL(r.url).hostname.replace('www.', '') })), 'brave');
+        }
+        fallbackReason = resp.status === 429 ? 'Brave rate limit (429)'
+          : resp.status === 401 || resp.status === 403 ? `Brave rejected the key (${resp.status})`
+          : resp.status === 402 ? 'Brave quota exhausted (402)' : `Brave error ${resp.status}`;
+        if (resp.status !== 429) break;               // only a rate limit is worth one retry
+      } catch (e) {
+        fallbackReason = `Brave unreachable (${String(e?.name || e?.message || e).slice(0, 40)})`;
+        break;
       }
-    } catch {}
+    }
   }
   try {
     const resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`, { headers: { 'User-Agent': 'BrainSpark/2.1' }, signal: AbortSignal.timeout(8000) });
@@ -2479,11 +2504,11 @@ async function performSearch(query, braveApiKey, opts = {}) {
     for (const t of (data.RelatedTopics || []).slice(0, 4)) {
       if (t.Text && t.FirstURL) results.push({ title: t.Text.split(' - ')[0]?.slice(0, 80) || '', url: t.FirstURL, snippet: t.Text?.slice(0, 300) || '', source: new URL(t.FirstURL).hostname.replace('www.', '') });
     }
-    return results.filter(r => r.snippet).slice(0, 5);
+    return tagResults(results.filter(r => r.snippet).slice(0, 5), 'duckduckgo', fallbackReason);
   } catch {
     // Honest degradation: return NO results rather than a fake "result".
     // The caller surfaces resultCount:0 and instructs the model not to fabricate citations.
-    return [];
+    return tagResults([], 'none', fallbackReason ? `${fallbackReason}; fallback search also failed` : 'search unavailable');
   }
 }
 

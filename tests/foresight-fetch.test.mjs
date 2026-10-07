@@ -187,6 +187,23 @@ describe('the research pipeline reads pages and drops unsupported claims', () =>
     assert.match(out.rejected[0].why, /quote is not present/);
   });
 
+  it('a configured Brave key that fails is reported, not hidden (Oct 2026)', async () => {
+    const d = deps([{ ...base, sourceQuote: 'Xiaomi V8s EVO runs 0.15 mm laminations at 960 MPa yield in 2025 production.' }]);
+    const inner = d.performSearch;
+    d.performSearch = async (...a) => Object.assign(await inner(...a), { provider: 'duckduckgo', fallbackReason: 'Brave rate limit (429)' });
+    d.searchApiKey = 'BSA-test';
+    const out = await researchFutureTechnologies('stator lamination', d);
+    assert.ok(out.evidence.provider.fellBack > 0);
+    assert.match(out.evidence.provider.fallbackNote, /fell back.*Brave rate limit \(429\)/);
+  });
+
+  it('a candidate figure or production claim not in the evidence is blanked (Oct 2026)', async () => {
+    const out = await researchFutureTechnologies('stator lamination', deps([{ ...base, quantitativeSpec: '0.08 mm at 1500 MPa', earliestProduction: 'BMW Neue Klasse (2025)',
+      sourceQuote: 'Xiaomi V8s EVO runs 0.15 mm laminations at 960 MPa yield in 2025 production.' }]));
+    assert.equal(out.candidates[0].quantitativeSpec, '');
+    assert.equal(out.candidates[0].specVerified, false);
+  });
+
   it('says plainly when no search provider was configured', async () => {
     const out = await researchFutureTechnologies('stator lamination', deps([{ ...base, sourceQuote: 'Xiaomi V8s EVO runs 0.15 mm laminations at 960 MPa yield in 2025 production.' }]));
     assert.equal(out.evidence.provider.configured, false);

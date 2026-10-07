@@ -266,6 +266,9 @@ export function positionCandidates(candidates, { now = REGISTER_VINTAGE } = {}) 
       sourceQuote: str(c.sourceQuote, 240),
       sourceRead: Boolean(c.sourceRead),
       quantitativeSpec: str(c.quantitativeSpec, 200),
+      // Oct 2026: the verification stamps must survive positioning too, or the
+      // UI cannot tell a checked figure from an unchecked one.
+      quoteVerified: c.quoteVerified, specVerified: c.specVerified, productionVerified: c.productionVerified,
     };
   });
 }
@@ -289,11 +292,14 @@ export async function researchFutureTechnologies(query, deps) {
 
   const plan = buildResearchPlan(q);
   const searches = [];
+  const searchLog = { total: 0, fellBack: 0, reasons: new Set() };
   for (const probe of plan) {
     const sq = typeof probe === 'string' ? probe : probe.q;
     const locale = typeof probe === 'string' ? {} : { country: probe.country, searchLang: probe.searchLang };
     const cap = (typeof probe === 'string' ? 3 : probe.hits) ?? 3;
     const hits = await performSearch(sq, searchApiKey, locale).catch(() => []);
+    searchLog.total++;
+    if (searchApiKey && hits?.provider && hits.provider !== 'brave') { searchLog.fellBack++; if (hits.fallbackReason) searchLog.reasons.add(hits.fallbackReason); }
     for (const r of (hits || []).slice(0, cap)) {
       const url = safeUrl(r?.url);
       if (!url) continue;               // unusable scheme => not a citable source
@@ -459,6 +465,12 @@ export async function researchFutureTechnologies(query, deps) {
   const readCounted = searches.filter((r) => r.read).length;
   const provider = {
     configured: Boolean(searchApiKey),
+    // A configured key is not a working key: say how many searches Brave
+    // actually answered (Oct 2026 review — errors fell back silently).
+    fellBack: searchLog.fellBack, searches: searchLog.total,
+    fallbackNote: searchLog.fellBack
+      ? `${searchLog.fellBack} of ${searchLog.total} searches fell back to an instant-answer service (${[...searchLog.reasons].join('; ')}) — coverage for those probes is encyclopedia-level, not technical.`
+      : null,
     // Honest failure (Phase 0 finding HZ-7): with no provider key the search
     // helper falls back to an instant-answer API that returns encyclopedia
     // summaries, not technical sources. That is a coverage limitation the
