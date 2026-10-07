@@ -326,7 +326,11 @@ const NOT_PRODUCTION_RE = /\b(discontinu\w*|review\w*|research|concept\w*|announ
 /** A named series-production programme — not a review paper, a pilot or a plan. */
 export function hasProductionEvidence(firstProduction) {
   const t = typeof firstProduction === 'string' ? firstProduction.trim() : '';
-  return t !== '' && !/^none/i.test(t) && !NOT_PRODUCTION_RE.test(t);
+  if (t === '' || /^none/i.test(t)) return false;
+  // Judge each programme on its own: "NIO pack (2024; discontinued 2025);
+  // SAIC MG4 (deliveries Dec 2025)" has live series production even though
+  // one item was discontinued — the whole string used to fail on one word.
+  return t.split(/;|→/).map((x) => x.trim()).filter(Boolean).some((x) => !NOT_PRODUCTION_RE.test(x));
 }
 
 /** committed: production-ready (TRL ≥ 7) AND anchored to binding law or a

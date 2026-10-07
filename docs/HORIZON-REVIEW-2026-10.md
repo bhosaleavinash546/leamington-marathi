@@ -219,3 +219,48 @@ Still open:
   - Key finding: approving them moves 33 technologies from H2 to H1, because
     the lane rule uses a quarter of each technology's *own* ceiling. Decide
     that model question together with the values.
+
+## BEV battery update, 7 October 2026
+
+All 29 Battery entries were refreshed against 2025–26 sources and four
+technologies were added. The Battery commodity now has 33 entries.
+
+- **Shares and maturity:**
+  - LFP is 55% of EV batteries deployed globally in 2025 (IEA GEVO 2026;
+    was 40%) and is more than 40% cheaper than NMC.
+  - Sodium-ion is 0.1% (CATL guides 10–20k Na-ion EVs in 2026). The Changan
+    Nevo A06 is the first mass-produced Na-ion car.
+  - Semi-solid TRL 6 → 8 (SAIC MG4 QingTao deliveries, Dec 2025).
+  - Dry electrode TRL 7 → 8 (Tesla fully dry 4680 in volume, Q4 2025).
+- **Programmes:**
+  - BYD Blade 2.0 / CTB 2.0 and 1.5 MW flash charging (11,586 stations by
+    Sep 2026).
+  - BYD 1000 V Super e-Platform.
+  - Rivian R2 4695 deliveries (Jun 2026).
+  - NIO 4,090 swap stations; CATL Choco-swap at 2,000 stations.
+  - GB 38031-2025 dates: new types Jul 2026, existing types Jul 2027.
+- **Players:**
+  - Group14 owns its former SK JV.
+  - Sila's Moses Lake plant is online.
+  - SES AI has left EV cells.
+  - Ford is out of V2G (F-150 Lightning ended).
+  - Zeekr is out of 1000 V (its platform is 900 V).
+  - GM no longer uses the "Ultium" brand.
+- **New entries:**
+  - in-pack thermal-runaway gas and pressure sensing (anchored to GB 38031);
+  - high-voltage mid-nickel single-crystal NCM;
+  - dual-chemistry packs (CATL Freevoy Na+Li; NIO NCM+LFP);
+  - VW's unified prismatic cell.
+- **Removed or skipped:**
+  - an unsourced claim about GM's LFP plans (LMR entry);
+  - Blade 2.0 as LMFP (the source is conditional);
+  - market-research-only player additions;
+  - an ambiguous future housing SOP;
+  - debond-on-demand adhesives (no production vehicle).
+- **Engine fix:** production evidence is now judged per programme. One
+  discontinued or planned item no longer hides a live series programme in
+  the same list. This corrected 7 entries to COMMITTED, each with a real
+  series programme.
+
+As before, page fetches were blocked by the proxy, so the quotes are
+search-result text. Open the `evidenceUrl` links before the demo.
