@@ -188,3 +188,34 @@ Still open:
 - adoption ceilings for the uncurated entries (needs engineering sign-off);
 - refreshing the worst stale entries;
 - a US FMVSS 108 ADB regulatory anchor (it does not exist in REG_ANCHORS yet).
+
+## Follow-up, 7 October 2026 (items 5–7)
+
+- **7. US FMVSS 108 ADB anchor.**
+  - New in-force anchor `us-fmvss108-adb`: final rule 87 FR 9916 (22 Feb
+    2022), with reconsideration petitions denied in Dec 2024.
+  - It is recorded as an ENABLING rule (it permits ADB, it does not mandate
+    it).
+  - The ADB technology cites it.
+- **6. Stale evidence: the 20 highest-momentum stale entries were researched.**
+  - **Refreshed (14)** with sourced 2024–26 programmes, for example the BMW
+    Neue Klasse iX3 (cell-to-pack, 800 V), BYD's 12-in-1 drive, Rivian Gen 2
+    quad-motor, the Tesla Model Y refresh, Stellantis e-DCS6, and China
+    one-box and CDC fitment.
+  - **Note corrections (3):**
+    - LFP is >40% cheaper than NMC (IEA 2026), not 20–30%.
+    - Heat pumps are still an option on some volume models.
+    - Air suspension has reached the RMB 200–250k band in China (5.6% fitment).
+  - **Skipped (4)**, because the evidence was a plan, a regulation or a
+    certification rather than production: ElringKlinger CCS, Eaton Breaktor,
+    Euro 7, CCC digital-key.
+  - **No new evidence (2):** 800 V e-compressor, terrain AI. They stay flagged.
+  - Curation debt fell from 131 to 117 (stale from 70 to 56) and the gate is
+    ratcheted.
+- **5. Adoption ceilings.**
+  - 119 proposals are in `docs/HORIZON-CEILING-PROPOSALS.md` and `.csv`:
+    6 sourced, 25 structural, 88 engineering judgement.
+  - **Not applied**: they await cost-engineering sign-off.
+  - Key finding: approving them moves 33 technologies from H2 to H1, because
+    the lane rule uses a quarter of each technology's *own* ceiling. Decide
+    that model question together with the values.

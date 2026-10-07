@@ -279,7 +279,7 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // were wrong (GM CFRP propshafts, Zeekr/Tesla as the first M3P cars) also
   // removed the region they appeared to cover. Same rule as the debt gate: a
   // region "covered" by a false name was never covered.
-  assert.ok(a.multiRegionPct >= 69, `multi-region coverage fell to ${a.multiRegionPct}%`);
+  assert.ok(a.multiRegionPct >= 70, `multi-region coverage fell to ${a.multiRegionPct}%`);
   // Re-baselined when the frontier check went region-neutral (single-region-view
   // replaced no-china-frontier): the flag MEANS something different, so the old
   // 129 number does not transfer. 119 was the measured value at that changeover.
@@ -305,7 +305,9 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // (lighting, steering, inverters, BIW), mostly "stale" because their first
   // production really is 2021-22. New coverage brings its own debt; the gate
   // still forbids any EXISTING entry getting worse unnoticed.
-  assert.ok(a.flaggedCount <= 131, `curation debt grew to ${a.flaggedCount}`);
+  // Ratcheted 131 → 117 (7 Oct 2026): the 20 highest-momentum stale entries
+  // were refreshed with sourced 2024-26 programmes (14 cleared).
+  assert.ok(a.flaggedCount <= 117, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 
