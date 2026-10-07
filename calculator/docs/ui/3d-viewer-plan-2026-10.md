@@ -155,3 +155,52 @@ state it shoots (loaded, colour menu open, inspector open, both themes). Screens
   Face to face.
 
 **Not done (Phase 3):** saved views and notes in the PDF, share links, LOD for large assemblies.
+
+## 7. Navigation review — pan, zoom, rotate (Oct 2026)
+
+**What it was:** three.js OrbitControls with its defaults (damping, zoom-to-cursor). Against Onshape / Fusion /
+SolidWorks that falls short in five ways:
+
+| # | Gap | Effect |
+|---|---|---|
+| 1 | Rotation pivots about the box centre (or a double-clicked point) | Zoom into a corner, rotate, and the corner swings off screen — the single biggest "not a CAD tool" tell |
+| 2 | Pan speed taken at the orbit target's depth | A grabbed near face slides faster or slower than the cursor |
+| 3 | Wheel zoom in fixed 5 % jumps, applied at once | Stepped with a mouse wheel; zooms straight through the part; zooms out without limit |
+| 4 | Middle-drag = dolly; pan damped | Unusual binding for CAD; the view drifts on after a pan stops |
+| 5 | Brute-force picking (no spatial index) | Measured: 13 ms / pick at 0.1 M triangles, 77 ms at 1 M, 236 ms at 3 M — every face click and measure snap stalls on a big assembly |
+
+**What it is now** (`src/ui/cad-navigation.ts`, `src/ui/cad-bvh-worker.ts`):
+
+- **Left-drag** rotates about the point under the cursor (picked on press; empty space → the orbit target),
+  turntable (no roll), pitch stops at 89°, a short coast on a flick (never after a deliberate stop). A pivot
+  marker shows what it turns about.
+- **Right-drag, middle-drag or Shift + drag** pans; the grabbed point stays exactly under the cursor. No drift.
+- **Scroll / pinch** zooms toward the point under the cursor, eased over ~70 ms per notch; it stops short of
+  the surface (0.4 % of the model radius) and at 40 radii out.
+- **Double-click** glides the view to centre that point (re-aims from where the camera is, so the point stays in sight).
+- **Keyboard**: arrows rotate 15° (Shift: pan), + / − zoom, plus the existing view / tool keys.
+- **Touch** stays with OrbitControls (one finger rotate, two pinch / pan).
+- **Picking index**: three-mesh-bvh (MIT), built per body in a worker after load, `indirect` so the triangle
+  order — and with it every face id — is untouched (direct mode returned the wrong face on 70 of 70 test picks).
+  Section planes are respected: a click no longer picks geometry the cut has removed.
+
+**Measured** (`npx tsx e2e/viewer-nav.ts <out>`: real server, real STEP, real mouse, software GL):
+
+| Check | Result |
+|---|---|
+| Orbit: the face under the cursor is still under it after a 20-step drag | pass (face #115 → #115) |
+| Pivot marker on the pressed point | 0.0 / 0.2 px off |
+| Zoom: face under an off-centre cursor stays under it after 6 notches | pass |
+| Pan: the grabbed face follows the cursor | pass |
+| Double-click: that face reaches the centre | pass |
+| ← rotates, + zooms, ? opens the viewer's sheet (not the app's Help) | pass |
+| 1 M-triangle STL: index built off-thread after load | ≈ 1.7–1.9 s, page responsive meanwhile |
+| 1 M-triangle STL: a face click (raycast + highlight) after the index | ≈ 2 ms (brute force before: 5–18 ms on this flat sheet in Chrome, 77 ms on a wavy one in Node) |
+| Page errors | 0 |
+
+Unit tests: `tests/cad-navigation.test.ts` (pivot fixed under rotation, no roll, pole clamp, click ≠ drag, touch
+ignored, pan exact at the grab depth, zoom anchored / eased / bounded, BVH face index = brute force after a
+structured-clone round trip).
+
+**Not done:** an orthographic projection toggle (engineering views without perspective); the frame rate on a
+real GPU was not measured here (the container renders in software).

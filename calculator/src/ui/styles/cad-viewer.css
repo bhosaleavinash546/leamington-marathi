@@ -56,6 +56,15 @@ html:not([data-theme="light"]) .cv3d {
 }
 .cv3d-viewport:focus-visible { box-shadow: inset 0 0 0 2px var(--v-accent); }
 .cv3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.cv3d-canvas--dragging { cursor: grabbing !important; }
+/* the orbit pivot, shown while rotating */
+.cv3d-pivot {
+  position: absolute; left: 0; top: 0; z-index: 3; width: 14px; height: 14px; margin: -7px 0 0 -7px;
+  border-radius: 50%; border: 2px solid #fff; background: var(--v-accent);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 0 0 6px color-mix(in srgb, var(--v-accent) 25%, transparent);
+  pointer-events: none; opacity: 0; transition: opacity 0.12s ease;
+}
+.cv3d-pivot.show { opacity: 1; }
 
 /* frosted floating surfaces share one look */
 .cv3d-titlechip, .cv3d-dock, .cv3d-menu, .cv3d-legend, .cv3d-facechip, .cv3d-float, .cv3d-tree, .cv3d-shortcuts, .cv3d-hint {

@@ -333,6 +333,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const THREE = await import('three');
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
   const { createViewCube } = await import('./cad-viewcube.js');
+  const { createCadNavigation } = await import('./cad-navigation.js');
+  const { MeshBVH, acceleratedRaycast } = await import('three-mesh-bvh');
   const { toCreasedNormals } = await import('three/examples/jsm/utils/BufferGeometryUtils.js');
   // Crease angle for smooth shading: normals are averaged across facets that meet
   // below this angle (round cylinders/fillets) and kept hard above it (real edges).
@@ -453,7 +455,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <dt>Del</dt><dd>Clear measurements</dd><dt>S</dt><dd>Section</dd>
           <dt>C</dt><dd>Next colour mode</dd><dt>E · W</dt><dd>Shaded · Wireframe</dd><dt>B</dt><dd>Bounding box</dd>
           <dt>T · I</dt><dd>Model tree · Inspector</dd><dt>X</dt><dd>Full screen</dd>
-          <dt>Double-click</dt><dd>Orbit about that point</dd><dt>Right-drag</dt><dd>Pan</dd>
+          <dt>← → ↑ ↓</dt><dd>Rotate 15° (Shift: pan)</dd><dt>+ / −</dt><dd>Zoom in / out</dd>
+          <dt>Drag</dt><dd>Rotate about the point under the cursor</dd><dt>Right / middle-drag</dt><dd>Pan (also Shift + drag)</dd>
+          <dt>Scroll · pinch</dt><dd>Zoom at the cursor</dd><dt>Double-click</dt><dd>Centre on that point</dd>
         </dl>
       </div>
     </div>
@@ -465,7 +469,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     <div class="cv3d-status">
       <span class="cv3d-status-file">No file loaded</span>
       <span class="cv3d-status-dims"></span>
-      <span class="cv3d-status-hint">Drag to rotate · scroll to zoom · right-drag to pan · double-click to set orbit centre</span>
+      <span class="cv3d-status-hint">Drag: rotate about the cursor · right-drag: pan · scroll: zoom at the cursor · double-click: centre</span>
     </div>`;
   host.appendChild(root);
 
@@ -551,7 +555,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.12;
-  controls.zoomToCursor = true; // CAD convention: zoom at the pointer, not the screen centre
+  controls.zoomToCursor = true;
+  // Mouse and wheel belong to the CAD navigation below (orbit about the cursor, exact pan, eased zoom);
+  // OrbitControls keeps touch (one finger rotates, two pinch / pan) and its lookAt / damping.
+  (controls as unknown as { mouseButtons: Record<string, number | null> }).mouseButtons = { LEFT: null, MIDDLE: null, RIGHT: null };
 
   type Vec3 = InstanceType<typeof THREE.Vector3>;
   // Labelled view cube (top-right) — click a face, edge or corner for that view.
@@ -582,10 +589,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     partGroup.add(shadowMesh);
   }
   // ── camera tween: every view change glides (300 ms ease) instead of jumping ──
+  let nav: import('./cad-navigation.js').CadNavigation | null = null;
   let camAnim: { p0: Vec3; p1: Vec3; t0: Vec3; t1: Vec3; start: number; dur: number } | null = null;
   function animateCamera(pos: Vec3, target: Vec3, dur = 320): void {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || dur <= 0) { camAnim = null; camera.position.copy(pos); controls.target.copy(target); controls.update(); invalidate(); return; }
+    if (reduce || dur <= 0) { nav?.stop(); camAnim = null; camera.position.copy(pos); controls.target.copy(target); controls.update(); invalidate(); return; }
+    nav?.stop();
     camAnim = { p0: camera.position.clone(), p1: pos.clone(), t0: controls.target.clone(), t1: target.clone(), start: performance.now(), dur };
     invalidate();
   }
@@ -722,6 +731,46 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       worker.postMessage({ id, positions: copy, angleDeg: EDGE_ANGLE_DEG }, [copy.buffer]);
     });
   }
+  // ── picking index (three-mesh-bvh), built per body in a worker ──
+  let bvhWorker: Worker | null | undefined;
+  const bvhJobs = new Map<number, (d: { bvh?: unknown; error?: string }) => void>();
+  let bvhJobSeq = 0;
+  /** True once every body's index has landed — picking is then sub-millisecond at any size. */
+  let bvhReady = false;
+  function buildPickIndex(isStale: () => boolean): void {
+    bvhReady = false;
+    root.dataset.pickIndex = 'building';
+    const meshes = bodyMeshes.slice();
+    if (!meshes.length) return;
+    if (bvhWorker === undefined) {
+      try {
+        bvhWorker = new Worker(new URL('./cad-bvh-worker.ts', import.meta.url), { type: 'module' });
+        bvhWorker.addEventListener('message', (ev: MessageEvent<{ id: number; bvh?: unknown; error?: string }>) => {
+          const cb = bvhJobs.get(ev.data.id);
+          if (cb) { bvhJobs.delete(ev.data.id); cb(ev.data); }
+        });
+        bvhWorker.addEventListener('error', () => { for (const [id, cb] of bvhJobs) { bvhJobs.delete(id); cb({ error: 'worker failed' }); } });
+      } catch { bvhWorker = null; }
+    }
+    if (!bvhWorker) return; // brute-force raycasts still work, just slower on big models
+    let pending = meshes.length;
+    for (const mesh of meshes) {
+      const geo = mesh.geometry;
+      const copy = (geo.getAttribute('position').array as Float32Array).slice();
+      const id = ++bvhJobSeq;
+      bvhJobs.set(id, (d) => {
+        if (!isStale() && !d.error && d.bvh && geo.getAttribute('position')) {
+          try {
+            const bvh = MeshBVH.deserialize(d.bvh as never, geo, { setIndex: false });
+            (geo as unknown as { boundsTree: unknown }).boundsTree = bvh;
+            mesh.raycast = acceleratedRaycast as never;
+          } catch { /* keep the brute-force raycast */ }
+        }
+        if (--pending === 0 && !isStale()) { bvhReady = true; root.dataset.pickIndex = 'ready'; }
+      });
+      bvhWorker.postMessage({ id, positions: copy }, [copy.buffer]);
+    }
+  }
   function computeEdgesSync(positions: Float32Array): Float32Array {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -794,6 +843,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     renderer.setPixelRatio(pixelRatio());
     renderer.setSize(w, h, false);
   }
+  let lastFrameAt = performance.now();
   function frame(): void {
     renderPending = false;
     if (disposed) return;
@@ -805,10 +855,17 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       controls.target.lerpVectors(camAnim.t0, camAnim.t1, e);
       if (k >= 1) camAnim = null; else animating = true;
     }
+    const nowMs = performance.now();
+    if (nav?.update(nowMs - lastFrameAt)) animating = true;
+    lastFrameAt = nowMs;
     const moved = controls.update(); // true while damping is still settling
     scaleLabels();
+    placePivotMarker();
     renderer.render(scene, camera);
     viewCube?.render(renderer, camera, controls.target);
+    // Exposed for automation (and nothing else): '1' while the camera is still gliding / coasting.
+    const movingNow = animating || moved ? '1' : '0';
+    if (root.dataset.moving !== movingNow) root.dataset.moving = movingNow;
     if (animating || moved) {
       invalidate();                 // keep going until motion settles
     } else if (lowRes) {
@@ -832,6 +889,29 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // user is actively dragging so large meshes stay responsive.
   controls.addEventListener('change', invalidate);
   controls.addEventListener('start', () => { lowRes = true; applyPixelRatio(); invalidate(); });
+
+  // ── CAD navigation (mouse / pen / wheel) ──
+  const pivotEl = document.createElement('div');
+  pivotEl.className = 'cv3d-pivot';
+  pivotEl.setAttribute('aria-hidden', 'true');
+  viewport.appendChild(pivotEl);
+  nav = createCadNavigation(THREE, {
+    camera, target: controls.target, dom: canvas,
+    pick: (x, y) => pickWorld(x, y),
+    radius: () => partRadius,
+    changed: invalidate,
+    started: () => { lowRes = true; applyPixelRatio(); canvas.classList.add('cv3d-canvas--dragging'); invalidate(); },
+    ended: () => { canvas.classList.remove('cv3d-canvas--dragging'); invalidate(); },
+    blocked: (ev) => !!viewCube?.contains(ev, canvas),
+  });
+  /** The orbit pivot, drawn while rotating so the user sees what the part turns about. */
+  function placePivotMarker(): void {
+    const p = nav?.activePivot();
+    if (!p) { pivotEl.classList.remove('show'); return; }
+    const v = p.clone().project(camera);
+    pivotEl.style.transform = `translate(${((v.x + 1) / 2) * canvas.clientWidth}px, ${((1 - v.y) / 2) * canvas.clientHeight}px)`;
+    pivotEl.classList.add('show');
+  }
 
   // ── views ──
   function setView(dir: readonly [number, number, number], instant = false): void {
@@ -1089,6 +1169,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         applyClipping();
       });
     });
+
+    buildPickIndex(stale);
 
     const gridSize = Math.max(partSpan.x, partSpan.y) * 2.2 || 10;
     grid = new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8);
@@ -1395,14 +1477,26 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let pickNormals: Vec3[] = []; // world-space face normals captured for face-to-face measure
   const raycaster = new THREE.Raycaster();
 
-  function screenToNDC(ev: PointerEvent | MouseEvent): InstanceType<typeof THREE.Vector2> {
+  function screenToNDC(ev: { clientX: number; clientY: number }): InstanceType<typeof THREE.Vector2> {
     const r = canvas.getBoundingClientRect();
     return new THREE.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
   }
 
-  function raycastMeshes(ev: PointerEvent | MouseEvent) {
-    raycaster.setFromCamera(screenToNDC(ev), camera);
-    return raycaster.intersectObjects(bodyMeshes.filter(m => m.visible), false);
+  /** Hits under the pointer, nearest first — BVH-accelerated once the index is built, and never on
+   *  geometry a section plane has cut away (a click through the cut used to pick the hidden part). */
+  function raycastMeshes(ev: { clientX: number; clientY: number }) {
+    raycaster.setFromCamera(screenToNDC(ev as MouseEvent), camera);
+    const hits = raycaster.intersectObjects(bodyMeshes.filter(m => m.visible), false);
+    const planes = activeClipPlanes();
+    return planes.length ? hits.filter(h => planes.every(pl => pl.distanceToPoint(h.point) >= -1e-6)) : hits;
+  }
+  /** World point under a client position, or null over empty space (navigation pivot / zoom anchor). */
+  function pickWorld(clientX: number, clientY: number): Vec3 | null {
+    if (!bodyMeshes.length) return null;
+    // Without the index a pick on a multi-million-triangle model costs 80–240 ms: navigation then falls
+    // back to the orbit target rather than stall the first frame of a drag.
+    if (!bvhReady && (masterPositions?.length ?? 0) / 9 > 400_000) return null;
+    return raycastMeshes({ clientX, clientY })[0]?.point.clone() ?? null;
   }
 
   /** Snap the hit to the nearest triangle VERTEX (≤14 px) or EDGE (≤10 px). */
@@ -1756,15 +1850,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   };
   const onDblClick = (ev: MouseEvent) => {
     // CAD convention: double-click re-centres the orbit on the picked point
+    // — glide there instead of snapping the view.
+    if (viewCube?.contains(ev, canvas)) return;
     const hits = raycastMeshes(ev);
-    if (hits.length) {
-      controls.target.copy(hits[0].point);
-      statusHint.textContent = 'Orbit centre set — double-click empty space to reset';
-    } else {
-      controls.target.set(0, 0, 0);
-      statusHint.textContent = 'Orbit centre reset';
-    }
-    controls.update();
+    const to = hits.length ? hits[0].point.clone() : new THREE.Vector3(0, 0, 0);
+    // Re-aim from where the camera is (the line of sight that found the point stays clear); shifting the
+    // camera sideways instead let a nearer wall hide the point under perspective.
+    animateCamera(camera.position.clone(), to, 280);
+    statusHint.textContent = hits.length ? 'Centred on that point — double-click empty space to re-centre the part' : 'Re-centred on the part';
   };
   const onKeyDown = (ev: KeyboardEvent) => {
     if (ev.key !== 'Escape') return;
@@ -2419,6 +2512,20 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (!picks.length && !maximized && tool !== 'select') { setTool('select'); syncDock(); ev.stopPropagation(); }
       return; // the window handler cancels picks / leaves full screen
     }
+    // Arrows orbit 15° (Shift: pan); + / − zoom at the centre — the keyboard reaches every navigation.
+    const step = Math.PI / 12;
+    const arrows: Record<string, [number, number]> = { arrowleft: [-1, 0], arrowright: [1, 0], arrowup: [0, -1], arrowdown: [0, 1] };
+    if (arrows[k] && nav) {
+      const [ax, ay] = arrows[k];
+      if (ev.shiftKey) nav.panBy(ax * 60, ay * 60); else nav.orbitBy(-ax * step, -ay * step);
+      ev.preventDefault(); ev.stopPropagation();
+      return;
+    }
+    if ((k === '+' || k === '=' || k === '-' || k === '_') && nav) {
+      nav.zoomBy(k === '-' || k === '_' ? 1.25 : 0.8);
+      ev.preventDefault(); ev.stopPropagation();
+      return;
+    }
     const act = KEYS[k];
     if (!act) return;
     if (act === 'tree' && !meta) return;
@@ -2531,6 +2638,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       renderer.dispose();
       try { renderer.forceContextLoss(); } catch { /* context may already be gone */ }
       if (edgeWorker) { edgeWorker.terminate(); edgeWorker = null; }
+      if (bvhWorker) { bvhWorker.terminate(); bvhWorker = null; }
+      nav?.dispose();
       root.remove();
     },
   };

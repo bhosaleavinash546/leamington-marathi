@@ -535,6 +535,10 @@ what is true** — nothing here has been compared with a price JLR paid.
   themes). The host pushes £ per face + the costed feature lines + its currency formatter (`setFaceCosts`) and the DFM
   findings (`setIssues`) via `pushViewerState` — the viewer never prints a bare £. Kernel edges must move with the
   re-centred mesh (the ghost outline). Prove a change with `npx tsx e2e/viewer-shots.ts <out>` (axe inside the viewer).
+  Navigation is `cad-navigation.ts` (mouse / wheel: orbit about the point under the cursor, exact pan, eased
+  zoom-to-cursor with limits); OrbitControls keeps touch only (`mouseButtons` all null). Picking uses a three-mesh-bvh
+  index built in `cad-bvh-worker.ts` — `indirect: true` ALWAYS (direct mode reorders triangles and every face id goes
+  wrong) and post the whole serialised object (its `version`). Prove navigation with `npx tsx e2e/viewer-nav.ts <out>`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
