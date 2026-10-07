@@ -181,3 +181,73 @@ describe('picking index (three-mesh-bvh, indirect)', () => {
     expect(compared).toBeGreaterThan(50);
   });
 });
+
+describe('orthographic view (the rig drives an orthographic camera)', () => {
+  // The viewer's sync: frustum = what the rig sees at the target plane; camera backed off along the view line.
+  function orthoSetup(pickPoint: THREE.Vector3 | null) {
+    const camera = new THREE.PerspectiveCamera(40, 1000 / 800, 0.01, 1e5);
+    camera.position.set(30, 20, 100);
+    const target = new THREE.Vector3(0, 0, 0);
+    camera.lookAt(target);
+    const oc = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.001, 1e5);
+    const sync = () => {
+      camera.updateMatrixWorld();
+      const dist = camera.position.distanceTo(target);
+      const halfH = dist * Math.tan((camera.fov * Math.PI) / 360), halfW = halfH * camera.aspect;
+      Object.assign(oc, { left: -halfW, right: halfW, top: halfH, bottom: -halfH });
+      const fwd = target.clone().sub(camera.position).normalize();
+      oc.position.copy(target).addScaledVector(fwd, -(dist + 160));
+      oc.quaternion.copy(camera.quaternion);
+      oc.updateProjectionMatrix(); oc.updateMatrixWorld();
+      return oc;
+    };
+    const { dom, handlers, parentHandlers } = stubDom();
+    const nav = createCadNavigation(THREE, {
+      camera, target, dom: dom as unknown as HTMLElement, rayCamera: sync, orthographic: () => true,
+      pick: () => pickPoint?.clone() ?? null, radius: () => 20, changed: () => {}, started: () => {}, ended: () => {},
+    });
+    const project = (p: THREE.Vector3) => { const v = p.clone().project(sync()); return { x: (v.x + 1) / 2 * 1000, y: (1 - v.y) / 2 * 800 }; };
+    return { camera, target, nav, handlers, parentHandlers, project };
+  }
+  it('pan moves a grabbed point exactly with the cursor at ANY depth (one scale in orthographic)', () => {
+    const grab = new THREE.Vector3(5, -3, 45); // far nearer the camera than the target
+    const t = orthoSetup(grab);
+    const s0 = t.project(grab);
+    t.handlers.pointerdown(pe({ button: 2, clientX: s0.x, clientY: s0.y }));
+    t.handlers.pointermove(pe({ clientX: s0.x + 150, clientY: s0.y + 90 }));
+    t.handlers.pointerup(pe({ clientX: s0.x + 150, clientY: s0.y + 90 }));
+    const s1 = t.project(grab);
+    expect(s1.x - s0.x).toBeCloseTo(150, 1);
+    expect(s1.y - s0.y).toBeCloseTo(90, 1);
+  });
+  it('zoom keeps the point under the cursor fixed and really magnifies', () => {
+    const anchor = new THREE.Vector3(-8, 6, 10);
+    const t = orthoSetup(anchor);
+    const s0 = t.project(anchor);
+    const ref = t.project(new THREE.Vector3(-8 + 5, 6, 10));
+    t.parentHandlers.wheel({ deltaY: -300, deltaMode: 0, clientX: s0.x, clientY: s0.y, ctrlKey: false, preventDefault() {}, stopPropagation() {} });
+    for (let i = 0; i < 60; i++) t.nav.update(16);
+    const s1 = t.project(anchor);
+    const ref1 = t.project(new THREE.Vector3(-8 + 5, 6, 10));
+    expect(s1.x).toBeCloseTo(s0.x, 3);
+    expect(s1.y).toBeCloseTo(s0.y, 3);
+    expect(Math.hypot(ref1.x - s1.x, ref1.y - s1.y)).toBeGreaterThan(Math.hypot(ref.x - s0.x, ref.y - s0.y) * 1.4);
+  });
+  it('orbit keeps the pivot on its pixel', () => {
+    const pivot = new THREE.Vector3(12, 4, -6);
+    const t = orthoSetup(pivot);
+    const s0 = t.project(pivot);
+    t.handlers.pointerdown(pe({ clientX: s0.x, clientY: s0.y }));
+    for (let i = 1; i <= 15; i++) t.handlers.pointermove(pe({ clientX: s0.x + i * 10, clientY: s0.y + i * 4 }));
+    t.handlers.pointerup(pe({ clientX: s0.x + 150, clientY: s0.y + 60 }));
+    const s1 = t.project(pivot);
+    expect(s1.x).toBeCloseTo(s0.x, 2);
+    expect(s1.y).toBeCloseTo(s0.y, 2);
+  });
+  it('parallel lines stay parallel: equal edges at different depths draw the same length', () => {
+    const t = orthoSetup(null);
+    const near = [new THREE.Vector3(0, 0, 40), new THREE.Vector3(10, 0, 40)].map(t.project);
+    const far = [new THREE.Vector3(0, 0, -40), new THREE.Vector3(10, 0, -40)].map(t.project);
+    expect(Math.hypot(near[1].x - near[0].x, near[1].y - near[0].y)).toBeCloseTo(Math.hypot(far[1].x - far[0].x, far[1].y - far[0].y), 6);
+  });
+});

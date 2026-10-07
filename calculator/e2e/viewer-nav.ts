@@ -154,6 +154,37 @@ async function main(): Promise<void> {
       { rotated: k1 !== k0, zoomed: k2 !== k1, sheet, helpOpened: helpAfter - helpOpened });
     await page.screenshot({ path: join(OUT, '6-keyboard.png') });
 
+    // ── orthographic: O toggles it; the same face-tracking checks must hold ──
+    await page.locator('#viewer-view [data-act="view-iso"]').click();
+    await page.waitForTimeout(100); await settled(page);
+    await page.locator('#viewer-view .cv3d-viewport').focus();
+    const pShot0 = await shot();
+    await page.keyboard.press('o');
+    await page.waitForTimeout(100); await settled(page);
+    const proj = await page.locator('#viewer-view .cv3d').getAttribute('data-projection');
+    const oShot = await shot();
+    check('ortho: O switches the projection and the picture changes', proj === 'ortho' && oShot !== pShot0, { proj });
+    await page.screenshot({ path: join(OUT, '6b-orthographic.png') });
+    const ox = box.x + box.width * 0.47, oy = box.y + box.height * 0.5;
+    const oBefore = await faceAt(ox, oy);
+    await page.mouse.move(ox, oy); await page.mouse.down();
+    for (let i = 1; i <= 15; i++) await page.mouse.move(ox + i * 10, oy + i * 4);
+    await page.mouse.up(); await page.waitForTimeout(100); await settled(page);
+    check('ortho orbit: the face under the cursor stays under it', !!oBefore && oBefore === await faceAt(ox, oy), { oBefore });
+    const oz = await faceAt(ox - 80, oy - 40);
+    await page.mouse.move(ox - 80, oy - 40);
+    for (let i = 0; i < 5; i++) { await page.mouse.wheel(0, -100); await page.waitForTimeout(40); }
+    await page.waitForTimeout(100); await settled(page);
+    check('ortho zoom: the face under the cursor stays under it', !!oz && oz === await faceAt(ox - 80, oy - 40), { oz });
+    await page.mouse.move(ox - 80, oy - 40); await page.mouse.down({ button: 'right' });
+    for (let i = 1; i <= 10; i++) await page.mouse.move(ox - 80 + i * 12, oy - 40 + i * 6);
+    await page.mouse.up({ button: 'right' }); await page.waitForTimeout(100); await settled(page);
+    check('ortho pan: the grabbed face followed the cursor', !!oz && oz === await faceAt(ox + 40, oy + 20), { oz });
+    await page.screenshot({ path: join(OUT, '6c-orthographic-after.png') });
+    await page.keyboard.press('o'); // back to perspective for the rest
+    const persisted = await page.evaluate(() => localStorage.getItem('cv3d-projection'));
+    check('ortho: the choice is remembered', persisted === 'persp', { persisted });
+
     // ── a million triangles: picking before and after the index ──
     const errorsBeforeSynthetic = errors.length;
     const stl = join(dir, 'sheet-1M.stl');

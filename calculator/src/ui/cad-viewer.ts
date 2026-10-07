@@ -324,6 +324,7 @@ const ICON: Record<string, string> = {
   'palette':    svgIcon('<path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.1-.9-1.5-.9-2.5 0-1 .8-1.6 1.8-1.6h2.1a3.7 3.7 0 0 0 3.7-3.7C20.5 7 16.7 3.5 12 3.5z"/><circle cx="7.8" cy="11" r="1.1"/><circle cx="10.5" cy="7.4" r="1.1"/><circle cx="15" cy="7.6" r="1.1"/>'),
   'inspector':  svgIcon('<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M14.5 4v16"/><path d="M16.8 8h1.7M16.8 11h1.7M16.8 14h1.7"/>'),
   'keyboard':   svgIcon('<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M7.5 14h9"/>'),
+  'ortho':      svgIcon('<path d="M4 8h10v10H4z"/><path d="M4 8l6-4h10l-6 4M14 18l6-4V4"/>'),
   'cost':       svgIcon('<path d="M15.5 7.2A4 4 0 0 0 8.4 9.6V18h8"/><path d="M6.5 13.2h6.5"/>'),
 };
 
@@ -428,6 +429,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         </div>
         <div class="cv3d-menu" role="menu" data-menu-for="display" aria-label="Display" hidden>
           ${item('mode-shaded', 'shaded', 'Shaded with edges', 'E', 'menuitemradio')}${item('mode-wire', 'wire', 'Wireframe', 'W', 'menuitemradio')}
+          <div class="cv3d-menu-sep"></div>${item('ortho', 'ortho', 'Orthographic', 'O', 'menuitemcheckbox')}
           <div class="cv3d-menu-sep"></div>${item('bbox', 'bbox', 'Bounding box', 'B', 'menuitemcheckbox')}${item('grid', 'grid', 'Ground grid', 'G', 'menuitemcheckbox')}
         </div>
         <div class="cv3d-menu" role="menu" data-menu-for="arrange" aria-label="Assembly" hidden>
@@ -453,7 +455,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <dt>Esc</dt><dd>Select tool · cancel · exit full screen</dd>
           <dt>D R A P G</dt><dd>Distance · Radius · Angle · Point · Face to face</dd>
           <dt>Del</dt><dd>Clear measurements</dd><dt>S</dt><dd>Section</dd>
-          <dt>C</dt><dd>Next colour mode</dd><dt>E · W</dt><dd>Shaded · Wireframe</dd><dt>B</dt><dd>Bounding box</dd>
+          <dt>C</dt><dd>Next colour mode</dd><dt>E · W</dt><dd>Shaded · Wireframe</dd><dt>O</dt><dd>Orthographic / perspective</dd><dt>B</dt><dd>Bounding box</dd>
           <dt>T · I</dt><dd>Model tree · Inspector</dd><dt>X</dt><dd>Full screen</dd>
           <dt>← → ↑ ↓</dt><dd>Rotate 15° (Shift: pan)</dd><dt>+ / −</dt><dd>Zoom in / out</dd>
           <dt>Drag</dt><dd>Rotate about the point under the cursor</dd><dt>Right / middle-drag</dt><dd>Pan (also Shift + drag)</dd>
@@ -552,6 +554,35 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // out to near-white, so it was removed to restore the solid CAD grey the user
   // preferred — the smoothness comes from creased normals, not the IBL.
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 10000);
+  // ── orthographic projection ──
+  // The perspective camera stays the navigation RIG (orbit, pan, zoom, fly-to, view cube all keep their
+  // maths); in orthographic mode the scene is drawn and picked through this camera, synced from the rig
+  // each frame. Its frustum is what the rig sees at the orbit target's plane, so zooming the rig in
+  // shrinks it — zoom, zoom-to-cursor and orbit-about-cursor carry over unchanged.
+  let ortho = (() => { try { return localStorage.getItem('cv3d-projection') === 'ortho'; } catch { return false; } })();
+  const orthoCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.001, 1000);
+  function syncOrtho(): void {
+    if (!ortho) return;
+    const dist = Math.max(camera.position.distanceTo(controls.target), 1e-6);
+    const halfH = dist * Math.tan((camera.fov * Math.PI) / 360);
+    const halfW = halfH * camera.aspect;
+    orthoCam.left = -halfW; orthoCam.right = halfW; orthoCam.top = halfH; orthoCam.bottom = -halfH;
+    // Back the camera well off along the view line: in orthographic depth changes nothing on screen, and
+    // a rig zoomed in close would otherwise clip the part in front of it.
+    const back = partRadius * 8;
+    const fwd = controls.target.clone().sub(camera.position).normalize();
+    orthoCam.position.copy(controls.target).addScaledVector(fwd, -(dist + back));
+    orthoCam.quaternion.copy(camera.quaternion);
+    orthoCam.near = Math.max(partRadius * 1e-4, 1e-4);
+    orthoCam.far = dist + back + partRadius * 12;
+    orthoCam.updateProjectionMatrix();
+    orthoCam.updateMatrixWorld();
+  }
+  /** The camera the scene is drawn and picked through. */
+  function viewCam(): InstanceType<typeof THREE.PerspectiveCamera> | InstanceType<typeof THREE.OrthographicCamera> {
+    if (ortho) { camera.updateMatrixWorld(); syncOrtho(); return orthoCam; }
+    return camera;
+  }
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.12;
@@ -807,21 +838,16 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
   function scaleLabels(): void {
     // Sprites are rescaled every frame; walk the two groups without building an array.
+    // In orthographic every depth is drawn at the target plane's scale.
+    const orthoD = ortho ? camera.position.distanceTo(controls.target) : 0;
     const scaleOne = (sp: Sprite3) => {
-      const d = camera.position.distanceTo(sp.position);
+      const d = ortho ? orthoD : camera.position.distanceTo(sp.position);
       const h = d * 0.045 * (opts.compact ? 1.4 : 1);
       const aspect = (sp as unknown as { __aspect?: number }).__aspect ?? 4;
       sp.scale.set(h * aspect, h, 1);
     };
     for (const sp of bboxLabels) scaleOne(sp as Sprite3);
     for (const o of overlayGroup.children) if ((o as { isSprite?: boolean }).isSprite) scaleOne(o as Sprite3);
-    const all: Sprite3[] = [];
-    for (const sp of all) {
-      const d = camera.position.distanceTo((sp as Sprite3).position);
-      const h = d * 0.045 * (opts.compact ? 1.4 : 1);
-      const aspect = (sp as unknown as { __aspect?: number }).__aspect ?? 4;
-      (sp as Sprite3).scale.set(h * aspect, h, 1);
-    }
   }
 
   // ── render loop — on-demand ──────────────────────────────────────────────
@@ -861,7 +887,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const moved = controls.update(); // true while damping is still settling
     scaleLabels();
     placePivotMarker();
-    renderer.render(scene, camera);
+    renderer.render(scene, viewCam());
     viewCube?.render(renderer, camera, controls.target);
     // Exposed for automation (and nothing else): '1' while the camera is still gliding / coasting.
     const movingNow = animating || moved ? '1' : '0';
@@ -897,6 +923,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   viewport.appendChild(pivotEl);
   nav = createCadNavigation(THREE, {
     camera, target: controls.target, dom: canvas,
+    rayCamera: () => viewCam(),
+    orthographic: () => ortho,
     pick: (x, y) => pickWorld(x, y),
     radius: () => partRadius,
     changed: invalidate,
@@ -908,7 +936,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function placePivotMarker(): void {
     const p = nav?.activePivot();
     if (!p) { pivotEl.classList.remove('show'); return; }
-    const v = p.clone().project(camera);
+    const v = p.clone().project(viewCam());
     pivotEl.style.transform = `translate(${((v.x + 1) / 2) * canvas.clientWidth}px, ${((1 - v.y) / 2) * canvas.clientHeight}px)`;
     pivotEl.classList.add('show');
   }
@@ -1485,7 +1513,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   /** Hits under the pointer, nearest first — BVH-accelerated once the index is built, and never on
    *  geometry a section plane has cut away (a click through the cut used to pick the hidden part). */
   function raycastMeshes(ev: { clientX: number; clientY: number }) {
-    raycaster.setFromCamera(screenToNDC(ev as MouseEvent), camera);
+    raycaster.setFromCamera(screenToNDC(ev as MouseEvent), viewCam());
     const hits = raycaster.intersectObjects(bodyMeshes.filter(m => m.visible), false);
     const planes = activeClipPlanes();
     return planes.length ? hits.filter(h => planes.every(pl => pl.distanceToPoint(h.point) >= -1e-6)) : hits;
@@ -1506,7 +1534,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const pos = mesh.geometry.getAttribute('position');
     const r = canvas.getBoundingClientRect();
     const screenDist = (world: Vec3) => {
-      const p = world.clone().project(camera);
+      const p = world.clone().project(viewCam());
       return Math.hypot(((p.x + 1) / 2) * r.width - (ev.clientX - r.left), ((1 - p.y) / 2) * r.height - (ev.clientY - r.top));
     };
     const verts = [hit.face.a, hit.face.b, hit.face.c].map(idx =>
@@ -1997,7 +2025,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const arrangeTrigger = root.querySelector<HTMLButtonElement>('[data-menu="arrange"]');
     if (arrangeTrigger) arrangeTrigger.disabled = !bodyMeshes.length;
     root.querySelector('[data-act="inspector"]')?.classList.toggle('active', !inspector.hidden);
-    for (const [act, on] of [['bbox', bboxOn], ['grid', gridOn], ['mode-shaded', edgesOn], ['mode-wire', !edgesOn]] as const) {
+    for (const [act, on] of [['bbox', bboxOn], ['grid', gridOn], ['mode-shaded', edgesOn], ['mode-wire', !edgesOn], ['ortho', ortho]] as const) {
       const b = root.querySelector<HTMLElement>(`[data-act="${act}"]`);
       if (b) { b.classList.toggle('active', on); b.setAttribute('aria-checked', String(on)); }
     }
@@ -2419,6 +2447,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         bodyMats.forEach(m => { m.wireframe = true; });
         bodyEdges.forEach(e => { if (e) e.visible = false; });
         break;
+      case 'ortho':
+        ortho = !ortho;
+        try { localStorage.setItem('cv3d-projection', ortho ? 'ortho' : 'persp'); } catch { /* storage blocked */ }
+        root.dataset.projection = ortho ? 'ortho' : 'persp';
+        statusHint.textContent = ortho ? 'Orthographic — true proportions, no perspective' : 'Perspective';
+        break;
       case 'bbox':
         bboxOn = !bboxOn;
         if (bboxHelper) bboxHelper.visible = bboxOn;
@@ -2467,7 +2501,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       case 'tool-facedist': setTool('facedist'); break;
       case 'clear': clearMeasurements(); statusHint.textContent = 'Measurements cleared'; break;
       case 'snap': {
-        renderer.render(scene, camera); // without the view cube — a clean picture of the part
+        renderer.render(scene, viewCam()); // without the view cube — a clean picture of the part
         const url = renderer.domElement.toDataURL('image/jpeg', 0.92);
         invalidate();
         if (opts.onSnapshot) {
@@ -2499,7 +2533,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const KEYS: Record<string, string> = {
     h: 'view-iso', f: 'fit', '0': 'view-iso', '1': 'view-front', '2': 'view-back', '3': 'view-top', '4': 'view-bottom', '5': 'view-left', '6': 'view-right',
     d: 'tool-dist', r: 'tool-circle', a: 'tool-angle', p: 'tool-point', g: 'tool-facedist', m: 'tool-dist',
-    s: 'clip', c: 'color-next', e: 'mode-shaded', w: 'mode-wire', b: 'bbox', t: 'tree', i: 'inspector', x: 'maximize', '?': 'shortcuts',
+    s: 'clip', c: 'color-next', o: 'ortho', e: 'mode-shaded', w: 'mode-wire', b: 'bbox', t: 'tree', i: 'inspector', x: 'maximize', '?': 'shortcuts',
     delete: 'clear', backspace: 'clear',
   };
   root.addEventListener('keydown', (ev) => {
@@ -2544,6 +2578,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   resize();
   setView([1, 0.8, 1], true);
+  root.dataset.projection = ortho ? 'ortho' : 'persp';
   applyThemeToScene();
   const themeObserver = new MutationObserver(() => { if (isDarkTheme() !== darkTheme) applyThemeToScene(); });
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

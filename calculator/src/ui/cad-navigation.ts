@@ -21,6 +21,10 @@ export interface NavOptions {
   /** controls.target — moved together with the camera. */
   target: V3;
   dom: HTMLElement;
+  /** The camera the scene is drawn through (an orthographic one when that view is on); rays use it. */
+  rayCamera?(): import('three').Camera;
+  /** Orthographic view on: the scale is the same at every depth (the target plane's). */
+  orthographic?(): boolean;
   /** World point under the client position (respecting section planes), or null on empty space. */
   pick(clientX: number, clientY: number): V3 | null;
   /** Bounding radius of the model — scales the zoom limits. */
@@ -77,6 +81,7 @@ export function createCadNavigation(THREE: ThreeNS, o: NavOptions): CadNavigatio
   /** World units per screen pixel at a given depth along the view direction. */
   function worldPerPixel(depth: number): number {
     const h = dom.clientHeight || 1;
+    if (o.orthographic?.()) depth = camera.position.distanceTo(target); // every depth draws at the target plane's scale
     return (2 * Math.max(depth, 1e-6) * Math.tan((camera.fov * Math.PI) / 360)) / h;
   }
 
@@ -85,7 +90,7 @@ export function createCadNavigation(THREE: ThreeNS, o: NavOptions): CadNavigatio
     const r = dom.getBoundingClientRect();
     const ndc = new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster();
-    ray.setFromCamera(ndc, camera);
+    ray.setFromCamera(ndc, (o.rayCamera?.() ?? camera) as import('three').PerspectiveCamera);
     const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(forward(), target);
     return ray.ray.intersectPlane(plane, new THREE.Vector3()) ?? target.clone();
   }

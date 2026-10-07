@@ -539,6 +539,8 @@ what is true** — nothing here has been compared with a price JLR paid.
   zoom-to-cursor with limits); OrbitControls keeps touch only (`mouseButtons` all null). Picking uses a three-mesh-bvh
   index built in `cad-bvh-worker.ts` — `indirect: true` ALWAYS (direct mode reorders triangles and every face id goes
   wrong) and post the whole serialised object (its `version`). Prove navigation with `npx tsx e2e/viewer-nav.ts <out>`.
+  Orthographic (O): the perspective camera stays the RIG; render / pick / project through `viewCam()` (an orthographic
+  camera synced from the rig, frustum = the rig's view at the target plane) — never `camera` directly for those.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

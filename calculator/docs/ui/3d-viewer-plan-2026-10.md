@@ -202,5 +202,13 @@ Unit tests: `tests/cad-navigation.test.ts` (pivot fixed under rotation, no roll,
 ignored, pan exact at the grab depth, zoom anchored / eased / bounded, BVH face index = brute force after a
 structured-clone round trip).
 
-**Not done:** an orthographic projection toggle (engineering views without perspective); the frame rate on a
-real GPU was not measured here (the container renders in software).
+**Orthographic view** (added after the review): Display ▾ → Orthographic, or **O**; remembered per browser
+(`cv3d-projection`), tagged "Ortho" on the title chip. The perspective camera stays the navigation rig; the scene is
+drawn and picked through an orthographic camera synced from it every frame, its frustum = what the rig sees at the
+orbit target's plane (backed off along the view line so a close zoom never clips the part). So zoom, zoom-to-cursor,
+orbit-about-cursor, fly-to, the view cube and snapshots all work unchanged; pan uses one scale at every depth.
+Proven: unit tests (pan exact at any depth, anchored zoom that magnifies, pivot fixed, equal edges at different
+depths draw the same length) and `e2e/viewer-nav.ts` (O switches; orbit / zoom / pan keep the face under the cursor
+in orthographic; the choice persists) — 15 / 15 checks pass.
+
+**Not done:** the frame rate on a real GPU was not measured here (the container renders in software).
