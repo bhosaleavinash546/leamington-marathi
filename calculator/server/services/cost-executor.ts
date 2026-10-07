@@ -83,6 +83,9 @@ export interface CostToolResult {
   trace?: { operations: OperationResult[]; traceability: TraceabilityRecord[]; rateBook: string; drivers?: CommodityDrivers };
 }
 
+import { computeBatteryPackDrivers } from '../../src/engine/modules/battery-pack.js';
+import { computeEMotorDrivers } from '../../src/engine/modules/e-motor.js';
+
 // ─── Commodity dispatch map ───────────────────────────────────────────────────
 
 type ComputeFn = (inputs: Record<string, unknown>) => ReturnType<typeof computeMachiningDrivers>;
@@ -108,6 +111,8 @@ const COMMODITY_MAP: Record<string, ComputeFn> = {
   aluminium_extrusion:  computeAluminiumExtrusionDrivers as unknown as ComputeFn,
   wiring_harness:       computeWiringHarnessDrivers     as unknown as ComputeFn,
   gear:                 computeGearDrivers              as unknown as ComputeFn,
+  battery_pack:         computeBatteryPackDrivers       as unknown as ComputeFn,
+  e_motor:              computeEMotorDrivers            as unknown as ComputeFn,
 };
 
 // ─── DFM opportunity generator ────────────────────────────────────────────────

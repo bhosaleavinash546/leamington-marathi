@@ -3,6 +3,7 @@ import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
 import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
 import { MATERIAL_PICKERS, materialOptionsHtml, wireMaterialPicker } from './material-picker.js';
+import { renderBatteryPackForm, collectBatteryPackDrivers, renderEMotorForm, collectEMotorDrivers, renderEvChecks } from './ev-forms.js';
 import { CASTING_TAXONOMY } from '../engine/casting-material-taxonomy.js';
 import { FORGING_TAXONOMY } from '../engine/forging-material-taxonomy.js';
 import { POLYMER_TAXONOMIES } from '../engine/polymer-material-taxonomy.js';
@@ -1520,7 +1521,7 @@ function renderNegotiationPanel(): void {
   const preShould = haveLast ? lastResult!.total : 0;
   const preCommodity = haveLast ? activeCommodity : 'machining';
   const preVol = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '') || 5000;
-  const commodities = ['machining','casting','cast_and_machine','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','aluminium_extrusion','thermoforming','rotational_moulding','forging','rubber','composites','pcb_fab','pcba','wiring_harness','assembly'];
+  const commodities = ['machining','casting','cast_and_machine','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','aluminium_extrusion','thermoforming','rotational_moulding','forging','rubber','composites','pcb_fab','pcba','wiring_harness','battery_pack','e_motor','assembly'];
 
   host.innerHTML = `
     <div style="border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);overflow:hidden">
@@ -6491,7 +6492,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     injection_moulding: 'Injection Moulding', casting: 'Casting', forging: 'Forging', gear: 'Gear Cutting',
     cast_and_machine: 'Cast+Machine', rubber: 'Rubber', composites: 'Composites',
     blow_moulding: 'Blow Moulding', thermoforming: 'Thermoforming',
-    rotational_moulding: 'Rotomoulding', wiring_harness: 'Harness',
+    rotational_moulding: 'Rotomoulding', wiring_harness: 'Harness', battery_pack: 'Battery Pack', e_motor: 'E-Motor',
     extrusion: 'Extrusion', aluminium_extrusion: 'Al Extrusion', pcb_fab: 'PCB Fab', pcba: 'PCBA',
     biw_assembly: 'BIW Assembly', painting: 'Painting', assembly: 'Assembly',
   };
@@ -10720,6 +10721,7 @@ const COMMODITY_AMORT_FIELD: Record<string, string> = {
   rotational_moulding: 'rm-amort', composites: 'comp-amort', blow_moulding: 'bm-amort',
   rubber: 'rub-amort', wiring_harness: 'harn-amort', painting: 'paint-amort',
   biw_assembly: 'biw-amort', pcb_fab: 'pcbf-amort', pcba: 'pcba-amort',
+  battery_pack: 'bp-amort', e_motor: 'em-amort',
 };
 
 /** Plan-view projected footprint (cm²) — two largest bbox dims, measured OCCT
@@ -11778,6 +11780,27 @@ function switchCommodity(type: CommodityType): void {
         if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-blow') ?? Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = opt.value; }
         wireBlowMouldingProcessChange();
         wireBlowDFM();
+      }, 0);
+      break;
+
+    case 'battery_pack':
+      // EV propulsion (built Oct 2026) — the forms and collectors live in ev-forms.ts.
+      area.innerHTML = renderBatteryPackForm();
+      populateSelects();
+      setTimeout(() => {
+        for (const [id, want] of [['bp-lab', 'semiskilled'], ['bp-test-lab', 'technician']] as const) {
+          const e = el<HTMLSelectElement>(id); const o = e && Array.from(e.options).find(x => x.value.includes(want)); if (e && o) e.value = o.value;
+        }
+      }, 0);
+      break;
+
+    case 'e_motor':
+      area.innerHTML = renderEMotorForm();
+      populateSelects();
+      setTimeout(() => {
+        for (const [id, want] of [['em-lab', 'semiskilled'], ['em-test-lab', 'technician'], ['em-lam', 'mat-no27-27a']] as const) {
+          const e = el<HTMLSelectElement>(id); const o = e && Array.from(e.options).find(x => x.value.includes(want)); if (e && o) e.value = o.value;
+        }
       }, 0);
       break;
 
@@ -14214,6 +14237,14 @@ function collectInput(): UniversalStackInput {
     case 'rubber':               return collectRubberInput();
     case 'composites':           return collectCompositesInput();
     case 'wiring_harness':       return collectWiringHarnessInput();
+    case 'battery_pack': {
+      const d = collectBatteryPackDrivers({ num, sel });
+      return { ...getUniversalTail(), rawMaterial: d.rawMaterial, operations: d.operations, tooling: d.tooling };
+    }
+    case 'e_motor': {
+      const d = collectEMotorDrivers({ num, sel });
+      return { ...getUniversalTail(), rawMaterial: d.rawMaterial, operations: d.operations, tooling: d.tooling };
+    }
     case 'automotive_software':
       throw new Error('Use the Calculate button inside the Automotive Software Should-Cost panel.');
     case 'cad_analysis':
@@ -14396,6 +14427,7 @@ function compute(): void {
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
     renderBreakdown(result);
+    if (activeCommodity === 'battery_pack' || activeCommodity === 'e_motor') renderEvChecks(activeCommodity, result, input, { num, sel });
     renderSelfAudit(result, input);   // deterministic lessons layer + learned-calibration status
     updateTabBadges(result, input);
     fetchAICommentary(result);

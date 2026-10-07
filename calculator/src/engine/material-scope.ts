@@ -35,6 +35,8 @@ export const MATERIAL_SCOPE_BY_COMMODITY: Record<string, RegExp> = {
   extrusion: /^Extrusion$/i,
   aluminium_extrusion: /^Aluminium Extrusion Billet$/i,
   rubber: /^(Rubber|Thermoplastic Elastomer)$/i,
+  // EV traction motor laminations (EV propulsion build, Oct 2026).
+  e_motor: /^Electrical Steel Sheet$/i,
   composites: /^Composite$/i,
   painting: /^Paint$/i,
   /** Not a commodity: the let-down additives the extrusion and thermoforming forms add to a base grade. */

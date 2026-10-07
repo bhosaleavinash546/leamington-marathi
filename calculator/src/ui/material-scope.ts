@@ -18,7 +18,7 @@ export const SELECT_COMMODITY: Record<string, string> = {
   'mach-mat': 'machining', 'cast-mat': 'casting', 'cam-mat': 'cast_and_machine', 'forge-mat': 'forging',
   'gear-mat': 'gear', 'sm-mat': 'sheet_metal', 'smf-mat': 'sheet_metal_fab', 'imm-mat': 'injection_moulding',
   'bm-mat': 'blow_moulding', 'rm-mat': 'rotational_moulding', 'tf-mat': 'thermoforming', 'ext-mat': 'extrusion',
-  'rub-mat': 'rubber',
+  'rub-mat': 'rubber', 'em-lam': 'e_motor',
 };
 
 /**

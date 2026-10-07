@@ -1,3 +1,4 @@
+import { EV_MACHINES } from './ev-data.js';
 import type { RateLibrary, MachineRate, MachineRateBuildup, MaterialRate } from './types.js';
 import {
   AL_PRESSES, AL_CONFORM, AL_IMPACT, AL_DOWNSTREAM, AL_ALLOYS, AL_ALLOY_LIST, AL_MARKET, AL_LINE,
@@ -55,6 +56,22 @@ const AL_PRESS_KG_PER_HR: Record<string, number> = {
   'al-ext-press-3600t': 2300, 'al-ext-press-5500t': 3000, 'al-ext-press-8000t': 4000,
   'al-ext-indirect-2800t': 1200, 'al-ext-hydrostatic-1600t': 600,
 };
+/** EV propulsion lines (battery pack, e-motor) — ev-data.ts. Capex ESTIMATE; built like every library rate. */
+function evBuildup(capexGbp: number, runningKw: number, floorM2: number, hours = 6000, util = 0.80): MachineRateBuildup {
+  return {
+    annualDepreciation: Math.round(capexGbp / 10),
+    maintenance: Math.round(capexGbp * 0.04),
+    energy: Math.round(runningKw * hours * util * 0.268),
+    floorSpace: Math.round(floorM2 * 110),
+    indirectSupport: Math.round(capexGbp * 0.05),
+    financeCost: Math.round(capexGbp / 2 * 0.04),
+    annualAvailableHours: hours,
+    machineUtilization: util,
+  };
+}
+const EV_LINE_MACHINES: MachineRate[] = EV_MACHINES.map(m => makeMachine(m.id, m.label, evBuildup(m.capexGbp, m.kw, m.floorM2), 'UK',
+  `EV propulsion build 2026-10. Capex £${m.capexGbp.toLocaleString('en-GB')} ESTIMATE, ${m.kw} kW running load, ${m.floorM2} m². 10-yr depreciation, 6,000 h at 80 %.`));
+
 const AL_MACHINES: MachineRate[] = [
   ...AL_PRESSES.map(p => makeMachine(p.id, `Aluminium extrusion line — ${p.label}`,
     alBuildup(p.capexGbp, (AL_PRESS_KG_PER_HR[p.id] ?? 1000) * AL_LINE.pressKwhPerKg, 1200 + p.forceT * 0.6),
@@ -1510,6 +1527,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       { annualDepreciation: 18216, maintenance: 6058, energy: 34957, floorSpace: 12115, indirectSupport: 5036, financeCost: 2250, annualAvailableHours: 5000, machineUtilization: 0.75 },
       'UK', 'UK composites benchmark Jun 2026. Fan-assisted oven cure — prepreg (no autoclave pressure), wet layup post-cure.'),
     ...AL_MACHINES,
+    ...EV_LINE_MACHINES,
     makeMachine('rtm-press-std', 'RTM / VARTM Injection Press',
       { annualDepreciation: 22264, maintenance: 9086, energy: 13983, floorSpace: 8077, indirectSupport: 6043, financeCost: 2750, annualAvailableHours: 3500, machineUtilization: 0.78 },
       'UK', 'UK composites benchmark Jun 2026. Resin Transfer Moulding injection press. Structural automotive CFRP/GFRP.'),
@@ -2143,6 +2161,8 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'oh-rubber-t2', commodityType: 'rubber', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
     { id: 'oh-composites-t2',    commodityType: 'composites',     supplierTier: 'Tier 2', overheadPct: 0.14, marginPct: 0.10, sourceNote: 'Industry benchmark' },
     { id: 'oh-wiring-harness-t2',commodityType: 'wiring_harness', supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-battery-pack-t1',  commodityType: 'battery_pack',   supplierTier: 'Tier 1', overheadPct: 0.08, marginPct: 0.06, sourceNote: 'EV propulsion build 2026-10 — ESTIMATE (on the integration only: the bought-in cells carry handling, not overhead / margin)' },
+    { id: 'oh-e-motor-t1',       commodityType: 'e_motor',        supplierTier: 'Tier 1', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'EV propulsion build 2026-10 — ESTIMATE' },
   ],
 };
 

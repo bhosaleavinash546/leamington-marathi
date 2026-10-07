@@ -416,6 +416,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   library entry + `GRADES` in casting-material-taxonomy.ts; family, advisor alloy and melt follow its category. CGI
   (EN-GJV) melts as ductile iron (`castingAlloyOf` returned null for it). Designation keys run to 4 tokens (EN-GJS-500-7
   v 500-14). Review-added grades are HELD by the refresh's catch-all — give them alloy drivers in the next config.
+- EV propulsion (Oct 2026, `docs/ev/battery-emotor-build-2026-10.md`, `tests/ev-propulsion.test.ts`): `battery_pack` and
+  `e_motor` commodities, spec-driven (no CAD route). Data and sources in `src/engine/ev-data.ts`: BNEF 2025 cell price,
+  SMM / SunSirs 2026 magnets; parts, conversions and line capex are labelled ESTIMATE.
+  - Modules: `modules/battery-pack.ts`, `modules/e-motor.ts`; checks in `modules/ev-advisor.ts`; forms in `src/ui/ev-forms.ts`.
+  - Cells are BOUGHT IN (`rawMaterial.boughtIn`): `directCost` holds the integration ONLY, because the core adds `boughtIn`
+    itself (putting both in counted the cells twice).
+  - Library metals are read from the ACTIVE book. The 17 line machines are library rates (`EV_LINE_MACHINES`).
+  - Lamination dies wear out fractionally.
 - Casting & forging materials (review, Oct 2026): the GRADE is an advisory question `material.grade`
   (`derive/grade.ts`) — the representative grade is costed until it is answered; an answered, pinned (CAD panel →
   `answersFromContext`) or DECLARED (STEP material designation) grade sets the £/kg, the mass (its density) and the

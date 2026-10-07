@@ -22,6 +22,8 @@ export type CommodityType =
   | 'rubber'
   | 'composites'
   | 'wiring_harness'
+  | 'battery_pack'
+  | 'e_motor'
   | 'cad_analysis'
   | 'assembly'
   | 'automotive_software';
