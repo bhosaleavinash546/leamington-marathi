@@ -264,3 +264,63 @@ technologies were added. The Battery commodity now has 33 entries.
 
 As before, page fetches were blocked by the proxy, so the quotes are
 search-result text. Open the `evidenceUrl` links before the demo.
+
+## EDU update, 7 October 2026
+
+All 20 EDU entries were checked against 2025–26 sources. 16 were corrected
+or extended, and four technologies were added. EDU now has 24 entries.
+
+- **Corrections:**
+  - SiC share of BEV main inverters: 35 → 31% (TrendForce, 2Q25).
+  - Two-speed EV transmissions TRL 8 → 9, adding the Mercedes CLA EV in-house
+    two-speed, eATS 2.0 (2025).
+  - NIO ET9 dated 2025, not 2024.
+  - Porsche's first series direct oil cooling is the Cayenne Electric rear
+    motor (2025), not PPE in 2024; the Macan uses a water jacket.
+  - The 8-in-1 cost claim is now Yole SystemPlus's teardown estimate (−18%)
+    rather than an unsourced "BYD claim of −20%".
+  - DSC module thermal resistance is about 35% better (Hitachi), not "cut to
+    50%", and the evidence link now points at Hitachi rather than a 2007
+    Denso release.
+  - In-wheel motors: the Lordstown "38 sold" figure was unsupported and is now
+    "only a few dozen built". It is clear that the vehicle makers went
+    bankrupt, not Elaphe.
+  - 0.10 mm electrical steel is already mill-produced (Baosteel), not sampling.
+  - The Tesla Model 3 SiC inverter is dated 2017.
+  - The magnet-recycling note no longer claims "automotive grade". It now
+    reflects the EU ELV Regulation deal of December 2025.
+- **Programmes added:**
+  - Xiaomi V8s EVO at 0.15 mm / 28,000 rpm (YU7 GT, 2026).
+  - Lucid Gravity motor-boost charging (December 2024).
+  - BYD's own 1500 V SiC chips (March 2025).
+  - Hitachi DSC inverter (2014, 300,000+ vehicles).
+  - Renault 5 Turbo 3E with Protean in-wheel motors (deliveries from 2027).
+  - HyProMag's Tyseley recycling plant (January 2026).
+  - The secondary-axle disconnect entry now cites Hyundai Transys (Ioniq 5,
+    May 2021) and the Mercedes CLA DCU (2025) instead of a market-research
+    link.
+- **Players:**
+  - Nissan added to EESM (Ariya).
+  - Mercedes-Benz added to two-speed.
+  - Innoscience and Inovance added to GaN (GaN on-board charger on Changan).
+  - Lucid added to boost charging.
+- **New entries:**
+  - Dy/Tb-free NdFeB magnets (Honda hybrid 2016; China's April 2025 export
+    licensing).
+  - Trench-gate SiC MOSFETs (Infineon on E-GMP; ROHM on Zeekr).
+  - Carbon-sleeved rotors (Model S Plaid; SU7 Ultra).
+  - Coaxial planetary reducers (Schaeffler on the e-tron; ZF from 2025).
+- **Dropped:**
+  - A duplicate AWD-disconnect entry, merged into the existing one.
+  - A rare-earth-free ferrite motor (no production vehicle).
+  - The Yangwang U9 Track Edition (a record car).
+  - Valeo EESM supply (2027, not yet in production).
+  - An unsourced Revuelto date.
+  - An EESM share cut based on a single unfetched snippet.
+- **Adoption shares** for the new entries are curator estimates, not
+  measured. No source publishes them.
+
+Curation debt is 116 → 118. The refresh cleared two existing flags, and the
+four new entries carry four honest flags. As with the battery update, the
+quotes are search-result text, so open the `evidenceUrl` links before the
+demo.

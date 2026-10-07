@@ -307,7 +307,13 @@ test('self-audit regression gates: the register can only get healthier', () => {
   // still forbids any EXISTING entry getting worse unnoticed.
   // Ratcheted 131 → 117 (7 Oct 2026): the 20 highest-momentum stale entries
   // were refreshed with sourced 2024-26 programmes (14 cleared).
-  assert.ok(a.flaggedCount <= 117, `curation debt grew to ${a.flaggedCount}`);
+  // 117 → 116 with the BEV battery update (7 Oct 2026).
+  // 116 → 118 with the EDU update (7 Oct 2026), net of two opposite moves:
+  // the sourced refresh CLEARED two existing EDU flags (116 → 114), and the
+  // four new sourced entries brought four honest flags of their own (a
+  // trench-SiC programme dated 2023, Dy-free magnets proven only in a 2016
+  // hybrid, two-player carbon sleeves, a Europe-only coaxial reducer).
+  assert.ok(a.flaggedCount <= 118, `curation debt grew to ${a.flaggedCount}`);
   assert.ok((a.byFlag['no-evidence'] ?? 0) <= 23, 'evidence debt grew');
 });
 
