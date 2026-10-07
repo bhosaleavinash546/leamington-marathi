@@ -527,6 +527,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   `html:not([data-theme="light"])` (`tests/dark-theme-scope.test.ts`). One green accent (#22C55E, dark ink on
   green fills); success / saving is TEAL in dark (green is the accent). Prove a theme change with
   `e2e/theme-shots.ts` (shoot before/after, `--diff`: light must be 0 px).
+- 3D viewer (Oct 2026 redesign, `docs/ui/3d-viewer-plan-2026-10.md`): `src/ui/cad-viewer.ts` is ONE component for the
+  standalone viewer and the inline CAD-to-Cost viewer — floating icon dock with fly-outs (every tool keeps its `data-act`
+  id; `runAction` is the one switch), labelled view cube (`cad-viewcube.ts`, drawn in the canvas), inspector column,
+  `colorMode` (one colour mode at a time). Pure helpers in `cad-viewer-model.ts` (robust 5–95 % ranges, mesh volume,
+  geometry checks, `isRoundFeature` — a fillet is not a hole). Styles in `styles/cad-viewer.css` (`--v-*` tokens, both
+  themes). The host pushes £ per face + the costed feature lines + its currency formatter (`setFaceCosts`) and the DFM
+  findings (`setIssues`) via `pushViewerState` — the viewer never prints a bare £. Kernel edges must move with the
+  re-centred mesh (the ghost outline). Prove a change with `npx tsx e2e/viewer-shots.ts <out>` (axe inside the viewer).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

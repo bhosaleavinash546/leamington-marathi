@@ -21,6 +21,7 @@ import './styles/brand.css';
 // UI/UX review (Oct 2026): the review's layout and polish, loaded last — docs/ui/ui-ux-review-2026-10.md.
 import './styles/saas-polish.css';
 import './styles/dark-green.css';   // dark theme only: black + green (every rule scoped to not-light)
+import './styles/cad-viewer.css';  // 3D viewer (theme-aware, --v-* tokens)
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
@@ -1031,7 +1032,7 @@ function showViewer(): void {
 }
 
 async function loadViewerFile(file: File): Promise<void> {
-  const dz = document.getElementById('viewer-dropzone');
+  const dz = document.getElementById('viewer-empty');
   const hostWrap = document.getElementById('viewer-standalone-host');
   if (!hostWrap) return;
   if (dz) dz.style.display = 'none';
@@ -1048,7 +1049,7 @@ async function loadViewerFile(file: File): Promise<void> {
     if (dz) {
       dz.style.display = '';
       const msg = err instanceof Error ? err.message : 'could not open file';
-      const hint = dz.querySelector('div:last-child');
+      const hint = document.getElementById('viewer-dz-sub');
       if (hint) hint.textContent = `Couldn't open ${file.name}: ${msg}`;
     }
   }
@@ -17169,6 +17170,7 @@ async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
       cadGeometricDFM = await rep.json() as GeometricDFMMeta;
       console.log(`[dfm] geometric DFM ready: ${cadGeometricDFM.grouped?.length ?? 0} issue(s)`);
       renderGeometricDFMPanel();
+      pushViewerState(); // the findings appear in the viewer's inspector too
       return;
     } catch { return; }
   }
@@ -17230,7 +17232,7 @@ function renderGeometricDFMPanel(): void {
  * It used to be `window.__cadViewer`, set on every mount and never cleared, so
  * a DFM click could report "Highlighted N faces" into a disposed viewer.
  */
-type ViewerLike = Pick<import('./cad-viewer.js').CADViewerHandle, 'highlightFaces' | 'setGuardrails' | 'showEnvelope' | 'setFaceCosts'> & { dispose(): void };
+type ViewerLike = Pick<import('./cad-viewer.js').CADViewerHandle, 'highlightFaces' | 'setGuardrails' | 'showEnvelope' | 'setFaceCosts' | 'setIssues'> & { dispose(): void };
 const viewerBus = {
   handle: null as ViewerLike | null,
   publish(h: ViewerLike): void {
@@ -17257,8 +17259,11 @@ function pushViewerState(): void {
     const oversize = _cadDecisions.find(d => d.id === 'machine.oversize' && !_cadDecisionAnswers[d.id]);
     const env = oversize ? /at (\d+(?:\.\d+)?) × (\d+(?:\.\d+)?) × (\d+(?:\.\d+)?) mm/.exec(oversize.why) : null;
     v.showEnvelope(env ? [Number(env[1]), Number(env[2]), Number(env[3])] : null);
-    // After a costing, the money goes on the model: £ per face from the costed feature lines.
-    v.setFaceCosts(lastResult && _pendingCostingSource === 'cad' ? faceCostMap() : null);
+    // After a costing, the money goes on the model: £ per face from the costed feature lines, the
+    // lines themselves for the inspector's ranking, and the display currency for every figure.
+    const costed = lastResult && _pendingCostingSource === 'cad';
+    v.setFaceCosts(costed ? faceCostMap() : null, { items: costed ? faceCostItems() : [], format: dfmMoneyUi });
+    v.setIssues(viewerIssuesFromDFM());
   } catch (err) {
     console.warn('[viewer] state push failed:', err instanceof Error ? err.message : String(err));
   }
@@ -17285,6 +17290,35 @@ function faceCostMap(): Record<number, number> | null {
     for (const f of l.faceIds) out[f] = (out[f] ?? 0) + perFace;
   }
   return Object.keys(out).length ? out : null;
+}
+
+/** The costed feature lines as the viewer's cost-on-model rows (label, faces, £ per part). */
+function faceCostItems(): import('./cad-viewer.js').CostItem[] {
+  const meta = buildCadReportMeta();
+  const rate = meta.featureMachineRatePerHr ?? 0;
+  if (!rate) return [];
+  return (meta.featureLines ?? []).filter(l => l.included && l.faceIds?.length).map(l => ({
+    // A pocket or face has no diameter — name it by its depth, never "Ø0.0".
+    label: `${l.count > 1 ? `${l.count} × ` : ''}${l.kind}${l.diaMm > 0 ? ` Ø${l.diaMm.toFixed(1)}${l.depthMm ? ` × ${l.depthMm.toFixed(1)}` : ''} mm` : l.depthMm ? ` ${l.depthMm.toFixed(1)} mm deep` : ''} — ${l.operation}`,
+    faceIds: l.faceIds ?? [],
+    gbp: (l.totalMinutes / 60) * rate,
+  }));
+}
+
+/** The background geometric-DFM findings as the viewer's manufacturability list (null until the job lands). */
+function viewerIssuesFromDFM(): import('./cad-viewer.js').ViewerIssue[] | null {
+  const groups = cadGeometricDFM?.grouped;
+  if (!groups) return null;
+  const sev = { critical: 'high', major: 'medium', minor: 'low', advisory: 'info' } as const;
+  return groups.map(g => ({
+    id: g.ruleId,
+    title: g.count > 1 ? `${g.title} (${g.count})` : g.title,
+    severity: sev[g.severity as keyof typeof sev] ?? 'info',
+    detail: `${g.range.min === g.range.max ? g.range.min : `${g.range.min}–${g.range.max}`} ${g.range.unit} against ${g.threshold.comparator} ${g.threshold.value} ${g.threshold.unit} — ${g.recommendation}`,
+    faceIds: g.faceIds ?? [],
+    amount: (g.totalCostGBP ?? 0) > 0 ? `${dfmMoneyUi(g.totalCostGBP ?? 0)}/part` : undefined,
+    source: [g.source.standard, g.source.clause, g.source.note].filter(Boolean).join(' · '),
+  }));
 }
 
 /**
@@ -19690,7 +19724,23 @@ async function init(): Promise<void> {
   });
   const viewerDz = document.getElementById('viewer-dropzone');
   if (viewerDz) {
-    viewerDz.addEventListener('click', () => document.getElementById('viewer-file-input')?.click());
+    const pick = () => document.getElementById('viewer-file-input')?.click();
+    viewerDz.addEventListener('click', (e) => { if (!(e.target as HTMLElement).closest('#viewer-sample-btn')) pick(); });
+    viewerDz.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === viewerDz) { e.preventDefault(); pick(); } });
+    // A real part to try: the casting bracket from the real-parts baseline (public/samples).
+    document.getElementById('viewer-sample-btn')?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const btn = e.currentTarget as HTMLButtonElement;
+      btn.disabled = true;
+      try {
+        const r = await fetch('/samples/casting-bracket.stp');
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        await loadViewerFile(new File([await r.blob()], 'casting-bracket.stp', { type: 'model/step' }));
+      } catch (err) {
+        const hint = document.getElementById('viewer-dz-sub');
+        if (hint) hint.textContent = `Couldn't load the sample: ${err instanceof Error ? err.message : 'network error'}`;
+      } finally { btn.disabled = false; }
+    });
     viewerDz.addEventListener('dragover', (e) => { e.preventDefault(); viewerDz.classList.add('dragover'); });
     viewerDz.addEventListener('dragleave', () => viewerDz.classList.remove('dragover'));
     viewerDz.addEventListener('drop', (e) => {

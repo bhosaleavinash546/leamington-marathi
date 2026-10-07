@@ -625,10 +625,24 @@
     </div>
   </div>
   <input type="file" id="viewer-file-input" accept=".step,.stp,.iges,.igs,.stl" style="display:none"/>
-  <div id="viewer-dropzone" class="viewer-dropzone">
-    <svg class="ic" style="width:44px;height:44px;opacity:.55"><use href="#i-cube"/></svg>
-    <div style="font-weight:700;font-size:1.02rem;margin-top:10px">Drop a CAD file here, or click “Open CAD file”</div>
-    <div style="color:var(--text-muted);font-size:0.82rem;margin-top:5px">STEP · IGES · STL — rotate, section, measure, wall-thickness &amp; draft analysis</div>
+  <div id="viewer-empty" class="viewer-empty">
+    <div id="viewer-dropzone" class="viewer-dropzone" role="button" tabindex="0" aria-label="Open a CAD file — or drop one here">
+      <div class="viewer-dz-icon"><svg class="ic"><use href="#i-cube"/></svg></div>
+      <div class="viewer-dz-title">Drop a CAD model here</div>
+      <div class="viewer-dz-sub" id="viewer-dz-sub">or choose a file from your computer</div>
+      <div class="viewer-formats" aria-label="Supported formats"><span>STEP</span><span>STP</span><span>IGES</span><span>IGS</span><span>STL</span></div>
+      <div class="viewer-dz-actions">
+        <button class="btn btn-primary btn-sm" id="viewer-dz-open" type="button">Choose file</button>
+        <button class="btn btn-secondary btn-sm" id="viewer-sample-btn" type="button">Try a sample part</button>
+      </div>
+      <div class="viewer-dz-privacy">STEP and IGES are meshed by your CostVision server, which keeps the mesh so the file reopens instantly. STL opens in your browser.</div>
+    </div>
+    <div class="viewer-caps" aria-label="What the viewer does">
+      <div class="viewer-cap"><i>⌖</i><div><b>Exact geometry</b><span>Click a face for its true type, radius, depth and area from the B-rep — not a mesh guess.</span></div></div>
+      <div class="viewer-cap"><i>↔</i><div><b>Measure &amp; section</b><span>Distance, radius, angle and face-to-face, snapped to edges; X / Y / Z section planes.</span></div></div>
+      <div class="viewer-cap"><i>▦</i><div><b>Wall thickness &amp; draft</b><span>Heat-maps of wall thickness and draft against the pull direction, with the spread in the inspector.</span></div></div>
+      <div class="viewer-cap"><i>◈</i><div><b>Cost on the model</b><span>After a CAD costing, the money is painted on the faces that cost it — click a feature to fly to it.</span></div></div>
+    </div>
   </div>
   <div id="viewer-standalone-host" style="display:none"></div>
 </section>
@@ -4979,6 +4993,11 @@ function initTooltips() {
       if (popover) popover.classList.remove('visible');
     }, 120);
   }, true);
+  // A click acts on the thing — the explanation has done its job. Without this the
+  // popover stayed over the new page while the pointer rested on the nav item.
+  var hideNow = function() { clearTimeout(popHide); if (popover) popover.classList.remove('visible'); };
+  document.body.addEventListener('pointerdown', hideNow, true);
+  window.addEventListener('scroll', hideNow, true);
 }
 
 // ── 2. Product Tour ───────────────────────────────────────────────────────

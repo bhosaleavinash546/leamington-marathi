@@ -17,6 +17,11 @@
 
 import { parseSTLMesh } from './cad-views.js';
 import { exportFilename } from '../export/filename.js';
+import {
+  robustRange, normInRange, histogram, meshVolumeArea, VIEWER_DENSITIES, viewName, geometryChecks, rankCostItems, esc, isRoundFeature,
+  type RobustRange, type ViewerIssue, type CostItem,
+} from './cad-viewer-model.js';
+export type { ViewerIssue, CostItem } from './cad-viewer-model.js';
 
 type V3 = { x: number; y: number; z: number };
 
@@ -107,7 +112,9 @@ export interface CADViewerHandle {
   /** Draw (or clear) a machine envelope box around the part — the oversize decision made visible. */
   showEnvelope(envelopeMm: [number, number, number] | null, label?: string): void;
   /** £ per face for the cost heat-map colour mode; null clears it. */
-  setFaceCosts(costs: Record<number, number> | null): void;
+  setFaceCosts(costs: Record<number, number> | null, extra?: { items?: CostItem[]; format?: (gbp: number) => string }): void;
+  /** Manufacturability findings for the inspector (null = the viewer's own geometry checks). */
+  setIssues(items: ViewerIssue[] | null): void;
   dispose(): void;
   el: HTMLElement;
 }
@@ -314,6 +321,10 @@ const ICON: Record<string, string> = {
   'clear':      svgIcon('<path d="M6 6 18 18M18 6 6 18"/>'),
   'snapshot':   svgIcon('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7 10 4.5h4L15.5 7"/><circle cx="12" cy="13.5" r="3.2"/>'),
   'expand':     svgIcon('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+  'palette':    svgIcon('<path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.1-.9-1.5-.9-2.5 0-1 .8-1.6 1.8-1.6h2.1a3.7 3.7 0 0 0 3.7-3.7C20.5 7 16.7 3.5 12 3.5z"/><circle cx="7.8" cy="11" r="1.1"/><circle cx="10.5" cy="7.4" r="1.1"/><circle cx="15" cy="7.6" r="1.1"/>'),
+  'inspector':  svgIcon('<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M14.5 4v16"/><path d="M16.8 8h1.7M16.8 11h1.7M16.8 14h1.7"/>'),
+  'keyboard':   svgIcon('<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M7.5 14h9"/>'),
+  'cost':       svgIcon('<path d="M15.5 7.2A4 4 0 0 0 8.4 9.6V18h8"/><path d="M6.5 13.2h6.5"/>'),
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -321,7 +332,7 @@ const ICON: Record<string, string> = {
 export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions = {}): Promise<CADViewerHandle> {
   const THREE = await import('three');
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
-  const { ViewHelper } = await import('three/examples/jsm/helpers/ViewHelper.js');
+  const { createViewCube } = await import('./cad-viewcube.js');
   const { toCreasedNormals } = await import('three/examples/jsm/utils/BufferGeometryUtils.js');
   // Crease angle for smooth shading: normals are averaged across facets that meet
   // below this angle (round cylinders/fillets) and kept hard above it (real edges).
@@ -338,41 +349,44 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   };
 
   // ── DOM scaffold ──
+  // Model-first layout (Oct 2026 redesign, docs/ui/3d-viewer-plan-2026-10.md): the canvas owns the
+  // space; tools are one floating icon dock with fly-out menus; facts live in a collapsible inspector
+  // beside the canvas; a labelled view cube sits top-right. Every tool keeps its data-act id.
+  const dockBtn = (act: string, icon: string, label: string, key = '', extra = '') =>
+    `<button type="button" data-act="${act}" aria-label="${label}" data-tip="${label}${key ? ` · ${key}` : ''}" ${extra}>${ICON[icon]}</button>`;
+  const menuBtn = (menu: string, icon: string, label: string, key = '') =>
+    `<button type="button" class="cv3d-menu-trigger" data-menu="${menu}" aria-haspopup="menu" aria-expanded="false" aria-label="${label}" data-tip="${label}${key ? ` · ${key}` : ''}">${ICON[icon]}<i class="cv3d-caret" aria-hidden="true"></i></button>`;
+  const item = (act: string, icon: string, label: string, key = '', role = 'menuitem') =>
+    `<button type="button" role="${role}" data-act="${act}">${ICON[icon] ?? ''}<span>${label}</span>${key ? `<kbd>${key}</kbd>` : ''}</button>`;
   const root = document.createElement('div');
   root.className = 'cv3d' + (opts.compact ? ' cv3d--compact' : '');
   root.innerHTML = `
-    <div class="cv3d-viewport">
+    <div class="cv3d-main">
+    <div class="cv3d-viewport" tabindex="0" role="application" aria-label="3D model view — drag to rotate, scroll to zoom; press ? for keyboard shortcuts">
       <canvas class="cv3d-canvas"></canvas>
       <div class="cv3d-banner" style="display:none"></div>
+      <div class="cv3d-titlechip"><span class="cv3d-title">No model loaded</span><span class="cv3d-badge" style="display:none"></span></div>
       <div class="cv3d-facechip" style="display:none"></div>
       <div class="cv3d-legend" style="display:none"></div>
       <div class="cv3d-tree" style="display:none">
         <div class="cv3d-tree-head">
-          <button class="cv3d-tree-collapse" title="Collapse / expand the tree">${ICON['tree']}</button>
+          <button class="cv3d-tree-collapse" title="Collapse / expand the tree" aria-label="Collapse or expand the tree">${ICON['tree']}</button>
           <span class="cv3d-tree-title">Model tree</span>
-          <button class="cv3d-tree-close" title="Close tree">${ICON['clear']}</button>
+          <button class="cv3d-tree-close" title="Close tree" aria-label="Close tree">${ICON['clear']}</button>
         </div>
         <div class="cv3d-tree-list"></div>
         <div class="cv3d-tree-resize" title="Drag to resize"></div>
       </div>
-      <div class="cv3d-measures" style="display:none">
-        <div class="cv3d-measures-title">Measurements <button class="cv3d-csv-btn" title="Export measurements as CSV">⬇ CSV</button></div>
-        <div class="cv3d-measures-list"></div>
-      </div>
-      <div class="cv3d-features-panel" style="display:none">
-        <div class="cv3d-measures-title">Features</div>
-        <div class="cv3d-features-list"></div>
-      </div>
-      <div class="cv3d-clip-panel" style="display:none">
+      <div class="cv3d-clip-panel cv3d-float" style="display:none">
         <span class="cv3d-clip-label">Section</span>
         <div class="cv3d-clip-axes">
-          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="x"/><span>X</span><input type="range" data-clip-slider="x" min="-100" max="100" value="0" step="1"/></label>
-          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="y"/><span>Y</span><input type="range" data-clip-slider="y" min="-100" max="100" value="0" step="1"/></label>
-          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="z"/><span>Z</span><input type="range" data-clip-slider="z" min="-100" max="100" value="0" step="1"/></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="x"/><span>X</span><input type="range" data-clip-slider="x" min="-100" max="100" value="0" step="1" aria-label="Section X offset"/></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="y"/><span>Y</span><input type="range" data-clip-slider="y" min="-100" max="100" value="0" step="1" aria-label="Section Y offset"/></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="z"/><span>Z</span><input type="range" data-clip-slider="z" min="-100" max="100" value="0" step="1" aria-label="Section Z offset"/></label>
         </div>
-        <button class="cv3d-clip-off" title="Turn section view off">off</button>
+        <button class="cv3d-clip-off" title="Turn section view off">Off</button>
       </div>
-      <div class="cv3d-explode-panel" style="display:none">
+      <div class="cv3d-explode-panel cv3d-float" style="display:none">
         <span class="cv3d-clip-label">Explode</span>
         <div class="cv3d-axis-seg" data-explode-axes>
           <button data-explode-axis="radial" class="active" title="Explode radially from the centre">Radial</button>
@@ -380,85 +394,73 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-explode-axis="y" title="Explode along Y">Y</button>
           <button data-explode-axis="z" title="Explode along Z">Z</button>
         </div>
-        <input type="range" class="cv3d-explode-slider" min="0" max="100" value="0" step="1"/>
+        <input type="range" class="cv3d-explode-slider" min="0" max="100" value="0" step="1" aria-label="Explode distance"/>
       </div>
-      <div class="cv3d-rotate-panel" style="display:none">
+      <div class="cv3d-rotate-panel cv3d-float" style="display:none">
         <span class="cv3d-clip-label">Rotate</span>
-        <select class="cv3d-rotate-body" title="Component to rotate"></select>
-        <label class="cv3d-clip-row"><span>X</span><input type="range" data-rot-axis="x" min="-180" max="180" value="0" step="1"/></label>
-        <label class="cv3d-clip-row"><span>Y</span><input type="range" data-rot-axis="y" min="-180" max="180" value="0" step="1"/></label>
-        <label class="cv3d-clip-row"><span>Z</span><input type="range" data-rot-axis="z" min="-180" max="180" value="0" step="1"/></label>
+        <select class="cv3d-rotate-body" title="Component to rotate" aria-label="Component to rotate"></select>
+        <label class="cv3d-clip-row"><span>X</span><input type="range" data-rot-axis="x" min="-180" max="180" value="0" step="1" aria-label="Rotate X"/></label>
+        <label class="cv3d-clip-row"><span>Y</span><input type="range" data-rot-axis="y" min="-180" max="180" value="0" step="1" aria-label="Rotate Y"/></label>
+        <label class="cv3d-clip-row"><span>Z</span><input type="range" data-rot-axis="z" min="-180" max="180" value="0" step="1" aria-label="Rotate Z"/></label>
         <button class="cv3d-rotate-reset" title="Reset this component's rotation">Reset</button>
       </div>
-      <div class="cv3d-move-panel" style="display:none">
+      <div class="cv3d-move-panel cv3d-float" style="display:none">
         <span class="cv3d-clip-label">Move</span>
-        <select class="cv3d-move-body" title="Component to move"></select>
-        <label class="cv3d-clip-row"><span>X</span><input type="range" data-mov-axis="x" min="-100" max="100" value="0" step="1"/></label>
-        <label class="cv3d-clip-row"><span>Y</span><input type="range" data-mov-axis="y" min="-100" max="100" value="0" step="1"/></label>
-        <label class="cv3d-clip-row"><span>Z</span><input type="range" data-mov-axis="z" min="-100" max="100" value="0" step="1"/></label>
+        <select class="cv3d-move-body" title="Component to move" aria-label="Component to move"></select>
+        <label class="cv3d-clip-row"><span>X</span><input type="range" data-mov-axis="x" min="-100" max="100" value="0" step="1" aria-label="Move X"/></label>
+        <label class="cv3d-clip-row"><span>Y</span><input type="range" data-mov-axis="y" min="-100" max="100" value="0" step="1" aria-label="Move Y"/></label>
+        <label class="cv3d-clip-row"><span>Z</span><input type="range" data-mov-axis="z" min="-100" max="100" value="0" step="1" aria-label="Move Z"/></label>
         <button class="cv3d-move-reset" title="Reset this component's position">Reset</button>
       </div>
-      <button class="cv3d-tools-toggle" title="Hide / show the tools bar" aria-label="Hide or show the tools bar">${svgIcon('<path d="M6 9l6 6 6-6"/>')}</button>
+      <div class="cv3d-hint" aria-live="polite"></div>
+      <div class="cv3d-dock-wrap">
+        <div class="cv3d-menu" role="menu" data-menu-for="measure" aria-label="Measure" hidden>
+          ${item('tool-dist', 'distance', 'Distance', 'D')}${item('tool-circle', 'radius', 'Radius / diameter', 'R')}${item('tool-angle', 'angle', 'Angle', 'A')}${item('tool-point', 'point', 'Point (X Y Z)', 'P')}${item('tool-facedist', 'facedist', 'Face to face', 'G')}
+          <div class="cv3d-menu-sep"></div>${item('clear', 'clear', 'Clear measurements', 'Del')}
+        </div>
+        <div class="cv3d-menu" role="menu" data-menu-for="color" aria-label="Colour by" hidden>
+          <div class="cv3d-menu-cap">Colour by</div>
+          ${item('color-none', 'shaded', 'Plain', '', 'menuitemradio')}${item('facecolors', 'faces', 'Face type', '', 'menuitemradio')}${item('draft', 'draft', 'Draft &amp; undercut', '', 'menuitemradio')}
+          <div class="cv3d-axis-seg cv3d-draft-axes" data-draft-axes><span>Pull</span><button type="button" data-draft-axis="z" class="active">Z</button><button type="button" data-draft-axis="x">X</button><button type="button" data-draft-axis="y">Y</button></div>
+          ${item('thickness', 'thickness', 'Wall thickness', '', 'menuitemradio')}${item('bodycolors', 'components', 'Components', '', 'menuitemradio')}${item('costcolors', 'cost', 'Cost on model', '', 'menuitemradio')}
+        </div>
+        <div class="cv3d-menu" role="menu" data-menu-for="display" aria-label="Display" hidden>
+          ${item('mode-shaded', 'shaded', 'Shaded with edges', 'E', 'menuitemradio')}${item('mode-wire', 'wire', 'Wireframe', 'W', 'menuitemradio')}
+          <div class="cv3d-menu-sep"></div>${item('bbox', 'bbox', 'Bounding box', 'B', 'menuitemcheckbox')}${item('grid', 'grid', 'Ground grid', 'G', 'menuitemcheckbox')}
+        </div>
+        <div class="cv3d-menu" role="menu" data-menu-for="arrange" aria-label="Assembly" hidden>
+          ${item('explode', 'explode', 'Explode', '', 'menuitemcheckbox')}${item('rotate', 'rotate', 'Rotate a component', '', 'menuitemcheckbox')}${item('move', 'move', 'Move a component', '', 'menuitemcheckbox')}
+        </div>
+        <div class="cv3d-dock" role="toolbar" aria-label="Viewer tools">
+          ${dockBtn('view-iso', 'view-iso', 'Home view', 'H')}${dockBtn('fit', 'fit', 'Fit to screen', 'F')}
+          <span class="cv3d-dock-sep" aria-hidden="true"></span>
+          ${dockBtn('tool-select', 'select', 'Select a face', 'Esc', 'class="active"')}${menuBtn('measure', 'distance', 'Measure', 'M')}${dockBtn('clip', 'section', 'Section', 'S')}
+          <span class="cv3d-dock-sep" aria-hidden="true"></span>
+          ${menuBtn('color', 'palette', 'Colour by', 'C')}${menuBtn('display', 'shaded', 'Display')}
+          <span class="cv3d-dock-sep" aria-hidden="true"></span>
+          ${dockBtn('tree', 'tree', 'Model tree', 'T', 'disabled')}${menuBtn('arrange', 'explode', 'Assembly')}
+          <span class="cv3d-dock-sep" aria-hidden="true"></span>
+          ${dockBtn('inspector', 'inspector', 'Inspector', 'I')}${dockBtn('snap', 'snapshot', opts.onSnapshot ? 'Snapshot — attach to report' : 'Snapshot — download image')}${dockBtn('maximize', 'expand', 'Full screen', 'X')}${dockBtn('shortcuts', 'keyboard', 'Keyboard shortcuts', '?')}
+        </div>
+      </div>
+      <div class="cv3d-shortcuts" role="dialog" aria-label="Keyboard shortcuts" hidden>
+        <div class="cv3d-shortcuts-head"><strong>Keyboard shortcuts</strong><button type="button" class="cv3d-shortcuts-close" aria-label="Close shortcuts">${ICON['clear']}</button></div>
+        <dl>
+          <dt>H</dt><dd>Home view</dd><dt>F</dt><dd>Fit to screen</dd>
+          <dt>1 – 6</dt><dd>Front · Back · Top · Bottom · Left · Right</dd><dt>0</dt><dd>Isometric</dd>
+          <dt>Esc</dt><dd>Select tool · cancel · exit full screen</dd>
+          <dt>D R A P G</dt><dd>Distance · Radius · Angle · Point · Face to face</dd>
+          <dt>Del</dt><dd>Clear measurements</dd><dt>S</dt><dd>Section</dd>
+          <dt>C</dt><dd>Next colour mode</dd><dt>E · W</dt><dd>Shaded · Wireframe</dd><dt>B</dt><dd>Bounding box</dd>
+          <dt>T · I</dt><dd>Model tree · Inspector</dd><dt>X</dt><dd>Full screen</dd>
+          <dt>Double-click</dt><dd>Orbit about that point</dd><dt>Right-drag</dt><dd>Pan</dd>
+        </dl>
+      </div>
     </div>
-    <div class="cv3d-toolbar">
-      <div class="cv3d-grp" data-grp="views">
-        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Views</span>
-        <div class="cv3d-grp-row">
-          <button data-act="view-iso" title="Isometric (Home)"><b>${ICON['view-iso']}</b><span>Home</span></button>
-          <button data-act="view-front" title="Front view"><b>${ICON['view-front']}</b><span>Front</span></button>
-          <button data-act="view-top" title="Top view"><b>${ICON['view-top']}</b><span>Top</span></button>
-          <button data-act="view-right" title="Right view"><b>${ICON['view-right']}</b><span>Right</span></button>
-          <button data-act="fit" title="Fit part to screen"><b>${ICON['fit']}</b><span>Fit</span></button>
-        </div>
-      </div>
-      <div class="cv3d-grp" data-grp="display">
-        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Display</span>
-        <div class="cv3d-grp-row">
-          <button data-act="mode-shaded" class="active" title="Shaded with edges"><b>${ICON['shaded']}</b><span>Shaded</span></button>
-          <button data-act="mode-wire" title="Wireframe"><b>${ICON['wire']}</b><span>Wire</span></button>
-          <button data-act="bbox" title="Bounding box + dimensions"><b>${ICON['bbox']}</b><span>Box</span></button>
-          <button data-act="grid" class="active" title="Show / hide the ground grid"><b>${ICON['grid']}</b><span>Grid</span></button>
-        </div>
-      </div>
-      <div class="cv3d-grp" data-grp="analysis">
-        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Analysis</span>
-        <div class="cv3d-grp-row">
-          <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled><b>${ICON['faces']}</b><span>Faces</span></button>
-          <button data-act="bodycolors" title="Colour each component a distinct colour (multi-body assemblies)" disabled><b>${ICON['components']}</b><span>Components</span></button>
-          <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction"><b>${ICON['draft']}</b><span>Draft</span></button>
-          <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled><b>${ICON['thickness']}</b><span>Thickness</span></button>
-        </div>
-      </div>
-      <div class="cv3d-grp" data-grp="structure">
-        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Structure</span>
-        <div class="cv3d-grp-row">
-          <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled><b>${ICON['tree']}</b><span>Tree</span></button>
-          <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled><b>${ICON['holes']}</b><span>Holes</span></button>
-          <button data-act="clip" title="Section view — clipping planes (X/Y/Z)"><b>${ICON['section']}</b><span>Section</span></button>
-          <button data-act="explode" title="Exploded view (multi-body only)" disabled><b>${ICON['explode']}</b><span>Explode</span></button>
-          <button data-act="rotate" title="Rotate a component about its own X / Y / Z" disabled><b>${ICON['rotate']}</b><span>Rotate</span></button>
-          <button data-act="move" title="Move a component along X / Y / Z" disabled><b>${ICON['move']}</b><span>Move</span></button>
-        </div>
-      </div>
-      <div class="cv3d-grp cv3d-grp--measure" data-grp="measure">
-        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Measure &amp; Inspect</span>
-        <div class="cv3d-grp-row">
-          <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data"><b>${ICON['select']}</b><span>Select</span></button>
-          <button data-act="tool-dist" title="Distance — click two points (snaps to vertices &amp; edges)"><b>${ICON['distance']}</b><span>Distance</span></button>
-          <button data-act="tool-circle" title="Radius / diameter — click 3 points on a rim or bore"><b>${ICON['radius']}</b><span>Radius</span></button>
-          <button data-act="tool-angle" title="Angle — click 3 points (vertex is the middle click)"><b>${ICON['angle']}</b><span>Angle</span></button>
-          <button data-act="tool-point" title="Point — read X / Y / Z coordinates"><b>${ICON['point']}</b><span>Point</span></button>
-          <button data-act="tool-facedist" title="Face-to-face — perpendicular distance between two faces"><b>${ICON['facedist']}</b><span>Face–Face</span></button>
-          <button data-act="clear" title="Clear measurements &amp; selection"><b>${ICON['clear']}</b><span>Clear</span></button>
-        </div>
-      </div>
-      <div class="cv3d-grp" data-grp="capture">
-        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Capture</span>
-        <div class="cv3d-grp-row">
-          <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}"><b>${ICON['snapshot']}</b><span>Snapshot</span></button>
-          <button data-act="maximize" title="Maximize viewer (Esc to exit)"><b>${ICON['expand']}</b><span>Expand</span></button>
-        </div>
-      </div>
+    <aside class="cv3d-inspector" aria-label="Inspector" hidden>
+      <div class="cv3d-insp-head"><strong>Inspector</strong><button type="button" class="cv3d-insp-close" aria-label="Close inspector">${ICON['clear']}</button></div>
+      <div class="cv3d-insp-body"></div>
+    </aside>
     </div>
     <div class="cv3d-status">
       <span class="cv3d-status-file">No file loaded</span>
@@ -473,11 +475,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const faceChip = $('.cv3d-facechip');
   const legendEl = $('.cv3d-legend');
   const bannerEl = $('.cv3d-banner');
-  bannerEl.style.cssText = 'position:absolute;left:8px;right:8px;top:8px;z-index:6;display:none;flex-direction:column;gap:4px;pointer-events:auto';
-  const measuresBox = $('.cv3d-measures');
-  const measuresList = $('.cv3d-measures-list');
-  const featuresBox = $('.cv3d-features-panel');
-  const featuresList = $('.cv3d-features-list');
+  bannerEl.style.cssText = 'position:absolute;left:8px;right:120px;top:52px;z-index:6;display:none;flex-direction:column;gap:4px;pointer-events:auto';
   const treeBox = $('.cv3d-tree');
   const treeList = $('.cv3d-tree-list');
   const clipPanel = $('.cv3d-clip-panel');
@@ -489,7 +487,25 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const moveBodySelect = $<HTMLSelectElement>('.cv3d-move-body');
   const statusFile = $('.cv3d-status-file');
   const statusDims = $('.cv3d-status-dims');
-  const statusHint = $('.cv3d-status-hint');
+  const statusHintEl = $('.cv3d-status-hint');
+  const hintEl = $('.cv3d-hint');
+  const titleEl = $('.cv3d-title');
+  const badgeEl = $('.cv3d-badge');
+  const inspector = $('.cv3d-inspector');
+  const inspBody = $('.cv3d-insp-body');
+  const shortcutsEl = $('.cv3d-shortcuts');
+  /** Status messages go to the status bar and, briefly, to a toast over the canvas. */
+  let hintTimer = 0;
+  const statusHint = {
+    set textContent(s: string) {
+      statusHintEl.textContent = s;
+      hintEl.textContent = s;
+      hintEl.classList.toggle('show', !!s);
+      clearTimeout(hintTimer);
+      if (s) hintTimer = window.setTimeout(() => hintEl.classList.remove('show'), 2600);
+    },
+    get textContent(): string { return statusHintEl.textContent ?? ''; },
+  };
 
   // ── three.js scene ──
   // preserveDrawingBuffer:false lets the driver discard the buffer after compositing
@@ -502,7 +518,30 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   renderer.setPixelRatio(pixelRatio());
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xffffff);
+  // Theme-aware studio backdrop: a soft vertical gradient (a screen-filling background texture, so a
+  // snapshot carries it too). Follows the app's light / dark switch live.
+  const isDarkTheme = () => document.documentElement.getAttribute('data-theme') !== 'light';
+  let darkTheme = isDarkTheme();
+  let bgTexture: InstanceType<typeof THREE.CanvasTexture> | null = null;
+  function applyThemeToScene(): void {
+    darkTheme = isDarkTheme();
+    const c = document.createElement('canvas');
+    c.width = 4; c.height = 256;
+    const g = c.getContext('2d')!;
+    const grad = g.createLinearGradient(0, 0, 0, 256);
+    if (darkTheme) { grad.addColorStop(0, '#1f2630'); grad.addColorStop(1, '#0b0e12'); }
+    else { grad.addColorStop(0, '#fbfcfd'); grad.addColorStop(1, '#dde3ea'); }
+    g.fillStyle = grad; g.fillRect(0, 0, 4, 256);
+    bgTexture?.dispose();
+    bgTexture = new THREE.CanvasTexture(c);
+    bgTexture.colorSpace = THREE.SRGBColorSpace;
+    scene.background = bgTexture;
+    viewCube?.setTheme(darkTheme);
+    if (grid) styleGrid(grid);
+    if (shadowMat) shadowMat.opacity = darkTheme ? 0.55 : 0.32;
+    for (const e of bodyEdges) if (e) (e.material as InstanceType<typeof THREE.LineBasicMaterial>).color.set(darkTheme ? 0x0a0d12 : 0x1e2733);
+    invalidate();
+  }
 
   // Lighting is direct-only (hemisphere + key + rim, set up below). An earlier
   // image-based-lighting (RoomEnvironment) pass washed the matte grey material
@@ -514,14 +553,42 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   controls.dampingFactor = 0.12;
   controls.zoomToCursor = true; // CAD convention: zoom at the pointer, not the screen centre
 
-  // Orientation cube (bottom-right gizmo) — click a face/axis to snap to that view.
-  type ViewHelperT = InstanceType<typeof ViewHelper>;
-  let viewHelper: ViewHelperT | null = null;
-  try {
-    viewHelper = new ViewHelper(camera, renderer.domElement);
-    viewHelper.location = { top: null, right: 8, bottom: 8, left: null };
-  } catch { viewHelper = null; }
-  const clock = new THREE.Clock();
+  type Vec3 = InstanceType<typeof THREE.Vector3>;
+  // Labelled view cube (top-right) — click a face, edge or corner for that view.
+  let viewCube: import('./cad-viewcube.js').ViewCube | null = null;
+  try { viewCube = createViewCube(THREE, { size: opts.compact ? 80 : 108, margin: 12 }); } catch { viewCube = null; }
+  /** Grid lines in the theme's greys. */
+  function styleGrid(g: InstanceType<typeof THREE.GridHelper>): void {
+    const mats = (Array.isArray(g.material) ? g.material : [g.material]) as InstanceType<typeof THREE.LineBasicMaterial>[];
+    for (const m of mats) { m.transparent = true; m.opacity = darkTheme ? 0.55 : 0.8; m.vertexColors = false; m.color.set(darkTheme ? 0x3a4553 : 0xc3cbd5); m.needsUpdate = true; }
+  }
+  let shadowMat: InstanceType<typeof THREE.MeshBasicMaterial> | null = null;
+  let shadowMesh: InstanceType<typeof THREE.Mesh> | null = null;
+  /** Soft contact shadow under the part: a radial-gradient plane on the ground, cheap and always on. */
+  function buildShadow(): void {
+    if (shadowMesh) { removeAndDispose(partGroup, shadowMesh); shadowMesh = null; shadowMat = null; }
+    if (!bodyMeshes.length) return;
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const g = c.getContext('2d')!;
+    const rg = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+    rg.addColorStop(0, 'rgba(0,0,0,0.9)'); rg.addColorStop(0.55, 'rgba(0,0,0,0.35)'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+    const tex = new THREE.CanvasTexture(c);
+    shadowMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity: darkTheme ? 0.55 : 0.32 });
+    shadowMesh = new THREE.Mesh(new THREE.PlaneGeometry(partSpan.x * 1.5 || 1, partSpan.y * 1.5 || 1), shadowMat);
+    shadowMesh.position.z = -partSpan.z / 2 - partRadius * 0.015;
+    shadowMesh.renderOrder = -1;
+    partGroup.add(shadowMesh);
+  }
+  // ── camera tween: every view change glides (300 ms ease) instead of jumping ──
+  let camAnim: { p0: Vec3; p1: Vec3; t0: Vec3; t1: Vec3; start: number; dur: number } | null = null;
+  function animateCamera(pos: Vec3, target: Vec3, dur = 320): void {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || dur <= 0) { camAnim = null; camera.position.copy(pos); controls.target.copy(target); controls.update(); invalidate(); return; }
+    camAnim = { p0: camera.position.clone(), p1: pos.clone(), t0: controls.target.clone(), t1: target.clone(), start: performance.now(), dur };
+    invalidate();
+  }
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.0));
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -540,7 +607,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   type Mesh3 = InstanceType<typeof THREE.Mesh>;
   type Line3 = InstanceType<typeof THREE.LineSegments>;
-  type Vec3 = InstanceType<typeof THREE.Vector3>;
   type Sprite3 = InstanceType<typeof THREE.Sprite>;
   type Obj3 = InstanceType<typeof THREE.Object3D>;
   type Mat3 = InstanceType<typeof THREE.MeshStandardMaterial>;
@@ -559,7 +625,18 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let envelopeHelper: InstanceType<typeof THREE.Box3Helper> | null = null;
   let envelopeLabel: InstanceType<typeof THREE.Sprite> | null = null;
   let faceCosts: Record<number, number> | null = null;
-  let costOn = false;
+  /** The engine's costed feature lines (label, faces, £) for the inspector's ranking. */
+  let costItems: CostItem[] = [];
+  /** £ (GBP) → display-currency text; the host app passes its own so the viewer never prints a bare £. */
+  let fmtMoney: (gbp: number) => string = (gbp) => `£${gbp.toFixed(2)}`;
+  /** DFM findings from the host (costed); when null the viewer's own geometry checks are listed. */
+  let hostIssues: ViewerIssue[] | null = null;
+  let partStats: { volumeMm3: number | null; areaMm2: number } | null = null;
+  let densityId = (() => { try { return localStorage.getItem('cv3d-density') ?? 'steel'; } catch { return 'steel'; } })();
+  /** Inspector "Selection" section content (escaped HTML), mirrored by the face chip when it is closed. */
+  let selectionHtml = '';
+  type ColorMode = 'none' | 'facetype' | 'draft' | 'thickness' | 'body' | 'cost';
+  let colorMode: ColorMode = 'none';
   let lastLoadedInfo: LoadedInfo | null = null;
   let meta: TessMeta | null = null;
   /**
@@ -579,10 +656,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let disposed = false;
   let loadSeq = 0;
   let maximized = false;
-  let draftOn = false;
   let draftAxis: 'x' | 'y' | 'z' = 'z'; // moulding/casting pull defaults to part Z
-  let thicknessOn = false;
-  let thicknessRange: { min: number; max: number } | null = null;
+  let thicknessRange: RobustRange | null = null;
   let explodeFactor = 0;
   let explodeAxis: 'radial' | 'x' | 'y' | 'z' = 'radial';
   let bodyExplodeDir: Array<InstanceType<typeof THREE.Vector3>> = []; // per-body explode vector (dir × relative distance)
@@ -590,7 +665,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bodyRot: Array<{ x: number; y: number; z: number }> = [];       // per-body rotation in degrees
   let bodyMove: Array<{ x: number; y: number; z: number }> = [];      // per-body translation (mm, part space)
   let gridOn = true;
-  let bodyColorsOn = false;
 
   // ── resource disposal helpers ──
   function disposeMaterialDeep(m: unknown): void {
@@ -706,7 +780,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // forever we render only when something changes: invalidate() schedules one
   // frame; camera motion (controls 'change'), resize, load, and every scene
   // mutation call it. The frame keeps re-scheduling itself while OrbitControls
-  // damping or the ViewHelper animation is still settling, then stops.
+  // damping or a camera glide (animateCamera) is still settling, then stops.
   let renderPending = false;
   let renderHandle = 0;
   function invalidate(): void {
@@ -723,23 +797,18 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function frame(): void {
     renderPending = false;
     if (disposed) return;
-    const delta = clock.getDelta();
     let animating = false;
-    if (viewHelper) {
-      viewHelper.center = controls.target; // orbit the cube about the current target
-      if (viewHelper.animating) { viewHelper.update(delta); animating = true; }
+    if (camAnim) {
+      const k = Math.min(1, (performance.now() - camAnim.start) / camAnim.dur);
+      const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // ease-in-out cubic
+      camera.position.lerpVectors(camAnim.p0, camAnim.p1, e);
+      controls.target.lerpVectors(camAnim.t0, camAnim.t1, e);
+      if (k >= 1) camAnim = null; else animating = true;
     }
     const moved = controls.update(); // true while damping is still settling
     scaleLabels();
     renderer.render(scene, camera);
-    if (viewHelper) {
-      // ViewHelper.render() calls renderer.render() internally; with the default
-      // autoClear=true that would CLEAR the whole framebuffer (wiping the scene we
-      // just drew) before painting the gizmo in its corner. Suppress the clear.
-      renderer.autoClear = false;
-      viewHelper.render(renderer);
-      renderer.autoClear = true;
-    }
+    viewCube?.render(renderer, camera, controls.target);
     if (animating || moved) {
       invalidate();                 // keep going until motion settles
     } else if (lowRes) {
@@ -765,7 +834,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   controls.addEventListener('start', () => { lowRes = true; applyPixelRatio(); invalidate(); });
 
   // ── views ──
-  function setView(dir: [number, number, number]): void {
+  function setView(dir: readonly [number, number, number], instant = false): void {
     const len = Math.hypot(...dir) || 1;
     // Fit the bounding sphere into the NARROWER half-angle of the frustum: the
     // vertical fov, or the horizontal one when the viewport is tall. A fixed
@@ -774,11 +843,16 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
     const half = Math.min(vFov, hFov) / 2;
     const d = Math.max(partRadius / Math.sin(half) * 1.08, partRadius * 1.2);
-    camera.position.set((dir[0] / len) * d, (dir[1] / len) * d, (dir[2] / len) * d);
-    controls.target.set(0, 0, 0);
-    controls.update();
+    const pos = new THREE.Vector3((dir[0] / len) * d, (dir[1] / len) * d, (dir[2] / len) * d);
+    // A straight top / bottom view needs a tiny offset or OrbitControls' up-vector flips.
+    if (Math.abs(pos.x) < 1e-6 && Math.abs(pos.z) < 1e-6) pos.z = d * 1e-4;
+    animateCamera(pos, new THREE.Vector3(0, 0, 0), instant ? 0 : 320);
   }
-  const fit = () => setView([1, 0.8, 1]);
+  /** Fit keeps the current viewing direction (Home resets it to isometric). */
+  const fit = () => {
+    const dirNow = camera.position.clone().sub(controls.target);
+    setView(dirNow.lengthSq() > 0 ? [dirNow.x, dirNow.y, dirNow.z] : [1, 0.8, 1]);
+  };
 
   /** Frustum must track part size — fixed planes blank out metre-scale parts.
    *  With the logarithmic depth buffer a wide near..far range keeps full precision,
@@ -1008,7 +1082,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         if (stale()) return;
         const eg = new THREE.BufferGeometry();
         eg.setAttribute('position', new THREE.BufferAttribute(edgePositions, 3));
-        const line = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: 0x11141a, transparent: true, opacity: 0.85 }));
+        const line = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: darkTheme ? 0x0a0d12 : 0x1e2733, transparent: true, opacity: 0.8 }));
         line.visible = edgesOn && bodyVisible[bi];
         partGroup.add(line);
         bodyEdges[bi] = line;
@@ -1017,11 +1091,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     });
 
     const gridSize = Math.max(partSpan.x, partSpan.y) * 2.2 || 10;
-    grid = new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8); // light greys — readable on the white viewport
+    grid = new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8);
+    styleGrid(grid);
     grid.rotation.x = Math.PI / 2;
     grid.position.z = -partSpan.z / 2 - partRadius * 0.02;
     grid.visible = gridOn;
     partGroup.add(grid);
+    buildShadow();
 
     buildBBox();
     updateFrustum();
@@ -1046,39 +1122,32 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     statusFile.textContent = `${file.name} · ${triangles.toLocaleString()} triangles${meta ? ` · ${faceList.length} faces` : ''} · ${bodyText}${skippedText}`;
     statusDims.textContent = `X ${partSpan.x.toFixed(2)} · Y ${partSpan.y.toFixed(2)} · Z ${partSpan.z.toFixed(2)} mm`;
 
-    const fcBtn = $<HTMLButtonElement>('[data-act="facecolors"]');
-    fcBtn.disabled = !meta;
-    if (!meta && faceColorsOn) { faceColorsOn = false; fcBtn.classList.remove('active'); }
-    fcBtn.title = meta ? 'Colour by machining surface type' : 'Face types need STEP/IGES (B-rep) — STL is mesh-only';
-    const featBtn = $<HTMLButtonElement>('[data-act="features"]');
-    const hasCyl = faceList.some(f => f.type === 'cylinder');
-    featBtn.disabled = !hasCyl;
-    featBtn.title = hasCyl ? 'Detected features — holes & bosses' : 'Feature detection needs STEP/IGES with cylindrical faces';
-    const treeBtn = $<HTMLButtonElement>('[data-act="tree"]');
-    treeBtn.disabled = !meta;
-    treeBtn.title = meta ? 'Model tree — bodies, features & face types' : 'Model tree needs STEP/IGES (B-rep) — STL is mesh-only';
-    const explodeBtn = $<HTMLButtonElement>('[data-act="explode"]');
-    explodeBtn.disabled = bodyMeshes.length < 2;
-    explodeBtn.title = bodyMeshes.length < 2 ? 'Exploded view needs a multi-body model' : 'Exploded view';
-    // component colouring — assemblies only (≥2 bodies)
-    const bcBtn = $<HTMLButtonElement>('[data-act="bodycolors"]');
-    bcBtn.disabled = bodyMeshes.length < 2;
-    bcBtn.title = bodyMeshes.length < 2 ? 'Component colours need a multi-body assembly' : 'Colour each component a distinct colour';
-    if (bodyMeshes.length < 2) { bodyColorsOn = false; bcBtn.classList.remove('active'); }
-    // per-component rotate / move — any loaded model (acts on the whole part when single-body)
-    const rotBtn = $<HTMLButtonElement>('[data-act="rotate"]');
-    rotBtn.disabled = bodyMeshes.length < 1;
-    const movBtn = $<HTMLButtonElement>('[data-act="move"]');
-    movBtn.disabled = bodyMeshes.length < 1;
-    // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness
-    const thkVals = faceList.map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
-    thicknessRange = thkVals.length >= 2
-      ? thkVals.reduce((r, v) => ({ min: Math.min(r.min, v), max: Math.max(r.max, v) }), { min: Infinity, max: -Infinity })
-      : null;
-    const thkBtn = $<HTMLButtonElement>('[data-act="thickness"]');
-    thkBtn.disabled = !thicknessRange;
-    thkBtn.title = thicknessRange ? 'Wall-thickness heatmap' : 'Wall thickness needs STEP/IGES (B-rep) — STL is mesh-only';
-    if (!thicknessRange) { thicknessOn = false; thkBtn.classList.remove('active'); }
+    titleEl.textContent = file.name;
+    titleEl.title = file.name;
+    badgeEl.style.display = '';
+    const surfaceOnly = (topo && topo.isClosedSolid === false) || bodies === 0;
+    badgeEl.className = 'cv3d-badge ' + (surfaceOnly ? 'cv3d-badge--warn' : topo?.isClosedSolid ? 'cv3d-badge--ok' : 'cv3d-badge--info');
+    badgeEl.textContent = surfaceOnly ? 'Not a closed solid' : topo?.isClosedSolid ? 'Closed solid' : meta ? 'B-rep' : 'Mesh only';
+
+    // Tools that need B-rep data or several bodies are HIDDEN (disabled) on a model that cannot use them.
+    const enable = (act: string, on: boolean, why: string) => {
+      const b = root.querySelector<HTMLButtonElement>(`[data-act="${act}"]`);
+      if (b) { b.disabled = !on; b.title = on ? '' : why; }
+    };
+    enable('facecolors', !!meta, 'Face types need STEP/IGES (B-rep) — STL is mesh-only');
+    enable('tree', !!meta, 'Model tree needs STEP/IGES (B-rep) — STL is mesh-only');
+    enable('explode', bodyMeshes.length >= 2, 'Exploded view needs a multi-body model');
+    enable('bodycolors', bodyMeshes.length >= 2, 'Component colours need a multi-body assembly');
+    enable('rotate', bodyMeshes.length >= 1, '');
+    enable('move', bodyMeshes.length >= 1, '');
+    // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness. The colour scale
+    // is the area-weighted 5th–95th percentile — single-ray outliers no longer flatten it to one colour.
+    const thkFaces = faceList.filter(f => typeof f.thicknessMm === 'number' && f.thicknessMm > 0);
+    thicknessRange = robustRange(thkFaces.map(f => f.thicknessMm as number), thkFaces.map(f => f.areaCm2 ?? 1));
+    enable('thickness', !!thicknessRange, 'Wall thickness needs STEP/IGES (B-rep) — STL is mesh-only');
+    if ((colorMode === 'facetype' && !meta) || (colorMode === 'thickness' && !thicknessRange) || (colorMode === 'body' && bodyMeshes.length < 2)) colorMode = 'none';
+    // Mesh volume / area for the inspector (exact on a closed mesh).
+    partStats = meshVolumeArea(masterPositions!, topo ? topo.isClosedSolid !== false : true);
 
     // reset section + explode + rotate state for the new part
     explodeFactor = 0; explodeSlider.value = '0';
@@ -1090,7 +1159,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const sl = clipPanel.querySelector(`input[data-clip-slider="${a}"]`) as HTMLInputElement | null; if (sl) sl.value = '0';
     });
 
-    buildFeaturesPanel();
+    buildFeatureGroups();
     computeExplodeDirs();
     buildRotatePanel();
     buildMovePanel();
@@ -1100,7 +1169,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     applyClipping();
 
     resize();
-    fit();
+    setView([1, 0.8, 1], true);
+    renderInspector();
+    syncDock();
 
     // restore persisted measurements for this exact file
     fileKey = `${file.name}|${file.size}`;
@@ -1196,17 +1267,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     treeList.querySelectorAll('[data-tfeat]').forEach(row => row.addEventListener('click', () => {
       const g = featureGroups[Number((row as HTMLElement).dataset.tfeat)];
       if (!g) return;
-      highlightFaces(new Set(g.faceIds));
-      faceChip.innerHTML = `<strong>${g.faceIds.length} × ${g.kind === 'hole' ? 'hole/bore' : 'boss/shaft'} Ø ${g.diaMm.toFixed(2)} mm</strong>`;
-      faceChip.style.display = '';
+      showFaces(g.faceIds, `<strong>${g.faceIds.length} × ${g.kind === 'hole' ? 'hole / bore' : 'boss / shaft'} Ø ${g.diaMm.toFixed(2)} mm</strong>`);
     }));
     treeList.querySelectorAll('[data-ttype]').forEach(row => row.addEventListener('click', () => {
       const t = (row as HTMLElement).dataset.ttype!;
       const ids = treeTypeIds?.get(t);
       if (!ids) return;
       highlightFaces(new Set(ids));
-      faceChip.innerHTML = `<strong>${ids.length} × ${FACE_TYPE_LABEL[t] ?? t}</strong>`;
-      faceChip.style.display = '';
+      setSelection(`<strong>${ids.length} × ${esc(FACE_TYPE_LABEL[t] ?? t)}</strong>`);
     }));
   }
 
@@ -1302,13 +1370,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // ── features panel (holes & bosses from exact B-rep data) ──
   interface FeatureGroup { kind: 'hole' | 'boss'; diaMm: number; depthMm: number | null; faceIds: number[] }
   let featureGroups: FeatureGroup[] = [];
-  function buildFeaturesPanel(): void {
+  function buildFeatureGroups(): void {
     featureGroups = [];
-    featuresList.innerHTML = '';
     if (!meta) return;
     const groups = new Map<string, FeatureGroup>();
     for (const f of faceList) {
-      if (f.type !== 'cylinder' || f.radiusMm == null || f.hole == null) continue;
+      // Round features only — an edge fillet is a quarter-cylinder, not a hole (isRoundFeature).
+      if (f.type !== 'cylinder' || f.radiusMm == null || f.hole == null || !isRoundFeature(f)) continue;
       const kind = f.hole ? 'hole' : 'boss';
       const dia = Math.round(f.radiusMm * 2 * 100) / 100;
       const depth = f.depthMm != null ? Math.round(f.depthMm * 10) / 10 : null;
@@ -1317,20 +1385,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       groups.get(key)!.faceIds.push(f.id);
     }
     featureGroups = [...groups.values()].sort((a, b) => a.kind.localeCompare(b.kind) || a.diaMm - b.diaMm);
-    featuresList.innerHTML = featureGroups.map((g, i) =>
-      `<div class="cv3d-measure-row cv3d-feature-row" data-feat="${i}">
-        <span>${g.kind === 'hole' ? '◎' : '⬤'} ${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø ${g.diaMm.toFixed(2)}${g.depthMm != null ? ` × ${g.depthMm.toFixed(1)} deep` : ''} mm × ${g.faceIds.length}</span>
-      </div>`).join('') || '<div class="cv3d-measure-row"><span>No cylindrical features detected</span></div>';
-    featuresList.querySelectorAll('[data-feat]').forEach(row => {
-      row.addEventListener('click', () => {
-        const g = featureGroups[Number((row as HTMLElement).dataset.feat)];
-        if (!g) return;
-        highlightFaces(new Set(g.faceIds));
-        faceChip.innerHTML = `<strong>${g.faceIds.length} × ${g.kind === 'hole' ? 'hole/bore' : 'boss/shaft'} Ø ${g.diaMm.toFixed(2)} mm</strong>` +
-          `<span>R ${(g.diaMm / 2).toFixed(3)} mm <em>(exact, from B-rep)</em></span>`;
-        faceChip.style.display = '';
-      });
-    });
   }
 
   // ── picking / tools ──
@@ -1407,17 +1461,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
 
   function renderMeasureList(): void {
-    measuresBox.style.display = measurements.length ? '' : 'none';
-    measuresList.innerHTML = measurements.map((m, i) =>
-      `<div class="cv3d-measure-row"><span>${m.record.label}</span><button data-del="${i}" title="Remove">✕</button></div>`).join('');
-    measuresList.querySelectorAll('button[data-del]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const i = Number((btn as HTMLElement).dataset.del);
-        measurements[i]?.objects.forEach(o => removeAndDispose(overlayGroup, o));
-        measurements.splice(i, 1);
-        measurementsChanged();
-      });
-    });
+    // Measurements live in the inspector; opening it on the first one keeps the result in view.
+    if (measurements.length && inspector.hidden && !opts.compact) setInspector(true);
+    else renderInspector();
   }
 
   function exportCSV(): void {
@@ -1459,6 +1505,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     for (const h of highlightParts) { h.parent?.remove(h); disposeObject(h); }
     highlightParts = [];
     faceChip.style.display = 'none';
+    if (selectionHtml) { selectionHtml = ''; renderInspector(); }
     invalidate();
   }
 
@@ -1632,8 +1679,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function selectFace(triGlobal: number): void {
     clearHighlight();
     if (!meta || !triFaceAll) {
-      faceChip.innerHTML = `<strong>Mesh triangle #${triGlobal}</strong><span>Exact face data needs STEP/IGES (B-rep). STL carries mesh only.</span>`;
-      faceChip.style.display = '';
+      setSelection(`<strong>Mesh triangle #${triGlobal}</strong><span>Exact face data needs STEP/IGES (B-rep). STL carries mesh only.</span>`);
       return;
     }
     const faceId = triFaceAll[triGlobal];
@@ -1658,9 +1704,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     }
     if (face.areaCm2 != null) bits.push(`<span>Area ${face.areaCm2.toFixed(2)} cm²</span>`);
     if (bodyMeshes.length > 1 && face.bodyId != null && face.bodyId >= 0) bits.push(`<span>Body ${face.bodyId + 1}</span>`);
-    bits.push(`<span>${triCount} triangles</span>`);
-    faceChip.innerHTML = bits.join('');
-    faceChip.style.display = '';
+    const thk = face.thicknessMm;
+    if (typeof thk === 'number' && thk > 0) bits.push(`<span>Wall ≈ ${thk.toFixed(2)} mm (one ray from the face centre)</span>`);
+    const fc = faceCosts?.[faceId];
+    if (fc != null && fc > 0) bits.push(`<span>Machining on this face ≈ ${fmtMoney(fc)} per part</span>`);
+    bits.push(`<span class="cv3d-muted">${triCount} triangles</span>`);
+    setSelection(bits.join(''));
   }
 
   const onPointerDown = (ev: PointerEvent) => {
@@ -1672,7 +1721,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const down = (canvas as unknown as { __downAt?: [number, number] }).__downAt;
     const wasClick = !!down && Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) <= 5;
     // orientation cube consumes clicks in its corner (works even before a model loads)
-    if (wasClick && viewHelper && viewHelper.handleClick(ev)) return;
+    if (wasClick && viewCube) {
+      const d = viewCube.pick(ev, canvas);
+      if (d) { setView(d); statusHint.textContent = `${viewName(d)} view`; return; }
+    }
     if (!wasClick || !bodyMeshes.length) return;
     const hits = raycastMeshes(ev);
     if (!hits.length) { if (tool === 'select') clearHighlight(); return; }
@@ -1717,12 +1769,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const onKeyDown = (ev: KeyboardEvent) => {
     if (ev.key !== 'Escape') return;
     if (picks.length) { finishPicks(); statusHint.textContent = 'Cancelled'; }
-    else if (maximized) {
-      maximized = false;
-      root.classList.remove('cv3d--max');
-      $('[data-act="maximize"]').classList.remove('active');
-      requestAnimationFrame(resize);
-    }
+    else if (maximized) setFullscreen(false);
   };
   canvas.addEventListener('pointerdown', onPointerDown);
   canvas.addEventListener('pointerup', onPointerUp);
@@ -1730,22 +1777,28 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   window.addEventListener('keydown', onKeyDown);
 
   // ── toolbar wiring ──
-  let faceColorsOn = false;
   const rgbCss = (c: [number, number, number]) => `rgb(${c.map(x => Math.round(x * 255)).join(',')})`;
 
-  /** Single vertex-colour engine: face-type colouring and draft/undercut
-   *  shading are mutually exclusive. Rebuilds the colour buffer for the active
-   *  mode (or strips it when neither is on). */
+  /** Single vertex-colour engine: one colour mode at a time (`colorMode`). Rebuilds the colour buffer
+   *  for the active mode, or strips it for plain / per-component colour. */
+  function costRangeNow(): RobustRange | null {
+    if (!faceCosts || !meta || !triFaceAll) return null;
+    const vals = Object.values(faceCosts).filter(v => Number.isFinite(v) && v > 0);
+    if (!vals.length) return null;
+    // Cost runs from zero (a face with no attributed money) to the 95th percentile.
+    const r = robustRange(vals) ?? { min: 0, max: vals[0], absMin: vals[0], absMax: vals[0], clippedLow: false, clippedHigh: false };
+    return { ...r, min: 0, clippedLow: false };
+  }
+  function effectiveMode(): ColorMode {
+    if (colorMode === 'cost' && !costRangeNow()) return 'none';
+    if (colorMode === 'thickness' && !(meta && triFaceAll && thicknessRange)) return 'none';
+    if (colorMode === 'facetype' && !meta) return 'none';
+    if (colorMode === 'body' && bodyMeshes.length < 2) return 'none';
+    return colorMode;
+  }
   function applyColorMode(): void {
-    const costRange = (costOn && faceCosts && meta && triFaceAll) ? (() => {
-      const vals = Object.values(faceCosts!).filter(v => Number.isFinite(v) && v > 0);
-      return vals.length ? { min: 0, max: Math.max(...vals) } : null;
-    })() : null;
-    const mode: 'none' | 'facetype' | 'draft' | 'thickness' | 'body' | 'cost' =
-      costRange ? 'cost'
-      : draftOn ? 'draft'
-      : (thicknessOn && meta && triFaceAll && thicknessRange) ? 'thickness'
-      : (faceColorsOn && meta ? 'facetype' : (bodyColorsOn && bodyMeshes.length >= 2 ? 'body' : 'none'));
+    const costRange = costRangeNow();
+    const mode = effectiveMode();
     const pull: [number, number, number] = draftAxis === 'x' ? [1, 0, 0] : draftAxis === 'y' ? [0, 1, 0] : [0, 0, 1];
     for (let bi = 0; bi < bodyMeshes.length; bi++) {
       const mesh = bodyMeshes[bi];
@@ -1763,29 +1816,24 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const posAttr = mesh.geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>;
       const nTris = posAttr.count / 3;
       const colors = new Float32Array(nTris * 9);
+      const triOffset = mesh.userData.triOffset as number;
       if (mode === 'facetype' && meta && triFaceAll) {
-        const triOffset = mesh.userData.triOffset as number;
         for (let t = 0; t < nTris; t++) {
           const f = meta.faces[triFaceAll[triOffset + t]];
           const col = FACE_COLORS[f?.type ?? 'other'] ?? FACE_COLORS.other;
           for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
         }
-      } else if (mode === 'cost' && meta && triFaceAll && costRange) {
-        // £ per face → the same ramp as wall thickness: cold = cheap, hot = where the money is.
-        const triOffset = mesh.userData.triOffset as number;
-        const span = (costRange.max - costRange.min) || 1;
+      } else if (mode === 'cost' && triFaceAll && costRange) {
+        // £ per face → the same ramp as wall thickness, reversed: cold = cheap, hot = where the money is.
         for (let t = 0; t < nTris; t++) {
           const v = faceCosts![triFaceAll[triOffset + t]];
-          const col = v == null || !(v > 0) ? NO_THICKNESS_COLOR : thicknessColor((v - costRange.min) / span);
+          const col = v == null || !(v > 0) ? NO_THICKNESS_COLOR : thicknessColor(1 - normInRange(v, costRange));
           for (let v3 = 0; v3 < 3; v3++) colors.set(col, t * 9 + v3 * 3);
         }
       } else if (mode === 'thickness' && meta && triFaceAll && thicknessRange) {
-        const triOffset = mesh.userData.triOffset as number;
-        const { min, max } = thicknessRange;
-        const span = (max - min) || 1;
         for (let t = 0; t < nTris; t++) {
           const thk = meta.faces[triFaceAll[triOffset + t]]?.thicknessMm;
-          const col = thk == null ? NO_THICKNESS_COLOR : thicknessColor((thk - min) / span);
+          const col = thk == null ? NO_THICKNESS_COLOR : thicknessColor(normInRange(thk, thicknessRange));
           for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
         }
       } else { // draft: classify each triangle by its geometric normal vs the pull axis (part space)
@@ -1804,37 +1852,69 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       mat.color.set(0xffffff);
       mat.needsUpdate = true;
     }
+    const sw = (c: [number, number, number]) => `<i style="background:${rgbCss(c)}"></i>`;
+    const ramp = (rev: boolean) => `<b class="cv3d-ramp" style="background:linear-gradient(90deg,${[0, 0.25, 0.5, 0.75, 1].map(k => rgbCss(thicknessColor(rev ? 1 - k : k))).join(',')})"></b>`;
     if (mode === 'facetype' && meta) {
       const present = [...new Set(faceList.map(f => f.type))];
-      legendEl.innerHTML = present.map(t =>
-        `<span><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t}</span>`).join('');
+      legendEl.innerHTML = `<em>Face type</em>` + present.map(t => `<span>${sw(FACE_COLORS[t] ?? FACE_COLORS.other)}${FACE_TYPE_LABEL[t] ?? t}</span>`).join('');
     } else if (mode === 'draft') {
-      legendEl.innerHTML = (['undercut', 'zero', 'ok', 'neutral'] as DraftClass[]).map(k =>
-        `<span><i style="background:${rgbCss(DRAFT_COLORS[k])}"></i>${DRAFT_LABEL[k]}</span>`).join('') +
-        `<span style="opacity:.75">Pull axis: ${draftAxis.toUpperCase()} — click to cycle</span>`;
+      legendEl.innerHTML = `<em>Draft · pull ${draftAxis.toUpperCase()}</em>` + (['undercut', 'zero', 'ok', 'neutral'] as DraftClass[]).map(k =>
+        `<span>${sw(DRAFT_COLORS[k])}${DRAFT_LABEL[k]}</span>`).join('');
     } else if (mode === 'thickness' && thicknessRange) {
-      const { min, max } = thicknessRange, mid = (min + max) / 2;
-      legendEl.innerHTML = `<span style="opacity:.75">Wall thickness</span>` +
-        `<span><i style="background:${rgbCss(thicknessColor(0))}"></i>${min.toFixed(1)} mm (thin)</span>` +
-        `<span><i style="background:${rgbCss(thicknessColor(0.5))}"></i>${mid.toFixed(1)} mm</span>` +
-        `<span><i style="background:${rgbCss(thicknessColor(1))}"></i>${max.toFixed(1)} mm (thick)</span>`;
+      const r = thicknessRange;
+      legendEl.innerHTML = `<em>Wall thickness</em><span>${r.clippedLow ? '≤ ' : ''}${r.min.toFixed(1)} mm</span>${ramp(false)}<span>${r.clippedHigh ? '≥ ' : ''}${r.max.toFixed(1)} mm</span>` +
+        (r.clippedLow || r.clippedHigh ? `<span class="cv3d-legend-note">5–95% of area · readings ${r.absMin.toFixed(1)}–${r.absMax.toFixed(1)} mm</span>` : '');
     } else if (mode === 'body') {
-      legendEl.innerHTML = bodyMeshes.map((_, i) =>
-        `<span><i style="background:${rgbCss(bodyColorRGB(i))}"></i>Body ${i + 1}</span>`).join('');
+      legendEl.innerHTML = `<em>Components</em>` + bodyMeshes.slice(0, 12).map((_, i) => `<span>${sw(bodyColorRGB(i))}Body ${i + 1}</span>`).join('') +
+        (bodyMeshes.length > 12 ? `<span>+${bodyMeshes.length - 12} more</span>` : '');
     } else if (mode === 'cost' && costRange) {
-      legendEl.innerHTML = `<span style="opacity:.75">Cost per face (machining minutes × rate)</span>` +
-        `<span><i style="background:${rgbCss(thicknessColor(0))}"></i>£0</span>` +
-        `<span><i style="background:${rgbCss(thicknessColor(1))}"></i>£${costRange.max.toFixed(2)}</span>` +
-        `<span><i style="background:${rgbCss(NO_THICKNESS_COLOR)}"></i>no cost attributed</span>`;
+      legendEl.innerHTML = `<em>Cost on model · per part</em><span>${fmtMoney(0)}</span>${ramp(true)}<span>${costRange.clippedHigh ? '≥ ' : ''}${fmtMoney(costRange.max)}</span>` +
+        `<span>${sw(NO_THICKNESS_COLOR)}not attributed</span>`;
     }
     legendEl.style.display = mode === 'none' ? 'none' : '';
+    syncDock();
+    renderInspector();
     invalidate();
+  }
+
+  const COLOR_ACTS: Record<ColorMode, string> = { none: 'color-none', facetype: 'facecolors', draft: 'draft', thickness: 'thickness', body: 'bodycolors', cost: 'costcolors' };
+  const COLOR_LABEL: Record<ColorMode, string> = { none: 'Plain', facetype: 'Face type', draft: 'Draft', thickness: 'Wall thickness', body: 'Components', cost: 'Cost on model' };
+  function setColorMode(m: ColorMode): void {
+    colorMode = m;
+    applyColorMode();
+    const eff = effectiveMode();
+    statusHint.textContent = eff === 'none' ? 'Plain shading' : eff === 'draft' ? `Draft analysis — pull axis ${draftAxis.toUpperCase()}` : `Coloured by ${COLOR_LABEL[eff].toLowerCase()}`;
+  }
+  /** Reflect state on the dock: active colour item, tool, display toggles, menu triggers. */
+  function syncDock(): void {
+    const eff = effectiveMode();
+    for (const [m, act] of Object.entries(COLOR_ACTS)) {
+      const b = root.querySelector<HTMLElement>(`[data-act="${act}"]`);
+      if (b) { b.classList.toggle('active', m === eff); b.setAttribute('aria-checked', String(m === eff)); }
+    }
+    const costBtn = root.querySelector<HTMLButtonElement>('[data-act="costcolors"]');
+    if (costBtn) { costBtn.disabled = !costRangeNow(); costBtn.title = costBtn.disabled ? 'Cost on model appears after a CAD costing' : ''; }
+    root.querySelectorAll<HTMLElement>('[data-draft-axis]').forEach(b => b.classList.toggle('active', b.dataset.draftAxis === draftAxis));
+    const axesRow = root.querySelector<HTMLElement>('[data-draft-axes]');
+    if (axesRow) axesRow.style.display = eff === 'draft' ? '' : 'none';
+    root.querySelector('[data-menu="color"]')?.classList.toggle('active', eff !== 'none');
+    root.querySelector('[data-menu="measure"]')?.classList.toggle('active', tool !== 'select');
+    root.querySelector('[data-menu="arrange"]')?.classList.toggle('active',
+      explodePanel.style.display !== 'none' || rotatePanel.style.display !== 'none' || movePanel.style.display !== 'none');
+    const arrangeTrigger = root.querySelector<HTMLButtonElement>('[data-menu="arrange"]');
+    if (arrangeTrigger) arrangeTrigger.disabled = !bodyMeshes.length;
+    root.querySelector('[data-act="inspector"]')?.classList.toggle('active', !inspector.hidden);
+    for (const [act, on] of [['bbox', bboxOn], ['grid', gridOn], ['mode-shaded', edgesOn], ['mode-wire', !edgesOn]] as const) {
+      const b = root.querySelector<HTMLElement>(`[data-act="${act}"]`);
+      if (b) { b.classList.toggle('active', on); b.setAttribute('aria-checked', String(on)); }
+    }
   }
 
   function setTool(t: Tool): void {
     tool = t;
     finishPicks();
     root.querySelectorAll('[data-act^="tool-"]').forEach(b => b.classList.toggle('active', (b as HTMLElement).dataset.act === `tool-${t}`));
+    syncDock();
     canvas.style.cursor = t === 'select' ? 'default' : 'crosshair';
     statusHint.textContent = t === 'select' ? 'Click a face for exact B-rep data'
       : t === 'dist' ? 'Distance: pick two points (snaps to vertices & edges)'
@@ -1844,7 +1924,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       : 'Face-to-face: pick a point on each of two faces';
   }
 
-  $('.cv3d-csv-btn').addEventListener('click', (ev) => { ev.stopPropagation(); exportCSV(); });
   clipPanel.querySelectorAll('input[data-clip-axis]').forEach(cb => cb.addEventListener('change', () => {
     const a = (cb as HTMLInputElement).dataset.clipAxis as 'x' | 'y' | 'z';
     clipState[a].on = (cb as HTMLInputElement).checked;
@@ -1862,7 +1941,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (cb) cb.checked = false;
     });
     clipPanel.style.display = 'none';
-    $('[data-act="clip"]').classList.remove('active');
+    root.querySelector('[data-act="clip"]')?.classList.remove('active');
     applyClipping();
   });
   explodeSlider.addEventListener('input', () => {
@@ -1910,7 +1989,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   $('.cv3d-tree-close').addEventListener('click', () => {
     treeBox.style.display = 'none';
     root.classList.remove('cv3d--tree-open');
-    $('[data-act="tree"]').classList.remove('active');
+    root.querySelector('[data-act="tree"]')?.classList.remove('active');
   });
   {
     const handle = $('.cv3d-tree-resize');
@@ -1927,207 +2006,377 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     });
   }
 
-  // ── bottom tools bar: slide down / up toggle (animated, persisted) ──
-  try { if (localStorage.getItem('cv3d-tools-collapsed') === '1') root.classList.add('cv3d--tools-collapsed'); } catch { /* storage blocked */ }
-  $('.cv3d-tools-toggle').addEventListener('click', () => {
-    const collapsed = root.classList.toggle('cv3d--tools-collapsed');
-    try { localStorage.setItem('cv3d-tools-collapsed', collapsed ? '1' : '0'); } catch { /* storage blocked */ }
-    // the viewport (flex:1) grows/shrinks as the bar slides — refit the canvas as
-    // it animates (the ResizeObserver also tracks it) and once it settles.
-    let n = 0;
-    const step = (): void => { resize(); if (++n < 20) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
+  // ── dock fly-out menus ──
+  const dockWrap = $('.cv3d-dock-wrap');
+  function closeMenus(except?: string): void {
+    root.querySelectorAll<HTMLElement>('.cv3d-menu').forEach(m => { if (m.dataset.menuFor !== except) m.hidden = true; });
+    root.querySelectorAll<HTMLElement>('.cv3d-menu-trigger').forEach(t => { if (t.dataset.menu !== except) t.setAttribute('aria-expanded', 'false'); });
+  }
+  function toggleMenu(name: string, focusFirst = false): void {
+    const menu = root.querySelector<HTMLElement>(`.cv3d-menu[data-menu-for="${name}"]`);
+    const trigger = root.querySelector<HTMLElement>(`.cv3d-menu-trigger[data-menu="${name}"]`);
+    if (!menu || !trigger) return;
+    const open = menu.hidden;
+    closeMenus(name);
+    menu.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+    if (!open) return;
+    // Sit above the trigger, kept inside the viewport.
+    const wr = dockWrap.getBoundingClientRect(), tr = trigger.getBoundingClientRect(), vr = viewport.getBoundingClientRect();
+    const w = menu.offsetWidth;
+    const left = Math.max(vr.left + 8 - wr.left, Math.min(tr.left + tr.width / 2 - w / 2 - wr.left, vr.right - 8 - w - wr.left));
+    menu.style.left = `${left}px`;
+    if (focusFirst) menu.querySelector<HTMLElement>('button:not(:disabled)')?.focus();
+  }
+  dockWrap.addEventListener('keydown', (ev) => {
+    const menu = (ev.target as HTMLElement).closest<HTMLElement>('.cv3d-menu');
+    if (!menu) return;
+    const items = Array.from(menu.querySelectorAll<HTMLButtonElement>('button[role^="menuitem"]:not(:disabled)'));
+    const i = items.indexOf(ev.target as HTMLButtonElement);
+    if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      items[(i + (ev.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length]?.focus();
+    } else if (ev.key === 'Escape') {
+      ev.stopPropagation();
+      const name = menu.dataset.menuFor!;
+      closeMenus();
+      root.querySelector<HTMLElement>(`.cv3d-menu-trigger[data-menu="${name}"]`)?.focus();
+    }
+  });
+  // Tooltips: one bubble above the hovered / focused dock button (label · shortcut), after a short delay.
+  const tipEl = document.createElement('div');
+  tipEl.className = 'cv3d-tip';
+  tipEl.setAttribute('aria-hidden', 'true'); // visual only — every dock button carries its own aria-label
+  dockWrap.appendChild(tipEl);
+  let tipTimer = 0;
+  const showTip = (b: HTMLElement, delay: number) => {
+    clearTimeout(tipTimer);
+    tipTimer = window.setTimeout(() => {
+      if (b.getAttribute('aria-expanded') === 'true') return;
+      tipEl.textContent = b.dataset.tip ?? '';
+      const wr = dockWrap.getBoundingClientRect(), br = b.getBoundingClientRect();
+      tipEl.style.left = `${br.left + br.width / 2 - wr.left}px`;
+      tipEl.style.top = `${br.top - wr.top - 34}px`;
+      tipEl.classList.add('show');
+    }, delay);
+  };
+  const hideTip = () => { clearTimeout(tipTimer); tipEl.classList.remove('show'); };
+  const dockEl = $('.cv3d-dock');
+  dockEl.addEventListener('pointerover', (ev) => { const b = (ev.target as HTMLElement).closest<HTMLElement>('button[data-tip]'); if (b) showTip(b, 350); });
+  dockEl.addEventListener('pointerleave', hideTip);
+  dockEl.addEventListener('focusin', (ev) => { const b = (ev.target as HTMLElement).closest<HTMLElement>('button[data-tip]'); if (b && b.matches(':focus-visible')) showTip(b, 0); });
+  dockEl.addEventListener('focusout', hideTip);
+  dockEl.addEventListener('pointerdown', hideTip);
+  const onDocPointerDown = (ev: PointerEvent) => { if (!dockWrap.contains(ev.target as Node)) closeMenus(); };
+  document.addEventListener('pointerdown', onDocPointerDown);
+  root.querySelectorAll<HTMLButtonElement>('[data-draft-axis]').forEach(b => b.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    draftAxis = b.dataset.draftAxis as 'x' | 'y' | 'z';
+    setColorMode('draft');
+  }));
+
+  // ── inspector ──
+  function setInspector(open: boolean): void {
+    inspector.hidden = !open;
+    root.classList.toggle('cv3d--insp-open', open);
+    try { if (!opts.compact) localStorage.setItem('cv3d-inspector', open ? '1' : '0'); } catch { /* storage blocked */ }
+    faceChip.style.display = !open && selectionHtml ? '' : 'none';
+    syncDock();
+    if (open) renderInspector();
+    requestAnimationFrame(resize);
+  }
+  $('.cv3d-insp-close').addEventListener('click', () => setInspector(false));
+  /** Which inspector sections the user has collapsed — kept across re-renders. */
+  const closedSecs = new Set<string>();
+  const fmtNum = (n: number, d = 1) => n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+  function sec(id: string, title: string, body: string, aside = ''): string {
+    return `<details class="cv3d-sec" data-sec="${id}" ${closedSecs.has(id) ? '' : 'open'}><summary><span>${title}</span>${aside ? `<small>${aside}</small>` : ''}</summary><div class="cv3d-sec-body">${body}</div></details>`;
+  }
+  function histogramSvg(bins: number[], colorAt: (k: number) => [number, number, number]): string {
+    const max = Math.max(...bins, 1e-9), n = bins.length, W = 260, H = 54, bw = W / n;
+    return `<svg class="cv3d-hist" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Distribution histogram">` +
+      bins.map((b, i) => { const h = Math.max(b > 0 ? 2 : 0, (b / max) * (H - 2)); return `<rect x="${(i * bw + 1).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${rgbCss(colorAt((i + 0.5) / n))}"/>`; }).join('') + `</svg>`;
+  }
+  function issueList(): { items: ViewerIssue[]; source: string } {
+    if (hostIssues) return { items: hostIssues, source: 'Costed DFM findings (this part, this route)' };
+    return { items: meta ? geometryChecks(faceList) : [], source: 'Geometry checks — process-independent rules of thumb' };
+  }
+  function renderInspector(): void {
+    if (inspector.hidden) return;
+    const out: string[] = [];
+    if (!bodyMeshes.length) {
+      inspBody.innerHTML = `<p class="cv3d-insp-empty">Open a STEP, IGES or STL model to see its size, volume, mass, faces and manufacturability checks here.</p>`;
+      return;
+    }
+    // Part
+    const dens = VIEWER_DENSITIES.find(d => d.id === densityId) ?? VIEWER_DENSITIES[0];
+    const volCm3 = partStats?.volumeMm3 != null ? partStats.volumeMm3 / 1000 : null;
+    const massKg = volCm3 != null ? volCm3 * dens.gPerCm3 / 1000 : null;
+    const types = new Map<string, number>();
+    for (const f of faceList) types.set(f.type, (types.get(f.type) ?? 0) + (f.areaCm2 ?? 0));
+    const typeTotal = [...types.values()].reduce((a, b) => a + b, 0);
+    const typeBar = typeTotal > 0
+      ? `<div class="cv3d-typebar" role="img" aria-label="Surface area by face type">${[...types.entries()].sort((a, b) => b[1] - a[1]).map(([t, a]) =>
+        `<span style="flex:${a.toFixed(3)};background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}" title="${esc(FACE_TYPE_LABEL[t] ?? t)}: ${fmtNum(a / typeTotal * 100, 0)}% of area"></span>`).join('')}</div>` +
+        `<div class="cv3d-typekey">${[...types.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([t, a]) => `<span><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${esc((FACE_TYPE_LABEL[t] ?? t).split(' (')[0])} ${fmtNum(a / typeTotal * 100, 0)}%</span>`).join('')}</div>`
+      : '';
+    out.push(sec('part', 'Part', `
+      <dl class="cv3d-kv">
+        <dt>Size</dt><dd>${fmtNum(partSpan.x)} × ${fmtNum(partSpan.y)} × ${fmtNum(partSpan.z)} mm</dd>
+        <dt>Volume</dt><dd>${volCm3 != null ? `${fmtNum(volCm3, 2)} cm³` : '<span class="cv3d-muted">open shell — no volume</span>'}</dd>
+        <dt>Surface</dt><dd>${partStats ? `${fmtNum(partStats.areaMm2 / 100, 1)} cm²` : '—'}</dd>
+        <dt>Mass</dt><dd>${massKg != null ? `<strong>${massKg < 1 ? `${fmtNum(massKg * 1000, 0)} g` : `${fmtNum(massKg, 3)} kg`}</strong>` : '—'}
+          <select class="cv3d-density" aria-label="Material for the mass">${VIEWER_DENSITIES.map(d => `<option value="${d.id}" ${d.id === dens.id ? 'selected' : ''}>${esc(d.label)} · ${d.gPerCm3}</option>`).join('')}</select></dd>
+        <dt>Bodies</dt><dd>${bodyMeshes.length}${meta?.topology?.isClosedSolid ? ' · closed solid' : ''}</dd>
+        <dt>Faces</dt><dd>${meta ? `${faceList.length} B-rep · ` : ''}${(masterPositions ? masterPositions.length / 9 : 0).toLocaleString()} triangles</dd>
+      </dl>${typeBar}
+      <p class="cv3d-note">Volume and area from the mesh; mass at a typical density (g/cm³) — not the costed material.</p>`));
+    // Selection
+    out.push(sec('sel', 'Selection', selectionHtml ? `<div class="cv3d-selbox">${selectionHtml}</div>` : `<p class="cv3d-muted">Click a face for its exact B-rep type, radius, depth and area.</p>`));
+    // Cost on model
+    const ranked = rankCostItems(costItems);
+    if (ranked.length) {
+      const total = ranked.reduce((t, i) => t + i.gbp, 0);
+      out.push(sec('cost', 'Cost on model', `
+        <p class="cv3d-lead"><strong>${fmtMoney(total)}</strong> of feature machining per part sits on ${ranked.length} feature${ranked.length > 1 ? 's' : ''} — click one to fly to it.</p>
+        <div class="cv3d-rows">${ranked.slice(0, 12).map((r, i) => `
+          <button type="button" class="cv3d-row" data-cost-idx="${i}">
+            <span class="cv3d-row-main"><span class="cv3d-row-title">${esc(r.label)}</span><span class="cv3d-bar"><i style="width:${(r.share * 100).toFixed(1)}%"></i></span></span>
+            <span class="cv3d-row-val">${fmtMoney(r.gbp)}<small>${fmtNum(r.share * 100, 0)}%</small></span>
+          </button>`).join('')}</div>
+        ${effectiveMode() !== 'cost' ? `<button type="button" class="cv3d-linkbtn" data-insp-mode="cost">Colour the model by cost</button>` : ''}
+        <p class="cv3d-note">Machining minutes × the costed machine rate, from the engine's feature lines.</p>`, `${ranked.length}`));
+    }
+    // Manufacturability
+    const { items: issues, source } = issueList();
+    if (meta || hostIssues) {
+      const sevRank = { high: 0, medium: 1, low: 2, info: 3 } as const;
+      const sorted = [...issues].sort((a, b) => sevRank[a.severity] - sevRank[b.severity]);
+      const rows = sorted.length ? `
+        <div class="cv3d-rows">${sorted.map((it) => `
+          <button type="button" class="cv3d-row cv3d-issue" data-issue-idx="${issues.indexOf(it)}" ${it.faceIds.length ? '' : 'data-nofaces="1"'}>
+            <i class="cv3d-sev cv3d-sev--${it.severity}" aria-label="${it.severity}"></i>
+            <span class="cv3d-row-main"><span class="cv3d-row-title">${esc(it.title)}</span>${it.detail ? `<span class="cv3d-row-sub">${esc(it.detail)}</span>` : ''}</span>
+            ${it.amount ? `<span class="cv3d-row-val">${esc(it.amount)}</span>` : ''}
+          </button>`).join('')}</div>` : `<p class="cv3d-muted">No issues found by these checks.</p>`;
+      out.push(sec('issues', 'Manufacturability', `${rows}<p class="cv3d-note">${esc(source)}.</p>`, sorted.length ? `${sorted.length}` : ''));
+    }
+    // Wall thickness
+    if (thicknessRange && meta) {
+      const thk = faceList.filter(f => typeof f.thicknessMm === 'number' && f.thicknessMm > 0);
+      const vals = thk.map(f => f.thicknessMm as number), w = thk.map(f => f.areaCm2 ?? 1);
+      const r = thicknessRange;
+      const bins = histogram(vals, r.min, r.max, 18, w);
+      const med = robustRange(vals, w, 0.5, 0.5);
+      out.push(sec('thk', 'Wall thickness', `
+        ${histogramSvg(bins, k => thicknessColor(k))}
+        <div class="cv3d-axis"><span>${r.clippedLow ? '≤ ' : ''}${fmtNum(r.min)} mm</span><span>${r.clippedHigh ? '≥ ' : ''}${fmtNum(r.max)} mm</span></div>
+        <dl class="cv3d-kv"><dt>Median</dt><dd>${med ? fmtNum(med.min) : '—'} mm (by area)</dd><dt>Readings</dt><dd>${fmtNum(r.absMin)} – ${fmtNum(r.absMax)} mm · ${thk.length} faces</dd></dl>
+        ${effectiveMode() !== 'thickness' ? `<button type="button" class="cv3d-linkbtn" data-insp-mode="thickness">Colour the model by wall thickness</button>` : ''}
+        <p class="cv3d-note">One ray per face from its centre (kernel) — check a critical wall with Measure → Face to face.</p>`));
+    }
+    // Holes & bosses
+    if (featureGroups.length) {
+      out.push(sec('feat', 'Holes &amp; bosses', `<div class="cv3d-rows">${featureGroups.map((g, i) => `
+        <button type="button" class="cv3d-row" data-feat="${i}"><span class="cv3d-row-main"><span class="cv3d-row-title">${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø${g.diaMm.toFixed(2)}${g.depthMm != null ? ` × ${g.depthMm.toFixed(1)}` : ''} mm</span></span><span class="cv3d-row-val">× ${g.faceIds.length}</span></button>`).join('')}</div>`, `${featureGroups.length}`));
+    }
+    // Measurements
+    if (measurements.length) {
+      out.push(sec('meas', 'Measurements', `<div class="cv3d-rows">${measurements.map((m, i) => `
+        <div class="cv3d-row cv3d-row--static"><span class="cv3d-row-main"><span class="cv3d-row-title">${esc(m.record.label)}</span></span><button type="button" class="cv3d-del" data-del="${i}" aria-label="Remove measurement">✕</button></div>`).join('')}</div>
+        <button type="button" class="cv3d-linkbtn" data-csv="1">Export measurements (CSV)</button>`, `${measurements.length}`));
+    }
+    inspBody.innerHTML = out.join('');
+  }
+  inspBody.addEventListener('toggle', (ev) => {
+    const d = ev.target as HTMLDetailsElement;
+    if (!d.dataset?.sec) return;
+    if (d.open) closedSecs.delete(d.dataset.sec); else closedSecs.add(d.dataset.sec);
+  }, true);
+  inspBody.addEventListener('change', (ev) => {
+    const sel = (ev.target as HTMLElement).closest<HTMLSelectElement>('.cv3d-density');
+    if (!sel) return;
+    densityId = sel.value;
+    try { localStorage.setItem('cv3d-density', densityId); } catch { /* storage blocked */ }
+    renderInspector();
+  });
+  inspBody.addEventListener('click', (ev) => {
+    const t = ev.target as HTMLElement;
+    const costRow = t.closest<HTMLElement>('[data-cost-idx]');
+    if (costRow) {
+      const r = rankCostItems(costItems)[Number(costRow.dataset.costIdx)];
+      if (r) showFaces(r.faceIds, `<strong>${esc(r.label)}</strong><span>${fmtMoney(r.gbp)} per part · ${r.faceIds.length} face${r.faceIds.length > 1 ? 's' : ''}</span>`);
+      return;
+    }
+    const issueRow = t.closest<HTMLElement>('[data-issue-idx]');
+    if (issueRow) {
+      const it = issueList().items[Number(issueRow.dataset.issueIdx)];
+      if (it?.faceIds.length) showFaces(it.faceIds, `<strong>${esc(it.title)}</strong>${it.detail ? `<span>${esc(it.detail)}</span>` : ''}${it.amount ? `<span>${esc(it.amount)}</span>` : ''}<span class="cv3d-muted">${esc(it.source)}</span>`);
+      else statusHint.textContent = 'This finding is not tied to specific faces';
+      return;
+    }
+    const featRow = t.closest<HTMLElement>('[data-feat]');
+    if (featRow) {
+      const g = featureGroups[Number(featRow.dataset.feat)];
+      if (g) showFaces(g.faceIds, `<strong>${g.faceIds.length} × ${g.kind === 'hole' ? 'hole / bore' : 'boss / shaft'} Ø ${g.diaMm.toFixed(2)} mm</strong><span>R ${(g.diaMm / 2).toFixed(3)} mm${g.depthMm != null ? ` · ${g.depthMm.toFixed(1)} mm deep` : ''} <em>(exact, from B-rep)</em></span>`);
+      return;
+    }
+    const del = t.closest<HTMLElement>('[data-del]');
+    if (del) {
+      const i = Number(del.dataset.del);
+      measurements[i]?.objects.forEach(o => removeAndDispose(overlayGroup, o));
+      measurements.splice(i, 1);
+      measurementsChanged();
+      return;
+    }
+    if (t.closest('[data-csv]')) { exportCSV(); return; }
+    const modeBtn = t.closest<HTMLElement>('[data-insp-mode]');
+    if (modeBtn) setColorMode(modeBtn.dataset.inspMode as ColorMode);
   });
 
-  // ── draggable / reorderable toolbar groups (persisted; double-click cap = reset) ──
-  {
-    const toolbar = root.querySelector('.cv3d-toolbar') as HTMLElement;
-    const ORDER_KEY = 'cv3d-toolbar-order';
-    const defaultOrder = Array.from(toolbar.querySelectorAll('.cv3d-grp')).map(g => (g as HTMLElement).dataset.grp!);
-    const applyOrder = (order: string[]): void => {
-      for (const key of order) {
-        const g = toolbar.querySelector(`.cv3d-grp[data-grp="${key}"]`);
-        if (g) toolbar.appendChild(g); // re-append in saved order; unknown keys drop through
+  /** Highlight faces, show what they are, and glide the camera to them. */
+  function showFaces(ids: number[], html: string): void {
+    const set = new Set(ids);
+    highlightFaces(set);
+    setSelection(html);
+    flyToFaces(set);
+  }
+  function setSelection(html: string): void {
+    selectionHtml = html;
+    faceChip.innerHTML = html;
+    faceChip.style.display = html && inspector.hidden ? '' : 'none';
+    renderInspector();
+  }
+  /** Glide to a set of faces, keeping the current viewing direction, framed with some context. */
+  function flyToFaces(ids: Set<number>): void {
+    if (!triFaceAll || !masterPositions || !ids.size) return;
+    const box = new THREE.Box3();
+    const v = new THREE.Vector3();
+    partGroup.updateMatrixWorld(true);
+    for (let bi = 0; bi < bodyMeshes.length; bi++) {
+      const mesh = bodyMeshes[bi];
+      if (!mesh.visible) continue;
+      const off = mesh.userData.triOffset as number;
+      const n = (mesh.geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>).count / 3;
+      for (let t = off; t < off + n; t++) {
+        if (!ids.has(triFaceAll[t])) continue;
+        for (let k = 0; k < 3; k++) {
+          v.set(masterPositions[t * 9 + k * 3], masterPositions[t * 9 + k * 3 + 1], masterPositions[t * 9 + k * 3 + 2]).applyMatrix4(mesh.matrixWorld);
+          box.expandByPoint(v);
+        }
       }
-    };
-    try {
-      const saved = JSON.parse(localStorage.getItem(ORDER_KEY) ?? 'null');
-      if (Array.isArray(saved) && saved.length) applyOrder(saved as string[]);
-    } catch { /* corrupt/blocked storage → default order */ }
-
-    let dragEl: HTMLElement | null = null;
-    const onMove = (e: PointerEvent): void => {
-      if (!dragEl) return;
-      const others = Array.from(toolbar.querySelectorAll('.cv3d-grp')).filter(g => g !== dragEl) as HTMLElement[];
-      const after = others.find(g => {
-        const r = g.getBoundingClientRect();
-        return e.clientY < r.bottom && e.clientX < r.left + r.width / 2; // wrap-aware insert point
-      });
-      if (after) toolbar.insertBefore(dragEl, after); else toolbar.appendChild(dragEl);
-    };
-    const onUp = (): void => {
-      if (!dragEl) return;
-      dragEl.classList.remove('cv3d-grp--dragging');
-      dragEl = null;
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      try { localStorage.setItem(ORDER_KEY, JSON.stringify(Array.from(toolbar.querySelectorAll('.cv3d-grp')).map(g => (g as HTMLElement).dataset.grp))); } catch { /* storage blocked */ }
-    };
-    toolbar.querySelectorAll('.cv3d-grp-cap').forEach(cap => {
-      cap.addEventListener('pointerdown', (e) => {
-        dragEl = (cap as HTMLElement).closest('.cv3d-grp') as HTMLElement;
-        dragEl.classList.add('cv3d-grp--dragging');
-        window.addEventListener('pointermove', onMove);
-        window.addEventListener('pointerup', onUp);
-        (e as PointerEvent).preventDefault();
-      });
-      cap.addEventListener('dblclick', () => { try { localStorage.removeItem(ORDER_KEY); } catch { /* ignore */ } applyOrder(defaultOrder); });
-    });
+    }
+    if (box.isEmpty()) return;
+    const c = box.getCenter(new THREE.Vector3());
+    const r = Math.max(box.getSize(new THREE.Vector3()).length() / 2, partRadius * 0.22);
+    const dir = camera.position.clone().sub(controls.target);
+    if (dir.lengthSq() === 0) dir.set(1, 0.8, 1);
+    dir.normalize();
+    const vFov = (camera.fov * Math.PI) / 180;
+    const half = Math.min(vFov, 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect)) / 2;
+    const d = Math.min(r / Math.sin(half) * 1.9, partRadius / Math.sin(half) * 1.1);
+    animateCamera(c.clone().addScaledVector(dir, d), c, 480);
   }
 
-  root.querySelector('.cv3d-toolbar')!.addEventListener('click', (ev) => {
-    const btn = (ev.target as HTMLElement).closest('button');
-    if (!btn) return;
-    const act = btn.dataset.act!;
+  // ── full screen (Fullscreen API, with an in-page fallback) ──
+  function setFullscreen(on: boolean): void {
+    if (on && !maximized) {
+      const req = root.requestFullscreen?.bind(root);
+      if (req) req().catch(() => applyMax(true)); else applyMax(true);
+    } else if (!on && maximized) {
+      if (document.fullscreenElement === root) void document.exitFullscreen().catch(() => applyMax(false));
+      else applyMax(false);
+    }
+  }
+  function applyMax(on: boolean): void {
+    maximized = on;
+    root.classList.toggle('cv3d--max', on);
+    root.querySelector('[data-act="maximize"]')?.classList.toggle('active', on);
+    requestAnimationFrame(resize);
+    statusHint.textContent = on ? 'Full screen — press Esc to exit' : '';
+  }
+  const onFullscreenChange = () => { applyMax(document.fullscreenElement === root); };
+  document.addEventListener('fullscreenchange', onFullscreenChange);
+
+  function togglePanel(panel: HTMLElement, act: string): boolean {
+    const show = panel.style.display === 'none';
+    panel.style.display = show ? '' : 'none';
+    root.querySelector(`[data-act="${act}"]`)?.classList.toggle('active', show);
+    return show;
+  }
+  const COLOR_CYCLE: ColorMode[] = ['none', 'facetype', 'draft', 'thickness', 'body', 'cost'];
+
+  function runAction(act: string, btn?: HTMLElement | null): void {
     switch (act) {
       case 'view-iso': setView([1, 0.8, 1]); break;
       case 'view-front': setView([0, 0, 1]); break;
-      case 'view-top': setView([0, 1, 0.0001]); break;
+      case 'view-back': setView([0, 0, -1]); break;
+      case 'view-top': setView([0, 1, 0]); break;
+      case 'view-bottom': setView([0, -1, 0]); break;
+      case 'view-left': setView([-1, 0, 0]); break;
       case 'view-right': setView([1, 0, 0]); break;
       case 'fit': fit(); break;
       case 'mode-shaded':
         edgesOn = true;
         bodyMats.forEach(m => { m.wireframe = false; });
         bodyEdges.forEach((e, i) => { if (e) e.visible = bodyVisible[i]; });
-        root.querySelector('[data-act="mode-wire"]')?.classList.remove('active');
-        btn.classList.add('active');
         break;
       case 'mode-wire':
         edgesOn = false;
         bodyMats.forEach(m => { m.wireframe = true; });
         bodyEdges.forEach(e => { if (e) e.visible = false; });
-        root.querySelector('[data-act="mode-shaded"]')?.classList.remove('active');
-        btn.classList.add('active');
         break;
       case 'bbox':
         bboxOn = !bboxOn;
-        btn.classList.toggle('active', bboxOn);
         if (bboxHelper) bboxHelper.visible = bboxOn;
         bboxLabels.forEach(l => { l.visible = bboxOn; });
         break;
       case 'grid':
         gridOn = !gridOn;
-        btn.classList.toggle('active', gridOn);
         if (grid) grid.visible = gridOn;
-        statusHint.textContent = gridOn ? 'Ground grid shown' : 'Ground grid hidden';
+        if (shadowMesh) shadowMesh.visible = gridOn;
+        statusHint.textContent = gridOn ? 'Ground shown' : 'Ground hidden';
         break;
-      case 'facecolors':
-        faceColorsOn = !faceColorsOn;
-        if (faceColorsOn) {
-          draftOn = false; thicknessOn = false; bodyColorsOn = false;
-          root.querySelector('[data-act="draft"]')?.classList.remove('active');
-          root.querySelector('[data-act="thickness"]')?.classList.remove('active');
-          root.querySelector('[data-act="bodycolors"]')?.classList.remove('active');
-        }
-        btn.classList.toggle('active', faceColorsOn);
-        applyColorMode();
-        break;
-      case 'bodycolors':
-        bodyColorsOn = !bodyColorsOn;
-        if (bodyColorsOn) {
-          faceColorsOn = false; draftOn = false; thicknessOn = false;
-          root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
-          root.querySelector('[data-act="draft"]')?.classList.remove('active');
-          root.querySelector('[data-act="thickness"]')?.classList.remove('active');
-        }
-        btn.classList.toggle('active', bodyColorsOn);
-        applyColorMode();
-        statusHint.textContent = bodyColorsOn ? 'Components coloured — each body a distinct colour' : 'Component colours off';
-        break;
-      case 'draft':
-        // click cycles the pull axis: off → Z → X → Y → off
-        faceColorsOn = false; thicknessOn = false; bodyColorsOn = false;
-        root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
-        root.querySelector('[data-act="thickness"]')?.classList.remove('active');
-        root.querySelector('[data-act="bodycolors"]')?.classList.remove('active');
-        if (!draftOn) { draftOn = true; draftAxis = 'z'; }
-        else if (draftAxis === 'z') draftAxis = 'x';
-        else if (draftAxis === 'x') draftAxis = 'y';
-        else draftOn = false;
-        btn.classList.toggle('active', draftOn);
-        applyColorMode();
-        statusHint.textContent = draftOn ? `Draft analysis — pull axis ${draftAxis.toUpperCase()} (click again to change)` : 'Draft analysis off';
-        break;
-      case 'thickness':
-        thicknessOn = !thicknessOn;
-        if (thicknessOn) {
-          draftOn = false; faceColorsOn = false; bodyColorsOn = false;
-          root.querySelector('[data-act="draft"]')?.classList.remove('active');
-          root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
-          root.querySelector('[data-act="bodycolors"]')?.classList.remove('active');
-        }
-        btn.classList.toggle('active', thicknessOn);
-        applyColorMode();
-        statusHint.textContent = thicknessOn ? 'Wall-thickness heatmap — thin (red) → thick (blue)' : 'Thickness heatmap off';
-        break;
-      case 'clip': {
-        const show = clipPanel.style.display === 'none';
-        clipPanel.style.display = show ? '' : 'none';
-        btn.classList.toggle('active', show);
+      case 'color-none': setColorMode('none'); break;
+      case 'facecolors': setColorMode(colorMode === 'facetype' ? 'none' : 'facetype'); break;
+      case 'bodycolors': setColorMode(colorMode === 'body' ? 'none' : 'body'); break;
+      case 'draft': setColorMode(colorMode === 'draft' ? 'none' : 'draft'); break;
+      case 'thickness': setColorMode(colorMode === 'thickness' ? 'none' : 'thickness'); break;
+      case 'costcolors': setColorMode(colorMode === 'cost' ? 'none' : 'cost'); break;
+      case 'color-next': {
+        const avail = COLOR_CYCLE.filter(m => { const prev = colorMode; colorMode = m; const ok = effectiveMode() === m; colorMode = prev; return ok; });
+        setColorMode(avail[(avail.indexOf(effectiveMode()) + 1) % avail.length] ?? 'none');
         break;
       }
-      case 'explode': {
-        const show = explodePanel.style.display === 'none';
-        explodePanel.style.display = show ? '' : 'none';
-        btn.classList.toggle('active', show);
+      case 'clip': togglePanel(clipPanel, 'clip'); break;
+      case 'explode': togglePanel(explodePanel, 'explode'); break;
+      case 'rotate':
+        if (togglePanel(rotatePanel, 'rotate')) { buildRotatePanel(); statusHint.textContent = 'Rotate: pick a component, then drag its X / Y / Z slider'; }
         break;
-      }
-      case 'rotate': {
-        const show = rotatePanel.style.display === 'none';
-        rotatePanel.style.display = show ? '' : 'none';
-        btn.classList.toggle('active', show);
-        if (show) { buildRotatePanel(); statusHint.textContent = 'Rotate: pick a component, then drag its X / Y / Z slider'; }
+      case 'move':
+        if (togglePanel(movePanel, 'move')) { buildMovePanel(); statusHint.textContent = 'Move: pick a component, then drag its X / Y / Z slider (does not move the rest)'; }
         break;
-      }
-      case 'move': {
-        const show = movePanel.style.display === 'none';
-        movePanel.style.display = show ? '' : 'none';
-        btn.classList.toggle('active', show);
-        if (show) { buildMovePanel(); statusHint.textContent = 'Move: pick a component, then drag its X / Y / Z slider (does not move the rest)'; }
-        break;
-      }
       case 'tree': {
-        const show = treeBox.style.display === 'none';
-        treeBox.style.display = show ? '' : 'none';
-        btn.classList.toggle('active', show);
+        if ((btn as HTMLButtonElement | null)?.disabled || !meta) break;
+        const show = togglePanel(treeBox, 'tree');
         root.classList.toggle('cv3d--tree-open', show);
         if (show) buildTreePanel();
         break;
       }
-      case 'maximize':
-        maximized = !maximized;
-        root.classList.toggle('cv3d--max', maximized);
-        btn.classList.toggle('active', maximized);
-        requestAnimationFrame(resize);
-        statusHint.textContent = maximized ? 'Maximized — press Esc to exit' : '';
-        break;
-      case 'features': {
-        const show = featuresBox.style.display === 'none';
-        featuresBox.style.display = show ? '' : 'none';
-        btn.classList.toggle('active', show);
-        if (!show) clearHighlight();
-        break;
-      }
+      case 'inspector': setInspector(inspector.hidden); break;
+      case 'maximize': setFullscreen(!maximized); break;
+      case 'shortcuts': shortcutsEl.hidden = !shortcutsEl.hidden; break;
       case 'tool-select': setTool('select'); break;
       case 'tool-dist': setTool('dist'); break;
       case 'tool-circle': setTool('circle'); break;
       case 'tool-angle': setTool('angle'); break;
       case 'tool-point': setTool('point'); break;
       case 'tool-facedist': setTool('facedist'); break;
-      case 'clear': clearMeasurements(); statusHint.textContent = 'Cleared'; break;
+      case 'clear': clearMeasurements(); statusHint.textContent = 'Measurements cleared'; break;
       case 'snap': {
-        renderer.render(scene, camera);
-        const url = renderer.domElement.toDataURL('image/jpeg', 0.9);
+        renderer.render(scene, camera); // without the view cube — a clean picture of the part
+        const url = renderer.domElement.toDataURL('image/jpeg', 0.92);
+        invalidate();
         if (opts.onSnapshot) {
           opts.onSnapshot(url);
           statusHint.textContent = 'Snapshot attached to report';
@@ -2139,11 +2388,64 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         break;
       }
     }
-    invalidate(); // any toolbar action (mode/bbox/grid/view/panels) repaints once
+    syncDock();
+    invalidate(); // any action (mode/bbox/grid/view/panels) repaints once
+  }
+
+  dockWrap.addEventListener('click', (ev) => {
+    const trigger = (ev.target as HTMLElement).closest<HTMLElement>('.cv3d-menu-trigger');
+    if (trigger) { toggleMenu(trigger.dataset.menu!, (ev as MouseEvent).detail === 0); return; }
+    const btn = (ev.target as HTMLElement).closest<HTMLButtonElement>('button[data-act]');
+    if (!btn || btn.disabled) return;
+    if (btn.closest('.cv3d-menu')) closeMenus();
+    runAction(btn.dataset.act!, btn);
   });
+  $('.cv3d-shortcuts-close').addEventListener('click', () => { shortcutsEl.hidden = true; viewport.focus(); });
+
+  // ── keyboard: active while the viewer has focus (click the model, or Tab to it) ──
+  const KEYS: Record<string, string> = {
+    h: 'view-iso', f: 'fit', '0': 'view-iso', '1': 'view-front', '2': 'view-back', '3': 'view-top', '4': 'view-bottom', '5': 'view-left', '6': 'view-right',
+    d: 'tool-dist', r: 'tool-circle', a: 'tool-angle', p: 'tool-point', g: 'tool-facedist', m: 'tool-dist',
+    s: 'clip', c: 'color-next', e: 'mode-shaded', w: 'mode-wire', b: 'bbox', t: 'tree', i: 'inspector', x: 'maximize', '?': 'shortcuts',
+    delete: 'clear', backspace: 'clear',
+  };
+  root.addEventListener('keydown', (ev) => {
+    const tgt = ev.target as HTMLElement;
+    if (tgt.closest('input, select, textarea, .cv3d-menu') || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    const k = ev.key.toLowerCase();
+    if (k === 'escape') {
+      if (!shortcutsEl.hidden) { shortcutsEl.hidden = true; ev.stopPropagation(); return; }
+      if (root.querySelector('.cv3d-menu:not([hidden])')) { closeMenus(); ev.stopPropagation(); return; }
+      if (!picks.length && !maximized && tool !== 'select') { setTool('select'); syncDock(); ev.stopPropagation(); }
+      return; // the window handler cancels picks / leaves full screen
+    }
+    const act = KEYS[k];
+    if (!act) return;
+    if (act === 'tree' && !meta) return;
+    ev.preventDefault();
+    ev.stopPropagation(); // the viewer owns its keys while focused — "?" here is its sheet, not the Help Centre
+    runAction(act, root.querySelector<HTMLElement>(`[data-act="${act}"]`));
+  });
+  canvas.addEventListener('pointerdown', () => { if (document.activeElement !== viewport && !viewport.contains(document.activeElement)) viewport.focus({ preventScroll: true }); });
+  const onCanvasHover = (ev: PointerEvent) => {
+    if (!viewCube) return;
+    if (ev.buttons === 0 && viewCube.hover(ev, canvas)) invalidate();
+    if (ev.buttons === 0) canvas.style.cursor = viewCube.contains(ev, canvas) ? 'pointer' : (tool === 'select' ? 'default' : 'crosshair');
+  };
+  canvas.addEventListener('pointermove', onCanvasHover);
+  canvas.addEventListener('pointerleave', () => { if (viewCube?.hover(null, canvas)) invalidate(); });
 
   resize();
-  setView([1, 0.8, 1]);
+  setView([1, 0.8, 1], true);
+  applyThemeToScene();
+  const themeObserver = new MutationObserver(() => { if (isDarkTheme() !== darkTheme) applyThemeToScene(); });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  try {
+    const saved = localStorage.getItem('cv3d-inspector');
+    setInspector(saved == null ? !opts.compact && host.clientWidth >= 1000 : saved === '1' && !opts.compact);
+  } catch { setInspector(!opts.compact && host.clientWidth >= 1000); }
+  renderInspector();
+  syncDock();
   invalidate();
 
   return {
@@ -2189,10 +2491,18 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       scene.add(envelopeLabel);
       invalidate();
     },
-    setFaceCosts(costs: Record<number, number> | null): void {
+    setFaceCosts(costs: Record<number, number> | null, extra?: { items?: CostItem[]; format?: (gbp: number) => string }): void {
+      const first = !faceCosts && !!costs;
       faceCosts = costs;
-      costOn = !!costs;
+      costItems = costs ? (extra?.items ?? []) : [];
+      if (extra?.format) fmtMoney = extra.format;
+      // The money goes on the model the first time a costing arrives; the user can switch it off after.
+      if (first && colorMode === 'none') colorMode = 'cost';
       applyColorMode();
+    },
+    setIssues(items: ViewerIssue[] | null): void {
+      hostIssues = items;
+      renderInspector();
     },
     el: root,
     dispose(): void {
@@ -2201,12 +2511,19 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       loadSeq++; // invalidate any in-flight load
       if (renderHandle) cancelAnimationFrame(renderHandle);
       window.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onDocPointerDown);
+      clearTimeout(hintTimer);
+      clearTimeout(tipTimer);
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointerup', onPointerUp);
       canvas.removeEventListener('dblclick', onDblClick);
       ro.disconnect();
       controls.dispose();
-      if (viewHelper) { try { viewHelper.dispose(); } catch { /* already gone */ } viewHelper = null; }
+      if (viewCube) { try { viewCube.dispose(); } catch { /* already gone */ } viewCube = null; }
+      themeObserver.disconnect();
+      bgTexture?.dispose();
+      if (document.fullscreenElement === root) void document.exitFullscreen().catch(() => { /* not ours */ });
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
       // free every GPU resource this instance created
       for (const h of highlightParts) { h.parent?.remove(h); disposeObject(h); }
       highlightParts = [];
