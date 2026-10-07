@@ -833,6 +833,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const stale = () => disposed || mySeq !== loadSeq;
     meta = null;
     faceList = [];
+    serverEdges = null; // an STL after a STEP must not inherit the STEP's edges
     let stlBuf: ArrayBuffer;
     if (/\.stl$/i.test(file.name)) {
       stlBuf = await file.arrayBuffer();
@@ -932,6 +933,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     partRadius = Math.hypot(partSpan.x, partSpan.y, partSpan.z) / 2 || 1;
     for (let i = 0; i < positions.length; i += 3) {
       positions[i] -= cx; positions[i + 1] -= cy; positions[i + 2] -= cz;
+    }
+    // The kernel's exact edges arrive in the file's own coordinates — move them
+    // with the mesh, or they float off the part as a ghost outline (any part not
+    // modelled about the origin).
+    if (serverEdges) {
+      for (let i = 0; i + 2 < serverEdges.length; i += 3) {
+        serverEdges[i] -= cx; serverEdges[i + 1] -= cy; serverEdges[i + 2] -= cz;
+      }
     }
 
     // ── group triangles by body (stable) so each body is a contiguous mesh ──
