@@ -17,6 +17,7 @@
 
 import { parseSTLMesh } from './cad-views.js';
 import { exportFilename } from '../export/filename.js';
+import { sliceSection, nestLoops, sectionDxf, planeAxes, type SectionResult, type Axis as SecAxis } from './cad-section.js';
 import {
   robustRange, normInRange, histogram, meshVolumeArea, VIEWER_DENSITIES, viewName, geometryChecks, rankCostItems, esc, isRoundFeature,
   type RobustRange, type ViewerIssue, type CostItem,
@@ -56,9 +57,9 @@ export interface TessMeta {
 }
 
 export interface MeasurementRecord {
-  kind: 'dist' | 'circle' | 'angle' | 'point' | 'facedist';
+  kind: 'dist' | 'circle' | 'angle' | 'point' | 'facedist' | 'section';
   label: string;
-  /** mm for dist/circle/facedist (circle = diameter), degrees for angle, 0 for point */
+  /** mm for dist/circle/facedist (circle = diameter), degrees for angle, 0 for point, mm² for section */
   value: number;
   points: Array<[number, number, number]>;
 }
@@ -383,9 +384,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       <div class="cv3d-clip-panel cv3d-float" style="display:none">
         <span class="cv3d-clip-label">Section</span>
         <div class="cv3d-clip-axes">
-          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="x"/><span>X</span><input type="range" data-clip-slider="x" min="-100" max="100" value="0" step="1" aria-label="Section X offset"/></label>
-          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="y"/><span>Y</span><input type="range" data-clip-slider="y" min="-100" max="100" value="0" step="1" aria-label="Section Y offset"/></label>
-          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="z"/><span>Z</span><input type="range" data-clip-slider="z" min="-100" max="100" value="0" step="1" aria-label="Section Z offset"/></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="x"/><span>X</span><input type="range" data-clip-slider="x" min="-100" max="100" value="0" step="1" aria-label="Section X offset"/><button type="button" class="cv3d-clip-flip" data-clip-flip="x" aria-pressed="false" aria-label="Flip the X cut — keep the other side">⇅</button><output data-clip-out="x"></output></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="y"/><span>Y</span><input type="range" data-clip-slider="y" min="-100" max="100" value="0" step="1" aria-label="Section Y offset"/><button type="button" class="cv3d-clip-flip" data-clip-flip="y" aria-pressed="false" aria-label="Flip the Y cut — keep the other side">⇅</button><output data-clip-out="y"></output></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="z"/><span>Z</span><input type="range" data-clip-slider="z" min="-100" max="100" value="0" step="1" aria-label="Section Z offset"/><button type="button" class="cv3d-clip-flip" data-clip-flip="z" aria-pressed="false" aria-label="Flip the Z cut — keep the other side">⇅</button><output data-clip-out="z"></output></label>
         </div>
         <button class="cv3d-clip-off" title="Turn section view off">Off</button>
       </div>
@@ -690,6 +691,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let masterPositions: Float32Array | null = null; // reordered, centred positions
   let partRadius = 1;
   let partSpan = { x: 0, y: 0, z: 0 };
+  /** The file's coordinates of the centred origin — add it to report a position in model coordinates. */
+  let modelOrigin: [number, number, number] = [0, 0, 0];
   let edgesOn = true;
   let bodyVisible: boolean[] = [];
   let fileKey = '';
@@ -979,8 +982,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const AXIS_WORLD: Record<Axis, [number, number, number]> = {
     x: [1, 0, 0], y: [0, 0, -1], z: [0, 1, 0],
   };
-  const clipState: Record<Axis, { on: boolean; off: number }> = {
-    x: { on: false, off: 0 }, y: { on: false, off: 0 }, z: { on: false, off: 0 },
+  /** `flip`: keep the material ABOVE the plane (coord ≥ offset) instead of below. */
+  const clipState: Record<Axis, { on: boolean; off: number; flip: boolean }> = {
+    x: { on: false, off: 0, flip: false }, y: { on: false, off: 0, flip: false }, z: { on: false, off: 0, flip: false },
   };
   const clipPlanes: Record<Axis, InstanceType<typeof THREE.Plane>> = {
     x: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0),
@@ -993,9 +997,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (!clipState[a].on) continue;
       const [nx, ny, nz] = AXIS_WORLD[a];
       const offset = (clipState[a].off / 100) * partRadius;
-      // keep fragments where axis·p ≤ offset (slider slides the cut through the part)
-      clipPlanes[a].normal.set(-nx, -ny, -nz);
-      clipPlanes[a].constant = offset;
+      // keep fragments where axis·p ≤ offset (slider slides the cut through the part); flipped: ≥ offset
+      const sgn = clipState[a].flip ? -1 : 1;
+      clipPlanes[a].normal.set(-nx * sgn, -ny * sgn, -nz * sgn);
+      clipPlanes[a].constant = offset * sgn;
       out.push(clipPlanes[a]);
     }
     return out;
@@ -1006,7 +1011,147 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     for (const m of bodyMats) m.clippingPlanes = planes;
     for (const e of bodyEdges) if (e) (e.material as InstanceType<typeof THREE.LineBasicMaterial>).clippingPlanes = planes;
     if (highlight) (highlight.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
+    scheduleSection();
     invalidate();
+  }
+
+  // ── section measurement: cut-face area, drawn as a hatched cap (cad-section.ts) ──
+  const AXES: Axis[] = ['x', 'y', 'z'];
+  const AXIS_INDEX: Record<Axis, SecAxis> = { x: 0, y: 1, z: 2 };
+  let sections: SectionResult[] = [];
+  const capGroup = new THREE.Group();
+  partGroup.add(capGroup);
+  let hatchTex: InstanceType<typeof THREE.CanvasTexture> | null = null;
+  let sectionRaf = 0;
+  /** Recompute at most once a frame while a slider is dragged. */
+  function scheduleSection(): void {
+    if (sectionRaf) return;
+    sectionRaf = requestAnimationFrame(() => { sectionRaf = 0; updateSections(); });
+  }
+  /** Where an axis plane sits, in the centred part coordinates the mesh uses. */
+  const planeAt = (a: Axis) => (clipState[a].off / 100) * partRadius;
+  /** Turn a plane on with its cut face toward the camera (keep the far side), as CAD tools do. */
+  function faceCutToCamera(a: Axis): void {
+    const [nx, ny, nz] = AXIS_WORLD[a];
+    const toCam = camera.position.clone().sub(controls.target);
+    // keeping coord ≤ offset shows a face whose outward normal is +axis — visible when the camera is on the + side
+    clipState[a].flip = toCam.x * nx + toCam.y * ny + toCam.z * nz < 0;
+    syncFlipButtons();
+  }
+  function syncFlipButtons(): void {
+    for (const a of AXES) {
+      const b = clipPanel.querySelector<HTMLButtonElement>(`[data-clip-flip="${a}"]`);
+      if (b) { b.setAttribute('aria-pressed', String(clipState[a].flip)); b.title = clipState[a].flip ? 'Keeping the material above the plane — click to keep below' : 'Keeping the material below the plane — click to keep above'; }
+    }
+  }
+  function hatchTexture(): InstanceType<typeof THREE.CanvasTexture> {
+    if (hatchTex) return hatchTex;
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d')!;
+    g.fillStyle = '#f2b544'; g.fillRect(0, 0, 64, 64);
+    g.strokeStyle = 'rgba(120, 60, 0, 0.55)'; g.lineWidth = 5;
+    for (let k = -64; k <= 128; k += 21) { g.beginPath(); g.moveTo(k, 64); g.lineTo(k + 64, 0); g.stroke(); }
+    hatchTex = new THREE.CanvasTexture(c);
+    hatchTex.wrapS = hatchTex.wrapT = THREE.RepeatWrapping;
+    hatchTex.colorSpace = THREE.SRGBColorSpace;
+    return hatchTex;
+  }
+  function clearCaps(): void {
+    for (const ch of [...capGroup.children]) removeAndDispose(capGroup, ch as Obj3);
+  }
+  function updateSections(): void {
+    clearCaps();
+    const active = AXES.filter(a => clipState[a].on);
+    if (!active.length || !bodyMeshes.length) { sections = []; renderClipReadouts(); renderInspector(); invalidate(); return; }
+    // Visible bodies, where they now are (explode / move / rotate), in part coordinates.
+    const bodies = bodyMeshes.map((m, i) => {
+      if (!bodyVisible[i]) return null;
+      m.updateMatrix();
+      const identity = m.matrix.equals(new THREE.Matrix4());
+      return { positions: m.geometry.getAttribute('position').array as Float32Array, matrix: identity ? null : Array.from(m.matrix.elements) as number[] };
+    }).filter((b): b is { positions: Float32Array; matrix: number[] | null } => !!b);
+    sections = active.map(a => sliceSection(bodies, AXIS_INDEX[a], planeAt(a),
+      active.filter(o => o !== a).map(o => ({ axis: AXIS_INDEX[o], at: planeAt(o), keepAbove: clipState[o].flip }))));
+    // Caps: the same loops the area came from. The cap is clipped by the OTHER planes only.
+    const tile = Math.max(partRadius / 10, 0.5);
+    for (const sec of sections) {
+      const [ua, va] = planeAxes(sec.axis);
+      const others = activeClipPlanes().filter(pl => pl !== clipPlanes[AXES[sec.axis]]);
+      const place = (geo: InstanceType<typeof THREE.BufferGeometry>) => {
+        const pos = geo.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>;
+        const arr = pos.array as Float32Array;
+        for (let i = 0; i < pos.count; i++) {
+          const u = arr[i * 3], v = arr[i * 3 + 1];
+          const out = [0, 0, 0]; out[ua] = u; out[va] = v; out[sec.axis] = sec.at;
+          arr[i * 3] = out[0]; arr[i * 3 + 1] = out[1]; arr[i * 3 + 2] = out[2];
+        }
+        pos.needsUpdate = true;
+        geo.computeBoundingSphere();
+      };
+      for (const shp of nestLoops(sec.loops)) {
+        const shape = new THREE.Shape(shp.outer.map(([u, v]) => new THREE.Vector2(u, v)));
+        for (const h of shp.holes) shape.holes.push(new THREE.Path(h.map(([u, v]) => new THREE.Vector2(u, v))));
+        const geo = new THREE.ShapeGeometry(shape);
+        place(geo);
+        const tex = hatchTexture();
+        const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, clippingPlanes: others.length ? others : null });
+        tex.repeat.set(1 / tile, 1 / tile);
+        const cap = new THREE.Mesh(geo, mat);
+        cap.renderOrder = 2;
+        cap.userData.sectionCap = true;
+        capGroup.add(cap);
+      }
+      for (const l of sec.loops) {
+        const pts = l.pts.map(([u, v]) => { const o = [0, 0, 0]; o[ua] = u; o[va] = v; o[sec.axis] = sec.at; return new THREE.Vector3(o[0], o[1], o[2]); });
+        const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: l.signedArea > 0 ? 0x7a3d00 : 0x1d4ed8, clippingPlanes: others.length ? others : null }));
+        line.renderOrder = 3;
+        capGroup.add(line);
+      }
+    }
+    renderClipReadouts();
+    renderInspector();
+    invalidate();
+  }
+  const fmtArea = (mm2: number) => `${mm2.toLocaleString(undefined, { maximumFractionDigits: mm2 < 100 ? 2 : 1 })} mm²`;
+  /** Model coordinate of a plane (the file's own coordinates, as the CAD system shows them). */
+  const modelAt = (sec: SectionResult) => sec.at + modelOrigin[sec.axis];
+  function renderClipReadouts(): void {
+    for (const a of AXES) {
+      const out = clipPanel.querySelector<HTMLOutputElement>(`[data-clip-out="${a}"]`);
+      if (!out) continue;
+      const sec = sections.find(s => AXES[s.axis] === a);
+      out.textContent = !clipState[a].on ? '' : sec
+        ? `${modelAt(sec).toFixed(2)} mm · ${sec.openChains && !sec.loops.length ? 'open cut' : fmtArea(sec.areaMm2)}`
+        : `${(planeAt(a) + modelOrigin[AXIS_INDEX[a]]).toFixed(2)} mm`;
+    }
+  }
+  function sectionLabel(sec: SectionResult): string {
+    return `▭ Section ${'XYZ'[sec.axis]} = ${modelAt(sec).toFixed(2)} mm — ${fmtArea(sec.areaMm2)} (perimeter ${sec.perimeterMm.toFixed(1)} mm)`;
+  }
+  function addSectionMeasurement(i: number): void {
+    const sec = sections[i];
+    if (!sec) return;
+    const p = [0, 0, 0] as [number, number, number]; p[sec.axis] = modelAt(sec);
+    measurements.push({ record: { kind: 'section', label: sectionLabel(sec), value: sec.areaMm2, points: [p] }, objects: [] });
+    measurementsChanged();
+    statusHint.textContent = 'Section area added to measurements';
+  }
+  function downloadSectionDxf(i: number): void {
+    const sec = sections[i];
+    if (!sec) return;
+    const shifted: SectionResult = { ...sec, loops: sec.loops.map(l => {
+      const [ua, va] = planeAxes(sec.axis);
+      return { ...l, pts: l.pts.map(([u, v]) => [u + modelOrigin[ua], v + modelOrigin[va]] as [number, number]) };
+    }), at: modelAt(sec) };
+    const blob = new Blob([sectionDxf(shifted)], { type: 'application/dxf' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = exportFilename(`section-${'xyz'[sec.axis]}`, null, 'dxf');
+    a.click();
+    URL.revokeObjectURL(a.href);
+    statusHint.textContent = 'Section profile downloaded (DXF)';
   }
 
   // ── load ──
@@ -1111,6 +1256,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
     // centre at origin
     const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+    modelOrigin = [cx, cy, cz]; // the viewer works centred; positions are reported in the file's own coordinates
     partSpan = { x: maxX - minX, y: maxY - minY, z: maxZ - minZ };
     partRadius = Math.hypot(partSpan.x, partSpan.y, partSpan.z) / 2 || 1;
     for (let i = 0; i < positions.length; i += 3) {
@@ -1264,7 +1410,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     bodyRot = bodyMeshes.map(() => ({ x: 0, y: 0, z: 0 }));
     bodyMove = bodyMeshes.map(() => ({ x: 0, y: 0, z: 0 }));
     (['x', 'y', 'z'] as const).forEach(a => {
-      clipState[a].on = false; clipState[a].off = 0;
+      clipState[a].on = false; clipState[a].off = 0; clipState[a].flip = false;
       const cb = clipPanel.querySelector(`input[data-clip-axis="${a}"]`) as HTMLInputElement | null; if (cb) cb.checked = false;
       const sl = clipPanel.querySelector(`input[data-clip-slider="${a}"]`) as HTMLInputElement | null; if (sl) sl.value = '0';
     });
@@ -1331,6 +1477,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     bodyMeshes[i].visible = vis;
     const e = bodyEdges[i];
     if (e) e.visible = vis && edgesOn;
+    if (AXES.some(a => clipState[a].on)) scheduleSection(); // a hidden body is not cut
   }
 
   // ── model tree (bodies · features · faces by type) ──
@@ -1435,6 +1582,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const e = bodyEdges[i];
       if (e) { e.quaternion.copy(q); e.position.copy(pos); }
     }
+    if (AXES.some(a => clipState[a].on)) scheduleSection(); // the cut follows a moved / exploded body
     invalidate();
   }
   /** (Re)build the component picker in the rotate panel and sync the sliders to
@@ -1735,7 +1883,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   function completePoint(p: Vec3, interactive = true): void {
     const partInv = new THREE.Matrix4().copy(partGroup.matrixWorld).invert();
-    const local = p.clone().applyMatrix4(partInv); // world → part (CAD) coordinates
+    const local = p.clone().applyMatrix4(partInv).add(new THREE.Vector3(...modelOrigin)); // world → the file's own coordinates
     const dot = new THREE.Mesh(new THREE.SphereGeometry(partRadius * 0.012, 12, 12),
       new THREE.MeshBasicMaterial({ color: 0x22d3ee, depthTest: false }));
     dot.renderOrder = 998; dot.position.copy(p);
@@ -2048,7 +2196,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   clipPanel.querySelectorAll('input[data-clip-axis]').forEach(cb => cb.addEventListener('change', () => {
     const a = (cb as HTMLInputElement).dataset.clipAxis as 'x' | 'y' | 'z';
     clipState[a].on = (cb as HTMLInputElement).checked;
+    if (clipState[a].on) faceCutToCamera(a);
     applyClipping();
+  }));
+  clipPanel.querySelectorAll<HTMLButtonElement>('[data-clip-flip]').forEach(b => b.addEventListener('click', (ev) => {
+    ev.preventDefault(); // inside the row's <label> — do not toggle its checkbox
+    const a = b.dataset.clipFlip as Axis;
+    clipState[a].flip = !clipState[a].flip;
+    syncFlipButtons();
+    if (clipState[a].on) applyClipping();
   }));
   clipPanel.querySelectorAll('input[data-clip-slider]').forEach(sl => sl.addEventListener('input', () => {
     const a = (sl as HTMLInputElement).dataset.clipSlider as 'x' | 'y' | 'z';
@@ -2282,6 +2438,27 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           </button>`).join('')}</div>` : `<p class="cv3d-muted">No issues found by these checks.</p>`;
       out.push(sec('issues', 'Manufacturability', `${rows}<p class="cv3d-note">${esc(source)}.</p>`, sorted.length ? `${sorted.length}` : ''));
     }
+    // Section (cut-face area) — while a section plane is on
+    if (sections.length) {
+      const AX = 'XYZ';
+      out.push(sec('section', 'Section', sections.map((sc, i) => {
+        const [ua, va] = planeAxes(sc.axis);
+        const b = sc.bounds;
+        return `
+        <div class="cv3d-secblock">
+          <div class="cv3d-sec-plane">${AX[sc.axis]} = ${modelAt(sc).toFixed(2)} mm</div>
+          ${sc.loops.length ? `<dl class="cv3d-kv">
+            <dt>Cut area</dt><dd><strong>${fmtArea(sc.areaMm2)}</strong> <span class="cv3d-muted">${fmtNum(sc.areaMm2 / 100, 2)} cm²</span></dd>
+            <dt>Perimeter</dt><dd>${fmtNum(sc.perimeterMm, 1)} mm</dd>
+            <dt>Extent</dt><dd>${b ? `${AX[ua]} ${fmtNum(b.uMax - b.uMin, 1)} × ${AX[va]} ${fmtNum(b.vMax - b.vMin, 1)} mm` : '—'}</dd>
+            <dt>Regions</dt><dd>${sc.regions}${sc.holes ? ` · ${sc.holes} hole${sc.holes > 1 ? 's' : ''}` : ''}</dd>
+          </dl>
+          <div class="cv3d-secbtns"><button type="button" class="cv3d-linkbtn" data-sec-add="${i}">Add to measurements</button><button type="button" class="cv3d-linkbtn" data-sec-dxf="${i}">Profile DXF</button></div>`
+          : `<p class="cv3d-muted">${sc.openChains ? `The cut does not close (${sc.openChains} open edge chain${sc.openChains > 1 ? 's' : ''}) — the mesh is not a closed solid here, so no area.` : 'The plane does not cut the part here.'}</p>`}
+          ${sc.loops.length && sc.openChains ? `<p class="cv3d-note">${sc.openChains} open chain${sc.openChains > 1 ? 's' : ''} left out of the area — a gap in the mesh.</p>` : ''}
+        </div>`;
+      }).join('') + `<p class="cv3d-note">Measured on the tessellated surface: curved edges are chords, so a round boundary reads a fraction of a percent small (a solid round low, a section with bores slightly high). Checked against the CAD kernel's exact section: within 0.1 % on real parts. Positions are the file's own coordinates.</p>`, `${sections.length}`));
+    }
     // Wall thickness
     if (thicknessRange && meta) {
       const thk = faceList.filter(f => typeof f.thicknessMm === 'number' && f.thicknessMm > 0);
@@ -2351,6 +2528,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       return;
     }
     if (t.closest('[data-csv]')) { exportCSV(); return; }
+    const secAdd = t.closest<HTMLElement>('[data-sec-add]');
+    if (secAdd) { addSectionMeasurement(Number(secAdd.dataset.secAdd)); return; }
+    const secDxf = t.closest<HTMLElement>('[data-sec-dxf]');
+    if (secDxf) { downloadSectionDxf(Number(secDxf.dataset.secDxf)); return; }
     const modeBtn = t.closest<HTMLElement>('[data-insp-mode]');
     if (modeBtn) setColorMode(modeBtn.dataset.inspMode as ColorMode);
   });
@@ -2475,7 +2656,19 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         setColorMode(avail[(avail.indexOf(effectiveMode()) + 1) % avail.length] ?? 'none');
         break;
       }
-      case 'clip': togglePanel(clipPanel, 'clip'); break;
+      case 'clip':
+        if (togglePanel(clipPanel, 'clip')) {
+          // Opening Section turns a plane on (Z, through the middle) so it does something at once.
+          if (!AXES.some(a => clipState[a].on)) {
+            clipState.z.on = true;
+            faceCutToCamera('z');
+            const cb = clipPanel.querySelector<HTMLInputElement>('input[data-clip-axis="z"]'); if (cb) cb.checked = true;
+            applyClipping();
+          }
+          if (inspector.hidden && !opts.compact) setInspector(true);
+          statusHint.textContent = 'Section — drag a slider; the cut face area is in the panel and the inspector';
+        }
+        break;
       case 'explode': togglePanel(explodePanel, 'explode'); break;
       case 'rotate':
         if (togglePanel(rotatePanel, 'rotate')) { buildRotatePanel(); statusHint.textContent = 'Rotate: pick a component, then drag its X / Y / Z slider'; }
@@ -2656,6 +2849,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       document.removeEventListener('pointerdown', onDocPointerDown);
       clearTimeout(hintTimer);
       clearTimeout(tipTimer);
+      if (sectionRaf) cancelAnimationFrame(sectionRaf);
+      hatchTex?.dispose();
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointerup', onPointerUp);
       canvas.removeEventListener('dblclick', onDblClick);

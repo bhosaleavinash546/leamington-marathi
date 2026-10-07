@@ -449,3 +449,17 @@ html:not([data-theme="light"]) .cv3d-tip { background: #e6ebf2; color: #0b0e12; 
   font-size: 10.5px; font-weight: 700; letter-spacing: 0.02em;
   background: var(--v-accent-soft); color: var(--v-accent);
 }
+
+/* section measurement */
+.cv3d-clip-row output { min-width: 150px; font: 600 11px/1 Inter, system-ui, sans-serif; color: var(--v-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cv3d-secblock + .cv3d-secblock { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--v-border); }
+.cv3d-sec-plane { font-weight: 700; color: var(--v-ink); margin-bottom: 8px; }
+.cv3d-secbtns { display: flex; gap: 8px; }
+.cv3d-secbtns .cv3d-linkbtn { margin-top: 0; }
+.cv3d-clip-flip {
+  appearance: none; width: 24px; height: 22px; padding: 0; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--v-border); background: var(--v-hover); color: var(--v-ink-2); font-size: 12px; line-height: 1;
+}
+.cv3d-clip-flip[aria-pressed="true"] { background: var(--v-accent-soft); color: var(--v-accent); border-color: color-mix(in srgb, var(--v-accent) 45%, transparent); }
+/* the toast moves below a top panel (section, explode, rotate, move) instead of covering it */
+.cv3d-viewport:has(.cv3d-float:not([style*="none"])) .cv3d-hint { top: 168px; }

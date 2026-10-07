@@ -541,6 +541,10 @@ what is true** — nothing here has been compared with a price JLR paid.
   wrong) and post the whole serialised object (its `version`). Prove navigation with `npx tsx e2e/viewer-nav.ts <out>`.
   Orthographic (O): the perspective camera stays the RIG; render / pick / project through `viewCam()` (an orthographic
   camera synced from the rig, frustum = the rig's view at the target plane) — never `camera` directly for those.
+  Section measurement (S): `cad-section.ts` slices the mesh (oriented segments → loops, signed areas add, other planes
+  clip) and the hatched cap is drawn from the SAME loops — never compute the area one way and draw the cap another.
+  Positions are the file's own coordinates (`modelOrigin`). Proven against OCP's exact section: `npx tsx
+  e2e/viewer-section.ts <out>` (within 0.1 % on real parts).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

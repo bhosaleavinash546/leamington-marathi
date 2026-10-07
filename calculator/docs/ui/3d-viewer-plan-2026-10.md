@@ -212,3 +212,39 @@ depths draw the same length) and `e2e/viewer-nav.ts` (O switches; orbit / zoom /
 in orthographic; the choice persists) — 15 / 15 checks pass.
 
 **Not done:** the frame rate on a real GPU was not measured here (the container renders in software).
+
+## 8. Section measurement — cut-face area (Oct 2026)
+
+**What it does:** Section (dock, or **S**) turns on a plane through the middle with its cut face toward the camera.
+Each axis has a slider, a flip (⇅ — keep the other side) and a live readout `position · area`. The inspector's
+**Section** block gives, per active plane: position in the file's own coordinates, **cut area** (mm² and cm²),
+perimeter, extent, regions and holes, plus **Add to measurements** (into the list, CSV and report) and **Profile DXF**
+(the cut outline as closed polylines, holes on their own layer). The cut is drawn as a hatched cap — built from the
+same loops the area comes from, so the picture and the number cannot disagree.
+
+**How** (`src/ui/cad-section.ts`, pure): each straddling triangle gives one segment, oriented by the triangle's
+outward normal, so on a closed solid material loops and holes wind opposite ways and their signed areas just add.
+Edge crossings are computed from canonically ordered endpoints, so shared edges give identical points; chains whose
+shared vertices are a hair apart (re-exported STL) are joined within 1e-6 of the section size; a real gap is reported
+as an open chain and left out of the area. Other active planes clip the loops (Sutherland–Hodgman), their line not
+counted as perimeter. Moved / exploded / hidden bodies are cut where they are.
+
+**Accuracy, against the CAD kernel** (`npx tsx e2e/viewer-section.ts <out>`: the viewer's number in a real browser
+v. OpenCASCADE's exact B-rep section of the same solid at the same model coordinate, `e2e/occ-section.py`):
+
+| Part | Plane | Viewer | Kernel (exact) | Error |
+|---|---|---|---|---|
+| Casting bracket | Z = 62.50 | 1,552.8 mm² | 1,552.82 | −0.001 % |
+| Casting bracket | Z = 100.62 | 4,407.2 | 4,407.81 | −0.014 % |
+| Casting bracket | X = −87.78 | 952.2 | 952.26 | −0.007 % |
+| Casting bracket | Y = 27.23 | 2,472.1 | 2,471.78 | +0.013 % |
+| Hydraulic manifold | Z = 30.00 | 8,662.7 | 8,659.87 | +0.033 % |
+| Hydraulic manifold | X = 83.43 | 4,255.1 | 4,254.48 | +0.015 % |
+| Hydraulic manifold | Y = 8.76 | 5,817.7 | 5,813.45 | +0.073 % |
+
+The error is the tessellation's chords: bores come out a hair small, so a section through holes reads slightly high,
+a solid round slightly low. Unit tests (`tests/cad-section.test.ts`, 12): box, hollow box (hole), 64-gon bar (exact
+polygon area), two bodies, a moved body, clipping by another plane either side, a plane on a face, an open shell,
+near-coincident vertices joined but a real gap reported, nesting, DXF.
+
+Also: the Point tool now reports the file's own coordinates (it reported coordinates about the part's centre).
