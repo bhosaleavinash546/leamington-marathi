@@ -44,7 +44,10 @@ test('register: reg anchors are unique, dated, statused and cover every referenc
   assert.equal(new Set(ids).size, ids.length);
   const statuses = new Set(['in-force', 'adopted', 'proposed', 'under-revision', 'repealed', 'protocol']);
   for (const a of REG_ANCHORS) {
-    assert.ok(a.year >= 2024 && a.year <= 2040, `${a.id}: implausible year ${a.year}`);
+    // Law already in force may date from before the register's window (the US
+    // ADB rule, 2022); anything not yet in force must bite in 2024-2040.
+    const minYear = a.status === 'in-force' ? 2020 : 2024;
+    assert.ok(a.year >= minYear && a.year <= 2040, `${a.id}: implausible year ${a.year}`);
     assert.ok(a.name && a.region && a.effect, `${a.id}: missing fields`);
     assert.ok(statuses.has(a.status), `${a.id}: missing/invalid status`);
   }
