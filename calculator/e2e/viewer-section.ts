@@ -104,6 +104,31 @@ async function main(): Promise<void> {
         check(`${name} ${'XYZ'[v.axis]} = ${v.at} mm: viewer ${v.area} mm² v kernel ${k.toFixed(2)} mm²`, Math.abs(err) <= TOL, { errorPct: +(err * 100).toFixed(3) });
       });
     }
+    // ── wall thickness, against the manifold's modelling script (cad-audit/parts/MACH_modelled_parts.py) ──
+    // Any Z in (48, 61) cuts the pocket and the tapping holes: walls 4.5 mm (Ø11 bolt hole 10 mm from two faces),
+    // largest inscribed circle ⌀35 (between the pocket and an end face).
+    const zCut = await setCut(page, 'z', 26);
+    await page.waitForFunction(() => /Min wall/.test(document.querySelector('#viewer-view .cv3d-wallblock')?.textContent ?? ''), null, { timeout: 30_000 });
+    const wall = await page.evaluate(() => {
+      const txt = document.querySelector('#viewer-view .cv3d-wallblock')?.textContent ?? '';
+      const min = /Min wall\s*([\d.]+)\s*mm/.exec(txt), max = /⌀\s*([\d.]+)\s*mm/.exec(txt);
+      return { min: min ? Number(min[1]) : null, max: max ? Number(max[1]) : null };
+    });
+    check(`manifold Z = ${zCut?.at} mm: min wall ${wall.min} mm (model: 4.5, chords add a hair)`, wall.min != null && wall.min >= 4.49 && wall.min <= 4.56, wall);
+    check(`manifold Z = ${zCut?.at} mm: thickest ⌀${wall.max} mm (model: 35)`, wall.max != null && Math.abs(wall.max - 35) <= 0.15, wall);
+    await page.locator('#viewer-view [data-sec-thin="0"]').click();
+    await page.waitForTimeout(100); await settled(page);
+    await page.screenshot({ path: join(OUT, '3-thinnest-wall.png') });
+    const cbox = (await page.locator('#viewer-view .cv3d-canvas').boundingBox())!;
+    await page.mouse.click(cbox.x + cbox.width / 2, cbox.y + cbox.height / 2);
+    await page.waitForTimeout(400);
+    const here = await page.evaluate(() => {
+      const t = document.querySelector('#viewer-view .cv3d-selbox strong')?.textContent ?? document.querySelector('#viewer-view .cv3d-facechip strong')?.textContent ?? '';
+      const m = /Wall here ≈ ([\d.]+) mm/.exec(t); return m ? Number(m[1]) : t;
+    });
+    check('a click on the cut at the thinnest wall reads that wall', typeof here === 'number' && wall.min != null && Math.abs(here - wall.min) <= 0.05, { here, min: wall.min });
+    await page.screenshot({ path: join(OUT, '4-wall-here.png') });
+
     // flip keeps the other side: the picture changes, the cut area does not
     const before = await page.evaluate(() => document.querySelector('#viewer-view .cv3d-secblock dd strong')?.textContent ?? '');
     const flipBtn = page.locator('#viewer-view .cv3d-clip-flip[data-clip-flip="y"]');

@@ -248,3 +248,30 @@ polygon area), two bodies, a moved body, clipping by another plane either side, 
 near-coincident vertices joined but a real gap reported, nesting, DXF.
 
 Also: the Point tool now reports the file's own coordinates (it reported coordinates about the part's centre).
+
+## 9. Wall thickness in the section view (Oct 2026)
+
+**What it does:** with a section on, each cut gets — after the slider settles (a worker, ~0.2–0.8 s; area and cap
+stay instant) — its **min wall** (drawn on the cut as a red dimension, "t min 4.50 mm", with its model position),
+**median wall** (by outline length), the **thickest spot** (largest inscribed circle — the casting / moulding hot
+spot, drawn in violet), a length-weighted histogram and **Show the thinnest wall** (camera glides there).
+**Click the hatched cut** in Select mode for the wall through that point (its circle is drawn). "Add to
+measurements" carries the min wall.
+
+**Method** (`src/ui/cad-section-thickness.ts`, pure): the rolling-ball / inscribed-circle method. At samples by arc
+length along the cut outline (≤ 3 000, so the work follows the cut's size, not the tessellation), the largest
+circle tangent there inside the material is found by the shrinking-ball iteration (Ma et al. 2012: r ← |p−q|²/2(q−p)·n,
+exact, a few nearest-point queries on a segment tree). A reading is a WALL only when its two contacts face each
+other (normals ≥ 120° apart) — at a convex corner the circle is stopped by the next edge, which measures the corner,
+not a wall. The minimum and maximum are refined between samples by a golden-section search. A click reports the
+covering circle whose centre is nearest (the wall the point sits in); the textbook "largest covering circle" read
+⌀4.88 in the middle of a 4.5 mm gap.
+
+**Proof:**
+- Unit tests (`tests/cad-section-thickness.test.ts`, 9): strip 40 × 6 → 6 (corners not thin), tube R10/R7 → 3 within
+  the chord sagitta, L with 5 / 8 legs → 5, 20 × 20 block → ⌀20 hot spot, tapered wall → its thin end, the manifold's
+  Z = 50 cut rebuilt from its modelling script → min 4.5 / ⌀35, click semantics, a real slice of a hollow box → 10.
+- In a browser (`e2e/viewer-section.ts`): the real manifold STEP cut at Z = 50.31 reads **min wall 4.50 mm** and
+  **⌀35.0** — the model script's 4.5 (Ø11 bolt hole 10 mm from two faces) and 35 (pocket to end face) — and a click on
+  the thinnest wall reads 4.50.
+- Speed: 750–45 000-edge cuts in 0.2–0.75 s (was 75 s at 12 000 edges with bisection on a grid).

@@ -215,7 +215,9 @@ export function sliceSection(
   // Material loops wind one way, holes the other: the sign of the total names the material side.
   const total = loops.reduce((t, l) => t + l.signedArea, 0);
   const sign = total < 0 ? -1 : 1;
-  for (const l of loops) l.signedArea *= sign;
+  // Normalise the winding too: material loops counter-clockwise, holes clockwise in (u, v) — so the material
+  // is always on the LEFT of an edge (wall thickness reads the inward normal from it).
+  for (const l of loops) { l.signedArea *= sign; if (sign < 0) l.pts.reverse(); }
   let uMin = Infinity, uMax = -Infinity, vMin = Infinity, vMax = -Infinity;
   for (const l of loops) for (const [u, v] of l.pts) { uMin = Math.min(uMin, u); uMax = Math.max(uMax, u); vMin = Math.min(vMin, v); vMax = Math.max(vMax, v); }
   return {

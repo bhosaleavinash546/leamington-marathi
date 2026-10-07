@@ -545,6 +545,9 @@ what is true** — nothing here has been compared with a price JLR paid.
   clip) and the hatched cap is drawn from the SAME loops — never compute the area one way and draw the cap another.
   Positions are the file's own coordinates (`modelOrigin`). Proven against OCP's exact section: `npx tsx
   e2e/viewer-section.ts <out>` (within 0.1 % on real parts).
+  Section wall thickness: `cad-section-thickness.ts` (rolling ball, shrinking-ball iteration on a segment tree, arc-
+  length samples ≤ 3 000, run in `cad-section-worker.ts`); a reading is a WALL only when its contacts face each other
+  (≥ 120°) — corners never set the minimum; a click reports the covering circle with the NEAREST centre.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

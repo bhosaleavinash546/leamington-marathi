@@ -18,6 +18,7 @@
 import { parseSTLMesh } from './cad-views.js';
 import { exportFilename } from '../export/filename.js';
 import { sliceSection, nestLoops, sectionDxf, planeAxes, type SectionResult, type Axis as SecAxis } from './cad-section.js';
+import { thicknessAt, type SectionThickness } from './cad-section-thickness.js';
 import {
   robustRange, normInRange, histogram, meshVolumeArea, VIEWER_DENSITIES, viewName, geometryChecks, rankCostItems, esc, isRoundFeature,
   type RobustRange, type ViewerIssue, type CostItem,
@@ -1062,6 +1063,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
   function updateSections(): void {
     clearCaps();
+    clearThicknessOverlays();
+    thickness = [];
     const active = AXES.filter(a => clipState[a].on);
     if (!active.length || !bodyMeshes.length) { sections = []; renderClipReadouts(); renderInspector(); invalidate(); return; }
     // Visible bodies, where they now are (explode / move / rotate), in part coordinates.
@@ -1112,7 +1115,128 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     }
     renderClipReadouts();
     renderInspector();
+    scheduleThickness();
     invalidate();
+  }
+
+  // ── wall thickness in the section (cad-section-thickness.ts, in a worker, debounced) ──
+  let thickness: Array<SectionThickness | null> = [];
+  let thickWorker: Worker | null | undefined;
+  let thickJob = 0;
+  let thickTimer = 0;
+  let thickBusy = false;
+  const thickGroup = new THREE.Group();
+  partGroup.add(thickGroup);
+  let thickLabels: Sprite3[] = [];
+  function clearThicknessOverlays(): void {
+    for (const ch of [...thickGroup.children]) removeAndDispose(thickGroup, ch as Obj3);
+    for (const l of thickLabels) removeAndDispose(overlayGroup, l);
+    thickLabels = [];
+  }
+  /** After the slider settles: the area and cap are instant, the wall follows ~0.2–0.8 s later. */
+  function scheduleThickness(): void {
+    clearTimeout(thickTimer);
+    if (!sections.length) { thickBusy = false; return; }
+    thickBusy = true;
+    const job = ++thickJob;
+    thickTimer = window.setTimeout(() => {
+      if (thickWorker === undefined) {
+        try {
+          thickWorker = new Worker(new URL('./cad-section-worker.ts', import.meta.url), { type: 'module' });
+          thickWorker.addEventListener('message', (ev: MessageEvent<{ id: number; results?: SectionThickness[]; error?: string }>) => {
+            if (ev.data.id !== thickJob) return; // a newer cut superseded this one
+            thickBusy = false;
+            thickness = ev.data.results ?? [];
+            drawThickness();
+            renderInspector();
+          });
+        } catch { thickWorker = null; }
+      }
+      if (!thickWorker) { thickBusy = false; renderInspector(); return; }
+      thickWorker.postMessage({ id: job, sections: sections.map(sc => ({ ...sc, loops: sc.loops.map(l => ({ ...l, pts: l.pts })) })) });
+    }, 160);
+    renderInspector();
+  }
+  /** (u, v) on a section's plane → part coordinates, lifted a hair toward the visible side of the cut. */
+  function onPlane(sc: SectionResult, u: number, v: number, lift = true): Vec3 {
+    const [ua, va] = planeAxes(sc.axis);
+    const o = [0, 0, 0]; o[ua] = u; o[va] = v;
+    o[sc.axis] = sc.at + (lift ? (clipState[AXES[sc.axis]].flip ? -1 : 1) * partRadius * 2e-3 : 0);
+    return new THREE.Vector3(o[0], o[1], o[2]);
+  }
+  function circlePts(sc: SectionResult, c: [number, number], r: number): Vec3[] {
+    const out: Vec3[] = [];
+    for (let i = 0; i <= 64; i++) { const a = (i / 64) * Math.PI * 2; out.push(onPlane(sc, c[0] + r * Math.cos(a), c[1] + r * Math.sin(a))); }
+    return out;
+  }
+  function partToWorld(v: Vec3): Vec3 { partGroup.updateMatrixWorld(true); return v.clone().applyMatrix4(partGroup.matrixWorld); }
+  function drawThickness(): void {
+    clearThicknessOverlays();
+    sections.forEach((sc, i) => {
+      const th = thickness[i];
+      if (!th) return;
+      if (th.min) {
+        const a = onPlane(sc, th.min.p[0], th.min.p[1]), b = onPlane(sc, th.min.q[0], th.min.q[1]);
+        const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]), new THREE.LineBasicMaterial({ color: 0xdc2626, depthTest: false }));
+        line.renderOrder = 997;
+        const ends = [a, b].map(p => { const m = new THREE.Mesh(new THREE.SphereGeometry(partRadius * 0.008, 10, 10), new THREE.MeshBasicMaterial({ color: 0xdc2626, depthTest: false })); m.position.copy(p); m.renderOrder = 998; return m; });
+        thickGroup.add(line, ...ends);
+        const lab = makeLabel(`t min ${th.min.t.toFixed(2)} mm`);
+        lab.position.copy(partToWorld(a.clone().add(b).multiplyScalar(0.5)));
+        overlayGroup.add(lab); thickLabels.push(lab);
+      }
+      if (th.max) {
+        const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(circlePts(sc, th.max.c as [number, number], th.max.d / 2)),
+          new THREE.LineBasicMaterial({ color: 0x7c3aed, depthTest: false }));
+        ring.renderOrder = 997;
+        thickGroup.add(ring);
+        const lab = makeLabel(`⌀ ${th.max.d.toFixed(1)} max`);
+        lab.position.copy(partToWorld(onPlane(sc, th.max.c[0], th.max.c[1])));
+        overlayGroup.add(lab); thickLabels.push(lab);
+      }
+    });
+    invalidate();
+  }
+  /** A click on the hatched cut: the wall there (the largest inscribed circle that covers the point). */
+  function pickSectionWall(ev: { clientX: number; clientY: number }): boolean {
+    const caps = capGroup.children.filter(o => (o as Mesh3).isMesh) as Mesh3[];
+    if (!caps.length) return false;
+    raycaster.setFromCamera(screenToNDC(ev as MouseEvent), viewCam());
+    const capHit = raycaster.intersectObjects(caps, false)[0];
+    if (!capHit) return false;
+    const bodyHit = raycastMeshes(ev)[0];
+    if (bodyHit && bodyHit.distance < capHit.distance - partRadius * 1e-4) return false; // the part is in front
+    partGroup.updateMatrixWorld(true);
+    const local = capHit.point.clone().applyMatrix4(new THREE.Matrix4().copy(partGroup.matrixWorld).invert());
+    let best: { sc: SectionResult; i: number; d: number } | null = null;
+    sections.forEach((sc, i) => { const d = Math.abs(local.getComponent(sc.axis) - sc.at); if (!best || d < best.d) best = { sc, i, d }; });
+    if (!best) return false;
+    const { sc, i } = best as { sc: SectionResult; i: number };
+    const [ua, va] = planeAxes(sc.axis);
+    const th = thickness[i];
+    clearHighlight();
+    if (!th) { setSelection(`<strong>Cut face</strong><span>${thickBusy ? 'Measuring the walls…' : 'Wall thickness is not available for this cut'}</span>`); return true; }
+    const w = thicknessAt(th, [local.getComponent(ua), local.getComponent(va)]);
+    if (!w) { setSelection('<strong>Cut face</strong><span>No wall circle covers this point (a sharp corner).</span>'); return true; }
+    const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(circlePts(sc, w.c as [number, number], w.r)),
+      new THREE.LineBasicMaterial({ color: 0x0ea5e9, depthTest: false }));
+    ring.renderOrder = 997;
+    ring.userData.pickRing = true;
+    for (const ch of [...thickGroup.children]) if (ch.userData.pickRing) removeAndDispose(thickGroup, ch as Obj3);
+    thickGroup.add(ring);
+    const at = (u: number, v: number) => { const o = [0, 0, 0]; o[ua] = u + modelOrigin[ua]; o[va] = v + modelOrigin[va]; o[sc.axis] = modelAt(sc); return `(${o.map(x => x.toFixed(1)).join(', ')})`; };
+    setSelection(`<strong>Wall here ≈ ${(2 * w.r).toFixed(2)} mm</strong><span>Largest circle inside the cut that covers this point — tangent at ${at(w.p[0], w.p[1])}, touching ${at(w.q[0], w.q[1])} mm</span>${w.wall ? '' : '<span class="cv3d-muted">A corner, not a wall between two opposite faces.</span>'}`);
+    invalidate();
+    return true;
+  }
+  /** Glide to the thinnest wall of a section. */
+  function showThinnest(i: number): void {
+    const sc = sections[i], th = thickness[i];
+    if (!sc || !th?.min) return;
+    const mid = partToWorld(onPlane(sc, (th.min.p[0] + th.min.q[0]) / 2, (th.min.p[1] + th.min.q[1]) / 2, false));
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    const d = Math.max(th.min.t * 8, partRadius * 0.6);
+    animateCamera(mid.clone().addScaledVector(dir, d), mid, 480);
   }
   const fmtArea = (mm2: number) => `${mm2.toLocaleString(undefined, { maximumFractionDigits: mm2 < 100 ? 2 : 1 })} mm²`;
   /** Model coordinate of a plane (the file's own coordinates, as the CAD system shows them). */
@@ -1127,6 +1251,30 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         : `${(planeAt(a) + modelOrigin[AXIS_INDEX[a]]).toFixed(2)} mm`;
     }
   }
+  /** The section's wall readings for the inspector. */
+  function wallBlock(sc: SectionResult, i: number): string {
+    const th = thickness[i];
+    if (!th) return `<p class="cv3d-muted cv3d-wall-wait">${thickBusy ? 'Measuring wall thickness…' : ''}</p>`;
+    const [ua, va] = planeAxes(sc.axis);
+    const AX = 'XYZ';
+    const walls = th.samples.filter(w => w.wall);
+    let hist = '';
+    if (walls.length > 4 && th.min && th.max) {
+      const vals = walls.map(w => 2 * w.r), wts = walls.map(w => w.weight);
+      const lo = th.min.t, hi = Math.max(...vals);
+      const bins = histogram(vals, lo, hi, 16, wts);
+      hist = `${histogramSvg(bins, k => thicknessColor(k))}<div class="cv3d-axis"><span>${fmtNum(lo, 2)} mm</span><span>${fmtNum(hi, 1)} mm</span></div>`;
+    }
+    const where = th.min ? `${AX[ua]} ${fmtNum((th.min.p[0] + th.min.q[0]) / 2 + modelOrigin[ua], 1)}, ${AX[va]} ${fmtNum((th.min.p[1] + th.min.q[1]) / 2 + modelOrigin[va], 1)}` : '';
+    return `<div class="cv3d-wallblock">
+      <dl class="cv3d-kv">
+        <dt>Min wall</dt><dd>${th.min ? `<strong>${fmtNum(th.min.t, 2)} mm</strong> <span class="cv3d-muted">at ${where}</span>` : '—'}</dd>
+        <dt>Median wall</dt><dd>${th.median != null ? `${fmtNum(th.median, 2)} mm` : '—'}</dd>
+        <dt>Thickest</dt><dd>${th.max ? `⌀ ${fmtNum(th.max.d, 1)} mm inscribed` : '—'}</dd>
+      </dl>${hist}
+      ${th.min ? `<button type="button" class="cv3d-linkbtn" data-sec-thin="${i}">Show the thinnest wall</button>` : ''}
+    </div>`;
+  }
   function sectionLabel(sec: SectionResult): string {
     return `▭ Section ${'XYZ'[sec.axis]} = ${modelAt(sec).toFixed(2)} mm — ${fmtArea(sec.areaMm2)} (perimeter ${sec.perimeterMm.toFixed(1)} mm)`;
   }
@@ -1134,7 +1282,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const sec = sections[i];
     if (!sec) return;
     const p = [0, 0, 0] as [number, number, number]; p[sec.axis] = modelAt(sec);
-    measurements.push({ record: { kind: 'section', label: sectionLabel(sec), value: sec.areaMm2, points: [p] }, objects: [] });
+    const th = thickness[i];
+    const label = sectionLabel(sec) + (th?.min ? `, min wall ${th.min.t.toFixed(2)} mm` : '');
+    measurements.push({ record: { kind: 'section', label, value: sec.areaMm2, points: [p] }, objects: [] });
     measurementsChanged();
     statusHint.textContent = 'Section area added to measurements';
   }
@@ -1996,6 +2146,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (d) { setView(d); statusHint.textContent = `${viewName(d)} view`; return; }
     }
     if (!wasClick || !bodyMeshes.length) return;
+    if (tool === 'select' && sections.length && pickSectionWall(ev)) return;
     const hits = raycastMeshes(ev);
     if (!hits.length) { if (tool === 'select') clearHighlight(); return; }
     const hit = hits[0];
@@ -2453,11 +2604,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
             <dt>Extent</dt><dd>${b ? `${AX[ua]} ${fmtNum(b.uMax - b.uMin, 1)} × ${AX[va]} ${fmtNum(b.vMax - b.vMin, 1)} mm` : '—'}</dd>
             <dt>Regions</dt><dd>${sc.regions}${sc.holes ? ` · ${sc.holes} hole${sc.holes > 1 ? 's' : ''}` : ''}</dd>
           </dl>
+          ${wallBlock(sc, i)}
           <div class="cv3d-secbtns"><button type="button" class="cv3d-linkbtn" data-sec-add="${i}">Add to measurements</button><button type="button" class="cv3d-linkbtn" data-sec-dxf="${i}">Profile DXF</button></div>`
           : `<p class="cv3d-muted">${sc.openChains ? `The cut does not close (${sc.openChains} open edge chain${sc.openChains > 1 ? 's' : ''}) — the mesh is not a closed solid here, so no area.` : 'The plane does not cut the part here.'}</p>`}
           ${sc.loops.length && sc.openChains ? `<p class="cv3d-note">${sc.openChains} open chain${sc.openChains > 1 ? 's' : ''} left out of the area — a gap in the mesh.</p>` : ''}
         </div>`;
-      }).join('') + `<p class="cv3d-note">Measured on the tessellated surface: curved edges are chords, so a round boundary reads a fraction of a percent small (a solid round low, a section with bores slightly high). Checked against the CAD kernel's exact section: within 0.1 % on real parts. Positions are the file's own coordinates.</p>`, `${sections.length}`));
+      }).join('') + `<p class="cv3d-note">Measured on the tessellated surface: curved edges are chords, so a round boundary reads a fraction of a percent small (a solid round low, a section with bores slightly high). Checked against the CAD kernel's exact section: within 0.1 % on real parts. Wall = the largest circle inside the cut tangent to the outline (rolling ball); a corner, where the circle is stopped by the next edge, is not counted as a wall. Click the cut face for the wall at that point. Positions are the file's own coordinates.</p>`, `${sections.length}`));
     }
     // Wall thickness
     if (thicknessRange && meta) {
@@ -2530,6 +2682,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     if (t.closest('[data-csv]')) { exportCSV(); return; }
     const secAdd = t.closest<HTMLElement>('[data-sec-add]');
     if (secAdd) { addSectionMeasurement(Number(secAdd.dataset.secAdd)); return; }
+    const secThin = t.closest<HTMLElement>('[data-sec-thin]');
+    if (secThin) { showThinnest(Number(secThin.dataset.secThin)); return; }
     const secDxf = t.closest<HTMLElement>('[data-sec-dxf]');
     if (secDxf) { downloadSectionDxf(Number(secDxf.dataset.secDxf)); return; }
     const modeBtn = t.closest<HTMLElement>('[data-insp-mode]');
@@ -2850,6 +3004,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       clearTimeout(hintTimer);
       clearTimeout(tipTimer);
       if (sectionRaf) cancelAnimationFrame(sectionRaf);
+      clearTimeout(thickTimer);
+      thickWorker?.terminate(); thickWorker = null;
       hatchTex?.dispose();
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointerup', onPointerUp);

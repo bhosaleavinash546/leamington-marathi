@@ -463,3 +463,5 @@ html:not([data-theme="light"]) .cv3d-tip { background: #e6ebf2; color: #0b0e12; 
 .cv3d-clip-flip[aria-pressed="true"] { background: var(--v-accent-soft); color: var(--v-accent); border-color: color-mix(in srgb, var(--v-accent) 45%, transparent); }
 /* the toast moves below a top panel (section, explode, rotate, move) instead of covering it */
 .cv3d-viewport:has(.cv3d-float:not([style*="none"])) .cv3d-hint { top: 168px; }
+.cv3d-wallblock { margin: 4px 0 10px; padding-top: 8px; border-top: 1px dashed var(--v-border); }
+.cv3d-wall-wait { margin: 4px 0 8px; font-size: 11.5px; }
