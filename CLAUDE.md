@@ -603,7 +603,8 @@ what is true** — nothing here has been compared with a price JLR paid.
     never a percentage the server did not report.
 - Motion (review, Oct 2026): ONE system — `src/ui/animations.ts` (GSAP: fades ≤ 8 px, 150–260 ms, power2 out / in,
   no scale, no back / elastic, one count-up) + CSS. The `motion` package is gone; never add a second animation library or
-  a mousemove effect. Hover = colour / shadow (buttons) or a 2 px lift (cards) — the policy block at the end of
+  a mousemove effect. Hover = colour / shadow (buttons) or a 2 px lift (cards); commodity picker tiles rise 4 px, take the accent border
+  and FILL their icon tile with the accent (one look for every commodity) — the policy blocks at the end of
   `saas-polish.css`; overlays enter AND exit via `display … allow-discrete` + `@starting-style`; no `transition: all`.
   Toasts are `src/ui/toast.ts` only (main.ts's `showToast` delegates). `tests/motion-system.test.ts`, `e2e/motion-live.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was

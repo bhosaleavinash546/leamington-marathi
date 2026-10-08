@@ -429,3 +429,44 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile-sub   { font-size: 0.76
 .cv-switch-label      { font-size: 0.94rem; }                                       /* switcher, was 13.4 px */
 .cv-switch-hint       { font-size: 0.8rem; }                                        /* was 11.5 px */
 .hs-chip              { font-size: 0.88rem; }
+
+/* ── Commodity picker hover: one confident, consistent signal (Oct 2026) ──────────────────────────────────────────────
+   Calmer than the old grow + spring + 3-D tilt, more presence than a bare 2 px lift: the tile rises 4 px on a deeper
+   shadow, its border takes the accent, and its icon tile FILLS with the accent (icon in the on-accent ink). Every
+   commodity looks the same — the old per-commodity glow (orange border on Castings next to a blue icon) and the 22 %
+   icon zoom are retired. Keyboard focus gets the same look. */
+#commodity-picker-view .cpicker-tile {
+  transition:
+    transform var(--dur-hover, 200ms) var(--ease-decel, ease-out),
+    box-shadow var(--dur-hover, 200ms) var(--ease-std, ease),
+    border-color var(--dur-hover, 200ms) var(--ease-std, ease) !important;
+}
+#commodity-picker-view .cpicker-tile:hover,
+#commodity-picker-view .cpicker-tile:focus-visible {
+  transform: translateY(-4px) !important;
+  border-color: var(--accent) !important;
+  box-shadow:
+    0 14px 32px color-mix(in srgb, var(--text-primary) 14%, transparent),
+    0 0 0 1px var(--accent) !important;
+}
+#commodity-picker-view .cpicker-tile-icon {
+  transition: background-color var(--dur-hover, 200ms) var(--ease-std, ease), color var(--dur-hover, 200ms) var(--ease-std, ease);
+}
+#commodity-picker-view .cpicker-tile-icon svg,
+#commodity-picker-view .cpicker-tile-icon svg * { transition: stroke var(--dur-hover, 200ms) var(--ease-std, ease), fill var(--dur-hover, 200ms) var(--ease-std, ease); }
+#commodity-picker-view .cpicker-tile:hover .cpicker-tile-icon,
+#commodity-picker-view .cpicker-tile:focus-visible .cpicker-tile-icon { background: var(--accent); }
+#commodity-picker-view .cpicker-tile:hover .cpicker-tile-icon svg,
+#commodity-picker-view .cpicker-tile:hover .cpicker-tile-icon svg *,
+#commodity-picker-view .cpicker-tile:focus-visible .cpicker-tile-icon svg,
+#commodity-picker-view .cpicker-tile:focus-visible .cpicker-tile-icon svg * { stroke: var(--on-accent, #fff); }
+#commodity-picker-view .cpicker-tile:hover .cpicker-tile-icon svg [fill]:not([fill="none"]),
+#commodity-picker-view .cpicker-tile:focus-visible .cpicker-tile-icon svg [fill]:not([fill="none"]) { fill: var(--on-accent, #fff); }
+#commodity-picker-view .cpicker-tile:hover .cpicker-tile-icon svg { transform: none; filter: none; }
+/* The compact picker rail beside a costing: the same signal, a smaller rise. */
+body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: translateY(-2px) !important; }
+/* Home-page commodity chips carry data-commodity too and caught the per-commodity glow. */
+.hs-chip[data-commodity]:hover { box-shadow: none !important; border-color: var(--accent) !important; color: var(--text-primary); }
+@media (prefers-reduced-motion: reduce) {
+  #commodity-picker-view .cpicker-tile:hover, #commodity-picker-view .cpicker-tile:focus-visible { transform: none !important; }
+}
