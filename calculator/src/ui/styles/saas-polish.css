@@ -470,3 +470,52 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 @media (prefers-reduced-motion: reduce) {
   #commodity-picker-view .cpicker-tile:hover, #commodity-picker-view .cpicker-tile:focus-visible { transform: none !important; }
 }
+
+/* ── Dashboard "Cost a part" tiles: colour at rest, the picker's hover (user request, Oct 2026) ────────────────────────
+   At rest the tiles were flat white / flat grey and read as blank. Now: a soft accent glow from the top-left corner and
+   an icon chip in a gentle accent → cyan gradient (green → teal in the dark theme, from the same tokens). On hover they
+   behave exactly like the commodity picker: a 4 px rise, accent border + ring, a deeper shadow, the glow strengthens and
+   the icon chip FILLS with the full gradient. The featured gradient tile (--primary) keeps its own look. */
+:root { --tile-grad-a: var(--accent); --tile-grad-b: color-mix(in srgb, var(--accent) 55%, #06b6d4); }
+#home-view .dash-tiles-grid .dash-tile:not(.dash-tile--primary) {
+  background:
+    radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tile-grad-a) 11%, transparent) 0%, transparent 62%),
+    radial-gradient(90% 70% at 100% 100%, color-mix(in srgb, var(--tile-grad-b) 7%, transparent) 0%, transparent 60%),
+    var(--surface) !important;
+  border-color: color-mix(in srgb, var(--accent) 16%, var(--border)) !important;
+  transition:
+    transform var(--dur-hover, 200ms) var(--ease-decel, ease-out),
+    box-shadow var(--dur-hover, 200ms) var(--ease-std, ease),
+    border-color var(--dur-hover, 200ms) var(--ease-std, ease),
+    background var(--dur-hover, 200ms) var(--ease-std, ease) !important;
+}
+#home-view .dash-tiles-grid .dash-tile:not(.dash-tile--primary) .tile-icon {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--tile-grad-a) 20%, transparent),
+    color-mix(in srgb, var(--tile-grad-b) 16%, transparent)) !important;
+  transform: none !important;
+  transition: background var(--dur-hover, 200ms) var(--ease-std, ease), color var(--dur-hover, 200ms) var(--ease-std, ease) !important;
+}
+#home-view .dash-tiles-grid .dash-tile:not(.dash-tile--primary):hover,
+#home-view .dash-tiles-grid .dash-tile:not(.dash-tile--primary):focus-visible {
+  transform: translateY(-4px) !important;
+  border-color: var(--accent) !important;
+  background:
+    radial-gradient(130% 100% at 0% 0%, color-mix(in srgb, var(--tile-grad-a) 18%, transparent) 0%, transparent 64%),
+    radial-gradient(100% 80% at 100% 100%, color-mix(in srgb, var(--tile-grad-b) 12%, transparent) 0%, transparent 62%),
+    var(--surface) !important;
+  box-shadow:
+    0 14px 32px color-mix(in srgb, var(--text-primary) 14%, transparent),
+    0 0 0 1px var(--accent) !important;
+}
+#home-view .dash-tiles-grid .dash-tile:not(.dash-tile--primary):hover .tile-icon,
+#home-view .dash-tiles-grid .dash-tile:not(.dash-tile--primary):focus-visible .tile-icon {
+  background: linear-gradient(135deg, var(--tile-grad-a), var(--tile-grad-b)) !important;
+  color: var(--on-accent, #fff) !important;
+}
+/* The picker's icon fill uses the same gradient, so both places match. */
+#commodity-picker-view .cpicker-tile:hover .cpicker-tile-icon,
+#commodity-picker-view .cpicker-tile:focus-visible .cpicker-tile-icon { background: linear-gradient(135deg, var(--tile-grad-a), var(--tile-grad-b)); }
+@media (prefers-reduced-motion: reduce) {
+  #home-view .dash-tiles-grid .dash-tile:hover, #home-view .dash-tiles-grid .dash-tile:focus-visible { transform: none !important; }
+}

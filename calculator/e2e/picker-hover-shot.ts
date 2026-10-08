@@ -1,6 +1,7 @@
 /**
- * The commodity picker's hover, photographed: a real server + browser, the pointer on one tile, light and dark.
- *   npm run build && CV_OUT=<dir> CV_LABEL=before npx tsx e2e/picker-hover-shot.ts
+ * The commodity tiles' hover, photographed: a real server + browser, the pointer on one tile, light and dark.
+ * CV_TARGET=picker (default) — the New Costing picker; CV_TARGET=dash — the dashboard's "Cost a part" tiles.
+ *   npm run build && CV_OUT=<dir> CV_LABEL=before [CV_TARGET=dash] npx tsx e2e/picker-hover-shot.ts
  */
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -14,6 +15,7 @@ import jwt from 'jsonwebtoken';
 const ROOT = resolve('.');
 const OUT = process.env.CV_OUT ?? tmpdir();
 const LABEL = process.env.CV_LABEL ?? 'now';
+const TARGET = process.env.CV_TARGET === 'dash' ? 'dash' : 'picker';
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
 
 async function main(): Promise<void> {
@@ -38,14 +40,25 @@ async function main(): Promise<void> {
       await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
       await page.waitForSelector('html[data-country-ready="1"]', { timeout: 60_000 });
       await page.evaluate(th => document.documentElement.setAttribute('data-theme', th), theme);
-      await page.click('#new-costing-btn');
-      const tile = page.locator('#commodity-picker-view .cpicker-tile[data-commodity="casting"]:visible').first();
+      let grid: string, tileSel: string;
+      if (TARGET === 'dash') {
+        // A returning user's dashboard (mode "power"), as an engineer with costing history sees it.
+        await page.click('#analytics-btn');
+        await page.waitForTimeout(400);
+        await page.evaluate(() => { const h = document.getElementById('home-view'); if (h) h.dataset.mode = 'power'; });
+        grid = '#home-view .dash-tiles-grid'; tileSel = '#tile-machining';
+      } else {
+        await page.click('#new-costing-btn');
+        grid = '#commodity-picker-view .cpicker-grid'; tileSel = '#commodity-picker-view .cpicker-tile[data-commodity="casting"]:visible';
+      }
+      const tile = page.locator(tileSel).first();
       await tile.waitFor();
+      await tile.scrollIntoViewIfNeeded();
       await page.waitForTimeout(600);
       await tile.hover();
       await page.waitForTimeout(500);
-      const box = (await page.locator('#commodity-picker-view .cpicker-grid').first().boundingBox())!;
-      await page.screenshot({ path: join(OUT, `${LABEL}-hover-${theme}.png`), clip: { x: box.x - 8, y: box.y - 8, width: box.width + 16, height: 330 } });
+      const box = (await page.locator(grid).first().boundingBox())!;
+      await page.screenshot({ path: join(OUT, `${LABEL}-${TARGET}-hover-${theme}.png`), clip: { x: box.x - 8, y: box.y - 8, width: box.width + 16, height: Math.min(box.height + 16, 340) } });
     }
   } finally {
     await browser?.close();
