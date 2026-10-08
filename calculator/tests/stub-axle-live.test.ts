@@ -104,12 +104,15 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     expect(m.operations.some(o => /\(\d+ faces\)/.test(o.name))).toBe(false);
   });
 
-  it('the casting carries the turning stock: 7.364 kg + drilled + faced + 67.7 cm³ on the spindle = 9.04 kg', () => {
+  it('the casting carries the turning stock: 7.364 kg + drilled + faced + 67.7 cm³ on the spindle = 9.08 kg', () => {
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctx(ALL));
     const c = r.suggestions.casting as Record<string, number>;
     // The mass is the costed iron's: 1037.113 cm³ × 7100 kg/m³ (EN-GJS-500-7), not the family's 7150.
     expect(c.netWeightKg).toBeCloseTo(7.364, 3);
-    expect(c.castPartWeightKg).toBeCloseTo(7.364 + (35.3 + 132.6 + 67.7) * 0.0071, 2);
+    // Drilled 38.9 cm³ / stock 135.7 cm³ since the kernel's cylinder identity (Oct 2026): the two Ø8.5 × 31.3 split-half
+    // holes (+3.55 cm³) and the Ø31 bore were invisible before — 35.3 / 132.6 then.
+    expect(c.castPartWeightKg).toBeCloseTo(7.364 + (38.9 + 135.7 + 67.7) * 0.0071, 2);
+    expect(r.provenance['cam-cast-wt'].basis).toMatch(/38\.9 cm³ of 12 hole\(s\) ≤ 20 mm drilled/);
     expect(r.provenance['cam-cast-wt'].basis).toMatch(/67\.7 cm³ turning stock on the 226 cm² spindle/);
   });
 

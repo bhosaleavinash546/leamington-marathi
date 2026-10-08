@@ -45,98 +45,200 @@ _set_alarm(max(30, int(os.environ.get("CV_TESS_TIMEOUT_MS", "300000")) // 1000 -
 
 # ─── Surface / edge type classification ──────────────────────────────────────
 
-def _extract_feature_table(wrapped, extents):
-    """Exact hole/boss feature table from B-rep cylindrical faces.
+def _cylinder_features(wrapped, face_map, diag):
+    """Physical cylindrical features — ONE recognition for the costing feature table and geometric DFM.
 
-    Per cylinder face: diameter (exact kernel radius ×2), DEPTH from the
-    cylinder's V-parameter span (V is arc length along the axis — exact),
-    hole-vs-boss from concavity (face orientation XOR axis handedness), and
-    through/blind by comparing depth to the bbox extent projected onto the
-    axis. Faces split by booleans (half-cylinders) share the same underlying
-    axis, so instances are deduped by (axis point, direction) before counting.
-    Returns rows grouped by (kind, diameter, depth, through) with counts.
+    Identity: the axis LINE (its foot point nearest the origin + a sign-normalised direction), the radius and
+    the concavity. Faces on one line whose axial ranges overlap are one feature: split halves of a drilled hole
+    re-join even when they end at different heights (a hole exiting a sloped face; Parasolid / SolidWorks export
+    a bore as two 180° faces). Keying on the raw axis location and v-range lost such holes and read them as two
+    R4 "corners".
+
+    Full (a hole / a boss) = angular coverage ≥ 0.83 of a turn (the faces' summed sweep) — pocket corners (~90°),
+    slot ends (~180°) and blends are partial cylinders. Concave = material outside (face orientation against
+    the cylinder's parametrisation).
+
+    Open ends are found with a RAY along the axis from just inside each end out to the part's extent: any
+    material on it — a drill-point cone, a pocket floor, a wall — closes that end. One point 0.5 mm past the end
+    (the old probe) landed in air beyond a 118° drill point and called every pointed blind hole "through", and
+    called floor fillets open at both ends.
     """
-    from OCP.TopExp import TopExp_Explorer
-    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
     from OCP.TopoDS import TopoDS
+    from OCP.TopAbs import TopAbs_Orientation
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_SurfaceType
-    from OCP.BRepClass3d import BRepClass3d_SolidClassifier
-    from OCP.TopAbs import TopAbs_State
-    from OCP.gp import gp_Pnt
-    hole_probe_ok = lambda ends: len(ends) == 2
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+    from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+    from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
 
-    feats = {}   # physical-feature ident -> summed arc span + attributes
-    # Face ids: the 1-based TopTools_IndexedMapOfShape index — the SAME id the
-    # tessellation sidecar puts in `triFace`, so a costed feature can light up
-    # its faces in the viewer with no translation table in between.
-    from OCP.TopTools import TopTools_IndexedMapOfShape
-    from OCP.TopExp import TopExp
-    face_map = TopTools_IndexedMapOfShape()
-    TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
-    for map_idx in range(1, face_map.Extent() + 1):
-        face = TopoDS.Face_s(face_map.FindKey(map_idx))
+    faces = []
+    props = GProp_GProps()
+    for idx in range(1, face_map.Extent() + 1):
         try:
+            face = TopoDS.Face_s(face_map.FindKey(idx))
             ad = BRepAdaptor_Surface(face)
             if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
                 continue
             cyl = ad.Cylinder()
             r = cyl.Radius()
-            depth = abs(ad.LastVParameter() - ad.FirstVParameter())
-            if depth <= 0.01 or not math.isfinite(depth):
+            v0, v1 = sorted((ad.FirstVParameter(), ad.LastVParameter()))
+            if r <= 1e-6 or not math.isfinite(v1 - v0) or v1 - v0 <= 0.01:
                 continue
-            arc = abs(ad.LastUParameter() - ad.FirstUParameter())   # radians
-            ax = cyl.Axis()
-            d = ax.Direction()
-            p = ax.Location()
-            axis_extent = abs(d.X()) * extents[0] + abs(d.Y()) * extents[1] + abs(d.Z()) * extents[2]
-            # Through = open at BOTH ends: a point on the axis just past each end
-            # of the bore lies in air. "Spans the whole part along its axis" called
-            # every bolt hole through an 18 mm flange on a 50 mm hub blind, and
-            # billed it a bottom and a reaming pass (forging review, Oct 2026).
-            # The extent test stays as the fallback when the probe fails.
-            through = axis_extent > 0 and depth >= axis_extent - max(0.1, axis_extent * 0.02)
-            probe = (p.X(), p.Y(), p.Z(), d.X(), d.Y(), d.Z(),
-                     min(ad.FirstVParameter(), ad.LastVParameter()), max(ad.FirstVParameter(), ad.LastVParameter()))
-            reversed_param = not cyl.Position().Direct()
-            reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
-            hole = reversed_face != reversed_param
-            # identity: same axis + radius + span = same physical feature
-            ident = (round(p.X(), 2), round(p.Y(), 2), round(p.Z(), 2),
-                     round(d.X(), 3), round(d.Y(), 3), round(d.Z(), 3),
-                     round(r, 3), round(depth, 1), hole)
-            f = feats.get(ident)
-            if f is not None:
-                f["arc"] += arc          # halves of a boolean-split bore re-join here
-                f["faceIds"].append(map_idx)
-            else:
-                feats[ident] = {"kind": 'hole' if hole else 'boss', "dia": round(r * 2, 2),
-                                "depth": round(depth, 1), "through": bool(through), "arc": arc,
-                                "faceIds": [map_idx], "probe": probe}
+            ax = cyl.Axis(); dd = ax.Direction(); pl = ax.Location()
+            d = [dd.X(), dd.Y(), dd.Z()]
+            sgn = 1.0
+            for c in d:
+                if abs(c) > 1e-6:
+                    sgn = 1.0 if c > 0 else -1.0
+                    break
+            dc = [c * sgn for c in d]
+            loc = [pl.X(), pl.Y(), pl.Z()]
+            t0 = loc[0] * dc[0] + loc[1] * dc[1] + loc[2] * dc[2]
+            foot = [loc[k] - t0 * dc[k] for k in range(3)]
+            s_a, s_b = sorted((t0 + v0 * sgn, t0 + v1 * sgn))
+            BRepGProp.SurfaceProperties_s(face, props)
+            concave = (face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED) != (not cyl.Position().Direct())
+            arc = abs(ad.LastUParameter() - ad.FirstUParameter())   # the angle this face sweeps, radians
+            faces.append({"id": idx, "r": r, "dc": dc, "foot": foot, "s": (s_a, s_b), "arc": arc,
+                          "area": abs(props.Mass()), "concave": bool(concave)})
         except Exception:
             continue
 
+    by_line = {}
+    for f in faces:
+        key = (round(f["foot"][0], 2), round(f["foot"][1], 2), round(f["foot"][2], 2),
+               round(f["dc"][0], 3), round(f["dc"][1], 3), round(f["dc"][2], 3), round(f["r"], 3), f["concave"])
+        by_line.setdefault(key, []).append(f)
+
+    inter = None
+    try:
+        inter = IntCurvesFace_ShapeIntersector()
+        inter.Load(wrapped, 1e-4)
+    except Exception:
+        inter = None
+
+    def _open(pt, direction, r):
+        """Is the axis clear from pt outward to the part's extent? None if the probe could not run."""
+        if inter is None:
+            return None
+        try:
+            back = min(0.05, r * 0.05)
+            start = gp_Pnt(pt[0] - direction[0] * back, pt[1] - direction[1] * back, pt[2] - direction[2] * back)
+            inter.PerformNearest(gp_Lin(start, gp_Dir(*direction)), 0.0, diag * 1.05 + back)
+            return not (inter.IsDone() and inter.NbPnt() > 0)
+        except Exception:
+            return None
+
+    from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+    from OCP.TopAbs import TopAbs_State
+
+    def _air(pt):
+        try:
+            return BRepClass3d_SolidClassifier(wrapped, gp_Pnt(*pt), 1e-6).State() == TopAbs_State.TopAbs_OUT
+        except Exception:
+            return None
+
+    out = []
+    for line_no, ((fx, fy, fz, dx, dy, dz, rr, concave), fs) in enumerate(by_line.items()):
+        fs.sort(key=lambda f: f["s"][0])
+        clusters = []
+        for f in fs:
+            if clusters and f["s"][0] <= clusters[-1]["s1"] + 0.05:
+                c = clusters[-1]
+                c["faces"].append(f)
+                c["s1"] = max(c["s1"], f["s"][1])
+            else:
+                clusters.append({"faces": [f], "s0": f["s"][0], "s1": f["s"][1]})
+        for c in clusters:
+            r = c["faces"][0]["r"]
+            dc = c["faces"][0]["dc"]
+            foot = c["faces"][0]["foot"]
+            span = c["s1"] - c["s0"]
+            area = sum(f["area"] for f in c["faces"])
+            # Angular coverage from each face's own sweep, NOT from area: a bore with a window or a cross-hole
+            # through its wall keeps its 360° but loses area (an area test dropped the knuckle's Ø75 bore and
+            # Part1's Ø22 / Ø50). Faces stacked along the axis each sweep a full turn, so the sum is capped at
+            # one turn per the cluster's angular layers: split halves add to 360°, interrupted segments ≥ 360°.
+            coverage = min(sum(f["arc"] for f in c["faces"]) / (2 * math.pi), 2.0)
+            p0 = [foot[k] + dc[k] * c["s0"] for k in range(3)]
+            p1 = [foot[k] + dc[k] * c["s1"] for k in range(3)]
+            # ACCESS (a tool can come in along the axis from outside): the ray to the part's extent.
+            ends = [_open(p0, [-dc[0], -dc[1], -dc[2]], r), _open(p1, dc, r)]
+            # BREAKOUT (through / blind): air just past the end, beyond a 118° drill point (0.6R deep). A hole that
+            # breaks into a pocket is through even though its far wall blocks the ray; a pointed blind hole is not.
+            # Sampled from 0.5 mm past the end to past a possible drill point: blind if ANY sample is material
+            # (a thin flat bottom fails the first sample, a drill point the last); one far point read a thin can
+            # bottom as "through".
+            reach = 0.6 * r + 0.5
+            samples = [0.5 + (reach - 0.5) * i / 6 for i in range(7)]
+            def _breaks_out(pt, dirv):
+                st = [_air([pt[k] + dirv[k] * t for k in range(3)]) for t in samples]
+                return None if None in st else all(st)
+            brk = [_breaks_out(p0, [-dc[0], -dc[1], -dc[2]]), _breaks_out(p1, dc)]
+            out.append({"line": line_no, "s0": c["s0"], "s1": c["s1"], "breakout": brk,
+                "faceIds": sorted(f["id"] for f in c["faces"]), "concave": concave, "r": r, "dia": r * 2,
+                "axis": dc, "span": span, "area": area, "coverage": coverage, "full": coverage >= 0.83,
+                "mid": [(p0[k] + p1[k]) / 2 for k in range(3)], "ends": ends,
+                "openDirs": [[round(-c2, 5) for c2 in dc]] * (1 if ends[0] else 0) + [[round(c2, 5) for c2 in dc]] * (1 if ends[1] else 0),
+            })
+    return out
+
+
+def _extract_feature_table(wrapped, extents):
+    """Exact hole/boss feature table from B-rep cylindrical faces, for the costing.
+
+    Built on `_cylinder_features` — the same physical features the DFM sees: full cylinders only (a pocket
+    corner, slot end or blend is not a drilled hole or a turned shaft), depth = the axial span, through = both
+    ends clear along the axis (a ray to the part's extent). Rows are grouped by (kind, diameter, depth,
+    through) with counts.
+    """
+    from OCP.TopTools import TopTools_IndexedMapOfShape
+    from OCP.TopExp import TopExp
+    from OCP.TopAbs import TopAbs_FACE
+    face_map = TopTools_IndexedMapOfShape()
+    TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
+    diag = math.sqrt(sum(e * e for e in extents)) or 1.0
+    feats_all = [f for f in _cylinder_features(wrapped, face_map, diag) if f["full"]]
+    # One drill pass through collinear walls is ONE hole: segments on the same axis line with air between them
+    # (a cross hole through both walls of a hollow section) join, their cutting lengths added. The old identity
+    # joined them only when their depths happened to match, and then counted one wall's depth.
+    from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+    from OCP.TopAbs import TopAbs_State
+    from OCP.gp import gp_Pnt as _GP
+    merged = []
+    by_line = {}
+    for f in feats_all:
+        by_line.setdefault(f["line"], []).append(f)
+    for segs in by_line.values():
+        segs.sort(key=lambda f: f["s0"])
+        cur = None
+        for f in segs:
+            if cur is not None and f["concave"] and cur["concave"]:
+                gap_mid = [cur["mid"][k] + f["axis"][k] * ((cur["s1"] + f["s0"]) / 2 - (cur["s0"] + cur["s1"]) / 2) for k in range(3)]
+                try:
+                    air = BRepClass3d_SolidClassifier(wrapped, _GP(*gap_mid), 1e-6).State() == TopAbs_State.TopAbs_OUT
+                except Exception:
+                    air = False
+                if air:
+                    cur = dict(cur, span=cur["span"] + f["span"], s1=f["s1"], faceIds=cur["faceIds"] + f["faceIds"],
+                               breakout=[cur["breakout"][0], f["breakout"][1]], ends=[cur["ends"][0], f["ends"][1]])
+                    merged[-1] = cur
+                    continue
+            cur = f
+            merged.append(cur)
     instances = {}
-    for f in feats.values():
-        # Partial concave/convex arcs — pocket corner radii (~90°), slot ends
-        # (~180°), edge fillets — are NOT drillable bores or turned shafts.
-        # Require a near-full cylinder (≥ ~300° summed) to count as a feature.
-        if f["arc"] < 5.2:
-            continue
-        # Probed once per real hole (not per cylinder face — that tripled the
-        # kernel's time on a gear): is it open at both ends?
-        if f["kind"] == 'hole':
-            try:
-                px, py, pz, dx, dy, dz, v0, v1 = f["probe"]
-                ends = []
-                for v in (v0 - 0.5, v1 + 0.5):
-                    cls = BRepClass3d_SolidClassifier(wrapped, gp_Pnt(px + dx * v, py + dy * v, pz + dz * v), 1e-6)
-                    ends.append(cls.State() == TopAbs_State.TopAbs_OUT)
-                if hole_probe_ok(ends):
-                    f["through"] = all(ends)
-            except Exception:
-                pass
-        key = (f["kind"], f["dia"], f["depth"], f["through"])
+    for f in merged:
+        kind = 'hole' if f["concave"] else 'boss'
+        dia, depth = round(f["dia"], 2), round(f["span"], 1)
+        if kind == 'hole' and None not in f["breakout"]:
+            through = bool(f["breakout"][0] and f["breakout"][1])
+        else:
+            # fallback when the probe could not run: spans the part along its axis
+            d = f["axis"]
+            axis_extent = abs(d[0]) * extents[0] + abs(d[1]) * extents[1] + abs(d[2]) * extents[2]
+            through = axis_extent > 0 and f["span"] >= axis_extent - max(0.1, axis_extent * 0.02)
+        key = (kind, dia, depth, bool(through))
         inst = instances.get(key)
         if inst is None:
             instances[key] = {"count": 1, "faceIds": list(f["faceIds"])}
@@ -1992,9 +2094,16 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
                 rec["radiusMm"] = round(cyl.Radius(), 4)
                 ax = cyl.Axis().Direction()
                 rec["axis"] = [round(ax.X(), 5), round(ax.Y(), 5), round(ax.Z(), 5)]
-                # Concave (material outside) = hole; convex = boss/shaft. The
-                # face orientation is what distinguishes them.
-                rec["concave"] = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+                loc = cyl.Axis().Location()
+                rec["axisPt"] = [loc.X(), loc.Y(), loc.Z()]
+                rec["axisDir"] = [ax.X(), ax.Y(), ax.Z()]
+                rec["v"] = [min(ad.FirstVParameter(), ad.LastVParameter()), max(ad.FirstVParameter(), ad.LastVParameter())]
+                rec["arc"] = abs(ad.LastUParameter() - ad.FirstUParameter())
+                # Concave (material outside — a hole, an internal corner) v convex (a boss, an external
+                # round). Face orientation ALONE is not it: a cylinder parametrised left-handed flips the
+                # sense, so it is the face orientation against the parametrisation — the same test the
+                # costing feature table and the gear metrology use. (Orientation alone mislabelled holes.)
+                rec["concave"] = (face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED) != (not cyl.Position().Direct())
                 r = cyl.Radius()
                 if r > 1e-6:
                     # Swept length from area: A = 2*pi*r*L for a full cylinder.
@@ -2042,64 +2151,50 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
     def _thk(i):
         return F.get(i, {}).get("thicknessMm")
 
-    # Fillets: a small-radius cylinder bridging two faces. Recognised BEFORE
-    # holes so a fillet is never miscounted as a tiny drilled hole.
-    fillet_r_cap = max(0.5, diag * 0.02)
-    for i, r in F.items():
-        if r.get("type") != "cylinder":
-            continue
-        rad = r.get("radiusMm", 0)
-        nb = [j for j in adj.get(i, ()) if F.get(j, {}).get("type") == "plane"]
-        if 0 < rad <= fillet_r_cap and len(nb) >= 2 and not r.get("concave", False):
-            used_cyl.add(i)
-            feats.append({
-                "id": f"FIL{i}", "kind": "fillet", "faceIds": [i],
-                "radiusMm": rad, "areaMm2": r["areaMm2"], "positionMm": r["centroid"],
-                "adjacentFaceIds": nb[:6],
-            })
-
-    # Holes and bosses: group cylinders sharing an axis direction and radius.
-    axis_groups = {}
-    for i, r in F.items():
-        if r.get("type") != "cylinder" or i in used_cyl:
-            continue
-        ax = r.get("axis")
-        if not ax:
-            continue
-        key = (round(abs(ax[0]), 2), round(abs(ax[1]), 2), round(abs(ax[2]), 2),
-               round(r.get("radiusMm", 0), 2), bool(r.get("concave")))
-        axis_groups.setdefault(key, []).append(i)
-
-    for key, ids in axis_groups.items():
-        rad = key[3]
-        concave = key[4]
-        if rad <= 0:
-            continue
-        depth = sum(F[i].get("sweptLenMm", 0) or 0 for i in ids)
-        area = sum(F[i]["areaMm2"] for i in ids)
-        cen = F[ids[0]]["centroid"]
-        dia = round(rad * 2, 3)
-        # Local wall around the feature, from the adjacent planar faces — this
-        # is what the boss-to-wall and hole-to-wall rules need.
-        nbt = [t for j in ids for k in adj.get(j, ()) if (t := _thk(k)) is not None]
-        rec = {
-            "id": ("H" if concave else "B") + str(ids[0]),
-            "kind": "hole" if concave else "boss",
-            "faceIds": sorted(ids),
-            "diaMm": dia,
-            "depthMm": round(depth, 3),
-            "areaMm2": round(area, 3),
-            "positionMm": cen,
-            "axis": F[ids[0]].get("axis"),
-        }
-        if dia > 0:
-            rec["ldRatio"] = round(depth / dia, 3)
-        if nbt:
-            rec["neighbourWallMm"] = round(min(nbt), 3)
-            if concave is False and min(nbt) > 0:
-                # Boss wall ratio drives sink marks on mouldings.
-                rec["bossToWallRatio"] = round(dia / min(nbt), 3)
-        feats.append(rec)
+    # Cylinders → physical features: the SAME recognition the costing feature table uses (_cylinder_features).
+    # ≥ ~300° of a turn is a hole or a boss; less is a partial cylinder — concave: an internal corner radius
+    # (the end mill's radius), convex: an external round.
+    for g in _cylinder_features(wrapped, face_map, diag):
+        ids = g["faceIds"]
+        if g["full"]:
+            dia = round(g["dia"], 3)
+            rec = {
+                "id": ("H" if g["concave"] else "B") + str(ids[0]),
+                "kind": "hole" if g["concave"] else "boss",
+                "faceIds": ids, "diaMm": dia, "depthMm": round(g["span"], 3), "areaMm2": round(g["area"], 3),
+                "positionMm": [round(c, 3) for c in g["mid"]], "axis": [round(c, 5) for c in g["axis"]],
+            }
+            if dia > 0:
+                rec["ldRatio"] = round(g["span"] / dia, 3)
+            if g["concave"] and None not in g["breakout"]:
+                # openEnds: through (2) / blind (1) — breakout. openDirs: where a tool can come in — access.
+                rec["openEnds"] = int(bool(g["breakout"][0])) + int(bool(g["breakout"][1]))
+            if g["concave"] and None not in g["ends"]:
+                rec["openDirs"] = g["openDirs"]
+            nbt = [t for j in ids for k in adj.get(j, ()) if (t := _thk(k)) is not None]
+            if nbt:
+                rec["neighbourWallMm"] = round(min(nbt), 3)
+                if not g["concave"] and min(nbt) > 0:
+                    # Boss wall ratio drives sink marks on mouldings.
+                    rec["bossToWallRatio"] = round(dia / min(nbt), 3)
+            feats.append(rec)
+        else:
+            nb = [j for k in ids for j in adj.get(k, ()) if F.get(j, {}).get("type") == "plane"]
+            rec = {
+                "id": f"FIL{ids[0]}", "kind": "fillet", "faceIds": ids, "radiusMm": round(g["r"], 4),
+                "depthMm": round(g["span"], 3), "areaMm2": round(g["area"], 3),
+                "positionMm": [round(c, 3) for c in g["mid"]], "axis": [round(c, 5) for c in g["axis"]],
+                "concave": g["concave"], "sweepDeg": round(min(g["coverage"], 1.0) * 360.0, 1),
+                "adjacentFaceIds": sorted(set(nb))[:6],
+            }
+            # An internal corner an end mill cuts along its axis: clear along the axis at one end. The cutter is
+            # at most Ø2R and cuts the corner's full height — `toolReachMm` is that height (the cavity depth the
+            # corner-radius guidance is written against). A blend closed at both ends (a floor fillet between
+            # walls) is side-milled with a bull-nose: no reach, and no cutter-radius rule applies to it.
+            if g["concave"] and any(g["ends"]):
+                rec["toolReachMm"] = round(g["span"], 3)
+                rec["openDirs"] = g["openDirs"]
+            feats.append(rec)
 
     # Walls / ribs / planar faces, each carrying measured local thickness and
     # draft, plus the worst section-change across any adjacent face.
@@ -2111,6 +2206,8 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
             "id": f"P{i}", "kind": "planar_face", "faceIds": [i],
             "areaMm2": r["areaMm2"], "positionMm": r["centroid"],
         }
+        if r.get("normal"):
+            rec["axis"] = r["normal"]   # the face's material-outward normal
         if t is not None:
             rec["thicknessMm"] = t
         # Carry the class even when draft is not applicable, so a rule can tell

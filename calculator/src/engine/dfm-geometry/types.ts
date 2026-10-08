@@ -124,6 +124,32 @@ export interface GeometricRule {
   evaluate(feature: ManufacturingFeature, part: PartContext): GeometricFinding | null;
 }
 
+/**
+ * Is a single-ray thickness reading a WALL? A ray from a face can cross a cavity to the far side of the part
+ * (the ECU cover's "rib" read 168 mm against a 1.5 mm wall — 112×) or graze a sliver at a fillet (a casting
+ * "section" read 0.2 mm beside 27.8 mm — 163:1). Neither is a wall, and reporting them buried the real
+ * findings. A reading counts between max(0.3 mm, 0.2× the part's median wall) and 5× the median. No median
+ * measured → no judgement possible → treated as not plausible (measured or silent).
+ */
+export const WALL_PLAUSIBLE_MIN_MM = 0.3;
+export const WALL_PLAUSIBLE_LO = 0.2;
+export const WALL_PLAUSIBLE_HI = 5;
+export function plausibleWall(t: number | undefined | null, part: PartContext): boolean {
+  const med = part.featureSet.medianThicknessMm;
+  if (t === undefined || t === null || !(t > 0) || !med || !(med > 0)) return false;
+  return t >= Math.max(WALL_PLAUSIBLE_MIN_MM, WALL_PLAUSIBLE_LO * med) && t <= WALL_PLAUSIBLE_HI * med;
+}
+
+/**
+ * A fillet that is a BLEND between faces — not a slot end, a half-hole or a large curved panel. Since the
+ * kernel reports every partial cylinder as `fillet` (Oct 2026), corner rules must ask for this: a blend sweeps
+ * at most ~120° (a 90° corner sweeps 90°); a slot end sweeps 180°.
+ */
+export const BLEND_MAX_SWEEP_DEG = 120;
+export function isBlend(f: ManufacturingFeature): boolean {
+  return f.kind === 'fillet' && (f.sweepDeg === undefined || f.sweepDeg <= BLEND_MAX_SWEEP_DEG);
+}
+
 /** Helper so every rule builds a finding the same way, with no field forgotten. */
 export function finding(
   rule: GeometricRule,

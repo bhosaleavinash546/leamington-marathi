@@ -15,7 +15,7 @@
  * rather than inventing failures.
  */
 import type { GeometricRule, PartContext, RuleSource } from '../types.js';
-import { finding } from '../types.js';
+import { finding, isBlend } from '../types.js';
 import {
   FORGING_PROCESS_REFERENCE, type ForgingProcess,
 } from '../../modules/forging-advisor.js';
@@ -165,7 +165,7 @@ export const FORGING_RULES: readonly GeometricRule[] = [
           + 'metal at room temperature into tighter radii, so the rule does not run for that route.',
     },
     evaluate(f, part) {
-      if (f.radiusMm === undefined) return null;
+      if (!isBlend(f) || f.radiusMm === undefined) return null; // a blend — not a slot end or a half-hole
       if (routeOf(part) === 'cold-forming') return null;
       if (f.radiusMm >= 3) return null;
       return finding(this, f, part, {

@@ -12,6 +12,7 @@ import { runGeometricRules } from './types.js';
 import { CASTING_RULES, CASTING_LIMITATIONS, castingHotSpotFindings } from './commodities/casting.js';
 import { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
 import { MACHINING_RULES, MACHINING_LIMITATIONS } from './commodities/machining.js';
+import { machiningPartLevelFindings } from './commodities/machining-access.js';
 import { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
 import { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
 import { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, blowPartLevelFindings } from './commodities/blow-moulding.js';
@@ -26,6 +27,7 @@ export type { DFAHandlingResult } from './dfa-handling.js';
 export { CASTING_RULES, CASTING_LIMITATIONS, MIN_DRAFT_DEG } from './commodities/casting.js';
 export { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
 export { MACHINING_RULES, MACHINING_LIMITATIONS, PREFERRED_DRILL_DIA_MM, STANDARD_DRILL_LD } from './commodities/machining.js';
+export { machiningPartLevelFindings, partFrame, coverDirections } from './commodities/machining-access.js';
 export { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
 export { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
 export { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, MIN_BLOWN_WALL_MM } from './commodities/blow-moulding.js';
@@ -122,6 +124,9 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   }
   if (part.commodity === 'blow_moulding') {
     findings.push(...blowPartLevelFindings(part));
+  }
+  if (part.commodity === 'machining' || part.commodity === 'cast_and_machine') {
+    findings.push(...machiningPartLevelFindings(part));
   }
   // Every pack declares what geometry can never tell it. A short finding list
   // must not be read as a clean part — this is the difference between "we

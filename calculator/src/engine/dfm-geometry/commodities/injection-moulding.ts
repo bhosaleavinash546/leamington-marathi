@@ -7,7 +7,7 @@
  * was the whole complaint.
  */
 import type { GeometricRule } from '../types.js';
-import { finding } from '../types.js';
+import { finding, plausibleWall } from '../types.js';
 
 /** Rib base thickness as a fraction of the wall it sits on, above which sink shows. */
 export const RIB_TO_WALL_MAX = 0.6;
@@ -24,6 +24,7 @@ const DFM_TEXT = {
 };
 
 export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
+  // the core-pin rule is defined below the list (it reads its own constants) and appended there
   {
     id: 'moulding.rib.thicker-than-0p6-wall',
     commodity: 'injection_moulding',
@@ -35,6 +36,7 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
       if (f.thicknessMm === undefined || f.neighbourMinThicknessMm === undefined) return null;
       const thin = f.neighbourMinThicknessMm;
       if (thin <= 0) return null;
+      if (!plausibleWall(f.thicknessMm, part) || !plausibleWall(thin, part)) return null; // walls, not envelope rays
       // Only meaningful in the thick-relative-to-neighbour direction.
       const ratio = f.thicknessMm / thin;
       if (ratio <= 1 / RIB_TO_WALL_MAX) return null;     // 1/0.6 = 1.67
@@ -128,3 +130,47 @@ export const MOULDING_LIMITATIONS: readonly string[] = [
   + 'textured face needs roughly 1° more per 0.025 mm of texture depth.',
   'Resin shrinkage and warp were not modelled; those need the material and a flow analysis.',
 ];
+
+/**
+ * Core pins for moulded holes. A blind hole's core is a cantilever in the melt stream: past ~3× its
+ * diameter (2× under Ø5) it deflects, runs hot and breaks; a through hole's core is supported at both
+ * ends and can be about twice as long.
+ */
+export const CORE_PIN_BLIND_LD = 3;
+export const CORE_PIN_BLIND_LD_SMALL = 2;
+export const CORE_PIN_SMALL_DIA_MM = 5;
+export const CORE_PIN_THROUGH_LD = 6;
+
+export const CORE_PIN_RULE: GeometricRule = {
+  id: 'moulding.hole.core-pin-slender',
+  commodity: 'injection_moulding',
+  title: 'Moulded hole deeper than its core pin should be',
+  appliesTo: ['hole'],
+  source: {
+    standard: 'Envalior (ex-DSM) design guide, "Holes"; DuPont, "General Design Principles" (Module I)',
+    url: 'https://www.envalior.com/en-us/holes',
+    note: 'Blind holes "should not exceed three times the hole diameter" (2× under Ø5 mm); through-hole cores can be '
+      + 'about twice as long. DuPont limits blind depth to about "two times the diameter of the core pin" '
+      + '(https://www.delrin.com/wp-content/uploads/2024/02/DESIGN-PRINCIPLES-1.pdf). Quoted from the search engine\'s '
+      + 'extract of the page (the page itself was not opened in this session) — verify against the live URL.',
+  },
+  evaluate(f, part) {
+    if (f.diaMm === undefined || f.diaMm <= 0 || f.ldRatio === undefined || f.openEnds === undefined) return null;
+    const blind = f.openEnds === 1;
+    if (!blind && f.openEnds !== 2) return null;
+    const limit = blind ? (f.diaMm < CORE_PIN_SMALL_DIA_MM ? CORE_PIN_BLIND_LD_SMALL : CORE_PIN_BLIND_LD) : CORE_PIN_THROUGH_LD;
+    if (f.ldRatio <= limit) return null;
+    return finding(this, f, part, {
+      severity: f.ldRatio > 2 * limit ? 'major' : 'minor',
+      detail: `${blind ? 'Blind' : 'Through'} ⌀${f.diaMm.toFixed(1)} mm hole ${f.depthMm?.toFixed(1)} mm deep — `
+        + `a core pin at ${f.ldRatio.toFixed(1)}× its diameter against ${limit}×.`,
+      measuredField: 'ldRatio', measuredValue: f.ldRatio, unit: '×D', thresholdValue: limit, comparator: '>',
+      recommendation: blind
+        ? 'Shorten the hole, open it right through (a core supported at both ends), or core it from both sides; otherwise '
+          + 'the pin deflects and runs hot — slower cycle, an off-centre hole and pin breakage.'
+        : 'Core it from both halves (two pins meeting in the middle) or open the diameter.',
+    });
+  },
+};
+
+(INJECTION_MOULDING_RULES as GeometricRule[]).push(CORE_PIN_RULE);

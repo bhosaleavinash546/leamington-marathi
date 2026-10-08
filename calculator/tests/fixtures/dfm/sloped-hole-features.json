@@ -1,0 +1,297 @@
+{
+ "source": "OCP block 100x60x40 with a sloped top; \u00d88 through hole along Z exiting the slope \u2014 its split halves end at different heights (review repro, Oct 2026)",
+ "boundingBox": {
+  "xMm": 100.0,
+  "yMm": 60.0,
+  "zMm": 40.0
+ },
+ "featureTable": [
+  {
+   "kind": "hole",
+   "diaMm": 8.0,
+   "depthMm": 36.2,
+   "through": true,
+   "count": 1,
+   "faceIds": [
+    8,
+    9
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 5950.0,
+   "faceIds": [
+    5
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 4820.0,
+   "faceIds": [
+    3
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 4000.0,
+   "faceIds": [
+    6
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 2600.0,
+   "faceIds": [
+    4
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 2,
+   "areaMm2": 2073.0,
+   "faceIds": [
+    1,
+    7
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 1333.0,
+   "faceIds": [
+    2
+   ]
+  },
+  {
+   "kind": "pocket",
+   "diaMm": 0.0,
+   "depthMm": 7.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 4820.0,
+   "faceIds": [
+    3
+   ]
+  }
+ ],
+ "manufacturingFeatures": {
+  "available": true,
+  "features": [
+   {
+    "id": "H8",
+    "kind": "hole",
+    "faceIds": [
+     8,
+     9
+    ],
+    "diaMm": 8.0,
+    "depthMm": 36.204,
+    "areaMm2": 879.646,
+    "positionMm": [
+     10.0,
+     0.0,
+     18.102
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "ldRatio": 4.526,
+    "openEnds": 2,
+    "openDirs": [
+     [
+      -0.0,
+      -0.0,
+      -1.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "neighbourWallMm": 26.0
+   },
+   {
+    "id": "P1",
+    "kind": "planar_face",
+    "faceIds": [
+     1
+    ],
+    "areaMm2": 2073.333,
+    "positionMm": [
+     -50.0,
+     -2.276,
+     17.584
+    ],
+    "axis": [
+     -1.0,
+     -0.0,
+     0.0
+    ],
+    "thicknessMm": 56.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P2",
+    "kind": "planar_face",
+    "faceIds": [
+     2
+    ],
+    "areaMm2": 1333.333,
+    "positionMm": [
+     -0.0,
+     -23.333,
+     40.0
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "thicknessMm": 40.0,
+    "draftClass": "not_applicable"
+   },
+   {
+    "id": "P3",
+    "kind": "planar_face",
+    "faceIds": [
+     3
+    ],
+    "areaMm2": 4819.664,
+    "positionMm": [
+     -0.109,
+     6.739,
+     32.978
+    ],
+    "axis": [
+     0.0,
+     0.28735,
+     0.95783
+    ],
+    "thicknessMm": 34.453,
+    "draftClass": "not_applicable"
+   },
+   {
+    "id": "P4",
+    "kind": "planar_face",
+    "faceIds": [
+     4
+    ],
+    "areaMm2": 2600.0,
+    "positionMm": [
+     0.0,
+     30.0,
+     13.0
+    ],
+    "axis": [
+     -0.0,
+     1.0,
+     0.0
+    ],
+    "thicknessMm": 60.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P5",
+    "kind": "planar_face",
+    "faceIds": [
+     5
+    ],
+    "areaMm2": 5949.735,
+    "positionMm": [
+     -0.084,
+     -0.0,
+     0.0
+    ],
+    "axis": [
+     -0.0,
+     -0.0,
+     -1.0
+    ],
+    "thicknessMm": 35.0,
+    "draftClass": "not_applicable"
+   },
+   {
+    "id": "P6",
+    "kind": "planar_face",
+    "faceIds": [
+     6
+    ],
+    "areaMm2": 4000.0,
+    "positionMm": [
+     0.0,
+     -30.0,
+     20.0
+    ],
+    "axis": [
+     0.0,
+     -1.0,
+     -0.0
+    ],
+    "thicknessMm": 60.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P7",
+    "kind": "planar_face",
+    "faceIds": [
+     7
+    ],
+    "areaMm2": 2073.333,
+    "positionMm": [
+     50.0,
+     -2.276,
+     17.584
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    "thicknessMm": 36.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   }
+  ],
+  "note": "solid-bodied part (fill ratio 0.8566) \u2014 single-ray thickness measures part extent, not wall; section-change and hot-spot rules suppressed",
+  "faceCount": 9,
+  "thicknessSampledFaces": 9,
+  "medianThicknessMm": 36.0,
+  "hotSpots": [],
+  "wallAnalysisValid": false,
+  "fillRatio": 0.8566,
+  "adjacencyAvailable": true,
+  "drawDirectionXYZ": [
+   0.0,
+   0.0,
+   1.0
+  ]
+ }
+}

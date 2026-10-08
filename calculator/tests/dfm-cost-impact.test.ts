@@ -227,9 +227,12 @@ describe('coverage is explicit', () => {
 
   it('prices exactly the rules whose cost path is modelled', () => {
     expect(Object.keys(PRICERS).sort()).toEqual([
+      'casting.hole.beyond-cored-depth',
       'machining.corner.radius-below-economic-cutter',
       'machining.hole.depth-beyond-standard-drill',
+      'machining.hole.many-sizes',
       'machining.hole.non-preferred-diameter',
+      'machining.setup.access-directions',
       'moulding.undercut.requires-side-action',
       'sheetmetal.hole.smaller-than-thickness',
     ]);

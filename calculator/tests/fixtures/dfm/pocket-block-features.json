@@ -1,0 +1,622 @@
+{
+ "source": "OCP block 100x60x40: \u00d810x25 blind hole with a 118\u00b0 drill point, 30x30x20 pocket with R4 vertical + R1 floor fillets \u2014 machinable from +Z in ONE setup (review repro, Oct 2026)",
+ "boundingBox": {
+  "xMm": 100.0,
+  "yMm": 60.0,
+  "zMm": 40.0
+ },
+ "featureTable": [
+  {
+   "kind": "hole",
+   "diaMm": 10.0,
+   "depthMm": 25.0,
+   "through": false,
+   "count": 1,
+   "faceIds": [
+    7
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 6000.0,
+   "faceIds": [
+    5
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 5035.0,
+   "faceIds": [
+    3
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 2,
+   "areaMm2": 4000.0,
+   "faceIds": [
+    2,
+    4
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 2,
+   "areaMm2": 2400.0,
+   "faceIds": [
+    1,
+    6
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 776.0,
+   "faceIds": [
+    25
+   ]
+  },
+  {
+   "kind": "face",
+   "diaMm": 0.0,
+   "depthMm": 0.0,
+   "through": null,
+   "count": 4,
+   "areaMm2": 418.0,
+   "faceIds": [
+    9,
+    11,
+    13,
+    15
+   ]
+  },
+  {
+   "kind": "pocket",
+   "diaMm": 0.0,
+   "depthMm": 20.0,
+   "through": null,
+   "count": 1,
+   "areaMm2": 776.0,
+   "faceIds": [
+    25
+   ]
+  }
+ ],
+ "manufacturingFeatures": {
+  "available": true,
+  "features": [
+   {
+    "id": "H7",
+    "kind": "hole",
+    "faceIds": [
+     7
+    ],
+    "diaMm": 10.0,
+    "depthMm": 25.0,
+    "areaMm2": 785.398,
+    "positionMm": [
+     -30.0,
+     0.0,
+     27.5
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "ldRatio": 2.5,
+    "openEnds": 1,
+    "openDirs": [
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "neighbourWallMm": 15.747
+   },
+   {
+    "id": "FIL8",
+    "kind": "fillet",
+    "faceIds": [
+     8
+    ],
+    "radiusMm": 4.0,
+    "depthMm": 19.0,
+    "areaMm2": 119.381,
+    "positionMm": [
+     9.0,
+     -11.0,
+     30.5
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     3,
+     9,
+     15
+    ],
+    "toolReachMm": 19.0,
+    "openDirs": [
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   {
+    "id": "FIL10",
+    "kind": "fillet",
+    "faceIds": [
+     10
+    ],
+    "radiusMm": 4.0,
+    "depthMm": 19.0,
+    "areaMm2": 119.381,
+    "positionMm": [
+     31.0,
+     -11.0,
+     30.5
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     3,
+     9,
+     11
+    ],
+    "toolReachMm": 19.0,
+    "openDirs": [
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   {
+    "id": "FIL12",
+    "kind": "fillet",
+    "faceIds": [
+     12
+    ],
+    "radiusMm": 4.0,
+    "depthMm": 19.0,
+    "areaMm2": 119.381,
+    "positionMm": [
+     31.0,
+     11.0,
+     30.5
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     3,
+     11,
+     13
+    ],
+    "toolReachMm": 19.0,
+    "openDirs": [
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   {
+    "id": "FIL14",
+    "kind": "fillet",
+    "faceIds": [
+     14
+    ],
+    "radiusMm": 4.0,
+    "depthMm": 19.0,
+    "areaMm2": 119.381,
+    "positionMm": [
+     9.0,
+     11.0,
+     30.5
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     3,
+     13,
+     15
+    ],
+    "toolReachMm": 19.0,
+    "openDirs": [
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   {
+    "id": "FIL18",
+    "kind": "fillet",
+    "faceIds": [
+     18
+    ],
+    "radiusMm": 1.0,
+    "depthMm": 22.0,
+    "areaMm2": 34.558,
+    "positionMm": [
+     20.0,
+     -14.0,
+     21.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     9,
+     25
+    ]
+   },
+   {
+    "id": "FIL20",
+    "kind": "fillet",
+    "faceIds": [
+     20
+    ],
+    "radiusMm": 1.0,
+    "depthMm": 22.0,
+    "areaMm2": 34.558,
+    "positionMm": [
+     34.0,
+     0.0,
+     21.0
+    ],
+    "axis": [
+     -0.0,
+     1.0,
+     0.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     11,
+     25
+    ]
+   },
+   {
+    "id": "FIL22",
+    "kind": "fillet",
+    "faceIds": [
+     22
+    ],
+    "radiusMm": 1.0,
+    "depthMm": 22.0,
+    "areaMm2": 34.558,
+    "positionMm": [
+     20.0,
+     14.0,
+     21.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     13,
+     25
+    ]
+   },
+   {
+    "id": "FIL24",
+    "kind": "fillet",
+    "faceIds": [
+     24
+    ],
+    "radiusMm": 1.0,
+    "depthMm": 22.0,
+    "areaMm2": 34.558,
+    "positionMm": [
+     6.0,
+     0.0,
+     21.0
+    ],
+    "axis": [
+     -0.0,
+     1.0,
+     0.0
+    ],
+    "concave": true,
+    "sweepDeg": 90.0,
+    "adjacentFaceIds": [
+     15,
+     25
+    ]
+   },
+   {
+    "id": "P1",
+    "kind": "planar_face",
+    "faceIds": [
+     1
+    ],
+    "areaMm2": 2400.0,
+    "positionMm": [
+     -50.0,
+     -0.0,
+     20.0
+    ],
+    "axis": [
+     -1.0,
+     -0.0,
+     0.0
+    ],
+    "thicknessMm": 15.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P2",
+    "kind": "planar_face",
+    "faceIds": [
+     2
+    ],
+    "areaMm2": 4000.0,
+    "positionMm": [
+     0.0,
+     -30.0,
+     20.0
+    ],
+    "axis": [
+     0.0,
+     -1.0,
+     -0.0
+    ],
+    "thicknessMm": 60.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P3",
+    "kind": "planar_face",
+    "faceIds": [
+     3
+    ],
+    "areaMm2": 5035.195,
+    "positionMm": [
+     -3.052,
+     -0.0,
+     40.0
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "thicknessMm": 40.0,
+    "draftClass": "not_applicable"
+   },
+   {
+    "id": "P4",
+    "kind": "planar_face",
+    "faceIds": [
+     4
+    ],
+    "areaMm2": 4000.0,
+    "positionMm": [
+     0.0,
+     30.0,
+     20.0
+    ],
+    "axis": [
+     -0.0,
+     1.0,
+     0.0
+    ],
+    "thicknessMm": 60.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P5",
+    "kind": "planar_face",
+    "faceIds": [
+     5
+    ],
+    "areaMm2": 6000.0,
+    "positionMm": [
+     -0.0,
+     -0.0,
+     0.0
+    ],
+    "axis": [
+     -0.0,
+     -0.0,
+     -1.0
+    ],
+    "thicknessMm": 40.0,
+    "draftClass": "not_applicable"
+   },
+   {
+    "id": "P6",
+    "kind": "planar_face",
+    "faceIds": [
+     6
+    ],
+    "areaMm2": 2400.0,
+    "positionMm": [
+     50.0,
+     -0.0,
+     20.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    "thicknessMm": 16.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P9",
+    "kind": "planar_face",
+    "faceIds": [
+     9
+    ],
+    "areaMm2": 418.0,
+    "positionMm": [
+     20.0,
+     -15.0,
+     30.5
+    ],
+    "axis": [
+     -0.0,
+     1.0,
+     0.0
+    ],
+    "thicknessMm": 15.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P11",
+    "kind": "planar_face",
+    "faceIds": [
+     11
+    ],
+    "areaMm2": 418.0,
+    "positionMm": [
+     35.0,
+     0.0,
+     30.5
+    ],
+    "axis": [
+     -1.0,
+     -0.0,
+     0.0
+    ],
+    "thicknessMm": 15.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P13",
+    "kind": "planar_face",
+    "faceIds": [
+     13
+    ],
+    "areaMm2": 418.0,
+    "positionMm": [
+     20.0,
+     15.0,
+     30.5
+    ],
+    "axis": [
+     0.0,
+     -1.0,
+     -0.0
+    ],
+    "thicknessMm": 15.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P15",
+    "kind": "planar_face",
+    "faceIds": [
+     15
+    ],
+    "areaMm2": 418.0,
+    "positionMm": [
+     5.0,
+     0.0,
+     30.5
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     -0.0
+    ],
+    "thicknessMm": 30.0,
+    "draftClass": "zero_draft",
+    "draftDeg": 0.0
+   },
+   {
+    "id": "P25",
+    "kind": "planar_face",
+    "faceIds": [
+     25
+    ],
+    "areaMm2": 776.274,
+    "positionMm": [
+     20.0,
+     0.0,
+     20.0
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "thicknessMm": 20.0,
+    "draftClass": "not_applicable"
+   }
+  ],
+  "note": "solid-bodied part (fill ratio 0.9177) \u2014 single-ray thickness measures part extent, not wall; section-change and hot-spot rules suppressed",
+  "faceCount": 25,
+  "thicknessSampledFaces": 25,
+  "medianThicknessMm": 22.87,
+  "hotSpots": [],
+  "wallAnalysisValid": false,
+  "fillRatio": 0.9177,
+  "adjacencyAvailable": true,
+  "drawDirectionXYZ": [
+   0.0,
+   0.0,
+   1.0
+  ]
+ }
+}

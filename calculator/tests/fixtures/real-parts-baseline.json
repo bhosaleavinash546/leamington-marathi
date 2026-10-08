@@ -1801,7 +1801,7 @@
         {
           "kind": "hole",
           "diaMm": 10,
-          "depthMm": 3,
+          "depthMm": 6,
           "through": true,
           "count": 4,
           "faceIds": [
@@ -2058,16 +2058,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 10.16,
+      "total": 10.21,
       "breakdown": {
         "rawMaterial": 5.44,
-        "process": 1.73,
-        "labour": 0.65,
+        "process": 1.76,
+        "labour": 0.66,
         "tooling": 0.32,
         "packaging": 0.12,
         "logistics": 0.18,
         "overhead": 0.98,
-        "margin": 0.75
+        "margin": 0.76
       },
       "warnings": [
         "material_low_confidence"
@@ -7258,7 +7258,7 @@
           17.5,
           20
         ],
-        "estimatedHoleCount": 2,
+        "estimatedHoleCount": 1,
         "holeRadiiMm": [
           17.5
         ],
@@ -7295,22 +7295,13 @@
         {
           "kind": "hole",
           "diaMm": 35,
-          "depthMm": 2.5,
+          "depthMm": 40,
           "through": true,
           "count": 1,
           "faceIds": [
+            29,
             30,
             31
-          ]
-        },
-        {
-          "kind": "hole",
-          "diaMm": 35,
-          "depthMm": 35,
-          "through": true,
-          "count": 1,
-          "faceIds": [
-            29
           ]
         },
         {
@@ -7531,15 +7522,15 @@
       "cncCycleTimeEstimate": {
         "setupTimeMins": 45,
         "planarMillingTimeMins": 38.5,
-        "drillBoreTimeMins": 1,
-        "estimatedTotalMins": 84.5,
-        "estimatedTotalHrs": 1.4083,
+        "drillBoreTimeMins": 0.5,
+        "estimatedTotalMins": 84,
+        "estimatedTotalHrs": 1.3999,
         "assumedFeedRateMm2PerMin": 5000,
         "assumedDrillBoreMinPerFeature": 0.5,
         "assumedSetupTimeMinsPerSetup": 15
       },
       "toolingCostEstimates": {
-        "hpdcDieCostGBP": 200000,
+        "hpdcDieCostGBP": 195000,
         "gravityMouldCostGBP": 80000,
         "sandPatternCostGBP": 9500,
         "imMouldCostGBP": 200000,
@@ -15890,14 +15881,16 @@
           28.5,
           31.5
         ],
-        "estimatedHoleCount": 21,
+        "estimatedHoleCount": 22,
         "holeRadiiMm": [
           1.6,
           3.1,
+          4.2,
           5,
           7,
           8,
           12,
+          15.5,
           18.5,
           19.5,
           20,
@@ -15905,7 +15898,7 @@
           22.5,
           23
         ],
-        "bossShaftCount": 7,
+        "bossShaftCount": 8,
         "bossShaftRadiiMm": [
           10,
           12,
@@ -15966,6 +15959,17 @@
         },
         {
           "kind": "boss",
+          "diaMm": 55,
+          "depthMm": 59.5,
+          "through": null,
+          "count": 1,
+          "faceIds": [
+            196,
+            219
+          ]
+        },
+        {
+          "kind": "boss",
           "diaMm": 57,
           "depthMm": 7,
           "through": null,
@@ -16001,7 +16005,7 @@
           "kind": "hole",
           "diaMm": 3.15,
           "depthMm": 3,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             355,
@@ -16012,11 +16016,24 @@
           "kind": "hole",
           "diaMm": 6.3,
           "depthMm": 3.7,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             269,
             270
+          ]
+        },
+        {
+          "kind": "hole",
+          "diaMm": 8.5,
+          "depthMm": 31.3,
+          "through": true,
+          "count": 2,
+          "faceIds": [
+            12,
+            19,
+            20,
+            317
           ]
         },
         {
@@ -16093,6 +16110,17 @@
         },
         {
           "kind": "hole",
+          "diaMm": 31,
+          "depthMm": 10.6,
+          "through": true,
+          "count": 1,
+          "faceIds": [
+            251,
+            252
+          ]
+        },
+        {
+          "kind": "hole",
           "diaMm": 37,
           "depthMm": 45,
           "through": true,
@@ -16116,27 +16144,18 @@
         {
           "kind": "hole",
           "diaMm": 40,
-          "depthMm": 2.5,
+          "depthMm": 9.9,
           "through": true,
           "count": 2,
           "faceIds": [
             81,
             82,
-            216,
-            303
-          ]
-        },
-        {
-          "kind": "hole",
-          "diaMm": 40,
-          "depthMm": 7.4,
-          "through": true,
-          "count": 2,
-          "faceIds": [
             88,
             89,
             209,
-            210
+            210,
+            216,
+            303
           ]
         },
         {
@@ -16721,9 +16740,9 @@
       "cncCycleTimeEstimate": {
         "setupTimeMins": 45,
         "planarMillingTimeMins": 8.6,
-        "drillBoreTimeMins": 10.5,
-        "estimatedTotalMins": 64.1,
-        "estimatedTotalHrs": 1.0676,
+        "drillBoreTimeMins": 11,
+        "estimatedTotalMins": 64.6,
+        "estimatedTotalHrs": 1.076,
         "assumedFeedRateMm2PerMin": 5000,
         "assumedDrillBoreMinPerFeature": 0.5,
         "assumedSetupTimeMinsPerSetup": 15
@@ -16734,9 +16753,9 @@
         "sandPatternCostGBP": 32500,
         "imMouldCostGBP": 200000,
         "forgeDieCostGBP": 180000,
-        "progressiveDieCostGBP": 30000
+        "progressiveDieCostGBP": 35000
       },
-      "manufacturabilityScore": 18,
+      "manufacturabilityScore": 17,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.262,
         "sandCycleTimeHrFerrous": 0.4466,
@@ -16773,16 +16792,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 85.19,
+      "total": 86.92,
       "breakdown": {
-        "rawMaterial": 25.08,
-        "process": 28.02,
-        "labour": 15.11,
+        "rawMaterial": 25.29,
+        "process": 28.94,
+        "labour": 15.43,
         "tooling": 1.25,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 8.34,
-        "margin": 6.31
+        "overhead": 8.51,
+        "margin": 6.44
       }
     }
   },
@@ -16935,7 +16954,7 @@
           207,
           222
         ],
-        "estimatedHoleCount": 15,
+        "estimatedHoleCount": 13,
         "holeRadiiMm": [
           4,
           5.2,
@@ -16956,25 +16975,16 @@
         {
           "kind": "hole",
           "diaMm": 8,
-          "depthMm": 17.6,
+          "depthMm": 41,
           "through": false,
           "count": 2,
           "faceIds": [
             32,
             33,
-            43,
-            44
-          ]
-        },
-        {
-          "kind": "hole",
-          "diaMm": 8,
-          "depthMm": 23.4,
-          "through": true,
-          "count": 2,
-          "faceIds": [
             34,
             35,
+            43,
+            44,
             45,
             46
           ]
@@ -17523,22 +17533,22 @@
       "cncCycleTimeEstimate": {
         "setupTimeMins": 45,
         "planarMillingTimeMins": 5.9,
-        "drillBoreTimeMins": 7.5,
-        "estimatedTotalMins": 58.4,
-        "estimatedTotalHrs": 0.9726,
+        "drillBoreTimeMins": 6.5,
+        "estimatedTotalMins": 57.4,
+        "estimatedTotalHrs": 0.9559,
         "assumedFeedRateMm2PerMin": 5000,
         "assumedDrillBoreMinPerFeature": 0.5,
         "assumedSetupTimeMinsPerSetup": 15
       },
       "toolingCostEstimates": {
-        "hpdcDieCostGBP": 300000,
+        "hpdcDieCostGBP": 295000,
         "gravityMouldCostGBP": 80000,
         "sandPatternCostGBP": 15000,
         "imMouldCostGBP": 200000,
-        "forgeDieCostGBP": 62000,
-        "progressiveDieCostGBP": 30000
+        "forgeDieCostGBP": 60000,
+        "progressiveDieCostGBP": 25000
       },
-      "manufacturabilityScore": 49,
+      "manufacturabilityScore": 51,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1964,
         "sandCycleTimeHrFerrous": 0.2728,
@@ -17571,16 +17581,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 88.79,
+      "total": 88.57,
       "breakdown": {
-        "rawMaterial": 19.11,
-        "process": 41.17,
-        "labour": 12.69,
+        "rawMaterial": 19.1,
+        "process": 41.03,
+        "labour": 12.65,
         "tooling": 0.21,
         "packaging": 0.1,
         "logistics": 0.15,
-        "overhead": 8.78,
-        "margin": 6.58
+        "overhead": 8.76,
+        "margin": 6.56
       }
     }
   },
@@ -24165,7 +24175,7 @@
           40,
           44
         ],
-        "estimatedHoleCount": 14,
+        "estimatedHoleCount": 12,
         "holeRadiiMm": [
           5,
           5.5,
@@ -24177,7 +24187,7 @@
           35.5,
           37.5
         ],
-        "bossShaftCount": 5,
+        "bossShaftCount": 4,
         "bossShaftRadiiMm": [
           12.5,
           15.5,
@@ -24203,22 +24213,13 @@
         {
           "kind": "boss",
           "diaMm": 31,
-          "depthMm": 3,
-          "through": null,
-          "count": 1,
-          "faceIds": [
-            151,
-            152
-          ]
-        },
-        {
-          "kind": "boss",
-          "diaMm": 31,
           "depthMm": 26,
           "through": null,
           "count": 1,
           "faceIds": [
-            66
+            66,
+            151,
+            152
           ]
         },
         {
@@ -24246,22 +24247,13 @@
         {
           "kind": "hole",
           "diaMm": 11,
-          "depthMm": 5,
+          "depthMm": 20.5,
           "through": true,
           "count": 1,
           "faceIds": [
             203,
-            205
-          ]
-        },
-        {
-          "kind": "hole",
-          "diaMm": 11,
-          "depthMm": 15.5,
-          "through": true,
-          "count": 1,
-          "faceIds": [
             204,
+            205,
             206
           ]
         },
@@ -24335,23 +24327,14 @@
         {
           "kind": "hole",
           "diaMm": 68,
-          "depthMm": 3.8,
-          "through": true,
-          "count": 1,
-          "faceIds": [
-            13,
-            14
-          ]
-        },
-        {
-          "kind": "hole",
-          "diaMm": 68,
-          "depthMm": 36.5,
+          "depthMm": 40.3,
           "through": true,
           "count": 1,
           "faceIds": [
             6,
-            7
+            7,
+            13,
+            14
           ]
         },
         {
@@ -24923,9 +24906,9 @@
       "cncCycleTimeEstimate": {
         "setupTimeMins": 45,
         "planarMillingTimeMins": 6,
-        "drillBoreTimeMins": 7,
-        "estimatedTotalMins": 58,
-        "estimatedTotalHrs": 0.9661,
+        "drillBoreTimeMins": 6,
+        "estimatedTotalMins": 57,
+        "estimatedTotalHrs": 0.9495,
         "assumedFeedRateMm2PerMin": 5000,
         "assumedDrillBoreMinPerFeature": 0.5,
         "assumedSetupTimeMinsPerSetup": 15
@@ -24938,7 +24921,7 @@
         "forgeDieCostGBP": 126000,
         "progressiveDieCostGBP": 30000
       },
-      "manufacturabilityScore": 46,
+      "manufacturabilityScore": 48,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1885,
         "sandCycleTimeHrFerrous": 0.2518,
@@ -24973,16 +24956,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 44.02,
+      "total": 41.79,
       "breakdown": {
-        "rawMaterial": 11.48,
-        "process": 19.01,
-        "labour": 4.46,
+        "rawMaterial": 11.34,
+        "process": 17.59,
+        "labour": 4.17,
         "tooling": 0.97,
         "packaging": 0.19,
         "logistics": 0.34,
-        "overhead": 4.31,
-        "margin": 3.26
+        "overhead": 4.09,
+        "margin": 3.1
       }
     }
   },

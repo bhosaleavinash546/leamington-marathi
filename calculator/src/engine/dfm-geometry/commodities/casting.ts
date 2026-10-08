@@ -11,7 +11,8 @@
  * rather than a number the midpoint is used and the note says so.
  */
 import type { GeometricRule, PartContext, ManufacturingFeature } from '../types.js';
-import { finding } from '../types.js';
+import { finding, plausibleWall, isBlend } from '../types.js';
+import { coredAbove } from './machining.js';
 
 /**
  * Minimum draft by casting route, degrees per side, on an external wall.
@@ -140,6 +141,8 @@ export const CASTING_RULES: readonly GeometricRule[] = [
       // because single-ray thickness there measures the envelope, not a wall.
       if (part.featureSet.wallAnalysisValid === false) return null;
       if (f.sectionRatio === undefined || f.neighbourMinThicknessMm === undefined) return null;
+      // both sides must be walls, not a ray across a cavity or a graze at a sliver
+      if (!plausibleWall(f.thicknessMm, part) || !plausibleWall(f.neighbourMinThicknessMm, part)) return null;
       if (f.sectionRatio <= 2) return null;
       return finding(this, f, part, {
         severity: f.sectionRatio > 3 ? 'major' : 'minor',
@@ -164,6 +167,7 @@ export const CASTING_RULES: readonly GeometricRule[] = [
           + 'roughly half the local wall; a radius under ~1 mm is treated as effectively sharp.',
     },
     evaluate(f, part) {
+      if (f.concave !== true || !isBlend(f)) return null; // an internal corner blend; an external round is not this kind of stress raiser
       if (f.radiusMm === undefined) return null;
       if (f.radiusMm >= 1.0) return null;
       return finding(this, f, part, {
@@ -201,7 +205,7 @@ export function castingHotSpotFindings(part: PartContext) {
     },
     evaluate: () => null,
   };
-  return fs.hotSpots.map(h => finding(
+  return fs.hotSpots.filter(h => plausibleWall(h.thicknessMm, part)).map(h => finding(
     rule,
     { id: `HS${h.faceId}`, kind: 'planar_face', faceIds: [h.faceId],
       positionMm: h.positionMm as [number, number, number] } as ManufacturingFeature,
@@ -234,3 +238,62 @@ export const CASTING_LIMITATIONS: readonly string[] = [
   'Gating and feeding layout was not evaluated; hot spots are reported, but where to place risers '
   + 'is a foundry decision.',
 ];
+
+/**
+ * NADCA maximum cored depth for aluminium die castings — Ø (mm) → deepest a core of that diameter can
+ * form (mm). From the Product Specification Standards §4A "Cored Holes" table (inch values converted).
+ * Below the smallest listed diameter a hole is not cored at all.
+ */
+export const NADCA_AL_CORED_DEPTH: ReadonlyArray<[number, number]> = [
+  [3.175, 7.94], [3.97, 12.7], [4.76, 15.9], [6.35, 25.4], [9.525, 38.1], [12.7, 50.8],
+  [15.875, 79.4], [19.05, 114.3], [25.4, 152.4],
+];
+
+/** Deepest a die-cast core of this diameter can form, mm (null below the table: not cored). */
+export function nadcaMaxCoredDepthMm(diaMm: number): number | null {
+  const t = NADCA_AL_CORED_DEPTH;
+  if (diaMm < t[0][0]) return null;
+  if (diaMm >= t[t.length - 1][0]) return diaMm * (t[t.length - 1][1] / t[t.length - 1][0]);
+  for (let i = 1; i < t.length; i++) {
+    if (diaMm <= t[i][0]) {
+      const [d0, h0] = t[i - 1], [d1, h1] = t[i];
+      return h0 + ((h1 - h0) * (diaMm - d0)) / (d1 - d0);
+    }
+  }
+  return null;
+}
+
+export const CORED_HOLE_RULE: GeometricRule = {
+  id: 'casting.hole.beyond-cored-depth',
+  commodity: 'casting',
+  title: 'Hole too small or too deep to die-cast — drilled after casting',
+  appliesTo: ['hole'],
+  source: {
+    standard: 'NADCA Product Specification Standards for Die Castings, §4A "Cored Holes" (maximum cored depth by diameter)',
+    url: 'https://www.abdiecasting.com/wp-content/uploads/2024/09/Section-04a-Tolerancing.pdf',
+    note: 'Aluminium column; holes under Ø12.5 mm are limited to about 4:1 depth-to-diameter, and below Ø3.2 mm a hole is '
+      + 'not cored. Read from a supplier-hosted copy of the NADCA table via the search engine’s extract — verify against '
+      + 'the current NADCA edition.',
+  },
+  evaluate(f, part) {
+    const route = (part.process ?? '').toLowerCase();
+    if (route !== 'hpdc' && route !== 'diecast') return null; // measured or silent: the table is die casting only
+    if (f.diaMm === undefined || f.depthMm === undefined || f.diaMm <= 0) return null;
+    if (f.openEnds !== 1) return null; // the table is for blind cores; a through core is supported at both ends
+    // Holes the costing drills anyway (at or under its cored size) are not a finding — only holes the cost
+    // sheet assumes are CORED but that no core of that diameter can form that deep.
+    if (f.diaMm <= coredAbove(route)) return null;
+    const max = nadcaMaxCoredDepthMm(f.diaMm);
+    if (max !== null && f.depthMm <= max) return null;
+    return finding(this, f, part, {
+      severity: 'minor',
+      detail: `Blind ⌀${f.diaMm.toFixed(1)} mm hole ${f.depthMm.toFixed(1)} mm deep — a die-cast core of that diameter forms `
+        + `${(max ?? 0).toFixed(1)} mm at most, so it is drilled after casting (the cost sheet assumes it is cored).`,
+      measuredField: 'depthMm', measuredValue: f.depthMm, unit: 'mm',
+      thresholdValue: Math.round((max ?? 0) * 10) / 10, comparator: '>',
+      recommendation: 'Open the diameter or shorten the hole so it can be cored; otherwise add the drilling after casting — '
+        + 'priced here as that drilling, which the cost sheet does not yet carry.',
+    });
+  },
+};
+(CASTING_RULES as GeometricRule[]).push(CORED_HOLE_RULE);

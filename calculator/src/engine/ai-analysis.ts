@@ -19,6 +19,7 @@ export interface ManufacturingFeature {
   radiusMm?: number;
   areaMm2?: number;
   positionMm?: [number, number, number];
+  /** Holes / bosses / fillets: the cylinder axis. Planar faces: the material-outward normal. */
   axis?: [number, number, number];
   thicknessMm?: number;
   /** Draft measured on this face. Absent when draftClass is not_applicable. */
@@ -31,6 +32,22 @@ export interface ManufacturingFeature {
   sectionRatio?: number;
   bossToWallRatio?: number;
   adjacentFaceIds?: number[];
+  /**
+   * Fillets (partial cylinders): true = material outside the cylinder — an INTERNAL corner radius,
+   * the radius an end mill must fit; false = an external round. Holes and bosses are full cylinders.
+   */
+  concave?: boolean;
+  /** Fillets: the arc the partial cylinder sweeps, degrees (a pocket corner is ~90°). */
+  sweepDeg?: number;
+  /**
+   * Internal corners open at an end along their axis (an end mill can come in that way): the tool
+   * length needed from outside the part's envelope to the corner's far end, mm.
+   */
+  toolReachMm?: number;
+  /** Holes: how many ends are open (2 = through, 1 = blind), probed with the solid classifier. */
+  openEnds?: number;
+  /** Holes and reachable corners: the outward axis direction at each open end — where a tool comes in. */
+  openDirs?: Array<[number, number, number]>;
 }
 
 export interface ManufacturingFeatureSet {

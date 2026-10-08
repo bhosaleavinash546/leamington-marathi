@@ -13,7 +13,7 @@
  * so, instead of pretending each face was measured independently.
  */
 import type { GeometricRule, PartContext } from '../types.js';
-import { finding } from '../types.js';
+import { isBlend, finding } from '../types.js';
 
 /** Below this, a blown wall pinholes and fails top-load. Mirrors analyseBlowDFM. */
 export const MIN_BLOWN_WALL_MM = 0.5;
@@ -37,6 +37,7 @@ export const BLOW_MOULDING_RULES: readonly GeometricRule[] = [
     appliesTo: ['fillet'],
     source: { ...BLOW_GUIDE, clause: 'External corner radius ≥ 2–3 × nominal wall' },
     evaluate(f, part) {
+      if (f.concave === true || !isBlend(f)) return null; // an EXTERNAL corner blend of the blown shell
       const wall = part.medianWallMm;
       if (!wall || wall <= 0 || f.radiusMm === undefined) return null;
       const min = wall * CORNER_RADIUS_WALL_MULTIPLE;

@@ -42,6 +42,7 @@
 import type { GeometricFinding, PartContext } from './types.js';
 import { featureMinutesEach } from '../feature-machining.js';
 import { estimateMouldCost } from '../modules/injection-moulding.js';
+import { priceExtraSetups, priceHoleSizes } from './commodities/machining-access.js';
 
 /** Where the money comes from. Printed on the finding so it can be argued with. */
 export type CostImpactKind =
@@ -77,6 +78,10 @@ export interface CostContext {
   labourRatePerHr?: number;
   /** Cavities for the mould estimator. Defaults to 1 and says so. */
   cavities?: number;
+  /** Manufacturing engineer £/h — CAM programming per fixturing, as the costing prices it. */
+  engineerRatePerHr?: number;
+  /** Part mass, kg — handling per fixturing follows it (handlingMinPerFixturing), as in the costing. */
+  partWeightKg?: number;
 }
 
 /** Why a rule has no pricer. Specific per rule — a generic line is not an answer. */
@@ -121,6 +126,18 @@ export const NOT_MODELLED: Record<string, string> = {
     + 'measures no volume for what that operation would remove. Pricing it would mean inventing a '
     + 'cut. (An earlier version routed this to the hole pricer, which silently returned nothing '
     + 'because a face carries no diameter — a wrong mapping is worse than an honest gap.)',
+  'machining.hole.compound-angle':
+    'An off-frame hole is a fixturing of its own on a 3-axis machine; that fixturing is priced once, in the '
+    + '"several setups" finding, rather than again here.',
+  'machining.hole.intersecting':
+    'Cross-hole deburring (tool, brush, thermal or ECM) is not an operation in the machining model, so its '
+    + 'time is not derivable here.',
+  'machining.corner.long-reach-cutter':
+    'The machining model has no feed derating for cutter reach, so the slower long-series cutter is not '
+    + 'priced; the corner\'s pocket pass is in the cost either way.',
+  'moulding.hole.core-pin-slender':
+    'A slender core pin costs cycle time (it must cool) and pin breakage; neither is a term in the mould or '
+    + 'cycle model, so the delta is not derivable.',
   'sheetmetal.hole.deep-relative-to-diameter':
     'This flags a possible mis-classification (formed collar versus punched hole), not a defect '
     + 'with a cost.',
@@ -217,7 +234,11 @@ export const PRICERS: Record<string, Pricer> = {
   'machining.hole.depth-beyond-standard-drill': holeFeatureCost,
   'machining.hole.non-preferred-diameter': holeFeatureCost,
   'sheetmetal.hole.smaller-than-thickness': holeFeatureCost,
+  // the remedy IS the drilling: what the hole costs to drill after casting
+  'casting.hole.beyond-cored-depth': holeFeatureCost,
   'moulding.undercut.requires-side-action': (_f, part, ctx) => mouldSlideCost(part, ctx, 1),
+  'machining.setup.access-directions': (f, _part, ctx) => priceExtraSetups(f, ctx),
+  'machining.hole.many-sizes': (f, _part, ctx) => priceHoleSizes(f, ctx),
   'machining.corner.radius-below-economic-cutter': (f, part, ctx) => {
     const { machineRatePerHr: mr, labourRatePerHr: lr } = ctx;
     if (mr === undefined || lr === undefined) return null;
@@ -278,5 +299,16 @@ export function priceFinding(
 
 /** Sum priced findings. Uncosted ones contribute nothing and are not guessed at. */
 export function totalCostGBP(findings: readonly GeometricFinding[]): number {
-  return round4(findings.reduce((a, f) => a + (f.costImpact?.perPartGBP ?? 0), 0));
+  // A feature's own cost ("what this hole costs to make") is counted ONCE however many rules point at it — a
+  // deep, non-standard, uncoreable hole used to add its drilling cost three times.
+  const featureCost = new Map<string, number>();
+  let other = 0;
+  for (const f of findings) {
+    const c = f.costImpact;
+    if (!c) continue;
+    if (c.kind === 'feature_cost' && !f.featureId.startsWith('PART:')) {
+      featureCost.set(f.featureId, Math.max(featureCost.get(f.featureId) ?? 0, c.perPartGBP));
+    } else other += c.perPartGBP;
+  }
+  return round4(other + [...featureCost.values()].reduce((a, b) => a + b, 0));
 }

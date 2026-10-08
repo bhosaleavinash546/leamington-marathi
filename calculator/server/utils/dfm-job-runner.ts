@@ -227,10 +227,13 @@ function resolveCostContext(req: DFMJobRequest): CostContext {
     ?? lib.machines[0];
   const labour = lib.labour.find(l => /semiskilled|semi-skilled/i.test(l.id))
     ?? lib.labour[0];
+  // The manufacturing engineer prices CAM programming per fixturing — the same rate the costing uses.
+  const engineer = lib.labour.find(l => /engineer/i.test(l.id));
   return {
     annualVolume: req.annualVolume && req.annualVolume > 0 ? req.annualVolume : undefined,
     machineRatePerHr: machine?.computedRatePerHr,
     labourRatePerHr: labour?.fullyLoadedRatePerHr,
+    engineerRatePerHr: engineer?.fullyLoadedRatePerHr,
   };
 }
 
