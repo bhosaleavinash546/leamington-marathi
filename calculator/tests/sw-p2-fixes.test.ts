@@ -63,3 +63,26 @@ describe('#9 reported person-months are the person-months costed', () => {
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/1\.4–1\.7/);
   });
 });
+
+describe('#10 uncertainty band and volume sensitivity follow the headline', () => {
+  it('turning on ML data and homologation moves the band, not only the total', () => {
+    const off = computeSWProgram(defaultSWProgramInputs());
+    const on = computeSWProgram(prog(p => { p.includeMLDataCost = true; p.includeHomologation = true; }));
+    expect(on.summary.grandTotal).toBeGreaterThan(off.summary.grandTotal);
+    expect(on.monteCarlo.p50).toBeGreaterThan(off.monteCarlo.p50);
+    expect(on.monteCarlo.mean - off.monteCarlo.mean).toBeGreaterThan(0.5 * (on.summary.grandTotal - off.summary.grandTotal));
+  });
+  it('with a 2-year recovery window the band\'s £/vehicle brackets the headline (it showed £639 against £2,043)', () => {
+    const r = computeSWProgram(prog(p => { p.costRecoveryYears = 2; }));
+    expect(r.monteCarlo.p10PerVehicle).toBeLessThan(r.summary.perVehicle * 1.05);
+    expect(r.monteCarlo.p90PerVehicle).toBeGreaterThan(r.summary.perVehicle);
+  });
+  it('the volume sensitivity row brackets its own base under any recovery window', () => {
+    for (const rec of [undefined, 2]) {
+      const r = computeSWProgram(prog(p => { if (rec) p.costRecoveryYears = rec; }));
+      const row = r.sensitivity.find(x => /Production Volume/.test(x.parameter))!;
+      expect(row.low).toBeLessThan(row.base);
+      expect(row.high).toBeGreaterThan(row.base);
+    }
+  });
+});

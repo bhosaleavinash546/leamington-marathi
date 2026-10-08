@@ -1217,49 +1217,63 @@ function runMonteCarlo(
   // bucket's own min/max so correlation widens the tail without distorting
   // any single bucket's range.
   const lerp = (lo: number, hi: number, t: number) => lo + (hi - lo) * t;
-  const buckets: Array<[number, number, number, number]> = [
-    // [value, low, mode, high]
-    [s.totalDevelopment,   0.70, 1.00, 1.40],
-    [s.totalTesting,       0.75, 1.00, 1.35],
-    [s.totalIntegration,   0.70, 1.00, 1.40],
-    [s.totalToolchain,     0.85, 1.00, 1.25],
-    [s.totalCybersecurity, 0.65, 1.00, 1.50],
-    [s.totalCalibration,   0.70, 1.00, 1.50],
-    [s.totalMaintenance,   0.75, 1.00, 1.35],
-    [s.totalCloud,         0.50, 1.00, 1.60],
-    [s.totalLicensing,     0.80, 1.00, 1.30],
+  // [value, low, mode, high, NRE?]. ML data and homologation were left out — turning them on moved the total and not the
+  // band (software review P2 #10). Their ranges are borrowed, said so: ML data follows development, homologation (fixed
+  // audit fees) follows licensing. All ranges are CostVision engineering estimates.
+  const buckets: Array<[number, number, number, number, boolean]> = [
+    [s.totalDevelopment,   0.70, 1.00, 1.40, true],
+    [s.totalTesting,       0.75, 1.00, 1.35, true],
+    [s.totalIntegration,   0.70, 1.00, 1.40, true],
+    [s.totalToolchain,     0.85, 1.00, 1.25, true],
+    [s.totalCybersecurity, 0.65, 1.00, 1.50, true],
+    [s.totalCalibration,   0.70, 1.00, 1.50, true],
+    [s.totalMLData,        0.70, 1.00, 1.40, true],
+    [s.totalHomologation,  0.80, 1.00, 1.30, true],
+    [s.totalMaintenance,   0.75, 1.00, 1.35, false],
+    [s.totalCloud,         0.50, 1.00, 1.60, false],
+    [s.totalLicensing,     0.80, 1.00, 1.30, false],
   ];
 
+  // £ / vehicle per trial by the SAME rule as the headline: NRE over the recovery window, lifecycle over the full
+  // life. It divided every trial's total by volume × life, so with a 2-year recovery the headline said £2,043 and the
+  // band's P50 £639 (P2 #10).
+  const recoveryYears = Math.max(1, prog.costRecoveryYears ?? prog.programLifeYears);
+  const nreVehicles   = prog.annualProductionVolume * recoveryYears;
+  const lifeVehicles  = prog.annualProductionVolume * prog.programLifeYears;
+
   const totals: number[] = [];
+  const perVeh: number[] = [];
   for (let i = 0; i < iterations; i++) {
     // One shared programme-wide percentile draw (0..1) reused across buckets.
     const sharedQ = rand();
-    let total = 0;
-    for (const [val, lo, mode, hi] of buckets) {
+    let nre = 0, life = 0;
+    for (const [val, lo, mode, hi, isNre] of buckets) {
       // Map the shared quantile onto this bucket's triangular range.
       const Fc = (mode - lo) / (hi - lo);
       const shared = sharedQ < Fc
         ? lo + Math.sqrt(sharedQ * (hi - lo) * (mode - lo))
         : hi - Math.sqrt((1 - sharedQ) * (hi - lo) * (hi - mode));
       const idio = tri(lo, mode, hi);
-      total += val * lerp(idio, shared, rho);
+      const v = val * lerp(idio, shared, rho);
+      if (isNre) nre += v; else life += v;
     }
-    totals.push(total);
+    totals.push(nre + life);
+    perVeh.push((nreVehicles > 0 ? nre / nreVehicles : 0) + (lifeVehicles > 0 ? life / lifeVehicles : 0));
   }
   totals.sort((a, b) => a - b);
+  perVeh.sort((a, b) => a - b);
 
   const n = totals.length;
-  const vehicles = prog.annualProductionVolume * prog.programLifeYears;
-  const pv = (t: number) => vehicles > 0 ? t / vehicles : 0;
+  const q = (arr: number[], p: number) => arr[Math.floor(n * p)];
 
   return {
-    p10:           totals[Math.floor(n * 0.10)],
-    p50:           totals[Math.floor(n * 0.50)],
-    p90:           totals[Math.floor(n * 0.90)],
+    p10:           q(totals, 0.10),
+    p50:           q(totals, 0.50),
+    p90:           q(totals, 0.90),
     mean:          totals.reduce((a, b) => a + b, 0) / n,
-    p10PerVehicle: pv(totals[Math.floor(n * 0.10)]),
-    p50PerVehicle: pv(totals[Math.floor(n * 0.50)]),
-    p90PerVehicle: pv(totals[Math.floor(n * 0.90)]),
+    p10PerVehicle: q(perVeh, 0.10),
+    p50PerVehicle: q(perVeh, 0.50),
+    p90PerVehicle: q(perVeh, 0.90),
     iterations:    n,
   };
 }
@@ -1431,10 +1445,12 @@ export function computeSWProgram(
       unit: '£M',
     },
     {
+      // Re-costed at each volume, so £ / vehicle follows the headline's rule (recovery window, platform share). It
+      // divided the total by volume × life, so its bracket could miss its own base (P2 #10).
       parameter: 'Production Volume (150k vs 50k units/yr, per-vehicle)',
-      low:  summary.grandTotal / Math.max(1, 150_000 * prog.programLifeYears),
+      low:  _recomputeSummary(prog, { volumeOverride: 150_000 }).perVehicle,
       base: summary.perVehicle,
-      high: summary.grandTotal / Math.max(1, 50_000 * prog.programLifeYears),
+      high: _recomputeSummary(prog, { volumeOverride: 50_000 }).perVehicle,
       unit: '£/vehicle',
     },
   ];
@@ -1457,20 +1473,25 @@ export function computeSWProgram(
   return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: prog };
 }
 
-function _recomputeTotal(
-  prog: SWProgramInputs,
-  overrides: {
-    asilOverride?:       ASILLevel;
-    complexityOverride?: SWComplexity;
-    reuseOverride?:      SWReuse;
-    regionOverride?:     SWRegion;
-    lifeOverride?:       number;
-  }
-): number {
+type SWRecomputeOverrides = {
+  asilOverride?:       ASILLevel;
+  complexityOverride?: SWComplexity;
+  reuseOverride?:      SWReuse;
+  regionOverride?:     SWRegion;
+  lifeOverride?:       number;
+  volumeOverride?:     number;
+};
+
+function _recomputeTotal(prog: SWProgramInputs, overrides: SWRecomputeOverrides): number {
+  return _recomputeSummary(prog, overrides).grandTotal;
+}
+
+function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverrides): SWSummary {
   const p2: SWProgramInputs = {
     ...prog,
     region:           overrides.regionOverride ?? prog.region,
     programLifeYears: overrides.lifeOverride   ?? prog.programLifeYears,
+    annualProductionVolume: overrides.volumeOverride ?? prog.annualProductionVolume,
     modules: prog.modules.map(m => ({
       ...m,
       asil:       overrides.asilOverride       ?? m.asil,
@@ -1478,7 +1499,7 @@ function _recomputeTotal(
       reuse:      overrides.reuseOverride      ?? m.reuse,
     })),
   };
-  return computeSWProgram(p2, { summaryOnly: true }).summary.grandTotal;
+  return computeSWProgram(p2, { summaryOnly: true }).summary;
 }
 
 // ─── Default program inputs ───────────────────────────────────────────────────

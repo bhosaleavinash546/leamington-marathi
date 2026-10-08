@@ -1401,7 +1401,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   },
   {
     id: 'porsche_cayenne_ice', powertrain: 'ICE', label: 'Porsche Cayenne V8 (ICE)',
-    desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. No electrified-powertrain software — all nine EV powertrain / battery modules are out of scope. Porsche performance, chassis and infotainment software otherwise identical.',
+    desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. Combustion powertrain software (engine, transmission, after-treatment / OBD — estimates); no electrified-powertrain software. Porsche performance, chassis and infotainment software otherwise identical.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
     disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
@@ -1560,8 +1560,9 @@ function renderResults(result: SWProgramResult): void {
         </div>`).join('')}
       </div>
       <div style="font-size:0.75rem;color:var(--sw-text-secondary);background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:6px;padding:10px 14px">
-        <strong>Uncertainty model:</strong> Triangular distributions on 9 cost buckets
-        (labour ±35%, testing ±30%, cybersec ±50%, cloud ±60%, etc.) combined with a
+        <strong>Uncertainty model:</strong> Triangular distributions on 11 cost buckets
+        (development −30 / +40 %, testing −25 / +35 %, cybersecurity −35 / +50 %, cloud −50 / +60 %, etc. — CostVision
+        engineering estimates, not sourced) combined with a
         <strong>55% programme-wide correlation</strong> — schedule slips inflate dev, test and
         integration together, so the tail reflects real correlated overrun rather than a
         cancelling independent sum. Range P10→P90: <strong>${fmtM(span)}</strong>.
