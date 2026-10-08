@@ -9,6 +9,7 @@ import { executeCalculateCost, type CostToolInput } from '../services/cost-execu
 import { regionOf, rateBookForRegion, regionalShopDefaults } from '../services/rate-book.js';
 import type { RateLibrary } from '../../src/engine/types.js';
 import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
+import { groundToolInput, ungroundedRefusal, numbersIn, isGrounded } from '../utils/agent-grounding.js';
 
 const router = Router();
 
@@ -18,8 +19,11 @@ const CALCULATE_COST_TOOL: Anthropic.Tool = {
   name: 'calculate_cost',
   description: `Run the deterministic manufacturing cost engine for a part.
 Returns an 8-bucket cost breakdown (rawMaterial, process, labour, tooling, packaging, logistics, overhead, margin), total cost, and DFM opportunities.
-Call this whenever you need actual cost numbers. You can call it multiple times to compare scenarios or test DFM improvements.
-Always call this before interpreting costs or making recommendations.`,
+Call this whenever you need actual cost numbers. You can call it multiple times to compare scenarios the user describes.
+Always call this before interpreting costs or making recommendations.
+EVERY number in params must be one the user gave in this conversation (any unit) or in the costing they shared. Never
+estimate a number yourself: leave an optional field out so the engine uses its default, and ask the user for a
+required one. A call carrying a number the user did not give is refused and tells you which.`,
   input_schema: {
     type: 'object' as const,
     properties: {
@@ -72,6 +76,27 @@ export function costInRegion(input: CostToolInput & { region?: string }, session
   return { ...rest, region };
 }
 
+/**
+ * The tool call as the engine sees it: only numbers the user gave (agent-grounding.ts). A call carrying a number the
+ * user never supplied is not costed — the model is told which and must ask.
+ */
+export function groundedCostCall(
+  raw: CostToolInput & { region?: string }, sessionRegion: string | undefined, userTexts: string[],
+): Record<string, unknown> {
+  const g = groundToolInput(raw, userTexts);
+  if (g.ungrounded.length) return ungroundedRefusal(g.ungrounded);
+  const r = costInRegion(g.input, sessionRegion);
+  return g.defaulted.length
+    ? { ...r, note: `Not stated by the user, so the country's default was used: ${g.defaulted.join(', ')}.` }
+    : r;
+}
+
+/** What the user supplied in this conversation: their messages and the costing they shared. */
+function userSuppliedTexts(message: string, history: AgentRequest['history'], costResult: AgentRequest['costResult']): string[] {
+  return [message, ...(history ?? []).filter(h => h.role === 'user').map(h => h.content),
+    ...(costResult ? [JSON.stringify(costResult)] : [])];
+}
+
 // ─── Robust JSON extractor ───────────────────────────────────────────────────
 
 function extractJSON(text: string): Record<string, unknown> {
@@ -110,6 +135,7 @@ function extractJSON(text: string): Record<string, unknown> {
 const AgentActionSchema = z.object({
   type: z.literal('populate_form'),
   commodity: z.string(),
+  partName: z.string().optional(),
   data: z.record(z.string(), z.unknown()),
 }).nullable();
 
@@ -154,11 +180,16 @@ const ID_FIELDS = {
   forgeId:    VALID_MACHINE_IDS,
 };
 
-function validateAgentResponse(raw: Record<string, unknown>): {
+function validateAgentResponse(raw: Record<string, unknown>, userTexts: string[] = []): {
   response: Record<string, unknown>;
   idWarnings: string[];
 } {
   const idWarnings: string[] = [];
+  // The prompt asks for `action.params`; the schema reads `action.data` — every populate_form action was dropped.
+  const act = raw.action as Record<string, unknown> | null | undefined;
+  if (act && typeof act === 'object' && act.data === undefined && act.params && typeof act.params === 'object') {
+    raw = { ...raw, action: { ...act, data: act.params } };
+  }
 
   // Schema validation
   const parsed = AgentResponseSchema.safeParse(raw);
@@ -183,6 +214,19 @@ function validateAgentResponse(raw: Record<string, unknown>): {
         actionData[field] = null;
       }
     }
+
+    // A number the user never gave does not reach the form (agent-grounding.ts): the field keeps the form's own value.
+    const given = numbersIn(userTexts);
+    const dropped: string[] = [];
+    for (const [field, val] of Object.entries(actionData)) {
+      if (typeof val === 'number' && !isGrounded(val, given)) { dropped.push(`${field} = ${val}`); delete actionData[field]; }
+    }
+    if (dropped.length) {
+      response.chat = (response.chat as string)
+        + `\n\nNot filled — numbers you did not give (enter your own): ${dropped.join(', ')}.`;
+    }
+    // The screen fills the form from `action.params` (main.ts `_fillAgentParams`).
+    (response.action as Record<string, unknown>).params = actionData;
 
     if (idWarnings.length > 0) {
       const listStr = idWarnings.join('; ');
@@ -256,7 +300,8 @@ ${REGION_PROMPT_BLOCK}
 1. Validate commodity from description or photo — report your confidence (0.0–1.0).
 2. If no photo/CAD, proceed from text description but note assumptions.
 3. Ask for missing critical inputs: material, annual volume, region, key dimensions.
-4. Infer geometry from photo or description to estimate cycle times and complexity.
+4. Never estimate a number yourself (cycle time, weight, dimension, die cost, scrap rate): describe the likely route
+   in words and ASK the user for the numbers. The cost engine refuses numbers the user did not give.
 5. Select the correct internal cost model and manufacturing route.
 6. NEVER invent material prices or machine rates — use the parameter IDs below.
 
@@ -919,11 +964,13 @@ Cure types: autoclave-1200mm (autoclave), oven-composite-cure (oven), rtm-press-
 
 ## When Cost Results Are Provided
 When the user message contains [Cost Engine Result: ...], interpret as follows:
-1. **Summary**: Is this cost reasonable? Benchmark against industry norms for the commodity and volume.
+1. **Summary**: What the cost is made of — compare the buckets with each other; do not quote an "industry norm" you cannot source.
 2. **Key Cost Drivers**: Which of the 8 buckets dominate, and why? Use specific £ values.
-3. **DFM/DFC Recommendations**: Top 3 concrete actions to reduce cost (cite specific buckets and expected savings %).
+3. **DFM/DFC Recommendations**: Top 3 concrete actions to reduce cost, citing the bucket each acts on. State a saving only
+   from a calculate_cost re-run on numbers the user gave — never a rule-of-thumb percentage.
 4. **Regional What-If**: Never estimate another country's cost yourself — call calculate_cost with \`region\` set to that country; the engine re-prices every rate in its book.
-5. **What-If Scenarios**: 2–3 parameter changes with estimated impact.
+5. **What-If Scenarios**: name 2–3 parameters worth changing; price one only by calling calculate_cost with a value the
+   user gives you.
 6. **Confidence Assessment**: Flag assumptions and their impact.
 
 ## Routing Table Format
@@ -1049,7 +1096,8 @@ router.post('/chat', async (req, res): Promise<void> => {
         const toolResults: Anthropic.ToolResultBlockParam[] = [];
         for (const block of apiResp.content) {
           if (block.type === 'tool_use' && block.name === 'calculate_cost') {
-            const toolResult = costInRegion(block.input as CostToolInput & { region?: string }, region);
+            const toolResult = groundedCostCall(block.input as CostToolInput & { region?: string }, region,
+              userSuppliedTexts(message, history, costResult));
             console.log(
               `[agent] tool_use calculate_cost → commodity=${(block.input as CostToolInput).commodity}`,
               `success=${toolResult.success} total=${toolResult.total}`,
@@ -1068,7 +1116,7 @@ router.post('/chat', async (req, res): Promise<void> => {
         // end_turn — extract the final text response
         const textBlock = apiResp.content.find(b => b.type === 'text') as Anthropic.TextBlock | undefined;
         const rawText = textBlock?.text ?? '{}';
-        const { response: validated } = validateAgentResponse(extractJSON(rawText));
+        const { response: validated } = validateAgentResponse(extractJSON(rawText), userSuppliedTexts(message, history, costResult));
         finalResponse = validated;
         break;
       }
@@ -1142,7 +1190,8 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
         const toolResults: Anthropic.ToolResultBlockParam[] = [];
         for (const block of apiResp.content) {
           if (block.type === 'tool_use' && block.name === 'calculate_cost') {
-            const toolResult = costInRegion(block.input as CostToolInput & { region?: string }, region);
+            const toolResult = groundedCostCall(block.input as CostToolInput & { region?: string }, region,
+              userSuppliedTexts(message, history, costResult));
             console.log(
               `[agent/stream] tool_use calculate_cost → commodity=${(block.input as CostToolInput).commodity}`,
               `success=${toolResult.success} total=${toolResult.total}`,
@@ -1166,7 +1215,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
           res.write(`data: ${JSON.stringify({ type: 'delta', text: rawText })}\n\n`);
         }
 
-        const { response: validated, idWarnings } = validateAgentResponse(extractJSON(rawText));
+        const { response: validated, idWarnings } = validateAgentResponse(extractJSON(rawText), userSuppliedTexts(message, history, costResult));
         res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
         res.end();
         needsFinalStream = false;
@@ -1197,7 +1246,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
         }
       }
 
-      const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText));
+      const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText), userSuppliedTexts(message, history, costResult));
       res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
       res.end();
     }

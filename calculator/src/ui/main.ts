@@ -63,6 +63,8 @@ import { computePaintingDrivers, analysePainting } from '../engine/modules/paint
 import {
   finishingForCommodity, surfaceRouteFromCallout, type CommodityFinishingInput,
 } from '../engine/modules/surface-finishing.js';
+import { boundDrawingCoating } from '../engine/coating-drawing-read.js';
+import { startLongTask, fmtAllowance } from './long-task-progress.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.js';
@@ -160,7 +162,7 @@ import { exportToExcelBlob } from '../export/excel.js';
 import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
 import { NOT_IN_STACK_RULES } from '../engine/design-to-cost.js';
 import { mountDtcPanel } from './design-to-cost-panel.js';
-import { analyzeRequestTimeoutMs } from '../engine/geometry-timeout.js';
+import { analyzeRequestTimeoutMs, geometryTimeoutMs } from '../engine/geometry-timeout.js';
 import { currencySymbol } from '../engine/insights.js';
 import { populateRegionPickers } from './region-options.js';
 import { setActiveRates } from '../engine/rate-context.js';
@@ -5790,8 +5792,13 @@ function renderCADAnalysisForm(): string {
       <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>Analyze &amp; Calculate </button>
     </div>
     <div id="cad-progress-wrap" class="cad-progress-wrap" style="display:none">
-      <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
+      <div class="cad-progress-head">
+        <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
+        <span class="cad-progress-elapsed" id="cad-progress-elapsed"></span>
+        <button type="button" class="btn btn-secondary btn-sm" id="cad-progress-cancel" hidden>Cancel</button>
+      </div>
       <div class="cad-progress-bar"><div class="cad-progress-fill" id="cad-progress-fill" style="width:0%"></div></div>
+      <div class="cad-progress-hint" id="cad-progress-hint"></div>
     </div>
     <div id="cad-results"></div>`;
 }
@@ -6157,11 +6164,6 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
 
   if (!progress || !progressFill || !progressLabel || !analyzeBtn || !analyzeCalcBtn) return;
 
-  const updateProgress = (pct: number, label: string) => {
-    (progressFill as HTMLElement).style.width = pct + '%';
-    progressLabel.textContent = label;
-  };
-
   progress.style.display = '';
   analyzeBtn.setAttribute('disabled', 'true');
   analyzeCalcBtn.setAttribute('disabled', 'true');
@@ -6169,6 +6171,13 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
   if (cadResultsEl) cadResultsEl.innerHTML = '';
 
   const controller = new AbortController();
+  // Elapsed time, an honest indeterminate bar while the server works, and Cancel (long-task-progress.ts).
+  const task = startLongTask({
+    wrap: progress, fill: progressFill, label: progressLabel,
+    elapsed: document.getElementById('cad-progress-elapsed'), hint: document.getElementById('cad-progress-hint'),
+    cancel: document.getElementById('cad-progress-cancel') as HTMLButtonElement | null,
+  }, () => controller.abort(new DOMException('Analysis cancelled', 'AbortError')));
+  const updateProgress = (pct: number, label: string) => task.determinate(pct, label);
   // The wait follows the file's size — the server gives the kernel the same allowance (geometry-timeout.ts).
   const waitMs = analyzeRequestTimeoutMs(cadFile?.size ?? 0);
   const timeoutId = setTimeout(
@@ -6251,7 +6260,11 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
 
-    updateProgress(20, 'Running OCCT geometry engine…');
+    task.waiting(
+      mode === 'deterministic' ? 'Measuring the geometry (OCCT kernel) and deriving the cost inputs…'
+        : 'Measuring the geometry (OCCT kernel), then the AI reads the part…',
+      `${(cadFile.size / 1e6).toFixed(1)} MB file — the server allows up to ${fmtAllowance(geometryTimeoutMs(cadFile.size))} `
+        + 'for the measurement. Large or detailed files take longest.');
     const res = await fetch('/api/cad/analyze', {
       method: 'POST', headers, body: formData, signal: controller.signal,
     });
@@ -6312,6 +6325,10 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     renderCADResults(cadAnalysisResult, autoCalculate, resolvedAnnualVol);
   } catch (err) {
     progress.style.display = 'none';
+    if (controller.signal.aborted && (controller.signal.reason as DOMException | undefined)?.name === 'AbortError') {
+      showToast('CAD analysis cancelled.', 'info');
+      return;
+    }
     // A render bug and a dead server look identical in the panel without this.
     console.error('[CAD] analysis render failed:', err);
     const cadErrEl = document.getElementById('cad-results');
@@ -6326,6 +6343,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadErrEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } finally {
     clearTimeout(timeoutId);
+    task.end();
     analyzeBtn?.removeAttribute('disabled');
     analyzeCalcBtn?.removeAttribute('disabled');
   }
@@ -6875,10 +6893,10 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 
   // Wire alternative process cards
   panel.querySelectorAll<HTMLElement>('.cad-apply-alt-btn').forEach(btn => {
-    btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType, false));
+    btn.addEventListener('click', () => { void applyAlternativeProcess(btn.dataset.commodity as CommodityType, false); });
   });
   panel.querySelectorAll<HTMLElement>('.cad-apply-alt-calc-btn').forEach(btn => {
-    btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType, true));
+    btn.addEventListener('click', () => { void applyAlternativeProcess(btn.dataset.commodity as CommodityType, true); });
   });
 
   // Wire re-analyse button (uses cached OCCT geometry — no re-upload)
@@ -6951,6 +6969,28 @@ function cadBlankSummaryHtml(): string {
   return `<div style="margin-top:3px;font-size:0.72rem;color:var(--text-muted)" title="${escHtml(b.source)}">`
     + `Blank: ${(b.grossAreaMm2 / 100).toFixed(0)} cm² gross · ${Math.round(b.boundingRectMm.lengthMm)}×${Math.round(b.boundingRectMm.widthMm)} mm · `
     + `${b.holeCount} hole${b.holeCount === 1 ? '' : 's'} — ${origin}${dl}</div>`;
+}
+
+/**
+ * Apply an ALTERNATIVE process from the analysis. The rules ran for the recommended commodity only; the analysis's
+ * sub-object for any other commodity is the model's raw first pass (die / mould cost, cavities, cycle times). So the
+ * part is re-analysed AS that commodity first — its own rules decide every input and ask what they cannot — and only
+ * then applied. It used to fill the alternative's form straight from the model (AI-path audit, Oct 2026).
+ */
+async function applyAlternativeProcess(ct: CommodityType, autoCalculate: boolean): Promise<void> {
+  if (!cadAnalysisResult) return;
+  if (cadAnalysisResult.costInputSuggestions.recommendedCommodity === ct) { applyCADToForm(ct, autoCalculate); return; }
+  const sel = document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null;
+  if (!sel) return;
+  if (!Array.from(sel.options).some(o => o.value === ct)) sel.add(new Option(COMMODITY_LABELS[ct] ?? ct, ct));
+  sel.value = ct;
+  await reanalyzeCAD();
+  if (cadAnalysisResult?.costInputSuggestions.recommendedCommodity !== ct) {
+    showToast(`Could not re-analyse the part as ${COMMODITY_LABELS[ct] ?? ct} — nothing was applied.`, 'warning');
+    return;
+  }
+  // Open questions for the new route are on the panel now; applyCADToForm keeps Calculate blocked until they are answered.
+  applyCADToForm(ct, autoCalculate);
 }
 
 /** The form's programme life (years) for the CAD rules, '' when blank — the rules then state their own assumption. */
@@ -10630,7 +10670,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
   const setStatus = (t: string) => { if (status) status.textContent = t; };
   cadFile = file;
   if (btn) { btn.disabled = true; btn.textContent = 'Analyzing…'; }
-  setStatus('Uploading & running the OCCT geometry engine… (can take ~20–60 s)');
+  setStatus(`Uploading & measuring the geometry (OCCT kernel)… the server allows up to ${fmtAllowance(geometryTimeoutMs(file.size))} for a ${(file.size / 1e6).toFixed(1)} MB file`);
   try {
     const annVol = el<HTMLInputElement>('annual-volume')?.value || '100000';
     const fd = new FormData();
@@ -11431,8 +11471,13 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
       }
 
       case 'wiring_harness': {
-        // Wiring harness has no geometry-driven sub-object; populate sensible defaults
-        setNumericField('harn-asm-time', c.estimatedCycleTimeHr * 3600, 0);
+        // No rule set measures a harness from CAD, so nothing here is derived: the assembly time stays the form's own
+        // until the engineer types theirs. It used to take the AI's cycle time unbounded (AI-path audit, Oct 2026).
+        const asm = el<HTMLInputElement>('harn-asm-time');
+        if (asm) {
+          asm.setAttribute('data-prov', 'estimated');
+          asm.title = 'Not derived from the CAD file — enter the harness assembly time';
+        }
         if (!cadAnnVol) setNumericField('harn-amort', 10000, 0);   // fallback default only when no annual volume
         break;
       }
@@ -13083,10 +13128,12 @@ function applyCADSurfaceFinishing(
   if (!st) return;
 
   const route = surfaceRouteFromCallout(st.callout);
+  let routeSet = '';
   if (route && SURFACE_FINISH_ROUTES[route]) {
     const el = document.getElementById(`${prefix}-sf-route`) as HTMLSelectElement | null;
     if (el && Array.from(el.options).some(o => o.value === route)) {
       el.value = route;
+      routeSet = route;
       _smExtraWarnings.push(
         `Surface treatment: route "${SURFACE_ROUTE_LABELS[route]}" read from the drawing callout `
         + `"${st.callout}"${st.readFrom ? ` (${st.readFrom})` : ''}. This is an AI READ of a `
@@ -13100,11 +13147,17 @@ function applyCADSurfaceFinishing(
       + 'so NO coating cost is included. Add it manually or the part is being costed bare.');
   }
 
-  if (typeof st.thicknessUm === 'number' && st.thicknessUm > 0) {
-    setNumericField(`${prefix}-sf-um`, st.thicknessUm, 0);
-  }
-  if (typeof st.maskedFeatureCount === 'number' && st.maskedFeatureCount > 0) {
-    setNumericField(`${prefix}-sf-mask`, st.maskedFeatureCount, 0);
+  // Thickness and masks are an AI read of a drawing note: used only when credible for the route set above and for the
+  // measured part (coating-drawing-read.ts). They went into the plating dwell and masking stages unbounded.
+  if (routeSet) {
+    const ft = cadOCCTGeometry?.featureTable;
+    const bounded = boundDrawingCoating({
+      route: routeSet, thicknessUm: st.thicknessUm, maskedFeatureCount: st.maskedFeatureCount,
+      measuredMaskableFeatures: ft ? ft.filter(f => f.kind === 'hole' || f.kind === 'boss').reduce((n, f) => n + (f.count || 1), 0) : undefined,
+    });
+    if (bounded.thicknessUm !== null) setNumericField(`${prefix}-sf-um`, bounded.thicknessUm, 0);
+    if (bounded.maskedFeatureCount !== null) setNumericField(`${prefix}-sf-mask`, bounded.maskedFeatureCount, 0);
+    for (const n of bounded.notes) _smExtraWarnings.push(`Surface treatment: ${n}`);
   }
   if (typeof st.tensileStrengthMPa === 'number' && st.tensileStrengthMPa > 0) {
     setNumericField(`${prefix}-sf-mpa`, st.tensileStrengthMPa, 0);

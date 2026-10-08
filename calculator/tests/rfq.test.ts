@@ -15,9 +15,13 @@ describe('agentic RFQ analysis', () => {
     // extended = per-part × qty
     const housing = a.lines.find(l => l.partName === 'Housing')!;
     expect(housing.extendedShouldCost).toBeCloseTo(40 * 1000, 0);
-    // Seal has no should-cost → estimated from material × conversion
+    // Seal has no engine should-cost → NOT costed (it was material × a rule-of-thumb "conversion" factor), in no total
     const seal = a.lines.find(l => l.partName === 'Seal')!;
-    expect(seal.shouldCostPerPart).toBeGreaterThan(0);
+    expect(seal.costed).toBe(false);
+    expect(seal.shouldCostPerPart).toBe(0);
+    expect(a.totalShouldCost).toBeCloseTo(40 * 1000 + 8 * 5000, 2);
+    expect(seal.risks[0]).toMatch(/Not should-costed.*Material content alone: £0\.04/);
+    expect(a.negotiationBrief.some(b => /no should-cost yet \(Seal\)/.test(b))).toBe(true);
   });
 
   it('flags headroom vs aggressive targets correctly', () => {
@@ -44,5 +48,20 @@ describe('agentic RFQ analysis', () => {
     expect(a.highValueLines.length).toBeLessThanOrEqual(items.length);
     expect(a.negotiationBrief.length).toBeGreaterThan(2);
     expect(a.negotiationBrief.join(' ')).toMatch(/headroom|dual-source|Pareto|tolerance/i);
+  });
+});
+
+import { groundRfqItems } from '../server/routes/rfq.js';
+describe('RFQ lines read by the model keep only numbers in the RFQ text', () => {
+  it('drops an invented weight and any model should-cost, keeps what the text states', () => {
+    const text = 'Line 1: Bracket, steel, 5,000 off, target £7.20 each, 0.35 kg';
+    const [l] = groundRfqItems([{ partName: 'Bracket', commodity: 'sheet_metal', quantity: 5000, targetPricePerPart: 7.2,
+      netWeightKg: 0.35, materialPricePerKg: 0.9, shouldCostPerPart: 6.1 }], text);
+    expect(l.quantity).toBe(5000);
+    expect(l.targetPricePerPart).toBe(7.2);
+    expect(l.netWeightKg).toBe(0.35);
+    expect(l.materialPricePerKg).toBeUndefined();
+    expect(l.shouldCostPerPart).toBeUndefined();
+    expect(l.droppedByGrounding?.length).toBe(2);
   });
 });

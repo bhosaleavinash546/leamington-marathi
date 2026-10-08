@@ -14,7 +14,7 @@ export interface RfqLineItem {
   quantity: number;
   netWeightKg?: number;
   materialPricePerKg?: number;
-  shouldCostPerPart?: number;    // pre-computed by the cost engine, if available
+  shouldCostPerPart?: number;    // the cost engine's figure for this line — the ONLY should-cost source
   targetPricePerPart?: number;   // buyer target or supplier quote
   supplierCount?: number;
   toleranceClass?: 'loose' | 'standard' | 'tight';
@@ -24,6 +24,8 @@ export interface RfqLineAnalysis {
   partName: string;
   commodity: string;
   quantity: number;
+  /** False when no engine costing came with the line: shouldCostPerPart is 0 and the line is in no total. */
+  costed: boolean;
   shouldCostPerPart: number;
   extendedShouldCost: number;
   targetPricePerPart?: number;
@@ -43,26 +45,27 @@ export interface RfqAnalysis {
   negotiationBrief: string[];
 }
 
-// Material → total conversion multiplier (total ≈ material ÷ material-fraction) when
-// no engine should-cost is supplied. Representative; only a fallback estimate.
-const CONVERSION: Record<string, number> = {
-  machining: 2.6, casting: 1.9, cast_and_machine: 2.8, forging: 2.1, sheet_metal: 2.2, sheet_metal_fab: 2.6,
-  injection_moulding: 2.3, blow_moulding: 2.2, extrusion: 1.7, thermoforming: 2.4, rotational_moulding: 2.2,
-  rubber: 2.5, composites: 3.2, painting: 3.0, biw_assembly: 2.0, wiring_harness: 1.8,
-};
-
-function estimateShouldCost(l: RfqLineItem): number {
-  if (l.shouldCostPerPart && l.shouldCostPerPart > 0) return l.shouldCostPerPart;
-  const matCost = (l.netWeightKg ?? 0) * (l.materialPricePerKg ?? 0);
-  const conv = CONVERSION[l.commodity] ?? 2.3;
-  return Math.round(matCost * conv * 100) / 100;
+/**
+ * A line's should-cost is the cost engine's figure, supplied with the line (`shouldCostPerPart`). There is no fallback:
+ * this used to multiply weight × material price by a fixed "conversion" factor per commodity (2.6 for machining …),
+ * a rule-of-thumb printed as a should-cost (AI-path audit, Oct 2026). A line without an engine costing is reported
+ * as NOT COSTED, kept out of every total, and its material content is shown for what it is.
+ */
+function engineShouldCost(l: RfqLineItem): number | null {
+  return l.shouldCostPerPart && l.shouldCostPerPart > 0 ? l.shouldCostPerPart : null;
 }
 
 export function analyzeRfq(items: RfqLineItem[]): RfqAnalysis {
   const lines: RfqLineAnalysis[] = items.map(l => {
-    const sc = estimateShouldCost(l);
+    const costed = engineShouldCost(l);
+    const sc = costed ?? 0;
     const ext = Math.round(sc * Math.max(1, l.quantity) * 100) / 100;
     const risks: string[] = [];
+    if (costed === null) {
+      const mat = (l.netWeightKg ?? 0) * (l.materialPricePerKg ?? 0);
+      risks.push('Not should-costed: no engine costing for this line — cost it in its commodity form.'
+        + (mat > 0 ? ` Material content alone: £${mat.toFixed(2)} (${l.netWeightKg} kg × £${l.materialPricePerKg}/kg).` : ''));
+    }
     let gap: number | undefined;
     if (l.targetPricePerPart && l.targetPricePerPart > 0 && sc > 0) {
       gap = Math.round(((l.targetPricePerPart - sc) / sc) * 1000) / 10;
@@ -79,18 +82,18 @@ export function analyzeRfq(items: RfqLineItem[]): RfqAnalysis {
       : gap !== undefined && gap <= -5 ? 'Stress-test the low target — confirm scope/quality before award.'
       : 'Benchmark against should-cost; request cost breakdown.';
 
-    return { partName: l.partName, commodity: l.commodity, quantity: l.quantity, shouldCostPerPart: sc, extendedShouldCost: ext, targetPricePerPart: l.targetPricePerPart, gapVsTargetPct: gap, risks, lever };
+    return { partName: l.partName, commodity: l.commodity, quantity: l.quantity, costed: costed !== null, shouldCostPerPart: sc, extendedShouldCost: ext, targetPricePerPart: l.targetPricePerPart, gapVsTargetPct: gap, risks, lever: costed === null ? 'Cost this line first — no should-cost to negotiate from.' : lever };
   });
 
   const totalShouldCost = round2(lines.reduce((s, l) => s + l.extendedShouldCost, 0));
-  const withTarget = lines.filter(l => l.targetPricePerPart && l.targetPricePerPart > 0);
+  const withTarget = lines.filter(l => l.costed && l.targetPricePerPart && l.targetPricePerPart > 0);
   const totalTarget = withTarget.length ? round2(withTarget.reduce((s, l) => s + l.targetPricePerPart! * Math.max(1, l.quantity), 0)) : null;
   const headroomOpportunity = round2(lines.reduce((s, l) => {
     if (l.targetPricePerPart && l.targetPricePerPart > l.shouldCostPerPart) return s + (l.targetPricePerPart - l.shouldCostPerPart) * Math.max(1, l.quantity);
     return s;
   }, 0));
   const aggressiveExposure = round2(lines.reduce((s, l) => {
-    if (l.targetPricePerPart && l.targetPricePerPart < l.shouldCostPerPart) return s + (l.shouldCostPerPart - l.targetPricePerPart) * Math.max(1, l.quantity);
+    if (l.costed && l.targetPricePerPart && l.targetPricePerPart < l.shouldCostPerPart) return s + (l.shouldCostPerPart - l.targetPricePerPart) * Math.max(1, l.quantity);
     return s;
   }, 0));
 
@@ -110,6 +113,8 @@ export function analyzeRfq(items: RfqLineItem[]): RfqAnalysis {
   if (singleSource.length) brief.push(`Dual-source ${singleSource.length} single-sourced line(s) (${singleSource.slice(0, 3).map(l => l.partName).join(', ')}) to create competitive tension.`);
   const tight = lines.filter(l => l.risks.some(r => r.toLowerCase().includes('tolerance')));
   if (tight.length) brief.push(`Review tolerances on ${tight.length} line(s) — relaxing non-critical GD&T cuts scrap and inspection cost.`);
+  const uncosted = lines.filter(l => !l.costed);
+  if (uncosted.length) brief.push(`${uncosted.length} line(s) have no should-cost yet (${uncosted.slice(0, 3).map(l => l.partName).join(', ')}) — cost them before negotiating; they are in no total above.`);
   brief.push(`Focus effort on the Pareto set (${highValueLines.length} of ${lines.length} parts ≈ 80% of spend); request cost breakdowns and benchmark each against should-cost.`);
 
   return { lines, totalShouldCost, totalTarget, headroomOpportunity, aggressiveExposure, highValueLines, topRisks, negotiationBrief: brief };

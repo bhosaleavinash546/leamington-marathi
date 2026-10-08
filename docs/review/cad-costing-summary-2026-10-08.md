@@ -86,15 +86,23 @@ re-checks the arithmetic and lists every question asked.
 
 - **Rules-only mode (how the demo runs): no.** No AI client is created, the cache never serves an AI result to a
   rules-only request, and a test makes any AI call throw.
-- **With an API key and AI mode on: mostly guarded, five gaps remain (not fixed — see §6).** The selected commodity's
-  inputs are overwritten by rules or blocked until answered; but:
-  1. **Commodities with no rule pack** (wiring harness, BIW assembly, painting, assembly) take the AI's numbers — e.g.
-     harness assembly time = the AI's cycle time, unbounded.
-  2. **"Alternative processes" Apply** fills a *different* commodity's form from the AI's raw sub-object (die / mould
-     cost, cavities, cycle times) — rules run only for the selected commodity.
-  3. **Drawing-read coating thickness and masked-feature count** reach the coating cost with no upper bound.
-  4. **AI agent `calculate_cost` tool**: the model chooses every parameter; only range-validated.
-  5. **RFQ screen**: should-cost = AI-extracted weight × price × conversion, outside the 8-bucket engine.
+- **With an API key and AI mode on: the five gaps found by the audit are closed (second pass, same day).**
+  1. **Commodities with no rule pack** — the harness assembly time is no longer the AI's (the field is the form's own,
+     marked "not derived"); the AI mass now snaps to the measured mass when it is more than 5 % off in EITHER direction
+     (the clamp was upper-side only).
+  2. **"Alternative processes" Apply** re-analyses the part AS that commodity first, so its own rules decide every
+     input and ask what they cannot; the model's raw sub-object is never applied.
+  3. **Drawing-read coating thickness / masks** are used only inside the plating route's standard range (zinc 5–25 µm,
+     zinc-nickel 5–15 µm, anodise 5–25 µm) and with no more masks than measured holes + bosses; otherwise refused with
+     the reason (`src/engine/coating-drawing-read.ts`).
+  4. **Agent `calculate_cost`**: every number in the call must be one the user gave (any unit — 45 s may arrive as
+     0.0125 h); a call carrying any other number is refused and the model is told to ask. Unstated overhead / margin /
+     packaging / logistics use the country's defaults. The prompt no longer asks the model to estimate cycle times or
+     savings %. The "fill the form" action was silently dropped (`params` v `data`) — fixed, with the same rule
+     (`server/utils/agent-grounding.ts`).
+  5. **RFQ**: the should-cost is the engine's or nothing — the weight × price × "conversion factor" fallback is gone; an
+     uncosted line says so and is in no total. Numbers the model reads from RFQ text must be in that text; the model
+     never supplies a cost.
 - **PCB**: the model's component price only picks a point inside the tool's own catalogue / class range — confirmed.
 
 ## 4. Confidence — what changed today
@@ -122,7 +130,7 @@ holds. **As a product it is not finished.** Open items, in priority order:
 
 | # | Open item | Impact | Effort |
 |---|---|---|---|
-| 1 | AI-mode gaps 1–5 above (bound or rule-override every AI number; rule packs for harness / BIW / painting; RFQ through the engine) | only when an API key is used | medium |
+| 1 | ~~AI-mode gaps 1–5~~ — closed (§3). Still open: rule packs for harness / BIW / painting so CAD can derive them at all | those commodities are entered by hand | medium |
 | 2 | No actuals — accuracy unmeasured | credibility of absolute £ | needs real POs / quotes |
 | 3 | STL parts: no hole / feature / tooth measurement (sprocket) | STL costs are blank + press only | medium (pure-TS mesh features) |
 | 4 | Gear route has no tube / forged-blank stock (driveshaft removes 84 % of its bar) | over-states hollow shafts | small–medium |
@@ -130,7 +138,7 @@ holds. **As a product it is not finished.** Open items, in priority order:
 | 6 | Leak test borrows the tube leak-test rig as a proxy machine | small | small |
 | 7 | Gear workbook notes print literal £ in other currencies | cosmetic | small |
 | 8 | 4340 priced under 4130 in the library | small | next rate refresh |
-| 9 | CAD analysis progress (below) | user confidence on 20–200 s waits | small–medium |
+| 9 | ~~CAD analysis progress~~ — done: step, elapsed time, the server's allowance for the file size, Cancel, screen-reader role | — | — |
 
 ## 7. UI / UX, motion and animation — honest assessment
 
@@ -145,8 +153,9 @@ overflow, 0 console errors; first paint 0.3 s.
 - Skeleton loaders and a real staged progress tracker on the PCB flow; consistent dark (black + green) and light themes.
 
 **Not yet best-in-class (vs Linear / Stripe / Figma):**
-1. **CAD analysis progress sits at "20 % Running OCCT…" for the whole 20–200 s** — no elapsed time, no stages, no
-   cancel (the PCB flow already does this properly).
+1. ~~CAD analysis progress stuck at 20 %~~ — **done**: the bar runs indeterminate while the server measures (no
+   invented percentage), with the step, an elapsed clock, "the server allows up to 5 min 6 s for this 31.1 MB file",
+   Cancel and a progressbar role (`src/ui/long-task-progress.ts`; live: `e2e/cad-progress-live.ts`).
 2. **Four animation systems** (CSS, GSAP, Motion, hand-written) act on the same elements: buttons scale, tilt and
    spring and get two click ripples; bouncy / elastic easing reads consumer, not engineering tool.
 3. Menus, command palette, trace drawer and result tabs appear / disappear with no transition.

@@ -3,12 +3,35 @@ import type { Request, Response } from 'express';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { aiLimit } from '../middleware/ai-limit.js';
 import { analyzeRfq, type RfqLineItem } from '../../src/engine/rfq.js';
+import { numbersIn, isGrounded } from '../utils/agent-grounding.js';
+
+/**
+ * A line the model read from RFQ text keeps only the numbers that are IN that text, and never a should-cost: the model
+ * reads the document, the engine costs (AI-path audit, Oct 2026). A dropped number is said on the line.
+ */
+export function groundRfqItems(items: RfqLineItem[], text: string): Array<RfqLineItem & { droppedByGrounding?: string[] }> {
+  const given = numbersIn([text]);
+  const FIELDS = ['quantity', 'netWeightKg', 'materialPricePerKg', 'targetPricePerPart', 'supplierCount'] as const;
+  return items.map(l => {
+    const out: RfqLineItem & { droppedByGrounding?: string[] } = { ...l };
+    const dropped: string[] = [];
+    delete out.shouldCostPerPart;
+    if (typeof l.shouldCostPerPart === 'number') dropped.push(`shouldCostPerPart = ${l.shouldCostPerPart} (the model never sets a cost)`);
+    for (const f of FIELDS) {
+      const v = out[f];
+      if (typeof v === 'number' && !isGrounded(v, given)) { delete out[f]; dropped.push(`${f} = ${v} (not in the RFQ text)`); }
+    }
+    if (dropped.length) out.droppedByGrounding = dropped;
+    return out;
+  });
+}
 
 const router = Router();
 
 const DECOMPOSE_SYSTEM = `You are a strategic-sourcing cost engineer. Extract the RFQ / BOM text into a JSON array of line items. For EACH part return:
 { "partName": string, "commodity": one of [machining,casting,cast_and_machine,forging,sheet_metal,sheet_metal_fab,injection_moulding,blow_moulding,extrusion,thermoforming,rotational_moulding,rubber,composites,painting,biw_assembly,wiring_harness], "quantity": number, "netWeightKg"?: number, "materialPricePerKg"?: number, "targetPricePerPart"?: number, "supplierCount"?: number, "toleranceClass"?: "loose"|"standard"|"tight" }
-Infer the commodity from the material/description. Return ONLY the JSON array, nothing else.`;
+Infer the commodity from the material/description. Copy numbers exactly as written in the text — never estimate one; leave
+a field out when the text does not state it. Return ONLY the JSON array, nothing else.`;
 
 /** POST /api/rfq/analyze — analyse RFQ line items (or decompose raw text first). */
 router.post('/analyze', aiLimit('rfq'), async (req: Request, res: Response): Promise<void> => {
@@ -31,7 +54,7 @@ router.post('/analyze', aiLimit('rfq'), async (req: Request, res: Response): Pro
       });
       const raw = (msg.content.map(b => b.type === 'text' ? b.text : '').join('') || '[]');
       const jsonStr = raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1) || '[]';
-      items = JSON.parse(jsonStr) as RfqLineItem[];
+      items = groundRfqItems(JSON.parse(jsonStr) as RfqLineItem[], text);
     }
 
     if (!items || items.length === 0) { res.status(400).json({ error: 'No RFQ line items to analyse.' }); return; }

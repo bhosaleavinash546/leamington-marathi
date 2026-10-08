@@ -289,3 +289,20 @@ input.cv-field-invalid, input[aria-invalid="true"] {
 
 /* The commodity picker's legend names the accent colour, which differs by theme (dark-green.css). */
 .ck-dark { display: none; }
+
+/* ── CAD analysis progress (long-task-progress.ts): step + elapsed + Cancel, indeterminate while the server works ── */
+.cad-progress-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.cad-progress-head .cad-progress-label { flex: 1; margin-bottom: 0; }
+.cad-progress-elapsed { font-size: 0.76rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.cad-progress-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+.cad-progress-hint:empty { display: none; }
+.cad-progress-fill.is-indeterminate {
+  width: 30% !important;
+  transition: none;
+  animation: cv-indeterminate 1.4s var(--ease-std, ease-in-out) infinite;
+}
+@keyframes cv-indeterminate { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+@media (prefers-reduced-motion: reduce) {
+  /* No sweep: a steady half-tone bar says "working" without motion. */
+  .cad-progress-fill.is-indeterminate { animation: none; width: 100% !important; opacity: 0.45; }
+}

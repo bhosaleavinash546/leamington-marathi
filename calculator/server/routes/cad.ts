@@ -1551,10 +1551,12 @@ export function normalizeCADAnalysis(
     // measured 7.42 kg cast iron, +18% — inflating the material bucket and even
     // contradicting the report's own provenance line). Never trust an AI mass that
     // exceeds measured volume × density by more than a hair.
+    // Both ways: an under-stated mass under-prices the material and the freight just as surely (AI-path audit, Oct
+    // 2026 — the clamp was one-sided, so a commodity with no rule pack took a low AI mass straight into the cost).
     let net = num(ci.netWeightKg, measuredNet);
-    if (measuredNet > 0 && net > measuredNet * 1.05) {
+    if (measuredNet > 0 && (net > measuredNet * 1.05 || net < measuredNet * 0.95)) {
       ci.netWeightClampNote =
-        `netWeightKg clamped from AI ${net.toFixed(3)} kg to measured ${measuredNet.toFixed(3)} kg (volume × density).`;
+        `netWeightKg set from AI ${net.toFixed(3)} kg to measured ${measuredNet.toFixed(3)} kg (volume × density).`;
       net = measuredNet;
     }
     ci.netWeightKg = net;

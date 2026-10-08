@@ -594,8 +594,13 @@ what is true** — nothing here has been compared with a price JLR paid.
     "engineering estimate".
   - Confidence grade (`overallConfidence`): ≥ 40 % Low → Low, ≥ 70 % High → High, else the mix's score (High 1, Medium ½)
     ≥ 0.45 → Medium. It graded on the High share alone and printed "Low" on costings with no Low data.
-  - Open AI-mode gaps (rules-only is clean): no-rule-pack commodities, "Alternative processes" Apply, drawing-read
-    coating thickness / masks, the agent's `calculate_cost`, RFQ — see `docs/review/cad-costing-summary-2026-10-08.md` §3.
+  - AI mode (closed Oct 2026, `docs/review/cad-costing-summary-2026-10-08.md` §3): the AI mass snaps to the measured
+    mass beyond ±5 %; a no-rule-pack commodity takes no AI number; "Alternative processes" Apply re-analyses AS that
+    commodity (`applyAlternativeProcess`); drawing-read coating thickness / masks pass `boundDrawingCoating`; the agent's
+    `calculate_cost` and populate_form take only numbers the USER gave (`server/utils/agent-grounding.ts` — never let
+    the model supply a number); RFQ should-cost is the engine's or "not costed" (no conversion-factor fallback).
+  - Long server waits use `src/ui/long-task-progress.ts` (indeterminate bar + step + elapsed + allowance + Cancel) —
+    never a percentage the server did not report.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
