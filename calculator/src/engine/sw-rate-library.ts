@@ -47,8 +47,8 @@ const E = (value: number, source: string, asOf: string, confidence: RateConfiden
   ({ value, source, asOf, confidence, note });
 
 export const DEFAULT_SW_RATE_LIBRARY: SWRateLibrary = {
-  version:      '1.0.0',
-  lastReviewed: '2026-06',
+  version:      '1.1.0',
+  lastReviewed: '2026-10',
 
   ukBaseRatePerPM: E(
     28_000,
@@ -76,20 +76,26 @@ export const DEFAULT_SW_RATE_LIBRARY: SWRateLibrary = {
                        'Lower cost reflects leaner process, not lower scope — pair with higher risk weighting.'),
   },
 
+  // ASIL uplift — ONE factor on total effort (software review P1 #20, Oct 2026). It was ×1.35–3.20 on development AND a
+  // test fraction rising 0.35 → 1.80 on top (an ASIL-D module's testing ≈ 16× a QM one), against ×1.26–×1.8 in every
+  // source found. No standard publishes an ISO 26262 effort multiplier; these follow the one engineering source with
+  // per-level figures (DO-178C-derived): ×1.4 from no safety requirement to ASIL-B, ×1.3 from B to D. A and C are
+  // geometric interpolations, said so. Test, integration, cyber and maintenance are fractions of development, so they
+  // carry the uplift once — the test multipliers below are neutral (1.00) and exist only for a sourced override.
   asilDevMultipliers: {
-    QM: E(1.00, 'ISO 26262 — no safety integrity requirement (baseline)', '2024-01', 'High'),
-    A:  E(1.35, 'ISO 26262 ASIL-A process overhead vs QM — industry effort studies', '2024-01', 'Medium'),
-    B:  E(1.80, 'ISO 26262 ASIL-B process overhead vs QM', '2024-01', 'Medium'),
-    C:  E(2.30, 'ISO 26262 ASIL-C process overhead vs QM', '2024-01', 'Medium'),
-    D:  E(3.20, 'ISO 26262 ASIL-D process overhead vs QM — most stringent (independence, FMEDA, formal methods)', '2024-01', 'Medium'),
+    QM: E(1.00, 'ISO 26262 — no safety integrity requirement (baseline)', '2026-10', 'High'),
+    A:  E(1.18, 'Interpolated: √1.4 between QM (1.00) and ASIL-B (1.40) — https://www.solcept.ch/en/blog/critical-systems/effort-functional-safety/', '2026-10', 'Low', 'interpolation, not a published figure'),
+    B:  E(1.40, 'Solcept, "Effort of functional safety": ×1.4 non-safety → ASIL-B (DO-178C-derived) — https://www.solcept.ch/en/blog/critical-systems/effort-functional-safety/', '2026-10', 'Low', 'engineering blog, read via search extract; no ISO 26262 standard figure exists'),
+    C:  E(1.60, 'Interpolated: 1.4 × √1.3 between ASIL-B (1.40) and ASIL-D (1.82) — https://www.solcept.ch/en/blog/critical-systems/effort-functional-safety/', '2026-10', 'Low', 'interpolation, not a published figure'),
+    D:  E(1.82, 'Solcept: ×1.4 non-safety → B, then ×1.3 B → D = 1.82 — https://www.solcept.ch/en/blog/critical-systems/effort-functional-safety/ (cf. COCOMO II RELY Very High 1.26)', '2026-10', 'Low', 'engineering blog, read via search extract'),
   },
 
   asilTestMultipliers: {
-    QM: E(0.35, 'Verification effort as fraction of dev at QM — baseline', '2024-01', 'Medium'),
-    A:  E(0.55, 'ISO 26262 ASIL-A verification/test effort fraction', '2024-01', 'Medium'),
-    B:  E(0.85, 'ISO 26262 ASIL-B verification/test effort fraction', '2024-01', 'Medium'),
-    C:  E(1.20, 'ISO 26262 ASIL-C verification/test effort fraction (test ≥ dev)', '2024-01', 'Medium'),
-    D:  E(1.80, 'ISO 26262 ASIL-D verification/test effort fraction (HIL, fault injection, MC/DC)', '2024-01', 'Medium'),
+    QM: E(1.00, 'Neutral — the ASIL uplift is carried once by asilDevMultipliers (test is a fraction of development)', '2026-10', 'Medium'),
+    A:  E(1.00, 'Neutral — see asilDevMultipliers; override only with a sourced verification-share figure', '2026-10', 'Medium'),
+    B:  E(1.00, 'Neutral — see asilDevMultipliers; override only with a sourced verification-share figure', '2026-10', 'Medium'),
+    C:  E(1.00, 'Neutral — see asilDevMultipliers; override only with a sourced verification-share figure', '2026-10', 'Medium'),
+    D:  E(1.00, 'Neutral — see asilDevMultipliers; override only with a sourced verification-share figure', '2026-10', 'Medium'),
   },
 
   complexityMultipliers: {

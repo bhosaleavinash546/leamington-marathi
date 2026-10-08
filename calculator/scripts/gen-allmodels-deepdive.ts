@@ -5,7 +5,7 @@
  * Emits a real vector PDF (jsPDF) and a print-ready HTML report.
  *   npx tsx scripts/gen-allmodels-deepdive.ts
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
 
@@ -14,15 +14,16 @@ const SIG:any={ l460:{premium_audio:{complexity:'Very High'}}, x7:{digital_key:{
   q8:{autosar_classic:{reuse:'Platform'},autosar_adaptive:{reuse:'Platform'},rtos:{reuse:'Platform'},comm_stacks:{reuse:'Platform'}},
   gls:{ivi_os:{complexity:'Very High'},voice_assistant:{complexity:'Very High'},navigation:{complexity:'Very High'},active_suspension:{complexity:'Very High'},premium_audio:{complexity:'Very High'}},
   cayenne:{autosar_classic:{reuse:'Platform'},autosar_adaptive:{reuse:'Platform'},rtos:{reuse:'Platform'},comm_stacks:{reuse:'Platform'},vehicle_motion:{complexity:'Very High'},active_suspension:{complexity:'Very High'},premium_audio:{complexity:'Very High'}} };
-const CARC:any={ l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:1.55,sen:0.55,reuse:'Medium'},
-  x7:{region:'EU',dev:'OEM_Internal',vol:60000,life:8,oh:1.60,sen:0.55,reuse:'Heavy'},
-  q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:1.58,sen:0.55,reuse:'Heavy'},
-  gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:1.62,sen:0.55,reuse:'Medium'},
-  cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:1.62,sen:0.60,reuse:'Medium'} };
-const DT:any={ mhev:{dis:MHEV,ov:{}}, bev:{dis:[],ov:{fast_charge:{complexity:'Very High'}}} };
-function res(car:string,dt:string){ const c=CARC[car],d=DT[dt]; const b:any=defaultSWProgramInputs(); const dis=new Set(d.dis);
+const CARC:any={ l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
+  x7:{region:'EU',dev:'OEM_Internal',vol:60000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
+  q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
+  gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
+  cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.60,reuse:'Medium'} };
+// Powertrain scope from the engine (P1 #5) — this script kept its own copy.
+const DT: any = { mhev: 'MHEV', bev: 'BEV' };
+function res(car:string,dt:string){ const c=CARC[car],d=DT[dt]; const b:any=defaultSWProgramInputs(); 
   const inp:any={...b,region:c.region,devSource:c.dev,programLifeYears:c.life,annualProductionVolume:c.vol,overheadMultiplier:c.oh,teamSeniorFraction:c.sen,
-    modules:b.modules.map((m:any)=>({...m,enabled:!dis.has(m.moduleId),reuse:c.reuse,...(SIG[car][m.moduleId]??{}),...(d.ov[m.moduleId]??{})}))};
+    modules:applyPowertrainScope(b.modules.map((m:any)=>({...m,enabled:true,reuse:c.reuse})),d).map((m:any)=>({...m,...(SIG[car][m.moduleId]??{})}))};
   const r=computeSWProgram(inp,{summaryOnly:false}); const map:any={}; for(const m of r.modules) map[m.moduleId]=m; return map; }
 const R:any={ l460:res('l460','mhev'), l460b:res('l460','bev'), x7:res('x7','mhev'), q8:res('q8','mhev'), gls:res('gls','mhev'), cayenne:res('cayenne','bev') };
 const evSet=new Set(MHEV);
@@ -54,7 +55,7 @@ function insight(o:Mod):string{
 // league
 const leanCount:any={}, dearCount:any={};
 for(const o of MODS){ leanCount[o.lean.short]=(leanCount[o.lean.short]||0)+1; dearCount[o.dear.short]=(dearCount[o.dear.short]||0)+1; }
-const CAT:any={ A:['EV Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
+const CAT:any={ A:['Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
 const CATS=['A','B','C','D','E','F','G'];
 const catMods=(c:string)=>MODS.filter(m=>m.def.category===c).sort((a,b)=>b.dear.cost-a.dear.cost);
 // programme totals (MHEV cohort + Cayenne BEV) from locked runs

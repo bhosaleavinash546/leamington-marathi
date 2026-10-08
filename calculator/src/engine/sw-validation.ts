@@ -17,6 +17,7 @@
  */
 
 import { computeSWProgram, defaultSWProgramInputs } from './sw-should-cost.js';
+import { SW_PUBLISHED_PROGRAMMES } from './sw-benchmarks.js';
 import type { SWProgramInputs, SWRegion, DevSource } from './sw-should-cost.js';
 
 export interface SWValidationCase {
@@ -25,6 +26,8 @@ export interface SWValidationCase {
   publishedTotalGBP:  number;   // published total SW investment
   publishedPerVehicle: number;  // published £/vehicle
   confidence:         'High' | 'Medium' | 'Low';
+  /** False until the published figure carries a source link. */
+  verified:           boolean;
   /** Public approximation of the programme's macro cost drivers. */
   config: {
     region:                 SWRegion;
@@ -55,57 +58,36 @@ export interface SWValidationReport {
   mapePerVehicle:      number;   // mean absolute % error on £/vehicle
   withinBandCount:     number;
   caseCount:           number;
+  /** How many published figures are sourced (0 today) — the screen states it beside the MAPE. */
+  verifiedCount:       number;
+  /** Cases whose published £/vehicle does not equal published total ÷ (volume × life) within 10 %. */
+  perVehicleInconsistent: number;
 }
 
 /**
- * Reference programmes. Macro configs are public approximations; published
- * figures carry their source. These are deliberately NOT tuned to minimise
- * variance — the harness reports whatever the model produces.
+ * Reference programmes: the published figures come from the ONE list in sw-benchmarks.ts (none verified — see there);
+ * the macro configs are public approximations. The model is NOT tuned to these figures and no test asserts that it
+ * matches them — matching unverified figures is not evidence of accuracy (software review P1 #6, Oct 2026).
  */
-export const SW_VALIDATION_CASES: SWValidationCase[] = [
-  {
-    programme: 'BMW iX', source: 'Berylls Strategy Advisors estimate, 2023',
-    publishedTotalGBP: 620e6, publishedPerVehicle: 4_800, confidence: 'Medium',
-    config: { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 70_000, programLifeYears: 9,
-      note: 'German OEM in-house full-stack flagship' },
-  },
-  {
-    programme: 'Porsche Taycan', source: 'SBD Automotive teardown + SW analysis',
-    publishedTotalGBP: 480e6, publishedPerVehicle: 5_200, confidence: 'Medium',
-    config: { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 40_000, programLifeYears: 8,
-      note: 'Lower volume premium sports EV' },
-  },
-  {
-    programme: 'Mercedes EQS', source: 'Analyst estimate (MBUX Hyperscreen programme)',
-    publishedTotalGBP: 710e6, publishedPerVehicle: 5_500, confidence: 'Low',
-    config: { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 55_000, programLifeYears: 9,
-      note: 'Flagship infotainment-heavy programme' },
-  },
-  {
-    programme: 'Range Rover L460', source: 'JLR programme estimate (Tier-1 heavy)',
-    publishedTotalGBP: 390e6, publishedPerVehicle: 3_800, confidence: 'Low',
-    config: { region: 'UK', devSource: 'Tier1_Supplier', annualProductionVolume: 75_000, programLifeYears: 8,
-      note: 'UK OEM with heavy Tier-1 outsourcing' },
-  },
-  {
-    programme: 'Tesla Model S HW4', source: 'Morgan Stanley Research, annualised amortised',
-    publishedTotalGBP: 850e6, publishedPerVehicle: 3_200, confidence: 'Medium',
-    config: { region: 'USA_Detroit', devSource: 'OEM_Internal', annualProductionVolume: 100_000, programLifeYears: 10,
-      note: 'US in-house, highest absolute SW investment, high volume' },
-  },
-  {
-    programme: 'Audi Q8 e-tron', source: 'VW Group Annual Report + EY SW cost model',
-    publishedTotalGBP: 520e6, publishedPerVehicle: 4_600, confidence: 'Medium',
-    config: { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 65_000, programLifeYears: 9,
-      note: 'VW Group platform-reuse benefits' },
-  },
-  {
-    programme: 'Lucid Air', source: 'Low-volume amortisation — Lucid investor notes',
-    publishedTotalGBP: 380e6, publishedPerVehicle: 7_800, confidence: 'Low',
-    config: { region: 'USA_SV', devSource: 'Startup_OSS', annualProductionVolume: 8_000, programLifeYears: 6,
-      note: 'Silicon Valley startup, very low volume → high £/vehicle' },
-  },
+const CONFIGS: SWValidationCase['config'][] = [
+  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 70_000, programLifeYears: 9, note: 'German OEM in-house full-stack flagship' },  // BMW iX
+  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 40_000, programLifeYears: 8, note: 'Lower volume premium sports EV' },  // Porsche Taycan
+  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 55_000, programLifeYears: 9, note: 'Flagship infotainment-heavy programme' },  // Mercedes EQS
+  { region: 'UK', devSource: 'Tier1_Supplier', annualProductionVolume: 75_000, programLifeYears: 8, note: 'UK OEM with heavy Tier-1 outsourcing' },  // Range Rover L460
+  { region: 'USA_Detroit', devSource: 'OEM_Internal', annualProductionVolume: 100_000, programLifeYears: 10, note: 'US in-house, high volume' },  // Tesla Model S HW4
+  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 65_000, programLifeYears: 9, note: 'VW Group platform-reuse benefits' },  // Audi Q8 e-tron
+  { region: 'USA_SV', devSource: 'Startup_OSS', annualProductionVolume: 8_000, programLifeYears: 6, note: 'Silicon Valley startup, very low volume' },  // Lucid Air
 ];
+
+export const SW_VALIDATION_CASES: SWValidationCase[] = SW_PUBLISHED_PROGRAMMES.map((p, i) => ({
+  programme: p.vehicle.replace(/ \(.*\)$/, ''),
+  source: p.source,
+  publishedTotalGBP: p.totalGBP,
+  publishedPerVehicle: p.perVehicleGBP,
+  confidence: 'Low' as const,
+  verified: p.verified,
+  config: CONFIGS[i],
+}));
 
 const DEFAULT_BAND_PCT = 35;
 
@@ -143,5 +125,10 @@ export function runValidation(band = DEFAULT_BAND_PCT, cases = SW_VALIDATION_CAS
     mapePerVehicle: mean(results.map(r => Math.abs(r.perVehicleVariancePct))),
     withinBandCount: results.filter(r => r.withinBand).length,
     caseCount: results.length,
+    verifiedCount: cases.filter(c => c.verified).length,
+    perVehicleInconsistent: cases.filter(c => {
+      const implied = c.publishedTotalGBP / (c.config.annualProductionVolume * c.config.programLifeYears);
+      return Math.abs(implied - c.publishedPerVehicle) / c.publishedPerVehicle > 0.10;
+    }).length,
   };
 }

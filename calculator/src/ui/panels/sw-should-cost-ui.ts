@@ -16,11 +16,13 @@
 
 import type {
   ASILLevel, SWComplexity, SWReuse, SWRegion, DevSource,
-  SWProgramInputs, SWProgramResult, SWModuleInput,
+  SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS,
 } from '../../engine/sw-should-cost.js';
+import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
 import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
@@ -47,6 +49,11 @@ async function syncSWRateLibrary(): Promise<void> {
     _swInputs.rateLibrary = (data.rateLibrary && typeof data.rateLibrary === 'object')
       ? data.rateLibrary as typeof _swInputs.rateLibrary
       : undefined;
+    // An untyped base-rate field shows the ACTIVE book's base (it rendered before the book arrived).
+    for (const id of SW_BASE_RATE_FIELDS) {
+      const f = document.getElementById(id) as HTMLInputElement | null;
+      if (f && f.dataset.typed !== '1') f.value = String(swLibraryBaseRate(_swInputs));
+    }
   } catch { /* offline / not authed — keep engine defaults */ }
 }
 
@@ -193,7 +200,7 @@ function asilBadge(asil: ASILLevel): string {
 // ─── Category metadata ────────────────────────────────────────────────────────
 
 const CAT_META: Record<string, { label: string; icon: string; color: string }> = {
-  A: { label: 'EV Powertrain & Battery',    icon: '<svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg>', color: '#22c55e' },
+  A: { label: 'Powertrain & Battery',    icon: '<svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg>', color: '#22c55e' },
   B: { label: 'ADAS L2/L2+',               icon: '<svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>', color: '#3b82f6' },
   C: { label: 'Infotainment & UX',          icon: '<svg class="ic" aria-hidden="true"><use href="#i-palette"/></svg>', color: '#8b5cf6' },
   D: { label: 'Vehicle Domain Controllers', icon: '<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', color: '#f59e0b' },
@@ -269,8 +276,8 @@ function renderValidationHTML(): string {
   <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
     <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none">
       <span>Model Validation</span>
-      <span style="font-size:0.68rem;font-weight:700;color:#fff;background:${rep.mapeTotal < 25 ? '#059669' : '#d97706'};border-radius:4px;padding:1px 7px">Total MAPE ${rep.mapeTotal.toFixed(0)}%</span>
-      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">${rep.withinBandCount}/${rep.caseCount} within ±${rep.band}% vs published programmes</span>
+      <span style="font-size:0.68rem;font-weight:700;color:#fff;background:#b45309;border-radius:4px;padding:1px 7px">${rep.verifiedCount}/${rep.caseCount} figures sourced</span>
+      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">Total MAPE ${rep.mapeTotal.toFixed(0)}% vs unverified published figures — not evidence of accuracy</span>
     </summary>
     <div style="padding:0 18px 16px;overflow-x:auto">
       <table class="sw-data-table" style="font-size:0.76rem">
@@ -279,8 +286,10 @@ function renderValidationHTML(): string {
       </table>
       <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">
         Back-test of total SW investment against 7 premium-EV programmes (each run with that programme's region, dev source, volume and life).
-        Published figures are third-party <strong>estimates</strong>, not audited actuals — this is envelope validation, not point-accuracy proof.
-        <strong style="color:#dc2626">Known gap:</strong> per-vehicle figures validate poorly (model amortises NRE over full lifetime vs the industry's ~2-year recovery window) — see docs/sw-cost-validation.md.
+        <strong>None of the ${rep.caseCount} published figures has a source link</strong>, and two could not be traced at all — so a
+        small variance here proves nothing; replace a figure with a sourced one (sw-benchmarks.ts) before relying on this panel.
+        ${rep.perVehicleInconsistent} of ${rep.caseCount} published £/vehicle figures do not reconcile with their own published total over
+        the volume and life used here, so per-vehicle is not compared.
       </p>
     </div>
   </details>`;
@@ -337,13 +346,17 @@ let _wizDomains: Record<SWCat, boolean> = { A: true, B: true, C: true, D: true, 
 let _wizCfg: Record<SWCat, GuidedDomainCfg> =
   Object.fromEntries(ALL_CATS.map(c => [c, { complexity: 'default', reuse: 'Medium', asil: 'default' }])) as Record<SWCat, GuidedDomainCfg>;
 let _programPhase: 'Concept' | 'Development' | 'SOP' | 'Facelift' = 'Development';
+/** The wizard's drivetrain — BEV reproduces its old behaviour (domain A = the EV stack). P1 #5. */
+let _wizPowertrain: SWPowertrain = 'BEV';
+const PT_LABEL: Record<SWPowertrain, string> = { ICE: 'ICE — combustion', MHEV: 'MHEV — 48 V mild hybrid', PHEV: 'PHEV — plug-in hybrid', BEV: 'BEV — battery-electric' };
 
 /** Map the guided selections onto the full module set in _swInputs. */
 function applyGuidedToInputs(): void {
   for (const m of _swInputs.modules) {
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
     const cat = def.category as SWCat;
-    m.enabled = _wizDomains[cat];
+    // Powertrain modules follow the drivetrain's scope; it used to switch on every Category-A module (P1 #5).
+    m.enabled = _wizDomains[cat] && (!SW_POWERTRAIN_MODULE_IDS.has(m.moduleId) || SW_POWERTRAIN_SCOPE[_wizPowertrain].on.includes(m.moduleId));
     const g = _wizCfg[cat];
     m.complexity = g.complexity === 'default' ? def.defaultComplexity : g.complexity;
     m.asil       = g.asil === 'default' ? def.defaultAsil : g.asil;
@@ -384,6 +397,8 @@ function renderWizStepBody(step: number): string {
       .map(r => `<option value="${r}" ${inp.region === r ? 'selected' : ''}>${r.replace('_',' ')}</option>`).join('');
     const phaseOpts = (['Concept','Development','SOP','Facelift'] as const)
       .map(p => `<option value="${p}" ${_programPhase === p ? 'selected' : ''}>${p}</option>`).join('');
+    const ptOpts = (['ICE', 'MHEV', 'PHEV', 'BEV'] as const)
+      .map(p => `<option value="${p}" ${_wizPowertrain === p ? 'selected' : ''}>${PT_LABEL[p]}</option>`).join('');
     return `
       <div class="sw-wiz-h">Step 1 — Vehicle &amp; Programme Context</div>
       <p class="sw-wiz-help">Tell us about the programme. These set the baseline rates and how the one-time engineering cost is spread across vehicles.</p>
@@ -392,6 +407,8 @@ function renderWizStepBody(step: number): string {
           <select id="wiz-region" class="sw-config-sel">${regionOpts}</select></div>
         <div class="sw-field-group"><label class="sw-label">Programme phase ${tip('Concept/Development/SOP/Facelift — informational; facelift programmes usually reuse more software.')}</label>
           <select id="wiz-phase" class="sw-config-sel">${phaseOpts}</select></div>
+        <div class="sw-field-group"><label class="sw-label">Powertrain ${tip('Sets which powertrain software is in scope: engine / transmission for ICE, 48 V and hybrid control for MHEV, both stacks for PHEV, the EV stack for BEV.')}</label>
+          <select id="wiz-powertrain" class="sw-config-sel">${ptOpts}</select></div>
         <div class="sw-field-group"><label class="sw-label">Annual production volume ${tip('Vehicles per year. Higher volume spreads the software investment over more cars.')}</label>
           <input id="wiz-vol" type="number" class="sw-config-inp" min="1000" max="500000" step="1000" value="${inp.annualProductionVolume}"></div>
         <div class="sw-field-group"><label class="sw-label">Programme life (years) ${tip('How long the software is developed and maintained — typically 5–10 years.')}</label>
@@ -459,12 +476,12 @@ function renderWizStepBody(step: number): string {
       <div class="sw-wiz-h">Step 5 — Review &amp; Fine-Tune</div>
       <p class="sw-wiz-help">Adjust the commercial assumptions, then recalculate. Most users can leave these at defaults.</p>
       <div class="sw-grid sw-grid-3" style="gap:16px">
-        <div class="sw-field-group"><label class="sw-label">Overhead multiplier ${tip('Office, IT, management on top of bare salary. 1.6 is typical.')}</label>
+        <div class="sw-field-group"><label class="sw-label">Overhead multiplier ${tip('Facilities, IT and programme management on top of the base rate, which already includes benefits. 1.15 is the default; going much higher counts benefits twice.')}</label>
           <input id="wiz-overhead" type="number" class="sw-config-inp" min="1" max="3" step="0.05" value="${inp.overheadMultiplier}"></div>
         <div class="sw-field-group"><label class="sw-label">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
           <input id="wiz-senior" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inp.teamSeniorFraction}"></div>
         <div class="sw-field-group"><label class="sw-label">UK base rate £/PM ${tip('UK senior-blended rate per person-month before overhead. All regions scale from this.')}</label>
-          <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value}"></div>
+          <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? swLibraryBaseRate(inp)}"${inp.baseRateGBP ? ' data-typed="1"' : ''}></div>
       </div>
       <div style="text-align:center;margin-top:16px"><button id="wiz-recalc" class="sw-wiz-btn-primary">↻ Recalculate</button></div>
       <div id="wiz-sensitivity" style="margin-top:14px"></div>`;
@@ -482,6 +499,7 @@ function readWizStep(step: number): void {
   if (step === 1) {
     const region = (g('wiz-region') as HTMLSelectElement)?.value; if (region) _swInputs.region = region as SWRegion;
     const phase = (g('wiz-phase') as HTMLSelectElement)?.value as typeof _programPhase; if (phase) _programPhase = phase;
+    const pt = (g('wiz-powertrain') as HTMLSelectElement)?.value as SWPowertrain; if (pt) { _wizPowertrain = pt; _swInputs.powertrain = pt; }
     const vol = parseInt((g('wiz-vol') as HTMLInputElement)?.value); if (!isNaN(vol)) _swInputs.annualProductionVolume = Math.max(1, vol);
     const life = parseInt((g('wiz-life') as HTMLInputElement)?.value); if (!isNaN(life)) _swInputs.programLifeYears = Math.max(1, life);
   } else if (step === 2) {
@@ -493,7 +511,8 @@ function readWizStep(step: number): void {
   } else if (step === 5) {
     const ov = parseFloat((g('wiz-overhead') as HTMLInputElement)?.value); if (!isNaN(ov)) _swInputs.overheadMultiplier = Math.max(1, ov);
     const sf = parseFloat((g('wiz-senior') as HTMLInputElement)?.value); if (!isNaN(sf)) _swInputs.teamSeniorFraction = Math.min(1, Math.max(0, sf));
-    const br = parseFloat((g('wiz-baserate') as HTMLInputElement)?.value); if (!isNaN(br) && br > 0) _swInputs.baseRateGBP = br;
+    const brEl = g('wiz-baserate') as HTMLInputElement | null;
+    if (brEl) _swInputs.baseRateGBP = baseRateOverride(brEl.value, brEl.dataset.typed === '1');
   }
 }
 
@@ -603,7 +622,7 @@ function renderSWPanelHTML(): string {
       <tr class="sw-module-row" data-module-id="${def.id}">
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
         <td class="sw-mod-name">
-          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}</div>
+          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}${def.estimateBasis ? ` <span title="${esc('Estimate: ' + def.estimateBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--amber,#b45309);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">estimate</span>` : ''}</div>
           <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
         </td>
         <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:var(--sw-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>
@@ -709,6 +728,17 @@ function renderSWPanelHTML(): string {
         <select id="sw-dev-source" class="sw-config-sel">${sourceOpts}</select>
       </div>
       <div class="sw-field-group">
+        <label class="sw-label">Powertrain</label>
+        <select id="sw-powertrain" class="sw-config-sel" title="Switches the powertrain modules in scope (engine SW_POWERTRAIN_SCOPE); you can still tick modules by hand afterwards.">
+          <option value="" ${inputs.powertrain ? '' : 'selected'}>— as configured —</option>
+          ${(['ICE', 'MHEV', 'PHEV', 'BEV'] as const).map(p => `<option value="${p}" ${inputs.powertrain === p ? 'selected' : ''}>${PT_LABEL[p]}</option>`).join('')}
+        </select>
+      </div>
+      <div class="sw-field-group">
+        <label class="sw-label">Platform volume, all powertrains (veh/yr)</label>
+        <input id="sw-platform-vol" type="number" class="sw-config-inp" min="0" step="1000" placeholder="blank = this variant only" value="${inputs.platformAnnualVolume ?? ''}" title="Vehicles per year across every powertrain variant sharing the non-powertrain software. Shared modules are attributed to this variant by its share of that volume.">
+      </div>
+      <div class="sw-field-group">
         <label class="sw-label">Programme Life (years)</label>
         <input id="sw-prog-life" type="number" class="sw-config-inp" min="5" max="20" step="1" value="${inputs.programLifeYears}">
       </div>
@@ -726,7 +756,7 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label">UK Base Rate (£/PM)</label>
-        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value}" title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
+        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? swLibraryBaseRate(inputs)}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
@@ -762,15 +792,20 @@ function renderSWPanelHTML(): string {
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
     <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">Powertrain Cost Study</button>
     <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">L460 Competitive Benchmark</button>
-    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for all 49 modules" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive (all 49)</button>
+    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for every module" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive</button>
     <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
   </div>
+  <p id="sw-reports-stale" style="font-size:0.72rem;color:var(--sw-text-muted);margin:-8px 0 14px">
+    The Study, Benchmark, Deep-Dive, All-Models and "View full report" pages are <strong>static reports generated before the
+    October 2026 model fixes</strong> (one overhead default, sourced ASIL uplift, ICE / hybrid software, powertrain scope) —
+    their figures differ from the live calculation above, which is the current model.
+  </p>
   ${(() => {
     const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
     if (!active?.reportUrl) return '';
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;padding:10px 14px;border-radius:8px;border:1px solid rgba(29,78,216,0.30);background:linear-gradient(135deg,rgba(37,99,235,0.10),rgba(37,99,235,0.04))">
       <span style="font-size:1.05rem"></span>
-      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown available for ${esc(active.label)} — every parameter, all ${SW_MODULES.length} modules.</span>
+      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown for ${esc(active.label)} — a static report from before the October 2026 model fixes; its figures differ from the live calculation.</span>
       <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" style="display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;padding:7px 15px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:7px;cursor:pointer;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,0.30);transition:transform 0.15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
         View full report →
       </button>
@@ -1198,9 +1233,9 @@ function readConfig(): void {
   const devSrc     = (get('sw-dev-source') as HTMLSelectElement)?.value as DevSource || 'OEM_Internal';
   const life       = parseInt((get('sw-prog-life') as HTMLInputElement)?.value) || 10;
   const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
-  const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || 1.60;
+  const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || SW_DEFAULT_OVERHEAD;
   const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
-  const baseRate   = parseFloat((get('sw-base-rate') as HTMLInputElement)?.value);
+  const baseRateEl = get('sw-base-rate') as HTMLInputElement | null;
   const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
   const cloud      = (get('sw-inc-cloud') as HTMLInputElement)?.checked ?? true;
 
@@ -1210,7 +1245,10 @@ function readConfig(): void {
   _swInputs.annualProductionVolume = Math.max(1, vol);
   _swInputs.overheadMultiplier     = Math.max(1, overhead);
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
-  _swInputs.baseRateGBP            = isNaN(baseRate) || baseRate <= 0 ? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value : baseRate;
+  // Only a TYPED base rate overrides the active (company or built-in) rate book — P1 #2.
+  _swInputs.baseRateGBP            = baseRateEl ? baseRateOverride(baseRateEl.value, baseRateEl.dataset.typed === '1') : _swInputs.baseRateGBP;
+  const platVol = parseInt((get('sw-platform-vol') as HTMLInputElement | null)?.value ?? '');
+  _swInputs.platformAnnualVolume   = platVol > 0 ? platVol : undefined;
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost       = cloud;
 
@@ -1256,7 +1294,9 @@ interface SWVehicleDemo {
   overhead:        number;
   senior:          number;
   reuse:           SWReuse;
-  /** Category-A powertrain modules to DISABLE (not applicable to this drivetrain). */
+  /** The drivetrain — its powertrain modules come from the engine's SW_POWERTRAIN_SCOPE (P1 #5). */
+  powertrain:      SWPowertrain;
+  /** Other modules to disable (not powertrain — that is the scope's job). */
   disabledModules: string[];
   /** Optional per-module tweaks (complexity/asil) for signature systems. */
   moduleOverrides?: Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
@@ -1264,15 +1304,12 @@ interface SWVehicleDemo {
   reportUrl?: string;
 }
 
-// 48V mild-hybrid: no BEV-scale HV powertrain SW — keep only 48V regen + light
-// thermal; disable the BEV battery/charge/drive modules.
-const MHEV_DISABLED = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl'];
 
 export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
-    id: 'rr_l460', label: 'Range Rover L460 (PHEV)',
+    id: 'rr_l460', powertrain: 'PHEV', label: 'Range Rover L460 (PHEV)',
     desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
-    region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium',
+    region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/l460-software-cost-breakdown.html',  // relative to import.meta.env.BASE_URL
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
@@ -1284,30 +1321,30 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'bmw_x7', label: 'BMW X7 (48V MHEV)',
+    id: 'bmw_x7', powertrain: 'MHEV', label: 'BMW X7 (48V MHEV)',
     desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy',
+    region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/bmw-x7-software-cost-breakdown.html',
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       digital_key: { complexity: 'Very High' },   // BMW Digital Key Plus (UWB), industry-leading
     },
   },
   {
-    id: 'audi_q8', label: 'Audi Q8 (48V MHEV)',
+    id: 'audi_q8', powertrain: 'MHEV', label: 'Audi Q8 (48V MHEV)',
     desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy',
+    region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/audi-q8-software-cost-breakdown.html',
     // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
     moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
   },
   {
-    id: 'merc_gls', label: 'Mercedes GLS 450 (48V MHEV)',
+    id: 'merc_gls', powertrain: 'MHEV', label: 'Mercedes GLS 450 (48V MHEV)',
     desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/mercedes-gls-software-cost-breakdown.html',
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       ivi_os:            { complexity: 'Very High' },
       voice_assistant:   { complexity: 'Very High' },
@@ -1317,9 +1354,9 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne', label: 'Porsche Cayenne Electric (2026)',
+    id: 'porsche_cayenne', powertrain: 'BEV', label: 'Porsche Cayenne Electric (2026)',
     desc: 'E4 platform (PPE, 800V), full BEV, Porsche Driver Experience HMI. Shares PPE middleware with Macan EV / Audi Q6 e-tron (Platform reuse there); bespoke Porsche 4D chassis, Active Ride, 800V high-power charging and Burmester audio at Very-High complexity. Full EV powertrain stack retained.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-software-cost-breakdown.html',
     disabledModules: [],  // full BEV: BMS / charge / drive software all in scope
     moduleOverrides: {
@@ -1333,9 +1370,9 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_phev', label: 'Porsche Cayenne E-Hybrid (PHEV)',
+    id: 'porsche_cayenne_phev', powertrain: 'PHEV', label: 'Porsche Cayenne E-Hybrid (PHEV)',
     desc: 'MLB Evo · PCM · E-Hybrid plug-in powertrain. Same Porsche performance software as the BEV, but the plug-in-hybrid powertrain is retained at reduced scope (smaller pack, lower charging power) — BMS / SOC / drive-unit at High rather than Very-High.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-phev-software-cost-breakdown.html',
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
@@ -1345,22 +1382,22 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_mhev', label: 'Porsche Cayenne (48V MHEV)',
+    id: 'porsche_cayenne_mhev', powertrain: 'MHEV', label: 'Porsche Cayenne (48V MHEV)',
     desc: 'MLB Evo · PCM · 48V mild-hybrid powertrain. High-voltage battery / charge / drive modules are not applicable and disabled; 48V regen and battery-thermal retained. Porsche performance software at Very-High complexity.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-mhev-software-cost-breakdown.html',
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
       vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
     },
   },
   {
-    id: 'porsche_cayenne_ice', label: 'Porsche Cayenne V8 (ICE)',
+    id: 'porsche_cayenne_ice', powertrain: 'ICE', label: 'Porsche Cayenne V8 (ICE)',
     desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. No electrified-powertrain software — all nine EV powertrain / battery modules are out of scope. Porsche performance, chassis and infotainment software otherwise identical.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
-    disabledModules: ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'],
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
       vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
@@ -1372,36 +1409,33 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
 // Generated from car identity × drivetrain so they match scripts/gen-sw-report.ts
 // and the comparison study exactly. Each car keeps the drivetrain it already ships
 // as its primary demo above; the other three are appended here.
-const _ICE_OFF = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'];
 type Sig = Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
 interface StudyCar { id: string; slug: string; flag: string; name: string; region: SWRegion; devSource: DevSource; volume: number; life: number; overhead: number; senior: number; reuse: SWReuse; sig: Sig; skip: string; }
-interface StudyDT { key: string; code: string; dis: string[]; ov: Sig; note: string; }
+interface StudyDT { key: string; code: string; pt: SWPowertrain; }
 const STUDY_CARS: StudyCar[] = [
-  { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
-  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
-  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
-  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
+  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
+  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
 ];
 const STUDY_DTS: StudyDT[] = [
-  { key: 'ice', code: 'ICE', dis: _ICE_OFF, ov: {}, note: 'combustion — no EV powertrain software' },
-  { key: 'mhev', code: 'MHEV', dis: MHEV_DISABLED, ov: {}, note: '48V mild hybrid — HV battery/charge/drive disabled' },
-  { key: 'phev', code: 'PHEV', dis: [], ov: { bms_core: { complexity: 'High' }, soc_soh_soe: { complexity: 'High' }, edu_control: { complexity: 'High' }, fast_charge: { complexity: 'Medium' } }, note: 'plug-in hybrid — powertrain retained, de-rated vs BEV' },
-  { key: 'bev', code: 'BEV', dis: [], ov: { fast_charge: { complexity: 'Very High' } }, note: 'full battery-electric — entire EV powertrain stack in scope' },
-];
-for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
+  { key: 'ice', code: 'ICE', pt: 'ICE' }, { key: 'mhev', code: 'MHEV', pt: 'MHEV' },
+  { key: 'phev', code: 'PHEV', pt: 'PHEV' }, { key: 'bev', code: 'BEV', pt: 'BEV' },
+];for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
   if (dt.key === c.skip) continue;
   SW_VEHICLE_DEMOS.push({
     id: `${c.id}__${dt.key}`, label: `${c.flag} ${c.name} (${dt.code})`,
-    desc: `${c.name} — ${dt.code} powertrain variant (apple-to-apple study): ${dt.note}. Car identity and macro assumptions held constant; only the powertrain-software scope changes.`,
+    desc: `${c.name} — ${dt.code} powertrain variant (apple-to-apple study): ${SW_POWERTRAIN_SCOPE[dt.pt].note}. Car identity and macro assumptions held constant; only the powertrain-software scope changes.`,
+    powertrain: dt.pt,
     region: c.region, devSource: c.devSource, volume: c.volume, life: c.life, overhead: c.overhead, senior: c.senior, reuse: c.reuse,
     reportUrl: `reports/${c.slug}-${dt.key}-software-cost-breakdown.html`,
-    disabledModules: [...dt.dis],
-    moduleOverrides: { ...c.sig, ...dt.ov },
+    disabledModules: [],
+    moduleOverrides: { ...c.sig },
   });
 }
 
 /** Build a full programme-inputs object for a vehicle demo. */
-function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
+export function buildVehicleInputs(v: SWVehicleDemo, rateLibrary?: SWProgramInputs['rateLibrary']): SWProgramInputs {
   const b = defaultSWProgramInputs();
   const disabled = new Set(v.disabledModules);
   return {
@@ -1412,10 +1446,13 @@ function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
     annualProductionVolume: v.volume,
     overheadMultiplier:     v.overhead,
     teamSeniorFraction:     v.senior,
-    modules: b.modules.map(m => ({
+    ...(rateLibrary ? { rateLibrary } : {}),
+    powertrain:             v.powertrain,
+    // Powertrain modules from the engine's ONE scope (P1 #5), then the car's own disables and signature overrides.
+    // Every non-powertrain module is in a demo's scope (incl. the premium-trim ones its description lists) unless the
+    // demo disables it — as before; the powertrain modules then come from the scope.
+    modules: applyPowertrainScope(b.modules.map(m => ({ ...m, enabled: !disabled.has(m.moduleId), reuse: v.reuse })), v.powertrain).map(m => ({
       ...m,
-      enabled: !disabled.has(m.moduleId),
-      reuse:   v.reuse,
       ...(v.moduleOverrides?.[m.moduleId] ?? {}),
     })),
   };
@@ -1426,7 +1463,8 @@ function applyVehicleDemo(id: string): void {
   const v = SW_VEHICLE_DEMOS.find(d => d.id === id);
   if (!v) return;
   _swActiveVehicle = id;
-  _swInputs = buildVehicleInputs(v);
+  // A demo is costed on the ACTIVE rate book — it used to drop the company book (P1 #2).
+  _swInputs = buildVehicleInputs(v, _swInputs.rateLibrary);
   _swResult = null;
   const panel = document.getElementById('sw-panel');
   if (panel?.parentElement) {
@@ -1691,7 +1729,7 @@ function renderResults(result: SWProgramResult): void {
 
   // Benchmark comparison
   const bmRows = result.benchmarks.map(b => {
-    const isThis = b.vehicle.includes('This Model');
+    const isThis = b.vehicle === 'This programme';
     const thisM  = s.grandTotal / 1_000_000;
     const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
     const diffFmt = isThis ? '⭐ Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
@@ -1702,23 +1740,23 @@ function renderResults(result: SWProgramResult): void {
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
       <td class="sw-num">£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}</td>
       <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
-      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${esc(b.source)}</td>
+      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${isThis ? '' : b.verified ? '' : '<strong style="color:var(--amber,#b45309)">Unverified</strong> · '}${esc(b.source)}</td>
     </tr>`;
   }).join('');
 
   const bmEl = document.getElementById('sw-benchmarks');
   if (bmEl) bmEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment</div>
+    <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment (unverified)</div>
     <table class="sw-data-table">
       <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
       <tbody>${bmRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. Figures are industry estimates ±20%.</p>`;
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. <strong>None of these published figures has a source link</strong> and two could not be traced at all — they are shown for context only; do not quote them. The published £/vehicle figures do not reconcile with the published totals.</p>`;
 
   // Rec 4: OEM / Tier-1 / Startup decomposition
   const sourceDecomp: { src: string; label: string; srcMult: number; riskNote: string; ipNote: string; warrantyNote: string }[] = [
     { src: 'OEM_Internal',   label: 'OEM Internal',    srcMult: 1.00, riskNote: 'Full visibility & control', ipNote: 'IP owned outright', warrantyNote: 'Full in-house warranty liability' },
-    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', srcMult: 0.88, riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier warranty share ~40%' },
+    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', srcMult: 0.88, riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier carries a contractual warranty share' },
     { src: 'Startup_OSS',   label: 'Startup / OSS',   srcMult: 0.72, riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
   ];
   const currentSrc = result.inputs.devSource;
@@ -1759,7 +1797,7 @@ function renderResults(result: SWProgramResult): void {
       const top = sorted[0];
       insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>', level: 'info',
         title: `Top cost driver: ${top.moduleName}`,
-        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} dominates programme cost. Evaluate build-vs-buy: licensed platform IP could reduce this by 30–50%.`,
+        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} is the largest single module. Evaluate build-vs-buy: price a licensed platform against this figure (no saving is assumed here).`,
       });
     }
 
@@ -1773,19 +1811,26 @@ function renderResults(result: SWProgramResult): void {
 
     const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;
     const lifecyclePct = s.grandTotal > 0 ? lifecycleTotal / s.grandTotal * 100 : 0;
+    // Name the bucket that actually leads — the text used to say "cloud" whatever the numbers were (P1 #7).
+    const lifeTop = [
+      { name: 'maintenance', value: s.totalMaintenance },
+      { name: 'cloud', value: s.totalCloud },
+      { name: 'IP licensing', value: s.totalLicensing },
+    ].sort((a, b) => b.value - a.value)[0];
     if (lifecyclePct > 45) {
       insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', level: 'warn',
         title: `High lifecycle cost (${fmt(lifecyclePct,0)}% of total)`,
-        body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). Cloud infrastructure for AI retraining is the main driver. Hybrid cloud/on-premise architecture could reduce by 25–35%.`,
+        body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). The largest lifecycle bucket is ${lifeTop.name} at ${fmtM(lifeTop.value)} — review its assumptions first.`,
       });
     } else {
       insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-check-circle"/></svg>', level: 'ok',
-        title: `NRE/lifecycle split is healthy (${fmt(100-lifecyclePct,0)}% NRE)`,
-        body: `Development NRE accounts for ${fmt(100-lifecyclePct,0)}% of total. Typical for an OEM insourcing most development.`,
+        title: `NRE / lifecycle split: ${fmt(100-lifecyclePct,0)}% NRE`,
+        body: `Development NRE is ${fmt(100-lifecyclePct,0)}% of the total; lifecycle (maintenance, cloud, IP) is ${fmt(lifecyclePct,0)}%.`,
       });
     }
 
-    const nonThis = result.benchmarks.filter(b => !b.vehicle.includes('This Model'));
+    // Peer comparison only against SOURCED figures — none exists yet (sw-benchmarks.ts), so this insight is withheld (P1 #6).
+    const nonThis = result.benchmarks.filter(b => b.vehicle !== 'This programme' && b.verified);
     const medianBm = [...nonThis].sort((a,b)=>a.totalM-b.totalM)[Math.floor(nonThis.length/2)]?.totalM ?? 0;
     const thisM = s.grandTotal / 1_000_000;
     if (medianBm > 0) {
@@ -1811,7 +1856,7 @@ function renderResults(result: SWProgramResult): void {
         const saving = s.grandTotal - indiaTotal;
         insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>', level: 'info',
           title: `Offshoring to India could save ${fmtM(saving)}`,
-          body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. Factor in coordination overhead (+15%), knowledge transfer, and time zone risk.`,
+          body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. This is the whole programme re-costed at the India hub; add your own figure for coordination, knowledge transfer and time-zone risk.`,
         });
       }
     }
@@ -1893,8 +1938,10 @@ ${top3.map((m,i) => `${i+1}. ${m.moduleName}: £${(m.grandTotal/1e6).toFixed(1)}
 
 Provide:
 1. A 2-sentence executive summary
-2. Top 3 cost reduction opportunities with estimated savings
+2. Top 3 cost-reduction levers, naming the cost bucket each acts on
 3. Key risk factors requiring management attention
+Use ONLY the figures above. Do NOT state any saving, percentage or amount that is not in the data above — the cost is
+calculated by the CostVision engine and this text must not add numbers to it.
 Keep response concise and actionable (under 250 words).`;
 
   const render = (text: string, cached: boolean) => {
@@ -2027,10 +2074,10 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   const bmData = [
     ['Vehicle / Programme', 'Total SW Cost (£M)', '£/Vehicle', 'vs This Model (%)', 'Source'],
     ...result.benchmarks.map(b => {
-      const isThis = b.vehicle.includes('This Model');
+      const isThis = b.vehicle === 'This programme';
       const thisM = s.grandTotal / 1_000_000;
       const diff = (!isThis && b.totalM > 0) ? f2((thisM - b.totalM) / b.totalM * 100) : 'Base';
-      return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, b.source];
+      return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, (isThis || b.verified ? '' : 'UNVERIFIED — ') + b.source];
     }),
   ];
 
@@ -2232,7 +2279,7 @@ function exportSWPDF(result: SWProgramResult): void {
         head: [['Vehicle / Programme', 'Total SW Cost', '£/Vehicle', 'Source']],
         body: result.benchmarks.map(b => [
           b.vehicle, b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal),
-          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`, b.source,
+          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`, (b.vehicle === 'This programme' || b.verified ? '' : 'UNVERIFIED — ') + b.source,
         ]),
         headStyles: th,
         columnStyles: { 0: { cellWidth: 56 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { cellWidth: 74 } },
@@ -2300,7 +2347,8 @@ function compareConfigs(): void {
 
   const scenarios: { name: string; inputs: SWProgramInputs }[] = [
     { name: '● Current', inputs: _swInputs },
-    ...(_savedConfigs.map(c => ({ name: c.name, inputs: c.inputs }))),
+    // Saved configs carry no rate book: compare them on the same active book as "Current" (P1 #2).
+    ...(_savedConfigs.map(c => ({ name: c.name, inputs: { ...c.inputs, rateLibrary: _swInputs.rateLibrary } }))),
   ];
   if (scenarios.length < 2) {
     out.innerHTML = `<div style="font-size:0.75rem;color:var(--sw-text-muted);font-style:italic">Save at least one configuration to compare it against the current inputs.</div>`;
@@ -2390,6 +2438,26 @@ function showSWError(msg: string): void {
 // ─── Wire events ──────────────────────────────────────────────────────────────
 
 export function wireSWPanel(): void {
+  // A base-rate field becomes an override the moment the engineer types in it (sw-rate-field.ts).
+  const swPanel = document.getElementById('sw-panel');
+  if (swPanel && !swPanel.dataset.rateTypedWired) {
+    swPanel.dataset.rateTypedWired = '1';
+    swPanel.addEventListener('input', e => {
+      const t = e.target as HTMLInputElement;
+      if ((SW_BASE_RATE_FIELDS as readonly string[]).includes(t.id)) t.dataset.typed = '1';
+    });
+  }
+  // Powertrain select: apply the engine's scope to the modules and redraw the module table (P1 #5).
+  document.getElementById('sw-powertrain')?.addEventListener('change', e => {
+    const pt = (e.target as HTMLSelectElement).value as SWPowertrain | '';
+    if (!pt) return;
+    readConfig();
+    _swInputs.powertrain = pt;
+    _swInputs.modules = applyPowertrainScope(_swInputs.modules, pt);
+    _swResult = null;
+    const panel = document.getElementById('sw-panel');
+    if (panel?.parentElement) { panel.parentElement.innerHTML = renderSWPanelHTML(); wireSWPanel(); }
+  });
   // Mode toggle (Guided wizard ↔ Advanced expert panel) + wizard wiring
   document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(btn =>
     btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));

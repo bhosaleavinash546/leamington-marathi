@@ -5,7 +5,7 @@
  * real vector PDF (jsPDF, no browser) and a print-ready HTML report.
  *   npx tsx scripts/gen-l460-deepdive.ts
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
 
@@ -19,16 +19,17 @@ const SIG: any = {
   cayenne:{ autosar_classic:{reuse:'Platform'},autosar_adaptive:{reuse:'Platform'},rtos:{reuse:'Platform'},comm_stacks:{reuse:'Platform'},vehicle_motion:{complexity:'Very High'},active_suspension:{complexity:'Very High'},premium_audio:{complexity:'Very High'} },
 };
 const CAR: any = {
-  l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:1.55,sen:0.55,reuse:'Medium'},
-  x7:{region:'EU',dev:'OEM_Internal',vol:60000,life:8,oh:1.60,sen:0.55,reuse:'Heavy'},
-  q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:1.58,sen:0.55,reuse:'Heavy'},
-  gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:1.62,sen:0.55,reuse:'Medium'},
-  cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:1.62,sen:0.60,reuse:'Medium'},
+  l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
+  x7:{region:'EU',dev:'OEM_Internal',vol:60000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
+  q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
+  gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
+  cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.60,reuse:'Medium'},
 };
-const DT: any = { mhev:{dis:MHEV,ov:{}}, bev:{dis:[],ov:{fast_charge:{complexity:'Very High'}}} };
-function results(car:string, dt:string, reuse?:string){ const c=CAR[car], d=DT[dt]; const b:any=defaultSWProgramInputs(); const dis=new Set(d.dis);
+// Powertrain scope from the engine (P1 #5) — this script kept its own copy.
+const DT: any = { mhev: 'MHEV', bev: 'BEV' };
+function results(car:string, dt:string, reuse?:string){ const c=CAR[car], d=DT[dt]; const b:any=defaultSWProgramInputs(); 
   const inp:any={...b,region:c.region,devSource:c.dev,programLifeYears:c.life,annualProductionVolume:c.vol,overheadMultiplier:c.oh,teamSeniorFraction:c.sen,
-    modules:b.modules.map((m:any)=>({...m,enabled:!dis.has(m.moduleId),reuse:reuse??c.reuse,...(SIG[car][m.moduleId]??{}),...(d.ov[m.moduleId]??{})}))};
+    modules:applyPowertrainScope(b.modules.map((m:any)=>({...m,enabled:true,reuse:reuse??c.reuse})),d).map((m:any)=>({...m,...(SIG[car][m.moduleId]??{})}))};
   const r=computeSWProgram(inp,{summaryOnly:false}); const map:any={}; for(const m of r.modules) map[m.moduleId]=m; return map; }
 
 const L=results('l460','mhev'), X=results('x7','mhev'), Q=results('q8','mhev'), G=results('gls','mhev'), LH=results('l460','mhev','Heavy');
@@ -60,7 +61,7 @@ function insight(o:Mod):string{
   if(o.deltaVsBest!=null && o.deltaVsBest>0.4e6) return `${M(o.gt)} — ${M(o.deltaVsBest)} above ${o.bestName}. A reuse gap worth ~${M(o.reuseSave)} to close by carrying more forward.`;
   return `Competitive at ${M(o.gt)} — at or near the leanest peer. Remaining reuse upside ~${M(o.reuseSave)}.`;
 }
-const CAT:any={ A:['EV Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
+const CAT:any={ A:['Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
 const CATS=['A','B','C','D','E','F','G'];
 function catMods(c:string){ return MODS.filter(m=>m.def.category===c).sort((a,b)=>b.gt-a.gt); }
 function catTotal(c:string){ return catMods(c).reduce((s,m)=>s+m.gt,0); }

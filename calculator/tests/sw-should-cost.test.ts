@@ -53,8 +53,8 @@ describe('computeSWProgram — sanity', () => {
     expect(r.summary.grandTotal).toBeLessThan(1_200_000_000);
   });
 
-  it('all 49 modules carry the required cost-driver fields', () => {
-    expect(SW_MODULES).toHaveLength(49);
+  it('all 54 modules carry the required cost-driver fields (49 + 5 ICE / hybrid estimates, P1 #4)', () => {
+    expect(SW_MODULES).toHaveLength(54);
     for (const m of SW_MODULES) {
       expect(m.annualToolLicenceGBP).toBeTypeOf('number');
       expect(m.annualIPLicenceGBP).toBeTypeOf('number');

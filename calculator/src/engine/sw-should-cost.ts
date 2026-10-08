@@ -3,9 +3,9 @@
  * Senior Chief Automotive Software Should-Cost Engineer model
  * Premium Luxury SUV — Full Software Stack (2024-2026)
  *
- * Covers 49 software modules across 7 categories (43 core + 6 premium-trim
- * options that default to off):
- *  A. EV Powertrain & Battery   B. ADAS L2/L2+
+ * Covers 54 software modules across 7 categories (43 core + 6 premium-trim options + 5 ICE / hybrid estimates; the
+ * last two groups default to off):
+ *  A. Powertrain & Battery (EV, ICE, hybrid)   B. ADAS L2/L2+
  *  C. Infotainment & UX         D. Vehicle Domain Controllers
  *  E. Middleware & Platform      F. Cybersecurity
  *  G. OTA & Cloud Backend
@@ -18,6 +18,7 @@ import {
 } from './sw-rate-library.js';
 import type { SWRateLibrary } from './sw-rate-library.js';
 import { mulberry32 } from './uncertainty.js';
+import { SW_PUBLISHED_PROGRAMMES } from './sw-benchmarks.js';
 
 export type { SWRateLibrary, SWRateEntry, RateConfidence } from './sw-rate-library.js';
 export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
@@ -30,6 +31,7 @@ export type SWReuse         = 'Fresh' | 'Light' | 'Medium' | 'Heavy' | 'Platform
 export type SWCategory      = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type SWRegion        = 'UK' | 'EU' | 'USA_Detroit' | 'USA_SV' | 'China' | 'India' | 'Mexico' | 'Eastern_Europe' | 'Japan';
 export type DevSource       = 'OEM_Internal' | 'Tier1_Supplier' | 'Startup_OSS';
+export type SWPowertrain    = 'ICE' | 'MHEV' | 'PHEV' | 'BEV';
 
 /**
  * The software-engineering rate hub a manufacturing country is costed in. Software
@@ -57,6 +59,53 @@ export function swRegionFor(country: string): { region: SWRegion; basis?: string
   return near('India', 'low-cost Asian / African engineering — India is the nearest assessed hub');
 }
 
+// ─── Powertrain scope (software review P1 #5, Oct 2026) ───────────────────────────────────────────────────────────
+// ONE definition of which powertrain modules each drivetrain carries. It lived as copies in the screen and in three
+// report scripts; ICE carried no powertrain software at all. The screen, the demos and the scripts call this.
+
+const EV_MODULE_IDS  = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'];
+const ICE_MODULE_IDS = ['engine_control', 'transmission_control', 'aftertreatment_obd'];
+
+export const SW_POWERTRAIN_SCOPE: Record<SWPowertrain, {
+  on: string[];
+  overrides: Record<string, Partial<Pick<SWModuleInput, 'complexity' | 'asil'>>>;
+  note: string;
+}> = {
+  ICE:  { on: [...ICE_MODULE_IDS], overrides: {},
+          note: 'combustion — engine, transmission and after-treatment / OBD software (estimates); no electrified-powertrain software' },
+  MHEV: { on: [...ICE_MODULE_IDS, 'mhev_48v', 'hybrid_supervisor', 'thermal_mgmt', 'regen_braking'], overrides: { hybrid_supervisor: { complexity: 'High' } },
+          note: '48 V mild hybrid — combustion software plus 48 V BSG / battery control and a simpler energy manager; no high-voltage battery, charging or drive-unit software' },
+  PHEV: { on: [...ICE_MODULE_IDS, ...EV_MODULE_IDS, 'hybrid_supervisor'],
+          overrides: { bms_core: { complexity: 'High' }, soc_soh_soe: { complexity: 'High' }, edu_control: { complexity: 'High' }, fast_charge: { complexity: 'Medium' } },
+          note: 'plug-in hybrid — combustion AND high-voltage software, plus hybrid supervisory control; HV modules de-rated vs a BEV' },
+  BEV:  { on: [...EV_MODULE_IDS], overrides: { fast_charge: { complexity: 'Very High' } },
+          note: 'battery-electric — the full EV powertrain stack; no combustion or hybrid software' },
+};
+
+/** Every module whose presence depends on the drivetrain (category A). Everything else is shared across variants. */
+export const SW_POWERTRAIN_MODULE_IDS: ReadonlySet<string> = new Set([...EV_MODULE_IDS, ...ICE_MODULE_IDS, 'hybrid_supervisor', 'mhev_48v']);
+
+/** Switch the powertrain modules on / off for a drivetrain and apply its de-rating; other modules are left as they are. */
+export function applyPowertrainScope(modules: SWModuleInput[], pt: SWPowertrain): SWModuleInput[] {
+  const scope = SW_POWERTRAIN_SCOPE[pt];
+  return modules.map(m => {
+    if (!SW_POWERTRAIN_MODULE_IDS.has(m.moduleId)) return m;
+    // Reset to the module's own ASIL / complexity first: switching PHEV → BEV kept the PHEV de-rating (found live).
+    const def = SW_MODULES.find(d => d.id === m.moduleId);
+    return { ...m, enabled: scope.on.includes(m.moduleId),
+      ...(def ? { asil: def.defaultAsil, complexity: def.defaultComplexity } : {}),
+      ...(scope.overrides[m.moduleId] ?? {}) };
+  });
+}
+
+/** Share of a module's cost attributed to this variant: shared (non-powertrain) software over the platform volume. */
+export function attributedShare(moduleId: string, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'platformAnnualVolume'>): number {
+  if (SW_POWERTRAIN_MODULE_IDS.has(moduleId)) return 1;
+  const platform = prog.platformAnnualVolume ?? 0;
+  const vol = prog.annualProductionVolume;
+  return platform > vol && vol > 0 ? vol / platform : 1;
+}
+
 export interface SWModuleDef {
   id:                        string;
   name:                      string;
@@ -66,7 +115,12 @@ export interface SWModuleDef {
   description:               string;
   defaultAsil:               ASILLevel;
   defaultComplexity:         SWComplexity;
-  basePersonMonths:          number;   // UK senior FTE, fresh dev, at listed ASIL/complexity
+  /** NOMINAL effort, person-months: fresh development at QM and Medium complexity. The engine applies the module's
+   *  ASIL, complexity and reuse on top (computeModuleCost), exactly as docs/auto-sw-cost.md states
+   *  (effortPM = base × reuse → devPM = effortPM × asil_dev). The comment here used to say "at listed ASIL/complexity",
+   *  which contradicted that and read as double counting — the engine, its doc and its back-test all use nominal
+   *  (software review P1 #1, Oct 2026). The 49 values carry no source; treat them as engineering estimates. */
+  basePersonMonths:          number;
   hasMLContent:              boolean;
   hasCloudDependency:        boolean;
   hasCybersecRequirement:    boolean;
@@ -81,6 +135,9 @@ export interface SWModuleDef {
    *  present on premium trims but folded into the generic domain buckets on base
    *  vehicles, so leaving them off preserves the validated baseline. Undefined ⇒ on. */
   defaultEnabled?:           boolean;
+  /** Set on modules whose figures are NOT their own: every number is copied from the named analogue module
+   *  (software review P1 #4, Oct 2026). The screen labels these "estimate". */
+  estimateBasis?:            string;
   notes:                     string;
 }
 
@@ -124,6 +181,13 @@ export interface SWProgramInputs {
   /** Include programme-level homologation/compliance (UNECE R155 CSMS + R156
    *  SUMS audits + external ISO 26262 functional-safety assessment). */
   includeHomologation?:     boolean;
+  /** The powertrain the module scope was set for (applyPowertrainScope). Recorded for the reports; the scope itself is
+   *  in `modules`, so an engineer can still switch a module on or off by hand (software review P1 #5, Oct 2026). */
+  powertrain?:              SWPowertrain;
+  /** Vehicles / yr across ALL powertrain variants that share the non-powertrain software (ADAS, infotainment, body,
+   *  middleware, cyber, cloud). When it exceeds `annualProductionVolume`, each shared module is attributed to this
+   *  variant in proportion to its volume — it used to be charged in full to every variant (P1 #5). */
+  platformAnnualVolume?:    number;
 }
 
 export interface SWDevBreakdown {
@@ -168,6 +232,8 @@ export interface SWModuleCostResult {
   totalLifecycle:     number;  // maintenance + cloud + IP licensing over program life
   grandTotal:         number;
   perVehicle:         number;
+  /** Share of this module's cost attributed to the programme: 1, or volume ÷ platform volume for shared software. */
+  attributedShare:    number;
 }
 
 export interface SWSummary {
@@ -220,6 +286,9 @@ export interface SWBenchmark {
   totalM:      number;   // £M
   perVehicle:  number;   // £
   source:      string;
+  /** False for every published figure today — no source link (sw-benchmarks.ts). */
+  verified:    boolean;
+  sourceUrl:   string | null;
 }
 
 export interface SWProgramResult {
@@ -268,6 +337,12 @@ interface ResolvedRates {
   reuse:          Record<SWReuse, number>;
 }
 
+/** The base rate (£/PM) of the programme's ACTIVE rate book — the company book when one is applied, else the
+ *  built-in one. The screen shows this in its base-rate field until the engineer types an override. */
+export function swLibraryBaseRate(prog: Pick<SWProgramInputs, 'rateLibrary'>): number {
+  return resolveRateLibrary(prog.rateLibrary).ukBaseRatePerPM.value;
+}
+
 function resolveRates(prog: SWProgramInputs): ResolvedRates {
   const lib = resolveRateLibrary(prog.rateLibrary);
   // Explicit baseRateGBP (the quick UI override) wins over the library's base.
@@ -283,13 +358,13 @@ function resolveRates(prog: SWProgramInputs): ResolvedRates {
   };
 }
 
-// ─── Module Database (43 core + 6 premium-optional) ──────────────────────────
+// ─── Module Database (43 core + 6 premium-optional + 5 ICE / hybrid estimates) ─
 
 export const SW_MODULES: SWModuleDef[] = [
-  // ── CATEGORY A: EV Powertrain & Battery ──────────────────────────────────
+  // ── CATEGORY A: Powertrain & Battery ─────────────────────────────────────
   {
     id: 'bms_core', name: 'BMS Core Software', shortName: 'BMS Core',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Battery pack monitoring, protection logic, cell voltage/temp acquisition, state machine management, ASIL-D safety logic.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 90,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
@@ -300,7 +375,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'cell_balancing', name: 'Cell Balancing Algorithms', shortName: 'Cell Balancing',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Active/passive balancing algorithms, balancing current control, energy routing optimisation.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -311,7 +386,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'soc_soh_soe', name: 'SOC/SOH/SOE Estimation Models', shortName: 'SOC/SOH/SOE',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Electrochemical & data-driven (ML) State of Charge, Health, Energy estimation. Kalman, EKF, neural network approaches.',
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 42,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
@@ -322,7 +397,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'thermal_mgmt', name: 'Battery Thermal Management Software', shortName: 'Thermal Mgmt',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Thermal control loops, coolant pump/valve actuation, fast-charge thermal preconditioning, cabin integration.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -333,7 +408,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'fast_charge', name: 'Fast-Charging Control Software', shortName: 'Fast Charge',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'CCS/CHAdeMO/OCPP protocol stacks, dynamic power curve management, thermal derating during charge.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 25,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
@@ -344,7 +419,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'edu_control', name: 'EDU (Electric Drive Unit) Control Software', shortName: 'EDU Control',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Integrated electric drive unit control, dual-motor torque vectoring, multi-speed gearbox integration, creep & one-pedal drive.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
@@ -355,7 +430,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'inverter_ctrl', name: 'Inverter Control Algorithms', shortName: 'Inverter Ctrl',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Space Vector PWM, switching frequency optimisation, dead-time compensation, EMI management, demagnetisation protection.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 45,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -366,7 +441,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'motor_ctrl', name: 'Motor Control (FOC/DTC/SVPWM)', shortName: 'Motor Control',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Field-oriented control, direct torque control, sensorless rotor position estimation, flux linkage tables, temperature derating.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 42,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -377,7 +452,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'regen_braking', name: 'Regenerative Braking Software', shortName: 'Regen Braking',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Brake blending control, hydraulic-electric transition, ABS/ESC coordination, one-pedal tuning, driver feel calibration.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -851,14 +926,82 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultEnabled: false,
     notes: 'AR engine licence (e.g. WayRay/Envisics). Optical registration & distortion calibration. ASIL-A (driver-facing overlay).',
   },
+
+  // ── Combustion and hybrid powertrain (software review P1 #4, Oct 2026) ──────────────────────────────────────────
+  // The table had no ICE or hybrid software at all: an ICE variant costed £0 of powertrain software and a PHEV only
+  // 3.5 % more than a BEV. No sourced effort figure was found for these modules, so EVERY number below is copied
+  // from the closest existing module (named in estimateBasis) — an estimate, labelled so on screen. Default off: the
+  // powertrain input (computeSWProgram → powertrainModules) switches them on for ICE / MHEV / PHEV.
+  {
+    id: 'engine_control', name: 'Engine Management Software (ECU)', shortName: 'Engine Control',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Combustion engine control: air / fuel / ignition, torque structure and torque monitoring, start-stop, knock and misfire control.',
+    defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
+    defaultEnabled: false,
+    estimateBasis: 'edu_control (EDU control) — all figures copied; default ASIL B (torque monitoring) is engineering judgement, unsourced',
+    notes: 'ESTIMATE by analogue. Engine calibration is usually a large separate programme — the 0.12 calibration fraction is the analogue\'s and is likely low; enter your own if known.',
+  },
+  {
+    id: 'transmission_control', name: 'Transmission Control Software (TCU)', shortName: 'Transmission',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Automatic / dual-clutch transmission control: shift strategy, clutch control, torque interventions, limp-home.',
+    defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 60,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.14,
+    defaultEnabled: false,
+    estimateBasis: 'chassis_control (chassis control) — all figures copied; default ASIL B is engineering judgement, unsourced',
+    notes: 'ESTIMATE by analogue. A carry-over transmission is usually Heavy / Platform reuse.',
+  },
+  {
+    id: 'aftertreatment_obd', name: 'Emissions After-treatment & OBD', shortName: 'After-treatment / OBD',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Catalyst / particulate-filter / SCR control and the legally required on-board diagnostic monitors (EOBD / OBD-II).',
+    defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.35, integrationFractionBase: 0.15, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 18_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
+    defaultEnabled: false,
+    estimateBasis: 'thermal_mgmt (thermal control loops) — all figures copied; QM (emissions are legal, not safety, requirements) is engineering judgement',
+    notes: 'ESTIMATE by analogue. Emissions homologation testing is not included.',
+  },
+  {
+    id: 'hybrid_supervisor', name: 'Hybrid Supervisory Control & Energy Management', shortName: 'Hybrid Supervisor',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Hybrid mode selection, engine / e-machine torque split, battery state-of-charge strategy, blended regeneration.',
+    defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 80,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.45, integrationFractionBase: 0.22, maintenancePctPerYear: 12,
+    annualToolLicenceGBP: 54_000, annualIPLicenceGBP: 28_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.16,
+    defaultEnabled: false,
+    estimateBasis: 'vehicle_motion (vehicle-level torque coordination) — all figures copied; default ASIL C is engineering judgement, unsourced',
+    notes: 'ESTIMATE by analogue. MHEV energy management is simpler — the MHEV scope runs it at High complexity.',
+  },
+  {
+    id: 'mhev_48v', name: '48 V Belt Starter-Generator & Battery Control', shortName: '48 V BSG / Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: '48 V belt starter-generator motor control, boost / recuperation, 48 V battery and DC-DC management.',
+    defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 42,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 42_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
+    defaultEnabled: false,
+    estimateBasis: 'motor_ctrl (motor control) — all figures copied; ASIL B and High complexity (low-voltage machine) are engineering judgement',
+    notes: 'ESTIMATE by analogue. Often a supplier-delivered unit — set reuse Heavy / Platform if bought in.',
+  },
 ];
 
 // ─── Cost Calculation Engine ──────────────────────────────────────────────────
 
 // ─── Model-tuning constants (calibrated against the sw-validation back-test) ──
-/** Mean per-module testingFractionBase — re-bases the ASIL test scale so reviving
- *  the per-module fraction (SW1) is neutral on the average module. */
-const TEST_INTENSITY_REF = 0.38;
 /** Fraction of the complexity delta also carried by the implementation bucket
  *  (SW2). 0 = old algorithm-only behaviour; Medium (complexity=1) is always neutral. */
 const IMPL_COMPLEXITY_WEIGHT = 0.15;
@@ -885,9 +1028,9 @@ function computeModuleCost(
   const asilDev    = rates.asilDev[input.asil];
   const complexity = rates.complexity[input.complexity];
   const reuse      = rates.reuse[input.reuse];
-  // SW1: per-module test intensity honoured, scaled by ASIL and re-based so the
-  // mean module (testingFractionBase = TEST_INTENSITY_REF) reproduces the old value.
-  const testFrac   = def.testingFractionBase * (rates.asilTest[input.asil] / TEST_INTENSITY_REF);
+  // Per-module test intensity. The ASIL uplift is already in devTotal (asilDev), which testing is a fraction of, so the
+  // test multiplier is relative to QM and neutral by default — it compounded the uplift (P1 #20).
+  const testFrac   = def.testingFractionBase * (rates.asilTest[input.asil] / (rates.asilTest.QM || 1));
 
   // SW3: safety bucket resists reuse — floor the reuse it sees, then scale the
   // 0.15 safety slice up relative to the dev reuse (neutral when reuse ≥ floor,
@@ -981,7 +1124,7 @@ function computeModuleCost(
   const perVehicle    = (nreVehicles > 0 ? totalNRE / nreVehicles : 0)
                       + (lifeVehicles > 0 ? totalLifecycle / lifeVehicles : 0);
 
-  return {
+  const res: SWModuleCostResult = {
     moduleId:       def.id,
     moduleName:     def.name,
     category:       def.category,
@@ -1004,6 +1147,26 @@ function computeModuleCost(
     totalLifecycle,
     grandTotal,
     perVehicle,
+    attributedShare: 1,
+  };
+  // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
+  const share = attributedShare(def.id, prog);
+  return share < 1 ? scaleModuleResult(res, share) : res;
+}
+
+/** The module's cost and effort scaled to the share attributed to this programme. */
+function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult {
+  const scale = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).map(([key, v]) => [key, typeof v === 'number' ? v * k : v])) as T;
+  return {
+    ...r,
+    personMonths: Math.round(r.personMonths * k * 10) / 10,
+    development: scale(r.development), testing: scale(r.testing),
+    integrationCost: r.integrationCost * k, licensingCost: r.licensingCost * k, cloudCost: r.cloudCost * k,
+    cybersecCost: r.cybersecCost * k, maintenanceCost: r.maintenanceCost * k, toolchainCost: r.toolchainCost * k,
+    calibrationCost: r.calibrationCost * k, mlDataCost: r.mlDataCost * k,
+    totalNonRecurring: r.totalNonRecurring * k, totalLifecycle: r.totalLifecycle * k,
+    grandTotal: r.grandTotal * k, perVehicle: r.perVehicle * k,
+    attributedShare: k,
   };
 }
 
@@ -1218,15 +1381,13 @@ export function computeSWProgram(
     },
   ];
 
+  // ONE list (sw-benchmarks.ts) — every entry is labelled with whether it is verified (none is, Oct 2026).
   const benchmarks: SWBenchmark[] = [
-    { vehicle: 'BMW iX (2021–2026)',            totalM: 620,  perVehicle: 4_800, source: 'Berylls Strategy Advisors estimate, 2023' },
-    { vehicle: 'Porsche Taycan (2019–2024)',    totalM: 480,  perVehicle: 5_200, source: 'SBD Automotive teardown + SW analysis' },
-    { vehicle: 'Mercedes EQS (2021–2026)',      totalM: 710,  perVehicle: 5_500, source: 'McKinsey Future of Software in Automotive, 2022' },
-    { vehicle: 'Range Rover (L460, 2022–2027)', totalM: 390,  perVehicle: 3_800, source: 'JLR investor reports + industry est.' },
-    { vehicle: 'Tesla Model S (Gen 3 HW4)',     totalM: 850,  perVehicle: 3_200, source: 'Morgan Stanley Research, annualised amortised' },
-    { vehicle: 'Audi Q8 e-tron (2023–2028)',   totalM: 520,  perVehicle: 4_600, source: 'VW Group Annual Report + EY SW cost model' },
-    { vehicle: 'Lucid Air (2022–2027)',         totalM: 380,  perVehicle: 7_800, source: 'Low-volume amortisation — Lucid investor notes' },
-    { vehicle: 'Premium SUV This Model',        totalM: summary.grandTotal / 1_000_000, perVehicle: summary.perVehicle, source: 'CostVision model — this calculation' },
+    ...SW_PUBLISHED_PROGRAMMES.map(p => ({
+      vehicle: p.vehicle, totalM: p.totalGBP / 1_000_000, perVehicle: p.perVehicleGBP,
+      source: p.source, verified: p.verified, sourceUrl: p.sourceUrl,
+    })),
+    { vehicle: 'This programme', totalM: summary.grandTotal / 1_000_000, perVehicle: summary.perVehicle, source: 'CostVision model — this calculation', verified: true, sourceUrl: null },
   ];
 
   // NRE total for phase timeline
@@ -1264,6 +1425,13 @@ function _recomputeTotal(
 
 // ─── Default program inputs ───────────────────────────────────────────────────
 
+/**
+ * The ONE overhead default: facilities / programme overhead on a base rate that already includes benefits. The screen's
+ * fallback, its tooltip, every vehicle demo and the report scripts read this. They used 1.55–1.62, which this file
+ * itself says double-counts benefits (+28 % on a programme) — software review P1 #3, Oct 2026.
+ */
+export const SW_DEFAULT_OVERHEAD = 1.15;
+
 export function defaultSWProgramInputs(): SWProgramInputs {
   return {
     region:                  'UK',
@@ -1274,7 +1442,7 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     // 1.15 = facilities/programme overhead ONLY. The £28k/PM base rate is a
     // contractor day-rate equivalent that already includes benefits — the old
     // 1.60 (benefits 35% + facilities 15%) double-counted benefits (~26% high).
-    overheadMultiplier:      1.15,
+    overheadMultiplier:      SW_DEFAULT_OVERHEAD,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
     // baseRateGBP intentionally unset → driven by the rate library's ukBaseRatePerPM
