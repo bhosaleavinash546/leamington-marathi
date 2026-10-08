@@ -158,6 +158,7 @@ async function ensurePdfLibs(): Promise<void> {
 }
 import { exportToExcelBlob } from '../export/excel.js';
 import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
+import { NOT_IN_STACK_RULES } from '../engine/design-to-cost.js';
 import { mountDtcPanel } from './design-to-cost-panel.js';
 import { currencySymbol } from '../engine/insights.js';
 import { populateRegionPickers } from './region-options.js';
@@ -14426,6 +14427,8 @@ function compute(): void {
     // now, from this form, so the table and the PDF show the same rows (country-recost.ts).
     _countryCostings = costInComparisonCountries();
     comparisonRows(input, result, false);   // publishes the rows (e2e) before any tab is opened
+    // The DFM findings' £ follow this costing (re-costed), in the panel and the viewer alike.
+    if (cadGeometricDFM) renderGeometricDFMPanel();
     pushViewerState();
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
@@ -17242,16 +17245,15 @@ function renderGeometricDFMPanel(): void {
   if (!html) return;
   // With a costing on screen, show what each priced finding moves the WHOLE
   // stack by (overhead and margin included), next to the job's naked line.
-  if (lastInput && cadGeometricDFM?.grouped?.length && dfmBelongsToCosting()) {
-    try {
-      const re = restackFindingCosts(cadGeometricDFM.grouped, lastInput, library);
-      for (const r of re) {
-        const idx = cadGeometricDFM.grouped.findIndex(g => g.ruleId === r.ruleId);
-        const node = host.querySelector<HTMLElement>(`[data-dfm-idx="${idx}"] .dfm-geo-cost`);
-        if (node) { node.textContent = `${dfmMoneyUi(r.stackGBP)}/part`; node.title = `Δ piece price through the 8-bucket stack: ${r.basis}. Feature line alone: ${dfmMoneyUi(r.jobGBP)}`; }
-      }
-    } catch (err) { console.warn('[dfm] restack failed:', err instanceof Error ? err.message : String(err)); }
-  }
+  const amounts = dfmFindingAmounts();
+  cadGeometricDFM?.grouped?.forEach((g, idx) => {
+    const a = amounts.get(g.ruleId);
+    const node = host.querySelector<HTMLElement>(`[data-dfm-idx="${idx}"] .dfm-geo-cost`);
+    if (!node) return;
+    if (!a) { node.remove(); return; }
+    node.textContent = a.text;
+    node.title = a.title;
+  });
 
   host.querySelectorAll<HTMLElement>('[data-dfm-idx]').forEach(node => {
     const act = () => {
@@ -17354,17 +17356,59 @@ function faceCostItems(): import('./cad-viewer.js').CostItem[] {
 }
 
 /** The background geometric-DFM findings as the viewer's manufacturability list (null until the job lands). */
+/**
+ * The £ each geometric DFM finding shows — ONE answer for the findings panel and the 3D viewer's inspector.
+ * With this part's costing on screen a finding shows only what it moves that costing by (re-costed through the
+ * stack at the costed operation's own rates); a cost the sheet does not carry is shown as a cost to add; a finding
+ * that cannot be re-costed shows nothing. Before a costing the job's own line is shown and says it is at the
+ * finding's reference rate. The viewer used to print the job's line beside a costing that said otherwise
+ * (stub axle deep holes £2.85 in the viewer, £2.38 in the costing).
+ */
+function dfmFindingAmounts(): Map<string, { text: string; title: string }> {
+  const out = new Map<string, { text: string; title: string }>();
+  const groups = cadGeometricDFM?.grouped;
+  if (!groups?.length) return out;
+  const priced = groups.filter(g => (g.totalCostGBP ?? 0) > 0);
+  if (lastInput && dfmBelongsToCosting()) {
+    let re: ReturnType<typeof restackFindingCosts> = [];
+    try { re = restackFindingCosts(groups, lastInput, library); }
+    catch (err) { console.warn('[dfm] restack failed:', err instanceof Error ? err.message : String(err)); }
+    for (const r of re) {
+      if (!(r.stackGBP > 0)) continue;
+      out.set(r.ruleId, {
+        text: `${dfmMoneyUi(r.stackGBP)}/part`,
+        title: `Re-costed: what this finding moves the piece price by through the 8-bucket stack (${r.basis}).`,
+      });
+    }
+    for (const g of priced) if (NOT_IN_STACK_RULES.has(g.ruleId)) {
+      out.set(g.ruleId, {
+        text: `+${dfmMoneyUi(g.totalCostGBP ?? 0)}/part, not in the should-cost`,
+        title: 'A cost the should-cost does not carry yet — adding it would raise the price by this much.',
+      });
+    }
+    return out;
+  }
+  for (const g of priced) {
+    out.set(g.ruleId, {
+      text: `${dfmMoneyUi(g.totalCostGBP ?? 0)}/part at reference rate`,
+      title: 'The finding priced at its stated reference rate, before a costing of this part. Calculate to see what it moves the costing by.',
+    });
+  }
+  return out;
+}
+
 function viewerIssuesFromDFM(): import('./cad-viewer.js').ViewerIssue[] | null {
   const groups = cadGeometricDFM?.grouped;
   if (!groups) return null;
   const sev = { critical: 'high', major: 'medium', minor: 'low', advisory: 'info' } as const;
+  const amounts = dfmFindingAmounts();
   return groups.map(g => ({
     id: g.ruleId,
     title: g.count > 1 ? `${g.title} (${g.count})` : g.title,
     severity: sev[g.severity as keyof typeof sev] ?? 'info',
     detail: `${g.range.min === g.range.max ? g.range.min : `${g.range.min}–${g.range.max}`} ${g.range.unit} against ${g.threshold.comparator} ${g.threshold.value} ${g.threshold.unit} — ${g.recommendation}`,
     faceIds: g.faceIds ?? [],
-    amount: (g.totalCostGBP ?? 0) > 0 ? `${dfmMoneyUi(g.totalCostGBP ?? 0)}/part` : undefined,
+    amount: amounts.get(g.ruleId)?.text,
     source: [g.source.standard, g.source.clause, g.source.note].filter(Boolean).join(' · '),
   }));
 }

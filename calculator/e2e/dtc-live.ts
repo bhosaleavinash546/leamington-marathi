@@ -99,6 +99,30 @@ async function main(): Promise<void> {
     out.dfmFindings = await page.$$eval('#geometric-dfm-panel .dfm-geo-item', ns => ns.map(n => (n.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 200)));
     log(`DFM landed: ${(out.dfmFindings as string[]).length} finding group(s)`);
 
+    // 2b. The 3D viewer's inspector prints the SAME £ as the findings panel — the costing's re-costed figure, not the
+    // DFM job's reference-rate line (stub axle deep holes once read £2.85 in the viewer, £2.38 in the costing).
+    await page.waitForTimeout(500);
+    const panelMoney = await page.$$eval('#geometric-dfm-panel .dfm-geo-item', ns => ns.map(n => ({
+      title: (n.querySelector('strong')?.textContent ?? '').trim(), amount: (n.querySelector('.dfm-geo-cost')?.textContent ?? '').trim() })));
+    const insp = page.locator('.cv3d [data-act="inspector"]:visible').first();
+    if (await insp.count()) {
+      if (!(await page.locator('.cv3d-insp-body .cv3d-issue').count())) await insp.click();
+      await page.waitForSelector('.cv3d-insp-body .cv3d-issue', { timeout: 15_000 });
+      const viewerMoney = await page.$$eval('.cv3d-insp-body .cv3d-issue', ns => ns.map(n => ({
+        title: (n.querySelector('.cv3d-row-title')?.textContent ?? '').replace(/\s+/g, ' ').trim(), amount: (n.querySelector('.cv3d-row-val')?.textContent ?? '').trim() })));
+      out.viewerMoney = viewerMoney; out.panelMoney = panelMoney;
+      const pricedPanel = panelMoney.filter(p => p.amount);
+      const pricedViewer = viewerMoney.filter(v => v.amount);
+      if (pricedPanel.length !== pricedViewer.length) failures.push(`viewer shows ${pricedViewer.length} priced finding(s), panel ${pricedPanel.length}`);
+      for (const p of pricedPanel) {
+        if (!pricedViewer.some(v => v.amount === p.amount)) failures.push(`panel ${p.title} ${p.amount} not in the viewer (${pricedViewer.map(v => v.amount).join(', ')})`);
+        if (/reference rate/.test(p.amount)) failures.push(`${p.title} still at reference rate with a costing on screen`);
+      }
+      log(`viewer £ = panel £: ${pricedPanel.map(p => p.amount).join(', ') || '(none priced)'}`);
+    } else {
+      failures.push('no 3D viewer on the CAD-to-Cost screen to compare against');
+    }
+
     // 3. Target, then the Design-to-Cost tab.
     const target = Math.round(headline * TARGET_SHARE * 100) / 100;
     await page.fill('#target-price', String(target));
