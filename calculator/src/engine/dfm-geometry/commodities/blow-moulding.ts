@@ -13,7 +13,7 @@
  * so, instead of pretending each face was measured independently.
  */
 import type { GeometricRule, PartContext } from '../types.js';
-import { isBlend, finding } from '../types.js';
+import { isBlend, finding, undercutEvidence } from '../types.js';
 
 /** Below this, a blown wall pinholes and fails top-load. Mirrors analyseBlowDFM. */
 export const MIN_BLOWN_WALL_MM = 0.5;
@@ -63,18 +63,15 @@ export const BLOW_MOULDING_RULES: readonly GeometricRule[] = [
     source: {
       ...BLOW_GUIDE,
       clause: 'Undercuts and mould splits',
-      note: 'A blow mould is two halves closing on a parison. A face opposing the draw needs a '
-          + 'third split, a moving insert or post-mould trimming — each adds tool cost and cycle.',
+      note: 'A blow mould is two halves closing on a parison. An outside face the part blocks along its line of '
+          + 'release needs a third split, a moving insert or post-mould trimming — each adds tool cost and cycle. The '
+          + 'inside skin is formed by air, not steel, and is never an undercut.',
     },
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
-      const toDraw = 90 + (f.draftDeg ?? 0);
       return finding(this, f, part, {
         severity: 'major',
-        detail: `Face ${f.faceIds.join(', ')} sits at ${toDraw.toFixed(1)}° to the mould draw `
-              + '(past 90°) and cannot release from a two-part split.',
-        measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°',
-        thresholdValue: 90, comparator: '>',
+        ...undercutEvidence(f, 'blow mould'),
         recommendation: 'Re-orient the split line, relax the feature so it draws, or price a '
           + 'moving insert. Deep undercuts on a blown part are often cheaper to trim after '
           + 'moulding than to tool for.',

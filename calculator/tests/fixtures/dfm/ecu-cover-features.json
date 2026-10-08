@@ -1,0 +1,2491 @@
+{
+"source": "cad-audit/parts/IM_ECU_Cover.stp, kernel with CV_EXTRACT_FEATURES=1 (two-half release test, Oct 2026)",
+"boundingBox": {
+"xMm": 180.0,
+"yMm": 120.0,
+"zMm": 40.0
+},
+"draftAnalysis": {
+"drawDirectionXYZ": [
+0.0,
+0.0,
+1.0
+],
+"undercutFaceCount": 8,
+"cavityFaceCount": 0,
+"zeroDraftFaceCount": 36,
+"adequateDraftFaceCount": 24,
+"minPositiveDraftDeg": 1.5,
+"maxPositiveDraftDeg": 45.75,
+"analyzedFaceCount": 68,
+"pullDirectionSearch": {
+"candidates": [
+{
+"drawDirectionXYZ": [
+0.0,
+0.0,
+1.0
+],
+"undercutFaceCount": 8
+},
+{
+"drawDirectionXYZ": [
+0.0,
+1.0,
+0.0
+],
+"undercutFaceCount": 14
+},
+{
+"drawDirectionXYZ": [
+1.0,
+0.0,
+0.0
+],
+"undercutFaceCount": 26
+}
+],
+"runnerUp": {
+"drawDirectionXYZ": [
+0.0,
+1.0,
+0.0
+],
+"undercutFaceCount": 14
+},
+"ambiguous": false
+}
+},
+"manufacturingFeatures": {
+"available": true,
+"features": [
+{
+"id": "FIL7",
+"kind": "fillet",
+"faceIds": [
+7
+],
+"radiusMm": 0.5,
+"depthMm": 112.06,
+"areaMm2": 86.545,
+"positionMm": [
+-86.03,
+0.0,
+37.0
+],
+"axis": [
+-0.0,
+1.0,
+-0.0
+],
+"concave": true,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+3,
+34
+]
+},
+{
+"id": "FIL8",
+"kind": "fillet",
+"faceIds": [
+8
+],
+"radiusMm": 0.5,
+"depthMm": 172.06,
+"areaMm2": 132.883,
+"positionMm": [
+0.0,
+-56.03,
+37.0
+],
+"axis": [
+1.0,
+-0.0,
+0.0
+],
+"concave": true,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+3,
+36
+]
+},
+{
+"id": "FIL9",
+"kind": "fillet",
+"faceIds": [
+9
+],
+"radiusMm": 0.5,
+"depthMm": 172.06,
+"areaMm2": 132.883,
+"positionMm": [
+0.0,
+56.03,
+37.0
+],
+"axis": [
+1.0,
+0.0,
+0.0
+],
+"concave": true,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+3,
+38
+]
+},
+{
+"id": "FIL10",
+"kind": "fillet",
+"faceIds": [
+10
+],
+"radiusMm": 0.5,
+"depthMm": 112.06,
+"areaMm2": 86.545,
+"positionMm": [
+86.03,
+0.0,
+37.0
+],
+"axis": [
+-0.0,
+1.0,
+-0.0
+],
+"concave": true,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+3,
+40
+]
+},
+{
+"id": "B11",
+"kind": "boss",
+"faceIds": [
+11
+],
+"diaMm": 7.0,
+"depthMm": 31.5,
+"areaMm2": 692.721,
+"positionMm": [
+-80.0,
+-50.0,
+21.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 4.5,
+"neighbourWallMm": 2.5,
+"bossToWallRatio": 2.8
+},
+{
+"id": "B12",
+"kind": "boss",
+"faceIds": [
+12
+],
+"diaMm": 7.0,
+"depthMm": 31.5,
+"areaMm2": 692.721,
+"positionMm": [
+80.0,
+-50.0,
+21.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 4.5,
+"neighbourWallMm": 2.5,
+"bossToWallRatio": 2.8
+},
+{
+"id": "B13",
+"kind": "boss",
+"faceIds": [
+13
+],
+"diaMm": 7.0,
+"depthMm": 31.5,
+"areaMm2": 692.721,
+"positionMm": [
+-80.0,
+50.0,
+21.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 4.5,
+"neighbourWallMm": 2.5,
+"bossToWallRatio": 2.8
+},
+{
+"id": "B30",
+"kind": "boss",
+"faceIds": [
+30
+],
+"diaMm": 7.0,
+"depthMm": 31.5,
+"areaMm2": 692.721,
+"positionMm": [
+80.0,
+50.0,
+21.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 4.5,
+"neighbourWallMm": 2.5,
+"bossToWallRatio": 2.8
+},
+{
+"id": "FIL50",
+"kind": "fillet",
+"faceIds": [
+50
+],
+"radiusMm": 0.5,
+"depthMm": 37.045,
+"areaMm2": 29.08,
+"positionMm": [
+-86.515,
+-56.515,
+18.49
+],
+"axis": [
+0.02617,
+0.02617,
+0.99932
+],
+"concave": true,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+34,
+36,
+51
+],
+"toolReachMm": 37.045,
+"openDirs": [
+[
+-0.02617,
+-0.02617,
+-0.99932
+]
+]
+},
+{
+"id": "FIL52",
+"kind": "fillet",
+"faceIds": [
+52
+],
+"radiusMm": 0.5,
+"depthMm": 37.045,
+"areaMm2": 29.08,
+"positionMm": [
+-86.515,
+56.515,
+18.49
+],
+"axis": [
+0.02617,
+-0.02617,
+0.99932
+],
+"concave": true,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+34,
+38,
+51
+],
+"toolReachMm": 37.045,
+"openDirs": [
+[
+-0.02617,
+0.02617,
+-0.99932
+]
+]
+},
+{
+"id": "FIL53",
+"kind": "fillet",
+"faceIds": [
+53
+],
+"radiusMm": 0.5,
+"depthMm": 37.045,
+"areaMm2": 29.08,
+"positionMm": [
+86.515,
+-56.515,
+18.49
+],
+"axis": [
+0.02617,
+-0.02617,
+-0.99932
+],
+"concave": true,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+36,
+40,
+51
+],
+"toolReachMm": 37.045,
+"openDirs": [
+[
+0.02617,
+-0.02617,
+-0.99932
+]
+]
+},
+{
+"id": "FIL62",
+"kind": "fillet",
+"faceIds": [
+62
+],
+"radiusMm": 0.5,
+"depthMm": 37.045,
+"areaMm2": 29.08,
+"positionMm": [
+86.515,
+56.515,
+18.49
+],
+"axis": [
+0.02617,
+0.02617,
+-0.99932
+],
+"concave": true,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+38,
+40,
+51
+],
+"toolReachMm": 37.045,
+"openDirs": [
+[
+0.02617,
+0.02617,
+-0.99932
+]
+]
+},
+{
+"id": "H71",
+"kind": "hole",
+"faceIds": [
+71
+],
+"diaMm": 3.2,
+"depthMm": 29.5,
+"areaMm2": 296.566,
+"positionMm": [
+-80.0,
+-50.0,
+20.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 9.219,
+"openEnds": 1,
+"openDirs": [
+[
+-0.0,
+-0.0,
+-1.0
+]
+],
+"neighbourWallMm": 4.5
+},
+{
+"id": "H72",
+"kind": "hole",
+"faceIds": [
+72
+],
+"diaMm": 3.2,
+"depthMm": 29.5,
+"areaMm2": 296.566,
+"positionMm": [
+80.0,
+-50.0,
+20.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 9.219,
+"openEnds": 1,
+"openDirs": [
+[
+-0.0,
+-0.0,
+-1.0
+]
+],
+"neighbourWallMm": 4.5
+},
+{
+"id": "H73",
+"kind": "hole",
+"faceIds": [
+73
+],
+"diaMm": 3.2,
+"depthMm": 29.5,
+"areaMm2": 296.566,
+"positionMm": [
+-80.0,
+50.0,
+20.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 9.219,
+"openEnds": 1,
+"openDirs": [
+[
+-0.0,
+-0.0,
+-1.0
+]
+],
+"neighbourWallMm": 4.5
+},
+{
+"id": "H75",
+"kind": "hole",
+"faceIds": [
+75
+],
+"diaMm": 3.2,
+"depthMm": 29.5,
+"areaMm2": 296.566,
+"positionMm": [
+80.0,
+50.0,
+20.75
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"ldRatio": 9.219,
+"openEnds": 1,
+"openDirs": [
+[
+-0.0,
+-0.0,
+-1.0
+]
+],
+"neighbourWallMm": 4.5
+},
+{
+"id": "FIL77",
+"kind": "fillet",
+"faceIds": [
+77
+],
+"radiusMm": 3.0,
+"depthMm": 37.15,
+"areaMm2": 174.873,
+"positionMm": [
+-86.516,
+-56.516,
+18.438
+],
+"axis": [
+0.02617,
+0.02617,
+0.99932
+],
+"concave": false,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+51,
+76,
+78
+]
+},
+{
+"id": "FIL79",
+"kind": "fillet",
+"faceIds": [
+79
+],
+"radiusMm": 3.0,
+"depthMm": 37.15,
+"areaMm2": 174.873,
+"positionMm": [
+86.516,
+-56.516,
+18.438
+],
+"axis": [
+0.02617,
+-0.02617,
+-0.99932
+],
+"concave": false,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+51,
+78,
+80
+]
+},
+{
+"id": "FIL81",
+"kind": "fillet",
+"faceIds": [
+81
+],
+"radiusMm": 3.0,
+"depthMm": 37.15,
+"areaMm2": 174.873,
+"positionMm": [
+86.516,
+56.516,
+18.438
+],
+"axis": [
+0.02617,
+0.02617,
+-0.99932
+],
+"concave": false,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+51,
+80,
+82
+]
+},
+{
+"id": "FIL83",
+"kind": "fillet",
+"faceIds": [
+83
+],
+"radiusMm": 3.0,
+"depthMm": 37.15,
+"areaMm2": 174.873,
+"positionMm": [
+-86.516,
+56.516,
+18.438
+],
+"axis": [
+0.02617,
+-0.02617,
+0.99932
+],
+"concave": false,
+"sweepDeg": 90.0,
+"adjacentFaceIds": [
+51,
+76,
+82
+]
+},
+{
+"id": "FIL88",
+"kind": "fillet",
+"faceIds": [
+88
+],
+"radiusMm": 3.0,
+"depthMm": 112.06,
+"areaMm2": 519.27,
+"positionMm": [
+-86.03,
+0.0,
+37.0
+],
+"axis": [
+-0.0,
+1.0,
+-0.0
+],
+"concave": false,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+76,
+96
+]
+},
+{
+"id": "FIL90",
+"kind": "fillet",
+"faceIds": [
+90
+],
+"radiusMm": 3.0,
+"depthMm": 172.06,
+"areaMm2": 797.301,
+"positionMm": [
+0.0,
+-56.03,
+37.0
+],
+"axis": [
+1.0,
+-0.0,
+0.0
+],
+"concave": false,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+78,
+96
+]
+},
+{
+"id": "FIL92",
+"kind": "fillet",
+"faceIds": [
+92
+],
+"radiusMm": 3.0,
+"depthMm": 112.06,
+"areaMm2": 519.27,
+"positionMm": [
+86.03,
+0.0,
+37.0
+],
+"axis": [
+-0.0,
+1.0,
+-0.0
+],
+"concave": false,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+80,
+96
+]
+},
+{
+"id": "FIL94",
+"kind": "fillet",
+"faceIds": [
+94
+],
+"radiusMm": 3.0,
+"depthMm": 172.06,
+"areaMm2": 797.301,
+"positionMm": [
+0.0,
+56.03,
+37.0
+],
+"axis": [
+1.0,
+0.0,
+0.0
+],
+"concave": false,
+"sweepDeg": 88.5,
+"adjacentFaceIds": [
+82,
+96
+]
+},
+{
+"id": "P1",
+"kind": "planar_face",
+"faceIds": [
+1
+],
+"areaMm2": 33.75,
+"positionMm": [
+-84.0,
+-0.0,
+26.25
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 168.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 112.0
+},
+{
+"id": "P2",
+"kind": "planar_face",
+"faceIds": [
+2
+],
+"areaMm2": 1198.125,
+"positionMm": [
+-57.375,
+-0.75,
+26.25
+],
+"axis": [
+0.0,
+-1.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P3",
+"kind": "planar_face",
+"faceIds": [
+3
+],
+"areaMm2": 18543.658,
+"positionMm": [
+0.0,
+0.0,
+37.5
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 2.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.667
+},
+{
+"id": "P4",
+"kind": "planar_face",
+"faceIds": [
+4
+],
+"areaMm2": 1198.125,
+"positionMm": [
+-57.375,
+0.75,
+26.25
+],
+"axis": [
+-0.0,
+1.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P5",
+"kind": "planar_face",
+"faceIds": [
+5
+],
+"areaMm2": 79.875,
+"positionMm": [
+-57.375,
+0.0,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P6",
+"kind": "planar_face",
+"faceIds": [
+6
+],
+"areaMm2": 1243.125,
+"positionMm": [
+-30.75,
+-28.375,
+26.25
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P14",
+"kind": "planar_face",
+"faceIds": [
+14
+],
+"areaMm2": 1243.125,
+"positionMm": [
+-29.25,
+-28.375,
+26.25
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P15",
+"kind": "planar_face",
+"faceIds": [
+15
+],
+"areaMm2": 1316.25,
+"positionMm": [
+-0.0,
+-0.75,
+26.25
+],
+"axis": [
+0.0,
+-1.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P16",
+"kind": "planar_face",
+"faceIds": [
+16
+],
+"areaMm2": 1243.125,
+"positionMm": [
+29.25,
+-28.375,
+26.25
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P17",
+"kind": "planar_face",
+"faceIds": [
+17
+],
+"areaMm2": 33.75,
+"positionMm": [
+30.0,
+-56.0,
+26.25
+],
+"axis": [
+0.0,
+-1.0,
+-0.0
+],
+"thicknessMm": 112.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 74.667
+},
+{
+"id": "P18",
+"kind": "planar_face",
+"faceIds": [
+18
+],
+"areaMm2": 1243.125,
+"positionMm": [
+30.75,
+-28.375,
+26.25
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P19",
+"kind": "planar_face",
+"faceIds": [
+19
+],
+"areaMm2": 1198.125,
+"positionMm": [
+57.375,
+-0.75,
+26.25
+],
+"axis": [
+0.0,
+-1.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P20",
+"kind": "planar_face",
+"faceIds": [
+20
+],
+"areaMm2": 33.75,
+"positionMm": [
+84.0,
+-0.0,
+26.25
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 168.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 112.0
+},
+{
+"id": "P21",
+"kind": "planar_face",
+"faceIds": [
+21
+],
+"areaMm2": 1198.125,
+"positionMm": [
+57.375,
+0.75,
+26.25
+],
+"axis": [
+-0.0,
+1.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P22",
+"kind": "planar_face",
+"faceIds": [
+22
+],
+"areaMm2": 1243.125,
+"positionMm": [
+30.75,
+28.375,
+26.25
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P23",
+"kind": "planar_face",
+"faceIds": [
+23
+],
+"areaMm2": 33.75,
+"positionMm": [
+30.0,
+56.0,
+26.25
+],
+"axis": [
+-0.0,
+1.0,
+0.0
+],
+"thicknessMm": 112.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 74.667
+},
+{
+"id": "P24",
+"kind": "planar_face",
+"faceIds": [
+24
+],
+"areaMm2": 1243.125,
+"positionMm": [
+29.25,
+28.375,
+26.25
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P25",
+"kind": "planar_face",
+"faceIds": [
+25
+],
+"areaMm2": 1316.25,
+"positionMm": [
+-0.0,
+0.75,
+26.25
+],
+"axis": [
+-0.0,
+1.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P26",
+"kind": "planar_face",
+"faceIds": [
+26
+],
+"areaMm2": 1243.125,
+"positionMm": [
+-29.25,
+28.375,
+26.25
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P27",
+"kind": "planar_face",
+"faceIds": [
+27
+],
+"areaMm2": 33.75,
+"positionMm": [
+-30.0,
+56.0,
+26.25
+],
+"axis": [
+-0.0,
+1.0,
+0.0
+],
+"thicknessMm": 112.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 74.667
+},
+{
+"id": "P28",
+"kind": "planar_face",
+"faceIds": [
+28
+],
+"areaMm2": 1243.125,
+"positionMm": [
+-30.75,
+28.375,
+26.25
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 1.5,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P29",
+"kind": "planar_face",
+"faceIds": [
+29
+],
+"areaMm2": 33.75,
+"positionMm": [
+-30.0,
+-56.0,
+26.25
+],
+"axis": [
+0.0,
+-1.0,
+-0.0
+],
+"thicknessMm": 112.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 74.667
+},
+{
+"id": "P31",
+"kind": "planar_face",
+"faceIds": [
+31
+],
+"areaMm2": 2.25,
+"positionMm": [
+-30.0,
+0.0,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 25.0,
+"sectionRatio": 1.0
+},
+{
+"id": "P32",
+"kind": "planar_face",
+"faceIds": [
+32
+],
+"areaMm2": 82.875,
+"positionMm": [
+-30.0,
+-28.375,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P34",
+"kind": "planar_face",
+"faceIds": [
+34
+],
+"areaMm2": 4185.002,
+"positionMm": [
+-87.016,
+0.0,
+18.454
+],
+"axis": [
+0.99966,
+0.0,
+-0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P36",
+"kind": "planar_face",
+"faceIds": [
+36
+],
+"areaMm2": 6246.493,
+"positionMm": [
+0.0,
+-57.01,
+18.676
+],
+"axis": [
+0.0,
+0.99966,
+-0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P38",
+"kind": "planar_face",
+"faceIds": [
+38
+],
+"areaMm2": 6246.493,
+"positionMm": [
+0.0,
+57.01,
+18.676
+],
+"axis": [
+-0.0,
+-0.99966,
+-0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P40",
+"kind": "planar_face",
+"faceIds": [
+40
+],
+"areaMm2": 4185.002,
+"positionMm": [
+87.016,
+0.0,
+18.454
+],
+"axis": [
+-0.99966,
+-0.0,
+-0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P41",
+"kind": "planar_face",
+"faceIds": [
+41
+],
+"areaMm2": 30.442,
+"positionMm": [
+-80.0,
+-50.0,
+6.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 29.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 15.526
+},
+{
+"id": "P42",
+"kind": "planar_face",
+"faceIds": [
+42
+],
+"areaMm2": 30.442,
+"positionMm": [
+80.0,
+-50.0,
+6.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 29.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 15.526
+},
+{
+"id": "P43",
+"kind": "planar_face",
+"faceIds": [
+43
+],
+"areaMm2": 30.442,
+"positionMm": [
+-80.0,
+50.0,
+6.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 29.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 15.526
+},
+{
+"id": "P44",
+"kind": "planar_face",
+"faceIds": [
+44
+],
+"areaMm2": 87.75,
+"positionMm": [
+0.0,
+0.0,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P45",
+"kind": "planar_face",
+"faceIds": [
+45
+],
+"areaMm2": 82.875,
+"positionMm": [
+30.0,
+-28.375,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P46",
+"kind": "planar_face",
+"faceIds": [
+46
+],
+"areaMm2": 79.875,
+"positionMm": [
+57.375,
+-0.0,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P47",
+"kind": "planar_face",
+"faceIds": [
+47
+],
+"areaMm2": 82.875,
+"positionMm": [
+30.0,
+28.375,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P48",
+"kind": "planar_face",
+"faceIds": [
+48
+],
+"areaMm2": 82.875,
+"positionMm": [
+-30.0,
+28.375,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.5,
+"sectionRatio": 16.667
+},
+{
+"id": "P49",
+"kind": "planar_face",
+"faceIds": [
+49
+],
+"areaMm2": 30.442,
+"positionMm": [
+80.0,
+50.0,
+6.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 29.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 15.526
+},
+{
+"id": "P51",
+"kind": "planar_face",
+"faceIds": [
+51
+],
+"areaMm2": 1467.993,
+"positionMm": [
+-0.0,
+0.0,
+0.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 15.0,
+"draftClass": "not_applicable",
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 6.0
+},
+{
+"id": "P54",
+"kind": "planar_face",
+"faceIds": [
+54
+],
+"areaMm2": 40.014,
+"positionMm": [
+-40.0,
+-58.409,
+13.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.828,
+"draftClass": "undercut",
+"releaseHalf": -1,
+"blockedAtMm": 4.9,
+"undercutRegion": 54,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 10.331
+},
+{
+"id": "P55",
+"kind": "planar_face",
+"faceIds": [
+55
+],
+"areaMm2": 12.504,
+"positionMm": [
+-48.0,
+-58.475,
+10.5
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 41.163,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 16.465
+},
+{
+"id": "P56",
+"kind": "planar_face",
+"faceIds": [
+56
+],
+"areaMm2": 12.504,
+"positionMm": [
+-32.0,
+-58.475,
+10.5
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 64.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 25.6
+},
+{
+"id": "P57",
+"kind": "planar_face",
+"faceIds": [
+57
+],
+"areaMm2": 40.014,
+"positionMm": [
+-40.0,
+-58.54,
+8.0
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"thicknessMm": 8.0,
+"draftClass": "undercut",
+"releaseHalf": 1,
+"blockedAtMm": 4.9,
+"undercutRegion": 54,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 3.2
+},
+{
+"id": "P58",
+"kind": "planar_face",
+"faceIds": [
+58
+],
+"areaMm2": 40.014,
+"positionMm": [
+40.0,
+-58.409,
+13.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.828,
+"draftClass": "undercut",
+"releaseHalf": -1,
+"blockedAtMm": 4.9,
+"undercutRegion": 54,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 10.331
+},
+{
+"id": "P59",
+"kind": "planar_face",
+"faceIds": [
+59
+],
+"areaMm2": 12.504,
+"positionMm": [
+48.0,
+-58.475,
+10.5
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 41.163,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 16.465
+},
+{
+"id": "P60",
+"kind": "planar_face",
+"faceIds": [
+60
+],
+"areaMm2": 40.014,
+"positionMm": [
+40.0,
+-58.54,
+8.0
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"thicknessMm": 8.0,
+"draftClass": "undercut",
+"releaseHalf": 1,
+"blockedAtMm": 4.9,
+"undercutRegion": 54,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 3.2
+},
+{
+"id": "P61",
+"kind": "planar_face",
+"faceIds": [
+61
+],
+"areaMm2": 12.504,
+"positionMm": [
+32.0,
+-58.475,
+10.5
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 64.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 25.6
+},
+{
+"id": "P63",
+"kind": "planar_face",
+"faceIds": [
+63
+],
+"areaMm2": 40.014,
+"positionMm": [
+-40.0,
+58.409,
+13.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.828,
+"draftClass": "undercut",
+"releaseHalf": -1,
+"blockedAtMm": 4.9,
+"undercutRegion": 63,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 10.331
+},
+{
+"id": "P64",
+"kind": "planar_face",
+"faceIds": [
+64
+],
+"areaMm2": 12.504,
+"positionMm": [
+-48.0,
+58.475,
+10.5
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 41.163,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 16.465
+},
+{
+"id": "P65",
+"kind": "planar_face",
+"faceIds": [
+65
+],
+"areaMm2": 12.504,
+"positionMm": [
+-32.0,
+58.475,
+10.5
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 64.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 25.6
+},
+{
+"id": "P66",
+"kind": "planar_face",
+"faceIds": [
+66
+],
+"areaMm2": 40.014,
+"positionMm": [
+-40.0,
+58.54,
+8.0
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"thicknessMm": 8.0,
+"draftClass": "undercut",
+"releaseHalf": 1,
+"blockedAtMm": 4.9,
+"undercutRegion": 63,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 3.2
+},
+{
+"id": "P67",
+"kind": "planar_face",
+"faceIds": [
+67
+],
+"areaMm2": 40.014,
+"positionMm": [
+40.0,
+58.409,
+13.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.828,
+"draftClass": "undercut",
+"releaseHalf": -1,
+"blockedAtMm": 4.9,
+"undercutRegion": 63,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 10.331
+},
+{
+"id": "P68",
+"kind": "planar_face",
+"faceIds": [
+68
+],
+"areaMm2": 12.504,
+"positionMm": [
+48.0,
+58.475,
+10.5
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"thicknessMm": 41.163,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 16.465
+},
+{
+"id": "P69",
+"kind": "planar_face",
+"faceIds": [
+69
+],
+"areaMm2": 40.014,
+"positionMm": [
+40.0,
+58.54,
+8.0
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"thicknessMm": 8.0,
+"draftClass": "undercut",
+"releaseHalf": 1,
+"blockedAtMm": 4.9,
+"undercutRegion": 63,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 3.2
+},
+{
+"id": "P70",
+"kind": "planar_face",
+"faceIds": [
+70
+],
+"areaMm2": 12.504,
+"positionMm": [
+32.0,
+58.475,
+10.5
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"thicknessMm": 64.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 25.6
+},
+{
+"id": "P74",
+"kind": "planar_face",
+"faceIds": [
+74
+],
+"areaMm2": 2.25,
+"positionMm": [
+30.0,
+0.0,
+15.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 25.0,
+"sectionRatio": 1.0
+},
+{
+"id": "P76",
+"kind": "planar_face",
+"faceIds": [
+76
+],
+"areaMm2": 4192.465,
+"positionMm": [
+-89.516,
+0.0,
+18.486
+],
+"axis": [
+-0.99966,
+-0.0,
+0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": 1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P78",
+"kind": "planar_face",
+"faceIds": [
+78
+],
+"areaMm2": 6257.884,
+"positionMm": [
+0.0,
+-59.51,
+18.709
+],
+"axis": [
+-0.0,
+-0.99966,
+0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": 1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P80",
+"kind": "planar_face",
+"faceIds": [
+80
+],
+"areaMm2": 4192.465,
+"positionMm": [
+89.516,
+0.0,
+18.486
+],
+"axis": [
+0.99966,
+0.0,
+0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": 1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P82",
+"kind": "planar_face",
+"faceIds": [
+82
+],
+"areaMm2": 6257.884,
+"positionMm": [
+0.0,
+59.51,
+18.709
+],
+"axis": [
+0.0,
+0.99966,
+0.02618
+],
+"thicknessMm": 2.5,
+"draftClass": "drafted",
+"draftDeg": 1.5,
+"releaseHalf": 1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 1.0
+},
+{
+"id": "P84",
+"kind": "planar_face",
+"faceIds": [
+84
+],
+"areaMm2": 8.042,
+"positionMm": [
+-80.0,
+-50.0,
+35.5
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 4.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 2.368
+},
+{
+"id": "P85",
+"kind": "planar_face",
+"faceIds": [
+85
+],
+"areaMm2": 8.042,
+"positionMm": [
+80.0,
+-50.0,
+35.5
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 4.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 2.368
+},
+{
+"id": "P86",
+"kind": "planar_face",
+"faceIds": [
+86
+],
+"areaMm2": 8.042,
+"positionMm": [
+-80.0,
+50.0,
+35.5
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 4.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 2.368
+},
+{
+"id": "P87",
+"kind": "planar_face",
+"faceIds": [
+87
+],
+"areaMm2": 8.042,
+"positionMm": [
+80.0,
+50.0,
+35.5
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 4.5,
+"draftClass": "not_applicable",
+"releaseHalf": -1,
+"neighbourMinThicknessMm": 1.9,
+"sectionRatio": 2.368
+},
+{
+"id": "P96",
+"kind": "planar_face",
+"faceIds": [
+96
+],
+"areaMm2": 19281.096,
+"positionMm": [
+0.0,
+0.0,
+40.0
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"thicknessMm": 25.0,
+"draftClass": "not_applicable",
+"releaseHalf": 1,
+"neighbourMinThicknessMm": 2.5,
+"sectionRatio": 10.0
+}
+],
+"note": "",
+"faceCount": 96,
+"thicknessSampledFaces": 96,
+"medianThicknessMm": 2.5,
+"hotSpots": [
+{
+"faceId": 1,
+"thicknessMm": 168.0,
+"vsMedianRatio": 67.2,
+"positionMm": [
+-84.0,
+-0.0,
+26.25
+]
+},
+{
+"faceId": 20,
+"thicknessMm": 168.0,
+"vsMedianRatio": 67.2,
+"positionMm": [
+84.0,
+-0.0,
+26.25
+]
+},
+{
+"faceId": 17,
+"thicknessMm": 112.0,
+"vsMedianRatio": 44.8,
+"positionMm": [
+30.0,
+-56.0,
+26.25
+]
+},
+{
+"faceId": 23,
+"thicknessMm": 112.0,
+"vsMedianRatio": 44.8,
+"positionMm": [
+30.0,
+56.0,
+26.25
+]
+},
+{
+"faceId": 27,
+"thicknessMm": 112.0,
+"vsMedianRatio": 44.8,
+"positionMm": [
+-30.0,
+56.0,
+26.25
+]
+},
+{
+"faceId": 29,
+"thicknessMm": 112.0,
+"vsMedianRatio": 44.8,
+"positionMm": [
+-30.0,
+-56.0,
+26.25
+]
+},
+{
+"faceId": 56,
+"thicknessMm": 64.0,
+"vsMedianRatio": 25.6,
+"positionMm": [
+-32.0,
+-58.475,
+10.5
+]
+},
+{
+"faceId": 61,
+"thicknessMm": 64.0,
+"vsMedianRatio": 25.6,
+"positionMm": [
+32.0,
+-58.475,
+10.5
+]
+},
+{
+"faceId": 65,
+"thicknessMm": 64.0,
+"vsMedianRatio": 25.6,
+"positionMm": [
+-32.0,
+58.475,
+10.5
+]
+},
+{
+"faceId": 70,
+"thicknessMm": 64.0,
+"vsMedianRatio": 25.6,
+"positionMm": [
+32.0,
+58.475,
+10.5
+]
+},
+{
+"faceId": 55,
+"thicknessMm": 41.163,
+"vsMedianRatio": 16.47,
+"positionMm": [
+-48.0,
+-58.475,
+10.5
+]
+},
+{
+"faceId": 59,
+"thicknessMm": 41.163,
+"vsMedianRatio": 16.47,
+"positionMm": [
+48.0,
+-58.475,
+10.5
+]
+},
+{
+"faceId": 64,
+"thicknessMm": 41.163,
+"vsMedianRatio": 16.47,
+"positionMm": [
+-48.0,
+58.475,
+10.5
+]
+},
+{
+"faceId": 68,
+"thicknessMm": 41.163,
+"vsMedianRatio": 16.47,
+"positionMm": [
+48.0,
+58.475,
+10.5
+]
+},
+{
+"faceId": 41,
+"thicknessMm": 29.5,
+"vsMedianRatio": 11.8,
+"positionMm": [
+-80.0,
+-50.0,
+6.0
+]
+},
+{
+"faceId": 42,
+"thicknessMm": 29.5,
+"vsMedianRatio": 11.8,
+"positionMm": [
+80.0,
+-50.0,
+6.0
+]
+},
+{
+"faceId": 43,
+"thicknessMm": 29.5,
+"vsMedianRatio": 11.8,
+"positionMm": [
+-80.0,
+50.0,
+6.0
+]
+},
+{
+"faceId": 49,
+"thicknessMm": 29.5,
+"vsMedianRatio": 11.8,
+"positionMm": [
+80.0,
+50.0,
+6.0
+]
+},
+{
+"faceId": 54,
+"thicknessMm": 25.828,
+"vsMedianRatio": 10.33,
+"positionMm": [
+-40.0,
+-58.409,
+13.0
+]
+},
+{
+"faceId": 58,
+"thicknessMm": 25.828,
+"vsMedianRatio": 10.33,
+"positionMm": [
+40.0,
+-58.409,
+13.0
+]
+},
+{
+"faceId": 63,
+"thicknessMm": 25.828,
+"vsMedianRatio": 10.33,
+"positionMm": [
+-40.0,
+58.409,
+13.0
+]
+},
+{
+"faceId": 67,
+"thicknessMm": 25.828,
+"vsMedianRatio": 10.33,
+"positionMm": [
+40.0,
+58.409,
+13.0
+]
+},
+{
+"faceId": 5,
+"thicknessMm": 25.0,
+"vsMedianRatio": 10.0,
+"positionMm": [
+-57.375,
+0.0,
+15.0
+]
+},
+{
+"faceId": 31,
+"thicknessMm": 25.0,
+"vsMedianRatio": 10.0,
+"positionMm": [
+-30.0,
+0.0,
+15.0
+]
+},
+{
+"faceId": 32,
+"thicknessMm": 25.0,
+"vsMedianRatio": 10.0,
+"positionMm": [
+-30.0,
+-28.375,
+15.0
+]
+}
+],
+"wallAnalysisValid": true,
+"fillRatio": 0.1416,
+"adjacencyAvailable": true,
+"drawDirectionXYZ": [
+0.0,
+0.0,
+1.0
+]
+}
+}

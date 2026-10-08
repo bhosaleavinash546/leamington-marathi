@@ -7,7 +7,7 @@
  * was the whole complaint.
  */
 import type { GeometricRule } from '../types.js';
-import { finding, plausibleWall } from '../types.js';
+import { finding, plausibleWall, undercutEvidence } from '../types.js';
 
 /** Rib base thickness as a fraction of the wall it sits on, above which sink shows. */
 export const RIB_TO_WALL_MAX = 0.6;
@@ -104,15 +104,9 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
     source: { ...DFM_TEXT, clause: 'Undercuts and moving mould components' },
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
-      // Report the angle to the DRAW. An undercut is a classification, and
-      // printing "draft 45° against a threshold of < 0°" is self-contradictory.
-      const toDraw = 90 + (f.draftDeg ?? 0);
       return finding(this, f, part, {
         severity: 'major',
-        detail: `Face ${f.faceIds.join(', ')} sits at ${toDraw.toFixed(1)}° to the draw `
-              + '(past 90°) and cannot eject on the main parting.',
-        measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°',
-        thresholdValue: 90, comparator: '>',
+        ...undercutEvidence(f, 'mould'),
         recommendation: 'Re-orient the parting, redesign the feature to draw, or price a slide / '
           + 'lifter — each adds mould cost and lengthens the cycle.',
       });

@@ -11,7 +11,7 @@
  * rather than a number the midpoint is used and the note says so.
  */
 import type { GeometricRule, PartContext, ManufacturingFeature } from '../types.js';
-import { finding, plausibleWall, isBlend } from '../types.js';
+import { finding, plausibleWall, isBlend, undercutEvidence } from '../types.js';
 import { coredAbove } from './machining.js';
 
 /**
@@ -104,21 +104,14 @@ export const CASTING_RULES: readonly GeometricRule[] = [
     source: {
       standard: 'NADCA Product Specification Standards for Die Castings',
       clause: 'Undercuts and moving die components',
-      note: 'Any face whose normal opposes the draw cannot release on the main parting; it '
-          + 'requires a slide, a loose piece or a core, each of which adds die cost and cycle time.',
+      note: 'A face the part blocks along its line of release (toward the half it faces) cannot release on the '
+          + 'main parting; it requires a slide, a loose piece or a core, each of which adds die cost and cycle time.',
     },
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
-      // Report the angle to the DRAW, not the draft magnitude. An undercut is a
-      // classification (the normal opposes the draw), and printing "draft 45°
-      // against a threshold of < 0°" is a self-contradiction on the report.
-      const toDraw = 90 + (f.draftDeg ?? 0);
       return finding(this, f, part, {
         severity: 'major',
-        detail: `Face ${f.faceIds.join(', ')} sits at ${toDraw.toFixed(1)}° to the draw `
-              + '(past 90°, so its normal opposes withdrawal) and cannot release on the main parting.',
-        measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°',
-        thresholdValue: 90, comparator: '>',
+        ...undercutEvidence(f, 'die / pattern'),
         recommendation: 'Re-orient the parting line, or price a slide/core for this feature and '
           + 'carry the die cost and cycle penalty explicitly.',
       });

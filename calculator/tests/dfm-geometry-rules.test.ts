@@ -396,7 +396,7 @@ describe('the assumed draw direction is checked before undercuts are believed', 
                    wall(5, false), wall(6, false)];
     const r = analyseGeometricDFM(ctx(faces, { commodity: 'injection_moulding' }));
     expect(r.findings.filter(f => f.ruleId.includes('.undercut.'))).toHaveLength(0);
-    expect(r.limitations[0]).toMatch(/Draw direction is assumed to be \+Z/);
+    expect(r.limitations[0]).toMatch(/is the best principal axis the kernel found, and it does not fit/);
     expect(r.limitations[0]).toMatch(/67%/);
     expect(r.limitations[0]).toMatch(/withdrawn/);
   });
@@ -407,7 +407,7 @@ describe('the assumed draw direction is checked before undercuts are believed', 
     const faces = [wall(1, true), ...Array.from({ length: 9 }, (_, i) => wall(i + 2, false))];
     const r = analyseGeometricDFM(ctx(faces, { commodity: 'casting' }));
     expect(r.findings.filter(f => f.ruleId.includes('.undercut.')).length).toBe(1);
-    expect(r.limitations.some(l => /Draw direction is assumed/.test(l))).toBe(false);
+    expect(r.limitations.some(l => /does not fit/.test(l))).toBe(false);
   });
 
   it('does not fire on a single undercut, however small the part', () => {

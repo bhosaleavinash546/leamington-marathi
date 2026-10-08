@@ -23,6 +23,7 @@ import {
   type GeometricAnalysis, type PartContext, type CostContext,
 } from '../../src/engine/dfm-geometry/index.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { partWeightKgFor } from '../../src/engine/dfm-geometry/cost-impact.js';
 import type { CommodityType } from '../../src/engine/types.js';
 
 export type DFMJobStatus = 'queued' | 'running' | 'done' | 'error';
@@ -192,7 +193,7 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
       medianWallMm: geo.manufacturingFeatures?.medianThicknessMm ?? geo.wallThickness?.meanMm ?? null,
       materialFamily: req.materialFamily,
       process: req.process,
-      cost: resolveCostContext(req),
+      cost: resolveCostContext(req, geo.volume?.cm3),
     };
     finish(id, analyseGeometricDFM(part));
   } catch (e) {
@@ -215,7 +216,7 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
  * reference pair, because a DFM finding is about the feature, not about which
  * specific machine a supplier happens to own. The basis string says so.
  */
-function resolveCostContext(req: DFMJobRequest): CostContext {
+function resolveCostContext(req: DFMJobRequest, volumeCm3?: number): CostContext {
   // An unrecognised region falls back to the default library rather than
   // throwing — a bad region code must not lose the whole DFM report.
   // The deployment's active book (company rates when loaded) in the requested
@@ -234,6 +235,7 @@ function resolveCostContext(req: DFMJobRequest): CostContext {
     machineRatePerHr: machine?.computedRatePerHr,
     labourRatePerHr: labour?.fullyLoadedRatePerHr,
     engineerRatePerHr: engineer?.fullyLoadedRatePerHr,
+    partWeightKg: partWeightKgFor(req.materialFamily, volumeCm3),
   };
 }
 

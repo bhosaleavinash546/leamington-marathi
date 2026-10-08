@@ -123,9 +123,10 @@ describe('DFM finding restated through the whole stack', () => {
     const grouped = [{ ruleId: 'machining.hole.depth-beyond-standard-drill', totalCostGBP: 0.5, worst: { costImpact: { kind: 'feature_cost' } } }];
     const [r] = restackFindingCosts(grouped, input, lib);
     expect(r.jobGBP).toBe(0.5);
-    expect(r.stackGBP).toBeGreaterThan(0.5);            // overhead 12% and margin 8% on top
-    expect(r.stackGBP).toBeLessThan(0.5 * 1.6);         // OEE/efficiency scale the charged hours, then overhead + margin
-    expect(r.basis).toMatch(/off Mill through the stack/);
+    // EXACTLY the finding's £ comes off the factory base, then overhead 12 % and margin 8 % follow. The hours used
+    // to be £ ÷ (machine + labour rate), which ignored OEE 0.85 / efficiency 0.92 and overstated it by ~1/OEE.
+    expect(r.stackGBP).toBeCloseTo(0.5 * 1.12 * 1.08, 3);
+    expect(r.basis).toMatch(/off Mill \(£[\d.]+ per hour of cycle after parts\/cycle, OEE and crew\) through the stack/);
   });
   it('unpriced findings stay unpriced', () => {
     expect(restackFindingCosts([{ ruleId: 'casting.draft.insufficient', totalCostGBP: 0, worst: {} }], input, lib)).toEqual([]);

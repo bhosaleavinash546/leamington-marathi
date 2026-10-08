@@ -45,7 +45,25 @@ _set_alarm(max(30, int(os.environ.get("CV_TESS_TIMEOUT_MS", "300000")) // 1000 -
 
 # ─── Surface / edge type classification ──────────────────────────────────────
 
+_CYL_CACHE = {}
+
+
 def _cylinder_features(wrapped, face_map, diag):
+    """Cached `_cylinder_features_uncached`: the costing's feature table and the DFM extraction both read the
+    cylinders of the SAME shape (same face map, same diagonal) in one run — computing them once halves the
+    ray / classifier work on a large part. One entry, keyed by the shape object and the diagonal; callers get a
+    deep copy, so neither can change what the other reads."""
+    import copy
+    key = (id(wrapped), round(diag, 6), face_map.Extent())
+    hit = _CYL_CACHE.get("entry")
+    if hit is not None and hit[0] == key and hit[1] is wrapped:
+        return copy.deepcopy(hit[2])
+    out = _cylinder_features_uncached(wrapped, face_map, diag)
+    _CYL_CACHE["entry"] = (key, wrapped, out)
+    return copy.deepcopy(out)
+
+
+def _cylinder_features_uncached(wrapped, face_map, diag):
     """Physical cylindrical features — ONE recognition for the costing feature table and geometric DFM.
 
     Identity: the axis LINE (its foot point nearest the origin + a sign-normalised direction), the radius and
@@ -133,9 +151,19 @@ def _cylinder_features(wrapped, face_map, diag):
     from OCP.BRepClass3d import BRepClass3d_SolidClassifier
     from OCP.TopAbs import TopAbs_State
 
+    # ONE classifier, re-pointed per sample: constructing it per point rebuilt the solid explorer over every face
+    # each time — on the 3,444-face fuel tank that alone ran past the 290 s budget.
+    try:
+        clf = BRepClass3d_SolidClassifier(wrapped)
+    except Exception:
+        clf = None
+
     def _air(pt):
+        if clf is None:
+            return None
         try:
-            return BRepClass3d_SolidClassifier(wrapped, gp_Pnt(*pt), 1e-6).State() == TopAbs_State.TopAbs_OUT
+            clf.Perform(gp_Pnt(*pt), 1e-6)
+            return clf.State() == TopAbs_State.TopAbs_OUT
         except Exception:
             return None
 
@@ -170,15 +198,23 @@ def _cylinder_features(wrapped, face_map, diag):
             # Sampled from 0.5 mm past the end to past a possible drill point: blind if ANY sample is material
             # (a thin flat bottom fails the first sample, a drill point the last); one far point read a thin can
             # bottom as "through".
+            # Only a full cylinder (a hole or a boss) is ever read for breakout — a partial one is a corner / blend.
             reach = 0.6 * r + 0.5
             samples = [0.5 + (reach - 0.5) * i / 6 for i in range(7)]
             def _breaks_out(pt, dirv):
-                st = [_air([pt[k] + dirv[k] * t for k in range(3)]) for t in samples]
-                return None if None in st else all(st)
-            brk = [_breaks_out(p0, [-dc[0], -dc[1], -dc[2]]), _breaks_out(p1, dc)]
+                for t in samples:               # the first sample in material settles it: blind
+                    a = _air([pt[k] + dirv[k] * t for k in range(3)])
+                    if a is None:
+                        return None
+                    if not a:
+                        return False
+                return True
+            full = coverage >= 0.83
+            brk = ([_breaks_out(p0, [-dc[0], -dc[1], -dc[2]]), _breaks_out(p1, dc)] if full and concave
+                   else [None, None])
             out.append({"line": line_no, "s0": c["s0"], "s1": c["s1"], "breakout": brk,
                 "faceIds": sorted(f["id"] for f in c["faces"]), "concave": concave, "r": r, "dia": r * 2,
-                "axis": dc, "span": span, "area": area, "coverage": coverage, "full": coverage >= 0.83,
+                "axis": dc, "span": span, "area": area, "coverage": coverage, "full": full,
                 "mid": [(p0[k] + p1[k]) / 2 for k in range(3)], "ends": ends,
                 "openDirs": [[round(-c2, 5) for c2 in dc]] * (1 if ends[0] else 0) + [[round(c2, 5) for c2 in dc]] * (1 if ends[1] else 0),
             })
@@ -1256,67 +1292,324 @@ def _silhouette_areas_mm2(shape, diag_mm: float, cells: int = 400) -> dict:
 	return out
 
 
-def _compute_draft_analysis(faces, draw_dir=(0.0, 0.0, 1.0)) -> dict:
-    """
-    Classify faces by draft angle relative to the die-draw direction.
-    Undercut  → face normal has a component AGAINST the draw direction (angle > 90°).
-    Zero-draft → face nearly perpendicular to draw (|90° - angle| < 1°).
-    Adequate  → face has ≥ 1° positive draft.
-    """
+# A wall within 0.5° of the draw is a draft question (zero draft), not a release one.
+_RELEASE_PARALLEL_COS = math.sin(math.radians(0.5))
+# The release probe starts this far off the face (grazing guard) …
+RELEASE_OFFSET_MM = 0.1
+# … and an obstruction nearer than this along the line of release is a sliver or a grazing hit, below casting and
+# moulding tolerance — nothing a slide or a core is made for (the knuckle's 0.3 mm² slivers read 0.15–0.7 mm).
+MIN_BLOCK_MM = 0.5
+# A face smaller than this is not judged for release on its own (a sliver at a fillet junction).
+MIN_RELEASE_FACE_MM2 = 1.0
+
+
+def _face_points(face, k=3):
+    """Up to k points ON a trimmed face, spread across it (uv-mid first when it is inside, then the inside points of a
+    5 × 5 grid farthest from those already taken), each with the material-outward normal there."""
     from OCP.BRep import BRep_Tool
-    from OCP.GeomLProp import GeomLProp_SLProps
     from OCP.BRepTools import BRepTools
-    from OCP.GeomAdaptor import GeomAdaptor_Surface
-    from OCP.GeomAbs import GeomAbs_Plane, GeomAbs_Cylinder
+    from OCP.GeomLProp import GeomLProp_SLProps
+    from OCP.BRepTopAdaptor import BRepTopAdaptor_FClass2d
+    from OCP.gp import gp_Pnt2d
+    from OCP.TopAbs import TopAbs_State, TopAbs_Orientation
+    surf = BRep_Tool.Surface_s(face)
+    umin, umax, vmin, vmax = BRepTools.UVBounds_s(face)
+    try:
+        fc = BRepTopAdaptor_FClass2d(face, 1e-6)
+    except Exception:
+        fc = None
+    grid = [((umin + umax) / 2, (vmin + vmax) / 2)]
+    grid += [(umin + (umax - umin) * (i + 0.5) / 5, vmin + (vmax - vmin) * (j + 0.5) / 5) for i in range(5) for j in range(5)]
+    inside = []
+    for (u, v) in grid:
+        if fc is not None:
+            try:
+                if fc.Perform(gp_Pnt2d(u, v)) != TopAbs_State.TopAbs_IN:
+                    continue
+            except Exception:
+                pass
+        props = GeomLProp_SLProps(surf, u, v, 1, 1e-7)
+        if not props.IsNormalDefined():
+            continue
+        P, N = props.Value(), props.Normal()
+        n = [N.X(), N.Y(), N.Z()]
+        if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+            n = [-c for c in n]
+        inside.append(((P.X(), P.Y(), P.Z()), tuple(n)))
+    if not inside:
+        return []
+    picked = [inside[0]]
+    while len(picked) < k and len(picked) < len(inside):
+        far = max((q for q in inside if q not in picked), key=lambda q: min(math.dist(q[0], r[0]) for r in picked))
+        picked.append(far)
+    return picked
 
+
+def _face_point(face):
+    """A point ON a trimmed face and the face's MATERIAL-outward normal there: (P, (nx, ny, nz)) or None.
+
+    The uv-mid point of a trimmed face can lie outside it (an L-shaped plate, a face with a big hole); a probe from
+    there tests the wrong place. The uv-mid is kept when the face's own 2-D classifier puts it inside, otherwise the
+    first inside point of a 5 × 5 grid."""
+    from OCP.BRep import BRep_Tool
+    from OCP.BRepTools import BRepTools
+    from OCP.GeomLProp import GeomLProp_SLProps
+    from OCP.BRepTopAdaptor import BRepTopAdaptor_FClass2d
+    from OCP.gp import gp_Pnt2d
+    from OCP.TopAbs import TopAbs_State, TopAbs_Orientation
+    surf = BRep_Tool.Surface_s(face)
+    umin, umax, vmin, vmax = BRepTools.UVBounds_s(face)
+    cands = [((umin + umax) / 2, (vmin + vmax) / 2)]
+    cands += [(umin + (umax - umin) * (i + 0.5) / 5, vmin + (vmax - vmin) * (j + 0.5) / 5) for i in range(5) for j in range(5)]
+    try:
+        fc = BRepTopAdaptor_FClass2d(face, 1e-6)
+    except Exception:
+        fc = None
+    for (u, v) in cands:
+        if fc is not None:
+            try:
+                if fc.Perform(gp_Pnt2d(u, v)) != TopAbs_State.TopAbs_IN:
+                    continue
+            except Exception:
+                pass
+        props = GeomLProp_SLProps(surf, u, v, 1, 1e-7)
+        if not props.IsNormalDefined():
+            continue
+        P, N = props.Value(), props.Normal()
+        nx, ny, nz = N.X(), N.Y(), N.Z()
+        if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+            nx, ny, nz = -nx, -ny, -nz
+        return (P.X(), P.Y(), P.Z()), (nx, ny, nz)
+    return None
+
+
+def _release_blocked(inter, pt, n, d, diag):
+    """Two-half tooling (a mould, a die, a pattern): a face comes out of the half its outward normal faces — the
+    sign of n·d — so a face pointing AGAINST the draw is not an undercut, it is on the other half. It is an
+    undercut only when material lies on its line of release. Returns (half, blockedAtMm): half +1 / -1, 0 for a
+    wall parallel to the draw; blockedAtMm None when the release line is clear or the probe could not run.
+
+    One ray from one point on the face: a face partly shadowed reads by that point. Stated, not hidden."""
+    from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
+    c = n[0] * d[0] + n[1] * d[1] + n[2] * d[2]
+    if abs(c) < _RELEASE_PARALLEL_COS:
+        return 0, None
+    s = 1.0 if c > 0 else -1.0
+    if inter is None:
+        return int(s), None
+    # 0.1 mm off the face: a ray started 0.01 mm off a wall a few degrees from the draw grazed the neighbouring
+    # edge and read 0.07–0.59 mm "blocks" along the gearbox housing's whole flange (clear from 0.1 mm).
+    off = max(diag * 5e-5, RELEASE_OFFSET_MM)
+    start = gp_Pnt(pt[0] + n[0] * off, pt[1] + n[1] * off, pt[2] + n[2] * off)
+    try:
+        inter.PerformNearest(gp_Lin(start, gp_Dir(s * d[0], s * d[1], s * d[2])), 0.0, diag * 1.05)
+        if inter.IsDone() and inter.NbPnt() > 0:
+            dist = start.Distance(inter.Pnt(1))
+            if dist > MIN_BLOCK_MM:
+                return int(s), round(dist, 3)
+    except Exception:
+        pass
+    return int(s), None
+
+
+# Directions for the cavity probe: the 26 of a cube's faces, edges and corners.
+_PROBE_DIRS = [(a / m, b / m, c / m) for a in (-1, 0, 1) for b in (-1, 0, 1) for c in (-1, 0, 1)
+               if (a, b, c) != (0, 0, 0) for m in [math.sqrt(a * a + b * b + c * c)]]
+CAVITY_BLOCKED_SHARE = 0.85
+_CAVITY_MEMO = {}
+
+
+def _faces_cavity(inter, pt, n, diag):
+    """Does this face look into an ENCLOSED cavity — the inside skin of a hollow body? From just off the face, rays
+    into the half-space it faces: when ≥ 85 % hit the part, the face is walled in (an open filler neck lets a few
+    out). Such a face is blocked along the draw like an undercut, but no tool forms it: a blow or roto moulding
+    is pressed out by air / gravity, a casting needs a core, a moulding cannot be made — not a slide question.
+    None when the probe could not run."""
+    if inter is None:
+        return None
+    # Independent of the draw: memoised per (intersector, point, normal) across the three candidate axes and the
+    # per-face pass — a hollow tank's whole inside skin is blocked, and probing it four times doubled its run.
+    key = (round(pt[0], 4), round(pt[1], 4), round(pt[2], 4), round(n[0], 4), round(n[1], 4), round(n[2], 4))
+    if key in _CAVITY_MEMO:
+        return _CAVITY_MEMO[key]
+    from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
+    off = max(diag * 2e-5, 0.01)
+    start = gp_Pnt(pt[0] + n[0] * off, pt[1] + n[1] * off, pt[2] + n[2] * off)
+    tried = hit = 0
+    try:
+        for d in _PROBE_DIRS:
+            if d[0] * n[0] + d[1] * n[1] + d[2] * n[2] < 0.2:
+                continue
+            tried += 1
+            inter.PerformNearest(gp_Lin(start, gp_Dir(*d)), 0.0, diag * 1.05)
+            if inter.IsDone() and inter.NbPnt() > 0:
+                hit += 1
+    except Exception:
+        return None
+    res = tried > 0 and hit >= CAVITY_BLOCKED_SHARE * tried
+    if len(_CAVITY_MEMO) > 200_000:
+        _CAVITY_MEMO.clear()
+    _CAVITY_MEMO[key] = res
+    return res
+
+
+def _shape_intersector(wrapped):
+    try:
+        from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+        inter = IntCurvesFace_ShapeIntersector()
+        inter.Load(wrapped, 1e-4)
+        return inter
+    except Exception:
+        return None
+
+
+_RELEASE_CACHE = {}
+
+
+def _face_adjacency(wrapped, face_map):
+    """{face index: set of face indices sharing an edge} — 1-based, the face map's own indexing."""
+    from OCP.TopTools import TopTools_IndexedDataMapOfShapeListOfShape
+    from OCP.TopExp import TopExp
+    from OCP.TopAbs import TopAbs_EDGE, TopAbs_FACE
+    adj = {i: set() for i in range(1, face_map.Extent() + 1)}
+    try:
+        emap = TopTools_IndexedDataMapOfShapeListOfShape()
+        TopExp.MapShapesAndAncestors_s(wrapped, TopAbs_EDGE, TopAbs_FACE, emap)
+        for ei in range(1, emap.Extent() + 1):
+            ids = [fi for shp in emap.FindFromIndex(ei) if (fi := face_map.FindIndex(shp)) > 0]
+            for a in ids:
+                for b in ids:
+                    if a != b:
+                        adj[a].add(b)
+    except Exception:
+        pass
+    return adj
+
+
+def _release_table(wrapped, face_map, diag, draw_dir, inter):
+    """Per face (planes and cylinders), for a two-half tool opening along ±draw: the half it comes out of, where the
+    part blocks its line of release (None = clear), and whether it faces an enclosed cavity. ONE table per draw,
+    shared by the aggregate draft count (costing) and the per-face DFM pass — they used to cast the same rays twice.
+
+    Cavity is probed per connected group of BLOCKED faces, not per face: a hollow body's inside skin is one group
+    (its faces touch), and it does not touch the outside skin — the rim faces between them face along the wall and
+    are not blocked. Three spread probes decide a group; if they disagree every face in it is probed. On the 3,444-
+    face fuel tank this took the cavity probes from ~18 000 rays to a few dozen."""
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+    gprops = GProp_GProps()
+    n_faces = face_map.Extent()
     dx, dy, dz = draw_dir
-    d_mag = math.sqrt(dx*dx + dy*dy + dz*dz)
-
-    undercuts, zero_draft, adequate = 0, 0, 0
-    pos_drafts = []
-
-    for face in faces:
+    d_mag = math.sqrt(dx * dx + dy * dy + dz * dz) or 1.0
+    d = (dx / d_mag, dy / d_mag, dz / d_mag)
+    key = (id(wrapped), n_faces, round(diag, 6), tuple(round(c, 6) for c in d))
+    hit = _RELEASE_CACHE.get(key)
+    if hit is not None and hit[0] is wrapped:
+        return hit[1]
+    recs = {}
+    for idx in range(1, n_faces + 1):
         try:
-            surf = BRep_Tool.Surface_s(face.wrapped)
-            adaptor = GeomAdaptor_Surface(surf)
-            if adaptor.GetType() not in (GeomAbs_Plane, GeomAbs_Cylinder):
+            face = TopoDS.Face_s(face_map.FindKey(idx))
+            st = BRepAdaptor_Surface(face).GetType()
+            if st not in (GeomAbs_SurfaceType.GeomAbs_Plane, GeomAbs_SurfaceType.GeomAbs_Cylinder):
                 continue
-            umin, umax, vmin, vmax = BRepTools.UVBounds_s(face.wrapped)
-            props = GeomLProp_SLProps(surf, (umin+umax)/2, (vmin+vmax)/2, 1, 1e-7)
-            if not props.IsNormalDefined():
+            pts = _face_points(face, 3)
+            if not pts:
                 continue
-            N = props.Normal()
-            nx, ny, nz = N.X(), N.Y(), N.Z()
-            n_mag = math.sqrt(nx*nx + ny*ny + nz*nz)
-            if n_mag < 1e-10:
+            pt, (nx, ny, nz) = pts[0]
+            nm = math.sqrt(nx * nx + ny * ny + nz * nz)
+            if nm < 1e-10:
                 continue
-            # cos(angle) between face normal and draw direction
-            cos_a = (nx*dx + ny*dy + nz*dz) / (n_mag * d_mag)
-            cos_a = max(-1.0, min(1.0, cos_a))
-            # Draft is only DEFINED on wall-like faces. A top or bottom face is
-            # perpendicular to the draw and has no draft; this function used to
-            # classify it anyway, and a flat BOTTOM face (angle 180°) counted as
-            # an undercut on every part. Same gate as the per-face extractor.
-            if abs(cos_a) > 0.95:
-                continue
-            angle_deg = math.degrees(math.acos(cos_a))
-            # Draft angle = deviation from perpendicular (90°)
-            draft = abs(90.0 - angle_deg)
-
-            if angle_deg > 90.5:               # normal against draw → undercut
-                undercuts += 1
-            elif draft < 1.0:                  # < 1° from perpendicular → zero-draft
-                zero_draft += 1
-            else:
-                adequate += 1
-                if angle_deg < 90.0:           # positive draft only
-                    pos_drafts.append(round(draft, 2))
+            n = (nx / nm, ny / nm, nz / nm)
+            half, blocked = _release_blocked(inter, pt, n, d, diag)
+            if blocked is not None:
+                BRepGProp.SurfaceProperties_s(face, gprops)
+                if abs(gprops.Mass()) < MIN_RELEASE_FACE_MM2:
+                    blocked = None
+                elif len(pts) > 1:
+                    # Confirm from the other spread points: blocked at the majority, the nearest obstruction kept.
+                    more = [_release_blocked(inter, q, tuple(c / (math.sqrt(sum(x * x for x in m)) or 1.0) for c in m), d, diag)[1]
+                            for (q, m) in pts[1:]]
+                    hits = [blocked] + [b for b in more if b is not None]
+                    blocked = min(hits) if len(hits) * 2 > len(pts) else None
+            recs[idx] = {"pt": pt, "n": n, "plane": st == GeomAbs_SurfaceType.GeomAbs_Plane,
+                         "half": half, "blocked": blocked, "cavity": False}
         except Exception:
             continue
+    blocked_ids = {i for i, r in recs.items() if r["blocked"] is not None}
+    if blocked_ids:
+        adj = _face_adjacency(wrapped, face_map)
+        seen = set()
+        for start in sorted(blocked_ids):
+            if start in seen:
+                continue
+            comp, stack = [], [start]
+            seen.add(start)
+            while stack:
+                a = stack.pop()
+                comp.append(a)
+                for b in adj.get(a, ()):
+                    # through blocked faces, and across a blend that is not itself tabled (a torus, a B-spline fillet)
+                    nxt = [b] if b in blocked_ids else ([c for c in adj.get(b, ()) if c in blocked_ids] if b not in recs else [])
+                    for c in nxt:
+                        if c not in seen:
+                            seen.add(c)
+                            stack.append(c)
+            comp.sort()
+            sample = sorted({comp[0], comp[len(comp) // 2], comp[-1]})
+            votes = [_faces_cavity(inter, recs[k]["pt"], recs[k]["n"], diag) for k in sample]
+            if all(v is True for v in votes):
+                for k in comp:
+                    recs[k]["cavity"] = True
+            elif not all(v is False for v in votes):
+                for k in comp:
+                    recs[k]["cavity"] = bool(_faces_cavity(inter, recs[k]["pt"], recs[k]["n"], diag))
+    if len(_RELEASE_CACHE) > 8:
+        _RELEASE_CACHE.clear()
+    _RELEASE_CACHE[key] = (wrapped, recs)
+    return recs
 
+
+def _compute_draft_analysis(wrapped, face_map, draw_dir=(0.0, 0.0, 1.0), inter=None, diag=1.0) -> dict:
+    """
+    Classify faces (planes and cylinders) by draft relative to the draw, for a TWO-HALF tool (`_release_table`).
+    Undercut   → the part blocks the face's line of release toward the half it faces — and it is not the inside
+                 of a hollow body (`cavityFaceCount`: no tool forms those). With no intersector no face is called
+                 an undercut — measured or silent. It used to be "normal against the draw (angle > 90°)", which
+                 called every wall and floor of the lower half an undercut: a two-half tool opens BOTH ways.
+    Zero-draft → face nearly parallel to the draw (|90° - angle| < 1°).
+    Adequate   → face has ≥ 1° draft toward the half it comes out of.
+    End faces (normal within ~18° of the draw) have no draft; they count only when blocked.
+    """
+    dx, dy, dz = draw_dir
+    d_mag = math.sqrt(dx*dx + dy*dy + dz*dz) or 1.0
+    undercuts, zero_draft, adequate, cavity = 0, 0, 0, 0
+    pos_drafts = []
+    for r in _release_table(wrapped, face_map, diag, draw_dir, inter).values():
+        if r["blocked"] is not None:
+            if r["cavity"]:
+                cavity += 1
+            else:
+                undercuts += 1
+            continue
+        nx, ny, nz = r["n"]
+        cos_a = max(-1.0, min(1.0, (nx*dx + ny*dy + nz*dz) / d_mag))
+        if abs(cos_a) > 0.95:
+            continue
+        draft = abs(90.0 - math.degrees(math.acos(cos_a)))
+        if draft < 1.0:
+            zero_draft += 1
+        else:
+            adequate += 1
+            pos_drafts.append(round(draft, 2))
     return {
         "drawDirectionXYZ": list(draw_dir),
         "undercutFaceCount": undercuts,
+        # Blocked along the draw but facing an enclosed cavity (inside skin of a hollow body): not counted above.
+        "cavityFaceCount": cavity,
         "zeroDraftFaceCount": zero_draft,
         "adequateDraftFaceCount": adequate,
         "minPositiveDraftDeg": round(min(pos_drafts), 2) if pos_drafts else None,
@@ -2041,6 +2334,8 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
     # ── Pass 1: per-face record ───────────────────────────────────────────────
     dx, dy, dz = draw_dir
     d_mag = math.sqrt(dx * dx + dy * dy + dz * dz) or 1.0
+    # The analysis already built this draw's table for the draft count; the cache hands it back (same shape object).
+    release = _release_table(wrapped, face_map, diag, draw_dir, _shape_intersector(wrapped))
     props = GProp_GProps()
     F = {}                       # 1-based face id -> record
     for idx in range(1, n + 1):
@@ -2066,6 +2361,7 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
                 if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
                     nx, ny, nz = -nx, -ny, -nz
                 rec["normal"] = [round(nx, 5), round(ny, 5), round(nz, 5)]
+                rel = release.get(idx)
                 # Draft measured PER FACE, and attributed — the aggregate
                 # `_compute_draft_analysis` counts the same thing and throws the
                 # identity away, which is why no finding could ever name a face.
@@ -2081,13 +2377,29 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
                 cos_a = max(-1.0, min(1.0, (nx * dx + ny * dy + nz * dz) / d_mag))
                 ang = math.degrees(math.acos(cos_a))
                 rec["angleToDrawDeg"] = round(ang, 2)
-                if abs(cos_a) > 0.95:            # normal along ±draw → end face
-                    rec["draftClass"] = "not_applicable"
+                # Two-half tool: the face comes out of the half it faces; an undercut is a face whose line of
+                # release is blocked by the part (`_release_blocked`) — not merely one facing the other half. END
+                # faces are tested too: the top of a snap window through a side wall faces the draw, has no draft to
+                # judge, and is blocked by the window's bottom — the side action.
+                half, blocked = (rel["half"], rel["blocked"]) if rel is not None else (0, None)
+                if half:
+                    rec["releaseHalf"] = half
+                if blocked is not None:
+                    rec["blockedAtMm"] = blocked
+                    if rel["cavity"]:
+                        # the inside skin of a hollow body: blocked, but no tool forms it — not an undercut
+                        rec["facesCavity"] = True
+                        blocked = None
+                if abs(cos_a) > 0.95:            # normal along ±draw → end face: no draft
+                    rec["draftClass"] = "undercut" if blocked is not None else "not_applicable"
                 else:
                     rec["draftDeg"] = round(abs(90.0 - ang), 2)
-                    rec["draftClass"] = ("undercut" if ang > 90.5
+                    rec["draftClass"] = ("undercut" if blocked is not None
                                          else "zero_draft" if abs(90.0 - ang) < 1.0
                                          else "drafted")
+                if rec.get("facesCavity"):       # no tool steel touches it: no draft to judge either
+                    rec["draftClass"] = "not_applicable"
+                    rec.pop("draftDeg", None)
             elif st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
                 rec["type"] = "cylinder"
                 cyl = ad.Cylinder()
@@ -2143,6 +2455,40 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
                         adj[a].add(b)
     except Exception:
         pass
+
+    # ── Undercut regions: blocked faces that touch (directly, or across one blend) are ONE undercut — one slide,
+    # lifter or core — not one per face. Pricing a slide per face priced a five-face snap-fit pocket as five slides.
+    uc = [i for i, r in F.items() if r.get("draftClass") == "undercut"]
+    parent = {i: i for i in uc}
+
+    def _find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    def _union(a, b):
+        ra, rb = _find(a), _find(b)
+        if ra != rb:
+            parent[max(ra, rb)] = min(ra, rb)
+    ucs = set(uc)
+
+    def _side_wall(j):
+        # A plane parallel to the draw: the face a slide pulls out through — every undercut it carries goes with
+        # that ONE slide (the windows in one wall of a cover are one side action, along the wall's normal).
+        r = F.get(j, {})
+        nrm = r.get("normal")
+        return r.get("type") == "plane" and nrm is not None and abs(nrm[0] * dx + nrm[1] * dy + nrm[2] * dz) / d_mag < 0.1
+    for i in uc:
+        for j in adj.get(i, ()):
+            if j in ucs:
+                _union(i, j)
+            elif F.get(j, {}).get("type") not in (None, "plane") or _side_wall(j):   # across a blend or a side wall
+                for k in adj.get(j, ()):
+                    if k in ucs and k != i:
+                        _union(i, k)
+    for i in uc:
+        F[i]["undercutRegion"] = _find(i)
 
     # ── Pass 3: assemble features ─────────────────────────────────────────────
     feats = []
@@ -2217,6 +2563,9 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
             rec["draftClass"] = r["draftClass"]
         if "draftDeg" in r:
             rec["draftDeg"] = r["draftDeg"]
+        for k in ("releaseHalf", "blockedAtMm", "undercutRegion", "facesCavity"):
+            if k in r:
+                rec[k] = r[k]
         # Section change: the ratio to the thinnest adjacent measured section.
         # A step change is where castings tear and mouldings sink.
         if t and wall_valid:
@@ -2592,6 +2941,7 @@ def _unit_check(x_sz, y_sz, z_sz, cyl_radii, file_units, unit_scale):
 
 
 def analyze(filepath: str) -> dict:
+    _CAVITY_MEMO.clear()          # one part's cavity verdicts never answer another's
     try:
         from OCP.BRepGProp import BRepGProp
         from OCP.GProp import GProp_GProps
@@ -2750,8 +3100,14 @@ def analyze(filepath: str) -> dict:
                           else ("yMm2" if abs(d["drawDirectionXYZ"][1]) > 0.9 else "xMm2")) or 0)
         try:
             candidates = []
+            _inter_draft = _shape_intersector(raw_shape)
+            from OCP.TopTools import TopTools_IndexedMapOfShape as _IMS
+            from OCP.TopExp import TopExp as _TE
+            from OCP.TopAbs import TopAbs_FACE as _TAF
+            _fmap_draft = _IMS()
+            _TE.MapShapes_s(raw_shape, _TAF, _fmap_draft)
             for axis in ((0.0, 0.0, 1.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0)):
-                di = _compute_draft_analysis(faces, axis)
+                di = _compute_draft_analysis(raw_shape, _fmap_draft, axis, _inter_draft, _diag_pa)
                 candidates.append(di)
             candidates.sort(key=lambda d: (d["undercutFaceCount"], -_sil(d), -d["adequateDraftFaceCount"]))
             draft_info = dict(candidates[0])
@@ -2786,7 +3142,10 @@ def analyze(filepath: str) -> dict:
         if os.environ.get("CV_EXTRACT_FEATURES") == "1":
             try:
                 _diag = math.sqrt(x_sz ** 2 + y_sz ** 2 + z_sz ** 2) or 1.0
-                mfg_features = _extract_manufacturing_features(wrapped, _diag, fill_ratio=fill_ratio)
+                # The draw the pull-direction search chose — the per-face draft and undercut findings used to be
+                # measured against a fixed +Z whatever the part's orientation.
+                _dd = tuple((draft_info or {}).get("drawDirectionXYZ") or (0.0, 0.0, 1.0))
+                mfg_features = _extract_manufacturing_features(wrapped, _diag, draw_dir=_dd, fill_ratio=fill_ratio)
             except Exception as _fe:
                 mfg_features = {"available": False, "features": [], "note": str(_fe)[:160]}
 

@@ -26,6 +26,16 @@ export interface ManufacturingFeature {
   draftDeg?: number;
   /** `not_applicable` = an end face, where draft is undefined — not a gap. */
   draftClass?: 'undercut' | 'zero_draft' | 'drafted' | 'not_applicable';
+  /**
+   * Planar faces, two-half release test (Oct 2026): the half the face comes out of (+1 toward +draw, −1 toward
+   * −draw; absent for a wall parallel to the draw), and — when the part blocks that line of release — the distance
+   * to the obstruction. `undercutRegion` groups blocked faces that are one slide / core. `facesCavity`: the face
+   * looks into an enclosed cavity (the inside of a hollow body) — blocked, but no tool forms it, so not an undercut.
+   */
+  releaseHalf?: number;
+  blockedAtMm?: number;
+  undercutRegion?: number;
+  facesCavity?: boolean;
   neighbourWallMm?: number;
   neighbourMinThicknessMm?: number;
   /** Thick:thin across an adjacent face. Only emitted when wallAnalysisValid. */
@@ -155,7 +165,10 @@ export interface OCCTGeometry {
   } | null;
   draftAnalysis?: {
     drawDirectionXYZ: [number, number, number];
+    /** Faces the part blocks along their line of release toward the half they face (two-half tool, Oct 2026). */
     undercutFaceCount: number;
+    /** Blocked, but facing an enclosed cavity (the inside of a hollow body) — no tool forms them; not undercuts. */
+    cavityFaceCount?: number;
     zeroDraftFaceCount: number;
     adequateDraftFaceCount: number;
     minPositiveDraftDeg: number | null;

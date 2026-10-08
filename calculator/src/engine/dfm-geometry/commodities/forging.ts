@@ -15,7 +15,7 @@
  * rather than inventing failures.
  */
 import type { GeometricRule, PartContext, RuleSource } from '../types.js';
-import { finding, isBlend } from '../types.js';
+import { finding, isBlend, undercutEvidence } from '../types.js';
 import {
   FORGING_PROCESS_REFERENCE, type ForgingProcess,
 } from '../../modules/forging-advisor.js';
@@ -134,18 +134,14 @@ export const FORGING_RULES: readonly GeometricRule[] = [
     source: {
       standard: 'ASM Handbook Vol. 14A, Metalworking: Bulk Forming — die design and parting',
       note: 'A forging die has no slides or cores: the part must lift straight out of the '
-          + 'impression. A face whose normal opposes the draw cannot be forged on that parting '
+          + 'impression. A face the part blocks along its line of release cannot be forged on that parting '
           + 'and has to be machined afterwards, or the parting has to move.',
     },
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
-      const toDraw = 90 + (f.draftDeg ?? 0);
       return finding(this, f, part, {
         severity: 'major',
-        detail: `Face ${f.faceIds.join(', ')} sits at ${toDraw.toFixed(1)}° to the draw (past 90°) `
-              + 'and cannot lift out of an impression die.',
-        measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°',
-        thresholdValue: 90, comparator: '>',
+        ...undercutEvidence(f, 'impression die'),
         recommendation: 'Move the parting line, or accept the feature as a machined operation '
           + 'after forging and carry that cost. Unlike casting or moulding, a forging die cannot '
           + 'buy its way out with a slide.',

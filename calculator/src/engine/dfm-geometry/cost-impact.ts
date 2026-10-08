@@ -43,6 +43,7 @@ import type { GeometricFinding, PartContext } from './types.js';
 import { featureMinutesEach } from '../feature-machining.js';
 import { estimateMouldCost } from '../modules/injection-moulding.js';
 import { priceExtraSetups, priceHoleSizes } from './commodities/machining-access.js';
+import { TOOL_CHANGE_SEC } from '../machining-time.js';
 
 /** Where the money comes from. Printed on the finding so it can be argued with. */
 export type CostImpactKind =
@@ -61,6 +62,11 @@ export interface FindingCostImpact {
    * `indicative` — a documented default stood in for an unstated input.
    */
   confidence: 'modelled' | 'indicative';
+  /**
+   * Findings that share a group share ONE cost: every blocked face of an undercut region is the same slide, so the
+   * region's slide is counted once however many faces point at it (`totalCostGBP`).
+   */
+  costGroup?: string;
 }
 
 /**
@@ -132,6 +138,9 @@ export const NOT_MODELLED: Record<string, string> = {
   'machining.hole.intersecting':
     'Cross-hole deburring (tool, brush, thermal or ECM) is not an operation in the machining model, so its '
     + 'time is not derivable here.',
+  'machining.feature.toothed-form':
+    'Tooth cutting is costed on the gear route (hob / shape / broach time per tooth), not as a DFM delta on the '
+    + 'machining cost.',
   'machining.corner.long-reach-cutter':
     'The machining model has no feed derating for cutter reach, so the slower long-series cutter is not '
     + 'priced; the corner\'s pocket pass is in the cost either way.',
@@ -232,11 +241,31 @@ type Pricer = (f: GeometricFinding, part: PartContext, ctx: CostContext) => Find
  */
 export const PRICERS: Record<string, Pricer> = {
   'machining.hole.depth-beyond-standard-drill': holeFeatureCost,
-  'machining.hole.non-preferred-diameter': holeFeatureCost,
+  // What moving to a standard size saves is the special tool's change — not the hole (it is still made). Priced as one
+  // tool change per distinct size (costGroup), the same constant as hole-size consolidation. It used to be the whole
+  // hole's drilling cost, which the Design-to-Cost tab then offered as a saving (£18 on a Ø35.5 driveshaft bore).
+  'machining.hole.non-preferred-diameter': (f, _part, ctx) => {
+    const mr = ctx.machineRatePerHr;
+    if (mr === undefined) return null;
+    return {
+      perPartGBP: round4((TOOL_CHANGE_SEC / 3600) * mr),
+      kind: 'feature_cost',
+      basis: `one tool change (${TOOL_CHANGE_SEC} s × £${mr.toFixed(2)}/h machine) for the ⌀${f.measured.value} mm special, counted once `
+        + 'per size — the special drill or reamer itself (purchase, regrind) is not priced.',
+      confidence: 'modelled',
+      costGroup: `size:${f.measured.value}`,
+    };
+  },
   'sheetmetal.hole.smaller-than-thickness': holeFeatureCost,
   // the remedy IS the drilling: what the hole costs to drill after casting
   'casting.hole.beyond-cored-depth': holeFeatureCost,
-  'moulding.undercut.requires-side-action': (_f, part, ctx) => mouldSlideCost(part, ctx, 1),
+  // One slide per undercut REGION (blocked faces the kernel joined), not per face: a five-face snap-fit pocket is
+  // one slide. A payload with no region (older kernel) prices per face, as before.
+  'moulding.undercut.requires-side-action': (f, part, ctx) => {
+    const c = mouldSlideCost(part, ctx, 1);
+    const region = part.featureSet.features.find(x => x.id === f.featureId)?.undercutRegion;
+    return c && region !== undefined ? { ...c, costGroup: `slide:${region}`, basis: `${c.basis} One slide for undercut region ${region}.` } : c;
+  },
   'machining.setup.access-directions': (f, _part, ctx) => priceExtraSetups(f, ctx),
   'machining.hole.many-sizes': (f, _part, ctx) => priceHoleSizes(f, ctx),
   'machining.corner.radius-below-economic-cutter': (f, part, ctx) => {
@@ -302,13 +331,33 @@ export function totalCostGBP(findings: readonly GeometricFinding[]): number {
   // A feature's own cost ("what this hole costs to make") is counted ONCE however many rules point at it — a
   // deep, non-standard, uncoreable hole used to add its drilling cost three times.
   const featureCost = new Map<string, number>();
+  const grouped = new Map<string, number>();          // costGroup → one cost (a region's slide)
   let other = 0;
   for (const f of findings) {
     const c = f.costImpact;
     if (!c) continue;
-    if (c.kind === 'feature_cost' && !f.featureId.startsWith('PART:')) {
+    if (c.costGroup) {
+      grouped.set(c.costGroup, Math.max(grouped.get(c.costGroup) ?? 0, c.perPartGBP));
+    } else if (c.kind === 'feature_cost' && !f.featureId.startsWith('PART:')) {
       featureCost.set(f.featureId, Math.max(featureCost.get(f.featureId) ?? 0, c.perPartGBP));
     } else other += c.perPartGBP;
   }
-  return round4(other + [...featureCost.values()].reduce((a, b) => a + b, 0));
+  const sum = (m: Map<string, number>) => [...m.values()].reduce((a, b) => a + b, 0);
+  return round4(other + sum(featureCost) + sum(grouped));
+}
+
+/** Typical density by the engineer's material family, g/cm³ — first keyword match wins (stainless before steel). */
+const FAMILY_DENSITY: Array<[RegExp, number]> = [
+  [/stainless/i, 7.9], [/cast iron|ductile|grey iron|\biron\b/i, 7.1], [/steel/i, 7.85], [/alumin/i, 2.7],
+  [/magnes/i, 1.8], [/titan/i, 4.43], [/zinc/i, 6.6], [/nickel/i, 8.2], [/copper|brass|bronze/i, 8.5],
+];
+
+/**
+ * The part's weight for the handling time (`handlingMinPerFixturing`): measured volume × the CONFIRMED family's
+ * density. No family → undefined, and the setup pricer states its default instead (measured or silent).
+ */
+export function partWeightKgFor(materialFamily: string | undefined, volumeCm3: number | undefined): number | undefined {
+  if (!materialFamily || !(volumeCm3 && volumeCm3 > 0)) return undefined;
+  const rho = FAMILY_DENSITY.find(([re]) => re.test(materialFamily))?.[1];
+  return rho ? Math.round(volumeCm3 * rho) / 1000 : undefined;
 }

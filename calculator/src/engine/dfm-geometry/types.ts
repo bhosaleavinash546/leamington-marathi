@@ -150,6 +150,34 @@ export function isBlend(f: ManufacturingFeature): boolean {
   return f.kind === 'fillet' && (f.sweepDeg === undefined || f.sweepDeg <= BLEND_MAX_SWEEP_DEG);
 }
 
+/**
+ * The undercut evidence on a face. Since Oct 2026 the kernel tests a TWO-HALF tool: a face comes out of the half its
+ * normal faces, and is an undercut only when the part blocks its line of release (`blockedAtMm` — how far along it
+ * the obstruction is). Blocked faces that touch, or share a blend or a side wall, are one `undercutRegion` — one
+ * slide, lifter or core. A payload from the older one-way kernel carries only the angle, and says so.
+ */
+export function undercutEvidence(f: ManufacturingFeature, tool: string): {
+  detail: string; measuredField: string; measuredValue: number; unit: string; thresholdValue: number;
+  comparator: GeometricFinding['threshold']['comparator'];
+} {
+  const faces = f.faceIds.join(', ');
+  if (f.blockedAtMm !== undefined) {
+    const half = f.releaseHalf === undefined ? 'the half it faces' : `the ${f.releaseHalf > 0 ? '+' : '−'}draw half`;
+    return {
+      detail: `Face ${faces} comes out toward ${half}, but the part blocks it ${f.blockedAtMm.toFixed(1)} mm along that line `
+        + `— it cannot release from either half of the ${tool}`
+        + (f.undercutRegion !== undefined ? ` (undercut region ${f.undercutRegion}).` : '.'),
+      measuredField: 'blockedAtMm', measuredValue: f.blockedAtMm, unit: 'mm', thresholdValue: 0, comparator: '>',
+    };
+  }
+  const toDraw = 90 + (f.draftDeg ?? 0);
+  return {
+    detail: `Face ${faces} sits at ${toDraw.toFixed(1)}° to the draw (past 90°) — read by the older one-way test, `
+      + 'which cannot tell an undercut from a face on the other half; re-run the analysis.',
+    measuredField: 'angleToDrawDeg', measuredValue: toDraw, unit: '°', thresholdValue: 90, comparator: '>',
+  };
+}
+
 /** Helper so every rule builds a finding the same way, with no field forgotten. */
 export function finding(
   rule: GeometricRule,

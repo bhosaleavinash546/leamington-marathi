@@ -6,10 +6,11 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { analyseGeometricDFM, type ManufacturingFeature, type PartContext } from '../src/engine/dfm-geometry/index.js';
-import { coverDirections, partFrame, offFrameDeg } from '../src/engine/dfm-geometry/commodities/machining-access.js';
+import { partWeightKgFor } from '../src/engine/dfm-geometry/cost-impact.js';
+import { coverDirections, partFrame, offFrameDeg, toothedSets, indexedGroup } from '../src/engine/dfm-geometry/commodities/machining-access.js';
 import { nadcaMaxCoredDepthMm } from '../src/engine/dfm-geometry/commodities/casting.js';
 import { plausibleWall } from '../src/engine/dfm-geometry/types.js';
-import { HANDLING_MIN_PER_FIXTURING, FIXTURE_GBP, PROGRAMMING_HR } from '../src/engine/machining-time.js';
+import { HANDLING_MIN_PER_FIXTURING, FIXTURE_GBP, PROGRAMMING_HR, TOOL_CHANGE_SEC } from '../src/engine/machining-time.js';
 
 const COST = { annualVolume: 10_000, machineRatePerHr: 60, labourRatePerHr: 25, engineerRatePerHr: 55 };
 const ctx = (features: ManufacturingFeature[], o: Partial<PartContext> = {}): PartContext => ({
@@ -223,12 +224,115 @@ describe('independent-review regressions (OCP-built parts, recorded kernel outpu
     const r = analyseGeometricDFM(ctx([h]));
     const priced = r.findings.filter(f => f.featureId === 'H1' && f.costImpact);
     expect(priced.length).toBeGreaterThanOrEqual(2);
-    expect(r.totalAddressableGBP).toBeCloseTo(priced[0].costImpact!.perPartGBP, 4);
+    // The hole's own cost once (deep-hole and any other rule pricing the hole) + the non-preferred size's tool change,
+    // which is a different cost (the special tool), counted once per size.
+    const hole = Math.max(...priced.filter(f => !f.costImpact!.costGroup).map(f => f.costImpact!.perPartGBP));
+    const size = priced.find(f => f.ruleId === 'machining.hole.non-preferred-diameter')!.costImpact!;
+    expect(size.costGroup).toBe('size:6.3');
+    expect(size.perPartGBP).toBeCloseTo((TOOL_CHANGE_SEC / 3600) * 60, 4);
+    expect(r.totalAddressableGBP).toBeCloseTo(hole + size.perPartGBP, 4);
   });
   it('the cored-hole rule takes the route in any case, and only blind holes the cost sheet assumes are cored', () => {
     const h: ManufacturingFeature = { id: 'H1', kind: 'hole', faceIds: [1], diaMm: 8, depthMm: 45, ldRatio: 5.6, openEnds: 1 };
     expect(rules(analyseGeometricDFM(ctx([h], { commodity: 'casting', process: 'HPDC' })))).toContain('casting.hole.beyond-cored-depth');
     expect(rules(analyseGeometricDFM(ctx([{ ...h, openEnds: 2 }], { commodity: 'casting', process: 'hpdc' })))).not.toContain('casting.hole.beyond-cored-depth');
     expect(rules(analyseGeometricDFM(ctx([{ ...h, diaMm: 5, depthMm: 40 }], { commodity: 'casting', process: 'hpdc' })))).not.toContain('casting.hole.beyond-cored-depth'); // drilled by the costing anyway
+  });
+});
+
+describe('undercuts on a two-half tool (Oct 2026): blocked along the line of release, grouped into slides', () => {
+  const ecu = JSON.parse(readFileSync('tests/fixtures/dfm/ecu-cover-features.json', 'utf8'));
+  const res = JSON.parse(readFileSync('tests/fixtures/dfm/washer-reservoir-features.json', 'utf8'));
+  const run = (fx: { manufacturingFeatures: PartContext['featureSet']; boundingBox: { xMm: number; yMm: number; zMm: number } },
+               commodity: PartContext['commodity']) => analyseGeometricDFM({
+    commodity, featureSet: fx.manufacturingFeatures, materialFamily: 'polymer',
+    bboxMm: { x: fx.boundingBox.xMm, y: fx.boundingBox.yMm, z: fx.boundingBox.zMm },
+    cost: { annualVolume: 50_000, machineRatePerHr: 60, labourRatePerHr: 25 },
+  });
+
+  it('the ECU cover\'s four snap windows are its undercuts — the top and bottom of each window, blocked 5 mm along the draw', () => {
+    const uc = (ecu.manufacturingFeatures.features as ManufacturingFeature[]).filter(f => f.draftClass === 'undercut');
+    expect(uc).toHaveLength(8);
+    for (const f of uc) expect(f.blockedAtMm).toBeCloseTo(4.9, 1);        // the window is 5 mm tall; the probe starts 0.1 mm off the face
+    // The old one-way test called its four drafted outer walls undercuts (they come out of the other half) and
+    // missed the windows (their faces point along the draw, where it did not look).
+    expect(ecu.draftAnalysis.undercutFaceCount).toBe(8);
+  });
+
+  it('one slide per wall: the two windows in each long wall are one region, the cover two slides', () => {
+    const uc = (ecu.manufacturingFeatures.features as ManufacturingFeature[]).filter(f => f.draftClass === 'undercut');
+    expect(new Set(uc.map(f => f.undercutRegion)).size).toBe(2);
+    const r = run(ecu, 'injection_moulding');
+    const g = r.grouped.find(x => x.ruleId === 'moulding.undercut.requires-side-action')!;
+    expect(g.count).toBe(8);                                 // eight faces reported …
+    const one = g.instances[0].costImpact!.perPartGBP;
+    expect(g.totalCostGBP).toBeCloseTo(2 * one, 4);          // … two slides priced
+    expect(g.worst.detail).toMatch(/blocks it 4\.9 mm along that line — it cannot release from either half of the mould \(undercut region \d+\)/);
+    expect(g.instances[0].costImpact!.basis).toMatch(/One slide for undercut region/);
+  });
+
+  it('the inside skin of a hollow blow moulding is a cavity, not an undercut — no tool forms it', () => {
+    const f = res.manufacturingFeatures.features as ManufacturingFeature[];
+    expect(f.filter(x => x.draftClass === 'undercut')).toHaveLength(0);
+    expect(f.filter(x => x.facesCavity).length).toBeGreaterThan(0);
+    expect(res.draftAnalysis.undercutFaceCount).toBe(0);     // the one-way test reported 8
+    expect(res.draftAnalysis.cavityFaceCount).toBeGreaterThan(0);
+    expect(run(res, 'blow_moulding').findings.filter(x => /undercut/.test(x.ruleId))).toHaveLength(0);
+  });
+
+  it('a payload from the older one-way kernel still reads, and says it cannot be trusted', () => {
+    const old: ManufacturingFeature = { id: 'P9', kind: 'planar_face', faceIds: [9], draftClass: 'undercut', draftDeg: 12 };
+    const r = analyseGeometricDFM(ctx([old], { commodity: 'casting' }));
+    expect(r.findings.find(x => x.ruleId === 'casting.undercut.requires-core')!.detail).toMatch(/older one-way test/);
+  });
+});
+
+describe('real uploaded parts (Oct 2026): tooth forms, radial setups, free-form coverage', () => {
+  // A ring of n concave R0.1 roots round +Y at radius 15 — how the input shaft's (Eingangswelle) teeth read.
+  const ring = (n: number, r = 15, root = 0.1, y = 0): ManufacturingFeature[] => Array.from({ length: n }, (_, i) => {
+    const a = (2 * Math.PI * i) / n;
+    return { id: `FIL${i + 1}`, kind: 'fillet', faceIds: [i + 1], radiusMm: root, concave: true, sweepDeg: 90, axis: [0, 1, 0],
+      positionMm: [r * Math.cos(a), y, r * Math.sin(a)], depthMm: 29.3, toolReachMm: 29.3, openDirs: [[0, 1, 0]] } as ManufacturingFeature;
+  });
+  it('a ring of tooth roots is a tooth form — the corner rules no longer price them as end-milled corners', () => {
+    expect(toothedSets(ring(78))).toHaveLength(1);
+    const r = analyseGeometricDFM(ctx(ring(78)));
+    expect(rules(r)).toContain('machining.feature.toothed-form');
+    expect(rules(r).filter(id => id.startsWith('machining.corner.'))).toEqual([]);
+    expect(r.totalAddressableGBP).toBe(0);                    // the input shaft read £52 of "corners"
+  });
+  it('two rings at different radii are two tooth forms; a straight row of corners is not a ring', () => {
+    const two = [...ring(30, 15), ...ring(20, 25).map((f, i) => ({ ...f, id: `G${i}`, faceIds: [100 + i] }))];
+    expect(toothedSets(two)).toHaveLength(2);
+    const row = ring(8).map((f, i) => ({ ...f, positionMm: [i * 5, 0, 0] as [number, number, number] }));
+    expect(toothedSets(row)).toHaveLength(0);
+  });
+  it('radial directions round one axis are one rotary-indexed fixturing (the driveshaft read 21 setups)', () => {
+    const dirs: [number, number, number][] = Array.from({ length: 20 }, (_, i) => {
+      const a = (2 * Math.PI * i) / 20; return [0, Math.cos(a), Math.sin(a)];
+    });
+    expect(indexedGroup(dirs)!.members).toHaveLength(20);
+    const holes: ManufacturingFeature[] = dirs.map((d, i) => ({ id: `H${i}`, kind: 'hole', faceIds: [i], diaMm: 6, depthMm: 5, ldRatio: 0.8,
+      axis: d, positionMm: [0, d[1] * 40, d[2] * 40], openEnds: 1, openDirs: [d] }));
+    holes.push({ id: 'B', kind: 'hole', faceIds: [99], diaMm: 30, depthMm: 100, ldRatio: 3.3, axis: [1, 0, 0], positionMm: [0, 0, 0], openEnds: 2, openDirs: [[1, 0, 0], [-1, 0, 0]] });
+    const f = analyseGeometricDFM(ctx(holes)).findings.filter(x => x.ruleId === 'machining.setup.access-directions');
+    // the bore along X (1) + one indexed fixturing for the 20 radial holes = 2: below the reporting threshold
+    expect(f).toHaveLength(0);
+    // two directions are not a rotary index
+    expect(indexedGroup([[1, 0, 0], [0, 1, 0]])).toBeNull();
+  });
+  it('a free-form part leads its report with what was NOT checked', () => {
+    const r = analyseGeometricDFM(ctx([plane('P1', [0, 0, 1], 10)], { featureSet: { available: true, features: [plane('P1', [0, 0, 1], 10)], faceCount: 498, medianThicknessMm: 2.5, wallAnalysisValid: true } }));
+    expect(r.limitations[0]).toMatch(/Only 1 of 498 faces \(0 %\) are planes or cylinders .* NOT checked/);
+  });
+});
+
+describe('the DFM job prices handling on the part\'s weight when the family is confirmed', () => {
+  it('measured volume × the confirmed family\'s density; no family → undefined (the pricer states its default)', () => {
+    expect(partWeightKgFor('aluminium', 1000)).toBeCloseTo(2.7, 6);
+    expect(partWeightKgFor('cast iron', 1037.113)).toBeCloseTo(7.364, 3);
+    expect(partWeightKgFor('stainless steel', 100)).toBeCloseTo(0.79, 6);
+    expect(partWeightKgFor(undefined, 1000)).toBeUndefined();
+    expect(partWeightKgFor('unobtainium', 1000)).toBeUndefined();
   });
 });

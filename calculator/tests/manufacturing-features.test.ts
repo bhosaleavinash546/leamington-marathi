@@ -12,8 +12,10 @@
  * files rather than by reasoning about it:
  *
  *   1. A flat BOTTOM face is not an undercut. Its normal is 180° from the draw,
- *      and the existing aggregate `_compute_draft_analysis` tests `angle > 90.5
- *      -> undercut`, so it has been counting every bottom face as an undercut.
+ *      and the aggregate `_compute_draft_analysis` once tested `angle > 90.5
+ *      -> undercut`, so it counted every bottom face as an undercut. (Since Oct
+ *      2026 both use the two-half release test — a face is an undercut only when
+ *      the part blocks its line of release; docs/cad/dfm-cost-drivers-2026-10.md.)
  *   2. On a SOLID part, single-ray thickness measures the part's extent, not a
  *      wall. A 40x20x10 block returns 40, 20 and 10 from its three face pairs,
  *      and a naive section-change rule reports a 4x step that does not exist.

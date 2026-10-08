@@ -42,10 +42,15 @@ const headless = async (part: string, resin: string, v: number) =>
     { partNumber: part, file: part, status: 'error' } as never) as { status: string; total: number; error?: string };
 
 describe('1. the sheet the part came from: plan area, then mass balance', () => {
-  it('the plan is the largest silhouette — the "along draw" one was the cover\'s SIDE (139 cm², not 600)', () => {
+  it('the plan is the largest silhouette — whatever the kernel\'s draw says (it was the cover\'s SIDE, 139 cm², not 600)', () => {
+    // Since the two-half release test (Oct 2026) the pull search finds the cover's real draw, so "along draw" IS the
+    // plan now; the rule must not depend on that — a side-on draw is still read as the largest silhouette.
     const g = geoOf(COVER);
-    expect(g.projectedArea!.alongDrawMm2! / 100).toBeLessThan(150);
+    expect(g.projectedArea!.alongDrawMm2! / 100).toBeGreaterThan(580);
     expect(planAreaCm2(ctx(COVER, 'mat-abs-tf'))!.cm2).toBeGreaterThan(580);
+    const side = structuredClone(g);
+    side.projectedArea!.alongDrawMm2 = 13_900;
+    expect(planAreaCm2({ ...ctx(COVER, 'mat-abs-tf'), geo: side })!.cm2).toBeGreaterThan(580);
   });
   it('gauge = part volume ÷ plan: the lid needs 9.4 mm (the draw formula bought 7.5 mm, less than the part weighs)', () => {
     expect(tf(LID, 'mat-hdpe-tf').s.sheetThicknessMm).toBeCloseTo(9.41, 1);

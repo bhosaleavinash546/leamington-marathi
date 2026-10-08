@@ -158,6 +158,7 @@ async function ensurePdfLibs(): Promise<void> {
 }
 import { exportToExcelBlob } from '../export/excel.js';
 import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
+import { mountDtcPanel } from './design-to-cost-panel.js';
 import { currencySymbol } from '../engine/insights.js';
 import { populateRegionPickers } from './region-options.js';
 import { setActiveRates } from '../engine/rate-context.js';
@@ -14632,6 +14633,7 @@ function switchResultTab(tab: string): void {
   document.getElementById('results-sensitivity')?.style.setProperty('display', tab === 'sensitivity' ? '' : 'none');
   document.getElementById('results-scenarios')?.style.setProperty('display', tab === 'scenarios' ? '' : 'none');
   document.getElementById('results-dfm')?.style.setProperty('display', tab === 'dfm' ? '' : 'none');
+  document.getElementById('results-dtc')?.style.setProperty('display', tab === 'dtc' ? '' : 'none');
   const uploadEl = document.getElementById('results-upload');
   if (uploadEl) uploadEl.style.display = tab === 'upload' ? '' : 'none';
 
@@ -14640,8 +14642,37 @@ function switchResultTab(tab: string): void {
   if (tab === 'sensitivity' && lastInput) renderSensitivity();
   if (tab === 'scenarios') renderScenarios();
   if (tab === 'dfm' && lastResult && lastInput) renderDFMDFA(lastResult, lastInput);
+  if (tab === 'dtc') renderDesignToCost();
   if (tab === 'upload') renderUploadPanel();
 }
+
+/**
+ * The Design-to-Cost tab (design-to-cost-panel.ts): target v should-cost, the part's priced DFM findings as
+ * switches, drivers and what-ifs — every figure the costed input re-run through the same stack.
+ */
+function renderDesignToCost(): void {
+  const host = document.getElementById('results-dtc');
+  if (!host || !lastInput) return;
+  const tgt = _targetPriceGbp();
+  try {
+    mountDtcPanel(host, {
+      input: lastInput, library,
+      grouped: cadGeometricDFM?.grouped ?? (cadDfmJobId ? [] : null),
+      dfmPending: !!cadDfmJobId && !cadGeometricDFM,
+      targetGBP: tgt > 0 ? tgt : null,
+      // Sub-penny levers are real (a tool change is £0.003/part): never print one as 0.00.
+      money: (gbp: number) => {
+        const v = gbp * _displayFxRate;
+        return v !== 0 && Math.abs(v) < 0.01 ? `${CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency}${v.toFixed(4)}` : _currFmt(gbp);
+      },
+    }, faces => highlightViewerFaces(faces));
+  } catch (err) {
+    host.innerHTML = `<p class="dtc-empty">Design to Cost could not be computed: ${escHtml(err instanceof Error ? err.message : String(err))}</p>`;
+  }
+}
+function dtcTabActive(): boolean { return document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel === 'dtc'; }
+// The target is typed in the form: the tab follows it live (the gap, and every driver's "to hit target alone").
+document.getElementById('target-price')?.addEventListener('input', () => { if (dtcTabActive()) renderDesignToCost(); });
 
 // ─── Tab Badges ────────────────────────────────────────────────────────────────
 
@@ -17155,7 +17186,9 @@ function reportFunctionalSafety(): FunctionalSafetyMeta | undefined {
  * the job has not landed. The alternative — blocking the costing on a
  * minute-long per-face scan — is what the background job exists to avoid.
  */
-async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
+// 110 tries ≈ 5 × 1 s + 105 × 3 s = 320 s: past the kernel's own 300 s budget. At 60 (≈ 170 s) a large part's
+// report (the 3,444-face fuel tank: ~190 s) landed after the screen had stopped asking for it.
+async function pollGeometricDFM(jobId: string, tries = 110): Promise<void> {
   for (let i = 0; i < tries; i++) {
     await new Promise(r => setTimeout(r, i < 5 ? 1000 : 3000));
     if (cadDfmJobId !== jobId) return;          // a newer upload superseded this
@@ -17171,6 +17204,7 @@ async function pollGeometricDFM(jobId: string, tries = 60): Promise<void> {
       console.log(`[dfm] geometric DFM ready: ${cadGeometricDFM.grouped?.length ?? 0} issue(s)`);
       renderGeometricDFMPanel();
       pushViewerState(); // the findings appear in the viewer's inspector too
+      if (dtcTabActive()) renderDesignToCost();
       return;
     } catch { return; }
   }
@@ -19460,6 +19494,7 @@ async function init(): Promise<void> {
       if (activePanel === 'detail') renderDetail(lastResult, lastInput);
       if (activePanel === 'insights') renderInsights(lastResult, lastInput);
       if (activePanel === 'sensitivity') renderSensitivity();
+      if (activePanel === 'dtc') renderDesignToCost();
     }
   };
   el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {

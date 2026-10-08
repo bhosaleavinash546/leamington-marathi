@@ -548,6 +548,18 @@ what is true** — nothing here has been compared with a price JLR paid.
   Section wall thickness: `cad-section-thickness.ts` (rolling ball, shrinking-ball iteration on a segment tree, arc-
   length samples ≤ 3 000, run in `cad-section-worker.ts`); a reading is a WALL only when its contacts face each other
   (≥ 120°) — corners never set the minimum; a click reports the covering circle with the NEAREST centre.
+- Geometric DFM & Design to Cost (Oct 2026, `docs/cad/dfm-cost-drivers-2026-10.md`): the kernel's ONE cylinder pass
+  (`_cylinder_features`: axis LINE + radius + concavity XOR parametrisation; full ≥ 0.83 of a turn = hole/boss, partial =
+  fillet with `sweepDeg`; breakout samples = through/blind, access ray = `openDirs`) feeds the costing table AND the DFM.
+  Draft is for a TWO-HALF tool (`_release_table`, shared by `draftAnalysis` and the per-face pass, at the CHOSEN draw):
+  a face comes out of the half it faces and is an undercut only when the part blocks that line (`blockedAtMm`); faces
+  into an enclosed cavity are `facesCavity` / `cavityFaceCount`, never undercuts; touching blocked faces (or across a
+  blend / side wall) are one `undercutRegion` = one slide (`costGroup`, counted once). New rules: setups, compound angle,
+  cross holes, hole sizes, long-reach corner, NADCA cored depth, core-pin L/D — each sourced, `plausibleWall` / `isBlend`
+  guards. The Design-to-Cost results tab (`src/engine/design-to-cost.ts` + `src/ui/design-to-cost-panel.ts`): target v
+  should-cost, priced findings as switches, drivers with "to hit target alone", what-ifs — every figure is
+  `computeUniversalStack` on a varied input; `findingVariant` (shared with the DFM restack) takes EXACTLY a finding's £
+  off the factory base (÷ the op's £ per cycle-hour after parts/cycle, OEE and crew). Live: `npx tsx e2e/dtc-live.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
