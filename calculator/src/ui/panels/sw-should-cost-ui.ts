@@ -628,7 +628,7 @@ function renderSWPanelHTML(): string {
       <tr class="sw-module-row" data-module-id="${def.id}">
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
         <td class="sw-mod-name">
-          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}${def.estimateBasis ? ` <span title="${esc('Estimate: ' + def.estimateBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--amber,#b45309);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">estimate</span>` : ''}</div>
+          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}${def.estimateBasis ? ` <span title="${esc('Estimate: ' + def.estimateBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--amber,#b45309);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">estimate</span>` : ''}${def.royaltyBasis ? ` <span title="${esc('Royalty: ' + def.royaltyBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--sw-text-secondary);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">per-vehicle royalty</span>` : ''}</div>
           <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
         </td>
         <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:var(--sw-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>

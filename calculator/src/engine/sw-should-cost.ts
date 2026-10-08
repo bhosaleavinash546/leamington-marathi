@@ -19,6 +19,7 @@ import {
 import type { SWRateLibrary } from './sw-rate-library.js';
 import { mulberry32 } from './uncertainty.js';
 import { SW_PUBLISHED_PROGRAMMES } from './sw-benchmarks.js';
+import { USD_PER_GBP } from './gear-heat-treat-data.js';   // the app's one dated USD→GBP rate
 
 export type { SWRateLibrary, SWRateEntry, RateConfidence } from './sw-rate-library.js';
 export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
@@ -135,6 +136,14 @@ export interface SWModuleDef {
    *  present on premium trims but folded into the generic domain buckets on base
    *  vehicles, so leaving them off preserves the validated baseline. Undefined ⇒ on. */
   defaultEnabled?:           boolean;
+  /** Royalty paid per vehicle BUILT, £ (e.g. an OS or speech-engine licence). Charged on this programme's own
+   *  volume every year and never apportioned across a platform — each vehicle pays it (software review P2 #11). */
+  perVehicleRoyaltyGBP?:     number;
+  /** Royalty per vehicle IN SERVICE per year, £ (e.g. map data). The fleet grows by the annual volume each year and
+   *  pays until the programme ends — CostVision's assumption, stated in royaltyBasis. */
+  perVehiclePerYearGBP?:     number;
+  /** Where the royalty figure comes from. */
+  royaltyBasis?:             string;
   /** Set on modules whose figures are NOT their own: every number is copied from the named analogue module
    *  (software review P1 #4, Oct 2026). The screen labels these "estimate". */
   estimateBasis?:            string;
@@ -568,8 +577,10 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 160,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.35, integrationFractionBase: 0.22, maintenancePctPerYear: 18,
-    annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 220_000, annualCloudCostGBP: 120_000,
+    annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.02,
+    perVehicleRoyaltyGBP: Math.round(25 / USD_PER_GBP * 100) / 100,
+    royaltyBasis: 'This module\'s own note: AAOS licence ~$25 / vehicle, at the app\'s USD_PER_GBP. Replaces the flat £220k / yr IP figure (the note names the licence it stood for). Unsourced estimate.',
     notes: 'Google AAOS licence fee (~$25/vehicle) or QNX royalty. Boot < 4s target.',
   },
   {
@@ -579,8 +590,10 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 42,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 200_000, annualCloudCostGBP: 380_000,
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 380_000,
     calibrationFractionBase: 0.02,
+    perVehiclePerYearGBP: 11.5,
+    royaltyBasis: 'This module\'s own note: map data £8–15 / vehicle / yr — midpoint £11.50, paid on the fleet in service until programme end. Replaces the flat £200k / yr IP figure. Unsourced estimate.',
     notes: 'Map data licence: HERE ~£8-15/vehicle/yr OR TomTom similar. Real-time traffic API cloud cost significant.',
   },
   {
@@ -590,8 +603,10 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.35, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 220_000, annualCloudCostGBP: 450_000,
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 450_000,
     calibrationFractionBase: 0.04,
+    perVehicleRoyaltyGBP: 15,
+    royaltyBasis: 'This module\'s own note: on-device ASR engine licence ~£15 / vehicle. Replaces the flat £220k / yr IP figure. Unsourced estimate.',
     notes: 'On-device ASR engines (Cerence, SoundHound) licence ~£15/vehicle. Cloud NLU significant.',
   },
   {
@@ -1160,7 +1175,32 @@ function computeModuleCost(
   };
   // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
   const share = attributedShare(def.id, prog);
-  return share < 1 ? scaleModuleResult(res, share) : res;
+  const out = share < 1 ? scaleModuleResult(res, share) : res;
+  // Per-unit royalties (P2 #11) — on THIS programme's vehicles, after the platform share (each vehicle pays its own).
+  const royalty = unitRoyaltyGBP(def, prog);
+  if (royalty === 0) return out;
+  const lifeVeh = prog.annualProductionVolume * prog.programLifeYears;
+  return {
+    ...out,
+    licensingCost:  out.licensingCost + royalty,
+    totalLifecycle: out.totalLifecycle + royalty,
+    grandTotal:     out.grandTotal + royalty,
+    perVehicle:     out.perVehicle + (lifeVeh > 0 ? royalty / lifeVeh : 0),
+  };
+}
+
+/** Per-unit royalties over the programme, £ (NPV when a discount rate is set). Built: volume × royalty each year.
+ *  In service: the fleet after year t is volume × t, each paying the yearly royalty until the programme ends. */
+export function unitRoyaltyGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct'>): number {
+  const built = def.perVehicleRoyaltyGBP ?? 0, perYear = def.perVehiclePerYearGBP ?? 0;
+  if (!built && !perYear) return 0;
+  const r = (prog.discountRatePct ?? 0) / 100;
+  let total = 0;
+  for (let t = 1; t <= prog.programLifeYears; t++) {
+    const df = r > 0 ? 1 / Math.pow(1 + r, t) : 1;
+    total += (prog.annualProductionVolume * built + prog.annualProductionVolume * t * perYear) * df;
+  }
+  return total;
 }
 
 /** The module's cost and effort scaled to the share attributed to this programme. */

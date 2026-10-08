@@ -4,7 +4,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP } from '../src/engine/sw-should-cost.js';
+import { USD_PER_GBP } from '../src/engine/gear-heat-treat-data.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 
 const src = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
@@ -84,5 +85,51 @@ describe('#10 uncertainty band and volume sensitivity follow the headline', () =
       expect(row.low).toBeLessThan(row.base);
       expect(row.high).toBeGreaterThan(row.base);
     }
+  });
+});
+
+describe('#11 per-vehicle royalties scale with volume', () => {
+  const def = (id: string) => SW_MODULES.find(m => m.id === id)!;
+  const only = (id: string, vol: number, life = 10) => prog(p => {
+    p.modules = p.modules.map(m => ({ ...m, enabled: m.moduleId === id }));
+    if (!p.modules.some(m => m.moduleId === id)) p.modules.push({ moduleId: id, enabled: true } as SWProgramInputs['modules'][number]);
+    p.annualProductionVolume = vol; p.programLifeYears = life; p.discountRatePct = 0;
+  });
+  const lic = (id: string, vol: number, life = 10) =>
+    computeSWProgram(only(id, vol, life)).modules.find(m => m.moduleId === id)!.licensingCost;
+
+  it('the three royalty modules carry a per-unit figure, no flat IP fee, and a stated basis', () => {
+    expect(def('ivi_os').perVehicleRoyaltyGBP).toBeCloseTo(25 / USD_PER_GBP, 2);
+    expect(def('voice_assistant').perVehicleRoyaltyGBP).toBe(15);
+    expect(def('navigation').perVehiclePerYearGBP).toBe(11.5);
+    for (const id of ['ivi_os', 'voice_assistant', 'navigation']) {
+      expect(def(id).annualIPLicenceGBP).toBe(0);
+      expect(def(id).royaltyBasis).toMatch(/Unsourced estimate/);
+    }
+  });
+
+  it('a built-vehicle royalty is volume × life × rate (no discount)', () => {
+    expect(lic('voice_assistant', 80_000)).toBeCloseTo(80_000 * 10 * 15, 0);
+    expect(lic('voice_assistant', 160_000)).toBeCloseTo(2 * lic('voice_assistant', 80_000), 0);
+  });
+
+  it('map data is paid on the fleet in service: volume × Σt × rate', () => {
+    // 3 years: fleet 1×, 2×, 3× the annual volume → 6 vehicle-years per annual vehicle
+    expect(lic('navigation', 10_000, 3)).toBeCloseTo(10_000 * 6 * 11.5, 0);
+  });
+
+  it('a royalty is per vehicle — not apportioned by the platform volume', () => {
+    const base = only('voice_assistant', 50_000);
+    const shared = { ...base, platformAnnualVolume: 200_000 };
+    const a = computeSWProgram(base).modules.find(m => m.moduleId === 'voice_assistant')!;
+    const b = computeSWProgram(shared).modules.find(m => m.moduleId === 'voice_assistant')!;
+    expect(b.licensingCost).toBeCloseTo(a.licensingCost, 0);           // royalty only; whole licence is per-unit
+    expect(b.totalNonRecurring).toBeLessThan(a.totalNonRecurring);                       // the engineering is still shared
+  });
+
+  it('discounting applies year by year', () => {
+    const d = def('voice_assistant');
+    const v = unitRoyaltyGBP(d, { annualProductionVolume: 1000, programLifeYears: 2, discountRatePct: 10 });
+    expect(v).toBeCloseTo(1000 * 15 / 1.1 + 1000 * 15 / 1.21, 4);
   });
 });
