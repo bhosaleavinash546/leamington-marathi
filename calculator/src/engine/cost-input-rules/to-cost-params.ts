@@ -629,7 +629,11 @@ export function toCostParams(
       // become prices unexamined. Scale proportionally so the routing shape is
       // preserved and only the total moves.
       let opsScale = 1;
-      if (geo?.volume?.cm3 && geo.boundingBox) {
+      // Rule-built operations are the measured build-up (stock, removal, finishing area, holes, tool changes, handling)
+      // and are NOT capped here — handling and tool changes are not removal. Scaling them made headless cost the 25T
+      // servo horn at £3.14 while the screen, which never applied the cap, said £5.34 (uploaded-parts review, Oct 2026).
+      const allMeasured = ops.length > 0 && ops.every(o => (o as { measured?: boolean }).measured === true);
+      if (!allMeasured && geo?.volume?.cm3 && geo.boundingBox) {
         const stockCm3 = geo.boundingBox.xMm * geo.boundingBox.yMm * geo.boundingBox.zMm / 1000;
         const mf = MACHINABILITY_FOR_CEILING[mat.family ?? 'steel'] ?? 1.2;
         const holeRows = ((geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');

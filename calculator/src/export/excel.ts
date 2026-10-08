@@ -6,6 +6,8 @@ import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
 
 const num4 = (n: number) => +n.toFixed(4);
+/** Hours to 6 dp — at 4 dp a reader recomputing an operation from the sheet was out by up to £0.003. */
+const hr6 = (n: number) => +n.toFixed(6);
 
 /**
  * The costing as a workbook. Every figure is the ENGINE's (computeUniversalStack) — nothing here recomputes a cost — and
@@ -118,7 +120,7 @@ export async function exportToExcelBlob(
     matDetail.push(
       ['Material ID', rm.materialId, '', ''],
       ['Grade / Description', mat?.grade ?? rm.materialId, '', mat?.sourceNote ?? ''],
-      ['Net (Finished) Weight', num4(rm.netWeightKg), 'kg', 'the weight the material line is costed on'],
+      ['Costed Net Weight', num4(rm.netWeightKg), 'kg', 'the weight the material line is costed on — the finished part plus any machining stock or reject allowance the module carries'],
       ['Gross Weight (stock / pour)', num4(gross), 'kg', '= net ÷ utilisation'],
       ['Material Utilisation', pctCell(rm.materialUtilization), '', lossIsNotScrap ? 'melt loss only — runners and risers are remelted' : '= net ÷ gross'],
       ['Material Price', m(price), `${currency}/kg`, 'as costed'],
@@ -169,17 +171,17 @@ export async function exportToExcelBlob(
       bench ? '— bench (no machine time)' : op.machineId,
       bench ? '' : mach?.machineClass ?? '—',
       bench ? '' : m(op.machineRateUsed),
-      num4(op.cycleTimeHr),
-      +(op.cycleTimeHr * 60).toFixed(2),
+      hr6(op.cycleTimeHr),
+      +(op.cycleTimeHr * 60).toFixed(3),
       op.partsPerCycle,
       bench ? '' : pctCell(op.oee),
-      bench ? '' : num4(op.cycleTimeHr / op.oee),
+      bench ? '' : hr6(op.cycleTimeHr / op.oee),
       m(op.processCost),
       untended ? '— untended' : op.labourId,
       untended ? '' : lab?.skillLevel ?? '—',
       untended ? '' : m(op.labourRateUsed),
       untended ? 0 : op.manning,
-      num4(op.labourTimeHr),
+      hr6(op.labourTimeHr),
       untended ? '' : pctCell(op.labourEfficiency),
       m(op.labourCost),
       m(op.processCost + op.labourCost),

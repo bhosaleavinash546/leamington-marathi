@@ -9,6 +9,7 @@
  * that before calling this. Failure is soft: the costing carries on with the
  * bounding-box estimate and the reason is returned for the response.
  */
+import { enclosedShell, cavityShell } from '../../src/engine/cost-input-rules/derive/hollow.js';
 import { createHash } from 'node:crypto';
 import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
 import { extractSkinMesh } from '../utils/geometry-bridge.js';
@@ -45,6 +46,9 @@ export async function developBlankFromCad(
   const thinShell = sm?.thicknessSource === 'bulk-wall' && (sm.thicknessMm ?? 0) > 0 && (sm.thicknessMm ?? 0) <= 4
     && (geo.fillRatio ?? 1) < 0.1 && geo.wallThickness?.method === 'volume_surface_shell';
   if (!sm || !(bendGauge || thinShell)) return null;
+  // A closed container is never a pressing: the real fuel tank's 349 filleted "bends" sent its two skins through the
+  // unfold for 296 s, and the page timed out before the costing came back (uploaded-parts review, Oct 2026).
+  if (enclosedShell(geo) || cavityShell(geo)) return null;
 
   const t0 = Date.now();
   const mesh = await extractSkinMesh(buffer, filename, { timeoutMs: opts.timeoutMs ?? 180_000, unitScale: opts.unitScale });

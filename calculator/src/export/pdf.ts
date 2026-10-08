@@ -893,7 +893,7 @@ export function renderShouldCostSections(
     ['Material ID',                input.rawMaterial.materialId,                             'ID',           ''],
     ['Grade / Specification',      mat?.grade ?? 'Direct Cost Entry',                        '',             mat?.sourceNote ?? ''],
     ['Region',                     mat?.region ?? '—',                                       '',             ''],
-    ['Net Finished Weight',        `${input.rawMaterial.netWeightKg.toFixed(4)} kg`,         'kg',           'Weight in finished part'],
+    ['Costed Net Weight',          `${input.rawMaterial.netWeightKg.toFixed(4)} kg`,         'kg',           'The weight the material line is costed on — the finished part, plus the machining stock or reject allowance the module carries (see Key Assumptions)'],
   ];
 
   // Every item the engine puts in the material line, on BOTH paths, so the rows add up to bucket 1 — the supplied-price
@@ -2259,8 +2259,9 @@ export function printPDF(
   const finishedKg = cadMeta.measuredWeightKg ?? null;
   const nearNet = /cast|forg/.test(commodityType);
   const costedWeightLine = finishedKg != null && Math.abs(costedKg - finishedKg) > 0.01 * Math.max(finishedKg, 1e-9)
-    ? `Costed weight: ${costedKg.toFixed(3)} kg${nearNet ? ` (${/forg/.test(commodityType) ? 'as forged' : 'as cast'}: the finished ${finishedKg.toFixed(3)} kg measured + the stock machining removes)` : ` (finished part measured at ${finishedKg.toFixed(3)} kg)`}`
+    ? `Costed weight: ${costedKg.toFixed(3)} kg${nearNet ? ` (${/forg/.test(commodityType) ? 'as forged' : 'as cast'}: the finished ${finishedKg.toFixed(3)} kg measured + the stock machining removes)` : costedKg > finishedKg ? ` (the finished ${finishedKg.toFixed(3)} kg measured + the reject / process allowance the module carries)` : ` (finished part measured at ${finishedKg.toFixed(3)} kg)`}`
     : `Net weight: ${costedKg.toFixed(3)} kg${wtNote}`;
+
   const pinNote = [
     cadMeta.userSpecifiedMaterial ? 'grade user-specified' : '',
     cadMeta.userSpecifiedProcess ? 'process user-specified' : '',

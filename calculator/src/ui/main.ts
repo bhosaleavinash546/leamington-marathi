@@ -6068,6 +6068,21 @@ void (async () => {
   } catch { /* offline: defaults stand */ }
 })();
 
+/** The CAD format a file's own header names: STEP (ISO-10303-21), IGES (the 80-column 'S' start section), STL. */
+async function sniffCadFormat(f: File): Promise<'.stp' | '.igs' | '.stl' | null> {
+  try {
+    const head = await f.slice(0, 1024).text();
+    if (/^\s*ISO-10303-21\s*;/.test(head)) return '.stp';
+    const first = head.split(/\r?\n/)[0] ?? '';
+    if (first.length >= 73 && first[72] === 'S') return '.igs';
+    if (/^\s*solid\b/.test(head) && /facet\s+normal/.test(head)) return '.stl';
+    // binary STL: an 80-byte header then a triangle count that matches the size
+    const buf = new DataView(await f.slice(0, 84).arrayBuffer());
+    if (f.size >= 84 && 84 + 50 * buf.getUint32(80, true) === f.size) return '.stl';
+  } catch { /* unreadable — refuse below */ }
+  return null;
+}
+
 function setCADFile(f: File): void {
   const ext = f.name.toLowerCase().split('.').pop() ?? '';
   if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'].includes(ext)) {
@@ -6075,7 +6090,16 @@ function setCADFile(f: File): void {
     return;
   }
   if (!cadLimits.accept.includes('.' + ext)) {
-    alert(`Unsupported file format. Please use ${cadLimits.accept.join(', ')}.`);
+    // A file saved without its extension ("Input_Shaft_machined") is still a STEP / IGES / STL file — its first bytes
+    // say which. It was refused as "Unsupported file format" (uploaded-parts review, Oct 2026).
+    void sniffCadFormat(f).then(found => {
+      if (found) {
+        showToast(`"${f.name}" has no CAD extension — read as ${found.toUpperCase().slice(1)} from its file header.`, 'info');
+        setCADFile(new File([f], `${f.name}${found}`, { type: f.type, lastModified: f.lastModified }));
+      } else {
+        alert(`Unsupported file format. Please use ${cadLimits.accept.join(', ')}.`);
+      }
+    });
     return;
   }
   // Check the size HERE, before the whole file goes up and the server's 413 comes back.
@@ -12470,7 +12494,7 @@ function collectIMMInput(): UniversalStackInput {
       );
     } else if (requiredTonnage > ratedTonnage * 0.9) {
       _smExtraWarnings.push(
-        `Clamping tonnage: part needs ≈${Math.round(requiredTonnage)}T vs ${ratedTonnage}T rated — running above 90% of clamp capacity leaves little safety margin.`
+        `Clamping tonnage: ≈${Math.round(requiredTonnage)}T needed (already including the 1.15 safety factor) on a ${ratedTonnage}T press — within capacity, ${Math.round((1 - requiredTonnage / ratedTonnage) * 100)}% headroom beyond the safety factor.`
       );
     }
   }

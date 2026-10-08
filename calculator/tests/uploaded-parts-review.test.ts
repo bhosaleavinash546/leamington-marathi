@@ -176,3 +176,34 @@ describe('observations and levers say only what the costing supports', () => {
     expect(titles).not.toMatch(/35% floor/);
   });
 });
+
+describe('the casting observations do not advise casting a casting', () => {
+  it('a cast + machined part is not told to "evaluate a near-net-shape blank", nor to raise a melt-loss utilisation', async () => {
+    const { input, result } = await stubAxle();
+    // make material dominate so the material actions are produced
+    const heavy = { ...result, breakdown: { ...result.breakdown, rawMaterial: result.total * 0.7 } };
+    const text = JSON.stringify(generateInsights(heavy as never, input, book, 'cast_and_machine', { region: 'UK', volumeProvided: true, pkgLogisticsEstimated: false, library: book }));
+    expect(text).not.toMatch(/near-net-shape blank \(casting or forging\) instead of cutting from solid/);
+    expect(text).not.toMatch(/utilisation at 9\d% — re-cost/);
+  });
+});
+
+describe('screen and headless cost a machined part alike', () => {
+  it('the removal-ceiling cap leaves rule-built (measured) operations alone — it scaled the servo horn\'s handling', async () => {
+    const { toCostParams } = await import('../src/engine/cost-input-rules/to-cost-params.js');
+    // a 1.2 cm³ part in a 47 × 10 × 7.5 mm envelope: the removal ceiling is a few seconds, the measured build-up is not
+    const geo = { volume: { cm3: 1.2 }, surfaceArea: { cm2: 40 }, boundingBox: { xMm: 46.9, yMm: 9.7, zMm: 7.5 }, featureTable: [] } as never;
+    const ops = [
+      { operationName: 'Milling — +X', machineId: 'mach-haas-vf2', cycleTimeHr: 0.0066, measured: true },
+      { operationName: 'Load / clamp / unload — 4 fixturing(s)', machineId: 'mach-haas-vf2', cycleTimeHr: 0.0204, measured: true },
+    ];
+    const ci = { estimatedOperations: ops, estimatedCycleTimeHr: 0.027, netWeightKg: 0.003, machining: { stockWeightKg: 0.022, machineId: 'mach-haas-vf2' } } as never;
+    const r = toCostParams('machining', ci, 100_000, 'aluminium', geo)!;
+    const out = (r.params as { operations: Array<{ cycleTimeHr: number }> }).operations;
+    expect(out.map(o => o.cycleTimeHr)).toEqual([0.0066, 0.0204]);
+    expect(r.assumed.join(' ')).not.toMatch(/removal ceiling/);
+    // a model-supplied (unmeasured) cycle on the same part IS capped
+    const model = { ...(ci as object), estimatedOperations: ops.map(o => ({ ...o, cycleTimeHr: o.cycleTimeHr * 20, measured: undefined })) } as never;
+    expect(toCostParams('machining', model, 100_000, 'aluminium', geo)!.assumed.join(' ')).toMatch(/removal ceiling/);
+  });
+});

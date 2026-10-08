@@ -311,7 +311,6 @@ function materialDominanceActions(
         ...commercial,
       ];
     case 'machining':
-    case 'cast_and_machine':
       return [
         'Evaluate a near-net-shape blank (casting or forging) instead of cutting from solid',
         `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
@@ -320,10 +319,13 @@ function materialDominanceActions(
         ...commercial,
       ];
     case 'casting':
+    case 'cast_and_machine':
     case 'forging':
       return [
         'Improve yield: gating/riser design for casting, flash-land and preform design for forging',
-        `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
+        // On a casting whose gating is remelted the utilisation is melt loss only — not a yield lever to quote.
+        ...(matUtilPct < 90 ? [`Material utilisation at ${matUtilPct.toFixed(0)}% — re-cost with a higher utilisation to see what it is worth`] : []),
+        'Review the machining stock left on the casting / forging — it is bought, poured and then cut away',
         'Explore secondary/recycled alloy grades that meet functional spec',
         'Confirm returns and scrap recovery are credited back in the quote',
         ...commercial,
