@@ -78,6 +78,14 @@ export async function exportToExcelBlob(
   if (input.tooling.mode === 'amortized') {
     sum.push(['Total Tooling Cost', m(input.tooling.totalToolingCost)]);
     sum.push(['Amortisation Volume', input.tooling.amortizationVolume, 'parts']);
+    if (input.annualVolume) sum.push(['Annual Volume', input.annualVolume, 'parts / year']);
+    if (input.programmeYears) {
+      const life = (input.annualVolume ?? 0) * input.programmeYears;
+      sum.push(['Programme Life', input.programmeYears, `years (${life.toLocaleString('en-GB')} lifetime)`]);
+      if (life > 0 && Math.abs(input.tooling.amortizationVolume - life) > 0.5) {
+        sum.push(['NOTE', `Tooling is amortised over ${Math.round(input.tooling.amortizationVolume).toLocaleString('en-GB')} parts, not the programme lifetime`]);
+      }
+    }
   }
   const warnings = result.warnings ?? [];
   if (warnings.length) {

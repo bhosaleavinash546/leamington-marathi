@@ -21,7 +21,7 @@ import Database from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
 import * as XLSX from 'xlsx';
 
-interface PartSpec { label: string; file: string; answers: Record<string, string>; annualVolume?: number }
+interface PartSpec { label: string; file: string; answers: Record<string, string>; annualVolume?: number; region?: string; programmeYears?: number; programmeYearsFirst?: boolean }
 const ROOT = resolve('.');
 const OUT = process.env.CV_LIVE_OUT ?? tmpdir();
 const PARTS: PartSpec[] = JSON.parse(readFileSync(process.env.CV_PARTS ?? 'parts.json', 'utf8'));
@@ -41,7 +41,14 @@ async function costOne(page: Page, base: string, p: PartSpec): Promise<Record<st
   await page.waitForSelector('html[data-country-ready="1"]', { timeout: 60_000 });
   await page.click('#new-costing-btn', { timeout: 15_000 });
   await page.locator('#commodity-picker-view .cpicker-tile[data-commodity="cad_analysis"]:visible').first().click({ timeout: 15_000 });
-  if (p.annualVolume) await page.fill('#cad-annual-volume, #cad-volume', String(p.annualVolume)).catch(() => {});
+  // The manufacturing country, as the header picker sets it (every rate book follows it).
+  if (p.region) {
+    await page.selectOption('#mfg-region-selector', p.region);
+    await page.waitForTimeout(800);
+  }
+  if (p.annualVolume) await page.fill('#cad-annual-volume', String(p.annualVolume));
+  // Programme life typed BEFORE the upload (the order an engineer filling the page top-down uses).
+  if (p.programmeYears && p.programmeYearsFirst) await page.fill('#programme-years', String(p.programmeYears));
   await page.setInputFiles('#cad-file-input', p.file);
   await page.click('#cad-analyze-btn');
   const asked: Array<{ id: string; severity: string; options: string[]; checked: string | null }> = [];
@@ -87,6 +94,16 @@ async function costOne(page: Page, base: string, p: PartSpec): Promise<Record<st
     const sel = (id: string) => { const e = document.getElementById(id) as HTMLSelectElement | null; return e ? { value: e.value, text: e.selectedOptions?.[0]?.textContent?.trim() } : null; };
     return { commodity: active?.dataset.commodity ?? active?.textContent?.trim(), title: document.querySelector('.wf-panel-header h2, .wf-panel-title')?.textContent?.trim(),
       materials: ['cast-mat', 'cam-mat', 'forge-mat', 'sm-mat', 'smf-mat', 'imm-mat', 'bm-mat', 'tf-mat', 'ext-mat', 'mach-mat', 'gear-mat', 'gear-material-class'].map(id => [id, sel(id)]).filter(([, v]) => v && (v as { value: string }).value) };
+  });
+  if (p.programmeYears && !p.programmeYearsFirst) {
+    await page.fill('#programme-years', String(p.programmeYears));
+    await page.dispatchEvent('#programme-years', 'change');
+    await page.waitForTimeout(400);
+  }
+  out.inputsBeforeCalc = await page.evaluate(() => {
+    const v = (id: string) => (document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null)?.value ?? null;
+    return { region: v('mfg-region-selector'), cadVolume: v('cad-annual-volume'), annualVolume: v('annual-volume'), programmeYears: v('programme-years'),
+      amort: Array.from(document.querySelectorAll<HTMLInputElement>('input[id$="-amort"]')).filter(e => e.offsetParent !== null).map(e => [e.id, e.value, e.dataset.amortDefault ?? null]) };
   });
   await page.click('#calc-btn');
   await page.waitForFunction(() => /\d/.test(document.querySelector('#cv-result-hero .crh-total')?.textContent ?? ''), null, { timeout: 120_000 });

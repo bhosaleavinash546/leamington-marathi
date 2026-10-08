@@ -6229,6 +6229,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     if (commOvr) formData.append('commodity', commOvr);
     if (matOvr)  formData.append('material', matOvr);
     formData.append('annualVolume', annVol || '100000');
+    if (programmeYearsValue()) formData.append('programmeYears', programmeYearsValue());
     formData.append('region', _mfgRegion);
     if (ovrWt)   formData.append('weightKg', ovrWt);
     if (ovrVol)  formData.append('volumeCm3', ovrVol);
@@ -6952,6 +6953,12 @@ function cadBlankSummaryHtml(): string {
     + `${b.holeCount} hole${b.holeCount === 1 ? '' : 's'} — ${origin}${dl}</div>`;
 }
 
+/** The form's programme life (years) for the CAD rules, '' when blank — the rules then state their own assumption. */
+function programmeYearsValue(): string {
+  const v = parseFloat((document.getElementById('programme-years') as HTMLInputElement | null)?.value ?? '');
+  return v > 0 ? String(v) : '';
+}
+
 async function reanalyzeCAD(): Promise<void> {
   if (!cadOCCTGeometry) {
     // An STL is measured in the request and not kept on the server, so there is
@@ -6998,6 +7005,7 @@ async function reanalyzeCAD(): Promise<void> {
       // used to be sent on the first analysis only.
       region: _mfgRegion,
     };
+    if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
     if (commOvr) { body['commodity'] = commOvr; body['commodityExplicit'] = true; }
     if (matOvr)  body['material']  = matOvr;
     if (procOvr) body['process']   = procOvr;
@@ -10629,6 +10637,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     fd.append('cadFile', file);
     fd.append('commodity', commodity);   // the engineer has already chosen the process — this form is it
     fd.append('annualVolume', annVol);
+    if (programmeYearsValue()) fd.append('programmeYears', programmeYearsValue());
     // Same default as the full panel: derive from the geometry. This path has
     // no decisions block, so anything the rules cannot settle is reported in
     // the status line instead of being quietly filled.
@@ -10884,9 +10893,18 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
       // Amortise tooling over the user's stated annual volume for EVERY commodity
       // that has an amort field (see COMMODITY_AMORT_FIELD — the single source of
       // truth). Per-case defaults below only apply when no annual volume is given.
+      // Over the PROGRAMME: annual volume × programme life (blank = one year), and the field keeps following the two
+      // universal fields afterwards. It wrote the annual volume alone, so a programme life typed before the upload was
+      // dropped — the report said "6 years (1,200,000 lifetime)" and amortised over 200,000 (country / volume / life
+      // check, Oct 2026).
       const amortId = COMMODITY_AMORT_FIELD[targetCommodity];
       const amortEl = amortId ? document.getElementById(amortId) as HTMLInputElement | null : null;
-      if (amortEl) { amortEl.value = cadAnnVol; amortEl.dispatchEvent(new Event('input')); }
+      if (amortEl) {
+        const years = parseFloat((document.getElementById('programme-years') as HTMLInputElement | null)?.value ?? '') || 1;
+        amortEl.value = String(Math.round((parseFloat(cadAnnVol) || 0) * (years > 0 ? years : 1)) || cadAnnVol);
+        amortEl.dataset.amortDefault = amortEl.value;
+        amortEl.dispatchEvent(new Event('input'));
+      }
     }
     // Part name
     const partNameEl = el<HTMLInputElement>('part-name');

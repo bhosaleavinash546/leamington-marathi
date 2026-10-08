@@ -125,3 +125,27 @@ Hand checks (from the workbooks):
   is the blank and the press only, and the report now says so (warning `mesh_features_not_costed`). Ask for the STEP.
 - Leak test on a casting borrows the library's tube leak-test rig as a proxy machine; gear workbooks carry the gear
   module's derivation notes with literal £ (correct in GBP, not converted in another currency).
+
+## 8. Country, annual volume and programme life — are they used? (China / 200k / 6 years)
+
+Run live (real server + browser, rules only) on PRCR002, the gearbox housing, the bumper, Model Mania, the hood
+bracket, Eingangswelle and the fuel tank, with Manufacturing country = China, annual volume 200,000 and programme
+life 6 years.
+
+| Input | Where it acts | Evidence |
+|---|---|---|
+| China | the whole rate book is rebuilt for CN (labour roles, machines, energy, overhead 9%, services, tools); results in CNY | PDF "Region: CN", Excel "China (CN) — rates rebuilt", skilled labour ¥71.76/h |
+| 200,000/yr | the CAD rules (cavitation, press, die type, batch, route choice) and the form | rules' bases quote "200,000/yr" |
+| 6 years | tooling amortisation = 200,000 × 6 = 1,200,000 parts; tools that wear out are bought `ceil(lifetime ÷ tool life)` times; moulding cavitation and mould steel chosen over the same programme | Excel Summary "Programme Life 6 years (1,200,000 lifetime)", Amortisation Volume 1,200,000 |
+
+Two defects found and fixed:
+
+1. **Programme life typed before the upload was dropped.** CAD Apply wrote the amortisation volume as one year
+   (200,000) — the cost equalled a 1-year programme while the PDF printed "6 years (1,200,000 lifetime)". Apply now
+   writes annual × years. PRCR002 ¥374.99 → ¥374.61, bumper ¥59.92 → ¥53.71, Model Mania ¥36.40 → ¥36.34.
+   The PDF and Excel now state a NOTE whenever the amortisation volume differs from the programme lifetime.
+2. **The moulding rules assumed 5 years whatever was typed.** The programme life is now sent with every CAD request
+   (`programmeYears`, part of the rules' cache key) and the cavitation optimiser and steel class use it; with none
+   given the basis says "5 years (assumed — no programme life given)". Bumper: 5 years sized a production mould
+   (1.0M-shot life) for 1.0M shots, and the 1.2M-part amortisation then bought it twice (¥3.16M); 6 years sizes one
+   high-volume mould (5M-shot life, ¥1.72M) — ¥53.71 → ¥52.30. `tests/programme-life.test.ts`.

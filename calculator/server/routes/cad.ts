@@ -915,7 +915,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   const ovrHeightMm     = req.body?.heightMm    ? parseFloat(req.body.heightMm)    : null;
   const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
 
-  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3, region: rateRegionOf(requestRegion(req)) };
+  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, programmeYears: parseFloat(req.body?.programmeYears) > 0 ? parseFloat(req.body?.programmeYears) : null, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3, region: rateRegionOf(requestRegion(req)) };
   let analysisMode = parseAnalysisMode(req.body?.mode);
   // Whether the caller *chose* deterministic or simply got the default. The two
   // deserve different behaviour on a commodity with no rules yet.
@@ -1572,6 +1572,8 @@ interface UserOverrides {
   forcedMaterial: string;
   forcedProcess: string;
   annualVolume: number;
+  /** Programme life in years from the form (blank → null: the rules state their own assumption). */
+  programmeYears?: number | null;
   ovrWeightKg: number | null;
   ovrVolumeCm3: number | null;
   ovrLengthMm: number | null;
@@ -2256,7 +2258,7 @@ export function ruleContextFor(
   commodity: string,
   geo: OCCTGeometry,
   filename: string,
-  overrides: Pick<UserOverrides, 'annualVolume' | 'forcedCommodity' | 'forcedMaterial' | 'region'>,
+  overrides: Pick<UserOverrides, 'annualVolume' | 'programmeYears' | 'forcedCommodity' | 'forcedMaterial' | 'region'>,
   answers: Record<string, unknown> = {},
   /**
    * Who answers the blocking questions. On the AI path nobody is at the screen,
@@ -2283,6 +2285,7 @@ export function ruleContextFor(
     // With an engineer present (deterministic), the question blocks instead.
     assumeLeanings: mode === 'ai',
     annualVolume: overrides.annualVolume,
+    ...(overrides.programmeYears ? { programmeYears: overrides.programmeYears } : {}),
     filename,
     answers: { ...answersFromContext(overrides.forcedMaterial, filename), ...answers },
     rates: rateBookFor(overrides.region as ManufacturingRegion | undefined),
@@ -2758,7 +2761,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
-  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3, region: rateRegionOf(requestRegion(req)) };
+  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, programmeYears: parseFloat(req.body?.programmeYears) > 0 ? parseFloat(req.body?.programmeYears) : null, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3, region: rateRegionOf(requestRegion(req)) };
   // This is the route the client posts decision answers back to, so it is the
   // one that most needs to work without a key.
   let analysisMode = parseAnalysisMode(req.body?.mode);

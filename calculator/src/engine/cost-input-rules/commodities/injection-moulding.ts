@@ -41,6 +41,8 @@ const MAX_CLAMP_TONNES = 3500;
 
 /** A typical automotive programme, years. Turns an annual volume into a tool life. */
 const PROGRAMME_YEARS = 5;
+/** The programme the cavitation and mould steel are chosen over: the engineer's programme life, else 5 years (stated). */
+const programmeYearsOf = (ctx: RuleContext): number => (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : PROGRAMME_YEARS);
 
 /**
  * Projected area of one cavity, cm² — the two largest bounding-box dimensions.
@@ -82,7 +84,7 @@ export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): Cavita
     annualVolume: ctx.annualVolume,
     sideActionsLifters: sideActions(ctx).n,
     maxClampTonnes: MAX_CLAMP_TONNES,
-    programmeYears: PROGRAMME_YEARS,
+    programmeYears: programmeYearsOf(ctx),
     runnerSystem: runner.system,
     dropsPerCavity: runner.dropsPerCavity,
     runnerAreaFactor: runner.system === 'cold' ? COLD_RUNNER_AREA_FACTOR : 1,
@@ -314,7 +316,7 @@ function advise(ctx: RuleContext): { advice: ImAdvice } | { blocked: RuleOutcome
     projectedAreaCm2: areaCm2 * n * (runnerChoice(ctx, resin, areaCm2).system === 'cold' ? COLD_RUNNER_AREA_FACTOR : 1),
     cavityPressureMPa: resin.cavityPressureMPa!,
   });
-  const shots = (ctx.annualVolume * PROGRAMME_YEARS) / n;
+  const shots = (ctx.annualVolume * programmeYearsOf(ctx)) / n;
 
   return {
     advice: {
@@ -549,7 +551,8 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('injectionMoulding.steelClass', r.advice.steel.cls, 'rule',
-          `${ctx.annualVolume.toLocaleString('en-GB')}/yr over ${PROGRAMME_YEARS} years in `
+          `${ctx.annualVolume.toLocaleString('en-GB')}/yr over ${programmeYearsOf(ctx)} years`
+          + `${ctx.programmeYears && ctx.programmeYears > 0 ? ' (programme life)' : ' (assumed — no programme life given)'} in `
           + `${r.advice.cavities} cavity = ${r.advice.shots.toLocaleString('en-GB')} shots`, 0.7);
       },
     },

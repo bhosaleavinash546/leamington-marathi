@@ -142,6 +142,8 @@ export interface RuleContext {
    */
   assumeLeanings?: boolean;
   annualVolume: number;
+  /** Programme life in years, when the engineer gave one: tools that wear out are sized over annual × years. */
+  programmeYears?: number;
   filename: string;
   /** Answers already given, keyed by Decision id. */
   answers: Readonly<Record<string, unknown>>;

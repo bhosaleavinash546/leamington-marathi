@@ -2275,6 +2275,10 @@ export function printPDF(
     ? `Annual volume: ${annVol.toLocaleString()}/yr   ·   Programme: ${progYears} years `
       + `(${(annVol * progYears).toLocaleString()} lifetime)   ·   Region: ${(input as { region?: string }).region ?? region}`
       + `   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`
+      // Say so when the tooling is NOT amortised over that lifetime (an amortisation volume typed on the form).
+      + (input.tooling.mode === 'amortized' && Math.abs(input.tooling.amortizationVolume - annVol * progYears) > 0.5
+        ? `   ·   NOTE: tooling is amortised over ${Math.round(input.tooling.amortizationVolume).toLocaleString()} parts, not the programme lifetime`
+        : '')
     : `Annual volume: ${(annVol ?? '—').toLocaleString?.() ?? '—'}   ·   Region: ${(input as { region?: string }).region ?? region}   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`;
   if (pcba) {
     y = calloutBox(doc, y, 'Key Assumptions', [

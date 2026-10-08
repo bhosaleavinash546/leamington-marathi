@@ -289,6 +289,9 @@ what is true** — nothing here has been compared with a price JLR paid.
 
 ## Working notes
 - Default dev branch is `claude/new-session-ts4byp`.
+- Programme life (`#programme-years`) is a costing input: CAD Apply writes `*-amort` = annual × years, and every CAD
+  request sends `programmeYears` so the rules size tools that wear out (moulding cavitation / steel) over the same
+  programme (`RuleContext.programmeYears`; blank → a stated 5-year assumption). `tests/programme-life.test.ts`.
 - Before shipping a cost-logic change, prove it: unit test + `npm run accuracy`
   or a hand-calc reproduction. `tests/reference-part.test.ts` pins a hand-computed
   £24.79 machined bracket (2026-09 rates; it follows the library) to <0.01% — keep
