@@ -268,6 +268,12 @@ interface ResolvedRates {
   reuse:          Record<SWReuse, number>;
 }
 
+/** The base rate (£/PM) of the programme's ACTIVE rate book — the company book when one is applied, else the
+ *  built-in one. The screen shows this in its base-rate field until the engineer types an override. */
+export function swLibraryBaseRate(prog: Pick<SWProgramInputs, 'rateLibrary'>): number {
+  return resolveRateLibrary(prog.rateLibrary).ukBaseRatePerPM.value;
+}
+
 function resolveRates(prog: SWProgramInputs): ResolvedRates {
   const lib = resolveRateLibrary(prog.rateLibrary);
   // Explicit baseRateGBP (the quick UI override) wins over the library's base.

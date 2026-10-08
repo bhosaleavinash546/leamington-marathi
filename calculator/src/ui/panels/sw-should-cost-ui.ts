@@ -19,8 +19,9 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
 } from '../../engine/sw-should-cost.js';
+import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
 import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
@@ -47,6 +48,11 @@ async function syncSWRateLibrary(): Promise<void> {
     _swInputs.rateLibrary = (data.rateLibrary && typeof data.rateLibrary === 'object')
       ? data.rateLibrary as typeof _swInputs.rateLibrary
       : undefined;
+    // An untyped base-rate field shows the ACTIVE book's base (it rendered before the book arrived).
+    for (const id of SW_BASE_RATE_FIELDS) {
+      const f = document.getElementById(id) as HTMLInputElement | null;
+      if (f && f.dataset.typed !== '1') f.value = String(swLibraryBaseRate(_swInputs));
+    }
   } catch { /* offline / not authed — keep engine defaults */ }
 }
 
@@ -464,7 +470,7 @@ function renderWizStepBody(step: number): string {
         <div class="sw-field-group"><label class="sw-label">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
           <input id="wiz-senior" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inp.teamSeniorFraction}"></div>
         <div class="sw-field-group"><label class="sw-label">UK base rate £/PM ${tip('UK senior-blended rate per person-month before overhead. All regions scale from this.')}</label>
-          <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value}"></div>
+          <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? swLibraryBaseRate(inp)}"${inp.baseRateGBP ? ' data-typed="1"' : ''}></div>
       </div>
       <div style="text-align:center;margin-top:16px"><button id="wiz-recalc" class="sw-wiz-btn-primary">↻ Recalculate</button></div>
       <div id="wiz-sensitivity" style="margin-top:14px"></div>`;
@@ -493,7 +499,8 @@ function readWizStep(step: number): void {
   } else if (step === 5) {
     const ov = parseFloat((g('wiz-overhead') as HTMLInputElement)?.value); if (!isNaN(ov)) _swInputs.overheadMultiplier = Math.max(1, ov);
     const sf = parseFloat((g('wiz-senior') as HTMLInputElement)?.value); if (!isNaN(sf)) _swInputs.teamSeniorFraction = Math.min(1, Math.max(0, sf));
-    const br = parseFloat((g('wiz-baserate') as HTMLInputElement)?.value); if (!isNaN(br) && br > 0) _swInputs.baseRateGBP = br;
+    const brEl = g('wiz-baserate') as HTMLInputElement | null;
+    if (brEl) _swInputs.baseRateGBP = baseRateOverride(brEl.value, brEl.dataset.typed === '1');
   }
 }
 
@@ -726,7 +733,7 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label">UK Base Rate (£/PM)</label>
-        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value}" title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
+        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? swLibraryBaseRate(inputs)}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
@@ -1200,7 +1207,7 @@ function readConfig(): void {
   const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
   const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || SW_DEFAULT_OVERHEAD;
   const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
-  const baseRate   = parseFloat((get('sw-base-rate') as HTMLInputElement)?.value);
+  const baseRateEl = get('sw-base-rate') as HTMLInputElement | null;
   const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
   const cloud      = (get('sw-inc-cloud') as HTMLInputElement)?.checked ?? true;
 
@@ -1210,7 +1217,8 @@ function readConfig(): void {
   _swInputs.annualProductionVolume = Math.max(1, vol);
   _swInputs.overheadMultiplier     = Math.max(1, overhead);
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
-  _swInputs.baseRateGBP            = isNaN(baseRate) || baseRate <= 0 ? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value : baseRate;
+  // Only a TYPED base rate overrides the active (company or built-in) rate book — P1 #2.
+  _swInputs.baseRateGBP            = baseRateEl ? baseRateOverride(baseRateEl.value, baseRateEl.dataset.typed === '1') : _swInputs.baseRateGBP;
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost       = cloud;
 
@@ -1401,7 +1409,7 @@ for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
 }
 
 /** Build a full programme-inputs object for a vehicle demo. */
-export function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
+export function buildVehicleInputs(v: SWVehicleDemo, rateLibrary?: SWProgramInputs['rateLibrary']): SWProgramInputs {
   const b = defaultSWProgramInputs();
   const disabled = new Set(v.disabledModules);
   return {
@@ -1412,6 +1420,7 @@ export function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
     annualProductionVolume: v.volume,
     overheadMultiplier:     v.overhead,
     teamSeniorFraction:     v.senior,
+    ...(rateLibrary ? { rateLibrary } : {}),
     modules: b.modules.map(m => ({
       ...m,
       enabled: !disabled.has(m.moduleId),
@@ -1426,7 +1435,8 @@ function applyVehicleDemo(id: string): void {
   const v = SW_VEHICLE_DEMOS.find(d => d.id === id);
   if (!v) return;
   _swActiveVehicle = id;
-  _swInputs = buildVehicleInputs(v);
+  // A demo is costed on the ACTIVE rate book — it used to drop the company book (P1 #2).
+  _swInputs = buildVehicleInputs(v, _swInputs.rateLibrary);
   _swResult = null;
   const panel = document.getElementById('sw-panel');
   if (panel?.parentElement) {
@@ -2300,7 +2310,8 @@ function compareConfigs(): void {
 
   const scenarios: { name: string; inputs: SWProgramInputs }[] = [
     { name: '● Current', inputs: _swInputs },
-    ...(_savedConfigs.map(c => ({ name: c.name, inputs: c.inputs }))),
+    // Saved configs carry no rate book: compare them on the same active book as "Current" (P1 #2).
+    ...(_savedConfigs.map(c => ({ name: c.name, inputs: { ...c.inputs, rateLibrary: _swInputs.rateLibrary } }))),
   ];
   if (scenarios.length < 2) {
     out.innerHTML = `<div style="font-size:0.75rem;color:var(--sw-text-muted);font-style:italic">Save at least one configuration to compare it against the current inputs.</div>`;
@@ -2390,6 +2401,15 @@ function showSWError(msg: string): void {
 // ─── Wire events ──────────────────────────────────────────────────────────────
 
 export function wireSWPanel(): void {
+  // A base-rate field becomes an override the moment the engineer types in it (sw-rate-field.ts).
+  const swPanel = document.getElementById('sw-panel');
+  if (swPanel && !swPanel.dataset.rateTypedWired) {
+    swPanel.dataset.rateTypedWired = '1';
+    swPanel.addEventListener('input', e => {
+      const t = e.target as HTMLInputElement;
+      if ((SW_BASE_RATE_FIELDS as readonly string[]).includes(t.id)) t.dataset.typed = '1';
+    });
+  }
   // Mode toggle (Guided wizard ↔ Advanced expert panel) + wizard wiring
   document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(btn =>
     btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));

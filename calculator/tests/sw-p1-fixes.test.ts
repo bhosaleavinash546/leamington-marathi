@@ -23,3 +23,27 @@ describe('#3 one overhead default (1.15 — the 1.55–1.62 demos counted benefi
     }
   });
 });
+
+import { baseRateOverride } from '../src/ui/panels/sw-rate-field.js';
+import { swLibraryBaseRate, DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-should-cost.js';
+
+describe('#2 a company rate book is honoured (base rate and vehicle demos)', () => {
+  const company = { ukBaseRatePerPM: { ...DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM, value: 35_000, source: 'company book' } };
+  it('an untyped base-rate field is not an override; a typed one is', () => {
+    expect(baseRateOverride('28000', false)).toBeUndefined();
+    expect(baseRateOverride('31000', true)).toBe(31_000);
+    expect(baseRateOverride('', true)).toBeUndefined();
+    expect(baseRateOverride('-5', true)).toBeUndefined();
+  });
+  it('with no override the company base rate drives the cost', () => {
+    const p = { ...defaultSWProgramInputs(), rateLibrary: company };
+    expect(swLibraryBaseRate(p)).toBe(35_000);
+    const builtIn = computeSWProgram(defaultSWProgramInputs()).summary.totalDevelopment;
+    expect(computeSWProgram(p).summary.totalDevelopment / builtIn).toBeCloseTo(35_000 / 28_000, 6);
+  });
+  it('a vehicle demo keeps the active rate book (it was dropped)', () => {
+    const d = SW_VEHICLE_DEMOS[0];
+    expect(buildVehicleInputs(d, company).rateLibrary).toBe(company);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/buildVehicleInputs\(v, _swInputs\.rateLibrary\)/);
+  });
+});
