@@ -16,10 +16,11 @@
 
 import type {
   ASILLevel, SWComplexity, SWReuse, SWRegion, DevSource,
-  SWProgramInputs, SWProgramResult, SWModuleInput,
+  SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain,
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
@@ -345,13 +346,17 @@ let _wizDomains: Record<SWCat, boolean> = { A: true, B: true, C: true, D: true, 
 let _wizCfg: Record<SWCat, GuidedDomainCfg> =
   Object.fromEntries(ALL_CATS.map(c => [c, { complexity: 'default', reuse: 'Medium', asil: 'default' }])) as Record<SWCat, GuidedDomainCfg>;
 let _programPhase: 'Concept' | 'Development' | 'SOP' | 'Facelift' = 'Development';
+/** The wizard's drivetrain — BEV reproduces its old behaviour (domain A = the EV stack). P1 #5. */
+let _wizPowertrain: SWPowertrain = 'BEV';
+const PT_LABEL: Record<SWPowertrain, string> = { ICE: 'ICE — combustion', MHEV: 'MHEV — 48 V mild hybrid', PHEV: 'PHEV — plug-in hybrid', BEV: 'BEV — battery-electric' };
 
 /** Map the guided selections onto the full module set in _swInputs. */
 function applyGuidedToInputs(): void {
   for (const m of _swInputs.modules) {
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
     const cat = def.category as SWCat;
-    m.enabled = _wizDomains[cat];
+    // Powertrain modules follow the drivetrain's scope; it used to switch on every Category-A module (P1 #5).
+    m.enabled = _wizDomains[cat] && (!SW_POWERTRAIN_MODULE_IDS.has(m.moduleId) || SW_POWERTRAIN_SCOPE[_wizPowertrain].on.includes(m.moduleId));
     const g = _wizCfg[cat];
     m.complexity = g.complexity === 'default' ? def.defaultComplexity : g.complexity;
     m.asil       = g.asil === 'default' ? def.defaultAsil : g.asil;
@@ -392,6 +397,8 @@ function renderWizStepBody(step: number): string {
       .map(r => `<option value="${r}" ${inp.region === r ? 'selected' : ''}>${r.replace('_',' ')}</option>`).join('');
     const phaseOpts = (['Concept','Development','SOP','Facelift'] as const)
       .map(p => `<option value="${p}" ${_programPhase === p ? 'selected' : ''}>${p}</option>`).join('');
+    const ptOpts = (['ICE', 'MHEV', 'PHEV', 'BEV'] as const)
+      .map(p => `<option value="${p}" ${_wizPowertrain === p ? 'selected' : ''}>${PT_LABEL[p]}</option>`).join('');
     return `
       <div class="sw-wiz-h">Step 1 — Vehicle &amp; Programme Context</div>
       <p class="sw-wiz-help">Tell us about the programme. These set the baseline rates and how the one-time engineering cost is spread across vehicles.</p>
@@ -400,6 +407,8 @@ function renderWizStepBody(step: number): string {
           <select id="wiz-region" class="sw-config-sel">${regionOpts}</select></div>
         <div class="sw-field-group"><label class="sw-label">Programme phase ${tip('Concept/Development/SOP/Facelift — informational; facelift programmes usually reuse more software.')}</label>
           <select id="wiz-phase" class="sw-config-sel">${phaseOpts}</select></div>
+        <div class="sw-field-group"><label class="sw-label">Powertrain ${tip('Sets which powertrain software is in scope: engine / transmission for ICE, 48 V and hybrid control for MHEV, both stacks for PHEV, the EV stack for BEV.')}</label>
+          <select id="wiz-powertrain" class="sw-config-sel">${ptOpts}</select></div>
         <div class="sw-field-group"><label class="sw-label">Annual production volume ${tip('Vehicles per year. Higher volume spreads the software investment over more cars.')}</label>
           <input id="wiz-vol" type="number" class="sw-config-inp" min="1000" max="500000" step="1000" value="${inp.annualProductionVolume}"></div>
         <div class="sw-field-group"><label class="sw-label">Programme life (years) ${tip('How long the software is developed and maintained — typically 5–10 years.')}</label>
@@ -490,6 +499,7 @@ function readWizStep(step: number): void {
   if (step === 1) {
     const region = (g('wiz-region') as HTMLSelectElement)?.value; if (region) _swInputs.region = region as SWRegion;
     const phase = (g('wiz-phase') as HTMLSelectElement)?.value as typeof _programPhase; if (phase) _programPhase = phase;
+    const pt = (g('wiz-powertrain') as HTMLSelectElement)?.value as SWPowertrain; if (pt) { _wizPowertrain = pt; _swInputs.powertrain = pt; }
     const vol = parseInt((g('wiz-vol') as HTMLInputElement)?.value); if (!isNaN(vol)) _swInputs.annualProductionVolume = Math.max(1, vol);
     const life = parseInt((g('wiz-life') as HTMLInputElement)?.value); if (!isNaN(life)) _swInputs.programLifeYears = Math.max(1, life);
   } else if (step === 2) {
@@ -716,6 +726,17 @@ function renderSWPanelHTML(): string {
       <div class="sw-field-group">
         <label class="sw-label">Development Source</label>
         <select id="sw-dev-source" class="sw-config-sel">${sourceOpts}</select>
+      </div>
+      <div class="sw-field-group">
+        <label class="sw-label">Powertrain</label>
+        <select id="sw-powertrain" class="sw-config-sel" title="Switches the powertrain modules in scope (engine SW_POWERTRAIN_SCOPE); you can still tick modules by hand afterwards.">
+          <option value="" ${inputs.powertrain ? '' : 'selected'}>— as configured —</option>
+          ${(['ICE', 'MHEV', 'PHEV', 'BEV'] as const).map(p => `<option value="${p}" ${inputs.powertrain === p ? 'selected' : ''}>${PT_LABEL[p]}</option>`).join('')}
+        </select>
+      </div>
+      <div class="sw-field-group">
+        <label class="sw-label">Platform volume, all powertrains (veh/yr)</label>
+        <input id="sw-platform-vol" type="number" class="sw-config-inp" min="0" step="1000" placeholder="blank = this variant only" value="${inputs.platformAnnualVolume ?? ''}" title="Vehicles per year across every powertrain variant sharing the non-powertrain software. Shared modules are attributed to this variant by its share of that volume.">
       </div>
       <div class="sw-field-group">
         <label class="sw-label">Programme Life (years)</label>
@@ -1221,6 +1242,8 @@ function readConfig(): void {
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
   // Only a TYPED base rate overrides the active (company or built-in) rate book — P1 #2.
   _swInputs.baseRateGBP            = baseRateEl ? baseRateOverride(baseRateEl.value, baseRateEl.dataset.typed === '1') : _swInputs.baseRateGBP;
+  const platVol = parseInt((get('sw-platform-vol') as HTMLInputElement | null)?.value ?? '');
+  _swInputs.platformAnnualVolume   = platVol > 0 ? platVol : undefined;
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost       = cloud;
 
@@ -1266,7 +1289,9 @@ interface SWVehicleDemo {
   overhead:        number;
   senior:          number;
   reuse:           SWReuse;
-  /** Category-A powertrain modules to DISABLE (not applicable to this drivetrain). */
+  /** The drivetrain — its powertrain modules come from the engine's SW_POWERTRAIN_SCOPE (P1 #5). */
+  powertrain:      SWPowertrain;
+  /** Other modules to disable (not powertrain — that is the scope's job). */
   disabledModules: string[];
   /** Optional per-module tweaks (complexity/asil) for signature systems. */
   moduleOverrides?: Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
@@ -1274,13 +1299,10 @@ interface SWVehicleDemo {
   reportUrl?: string;
 }
 
-// 48V mild-hybrid: no BEV-scale HV powertrain SW — keep only 48V regen + light
-// thermal; disable the BEV battery/charge/drive modules.
-const MHEV_DISABLED = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl'];
 
 export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
-    id: 'rr_l460', label: 'Range Rover L460 (PHEV)',
+    id: 'rr_l460', powertrain: 'PHEV', label: 'Range Rover L460 (PHEV)',
     desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
     region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/l460-software-cost-breakdown.html',  // relative to import.meta.env.BASE_URL
@@ -1294,30 +1316,30 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'bmw_x7', label: 'BMW X7 (48V MHEV)',
+    id: 'bmw_x7', powertrain: 'MHEV', label: 'BMW X7 (48V MHEV)',
     desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/bmw-x7-software-cost-breakdown.html',
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       digital_key: { complexity: 'Very High' },   // BMW Digital Key Plus (UWB), industry-leading
     },
   },
   {
-    id: 'audi_q8', label: 'Audi Q8 (48V MHEV)',
+    id: 'audi_q8', powertrain: 'MHEV', label: 'Audi Q8 (48V MHEV)',
     desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/audi-q8-software-cost-breakdown.html',
     // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
     moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
   },
   {
-    id: 'merc_gls', label: 'Mercedes GLS 450 (48V MHEV)',
+    id: 'merc_gls', powertrain: 'MHEV', label: 'Mercedes GLS 450 (48V MHEV)',
     desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
     region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/mercedes-gls-software-cost-breakdown.html',
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       ivi_os:            { complexity: 'Very High' },
       voice_assistant:   { complexity: 'Very High' },
@@ -1327,7 +1349,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne', label: 'Porsche Cayenne Electric (2026)',
+    id: 'porsche_cayenne', powertrain: 'BEV', label: 'Porsche Cayenne Electric (2026)',
     desc: 'E4 platform (PPE, 800V), full BEV, Porsche Driver Experience HMI. Shares PPE middleware with Macan EV / Audi Q6 e-tron (Platform reuse there); bespoke Porsche 4D chassis, Active Ride, 800V high-power charging and Burmester audio at Very-High complexity. Full EV powertrain stack retained.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-software-cost-breakdown.html',
@@ -1343,7 +1365,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_phev', label: 'Porsche Cayenne E-Hybrid (PHEV)',
+    id: 'porsche_cayenne_phev', powertrain: 'PHEV', label: 'Porsche Cayenne E-Hybrid (PHEV)',
     desc: 'MLB Evo · PCM · E-Hybrid plug-in powertrain. Same Porsche performance software as the BEV, but the plug-in-hybrid powertrain is retained at reduced scope (smaller pack, lower charging power) — BMS / SOC / drive-unit at High rather than Very-High.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-phev-software-cost-breakdown.html',
@@ -1355,22 +1377,22 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
   {
-    id: 'porsche_cayenne_mhev', label: 'Porsche Cayenne (48V MHEV)',
+    id: 'porsche_cayenne_mhev', powertrain: 'MHEV', label: 'Porsche Cayenne (48V MHEV)',
     desc: 'MLB Evo · PCM · 48V mild-hybrid powertrain. High-voltage battery / charge / drive modules are not applicable and disabled; 48V regen and battery-thermal retained. Porsche performance software at Very-High complexity.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-mhev-software-cost-breakdown.html',
-    disabledModules: MHEV_DISABLED,
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
       vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
     },
   },
   {
-    id: 'porsche_cayenne_ice', label: 'Porsche Cayenne V8 (ICE)',
+    id: 'porsche_cayenne_ice', powertrain: 'ICE', label: 'Porsche Cayenne V8 (ICE)',
     desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. No electrified-powertrain software — all nine EV powertrain / battery modules are out of scope. Porsche performance, chassis and infotainment software otherwise identical.',
     region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
-    disabledModules: ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'],
+    disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
       autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
       vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
@@ -1382,10 +1404,9 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
 // Generated from car identity × drivetrain so they match scripts/gen-sw-report.ts
 // and the comparison study exactly. Each car keeps the drivetrain it already ships
 // as its primary demo above; the other three are appended here.
-const _ICE_OFF = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'];
 type Sig = Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
 interface StudyCar { id: string; slug: string; flag: string; name: string; region: SWRegion; devSource: DevSource; volume: number; life: number; overhead: number; senior: number; reuse: SWReuse; sig: Sig; skip: string; }
-interface StudyDT { key: string; code: string; dis: string[]; ov: Sig; note: string; }
+interface StudyDT { key: string; code: string; pt: SWPowertrain; }
 const STUDY_CARS: StudyCar[] = [
   { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
   { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
@@ -1393,20 +1414,18 @@ const STUDY_CARS: StudyCar[] = [
   { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
 ];
 const STUDY_DTS: StudyDT[] = [
-  { key: 'ice', code: 'ICE', dis: _ICE_OFF, ov: {}, note: 'combustion — no EV powertrain software' },
-  { key: 'mhev', code: 'MHEV', dis: MHEV_DISABLED, ov: {}, note: '48V mild hybrid — HV battery/charge/drive disabled' },
-  { key: 'phev', code: 'PHEV', dis: [], ov: { bms_core: { complexity: 'High' }, soc_soh_soe: { complexity: 'High' }, edu_control: { complexity: 'High' }, fast_charge: { complexity: 'Medium' } }, note: 'plug-in hybrid — powertrain retained, de-rated vs BEV' },
-  { key: 'bev', code: 'BEV', dis: [], ov: { fast_charge: { complexity: 'Very High' } }, note: 'full battery-electric — entire EV powertrain stack in scope' },
-];
-for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
+  { key: 'ice', code: 'ICE', pt: 'ICE' }, { key: 'mhev', code: 'MHEV', pt: 'MHEV' },
+  { key: 'phev', code: 'PHEV', pt: 'PHEV' }, { key: 'bev', code: 'BEV', pt: 'BEV' },
+];for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
   if (dt.key === c.skip) continue;
   SW_VEHICLE_DEMOS.push({
     id: `${c.id}__${dt.key}`, label: `${c.flag} ${c.name} (${dt.code})`,
-    desc: `${c.name} — ${dt.code} powertrain variant (apple-to-apple study): ${dt.note}. Car identity and macro assumptions held constant; only the powertrain-software scope changes.`,
+    desc: `${c.name} — ${dt.code} powertrain variant (apple-to-apple study): ${SW_POWERTRAIN_SCOPE[dt.pt].note}. Car identity and macro assumptions held constant; only the powertrain-software scope changes.`,
+    powertrain: dt.pt,
     region: c.region, devSource: c.devSource, volume: c.volume, life: c.life, overhead: c.overhead, senior: c.senior, reuse: c.reuse,
     reportUrl: `reports/${c.slug}-${dt.key}-software-cost-breakdown.html`,
-    disabledModules: [...dt.dis],
-    moduleOverrides: { ...c.sig, ...dt.ov },
+    disabledModules: [],
+    moduleOverrides: { ...c.sig },
   });
 }
 
@@ -1423,11 +1442,12 @@ export function buildVehicleInputs(v: SWVehicleDemo, rateLibrary?: SWProgramInpu
     overheadMultiplier:     v.overhead,
     teamSeniorFraction:     v.senior,
     ...(rateLibrary ? { rateLibrary } : {}),
-    modules: b.modules.map(m => ({
+    powertrain:             v.powertrain,
+    // Powertrain modules from the engine's ONE scope (P1 #5), then the car's own disables and signature overrides.
+    // Every non-powertrain module is in a demo's scope (incl. the premium-trim ones its description lists) unless the
+    // demo disables it — as before; the powertrain modules then come from the scope.
+    modules: applyPowertrainScope(b.modules.map(m => ({ ...m, enabled: !disabled.has(m.moduleId), reuse: v.reuse })), v.powertrain).map(m => ({
       ...m,
-      // Estimate modules (ICE / hybrid, P1 #4) are not part of a demo's listed scope.
-      enabled: !disabled.has(m.moduleId) && !SW_MODULES.find(d => d.id === m.moduleId)?.estimateBasis,
-      reuse:   v.reuse,
       ...(v.moduleOverrides?.[m.moduleId] ?? {}),
     })),
   };
@@ -2422,6 +2442,17 @@ export function wireSWPanel(): void {
       if ((SW_BASE_RATE_FIELDS as readonly string[]).includes(t.id)) t.dataset.typed = '1';
     });
   }
+  // Powertrain select: apply the engine's scope to the modules and redraw the module table (P1 #5).
+  document.getElementById('sw-powertrain')?.addEventListener('change', e => {
+    const pt = (e.target as HTMLSelectElement).value as SWPowertrain | '';
+    if (!pt) return;
+    readConfig();
+    _swInputs.powertrain = pt;
+    _swInputs.modules = applyPowertrainScope(_swInputs.modules, pt);
+    _swResult = null;
+    const panel = document.getElementById('sw-panel');
+    if (panel?.parentElement) { panel.parentElement.innerHTML = renderSWPanelHTML(); wireSWPanel(); }
+  });
   // Mode toggle (Guided wizard ↔ Advanced expert panel) + wizard wiring
   document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(btn =>
     btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));

@@ -5,7 +5,7 @@
  * real vector PDF (jsPDF, no browser) and a print-ready HTML report.
  *   npx tsx scripts/gen-l460-deepdive.ts
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
 
@@ -25,10 +25,11 @@ const CAR: any = {
   gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
   cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.60,reuse:'Medium'},
 };
-const DT: any = { mhev:{dis:MHEV,ov:{}}, bev:{dis:[],ov:{fast_charge:{complexity:'Very High'}}} };
-function results(car:string, dt:string, reuse?:string){ const c=CAR[car], d=DT[dt]; const b:any=defaultSWProgramInputs(); const dis=new Set(d.dis);
+// Powertrain scope from the engine (P1 #5) — this script kept its own copy.
+const DT: any = { mhev: 'MHEV', bev: 'BEV' };
+function results(car:string, dt:string, reuse?:string){ const c=CAR[car], d=DT[dt]; const b:any=defaultSWProgramInputs(); 
   const inp:any={...b,region:c.region,devSource:c.dev,programLifeYears:c.life,annualProductionVolume:c.vol,overheadMultiplier:c.oh,teamSeniorFraction:c.sen,
-    modules:b.modules.map((m:any)=>({...m,enabled:!dis.has(m.moduleId),reuse:reuse??c.reuse,...(SIG[car][m.moduleId]??{}),...(d.ov[m.moduleId]??{})}))};
+    modules:applyPowertrainScope(b.modules.map((m:any)=>({...m,enabled:true,reuse:reuse??c.reuse})),d).map((m:any)=>({...m,...(SIG[car][m.moduleId]??{})}))};
   const r=computeSWProgram(inp,{summaryOnly:false}); const map:any={}; for(const m of r.modules) map[m.moduleId]=m; return map; }
 
 const L=results('l460','mhev'), X=results('x7','mhev'), Q=results('q8','mhev'), G=results('gls','mhev'), LH=results('l460','mhev','Heavy');

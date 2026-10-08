@@ -11,7 +11,9 @@
  * a docs/ copy. NB: the Range Rover L460 report is hand-authored and NOT produced
  * here — its config is intentionally absent so it is never overwritten.
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope, SW_POWERTRAIN_SCOPE } from '../src/engine/sw-should-cost.js';
+import type { SWPowertrain } from '../src/engine/sw-should-cost.js';
+import { rateValues } from '../src/engine/sw-rate-library.js';
 import type { SWModuleInput, SWReuse } from '../src/engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY as L } from '../src/engine/sw-rate-library.js';
 import * as fs from 'node:fs';
@@ -21,12 +23,11 @@ const L460 = fs.readFileSync('docs/l460-cost-breakdown.html', 'utf8');
 const CSS = L460.slice(L460.indexOf('<style>'), L460.indexOf('</style>') + 8);
 const JS  = L460.slice(L460.lastIndexOf('<script>'), L460.lastIndexOf('</script>') + 9);
 
-const MHEV_DISABLED = ['bms_core','cell_balancing','soc_soh_soe','fast_charge','edu_control','inverter_ctrl','motor_ctrl'];
 
 interface Meta {
   id: string; file: string; docFile: string; flag: string; name: string; code: string;
   region: 'EU'|'UK'; devSource: 'OEM_Internal'|'Tier1_Supplier'; volume: number; life: number;
-  overhead: number; senior: number; reuse: SWReuse; disabled: string[];
+  overhead: number; senior: number; reuse: SWReuse; powertrain: SWPowertrain;
   overrides: Record<string, Partial<Pick<SWModuleInput,'asil'|'complexity'|'reuse'>>>;
   arch: string; drivetrain: string; powertrainNote: string; premiumNote: string; reuseNote: string;
 }
@@ -36,7 +37,6 @@ interface Meta {
 // only the drivetrain changes the powertrain-module scope. This makes the whole
 // matrix (5 cars × 4 drivetrains) a clean apple-to-apple study, and reproduces the
 // already-shipped combos exactly.
-const ICE_DISABLED = ['bms_core','cell_balancing','soc_soh_soe','thermal_mgmt','fast_charge','edu_control','inverter_ctrl','motor_ctrl','regen_braking'];
 
 interface Car {
   id: string; slug: string; flag: string; name: string;
@@ -45,8 +45,7 @@ interface Car {
   sig: Meta['overrides']; arch: string; audio: string; premiumExtras: string; reuseNote: string;
 }
 interface Drivetrain {
-  key: 'ice'|'mhev'|'phev'|'bev'; code: string;
-  disabled: string[]; overrides: Meta['overrides'];
+  key: 'ice'|'mhev'|'phev'|'bev'; code: SWPowertrain;
   drivetrain: string; archNote: string; powertrainNote: string; chargeNote: string;
 }
 
@@ -74,14 +73,14 @@ export const CARS: Car[] = [
 ];
 
 export const DRIVETRAINS: Drivetrain[] = [
-  { key:'ice', code:'ICE', disabled:ICE_DISABLED, overrides:{}, drivetrain:'Combustion (ICE)', archNote:'combustion powertrain', chargeNote:'',
-    powertrainNote:'there is no electrified-powertrain software — all nine EV powertrain / battery modules are out of scope' },
-  { key:'mhev', code:'MHEV', disabled:MHEV_DISABLED, overrides:{}, drivetrain:'ICE + 48V mild hybrid (MHEV)', archNote:'48V mild-hybrid powertrain', chargeNote:'',
-    powertrainNote:'the high-voltage battery / charge / drive modules are not applicable and are disabled; 48V regen and battery-thermal software are retained' },
-  { key:'phev', code:'PHEV', disabled:[], overrides:{ bms_core:{complexity:'High'}, soc_soh_soe:{complexity:'High'}, edu_control:{complexity:'High'}, fast_charge:{complexity:'Medium'} }, drivetrain:'Plug-in hybrid (PHEV)', archNote:'plug-in-hybrid powertrain', chargeNote:', AC + DC plug-in charging',
-    powertrainNote:'the plug-in-hybrid powertrain is retained but de-rated vs a full BEV — BMS / SOC / drive-unit run at High rather than Very-High complexity' },
-  { key:'bev', code:'BEV', disabled:[], overrides:{ fast_charge:{complexity:'Very High'} }, drivetrain:'Full battery-electric (BEV)', archNote:'battery-electric powertrain', chargeNote:', high-power DC charging',
-    powertrainNote:'the full EV powertrain software stack (BMS, charging, drive-unit, inverter, motor control) is in scope' },
+  { key:'ice', code:'ICE', drivetrain:'Combustion (ICE)', archNote:'combustion powertrain', chargeNote:'',
+    powertrainNote:SW_POWERTRAIN_SCOPE.ICE.note },
+  { key:'mhev', code:'MHEV', drivetrain:'ICE + 48V mild hybrid (MHEV)', archNote:'48V mild-hybrid powertrain', chargeNote:'',
+    powertrainNote:SW_POWERTRAIN_SCOPE.MHEV.note },
+  { key:'phev', code:'PHEV', drivetrain:'Plug-in hybrid (PHEV)', archNote:'plug-in-hybrid powertrain', chargeNote:', AC + DC plug-in charging',
+    powertrainNote:SW_POWERTRAIN_SCOPE.PHEV.note },
+  { key:'bev', code:'BEV', drivetrain:'Full battery-electric (BEV)', archNote:'battery-electric powertrain', chargeNote:', high-power DC charging',
+    powertrainNote:SW_POWERTRAIN_SCOPE.BEV.note },
 ];
 
 // Combos already shipped (hand-authored L460 PHEV + the earlier reports) keep their
@@ -106,7 +105,7 @@ function buildMeta(car: Car, dt: Drivetrain): Meta & { carId: string; dtKey: str
     id: key, file, docFile, flag: car.flag,
     name: `${car.name} ${dt.code}`, code: dt.code,
     region: car.region, devSource: car.devSource, volume: car.volume, life: car.life, overhead: car.overhead, senior: car.senior, reuse: car.reuse,
-    disabled: dt.disabled, overrides: { ...car.sig, ...dt.overrides },
+    powertrain: dt.code, overrides: { ...car.sig },
     arch: `${car.arch} · ${dt.archNote}`, drivetrain: dt.drivetrain, powertrainNote: dt.powertrainNote,
     premiumNote: `${car.premiumExtras}${dt.chargeNote}, ${car.audio} audio.`,
     reuseNote: car.reuseNote,
@@ -119,8 +118,8 @@ const VEHICLES = CARS.flatMap(c => DRIVETRAINS.map(dt => buildMeta(c, dt)));
 const CATNAME: Record<string,string> = { A:'Powertrain & Battery', B:'ADAS L2/L2+', C:'Infotainment & UX', D:'Domain Controllers', E:'Middleware & Platform', F:'Cybersecurity', G:'OTA & Cloud' };
 const REUSE_V: Record<string,number> = { Fresh:1.0, Light:0.82, Medium:0.60, Heavy:0.35, Platform:0.14 };
 const CX_V: Record<string,number> = { Low:0.6, Medium:1.0, High:1.7, 'Very High':2.8 };
-const ASILDEV: Record<string,number> = { QM:1.0, A:1.35, B:1.8, C:2.3, D:3.2 };
-const ASILTEST: Record<string,number> = { QM:0.35, A:0.55, B:0.85, C:1.2, D:1.8 };
+const ASILDEV: Record<string,number> = rateValues(L.asilDevMultipliers);   // the library's — this script had its own copy
+const ASILTEST: Record<string,number> = rateValues(L.asilTestMultipliers);
 const esc = (s:string)=> s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const M = (n:number)=> '£'+(n/1e6).toFixed(1)+'M';
 const M0 = (n:number)=> '£'+Math.round(n/1e6)+'M';
@@ -128,10 +127,10 @@ const P = (n:number)=> '£'+Math.round(n).toLocaleString('en-GB');
 
 function buildInputs(v: Meta) {
   const b = defaultSWProgramInputs();
-  const disabled = new Set(v.disabled);
   return { ...b, region:v.region, devSource:v.devSource, programLifeYears:v.life, annualProductionVolume:v.volume,
-    overheadMultiplier:v.overhead, teamSeniorFraction:v.senior,
-    modules: b.modules.map(m => ({ ...m, enabled: !disabled.has(m.moduleId), reuse: v.reuse, ...(v.overrides[m.moduleId] ?? {}) })) };
+    overheadMultiplier:v.overhead, teamSeniorFraction:v.senior, powertrain: v.powertrain,
+    // Powertrain scope from the engine (P1 #5), then the car's signature overrides.
+    modules: applyPowertrainScope(b.modules.map(m => ({ ...m, enabled: true, reuse: v.reuse })), v.powertrain).map(m => ({ ...m, ...(v.overrides[m.moduleId] ?? {}) })) };
 }
 
 function report(v: Meta): { file:string; docFile:string; html:string; gt:number; pv:number; mods:number } {

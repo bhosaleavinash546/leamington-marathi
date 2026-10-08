@@ -5,7 +5,7 @@
  * Emits a real vector PDF (jsPDF) and a print-ready HTML report.
  *   npx tsx scripts/gen-allmodels-deepdive.ts
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
 
@@ -19,10 +19,11 @@ const CARC:any={ l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:SW_D
   q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
   gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
   cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.60,reuse:'Medium'} };
-const DT:any={ mhev:{dis:MHEV,ov:{}}, bev:{dis:[],ov:{fast_charge:{complexity:'Very High'}}} };
-function res(car:string,dt:string){ const c=CARC[car],d=DT[dt]; const b:any=defaultSWProgramInputs(); const dis=new Set(d.dis);
+// Powertrain scope from the engine (P1 #5) — this script kept its own copy.
+const DT: any = { mhev: 'MHEV', bev: 'BEV' };
+function res(car:string,dt:string){ const c=CARC[car],d=DT[dt]; const b:any=defaultSWProgramInputs(); 
   const inp:any={...b,region:c.region,devSource:c.dev,programLifeYears:c.life,annualProductionVolume:c.vol,overheadMultiplier:c.oh,teamSeniorFraction:c.sen,
-    modules:b.modules.map((m:any)=>({...m,enabled:!dis.has(m.moduleId),reuse:c.reuse,...(SIG[car][m.moduleId]??{}),...(d.ov[m.moduleId]??{})}))};
+    modules:applyPowertrainScope(b.modules.map((m:any)=>({...m,enabled:true,reuse:c.reuse})),d).map((m:any)=>({...m,...(SIG[car][m.moduleId]??{})}))};
   const r=computeSWProgram(inp,{summaryOnly:false}); const map:any={}; for(const m of r.modules) map[m.moduleId]=m; return map; }
 const R:any={ l460:res('l460','mhev'), l460b:res('l460','bev'), x7:res('x7','mhev'), q8:res('q8','mhev'), gls:res('gls','mhev'), cayenne:res('cayenne','bev') };
 const evSet=new Set(MHEV);

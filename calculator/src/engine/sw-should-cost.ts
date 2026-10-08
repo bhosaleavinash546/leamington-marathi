@@ -31,6 +31,7 @@ export type SWReuse         = 'Fresh' | 'Light' | 'Medium' | 'Heavy' | 'Platform
 export type SWCategory      = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type SWRegion        = 'UK' | 'EU' | 'USA_Detroit' | 'USA_SV' | 'China' | 'India' | 'Mexico' | 'Eastern_Europe' | 'Japan';
 export type DevSource       = 'OEM_Internal' | 'Tier1_Supplier' | 'Startup_OSS';
+export type SWPowertrain    = 'ICE' | 'MHEV' | 'PHEV' | 'BEV';
 
 /**
  * The software-engineering rate hub a manufacturing country is costed in. Software
@@ -56,6 +57,48 @@ export function swRegionFor(country: string): { region: SWRegion; basis?: string
   if (['KR', 'SG'].includes(c)) return near('Japan', 'high-cost Asian engineering — Japan is the nearest assessed hub');
   if (c === 'TW') return near('China', 'Greater China engineering hub');
   return near('India', 'low-cost Asian / African engineering — India is the nearest assessed hub');
+}
+
+// ─── Powertrain scope (software review P1 #5, Oct 2026) ───────────────────────────────────────────────────────────
+// ONE definition of which powertrain modules each drivetrain carries. It lived as copies in the screen and in three
+// report scripts; ICE carried no powertrain software at all. The screen, the demos and the scripts call this.
+
+const EV_MODULE_IDS  = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'];
+const ICE_MODULE_IDS = ['engine_control', 'transmission_control', 'aftertreatment_obd'];
+
+export const SW_POWERTRAIN_SCOPE: Record<SWPowertrain, {
+  on: string[];
+  overrides: Record<string, Partial<Pick<SWModuleInput, 'complexity' | 'asil'>>>;
+  note: string;
+}> = {
+  ICE:  { on: [...ICE_MODULE_IDS], overrides: {},
+          note: 'combustion — engine, transmission and after-treatment / OBD software (estimates); no electrified-powertrain software' },
+  MHEV: { on: [...ICE_MODULE_IDS, 'mhev_48v', 'hybrid_supervisor', 'thermal_mgmt', 'regen_braking'], overrides: { hybrid_supervisor: { complexity: 'High' } },
+          note: '48 V mild hybrid — combustion software plus 48 V BSG / battery control and a simpler energy manager; no high-voltage battery, charging or drive-unit software' },
+  PHEV: { on: [...ICE_MODULE_IDS, ...EV_MODULE_IDS, 'hybrid_supervisor'],
+          overrides: { bms_core: { complexity: 'High' }, soc_soh_soe: { complexity: 'High' }, edu_control: { complexity: 'High' }, fast_charge: { complexity: 'Medium' } },
+          note: 'plug-in hybrid — combustion AND high-voltage software, plus hybrid supervisory control; HV modules de-rated vs a BEV' },
+  BEV:  { on: [...EV_MODULE_IDS], overrides: { fast_charge: { complexity: 'Very High' } },
+          note: 'battery-electric — the full EV powertrain stack; no combustion or hybrid software' },
+};
+
+/** Every module whose presence depends on the drivetrain (category A). Everything else is shared across variants. */
+export const SW_POWERTRAIN_MODULE_IDS: ReadonlySet<string> = new Set([...EV_MODULE_IDS, ...ICE_MODULE_IDS, 'hybrid_supervisor', 'mhev_48v']);
+
+/** Switch the powertrain modules on / off for a drivetrain and apply its de-rating; other modules are left as they are. */
+export function applyPowertrainScope(modules: SWModuleInput[], pt: SWPowertrain): SWModuleInput[] {
+  const scope = SW_POWERTRAIN_SCOPE[pt];
+  return modules.map(m => SW_POWERTRAIN_MODULE_IDS.has(m.moduleId)
+    ? { ...m, enabled: scope.on.includes(m.moduleId), ...(scope.overrides[m.moduleId] ?? {}) }
+    : m);
+}
+
+/** Share of a module's cost attributed to this variant: shared (non-powertrain) software over the platform volume. */
+export function attributedShare(moduleId: string, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'platformAnnualVolume'>): number {
+  if (SW_POWERTRAIN_MODULE_IDS.has(moduleId)) return 1;
+  const platform = prog.platformAnnualVolume ?? 0;
+  const vol = prog.annualProductionVolume;
+  return platform > vol && vol > 0 ? vol / platform : 1;
 }
 
 export interface SWModuleDef {
@@ -133,6 +176,13 @@ export interface SWProgramInputs {
   /** Include programme-level homologation/compliance (UNECE R155 CSMS + R156
    *  SUMS audits + external ISO 26262 functional-safety assessment). */
   includeHomologation?:     boolean;
+  /** The powertrain the module scope was set for (applyPowertrainScope). Recorded for the reports; the scope itself is
+   *  in `modules`, so an engineer can still switch a module on or off by hand (software review P1 #5, Oct 2026). */
+  powertrain?:              SWPowertrain;
+  /** Vehicles / yr across ALL powertrain variants that share the non-powertrain software (ADAS, infotainment, body,
+   *  middleware, cyber, cloud). When it exceeds `annualProductionVolume`, each shared module is attributed to this
+   *  variant in proportion to its volume — it used to be charged in full to every variant (P1 #5). */
+  platformAnnualVolume?:    number;
 }
 
 export interface SWDevBreakdown {
@@ -177,6 +227,8 @@ export interface SWModuleCostResult {
   totalLifecycle:     number;  // maintenance + cloud + IP licensing over program life
   grandTotal:         number;
   perVehicle:         number;
+  /** Share of this module's cost attributed to the programme: 1, or volume ÷ platform volume for shared software. */
+  attributedShare:    number;
 }
 
 export interface SWSummary {
@@ -1067,7 +1119,7 @@ function computeModuleCost(
   const perVehicle    = (nreVehicles > 0 ? totalNRE / nreVehicles : 0)
                       + (lifeVehicles > 0 ? totalLifecycle / lifeVehicles : 0);
 
-  return {
+  const res: SWModuleCostResult = {
     moduleId:       def.id,
     moduleName:     def.name,
     category:       def.category,
@@ -1090,6 +1142,26 @@ function computeModuleCost(
     totalLifecycle,
     grandTotal,
     perVehicle,
+    attributedShare: 1,
+  };
+  // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
+  const share = attributedShare(def.id, prog);
+  return share < 1 ? scaleModuleResult(res, share) : res;
+}
+
+/** The module's cost and effort scaled to the share attributed to this programme. */
+function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult {
+  const scale = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).map(([key, v]) => [key, typeof v === 'number' ? v * k : v])) as T;
+  return {
+    ...r,
+    personMonths: Math.round(r.personMonths * k * 10) / 10,
+    development: scale(r.development), testing: scale(r.testing),
+    integrationCost: r.integrationCost * k, licensingCost: r.licensingCost * k, cloudCost: r.cloudCost * k,
+    cybersecCost: r.cybersecCost * k, maintenanceCost: r.maintenanceCost * k, toolchainCost: r.toolchainCost * k,
+    calibrationCost: r.calibrationCost * k, mlDataCost: r.mlDataCost * k,
+    totalNonRecurring: r.totalNonRecurring * k, totalLifecycle: r.totalLifecycle * k,
+    grandTotal: r.grandTotal * k, perVehicle: r.perVehicle * k,
+    attributedShare: k,
   };
 }
 

@@ -154,3 +154,72 @@ describe('#4 ICE and hybrid powertrain software exists — as labelled estimates
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/def\.estimateBasis \? .*estimate<\/span>/);
   });
 });
+
+import { applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, attributedShare } from '../src/engine/sw-should-cost.js';
+import type { SWPowertrain } from '../src/engine/sw-should-cost.js';
+
+describe('#5 powertrain is an engine input; shared software is apportioned across variants', () => {
+  const on = (pt: SWPowertrain) => applyPowertrainScope(defaultSWProgramInputs().modules, pt)
+    .filter(m => m.enabled && SW_POWERTRAIN_MODULE_IDS.has(m.moduleId)).map(m => m.moduleId).sort();
+  it('each drivetrain carries its own powertrain software (ICE carried none)', () => {
+    expect(on('ICE')).toEqual(['aftertreatment_obd', 'engine_control', 'transmission_control']);
+    expect(on('MHEV')).toEqual(['aftertreatment_obd', 'engine_control', 'hybrid_supervisor', 'mhev_48v', 'regen_braking', 'thermal_mgmt', 'transmission_control']);
+    expect(on('PHEV')).toContain('engine_control');
+    expect(on('PHEV')).toContain('bms_core');
+    expect(on('PHEV')).toContain('hybrid_supervisor');
+    expect(on('BEV')).not.toContain('engine_control');
+    expect(on('BEV')).toContain('inverter_ctrl');
+  });
+  it('the scope touches only powertrain modules — an engineer\'s other choices survive', () => {
+    const base = defaultSWProgramInputs().modules.map(m => m.moduleId === 'ivi_os' ? { ...m, enabled: false } : m);
+    expect(applyPowertrainScope(base, 'ICE').find(m => m.moduleId === 'ivi_os')!.enabled).toBe(false);
+  });
+  it('on one car, a PHEV (two powertrains + hybrid control) now costs more than the BEV, and ICE carries engine software', () => {
+    const car = (pt: SWPowertrain) => {
+      const b = defaultSWProgramInputs();
+      return computeSWProgram({ ...b, region: 'UK', devSource: 'Tier1_Supplier', programLifeYears: 8, annualProductionVolume: 75_000,
+        teamSeniorFraction: 0.55, powertrain: pt, modules: applyPowertrainScope(b.modules, pt) }).summary;
+    };
+    expect(car('ICE').byCategory.A).toBeGreaterThan(0);
+    expect(car('PHEV').grandTotal).toBeGreaterThan(car('BEV').grandTotal);
+  });
+  it('with a platform volume, shared software is attributed by volume share; powertrain software is not', () => {
+    const vol = 75_000;
+    expect(attributedShare('ivi_os', { annualProductionVolume: vol, platformAnnualVolume: 4 * vol })).toBeCloseTo(0.25, 12);
+    expect(attributedShare('engine_control', { annualProductionVolume: vol, platformAnnualVolume: 4 * vol })).toBe(1);
+    expect(attributedShare('ivi_os', { annualProductionVolume: vol })).toBe(1);
+    const p = { ...defaultSWProgramInputs(), annualProductionVolume: vol };
+    const solo = computeSWProgram(p).modules.find(m => m.moduleId === 'ivi_os')!;
+    const shared = computeSWProgram({ ...p, platformAnnualVolume: 4 * vol }).modules.find(m => m.moduleId === 'ivi_os')!;
+    expect(shared.grandTotal / solo.grandTotal).toBeCloseTo(0.25, 12);
+    // its £/vehicle is the whole module spread over the whole platform
+    expect(shared.perVehicle).toBeCloseTo(solo.grandTotal / (4 * vol * p.programLifeYears), 6);
+  });
+  it('every vehicle demo declares its powertrain and is scoped by the engine', () => {
+    for (const d of SW_VEHICLE_DEMOS) {
+      const inp = buildVehicleInputs(d);
+      expect(inp.powertrain, d.id).toBe(d.powertrain);
+      for (const id of SW_POWERTRAIN_MODULE_IDS) {
+        expect(inp.modules.find(m => m.moduleId === id)!.enabled, `${d.id}:${id}`).toBe(SW_POWERTRAIN_SCOPE[d.powertrain].on.includes(id));
+      }
+    }
+  });
+  it('the wizard and the report scripts use the engine scope (no private copies)', () => {
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/SW_POWERTRAIN_SCOPE\[_wizPowertrain\]\.on\.includes/);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/MHEV_DISABLED|_ICE_OFF/);
+    for (const f of ['scripts/gen-sw-report.ts', 'scripts/gen-l460-deepdive.ts', 'scripts/gen-allmodels-deepdive.ts']) {
+      expect(src(f), f).toMatch(/applyPowertrainScope/);
+      expect(src(f), f).not.toMatch(/MHEV_DISABLED|ICE_DISABLED|dis:MHEV/);
+    }
+    expect(src('scripts/gen-sw-report.ts')).not.toMatch(/D:3\.2/);
+  });
+});
+
+describe('#5 follow-through: demos keep their premium-trim modules', () => {
+  it('a demo still includes every non-powertrain module it does not disable (premium-trim included)', () => {
+    for (const d of SW_VEHICLE_DEMOS) {
+      const inp = buildVehicleInputs(d);
+      for (const m of inp.modules) if (!SW_POWERTRAIN_MODULE_IDS.has(m.moduleId)) expect(m.enabled, `${d.id}:${m.moduleId}`).toBe(!d.disabledModules.includes(m.moduleId));
+    }
+  });
+});
