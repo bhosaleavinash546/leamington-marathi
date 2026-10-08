@@ -62,7 +62,7 @@ Checked on the modelled parts:
 | IM storage tray | 4 (drafted walls) | 0 |
 | BM washer reservoir / ROTO coolant tank | 8 each | 0 undercuts, 11 cavity faces |
 | Casting bracket | 17 | 0 |
-| Fuel tank (3,444 faces) | timed out | ~50 undercut faces (agg.), ~720 cavity faces; 184–218 s |
+| Fuel tank (3,444 faces) | timed out | 54 undercut faces (agg.), 704 cavity faces; 178 s |
 
 The screen now polls the DFM job for ~320 s (was ~170 s) — past the kernel's own
 budget, so a large part's report still lands.
@@ -110,13 +110,13 @@ would be costed (the harness's choice, stated). Times on the 4-core session cont
 
 | Part | Commodity | Kernel | What the DFM says now |
 |---|---|---|---|
-| Fuel tank (3,444 faces) | blow | 184–218 s (timed out before) | 110 corners R1.5 vs 8.4 mm (2× wall); 7 outside undercut faces in 5 regions; 719 inside-skin faces are cavity, not undercuts |
+| Fuel tank (3,444 faces) | blow | 178 s alone (timed out before) | 110 corners R1.5 vs 8.4 mm (2× wall); 10 outside undercut faces in 10 regions; ~700 inside-skin faces are cavity, not undercuts |
 | Brembo caliper | cast + machine (gravity) | 28 s | draft 0° ×93, section steps to 16:1, hot spots, 10 undercut faces; 6 bore sizes. **The file declares mm and measures 777 × 340 × 470 mm, 30 L — about 3× a real caliper: check the model's scale before trusting its cost.** |
-| Gearbox housing | cast + machine (HPDC) | ~100 s | 11 blind Ø6.6 × 27 holes past the NADCA cored depth (£3.31 — drilled, the sheet assumes cored); 14 hole sizes; 3 fixturings (radial directions on one index); 2 compound-angle bores; 5 cross holes |
+| Gearbox housing | cast + machine (HPDC) | ~100 s | 11 blind Ø6.6 × 27 holes past the NADCA cored depth (£3.31 — drilled, the sheet assumes cored); 14 hole sizes; 5 fixturings on a 3-axis machine (£2.64); 2 compound-angle bores; 5 cross holes |
 | Hollow driveshaft | machining | 32 s | Ø35.5 / Ø29.9 non-standard sizes (a tool change each, £0.19); 2 fixturings (bore + one rotary index) — was 21 |
 | Eingangswelle (input shaft) | machining | ~65 s | Ø9 × 271 mm gun-drilled bore (30:1); two tooth rings (78 + 48 roots) — gear / spline cutting, not corners. Was 126 "R0.1 corners" priced £52.47 |
-| Steering knuckle | cast + machine (sand) | 8 s | 9 bore sizes; draft, section and hot-spot findings; 1 undercut face (was 4 incl. 0.3 mm² slivers) |
-| PRCR002 / stub axle | cast + machine (sand) | 10 s | 14 hole sizes; spindle bores 9° off-axis (one compound-angle group); 3 undercut regions |
+| Steering knuckle | cast + machine (sand) | 8 s | 4 fixturings; 9 bore sizes; draft, section and hot-spot findings; 1 undercut face (was 4 incl. 0.3 mm² slivers) |
+| PRCR002 / stub axle | cast + machine (sand) | 10 s | 3 fixturings; 14 hole sizes; spindle bores 9° off-axis (one compound-angle group); 8 undercut faces (cores) |
 | Part1 | machining | 8 s | 7 sizes; Ø43 non-standard; compound-angle Ø14 / Ø8 bores at 43.6°; cross holes |
 | Model Mania 2017 | machining | 2 s | angled features round one axis — 2 fixturings, no finding (was 7 setups); its 6 × R2 hexagon corners stay corners |
 | Servo horn | machining | 3 s | Ø5.1 / Ø4.9 non-standard sizes |
@@ -137,8 +137,9 @@ Bugs found and fixed from these runs:
    0.1 mm off the face, an obstruction nearer than 0.5 mm is ignored (below casting / moulding tolerance), faces under
    1 mm² are not judged alone, and a blocked face is confirmed at two more spread points.
 5. **Free-form silence read as a pass** (bumper, close volume): the limitation above.
-6. **Fuel tank timed out**: one classifier per run, breakout only on full cylinders, a shared release table, cavity
-   probed per connected group, and the screen's DFM poll lengthened past the kernel budget.
+6. **Fuel tank timed out**: one classifier per run, breakout only on full cylinders, a shared release table, face
+   geometry and adjacency cached across the draw candidates, cavity probed per connected group, undercuts confirmed only
+   after the cavity vote — 178 s alone; the screen's DFM poll lengthened past the kernel budget.
 7. **DtC drivers missed the rest of the material line** (live manifold: drivers £40.01 v headline £40.99): consumables /
    services and bought-in content are drivers now — the drivers add up to the headline, pinned by test and by
    `e2e/dtc-live.ts`.
@@ -153,12 +154,27 @@ All from the two-half undercut test and the draw it now chooses:
 | IM cable clip | £0.39 | £0.47 | its latch window is now found (0 → 2 faces): a slide in the tool |
 | IM ECU cover | £1.92 | £2.00 | 4 drafted walls (not undercuts) → the 8 snap-window faces (side actions) |
 | IM storage tray | £8.21 | £8.10 | 4 drafted walls were not undercuts |
-| PRCR002 (stub axle) | £86.92 | £84.09 | draw Z → Y (fewest blocked faces): 2 impressions fit the flask, sand time per casting halves; pattern £7,037 → £9,305 (5 slides, 2 core boxes) over twice the life |
+| PRCR002 (stub axle) | £86.92 | £84.09 → £84.25 | draw Z → Y (fewest blocked faces): 2 impressions fit the flask, sand time per casting halves; pattern £7,037 → £9,305 over twice the life. After the review fix (#1) its cross passages count again (25 → 32 undercut faces, draw X): pattern +£0.14 a part |
 | ROTO coolant / header tank | £55.89 / £21.49 | £51.84 / £20.49 | inside skins are cavity faces, not undercuts: the tool is no longer scored "complex" |
 | RUB AV mount / grommet | £2.28 / £0.68 | £2.19 / £0.65 | 4 one-way undercuts → 0 (mount); the grommet's draw moves to Y |
 
 Undercut counts also moved, with no cost change, on the BIW panels, composites, thermoforming covers, Part1, the seat
 bracket and the knuckle (their routes do not price undercuts).
+
+## 4b. Independent review (Oct 2026) — fixed
+
+| # | Defect | Fix |
+|---|---|---|
+| 1 | The cavity probe (≥ 85 % of rays into the face's half-space hit) called a long cross bore in a SOLID part "the inside of a hollow body" — the manifold, Part1 and the stub axle lost cross passages from the undercut count, and the casting rules their cores | Cavity = every direction of the FULL sphere (26 + ±axis for a cylinder) hits the part: a bore always opens along its axis. A group's three probes decide by majority. Fixture `cross-bore-features.json` |
+| 2 | ±X / ±Y of every prismatic block are perpendicular to Z, so `indexedGroup` collapsed them into one "rotary index" and the setups finding went silent | A rotary index needs ≥ 2 of its directions OFF the part frame (a radial pattern), else the sides stay separate 3-axis fixturings |
+| 3 | DtC took out cost the sheet does not carry (a hole it assumes is cored), offered whole-feature prices as redesign savings, and removed one hole twice when two rules priced it | `NOT_IN_STACK_RULES` are listed as costs to ADD, never levers; whole-feature prices are tagged "upper bound"; levers applied together share a `removed` ledger keyed like `totalCostGBP` (feature once, cost group once) |
+| 4 | A slide lever multiplied the per-part figure back by the stack's amortisation volume (a £3,000 slide read £15,000 when the stack amortised over 250k) | The pricer carries `nreGBP`; the lever takes that off the tool |
+| 5 | Undercut regions joined across ANY non-planar neighbour — a round cup's wall made its 4 windows one slide | Only across a blend (a torus, or a cylinder ≤ R10) or a side-wall plane |
+| 6 | A ring of milled pockets read as gear teeth and lost its corner checks | A tooth ring needs ≥ 24 roots (12 teeth); smaller splines are judged as corners, stated |
+| 7 | DtC applied the last upload's DFM levers to any later costing | Only when the costing on screen is the applied CAD part (commodity and part name); clear / new file drop the old report |
+| 8 | `_face_points` could raise on a face with one or two inside points (the uv-mid was listed twice) | De-duplicated grid; confirms from the points there are |
+| 9 | "Exactly the finding's £" failed when labour time was shorter than the cycle | The time is solved with labour falling hour for hour until it runs out, then machine alone |
+| 10 | The release-table cache key ignored a missing intersector; the per-face pass built an intersector even on a hit | Key carries it; the intersector is built only on a miss |
 
 ## 5. What it still cannot see
 

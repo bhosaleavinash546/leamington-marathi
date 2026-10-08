@@ -1,0 +1,235 @@
+{
+"source": "tests/fixtures/dfm/cross-bore.gen.py, kernel with CV_EXTRACT_FEATURES=1 (Oct 2026 review fix)",
+"boundingBox": {
+"xMm": 40.0,
+"yMm": 40.0,
+"zMm": 40.0
+},
+"draftAnalysis": {
+"drawDirectionXYZ": [
+0.0,
+1.0,
+0.0
+],
+"undercutFaceCount": 0,
+"cavityFaceCount": 0,
+"zeroDraftFaceCount": 5,
+"adequateDraftFaceCount": 0,
+"minPositiveDraftDeg": null,
+"maxPositiveDraftDeg": null,
+"analyzedFaceCount": 5,
+"pullDirectionSearch": {
+"candidates": [
+{
+"drawDirectionXYZ": [
+0.0,
+1.0,
+0.0
+],
+"undercutFaceCount": 0
+},
+{
+"drawDirectionXYZ": [
+1.0,
+0.0,
+0.0
+],
+"undercutFaceCount": 0
+},
+{
+"drawDirectionXYZ": [
+0.0,
+0.0,
+1.0
+],
+"undercutFaceCount": 1
+}
+],
+"runnerUp": {
+"drawDirectionXYZ": [
+1.0,
+0.0,
+0.0
+],
+"undercutFaceCount": 0
+},
+"ambiguous": false
+}
+},
+"manufacturingFeatures": {
+"available": true,
+"features": [
+{
+"id": "H6",
+"kind": "hole",
+"faceIds": [
+6
+],
+"diaMm": 10.0,
+"depthMm": 40.0,
+"areaMm2": 1256.637,
+"positionMm": [
+20.0,
+0.0,
+0.0
+],
+"axis": [
+1.0,
+0.0,
+0.0
+],
+"ldRatio": 4.0,
+"openEnds": 2,
+"openDirs": [
+[
+-1.0,
+-0.0,
+-0.0
+],
+[
+1.0,
+0.0,
+0.0
+]
+]
+},
+{
+"id": "P1",
+"kind": "planar_face",
+"faceIds": [
+1
+],
+"areaMm2": 1521.46,
+"positionMm": [
+0.0,
+0.0,
+-0.0
+],
+"axis": [
+-1.0,
+-0.0,
+0.0
+],
+"draftClass": "zero_draft",
+"draftDeg": 0.0
+},
+{
+"id": "P2",
+"kind": "planar_face",
+"faceIds": [
+2
+],
+"areaMm2": 1600.0,
+"positionMm": [
+20.0,
+-20.0,
+-0.0
+],
+"axis": [
+0.0,
+-1.0,
+-0.0
+],
+"thicknessMm": 15.0,
+"draftClass": "not_applicable",
+"releaseHalf": -1
+},
+{
+"id": "P3",
+"kind": "planar_face",
+"faceIds": [
+3
+],
+"areaMm2": 1600.0,
+"positionMm": [
+20.0,
+0.0,
+20.0
+],
+"axis": [
+0.0,
+0.0,
+1.0
+],
+"thicknessMm": 15.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0
+},
+{
+"id": "P4",
+"kind": "planar_face",
+"faceIds": [
+4
+],
+"areaMm2": 1600.0,
+"positionMm": [
+20.0,
+0.0,
+-20.0
+],
+"axis": [
+-0.0,
+-0.0,
+-1.0
+],
+"thicknessMm": 15.0,
+"draftClass": "zero_draft",
+"draftDeg": 0.0
+},
+{
+"id": "P5",
+"kind": "planar_face",
+"faceIds": [
+5
+],
+"areaMm2": 1600.0,
+"positionMm": [
+20.0,
+20.0,
+-0.0
+],
+"axis": [
+-0.0,
+1.0,
+0.0
+],
+"thicknessMm": 15.0,
+"draftClass": "not_applicable",
+"releaseHalf": 1
+},
+{
+"id": "P7",
+"kind": "planar_face",
+"faceIds": [
+7
+],
+"areaMm2": 1521.46,
+"positionMm": [
+40.0,
+0.0,
+-0.0
+],
+"axis": [
+1.0,
+0.0,
+-0.0
+],
+"draftClass": "zero_draft",
+"draftDeg": 0.0
+}
+],
+"note": "solid-bodied part (fill ratio 0.9509) \u2014 single-ray thickness measures part extent, not wall; section-change and hot-spot rules suppressed",
+"faceCount": 7,
+"thicknessSampledFaces": 5,
+"medianThicknessMm": 15.0,
+"hotSpots": [],
+"wallAnalysisValid": false,
+"fillRatio": 0.9509,
+"adjacencyAvailable": true,
+"drawDirectionXYZ": [
+0.0,
+1.0,
+0.0
+]
+}
+}

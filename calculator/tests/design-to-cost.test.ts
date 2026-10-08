@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
-import { findingVariant, dfmLevers, costDrivers, projectDesignToCost, type DtcFindingLike } from '../src/engine/design-to-cost.js';
+import { findingVariant, dfmLevers, costDrivers, projectDesignToCost, costsNotInStack, type DtcFindingLike } from '../src/engine/design-to-cost.js';
 import { analyseGeometricDFM, restackFindingCosts, type ManufacturingFeature } from '../src/engine/dfm-geometry/index.js';
 import { buildDtcPanel, computeDtc, freshDtcState, gapStatus, type DtcPanelModel } from '../src/ui/design-to-cost-panel.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
@@ -187,5 +187,58 @@ describe('drivers cover the whole material line', () => {
     expect(d.map(x => x.id)).toEqual(expect.arrayContaining(['material', 'consumables', 'bought-in']));
     expect(d.reduce((a, x) => a + x.stackGBP, 0)).toBeCloseTo(total, 3);
     expect(d.find(x => x.id === 'consumables')!.label).toContain('tool wear');
+  });
+});
+
+describe('independent review fixes (Oct 2026)', () => {
+  const opFactory = (o: Partial<UniversalStackInput['operations'][number]>) => ({ ...input.operations[0], ...o });
+  const factoryBase = (r: ReturnType<typeof computeUniversalStack>) => r.factoryCost - r.breakdown.packaging - r.breakdown.logistics;
+
+  it('a slide comes off the tool at the NRE it was priced from — not × the stack\'s amortisation volume', () => {
+    // priced over 50k a year → £0.06/part; the stack amortises over 250k: the old lever took off £15,000 for a £3,000 slide
+    const amort = { ...input, tooling: { ...input.tooling, amortizationVolume: 250_000 } };
+    const slide: DtcFindingLike = { ...slideFinding, worst: { costImpact: { kind: 'tooling', nreGBP: 3000 } },
+      instances: [{ featureId: 'P9', costImpact: { perPartGBP: 0.06, kind: 'tooling', nreGBP: 3000, costGroup: 'slide:9' } }] };
+    const [l] = dfmLevers([slide], amort, lib);
+    expect(l.basis).toMatch(/tooling NRE −£3000/);
+    const after = computeUniversalStack(l.apply(amort), lib);
+    expect(computeUniversalStack(amort, lib).breakdown.tooling - after.breakdown.tooling).toBeCloseTo(3000 / 250_000, 6);
+  });
+
+  it('a tended op (labour time below the cycle) still gives up exactly the finding\'s £', () => {
+    const tended = { ...input, operations: [opFactory({ cycleTimeHr: 0.12, labourTimeHr: 0.01 })] };
+    const f: DtcFindingLike = { ...holeFinding, totalCostGBP: 1.0 };
+    const v = findingVariant(f, tended, lib)!;
+    expect(factoryBase(computeUniversalStack(tended, lib)) - factoryBase(computeUniversalStack(v.next, lib))).toBeCloseTo(1.0, 6);
+    expect(v.removedGBP).toBeCloseTo(1.0, 6);
+  });
+
+  it('one hole flagged by two rules comes out once when both levers are on', () => {
+    const a: DtcFindingLike = { ruleId: 'machining.hole.depth-beyond-standard-drill', title: 'deep', totalCostGBP: 0.25, worst: { costImpact: { kind: 'feature_cost' } },
+      instances: [{ featureId: 'H1', costImpact: { perPartGBP: 0.25, kind: 'feature_cost' } }] };
+    const b: DtcFindingLike = { ruleId: 'sheetmetal.hole.smaller-than-thickness', title: 'small', totalCostGBP: 0.25, worst: { costImpact: { kind: 'feature_cost' } },
+      instances: [{ featureId: 'H1', costImpact: { perPartGBP: 0.25, kind: 'feature_cost' } }] };
+    const levers = dfmLevers([a, b], input, lib);
+    expect(levers).toHaveLength(2);
+    const both = projectDesignToCost(input, lib, levers);
+    expect(factoryBase(both.base) - factoryBase(both.projected)).toBeCloseTo(0.25, 6);   // not 0.50
+  });
+
+  it('a hole the sheet assumes is cored is a cost to ADD, never a lever to take out', () => {
+    const cored: DtcFindingLike = { ruleId: 'casting.hole.beyond-cored-depth', title: 'cored', totalCostGBP: 0.3, worst: { costImpact: { kind: 'feature_cost' } } };
+    expect(dfmLevers([cored], input, lib)).toHaveLength(0);
+    expect(costsNotInStack([cored])).toEqual([expect.objectContaining({ gbp: 0.3 })]);
+    expect(restackFindingCosts([cored as never], input, lib)).toEqual([]);
+    const html = (() => { const m = { input, library: lib, grouped: [cored], targetGBP: null, money: (g: number) => `£${g.toFixed(2)}` };
+      const st = freshDtcState(input); const c = computeDtc(m, st); return buildDtcPanel(m, st, c.levers, c.drivers, c.proj); })();
+    expect(html).toContain('Not in the should-cost yet');
+  });
+
+  it('a whole-feature price is labelled an upper bound on the lever', () => {
+    const [l] = dfmLevers([holeFinding], input, lib);
+    expect(l.kind).toBe('upper-bound');
+    expect(l.basis).toMatch(/^Upper bound/);
+    const [s] = dfmLevers([{ ruleId: 'machining.setup.access-directions', title: 'setups', totalCostGBP: 0.2, worst: { costImpact: { kind: 'feature_cost' } } }], input, lib);
+    expect(s.kind).toBe('redesign');
   });
 });

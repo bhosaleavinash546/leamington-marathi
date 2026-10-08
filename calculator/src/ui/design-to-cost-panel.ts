@@ -15,7 +15,7 @@
 import { escHtml } from './toast.js';
 import type { UniversalStackInput, RateLibrary } from '../engine/types.js';
 import {
-  dfmLevers, costDrivers, projectDesignToCost,
+  dfmLevers, costDrivers, projectDesignToCost, costsNotInStack,
   type DtcFindingLike, type DtcLever, type DtcDriver, type DtcWhatIf, type DtcProjection,
 } from '../engine/design-to-cost.js';
 
@@ -80,7 +80,7 @@ function leverRows(levers: DtcLever[], st: DtcState, money: (g: number) => strin
   return levers.map(l => `
     <tr>
       <td><input type="checkbox" data-dtc-lever="${escHtml(l.id)}" id="dtc-${escHtml(l.id)}"${st.on.has(l.id) ? ' checked' : ''}></td>
-      <td><label for="dtc-${escHtml(l.id)}">${escHtml(l.title)}</label>
+      <td><label for="dtc-${escHtml(l.id)}">${escHtml(l.title)}</label>${l.kind === 'upper-bound' ? ' <span class="dtc-tag" title="The whole feature\'s cost: deleting it saves this; shortening or opening it saves part">upper bound</span>' : ''}
         <div class="dtc-basis">${escHtml(l.basis)}${l.confidence === 'indicative' ? ' · indicative' : ''}</div></td>
       <td class="num">−${money(l.savingGBP)}</td>
       <td>${l.faceIds.length ? `<button type="button" class="btn btn-secondary btn-xs" data-dtc-faces="${escHtml(l.id)}">Show ${l.faceIds.length} face${l.faceIds.length === 1 ? '' : 's'}</button>` : ''}</td>
@@ -110,6 +110,15 @@ function slider(id: string, label: string, value: number, min: number, max: numb
       <input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${value}" data-dtc-unit="${unit}">
       <div class="dtc-basis">${escHtml(hint)}</div>
     </div>`;
+}
+
+/** Costs the DFM priced that the sheet does not carry yet (a hole it assumes is cored): to ADD, not to switch off. */
+function notInStackBlock(m: DtcPanelModel): string {
+  const xs = m.grouped ? costsNotInStack(m.grouped) : [];
+  if (!xs.length) return '';
+  return `<section aria-labelledby="dtc-h-add"><h4 id="dtc-h-add">Not in the should-cost yet</h4>
+    <ul class="dtc-add">${xs.map(x => `<li>${escHtml(x.title)} — <strong>+${m.money(x.gbp)}</strong> / part before overhead and margin`
+      + `${x.basis ? `<div class="dtc-basis">${escHtml(x.basis)}</div>` : ''}</li>`).join('')}</ul></section>`;
 }
 
 /** The whole tab. `levers` / `drivers` are passed in so the binder and the test cost them once. */
@@ -150,6 +159,8 @@ export function buildDtcPanel(m: DtcPanelModel, st: DtcState, levers: DtcLever[]
     <p class="dtc-note">Every figure is this part re-costed through the same 8-bucket stack as the headline — overhead and margin follow. Design levers are measured on the part and priced by the costing's own constants; drivers and what-ifs hold everything else equal.</p>
 
     <section aria-labelledby="dtc-h-design"><h4 id="dtc-h-design">Design levers</h4>${designBody}</section>
+
+    ${notInStackBlock(m)}
 
     <section aria-labelledby="dtc-h-drivers"><h4 id="dtc-h-drivers">Cost drivers${hasTarget && gap > 0 ? ' — and what each must fall to, alone, to hit the target' : ''}</h4>
       ${drivers.length ? `<table class="dtc-table"><thead><tr><th scope="col">Driver</th><th scope="col" class="num">£ / part</th><th scope="col">Share</th>${hasTarget ? '<th scope="col">To hit target alone</th>' : ''}</tr></thead><tbody>${driverRows(drivers, m.money, hasTarget)}</tbody></table>` : '<p class="dtc-empty">No drivers to show.</p>'}

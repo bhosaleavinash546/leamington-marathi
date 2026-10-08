@@ -67,6 +67,8 @@ export interface FindingCostImpact {
    * region's slide is counted once however many faces point at it (`totalCostGBP`).
    */
   costGroup?: string;
+  /** Tooling: the one-off NRE `perPartGBP` was amortised from — what a redesign takes off the tool. */
+  nreGBP?: number;
 }
 
 /**
@@ -223,6 +225,7 @@ function mouldSlideCost(
 
   return {
     perPartGBP: round4(delta / vol),
+    nreGBP: Math.round(delta),
     kind: 'tooling',
     basis: `estimateMouldCost with ${slideCount} slide(s) £${withSlides.total.toFixed(0)} vs `
          + `£${without.total.toFixed(0)} without = £${delta.toFixed(0)}, ÷ ${vol.toLocaleString()} `

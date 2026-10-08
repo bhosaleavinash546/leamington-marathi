@@ -302,7 +302,7 @@ describe('real uploaded parts (Oct 2026): tooth forms, radial setups, free-form 
     expect(r.totalAddressableGBP).toBe(0);                    // the input shaft read £52 of "corners"
   });
   it('two rings at different radii are two tooth forms; a straight row of corners is not a ring', () => {
-    const two = [...ring(30, 15), ...ring(20, 25).map((f, i) => ({ ...f, id: `G${i}`, faceIds: [100 + i] }))];
+    const two = [...ring(30, 15), ...ring(26, 25).map((f, i) => ({ ...f, id: `G${i}`, faceIds: [100 + i] }))];
     expect(toothedSets(two)).toHaveLength(2);
     const row = ring(8).map((f, i) => ({ ...f, positionMm: [i * 5, 0, 0] as [number, number, number] }));
     expect(toothedSets(row)).toHaveLength(0);
@@ -334,5 +334,35 @@ describe('the DFM job prices handling on the part\'s weight when the family is c
     expect(partWeightKgFor('stainless steel', 100)).toBeCloseTo(0.79, 6);
     expect(partWeightKgFor(undefined, 1000)).toBeUndefined();
     expect(partWeightKgFor('unobtainium', 1000)).toBeUndefined();
+  });
+});
+
+describe('independent review fixes (Oct 2026)', () => {
+  it('a long cross bore in a SOLID block is an undercut along Z, never "the inside of a hollow body"', () => {
+    const fx = JSON.parse(readFileSync('tests/fixtures/dfm/cross-bore-features.json', 'utf8'));
+    const z = fx.draftAnalysis.pullDirectionSearch.candidates.find((c: { drawDirectionXYZ: number[] }) => c.drawDirectionXYZ[2] === 1);
+    expect(z.undercutFaceCount).toBeGreaterThanOrEqual(1);       // the probe called it a cavity: 0
+    expect(fx.draftAnalysis.cavityFaceCount).toBe(0);
+    // the pull search parts it through the bore's axis (Y): each half forms half the bore — no core needed
+    expect(fx.draftAnalysis.drawDirectionXYZ).toEqual([0, 1, 0]);
+    expect(fx.draftAnalysis.undercutFaceCount).toBe(0);
+  });
+  it('a prismatic block with holes on five faces is five setups — its sides are not a rotary index', () => {
+    const dirs: [number, number, number][] = [[0, 0, 1], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]];
+    const holes: ManufacturingFeature[] = dirs.map((d, i) => ({ id: `H${i}`, kind: 'hole', faceIds: [i + 1], diaMm: 6, depthMm: 10, ldRatio: 1.7,
+      axis: d, positionMm: [d[0] * 20, d[1] * 20, d[2] * 20], openEnds: 1, openDirs: [d] }));
+    const planes = dirs.map((d, i) => plane(`P${10 + i}`, d, 1600));
+    const f = analyseGeometricDFM(ctx([...holes, ...planes])).findings.find(x => x.ruleId === 'machining.setup.access-directions');
+    expect(f?.measured.value).toBe(5);
+    expect(indexedGroup([[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])).toBeNull();
+  });
+  it('a ring of milled pockets is not a tooth form: 6 pockets × 4 R1 corners stay corners', () => {
+    const pocketCorners: ManufacturingFeature[] = [];
+    for (let p = 0; p < 6; p++) for (const [rr, da] of [[25, -0.08], [25, 0.08], [40, -0.06], [40, 0.06]] as const) {
+      const a = (2 * Math.PI * p) / 6 + da;
+      pocketCorners.push({ id: `C${pocketCorners.length}`, kind: 'fillet', faceIds: [pocketCorners.length + 1], radiusMm: 1, concave: true,
+        sweepDeg: 90, axis: [0, 0, 1], positionMm: [rr * Math.cos(a), rr * Math.sin(a), 5], depthMm: 10, toolReachMm: 10, openDirs: [[0, 0, 1]] });
+    }
+    expect(toothedSets(pocketCorners)).toHaveLength(0);
   });
 });

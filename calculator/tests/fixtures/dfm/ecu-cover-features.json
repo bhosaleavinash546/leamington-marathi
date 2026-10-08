@@ -34,7 +34,7 @@
 1.0,
 0.0
 ],
-"undercutFaceCount": 14
+"undercutFaceCount": 18
 },
 {
 "drawDirectionXYZ": [
@@ -42,7 +42,7 @@
 0.0,
 0.0
 ],
-"undercutFaceCount": 26
+"undercutFaceCount": 34
 }
 ],
 "runnerUp": {
@@ -51,7 +51,7 @@
 1.0,
 0.0
 ],
-"undercutFaceCount": 14
+"undercutFaceCount": 18
 },
 "ambiguous": false
 }

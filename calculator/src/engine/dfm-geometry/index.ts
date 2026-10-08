@@ -18,7 +18,7 @@ import { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
 import { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, blowPartLevelFindings } from './commodities/blow-moulding.js';
 import { analyseDFAHandling, type DFAHandlingResult } from './dfa-handling.js';
 import { priceFinding, totalCostGBP, type CostContext } from './cost-impact.js';
-import { findingVariant } from '../design-to-cost.js';
+import { findingVariant, NOT_IN_STACK_RULES } from '../design-to-cost.js';
 
 export * from './types.js';
 export { analyseDFAHandling, symmetryClass } from './dfa-handling.js';
@@ -340,7 +340,9 @@ export function restackFindingCosts(
   const base = computeUniversalStack(input, library).total;
   const out: Array<{ ruleId: string; jobGBP: number; stackGBP: number; basis: string }> = [];
   for (const g of grouped) {
-    // One definition of "take this finding out" — shared with the Design-to-Cost panel (design-to-cost.ts).
+    // One definition of "take this finding out" — shared with the Design-to-Cost panel (design-to-cost.ts). A cost the
+    // sheet does not carry (a hole it assumes is cored) is not in the stack to take out.
+    if (NOT_IN_STACK_RULES.has(g.ruleId)) continue;
     const v = findingVariant(g, input, library);
     if (!v) continue;
     try {

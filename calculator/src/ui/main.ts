@@ -5936,7 +5936,7 @@ function wireCADEvents(): void {
 
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
-    cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
+    cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
     _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
     unmountCADViewer();
@@ -6092,6 +6092,7 @@ function setCADFile(f: File): void {
   if (cadResults) cadResults.innerHTML = '';
   cadAnalysisResult = null;
   cadOCCTGeometry = null;
+  cadDfmJobId = null; cadGeometricDFM = null;   // the last part's findings are not this part's
   void mountCADViewer('cad-viewer-host', f, false);
 }
 
@@ -14654,11 +14655,15 @@ function renderDesignToCost(): void {
   const host = document.getElementById('results-dtc');
   if (!host || !lastInput) return;
   const tgt = _targetPriceGbp();
+  // The DFM levers belong to the CAD part they were measured on: only when the costing on screen is that part, in the
+  // commodity it was applied to. A hand-entered costing of another part used to inherit the last upload's levers.
+  const ours = !!cadAnalysisResult && _cadAppliedTo === activeCommodity
+    && (!cadAnalysisResult.partName || cadAnalysisResult.partName === lastInput.partName);
   try {
     mountDtcPanel(host, {
       input: lastInput, library,
-      grouped: cadGeometricDFM?.grouped ?? (cadDfmJobId ? [] : null),
-      dfmPending: !!cadDfmJobId && !cadGeometricDFM,
+      grouped: !ours ? null : cadGeometricDFM?.grouped ?? (cadDfmJobId ? [] : null),
+      dfmPending: ours && !!cadDfmJobId && !cadGeometricDFM,
       targetGBP: tgt > 0 ? tgt : null,
       // Sub-penny levers are real (a tool change is £0.003/part): never print one as 0.00.
       money: (gbp: number) => {

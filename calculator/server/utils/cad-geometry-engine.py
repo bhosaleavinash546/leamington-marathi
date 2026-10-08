@@ -1301,6 +1301,8 @@ RELEASE_OFFSET_MM = 0.1
 MIN_BLOCK_MM = 0.5
 # A face smaller than this is not judged for release on its own (a sliver at a fillet junction).
 MIN_RELEASE_FACE_MM2 = 1.0
+# A cylinder up to this radius between two blocked faces is a blend that joins them into one undercut region.
+BLEND_MAX_RADIUS_MM = 10.0
 
 
 def _face_points(face, k=3):
@@ -1319,7 +1321,9 @@ def _face_points(face, k=3):
     except Exception:
         fc = None
     grid = [((umin + umax) / 2, (vmin + vmax) / 2)]
-    grid += [(umin + (umax - umin) * (i + 0.5) / 5, vmin + (vmax - vmin) * (j + 0.5) / 5) for i in range(5) for j in range(5)]
+    # the 5 × 5 grid's centre cell IS the uv-mid: skipped, so no point is listed twice
+    grid += [(umin + (umax - umin) * (i + 0.5) / 5, vmin + (vmax - vmin) * (j + 0.5) / 5)
+             for i in range(5) for j in range(5) if (i, j) != (2, 2)]
     inside = []
     for (u, v) in grid:
         if fc is not None:
@@ -1339,9 +1343,11 @@ def _face_points(face, k=3):
     if not inside:
         return []
     picked = [inside[0]]
-    while len(picked) < k and len(picked) < len(inside):
-        far = max((q for q in inside if q not in picked), key=lambda q: min(math.dist(q[0], r[0]) for r in picked))
-        picked.append(far)
+    while len(picked) < k:
+        rest = [q for q in inside if all(math.dist(q[0], r[0]) > 1e-9 for r in picked)]
+        if not rest:            # fewer distinct inside points than asked for: confirm from those there are
+            break
+        picked.append(max(rest, key=lambda q: min(math.dist(q[0], r[0]) for r in picked)))
     return picked
 
 
@@ -1412,41 +1418,44 @@ def _release_blocked(inter, pt, n, d, diag):
     return int(s), None
 
 
-# Directions for the cavity probe: the 26 of a cube's faces, edges and corners.
+# Directions for the cavity probe: the 14 of a cube's faces and corners (a cylinder adds its ±axis). The 12 edge
+# directions doubled the probe's cost and changed no verdict on the audit parts or the fuel tank.
 _PROBE_DIRS = [(a / m, b / m, c / m) for a in (-1, 0, 1) for b in (-1, 0, 1) for c in (-1, 0, 1)
-               if (a, b, c) != (0, 0, 0) for m in [math.sqrt(a * a + b * b + c * c)]]
-CAVITY_BLOCKED_SHARE = 0.85
+               if (a, b, c) != (0, 0, 0) and abs(a) + abs(b) + abs(c) != 2 for m in [math.sqrt(a * a + b * b + c * c)]]
 _CAVITY_MEMO = {}
 
 
-def _faces_cavity(inter, pt, n, diag):
-    """Does this face look into an ENCLOSED cavity — the inside skin of a hollow body? From just off the face, rays
-    into the half-space it faces: when ≥ 85 % hit the part, the face is walled in (an open filler neck lets a few
-    out). Such a face is blocked along the draw like an undercut, but no tool forms it: a blow or roto moulding
-    is pressed out by air / gravity, a casting needs a core, a moulding cannot be made — not a slide question.
-    None when the probe could not run."""
+def _faces_cavity(inter, pt, n, diag, axis=None):
+    """Does this face look into an ENCLOSED cavity — the inside skin of a hollow body? From just off the face, a ray in
+    EVERY direction of the full sphere (the 26 of a cube, plus ±axis for a cylinder) must hit the part: no straight line
+    leads out. Such a face is blocked along the draw like an undercut, but no tool forms it — a blow or roto moulding is
+    pressed out by air / gravity, a casting needs a lost core, a moulding cannot be made — so it is not a slide question.
+
+    The first version asked for 85 % of the rays into the face's own half-space, and a long cross bore in a SOLID part
+    passed it (from inside a bore almost every ray hits the far wall): the manifold, Part1 and the stub axle lost their
+    cross passages from the undercut count. A bore always opens along its axis, so it fails this test. None when the probe
+    could not run."""
     if inter is None:
         return None
-    # Independent of the draw: memoised per (intersector, point, normal) across the three candidate axes and the
-    # per-face pass — a hollow tank's whole inside skin is blocked, and probing it four times doubled its run.
-    key = (round(pt[0], 4), round(pt[1], 4), round(pt[2], 4), round(n[0], 4), round(n[1], 4), round(n[2], 4))
+    key = (round(pt[0], 4), round(pt[1], 4), round(pt[2], 4), round(n[0], 4), round(n[1], 4), round(n[2], 4),
+           None if axis is None else tuple(round(c, 4) for c in axis))
     if key in _CAVITY_MEMO:
         return _CAVITY_MEMO[key]
     from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
-    off = max(diag * 2e-5, 0.01)
+    off = max(diag * 5e-5, RELEASE_OFFSET_MM)
     start = gp_Pnt(pt[0] + n[0] * off, pt[1] + n[1] * off, pt[2] + n[2] * off)
-    tried = hit = 0
+    dirs = list(_PROBE_DIRS)
+    if axis is not None:
+        dirs += [tuple(axis), tuple(-c for c in axis)]
+    res = True
     try:
-        for d in _PROBE_DIRS:
-            if d[0] * n[0] + d[1] * n[1] + d[2] * n[2] < 0.2:
-                continue
-            tried += 1
+        for d in dirs:          # the first escape settles it: not enclosed
             inter.PerformNearest(gp_Lin(start, gp_Dir(*d)), 0.0, diag * 1.05)
-            if inter.IsDone() and inter.NbPnt() > 0:
-                hit += 1
+            if not (inter.IsDone() and inter.NbPnt() > 0):
+                res = False
+                break
     except Exception:
         return None
-    res = tried > 0 and hit >= CAVITY_BLOCKED_SHARE * tried
     if len(_CAVITY_MEMO) > 200_000:
         _CAVITY_MEMO.clear()
     _CAVITY_MEMO[key] = res
@@ -1464,10 +1473,25 @@ def _shape_intersector(wrapped):
 
 
 _RELEASE_CACHE = {}
+_FACE_GEOM_CACHE = {}
+
+
+_ADJ_CACHE = {}
 
 
 def _face_adjacency(wrapped, face_map):
-    """{face index: set of face indices sharing an edge} — 1-based, the face map's own indexing."""
+    """{face index: set of face indices sharing an edge} — 1-based, the face map's own indexing. Cached per shape:
+    the three draw candidates and the per-face pass all ask."""
+    key = (id(wrapped), face_map.Extent())
+    hit = _ADJ_CACHE.get("entry")
+    if hit is not None and hit[0] == key and hit[1] is wrapped:
+        return hit[2]
+    adj = _face_adjacency_uncached(wrapped, face_map)
+    _ADJ_CACHE["entry"] = (key, wrapped, adj)
+    return adj
+
+
+def _face_adjacency_uncached(wrapped, face_map):
     from OCP.TopTools import TopTools_IndexedDataMapOfShapeListOfShape
     from OCP.TopExp import TopExp
     from OCP.TopAbs import TopAbs_EDGE, TopAbs_FACE
@@ -1505,38 +1529,56 @@ def _release_table(wrapped, face_map, diag, draw_dir, inter):
     dx, dy, dz = draw_dir
     d_mag = math.sqrt(dx * dx + dy * dy + dz * dz) or 1.0
     d = (dx / d_mag, dy / d_mag, dz / d_mag)
-    key = (id(wrapped), n_faces, round(diag, 6), tuple(round(c, 6) for c in d))
+    if inter == "lazy":
+        key0 = (id(wrapped), n_faces, round(diag, 6), tuple(round(c, 6) for c in d), True)
+        hit = _RELEASE_CACHE.get(key0)
+        if hit is not None and hit[0] is wrapped:
+            return hit[1]
+        inter = _shape_intersector(wrapped)      # built only on a miss (it costs time on a large part)
+    # A table built with no intersector measured nothing; it is never handed to a caller that has one.
+    key = (id(wrapped), n_faces, round(diag, 6), tuple(round(c, 6) for c in d), inter is not None)
     hit = _RELEASE_CACHE.get(key)
     if hit is not None and hit[0] is wrapped:
         return hit[1]
-    recs = {}
-    for idx in range(1, n_faces + 1):
-        try:
-            face = TopoDS.Face_s(face_map.FindKey(idx))
-            st = BRepAdaptor_Surface(face).GetType()
-            if st not in (GeomAbs_SurfaceType.GeomAbs_Plane, GeomAbs_SurfaceType.GeomAbs_Cylinder):
-                continue
-            pts = _face_points(face, 3)
-            if not pts:
-                continue
-            pt, (nx, ny, nz) = pts[0]
-            nm = math.sqrt(nx * nx + ny * ny + nz * nz)
-            if nm < 1e-10:
-                continue
-            n = (nx / nm, ny / nm, nz / nm)
-            half, blocked = _release_blocked(inter, pt, n, d, diag)
-            if blocked is not None:
+    # The faces' sample points, normals, axes and areas do not depend on the draw: worked out once per shape and
+    # shared by the three candidate axes (recomputing them per axis was most of the fuel tank's release time).
+    gkey = (id(wrapped), n_faces)
+    ghit = _FACE_GEOM_CACHE.get("entry")
+    if ghit is not None and ghit[0] == gkey and ghit[1] is wrapped:
+        geom = ghit[2]
+    else:
+        geom = {}
+        for idx in range(1, n_faces + 1):
+            try:
+                face = TopoDS.Face_s(face_map.FindKey(idx))
+                st = BRepAdaptor_Surface(face).GetType()
+                if st not in (GeomAbs_SurfaceType.GeomAbs_Plane, GeomAbs_SurfaceType.GeomAbs_Cylinder):
+                    continue
+                pts = _face_points(face, 3)
+                if not pts:
+                    continue
+                pt, (nx, ny, nz) = pts[0]
+                nm = math.sqrt(nx * nx + ny * ny + nz * nz)
+                if nm < 1e-10:
+                    continue
+                cyl_axis = None
+                if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                    a = BRepAdaptor_Surface(face).Cylinder().Axis().Direction()
+                    cyl_axis = (a.X(), a.Y(), a.Z())
                 BRepGProp.SurfaceProperties_s(face, gprops)
-                if abs(gprops.Mass()) < MIN_RELEASE_FACE_MM2:
-                    blocked = None
-                elif len(pts) > 1:
-                    # Confirm from the other spread points: blocked at the majority, the nearest obstruction kept.
-                    more = [_release_blocked(inter, q, tuple(c / (math.sqrt(sum(x * x for x in m)) or 1.0) for c in m), d, diag)[1]
-                            for (q, m) in pts[1:]]
-                    hits = [blocked] + [b for b in more if b is not None]
-                    blocked = min(hits) if len(hits) * 2 > len(pts) else None
-            recs[idx] = {"pt": pt, "n": n, "plane": st == GeomAbs_SurfaceType.GeomAbs_Plane,
-                         "half": half, "blocked": blocked, "cavity": False}
+                geom[idx] = {"pt": pt, "n": (nx / nm, ny / nm, nz / nm), "plane": st == GeomAbs_SurfaceType.GeomAbs_Plane,
+                             "axis": cyl_axis, "area": abs(gprops.Mass()), "more": pts[1:]}
+            except Exception:
+                continue
+        _FACE_GEOM_CACHE["entry"] = (gkey, wrapped, geom)
+    recs = {}
+    for idx, gm in geom.items():
+        try:
+            half, blocked = _release_blocked(inter, gm["pt"], gm["n"], d, diag)
+            if blocked is not None and gm["area"] < MIN_RELEASE_FACE_MM2:
+                blocked = None
+            recs[idx] = {"pt": gm["pt"], "n": gm["n"], "plane": gm["plane"], "axis": gm["axis"],
+                         "half": half, "blocked": blocked, "cavity": False, "more": gm["more"]}
         except Exception:
             continue
     blocked_ids = {i for i, r in recs.items() if r["blocked"] is not None}
@@ -1559,14 +1601,23 @@ def _release_table(wrapped, face_map, diag, draw_dir, inter):
                             seen.add(c)
                             stack.append(c)
             comp.sort()
-            sample = sorted({comp[0], comp[len(comp) // 2], comp[-1]})
-            votes = [_faces_cavity(inter, recs[k]["pt"], recs[k]["n"], diag) for k in sample]
-            if all(v is True for v in votes):
+            # one probe decides a small group (a face or two); three spread probes vote on a larger one
+            sample = [comp[0]] if len(comp) <= 3 else sorted({comp[0], comp[len(comp) // 2], comp[-1]})
+            votes = [_faces_cavity(inter, recs[k]["pt"], recs[k]["n"], diag, recs[k]["axis"]) for k in sample]
+            # A group is one skin: the majority of three spread probes decides it (a face by an open filler neck sees
+            # out through it and must not split the inside skin into a few dozen "undercuts").
+            if sum(1 for v in votes if v is True) * 2 > len(votes):
                 for k in comp:
                     recs[k]["cavity"] = True
-            elif not all(v is False for v in votes):
-                for k in comp:
-                    recs[k]["cavity"] = bool(_faces_cavity(inter, recs[k]["pt"], recs[k]["n"], diag))
+    # Confirm each remaining UNDERCUT from the face's other spread points (blocked at the majority, the nearest
+    # obstruction kept) — after the cavity vote, so a hollow body's inside skin does not pay two more rays a face.
+    for r in recs.values():
+        more = r.pop("more", [])
+        if r["blocked"] is None or r["cavity"] or not more:
+            continue
+        hits = [r["blocked"]] + [b for (q, m) in more
+                                 if (b := _release_blocked(inter, q, tuple(c / (math.sqrt(sum(x * x for x in m)) or 1.0) for c in m), d, diag)[1]) is not None]
+        r["blocked"] = min(hits) if len(hits) * 2 > len(more) + 1 else None
     if len(_RELEASE_CACHE) > 8:
         _RELEASE_CACHE.clear()
     _RELEASE_CACHE[key] = (wrapped, recs)
@@ -2335,7 +2386,7 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
     dx, dy, dz = draw_dir
     d_mag = math.sqrt(dx * dx + dy * dy + dz * dz) or 1.0
     # The analysis already built this draw's table for the draft count; the cache hands it back (same shape object).
-    release = _release_table(wrapped, face_map, diag, draw_dir, _shape_intersector(wrapped))
+    release = _release_table(wrapped, face_map, diag, draw_dir, "lazy")
     props = GProp_GProps()
     F = {}                       # 1-based face id -> record
     for idx in range(1, n + 1):
@@ -2479,11 +2530,16 @@ def _extract_manufacturing_features(wrapped, diag: float, draw_dir=(0.0, 0.0, 1.
         r = F.get(j, {})
         nrm = r.get("normal")
         return r.get("type") == "plane" and nrm is not None and abs(nrm[0] * dx + nrm[1] * dy + nrm[2] * dz) / d_mag < 0.1
+    def _blend(j):
+        # A blend between faces — a torus, or a small-radius cylinder — joins the undercuts it runs between. A large
+        # curved SKIN (a round cup's wall) touches every window cut in it and is not one slide's worth of geometry.
+        r = F.get(j, {})
+        return r.get("type") == "torus" or (r.get("type") == "cylinder" and (r.get("radiusMm") or 1e9) <= BLEND_MAX_RADIUS_MM)
     for i in uc:
         for j in adj.get(i, ()):
             if j in ucs:
                 _union(i, j)
-            elif F.get(j, {}).get("type") not in (None, "plane") or _side_wall(j):   # across a blend or a side wall
+            elif _blend(j) or _side_wall(j):   # across a blend or a side wall
                 for k in adj.get(j, ()):
                     if k in ucs and k != i:
                         _union(i, k)

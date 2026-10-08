@@ -112,15 +112,21 @@ function accessItems(part: PartContext): AccessItem[] {
 
 /** Directions within this of perpendicular to an axis count as radial to it. */
 export const RADIAL_TOL_DEG = 5;
-/** Radial directions round one axis that make a rotary-indexed fixturing. */
+/** Radial directions round one axis that make a rotary-indexed fixturing … */
 export const INDEXED_MIN_DIRECTIONS = 3;
+/**
+ * … of which at least this many are OFF the part's frame (angled). The four sides of a prismatic block are all
+ * perpendicular to Z too, but they are a 3-axis part's separate fixturings, not a radial pattern — collapsing them
+ * hid the setups finding on every block with holes on its sides (review, Oct 2026).
+ */
+export const INDEXED_MIN_OFF_FRAME = 2;
 
 /**
  * The largest group of directions perpendicular to ONE axis (≥ 3, a rotary index's work), or null. Candidate axes
  * are the normals of pairs of directions; an axis also in the set (an end face) is not a member — it is reached
  * along the axis, not by indexing round it.
  */
-export function indexedGroup(dirs: readonly V3[]): { axis: V3; members: number[] } | null {
+export function indexedGroup(dirs: readonly V3[], frame?: readonly V3[]): { axis: V3; members: number[] } | null {
   const tol = Math.sin((RADIAL_TOL_DEG * Math.PI) / 180);
   let best: { axis: V3; members: number[] } | null = null;
   for (let i = 0; i < dirs.length; i++) {
@@ -132,16 +138,20 @@ export function indexedGroup(dirs: readonly V3[]): { axis: V3; members: number[]
       if (!best || members.length > best.members.length) best = { axis, members };
     }
   }
-  return best && best.members.length >= INDEXED_MIN_DIRECTIONS ? best : null;
+  if (!best || best.members.length < INDEXED_MIN_DIRECTIONS) return null;
+  if (frame && best.members.filter(k => offFrameDeg(dirs[k], frame) > SAME_DIRECTION_DEG).length < INDEXED_MIN_OFF_FRAME) return null;
+  return best;
 }
 
 // ── toothed forms: gear teeth and splines are generated, not end-milled ─────────────────────────────────────────
 
 /**
- * A tooth ring: at least this many concave roots of one radius on one circle round one axis (a spline or gear tooth
- * space has two root blends, so even a 6-tooth spline gives 12) …
+ * A tooth ring: at least this many concave roots of one radius on one circle round one axis — two root blends per
+ * tooth space, so 12 or more teeth. A ring of milled pockets has the same symmetry (6 lightening pockets with R1 corners
+ * are 12 + 12 corners on two rings — review, Oct 2026), so fewer than 24 roots are judged as corners; a spline of
+ * under 12 teeth loses the exemption, which is stated rather than guessed …
  */
-export const TOOTHED_MIN_COUNT = 12;
+export const TOOTHED_MIN_COUNT = 24;
 /**
  * … each root small against its ring (a gear's root radius ≈ 0.38 m on a pitch radius z·m/2: r/R ≈ 0.76/z ≤ 0.05 from
  * ~16 teeth; the input shaft's 0.1 mm on 15 mm is 0.007) and a blend, not a slot end. Model Mania's hexagonal pocket
@@ -277,7 +287,7 @@ export function machiningPartLevelFindings(part: PartContext): GeometricFinding[
     const cover = coverDirections(items);
     // Directions spread AROUND one axis (radial holes in a shaft, scallops round a flange) are one rotary-indexed
     // fixturing — a 4th axis or a mill-turn's C axis — not one each: the hollow driveshaft read 21 "setups".
-    const idx = indexedGroup(cover.map(c => c.dir));
+    const idx = indexedGroup(cover.map(c => c.dir), partFrame(feats));
     const setups = idx ? cover.length - idx.members.length + 1 : cover.length;
     if (setups >= SETUPS_REPORTED_AT) {
       const parts = cover.filter((_, i) => !idx?.members.includes(i))

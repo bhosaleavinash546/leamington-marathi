@@ -22,6 +22,11 @@ import { computeUniversalStack } from './core.js';
 import type { UniversalStackInput, RateLibrary, PartCostResult } from './types.js';
 
 /** Structural — what the DFM report's grouped finding carries; no import from dfm-geometry (no cycle). */
+export interface DtcCostImpactLike {
+  perPartGBP?: number; kind?: string; basis?: string; confidence?: string; costGroup?: string;
+  /** Tooling findings: the one-off NRE the per-part figure was amortised from. */
+  nreGBP?: number;
+}
 export interface DtcFindingLike {
   ruleId: string;
   title?: string;
@@ -29,8 +34,21 @@ export interface DtcFindingLike {
   count?: number;
   faceIds?: number[];
   recommendation?: string;
-  worst: { costImpact?: { kind?: string; basis?: string; confidence?: string } };
+  worst: { costImpact?: DtcCostImpactLike };
+  /** Per-feature instances — so one hole flagged by two rules is taken out once, not twice. */
+  instances?: Array<{ featureId: string; costImpact?: DtcCostImpactLike }>;
 }
+
+/**
+ * What a lever's £ means. `redesign`: the change removes the cost (a set-up, a slide, a tool change). `upper-bound`:
+ * the pricer costs the WHOLE feature (the hole's drilling, the corner's pocket pass) — deleting it recovers that,
+ * shortening or opening it recovers part, so the saving is the ceiling. Findings priced on cost the sheet does NOT
+ * carry (`NOT_IN_STACK`: a hole the sheet assumes is cored) are not levers at all — taking them out of the stack
+ * would remove money that was never in it; the tab lists them as costs to add.
+ */
+export type LeverKind = 'redesign' | 'upper-bound';
+const UPPER_BOUND_RULES = /\.hole\.depth-beyond-standard-drill|\.corner\.radius-below-economic-cutter|sheetmetal\.hole\.smaller-than-thickness/;
+export const NOT_IN_STACK_RULES = new Set(['casting.hole.beyond-cored-depth']);
 
 export interface DtcLever {
   id: string;
@@ -38,13 +56,37 @@ export interface DtcLever {
   /** What the lever changes, in words and numbers. */
   basis: string;
   confidence: 'modelled' | 'indicative';
+  kind: LeverKind;
   ruleId: string;
   faceIds: number[];
   /** The finding's own £/part (factory base, before overhead and margin). */
   jobGBP: number;
   /** Piece price saved through the whole stack when applied ALONE. */
   savingGBP: number;
-  apply(input: UniversalStackInput): UniversalStackInput;
+  /**
+   * The input with this lever's cost out. `removed` (key → £) is shared across the levers applied together: a cost
+   * another lever already took out (the same hole, the same slide) is not taken out twice.
+   */
+  apply(input: UniversalStackInput, removed?: Map<string, number>): UniversalStackInput;
+}
+
+/** A finding's cost items, de-duplicated the way `totalCostGBP` counts them: a feature's own cost once, a cost group once. */
+interface CostItem { key: string; gbp: number; nre?: number }
+function costItems(g: DtcFindingLike): CostItem[] {
+  const inst = g.instances?.filter(x => (x.costImpact?.perPartGBP ?? 0) > 0) ?? [];
+  if (!inst.length) {
+    const gbp = g.totalCostGBP ?? 0;
+    return gbp > 0 ? [{ key: `rule:${g.ruleId}`, gbp, nre: g.worst.costImpact?.nreGBP }] : [];
+  }
+  const by = new Map<string, CostItem>();
+  inst.forEach((x, n) => {
+    const c = x.costImpact!;
+    const key = c.costGroup ? `group:${c.costGroup}`
+      : c.kind === 'feature_cost' && !x.featureId.startsWith('PART:') ? `feature:${x.featureId}` : `rule:${g.ruleId}:${n}`;
+    const prev = by.get(key);
+    if (!prev || (c.perPartGBP ?? 0) > prev.gbp) by.set(key, { key, gbp: c.perPartGBP ?? 0, nre: c.nreGBP });
+  });
+  return [...by.values()];
 }
 
 /** Which operation a finding's time comes off, by the operation's own name (the costing names them). */
@@ -54,88 +96,118 @@ const OP_FOR_RULE: Array<[RegExp, RegExp]> = [
   [/\.corner\./, /mill|pocket/i],
 ];
 
-/** £/h of an operation's cost per hour of its cycle — the core's own formula (core.ts processCost / labourCost). */
-function opCostPerHr(op: UniversalStackInput['operations'][number], library: RateLibrary): number {
+/** An operation's £ per hour of cycle, machine and labour apart — the core's own formula (core.ts). */
+function opSlopes(op: UniversalStackInput['operations'][number], library: RateLibrary): { m: number; l: number } {
   const rate = library.machines.find(m => m.id === op.machineId)?.computedRatePerHr ?? 0;
   const lab = library.labour.find(l => l.id === op.labourId)?.fullyLoadedRatePerHr ?? 0;
   const ppc = op.partsPerCycle >= 1 ? op.partsPerCycle : 1;
-  const machine = op.benchOperation ? 0 : rate / ppc / (op.oee > 0 ? op.oee : 1);
-  const labour = op.labourTimeHr > 0 ? lab * op.manning / ppc / (op.labourEfficiency > 0 ? op.labourEfficiency : 1) : 0;
-  return machine + labour;
+  return {
+    m: op.benchOperation ? 0 : rate / ppc / (op.oee > 0 ? op.oee : 1),
+    l: op.labourTimeHr > 0 ? lab * op.manning / ppc / (op.labourEfficiency > 0 ? op.labourEfficiency : 1) : 0,
+  };
 }
 
 /**
- * The input with one finding's cost taken out — the single definition the DFM restack and the DtC panel share.
- *
- * feature_cost: the time off the costliest-per-hour machine operation that removes EXACTLY the finding's £ from
- * the factory base — dividing by machine + labour rate alone (as the restack once did) ignored parts per cycle,
- * OEE and manning, and overstated a machining finding by ~1/OEE. tooling: the slide / insert NRE off the tool.
+ * The input with `gbp` (feature cost) or `nre` (tooling) taken out for finding `g` — the single definition the DFM
+ * restack and the DtC panel share. Feature cost comes off the operation that carries it as the time that removes
+ * EXACTLY that £ from the factory base: machine time at the machine's £ per cycle-hour (after parts per cycle and OEE),
+ * labour hour for hour until the op's labour time runs out, then machine alone. Never more than 90 % of the op; the
+ * basis says when the cap bit. Tooling comes off the tool NRE — the NRE the finding was priced from, not the per-part
+ * figure × the stack's amortisation volume (a slide priced over 50k parts a year read as five slides over 250k).
  */
 export function findingVariant(
-  g: DtcFindingLike, input: UniversalStackInput, library: RateLibrary,
-): { next: UniversalStackInput; basis: string } | null {
-  const gbp = g.totalCostGBP ?? 0;
+  g: DtcFindingLike, input: UniversalStackInput, library: RateLibrary, amount?: { gbp: number; nre?: number },
+): { next: UniversalStackInput; basis: string; removedGBP: number } | null {
+  const items = costItems(g);
+  const gbp = amount?.gbp ?? items.reduce((a, x) => a + x.gbp, 0);
   if (!(gbp > 0)) return null;
   const kind = g.worst.costImpact?.kind ?? (/undercut|side-action|slide/.test(g.ruleId) ? 'tooling' : 'feature_cost');
   if (kind === 'tooling') {
     const vol = input.tooling.amortizationVolume || input.annualVolume || 0;
-    const delta = gbp * (vol || 1);
+    const nre = amount ? (amount.nre ?? gbp * (vol || 1)) : items.reduce((a, x) => a + (x.nre ?? x.gbp * (vol || 1)), 0);
+    const delta = Math.min(nre, input.tooling.totalToolingCost);
     return {
-      next: { ...input, tooling: { ...input.tooling, totalToolingCost: Math.max(0, input.tooling.totalToolingCost - delta) } },
+      next: { ...input, tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost - delta } },
       basis: `tooling NRE −£${delta.toFixed(0)} (the slide / insert) through the stack`,
+      removedGBP: vol > 0 ? delta / vol : 0,
     };
   }
   if (kind !== 'feature_cost') return null;
   const ops = input.operations;
   if (!ops.length) return null;
-  // The operation the feature is cut on: the one whose name says so (a hole on the drilling op, a set-up on the
-  // load / clamp op), else the longest machine (non-bench) cycle. Same £ either way — the op only names where it goes.
   const want_ = OP_FOR_RULE.find(([re]) => re.test(g.ruleId))?.[1];
   let k = want_ ? ops.findIndex(o => !o.benchOperation && o.cycleTimeHr > 0 && want_.test(o.operationName)) : -1;
   if (k < 0) ops.forEach((o, i) => { if (!o.benchOperation && (k < 0 || o.cycleTimeHr > ops[k].cycleTimeHr)) k = i; });
   if (k < 0) return null;
   const op = ops[k];
-  const perHr = opCostPerHr(op, library);
-  if (!(perHr > 0)) return null;
-  // Never cut more than 90 % of the operation: a finding priced above the op it sits on is a modelling mismatch,
-  // and the basis says how much was taken.
-  const want = gbp / perHr;
-  const hr = Math.min(want, op.cycleTimeHr * 0.9);
-  const labourHr = op.labourTimeHr > 0 ? Math.min(hr, op.labourTimeHr * 0.9) : 0;
+  const { m, l } = opSlopes(op, library);
+  if (!(m + l > 0)) return null;
+  const hrCap = op.cycleTimeHr * 0.9, labCap = op.labourTimeHr * 0.9;
+  // labour falls with the cycle until its own time runs out; past that only the machine term removes cost
+  let hr = gbp / (m + l);
+  if (l > 0 && hr > labCap) hr = m > 0 ? labCap + (gbp - (m + l) * labCap) / m : labCap;
+  hr = Math.min(hr, hrCap);
+  const labourHr = l > 0 ? Math.min(hr, labCap) : 0;
+  const removed = m * hr + l * labourHr;
   return {
     next: { ...input, operations: ops.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr - hr, labourTimeHr: o.labourTimeHr - labourHr } : o) },
-    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} (£${perHr.toFixed(2)} per hour of cycle after parts/cycle, OEE and crew)`
-      + (hr < want ? ` — capped at 90 % of the operation; the finding is priced at £${gbp.toFixed(2)}` : '') + ' through the stack',
+    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} (£${(m + l).toFixed(2)} per hour of cycle after parts/cycle, OEE and crew)`
+      + (removed < gbp - 1e-9 ? ` — capped at 90 % of the operation: £${removed.toFixed(4)} of the £${gbp.toFixed(4)} comes out` : '')
+      + ' through the stack',
+    removedGBP: removed,
   };
 }
 
-/** Design levers: every DFM finding with a modelled £ that the stack can take out. */
+/** Design levers: every DFM finding with a modelled £ that the stack carries and the design change can take out. */
 export function dfmLevers(
   grouped: readonly DtcFindingLike[], input: UniversalStackInput, library: RateLibrary,
 ): DtcLever[] {
   const base = computeUniversalStack(input, library).total;
   const out: DtcLever[] = [];
   for (const g of grouped) {
+    if (NOT_IN_STACK_RULES.has(g.ruleId)) continue;
+    const items = costItems(g);
     const v = findingVariant(g, input, library);
     if (!v) continue;
     let t: number;
     try { t = computeUniversalStack(v.next, library).total; } catch { continue; }
     const saving = round4(base - t);
     if (!(saving > 0)) continue;
+    const kind: LeverKind = UPPER_BOUND_RULES.test(g.ruleId) ? 'upper-bound' : 'redesign';
     out.push({
       id: `dfm:${g.ruleId}`,
       title: g.title ?? g.ruleId,
       // What the £ IS (the finding's own pricing), then how it moves the stack.
-      basis: g.worst.costImpact?.basis ? `${g.worst.costImpact.basis} — applied as ${v.basis}` : v.basis,
+      basis: (kind === 'upper-bound' ? 'Upper bound — the whole feature\'s cost (deleting it); shortening or opening it recovers part. ' : '')
+        + (g.worst.costImpact?.basis ? `${g.worst.costImpact.basis} — applied as ${v.basis}` : v.basis),
       confidence: g.worst.costImpact?.confidence === 'indicative' ? 'indicative' : 'modelled',
+      kind,
       ruleId: g.ruleId,
       faceIds: g.faceIds ?? [],
-      jobGBP: g.totalCostGBP ?? 0,
+      jobGBP: items.reduce((a, x) => a + x.gbp, 0),
       savingGBP: saving,
-      apply: (inp) => findingVariant(g, inp, library)?.next ?? inp,
+      apply: (inp, removed) => {
+        if (!removed) return findingVariant(g, inp, library)?.next ?? inp;
+        // only what no earlier lever already took out
+        let gbp = 0, nre = 0;
+        for (const it of items) {
+          const done = removed.get(it.key) ?? 0;
+          const left = Math.max(0, it.gbp - done);
+          if (left > 0) { gbp += left; nre += it.nre !== undefined ? it.nre * (left / it.gbp) : 0; }
+          removed.set(it.key, Math.max(done, it.gbp));
+        }
+        if (!(gbp > 0)) return inp;
+        return findingVariant(g, inp, library, { gbp, ...(nre > 0 ? { nre } : {}) })?.next ?? inp;
+      },
     });
   }
   return out.sort((a, b) => b.savingGBP - a.savingGBP);
+}
+
+/** Findings priced on cost the sheet does not carry yet — to ADD to the should-cost, not levers to take out. */
+export function costsNotInStack(grouped: readonly DtcFindingLike[]): Array<{ ruleId: string; title: string; gbp: number; faceIds: number[]; basis?: string }> {
+  return grouped.filter(g => NOT_IN_STACK_RULES.has(g.ruleId) && (g.totalCostGBP ?? 0) > 0)
+    .map(g => ({ ruleId: g.ruleId, title: g.title ?? g.ruleId, gbp: g.totalCostGBP!, faceIds: g.faceIds ?? [], basis: g.worst.costImpact?.basis }));
 }
 
 // ── Drivers: where the money is, and what each would have to become ─────────
@@ -288,7 +360,8 @@ export function projectDesignToCost(
   const base = computeUniversalStack(input, library);
   let next = input;
   const applied: string[] = [];
-  for (const l of levers) { next = l.apply(next); applied.push(`${l.title}: ${l.basis}`); }
+  const removed = new Map<string, number>();     // one hole / one slide comes out once, whichever levers point at it
+  for (const l of levers) { next = l.apply(next, removed); applied.push(`${l.title}: ${l.basis}`); }
   const specs = driverSpecs(next, library);
   if (whatIf.massPct) {
     const m = specs.find(s => s.id === 'material');

@@ -6457,6 +6457,9 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
   letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--border); }
 .dtc-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-primary); }
 .dtc-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dtc-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 999px; font-size: 0.68rem;
+  border: 1px solid var(--warning-border); background: var(--warning-bg); color: var(--text-primary); }
+.dtc-add { margin: 0; padding-left: 18px; font-size: 0.82rem; color: var(--text-primary); }
 .dtc-table td.dtc-to { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .dtc-basis { font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px; }
 .dtc-bar { display: inline-block; width: 90px; height: 8px; border-radius: 4px; background: var(--border); vertical-align: middle; overflow: hidden; }

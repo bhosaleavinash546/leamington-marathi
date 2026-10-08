@@ -202,26 +202,26 @@
             },
             {
               "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
               "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              1,
               0,
-              0
+              0,
+              1
             ],
             "undercutFaceCount": 0
           },
@@ -602,7 +602,7 @@
         "zMm2": 267300,
         "yMm2": 105300,
         "xMm2": 1486,
-        "alongDrawMm2": 267300,
+        "alongDrawMm2": 1486,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -799,26 +799,34 @@
       },
       "draftAnalysis": {
         "drawDirectionXYZ": [
+          1,
           0,
-          0,
-          1
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 8,
-        "zeroDraftFaceCount": 12,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 20,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 12,
+        "analyzedFaceCount": 20,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 8
             },
             {
               "drawDirectionXYZ": [
@@ -826,24 +834,16 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 8
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
               0,
-              1,
-              0
+              0,
+              1
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 8
           },
           "ambiguous": false
         }
@@ -992,7 +992,7 @@
         "zMm2": 181675,
         "yMm2": 50700,
         "xMm2": 1142,
-        "alongDrawMm2": 181675,
+        "alongDrawMm2": 1142,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -1169,26 +1169,34 @@
       },
       "draftAnalysis": {
         "drawDirectionXYZ": [
+          1,
           0,
-          0,
-          1
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 4,
-        "zeroDraftFaceCount": 8,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 12,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 8,
+        "analyzedFaceCount": 12,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 4
             },
             {
               "drawDirectionXYZ": [
@@ -1196,24 +1204,16 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 4
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
               0,
-              1,
-              0
+              0,
+              1
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 4
           },
           "ambiguous": false
         }
@@ -1920,13 +1920,13 @@
           0,
           1
         ],
-        "undercutFaceCount": 0,
-        "cavityFaceCount": 4,
+        "undercutFaceCount": 4,
+        "cavityFaceCount": 0,
         "zeroDraftFaceCount": 16,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 16,
+        "analyzedFaceCount": 20,
         "pullDirectionSearch": {
           "candidates": [
             {
@@ -1935,7 +1935,7 @@
                 0,
                 1
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 4
             },
             {
               "drawDirectionXYZ": [
@@ -1943,7 +1943,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 4
             },
             {
               "drawDirectionXYZ": [
@@ -1960,9 +1960,9 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 4
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -2023,13 +2023,13 @@
       },
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 80000,
-        "gravityMouldCostGBP": 15000,
+        "gravityMouldCostGBP": 60000,
         "sandPatternCostGBP": 6500,
-        "imMouldCostGBP": 55000,
+        "imMouldCostGBP": 90000,
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 25000
       },
-      "manufacturabilityScore": 84,
+      "manufacturabilityScore": 52,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.2097,
         "sandCycleTimeHrFerrous": 0.308,
@@ -2406,25 +2406,25 @@
             },
             {
               "drawDirectionXYZ": [
-                0,
                 1,
+                0,
                 0
               ],
               "undercutFaceCount": 0
             },
             {
               "drawDirectionXYZ": [
-                1,
                 0,
+                1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 18
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              0,
               1,
+              0,
               0
             ],
             "undercutFaceCount": 0
@@ -3005,7 +3005,7 @@
         "zMm2": 60000,
         "yMm2": 40000,
         "xMm2": 132,
-        "alongDrawMm2": 60000,
+        "alongDrawMm2": 132,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -3200,51 +3200,51 @@
       },
       "draftAnalysis": {
         "drawDirectionXYZ": [
+          1,
           0,
-          0,
-          1
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 2,
-        "zeroDraftFaceCount": 6,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 12,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 6,
+        "analyzedFaceCount": 12,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
               "undercutFaceCount": 2
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 4
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              1,
               0,
-              0
+              0,
+              1
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 2
           },
           "ambiguous": false
         }
@@ -5851,7 +5851,7 @@
         "zMm2": 51262,
         "yMm2": 27763,
         "xMm2": 31538,
-        "alongDrawMm2": 51262,
+        "alongDrawMm2": 31538,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -6015,48 +6015,48 @@
       },
       "draftAnalysis": {
         "drawDirectionXYZ": [
+          1,
           0,
-          0,
-          1
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 2,
-        "zeroDraftFaceCount": 0,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 4,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 0,
+        "analyzedFaceCount": 4,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 2
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              1,
               0,
+              1,
               0
             ],
             "undercutFaceCount": 0
@@ -7436,7 +7436,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 3
             }
           ],
           "runnerUp": {
@@ -10453,7 +10453,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 1
+              "undercutFaceCount": 3
             },
             {
               "drawDirectionXYZ": [
@@ -10461,7 +10461,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 41
+              "undercutFaceCount": 55
             }
           ],
           "runnerUp": {
@@ -10470,7 +10470,7 @@
               0,
               0
             ],
-            "undercutFaceCount": 1
+            "undercutFaceCount": 3
           },
           "ambiguous": false
         }
@@ -10969,47 +10969,47 @@
       "draftAnalysis": {
         "drawDirectionXYZ": [
           0,
-          0,
-          1
+          1,
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 1,
-        "zeroDraftFaceCount": 2,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 4,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 2,
+        "analyzedFaceCount": 4,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              0,
               1,
+              0,
               0
             ],
             "undercutFaceCount": 0
@@ -11335,7 +11335,7 @@
         "zMm2": 80000,
         "yMm2": 50000,
         "xMm2": 286,
-        "alongDrawMm2": 80000,
+        "alongDrawMm2": 286,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -11500,26 +11500,34 @@
       },
       "draftAnalysis": {
         "drawDirectionXYZ": [
+          1,
           0,
-          0,
-          1
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 4,
-        "zeroDraftFaceCount": 8,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 12,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 8,
+        "analyzedFaceCount": 12,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 4
             },
             {
               "drawDirectionXYZ": [
@@ -11527,24 +11535,16 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 4
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
               0,
-              1,
-              0
+              0,
+              1
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 4
           },
           "ambiguous": false
         }
@@ -11826,47 +11826,47 @@
       "draftAnalysis": {
         "drawDirectionXYZ": [
           0,
-          0,
-          1
+          1,
+          0
         ],
         "undercutFaceCount": 0,
-        "cavityFaceCount": 1,
-        "zeroDraftFaceCount": 2,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 4,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 2,
+        "analyzedFaceCount": 4,
         "pullDirectionSearch": {
           "candidates": [
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                1,
+                0,
+                0
+              ],
+              "undercutFaceCount": 0
+            },
             {
               "drawDirectionXYZ": [
                 0,
                 0,
                 1
               ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
-            {
-              "drawDirectionXYZ": [
-                1,
-                0,
-                0
-              ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              0,
               1,
+              0,
               0
             ],
             "undercutFaceCount": 0
@@ -12854,7 +12854,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 6
+              "undercutFaceCount": 7
             }
           ],
           "runnerUp": {
@@ -13603,7 +13603,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 14
+              "undercutFaceCount": 18
             },
             {
               "drawDirectionXYZ": [
@@ -13611,7 +13611,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 26
+              "undercutFaceCount": 34
             }
           ],
           "runnerUp": {
@@ -13620,7 +13620,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 14
+            "undercutFaceCount": 18
           },
           "ambiguous": false
         }
@@ -14417,7 +14417,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 8
+              "undercutFaceCount": 12
             },
             {
               "drawDirectionXYZ": [
@@ -14434,7 +14434,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 8
+            "undercutFaceCount": 12
           },
           "ambiguous": false
         }
@@ -15155,13 +15155,13 @@
           0,
           1
         ],
-        "undercutFaceCount": 0,
-        "cavityFaceCount": 5,
+        "undercutFaceCount": 5,
+        "cavityFaceCount": 0,
         "zeroDraftFaceCount": 25,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 25,
+        "analyzedFaceCount": 30,
         "pullDirectionSearch": {
           "candidates": [
             {
@@ -15170,7 +15170,7 @@
                 0,
                 1
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 5
             },
             {
               "drawDirectionXYZ": [
@@ -15186,7 +15186,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 6
+              "undercutFaceCount": 14
             }
           ],
           "runnerUp": {
@@ -15197,7 +15197,7 @@
             ],
             "undercutFaceCount": 6
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -15273,13 +15273,13 @@
       },
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 80000,
-        "gravityMouldCostGBP": 15000,
+        "gravityMouldCostGBP": 38000,
         "sandPatternCostGBP": 3500,
         "imMouldCostGBP": 55000,
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 25000
       },
-      "manufacturabilityScore": 84,
+      "manufacturabilityScore": 44,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.2025,
         "sandCycleTimeHrFerrous": 0.289,
@@ -15621,7 +15621,7 @@
                 0,
                 1
               ],
-              "undercutFaceCount": 2
+              "undercutFaceCount": 3
             }
           ],
           "runnerUp": {
@@ -15773,7 +15773,7 @@
         "zMm2": 18775,
         "yMm2": 17627,
         "xMm2": 24572,
-        "alongDrawMm2": 17627,
+        "alongDrawMm2": 24572,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -16329,35 +16329,19 @@
       },
       "draftAnalysis": {
         "drawDirectionXYZ": [
-          0,
           1,
+          0,
           0
         ],
-        "undercutFaceCount": 25,
-        "cavityFaceCount": 14,
-        "zeroDraftFaceCount": 79,
-        "adequateDraftFaceCount": 45,
-        "minPositiveDraftDeg": 1.03,
-        "maxPositiveDraftDeg": 67.93,
-        "analyzedFaceCount": 149,
+        "undercutFaceCount": 32,
+        "cavityFaceCount": 0,
+        "zeroDraftFaceCount": 108,
+        "adequateDraftFaceCount": 29,
+        "minPositiveDraftDeg": 4.02,
+        "maxPositiveDraftDeg": 65.41,
+        "analyzedFaceCount": 169,
         "pullDirectionSearch": {
           "candidates": [
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 25
-            },
-            {
-              "drawDirectionXYZ": [
-                0,
-                0,
-                1
-              ],
-              "undercutFaceCount": 29
-            },
             {
               "drawDirectionXYZ": [
                 1,
@@ -16365,6 +16349,22 @@
                 0
               ],
               "undercutFaceCount": 32
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 35
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 39
             }
           ],
           "runnerUp": {
@@ -16373,9 +16373,9 @@
               0,
               1
             ],
-            "undercutFaceCount": 29
+            "undercutFaceCount": 35
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -16821,16 +16821,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 84.09,
+      "total": 84.25,
       "breakdown": {
         "rawMaterial": 25.29,
         "process": 28.22,
         "labour": 14.04,
-        "tooling": 1.01,
+        "tooling": 1.15,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 8.23,
-        "margin": 6.23
+        "overhead": 8.24,
+        "margin": 6.24
       }
     }
   },
@@ -17243,13 +17243,13 @@
           0,
           0
         ],
-        "undercutFaceCount": 8,
-        "cavityFaceCount": 8,
+        "undercutFaceCount": 16,
+        "cavityFaceCount": 0,
         "zeroDraftFaceCount": 62,
         "adequateDraftFaceCount": 40,
         "minPositiveDraftDeg": 28.96,
         "maxPositiveDraftDeg": 70,
-        "analyzedFaceCount": 110,
+        "analyzedFaceCount": 118,
         "pullDirectionSearch": {
           "candidates": [
             {
@@ -17258,7 +17258,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 8
+              "undercutFaceCount": 16
             },
             {
               "drawDirectionXYZ": [
@@ -17266,7 +17266,7 @@
                 0,
                 1
               ],
-              "undercutFaceCount": 37
+              "undercutFaceCount": 49
             },
             {
               "drawDirectionXYZ": [
@@ -17274,7 +17274,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 45
+              "undercutFaceCount": 59
             }
           ],
           "runnerUp": {
@@ -17283,7 +17283,7 @@
               0,
               1
             ],
-            "undercutFaceCount": 37
+            "undercutFaceCount": 49
           },
           "ambiguous": false
         }
@@ -17571,10 +17571,10 @@
         "assumedSetupTimeMinsPerSetup": 15
       },
       "toolingCostEstimates": {
-        "hpdcDieCostGBP": 155000,
+        "hpdcDieCostGBP": 260000,
         "gravityMouldCostGBP": 80000,
         "sandPatternCostGBP": 15000,
-        "imMouldCostGBP": 170000,
+        "imMouldCostGBP": 200000,
         "forgeDieCostGBP": 60000,
         "progressiveDieCostGBP": 25000
       },
@@ -18339,7 +18339,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
@@ -19301,7 +19301,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
@@ -19676,25 +19676,25 @@
             },
             {
               "drawDirectionXYZ": [
-                0,
                 1,
+                0,
                 0
               ],
               "undercutFaceCount": 0
             },
             {
               "drawDirectionXYZ": [
-                1,
                 0,
+                1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 2
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              0,
               1,
+              0,
               0
             ],
             "undercutFaceCount": 0
@@ -20105,26 +20105,26 @@
             },
             {
               "drawDirectionXYZ": [
-                0,
-                0,
-                1
-              ],
-              "undercutFaceCount": 1
-            },
-            {
-              "drawDirectionXYZ": [
                 1,
                 0,
                 0
               ],
               "undercutFaceCount": 1
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                0,
+                1
+              ],
+              "undercutFaceCount": 2
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
+              1,
               0,
-              0,
-              1
+              0
             ],
             "undercutFaceCount": 1
           },
@@ -20558,7 +20558,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 28
+              "undercutFaceCount": 26
             },
             {
               "drawDirectionXYZ": [
@@ -20575,7 +20575,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 28
+            "undercutFaceCount": 26
           },
           "ambiguous": false
         }
@@ -22986,16 +22986,16 @@
             },
             {
               "drawDirectionXYZ": [
-                1,
                 0,
+                1,
                 0
               ],
-              "undercutFaceCount": 6
+              "undercutFaceCount": 10
             },
             {
               "drawDirectionXYZ": [
-                0,
                 1,
+                0,
                 0
               ],
               "undercutFaceCount": 10
@@ -23003,13 +23003,13 @@
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              1,
               0,
+              1,
               0
             ],
-            "undercutFaceCount": 6
+            "undercutFaceCount": 10
           },
-          "ambiguous": true
+          "ambiguous": false
         }
       },
       "manufacturingFeatures": null,
@@ -24586,7 +24586,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 24
+              "undercutFaceCount": 32
             },
             {
               "drawDirectionXYZ": [
@@ -24594,7 +24594,7 @@
                 0,
                 1
               ],
-              "undercutFaceCount": 39
+              "undercutFaceCount": 43
             }
           ],
           "runnerUp": {
@@ -24603,7 +24603,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 24
+            "undercutFaceCount": 32
           },
           "ambiguous": false
         }
