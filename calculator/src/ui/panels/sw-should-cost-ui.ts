@@ -24,6 +24,7 @@ import {
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
+import { renderActualsHTML, wireActuals } from './sw-actuals.js';
 import type { SWRateEntry, RateConfidence, SWRateLibrary } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
@@ -783,6 +784,10 @@ function renderSWPanelHTML(): string {
         <input id="sw-overhead" type="number" class="sw-config-inp" min="1.0" max="3.0" step="0.05" value="${inputs.overheadMultiplier}">
       </div>
       <div class="sw-field-group">
+        <label class="sw-label" for="sw-effort-cal">Effort Calibration ×</label>
+        <input id="sw-effort-cal" type="number" class="sw-config-inp" min="0.2" max="5" step="0.01" placeholder="none" value="${inputs.effortCalibration ?? ''}" title="Your own actual ÷ modelled effort (Calibrate to your actuals, below). Blank = the model as published. Scales the model's effort, not a typed custom PM.">
+      </div>
+      <div class="sw-field-group">
         <label class="sw-label">Senior Engineer Fraction</label>
         <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0).">
       </div>
@@ -808,6 +813,7 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Model Validation (Rec #2) ─────────────────────────────── -->
   <div id="sw-validation-wrap">${renderValidationHTML()}</div>
+  ${renderActualsHTML()}
 
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
@@ -1285,6 +1291,9 @@ function readConfig(): void {
   _swInputs.platformAnnualVolume   = platVol > 0 ? platVol : undefined;
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost       = cloud;
+  // Blank = uncalibrated; a typed factor goes to the engine, which refuses one outside 0.2–5 (P2 #21).
+  const calRaw = ((get('sw-effort-cal') as HTMLInputElement | null)?.value ?? '').trim();
+  _swInputs.effortCalibration      = calRaw === '' ? undefined : parseFloat(calRaw);
 
   document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => {
     const m = _swInputs.modules.find(x => x.moduleId === cb.dataset.id);
@@ -2517,6 +2526,11 @@ export function wireSWPanel(): void {
     btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));
   wireGuided();
   void renderSWRateAdmin();
+  wireActuals(factor => {
+    _swInputs.effortCalibration = factor;
+    const f = document.getElementById('sw-effort-cal') as HTMLInputElement | null;
+    if (f) f.value = String(factor);
+  });
 
   // Calculate button
   const calcBtn = document.getElementById('sw-calc-btn');

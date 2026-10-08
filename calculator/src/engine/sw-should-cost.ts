@@ -205,6 +205,10 @@ export interface SWProgramInputs {
    *  middleware, cyber, cloud). When it exceeds `annualProductionVolume`, each shared module is attributed to this
    *  variant in proportion to its volume — it used to be charged in full to every variant (P1 #5). */
   platformAnnualVolume?:    number;
+  /** Effort calibration from the user's own completed projects: Σ actual ÷ Σ modelled person-months over the modules
+   *  they logged (sw-calibration.ts::calibrateSWEffort). Multiplies the model's effort estimate (base person-months);
+   *  a typed custom person-months is the user's own figure and is not scaled. 1 / absent = uncalibrated (P2 #21). */
+  effortCalibration?:       number;
 }
 
 export interface SWDevBreakdown {
@@ -1074,7 +1078,8 @@ function computeModuleCost(
   const sched         = prog.scheduleCompression && prog.scheduleCompression > 0 ? prog.scheduleCompression : 1;
   const schedPenalty  = sched >= 1 ? 1 : 1 + (1 - sched) * SCHEDULE_COMPRESSION_K;
 
-  const effectivePM = (input.customPersonMonths ?? def.basePersonMonths) * reuse;
+  const effortCal   = input.customPersonMonths != null ? 1 : (prog.effortCalibration ?? 1);
+  const effectivePM = (input.customPersonMonths ?? def.basePersonMonths * effortCal) * reuse;
 
   // Development sub-buckets. Complexity on the algorithm bucket in full, and a
   // weighted share on implementation (SW2). Safety bucket carries the reuse floor.
@@ -1227,6 +1232,8 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Annual volume × life', `${prog.annualProductionVolume.toLocaleString('en-GB')} × ${prog.programLifeYears} yr`],
     ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
+    ['Effort calibration', prog.effortCalibration && prog.effortCalibration !== 1
+      ? `× ${prog.effortCalibration} (fitted to your logged actuals)` : 'none (model as published)'],
   ];
 }
 
@@ -1426,6 +1433,7 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (!fin(prog.overheadMultiplier) || prog.overheadMultiplier < 1 || prog.overheadMultiplier > 5) p.push('overhead multiplier must be 1–5 (1 = no overhead)');
   if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP <= 0 || prog.baseRateGBP > 500_000)) p.push('base rate must be £1–£500,000 per person-month');
   if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
+  if (prog.effortCalibration !== undefined && (!fin(prog.effortCalibration) || prog.effortCalibration < 0.2 || prog.effortCalibration > 5)) p.push('effort calibration must be between 0.2 and 5 (a fitted factor outside that says the logged actuals and the model describe different work)');
   if (prog.scheduleCompression !== undefined && (!fin(prog.scheduleCompression) || prog.scheduleCompression <= 0 || prog.scheduleCompression > 1.5)) p.push('schedule compression must be above 0 and at most 1.5');
   if (prog.costRecoveryYears !== undefined && (!fin(prog.costRecoveryYears) || prog.costRecoveryYears < 1 || prog.costRecoveryYears > 40)) p.push('cost-recovery window must be 1–40 years');
   if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');

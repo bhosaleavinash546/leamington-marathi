@@ -8,6 +8,8 @@ import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputErro
 import { USD_PER_GBP } from '../src/engine/gear-heat-treat-data.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 import { runValidation } from '../src/engine/sw-validation.js';
+import { calibrateSWEffort, modelledEffortPM } from '../src/engine/sw-calibration.js';
+import type { SWEffortActual } from '../src/engine/sw-calibration.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
 import { readdirSync } from 'node:fs';
 import { withReferenceBanner, REFERENCE_MARKER } from '../scripts/sw-review/reference-banner.js';
@@ -264,5 +266,58 @@ describe('#14 exports state the rate basis; static reports are labelled referenc
     const once = withReferenceBanner('<html><body class="x"><p>hi</p></body></html>', 'test');
     expect(withReferenceBanner(once)).toBe(once);
     expect(once).toMatch(/<body class="x"><div data-cv-reference-example/);
+  });
+});
+
+describe('#21 calibration to the user\'s own actuals', () => {
+  const a = (moduleId: string, pm: number, over: Partial<SWEffortActual> = {}): SWEffortActual =>
+    ({ moduleId, asil: 'B', complexity: 'Medium', reuse: 'Fresh', actualPersonMonths: pm, ...over });
+
+  it('the modelled effort is the module alone at the logged settings', () => {
+    const m = modelledEffortPM(a('gateway_ecu', 1));
+    const p = prog(q => { q.powertrain = undefined; q.modules = q.modules.map(x => x.moduleId === 'gateway_ecu'
+      ? { ...x, enabled: true, asil: 'B', complexity: 'Medium', reuse: 'Fresh', customPersonMonths: null } : { ...x, enabled: false }); });
+    expect(m).toBeCloseTo(computeSWProgram(p).summary.totalEffortPersonMonths, 6);
+    expect(modelledEffortPM(a('gateway_ecu', 1, { asil: 'D' }))).toBeGreaterThan(m);
+  });
+
+  it('the factor is the ratio of sums, with n stated', () => {
+    const m1 = modelledEffortPM(a('gateway_ecu', 1)), m2 = modelledEffortPM(a('body_control', 1));
+    const fit = calibrateSWEffort([a('gateway_ecu', m1 * 1.5), a('body_control', m2 * 0.5)]);
+    expect(fit.n).toBe(2);
+    expect(fit.factor).toBeCloseTo((m1 * 1.5 + m2 * 0.5) / (m1 + m2), 10);
+    expect(fit.warnings.join(' ')).toMatch(/Only 2 module/);
+  });
+
+  it('unknown modules and empty efforts are ignored and said so; nothing logged = no factor', () => {
+    expect(calibrateSWEffort([]).factor).toBeNull();
+    const fit = calibrateSWEffort([a('no_such', 100), a('gateway_ecu', 0), a('gateway_ecu', 50), a('body_control', 50), a('rtos', 50)]);
+    expect(fit.n).toBe(3);
+    expect(fit.warnings.join(' ')).toMatch(/2 logged row\(s\) ignored/);
+  });
+
+  it('effortCalibration scales the model\'s effort and the effort-driven £, not royalties or a typed custom PM', () => {
+    const base = computeSWProgram(prog());
+    const cal = computeSWProgram(prog(p => { p.effortCalibration = 1.2; }));
+    expect(cal.summary.totalEffortPersonMonths / base.summary.totalEffortPersonMonths).toBeCloseTo(1.2, 2);
+    expect(cal.summary.totalDevelopment / base.summary.totalDevelopment).toBeCloseTo(1.2, 10);
+    expect(cal.summary.totalLicensing).toBeCloseTo(base.summary.totalLicensing, 6);
+    const custom = (c?: number) => computeSWProgram(prog(p => { p.effortCalibration = c; p.modules[0].customPersonMonths = 100; }))
+      .modules.find(m => m.moduleId === p0)!.development.total;
+    const p0 = prog().modules[0].moduleId;
+    expect(custom(1.5)).toBeCloseTo(custom(undefined), 6);
+  });
+
+  it('a factor outside 0.2–5 is refused by the engine and flagged by the fit', () => {
+    expect(() => computeSWProgram(prog(p => { p.effortCalibration = 9; }))).toThrow(/effort calibration/);
+    const m = modelledEffortPM(a('rtos', 1));
+    expect(calibrateSWEffort([a('rtos', m * 8)]).warnings.join(' ')).toMatch(/cannot be applied/);
+  });
+
+  it('the screen offers the field and the card; exports name the factor', () => {
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).toMatch(/id="sw-effort-cal"/);
+    expect(ui).toMatch(/renderActualsHTML\(\)/);
+    expect(swRateBasis(prog(p => { p.effortCalibration = 1.1; })).find(([k]) => /Effort calibration/.test(k))![1]).toMatch(/× 1\.1/);
   });
 });
