@@ -795,12 +795,17 @@ function renderSWPanelHTML(): string {
     <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for every module" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive</button>
     <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
   </div>
+  <p id="sw-reports-stale" style="font-size:0.72rem;color:var(--sw-text-muted);margin:-8px 0 14px">
+    The Study, Benchmark, Deep-Dive, All-Models and "View full report" pages are <strong>static reports generated before the
+    October 2026 model fixes</strong> (one overhead default, sourced ASIL uplift, ICE / hybrid software, powertrain scope) —
+    their figures differ from the live calculation above, which is the current model.
+  </p>
   ${(() => {
     const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
     if (!active?.reportUrl) return '';
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;padding:10px 14px;border-radius:8px;border:1px solid rgba(29,78,216,0.30);background:linear-gradient(135deg,rgba(37,99,235,0.10),rgba(37,99,235,0.04))">
       <span style="font-size:1.05rem"></span>
-      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown available for ${esc(active.label)} — every parameter, all ${SW_MODULES.length} modules.</span>
+      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown for ${esc(active.label)} — a static report from before the October 2026 model fixes; its figures differ from the live calculation.</span>
       <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" style="display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;padding:7px 15px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:7px;cursor:pointer;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,0.30);transition:transform 0.15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
         View full report →
       </button>
