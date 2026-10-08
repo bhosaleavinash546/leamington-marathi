@@ -84,3 +84,21 @@ describe('#6 published benchmark figures: one list, labelled unverified, no peer
     expect(ui).not.toMatch(/Figures are industry estimates ±20%/);
   });
 });
+
+import { SW_MODULES } from '../src/engine/sw-should-cost.js';
+
+describe('#1 base effort is NOMINAL (QM, Medium, fresh) — one definition, no second ASIL / complexity', () => {
+  it('at QM, Medium complexity and fresh code the costed effort is exactly the base person-months', () => {
+    const p = defaultSWProgramInputs();
+    p.modules = p.modules.map(m => ({ ...m, enabled: m.moduleId === 'bms_core', asil: 'QM' as const, complexity: 'Medium' as const, reuse: 'Fresh' as const }));
+    const r = computeSWProgram(p);
+    const m = r.modules[0];
+    const ratePerPM = 28_000 * 1 * 1 * (0.5 * 1.2 + 0.5 * 0.75) * p.overheadMultiplier;
+    expect(m.development.total / ratePerPM).toBeCloseTo(SW_MODULES.find(d => d.id === 'bms_core')!.basePersonMonths, 9);
+  });
+  it('the field definition says nominal, matching the engine and docs/auto-sw-cost.md', () => {
+    expect(src('src/engine/sw-should-cost.ts')).not.toMatch(/at listed ASIL\/complexity$/m);
+    expect(src('src/engine/sw-should-cost.ts')).toMatch(/NOMINAL effort, person-months: fresh development at QM and Medium complexity/);
+    expect(src('docs/auto-sw-cost.md')).toMatch(/effortPM\s+= basePersonMonths × reuse/);
+  });
+});

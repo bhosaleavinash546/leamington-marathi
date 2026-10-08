@@ -67,7 +67,12 @@ export interface SWModuleDef {
   description:               string;
   defaultAsil:               ASILLevel;
   defaultComplexity:         SWComplexity;
-  basePersonMonths:          number;   // UK senior FTE, fresh dev, at listed ASIL/complexity
+  /** NOMINAL effort, person-months: fresh development at QM and Medium complexity. The engine applies the module's
+   *  ASIL, complexity and reuse on top (computeModuleCost), exactly as docs/auto-sw-cost.md states
+   *  (effortPM = base × reuse → devPM = effortPM × asil_dev). The comment here used to say "at listed ASIL/complexity",
+   *  which contradicted that and read as double counting — the engine, its doc and its back-test all use nominal
+   *  (software review P1 #1, Oct 2026). The 49 values carry no source; treat them as engineering estimates. */
+  basePersonMonths:          number;
   hasMLContent:              boolean;
   hasCloudDependency:        boolean;
   hasCybersecRequirement:    boolean;
