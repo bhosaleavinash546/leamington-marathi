@@ -204,6 +204,15 @@ describe('machining rules read the hole, not the invoice', () => {
     expect(f.recommendation).toMatch(/gun-drilling|trepanning/);
   });
 
+  it('a hole past 4×D is MAJOR, not only past 10×D (the manifold\u2019s Ø8 × 70 at 8.8:1)', () => {
+    const r = analyseGeometricDFM(ctx(
+      [{ id: 'H5', kind: 'hole', faceIds: [6], diaMm: 8, depthMm: 70, ldRatio: 8.75 }],
+      { commodity: 'machining' }));
+    const f = r.findings.find(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill')!;
+    expect(f.severity).toBe('major');
+    expect(f.recommendation).toMatch(/peck-drilling/);
+  });
+
   it('leaves a normal hole alone', () => {
     const r = analyseGeometricDFM(ctx(
       [{ id: 'H1', kind: 'hole', faceIds: [1], diaMm: 10, depthMm: 20, ldRatio: 2 }],

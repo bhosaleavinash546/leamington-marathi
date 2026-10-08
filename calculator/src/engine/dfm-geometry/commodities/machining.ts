@@ -79,7 +79,7 @@ const DRILL_DEPTH_SOURCE = {
   standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — holes; MSC Industrial Supply, deep-hole drilling',
   url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
   note: 'Hubs: "Recommended hole depth: 4 x nominal diameter. Typical: 10 x nominal diameter." MSC: a hole "more than 10 '
-    + 'diameters deep … requires a specialty drill". Reported past 4×D, major past 10×D. ' + EXTRACT_NOTE,
+    + 'diameters deep … requires a specialty drill". Reported as major past 4×D; past 10×D the fix is gun drilling. ' + EXTRACT_NOTE,
 };
 
 export const MACHINING_RULES: readonly GeometricRule[] = [
@@ -95,7 +95,9 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
       if (f.ldRatio <= STANDARD_DRILL_LD) return null;
       const extreme = f.ldRatio > EXTENDED_DRILL_LD;
       return finding(this, f, part, {
-        severity: extreme ? 'major' : 'minor',
+        // Major from 4×D: peck drilling or extended-reach tooling is a slower cycle, dearer tools and broken drills —
+        // a cost driver, not a footnote (demo review, Oct 2026). Past 10×D the fix says gun drilling.
+        severity: 'major',
         detail: `⌀${f.diaMm.toFixed(1)} mm hole is ${f.depthMm?.toFixed(1)} mm deep — `
               + `${f.ldRatio.toFixed(1)}:1 depth-to-diameter.`,
         measuredField: 'ldRatio', measuredValue: f.ldRatio, unit: ':1',
