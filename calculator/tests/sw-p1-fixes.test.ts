@@ -230,7 +230,7 @@ describe('#5 follow-through: demos keep their premium-trim modules', () => {
 
 describe('static reports are labelled as pre-fix', () => {
   it('the panel says the report pages pre-date the October 2026 fixes', () => {
-    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/static reports generated before the\s+October 2026 model fixes/);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/reference examples<\/strong> — static reports\s+generated before the October 2026 model fixes/);
   });
 });
 

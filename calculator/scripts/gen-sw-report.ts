@@ -17,6 +17,7 @@ import { rateValues } from '../src/engine/sw-rate-library.js';
 import type { SWModuleInput, SWReuse } from '../src/engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY as L } from '../src/engine/sw-rate-library.js';
 import * as fs from 'node:fs';
+import { withReferenceBanner } from './sw-review/reference-banner.js';
 
 // Shared look-and-feel lifted verbatim from the shipped L460 report.
 const L460 = fs.readFileSync('docs/l460-cost-breakdown.html', 'utf8');
@@ -569,8 +570,8 @@ if (!studyOnly) {
   if (!targets.length) { console.error('No matching combos. Known car ids:', CARS.map(c=>c.id).join(', ')); process.exit(1); }
   for (const v of targets) {
     const out = report(v);
-    fs.writeFileSync('public/reports/'+out.file, out.html);
-    fs.writeFileSync('docs/'+out.docFile, out.html);
+    fs.writeFileSync('public/reports/'+out.file, withReferenceBanner(out.html));
+    fs.writeFileSync('docs/'+out.docFile, withReferenceBanner(out.html));
     console.log(`${v.name.padEnd(26)} ${out.mods} mods  ${M(out.gt)}  ${P(out.pv)}/veh  → ${out.file}`);
   }
 }
@@ -578,7 +579,7 @@ if (!studyOnly) {
 // Always (re)build the comparison study unless targeting specific report ids.
 if (studyOnly || !ids.length) {
   const st = renderStudy();
-  fs.writeFileSync('public/reports/'+st.file, st.html);
-  fs.writeFileSync('docs/powertrain-cost-study.html', st.html);
+  fs.writeFileSync('public/reports/'+st.file, withReferenceBanner(st.html));
+  fs.writeFileSync('docs/powertrain-cost-study.html', withReferenceBanner(st.html));
   console.log(`study → ${st.file} (${st.html.length} bytes)`);
 }

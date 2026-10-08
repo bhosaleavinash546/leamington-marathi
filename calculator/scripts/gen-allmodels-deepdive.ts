@@ -8,6 +8,7 @@
 import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
+import { withReferenceBanner } from './sw-review/reference-banner.js';
 
 const MHEV=['bms_core','cell_balancing','soc_soh_soe','fast_charge','edu_control','inverter_ctrl','motor_ctrl'];
 const SIG:any={ l460:{premium_audio:{complexity:'Very High'}}, x7:{digital_key:{complexity:'Very High'}},
@@ -222,6 +223,6 @@ ${CATS.map(c=>`<div class="domain"><div class="dhead" style="background:${HEX[c]
 const content=`<title>Premium-SUV Software Cost — All-Models Comparison</title>\n${CSS}\n${body}`;
 fs.writeFileSync((process.env.SCRATCH||'/tmp')+'/allmodels-content.html', content);
 const standalone=`<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Premium-SUV Software Cost — All-Models Comparison</title>\n${CSS}\n</head>\n<body>\n${body}\n</body>\n</html>\n`;
-fs.writeFileSync('public/reports/allmodels-deepdive.html', standalone);
-fs.writeFileSync('docs/allmodels-deepdive.html', standalone);
+fs.writeFileSync('public/reports/allmodels-deepdive.html', withReferenceBanner(standalone));
+fs.writeFileSync('docs/allmodels-deepdive.html', withReferenceBanner(standalone));
 console.log('HTML: public/reports/allmodels-deepdive.html', Math.round(standalone.length/1024)+'KB');

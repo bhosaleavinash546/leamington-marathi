@@ -4,11 +4,13 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP, CYBER_UPLIFT_BY_CAL, calFor, devSourceComparison } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP, CYBER_UPLIFT_BY_CAL, calFor, devSourceComparison, swRateBasis } from '../src/engine/sw-should-cost.js';
 import { USD_PER_GBP } from '../src/engine/gear-heat-treat-data.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 import { runValidation } from '../src/engine/sw-validation.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
+import { readdirSync } from 'node:fs';
+import { withReferenceBanner, REFERENCE_MARKER } from '../scripts/sw-review/reference-banner.js';
 
 const src = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const prog = (mut: (p: SWProgramInputs) => void = () => {}) => { const p = defaultSWProgramInputs(); mut(p); return p; };
@@ -217,5 +219,50 @@ describe('#13 the screen shows what was costed — active book, country, dev-sou
     expect(src('src/ui/main.ts')).toMatch(/applySWCountry\(region\)/);
     expect(ui).toMatch(/runValidation\(undefined, undefined, _swInputs\.rateLibrary\)/);
     expect(ui).toMatch(/resolveRateLibrary\(_swInputs\.rateLibrary\)/);
+  });
+});
+
+describe('#14 exports state the rate basis; static reports are labelled reference examples', () => {
+  const val = (rows: Array<[string, string]>, k: RegExp) => rows.find(([l]) => k.test(l))?.[1] ?? '';
+
+  it('the rate basis names the book, the base rate and its origin, overhead, powertrain and platform volume', () => {
+    const rows = swRateBasis(prog(p => { p.powertrain = 'PHEV'; p.platformAnnualVolume = 300_000; }));
+    expect(val(rows, /Rate book/)).toMatch(new RegExp(`built-in v${DEFAULT_SW_RATE_LIBRARY.version.replace(/\./g, '\\.')}`));
+    expect(val(rows, /Base rate/)).toMatch(/rate book/);
+    expect(val(rows, /Overhead/)).toMatch(/1\.15/);
+    expect(val(rows, /Powertrain/)).toBe('PHEV');
+    expect(val(rows, /Platform/)).toMatch(/300,000/);
+  });
+
+  it('a typed base rate and a company book are named as such', () => {
+    const rows = swRateBasis(prog(p => { p.baseRateGBP = 9000; p.rateLibrary = { version: 'ACME-1' } as SWProgramInputs['rateLibrary']; }));
+    expect(val(rows, /Base rate/)).toMatch(/£9,000 — typed override/);
+    expect(val(rows, /Rate book/)).toMatch(/Company rates vACME-1/);
+  });
+
+  it('the loaded rate reproduces the engine: development £ = development PM × loaded rate (no schedule penalty)', () => {
+    const p = prog();
+    const r = computeSWProgram(p);
+    const loaded = Number(val(swRateBasis(p), /Loaded rate/).replace(/[£,]/g, ''));
+    const m = r.modules[0];
+    expect(m.development.total / m.personMonths).toBeCloseTo(loaded, -1);   // rounding of the printed £ only
+  });
+
+  it('both exports print it; Excel lists the CAL', () => {
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui.match(/swRateBasis\(/g)!.length).toBeGreaterThanOrEqual(2);
+    expect(ui).toMatch(/'CAL \(ISO\/SAE 21434\)'/);
+  });
+
+  it('every static report carries the reference-example banner, and the generators add it', () => {
+    const dir = new URL('../public/reports/', import.meta.url);
+    const files = readdirSync(dir).filter(f => f.endsWith('.html'));
+    expect(files.length).toBeGreaterThan(10);
+    for (const f of files) expect(readFileSync(new URL(f, dir), 'utf8'), f).toContain(REFERENCE_MARKER);
+    for (const g of ['scripts/gen-sw-report.ts', 'scripts/gen-l460-deepdive.ts', 'scripts/gen-allmodels-deepdive.ts'])
+      expect(src(g), g).toMatch(/withReferenceBanner\(/);
+    const once = withReferenceBanner('<html><body class="x"><p>hi</p></body></html>', 'test');
+    expect(withReferenceBanner(once)).toBe(once);
+    expect(once).toMatch(/<body class="x"><div data-cv-reference-example/);
   });
 });

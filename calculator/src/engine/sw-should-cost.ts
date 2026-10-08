@@ -1201,6 +1201,35 @@ function computeModuleCost(
   };
 }
 
+/**
+ * What the figures were priced on — every input a reader needs to reproduce the report (software review P2 #14: the
+ * Excel / PDF exports printed region and volume but not the base rate, the rate book or the overhead). Label / value
+ * pairs, shared by both exports.
+ */
+export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const r = resolveRates(prog);
+  const typed = !!(prog.baseRateGBP && prog.baseRateGBP > 0);
+  const seniorMult = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
+  const loaded = r.baseRate * r.region[prog.region] * r.devSource[prog.devSource] * seniorMult * prog.overheadMultiplier;
+  const gbp = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
+  return [
+    ['Rate book', `${prog.rateLibrary ? 'Company rates' : 'CostVision built-in'} v${lib.version} (reviewed ${lib.lastReviewed})`],
+    ['Base rate (£ / person-month, pre-overhead)', `${gbp(r.baseRate)} — ${typed ? 'typed override' : `rate book (${lib.ukBaseRatePerPM.source})`}`],
+    ['Engineering region', `${prog.region} × ${r.region[prog.region]}`],
+    ['Development source', `${prog.devSource} × ${r.devSource[prog.devSource]}`],
+    ['Senior share', `${Math.round(prog.teamSeniorFraction * 100)} % (× ${seniorMult.toFixed(3)})`],
+    ['Overhead multiplier', `× ${prog.overheadMultiplier}`],
+    ['Loaded rate (£ / person-month)', gbp(loaded)],
+    ['Powertrain', prog.powertrain ?? 'not set (modules as selected)'],
+    ['Platform annual volume', prog.platformAnnualVolume && prog.platformAnnualVolume > prog.annualProductionVolume
+      ? `${prog.platformAnnualVolume.toLocaleString('en-GB')} (shared software apportioned by volume share)` : 'not shared (this programme carries all of it)'],
+    ['Annual volume × life', `${prog.annualProductionVolume.toLocaleString('en-GB')} × ${prog.programLifeYears} yr`],
+    ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
+    ['Discount rate', `${prog.discountRatePct ?? 0} %`],
+  ];
+}
+
 /** The programme re-costed with each development source, in the programme's own rate book (P2 #13). The screen used
  *  to re-price with its own copy of the multipliers (0.88 / 0.72), so a company book's multipliers never reached the
  *  table, and it scaled the labour share linearly instead of re-costing. */

@@ -8,6 +8,7 @@
 import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
+import { withReferenceBanner } from './sw-review/reference-banner.js';
 
 // ── config (mirrors gen-sw-report car identities) ─────────────────────────────
 const MHEV = ['bms_core','cell_balancing','soc_soh_soe','fast_charge','edu_control','inverter_ctrl','motor_ctrl'];
@@ -288,6 +289,6 @@ ${regRows.map(o=>`<tr><td><b>${esc(o.def.name)}</b></td><td class="n">${o.def.ca
 const content=`<title>Range Rover L460 — Software Cost Deep-Dive</title>\n${CSS}\n${bodyHTML}`;
 fs.writeFileSync(process.env.SCRATCH ? process.env.SCRATCH+'/l460-deepdive-content.html' : '/tmp/l460-deepdive-content.html', content);
 const standalone=`<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Range Rover L460 — Software Cost Deep-Dive</title>\n${CSS}\n</head>\n<body>\n${bodyHTML}\n</body>\n</html>\n`;
-fs.writeFileSync('public/reports/l460-deepdive.html', standalone);
-fs.writeFileSync('docs/l460-deepdive.html', standalone);
+fs.writeFileSync('public/reports/l460-deepdive.html', withReferenceBanner(standalone));
+fs.writeFileSync('docs/l460-deepdive.html', withReferenceBanner(standalone));
 console.log('HTML:', 'public/reports/l460-deepdive.html', Math.round(standalone.length/1024)+'KB');

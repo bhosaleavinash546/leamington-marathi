@@ -20,7 +20,7 @@ import type {
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
-  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
@@ -828,18 +828,19 @@ function renderSWPanelHTML(): string {
     <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
   </div>
   <p id="sw-reports-stale" style="font-size:0.72rem;color:var(--sw-text-muted);margin:-8px 0 14px">
-    The Study, Benchmark, Deep-Dive, All-Models and "View full report" pages are <strong>static reports generated before the
-    October 2026 model fixes</strong> (one overhead default, sourced ASIL uplift, ICE / hybrid software, powertrain scope) —
-    their figures differ from the live calculation above, which is the current model.
+    The Study, Benchmark, Deep-Dive, All-Models and per-vehicle pages are <strong>reference examples</strong> — static reports
+    generated before the October 2026 model fixes (one overhead default, sourced ASIL uplift, ICE / hybrid software, powertrain
+    scope, royalties, CAL-keyed cyber). Their figures differ from the live calculation above, which is the current model; the
+    Excel / PDF export of the live calculation states its rate basis.
   </p>
   ${(() => {
     const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
     if (!active?.reportUrl) return '';
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;padding:10px 14px;border-radius:8px;border:1px solid rgba(29,78,216,0.30);background:linear-gradient(135deg,rgba(37,99,235,0.10),rgba(37,99,235,0.04))">
       <span style="font-size:1.05rem"></span>
-      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown for ${esc(active.label)} — a static report from before the October 2026 model fixes; its figures differ from the live calculation.</span>
+      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown for ${esc(active.label)} — a reference example from before the October 2026 model fixes; its figures differ from the live calculation.</span>
       <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" style="display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;padding:7px 15px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:7px;cursor:pointer;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,0.30);transition:transform 0.15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
-        View full report →
+        View reference example →
       </button>
     </div>`;
   })()}
@@ -2057,6 +2058,9 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['Engineering Effort (all costed effort)', f2(s.totalEffortPersonMonths), 'PM'],
     ['Development Person-Months (costed)', f2(s.totalPersonMonths), 'PM'],
     ['Active Modules', result.modules.length, ''],
+    [],
+    ['RATE BASIS — what these figures were priced on'],
+    ...swRateBasis(inp).map(([k, v]) => [k, v]),
   ];
 
   // Sheet 2: Category Breakdown
@@ -2071,12 +2075,12 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
 
   // Sheet 3: Module Detail
   const modData = [
-    ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'Person-Months',
+    ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'CAL (ISO/SAE 21434)', 'Person-Months',
      'Dev Cost (£M)', 'Test Cost (£M)', 'Calibration (£M)', 'Integration (£M)',
      'Toolchain (£M)', 'IP Licence (£M)', 'Cybersec (£M)', 'Cloud (£M)', 'Maintenance (£M)',
      'Grand Total (£M)', '£/Vehicle'],
     ...[...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).map((m, i) => [
-      i+1, m.moduleName, m.category, m.asilUsed, m.complexityUsed, m.reuseUsed,
+      i+1, m.moduleName, m.category, m.asilUsed, m.complexityUsed, m.reuseUsed, m.calUsed,
       f2(m.personMonths), fM(m.development.total), fM(m.testing.total),
       fM(m.calibrationCost), fM(m.integrationCost), fM(m.toolchainCost),
       fM(m.licensingCost), fM(m.cybersecCost), fM(m.cloudCost), fM(m.maintenanceCost),
@@ -2214,6 +2218,18 @@ function exportSWPDF(result: SWProgramResult): void {
         columnStyles: { 0: { cellWidth: 100 }, 1: { cellWidth: 44, halign: 'right' }, 2: { cellWidth: 38, halign: 'right' } },
         bodyStyles: { fontSize: 7, cellPadding: 2.5 },
         alternateRowStyles: { fillColor: [248, 250, 252] },
+        margin: { left: MG, right: MG },
+      });
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+      // Rate basis — what the figures were priced on, so the report can be reproduced (P2 #14).
+      chk(40);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+      doc.text('Rate basis', MG, y); y += 4;
+      autoTable(doc, {
+        startY: y,
+        body: swRateBasis(result.inputs),
+        columnStyles: { 0: { cellWidth: 70, fontStyle: 'bold' }, 1: { cellWidth: 112 } },
+        bodyStyles: { fontSize: 7, cellPadding: 1.8 },
         margin: { left: MG, right: MG },
       });
       y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
@@ -2551,7 +2567,7 @@ export function wireSWPanel(): void {
     btn.addEventListener('click', () => applyVehicleDemo(btn.dataset.vehicle ?? ''));
   });
 
-  // "View full report" — open the detailed board-level breakdown for the demo.
+  // "View reference example" — open the detailed board-level breakdown for the demo.
   document.getElementById('sw-demo-report-btn')?.addEventListener('click', evt => {
     const url = (evt.currentTarget as HTMLElement).dataset.reportUrl;
     if (url) window.open(import.meta.env.BASE_URL + url, '_blank', 'noopener');
