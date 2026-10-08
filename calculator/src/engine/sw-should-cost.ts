@@ -217,7 +217,13 @@ export interface SWModuleCostResult {
   asilUsed:           ASILLevel;
   complexityUsed:     SWComplexity;
   reuseUsed:          SWReuse;
+  /** Development person-months as COSTED: every development bucket after complexity, the safety-reuse floor and any
+   *  schedule penalty — development £ = personMonths × the loaded rate. It used to report the effort before those
+   *  scalings (BMS showed 172.8 PM while 258.5 PM were paid for — software review P2 #9). */
   personMonths:       number;
+  /** All engineering effort the cost pays for, person-months: development + testing + integration + cybersecurity +
+   *  calibration + ML data, ÷ the loaded rate. */
+  effortPersonMonths: number;
   development:        SWDevBreakdown;
   testing:            SWTestingBreakdown;
   integrationCost:    number;
@@ -251,6 +257,8 @@ export interface SWSummary {
   nreTotal:           number;  // dev + test + integration + toolchain + cybersec + calibration + ML data + homologation
   grandTotal:         number;
   totalPersonMonths:  number;
+  /** Σ effortPersonMonths — all engineering effort costed (P2 #9). */
+  totalEffortPersonMonths: number;
   perVehicle:         number;
   byCategory:         Record<SWCategory, number>;
 }
@@ -1132,7 +1140,8 @@ function computeModuleCost(
     asilUsed:       input.asil,
     complexityUsed: input.complexity,
     reuseUsed:      input.reuse,
-    personMonths:   Math.round(devPM * 10) / 10,
+    personMonths:   Math.round((reqsPM + archPM + algoPM + implPM + safetyPM) * schedPenalty * 10) / 10,
+    effortPersonMonths: Math.round((devTotal + testTotal + integration + cybersec + calibration + mlDataCost) / regionRate * 10) / 10,
     development:    { requirements: reqs, architecture: arch, algorithmDev: algo, implementation: impl, safetyCompliance: safety, total: devTotal },
     testing:        { sil: silCost, mil: milCost, hil: hilCost, regression: regCost, penTest: penCost, scenarios: scenCost, total: testTotal },
     integrationCost:  integration,
@@ -1160,6 +1169,7 @@ function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult
   return {
     ...r,
     personMonths: Math.round(r.personMonths * k * 10) / 10,
+    effortPersonMonths: Math.round(r.effortPersonMonths * k * 10) / 10,
     development: scale(r.development), testing: scale(r.testing),
     integrationCost: r.integrationCost * k, licensingCost: r.licensingCost * k, cloudCost: r.cloudCost * k,
     cybersecCost: r.cybersecCost * k, maintenanceCost: r.maintenanceCost * k, toolchainCost: r.toolchainCost * k,
@@ -1356,6 +1366,7 @@ export function computeSWProgram(
     nreTotal:           0,
     grandTotal:         sum(modules.map(m => m.grandTotal)) + homologation,
     totalPersonMonths:  sum(modules.map(m => m.personMonths)),
+    totalEffortPersonMonths: sum(modules.map(m => m.effortPersonMonths)),
     perVehicle:         0,
     byCategory:         {} as Record<SWCategory, number>,
   };

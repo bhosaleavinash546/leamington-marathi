@@ -40,3 +40,26 @@ describe('#8 engine input validation — invalid inputs are refused with a reaso
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/'sw-vol'\) as HTMLInputElement\)\?\.value\) \|\| 80_000/);
   });
 });
+
+describe('#9 reported person-months are the person-months costed', () => {
+  it('module development £ = personMonths × the loaded rate (it reported effort before complexity / safety scaling)', () => {
+    const p = defaultSWProgramInputs();
+    const rate = 28_000 * 1 * 1 * (0.5 * 1.2 + 0.5 * 0.75) * p.overheadMultiplier;
+    for (const m of computeSWProgram(p).modules) {
+      expect(m.development.total / rate, m.moduleId).toBeCloseTo(m.personMonths, 0);
+    }
+  });
+  it('engineering effort covers every effort-driven bucket, and the summary adds them', () => {
+    const p = defaultSWProgramInputs();
+    const rate = 28_000 * (0.5 * 1.2 + 0.5 * 0.75) * p.overheadMultiplier;
+    const r = computeSWProgram(p);
+    const m = r.modules.find(x => x.moduleId === 'bms_core')!;
+    const effortGBP = m.development.total + m.testing.total + m.integrationCost + m.cybersecCost + m.calibrationCost + m.mlDataCost;
+    expect(m.effortPersonMonths).toBeCloseTo(effortGBP / rate, 0);
+    expect(r.summary.totalEffortPersonMonths).toBeCloseTo(r.modules.reduce((a, x) => a + x.effortPersonMonths, 0), 6);
+    expect(r.summary.totalEffortPersonMonths).toBeGreaterThan(r.summary.totalPersonMonths);
+  });
+  it('the unsourced "peak headcount 1.4–1.7×" claim is gone', () => {
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/1\.4–1\.7/);
+  });
+});

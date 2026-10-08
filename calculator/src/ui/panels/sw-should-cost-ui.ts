@@ -1513,7 +1513,7 @@ function renderResults(result: SWProgramResult): void {
   const s = result.summary;
 
   // Summary cards
-  const avgFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
+  const avgFTE = s.totalEffortPersonMonths > 0 ? s.totalEffortPersonMonths / (result.inputs.programLifeYears * 12) : 0;
   const nreTotal = s.nreTotal;
   const vehicles = result.inputs.annualProductionVolume * result.inputs.programLifeYears;
   const nrePerVeh       = vehicles > 0 ? nreTotal / vehicles : 0;                    // one-time dev, amortised
@@ -1522,7 +1522,7 @@ function renderResults(result: SWProgramResult): void {
     { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
     { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `NRE £${fmt(nrePerVeh,0)} + Lifecycle £${fmt(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
     { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
-    { label: 'Total Person-Months',    value: `${fmt(s.totalPersonMonths, 0)} PM`, sub: `Avg team: ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears}yr`, color: '#d97706' },
+    { label: 'Engineering Effort',     value: `${fmt(s.totalEffortPersonMonths, 0)} PM`, sub: `development ${fmt(s.totalPersonMonths, 0)} PM · avg ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears} yr`, color: '#d97706' },
     { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
     { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of ${SW_MODULES.length} modules · ${result.inputs.region} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
   ];
@@ -1868,10 +1868,10 @@ function renderResults(result: SWProgramResult): void {
       }
     }
 
-    const avgTeamFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
+    const avgTeamFTE = s.totalEffortPersonMonths > 0 ? s.totalEffortPersonMonths / (result.inputs.programLifeYears * 12) : 0;
     insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>', level: 'info',
       title: `Average team: ${fmt(avgTeamFTE, 0)} FTE across ${result.inputs.programLifeYears}-year programme`,
-      body: `${fmt(s.totalPersonMonths, 0)} total person-months implies ~${fmt(avgTeamFTE,0)} FTE sustained. Peak headcount during integration phases is typically 1.4–1.7× this average.`,
+      body: `${fmt(s.totalEffortPersonMonths, 0)} person-months of engineering effort is ~${fmt(avgTeamFTE,0)} FTE averaged over the ${result.inputs.programLifeYears}-year programme; the peak during development is higher.`,
     });
 
     const levelColor: Record<string, string> = { info: '#2563eb', warn: '#d97706', ok: '#059669' };
@@ -1927,7 +1927,7 @@ function generateAIInsights(result: SWProgramResult): void {
 PROGRAMME: Premium Luxury SUV Full Software Stack (${result.inputs.programLifeYears}-year programme)
 Total Programme Cost: ${(s.grandTotal/1e6).toFixed(1)}M GBP
 Per Vehicle: £${Math.round(s.perVehicle)}
-Total Person-Months: ${Math.round(s.totalPersonMonths)} PM (avg ${Math.round(s.totalPersonMonths/(result.inputs.programLifeYears*12))} FTE)
+Engineering effort: ${Math.round(s.totalEffortPersonMonths)} PM (development ${Math.round(s.totalPersonMonths)} PM)
 Region: ${result.inputs.region} | Source: ${result.inputs.devSource} | Life: ${result.inputs.programLifeYears}yr | Volume: ${(result.inputs.annualProductionVolume/1000).toFixed(0)}k/yr
 Active Modules: ${result.modules.length}/${SW_MODULES.length}
 
@@ -2024,7 +2024,8 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['TOTAL PROGRAMME COST',    fM(s.grandTotal),        100],
     [],
     ['Per Vehicle (SW)', f2(s.perVehicle), '£'],
-    ['Total Person-Months', f2(s.totalPersonMonths), 'PM'],
+    ['Engineering Effort (all costed effort)', f2(s.totalEffortPersonMonths), 'PM'],
+    ['Development Person-Months (costed)', f2(s.totalPersonMonths), 'PM'],
     ['Active Modules', result.modules.length, ''],
   ];
 
