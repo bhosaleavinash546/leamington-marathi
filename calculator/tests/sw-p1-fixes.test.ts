@@ -229,3 +229,11 @@ describe('static reports are labelled as pre-fix', () => {
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/static reports generated before the\s+October 2026 model fixes/);
   });
 });
+
+describe('#5 switching powertrain re-scopes cleanly', () => {
+  it('PHEV then BEV gives the same modules as BEV directly (the PHEV de-rating used to stick)', () => {
+    const d = defaultSWProgramInputs().modules;
+    const viaPhev = applyPowertrainScope(applyPowertrainScope(d, 'PHEV'), 'BEV');
+    expect(viaPhev).toEqual(applyPowertrainScope(d, 'BEV'));
+  });
+});

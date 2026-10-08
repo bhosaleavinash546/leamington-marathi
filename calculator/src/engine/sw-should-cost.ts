@@ -88,9 +88,14 @@ export const SW_POWERTRAIN_MODULE_IDS: ReadonlySet<string> = new Set([...EV_MODU
 /** Switch the powertrain modules on / off for a drivetrain and apply its de-rating; other modules are left as they are. */
 export function applyPowertrainScope(modules: SWModuleInput[], pt: SWPowertrain): SWModuleInput[] {
   const scope = SW_POWERTRAIN_SCOPE[pt];
-  return modules.map(m => SW_POWERTRAIN_MODULE_IDS.has(m.moduleId)
-    ? { ...m, enabled: scope.on.includes(m.moduleId), ...(scope.overrides[m.moduleId] ?? {}) }
-    : m);
+  return modules.map(m => {
+    if (!SW_POWERTRAIN_MODULE_IDS.has(m.moduleId)) return m;
+    // Reset to the module's own ASIL / complexity first: switching PHEV → BEV kept the PHEV de-rating (found live).
+    const def = SW_MODULES.find(d => d.id === m.moduleId);
+    return { ...m, enabled: scope.on.includes(m.moduleId),
+      ...(def ? { asil: def.defaultAsil, complexity: def.defaultComplexity } : {}),
+      ...(scope.overrides[m.moduleId] ?? {}) };
+  });
 }
 
 /** Share of a module's cost attributed to this variant: shared (non-powertrain) software over the platform volume. */
