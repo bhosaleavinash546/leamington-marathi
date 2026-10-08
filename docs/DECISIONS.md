@@ -4889,3 +4889,27 @@ newcomer:
 - **Self-audit gates re-baselined to honest values** (118 flags, 69%
   multi-region). Removing false evidence re-exposed debt that the false facts
   had been hiding.
+
+## 125. A commissioned count is a target, not a quota: ideas that fail review are not padded back
+
+The Interior / Exterior / BIW / Chassis pack was commissioned at 400 (100 per
+commodity) and ships at 397 (`docs/IDEA-LIBRARY-REVIEW-2026-10-08.md`).
+
+- **One replacement round, then stop.** Review retired 22 ideas, and 22
+  replacements were written with the retirement reasons as their brief.
+  Review then retired three of those as well, two because they were existing
+  library concepts reworded past the automatic duplicate gate.
+- **Why not keep going:** another round to reach exactly 400 would have
+  traded review depth for a round number. The test pins the real
+  per-commodity counts instead.
+- **Retire threshold:** every idea scoring 2 or lower is retired, not only
+  those the reviewer marked "retire". A low-scoring idea with a patched
+  mechanism is still a broken mechanism.
+- **Never seeded:** ideas retired before their first seed are dropped, not
+  listed in `marketplace-retired-ideas.json`, because no database ever held
+  them.
+- **Fail-safe rule:** any saving that rests on software or regen being
+  available is retired, whatever the arithmetic says. This applies to
+  friction brakes, steering, restraints, crash structure and thermal-runaway
+  barriers.
+
