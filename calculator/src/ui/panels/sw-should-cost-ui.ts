@@ -1401,7 +1401,7 @@ for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
 }
 
 /** Build a full programme-inputs object for a vehicle demo. */
-function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
+export function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
   const b = defaultSWProgramInputs();
   const disabled = new Set(v.disabledModules);
   return {
