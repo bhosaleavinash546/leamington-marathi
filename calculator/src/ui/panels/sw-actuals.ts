@@ -47,7 +47,7 @@ export function renderActualsHTML(): string {
       </div>
       <div id="swa-msg" role="status" style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px"></div>
       <div id="swa-table" style="overflow-x:auto;margin-top:10px"></div>
-      <div id="swa-result" style="margin-top:10px;font-size:0.78rem"></div>
+      <div id="swa-result" style="margin-top:10px;font-size:0.78rem;color:var(--sw-text-primary)"></div>
     </div>
   </details>`;
 }
@@ -62,7 +62,7 @@ export function wireActuals(onApply: (factor: number) => void): void {
     const badge = g('sw-actuals-badge');
     if (badge) badge.textContent = fit.factor !== null ? `· factor ×${fit.factor.toFixed(2)} from ${fit.n} module${fit.n === 1 ? '' : 's'}` : '· none logged';
     const table = g('swa-table');
-    if (table) table.innerHTML = actuals.length ? `<table class="sw-data-table" style="font-size:0.74rem">
+    if (table) table.innerHTML = actuals.length ? `<table class="sw-data-table" style="font-size:0.74rem;color:var(--sw-text-body)">
       <thead><tr><th>Module</th><th>Project</th><th>Settings</th><th class="sw-num">Actual PM</th><th class="sw-num">Model PM</th><th class="sw-num">Actual ÷ model</th><th></th></tr></thead>
       <tbody>${actuals.map((a, i) => {
         const known = SW_MODULES.some(m => m.id === a.moduleId);
@@ -73,7 +73,7 @@ export function wireActuals(onApply: (factor: number) => void): void {
         <td class="sw-num">${Number(a.actualPersonMonths).toFixed(1)}</td>
         <td class="sw-num">${Number.isFinite(model) ? model.toFixed(1) : '—'}</td>
         <td class="sw-num">${Number.isFinite(model) && model > 0 ? (a.actualPersonMonths / model).toFixed(2) : '—'}</td>
-        <td><button type="button" class="swa-del" data-i="${i}" aria-label="Remove logged ${esc(a.moduleId)}" style="font-size:0.7rem">Remove</button></td>
+        <td><button type="button" class="swa-del sw-preset-btn" data-i="${i}" aria-label="Remove logged ${esc(a.moduleId)}" style="font-size:0.7rem;padding:2px 8px">Remove</button></td>
       </tr>`; }).join('')}</tbody></table>` : '';
     const res = g('swa-result');
     if (res) {
