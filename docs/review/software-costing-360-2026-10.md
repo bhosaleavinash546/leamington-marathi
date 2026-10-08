@@ -320,5 +320,8 @@ any independently measured accuracy for software (a NASA blind study tested SEER
 | 21 | No calibration to the user's own completed projects (all four commercial tools have it) | method | Accuracy cannot improve with use | M | P2 | Let the user log actual effort / cost per module and fit a programme factor (as CostVision already does for parts) |
 | 19 | Headline percentile not stated | UI results | Reader assumes headline = P50 | S | P3 | State "headline ≈ P30; P50 = £x" |
 
-**STOP — no fixes have been made.** Approve the list (or a subset) and I will work on a new branch, save the
+**Status:** P1 items 1–7 and 20 fixed on branch `claude/sw-costing-p1-fixes` — before / after in
+`software-costing-p1-fixes-2026-10.md`. P2 / P3 items open.
+
+(Original note:) Approve the list (or a subset) and I will work on a new branch, save the
 current outputs as a baseline, make one fix per commit with a test, then re-run the baseline and show what moved and why.

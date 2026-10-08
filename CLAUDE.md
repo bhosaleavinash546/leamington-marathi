@@ -607,6 +607,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   and FILL their icon tile with the accent (one look for every commodity) — the policy blocks at the end of
   `saas-polish.css`; overlays enter AND exit via `display … allow-discrete` + `@starting-style`; no `transition: all`.
   Toasts are `src/ui/toast.ts` only (main.ts's `showToast` delegates). `tests/motion-system.test.ts`, `e2e/motion-live.ts`.
+- Automotive software costing (`src/engine/sw-should-cost.ts`, `sw-rate-library.ts`, `sw-benchmarks.ts`, panel
+  `src/ui/panels/sw-should-cost-ui.ts`; review `docs/review/software-costing-360-2026-10.md`, P1 fixes
+  `docs/review/software-costing-p1-fixes-2026-10.md`): base person-months are NOMINAL (QM, Medium, fresh); the ASIL uplift
+  is ONE factor (asilDev, ×1.82 at D, Low confidence) — test / integration follow development, never a second ASIL
+  multiplier; one overhead default `SW_DEFAULT_OVERHEAD` (1.15); powertrain scope is the engine's `SW_POWERTRAIN_SCOPE` /
+  `applyPowertrainScope` (never a copy in the UI or scripts); `platformAnnualVolume` apportions shared software; the 5
+  ICE / hybrid modules are `estimateBasis` copies of named analogues; published benchmarks are unverified (one list,
+  `verified` flag) and no test may pin the model to them; a base-rate field overrides only when typed (`sw-rate-field.ts`).
+  Snapshot outputs with `npx tsx scripts/sw-review/baseline.ts <out.json>`; live check `e2e/sw-live.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
