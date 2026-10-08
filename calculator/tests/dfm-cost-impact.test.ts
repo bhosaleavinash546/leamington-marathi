@@ -88,8 +88,11 @@ describe('a price reconciles to the engine it came from', () => {
   it('prints the arithmetic, so a supplier can check it', () => {
     const r = analyseGeometricDFM(ctx([DEEP_HOLE], { commodity: 'machining' }));
     const f = r.findings.find(x => x.costImpact)!;
-    expect(f.costImpact!.basis).toMatch(/the costing\u2019s hole time/);
+    expect(f.costImpact!.basis).toMatch(/the costing\u2019s drilling time/);
     expect(f.costImpact!.basis).toMatch(/reference machine \+ labour/);
+    // one plain sentence on what the figure is — the old "deleting it recovers this, shortening it recovers part"
+    expect(f.costImpact!.basis).toMatch(/deleting it saves all of it, making it shallower saves part of it\.$/);
+    expect(f.costImpact!.basis).not.toMatch(/mach-|lab-/);
     expect(f.costImpact!.minutes).toBeGreaterThan(0);   // what Design to Cost takes off the costed operation
     expect(f.costImpact!.confidence).toBe('modelled');
   });

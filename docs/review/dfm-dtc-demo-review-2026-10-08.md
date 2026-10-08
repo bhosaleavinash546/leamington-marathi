@@ -117,7 +117,18 @@ Notes for the demo:
 - Accuracy against purchase prices: unmeasured.
 - STL (the sprocket): no DFM yet.
 
-## 7. How this was produced
+## 7. Screen polish (after the review)
+The figures did not change; how they read did. Each DtC lever is one plain line ("2.52 min of drilling off each part,
+at that operation's own rate") with the calculation behind "How is this calculated?" — it was ten lines, printed
+twice. Internal library ids ("mach-vmc3 + lab-uk-semiskilled") are now names ("CNC VMC 3-axis + semi-skilled
+operator"); measured fields read "Depth ÷ diameter 5.5–8.8 : 1, flagged above 4 : 1", not "ldRatio 5.455–8.75:1";
+severity is a word badge (Critical / Major / Minor / Advisory) in the panel and the viewer; the viewer's
+inspector leads with the findings and shows the same £ as the panel (one helper); the garbled "deleting it recovers
+this, shortening it recovers part" is one sentence. The workspace no longer slides under the app header when
+something is scrolled into view (`overflow: clip`). Checked live in `e2e/dtc-live.ts` (viewer £ = panel £) and axe
+(0 violations on the DtC tab and the viewer).
+
+## 8. How this was produced
 `npx vitest run` (3,412 passed), `npx tsc -p tsconfig.build.json --noEmit`, `npx tsx scripts/real-parts-baseline.ts
 --update`, `e2e/dtc-live.ts` (PASS, axe clean), the per-part harness (kernel → `analyzeGeometry` → `developBlankFromCad`
 → `costMeasuredPart` → DFM in the country book → `dfmLevers` / `costDrivers`), and the three audit reports.

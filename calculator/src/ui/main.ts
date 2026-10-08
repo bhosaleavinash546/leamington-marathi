@@ -223,7 +223,7 @@ import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml } from './toast.js';
-import { buildGeometricDFMPanel, dfmHighlightHint } from './dfm-geometry-panel.js';
+import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measuredText, thresholdText, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
 import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { renderAlExtrusionForm, collectAlExtrusionDrivers, wireAlExtrusionForm } from './al-extrusion-form.js';
@@ -17239,24 +17239,17 @@ function dfmMoneyUi(n: number): string { return `${currencySymbol(_displayCurren
 function renderGeometricDFMPanel(): void {
   const host = el<HTMLElement>('geometric-dfm-panel');
   if (!host) return;
-  const html = buildGeometricDFMPanel(cadGeometricDFM);
+  // With this part's costing on screen each priced finding shows what it moves the WHOLE stack by (overhead and
+  // margin included) — the same figure the 3D viewer and the Design-to-Cost tab show (dfmFindingAmounts).
+  const html = buildGeometricDFMPanel(cadGeometricDFM, { amounts: dfmFindingAmounts(), recosted: !!lastInput && dfmBelongsToCosting() });
   host.innerHTML = html;
   host.style.display = html ? '' : 'none';
   if (!html) return;
-  // With a costing on screen, show what each priced finding moves the WHOLE
-  // stack by (overhead and margin included), next to the job's naked line.
-  const amounts = dfmFindingAmounts();
-  cadGeometricDFM?.grouped?.forEach((g, idx) => {
-    const a = amounts.get(g.ruleId);
-    const node = host.querySelector<HTMLElement>(`[data-dfm-idx="${idx}"] .dfm-geo-cost`);
-    if (!node) return;
-    if (!a) { node.remove(); return; }
-    node.textContent = a.text;
-    node.title = a.title;
-  });
 
   host.querySelectorAll<HTMLElement>('[data-dfm-idx]').forEach(node => {
-    const act = () => {
+    const act = (e?: Event) => {
+      // Opening "How is this £ calculated?" reads the finding; it does not also select its faces.
+      if (e && (e.target as HTMLElement | null)?.closest('details')) return;
       const idx = Number(node.dataset.dfmIdx);
       const faces = cadGeometricDFM?.grouped?.[idx]?.faceIds ?? [];
       const shown = highlightViewerFaces(faces);
@@ -17266,7 +17259,7 @@ function renderGeometricDFMPanel(): void {
       if (hint) hint.textContent = dfmHighlightHint(faces, shown);
     };
     node.addEventListener('click', act);
-    node.addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') act(); });
+    node.addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') act(e); });
   });
 }
 
@@ -17343,19 +17336,33 @@ function faceCostMap(): Record<number, number> | null {
 }
 
 /** The costed feature lines as the viewer's cost-on-model rows (label, faces, £ per part). */
+/**
+ * A costed feature line as the viewer lists it: the operation first, then what it cuts — "Face milling · 18.4 cm²",
+ * "Drilling · 2 × Ø8 × 70 mm blind". It read "face — Face milling (facing)" six times over.
+ */
+function featureLineLabel(l: { kind: string; count: number; diaMm: number; depthMm: number; through: boolean | null; areaMm2?: number; operation: string }): string {
+  const op = l.operation.replace(/\s*\(.*\)\s*$/, '').trim() || l.kind;
+  const n = l.count > 1 ? `${l.count} × ` : '';
+  const num = (v: number) => fmtMeasureNum(v);
+  let what: string;
+  if (l.diaMm > 0) what = `${n}Ø${num(l.diaMm)}${l.depthMm ? ` × ${num(l.depthMm)} mm` : ' mm'}${l.through === true ? ' through' : l.through === false ? ' blind' : ''}`;
+  else if (l.areaMm2 && l.areaMm2 > 0) what = `${l.count > 1 ? `${l.count} ${l.kind}s, ` : ''}${num(l.areaMm2 / 100)} cm²`;
+  else if (l.depthMm) what = `${n}${l.kind} ${num(l.depthMm)} mm deep`;
+  else what = `${n}${l.kind}`;
+  return `${op} · ${what}`;
+}
 function faceCostItems(): import('./cad-viewer.js').CostItem[] {
   const meta = buildCadReportMeta();
   const rate = meta.featureMachineRatePerHr ?? 0;
   if (!rate) return [];
   return (meta.featureLines ?? []).filter(l => l.included && l.faceIds?.length).map(l => ({
     // A pocket or face has no diameter — name it by its depth, never "Ø0.0".
-    label: `${l.count > 1 ? `${l.count} × ` : ''}${l.kind}${l.diaMm > 0 ? ` Ø${l.diaMm.toFixed(1)}${l.depthMm ? ` × ${l.depthMm.toFixed(1)}` : ''} mm` : l.depthMm ? ` ${l.depthMm.toFixed(1)} mm deep` : ''} — ${l.operation}`,
+    label: featureLineLabel(l),
     faceIds: l.faceIds ?? [],
     gbp: (l.totalMinutes / 60) * rate,
   }));
 }
 
-/** The background geometric-DFM findings as the viewer's manufacturability list (null until the job lands). */
 /**
  * The £ each geometric DFM finding shows — ONE answer for the findings panel and the 3D viewer's inspector.
  * With this part's costing on screen a finding shows only what it moves that costing by (re-costed through the
@@ -17364,8 +17371,8 @@ function faceCostItems(): import('./cad-viewer.js').CostItem[] {
  * finding's reference rate. The viewer used to print the job's line beside a costing that said otherwise
  * (stub axle deep holes £2.85 in the viewer, £2.38 in the costing).
  */
-function dfmFindingAmounts(): Map<string, { text: string; title: string }> {
-  const out = new Map<string, { text: string; title: string }>();
+function dfmFindingAmounts(): Map<string, DfmAmount> {
+  const out = new Map<string, DfmAmount>();
   const groups = cadGeometricDFM?.grouped;
   if (!groups?.length) return out;
   const priced = groups.filter(g => (g.totalCostGBP ?? 0) > 0);
@@ -17377,12 +17384,13 @@ function dfmFindingAmounts(): Map<string, { text: string; title: string }> {
       if (!(r.stackGBP > 0)) continue;
       out.set(r.ruleId, {
         text: `${dfmMoneyUi(r.stackGBP)}/part`,
-        title: `Re-costed: what this finding moves the piece price by through the 8-bucket stack (${r.basis}).`,
+        title: 'Re-costed: what this finding moves this costing\u2019s piece price by, overhead and margin included.',
+        basis: r.basis,
       });
     }
     for (const g of priced) if (NOT_IN_STACK_RULES.has(g.ruleId)) {
       out.set(g.ruleId, {
-        text: `+${dfmMoneyUi(g.totalCostGBP ?? 0)}/part, not in the should-cost`,
+        text: `+${dfmMoneyUi(g.totalCostGBP ?? 0)}/part to add`,
         title: 'A cost the should-cost does not carry yet — adding it would raise the price by this much.',
       });
     }
@@ -17390,13 +17398,14 @@ function dfmFindingAmounts(): Map<string, { text: string; title: string }> {
   }
   for (const g of priced) {
     out.set(g.ruleId, {
-      text: `${dfmMoneyUi(g.totalCostGBP ?? 0)}/part at reference rate`,
+      text: `${dfmMoneyUi(g.totalCostGBP ?? 0)}/part (ref. rate)`,
       title: 'The finding priced at its stated reference rate, before a costing of this part. Calculate to see what it moves the costing by.',
     });
   }
   return out;
 }
 
+/** The background geometric-DFM findings as the viewer's manufacturability list (null until the job lands). */
 function viewerIssuesFromDFM(): import('./cad-viewer.js').ViewerIssue[] | null {
   const groups = cadGeometricDFM?.grouped;
   if (!groups) return null;
@@ -17404,9 +17413,10 @@ function viewerIssuesFromDFM(): import('./cad-viewer.js').ViewerIssue[] | null {
   const amounts = dfmFindingAmounts();
   return groups.map(g => ({
     id: g.ruleId,
-    title: g.count > 1 ? `${g.title} (${g.count})` : g.title,
+    title: g.count > 1 ? `${g.title} ×${g.count}` : g.title,
     severity: sev[g.severity as keyof typeof sev] ?? 'info',
-    detail: `${g.range.min === g.range.max ? g.range.min : `${g.range.min}–${g.range.max}`} ${g.range.unit} against ${g.threshold.comparator} ${g.threshold.value} ${g.threshold.unit} — ${g.recommendation}`,
+    // The measurement against its limit; the fix and the calculation are in the findings panel beside it.
+    detail: `${measureLabel(g.worst?.measured?.field ?? '')} ${measuredText(g.range, g.count)}, ${thresholdText(g.threshold)}.`.trim(),
     faceIds: g.faceIds ?? [],
     amount: amounts.get(g.ruleId)?.text,
     source: [g.source.standard, g.source.clause, g.source.note].filter(Boolean).join(' · '),

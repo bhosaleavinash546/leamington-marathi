@@ -77,14 +77,19 @@ export function buildDtcProjection(p: DtcProjection, m: Pick<DtcPanelModel, 'tar
 }
 
 function leverRows(levers: DtcLever[], st: DtcState, money: (g: number) => string): string {
-  return levers.map(l => `
+  return levers.map(l => {
+    const id = `dtc-${escHtml(l.id)}`;
+    return `
     <tr>
-      <td><input type="checkbox" data-dtc-lever="${escHtml(l.id)}" id="dtc-${escHtml(l.id)}"${st.on.has(l.id) ? ' checked' : ''}></td>
-      <td><label for="dtc-${escHtml(l.id)}">${escHtml(l.title)}</label>${l.kind === 'upper-bound' ? ' <span class="dtc-tag" title="The whole feature\'s cost: deleting it saves this; shortening or opening it saves part">upper bound</span>' : ''}
-        <div class="dtc-basis">${escHtml(l.basis)}${l.confidence === 'indicative' ? ' · indicative' : ''}</div></td>
-      <td class="num">−${money(l.savingGBP)}</td>
-      <td>${l.faceIds.length ? `<button type="button" class="btn btn-secondary btn-xs" data-dtc-faces="${escHtml(l.id)}">Show ${l.faceIds.length} face${l.faceIds.length === 1 ? '' : 's'}</button>` : ''}</td>
-    </tr>`).join('');
+      <td><input type="checkbox" data-dtc-lever="${escHtml(l.id)}" id="${id}"${st.on.has(l.id) ? ' checked' : ''}></td>
+      <td><label for="${id}" class="dtc-lever-title">${escHtml(l.title)}</label>${l.kind === 'upper-bound' ? ' <span class="dtc-tag" title="The features\u2019 whole cost: deleting them saves this; shortening or opening them saves part of it">upper bound</span>' : ''}${l.confidence === 'indicative' ? ' <span class="dtc-tag dtc-tag--muted" title="A documented default stood in for an input the part did not state">indicative</span>' : ''}
+        <div class="dtc-basis">${escHtml(l.summary)}</div>
+        <details class="dtc-how"><summary>How is this calculated?</summary>
+          <ol>${l.steps.map(x => `<li>${escHtml(x)}</li>`).join('')}</ol></details></td>
+      <td class="num dtc-save">−${money(l.savingGBP)}</td>
+      <td>${l.faceIds.length ? `<button type="button" class="btn btn-secondary btn-xs" data-dtc-faces="${escHtml(l.id)}" aria-label="Show the ${l.faceIds.length} face${l.faceIds.length === 1 ? '' : 's'} of ${escHtml(l.title)} in the 3D viewer">Show ${l.faceIds.length} face${l.faceIds.length === 1 ? '' : 's'}</button>` : ''}</td>
+    </tr>`;
+  }).join('');
 }
 
 function driverRows(drivers: DtcDriver[], money: (g: number) => string, hasTarget: boolean): string {
@@ -156,7 +161,7 @@ export function buildDtcPanel(m: DtcPanelModel, st: DtcState, levers: DtcLever[]
       ${gs ? `<div class="dtc-kpi dtc-${gs.cls}"><span>Gap</span><strong>${gap > 0 ? m.money(gap) : m.money(-gap)}</strong><em>${escHtml(gs.text)}</em></div>` : ''}
       <div class="dtc-proj" data-dtc-proj aria-live="polite">${buildDtcProjection(proj, m)}</div>
     </div>
-    <p class="dtc-note">Every figure is this part re-costed through the same 8-bucket stack as the headline — overhead and margin follow. Design levers are measured on the part: their minutes and tooling come off the costing's own operations, at those operations' rates. Drivers and what-ifs hold everything else equal.</p>
+    <p class="dtc-note">Every figure is this part re-costed through the same 8-bucket stack as the headline, overhead and margin included. Design levers come from the measured part and take their time or tooling off the costing's own operations; drivers and what-ifs hold everything else equal.</p>
 
     <section aria-labelledby="dtc-h-design"><h4 id="dtc-h-design">Design levers</h4>${designBody}</section>
 

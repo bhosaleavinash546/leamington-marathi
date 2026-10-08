@@ -6421,11 +6421,26 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
 .dfm-geo-item.warn   { border-left-color: var(--warning); }
 .dfm-geo-item.muted  { border-left-color: var(--text-muted); }
 .dfm-geo-item.selected { border-color: var(--accent); background: var(--accent-light); }
-.dfm-geo-item > div { margin-top: 3px; }
+.dfm-geo-item > div { margin-top: 4px; }
+/* Severity as a word, the title, the £ — one line that wraps cleanly (the £ used to float over the text). */
+.dfm-geo-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 0 !important; }
+.dfm-geo-title { flex: 1 1 200px; color: var(--text-primary); }
+.dfm-geo-nocost { font-size: 0.74rem; color: var(--text-muted); white-space: nowrap; }
+.dfm-sev { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }
+.dfm-sev--critical, .dfm-sev--major { background: var(--danger-bg); border-color: var(--danger-border); }
+.dfm-sev--minor { background: var(--warning-bg); border-color: var(--warning-border); }
+.dfm-sev--advisory { background: var(--surface); }
+.dfm-geo-how { margin-top: 6px; }
+.dfm-geo-how > summary, .dtc-how > summary { cursor: pointer; font-size: 0.76rem; color: var(--text-secondary); width: fit-content; }
+.dfm-geo-how > summary:hover, .dtc-how > summary:hover { color: var(--text-primary); }
+.dfm-geo-how > p { margin: 4px 0 0; color: var(--text-secondary); }
+.dfm-geo-src { font-size: 0.74rem; }
+.dfm-geo-lead { line-height: 1.5; }
 .dfm-geo-item em { color: var(--text-muted); font-style: normal; }
 /* Money is what the list is ranked by, so it reads as a figure, not as prose. */
 .dfm-geo-cost {
-  float: right;
+  white-space: nowrap;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--accent);
@@ -6462,6 +6477,11 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
 .dtc-add { margin: 0; padding-left: 18px; font-size: 0.82rem; color: var(--text-primary); }
 .dtc-table td.dtc-to { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .dtc-basis { font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px; }
+.dtc-lever-title { font-weight: 600; cursor: pointer; }
+.dtc-tag--muted { border-color: var(--border); background: var(--surface); }
+.dtc-how { margin-top: 4px; }
+.dtc-how ol { margin: 4px 0 0; padding-left: 18px; font-size: 0.74rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 3px; }
+.dtc-table td.dtc-save { font-weight: 700; color: var(--accent); }
 .dtc-bar { display: inline-block; width: 90px; height: 8px; border-radius: 4px; background: var(--border); vertical-align: middle; overflow: hidden; }
 .dtc-bar > i { display: block; height: 100%; background: var(--accent); }
 .dtc-share { margin-left: 6px; font-variant-numeric: tabular-nums; color: var(--text-secondary); }

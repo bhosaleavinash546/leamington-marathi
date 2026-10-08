@@ -43,7 +43,7 @@ html:not([data-theme="light"]) .cv3d {
   --v-shadow: 0 10px 32px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
   --v-canvas: #151a21;
 }
-.cv3d--compact { height: 440px; }
+.cv3d--compact { height: 500px; }
 #viewer-standalone-host .cv3d { height: calc(100vh - 190px); min-height: 520px; }
 
 .cv3d-main { position: relative; display: flex; flex: 1; min-height: 0; }
@@ -298,6 +298,12 @@ html:not([data-theme="light"]) .cv3d-tip { background: #e6ebf2; color: #0b0e12; 
 .cv3d-sev--medium { background: #f59e0b; }
 .cv3d-sev--low { background: #3b82f6; }
 .cv3d-sev--info { background: #94a3b8; }
+.cv3d-sevtag { display: inline-block; align-self: flex-start; margin: 2px 0 1px; padding: 0 6px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 0.02em; color: var(--v-ink); border: 1px solid transparent; }
+.cv3d-sevtag--high   { background: color-mix(in srgb, #dc2626 20%, transparent); border-color: color-mix(in srgb, #dc2626 45%, transparent); }
+.cv3d-sevtag--medium { background: color-mix(in srgb, #f59e0b 20%, transparent); border-color: color-mix(in srgb, #f59e0b 45%, transparent); }
+.cv3d-sevtag--low    { background: color-mix(in srgb, #3b82f6 18%, transparent); border-color: color-mix(in srgb, #3b82f6 40%, transparent); }
+.cv3d-sevtag--info   { background: color-mix(in srgb, #94a3b8 18%, transparent); border-color: color-mix(in srgb, #94a3b8 40%, transparent); }
+.cv3d-row-val.cv3d-muted { font-weight: 500; font-size: 11px; }
 .cv3d-del { appearance: none; border: none; background: none; color: var(--v-muted); cursor: pointer; padding: 2px 6px; border-radius: 5px; font-size: 11px; }
 .cv3d-del:hover { color: #dc2626; background: color-mix(in srgb, #dc2626 12%, transparent); }
 .cv3d-linkbtn {
@@ -401,7 +407,7 @@ html:not([data-theme="light"]) .cv3d-tip { background: #e6ebf2; color: #0b0e12; 
 .cv3d--compact .cv3d-dock [data-act="shortcuts"] { display: none; } /* the sheet still opens with ? */
 .cv3d--compact .cv3d-legend { bottom: 66px; }
 .cv3d--compact .cv3d-menu { bottom: 54px; }
-.cv3d--compact .cv3d-inspector { position: absolute; top: 0; right: 0; bottom: 0; z-index: 7; width: min(320px, 88%); box-shadow: var(--v-shadow); }
+.cv3d--compact .cv3d-inspector { position: absolute; top: 0; right: 0; bottom: 0; z-index: 7; width: min(300px, 64%); box-shadow: var(--v-shadow); }
 
 @media (max-width: 700px) {
   .cv3d { height: 460px; }

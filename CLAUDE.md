@@ -568,6 +568,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   one to the AI. A threshold with no source read is labelled "CostVision engineering heuristic". Drill rules stop at Ø26
   (bored above). Kernel: release tested at a cylinder's ±draw points; breakout on a 0.8 r ring; `orientationCheck` →
   `orientation_skew` warning.
+  Screen (UI polish, Oct 2026): a DFM finding's £ in the findings panel AND the 3D viewer come from ONE helper,
+  `dfmFindingAmounts` in main.ts (re-costed with this part's costing on screen, "(ref. rate)" before one). Measured
+  fields print through `MEASURE_LABELS` (dfm-geometry-panel.ts — a new rule field needs a label, the test reads the
+  rule files); severity is a word badge, never colour alone. A DtC lever shows `summary` (one line) with `steps` behind
+  "How is this calculated?"; no library id (mach-…, lab-…) reaches the screen — the rate basis names machineClass +
+  skillLevel. The costing workspace is `overflow: clip` (hidden let scrollIntoView slide it under the app header).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

@@ -1525,7 +1525,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     };
     try { opts.onLoaded?.(lastLoadedInfo); } catch { /* listener errors must not break the load */ }
     const skippedText = meta?.skippedFaces ? ` · ⚠ ${meta.skippedFaces} faces unmeshed` : '';
-    statusFile.textContent = `${file.name} · ${triangles.toLocaleString()} triangles${meta ? ` · ${faceList.length} faces` : ''} · ${bodyText}${skippedText}`;
+    const fullStatus = `${file.name} · ${triangles.toLocaleString()} triangles${meta ? ` · ${faceList.length} faces` : ''} · ${bodyText}${skippedText}`;
+    // The compact mount is narrow: the name and the face count; the whole line is the tooltip.
+    statusFile.textContent = opts.compact ? `${file.name}${meta ? ` · ${faceList.length} faces` : ''}${skippedText}` : fullStatus;
+    statusFile.title = fullStatus;
     statusDims.textContent = `X ${partSpan.x.toFixed(2)} · Y ${partSpan.y.toFixed(2)} · Z ${partSpan.z.toFixed(2)} mm`;
 
     titleEl.textContent = file.name;
@@ -2529,6 +2532,22 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     if (hostIssues) return { items: hostIssues, source: 'Costed DFM findings (this part, this route)' };
     return { items: meta ? geometryChecks(faceList) : [], source: 'Geometry checks — process-independent rules of thumb' };
   }
+  /** Severity as a word, beside the dot — never colour alone (WCAG 1.4.1); the DFM panel's names. */
+  const SEV_WORD = { high: 'Critical', medium: 'Major', low: 'Minor', info: 'Advisory' } as const;
+  /** The manufacturability list: the host's costed DFM findings, else the viewer's own geometry checks. */
+  function issuesSection(): string {
+    const { items: issues, source } = issueList();
+    const sevRank = { high: 0, medium: 1, low: 2, info: 3 } as const;
+    const sorted = [...issues].sort((a, b) => sevRank[a.severity] - sevRank[b.severity]);
+    const rows = sorted.length ? `
+      <div class="cv3d-rows">${sorted.map((it) => `
+        <button type="button" class="cv3d-row cv3d-issue" data-issue-idx="${issues.indexOf(it)}" ${it.faceIds.length ? '' : 'data-nofaces="1"'}>
+          <i class="cv3d-sev cv3d-sev--${it.severity}" aria-label="${it.severity}"></i>
+          <span class="cv3d-row-main"><span class="cv3d-row-title">${esc(it.title)}</span><span class="cv3d-sevtag cv3d-sevtag--${it.severity}">${SEV_WORD[it.severity]}</span>${it.detail ? `<span class="cv3d-row-sub">${esc(it.detail)}</span>` : ''}</span>
+          ${it.amount ? `<span class="cv3d-row-val">${esc(it.amount)}</span>` : '<span class="cv3d-row-val cv3d-muted">not priced</span>'}
+        </button>`).join('')}</div>` : `<p class="cv3d-muted">No issues found by these checks.</p>`;
+    return sec('issues', 'Manufacturability', `${rows}<p class="cv3d-note">${esc(source)}.</p>`, sorted.length ? `${sorted.length}` : '');
+  }
   function renderInspector(): void {
     if (inspector.hidden) return;
     const out: string[] = [];
@@ -2536,6 +2555,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       inspBody.innerHTML = `<p class="cv3d-insp-empty">Open a STEP, IGES or STL model to see its size, volume, mass, faces and manufacturability checks here.</p>`;
       return;
     }
+    // With the costed DFM findings in, they lead: they are what the engineer opened the inspector for.
+    const leadIssues = !!hostIssues?.length;
+    if (leadIssues) out.push(issuesSection());
     // Part
     const dens = VIEWER_DENSITIES.find(d => d.id === densityId) ?? VIEWER_DENSITIES[0];
     const volCm3 = partStats?.volumeMm3 != null ? partStats.volumeMm3 / 1000 : null;
@@ -2575,20 +2597,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         ${effectiveMode() !== 'cost' ? `<button type="button" class="cv3d-linkbtn" data-insp-mode="cost">Colour the model by cost</button>` : ''}
         <p class="cv3d-note">Machining minutes × the costed machine rate, from the engine's feature lines.</p>`, `${ranked.length}`));
     }
-    // Manufacturability
-    const { items: issues, source } = issueList();
-    if (meta || hostIssues) {
-      const sevRank = { high: 0, medium: 1, low: 2, info: 3 } as const;
-      const sorted = [...issues].sort((a, b) => sevRank[a.severity] - sevRank[b.severity]);
-      const rows = sorted.length ? `
-        <div class="cv3d-rows">${sorted.map((it) => `
-          <button type="button" class="cv3d-row cv3d-issue" data-issue-idx="${issues.indexOf(it)}" ${it.faceIds.length ? '' : 'data-nofaces="1"'}>
-            <i class="cv3d-sev cv3d-sev--${it.severity}" aria-label="${it.severity}"></i>
-            <span class="cv3d-row-main"><span class="cv3d-row-title">${esc(it.title)}</span>${it.detail ? `<span class="cv3d-row-sub">${esc(it.detail)}</span>` : ''}</span>
-            ${it.amount ? `<span class="cv3d-row-val">${esc(it.amount)}</span>` : ''}
-          </button>`).join('')}</div>` : `<p class="cv3d-muted">No issues found by these checks.</p>`;
-      out.push(sec('issues', 'Manufacturability', `${rows}<p class="cv3d-note">${esc(source)}.</p>`, sorted.length ? `${sorted.length}` : ''));
-    }
+    // Manufacturability (below the cost when it is only the viewer's own geometry checks)
+    if (!leadIssues && (meta || hostIssues)) out.push(issuesSection());
     // Section (cut-face area) — while a section plane is on
     if (sections.length) {
       const AX = 'XYZ';

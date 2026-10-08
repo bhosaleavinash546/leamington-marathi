@@ -56,8 +56,12 @@ export const NOT_IN_STACK_RULES = new Set(['sheetmetal.hole.smaller-than-thickne
 export interface DtcLever {
   id: string;
   title: string;
-  /** What the lever changes, in words and numbers. */
+  /** What the lever changes, in words and numbers (the full calculation, one string). */
   basis: string;
+  /** One plain line for the screen: what comes out of the costing. */
+  summary: string;
+  /** The calculation, step by step — the finding's own pricing, then how it moves the stack. */
+  steps: string[];
   confidence: 'modelled' | 'indicative';
   kind: LeverKind;
   ruleId: string;
@@ -120,7 +124,7 @@ function opSlopes(op: UniversalStackInput['operations'][number], library: RateLi
  */
 export function findingVariant(
   g: DtcFindingLike, input: UniversalStackInput, library: RateLibrary, amount?: { gbp: number; nre?: number; minutes?: number },
-): { next: UniversalStackInput; basis: string; removedGBP: number } | null {
+): { next: UniversalStackInput; basis: string; short: string; removedGBP: number } | null {
   const items = costItems(g);
   const gbp = amount?.gbp ?? items.reduce((a, x) => a + x.gbp, 0);
   // Minutes in the costing's own time model, when every item carries them (the time pricers do): the saving is then
@@ -135,6 +139,7 @@ export function findingVariant(
     return {
       next: { ...input, tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost - delta } },
       basis: `tooling NRE −£${delta.toFixed(0)} (the slide / insert) through the stack`,
+      short: `£${delta.toFixed(0)} less tooling (the slide / insert), spread over ${vol > 0 ? vol.toLocaleString('en-GB') : 'the'} parts`,
       removedGBP: vol > 0 ? delta / vol : 0,
     };
   }
@@ -170,8 +175,15 @@ export function findingVariant(
       + 'of cycle after parts/cycle, OEE and crew)'
       + (hr < want - 1e-12 ? ` — capped at 90 % of the operation (${(want * 60).toFixed(2)} min asked)` : '')
       + ' through the stack',
+    short: `${(hr * 60).toFixed(2)} min of ${opShortName(op.operationName)} off each part, at that operation\u2019s own rate`,
     removedGBP: removed,
   };
+}
+
+/** "Drilling — 13 holes (4×Ø5.0×12, …) [geometry-measured]" → "drilling": the operation's name, not its spec. */
+export function opShortName(name: string): string {
+  const head = name.split(/\s+[—–-]\s+/)[0].replace(/\s*[([].*$/, '').trim();
+  return head ? head.charAt(0).toLowerCase() + head.slice(1) : name;
 }
 
 /** Design levers: every DFM finding with a modelled £ that the stack carries and the design change can take out. */
@@ -190,12 +202,19 @@ export function dfmLevers(
     const saving = round4(base - t);
     if (!(saving > 0)) continue;
     const kind: LeverKind = UPPER_BOUND_RULES.test(g.ruleId) ? 'upper-bound' : 'redesign';
+    const upper = 'Upper bound: this is the features\u2019 whole cost. Deleting them saves all of it; shortening or opening them saves part of it.';
+    const steps = [
+      ...(g.worst.costImpact?.basis ? [`The finding: ${g.worst.costImpact.basis}`] : []),
+      `In this costing: ${v.basis}.`,
+      ...(kind === 'upper-bound' ? [upper] : []),
+    ];
     out.push({
       id: `dfm:${g.ruleId}`,
       title: g.title ?? g.ruleId,
+      summary: `${v.short.charAt(0).toUpperCase()}${v.short.slice(1)}.`,
+      steps,
       // What the £ IS (the finding's own pricing), then how it moves the stack.
-      basis: (kind === 'upper-bound' ? 'Upper bound — what the feature costs at all; deleting it recovers this, changing it recovers part. ' : '')
-        + (g.worst.costImpact?.basis ? `${g.worst.costImpact.basis} — applied as ${v.basis}` : v.basis),
+      basis: steps.join(' '),
       confidence: g.worst.costImpact?.confidence === 'indicative' ? 'indicative' : 'modelled',
       kind,
       ruleId: g.ruleId,
@@ -382,7 +401,7 @@ export function projectDesignToCost(
   let next = input;
   const applied: string[] = [];
   const removed = new Map<string, number>();     // one hole / one slide comes out once, whichever levers point at it
-  for (const l of levers) { next = l.apply(next, removed); applied.push(`${l.title}: ${l.basis}`); }
+  for (const l of levers) { next = l.apply(next, removed); applied.push(`${l.title} — ${l.summary.replace(/\.$/, '')}`); }
   const specs = driverSpecs(next, library);
   if (whatIf.massPct) {
     const m = specs.find(s => s.id === 'material');

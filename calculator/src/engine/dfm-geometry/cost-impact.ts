@@ -222,10 +222,11 @@ function holeFeatureCost(
     perPartGBP: round4(gbp),
     minutes: round4(minutes),
     kind: 'feature_cost',
-    basis: `${minutes.toFixed(2)} min (the costing\u2019s hole time, Ø${dia.toFixed(1)}×${depth.toFixed(0)} mm`
-         + `${through === null ? '' : through ? ' through' : ' blind'}, peck allowance past 5×D${tf !== 1 ? `, × ${tf} metal time factor` : ''}) `
-         + `× £${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'reference machine + labour'}. What the hole costs to make at all: `
-         + 'deleting it recovers this, shortening it recovers part.',
+    basis: `${minutes.toFixed(2)} min to make the Ø${dia.toFixed(1)} × ${depth.toFixed(0)} mm`
+         + `${through === null ? '' : through ? ' through' : ' blind'} hole (the costing\u2019s ${cast ? 'cored + bored' : 'drilling'} time, `
+         + `peck drilling past 5×D included${tf !== 1 ? `, × ${tf} for the metal` : ''}) `
+         + `× £${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}. This is the hole\u2019s whole `
+         + 'machining cost: deleting it saves all of it, making it shallower saves part of it.',
     confidence: 'modelled',
   };
 }

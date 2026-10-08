@@ -43,11 +43,68 @@ function severityClass(s: string): string {
   return s === 'critical' || s === 'major' ? 'danger' : s === 'minor' ? 'warn' : 'muted';
 }
 
-/** Measured spread across instances — the range, not one cherry-picked case. */
-function measuredRange(x: Grouped): string {
-  return x.count > 1
-    ? `${x.range.min}–${x.range.max}${x.range.unit}`
-    : `${x.range.min}${x.range.unit}`;
+/** The severity as a word an engineer reads at a glance — never colour alone (WCAG 1.4.1). */
+export function severityBadge(s: string): string {
+  const k = ['critical', 'major', 'minor'].includes(s) ? s : 'advisory';
+  return `<span class="dfm-sev dfm-sev--${k}">${k.charAt(0).toUpperCase()}${k.slice(1)}</span>`;
+}
+
+/**
+ * The engine's measured-field keys as an engineer reads them. A key missing here prints as itself, so a new rule is
+ * never blank — `tests/dfm-geometry-panel.test.ts` fails on any rule field this table does not name.
+ */
+export const MEASURE_LABELS: Record<string, string> = {
+  angleToDrawDeg: 'Angle to the draw',
+  axisGapMm: 'Gap between the hole axes',
+  blockedAtMm: 'Blocked by the part at',
+  bossWallToWall: 'Boss wall ÷ nominal wall',
+  characteristicWallMm: 'Wall',
+  cutterLD: 'Cutter reach ÷ diameter',
+  depthMm: 'Depth',
+  diaMm: 'Diameter',
+  diaToThicknessRatio: 'Hole Ø ÷ sheet thickness',
+  draftDeg: 'Draft',
+  holeSizes: 'Distinct hole sizes',
+  ldRatio: 'Depth ÷ diameter',
+  offFrameDeg: 'Angle off the part axes',
+  partLtoD: 'Length ÷ diameter',
+  radiusMm: 'Radius',
+  roots: 'Tooth roots',
+  sectionRatio: 'Thick ÷ thin section',
+  setups: 'Fixturings',
+  thicknessMm: 'Thickness',
+  thicknessRatio: 'Thickness ratio',
+};
+export function measureLabel(field: string): string { return MEASURE_LABELS[field] ?? field; }
+
+/** A measured number at the precision it deserves: 5.455 → 5.5, 0.25 → 0.25, 142.7 → 143. */
+export function fmtMeasureNum(v: number): string {
+  const a = Math.abs(v);
+  const d = a === 0 || Number.isInteger(v) ? 0 : a < 1 ? 2 : a < 100 ? 1 : 0;
+  return v.toFixed(d).replace(/\.0+$/, '');
+}
+
+/** "8.8 : 1", "0.5°", "12 mm", "3 fixturings" — a unit spaced the way it is written. */
+export function withUnit(text: string, unit: string): string {
+  if (!unit) return text;
+  if (unit === ':1') return `${text} : 1`;
+  if (unit === '°' || unit === '×' || unit === '%') return `${text}${unit}`;
+  if (unit === '×D') return `${text} × D`;
+  return `${text} ${unit}`;
+}
+
+/** Measured spread across instances — the range, not one cherry-picked case; one value when they all agree. */
+export function measuredText(range: { min: number; max: number; unit: string }, count = 2): string {
+  const a = fmtMeasureNum(range.min), b = fmtMeasureNum(range.max);
+  return withUnit(count > 1 && a !== b ? `${a}–${b}` : a, range.unit);
+}
+
+function measuredRange(x: Grouped): string { return measuredText(x.range, x.count); }
+
+/** "limit > 4 : 1" */
+export function thresholdText(t: { comparator: string; value: number; unit: string }): string {
+  const cmp = t.comparator === '>' ? 'above' : t.comparator === '<' ? 'below' : t.comparator === '>=' ? 'at or above' : t.comparator === '<=' ? 'at or below' : t.comparator;
+  return `flagged ${cmp} ${withUnit(fmtMeasureNum(t.value), t.unit)}`;
 }
 
 /**
@@ -57,17 +114,19 @@ function measuredRange(x: Grouped): string {
  * number and an explanation of why there is no number, because "here is a
  * figure and here is why there is no figure" is how a report loses its reader.
  */
-function costLine(x: Grouped): string {
+function costLine(x: Grouped, recosted?: { basis?: string }): string {
   if ((x.totalCostGBP ?? 0) > 0 && x.worst.costImpact) {
     const indicative = x.worst.costImpact.confidence === 'indicative'
       ? ' <em>(indicative — a documented default stood in for an unstated input)</em>'
       : '';
-    return `<div class="small muted"><strong>Cost basis:</strong> `
-      + `${escHtml(x.worst.costImpact.basis)}${indicative}</div>`;
+    return `<details class="dfm-geo-how"><summary>How is this £ calculated?</summary>`
+      + `<p class="small">${escHtml(x.worst.costImpact.basis)}${indicative}</p>`
+      + (recosted?.basis ? `<p class="small"><strong>In this costing:</strong> ${escHtml(recosted.basis)}.</p>` : '')
+      + `</details>`;
   }
   if (x.costNotModelled) {
-    return `<div class="small muted"><strong>Not priced:</strong> `
-      + `${escHtml(x.costNotModelled)}</div>`;
+    return `<details class="dfm-geo-how"><summary>Not priced — why?</summary>`
+      + `<p class="small">${escHtml(x.costNotModelled)}</p></details>`;
   }
   return '';
 }
@@ -104,30 +163,40 @@ function dfaBlock(dfa: GeometricDFMMeta['dfa']): string {
     + `<p class="small muted">${sourceLine(dfa.source)}</p></details>`;
 }
 
-function issueItem(x: Grouped, i: number): string {
-  const priced = (x.totalCostGBP ?? 0) > 0;
+/** The £ a finding shows, decided by the host (re-costed when this part's costing is on screen). */
+export interface DfmAmount { text: string; title: string; basis?: string }
+
+function issueItem(x: Grouped, i: number, amounts?: ReadonlyMap<string, DfmAmount>): string {
+  const own: DfmAmount | undefined = (x.totalCostGBP ?? 0) > 0 ? { text: `${dfmMoney(x.totalCostGBP ?? 0)}/part`, title: 'Priced at the finding\u2019s reference rate' } : undefined;
+  const amt = amounts ? amounts.get(x.ruleId) : own;
+  const faces = x.faceIds.length;
   return `
     <li class="dfm-geo-item ${severityClass(x.severity)}" data-dfm-idx="${i}"
-        role="button" tabindex="0">
-      <strong>${escHtml(x.title)}</strong>${x.count > 1 ? ` <em>(${x.count})</em>` : ''}
-      ${priced ? `<span class="dfm-geo-cost">${dfmMoney(x.totalCostGBP ?? 0)}/part</span>` : ''}
+        role="button" tabindex="0" aria-label="${escHtml(`${x.severity} — ${x.title}. Highlight ${faces} face${faces === 1 ? '' : 's'} in the 3D viewer`)}">
+      <div class="dfm-geo-top">
+        ${severityBadge(x.severity)}
+        <strong class="dfm-geo-title">${escHtml(x.title)}${x.count > 1 ? ` <em>×${x.count}</em>` : ''}</strong>
+        ${amt ? `<span class="dfm-geo-cost" title="${escHtml(amt.title)}">${escHtml(amt.text)}</span>` : '<span class="dfm-geo-nocost">not priced</span>'}
+      </div>
       <div class="small">${escHtml(x.worst.detail)}</div>
       <div class="small dfm-geo-measure">
-        <span>measured <strong>${escHtml(x.worst.measured.field)} ${measuredRange(x)}</strong></span>
-        <span class="muted">threshold ${escHtml(x.threshold.comparator)} `
-          + `${x.threshold.value}${escHtml(x.threshold.unit)}</span>
-        <span class="muted">${x.faceIds.length} face(s)</span>
+        <span>${escHtml(measureLabel(x.worst.measured.field))} <strong>${escHtml(measuredRange(x))}</strong></span>
+        <span class="muted">${escHtml(thresholdText(x.threshold))}</span>
+        <span class="muted">${faces} face${faces === 1 ? '' : 's'}</span>
       </div>
       <div class="small"><strong>Fix:</strong> ${escHtml(x.recommendation)}</div>
-      ${costLine(x)}
-      <div class="small muted">${sourceLine(x.source)}</div>
+      ${costLine(x, amt)}
+      <div class="small muted dfm-geo-src">Source: ${sourceLine(x.source)}</div>
     </li>`;
 }
 
 const HEADING = '<h3>Geometric DFM — measured from the CAD</h3>';
 
 /** The whole panel as HTML. Returns '' when there is nothing to show at all. */
-export function buildGeometricDFMPanel(g: GeometricDFMMeta | null): string {
+export function buildGeometricDFMPanel(
+  g: GeometricDFMMeta | null,
+  opts: { amounts?: ReadonlyMap<string, DfmAmount>; recosted?: boolean } = {},
+): string {
   if (!g) return '';
 
   if (!g.packAvailable) {
@@ -139,15 +208,18 @@ export function buildGeometricDFMPanel(g: GeometricDFMMeta | null): string {
   }
 
   const priced = (g.totalAddressableGBP ?? 0) > 0;
+  const nPriced = opts.amounts ? g.grouped.filter(x => opts.amounts!.has(x.ruleId)).length : g.grouped.filter(x => (x.totalCostGBP ?? 0) > 0).length;
+  const money = opts.recosted
+    ? (nPriced
+      ? `${nPriced} finding${nPriced === 1 ? ' carries' : 's carry'} a £: what each moves <strong>this costing</strong> by, re-costed through its own operations (overhead and margin included). The rest are quality or yield risks with no modelled cost path; each says why.`
+      : 'No finding moves this costing by a modelled £ — each says why.')
+    : priced
+      ? `<strong>${dfmMoney(g.totalAddressableGBP ?? 0)}/part</strong> across ${nPriced} priced finding${nPriced === 1 ? '' : 's'} at the reference rate; Calculate to see what each moves the costing by. The rest are quality or yield risks with no modelled cost path.`
+      : 'No finding here has a modelled cost path — each says why.';
   const head = `${HEADING}
-    <p class="muted small">${g.grouped.length} issue(s) across ${g.findings.length} instance(s)
-      from ${g.featuresExamined} measured feature(s), ${g.rulesEvaluated} rule(s) evaluated,
-      ranked by cost. ${priced
-        ? `<strong>${dfmMoney(g.totalAddressableGBP ?? 0)}/part</strong> priced at the job\u2019s reference rates (with a
-           costing on screen each line shows its Δ through the costing\u2019s own operations instead); issues without a
-           figure are quality or yield risks with no modelled cost path.`
-        : 'No finding here has a modelled cost path — each says why.'}
-      Click an issue to highlight the faces that caused it.</p>`;
+    <p class="muted small dfm-geo-lead">${g.grouped.length} issue${g.grouped.length === 1 ? '' : 's'} (${g.findings.length} instance${g.findings.length === 1 ? '' : 's'})
+      from ${g.featuresExamined} measured features and ${g.rulesEvaluated} rules. ${money}
+      Click an issue to highlight its faces in the 3D viewer.</p>`;
 
   const tail = `${limitationsBlock(g.limitations ?? [])}${dfaBlock(g.dfa)}
     <div id="dfm-geo-hint" class="small muted" style="margin-top:6px"></div>`;
@@ -160,7 +232,7 @@ export function buildGeometricDFMPanel(g: GeometricDFMMeta | null): string {
   }
 
   return `${head}
-    <ul class="dfm-geo-list">${g.grouped.map(issueItem).join('')}</ul>
+    <ul class="dfm-geo-list">${g.grouped.map((x, i) => issueItem(x, i, opts.amounts)).join('')}</ul>
     ${tail}`;
 }
 

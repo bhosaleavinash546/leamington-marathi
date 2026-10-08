@@ -18,7 +18,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { analyseGeometricDFM } from '../src/engine/dfm-geometry/index.js';
-import { buildGeometricDFMPanel, dfmHighlightHint, dfmMoney } from '../src/ui/dfm-geometry-panel.js';
+import { buildGeometricDFMPanel, dfmHighlightHint, dfmMoney, thresholdText, measureLabel, MEASURE_LABELS, measuredText, severityBadge } from '../src/ui/dfm-geometry-panel.js';
+import { readFileSync, readdirSync } from 'node:fs';
 import type { PartContext, ManufacturingFeature } from '../src/engine/dfm-geometry/types.js';
 import type { ManufacturingFeatureSet } from '../src/engine/ai-analysis.js';
 import type { GeometricDFMMeta } from '../src/export/pdf.js';
@@ -60,12 +61,29 @@ describe('the panel renders what the engine actually returned', () => {
       expect(html, `title missing for ${x.ruleId}`).toContain(x.title);
       // The threshold is the only thing that makes a measured value a FINDING.
       expect(html, `threshold missing for ${x.ruleId}`)
-        .toContain(`${x.threshold.value}${x.threshold.unit}`);
+        .toContain(thresholdText(x.threshold).replace(/&/g, '&amp;'));
+      // measured as an engineer reads it — never the engine's field key ("ldRatio 5.455")
+      expect(html, `measured label missing for ${x.ruleId}`).toContain(measureLabel(x.worst.measured.field).replace(/&/g, '&amp;'));
+      expect(html, `severity word missing for ${x.ruleId}`).toContain(severityBadge(x.severity));
       expect(html, `recommendation missing for ${x.ruleId}`).toContain(x.recommendation);
       expect(html, `source missing for ${x.ruleId}`).toContain(x.source.standard.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'));
       expect(html, `face count missing for ${x.ruleId}`)
-        .toContain(`${x.faceIds.length} face(s)`);
+        .toContain(`${x.faceIds.length} face${x.faceIds.length === 1 ? '' : 's'}`);
     }
+  });
+
+  it('names every measured field a rule can report, and spaces units as they are written', () => {
+    const dir = 'src/engine/dfm-geometry';
+    const files = [...readdirSync(dir).filter(f => f.endsWith('.ts')).map(f => `${dir}/${f}`),
+      ...readdirSync(`${dir}/commodities`).filter(f => f.endsWith('.ts')).map(f => `${dir}/commodities/${f}`)];
+    const fields = new Set<string>();
+    for (const f of files) for (const m of readFileSync(f, 'utf8').matchAll(/(?:measuredField|field):\s*'([A-Za-z]+)'/g)) fields.add(m[1]);
+    expect(fields.size).toBeGreaterThan(10);
+    for (const k of fields) expect(MEASURE_LABELS[k], `no label for measured field ${k}`).toBeTruthy();
+    expect(measuredText({ min: 5.455, max: 8.75, unit: ':1' }, 6)).toBe('5.5–8.8 : 1');
+    expect(measuredText({ min: 10, max: 10, unit: 'mm' }, 2)).toBe('10 mm');
+    expect(measuredText({ min: 3, max: 3, unit: 'setups' }, 1)).toBe('3 setups');
+    expect(thresholdText({ comparator: '>', value: 4, unit: ':1' })).toBe('flagged above 4 : 1');
   });
 
   it('prints the cost basis for a priced finding and the reason for an unpriced one', () => {

@@ -15,7 +15,9 @@
     display: grid !important;
     grid-template-columns: clamp(460px, 42%, 600px) minmax(0, 1fr) !important;   /* calculator.css unsets it with !important */
     grid-template-rows: auto minmax(0, 1fr);
-    overflow: hidden !important;
+    /* clip, not hidden: a hidden box still scrolls from code — any scrollIntoView (the result, a finding, a tab)
+       slid the whole workspace up under the app header and hid the panel header with it. */
+    overflow: clip !important;
   }
   body.cv-new-costing #costing-view > .wf-panel-header { grid-column: 1 / -1; }
   body.cv-new-costing #costing-view > .input-panel {
@@ -29,6 +31,9 @@
     min-height: 0; overflow-y: auto !important;
     padding: 0 22px 28px;   /* top spacing is on the first child: a padded top let rows show above the stuck summary bar */
     background: var(--bg);
+    /* The sticky result bar sits at the top of this pane: anything scrolled to (a tab, a finding, a lever)
+       lands below it, not under it. */
+    scroll-padding-top: 104px;
   }
   /* Focus mode (report full width) keeps working. */
   :root.cv-focus-report body.cv-new-costing #costing-view > .input-panel { display: none; }

@@ -434,8 +434,8 @@ export function priceHoleSizes(f: GeometricFinding, ctx: { machineRatePerHr?: nu
     perPartGBP: r4((minutes / 60) * (mr + (lr ?? 0))),
     minutes: r4(minutes),
     kind: 'feature_cost' as const,
-    basis: `${extra} size(s) beyond the first × the costing\u2019s tool change ${TOOL_CHANGE_SEC} s = ${minutes.toFixed(2)} min `
-      + `× £${(mr + (lr ?? 0)).toFixed(2)}/h ${ctx.rateBasis ?? 'reference machine + labour'} — an upper bound (every size consolidated); `
+    basis: `${extra} size${extra === 1 ? '' : 's'} beyond the first × the costing\u2019s ${TOOL_CHANGE_SEC} s tool change = ${minutes.toFixed(2)} min `
+      + `× £${(mr + (lr ?? 0)).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'} — an upper bound (every size merged into one); `
       + 'tool stock and programming effort, the larger cost of many sizes, are not priced.',
     confidence: 'modelled' as const,
   };

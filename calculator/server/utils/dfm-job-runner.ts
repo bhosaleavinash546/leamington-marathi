@@ -243,8 +243,9 @@ function resolveCostContext(req: DFMJobRequest, volumeCm3?: number): CostContext
     engineerRatePerHr: engineer?.fullyLoadedRatePerHr,
     partWeightKg: partWeightKgFor(req.materialFamily, volumeCm3),
     timeFactor: timeFactorFor(req.materialFamily),
-    rateBasis: `reference ${machine?.id ?? 'machine'} + ${labour?.id ?? 'labour'} (with a costing on screen, Design to Cost re-prices `
-      + 'the minutes at the costed operation\u2019s own rates)',
+    // Named as an engineer reads it ("CNC VMC 3-axis + semi-skilled operator"), never by library id.
+    rateBasis: `at the reference rate (${machine?.machineClass ?? 'machine'} + ${(labour?.skillLevel ?? 'labour').toLowerCase()}; `
+      + 'a costing re-prices the minutes at its own operation\u2019s rates)',
   };
 }
 

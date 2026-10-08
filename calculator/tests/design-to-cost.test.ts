@@ -245,7 +245,11 @@ describe('independent review fixes (Oct 2026)', () => {
   it('a whole-feature price is labelled an upper bound on the lever', () => {
     const [l] = dfmLevers([holeFinding], input, lib);
     expect(l.kind).toBe('upper-bound');
-    expect(l.basis).toMatch(/^Upper bound/);
+    expect(l.steps.some(x => /^Upper bound: /.test(x))).toBe(true);
+    // the screen line is one plain sentence; the calculation sits behind "How is this calculated?"
+    expect(l.summary).toMatch(/^\d+\.\d{2} min of \w+ off each part/);
+    expect(l.summary.length).toBeLessThan(120);
+    expect(l.summary).not.toMatch(/mach-|lab-uk|\[|reference/);
     const [s] = dfmLevers([{ ruleId: 'machining.setup.access-directions', title: 'setups', totalCostGBP: 0.2, worst: { costImpact: { kind: 'feature_cost' } } }], input, lib);
     expect(s.kind).toBe('redesign');
   });

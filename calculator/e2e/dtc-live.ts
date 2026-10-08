@@ -111,8 +111,8 @@ async function main(): Promise<void> {
       const viewerMoney = await page.$$eval('.cv3d-insp-body .cv3d-issue', ns => ns.map(n => ({
         title: (n.querySelector('.cv3d-row-title')?.textContent ?? '').replace(/\s+/g, ' ').trim(), amount: (n.querySelector('.cv3d-row-val')?.textContent ?? '').trim() })));
       out.viewerMoney = viewerMoney; out.panelMoney = panelMoney;
-      const pricedPanel = panelMoney.filter(p => p.amount);
-      const pricedViewer = viewerMoney.filter(v => v.amount);
+      const pricedPanel = panelMoney.filter(p => /\d/.test(p.amount));
+      const pricedViewer = viewerMoney.filter(v => /\d/.test(v.amount));
       if (pricedPanel.length !== pricedViewer.length) failures.push(`viewer shows ${pricedViewer.length} priced finding(s), panel ${pricedPanel.length}`);
       for (const p of pricedPanel) {
         if (!pricedViewer.some(v => v.amount === p.amount)) failures.push(`panel ${p.title} ${p.amount} not in the viewer (${pricedViewer.map(v => v.amount).join(', ')})`);
