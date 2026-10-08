@@ -24,7 +24,7 @@ import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
-import { orientationWarning, runCADSanityChecks, type CADGeometryContext, type CADSanityWarning } from '../utils/cad-sanity.js';
+import { orientationWarning, meshFeatureWarning, runCADSanityChecks, type CADGeometryContext, type CADSanityWarning } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
 import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/cost-input-rules/index.js';
@@ -547,7 +547,7 @@ export function runAllGuards(
   const machining = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
   return [...machining, ...runCADSanityChecks(
     analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis, stated)),
-    ...orientationWarning(geo)];
+    ...orientationWarning(geo), ...meshFeatureWarning(geo)];
 }
 
 /** A costing is `costable` when no blocking decision is open and no blocking

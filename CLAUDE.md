@@ -574,6 +574,21 @@ what is true** — nothing here has been compared with a price JLR paid.
   rule files); severity is a word badge, never colour alone. A DtC lever shows `summary` (one line) with `steps` behind
   "How is this calculated?"; no library id (mach-…, lab-…) reaches the screen — the rate basis names machineClass +
   skillLevel. The costing workspace is `overflow: clip` (hidden let scrollIntoView slide it under the app header).
+- Uploaded-parts review (Oct 2026, `docs/review/uploaded-parts-costing-review-2026-10-08.md`): every uploaded file costed
+  live with both exports (`e2e/cad-parts-live.ts`, a manifest of file + answers). Rules it left behind:
+  - Routing: gear / pinion is a whole word (not "_gearbox"); faces measured into a cavity (`cavityShell`) make a thin shell
+    a hollow route; fill-only "hollow" offers the open routes too; a > 4 mm bossed shell is offered casting; the blank
+    unfold never runs on a container (it took 296 s on the fuel tank). Kernel and page timeouts scale with file size
+    (`geometry-timeout.ts`); a file with no extension is read by its header.
+  - Casting: megacasting and HPDC both stop at `HPDC_SECTION_MAX_MM` (2·V/S). A gear on a SHAFT is costed as the shaft
+    (`shaftBlank`: the machining route's bar, turning and holes). Applying blocking answers never pins an ADVISORY default.
+  - Parity: the removal-ceiling cap is for unmeasured (model) operations only; headless OEE / labour efficiency follow the
+    form where no rule sets them (`FORM_EFFICIENCY_DEFAULTS`, tested against the form HTML).
+  - Reports: PDF / Excel print only what the costing holds — exclusions checked against operations AND consumable lines,
+    the screen's band (`cadMeta.uncertainty`), the screen's DFM £ (`geometricDFMAmounts`), §4C only when its lines are
+    the cost (`featureLinesInCost`), one confidence grade. Excel money is numeric (`money()` cells); sheet 7 checks the
+    arithmetic and lists every question asked. No rule-of-thumb £ or % in observation text; reference bands say
+    "engineering estimate".
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

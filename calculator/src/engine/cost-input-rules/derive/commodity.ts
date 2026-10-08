@@ -392,6 +392,14 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
       routes: ['machining', 'forging', 'cast_and_machine'],
     };
 
+  // A flat plate (thinnest side ≤ 12 mm and under 8 % of the largest) is a profile cut or blanked from plate — laser,
+  // fine blanking or a press — whatever its fill: the 5 mm × Ø271 chain sprocket was offered only casting or machining
+  // and turned from Ø275 bar (uploaded-parts review, Oct 2026). Offered, not leaned on.
+  const dimsSorted = [g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm].sort((a, b) => a - b);
+  if (dimsSorted[0] <= 12 && dimsSorted[0] / dimsSorted[2] < 0.08 && !rung.routes.includes('sheet_metal')) {
+    rung.routes = [...rung.routes, 'sheet_metal'];
+    rung.why += ` A flat ${dimsSorted[0].toFixed(1)} mm plate ${dimsSorted[2].toFixed(0)} mm across: it may be cut or blanked from plate.`;
+  }
   const lean = processLeaning(ctx, rung.routes);
   return {
     decision: ask(

@@ -14,8 +14,9 @@ answers per part), then the two checks described in §6.
 |---|---|
 | Every part routes to its real process with the tool's own options | **Fixed** — 4 parts were mis-routed or not offered their process (§3) |
 | Process choice inside a commodity (HPDC / gravity / sand / megacasting) | **Fixed** — two section-blind rules (§3) |
-| Screen = PDF = Excel, every part | **Yes** — totals agree to the penny on all parts (§5) |
-| Arithmetic, recomputed independently from the workbook's own inputs | **Yes** — totals, overhead, margin exact; operations within the printed rounding (§6) |
+| Screen = PDF = Excel, every part | **Yes** — 18 of 18 runs (16 files, the sprocket two ways) agree to the penny (§5) |
+| Screen = headless (the bulk / baseline path) | **Yes** — every STEP part to the penny, after two parity fixes (§3) |
+| Arithmetic, recomputed independently from the workbook's own inputs | **Yes** — every operation and every total, 18 of 18 runs (§6) |
 | PDF / Excel statements that contradicted the costing | **Removed** — 30+ instances (§4) |
 | Absolute accuracy against a price actually paid | **Unmeasured** — no purchase prices exist for these parts. Say so. |
 
@@ -48,7 +49,7 @@ Annual volume 100,000 (the form's default), UK.
 | Model Mania 2017 | Machining, 6082-T6 | prismatic test part | — |
 | Servo horn | Machining, 6082-T6 | named aluminium horn | Headless capped its handling by a removal ceiling (£3.14 v screen £5.34) |
 | Hood bracket / Seat bracket | Sheet metal (stamping), DC04 | pressings | — |
-| Chain sprocket (STL) | see §5 | 5 mm × Ø271 plate, 13 through-holes (mesh genus) | an STL cannot count holes: the tool **asks** (correct) |
+| Chain sprocket (STL) | Sheet metal (blanked plate), HRPO hot-rolled | 5 mm × Ø271 plate, 13 through-holes (mesh genus) | Plate route **not offered** (only cast / machine → turned from Ø275 bar, £82.96); the entered holes were costed nowhere, silently; 5 mm steel defaulted to DC04 cold-rolled coil |
 | Input_Shaft_machined (no extension) | as the input shaft | same file | **Refused** as "unsupported format": now read as STEP from its header |
 
 ## 4. PDF and Excel — what they said that the costing did not
@@ -72,7 +73,26 @@ estimate".
 
 ## 5. Results — screen, PDF and Excel (final run)
 
-FINAL_TABLE
+| Part | Commodity | Material (form) | Screen | PDF | Excel | ± band | Excel checks | Independent recompute |
+|---|---|---|---|---|---|---|---|---|
+| Brembo_Brake_Caliper_Z1240sx | cast_and_machine | LM25 / A356 · sand / gravity | £628.22 | £628.22 | £628.2168 | ±9.6% | 5/5 OK | total £628.2168 = £628.2168 |
+| CLOSE_VOLUME | injection_moulding | PP Impact Copolymer (PP-B) | £2.75 | £2.75 | £2.7510 | ±7.2% | 5/5 OK | total £2.7510 = £2.7510 |
+| BUMPER | injection_moulding | PP Impact Copolymer (PP-B) | £12.99 | £12.99 | £12.9859 | ±8% | 5/5 OK | total £12.9859 = £12.9859 |
+| offroad_vehicle_gearbox_housing | cast_and_machine | ADC12 / A383 · die-cast | £62.32 | £62.32 | £62.3160 | ±6.7% | 5/5 OK | total £62.3160 = £62.3160 |
+| Model_Mania_2017_Phase_2 | machining | 6082-T6 Aluminium Bar (UK) | £8.18 | £8.18 | £8.1787 | ±7.5% | 5/5 OK | total £8.1787 = £8.1787 |
+| Hollow_Driveshaft | gear | 4140 / 42CrMo4 / EN19 (Chromoly Alloy Steel) (UK) | £116.26 | £116.26 | £116.2579 | ±10.6% | 5/5 OK | total £116.2579 = £116.2579 |
+| Aluminium_25T_Servo_Horn | machining | 6082-T6 Aluminium Bar (UK) | £5.34 | £5.34 | £5.3394 | ±8.1% | 5/5 OK | total £5.3394 = £5.3394 |
+| Hood_Bracket | sheet_metal | DC04 (CR4 Deep-Drawing) | £2.33 | £2.33 | £2.3321 | ±9% | 5/5 OK | total £2.3321 = £2.3321 |
+| Eingangswelle | gear | 20MnCr5 (Gear Steel) (UK) | £41.25 | £41.25 | £41.2475 | ±8.7% | 5/5 OK | total £41.2475 = £41.2475 |
+| steering_knuckle_RH | cast_and_machine | EN-GJS-500-7 (Ductile Iron) | £45.94 | £45.94 | £45.9448 | ±5.9% | 5/5 OK | total £45.9448 = £45.9448 |
+| Part1 | cast_and_machine | LM25 / A356 · sand / gravity | £36.76 | £36.76 | £36.7643 | ±6.4% | 5/5 OK | total £36.7643 = £36.7643 |
+| PRCR002 | cast_and_machine | EN-GJS-500-7 (Ductile Iron) | £84.58 | £84.58 | £84.5763 | ±6.3% | 5/5 OK | total £84.5763 = £84.5763 |
+| Seat_Locking_Bracket | sheet_metal | DC04 (CR4 Deep-Drawing) | £2.18 | £2.18 | £2.1772 | ±8.9% | 5/5 OK | total £2.1772 = £2.1772 |
+| Stub_Axle | cast_and_machine | EN-GJS-500-7 (Ductile Iron) | £84.58 | £84.58 | £84.5763 | ±6.3% | 5/5 OK | total £84.5763 = £84.5763 |
+| Input_Shaft_machined | gear | 20MnCr5 (Gear Steel) (UK) | £41.25 | £41.25 | £41.2475 | ±8.7% | 5/5 OK | total £41.2475 = £41.2475 |
+| Chain_Sprocket_STL | sheet_metal | HRPO (Hot Rolled Pickled & Oiled) | £2.96 | £2.96 | £2.9618 | ±14.8% | 5/5 OK | total £2.9618 = £2.9618 |
+| Chain_Sprocket_STL_machined | machining | EN8 / 080M40 (Medium Carbon) (UK) | £82.96 | £82.96 | £82.9594 | ±11.4% | 5/5 OK | total £82.9594 = £82.9594 |
+| Fuel_tank | blow_moulding | HDPE Coex Fuel-Tank Grade (6-layer/EVOH) | £28.03 | £28.03 | £28.0338 | ±20% | 5/5 OK | total £28.0338 = £28.0338 |
 
 ## 6. Independent arithmetic
 
@@ -97,8 +117,11 @@ Hand checks (from the workbooks):
 - **Hollow driveshaft / input shaft** are costed from solid bar (the tool has no tube or forged-blank stock on the gear
   route); the driveshaft removes 84 % of its bar. The form takes a forged-blank quote (and a zero turning cycle) when
   one exists. A helical input gear is costed spur-equivalent until the helix angle is entered.
-- **Fuel tank**: the kernel needs ~3–5 minutes on the 31 MB file. Start it before the meeting or use the result.
+- **Fuel tank**: the 31 MB file now costs live in ~3 minutes (it timed out at 150 s, and then spent 296 s unfolding
+  the tank as a pressing). Start it before you need it. Its ±20 % band is the widest here: resin, capacity band and
+  barrier were the tool's leanings, confirmed rather than read off a drawing.
 - **CLOSE_VOLUME** route is the engineer's choice — the file does not say what the part is.
-- **STL (sprocket)**: no B-rep, so features are entered (hole count) not measured; no DFM on a mesh.
+- **STL (sprocket)**: no B-rep, so the tooth outline, holes and any hardening cannot be measured — the £2.96 blanked plate
+  is the blank and the press only, and the report now says so (warning `mesh_features_not_costed`). Ask for the STEP.
 - Leak test on a casting borrows the library's tube leak-test rig as a proxy machine; gear workbooks carry the gear
   module's derivation notes with literal £ (correct in GBP, not converted in another currency).

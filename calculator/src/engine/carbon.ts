@@ -41,7 +41,9 @@ function materialCarbonFactor(m: MaterialRate | undefined): { factor: number; cl
   // beside a ductile-iron costing (uploaded-parts review, Oct 2026).
   if (has('cast iron', 'ductile', 'grey iron', 'gray iron', 'en-gjs', 'en-gjl', 'en-gjv', 'gjs', 'gjl', 'gjv', 'gjmb', 'adi', 'ni-resist'))
     return { factor: 2.1, cls: 'Cast iron (steel factor applied)' };
-  if (has('steel', 'iron', 'ferrous', 'hslä', 'hsla', 'dp', 'boron')) return { factor: 2.1, cls: 'Steel' };
+  // "dp" (dual-phase) only as its own token — as a substring it matched hDPe and gave the HDPE fuel tank steel's factor
+  // and a "(Steel)" label (uploaded-parts review, Oct 2026).
+  if (has('steel', 'iron', 'ferrous', 'hslä', 'hsla', 'boron') || /(^|[^a-z])dp\s?-?\d/.test(s)) return { factor: 2.1, cls: 'Steel' };
   // Composites — TRUE structural laminates only. A glass-FILLED thermoplastic
   // (e.g. "PP GF30 (Short Glass)", "PA66 GF30") is NOT a GFRP composite: it is
   // mostly its base resin and is priced/emitted near it, so it must fall through

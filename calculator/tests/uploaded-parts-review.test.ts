@@ -207,3 +207,32 @@ describe('screen and headless cost a machined part alike', () => {
     expect(toCostParams('machining', model, 100_000, 'aluminium', geo)!.assumed.join(' ')).toMatch(/removal ceiling/);
   });
 });
+
+describe('headless OEE / labour efficiency = the form\'s, where no rule sets them', () => {
+  it('injection moulding and stamping read the same defaults the forms show (bumper £13.29 headless v £12.99 screen)', async () => {
+    const { FORM_EFFICIENCY_DEFAULTS } = await import('../src/engine/cost-input-rules/to-cost-params.js');
+    const main = readFileSync(new URL('../src/ui/main.ts', import.meta.url), 'utf8');
+    const formValue = (id: string) => Number(new RegExp(`id="${id}"[^>]*value="([\\d.]+)"`).exec(main)![1]);
+    expect(FORM_EFFICIENCY_DEFAULTS.injection_moulding).toEqual({ oee: formValue('imm-oee'), labourEfficiency: formValue('imm-lab-eff') });
+    expect(FORM_EFFICIENCY_DEFAULTS.sheet_metal).toEqual({ oee: formValue('sm-oee'), labourEfficiency: formValue('sm-lab-eff') });
+  });
+});
+
+describe('embodied carbon reads the material it is given', () => {
+  it('HDPE is a polyethylene, not steel ("dp" matched inside "hdpe"); DP600 is still steel; ductile iron says so', async () => {
+    const { computeCarbon } = await import('../src/engine/carbon.js');
+    const cls = (materialId: string) => computeCarbon({ input: { rawMaterial: { materialId, netWeightKg: 1, materialUtilization: 1 } } as never, library: book, commodity: 'blow_moulding', region: 'UK' } as never).materialClass;
+    expect(cls('mat-hdpe-fuel-coex')).toMatch(/Polyethylene/);
+    expect(cls('mat-gjs500')).toMatch(/Cast iron/);
+    const dp = book.materials.find(m => /\bDP\s?\d/i.test(m.grade));
+    if (dp) expect(cls(dp.id)).toBe('Steel');
+  });
+});
+
+describe('a heavy-gauge steel pressing is bought hot-rolled', () => {
+  it('above 3 mm the representative steel is HRPO, not DC04 cold-rolled deep-drawing coil (5 mm plate sprocket)', async () => {
+    const { SHEET_COLD_ROLLED_MAX_MM } = await import('../src/engine/cost-input-rules/commodities/sheet-metal.js');
+    expect(SHEET_COLD_ROLLED_MAX_MM).toBe(3);
+    expect(book.materials.find(m => m.id === 'mat-hrpo')?.category).toMatch(/Sheet/);
+  });
+});

@@ -117,6 +117,17 @@ const RUBBER_MACHINE: Record<string, string> = {
   die_cut: 'die-cut-press-rubber',
 };
 
+/**
+ * OEE and labour efficiency for the commodities whose rules do not set them — the SAME defaults their forms show
+ * (imm-oee / imm-lab-eff, sm-oee / sm-lab-eff in main.ts). Headless used the shop-wide 0.80 / 0.92, so the bumper cost
+ * £13.29 headless and £12.99 on screen (uploaded-parts review, Oct 2026). tests/uploaded-parts-review.test.ts reads the
+ * form values, so the two cannot drift apart again.
+ */
+export const FORM_EFFICIENCY_DEFAULTS: Record<string, { oee: number; labourEfficiency: number }> = {
+  injection_moulding: { oee: 0.85, labourEfficiency: 0.95 },
+  sheet_metal: { oee: 0.85, labourEfficiency: 0.95 },
+};
+
 export const SHOP_DEFAULTS = {
   oee: 0.80,
   manning: 1,
@@ -310,8 +321,8 @@ export function toCostParams(
   if (mat.assumed) assumed.push(mat.assumed);
 
   const shop = {
-    labourId, oee: D.oee, manning: D.manning,
-    labourEfficiency: D.labourEfficiency, rejectRate: D.rejectRate,
+    labourId, oee: FORM_EFFICIENCY_DEFAULTS[commodity]?.oee ?? D.oee, manning: D.manning,
+    labourEfficiency: FORM_EFFICIENCY_DEFAULTS[commodity]?.labourEfficiency ?? D.labourEfficiency, rejectRate: D.rejectRate,
     amortizationVolume: annualVolume,
   };
 

@@ -337,3 +337,18 @@ export function orientationWarning(geo: { orientationCheck?: { aabbOverObb?: num
       + 'file\u2019s axes, so stock-based material and machining may be overstated. Re-export the part aligned to its main faces.',
   }];
 }
+
+/**
+ * A mesh (STL) costing says what it could not cost. A mesh has no B-rep: hole diameters and depths, pockets and gear
+ * teeth cannot be read, so the machining is the envelope and stock only — the chain sprocket STL was costed with its 13
+ * entered holes and its teeth in no operation, and nothing on the report said so (uploaded-parts review, Oct 2026).
+ */
+export function meshFeatureWarning(geo: { status?: string; wallThickness?: { method?: string } | null }): CADSanityWarning[] {
+  if (geo.status !== 'success' || geo.wallThickness?.method !== 'stl_heuristic') return [];
+  return [{
+    code: 'mesh_features_not_costed', severity: 'warn',
+    message: 'Mesh (STL) upload: holes, pockets, threads and gear teeth cannot be measured from triangles, so no operation '
+      + 'here cuts them — a hole count entered for the route is not timed. Upload the STEP for a feature-level cost, or add '
+      + 'the drilling / tooth-cutting operations on the form.',
+  }];
+}

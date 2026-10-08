@@ -164,6 +164,9 @@ function formingNote(ctx: RuleContext, dev: NonNullable<RuleContext['geo']['blan
  * ray-cast minimum only when no bends were found, and says so in the basis so
  * the weaker source is visible on the report.
  */
+/** The thickest gauge costed as cold-rolled coil; heavier steel is hot-rolled (CostVision engineering heuristic). */
+export const SHEET_COLD_ROLLED_MAX_MM = 3;
+
 export function gaugeMm(ctx: RuleContext): { mm: number; basis: string; confidence: number } | null {
   let read: { mm: number; basis: string; confidence: number } | null = null;
   const sm = ctx.geo.sheetMetal;
@@ -1063,9 +1066,13 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
         if (amb.decision) return ask(amb.decision);
         const mat = materialFacts(ctx);
         if (mat.decision) return ask(mat.decision);
-        const id = representativeMaterialId(ctx.commodity, mat.family!);
+        // Above 3 mm a steel pressing is bought hot-rolled (pickled & oiled), not as cold-rolled deep-drawing coil —
+        // a 5 mm plate sprocket was costed in DC04 (uploaded-parts review, Oct 2026).
+        const g = gaugeMm(ctx);
+        const heavySteel = mat.family === 'steel' && g != null && g.mm > SHEET_COLD_ROLLED_MAX_MM;
+        const id = heavySteel ? 'mat-hrpo' : representativeMaterialId(ctx.commodity, mat.family!);
         return decided('sheetMetal.materialId', id ?? mat.family!, 'geometry',
-          `${mat.family} → ${id ?? mat.family} (representative coil grade — not a drawing callout)`, 0.85);
+          `${mat.family} → ${id ?? mat.family} (representative ${heavySteel ? `hot-rolled grade for a ${g!.mm.toFixed(1)} mm gauge — cold-rolled coil stops at ~${SHEET_COLD_ROLLED_MAX_MM} mm` : 'coil grade'} — not a drawing callout)`, 0.85);
       },
     },
     {
