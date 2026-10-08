@@ -198,7 +198,7 @@ describe('machining rules read the hole, not the invoice', () => {
       [{ id: 'H4', kind: 'hole', faceIds: [4, 5], diaMm: 6, depthMm: 72, ldRatio: 12 }],
       { commodity: 'machining' }));
     const f = r.findings.find(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill')!;
-    expect(f.severity).toBe('major');            // 12:1 is past extended reach too
+    expect(f.severity).toBe('critical');         // 12:1 is past extended reach: a gun-drilling operation
     expect(f.measured.value).toBe(12);
     expect(f.threshold.value).toBe(STANDARD_DRILL_LD);
     expect(f.recommendation).toMatch(/gun-drilling|trepanning/);
