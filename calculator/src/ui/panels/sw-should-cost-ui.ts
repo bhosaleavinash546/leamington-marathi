@@ -20,11 +20,11 @@ import type {
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
-  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
-import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
-import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
+import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
+import type { SWRateEntry, RateConfidence, SWRateLibrary } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 import { projectStore } from '../project-store.js';
@@ -54,6 +54,7 @@ async function syncSWRateLibrary(): Promise<void> {
       const f = document.getElementById(id) as HTMLInputElement | null;
       if (f && f.dataset.typed !== '1') f.value = String(swLibraryBaseRate(_swInputs));
     }
+    refreshSWBookViews();
   } catch { /* offline / not authed — keep engine defaults */ }
 }
 
@@ -213,12 +214,16 @@ const CAT_META: Record<string, { label: string; icon: string; color: string }> =
 
 // Rec #1: Rate library provenance — every rate shown with its source, date and
 // confidence so the model is defensible, not a black box of constants.
-function renderRateLibraryHTML(): string {
-  const lib = DEFAULT_SW_RATE_LIBRARY;
+/** The rate book the costing uses: the organisation's company rates when set, else the built-in book (P2 #13 — the
+ *  panel always showed the built-in book). */
+function activeSWBook(): { lib: SWRateLibrary; company: boolean } {
+  return { lib: resolveRateLibrary(_swInputs.rateLibrary), company: !!_swInputs.rateLibrary };
+}
+
+function rateLibraryRowsHTML(lib: SWRateLibrary): string {
   const confColor = (c: RateConfidence) => c === 'High' ? '#059669' : c === 'Medium' ? '#d97706' : '#dc2626';
   const confBadge = (c: RateConfidence) =>
     `<span style="font-size:0.62rem;font-weight:700;color:#fff;background:${confColor(c)};border-radius:3px;padding:1px 5px">${c}</span>`;
-
   const rows = (title: string, entries: [string, SWRateEntry][]) =>
     `<tr><td colspan="4" style="font-weight:700;color:var(--sw-text-primary);padding-top:8px">${esc(title)}</td></tr>` +
     entries.map(([k, e]) => `<tr>
@@ -227,28 +232,45 @@ function renderRateLibraryHTML(): string {
       <td>${confBadge(e.confidence)} <span style="font-size:0.7rem;color:var(--sw-text-muted)">${esc(e.asOf)}</span></td>
       <td style="font-size:0.7rem;color:var(--sw-text-secondary)">${esc(e.source)}${e.note ? ` <em>(${esc(e.note)})</em>` : ''}</td>
     </tr>`).join('');
-
   const ent = <T extends string>(rec: Record<T, SWRateEntry>) => Object.entries(rec) as [string, SWRateEntry][];
+  return rows('Labour base (£/person-month, pre-overhead)', [['UK senior-blended base', lib.ukBaseRatePerPM]])
+    + rows('Regional multipliers', ent(lib.regionMultipliers))
+    + rows('Development source multipliers', ent(lib.devSourceMultipliers))
+    + rows('ASIL development multipliers (ISO 26262)', ent(lib.asilDevMultipliers))
+    + rows('ASIL test/verification multipliers', ent(lib.asilTestMultipliers))
+    + rows('Complexity multipliers', ent(lib.complexityMultipliers))
+    + rows('Reuse factors', ent(lib.reuseFactors));
+}
 
+function rateLibraryBadgeHTML(lib: SWRateLibrary, company: boolean): string {
+  return `<span style="font-size:0.68rem;font-weight:600;color:#fff;background:#2563eb;border-radius:4px;padding:1px 7px">${company ? 'Company rates · ' : 'Built-in · '}v${esc(lib.version)}</span>
+      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">reviewed ${esc(lib.lastReviewed)} · every rate sourced &amp; overridable</span>`;
+}
+
+/** Re-draw what depends on the active book once it has loaded (it arrives after the panel renders). */
+function refreshSWBookViews(): void {
+  const { lib, company } = activeSWBook();
+  const rowsEl = document.getElementById('sw-ratelib-rows');
+  if (rowsEl) rowsEl.innerHTML = rateLibraryRowsHTML(lib);
+  const badgeEl = document.getElementById('sw-ratelib-badge');
+  if (badgeEl) badgeEl.innerHTML = rateLibraryBadgeHTML(lib, company);
+  const valEl = document.getElementById('sw-validation-wrap');
+  if (valEl) valEl.innerHTML = renderValidationHTML();
+}
+
+function renderRateLibraryHTML(): string {
+  const { lib, company } = activeSWBook();
   return `
   <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
     <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;list-style:none">
       <span>Rate Library &amp; Provenance</span>
-      <span style="font-size:0.68rem;font-weight:600;color:#fff;background:#2563eb;border-radius:4px;padding:1px 7px">v${esc(lib.version)}</span>
-      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">reviewed ${esc(lib.lastReviewed)} · every rate sourced &amp; overridable</span>
+      <span id="sw-ratelib-badge" style="display:contents">${rateLibraryBadgeHTML(lib, company)}</span>
     </summary>
     <div style="padding:0 18px 16px;overflow-x:auto">
       <div id="sw-rate-admin" style="margin-bottom:12px"></div>
       <table class="sw-data-table" style="font-size:0.76rem">
         <thead><tr><th>Rate</th><th class="sw-num">Value</th><th>Confidence / As-of</th><th>Source</th></tr></thead>
-        <tbody>
-          ${rows('Labour base (£/person-month, pre-overhead)', [['UK senior-blended base', lib.ukBaseRatePerPM]])}
-          ${rows('Regional multipliers', ent(lib.regionMultipliers))}
-          ${rows('Development source multipliers', ent(lib.devSourceMultipliers))}
-          ${rows('ASIL development multipliers (ISO 26262)', ent(lib.asilDevMultipliers))}
-          ${rows('ASIL test/verification multipliers', ent(lib.asilTestMultipliers))}
-          ${rows('Complexity multipliers', ent(lib.complexityMultipliers))}
-          ${rows('Reuse factors', ent(lib.reuseFactors))}
+        <tbody id="sw-ratelib-rows">${rateLibraryRowsHTML(lib)}
         </tbody>
       </table>
       <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">Override the UK base rate in Programme Configuration above. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <span style="color:#dc2626;font-weight:600">Low</span> figures as directional.</p>
@@ -260,7 +282,7 @@ function renderRateLibraryHTML(): string {
 // programmes so the model states its own error instead of presenting a number
 // as truth. See docs/sw-cost-validation.md.
 function renderValidationHTML(): string {
-  const rep = runValidation();
+  const rep = runValidation(undefined, undefined, _swInputs.rateLibrary);
   const vColor = (v: number) => Math.abs(v) <= 15 ? '#059669' : Math.abs(v) <= rep.band ? '#d97706' : '#dc2626';
   const sign = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(0)}%`;
 
@@ -565,7 +587,7 @@ function renderWizReport(): void {
   const res = document.getElementById('sw-results');
   if (res) res.style.display = '';
   const note = document.getElementById('wiz-report-note');
-  if (note) note.innerHTML = `<div class="sw-box" style="font-size:0.78rem;line-height:1.6"><strong>Key assumptions:</strong> ${selectedCats().length}/7 domains · ${esc(_swInputs.region.replace('_', ' '))} · ${_programPhase} phase · ${_swInputs.programLifeYears} yr · ${fmt(_swInputs.annualProductionVolume / 1000, 0)}k vehicles/yr · overhead ×${_swInputs.overheadMultiplier}. Rates from library v${esc(DEFAULT_SW_RATE_LIBRARY.version)}. Per-vehicle is amortised over full lifetime volume — see the Model Validation panel for the recovery-window caveat.</div>`;
+  if (note) note.innerHTML = `<div class="sw-box" style="font-size:0.78rem;line-height:1.6"><strong>Key assumptions:</strong> ${selectedCats().length}/7 domains · ${esc(_swInputs.region.replace('_', ' '))} · ${_programPhase} phase · ${_swInputs.programLifeYears} yr · ${fmt(_swInputs.annualProductionVolume / 1000, 0)}k vehicles/yr · overhead ×${_swInputs.overheadMultiplier}. Rates from ${activeSWBook().company ? "company" : "built-in"} library v${esc(activeSWBook().lib.version)}. Per-vehicle is amortised over full lifetime volume — see the Model Validation panel for the recovery-window caveat.</div>`;
 }
 
 function goToWizStep(n: number): void {
@@ -731,7 +753,7 @@ function renderSWPanelHTML(): string {
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
       <div class="sw-field-group">
         <label class="sw-label">Development Region</label>
-        <select id="sw-region" class="sw-config-sel">${regionOpts}</select>${_swHubBasis ? `<div style="font-size:0.66rem;color:var(--text-muted);margin-top:3px">${esc(_swHubBasis)}</div>` : ''}
+        <select id="sw-region" class="sw-config-sel">${regionOpts}</select><div id="sw-hub-basis" style="font-size:0.66rem;color:var(--text-muted);margin-top:3px">${esc(_swHubBasis)}</div>
       </div>
       <div class="sw-field-group">
         <label class="sw-label">Development Source</label>
@@ -785,7 +807,7 @@ function renderSWPanelHTML(): string {
   ${renderRateLibraryHTML()}
 
   <!-- ── Model Validation (Rec #2) ─────────────────────────────── -->
-  ${renderValidationHTML()}
+  <div id="sw-validation-wrap">${renderValidationHTML()}</div>
 
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
@@ -1770,24 +1792,23 @@ function renderResults(result: SWProgramResult): void {
     <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. <strong>None of these published figures has a source link</strong> and two could not be traced at all — they are shown for context only; do not quote them. The published £/vehicle figures do not reconcile with the published totals.</p>`;
 
   // Rec 4: OEM / Tier-1 / Startup decomposition
-  const sourceDecomp: { src: string; label: string; srcMult: number; riskNote: string; ipNote: string; warrantyNote: string }[] = [
-    { src: 'OEM_Internal',   label: 'OEM Internal',    srcMult: 1.00, riskNote: 'Full visibility & control', ipNote: 'IP owned outright', warrantyNote: 'Full in-house warranty liability' },
-    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', srcMult: 0.88, riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier carries a contractual warranty share' },
-    { src: 'Startup_OSS',   label: 'Startup / OSS',   srcMult: 0.72, riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
+  const sourceDecomp: { src: string; label: string; riskNote: string; ipNote: string; warrantyNote: string }[] = [
+    { src: 'OEM_Internal',   label: 'OEM Internal',    riskNote: 'Full visibility & control', ipNote: 'IP owned outright', warrantyNote: 'Full in-house warranty liability' },
+    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier carries a contractual warranty share' },
+    { src: 'Startup_OSS',   label: 'Startup / OSS',   riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
   ];
   const currentSrc = result.inputs.devSource;
-  const currentMult = currentSrc === 'OEM_Internal' ? 1.00 : currentSrc === 'Tier1_Supplier' ? 0.88 : 0.72;
-  // Only labour-driven NRE/maintenance scales with the dev source. Fixed pools
-  // (toolchain, IP licensing, cloud) are contractual and do not move.
-  const fixedPart  = s.totalToolchain + s.totalLicensing + s.totalCloud;
-  const labourPart = s.grandTotal - fixedPart;
+  // Each row is the programme RE-COSTED with that source in the active rate book (engine devSourceComparison) —
+  // the table used its own copy of the multipliers and scaled the labour share (P2 #13).
+  const bySource = new Map(devSourceComparison(result.inputs).map(r => [r.devSource as string, r]));
   const decompRows = sourceDecomp.map(d => {
-    const estCost = fixedPart + labourPart * (d.srcMult / currentMult);
+    const row = bySource.get(d.src);
+    if (!row) return '';
     const isCurrent = d.src === currentSrc;
     return `<tr ${isCurrent ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
       <td>${isCurrent ? '⭐ ' : ''}${esc(d.label)}</td>
-      <td class="sw-num" style="color:var(--sw-accent)">${fmtM(estCost)}</td>
-      <td class="sw-num">×${d.srcMult.toFixed(2)}</td>
+      <td class="sw-num" style="color:var(--sw-accent)">${fmtM(row.grandTotal)}</td>
+      <td class="sw-num">×${row.multiplier.toFixed(2)}</td>
       <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.riskNote)}</td>
       <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.ipNote)}</td>
       <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.warrantyNote)}</td>
@@ -1801,7 +1822,7 @@ function renderResults(result: SWProgramResult): void {
       <thead><tr><th>Dev Source</th><th class="sw-num">Estimated Cost</th><th class="sw-num">Rate Mult.</th><th>Risk Profile</th><th>IP Ownership</th><th>Warranty Exposure</th></tr></thead>
       <tbody>${decompRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:8px">* Rate multipliers relative to OEM Internal baseline. Actual costs also depend on management overhead, ramp-up time, and programme governance.</p>`;
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:8px">* Each row re-costs this programme with that source's rate multiplier from the active rate book. Actual costs also depend on management overhead, ramp-up time, and programme governance.</p>`;
 
   // Engineering Insights
   const insightsEl = document.getElementById('sw-insights');
@@ -2639,13 +2660,31 @@ function updateCatCounts(): void {
  * Call this from switchCommodity('automotive_software').
  */
 let _swHubBasis = '';
-export function initSWPanel(containerEl: HTMLElement): void {
-  _swInputs = defaultSWProgramInputs();
-  // The engineering hub follows the selected manufacturing country (nearest hub, stated).
-  const mfg = (document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK';
+
+function setSWCountry(mfg: string): void {
   const hub = swRegionFor(mfg);
   _swInputs.region = hub.region;
   _swHubBasis = hub.basis ? `${mfg}: ${hub.basis}` : '';
+}
+
+/**
+ * The page's country changed: the engineering hub follows it in the INPUTS as well as the drop-downs (P2 #13 — only
+ * the advanced drop-down moved, so the wizard still costed the old country). The current result is marked stale.
+ */
+export function applySWCountry(mfg: string): void {
+  setSWCountry(mfg);
+  for (const id of ['sw-region', 'wiz-region']) {
+    const sel = document.getElementById(id) as HTMLSelectElement | null;
+    if (sel) sel.value = _swInputs.region;
+  }
+  const basisEl = document.getElementById('sw-hub-basis');
+  if (basisEl) basisEl.textContent = _swHubBasis;
+}
+
+export function initSWPanel(containerEl: HTMLElement): void {
+  _swInputs = defaultSWProgramInputs();
+  // The engineering hub follows the selected manufacturing country (nearest hub, stated).
+  setSWCountry((document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK');
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();
   wireSWPanel();

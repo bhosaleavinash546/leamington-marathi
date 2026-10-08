@@ -1201,6 +1201,18 @@ function computeModuleCost(
   };
 }
 
+/** The programme re-costed with each development source, in the programme's own rate book (P2 #13). The screen used
+ *  to re-price with its own copy of the multipliers (0.88 / 0.72), so a company book's multipliers never reached the
+ *  table, and it scaled the labour share linearly instead of re-costing. */
+export interface SWDevSourceRow { devSource: DevSource; multiplier: number; grandTotal: number; perVehicle: number }
+export function devSourceComparison(prog: SWProgramInputs): SWDevSourceRow[] {
+  const mult = resolveRates(prog).devSource;
+  return (Object.keys(mult) as DevSource[]).map(devSource => {
+    const s = computeSWProgram({ ...prog, devSource }, { summaryOnly: true }).summary;
+    return { devSource, multiplier: mult[devSource], grandTotal: s.grandTotal, perVehicle: s.perVehicle };
+  });
+}
+
 /** Cybersecurity engineering (TARA, cyber concept, verification) as a share of development, by ISO/SAE 21434 CAL.
  *  CostVision engineering estimate: the review found no published effort ratio per CAL (software review §5), so these
  *  are the previous ASIL-keyed tiers (8 / 10 / 14 %) re-keyed — CAL1 and CAL2 share the lowest. */

@@ -92,10 +92,13 @@ export const SW_VALIDATION_CASES: SWValidationCase[] = SW_PUBLISHED_PROGRAMMES.m
 const DEFAULT_BAND_PCT = 35;
 
 /** Run the back-test and return the variance report. */
-export function runValidation(band = DEFAULT_BAND_PCT, cases = SW_VALIDATION_CASES): SWValidationReport {
+export function runValidation(band = DEFAULT_BAND_PCT, cases = SW_VALIDATION_CASES,
+                              rateLibrary?: SWProgramInputs['rateLibrary']): SWValidationReport {
   const results: SWValidationResult[] = cases.map(c => {
     const inputs: SWProgramInputs = {
       ...defaultSWProgramInputs(),
+      // The ACTIVE book (company rates when set) — the panel showed the built-in book's figures (P2 #13).
+      ...(rateLibrary ? { rateLibrary } : {}),
       region:                 c.config.region,
       devSource:              c.config.devSource,
       annualProductionVolume: c.config.annualProductionVolume,

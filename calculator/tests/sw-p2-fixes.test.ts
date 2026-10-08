@@ -4,9 +4,11 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP, CYBER_UPLIFT_BY_CAL, calFor } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP, CYBER_UPLIFT_BY_CAL, calFor, devSourceComparison } from '../src/engine/sw-should-cost.js';
 import { USD_PER_GBP } from '../src/engine/gear-heat-treat-data.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
+import { runValidation } from '../src/engine/sw-validation.js';
+import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
 
 const src = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const prog = (mut: (p: SWProgramInputs) => void = () => {}) => { const p = defaultSWProgramInputs(); mut(p); return p; };
@@ -174,5 +176,46 @@ describe('#12 cybersecurity uplift follows the ISO/SAE 21434 CAL, not the ASIL',
 
   it('the advanced table offers a CAL per module', () => {
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/sw-cal-sel/);
+  });
+});
+
+describe('#13 the screen shows what was costed — active book, country, dev-source table', () => {
+  const company = {
+    version: 'ACME-1',
+    devSourceMultipliers: { ...DEFAULT_SW_RATE_LIBRARY.devSourceMultipliers,
+      Tier1_Supplier: { ...DEFAULT_SW_RATE_LIBRARY.devSourceMultipliers.Tier1_Supplier, value: 0.5 } },
+  } as SWProgramInputs['rateLibrary'];
+
+  it('dev-source rows are the programme re-costed with each source, exactly', () => {
+    const p = prog();
+    for (const row of devSourceComparison(p)) {
+      const direct = computeSWProgram({ ...p, devSource: row.devSource }).summary;
+      expect(row.grandTotal).toBeCloseTo(direct.grandTotal, 4);
+      expect(row.perVehicle).toBeCloseTo(direct.perVehicle, 8);
+    }
+  });
+
+  it('dev-source rows follow a company book\'s multiplier (the screen had 0.88 hard-coded)', () => {
+    const rows = devSourceComparison(prog(p => { p.rateLibrary = company; }));
+    expect(rows.find(r => r.devSource === 'Tier1_Supplier')!.multiplier).toBe(0.5);
+    const builtIn = devSourceComparison(prog()).find(r => r.devSource === 'Tier1_Supplier')!;
+    expect(rows.find(r => r.devSource === 'Tier1_Supplier')!.grandTotal).toBeLessThan(builtIn.grandTotal);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/srcMult: 0\.88|=== 'Tier1_Supplier' \? 0\.88/);
+  });
+
+  it('validation runs in the book it is given', () => {
+    const a = runValidation();
+    const b = runValidation(undefined, undefined, company);
+    const t1 = (r: typeof a) => r.cases.map(c => c.modelledTotalGBP);
+    expect(t1(b)).not.toEqual(t1(a));     // the cases include Tier-1 programmes, so the company multiplier shows
+  });
+
+  it('the page country moves the inputs and both hub pickers (not just the advanced drop-down)', () => {
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).toMatch(/export function applySWCountry/);
+    expect(ui).toMatch(/\['sw-region', 'wiz-region'\]/);
+    expect(src('src/ui/main.ts')).toMatch(/applySWCountry\(region\)/);
+    expect(ui).toMatch(/runValidation\(undefined, undefined, _swInputs\.rateLibrary\)/);
+    expect(ui).toMatch(/resolveRateLibrary\(_swInputs\.rateLibrary\)/);
   });
 });
