@@ -616,6 +616,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   ICE / hybrid modules are `estimateBasis` copies of named analogues; published benchmarks are unverified (one list,
   `verified` flag) and no test may pin the model to them; a base-rate field overrides only when typed (`sw-rate-field.ts`).
   Snapshot outputs with `npx tsx scripts/sw-review/baseline.ts <out.json>`; live check `e2e/sw-live.ts`.
+  P2 (`docs/review/software-costing-p2-fixes-2026-10.md`): `computeSWProgram` throws `SWInputError` on invalid input
+  (`validateSWInputs`) — never patch a bad value in the UI; `personMonths` is the development effort COSTED and
+  `effortPersonMonths` all costed effort; the Monte Carlo and the volume sensitivity use the headline's per-vehicle
+  rule; per-unit royalties (`perVehicleRoyaltyGBP` / `perVehiclePerYearGBP`, unsourced, from the modules' notes) are
+  charged per vehicle and never platform-apportioned; cyber follows the ISO/SAE 21434 CAL (`calFor`,
+  `CYBER_UPLIFT_BY_CAL`), not the ASIL; the page country goes through `applySWCountry`; panels and validation read the
+  ACTIVE book; the dev-source table is `devSourceComparison`; exports print `swRateBasis`; `effortCalibration` comes
+  only from the user's logged actuals (`sw-calibration.ts`, ratio of sums) and scales the model's base PM, never a
+  typed custom PM. The static report pages are reference examples (`scripts/sw-review/reference-banner.ts`).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
