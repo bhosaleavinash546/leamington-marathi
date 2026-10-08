@@ -46,6 +46,9 @@ Every fix is its own commit with a test in `calculator/tests/sw-p1-fixes.test.ts
 | Mercedes GLS 450 (PHEV) | 628.3 | 470.9 | 307.4 | **333.4** | -47% | £1,551 → £823 | 49 → 53 |
 | Mercedes GLS 450 (BEV) | 651.1 | 487.0 | 314.0 | **314.0** | -52% | £1,608 → £775 | 49 → 49 |
 
+Across the 20 vehicle demos the total falls by **34 % to 53 %** (the default programme by 35 %). The commit message of
+`12ca1fb` says "−25 to −53 %" — that lower bound is wrong; this table is the record.
+
 **Why each number moved**
 
 - **Overhead (#3)** — every demo ran at 1.55–1.62 against a base rate that already includes benefits; 1.15 is the
