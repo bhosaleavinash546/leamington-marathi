@@ -5,6 +5,20 @@ Every finding is tagged **Verified** (reproduced by running the code or reading 
 **Likely** (strong evidence, not fully proven) or **Unverified** (could not be confirmed).
 File references are `calculator/<path>:<line>`. No fixes have been made — section 6 is the proposal.
 
+## Bottom line
+
+- **The arithmetic is sound and repeatable.** A hand calculation reproduces the engine to the penny, the same input gives
+  identical results every time, and no AI number ever reaches the cost. All 49 module tests pass. (Verified)
+- **The inputs behind the arithmetic are mostly unsourced.** Every rate, multiplier and module size is a text
+  description with no document or link, and the seven "published" benchmark programmes could not be traced. (Verified)
+- **ICE, MHEV and PHEV are under-costed.** The tool has no engine, transmission, emissions or hybrid-control software
+  modules: ICE powertrain software costs £0. Shared software is charged in full to every powertrain variant. (Verified)
+- **Safety-critical (ASIL) uplift looks too high.** ×3.2 on development plus a test fraction 5× higher, against
+  ×1.26–×1.8 in every source found; base effort may already include it (double counting). (Likely)
+- **Three screen bugs change the money:** a company's uploaded base rate is ignored in the advanced form, vehicle demos drop
+  company rates, and the overhead default is 1.15 in the engine but 1.60 on screen (+28 %). (Verified)
+- **21 improvements** are listed in section 6. Nothing has been changed yet.
+
 ---
 
 ## 1. Workflow map
@@ -186,7 +200,97 @@ All four run without errors and in a sensible order, but see section 4 for what 
 
 ## 5. Market research and competitor benchmark
 
-COMPETITOR_SECTION
+**How this was researched.** Web search (8 Oct 2026). The research could not open the pages directly (the
+environment's proxy refused them), so every competitor cell rests on **search-result extracts** of the cited page,
+not a full read — tagged **Likely (search extract)**. "unknown" means no source was found. The CostVision column
+is from this repo's code — **Verified**. Spot-check key cells in a browser before quoting them externally.
+
+| Feature | **CostVision** (this module) | SEER for Software (Galorath) | PRICE TruePlanning (software) | QSM SLIM-Estimate | COCOMO II (USC) |
+|---|---|---|---|---|---|
+| Size input | Person-months per module from a fixed table; custom PM | SLOC, function points, use cases [1][2][3] | SLOC, function points, object points, use-case points [11][12][13] | Any unit via a "gearing factor" to SLOC [23][32] | KSLOC or function points → SLOC [36][37] |
+| Effort model | PM × reuse × ASIL × complexity; no size exponent | Parametric, 50+ parameters [1][8] | Activity-based: size × productivity × adjustments [12][15] | Putnam equation, Rayleigh staffing [22][27] | PM = A·Size^E·ΠEM; published constants A 2.94, B 0.91 [36][38] |
+| Reuse / modified code | 5 reuse levels (×1.00 … ×0.14); safety floor | New / reused / COTS → effective size [1] | "Reused size" input [11] | Effective size = new + modified [32] | AAF = 0.4·DM + 0.3·CM + 0.3·IM → ESLOC [36] |
+| Labour rates by location / role | 9 hubs × 1 blended rate; no roles | Project labour rates, by labour category [1][2][7] | Rates by labour resource; other countries by purchasing power [11] | Skill categories with rates [24] | Rate per module per month [41] |
+| Safety-critical adjustment | ASIL QM–D: dev ×1.00–3.20 and test fraction 0.35–1.80 | unknown (reliability as an output only [2]) | DO-178 levels in a calculator [11]; ISO 26262 unknown | unknown | RELY driver 0.82–1.26 [36][39] |
+| Cybersecurity | 8–14 % of dev, keyed on ASIL; Category F modules | unknown | "Security capability" impact [14]; method unknown | unknown | Not in core; COSECMO extension [43] |
+| V&V / testing | SIL / MIL / HIL / regression / pen-test / scenario split | TEST parameter; defect outputs [2][8] | Activity-based; split unknown [12] | Defect curves, MTTD [28] | Phase / activity split [41] |
+| Maintenance / lifecycle | % of dev per year × life; cloud, IP £/yr | Years, change rate, rigor, rate [2][7] | Maintenance model [11] | Life-cycle totals [22] | Maintenance size via MCF / MAF [36] |
+| Risk / uncertainty | Seeded Monte Carlo (triangular, 55 % correlation), sensitivity | Monte Carlo (Latin hypercube), P50 / P80 / P95 [2][5] | Uncertainty on any metric [11] | Monte Carlo documented for SLIM-Collaborate / SLIM AI [25][26] | None built in [48] |
+| Calibration to own history | **No** (back-test only, on unsourced figures) | Yes — calibrate on completed projects [2][6] | Yes [20] | Yes — SLIM-DataManager [29][30] | Yes — local calibration of A and B [38][41] |
+| Licences / COTS | Tool + IP £/yr per module | COTS integration estimate [2] | Software COTS cost objects [11] | unknown | COCOTS companion model [44] |
+| Hardware co-estimation | No (separate commodities in CostVision) | Separate product SEER-H [9] | Hardware models in the same framework [11][16] | unknown | unknown |
+| Automotive specifics (powertrains, ECU modules, OTA, R155/R156) | Yes — 49 automotive modules, OTA / cloud, R155/R156 opt-in; but no ICE / hybrid modules | unknown | unknown | unknown | unknown |
+| Price | Part of CostVision | Commercial, no public price [4] | Commercial, quote only [17] | Commercial; one 2023 Canadian contract CAD 16,740 [33] | Free tool, open model [41][45] |
+
+**Automotive-specific findings** (Likely, search extract)
+- **No commercial automotive software should-cost tool was found** — the four tools above are general-purpose and
+  defence / aerospace-led. CostVision's automotive module list is therefore a genuine differentiator; its weak spots
+  (sizing, calibration, sourcing) are exactly where the general tools are strong.
+- **McKinsey "software should-costing"** (automotive procurement): bottom-up supplier cost + margin, sized by
+  T-shirt sizing against reference projects and "complexity points"; levers include team size, co-location, duration
+  and best-cost-country share [49].
+- **Renault + COSMIC (ISO 19761)**: sizes Simulink ECU specifications automatically and uses the size to check
+  supplier cost and schedule [50][51][52][55] — a published, automotive way to get a size measure.
+- **ISO 26262 effort uplift — no standard multiplier exists.** One engineering blog (Solcept) quotes ×1.4 from
+  non-safety to ASIL-B and ×1.3 from B to D, i.e. about **×1.8 for ASIL-D** [58]; Analog Devices quotes a 0–60 %
+  safety premium [59]; COCOMO's top reliability rating is ×1.26 [39]. CostVision applies **×3.2 to development and
+  then a test fraction 5× higher** — far above every figure found. This supports method finding "ASIL compounding"
+  (still Likely: none of these is an automotive standard).
+- **Cybersecurity (ISO/SAE 21434): no published effort ratio found**; an ICEAA 2024 paper recommends costing cyber
+  as its own engineering phase plus security-COTS licences [61].
+- **Research state:** a 2024 KIT thesis finds "surprisingly little research" on automotive software cost practice [57].
+
+**Not verified:** full parameter lists of SEER / TruePlanning / SLIM; how their security and assurance inputs work;
+any independently measured accuracy for software (a NASA blind study tested SEER-H / TruePlanning on hardware only [21]).
+
+**Sources** (accessed 2026-10-08)
+[1] https://en.wikipedia.org/wiki/SEER-SEM ·
+[2] https://totalmetrics.com/__data/assets/pdf_file/0018/6840/SEER-for-Software.pdf ·
+[3] https://galorath.com/seer/use-case/effort-estimation/ ·
+[4] https://galorath.com/seer/ ·
+[5] https://galorath.com/risk/monte-carlo-simulation/ ·
+[6] https://galorath.com/newsroom/seer-for-software-now-incorporates-the-data-centric-dod-srdr-dataset/ ·
+[7] https://core.ac.uk/download/pdf/36726413.pdf ·
+[8] https://arxiv.org/pdf/1508.00032 ·
+[9] https://galorath.com/seer/solution/hardware-development/ ·
+[11] https://pricesystems.s3.amazonaws.com/Product+Release,+Updates/TruePlanning%C2%AE+Release+Notes+16.2.5.pdf ·
+[12] https://wikibin.org/articles/trueplanning-software-model.html ·
+[13] https://www.sei.cmu.edu/blog/software-cost-estimation-explained/ ·
+[14] https://www.projectmanagement.com/tools/232247/PRICE-Systems-LLC-TruePlanning ·
+[15] https://www.pricesystems.com/price-cost-analytics/true-planning/ ·
+[16] https://platform.softwareone.com/product/trueplanning/PCP-4947-0705 ·
+[17] https://www.g2.com/products/trueplanning/pricing ·
+[20] https://www.unisonglobal.com/blog-posts/why-benchmarking-is-the-right-thing-to-do ·
+[21] https://ntrs.nasa.gov/api/citations/20200003013/downloads/20200003013.pdf ·
+[22] https://www.qsm.com/products/slim-estimate ·
+[23] https://nethelp103.slimcollaborate.com/Estimate103NetHelp/Documents/useofthegearingfactor.htm ·
+[24] https://www.qsm.com/press-release/qsm-releases-slim-suite-103 ·
+[25] https://www.qsm.com/blog/2024/quantifying-and-managing-software-project-risk ·
+[26] https://www.qsm.com/sites/default/files/qsm/SLIM%20AI%20Delivers%20Fast%20Accurate%20Software%20Cost%20Estimates.pdf ·
+[27] https://en.wikipedia.org/wiki/Putnam_model ·
+[28] https://www.qsm.com/faq/defects-mttd-0 ·
+[29] https://www.qsm.com/Resources/SLIM-Suite_Overview.pdf ·
+[30] https://qsm.com/blog/2011/deploying-estimation-right-way-slim-customer-success-story ·
+[32] https://archive.open-services.net/wiki/estimation-and-measurement/EMS-1.0-REST-API-Key-Software-Metrics/index.html ·
+[33] https://rechercher.ouvert.canada.ca/contracts/record/tbs-sct%2CC-2022-2023-Q4-00042 ·
+[36] https://www.rose-hulman.edu/class/csse/csse372/201310/Homework/CII_modelman2000.pdf ·
+[37] https://athena.ecs.csus.edu/~buckley/CSc231_files/Cocomo_II_Manual.pdf ·
+[38] https://arxiv.org/pdf/1612.03240 ·
+[39] http://staff.um.edu.mt/ecac1//files/COCOMOII_PostArchitecture_EffortMultipliers_17CostDrivers.pdf ·
+[41] https://www.rose-hulman.edu/class/cs/csse372/201410/Homework/CII_manual2000.pdf ·
+[43] https://www.psmsc.com/UG2004/Presentations/BoehmBarryColbertEd_CostingDevelopmentOfSecureSystems.pdf ·
+[44] https://ics.uci.edu/~irus/spin/flyers/99/june99.html ·
+[45] https://cocomo-ii.software.informer.com/ ·
+[48] https://cris.unibo.it/handle/11585/905327 ·
+[49] https://www.mckinsey.com/industries/industrials/our-insights/software-should-costing-a-new-procurement-tool-for-automotive-companies ·
+[50] https://cosmic-sizing.org/wp-content/uploads/2016/11/COSMIC-Method-v4.0.1-Guideline-for-sizing-real-time-software-v1.1.1.pdf ·
+[51] https://cosmic-sizing.org/publications/manage-the-automotive-embedded-software-development-cost-productivity-with-the-automation-of-a-functional-size-measurement-method-cosmic/ ·
+[52] https://cosmic-sizing.org/publications/design-of-a-functional-size-measurement-procedure-for-real-time-embedded-software-requirements-expressed-using-the-simulink-model/ ·
+[55] https://cosmic-sizing.org/publications/practical-experimentations-with-the-cosmic-method-in-automotive-embedded-software-field/ ·
+[57] https://ibu.kit.edu/english/1676_4214.php ·
+[58] https://www.solcept.ch/en/blog/critical-systems/effort-functional-safety/ ·
+[59] https://ez.analog.com/ez-blogs/b/engineerzone-spotlight/posts/what-does-it-cost-to-implement-functional-safety ·
+[61] https://www.iceaaonline.com/wp-content/uploads/2024/06/SST05-MacDougall-Advancing-Cyber-Cost-Estimating-Paper.pdf
 
 ---
 
@@ -212,6 +316,8 @@ COMPETITOR_SECTION
 | 16 | No size-based model (SLOC / function points), no calibration to actuals | method | Not comparable with SEER / SLIM / COCOMO | L | P3 | Add an optional COCOMO II-style size → effort path calibrated to the user's own projects |
 | 17 | Cloud / OTA not volume-scaled; tool licences × production life as NRE | `:965–968` | Lifecycle cost shape wrong at very high / low volume | M | P3 | Cloud per connected vehicle; tool licences over the development years |
 | 18 | Rate workbook: keys not checked, 0 accepted, no version history | server | Silent bad uploads | S | P3 | Validate keys / > 0; snapshot like the main library |
+| 20 | ASIL uplift far above every published figure (×3.2 dev + 5× test fraction vs ×1.26–×1.8 found) | `sw-rate-library.ts:79–93` | Safety-critical modules likely overstated | M | P1 | Re-base ASIL factors to a cited range; apply one combined uplift, not dev × test compounding; label as estimate |
+| 21 | No calibration to the user's own completed projects (all four commercial tools have it) | method | Accuracy cannot improve with use | M | P2 | Let the user log actual effort / cost per module and fit a programme factor (as CostVision already does for parts) |
 | 19 | Headline percentile not stated | UI results | Reader assumes headline = P50 | S | P3 | State "headline ≈ P30; P50 = £x" |
 
 **STOP — no fixes have been made.** Approve the list (or a subset) and I will work on a new branch, save the
