@@ -23,7 +23,7 @@ describe('SW — premium-trim modules are catalogued but default-off (baseline p
     for (const id of PREMIUM) {
       expect(SW_MODULES.find(m => m.id === id), `${id} missing`).toBeTruthy();
     }
-    expect(SW_MODULES.length).toBe(49);
+    expect(SW_MODULES.length).toBe(54);   // 49 + 5 ICE / hybrid estimate modules (P1 #4)
   });
 
   it('premium modules are default-off; the 43-module baseline is on by default', () => {

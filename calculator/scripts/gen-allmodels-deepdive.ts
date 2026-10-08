@@ -54,7 +54,7 @@ function insight(o:Mod):string{
 // league
 const leanCount:any={}, dearCount:any={};
 for(const o of MODS){ leanCount[o.lean.short]=(leanCount[o.lean.short]||0)+1; dearCount[o.dear.short]=(dearCount[o.dear.short]||0)+1; }
-const CAT:any={ A:['EV Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
+const CAT:any={ A:['Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
 const CATS=['A','B','C','D','E','F','G'];
 const catMods=(c:string)=>MODS.filter(m=>m.def.category===c).sort((a,b)=>b.dear.cost-a.dear.cost);
 // programme totals (MHEV cohort + Cayenne BEV) from locked runs

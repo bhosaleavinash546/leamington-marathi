@@ -199,7 +199,7 @@ function asilBadge(asil: ASILLevel): string {
 // ─── Category metadata ────────────────────────────────────────────────────────
 
 const CAT_META: Record<string, { label: string; icon: string; color: string }> = {
-  A: { label: 'EV Powertrain & Battery',    icon: '<svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg>', color: '#22c55e' },
+  A: { label: 'Powertrain & Battery',    icon: '<svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg>', color: '#22c55e' },
   B: { label: 'ADAS L2/L2+',               icon: '<svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>', color: '#3b82f6' },
   C: { label: 'Infotainment & UX',          icon: '<svg class="ic" aria-hidden="true"><use href="#i-palette"/></svg>', color: '#8b5cf6' },
   D: { label: 'Vehicle Domain Controllers', icon: '<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', color: '#f59e0b' },
@@ -612,7 +612,7 @@ function renderSWPanelHTML(): string {
       <tr class="sw-module-row" data-module-id="${def.id}">
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
         <td class="sw-mod-name">
-          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}</div>
+          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}${def.estimateBasis ? ` <span title="${esc('Estimate: ' + def.estimateBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--amber,#b45309);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">estimate</span>` : ''}</div>
           <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
         </td>
         <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:var(--sw-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>
@@ -771,7 +771,7 @@ function renderSWPanelHTML(): string {
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
     <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">Powertrain Cost Study</button>
     <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">L460 Competitive Benchmark</button>
-    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for all 49 modules" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive (all 49)</button>
+    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for every module" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive</button>
     <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
   </div>
   ${(() => {
@@ -1425,7 +1425,8 @@ export function buildVehicleInputs(v: SWVehicleDemo, rateLibrary?: SWProgramInpu
     ...(rateLibrary ? { rateLibrary } : {}),
     modules: b.modules.map(m => ({
       ...m,
-      enabled: !disabled.has(m.moduleId),
+      // Estimate modules (ICE / hybrid, P1 #4) are not part of a demo's listed scope.
+      enabled: !disabled.has(m.moduleId) && !SW_MODULES.find(d => d.id === m.moduleId)?.estimateBasis,
       reuse:   v.reuse,
       ...(v.moduleOverrides?.[m.moduleId] ?? {}),
     })),

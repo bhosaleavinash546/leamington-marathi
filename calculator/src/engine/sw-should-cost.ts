@@ -3,9 +3,9 @@
  * Senior Chief Automotive Software Should-Cost Engineer model
  * Premium Luxury SUV — Full Software Stack (2024-2026)
  *
- * Covers 49 software modules across 7 categories (43 core + 6 premium-trim
- * options that default to off):
- *  A. EV Powertrain & Battery   B. ADAS L2/L2+
+ * Covers 54 software modules across 7 categories (43 core + 6 premium-trim options + 5 ICE / hybrid estimates; the
+ * last two groups default to off):
+ *  A. Powertrain & Battery (EV, ICE, hybrid)   B. ADAS L2/L2+
  *  C. Infotainment & UX         D. Vehicle Domain Controllers
  *  E. Middleware & Platform      F. Cybersecurity
  *  G. OTA & Cloud Backend
@@ -87,6 +87,9 @@ export interface SWModuleDef {
    *  present on premium trims but folded into the generic domain buckets on base
    *  vehicles, so leaving them off preserves the validated baseline. Undefined ⇒ on. */
   defaultEnabled?:           boolean;
+  /** Set on modules whose figures are NOT their own: every number is copied from the named analogue module
+   *  (software review P1 #4, Oct 2026). The screen labels these "estimate". */
+  estimateBasis?:            string;
   notes:                     string;
 }
 
@@ -298,13 +301,13 @@ function resolveRates(prog: SWProgramInputs): ResolvedRates {
   };
 }
 
-// ─── Module Database (43 core + 6 premium-optional) ──────────────────────────
+// ─── Module Database (43 core + 6 premium-optional + 5 ICE / hybrid estimates) ─
 
 export const SW_MODULES: SWModuleDef[] = [
-  // ── CATEGORY A: EV Powertrain & Battery ──────────────────────────────────
+  // ── CATEGORY A: Powertrain & Battery ─────────────────────────────────────
   {
     id: 'bms_core', name: 'BMS Core Software', shortName: 'BMS Core',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Battery pack monitoring, protection logic, cell voltage/temp acquisition, state machine management, ASIL-D safety logic.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 90,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
@@ -315,7 +318,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'cell_balancing', name: 'Cell Balancing Algorithms', shortName: 'Cell Balancing',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Active/passive balancing algorithms, balancing current control, energy routing optimisation.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -326,7 +329,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'soc_soh_soe', name: 'SOC/SOH/SOE Estimation Models', shortName: 'SOC/SOH/SOE',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Electrochemical & data-driven (ML) State of Charge, Health, Energy estimation. Kalman, EKF, neural network approaches.',
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 42,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
@@ -337,7 +340,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'thermal_mgmt', name: 'Battery Thermal Management Software', shortName: 'Thermal Mgmt',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Thermal control loops, coolant pump/valve actuation, fast-charge thermal preconditioning, cabin integration.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -348,7 +351,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'fast_charge', name: 'Fast-Charging Control Software', shortName: 'Fast Charge',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'CCS/CHAdeMO/OCPP protocol stacks, dynamic power curve management, thermal derating during charge.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 25,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
@@ -359,7 +362,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'edu_control', name: 'EDU (Electric Drive Unit) Control Software', shortName: 'EDU Control',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Integrated electric drive unit control, dual-motor torque vectoring, multi-speed gearbox integration, creep & one-pedal drive.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
@@ -370,7 +373,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'inverter_ctrl', name: 'Inverter Control Algorithms', shortName: 'Inverter Ctrl',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Space Vector PWM, switching frequency optimisation, dead-time compensation, EMI management, demagnetisation protection.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 45,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -381,7 +384,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'motor_ctrl', name: 'Motor Control (FOC/DTC/SVPWM)', shortName: 'Motor Control',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Field-oriented control, direct torque control, sensorless rotor position estimation, flux linkage tables, temperature derating.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 42,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -392,7 +395,7 @@ export const SW_MODULES: SWModuleDef[] = [
   },
   {
     id: 'regen_braking', name: 'Regenerative Braking Software', shortName: 'Regen Braking',
-    category: 'A', categoryLabel: 'EV Powertrain & Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Brake blending control, hydraulic-electric transition, ABS/ESC coordination, one-pedal tuning, driver feel calibration.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
@@ -865,6 +868,77 @@ export const SW_MODULES: SWModuleDef[] = [
     calibrationFractionBase: 0.10,
     defaultEnabled: false,
     notes: 'AR engine licence (e.g. WayRay/Envisics). Optical registration & distortion calibration. ASIL-A (driver-facing overlay).',
+  },
+
+  // ── Combustion and hybrid powertrain (software review P1 #4, Oct 2026) ──────────────────────────────────────────
+  // The table had no ICE or hybrid software at all: an ICE variant costed £0 of powertrain software and a PHEV only
+  // 3.5 % more than a BEV. No sourced effort figure was found for these modules, so EVERY number below is copied
+  // from the closest existing module (named in estimateBasis) — an estimate, labelled so on screen. Default off: the
+  // powertrain input (computeSWProgram → powertrainModules) switches them on for ICE / MHEV / PHEV.
+  {
+    id: 'engine_control', name: 'Engine Management Software (ECU)', shortName: 'Engine Control',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Combustion engine control: air / fuel / ignition, torque structure and torque monitoring, start-stop, knock and misfire control.',
+    defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
+    defaultEnabled: false,
+    estimateBasis: 'edu_control (EDU control) — all figures copied; default ASIL B (torque monitoring) is engineering judgement, unsourced',
+    notes: 'ESTIMATE by analogue. Engine calibration is usually a large separate programme — the 0.12 calibration fraction is the analogue\'s and is likely low; enter your own if known.',
+  },
+  {
+    id: 'transmission_control', name: 'Transmission Control Software (TCU)', shortName: 'Transmission',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Automatic / dual-clutch transmission control: shift strategy, clutch control, torque interventions, limp-home.',
+    defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 60,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.14,
+    defaultEnabled: false,
+    estimateBasis: 'chassis_control (chassis control) — all figures copied; default ASIL B is engineering judgement, unsourced',
+    notes: 'ESTIMATE by analogue. A carry-over transmission is usually Heavy / Platform reuse.',
+  },
+  {
+    id: 'aftertreatment_obd', name: 'Emissions After-treatment & OBD', shortName: 'After-treatment / OBD',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Catalyst / particulate-filter / SCR control and the legally required on-board diagnostic monitors (EOBD / OBD-II).',
+    defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.35, integrationFractionBase: 0.15, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 18_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
+    defaultEnabled: false,
+    estimateBasis: 'thermal_mgmt (thermal control loops) — all figures copied; QM (emissions are legal, not safety, requirements) is engineering judgement',
+    notes: 'ESTIMATE by analogue. Emissions homologation testing is not included.',
+  },
+  {
+    id: 'hybrid_supervisor', name: 'Hybrid Supervisory Control & Energy Management', shortName: 'Hybrid Supervisor',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: 'Hybrid mode selection, engine / e-machine torque split, battery state-of-charge strategy, blended regeneration.',
+    defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 80,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.45, integrationFractionBase: 0.22, maintenancePctPerYear: 12,
+    annualToolLicenceGBP: 54_000, annualIPLicenceGBP: 28_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.16,
+    defaultEnabled: false,
+    estimateBasis: 'vehicle_motion (vehicle-level torque coordination) — all figures copied; default ASIL C is engineering judgement, unsourced',
+    notes: 'ESTIMATE by analogue. MHEV energy management is simpler — the MHEV scope runs it at High complexity.',
+  },
+  {
+    id: 'mhev_48v', name: '48 V Belt Starter-Generator & Battery Control', shortName: '48 V BSG / Battery',
+    category: 'A', categoryLabel: 'Powertrain & Battery',
+    description: '48 V belt starter-generator motor control, boost / recuperation, 48 V battery and DC-DC management.',
+    defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 42,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 42_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
+    defaultEnabled: false,
+    estimateBasis: 'motor_ctrl (motor control) — all figures copied; ASIL B and High complexity (low-voltage machine) are engineering judgement',
+    notes: 'ESTIMATE by analogue. Often a supplier-delivered unit — set reuse Heavy / Platform if bought in.',
   },
 ];
 

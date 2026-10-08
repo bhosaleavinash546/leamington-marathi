@@ -60,7 +60,7 @@ function insight(o:Mod):string{
   if(o.deltaVsBest!=null && o.deltaVsBest>0.4e6) return `${M(o.gt)} — ${M(o.deltaVsBest)} above ${o.bestName}. A reuse gap worth ~${M(o.reuseSave)} to close by carrying more forward.`;
   return `Competitive at ${M(o.gt)} — at or near the leanest peer. Remaining reuse upside ~${M(o.reuseSave)}.`;
 }
-const CAT:any={ A:['EV Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
+const CAT:any={ A:['Powertrain & Battery',[47,92,73]], B:['ADAS L2 / L2+',[62,95,146]], C:['Infotainment & UX',[124,84,104]], D:['Vehicle Domain Controllers',[156,115,40]], E:['Middleware & Platform',[94,118,134]], F:['Cybersecurity (ISO 21434)',[172,74,62]], G:['OTA & Cloud Backend',[63,143,176]] };
 const CATS=['A','B','C','D','E','F','G'];
 function catMods(c:string){ return MODS.filter(m=>m.def.category===c).sort((a,b)=>b.gt-a.gt); }
 function catTotal(c:string){ return catMods(c).reduce((s,m)=>s+m.gt,0); }

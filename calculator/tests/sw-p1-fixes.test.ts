@@ -130,3 +130,27 @@ describe('#20 ASIL uplift: one sourced factor on total effort (×1.82 at D), not
     expect(ASIL_DEV_MULT.D).toBe(1.82);
   });
 });
+
+describe('#4 ICE and hybrid powertrain software exists — as labelled estimates', () => {
+  const NEW = ['engine_control', 'transmission_control', 'aftertreatment_obd', 'hybrid_supervisor', 'mhev_48v'];
+  const FIELDS = ['basePersonMonths', 'testingFractionBase', 'integrationFractionBase', 'maintenancePctPerYear',
+    'annualToolLicenceGBP', 'annualIPLicenceGBP', 'annualCloudCostGBP', 'calibrationFractionBase'] as const;
+  it('each new module copies every number from the analogue it names, and is default-off', () => {
+    for (const id of NEW) {
+      const m = SW_MODULES.find(d => d.id === id)!;
+      expect(m, id).toBeTruthy();
+      expect(m.defaultEnabled).toBe(false);
+      const analogueId = m.estimateBasis!.split(' ')[0];
+      const a = SW_MODULES.find(d => d.id === analogueId)!;
+      expect(a, `${id} → ${analogueId}`).toBeTruthy();
+      for (const f of FIELDS) expect(m[f], `${id}.${f}`).toBe(a[f]);
+    }
+  });
+  it('adding them does not move the default (BEV-scoped) programme', () => {
+    const r = computeSWProgram(defaultSWProgramInputs());
+    expect(r.modules.some(m => NEW.includes(m.moduleId))).toBe(false);
+  });
+  it('the screen labels them "estimate"', () => {
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/def\.estimateBasis \? .*estimate<\/span>/);
+  });
+});

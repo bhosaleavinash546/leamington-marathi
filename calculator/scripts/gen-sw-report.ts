@@ -116,7 +116,7 @@ function buildMeta(car: Car, dt: Drivetrain): Meta & { carId: string; dtKey: str
 const VEHICLES = CARS.flatMap(c => DRIVETRAINS.map(dt => buildMeta(c, dt)));
 
 // ── helpers ──────────────────────────────────────────────────────────────────
-const CATNAME: Record<string,string> = { A:'EV Powertrain & Battery', B:'ADAS L2/L2+', C:'Infotainment & UX', D:'Domain Controllers', E:'Middleware & Platform', F:'Cybersecurity', G:'OTA & Cloud' };
+const CATNAME: Record<string,string> = { A:'Powertrain & Battery', B:'ADAS L2/L2+', C:'Infotainment & UX', D:'Domain Controllers', E:'Middleware & Platform', F:'Cybersecurity', G:'OTA & Cloud' };
 const REUSE_V: Record<string,number> = { Fresh:1.0, Light:0.82, Medium:0.60, Heavy:0.35, Platform:0.14 };
 const CX_V: Record<string,number> = { Low:0.6, Medium:1.0, High:1.7, 'Very High':2.8 };
 const ASILDEV: Record<string,number> = { QM:1.0, A:1.35, B:1.8, C:2.3, D:3.2 };
