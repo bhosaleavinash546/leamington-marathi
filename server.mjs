@@ -781,6 +781,11 @@ seedMarketplaceIdeasFromFile('marketplace-mhev-48v-ideas.json', '48 V MHEV resea
 // validation plan, DFM, cost walk), a per-vehicle cost bridge that nets to the
 // stated saving, and tooling/capex/validation with a reconciled payback.
 seedMarketplaceIdeasFromFile('marketplace-mhev-48v-deep-ideas.json', '48 V MHEV deep ideas');
+// 400 Interior / Exterior / BIW / Chassis ideas for the luxury-SUV MHEV / 800V BEV
+// platform (100 per commodity, assembly / subassembly / part), each with a named
+// 2023-2026 benchmark and its source, a cost bridge that nets to the stated saving
+// and a reconciled payback; engineering-reviewed before seeding.
+seedMarketplaceIdeasFromFile('marketplace-interior-exterior-biw-chassis-ideas.json', 'Interior/Exterior/BIW/Chassis researched ideas');
 
 // Retired ideas: removed from their pack after review (impossible physics, a
 // negative saving, or not feasible as described). The seeder only inserts and

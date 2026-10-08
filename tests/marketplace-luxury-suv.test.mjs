@@ -48,11 +48,20 @@ const PACKS = [
     commodities: ['Powertrain', 'Electrical', 'Battery'],
     deep: true,
   },
+  {
+    file: 'marketplace-interior-exterior-biw-chassis-ideas.json', name: 'Interior / Exterior / BIW / Chassis',
+    total: 378, levels: { assembly: 113, subassembly: 135, part: 130 },
+    // Shared-platform ideas dominate; each commodity has a full hundred.
+    mix: (pt, offRoad) => (pt['MHEV & 800V BEV'] ?? 0) >= 300 && (pt['800V BEV'] ?? 0) >= 20 && (pt.MHEV ?? 0) >= 10 && offRoad >= 15,
+    commodities: ['Interior', 'Exterior', 'BIW', 'Chassis'],
+    perCommodity: null, // 100 each once the 22 review replacements land
+    bridge: true,
+  },
 ];
 
 for (const P of PACKS) describePack(P);
 
-function describePack({ file: FILE, name, total, levels, mix, commodities, deep = false }) {
+function describePack({ file: FILE, name, total, levels, mix, commodities, deep = false, bridge = false, perCommodity = null }) {
 const pack = JSON.parse(readFileSync(new URL(`../${FILE}`, import.meta.url), 'utf8'));
 describe(`${name} marketplace library`, () => {
   it(`holds exactly the commissioned ${Object.values(levels).join('/')} split and its powertrain mix`, () => {
@@ -140,6 +149,29 @@ describe(`${name} marketplace library`, () => {
       const total = inv.toolingEur + inv.capexEur + inv.validationEur;
       const expect = total / (((av[0] + av[1]) / 2) / 12);
       if (total > 0) assert.ok(Math.abs(inv.paybackMonths - expect) <= Math.max(1, expect * 0.2), `${x.title}: payback ${inv.paybackMonths} vs ${expect.toFixed(1)} months`);
+    }
+  });
+
+  if (perCommodity) it(`holds ${perCommodity} ideas in each commodity`, () => {
+    const by = pack.reduce((m, x) => ({ ...m, [inferCommodityKey(x.system)]: (m[inferCommodityKey(x.system)] || 0) + 1 }), {});
+    for (const k of commodities) assert.equal(by[k], perCommodity, `${k}: ${by[k]}`);
+  });
+
+  if (bridge) it('carries a cost bridge that nets to the saving and a payback that reconciles', () => {
+    for (const x of pack) {
+      const d = x.ideaData;
+      const lines = d.costBridgeLines || [];
+      assert.ok(lines.length >= 4, `${x.title}: cost bridge has ${lines.length} lines`);
+      const net = lines.reduce((a, l) => a + (l.baselineEur - l.proposedEur), 0);
+      const pv = money(d.costSavingPotential.perVehicle);
+      assert.ok(net >= pv[0] * 0.9 && net <= pv[1] * 1.1, `${x.title}: bridge nets €${net.toFixed(2)} vs ${d.costSavingPotential.perVehicle}`);
+      const inv = d.investment;
+      assert.ok(inv && ['toolingEur', 'capexEur', 'validationEur', 'paybackMonths'].every(k => Number.isFinite(inv[k])), `${x.title}: investment incomplete`);
+      const av = money(d.costSavingPotential.annualValue);
+      const total = inv.toolingEur + inv.capexEur + inv.validationEur;
+      const expect = total / (((av[0] + av[1]) / 2) / 12);
+      if (total > 0) assert.ok(Math.abs(inv.paybackMonths - expect) <= Math.max(1, expect * 0.2), `${x.title}: payback ${inv.paybackMonths} vs ${expect.toFixed(1)} months`);
+      assert.equal(x.annualSaving, d.costSavingPotential.annualValue, `${x.title}: headline saving differs from annual value`);
     }
   });
 
