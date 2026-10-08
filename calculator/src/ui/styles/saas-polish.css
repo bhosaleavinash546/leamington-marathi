@@ -416,3 +416,16 @@ input.cv-field-invalid, input[aria-invalid="true"] {
 .btn:active::after { animation: none !important; opacity: 0 !important; }
 .ai-chat-fab:hover { transform: translateY(-2px) !important; }
 .cmp-chk:checked { transform: none; }
+
+/* ── Commodity typography, larger (user request, Oct 2026) ────────────────────────────────────────────────────────────
+   The commodity names (14 px) and their sub-process lines ("Injection · Blow · Thermo", 12 px) read small on the picker,
+   the compact picker rail, the commodity switcher and the home chips. One step up each, here, last in the cascade. */
+.cpicker-tile-label   { font-size: 1rem !important; line-height: 1.3; }             /* 16 px, was 14 */
+.cpicker-tile-sub     { font-size: 0.86rem !important; line-height: 1.45; }         /* 13.8 px, was 12.2 */
+.cpicker-section-label { font-size: 0.82rem !important; }                           /* was 12.2 px */
+.cpicker-sub          { font-size: 0.9rem !important; }                             /* page subtitle, was 12.5 px */
+body.cv-new-costing #commodity-picker-view .cpicker-tile-label { font-size: 0.88rem !important; }  /* rail, was 12 px */
+body.cv-new-costing #commodity-picker-view .cpicker-tile-sub   { font-size: 0.76rem !important; }  /* rail, was 10.4 px */
+.cv-switch-label      { font-size: 0.94rem; }                                       /* switcher, was 13.4 px */
+.cv-switch-hint       { font-size: 0.8rem; }                                        /* was 11.5 px */
+.hs-chip              { font-size: 0.88rem; }
