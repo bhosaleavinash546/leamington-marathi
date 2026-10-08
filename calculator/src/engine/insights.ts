@@ -57,7 +57,7 @@ export interface SuggestionContext {
   library?: import('./types.js').RateLibrary;
 }
 
-// ─── Industry Benchmarks (aPriori-calibrated) ────────────────────────────────
+// ─── Reference bands by commodity — engineering estimates, NOT a sourced survey ────────────────────────────────
 
 interface CommodityBenchmarks {
   materialPct: [number, number];
@@ -245,11 +245,10 @@ export function realMachiningStations(input: UniversalStackInput): {
 function materialDominanceActions(
   commodity: CommodityType,
   matUtilPct: number,
-  fivePctSaving: string,
 ): string[] {
   const commercial = [
     'Negotiate a long-term agreement with the supplier for price-ceiling protection',
-    'Regional sourcing study: low-cost regions can reduce landed material cost by 20–40%',
+    'Regional sourcing study: re-cost the part in candidate countries (country picker / comparison table) — materials, energy and logistics are priced there',
   ];
 
   switch (commodity) {
@@ -299,7 +298,7 @@ function materialDominanceActions(
     case 'rubber':
       return [
         'Reduce wall thickness / nominal section to the minimum the load case allows',
-        `Runner and sprue return: material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        `Runner and sprue return: material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
         'Evaluate regrind at the highest percentage the specification permits',
         'Requalify to a lower-cost resin grade or a filled equivalent that meets spec',
         ...commercial,
@@ -307,7 +306,7 @@ function materialDominanceActions(
     case 'composites':
       return [
         'Review ply schedule and drop-offs — nesting waste is the biggest single lever',
-        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
         'Evaluate a lower-cost fibre or a hybrid layup where the load path allows',
         ...commercial,
       ];
@@ -315,7 +314,7 @@ function materialDominanceActions(
     case 'cast_and_machine':
       return [
         'Evaluate a near-net-shape blank (casting or forging) instead of cutting from solid',
-        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
         'Review stock size against the finished envelope — oversized billet is invisible waste',
         'Credit the swarf: confirm scrap recovery is being priced back into the quote',
         ...commercial,
@@ -324,7 +323,7 @@ function materialDominanceActions(
     case 'forging':
       return [
         'Improve yield: gating/riser design for casting, flash-land and preform design for forging',
-        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
         'Explore secondary/recycled alloy grades that meet functional spec',
         'Confirm returns and scrap recovery are credited back in the quote',
         ...commercial,
@@ -333,14 +332,14 @@ function materialDominanceActions(
     case 'sheet_metal_fab':
       return [
         'Re-nest the blank — nesting efficiency is the single biggest sheet-metal material lever',
-        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
         'Review gauge and grade against the load case; one gauge down is a step change',
         'Consider coil width optimisation or a progressive die to cut skeleton waste',
         ...commercial,
       ];
     default:
       return [
-        `Material utilisation at ${matUtilPct.toFixed(0)}% — every +5% saves ~${fivePctSaving}/part`,
+        `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
         'Re-cost the bought-out content at the target volume',
         ...commercial,
       ];
@@ -377,13 +376,12 @@ export function generateInsights(
       type: 'critical',
       category: 'material',
       title: 'Material is the dominant cost driver',
-      finding: `Raw material at ${pcts.mat.toFixed(1)}% of total exceeds the ${commodity.replace(/_/g, ' ')} benchmark ceiling of ${bm.materialPct[1]}%. Material is controlling this part's economics.`,
+      finding: `Raw material at ${pcts.mat.toFixed(1)}% of total exceeds the ${commodity.replace(/_/g, ' ')} reference band's ceiling of ${bm.materialPct[1]}% (engineering estimate). Material is controlling this part's economics.`,
       impact: 'High',
       potentialSavingPct: Math.min(excess * 0.4, 12),
       actions: materialDominanceActions(
         commodity,
         input.rawMaterial.materialUtilization * 100,
-        `£${(result.breakdown.rawMaterial * 0.05).toFixed(2)}`,
       ),
       benchmark: {
         label: 'Material %',
@@ -394,12 +392,12 @@ export function generateInsights(
         status: 'concern',
       },
     });
-  } else if (pcts.mat < bm.materialPct[0]) {
+  } else if (pcts.mat < bm.materialPct[0] && commodity !== 'cast_and_machine') {
     insights.push({
       type: 'info',
       category: 'material',
-      title: 'Material cost is below benchmark range',
-      finding: `Material at ${pcts.mat.toFixed(1)}% is below the typical ${bm.materialPct[0]}–${bm.materialPct[1]}% range. Conversion cost is the dominant driver.`,
+      title: 'Material cost is below the reference band',
+      finding: `Material at ${pcts.mat.toFixed(1)}% is below the ${bm.materialPct[0]}–${bm.materialPct[1]}% reference band (engineering estimate). Conversion cost is the dominant driver.`,
       impact: 'Low',
       potentialSavingPct: 0,
       actions: ['Focus optimisation efforts on process and labour efficiency'],
@@ -418,7 +416,7 @@ export function generateInsights(
       type: 'warning',
       category: 'material',
       title: 'Low material utilisation — high scrap rate',
-      finding: `Material utilisation at ${util.toFixed(0)}% is below the ${commodity.replace(/_/g,'  ')} benchmark of ${(bm.typicalMatUtil * 100).toFixed(0)}%. You are paying for ${((1 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization * 100).toFixed(0)}% more raw material than ends up in the part.`,
+      finding: `Material utilisation at ${util.toFixed(0)}% is below the ${commodity.replace(/_/g,'  ')} reference of ${(bm.typicalMatUtil * 100).toFixed(0)}% (engineering estimate). You are paying for ${((1 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization * 100).toFixed(0)}% more raw material than ends up in the part.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(8, (bm.typicalMatUtil - input.rawMaterial.materialUtilization) * 20),
       actions: [
@@ -431,13 +429,15 @@ export function generateInsights(
   }
 
   // ── Process cost vs benchmark ─────────────────────────────────────────────
-  if (pcts.proc > bm.processPct[1]) {
+  // The cast + machine band is the casting's — its machining is conversion the band does not include, so the share
+  // test would fire on every machined casting (uploaded-parts review, Oct 2026).
+  if (pcts.proc > bm.processPct[1] && commodity !== 'cast_and_machine') {
 
     insights.push({
       type: 'warning',
       category: 'process',
-      title: 'Machining / process cost above benchmark',
-      finding: `Process cost at ${pcts.proc.toFixed(1)}% of total is above the benchmark range of ${bm.processPct[0]}–${bm.processPct[1]}%. Cycle time or machine rate is elevated.`,
+      title: 'Process cost above the reference band',
+      finding: `Process cost at ${pcts.proc.toFixed(1)}% of total is above the ${bm.processPct[0]}–${bm.processPct[1]}% reference band (engineering estimate). Look at the longest cycles and the machine rates.`,
       impact: 'High',
       potentialSavingPct: Math.min(15, (pcts.proc - bm.processPct[1]) * 0.5),
       actions: [
@@ -463,7 +463,7 @@ export function generateInsights(
       type: 'warning',
       category: 'process',
       title: `Low OEE on "${worstOp.operationName}"`,
-      finding: `OEE of ${(worstOp.oee * 100).toFixed(0)}% is below the ${(bm.oeeBenchmark * 100).toFixed(0)}% benchmark. Every 5% OEE improvement on this operation saves ~£${(result.breakdown.process * 0.05).toFixed(3)}/part.`,
+      finding: `OEE of ${(worstOp.oee * 100).toFixed(0)}% is below the ${(bm.oeeBenchmark * 100).toFixed(0)}% reference (engineering estimate). Re-cost with a higher OEE on this operation to see what it is worth.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(8, (bm.oeeBenchmark - worstOp.oee) * 15),
       actions: [
@@ -477,7 +477,6 @@ export function generateInsights(
 
   // ── Tooling dominance ─────────────────────────────────────────────────────
   if (pcts.tool > bm.toolingPct[1]) {
-    const toolCostPerPart = result.breakdown.tooling;
     const volumeToHalve = input.tooling.amortizationVolume * 2;
     // A volume lever built on an ASSUMED volume is a sensitivity note, not an
     // instruction — a real bumper report told the reader to "increase volume"
@@ -490,12 +489,12 @@ export function generateInsights(
       title: volumeAssumed
         ? 'Tooling amortisation is volume-sensitive — and the volume is assumed'
         : 'Tooling amortisation is a significant cost driver',
-      finding: `Tooling at ${pcts.tool.toFixed(1)}% (£${toolCostPerPart.toFixed(2)}/part) exceeds the benchmark of ${bm.toolingPct[1]}%. This is volume-sensitive.`
+      finding: `Tooling at ${pcts.tool.toFixed(1)}% of the piece price exceeds the reference band's ${bm.toolingPct[1]}% (engineering estimate). This is volume-sensitive.`
         + (volumeAssumed ? ` The ${input.tooling.amortizationVolume.toLocaleString()} amortisation volume is a tool assumption — confirm it before acting on any figure below.` : ''),
       impact: volumeAssumed ? 'Medium' : 'High',
       potentialSavingPct: Math.min(10, (pcts.tool - bm.toolingPct[1]) * 0.4),
       actions: [
-        `Doubling volume to ${volumeToHalve.toLocaleString()} parts halves tooling cost to £${(toolCostPerPart / 2).toFixed(2)}/part`,
+        `Amortised over ${volumeToHalve.toLocaleString()} parts (double the volume) the tooling share per part halves`,
         'Evaluate family tooling (multiple parts per die) to spread NRE across higher volumes',
         'Negotiate supplier tooling ownership with amortisation in piece price',
         'Consider soft tooling (aluminium die) for prototyping at 70-80% lower tooling cost',
@@ -509,8 +508,8 @@ export function generateInsights(
     insights.push({
       type: 'opportunity',
       category: 'commercial',
-      title: 'Overhead rate above industry benchmark',
-      finding: `Overhead at ${(input.overheadPct * 100).toFixed(0)}% vs benchmark range ${bm.overheadPct[0]}–${bm.overheadPct[1]}%. This may reflect inflated factory burden rates.`,
+      title: 'Overhead rate above the reference band',
+      finding: `Overhead at ${(input.overheadPct * 100).toFixed(0)}% vs the ${bm.overheadPct[0]}–${bm.overheadPct[1]}% reference band (engineering estimate).`,
       impact: 'Medium',
       potentialSavingPct: Math.min(6, (input.overheadPct * 100 - bm.overheadPct[1]) * 0.5),
       actions: [
@@ -526,8 +525,8 @@ export function generateInsights(
     insights.push({
       type: 'opportunity',
       category: 'commercial',
-      title: 'Supplier margin is above competitive benchmark',
-      finding: `Supplier margin at ${(input.marginPct * 100).toFixed(0)}% vs benchmark ${bm.marginPct[0]}–${bm.marginPct[1]}%. This is an open negotiation lever.`,
+      title: 'Supplier margin is above the reference band',
+      finding: `Supplier margin at ${(input.marginPct * 100).toFixed(0)}% vs the ${bm.marginPct[0]}–${bm.marginPct[1]}% reference band (engineering estimate). This is an open negotiation lever.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(5, (input.marginPct * 100 - bm.marginPct[1])),
       actions: [
@@ -566,7 +565,7 @@ export function generateInsights(
       potentialSavingPct: Math.min(20, saving * 0.7),
       actions: [
         ...pick.map(c => `${REGIONAL_DATA[c].name}: conversion ~${cut(c)}% below ${REGIONAL_DATA[here].name} (½ labour + ½ machine-hour, country table) — `
-          + `about ${Math.round(cut(c) * labourIntensity / 100)}% on this part before logistics and duty`),
+          + 'conversion only — re-cost the part there for the figure'),
         'Re-cost the part in each candidate with the country picker or the comparison table — that prices materials, energy, tools and logistics too',
         'Offset: logistics, quality risk, IP protection, lead time, and working capital',
         'Recommend pilot batch from 2 alternative regions before full transition',
@@ -620,7 +619,7 @@ export function generateInsights(
       type: 'warning',
       category: 'material',
       title: 'Low casting yield — excess runner/gating material',
-      finding: `Casting yield of ${util.toFixed(0)}% means ${((1/input.rawMaterial.materialUtilization - 1)*100).toFixed(0)}% of poured metal is returned as runner/gate scrap. HPDC benchmark is 65–75%; sand/gravity 75–85%. Scrap recovery credits are partial — you are paying for metal that doesn't end up in the part.`,
+      finding: `Casting yield of ${util.toFixed(0)}% means ${((1/input.rawMaterial.materialUtilization - 1)*100).toFixed(0)}% of poured metal is returned as runner/gate scrap. Reference band (engineering estimate, not a sourced survey): HPDC 65–75%; sand / gravity 75–85%. Scrap recovery credits are partial — you are paying for metal that doesn't end up in the part.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(6, (benchmarkUtil/100 - input.rawMaterial.materialUtilization) * 15),
       actions: [
@@ -628,7 +627,7 @@ export function generateInsights(
         'Consider vacuum-assisted HPDC (vacural) to allow thinner gates and reduce gating volume',
         'Evaluate multi-cavity tooling — more parts per shot reduces gate-to-part ratio',
         'Review scrap alloy buy-back rate — negotiate higher recovery price for clean alloy returns',
-        `Improving yield to ${benchmarkUtil}% saves ~£${(result.breakdown.rawMaterial * (benchmarkUtil/100 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization).toFixed(2)}/part`,
+        `Re-cost at a ${benchmarkUtil}% yield to see what the gating is worth on this part`,
       ],
       benchmark: {
         label: 'Casting Yield',
@@ -656,7 +655,7 @@ export function generateInsights(
       category: 'process',
       lever: 'assumption',
       title: 'Confirm post-casting scope — no finishing operations in this cost',
-      finding: `The operation list carries no heat treatment, shot blasting or fettling line. If the casting form's service adders were set they are already in the material bucket; if not, structural castings typically add 8–18% for T5/T6 heat treatment (£1.20–2.80/kg), shot blast (£0.15–0.40/part), impregnation (£0.80–1.80/part) and deburring (£0.10–0.60/part).`,
+      finding: `The operation list carries no heat treatment, shot blasting or fettling line. If the casting form's service adders were set they are already in the material bucket; if not, heat treatment, shot blast, impregnation and deburring are not in this cost — confirm the specification and add the ones it calls for.`,
       impact: 'Medium',
       potentialSavingPct: 0,
       actions: [
@@ -673,14 +672,14 @@ export function generateInsights(
   // We detect this via OEE-adjusted vs non-adjusted comparison — proxy: if worst OEE op
   // has rejectUplift baked in AND total process cost is above benchmark high.
   // Simpler proxy: material utilization is fine (>0.70) but process% is still very high.
-  if ((commodity === 'casting' || commodity === 'cast_and_machine') &&
+  if (commodity === 'casting' &&
       pcts.proc > bm.processPct[1] * 1.2 &&
       input.rawMaterial.materialUtilization >= 0.65) {
     insights.push({
       type: 'warning',
       category: 'process',
       title: 'Elevated process cost — possible high reject/scrap rate',
-      finding: `Process cost is ${pcts.proc.toFixed(1)}% vs benchmark max of ${bm.processPct[1]}%. For castings, this may indicate a high reject rate (>5%) inflating effective machine time, poor OEE on the casting cell, or cycle time above industry benchmark for this alloy/weight range.`,
+      finding: `Process cost is ${pcts.proc.toFixed(1)}% vs the reference band's ${bm.processPct[1]}% (engineering estimate). Things to check: the reject rate and OEE on the casting cell, and the cycle time.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(8, (pcts.proc - bm.processPct[1]) * 0.4),
       actions: [

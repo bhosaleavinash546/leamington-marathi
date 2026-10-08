@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { geometryTimeoutMs } from '../../src/engine/geometry-timeout.js';
 import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
 import { queueDFMJobFromBuffer } from '../utils/dfm-job-runner.js';
@@ -798,7 +799,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       console.log(`[CAD] geometry cache HIT ${uploadHash.slice(0, 12)} @${unitScale}x`);
     } else {
       const tGeo = Date.now();
-      geo = await analyzeGeometry(buffer, originalname, 120_000,
+      geo = await analyzeGeometry(buffer, originalname, geometryTimeoutMs(size),
         unitScale !== 1 ? { CV_UNIT_SCALE: String(unitScale) } : {});
       geometryMs = Date.now() - tGeo;
     }
@@ -2720,7 +2721,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // Inch confirmed after the first measurement: re-measure from the kept upload.
     const kept = getUploadFile(geometryHash);
     if (kept) {
-      const re = await analyzeGeometry(kept.buffer, `part.${kept.ext}`, 120_000, { CV_UNIT_SCALE: String(unitScale) });
+      const re = await analyzeGeometry(kept.buffer, `part.${kept.ext}`, geometryTimeoutMs(kept.buffer.length), { CV_UNIT_SCALE: String(unitScale) });
       if (re.status === 'success') { putGeometry(geometryHash, re, unitScale); geo = re; }
     }
   }

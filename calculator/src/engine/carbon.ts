@@ -37,6 +37,10 @@ function materialCarbonFactor(m: MaterialRate | undefined): { factor: number; cl
   if (has('copper', 'brass', 'bronze')) return { factor: 4.2, cls: 'Copper alloy' };
   if (has('stainless')) return { factor: 6.15, cls: 'Stainless steel' };
   if (has('electrical steel', 'silicon steel', 'grain-oriented', 'go-', 'nife', 'cofe')) return { factor: 3.0, cls: 'Electrical steel' };
+  // Cast iron carries the steel factor (no separate iron figure here) — and says so, rather than printing "Steel"
+  // beside a ductile-iron costing (uploaded-parts review, Oct 2026).
+  if (has('cast iron', 'ductile', 'grey iron', 'gray iron', 'en-gjs', 'en-gjl', 'en-gjv', 'gjs', 'gjl', 'gjv', 'gjmb', 'adi', 'ni-resist'))
+    return { factor: 2.1, cls: 'Cast iron (steel factor applied)' };
   if (has('steel', 'iron', 'ferrous', 'hslä', 'hsla', 'dp', 'boron')) return { factor: 2.1, cls: 'Steel' };
   // Composites — TRUE structural laminates only. A glass-FILLED thermoplastic
   // (e.g. "PP GF30 (Short Glass)", "PA66 GF30") is NOT a GFRP composite: it is

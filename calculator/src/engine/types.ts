@@ -295,6 +295,8 @@ export interface OperationResult {
   manning: number;
   labourTimeHr: number;
   labourEfficiency: number;
+  /** A bench step — labour only, its machine id a placeholder (exports must not show that machine's rate). */
+  benchOperation?: boolean;
 }
 
 export interface Breakdown8Bucket {

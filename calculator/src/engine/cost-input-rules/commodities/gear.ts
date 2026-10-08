@@ -24,7 +24,8 @@
  */
 import { activeRates } from '../../rate-context.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
-import { CUTTING_DATA } from '../../machining-time.js';
+import { CUTTING_DATA, stockSize, fromBarTurningTime } from '../../machining-time.js';
+import type { FeatureRow } from '../../feature-ops.js';
 import type { MaterialFamily } from '../../material-family.js';
 import { analyseGear } from '../../modules/gear.js';
 import { HARDENING_ROUTE_UNSUITABLE, type HardeningRoute } from '../../modules/gear-advisor.js';
@@ -403,11 +404,46 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
   if (!mat) return null;
   const rho = mat.densityKgPerM3; // kg/m³
 
+  const partCm3 = ctx.geo.volume?.cm3 ?? 0;
+  const netKg = partCm3 * rho / 1e6;
+
+  // A gear cut on a SHAFT (an input shaft, a pinion shaft, a splined shaft) is not a disc: the bar is the whole
+  // shaft, and the lathe turns every journal and shoulder and drills its bores before the teeth are cut. It was
+  // costed as a face-width disc — a 274 mm input shaft got a Ø54 × 22 mm slice and 1.8 min of turning, its Ø9 ×
+  // 271 mm bore nothing (uploaded-parts review, Oct 2026). The shaft's own stock and turning come from the SAME
+  // functions the machining route uses (stockSize, fromBarTurningTime: turned volume, finish-turned area, holes).
+  const shaft = shaftBlank(ctx, od.od, face);
+  if (shaft) {
+    const stockKgS = shaft.stock.cm3 * rho / 1e6;
+    const fam = GEAR_CLASS_FAMILY[matClass];
+    const rows = ((ctx.geo.featureTable ?? []) as FeatureRow[]);
+    // The tooth spaces are cut by the hob, not turned: take their volume out of the turned stock.
+    const m = gearGeo(ctx)?.derivedNormalModuleMm ?? (od.od / ((gearGeo(ctx)?.teeth ?? 20) + 2));
+    const rootOd = Math.max(0, od.od - 4.5 * m);
+    const gapCm3 = Math.PI / 4 * (od.od * od.od - rootOd * rootOd) * face / 1000 * 0.5;
+    const cut = fromBarTurningTime({ family: fam, partCm3: partCm3 + gapCm3, stockCm3: shaft.stock.cm3,
+      totalAreaCm2: ctx.geo.surfaceArea?.cm2 ?? 0, turnedFraction: shaft.turnedFraction, rows });
+    const prepMinS = 1.5 + cut.lathe.totalMin + cut.mill.totalMin;
+    const materialCostS = Math.round((stockKgS * mat.pricePerKg
+      - Math.max(stockKgS - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
+    return {
+      materialCost: materialCostS,
+      prepCycleSec: Math.round(prepMinS * 60),
+      stockKg: Math.round(stockKgS * 1000) / 1000,
+      netKg: Math.round(netKg * 1000) / 1000,
+      materialBasis: `a gear on a shaft (${shaft.basis}): ${shaft.stock.basis} = ${fmt(stockKgS, 2)} kg `
+        + `${mat.grade} × £${fmt(mat.pricePerKg)}/kg − chips × £${fmt(mat.scrapRecoveryPricePerKg ?? 0)}/kg. `
+        + 'MATERIAL only — turning is costed as an operation. Replace with the forged-blank quote (and zero the turning '
+        + 'cycle) when one exists.',
+      prepBasis: `shaft turned from bar on the CNC lathe (live tooling for holes and flats), the machining route's own `
+        + `build-up: ${cut.lathe.basis}; ${cut.mill.basis}; tooth spaces (${fmt(gapCm3, 1)} cm³) left to the hob; `
+        + `+ 1.5 min load/datum = ${fmt(prepMinS, 1)} min — a process operation with machine rate, labour and OEE.`,
+    };
+  }
+
   const stockOd = od.od + 4, stockLen = face + 6;
   const stockCm3 = Math.PI / 4 * stockOd * stockOd * stockLen / 1000;
   const stockKg = stockCm3 * rho / 1e6;
-  const partCm3 = ctx.geo.volume?.cm3 ?? 0;
-  const netKg = partCm3 * rho / 1e6;
   // Blank profile the lathe leaves: full cylinder at tip Ø, bored.
   const blankCm3 = Math.PI / 4 * (od.od * od.od - bore * bore) * face / 1000;
   const removalCm3 = Math.max(stockCm3 - blankCm3, 0);
@@ -434,6 +470,32 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
     prepBasis: `face/turn/bore: ${fmt(removalCm3, 0)} cm³ off the bar @ ${MRR} cm³/min `
       + `+ 1.5 min load/datum = ${fmt(prepMin, 1)} min on the CNC lathe — costed as a process `
       + 'operation with machine rate, labour and OEE, not folded into material.',
+  };
+}
+
+/**
+ * Is the gear cut on a shaft? The kernel's turning signature gives the axis; the part is a shaft when its length along
+ * that axis is more than twice the gear's face width + 10 mm (a gear with a hub reads 1.2–1.8× its face). The bar Ø is
+ * the largest revolved Ø the part has, capped by its envelope across the axis (a revolved arc can report a Ø the part
+ * never reaches).
+ */
+export function shaftBlank(ctx: RuleContext, tipOd: number, faceMm: number):
+  { stock: ReturnType<typeof stockSize>; turnedFraction: number; basis: string } | null {
+  const t = ctx.geo.turning as { fraction?: number; maxDiaMm?: number; externalMaxDiaMm?: number; axis?: number[] } | undefined;
+  const bb = ctx.geo.boundingBox;
+  if (!t || !bb || !t.axis || (t.fraction ?? 0) < 0.4) return null;
+  const dims = [bb.xMm, bb.yMm, bb.zMm];
+  const ax = t.axis.map(Math.abs);
+  const k = ax.indexOf(Math.max(...ax));
+  const lengthMm = dims[k];
+  if (!(lengthMm > 2 * faceMm + 10)) return null;
+  const across = Math.max(...dims.filter((_, i) => i !== k));
+  const maxDia = Math.min(Math.max(tipOd, t.externalMaxDiaMm ?? t.maxDiaMm ?? tipOd), across);
+  const sorted = [...dims].sort((a, b) => b - a) as [number, number, number];
+  return {
+    stock: stockSize(sorted, { maxDiaMm: maxDia, lengthMm }),
+    turnedFraction: t.fraction ?? 0.6,
+    basis: `${fmt(lengthMm, 0)} mm long against a ${fmt(faceMm, 1)} mm gear face, ${Math.round((t.fraction ?? 0) * 100)}% of the area turned`,
   };
 }
 

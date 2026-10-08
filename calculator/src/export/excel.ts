@@ -3,11 +3,16 @@ import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
-import { buildWorkbook, workbookBlob, type SheetSpec } from './xlsx-util.js';
+import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
 
-const pct = (n: number) => `${n.toFixed(1)}%`;
 const num4 = (n: number) => +n.toFixed(4);
 
+/**
+ * The costing as a workbook. Every figure is the ENGINE's (computeUniversalStack) — nothing here recomputes a cost — and
+ * every money cell is a NUMBER in the report's currency with a currency format, so the sheet can be summed and checked
+ * (it was text, "£25.34"; uploaded-parts review, Oct 2026). Sheet 7 states the arithmetic that ties the sheets to the
+ * total, so a reader can see the workbook reconciles rather than take it on trust.
+ */
 export async function exportToExcelBlob(
   result: PartCostResult,
   input: UniversalStackInput,
@@ -17,227 +22,273 @@ export async function exportToExcelBlob(
   /** The guardrails, decisions and rule overrides behind a CAD costing (same block the PDF prints). */
   checks: ChecksAppliedMeta | null = null,
 ): Promise<Blob> {
-  // Canonical symbol map (all 16 currencies) — no partial copies to drift.
   const sym = currencySymbol(currency);
-  const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
+  const m = (gbp: number) => money(gbp * fxRate, sym);
+  const pc = (pct100: number) => pctCell(pct100 / 100);
   const sheets: SheetSpec[] = [];
   const pcts = breakdownPercentages(result);
+  const b = result.breakdown;
+  const rm = input.rawMaterial;
+  const boughtIn = Math.max(0, rm.boughtIn?.cost ?? 0);
+  const base = overheadBaseOf(result);
+  const handling = boughtIn > 0 ? Math.max(0, b.overhead - input.overheadPct * base) : 0;
+  const lc = result.learningCurveApplied;
 
   // ── Sheet 1: Summary ────────────────────────────────────────────────────────
-  const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
-  const grossWeight = input.rawMaterial.directCost === undefined
-    ? input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization
-    : 0;
-  const scrapWeight = Math.max(0, grossWeight - input.rawMaterial.netWeightKg);
-
   const sum: unknown[][] = [
     ['SHOULD-COST ANALYSIS REPORT'],
     ['Part Name', result.partName],
-    // The country the rates are from — the workbook used to name only the display currency.
     ['Manufacturing Country', library.regional ? `${library.regional.name} (${library.regional.code}) — rates rebuilt for this country` : 'United Kingdom — base rate book'],
     ['Report Date', new Date().toLocaleDateString('en-GB')],
-    ['Currency', `${currency} (FX: ${fxRate.toFixed(4)} to GBP)`],
+    ['Currency', currency === 'GBP' ? 'GBP' : `${currency} — £1 = ${fxRate.toFixed(4)} ${currency} (the costing is in GBP)`],
     [],
     ['── COST SUMMARY ──'],
-    ['Cost Bucket', `Amount (${currency})`, '% of Total', 'Bar (scaled)'],
-    ['1. Raw Material', c(result.breakdown.rawMaterial), pct(pcts.rawMaterial), '█'.repeat(Math.round(pcts.rawMaterial / 2))],
-    ['2. Process (Machine)', c(result.breakdown.process), pct(pcts.process), '█'.repeat(Math.round(pcts.process / 2))],
-    ['3. Direct Labour', c(result.breakdown.labour), pct(pcts.labour), '█'.repeat(Math.round(pcts.labour / 2))],
-    ['4. Tooling (amortised)', c(result.breakdown.tooling), pct(pcts.tooling), '█'.repeat(Math.round(pcts.tooling / 2))],
-    ['5. Packaging', c(result.breakdown.packaging), pct(pcts.packaging), ''],
-    ['6. Logistics', c(result.breakdown.logistics), pct(pcts.logistics), ''],
-    ['── Factory Cost', c(result.factoryCost), pct((result.factoryCost / result.total) * 100), ''],
-    // What overhead is a percentage of — factory cost adds packaging and logistics, this doesn't.
-    ['   Overhead base (material + process + labour + tooling)', c(overheadBaseOf(result)), '', ''],
-    [`7. Overhead (SG&A) — ${pct(overheadRateOf(result) * 100)} of base`, c(result.breakdown.overhead), pct(pcts.overhead), '█'.repeat(Math.round(pcts.overhead / 2))],
-    ['── Subtotal', c(result.subtotal), pct((result.subtotal / result.total) * 100), ''],
-    ['8. Supplier Margin', c(result.breakdown.margin), pct(pcts.margin), '█'.repeat(Math.round(pcts.margin / 2))],
-    ['TOTAL SHOULD COST', c(result.total), '100.0%', ''],
+    ['Cost Bucket', `Amount (${currency})`, '% of Total'],
+    ['1. Raw Material', m(b.rawMaterial), pc(pcts.rawMaterial)],
+    ['2. Process (Machine)', m(b.process), pc(pcts.process)],
+    ['3. Direct Labour', m(b.labour), pc(pcts.labour)],
+    ['4. Tooling (amortised)', m(b.tooling), pc(pcts.tooling)],
+    ['5. Packaging', m(b.packaging), pc(pcts.packaging)],
+    ['6. Logistics', m(b.logistics), pc(pcts.logistics)],
+    ['── Factory Cost', m(result.factoryCost), pc((result.factoryCost / result.total) * 100)],
+    [boughtIn > 0
+      ? `   Overhead base (material + process + labour + tooling, excl. bought-in ${sym}${(boughtIn * fxRate).toFixed(2)})`
+      : '   Overhead base (material + process + labour + tooling)', m(base), ''],
+    [boughtIn > 0
+      ? `7. Overhead (SG&A) — ${(input.overheadPct * 100).toFixed(1)}% of base + bought-in handling ${sym}${(handling * fxRate).toFixed(2)}`
+      : `7. Overhead (SG&A) — ${(overheadRateOf(result) * 100).toFixed(1)}% of base`, m(b.overhead), pc(pcts.overhead)],
+    ['── Subtotal', m(result.subtotal), pc((result.subtotal / result.total) * 100)],
+    [boughtIn > 0
+      ? `8. Supplier Margin — ${(input.marginPct * 100).toFixed(1)}% of the subtotal excl. bought-in`
+      : `8. Supplier Margin — ${(input.marginPct * 100).toFixed(1)}% of the subtotal`, m(b.margin), pc(pcts.margin)],
+    ['TOTAL SHOULD COST', m(result.total), pc(100)],
   ];
   if (result.toolingNRE !== undefined) {
-    sum.push(['NRE / Tooling (one-time, not in unit cost)', c(result.toolingNRE), '', '']);
+    sum.push(['NRE / Tooling (one-time, not in unit cost)', m(result.toolingNRE), '']);
   }
   sum.push([], ['── COMMERCIAL PARAMETERS ──']);
   sum.push(['Overhead Rate', input.priceBasis === 'market_price'
     ? 'not added — a fabricator\'s price already includes overhead and margin'
-    : `${pct(input.overheadPct * 100)} of material + process + labour + tooling`]);
-  sum.push(['Supplier Margin Rate', pct(input.marginPct * 100)]);
-  sum.push(['Packaging per Part', c(input.packagingPerPart)]);
-  sum.push(['Logistics per Part', c(input.logisticsPerPart)]);
+    : `${(input.overheadPct * 100).toFixed(1)}% of material + process + labour + tooling${boughtIn > 0 ? ' (excl. bought-in, which carries handling only)' : ''}`]);
+  sum.push(['Supplier Margin Rate', `${(input.marginPct * 100).toFixed(1)}%${boughtIn > 0 ? ' (not on bought-in content)' : ''}`]);
+  sum.push(['Packaging per Part', m(input.packagingPerPart)]);
+  sum.push(['Logistics per Part', m(input.logisticsPerPart)]);
   if (input.tooling.mode === 'amortized') {
-    sum.push(['Total Tooling Cost', c(input.tooling.totalToolingCost)]);
-    sum.push(['Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`]);
+    sum.push(['Total Tooling Cost', m(input.tooling.totalToolingCost)]);
+    sum.push(['Amortisation Volume', input.tooling.amortizationVolume, 'parts']);
+  }
+  const warnings = result.warnings ?? [];
+  if (warnings.length) {
+    sum.push([], ['── WARNINGS ON THIS COSTING ──'], ...warnings.map(w => [w]));
   }
 
-  sheets.push({ name: '1-Summary', rows: sum, cols: [34, 18, 14, 30] });
+  sheets.push({ name: '1-Summary', rows: sum, cols: [58, 18, 12] });
 
-  // ── Sheet 2: Material Detail ────────────────────────────────────────────────
+  // ── Sheet 2: Material Detail — every row of the material line, adding up to bucket 1 ──
+  const trace = result.traceability ?? [];
+  const traced = (re: RegExp) => trace.filter(t => re.test(t.field)).reduce((s, t) => s + (Number(t.value) || 0), 0);
+  const tracedValue = (field: string) => trace.find(t => t.field === field)?.value;
+  const mat = library.materials.find(x => x.id === rm.materialId);
+  const isDirect = rm.directCost !== undefined;
+  const placeholder = /^mat-virtual/.test(rm.materialId);
   const matDetail: unknown[][] = [
     ['MATERIAL DETAIL'],
     [],
     ['Parameter', 'Value', 'Unit', 'Notes'],
-    ['Material ID', input.rawMaterial.materialId, '', ''],
-    ['Grade / Description', mat?.grade ?? 'Direct Cost', '', mat?.sourceNote ?? ''],
-    ['Region', mat?.region ?? '—', '', ''],
-    ['Net (Finished) Weight', num4(input.rawMaterial.netWeightKg), 'kg', 'Weight in finished part'],
   ];
-
-  if (input.rawMaterial.directCost !== undefined) {
-    matDetail.push(['Direct Material Cost', c(input.rawMaterial.directCost), currency, 'Bypasses weight-based calculation']);
-  } else {
+  let metalNet = 0;
+  if (isDirect) {
+    metalNet = rm.directCost ?? 0;
     matDetail.push(
-      ['Gross Weight (stock/casting)', num4(grossWeight), 'kg', `= net ÷ utilisation`],
-      ['Scrap Weight', num4(scrapWeight), 'kg', `= gross − net`],
-      ['Material Utilisation', pct(input.rawMaterial.materialUtilization * 100), '', `Benchmark: ${mat ? '75-85%' : '—'}`],
-      ['Material Price', c(mat?.pricePerKg ?? 0), `${currency}/kg`, mat?.sourceNote ?? ''],
-      ['Scrap Recovery Price', c(mat?.scrapRecoveryPricePerKg ?? 0), `${currency}/kg`, ''],
-      ['Gross Material Cost', c(grossWeight * (mat?.pricePerKg ?? 0)), currency, `= gross × price/kg`],
+      ['Material basis', placeholder ? 'Supplied / bought-in price — no weight-based material' : (mat?.grade ?? rm.materialId), '', ''],
+      ['Direct material cost', m(metalNet), currency, 'priced by the commodity module (not weight × £/kg)'],
     );
-    // Every item the engine puts in the material line, so the rows add up to its total (360 review: the
-    // sheet printed "= gross − scrap" beside a total that also held energy, consumables and bought-in).
-    const lossIsNotScrap = !!(input.rawMaterial as { lossIsNotScrap?: boolean }).lossIsNotScrap;
-    const credit = lossIsNotScrap ? 0 : scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0);
-    matDetail.push(['Scrap Credit', c(credit), currency, lossIsNotScrap ? 'none — melt loss is metal lost, not scrap sold' : `= scrap × recovery price`]);
-    const metalNet = grossWeight * (mat?.pricePerKg ?? 0) - credit;
-    const trace = (result as { traceability?: Array<{ field: string; value: number }> }).traceability ?? [];
-    const traced = (re: RegExp) => trace.filter(t => re.test(t.field)).reduce((sum, t) => sum + (Number(t.value) || 0), 0);
-    const consumables = input.rawMaterial.consumablesCostPerPart ?? 0;
-    const energy = traced(/^rawMaterial\.energyKwh\./);
-    const boughtIn = input.rawMaterial.boughtIn?.cost ?? 0;
-    if (consumables > 0) matDetail.push(['Consumables & services', c(consumables), currency, 'per part (cores, shell, heat treat, NDT …)']);
-    if (energy > 0) matDetail.push(['Process energy', c(energy), currency, 'kWh × the costing country tariff']);
-    if (boughtIn > 0) matDetail.push(['Bought-in content', c(boughtIn), currency, 'supplier price, no second overhead / margin']);
-    const other = result.breakdown.rawMaterial - metalNet - consumables - energy - boughtIn;
-    if (Math.abs(other) >= 0.005) matDetail.push(['Other material-line items', c(other), currency, 'engine adders not itemised above']);
-    matDetail.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= the rows above']);
+    for (const l of rm.lines ?? []) {
+      matDetail.push([`   ${l.ref} ${l.description}`, m(l.unitCost * l.qty), currency, `${l.qty} × ${sym}${(l.unitCost * fxRate).toFixed(4)}${l.pkg ? ` · ${l.pkg}` : ''}`]);
+    }
+  } else {
+    // The prices the costing USED (its trace), not the library as it stands at export time.
+    const price = tracedValue('material.pricePerKg') ?? mat?.pricePerKg ?? 0;
+    const scrapPrice = tracedValue('material.scrapRecoveryPricePerKg') ?? mat?.scrapRecoveryPricePerKg ?? 0;
+    const gross = rm.netWeightKg / rm.materialUtilization;
+    const scrap = Math.max(0, gross - rm.netWeightKg);
+    const lossIsNotScrap = !!rm.lossIsNotScrap;
+    const credit = lossIsNotScrap ? 0 : scrap * scrapPrice;
+    metalNet = gross * price - credit;
+    matDetail.push(
+      ['Material ID', rm.materialId, '', ''],
+      ['Grade / Description', mat?.grade ?? rm.materialId, '', mat?.sourceNote ?? ''],
+      ['Net (Finished) Weight', num4(rm.netWeightKg), 'kg', 'the weight the material line is costed on'],
+      ['Gross Weight (stock / pour)', num4(gross), 'kg', '= net ÷ utilisation'],
+      ['Material Utilisation', pctCell(rm.materialUtilization), '', lossIsNotScrap ? 'melt loss only — runners and risers are remelted' : '= net ÷ gross'],
+      ['Material Price', m(price), `${currency}/kg`, 'as costed'],
+      ['Gross Material Cost', m(gross * price), currency, '= gross × price/kg'],
+      ['Scrap Credit', m(-credit), currency, lossIsNotScrap ? 'none — melt loss is metal lost, not scrap sold' : `= ${num4(scrap)} kg × ${sym}${(scrapPrice * fxRate).toFixed(2)}/kg`],
+    );
   }
-  matDetail.push(
-    [],
-    ['Data confidence', mat?.confidence ?? '—', '', ''],
-    ['Effective date', mat?.effectiveDate ?? '—', '', ''],
-  );
+  const consumables = rm.consumablesCostPerPart ?? 0;
+  const energy = traced(/^rawMaterial\.energyKwh\./);
+  if (consumables > 0) {
+    if (rm.consumablesItems?.length) {
+      for (const i of rm.consumablesItems) matDetail.push([`Consumable / service — ${i.label}`, m(i.gbp), currency, 'per part']);
+      const rest = consumables - rm.consumablesItems.reduce((s, i) => s + i.gbp, 0);
+      if (Math.abs(rest) >= 0.00005) matDetail.push(['Consumables & services — not itemised', m(rest), currency, 'per part']);
+    } else {
+      matDetail.push(['Consumables & services', m(consumables), currency, 'per part']);
+    }
+  }
+  if (energy > 0) matDetail.push(['Process energy', m(energy), currency, 'kWh × the costing country tariff (see 6-Traceability)']);
+  if (boughtIn > 0) matDetail.push(['Bought-in content', m(boughtIn), currency, 'supplier price — handling only, no second overhead / margin']);
+  const residual = b.rawMaterial - metalNet - consumables - energy - boughtIn;
+  if (Math.abs(residual) >= 0.0005) {
+    // Never a label that explains a difference away: if the rows do not add up, say so.
+    matDetail.push(['UNRECONCILED', m(residual), currency, 'the rows above do not add up to the material bucket — report this']);
+  }
+  matDetail.push(['NET RAW MATERIAL COST', m(b.rawMaterial), currency, '= bucket 1']);
+  if (!placeholder && mat) {
+    matDetail.push([], ['Data confidence', mat.confidence, '', ''], ['Effective date', mat.effectiveDate, '', '']);
+  }
 
-  sheets.push({ name: '2-Material', rows: matDetail, cols: [32, 20, 10, 50] });
+  sheets.push({ name: '2-Material', rows: matDetail, cols: [40, 18, 10, 60] });
 
   // ── Sheet 3: Operations Detail ──────────────────────────────────────────────
   const opHdr: string[] = [
-    'Operation', 'Machine ID', 'Machine Class', 'Machine Rate', 'Cycle Time (hr)', 'Cycle Time (min)',
-    'Parts/Cycle', 'OEE %', 'Effective Time (hr)', 'Process Cost',
-    'Labour ID', 'Labour Grade', 'Labour Rate', 'Manning', 'Labour Time (hr)',
-    'Labour Efficiency %', 'Labour Cost', 'Op Total', '% of Total',
+    'Operation', 'Machine ID', 'Machine Class', 'Machine Rate (/hr)', 'Cycle Time (hr)', 'Cycle Time (min)',
+    'Parts/Cycle', 'OEE', 'Effective Time (hr)', 'Process Cost',
+    'Labour ID', 'Labour Grade', 'Labour Rate (/hr)', 'Manning', 'Labour Time (hr)',
+    'Labour Efficiency', 'Labour Cost', 'Op Total', '% of Total',
   ];
   const opRows: unknown[][] = [opHdr];
-
   for (const op of result.operationDetails) {
-    const mach = library.machines.find(m => m.id === op.machineId);
-    const lab = library.labour.find(l => l.id === op.labourId);
-    const effectiveTimeHr = op.cycleTimeHr / op.oee;
+    const mach = library.machines.find(x => x.id === op.machineId);
+    const lab = library.labour.find(x => x.id === op.labourId);
+    const bench = !!op.benchOperation || op.cycleTimeHr === 0;
+    const untended = op.labourTimeHr === 0;
     opRows.push([
       op.operationName,
-      op.machineId,
-      mach?.machineClass ?? '—',
-      c(op.machineRateUsed),
+      bench ? '— bench (no machine time)' : op.machineId,
+      bench ? '' : mach?.machineClass ?? '—',
+      bench ? '' : m(op.machineRateUsed),
       num4(op.cycleTimeHr),
       +(op.cycleTimeHr * 60).toFixed(2),
       op.partsPerCycle,
-      pct(op.oee * 100),
-      num4(effectiveTimeHr),
-      c(op.processCost),
-      op.labourId,
-      lab?.skillLevel ?? '—',
-      c(op.labourRateUsed),
-      op.manning,
+      bench ? '' : pctCell(op.oee),
+      bench ? '' : num4(op.cycleTimeHr / op.oee),
+      m(op.processCost),
+      untended ? '— untended' : op.labourId,
+      untended ? '' : lab?.skillLevel ?? '—',
+      untended ? '' : m(op.labourRateUsed),
+      untended ? 0 : op.manning,
       num4(op.labourTimeHr),
-      pct(op.labourEfficiency * 100),
-      c(op.labourCost),
-      c(op.processCost + op.labourCost),
-      pct(((op.processCost + op.labourCost) / result.total) * 100),
+      untended ? '' : pctCell(op.labourEfficiency),
+      m(op.labourCost),
+      m(op.processCost + op.labourCost),
+      pctCell((op.processCost + op.labourCost) / result.total),
     ]);
+  }
+  const opsLabour = result.operationDetails.reduce((s, o) => s + o.labourCost, 0);
+  if (lc && Math.abs(b.labour - opsLabour) >= 0.00005) {
+    // The operations' labour is costed before Wright's law; the bucket after it.
+    opRows.push([`Learning-curve adjustment (${lc.curvePct}% curve, ×${lc.adjustmentFactor.toFixed(4)} on labour)`,
+      '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', m(b.labour - opsLabour), m(b.labour - opsLabour), '']);
   }
   opRows.push([
     'TOTAL', '', '', '', '', '', '', '', '',
-    c(result.breakdown.process), '', '', '', '', '', '',
-    c(result.breakdown.labour),
-    c(result.breakdown.process + result.breakdown.labour),
-    pct(((result.breakdown.process + result.breakdown.labour) / result.total) * 100),
+    m(b.process), '', '', '', '', '', '',
+    m(b.labour),
+    m(b.process + b.labour),
+    pctCell((b.process + b.labour) / result.total),
   ]);
 
   sheets.push({ name: '3-Operations', rows: opRows, cols: [
-    26, 18, 22, 16, 16, 16, 12, 10, 18, 16, 18, 18, 16, 10, 16, 18, 16, 14, 12,
+    40, 18, 22, 16, 14, 14, 10, 8, 16, 14, 18, 20, 16, 9, 14, 14, 14, 14, 10,
   ] });
 
-  // ── Sheet 4: Machine Rate Buildup ───────────────────────────────────────────
+  // ── Sheet 4: Machine Rate Buildup (machines the costing used, bench placeholders excluded) ──
   const machHdr: string[] = [
-    'Machine ID', 'Machine Class', 'Region', 'Computed Rate',
-    'Annual Depreciation', 'Maintenance', 'Energy', 'Floor Space',
-    'Indirect Support', 'Finance Cost', 'Annual Hours', 'Utilisation %',
-    'Effective Rate Check', 'Confidence',
+    'Machine ID', 'Machine Class', 'Region', 'Rate used in this costing (/hr)',
+    'Depreciation (/hr)', 'Maintenance (/hr)', 'Energy (/hr)', 'Floor Space (/hr)',
+    'Indirect Support (/hr)', 'Finance Cost (/hr)', 'Annual Hours', 'Utilisation',
+    'Build-up total (/hr)', 'Confidence',
   ];
   const machRows: unknown[][] = [machHdr];
-
-  const usedMachIds = new Set(result.operationDetails.map(op => op.machineId));
-  for (const mach of library.machines.filter(m => usedMachIds.has(m.id))) {
-    const b = mach.buildup;
-    const totalAnnualCost = b.annualDepreciation + b.maintenance + b.energy + b.floorSpace + b.indirectSupport + b.financeCost;
-    const effectiveHrs = b.annualAvailableHours * b.machineUtilization;
+  const usedMach = new Map<string, number>();
+  for (const op of result.operationDetails) if (!(op.benchOperation || op.cycleTimeHr === 0)) usedMach.set(op.machineId, op.machineRateUsed);
+  for (const mach of library.machines.filter(x => usedMach.has(x.id))) {
+    const bu = mach.buildup;
+    const effectiveHrs = Math.max(1, bu.annualAvailableHours * bu.machineUtilization);
+    const totalAnnual = bu.annualDepreciation + bu.maintenance + bu.energy + bu.floorSpace + bu.indirectSupport + bu.financeCost;
     machRows.push([
-      mach.id, mach.machineClass, mach.region, c(mach.computedRatePerHr),
-      c(b.annualDepreciation / effectiveHrs),
-      c(b.maintenance / effectiveHrs),
-      c(b.energy / effectiveHrs),
-      c(b.floorSpace / effectiveHrs),
-      c(b.indirectSupport / effectiveHrs),
-      c(b.financeCost / effectiveHrs),
-      b.annualAvailableHours,
-      pct(b.machineUtilization * 100),
-      c(totalAnnualCost / effectiveHrs),
-      mach.confidence,
+      mach.id, mach.machineClass, mach.region, m(usedMach.get(mach.id) ?? mach.computedRatePerHr),
+      m(bu.annualDepreciation / effectiveHrs), m(bu.maintenance / effectiveHrs), m(bu.energy / effectiveHrs),
+      m(bu.floorSpace / effectiveHrs), m(bu.indirectSupport / effectiveHrs), m(bu.financeCost / effectiveHrs),
+      bu.annualAvailableHours, pctCell(bu.machineUtilization), m(totalAnnual / effectiveHrs), mach.confidence,
     ]);
   }
-
   sheets.push({ name: '4-MachineRates', rows: machRows, cols: Array(14).fill(18) });
 
   // ── Sheet 5: Labour Rates ───────────────────────────────────────────────────
-  const labHdr: string[] = ['Labour ID', 'Region', 'Skill Level', 'Fully Loaded Rate', 'Effective Date', 'Source', 'Confidence'];
+  const labHdr: string[] = ['Labour ID', 'Region', 'Skill Level', 'Fully Loaded Rate (/hr)', 'Effective Date', 'Source', 'Confidence'];
   const labRows: unknown[][] = [labHdr];
-  const usedLabIds = new Set(result.operationDetails.map(op => op.labourId));
+  const usedLabIds = new Set(result.operationDetails.filter(o => o.labourTimeHr > 0).map(op => op.labourId));
   for (const lab of library.labour.filter(l => usedLabIds.has(l.id))) {
-    labRows.push([lab.id, lab.region, lab.skillLevel, c(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
+    labRows.push([lab.id, lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
   }
   labRows.push([], ['ALL AVAILABLE LABOUR RATES IN LIBRARY:']);
   labRows.push(labHdr);
   for (const lab of labourRoles(library)) {   // roles, one per job (labour-roles.ts)
-    labRows.push([lab.id, lab.region, lab.skillLevel, c(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
+    labRows.push([lab.id, lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
   }
-
   sheets.push({ name: '5-LabourRates', rows: labRows, cols: [22, 14, 20, 20, 14, 50, 12] });
 
-  // ── Sheet 6: Rate Traceability ──────────────────────────────────────────────
-  const trHdr: string[] = ['Field', 'Value', 'Unit', 'Rate Source / Reference', 'Rate ID', 'Confidence'];
+  // ── Sheet 6: Rate Traceability (money in the report's currency, like every other sheet) ──
+  const trHdr: string[] = ['Field', 'Value', 'Unit', 'Rate Source / Reference (as recorded, GBP)', 'Rate ID', 'Confidence'];
   const trRows: unknown[][] = [trHdr];
-  for (const t of result.traceability) {
-    trRows.push([t.field, num4(t.value), t.unit, t.rateSource, t.rateId, t.confidence]);
+  for (const t of trace) {
+    const isMoney = t.unit.includes('£');
+    trRows.push([t.field, isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, t.rateSource, t.rateId, t.confidence]);
   }
+  sheets.push({ name: '6-Traceability', rows: trRows, cols: [40, 14, 10, 70, 22, 12] });
 
-  sheets.push({ name: '6-Traceability', rows: trRows, cols: [36, 12, 10, 55, 22, 12] });
-
-  // ── Sheet 7: Checks applied (CAD costings) ─────────────────────────────────
+  // ── Sheet 7: Checks — the arithmetic that ties the sheets to the total, then the CAD checks ──
+  const bucketSum = b.rawMaterial + b.process + b.labour + b.tooling + b.packaging + b.logistics + b.overhead + b.margin;
+  const opsProcess = result.operationDetails.reduce((s, o) => s + o.processCost, 0);
+  const lcAdj = lc ? b.labour - opsLabour : 0;
+  const tol = 0.005;
+  const row = (what: string, a: number, bb: number) => [what, m(a), m(bb), m(a - bb), Math.abs(a - bb) <= tol ? 'OK' : 'MISMATCH'];
+  const ck: unknown[][] = [
+    ['ARITHMETIC CHECKS', `(${currency})`, '', '', ''],
+    ['Check', 'Sheets', 'Engine', 'Difference', 'Result'],
+    row('Buckets 1–8 add to the total', bucketSum, result.total),
+    row('Operations\' process cost = bucket 2', opsProcess, b.process),
+    row(`Operations' labour cost${lc ? ' + learning-curve adjustment' : ''} = bucket 3`, opsLabour + lcAdj, b.labour),
+    row('Material rows = bucket 1', metalNet + consumables + energy + boughtIn, b.rawMaterial),
+    row('Tooling: tool cost ÷ amortisation volume = bucket 4', input.tooling.mode === 'amortized' && input.tooling.amortizationVolume > 0
+      ? input.tooling.totalToolingCost / input.tooling.amortizationVolume : 0, b.tooling),
+    [],
+  ];
   if (checks) {
-    const ck: unknown[][] = [
+    const fmtVal = (v: unknown): string => {
+      if (v == null) return '';
+      if (Array.isArray(v)) return `${v.length} item(s): ${v.slice(0, 6).map(x => typeof x === 'object' && x ? String((x as { operationName?: string; label?: string; name?: string }).operationName ?? (x as { label?: string }).label ?? (x as { name?: string }).name ?? '…') : String(x)).join('; ')}${v.length > 6 ? '; …' : ''}`;
+      if (typeof v === 'object') return JSON.stringify(v).slice(0, 200);
+      return String(v);
+    };
+    ck.push(
       ['STATUS', checks.costable ? 'COSTABLE' : 'NOT COSTABLE — blocking decision open or blocking check unacknowledged'],
-      ['Geometry', checks.geometryQuality === 'occt' ? 'measured from CAD solid (OCCT)' : checks.geometryQuality === 'stl' ? 'measured from mesh (STL)' : checks.geometryQuality === 'text' ? 'NOT measured' : ''],
+      ['Geometry', checks.geometryQuality === 'occt' ? 'measured from CAD solid (OCCT)' : checks.geometryQuality === 'stl' ? 'measured from mesh (STL)' : checks.geometryQuality === 'text' ? 'NOT measured' : 'not recorded'],
       [],
       ['CONSISTENCY CHECKS'], ['Code', 'Severity', 'Blocking', 'Acknowledged', 'Finding'],
-      ...checks.sanity.map(w => [w.code, w.severity, w.blocking ? 'yes' : 'no', w.blocking ? (w.acknowledged ? 'yes' : 'NO') : '', w.message]),
+      ...(checks.sanity.length ? checks.sanity.map(w => [w.code, w.severity, w.blocking ? 'yes' : 'no', w.blocking ? (w.acknowledged ? 'yes' : 'NO') : '', w.message]) : [['none fired']]),
       [],
       ['DECISIONS'], ['Question', 'Severity', 'Answer'],
-      ...checks.decisions.map(d => [d.question, d.severity, d.answer ?? (d.severity === 'blocking' ? 'OPEN' : 'engine default')]),
+      ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, d.answer ?? (d.severity === 'blocking' ? 'OPEN' : 'engine default')]) : [['none recorded']]),
       [],
       ['RULE-OWNED VALUES'], ['Field', 'Rule', 'Model said', 'Used', 'Basis'],
-      ...checks.overrides.map(o => [o.field, o.ruleId, o.from == null ? '' : String(o.from), o.to == null ? '' : String(o.to), o.basis]),
-    ];
-    sheets.push({ name: '7-Checks', rows: ck, cols: [40, 14, 12, 14, 80] });
+      ...checks.overrides.map(o => [o.field, o.ruleId, fmtVal(o.from), fmtVal(o.to), o.basis]),
+    );
   }
+  sheets.push({ name: '7-Checks', rows: ck, cols: [56, 18, 18, 14, 60] });
 
   return workbookBlob(await buildWorkbook(sheets));
 }

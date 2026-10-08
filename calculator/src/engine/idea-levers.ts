@@ -69,8 +69,8 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
     basis: 'manning ×0.6 on every operation (a third shift unattended: 30-50% of attended labour passed through)',
   }),
   'Multi-Machine Manning': (input) => ({
-    next: { ...input, operations: input.operations.map(o => (o.manning ?? 0) >= 1 && o.cycleTimeHr > (o.labourTimeHr ?? 0) * 0.8 ? { ...o, manning: (o.manning ?? 1) / 2 } : o) },
-    basis: '1:2 manning on machine-paced operations',
+    next: { ...input, operations: input.operations.map(o => tendedMachineOp(o) ? { ...o, manning: (o.manning ?? 1) / 2 } : o) },
+    basis: '1:2 manning on machine-paced operations tended by one operator',
   }),
   'Soft / Bridge Tooling for This Volume': (input) => ({
     next: { ...input, tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 0.6 } },
@@ -97,10 +97,28 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
   }),
   'Consumables Rationalisation (Cores, Patterns, Shell)': (input) => {
     const c = input.rawMaterial.consumablesCostPerPart ?? 0;
-    if (!(c > 0)) return null;
-    return { next: { ...input, rawMaterial: { ...input.rawMaterial, consumablesCostPerPart: c * 0.8 } }, basis: 'consumables per part ×0.8' };
+    const core = coreConsumables(input);
+    if (!(c > 0) || !(core > 0)) return null;
+    return { next: { ...input, rawMaterial: { ...input.rawMaterial, consumablesCostPerPart: c - 0.2 * core } }, basis: 'core / pattern / shell consumables ×0.8' };
   },
 };
+
+/**
+ * A machine-paced operation one operator tends: not a bench step, not load / clamp / handling (the operator IS the
+ * task), not a crewed line (a sand moulding line runs a crew of 4 — "4 operators per machine" was read as over-manning).
+ */
+function tendedMachineOp(o: UniversalStackInput['operations'][number]): boolean {
+  const m = o.manning ?? 0;
+  return !o.benchOperation && m >= 1 && m <= 1.5 && o.cycleTimeHr > 0 && o.cycleTimeHr > (o.labourTimeHr ?? 0) * 0.8
+    && !/load|clamp|unload|handling|set-?up|inspect|gauge|deburr|fettl|pack/i.test(o.operationName ?? '');
+}
+
+/** £ per part of core / pattern / shell / moulding-sand consumables — itemised where the module itemises them. */
+function coreConsumables(input: UniversalStackInput): number {
+  const items = input.rawMaterial.consumablesItems;
+  if (items?.length) return items.filter(i => /core|pattern|shell|sand|wax|binder/i.test(i.label)).reduce((s, i) => s + i.gbp, 0);
+  return 0;
+}
 
 /**
  * Run every lever that has a transform through the real stack. The saving
@@ -175,9 +193,10 @@ export function generateIdeaLevers(
   const volumeAssumed = ctx?.volumeProvided === false;
   const alreadyLowCost = LOW_COST_REGIONS.has((ctx?.region ?? '').trim().toLowerCase());
 
-  const consumables = input.rawMaterial?.consumablesCostPerPart ?? 0;
+  // Only the consumables the lever is about — cores, patterns, shell, moulding sand. Heat treat, NDT and tool wear were
+  // counted too, so a stub axle read "consumables are 59 % of the material line" (uploaded-parts review, Oct 2026).
   const materialBucket = result.breakdown.rawMaterial || 0;
-  const consumShare = materialBucket > 0 ? consumables / materialBucket : 0;
+  const consumShare = materialBucket > 0 ? coreConsumables(input) / materialBucket : 0;
 
   const amortVol = input.tooling?.amortizationVolume ?? 0;
   const toolingNRE = input.tooling?.totalToolingCost ?? 0;
@@ -188,7 +207,7 @@ export function generateIdeaLevers(
   const topOp = opConv.length > 0 ? opConv.reduce((a, b) => (b.conv > a.conv ? b : a)) : null;
   const topOpShare = topOp && convTotal > 0 ? topOp.conv / convTotal : 0;
 
-  const maxManning = ops.reduce((m, o) => Math.max(m, o.manning ?? 0), 0);
+  const maxManning = ops.filter(tendedMachineOp).reduce((m, o) => Math.max(m, o.manning ?? 0), 0);
   const hasOp = (rx: RegExp) => ops.some(o => rx.test(o.operationName ?? ''));
   const opShareOfTotal = (rx: RegExp) => opDetails
     .filter(o => rx.test(o.operationName ?? ''))
@@ -244,7 +263,7 @@ export function generateIdeaLevers(
     out.push({
       category: 'material', lever: 'design',
       title: 'Consumables Rationalisation (Cores, Patterns, Shell)',
-      description: `Per-part consumables are ${(consumShare * 100).toFixed(0)}% of the material line. Core count, pattern life and shell recipe are all design-controllable.`,
+      description: `Cores, patterns and shell are ${(consumShare * 100).toFixed(0)}% of the material line. Core count, pattern life and shell recipe are all design-controllable.`,
       expectedSavingPct: Math.min(6, consumShare * 20),
       technicalJustification: 'Core consolidation (one complex core replacing two simple ones), longer-life wax/pattern tooling, and shell-sand reclaim each cut the recurring consumable line 10–30% in foundry practice.',
       risk: 'Medium', timeframe: 'Medium Term',
@@ -338,11 +357,11 @@ export function generateIdeaLevers(
     });
   }
 
-  if (maxManning >= 1 && labPct > 15 && !['wiring_harness', 'composites', 'biw_assembly'].includes(commodity) && ops.some(o => (o.manning ?? 0) >= 1 && o.cycleTimeHr > (o.labourTimeHr ?? 0) * 0.8)) {
+  if (maxManning >= 1 && labPct > 15 && !['wiring_harness', 'composites', 'biw_assembly'].includes(commodity) && ops.some(tendedMachineOp)) {
     out.push({
       category: 'process', lever: 'supplier',
       title: 'Multi-Machine Manning',
-      description: `Operations are manned at up to ${maxManning.toFixed(1)} operators per machine while the machine paces the cycle. One operator tending two machines is the textbook correction.`,
+      description: `Machine-paced operations are tended by ${maxManning.toFixed(1)} operator per machine. One operator tending two machines is the usual correction.`,
       expectedSavingPct: Math.min(5, labPct * 0.25),
       technicalJustification: 'Where the operator loads, starts and walks away, 1:2 or 1:3 manning halves or thirds the charged labour minutes. Requires cell layout and staggered cycles — a supplier kaizen, not an investment.',
       risk: 'Low', timeframe: 'Quick Win',

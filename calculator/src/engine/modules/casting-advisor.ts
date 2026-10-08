@@ -151,6 +151,15 @@ const ALLOY_LABEL: Record<AlloyFamily, string> = {
 const DIE_CASTABLE: AlloyFamily[] = ['aluminium', 'magnesium', 'zinc'];
 const FERROUS: AlloyFamily[] = ['grey-iron', 'ductile-iron', 'carbon-steel', 'stainless-steel'];
 
+/**
+ * The heaviest section (casting modulus 2·V/S, mm) sent to high-pressure die casting. 2·V/S counts bosses, ribs and
+ * pads with the walls, so it reads above the nominal wall a die caster designs to: a die-cast aluminium gearbox housing
+ * on a ~3–4 mm nominal wall measures 5.9 mm, and was sent to gravity casting at 50,000/yr under the old 4 mm limit
+ * (uploaded-parts review, Oct 2026). Above it the section freezes too slowly for a pressure die. CostVision engineering
+ * heuristic (not a published standard).
+ */
+export const HPDC_SECTION_MAX_MM = 6;
+
 export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProcessRecommendation {
   const alloy = ALLOY_LABEL[inputs.alloyFamily];
   const tol = inputs.toleranceClass ?? 'standard';
@@ -193,8 +202,12 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
       inputs.safetyCritical ? ['X-ray NDT', 'Heat treat'] : ['Heat treat']);
   }
 
-  // 3. Large structural aluminium at high volume → megacasting.
-  if (inputs.alloyFamily === 'aluminium' && inputs.partWeightKg >= 15 && inputs.annualVolume >= 50000) {
+  // 3. Large structural aluminium at high volume → megacasting. Structural megacastings are THIN-walled (they replace
+  //    pressings); a heavy block of the same mass is not one — an 80 kg part at a 48.6 mm section was sent to a 6,100 t
+  //    giga-press in ADC12 (uploaded-parts review, Oct 2026). The die-cast section limit applies here too.
+  const section = inputs.sectionMm ?? inputs.minWallThicknessMm;
+  if (inputs.alloyFamily === 'aluminium' && inputs.partWeightKg >= 15 && inputs.annualVolume >= 50000
+      && section <= HPDC_SECTION_MAX_MM) {
     return build('megacasting',
       `large structural aluminium (${inputs.partWeightKg} kg) at ${inputs.annualVolume.toLocaleString()}/yr — a single giga-die replaces dozens of stamped/joined parts; needs vacuum, ductile alloy (Silafont/Castasil) and post-cast T7`,
       ['Vacuum giga-HPDC', 'Solution + T7 age', 'Laser trim', 'CMM datum-align', 'Leak test'],
@@ -202,8 +215,7 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
   }
 
   // 4. Thin-wall, high-volume die-castable alloy → HPDC.
-  const section = inputs.sectionMm ?? inputs.minWallThicknessMm;
-  if (dieCastable && inputs.annualVolume >= 20000 && section <= 4 && inputs.partWeightKg <= 15) {
+  if (dieCastable && inputs.annualVolume >= 20000 && section <= HPDC_SECTION_MAX_MM && inputs.partWeightKg <= 15) {
     const secondary = ['Deburr/trim', 'Shot blast'];
     if (inputs.pressureTight) secondary.push('Vacuum-assist or impregnation');
     if (inputs.safetyCritical) secondary.push('X-ray NDT');

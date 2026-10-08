@@ -8,6 +8,7 @@
 // still win: dotenv never overwrites one that is already set, which is how the
 // Windows launcher and Docker pass their settings.
 import 'dotenv/config';
+import { GEOMETRY_TIMEOUT_MAX_MS } from '../src/engine/geometry-timeout.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -179,6 +180,11 @@ const server = app.listen(PORT, HOST, () => {
     }
   });
 });
+// A large STEP measures for up to GEOMETRY_TIMEOUT_MAX_MS (geometry-timeout.ts); Node's default 300 s request timeout
+// would cut the upload off before the kernel answers. Raised to that limit plus the page's minute, not removed.
+server.requestTimeout = GEOMETRY_TIMEOUT_MAX_MS + 60_000;
+server.headersTimeout = 120_000;
+
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

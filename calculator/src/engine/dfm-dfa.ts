@@ -122,7 +122,10 @@ export function generateDFMDFA(
   const oheadPct = (result.breakdown.overhead / tot) * 100;
   const mgnPct  = (result.breakdown.margin / tot) * 100;
   const opCount = (input.operations ?? []).length;
-  const avgOEE  = opCount > 0 ? (input.operations.reduce((s, o) => s + (o.oee ?? 0.85), 0) / opCount) : 0.85;
+  // OEE of the MACHINE operations only — bench steps carry OEE 1 and lifted a costing run at 80 % to "healthy OEE (87 %)"
+  // (uploaded-parts review, Oct 2026).
+  const machineOps = (input.operations ?? []).filter(o => !o.benchOperation && o.cycleTimeHr > 0);
+  const avgOEE  = machineOps.length > 0 ? (machineOps.reduce((s, o) => s + (o.oee ?? 0.85), 0) / machineOps.length) : 0.85;
   const matUtil = input.rawMaterial?.materialUtilization ?? 0.72;
 
   // Extended parameter diet for the 360° rules — still everything the costing
@@ -369,12 +372,13 @@ export function generateDFMDFA(
         recommendation: 'Increase annual volume, consider family tooling or gravity die as interim solution',
       });
     }
-    if (matPct < 35) {
+    // A cast + machined part's material share is diluted by its machining — the casting reference does not apply.
+    if (matPct < 35 && commodity === 'casting') {
       dfmIssues.push({
         severity: 'minor',
         category: 'material',
         title: 'Unusually low material content — verify alloy grade',
-        description: `Material at ${matPct.toFixed(1)}% of part cost is below the 35% floor for castings. Verify alloy grade and net weight inputs.`,
+        description: `Material at ${matPct.toFixed(1)}% of part cost is below 35% (CostVision reference for castings — an engineering estimate, not a sourced survey). Verify alloy grade and net weight inputs.`,
         savingPct: 0,
         risk: 'Low',
         recommendation: 'Validate material weight and alloy price inputs against purchase orders',

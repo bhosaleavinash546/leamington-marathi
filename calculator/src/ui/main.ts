@@ -160,6 +160,7 @@ import { exportToExcelBlob } from '../export/excel.js';
 import { restackFindingCosts } from '../engine/dfm-geometry/index.js';
 import { NOT_IN_STACK_RULES } from '../engine/design-to-cost.js';
 import { mountDtcPanel } from './design-to-cost-panel.js';
+import { analyzeRequestTimeoutMs } from '../engine/geometry-timeout.js';
 import { currencySymbol } from '../engine/insights.js';
 import { populateRegionPickers } from './region-options.js';
 import { setActiveRates } from '../engine/rate-context.js';
@@ -408,6 +409,13 @@ let _cadAnalysisByRegion: Record<string, { analysis: CADAnalysisResult; ruleFiel
 let _cadFillsByRegion: Record<string, Record<string, string>> = {};
 let _cadFillSource: Record<string, string> = {};
 let _cadDecisions: CADDecision[] = [];
+/** Every question asked on this upload, by id — the open list empties as they are answered, but the report must still
+ *  say what was asked and answered (the Checks sheet listed none on a costing with six answers). */
+let _cadDecisionsAsked: Record<string, { question: string; severity: string }> = {};
+function rememberDecisions(ds: CADDecision[]): CADDecision[] {
+  for (const d of ds) _cadDecisionsAsked[d.id] = { question: d.question, severity: d.severity };
+  return ds;
+}
 let _cadDecisionAnswers: Record<string, string> = {};
 /** The rules-vs-AI comparison. Only mode='both' produces one; else null. */
 let _cadDiff: CADDiff | null = null;
@@ -5701,9 +5709,9 @@ function renderCADAnalysisForm(): string {
         <label style="font-size:0.75rem">Annual Volume (pcs/year)</label>
         <input type="number" id="cad-annual-volume" value="100000" min="1" step="1000"
                style="font-size:0.8rem" title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
-        <label style="font-size:0.72rem;display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 4.8 instead of Sonnet 5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
+        <label style="font-size:0.72rem;display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 5.5 instead of Sonnet 5.5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
           <input type="checkbox" id="cad-deep-analysis" style="margin:0"/>
-          <span>Deep analysis — Claude Opus 4.8 (complex parts, slower)</span>
+          <span>Deep analysis — Claude Opus 5.5 (complex parts, slower)</span>
         </label>
       </div>
       <div class="field-group">
@@ -5939,7 +5947,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
+    _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6006,7 +6014,7 @@ function wireCADEvents(): void {
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          const maxDim = 2576;   // full resolution Claude Sonnet 5 / Opus 4.8 accept — material/finish ID needs the pixels
+          const maxDim = 2576;   // full resolution Claude Sonnet 5.5 / Opus 5.5 accept — material/finish ID needs the pixels
           const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
           const canvas = document.createElement('canvas');
           canvas.width = Math.round(img.width * scale);
@@ -6079,7 +6087,7 @@ function setCADFile(f: File): void {
   setCadQualityBadge(null, null);
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-  _cadDecisions = []; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
+  _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6137,9 +6145,11 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
   if (cadResultsEl) cadResultsEl.innerHTML = '';
 
   const controller = new AbortController();
+  // The wait follows the file's size — the server gives the kernel the same allowance (geometry-timeout.ts).
+  const waitMs = analyzeRequestTimeoutMs(cadFile?.size ?? 0);
   const timeoutId = setTimeout(
-    () => controller.abort(new DOMException('Analysis timed out after 150s', 'TimeoutError')),
-    150_000,
+    () => controller.abort(new DOMException(`Analysis timed out after ${Math.round(waitMs / 1000)}s`, 'TimeoutError')),
+    waitMs,
   );
 
   try {
@@ -6260,7 +6270,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     _cadRuleOverrides = (() => { const ro = (data as { ruleOverrides?: unknown }).ruleOverrides;
       return Array.isArray(ro) ? ro as typeof _cadRuleOverrides : ((ro as { applied?: typeof _cadRuleOverrides } | undefined)?.applied ?? []); })();
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
-    _cadDecisions = (data as { decisions?: CADDecision[] }).decisions ?? [];
+    _cadDecisions = rememberDecisions((data as { decisions?: CADDecision[] }).decisions ?? []);
     _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
     _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
@@ -6440,12 +6450,27 @@ function wireCADDecisionsPanel(): void {
   const panel = document.getElementById('cad-decisions-panel');
   if (!panel) return;
 
+  // An ADVISORY question is answered only when the engineer touches it. Recording every pre-selected default on Apply
+  // pinned the grade suggested for one process after the answers moved the part to another — a sand-cast caliper was
+  // costed in the die-casting alloy ADC12 (uploaded-parts review, Oct 2026). Blocking questions record their selection.
+  const touched = new Set<string>();
+  panel.addEventListener('change', e => {
+    const id = (e.target as HTMLElement | null)?.closest<HTMLElement>('.cad-decision')?.dataset.decisionId;
+    if (id) touched.add(id);
+  });
+  panel.addEventListener('input', e => {
+    const id = (e.target as HTMLElement | null)?.closest<HTMLElement>('.cad-decision')?.dataset.decisionId;
+    if (id) touched.add(id);
+  });
   const sync = (): void => {
     for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.cad-decision'))) {
       const id = block.dataset.decisionId;
+      if (!id) continue;
+      const advisory = _cadDecisions.find(d => d.id === id)?.severity === 'advisory';
+      if (advisory && !touched.has(id) && _cadDecisionAnswers[id] === undefined) continue;
       const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
       const picked = typed ?? block.querySelector<HTMLInputElement>('input[type=radio]:checked');
-      if (id && picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
+      if (picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
     }
     const open = _cadDecisions.filter(d => d.severity === 'blocking');
     const status = document.getElementById('cad-decisions-status');
@@ -6984,7 +7009,7 @@ async function reanalyzeCAD(): Promise<void> {
     // Locked grade/process win over anything the AI re-derived — the human decides.
     _applyCadPins(cadAnalysisResult);
     // What the rules could still not settle after the answers were applied.
-    _cadDecisions = data.decisions ?? [];
+    _cadDecisions = rememberDecisions(data.decisions ?? []);
     _cadRuleFields = data.ruleFields ?? {};
     _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
@@ -7491,9 +7516,9 @@ function buildPCBImageUploadZone(): string {
 
         <!-- Deep analysis: run extraction on Claude Opus (higher accuracy, ~2x cost, slower) -->
         <div style="margin-top:6px;display:flex;justify-content:center">
-          <label style="font-size:0.70rem;display:flex;align-items:center;gap:6px;cursor:pointer" title="Runs the vision extraction on Claude Opus 4.8 instead of Sonnet — deeper reasoning on ambiguous components and complex boards. Roughly 2x AI cost and slower; best for high-value or HDI/RF boards.">
+          <label style="font-size:0.70rem;display:flex;align-items:center;gap:6px;cursor:pointer" title="Runs the vision extraction on Claude Opus 5.5 instead of Sonnet 5.5 — deeper reasoning on ambiguous components and complex boards. Roughly 2x AI cost and slower; best for high-value or HDI/RF boards.">
             <input type="checkbox" id="pcb-deep-analysis" style="margin:0"/>
-            <span>Deep analysis — Claude Opus 4.8 (higher accuracy on complex boards, slower)</span>
+            <span>Deep analysis — Claude Opus 5.5 (higher accuracy on complex boards, slower)</span>
           </label>
         </div>
 
@@ -10369,7 +10394,9 @@ function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): voi
   element.setAttribute('data-prov', prov);
   element.title = prov === 'measured'
     ? 'Measured — derived from the CAD file geometry (OCCT/STL kernel)'
-    : 'AI-estimated — suggested by the analysis; review before calculating';
+    : selectedAnalysisMode() === 'deterministic'
+      ? 'Rule-set — derived by a stated rule (not measured); review before calculating'
+      : 'Estimated — suggested by the analysis (not measured); review before calculating';
   // Remove highlight after user edits (their value now — no longer AI provenance)
   element.addEventListener('input', () => { element.classList.remove('ai-filled'); element.removeAttribute('data-prov'); }, { once: true });
 }
@@ -10475,7 +10502,7 @@ function showCADProvenanceBanner(): void {
   div.style.cssText = 'margin:8px 0;padding:9px 12px;background:var(--info-bg,#eff6ff);border:1px solid var(--info-border,#bfdbfe);border-radius:8px;font-size:0.74rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;flex-wrap:wrap';
   div.innerHTML = `<strong style="color:var(--text-primary)">CAD auto-fill:</strong>` +
     `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-right:4px"></span>${measured} measured (geometry)</span>` +
-    `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} AI-estimated — review before calculating</span>` +
+    `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} ${selectedAnalysisMode() === 'deterministic' ? 'set by a rule' : 'estimated'} — review before calculating</span>` +
     (blocked ? `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#dc2626;margin-right:4px"></span>${blocked} waiting on a decision</span>` : '') +
     `<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;line-height:1" title="Dismiss" onclick="this.parentElement.remove()">&#10005;</button>`;
   const anchor = document.getElementById('commodity-tabs');
@@ -10588,7 +10615,8 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
     const controller = new AbortController();
-    const to = setTimeout(() => controller.abort(new DOMException('Timed out after 150 s', 'TimeoutError')), 150_000);
+    const waitMs = analyzeRequestTimeoutMs(file.size);
+    const to = setTimeout(() => controller.abort(new DOMException(`Timed out after ${Math.round(waitMs / 1000)} s`, 'TimeoutError')), waitMs);
     const res = await fetch('/api/cad/analyze', { method: 'POST', headers, body: fd, signal: controller.signal });
     clearTimeout(to);
     const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; occtGeometry?: OCCTGeometry | null; geometrySource?: 'occt' | 'text_parsing'; decisions?: CADDecision[]; ruleFields?: Record<string, CADRuleField>; error?: string };
@@ -10597,7 +10625,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     cadOCCTGeometry = data.occtGeometry ?? null;
     cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
-    _cadDecisions = data.decisions ?? [];
+    _cadDecisions = rememberDecisions(data.decisions ?? []);
     _cadRuleFields = data.ruleFields ?? {};
     _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     // This path never asks for a comparison, so any diff on screen is the last
@@ -17157,7 +17185,8 @@ function currentPartPhotoDataUrl(): string | null {
 function reportPhotos(): ReportPhoto[] {
   const out: ReportPhoto[] = [];
   // The board photos belong to the report only when this costing came from them.
-  if (!pcbFormNotFromPhoto()) pcbImageDataUrls.forEach((dataUrl, i) => {
+  // …and only on a PCB costing: a machined part's report carried the last board's photos (uploaded-parts review).
+  if ((activeCommodity === 'pcba' || activeCommodity === 'pcb_fab') && !pcbFormNotFromPhoto()) pcbImageDataUrls.forEach((dataUrl, i) => {
     if (dataUrl) out.push({ dataUrl, label: PCB_SLOT_LABELS[i] ?? `Image ${i + 1}` });
   });
   if (out.length === 0) {
@@ -17323,7 +17352,7 @@ function guardrailFaceIds(code: string): number[] | undefined {
 /** £ per B-rep face from the costed feature lines (minutes × rate), for the viewer's cost mode. */
 function faceCostMap(): Record<number, number> | null {
   const meta = buildCadReportMeta();
-  const lines = meta.featureLines ?? [];
+  const lines = meta.featureLinesInCost ? meta.featureLines ?? [] : [];
   const rate = meta.featureMachineRatePerHr ?? 0;
   if (!lines.length || !rate) return null;
   const out: Record<number, number> = {};
@@ -17354,7 +17383,7 @@ function featureLineLabel(l: { kind: string; count: number; diaMm: number; depth
 function faceCostItems(): import('./cad-viewer.js').CostItem[] {
   const meta = buildCadReportMeta();
   const rate = meta.featureMachineRatePerHr ?? 0;
-  if (!rate) return [];
+  if (!rate || !meta.featureLinesInCost) return [];
   return (meta.featureLines ?? []).filter(l => l.included && l.faceIds?.length).map(l => ({
     // A pocket or face has no diameter — name it by its depth, never "Ø0.0".
     label: featureLineLabel(l),
@@ -17459,14 +17488,19 @@ document.addEventListener('click', (ev) => {
 
 /** What the report prints under "Checks applied": the same list the gate uses. */
 function buildChecksApplied(): CADReportMeta['checks'] {
-  if (!cadAnalysisResult) return null;
+  // Only for the CAD part this costing was made from — a hand-entered costing of another part carried the last upload's
+  // checks, decisions and status (uploaded-parts review, Oct 2026).
+  if (!cadAnalysisResult || !dfmBelongsToCosting()) return null;
   const openBlocking = openCADDecisions().length > 0;
-  const unacked = cadSanityWarnings.some(w => w.blocking && !_cadSanityAcks.has(w.code));
+  // The same test the costing gate applies (sanityStillApplies) — STATUS printed NOT COSTABLE for a figure it accepted.
+  const unacked = cadSanityWarnings.some(w => w.blocking && sanityStillApplies(w.code) && !_cadSanityAcks.has(w.code));
+  const asked = { ..._cadDecisionsAsked };
+  for (const d of _cadDecisions) asked[d.id] = { question: d.question, severity: d.severity };
   return {
     costable: !openBlocking && !unacked,
     geometryQuality: cadGeometrySource === 'occt' ? 'occt' : cadGeometrySource === 'stl_parser' ? 'stl' : cadGeometrySource ? 'text' : null,
     sanity: cadSanityWarnings.map(w => ({ ...w, acknowledged: w.blocking ? _cadSanityAcks.has(w.code) : undefined })),
-    decisions: _cadDecisions.map(d => ({ id: d.id, question: d.question, severity: d.severity, answer: _cadDecisionAnswers[d.id] ?? null })),
+    decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'], answer: _cadDecisionAnswers[id] ?? null })),
     overrides: _cadRuleOverrides,
   };
 }
@@ -17483,12 +17517,28 @@ function exportBlockedReason(): string | null {
 
 function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
+    // The band the screen shows, so the report cannot print a different one.
+    ...(() => {
+      if (!lastResult || !lastInput) return { uncertainty: null, uncertaintyBasis: null };
+      try {
+        const b = resultBand(lastResult, lastInput);
+        return { uncertainty: b.u, uncertaintyBasis: b.hcalApplied
+          ? `calibrated on ${b.n} logged purchase price(s) for this commodity and material — ${b.mapePct}% mean absolute error`
+          : 'Monte-Carlo through the cost stack: each driver varied by where it came from (measured from the CAD, set by a rule, or a library default) and its rate-data confidence' };
+      } catch { return { uncertainty: null, uncertaintyBasis: null }; }
+    })(),
     annualVolume: lastInput?.annualVolume ?? null,
+    volumeProvided: uiSuggestionContext().volumeProvided,
+    pkgLogisticsEstimated: uiSuggestionContext().pkgLogisticsEstimated,
     photos: reportPhotos(),
     functionalSafety: reportFunctionalSafety(),
     // Present only when the background job has landed. Omitted rather than
     // blocked on — the section is additive, never load-bearing.
-    geometricDFM: cadGeometricDFM,
+    // Only the CAD part this costing was made from — a hand-entered costing of another part printed the last upload's
+    // findings (uploaded-parts review, Oct 2026).
+    geometricDFM: dfmBelongsToCosting() ? cadGeometricDFM : null,
+    geometricDFMAmounts: cadGeometricDFM && dfmBelongsToCosting() ? Object.fromEntries([...dfmFindingAmounts()].map(([k, v]) => [k, { text: v.text, basis: v.basis }])) : null,
+    geometricDFMRecosted: !!lastInput && dfmBelongsToCosting(),
     // The costing on screen IS the photo analysis (and it is still the loaded one): print it as a PCBA.
     pcbAnalysis: _costedFromPcbAnalysis && _costedFromPcbAnalysis === pcbImageResult && activeCommodity === 'pcb_fab'
       ? (_costedFromPcbAnalysis as unknown as NonNullable<CADReportMeta['pcbAnalysis']>) : null,
@@ -17503,6 +17553,7 @@ function buildCadReportMeta(): CADReportMeta {
   let featureLines: FeatureMachiningLine[] | null = null;
   let featureMachineRatePerHr: number | null = null;
   let featureStock: 'near_net' | 'solid_billet' | null = null;
+  let featureLinesInCost = false;
   const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
   if (rows.length) {
     const prefix = activeCommodity === 'casting' ? 'cast' : activeCommodity === 'forging' ? 'forge' : activeCommodity === 'machining' ? 'mach' : null;
@@ -17517,7 +17568,13 @@ function buildCadReportMeta(): CADReportMeta {
       fm = computeFeatureMachining(rows, { machineId, labourId: resolveLabourId('lab-uk-skilled'), stockCondition: stock });
     }
     featureLines = fm.lines;
-    featureMachineRatePerHr = library.machines.find(m => m.id === machineId)?.computedRatePerHr ?? 45;
+    featureMachineRatePerHr = library.machines.find(m => m.id === machineId)?.computedRatePerHr ?? null;
+    // In the cost only when the costing's operations ARE these feature operations (casting / forging secondary
+    // machining, or machining with feature machining as the basis). Otherwise the table is a geometry audit of a fresh
+    // VMC calculation the costing never used — the PDF printed "Costed? Yes" and a £ total for it, and the 3D viewer
+    // put those £ on the faces, beside a costing built from its own rules (uploaded-parts review, Oct 2026).
+    const featOps = new Set((fm.operations ?? []).map(o => o.operationName));
+    featureLinesInCost = !!prefix && featOps.size > 0 && lastInput!.operations.some(o => featOps.has(o.operationName));
   }
 
   return {
@@ -17527,6 +17584,7 @@ function buildCadReportMeta(): CADReportMeta {
     measuredVolumeCm3: volCm3,
     measuredWeightKg,
     featureLines,
+    featureLinesInCost,
     featureMachineRatePerHr,
     featureStock,
     userSpecifiedMaterial: _cadMaterialLocked,

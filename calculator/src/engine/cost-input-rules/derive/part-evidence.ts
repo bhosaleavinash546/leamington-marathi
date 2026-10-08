@@ -60,6 +60,8 @@ const PROCESS_WORDS: Array<{ re: RegExp; route: string; label: string }> = [
   { re: / (blow ?mou?ld(ed|ing|ings)?) /, route: 'blow_moulding', label: 'blow moulding' },
   { re: / (roto ?mou?ld(ed|ing|ings)?|rotational(ly)? ?mou?ld(ed|ing)?) /, route: 'rotational_moulding', label: 'rotational moulding' },
   { re: / (inj(ection)? ?mou?ld(ed|ing)?|mou?lded|mou?ldings?) /, route: 'injection_moulding', label: 'moulding' },
+  // A bumper fascia / cover is an injection moulding; a bumper BEAM is an extrusion or a pressing (not matched).
+  { re: / (bumpers?|fascias?)(?! ?(beams?|reinf\w*|brackets?|armatures?)) /, route: 'injection_moulding', label: 'a moulded bumper fascia' },
   { re: / (machined|billet|cnc) /, route: 'machining', label: 'machining' },
   { re: / (extru(ded|sion|sions)) /, route: 'extrusion', label: 'extrusion' },
   // Rubber (rubber review): the compound or an unambiguous rubber part. Not

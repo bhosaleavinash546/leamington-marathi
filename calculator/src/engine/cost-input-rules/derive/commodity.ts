@@ -27,15 +27,20 @@
  * override a model with.
  */
 import type { Decision, RuleContext } from '../types.js';
-import { hollowVerdict, enclosedShell } from './hollow.js';
+import { hollowVerdict, enclosedShell, cavityShell } from './hollow.js';
 import { extrusionProfile } from './profile.js';
 import { shellWallEstimateMm } from '../../geometry-sanity.js';
 import { partNames, processFromNames, polymerFromNames, netShapeSignal, hasMachinedFeatures } from './part-evidence.js';
 
 export const COMMODITY_DECISION_ID = 'commodity.route';
 
-/** A filename that names a gear: `ring_gear.step`, `PINION-12.stp`. */
-const GEAR_NAME = /\bgears?\b|\bpinion\b|_gear|gear_/i;
+/**
+ * A filename that names a gear: `ring_gear.step`, `PINION-12.stp`, `gear_z38.stp`. "gear" / "pinion" must be a whole
+ * word (underscores, digits and punctuation separate words) — `offroad_vehicle_gearbox_housing.stp` matched `_gear` and
+ * was costed as a gear asking for a tooth count (uploaded-parts review, Oct 2026). A gearbox, gear housing or gear
+ * cover is not a gear: "gear" followed by box / case / housing / cover / shift / lever is excluded.
+ */
+const GEAR_NAME = /(?:^|[^a-z])(?:gears?|pinions?)(?![a-z])(?![\s_-]*(?:box|case|housing|cover|shift|lever|knob|oil|pump))/i;
 
 /**
  * Is this a gear? The one rule, for every caller.
@@ -83,6 +88,8 @@ const GAUGE_WALL_TOLERANCE = 2;
  * and were only ever offered sheet metal, injection moulding or machining.
  */
 const THICK_WALL_MM = 6;
+/** The thickest wall injection moulding is designed to; a shell above it with bosses is cast. */
+const MOULDED_WALL_MAX_MM = 4;
 
 export interface CommodityVerdict {
   /** Set when the measurement settles it. */
@@ -190,7 +197,7 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   //    pressing-or-moulding question with no blow or roto option on it
   //    (rotational-moulding review). Roto leans below 10,000 a year, where its
   //    cheap tools win; blow above, where its minute-long cycle does.
-  if (enclosedShell(g)) {
+  if (enclosedShell(g) || cavityShell(g)) {
     const mx = Math.max(g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm);
     // A revolved cup up to 200 mm across may be an impact extrusion (cell cans,
     // capacitor and aerosol cans) — offered, never leaned (aluminium-extrusion build).
@@ -198,8 +205,13 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
     const impactCup = (t?.fraction ?? 0) >= 0.9 && (t?.maxDiaMm ?? 0) > 0 && (t?.maxDiaMm ?? 0) <= 200;
     return {
       decision: ask(
-        `A closed ${mx.toFixed(0)} mm shell (${Math.round((g.enclosure!.hitShare ?? 0) * 100)}% of rays from its centre `
-        + `meet a wall) — a tank or container. It cannot come out of a solid process; blow and rotational moulding `
+        (enclosedShell(g)
+          ? `A closed ${mx.toFixed(0)} mm shell (${Math.round((g.enclosure!.hitShare ?? 0) * 100)}% of rays from its centre `
+            + 'meet a wall) — a tank or container.'
+          : `A ${mx.toFixed(0)} mm thin shell with ${g.draftAnalysis!.cavityFaceCount} of its ${g.draftAnalysis!.analyzedFaceCount} `
+            + 'measured faces facing an enclosed cavity — a tank or container (a saddle tank\'s centre sits outside it, so '
+            + 'the ray probe alone cannot say).')
+        + ` It cannot come out of a solid process; blow and rotational moulding `
         + 'both make it, and the annual volume decides which.'
         + (impactCup ? ` Fully revolved and ${g.turning!.maxDiaMm!.toFixed(0)} mm across: a metal can or cup is impact extruded.` : ''),
         ['blow_moulding', 'rotational_moulding', 'sheet_metal', ...(impactCup ? ['aluminium_extrusion'] : [])],
@@ -234,6 +246,21 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
     // A polymer in the name is evidence against a pressing too (thermoforming
     // review: "… HDPE THERMOFORMED" and "… ABS" parts went to sheet metal).
     const polymer = polymerFromNames(partNames(ctx.filename, g));
+    // Over 4 mm with bosses it is not a moulding either — injection moulding is designed to 1–4 mm (THICK_WALL_MM
+    // above) — but a die-cast shell: a 5.9 mm aluminium gearbox housing with 20 filleted "bends" and bosses was offered
+    // only injection moulding, sheet metal or thermoforming, leaning injection moulding (uploaded-parts review, Oct
+    // 2026). Then casting is on the table, leaning on the part's own evidence (names, surface, measured holes).
+    if (gauge > MOULDED_WALL_MAX_MM && bosses > 0 && !polymer && hollowVerdict(g) !== 'near-enclosed') {
+      const lean = processLeaning(ctx, ['cast_and_machine', 'casting', 'injection_moulding', 'sheet_metal']);
+      return {
+        decision: ask(
+          `${sm.bendCount} bend-like radius pairs at a ${gauge.toFixed(1)} mm wall with ${bosses} boss(es) — fillets on a `
+          + `shell too thick to mould (injection moulding is designed to 1–${MOULDED_WALL_MAX_MM} mm) and with bosses a `
+          + 'pressing does not have: a cast shell, most likely.'
+          + (lean.evidence.length ? ` Evidence: ${lean.evidence.join('; ')}.` : ''),
+          lean.routes, lean.leaning ?? 'cast_and_machine'),
+      };
+    }
     if (bosses > 0 || namedOther || polymer) {
       const lean = namedOther ? namedOther.route!
         : bosses > 0 ? 'injection_moulding'
@@ -292,6 +319,23 @@ export function inferCommodity(ctx: RuleContext): CommodityVerdict {
   const bulkWall0 = (g.volume?.cm3 ?? 0) > 0 && (g.surfaceArea?.cm2 ?? 0) > 0
     ? shellWallEstimateMm(g.volume!.cm3, g.surfaceArea!.cm2) : wall;
   const hollowThinShell = fill < 0.20 && (bulkWall0 == null || bulkWall0 <= 10);
+  // "Hollow" on the fill ratio alone — no sealed void, no enclosure probe ≥ 90 %, no face measured into a cavity — is
+  // not evidence of a container: a 2.5 mm bumper fascia at 0.4 % fill reads the same and was offered only blow /
+  // roto / sheet, leaning roto (uploaded-parts review, Oct 2026). Then the open-shell routes are offered too, and
+  // the lean is only what the file's name says.
+  const weakHollow = sealed === true && g.topology?.enclosesSealedVoid !== true && !enclosedShell(g) && !cavityShell(g)
+    && hv === 'near-enclosed';
+  if ((largeThinShell || hollowThinShell) && weakHollow) {
+    const routes = ['injection_moulding', 'blow_moulding', 'rotational_moulding', 'thermoforming', 'sheet_metal'];
+    const named = namedRoute && ROUTES[namedRoute] ? namedRoute : undefined;
+    return {
+      decision: ask(
+        `A ${maxDim.toFixed(0)} mm thin shell at ${(fill * 100).toFixed(1)}% fill. Nothing measured says it is closed: `
+        + 'no sealed void, the rays from its centre mostly miss it, and no face was found facing an enclosed cavity — so it '
+        + 'may be an open moulding (a fascia, a cover) or a container. The shape does not settle which.',
+        named ? [...new Set([...routes, named])] : routes, named),
+    };
+  }
   if ((largeThinShell || hollowThinShell) && sealed === true) {
     // A sealed cavity rules out every solid process — no core comes out. Which
     // hollow route it is depends on size and volume, which the shape does not say.

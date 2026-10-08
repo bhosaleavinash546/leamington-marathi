@@ -253,6 +253,7 @@ export function computeUniversalStack(
       manning: op.manning,
       labourTimeHr: op.labourTimeHr,
       labourEfficiency: op.labourEfficiency,
+      ...(op.benchOperation ? { benchOperation: true } : {}),
     });
 
     // A bench operation buys no machine time, so the machine rate is not one of

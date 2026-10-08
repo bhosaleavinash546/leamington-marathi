@@ -62,6 +62,22 @@ export function enclosedShell(geo: OCCTGeometry): boolean {
 }
 const ENCLOSED_MIN_HIT_SHARE = 0.9;
 
+/**
+ * A thin shell whose faces point into an enclosed cavity — measured by the kernel's draft pass (`cavityFaceCount`:
+ * faces whose release line runs into the part's own interior). The real fuel tank has 704 of 1,080 analysed faces so;
+ * open shells (pressings, fascias, trays) have none. It catches the container the centre-ray probe misses: a saddle
+ * tank's envelope centre sits in the saddle, outside the tank, and only a third of its rays meet a wall.
+ */
+export function cavityShell(geo: OCCTGeometry): boolean {
+  const d = geo.draftAnalysis as { cavityFaceCount?: number; analyzedFaceCount?: number } | undefined;
+  const cav = d?.cavityFaceCount ?? 0, n = d?.analyzedFaceCount ?? 0;
+  if (!(cav >= CAVITY_MIN_FACES && n > 0 && cav / n >= CAVITY_MIN_SHARE)) return false;
+  const wall = geo.volume && geo.surfaceArea ? shellWallEstimateMm(geo.volume.cm3, geo.surfaceArea.cm2) : null;
+  return (geo.fillRatio ?? 1) < 0.2 && wall != null && wall > 0 && wall <= NEAR_ENCLOSED_MAX_WALL_MM;
+}
+const CAVITY_MIN_FACES = 20;
+const CAVITY_MIN_SHARE = 0.25;
+
 export function hollowVerdict(geo: OCCTGeometry): HollowVerdict {
   const t = geo.topology;
   if (!t?.available) return 'unknown';

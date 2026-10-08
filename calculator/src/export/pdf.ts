@@ -6,7 +6,8 @@ import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/
 import { generateInsights, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
-import { computeCostUncertainty } from '../engine/uncertainty.js';
+import { computeCostUncertainty, overallConfidence } from '../engine/uncertainty.js';
+import { measureLabel, measuredText, thresholdText } from '../engine/dfm-geometry/measure-format.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
@@ -77,6 +78,17 @@ export interface GeometricDFMMeta {
 }
 
 export interface CADReportMeta {
+  /**
+   * The uncertainty band the SCREEN shows (with the drivers' measured / rule provenance, or calibrated by actuals). The
+   * PDF recomputed it without provenance and printed ±16.6 % beside a screen that said ±6.3 % (uploaded-parts review,
+   * Oct 2026). When present the PDF prints this one.
+   */
+  uncertainty?: ReturnType<typeof computeCostUncertainty> | null;
+  /** How that band was computed, in words (driver provenance, or calibrated on n actuals). */
+  uncertaintyBasis?: string | null;
+  /** The screen's suggestion context: was an annual volume typed, are packaging / logistics estimates. */
+  volumeProvided?: boolean;
+  pkgLogisticsEstimated?: boolean;
   /** How the geometry was obtained: precise B-rep (occt), mesh (stl_parser), or
    *  the text/heuristic fallback (text_parsing) that only estimates weight. */
   geometrySource?: 'occt' | 'stl_parser' | 'text_parsing' | null;
@@ -84,9 +96,18 @@ export interface CADReportMeta {
   measuredWeightKg?: number | null;   // measured mass for the chosen material family
   /** Per-feature secondary-machining breakdown actually used in the cost. */
   featureLines?: FeatureMachiningLine[] | null;
+  /** True only when the costing's operations are these feature lines; otherwise §4C is a geometry audit with no £. */
+  featureLinesInCost?: boolean;
   featureMachineRatePerHr?: number | null;
   /** Geometric DFM/DFA from the background job, when one has completed. */
   geometricDFM?: GeometricDFMMeta | null;
+  /**
+   * The £ each finding shows ON SCREEN (main.ts dfmFindingAmounts: re-costed through this costing's own operations, or
+   * a cost to add, or "(ref. rate)" before a costing), keyed by rule id. The PDF printed the DFM job's reference-rate
+   * line and a total of overlapping upper bounds beside a screen that said otherwise (uploaded-parts review, Oct 2026).
+   */
+  geometricDFMAmounts?: Record<string, { text: string; basis?: string }> | null;
+  geometricDFMRecosted?: boolean;
   featureStock?: 'near_net' | 'solid_billet' | null;
   /** True when the engineer pinned the grade / process (locks out AI + sanity). */
   userSpecifiedMaterial?: boolean;
@@ -355,14 +376,18 @@ export function drawCostVisionLogo(doc: jsPDF, x: number, y: number, badgeH = 4.
 /** Commodity-appropriate material-utilisation benchmark for the §3 note. The old
  *  text hard-coded "casting 65–85 %, machining 60–75 %", which is wrong on a
  *  sheet-metal report (blanking yield is nesting-driven, ~55–75 %). */
-function utilisationBenchmarkNote(commodity?: string): string {
+function utilisationBenchmarkNote(commodity?: string, lossIsNotScrap = false): string {
   const c = String(commodity ?? '');
-  if (/sheet_metal|stamp/.test(c))      return 'Benchmark: stamping/blanking 55–75 % (nesting + skeleton scrap)';
-  if (/forging/.test(c))                return 'Benchmark: forging 75–90 % (flash + bar drop)';
-  if (/machining/.test(c))              return 'Benchmark: machining 60–75 % (stock removal)';
-  if (/cast/.test(c))                   return 'Benchmark: casting 65–85 % (runners + risers)';
-  if (/extrusion/.test(c))              return 'Benchmark: extrusion 85–95 % (end crop)';
-  return 'Benchmark: casting 65–85 %, machining 60–75 %';
+  // On a casting whose gating is remelted the utilisation is the metal LOST in melting (dross, burn-off) — not the
+  // casting yield; printing a 65–85 % yield band beside a 98 % figure contradicted the line it sat on.
+  if (lossIsNotScrap) return 'Melt loss only — runners and risers are remelted (their melt energy is in the cost)';
+  const ref = (t: string) => `Reference: ${t} (CostVision engineering estimate)`;
+  if (/sheet_metal|stamp/.test(c))      return ref('stamping / blanking 55–75 %, nesting + skeleton');
+  if (/forging/.test(c))                return ref('forging 75–90 %, flash + bar drop');
+  if (/machining/.test(c))              return ref('machining 60–75 %, stock removal');
+  if (/cast/.test(c))                   return ref('casting 65–85 %, runners + risers');
+  if (/extrusion/.test(c))              return ref('extrusion 85–95 %, end crop');
+  return '';
 }
 
 /** Shared should-cost report body — §1 through §16 (breakdown, ops, machine
@@ -387,9 +412,11 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[], i
   y = chk(doc, y, 100);
   y = secBar(doc, y, 'Source Photographs', `${photos.length} image${photos.length > 1 ? 's' : ''} the costing was built from`);
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-  for (const ln of doc.splitTextToSize(intro ??
-    ('Every component identification in the bill of materials traces to a package marking legible in one of these images. '
-    + 'Lines flagged as estimated could not be read from any of them.'), CW) as string[]) {
+  const partPhotoOnly = photos.every(p => p.label === 'Part photo');
+  for (const ln of doc.splitTextToSize(intro ?? (partPhotoOnly
+    ? 'The photograph supplied with this part — for identification only; no figure in this report is read from it.'
+    : 'Every component identification in the bill of materials traces to a package marking legible in one of these images. '
+      + 'Lines flagged as estimated could not be read from any of them.'), CW) as string[]) {
     doc.text(ln, MG, y); y += 3.6;
   }
   y += 4;
@@ -505,6 +532,7 @@ function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null
 function renderGeometricDFM(
   doc: jsPDF, y: number, g: GeometricDFMMeta | null | undefined,
   money: (n: number) => string,
+  amounts?: Record<string, { text: string; basis?: string }> | null, recosted?: boolean,
 ): number {
   if (!g) return y;
 
@@ -519,10 +547,15 @@ function renderGeometricDFM(
     `${groups.length} issue(s) across ${g.findings.length} instance(s), from `
     + `${g.featuresExamined} measured feature(s) and ${g.rulesEvaluated} rule(s). Every issue `
     + 'names the B-rep faces that produced it and the published source of its threshold. '
-    + (addressable > 0
-      ? `Priced findings total ${money(addressable)}/part; issues shown without a figure are `
-        + 'quality or yield risks with no modelled cost path — see each entry.'
-      : 'No finding on this part has a modelled cost path; each says why.'),
+    + (amounts
+      ? (recosted
+        ? 'A £ is what the finding moves THIS costing by, re-costed through its own operations (overhead and margin included); '
+          + 'levers overlap, so they are not summed. Issues without a figure are quality or yield risks with no modelled cost path.'
+        : 'A £ is the finding priced at its reference rate, before a costing of this part; issues without a figure have no modelled cost path.')
+      : addressable > 0
+        ? `Priced findings total ${money(addressable)}/part at the reference rate; issues shown without a figure are `
+          + 'quality or yield risks with no modelled cost path — see each entry.'
+        : 'No finding on this part has a modelled cost path; each says why.'),
     MG, y, { maxWidth: CW });
   y += 11;
 
@@ -540,9 +573,10 @@ function renderGeometricDFM(
     doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
     const cost = gr.totalCostGBP ?? 0;
     doc.text(`[${sev}] ${gr.title}${gr.count > 1 ? `  (${gr.count} instances)` : ''}`, MG, y);
-    if (cost > 0) {
+    const shownAmt = amounts ? amounts[gr.ruleId]?.text ?? (cost > 0 ? 'not re-costed' : '') : cost > 0 ? `${money(cost)}/part (ref. rate)` : '';
+    if (shownAmt) {
       doc.setTextColor(...NAVY);
-      doc.text(money(cost) + '/part', MG + CW, y, { align: 'right' });
+      doc.text(shownAmt, MG + CW, y, { align: 'right' });
     }
     y += 3.8;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.3); doc.setTextColor(...SLATE);
@@ -550,12 +584,11 @@ function renderGeometricDFM(
       doc.text(ln, MG + 2, y); y += 3.3;
     }
     doc.setTextColor(...GREY);
-    const range = gr.count > 1
-      ? `${gr.range.min}-${gr.range.max}${gr.range.unit}` : `${gr.range.min}${gr.range.unit}`;
     doc.text(
-      `measured ${gr.worst.measured.field} ${range}   `
-      + `threshold ${gr.threshold.comparator} ${gr.threshold.value}${gr.threshold.unit}`, MG + 2, y);
+      `${measureLabel(gr.worst.measured.field)} ${measuredText(gr.range, gr.count)}, ${thresholdText(gr.threshold)}`, MG + 2, y);
     y += 3.3;
+    const basisAmt = amounts?.[gr.ruleId]?.basis;
+    if (basisAmt) for (const ln of doc.splitTextToSize(`In this costing: ${basisAmt}.`, CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.1; }
     // Face list is capped: a 104-instance issue would otherwise run pages of ids.
     const shown = gr.faceIds.slice(0, 30).join(', ');
     for (const ln of doc.splitTextToSize(
@@ -564,6 +597,9 @@ function renderGeometricDFM(
     for (const ln of doc.splitTextToSize(`Fix: ${gr.recommendation}`, CW - 4) as string[]) {
       doc.text(ln, MG + 2, y); y += 3.3;
     }
+    // The header promises each unpriced issue says why — print it.
+    const why = (gr as { costNotModelled?: string }).costNotModelled;
+    if (why && !(amounts?.[gr.ruleId])) for (const ln of doc.splitTextToSize(`Not priced: ${why}`, CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.1; }
     const src = gr.source.clause ? `${gr.source.standard} - ${gr.source.clause}` : gr.source.standard;
     for (const ln of doc.splitTextToSize(`Source: ${src}`, CW - 4) as string[]) {
       doc.text(ln, MG + 2, y); y += 3.1;
@@ -585,7 +621,7 @@ function renderGeometricDFM(
 
   if (g.dfa?.available) {
     y = chk(doc, y, 20);
-    const p = g.dfa.penalties.map(x => `+${x.addedSec}s ${x.reason} (${x.measured})`);
+    const p = (g.dfa.penalties ?? []).map(x => `+${x.addedSec ?? 0}s ${x.reason ?? ''}${x.measured ? ` (${x.measured})` : ''}`);
     y = calloutBox(doc, y, 'DFA - handling & insertion (Boothroyd method, geometric half)', [
       `Handling ${g.dfa.handlingTimeSec}s + insertion ${g.dfa.insertionTimeSec}s = `
       + `${g.dfa.totalTimeSec}s, ${g.dfa.vsIdealRatio}x the 3s ideal part.`,
@@ -839,7 +875,7 @@ export function renderShouldCostSections(
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
   y = renderChecksApplied(doc, y, cadMeta.checks);
-  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c);
+  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c, cadMeta.geometricDFMAmounts, cadMeta.geometricDFMRecosted);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 
   // §3 — Material Detail  (new page)
@@ -850,7 +886,6 @@ export function renderShouldCostSections(
   const grossWt = input.rawMaterial.directCost === undefined
     ? input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization : 0;
   const scrapWt    = Math.max(0, grossWt - input.rawMaterial.netWeightKg);
-  const scrapValue = scrapWt * (mat?.scrapRecoveryPricePerKg ?? 0);
 
   y = secBar(doc, y, '§3 — Material Detail');
 
@@ -861,30 +896,44 @@ export function renderShouldCostSections(
     ['Net Finished Weight',        `${input.rawMaterial.netWeightKg.toFixed(4)} kg`,         'kg',           'Weight in finished part'],
   ];
 
+  // Every item the engine puts in the material line, on BOTH paths, so the rows add up to bucket 1 — the supplied-price
+  // path showed only its direct cost (a battery pack's bought-in cells appeared nowhere in §3; uploaded-parts review).
+  const tracedV = (f: string) => (result.traceability ?? []).find(t => t.field === f)?.value;
+  let metalLine = 0;
   if (input.rawMaterial.directCost !== undefined) {
-    matRows.push(['Direct Material Cost', c(input.rawMaterial.directCost), currency, 'Bypasses weight-based model']);
+    metalLine = input.rawMaterial.directCost;
+    matRows.push(['Direct Material Cost', c(metalLine), currency, 'Priced by the commodity module (not weight × £/kg)']);
   } else {
+    const price = tracedV('material.pricePerKg') ?? mat?.pricePerKg ?? 0;
+    const scrapPrice = tracedV('material.scrapRecoveryPricePerKg') ?? mat?.scrapRecoveryPricePerKg ?? 0;
+    const lossIsNotScrap = !!(input.rawMaterial as { lossIsNotScrap?: boolean }).lossIsNotScrap;
+    const credit = lossIsNotScrap ? 0 : scrapWt * scrapPrice;
+    metalLine = grossWt * price - credit;
     matRows.push(
       ['Gross Weight (stock)',        `${grossWt.toFixed(4)} kg`,                              'kg',           'Net ÷ utilisation ratio'],
       ['Scrap / Runner Weight',       `${scrapWt.toFixed(4)} kg`,                             'kg',           'Gross - Net'],
-      ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            utilisationBenchmarkNote(commodityType)],
-      ['Material Price',              c(mat?.pricePerKg ?? 0),                                `${currency}/kg`, mat?.sourceNote ?? ''],
-      ['Scrap Recovery Price',        c(mat?.scrapRecoveryPricePerKg ?? 0),                   `${currency}/kg`, ''],
-      ['Gross Material Cost',         c(grossWt * (mat?.pricePerKg ?? 0)),                    currency,       'Gross × price/kg'],
+      ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            utilisationBenchmarkNote(commodityType, lossIsNotScrap)],
+      ['Material Price',              c(price),                                               `${currency}/kg`, mat?.sourceNote ?? ''],
+      ['Scrap Recovery Price',        c(scrapPrice),                                          `${currency}/kg`, ''],
+      ['Gross Material Cost',         c(grossWt * price),                                     currency,       'Gross × price/kg'],
+      ['Scrap Credit',                `-${c(credit)}`,                                        currency,       lossIsNotScrap ? 'None — melt loss is metal lost, not scrap sold' : 'Scrap × recovery price'],
     );
-    // Every item the engine puts in the material line, so the rows add up to its total (360 review).
-    const lossIsNotScrap = !!(input.rawMaterial as { lossIsNotScrap?: boolean }).lossIsNotScrap;
-    const credit = lossIsNotScrap ? 0 : scrapValue;
-    matRows.push(['Scrap Credit', `-${c(credit)}`, currency, lossIsNotScrap ? 'None — melt loss is metal lost, not scrap sold' : 'Scrap × recovery price']);
+  }
+  {
     const consumables = input.rawMaterial.consumablesCostPerPart ?? 0;
     const energy = (result.traceability ?? []).filter(t => /^rawMaterial\.energyKwh\./.test(t.field)).reduce((sum, t) => sum + (Number(t.value) || 0), 0);
     const boughtIn = input.rawMaterial.boughtIn?.cost ?? 0;
-    if (consumables > 0) matRows.push(['Consumables & services', c(consumables), currency, 'Per-part recurring']);
+    const items = input.rawMaterial.consumablesItems ?? [];
+    if (consumables > 0 && items.length) {
+      for (const i of items) matRows.push([`Consumable / service — ${i.label}`, c(i.gbp), currency, 'Per part']);
+      const rest = consumables - items.reduce((s2, i) => s2 + i.gbp, 0);
+      if (Math.abs(rest) >= 0.00005) matRows.push(['Consumables — not itemised', c(rest), currency, 'Per part']);
+    } else if (consumables > 0) matRows.push(['Consumables & services', c(consumables), currency, 'Per part']);
     if (energy > 0) matRows.push(['Process energy', c(energy), currency, 'kWh × the costing country tariff']);
     if (boughtIn > 0) matRows.push(['Bought-in content', c(boughtIn), currency, 'Supplier price, no second overhead / margin']);
-    const other = result.breakdown.rawMaterial - (grossWt * (mat?.pricePerKg ?? 0) - credit) - consumables - energy - boughtIn;
-    if (Math.abs(other) >= 0.005) matRows.push(['Other material-line items', c(other), currency, 'Engine adders not itemised above']);
-    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, 'The rows above']);
+    const residual = result.breakdown.rawMaterial - metalLine - consumables - energy - boughtIn;
+    if (Math.abs(residual) >= 0.0005) matRows.push(['UNRECONCILED', c(residual), currency, 'The rows above do not add up to the material bucket — report this']);
+    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= bucket 1']);
   }
   // A pass-through placeholder has no price of its own, so its date says nothing
   // about the cost: print the date of the library the commodity module priced from
@@ -1004,7 +1053,7 @@ export function renderShouldCostSections(
     const note = Math.abs(gap) < 0.005
       ? `Lines reconcile exactly to the ${c(direct)} direct material cost.`
       : `Lines total ${c(linesTotal)} against a ${c(direct)} material bucket - the ${c(Math.abs(gap))} `
-        + `${gap > 0 ? 'balance' : 'excess'} is carried outside the itemisation (bare board, yield/rework allowance, coating).`;
+        + `${gap > 0 ? 'balance' : 'excess'} is carried outside the itemisation${/pcb/.test(commodityType) ? ' (bare board, yield / rework allowance, coating)' : ''} — see the material rows above.`;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
     for (const ln of doc.splitTextToSize(note, CW) as string[]) { doc.text(ln, MG, y); y += 3.6; }
     y += 5;
@@ -1015,14 +1064,24 @@ export function renderShouldCostSections(
   // silent mis-spec the knuckle exposed. Flag it; don't leave it implicit.
   const matId = input.rawMaterial.materialId.toLowerCase();
   const isCasting = /cast/.test(commodityType);
-  const generalDieCast = /adc12|a380|a383|a413|a319|a360|zamak/.test(matId);
-  const hasHeatTreatOp = result.operationDetails.some(op => /heat|t6|t7|solution|age|temper|ndt|x-?ray/i.test(op.operationName));
+  // Aluminium general die-cast alloys only — the structural alternatives named below are aluminium; a zinc (Zamak) part
+  // was told to use Silafont / Aural / Castasil.
+  const generalDieCast = /adc12|a380|a383|a413|a319|a360/.test(matId);
+  // What the costing carries, as an operation OR a per-part consumable / service line (heat treat, NDT and blast are
+  // priced as consumables on the casting routes — the PDF used to say "not in this cost" beside a costing that held
+  // £3.18 of heat treat and £5.00 of NDT; uploaded-parts review, Oct 2026).
+  const costedLines = [...result.operationDetails.map(op => op.operationName),
+    ...(input.rawMaterial.consumablesItems ?? []).filter(i => i.gbp > 0).map(i => i.label)];
+  const carries = (re: RegExp) => costedLines.some(n => re.test(n));
+  const hasHeatTreat = carries(/heat|\bt6\b|\bt7\b|solution|ageing|aging|temper|anneal|normalis|carburis|nitrid/i);
+  const hasNdt = carries(/\bndt\b|x-?ray|\bct\b|radiograph|ultrason|dye pen|magnetic particle|crack test/i);
+  const hasHip = carries(/\bhip\b|hot isostatic/i);
   if (isCasting && generalDieCast) {
     const bullets = [
       `Selected grade "${alloyMat?.grade ?? input.rawMaterial.materialId}" is a GENERAL die-cast alloy (good castability, not high-ductility).`,
-      'For safety-critical / structural parts (steering, suspension, brake, chassis, sub-frame) a structural HPDC alloy — Silafont-36, Aural-5 or Castasil-37 — plus T7 heat-treat and 100% NDT/X-ray is typically mandated.',
+      'For safety-critical / structural parts (steering, suspension, brake, chassis, sub-frame) a structural HPDC alloy — Silafont-36, Aural-5 or Castasil-37 — with T7 heat treat and 100% NDT / X-ray is the usual specification (CostVision engineering guidance — confirm against the drawing).',
     ];
-    if (!hasHeatTreatOp) bullets.push('No heat-treat or NDT operation is present in this cost. If the part is structural, add them (they raise the true cost) or confirm the part is non-structural.');
+    if (!hasHeatTreat || !hasNdt) bullets.push(`${[!hasHeatTreat && 'Heat treat', !hasNdt && 'NDT'].filter(Boolean).join(' and ')} ${!hasHeatTreat && !hasNdt ? 'are' : 'is'} not in this cost. If the part is structural, add ${!hasHeatTreat && !hasNdt ? 'them' : 'it'} (it raises the true cost) or confirm the part is non-structural.`);
     y = calloutBox(doc, y, 'Alloy & Specification Check', bullets, AM, OR_LT);
   }
 
@@ -1102,6 +1161,14 @@ export function renderShouldCostSections(
       c(op.processCost + op.labourCost),
     ];
   });
+  {
+    // The operations' labour is costed before Wright's law and the bucket after it — the rows must still add up.
+    const opsLab = result.operationDetails.reduce((s, o) => s + o.labourCost, 0);
+    const lcA = result.learningCurveApplied;
+    if (lcA && Math.abs(result.breakdown.labour - opsLab) >= 0.00005) {
+      opRowsB.push([`Learning-curve adjustment (${lcA.curvePct}% curve)`, '', '', '', '', `×${lcA.adjustmentFactor.toFixed(4)}`, c(result.breakdown.labour - opsLab), c(result.breakdown.labour - opsLab)]);
+    }
+  }
   opRowsB.push(['TOTAL', '', '', '', '', '', c(result.breakdown.labour), c(result.breakdown.process + result.breakdown.labour)]);
 
   autoTable(doc, {
@@ -1140,6 +1207,27 @@ export function renderShouldCostSections(
     y = chk(doc, y, 26);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
     doc.text('4C  Machined Features — Geometry Audit', MG, y); y += 5;
+    if (!cadMeta.featureLinesInCost) {
+      // Not the costing: list what was measured, with no £ and no "costed" column.
+      doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+      for (const ln of doc.splitTextToSize('Features measured on the model, for audit. They are NOT priced from this table: the '
+        + 'costing\'s own operations (§4A / §4B) carry the machining, built from the measured stock, areas and holes.', CW) as string[]) { doc.text(ln, MG, y); y += 3.3; }
+      y += 1;
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['Feature', 'Ø×depth / area', 'Qty']],
+        body: cadMeta.featureLines.map(l => [
+          ({ hole: 'Hole / bore', boss: 'Boss', face: 'Face', pocket: 'Pocket', slot: 'Slot' } as Record<string, string>)[l.kind] ?? l.kind,
+          (l.kind === 'hole' || l.kind === 'boss')
+            ? `Ø${l.diaMm.toFixed(1)} × ${l.depthMm.toFixed(0)}${l.kind === 'hole' ? (l.through ? ' thru' : l.through === false ? ' blind' : '') : ''}`
+            : `${Math.round(l.areaMm2 ?? 0)} mm²${l.depthMm > 0 ? ` × ${l.depthMm.toFixed(0)}` : ''}`,
+          String(l.count)]),
+        theme: 'plain', headStyles: { ...TH.headStyles, fontSize: 7 },
+        bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: { top: 2, bottom: 2, left: 3, right: 3 } },
+        alternateRowStyles: { fillColor: LIGHT },
+      });
+      y = lastFinalY(doc) + 8;
+    } else {
 
     const rate = cadMeta.featureMachineRatePerHr ?? 0;
     const kindLbl: Record<string, string> = { hole: 'Hole / bore', boss: 'Boss', face: 'Face', pocket: 'Pocket', slot: 'Slot' };
@@ -1193,6 +1281,7 @@ export function renderShouldCostSections(
       ], AM, OR_LT);
     } else {
       y += 4;
+    }
     }
   }
 
@@ -1259,7 +1348,7 @@ export function renderShouldCostSections(
     y = lastFinalY(doc) + 6;
     y = calloutBox(doc, y, 'How to read the machine rate', [
       'Rate/hr = (annual depreciation + maintenance + energy + floor + indirect + finance) ÷ effective hours, where effective hours = available hours × utilisation.',
-      'Effective hours encode the shift pattern: a lower hours-base raises £/hr and a higher one lowers it. A challenge from a supplier will target this divisor and whether depreciation is machine-only or full-cell (machine + dosing furnace + trim + robots/extraction) — state your basis when defending the number.',
+      'Effective hours encode the shift pattern: a lower hours-base raises £/hr and a higher one lowers it. A challenge from a supplier will target this divisor and whether depreciation is machine-only or the full cell (the machine plus its ancillaries) — state your basis when defending the number.',
     ], NAVY, HDR);
   }
 
@@ -1273,7 +1362,10 @@ export function renderShouldCostSections(
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
     head: [['Field', 'Value', 'Unit', 'Source / Reference', 'Rate ID', 'Conf.']],
-    body: result.traceability.map(t => [t.field, t.value.toFixed(4), t.unit, t.rateSource, t.rateId, t.confidence]),
+    // £-denominated values in the report's currency, like every other table (they printed GBP under a £/hr unit).
+    body: result.traceability.map(t => t.unit.includes('£')
+      ? [t.field, (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), t.rateSource, t.rateId, t.confidence]
+      : [t.field, t.value.toFixed(4), t.unit, t.rateSource, t.rateId, t.confidence]),
     theme: 'plain',
     headStyles: { ...TH.headStyles, fontSize: 7.5 },
     bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 4 } },
@@ -1306,7 +1398,8 @@ export function renderShouldCostSections(
     // themselves are guesses — so the band must widen beyond what the rate
     // confidences alone imply. Force a Low-plus base CV in that case.
     const geomEstimated = cadMeta.geometrySource === 'text_parsing';
-    const u = computeCostUncertainty(result, input, geomEstimated ? { baseCvOverride: 0.28 } : {});
+    const u = !geomEstimated && cadMeta.uncertainty ? cadMeta.uncertainty
+      : computeCostUncertainty(result, input, geomEstimated ? { baseCvOverride: 0.28 } : {});
     const confShown = geomEstimated ? 'Low' : u.overallConfidence;
     y = secBar(doc, y, '§7 — Should-Cost with Uncertainty', `Monte-Carlo  ·  ${confShown} confidence`);
     autoTable(doc, {
@@ -1319,7 +1412,10 @@ export function renderShouldCostSections(
     });
     y = lastFinalY(doc) + 3;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
-    const note = doc.splitTextToSize('Range reflects how well each cost driver is known (High / Medium / Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.', CW);
+    const basis = cadMeta.uncertaintyBasis ?? 'Monte-Carlo over the cost buckets, each spread by its rate-data confidence (High / Medium / Low)';
+    const note = doc.splitTextToSize(`Basis: ${basis}. P10 / P90 are the 10th / 90th percentile of the simulated totals. `
+      + (geomEstimated ? 'Measuring the geometry (a STEP or STL) tightens it most. ' : '')
+      + 'Confirming the Low-confidence rates or logging an actual purchase price tightens it.', CW);
     doc.text(note, MG, y + 3); y += note.length * 3.6 + 4;
 
     // Confidence-driver line — WHY the band is what it is (not just the grade).
@@ -1327,8 +1423,9 @@ export function renderShouldCostSections(
     const drivers: string[] = [];
     if (geomEstimated) drivers.push('geometry weight/volume estimated (not measured)');
     if (lowRates > 0) drivers.push(`${lowRates} rate(s) at Low confidence`);
-    drivers.push('tooling amortisation carries the widest per-bucket spread');
-    if (cadMeta.featureLines?.some(l => !l.included)) drivers.push('some detected features not costed (see §4C)');
+    if (result.breakdown.tooling > 0.005) drivers.push('tooling amortisation carries the widest per-bucket spread');
+    if (!drivers.length) drivers.push('rate-data confidence alone (no estimated geometry, no Low-confidence rate)');
+    if (cadMeta.featureLinesInCost && cadMeta.featureLines?.some(l => !l.included)) drivers.push('some detected features not costed (see §4C)');
     y = calloutBox(doc, y, `Why confidence is ${confShown}`, [
       `Main band drivers: ${drivers.join('; ')}.`,
     ], confShown === 'High' ? GN : confShown === 'Medium' ? AM : RD,
@@ -1339,13 +1436,23 @@ export function renderShouldCostSections(
   // One consolidated list, so silence never reads as "included". Some items are
   // conditional — heat-treat/NDT only flagged when no such operation is present.
   {
+    // Every line here is checked against the costing it sits under — a statement that the costing contradicts is
+    // worse than none (the tooling line said "amortised separately, not in this unit cost" beside a tooling bucket).
+    const tl = input.tooling;
     const excl: string[] = [
-      'One-time NRE — tooling / die, fixtures and CNC programming — is amortised separately, not in this unit cost.',
+      tl.totalToolingCost > 0
+        ? (tl.mode === 'one_time_nre'
+          ? `The tooling investment (${c(tl.totalToolingCost)}) is a one-time NRE charged separately — it is NOT in this unit cost.`
+          : `The tooling investment itself (${c(tl.totalToolingCost)}) is paid up front; this unit cost carries it amortised over ${Math.round(tl.amortizationVolume).toLocaleString('en-GB')} parts (bucket 4).`)
+        : 'No tooling investment is in this costing.',
       'Import duty and international freight (regional table is Ex-Works).',
       'Formal embodied-carbon reporting (figures are indicative cradle-to-gate — replace with supplier EPDs).',
     ];
-    if (isCasting && !hasHeatTreatOp) excl.push('Heat-treat (T6/T7), HIP and 100% NDT/X-ray are NOT in this cost — add them for structural / safety-critical parts.');
-    if (isCasting) excl.push('Trim/degate, shot-blast/deflash and impregnation are only included where shown as operations.');
+    if (isCasting) {
+      const missing = [!hasHeatTreat && 'heat treat', !hasNdt && 'NDT / X-ray', !hasHip && 'HIP'].filter(Boolean) as string[];
+      if (missing.length) excl.push(`Not in this cost: ${missing.join(', ')} — add ${missing.length > 1 ? 'them' : 'it'} if the part's specification calls for ${missing.length > 1 ? 'them' : 'it'}.`);
+      excl.push('Trim / degate, shot blast and impregnation are included only where listed as an operation or a consumable line (§3, §4).');
+    }
     if (cadMeta.geometrySource === 'text_parsing') excl.push('A measured geometry — this cost used an ESTIMATED weight/volume (see Geometry Provenance).');
     y = calloutBox(doc, y, "What's excluded from this unit cost", excl, GREY, HDR);
   }
@@ -1401,25 +1508,30 @@ export function renderShouldCostSections(
     y = secBar(doc, y, '§9 — Regional Cost Comparison', `Ex-Works  ·  per-region should-cost  ·  vs ${baseName}`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
-      head: [['Region', 'Material', 'Process', 'Labour', 'Tooling', 'Overhead', 'Ex-Works', 'Logistics', 'Total', `vs ${baseName}`]],
+      // Every column the total is made of, so a row adds up (it hid packaging and margin), and no local-currency tag over
+      // figures that are all in the report's currency ("India (INR)" sat over £; uploaded-parts review, Oct 2026).
+      head: [['Region', 'Material', 'Process', 'Labour', 'Tooling', 'Overhead', 'Packaging', 'Logistics', 'Margin', 'Total', `vs ${baseName}`]],
       body: rc.map(r => [
-        `${r.name} (${r.currency})`, c(r.material), c(r.process), c(r.labour), c(r.tooling), c(r.overhead), c(r.exWorks), c(r.logistics), c(r.total),
+        r.name, c(r.material), c(r.process), c(r.labour), c(r.tooling), c(r.overhead), c(r.packaging), c(r.logistics), c(r.margin), c(r.total),
         r.isBase ? 'Base' : `${r.vsBasePct >= 0 ? '-' : '+'}${Math.abs(r.vsBasePct).toFixed(0)}%`,
       ]),
       headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6.5 },
       bodyStyles: { fontSize: 6.9, cellPadding: 1.8 },
-      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 26 }, 6: { fontStyle: 'bold' }, 8: { fontStyle: 'bold' }, 9: { halign: 'center', fontStyle: 'bold' } },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 24 }, 9: { fontStyle: 'bold' }, 10: { halign: 'center', fontStyle: 'bold' } },
       didParseCell: (d: { section: string; row: { index: number }; column: { index: number }; cell: { styles: { fillColor?: unknown; textColor?: unknown } } }) => {
         if (d.section !== 'body') return;
         const row = rc[d.row.index];
         if (row.isBase) d.cell.styles.fillColor = HDR as RGB;
-        if (d.column.index === 8 && Math.abs(row.total - cheapest) < 0.005) { d.cell.styles.fillColor = [220, 252, 231] as RGB; d.cell.styles.textColor = GN as RGB; }
-        if (d.column.index === 9 && !row.isBase) d.cell.styles.textColor = (row.vsBasePct >= 0 ? GN : RD) as RGB;
+        if (d.column.index === 9 && Math.abs(row.total - cheapest) < 0.005) { d.cell.styles.fillColor = [220, 252, 231] as RGB; d.cell.styles.textColor = GN as RGB; }
+        if (d.column.index === 10 && !row.isBase) d.cell.styles.textColor = (row.vsBasePct >= 0 ? GN : RD) as RGB;
       },
     });
     y = lastFinalY(doc) + 3;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
-    doc.text('Per-region should-cost using regional labour, energy and rate benchmarks. Tooling held fixed. Ex-Works — excludes import duty + international freight. Indicative — confirm with RFQ.', MG, y + 3, { maxWidth: CW });
+    doc.text((regionalRows?.length || baseLibrary
+      ? 'Each row is the part re-costed with that country\'s labour, machine, energy and material rates; tooling scaled by its toolroom rate; overhead, packaging and logistics by its shop factors.'
+      : 'Each row scales this costing\'s buckets by that country\'s rate factors (no rate book was available to re-cost it).')
+      + ' Ex-works — excludes import duty and international freight. Indicative — confirm with an RFQ.', MG, y + 3, { maxWidth: CW });
     y += 12;
   }
 
@@ -1428,6 +1540,9 @@ export function renderShouldCostSections(
   // ════════════════════════════════════════════════════════════════════════
   {
     const cb = computeCarbon({ result, input, library, commodity: commodityType, region });
+    // A part costed with no material weight (a supplied price, bought-in cells, a board) has no mass to put a factor on:
+    // "0.00 kgCO2e" read as a result (uploaded-parts review, Oct 2026).
+    if (input.rawMaterial.netWeightKg > 0) {
     y = chk(doc, y, 42);
     y = secBar(doc, y, '§10 — Embodied Carbon', `${cb.totalKgCO2e.toFixed(2)} kgCO2e  ·  ${cb.perNetKgCO2e.toFixed(2)} /kg  ·  cradle-to-gate`);
     autoTable(doc, {
@@ -1443,8 +1558,10 @@ export function renderShouldCostSections(
     });
     y = lastFinalY(doc) + 3;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
-    doc.text('Indicative cradle-to-gate factors — replace with supplier EPDs for formal reporting.', MG, y + 3, { maxWidth: CW });
-    y += 10;
+    doc.text('Indicative cradle-to-gate: representative material factors and a per-commodity process energy intensity (kWh per kg) '
+      + '— not the costing\'s own energy line, and not sourced per material. Replace with supplier EPDs for formal reporting.', MG, y + 3, { maxWidth: CW });
+    y += 12;
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -1452,9 +1569,14 @@ export function renderShouldCostSections(
   // ════════════════════════════════════════════════════════════════════════
   // What the suggestion layer may know about this costing, so it stops
   // critiquing the tool's own region and volume assumptions.
+  // The SAME context the screen's tabs use (main.ts uiSuggestionContext): with the library every lever with a driver
+  // transform is re-costed through the stack; without it the PDF could never show a re-costed £ and listed levers the
+  // screen drops (uploaded-parts review, Oct 2026).
   const suggestionCtx = {
     region: String(region),
-    volumeProvided: !!(cadMeta?.annualVolume ?? (input as { annualVolume?: number }).annualVolume),
+    volumeProvided: cadMeta?.volumeProvided ?? !!(cadMeta?.annualVolume ?? (input as { annualVolume?: number }).annualVolume),
+    pkgLogisticsEstimated: !!cadMeta?.pkgLogisticsEstimated,
+    library,
   };
   const insights = generateInsights(result, input, library, commodityType, suggestionCtx);
   if (insights.length > 0) {
@@ -2005,7 +2127,7 @@ export function printPDF(
   ].join('   ·   ') : [
     `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
     `Currency: ${currency}`,
-    `FX Rate: ${fxRate.toFixed(4)} to GBP`,
+    `FX: £1 = ${fxRate.toFixed(4)} ${currency}`,
     `Operations: ${result.operationDetails.length}`,
     `Region: ${(input as { region?: string }).region ?? region}`,
   ].join('   ·   ');
@@ -2051,14 +2173,12 @@ export function printPDF(
   }
 
   // ── Confidence & traceability summary ────────────────────────────────────
-  const highCount = result.traceability.filter(t => t.confidence === 'High').length;
   const allCount  = result.traceability.length;
   // A PCBA's confidence is the analysis's own (how much of the BOM has a price behind it), not a
   // count of machining operations — "Low · 0 traced operations" said nothing about the board.
-  const overallConf = pcba?.confidence ? pcba.confidence.label
-    : allCount === 0 ? 'Medium'
-    : highCount / allCount >= 0.7 ? 'High'
-    : highCount / allCount >= 0.4 ? 'Medium' : 'Low';
+  // ONE grade for the cover and §7 (uncertainty.ts overallConfidence) — the cover used its own High-share test and could
+  // disagree with §7 on the same report.
+  const overallConf = pcba?.confidence ? pcba.confidence.label : overallConfidence(result);
   const confColor: RGB = overallConf === 'High' ? GN : overallConf === 'Medium' ? AM : RD;
 
   doc.setFillColor(...HDR);
@@ -2101,7 +2221,7 @@ export function printPDF(
       + `${dir} labour cost by ${money(Math.abs(lc.labourSaving))}/part.`,
       `Basis: cumulative volume ${lc.annualVolume.toLocaleString()} against a reference volume of `
       + `${lc.referenceVolume.toLocaleString()} at which the base labour time was established.`,
-      'The labour figure in every table below is the ADJUSTED figure, not the as-quoted standard time.',
+      'The labour BUCKET is the adjusted figure; §4B lists each operation at its standard time and shows the adjustment as its own row.',
     ], AM, [254, 249, 231]);
   }
 
@@ -2113,7 +2233,7 @@ export function printPDF(
     const vol = cadMeta.measuredVolumeCm3 != null ? `${cadMeta.measuredVolumeCm3.toFixed(1)} cm³` : '—';
     if (src === 'occt') {
       y = calloutBox(doc, y, 'Geometry Provenance — MEASURED (OCCT B-rep kernel)', [
-        `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; mass for the selected material family ${wt}.`,
+        `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; finished-part mass at the costed material's density ${wt}.`,
         'Material cost and geometry-derived machining are grounded in the actual solid — not an estimate.',
       ], GN, [237, 247, 237]);
     } else if (src === 'stl_parser') {
@@ -2132,6 +2252,15 @@ export function printPDF(
   const utilPct = (input.rawMaterial.materialUtilization * 100);
   const wtNote = cadMeta.geometrySource === 'text_parsing' ? ' (estimated — see provenance above)'
     : cadMeta.geometrySource ? ' (measured)' : '';
+  // The weight the material line is costed on. On a cast or forged part it is the AS-CAST / AS-FORGED weight (the
+  // finished part + the stock machining removes), not the measured finished mass — the cover printed both, one of them
+  // labelled "measured", with nothing to say why they differ (uploaded-parts review, Oct 2026).
+  const costedKg = input.rawMaterial.netWeightKg;
+  const finishedKg = cadMeta.measuredWeightKg ?? null;
+  const nearNet = /cast|forg/.test(commodityType);
+  const costedWeightLine = finishedKg != null && Math.abs(costedKg - finishedKg) > 0.01 * Math.max(finishedKg, 1e-9)
+    ? `Costed weight: ${costedKg.toFixed(3)} kg${nearNet ? ` (${/forg/.test(commodityType) ? 'as forged' : 'as cast'}: the finished ${finishedKg.toFixed(3)} kg measured + the stock machining removes)` : ` (finished part measured at ${finishedKg.toFixed(3)} kg)`}`
+    : `Net weight: ${costedKg.toFixed(3)} kg${wtNote}`;
   const pinNote = [
     cadMeta.userSpecifiedMaterial ? 'grade user-specified' : '',
     cadMeta.userSpecifiedProcess ? 'process user-specified' : '',
@@ -2160,8 +2289,8 @@ export function printPDF(
   }
   y = calloutBox(doc, y, 'Key Assumptions', [
     volLine,
-    `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}${pinNote ? ` (${pinNote})` : ''}   ·   Net weight: ${input.rawMaterial.netWeightKg.toFixed(3)} kg${wtNote}`,
-    `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of factory base   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of subtotal   ·   Operations: ${result.operationDetails.length}`,
+    `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}${pinNote ? ` (${pinNote})` : ''}   ·   ${costedWeightLine}`,
+    `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of material + process + labour + tooling${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' (bought-in content excluded — it carries a handling charge only)' : ''}   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of the subtotal${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' excl. bought-in' : ''}   ·   Operations: ${result.operationDetails.length}`,
   ], NAVY, HDR);
 
 
