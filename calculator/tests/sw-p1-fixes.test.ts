@@ -61,3 +61,26 @@ describe('#7 no invented savings on the software screen', () => {
     expect(ui).toMatch(/Do NOT state any saving, percentage or amount that is not in the data above/);
   });
 });
+
+import { SW_PUBLISHED_PROGRAMMES, hasVerifiedBenchmark } from '../src/engine/sw-benchmarks.js';
+import { SW_VALIDATION_CASES } from '../src/engine/sw-validation.js';
+
+describe('#6 published benchmark figures: one list, labelled unverified, no peer claim', () => {
+  it('the engine table and the validation read the same list and the same source names', () => {
+    const r = computeSWProgram(defaultSWProgramInputs());
+    const published = r.benchmarks.filter(b => b.vehicle !== 'This programme');
+    expect(published.map(b => b.source)).toEqual(SW_PUBLISHED_PROGRAMMES.map(p => p.source));
+    expect(SW_VALIDATION_CASES.map(c => c.source)).toEqual(SW_PUBLISHED_PROGRAMMES.map(p => p.source));
+  });
+  it('every published figure is marked unverified until it carries a link', () => {
+    for (const p of SW_PUBLISHED_PROGRAMMES) expect(p.verified || !p.sourceUrl).toBe(!p.verified ? true : !!p.sourceUrl);
+    expect(hasVerifiedBenchmark()).toBe(false);
+    expect(computeSWProgram(defaultSWProgramInputs()).benchmarks.filter(b => b.vehicle !== 'This programme').every(b => !b.verified)).toBe(true);
+  });
+  it('the peer-median insight compares only verified figures, and the table says Unverified', () => {
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).toMatch(/b\.vehicle !== 'This programme' && b\.verified/);
+    expect(ui).toMatch(/Unverified/);
+    expect(ui).not.toMatch(/Figures are industry estimates ±20%/);
+  });
+});

@@ -18,6 +18,7 @@ import {
 } from './sw-rate-library.js';
 import type { SWRateLibrary } from './sw-rate-library.js';
 import { mulberry32 } from './uncertainty.js';
+import { SW_PUBLISHED_PROGRAMMES } from './sw-benchmarks.js';
 
 export type { SWRateLibrary, SWRateEntry, RateConfidence } from './sw-rate-library.js';
 export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
@@ -220,6 +221,9 @@ export interface SWBenchmark {
   totalM:      number;   // £M
   perVehicle:  number;   // £
   source:      string;
+  /** False for every published figure today — no source link (sw-benchmarks.ts). */
+  verified:    boolean;
+  sourceUrl:   string | null;
 }
 
 export interface SWProgramResult {
@@ -1224,15 +1228,13 @@ export function computeSWProgram(
     },
   ];
 
+  // ONE list (sw-benchmarks.ts) — every entry is labelled with whether it is verified (none is, Oct 2026).
   const benchmarks: SWBenchmark[] = [
-    { vehicle: 'BMW iX (2021–2026)',            totalM: 620,  perVehicle: 4_800, source: 'Berylls Strategy Advisors estimate, 2023' },
-    { vehicle: 'Porsche Taycan (2019–2024)',    totalM: 480,  perVehicle: 5_200, source: 'SBD Automotive teardown + SW analysis' },
-    { vehicle: 'Mercedes EQS (2021–2026)',      totalM: 710,  perVehicle: 5_500, source: 'McKinsey Future of Software in Automotive, 2022' },
-    { vehicle: 'Range Rover (L460, 2022–2027)', totalM: 390,  perVehicle: 3_800, source: 'JLR investor reports + industry est.' },
-    { vehicle: 'Tesla Model S (Gen 3 HW4)',     totalM: 850,  perVehicle: 3_200, source: 'Morgan Stanley Research, annualised amortised' },
-    { vehicle: 'Audi Q8 e-tron (2023–2028)',   totalM: 520,  perVehicle: 4_600, source: 'VW Group Annual Report + EY SW cost model' },
-    { vehicle: 'Lucid Air (2022–2027)',         totalM: 380,  perVehicle: 7_800, source: 'Low-volume amortisation — Lucid investor notes' },
-    { vehicle: 'Premium SUV This Model',        totalM: summary.grandTotal / 1_000_000, perVehicle: summary.perVehicle, source: 'CostVision model — this calculation' },
+    ...SW_PUBLISHED_PROGRAMMES.map(p => ({
+      vehicle: p.vehicle, totalM: p.totalGBP / 1_000_000, perVehicle: p.perVehicleGBP,
+      source: p.source, verified: p.verified, sourceUrl: p.sourceUrl,
+    })),
+    { vehicle: 'This programme', totalM: summary.grandTotal / 1_000_000, perVehicle: summary.perVehicle, source: 'CostVision model — this calculation', verified: true, sourceUrl: null },
   ];
 
   // NRE total for phase timeline

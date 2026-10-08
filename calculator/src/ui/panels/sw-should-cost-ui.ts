@@ -275,8 +275,8 @@ function renderValidationHTML(): string {
   <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
     <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none">
       <span>Model Validation</span>
-      <span style="font-size:0.68rem;font-weight:700;color:#fff;background:${rep.mapeTotal < 25 ? '#059669' : '#d97706'};border-radius:4px;padding:1px 7px">Total MAPE ${rep.mapeTotal.toFixed(0)}%</span>
-      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">${rep.withinBandCount}/${rep.caseCount} within ±${rep.band}% vs published programmes</span>
+      <span style="font-size:0.68rem;font-weight:700;color:#fff;background:#b45309;border-radius:4px;padding:1px 7px">${rep.verifiedCount}/${rep.caseCount} figures sourced</span>
+      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">Total MAPE ${rep.mapeTotal.toFixed(0)}% vs unverified published figures — not evidence of accuracy</span>
     </summary>
     <div style="padding:0 18px 16px;overflow-x:auto">
       <table class="sw-data-table" style="font-size:0.76rem">
@@ -285,8 +285,10 @@ function renderValidationHTML(): string {
       </table>
       <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">
         Back-test of total SW investment against 7 premium-EV programmes (each run with that programme's region, dev source, volume and life).
-        Published figures are third-party <strong>estimates</strong>, not audited actuals — this is envelope validation, not point-accuracy proof.
-        <strong style="color:#dc2626">Known gap:</strong> per-vehicle figures validate poorly (model amortises NRE over full lifetime vs the industry's ~2-year recovery window) — see docs/sw-cost-validation.md.
+        <strong>None of the ${rep.caseCount} published figures has a source link</strong>, and two could not be traced at all — so a
+        small variance here proves nothing; replace a figure with a sourced one (sw-benchmarks.ts) before relying on this panel.
+        ${rep.perVehicleInconsistent} of ${rep.caseCount} published £/vehicle figures do not reconcile with their own published total over
+        the volume and life used here, so per-vehicle is not compared.
       </p>
     </div>
   </details>`;
@@ -1701,7 +1703,7 @@ function renderResults(result: SWProgramResult): void {
 
   // Benchmark comparison
   const bmRows = result.benchmarks.map(b => {
-    const isThis = b.vehicle.includes('This Model');
+    const isThis = b.vehicle === 'This programme';
     const thisM  = s.grandTotal / 1_000_000;
     const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
     const diffFmt = isThis ? '⭐ Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
@@ -1712,18 +1714,18 @@ function renderResults(result: SWProgramResult): void {
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
       <td class="sw-num">£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}</td>
       <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
-      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${esc(b.source)}</td>
+      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${isThis ? '' : b.verified ? '' : '<strong style="color:var(--amber,#b45309)">Unverified</strong> · '}${esc(b.source)}</td>
     </tr>`;
   }).join('');
 
   const bmEl = document.getElementById('sw-benchmarks');
   if (bmEl) bmEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment</div>
+    <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment (unverified)</div>
     <table class="sw-data-table">
       <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
       <tbody>${bmRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. Figures are industry estimates ±20%.</p>`;
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. <strong>None of these published figures has a source link</strong> and two could not be traced at all — they are shown for context only; do not quote them. The published £/vehicle figures do not reconcile with the published totals.</p>`;
 
   // Rec 4: OEM / Tier-1 / Startup decomposition
   const sourceDecomp: { src: string; label: string; srcMult: number; riskNote: string; ipNote: string; warrantyNote: string }[] = [
@@ -1801,7 +1803,8 @@ function renderResults(result: SWProgramResult): void {
       });
     }
 
-    const nonThis = result.benchmarks.filter(b => !b.vehicle.includes('This Model'));
+    // Peer comparison only against SOURCED figures — none exists yet (sw-benchmarks.ts), so this insight is withheld (P1 #6).
+    const nonThis = result.benchmarks.filter(b => b.vehicle !== 'This programme' && b.verified);
     const medianBm = [...nonThis].sort((a,b)=>a.totalM-b.totalM)[Math.floor(nonThis.length/2)]?.totalM ?? 0;
     const thisM = s.grandTotal / 1_000_000;
     if (medianBm > 0) {
@@ -2045,10 +2048,10 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   const bmData = [
     ['Vehicle / Programme', 'Total SW Cost (£M)', '£/Vehicle', 'vs This Model (%)', 'Source'],
     ...result.benchmarks.map(b => {
-      const isThis = b.vehicle.includes('This Model');
+      const isThis = b.vehicle === 'This programme';
       const thisM = s.grandTotal / 1_000_000;
       const diff = (!isThis && b.totalM > 0) ? f2((thisM - b.totalM) / b.totalM * 100) : 'Base';
-      return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, b.source];
+      return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, (isThis || b.verified ? '' : 'UNVERIFIED — ') + b.source];
     }),
   ];
 
@@ -2250,7 +2253,7 @@ function exportSWPDF(result: SWProgramResult): void {
         head: [['Vehicle / Programme', 'Total SW Cost', '£/Vehicle', 'Source']],
         body: result.benchmarks.map(b => [
           b.vehicle, b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal),
-          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`, b.source,
+          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`, (b.vehicle === 'This programme' || b.verified ? '' : 'UNVERIFIED — ') + b.source,
         ]),
         headStyles: th,
         columnStyles: { 0: { cellWidth: 56 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { cellWidth: 74 } },
