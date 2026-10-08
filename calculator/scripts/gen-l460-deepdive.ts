@@ -5,7 +5,7 @@
  * real vector PDF (jsPDF, no browser) and a print-ready HTML report.
  *   npx tsx scripts/gen-l460-deepdive.ts
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD } from '../src/engine/sw-should-cost.js';
 import { jsPDF } from 'jspdf';
 import * as fs from 'node:fs';
 
@@ -19,11 +19,11 @@ const SIG: any = {
   cayenne:{ autosar_classic:{reuse:'Platform'},autosar_adaptive:{reuse:'Platform'},rtos:{reuse:'Platform'},comm_stacks:{reuse:'Platform'},vehicle_motion:{complexity:'Very High'},active_suspension:{complexity:'Very High'},premium_audio:{complexity:'Very High'} },
 };
 const CAR: any = {
-  l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:1.55,sen:0.55,reuse:'Medium'},
-  x7:{region:'EU',dev:'OEM_Internal',vol:60000,life:8,oh:1.60,sen:0.55,reuse:'Heavy'},
-  q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:1.58,sen:0.55,reuse:'Heavy'},
-  gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:1.62,sen:0.55,reuse:'Medium'},
-  cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:1.62,sen:0.60,reuse:'Medium'},
+  l460:{region:'UK',dev:'Tier1_Supplier',vol:75000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
+  x7:{region:'EU',dev:'OEM_Internal',vol:60000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
+  q8:{region:'EU',dev:'OEM_Internal',vol:55000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Heavy'},
+  gls:{region:'EU',dev:'OEM_Internal',vol:45000,life:9,oh:SW_DEFAULT_OVERHEAD,sen:0.55,reuse:'Medium'},
+  cayenne:{region:'EU',dev:'OEM_Internal',vol:50000,life:8,oh:SW_DEFAULT_OVERHEAD,sen:0.60,reuse:'Medium'},
 };
 const DT: any = { mhev:{dis:MHEV,ov:{}}, bev:{dis:[],ov:{fast_charge:{complexity:'Very High'}}} };
 function results(car:string, dt:string, reuse?:string){ const c=CAR[car], d=DT[dt]; const b:any=defaultSWProgramInputs(); const dis=new Set(d.dis);

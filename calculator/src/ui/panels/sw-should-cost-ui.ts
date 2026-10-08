@@ -19,7 +19,7 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD,
 } from '../../engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
 import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
@@ -459,7 +459,7 @@ function renderWizStepBody(step: number): string {
       <div class="sw-wiz-h">Step 5 — Review &amp; Fine-Tune</div>
       <p class="sw-wiz-help">Adjust the commercial assumptions, then recalculate. Most users can leave these at defaults.</p>
       <div class="sw-grid sw-grid-3" style="gap:16px">
-        <div class="sw-field-group"><label class="sw-label">Overhead multiplier ${tip('Office, IT, management on top of bare salary. 1.6 is typical.')}</label>
+        <div class="sw-field-group"><label class="sw-label">Overhead multiplier ${tip('Facilities, IT and programme management on top of the base rate, which already includes benefits. 1.15 is the default; going much higher counts benefits twice.')}</label>
           <input id="wiz-overhead" type="number" class="sw-config-inp" min="1" max="3" step="0.05" value="${inp.overheadMultiplier}"></div>
         <div class="sw-field-group"><label class="sw-label">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
           <input id="wiz-senior" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inp.teamSeniorFraction}"></div>
@@ -1198,7 +1198,7 @@ function readConfig(): void {
   const devSrc     = (get('sw-dev-source') as HTMLSelectElement)?.value as DevSource || 'OEM_Internal';
   const life       = parseInt((get('sw-prog-life') as HTMLInputElement)?.value) || 10;
   const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
-  const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || 1.60;
+  const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || SW_DEFAULT_OVERHEAD;
   const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
   const baseRate   = parseFloat((get('sw-base-rate') as HTMLInputElement)?.value);
   const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
@@ -1272,7 +1272,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'rr_l460', label: 'Range Rover L460 (PHEV)',
     desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
-    region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium',
+    region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/l460-software-cost-breakdown.html',  // relative to import.meta.env.BASE_URL
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
@@ -1286,7 +1286,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'bmw_x7', label: 'BMW X7 (48V MHEV)',
     desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy',
+    region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/bmw-x7-software-cost-breakdown.html',
     disabledModules: MHEV_DISABLED,
     moduleOverrides: {
@@ -1296,7 +1296,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'audi_q8', label: 'Audi Q8 (48V MHEV)',
     desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy',
+    region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/audi-q8-software-cost-breakdown.html',
     // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
     moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
@@ -1305,7 +1305,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'merc_gls', label: 'Mercedes GLS 450 (48V MHEV)',
     desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/mercedes-gls-software-cost-breakdown.html',
     disabledModules: MHEV_DISABLED,
     moduleOverrides: {
@@ -1319,7 +1319,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne', label: 'Porsche Cayenne Electric (2026)',
     desc: 'E4 platform (PPE, 800V), full BEV, Porsche Driver Experience HMI. Shares PPE middleware with Macan EV / Audi Q6 e-tron (Platform reuse there); bespoke Porsche 4D chassis, Active Ride, 800V high-power charging and Burmester audio at Very-High complexity. Full EV powertrain stack retained.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-software-cost-breakdown.html',
     disabledModules: [],  // full BEV: BMS / charge / drive software all in scope
     moduleOverrides: {
@@ -1335,7 +1335,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne_phev', label: 'Porsche Cayenne E-Hybrid (PHEV)',
     desc: 'MLB Evo · PCM · E-Hybrid plug-in powertrain. Same Porsche performance software as the BEV, but the plug-in-hybrid powertrain is retained at reduced scope (smaller pack, lower charging power) — BMS / SOC / drive-unit at High rather than Very-High.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-phev-software-cost-breakdown.html',
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
@@ -1347,7 +1347,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne_mhev', label: 'Porsche Cayenne (48V MHEV)',
     desc: 'MLB Evo · PCM · 48V mild-hybrid powertrain. High-voltage battery / charge / drive modules are not applicable and disabled; 48V regen and battery-thermal retained. Porsche performance software at Very-High complexity.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-mhev-software-cost-breakdown.html',
     disabledModules: MHEV_DISABLED,
     moduleOverrides: {
@@ -1358,7 +1358,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne_ice', label: 'Porsche Cayenne V8 (ICE)',
     desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. No electrified-powertrain software — all nine EV powertrain / battery modules are out of scope. Porsche performance, chassis and infotainment software otherwise identical.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
     disabledModules: ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'],
     moduleOverrides: {
@@ -1377,10 +1377,10 @@ type Sig = Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'r
 interface StudyCar { id: string; slug: string; flag: string; name: string; region: SWRegion; devSource: DevSource; volume: number; life: number; overhead: number; senior: number; reuse: SWReuse; sig: Sig; skip: string; }
 interface StudyDT { key: string; code: string; dis: string[]; ov: Sig; note: string; }
 const STUDY_CARS: StudyCar[] = [
-  { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
-  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
-  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
-  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
+  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
+  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
 ];
 const STUDY_DTS: StudyDT[] = [
   { key: 'ice', code: 'ICE', dis: _ICE_OFF, ov: {}, note: 'combustion — no EV powertrain software' },

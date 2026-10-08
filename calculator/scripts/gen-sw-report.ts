@@ -11,7 +11,7 @@
  * a docs/ copy. NB: the Range Rover L460 report is hand-authored and NOT produced
  * here — its config is intentionally absent so it is never overwritten.
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD } from '../src/engine/sw-should-cost.js';
 import type { SWModuleInput, SWReuse } from '../src/engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY as L } from '../src/engine/sw-rate-library.js';
 import * as fs from 'node:fs';
@@ -51,23 +51,23 @@ interface Drivetrain {
 }
 
 export const CARS: Car[] = [
-  { id:'l460', slug:'range-rover-l460', flag:'🇬🇧', name:'Range Rover L460', region:'UK', devSource:'Tier1_Supplier', volume:75_000, life:8, overhead:1.55, senior:0.55, reuse:'Medium',
+  { id:'l460', slug:'range-rover-l460', flag:'🇬🇧', name:'Range Rover L460', region:'UK', devSource:'Tier1_Supplier', volume:75_000, life:8, overhead:SW_DEFAULT_OVERHEAD, senior:0.55, reuse:'Medium',
     sig:{ premium_audio:{complexity:'Very High'} }, arch:'EVA2 (MLA) · Pivi Pro', audio:'Meridian 3D',
     premiumExtras:'Dynamic Response Pro active body + rear-axle steer, park assist + 3D surround, cabin-air purification, digital key, HUD',
     reuseNote:'JLR flagship with heavy Tier-1 outsourcing; Medium baseline reuse.' },
-  { id:'bmw_x7', slug:'bmw-x7', flag:'🇩🇪', name:'BMW X7', region:'EU', devSource:'OEM_Internal', volume:60_000, life:8, overhead:1.60, senior:0.55, reuse:'Heavy',
+  { id:'bmw_x7', slug:'bmw-x7', flag:'🇩🇪', name:'BMW X7', region:'EU', devSource:'OEM_Internal', volume:60_000, life:8, overhead:SW_DEFAULT_OVERHEAD, senior:0.55, reuse:'Heavy',
     sig:{ digital_key:{complexity:'Very High'} }, arch:'G07 · CLAR · iDrive 8 (BMW OS 8)', audio:'Bowers & Wilkins Diamond',
     premiumExtras:'Executive Drive Pro active roll + Integral Active Steering, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-HUD',
     reuseNote:'Heavy platform reuse across 7-Series / X5 / X7 — most software carries forward.' },
-  { id:'audi_q8', slug:'audi-q8', flag:'🇩🇪', name:'Audi Q8', region:'EU', devSource:'OEM_Internal', volume:55_000, life:9, overhead:1.58, senior:0.55, reuse:'Heavy',
+  { id:'audi_q8', slug:'audi-q8', flag:'🇩🇪', name:'Audi Q8', region:'EU', devSource:'OEM_Internal', volume:55_000, life:9, overhead:SW_DEFAULT_OVERHEAD, senior:0.55, reuse:'Heavy',
     sig:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'} }, arch:'MLB Evo · MMI/MIB3 · VW Group', audio:'Bang & Olufsen 3D',
     premiumExtras:'adaptive air suspension + all-wheel steer, park assist plus + 360, 4-zone climate, HUD',
     reuseNote:'VW.OS core middleware carried across the Group — Platform reuse on AUTOSAR / RTOS / comm stacks.' },
-  { id:'merc_gls', slug:'mercedes-gls', flag:'🇩🇪', name:'Mercedes GLS 450', region:'EU', devSource:'OEM_Internal', volume:45_000, life:9, overhead:1.62, senior:0.55, reuse:'Medium',
+  { id:'merc_gls', slug:'mercedes-gls', flag:'🇩🇪', name:'Mercedes GLS 450', region:'EU', devSource:'OEM_Internal', volume:45_000, life:9, overhead:SW_DEFAULT_OVERHEAD, senior:0.55, reuse:'Medium',
     sig:{ ivi_os:{complexity:'Very High'}, voice_assistant:{complexity:'Very High'}, navigation:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} }, arch:'X167 · MBUX / NTG6', audio:'Burmester 3D',
     premiumExtras:'E-Active Body Control, MBUX + “Hey Mercedes” voice, active parking + 360, MB AR-HUD, 5-zone climate',
     reuseNote:'Signature MBUX / voice / active-body at Very-High complexity; moderate cross-range reuse.' },
-  { id:'porsche_cayenne', slug:'porsche-cayenne', flag:'🇩🇪', name:'Porsche Cayenne', region:'EU', devSource:'OEM_Internal', volume:50_000, life:8, overhead:1.62, senior:0.60, reuse:'Medium',
+  { id:'porsche_cayenne', slug:'porsche-cayenne', flag:'🇩🇪', name:'Porsche Cayenne', region:'EU', devSource:'OEM_Internal', volume:50_000, life:8, overhead:SW_DEFAULT_OVERHEAD, senior:0.60, reuse:'Medium',
     sig:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'}, vehicle_motion:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} }, arch:'PPE / MLB Evo · Porsche Driver Experience', audio:'Burmester High-End 3D',
     premiumExtras:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, park assist + 360, digital key, HUD',
     reuseNote:'PPE / VW-Group middleware shared across platforms → Platform reuse; bespoke Porsche performance software otherwise.' },

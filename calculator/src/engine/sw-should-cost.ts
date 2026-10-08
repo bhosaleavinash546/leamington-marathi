@@ -1264,6 +1264,13 @@ function _recomputeTotal(
 
 // ─── Default program inputs ───────────────────────────────────────────────────
 
+/**
+ * The ONE overhead default: facilities / programme overhead on a base rate that already includes benefits. The screen's
+ * fallback, its tooltip, every vehicle demo and the report scripts read this. They used 1.55–1.62, which this file
+ * itself says double-counts benefits (+28 % on a programme) — software review P1 #3, Oct 2026.
+ */
+export const SW_DEFAULT_OVERHEAD = 1.15;
+
 export function defaultSWProgramInputs(): SWProgramInputs {
   return {
     region:                  'UK',
@@ -1274,7 +1281,7 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     // 1.15 = facilities/programme overhead ONLY. The £28k/PM base rate is a
     // contractor day-rate equivalent that already includes benefits — the old
     // 1.60 (benefits 35% + facilities 15%) double-counted benefits (~26% high).
-    overheadMultiplier:      1.15,
+    overheadMultiplier:      SW_DEFAULT_OVERHEAD,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
     // baseRateGBP intentionally unset → driven by the rate library's ukBaseRatePerPM
