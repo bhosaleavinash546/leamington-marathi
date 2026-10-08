@@ -29,6 +29,8 @@ export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
 export type ASILLevel       = 'QM' | 'A' | 'B' | 'C' | 'D';
 export type SWComplexity    = 'Low' | 'Medium' | 'High' | 'Very High';
 export type SWReuse         = 'Fresh' | 'Light' | 'Medium' | 'Heavy' | 'Platform';
+/** ISO/SAE 21434 cybersecurity assurance level of a module's item / component ('none' = no cybersecurity goal). */
+export type SWCal           = 'none' | 'CAL1' | 'CAL2' | 'CAL3' | 'CAL4';
 export type SWCategory      = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type SWRegion        = 'UK' | 'EU' | 'USA_Detroit' | 'USA_SV' | 'China' | 'India' | 'Mexico' | 'Eastern_Europe' | 'Japan';
 export type DevSource       = 'OEM_Internal' | 'Tier1_Supplier' | 'Startup_OSS';
@@ -125,6 +127,10 @@ export interface SWModuleDef {
   hasMLContent:              boolean;
   hasCloudDependency:        boolean;
   hasCybersecRequirement:    boolean;
+  /** Default ISO/SAE 21434 CAL. Read from the informative example table in 21434 Annex E (impact × attack vector) with
+   *  CostVision engineering judgement of each module's worst attack vector and impact — a TARA decides the real one.
+   *  Absent: 'CAL2' when hasCybersecRequirement, else 'none' (software review P2 #12). */
+  defaultCal?:               SWCal;
   testingFractionBase:       number;   // testing cost ÷ dev cost at QM baseline
   integrationFractionBase:   number;   // integration cost ÷ dev cost
   maintenancePctPerYear:     number;   // % of dev cost per year (lifecycle)
@@ -157,6 +163,8 @@ export interface SWModuleInput {
   complexity:         SWComplexity;
   reuse:              SWReuse;
   customPersonMonths: number | null;   // null = auto
+  /** ISO/SAE 21434 CAL; absent = the module's default (calFor). */
+  cal?:               SWCal;
 }
 
 export interface SWProgramInputs {
@@ -226,6 +234,7 @@ export interface SWModuleCostResult {
   asilUsed:           ASILLevel;
   complexityUsed:     SWComplexity;
   reuseUsed:          SWReuse;
+  calUsed:            SWCal;
   /** Development person-months as COSTED: every development bucket after complexity, the safety-reuse floor and any
    *  schedule penalty — development £ = personMonths × the loaded rate. It used to report the effort before those
    *  scalings (BMS showed 172.8 PM while 258.5 PM were paid for — software review P2 #9). */
@@ -384,7 +393,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Battery pack monitoring, protection logic, cell voltage/temp acquisition, state machine management, ASIL-D safety logic.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 90,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 52_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.08,
@@ -428,7 +437,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'CCS/CHAdeMO/OCPP protocol stacks, dynamic power curve management, thermal derating during charge.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 25,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.38, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 11_000, annualIPLicenceGBP: 14_000, annualCloudCostGBP: 30_000,
     calibrationFractionBase: 0.08,
@@ -439,7 +448,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Integrated electric drive unit control, dual-motor torque vectoring, multi-speed gearbox integration, creep & one-pedal drive.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.12,
@@ -485,7 +494,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'B', categoryLabel: 'ADAS Level 2 & 2+',
     description: 'Object detection/classification (DNN), lane detection, traffic sign recognition, free-space estimation, parking vision. Mono + stereo cameras.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 130,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.50, integrationFractionBase: 0.20, maintenancePctPerYear: 16,
     annualToolLicenceGBP: 108_000, annualIPLicenceGBP: 160_000, annualCloudCostGBP: 850_000,
     calibrationFractionBase: 0.06,
@@ -551,7 +560,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'B', categoryLabel: 'ADAS Level 2 & 2+',
     description: 'Gaze tracking, drowsiness detection, attention estimation, hands-on-wheel detection. IR camera + CNN inference.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 55,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL2',
     testingFractionBase: 0.45, integrationFractionBase: 0.16, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 51_000, annualIPLicenceGBP: 90_000, annualCloudCostGBP: 180_000,
     calibrationFractionBase: 0.06,
@@ -575,7 +584,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'Android Automotive OS or QNX BSP integration, platform services, GPU driver optimisation, boot time optimisation, security hardening.',
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 160,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.22, maintenancePctPerYear: 18,
     annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.02,
@@ -601,7 +610,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'Wake word detection, ASR (on-device + cloud), NLU, TTS, vehicle function control, 3rd-party assistant integration (Alexa/Google).',
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 450_000,
     calibrationFractionBase: 0.04,
@@ -614,7 +623,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: '5G/LTE modem management, emergency call (eCall), remote diagnostics, remote access, V2X readiness, OBD-II data relay.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.38, integrationFractionBase: 0.15, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 90_000,
     calibrationFractionBase: 0.04,
@@ -625,7 +634,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'BT5.x stack (audio, phone), WiFi 6/6E AP+client, 5G SA/NSA modem driver integration, hotspot management.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.30, integrationFractionBase: 0.12, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 20_000,
     calibrationFractionBase: 0.03,
@@ -671,7 +680,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'D', categoryLabel: 'Vehicle Domain Controllers',
     description: 'CAN/LIN/FlexRay/Ethernet routing, signal translation, diagnostic gateway, firewall, network management master.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 28,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.16, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.04,
@@ -682,7 +691,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'D', categoryLabel: 'Vehicle Domain Controllers',
     description: 'Zone controller software, power distribution management, ECU consolidation logic, 100BASE-T1 Ethernet backbone management.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.38, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 45_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.05,
@@ -717,7 +726,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'E', categoryLabel: 'Middleware & Platform',
     description: 'ara::com service-oriented communication, execution management, update management (UCM), PHM, crypto API, DDS integration.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 60,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.38, integrationFractionBase: 0.22, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 108_000, annualIPLicenceGBP: 110_000, annualCloudCostGBP: 30_000,
     calibrationFractionBase: 0.04,
@@ -774,7 +783,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'Hardware Security Module (HSM) integration, key provisioning, boot chain verification, anti-rollback, attestation.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 20,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.45, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 45_000,
     calibrationFractionBase: 0.04,
@@ -785,7 +794,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'AES-256, RSA-2048, ECC, TLS 1.3 for V2X/cloud, AUTOSAR Crypto Stack, hardware crypto acceleration.',
     defaultAsil: 'B', defaultComplexity: 'Medium', basePersonMonths: 15,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.40, integrationFractionBase: 0.14, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 16_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.03,
@@ -796,7 +805,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'In-vehicle network anomaly detection, CAN message monitoring, rate-limiting, VSOC integration, event reporting to cloud.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 28,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
     annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 45_000, annualCloudCostGBP: 90_000,
     calibrationFractionBase: 0.05,
@@ -807,7 +816,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'Delta update generation, signature verification, rollback protection, update orchestration, bandwidth management.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 20,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 30_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.04,
@@ -818,7 +827,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'Certificate lifecycle management, PKI integration, key derivation, secure key storage, provisioning infrastructure.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 15,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.40, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 28_000, annualCloudCostGBP: 80_000,
     calibrationFractionBase: 0.04,
@@ -831,7 +840,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'G', categoryLabel: 'OTA & Cloud Backend',
     description: 'Vehicle-side update campaign execution, ECU coordination, rollback, consent management, network condition handling.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.38, integrationFractionBase: 0.18, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 55_000, annualCloudCostGBP: 180_000,
     calibrationFractionBase: 0.04,
@@ -842,7 +851,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'G', categoryLabel: 'OTA & Cloud Backend',
     description: 'Vehicle connectivity backend, API gateway, device shadow, remote command, data lake, microservices architecture (AWS/Azure/GCP).',
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.32, integrationFractionBase: 0.16, maintenancePctPerYear: 20,
     annualToolLicenceGBP: 48_000, annualIPLicenceGBP: 130_000, annualCloudCostGBP: 1_200_000,
     calibrationFractionBase: 0.03,
@@ -853,7 +862,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'G', categoryLabel: 'OTA & Cloud Backend',
     description: 'In-vehicle data collection agent, edge pre-processing, telemetry streaming, data lake ingestion, GDPR/data governance.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 27_000, annualIPLicenceGBP: 65_000, annualCloudCostGBP: 320_000,
     calibrationFractionBase: 0.04,
@@ -930,7 +939,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'CCC Digital Key 3.0 phone-as-key, UWB ranging & relay-attack protection, BLE fallback, secure-element / HSM integration, key sharing & cloud provisioning backend.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 22,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.32, integrationFractionBase: 0.14, maintenancePctPerYear: 9,
     annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 20_000, annualCloudCostGBP: 30_000,
     calibrationFractionBase: 0.03,
@@ -960,7 +969,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Combustion engine control: air / fuel / ignition, torque structure and torque monitoring, start-stop, knock and misfire control.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.12,
@@ -1090,7 +1099,7 @@ function computeModuleCost(
   let   silFrac    = 0.30;
   let   milFrac    = def.hasMLContent ? 0.18 : 0.08;
   let   regFrac    = 0.10;
-  let   penFrac    = def.hasCybersecRequirement ? 0.08 : 0;
+  let   penFrac    = calFor(def, input) !== 'none' ? 0.08 : 0;
   let   scenFrac   = def.category === 'B' ? 0.09 : 0;
   const fixedSum   = silFrac + milFrac + regFrac + penFrac + scenFrac;
   // If the fixed sub-buckets ever exceed the whole, normalise them down so the
@@ -1110,8 +1119,10 @@ function computeModuleCost(
 
   const integration = devTotal * def.integrationFractionBase;
 
-  const cybersecPct = def.hasCybersecRequirement
-    ? (input.asil === 'D' ? 0.14 : input.asil === 'C' ? 0.10 : 0.08) : 0;
+  // Cybersecurity engineering follows the ISO/SAE 21434 CAL, not the safety level (P2 #12): a QM infotainment OS with a
+  // network attack vector used to get the lowest uplift. The tiers are the old ASIL ones re-keyed.
+  const cal = calFor(def, input);
+  const cybersecPct = CYBER_UPLIFT_BY_CAL[cal];
   const cybersec    = devTotal * cybersecPct;
 
   // Physical/model calibration effort (dyno runs, proving ground, model fitting)
@@ -1154,6 +1165,7 @@ function computeModuleCost(
     categoryLabel:  def.categoryLabel,
     asilUsed:       input.asil,
     complexityUsed: input.complexity,
+    calUsed:        calFor(def, input),
     reuseUsed:      input.reuse,
     personMonths:   Math.round((reqsPM + archPM + algoPM + implPM + safetyPM) * schedPenalty * 10) / 10,
     effortPersonMonths: Math.round((devTotal + testTotal + integration + cybersec + calibration + mlDataCost) / regionRate * 10) / 10,
@@ -1187,6 +1199,17 @@ function computeModuleCost(
     grandTotal:     out.grandTotal + royalty,
     perVehicle:     out.perVehicle + (lifeVeh > 0 ? royalty / lifeVeh : 0),
   };
+}
+
+/** Cybersecurity engineering (TARA, cyber concept, verification) as a share of development, by ISO/SAE 21434 CAL.
+ *  CostVision engineering estimate: the review found no published effort ratio per CAL (software review §5), so these
+ *  are the previous ASIL-keyed tiers (8 / 10 / 14 %) re-keyed — CAL1 and CAL2 share the lowest. */
+export const CYBER_UPLIFT_BY_CAL: Record<SWCal, number> = { none: 0, CAL1: 0.08, CAL2: 0.08, CAL3: 0.10, CAL4: 0.14 };
+export const SW_CALS: SWCal[] = ['none', 'CAL1', 'CAL2', 'CAL3', 'CAL4'];
+
+/** The CAL a module is costed at: the input's, else the module's default. */
+export function calFor(def: SWModuleDef, input: Pick<SWModuleInput, 'cal'>): SWCal {
+  return input.cal ?? def.defaultCal ?? (def.hasCybersecRequirement ? 'CAL2' : 'none');
 }
 
 /** Per-unit royalties over the programme, £ (NPV when a discount rate is set). Built: volume × royalty each year.
@@ -1374,6 +1397,7 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
     if (!(m.asil in lib.asilDevMultipliers)) p.push(`${m.moduleId}: ASIL "${String(m.asil)}" is not known`);
     if (!(m.complexity in lib.complexityMultipliers)) p.push(`${m.moduleId}: complexity "${String(m.complexity)}" is not known`);
     if (!(m.reuse in lib.reuseFactors)) p.push(`${m.moduleId}: reuse "${String(m.reuse)}" is not known`);
+    if (m.cal !== undefined && !SW_CALS.includes(m.cal)) p.push(`${m.moduleId}: CAL "${String(m.cal)}" is not known (none, CAL1–CAL4)`);
     if (m.customPersonMonths !== null && m.customPersonMonths !== undefined
         && (!fin(m.customPersonMonths) || m.customPersonMonths < 0 || m.customPersonMonths > 50_000)) {
       p.push(`${m.moduleId}: custom effort must be 0–50,000 person-months`);

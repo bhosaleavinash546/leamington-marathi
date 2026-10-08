@@ -11,7 +11,7 @@
  * a docs/ copy. NB: the Range Rover L460 report is hand-authored and NOT produced
  * here — its config is intentionally absent so it is never overwritten.
  */
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope, SW_POWERTRAIN_SCOPE } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope, SW_POWERTRAIN_SCOPE, CYBER_UPLIFT_BY_CAL } from '../src/engine/sw-should-cost.js';
 import type { SWPowertrain } from '../src/engine/sw-should-cost.js';
 import { rateValues } from '../src/engine/sw-rate-library.js';
 import type { SWModuleInput, SWReuse } from '../src/engine/sw-should-cost.js';
@@ -177,7 +177,7 @@ function report(v: Meta): { file:string; docFile:string; html:string; gt:number;
   const adef = SW_MODULES.find(d=>d.id===am.moduleId)!;
   const cxMult = CX_V[am.complexityUsed]; const implCx = 1 + (cxMult-1)*0.15;
   const testFrac = adef.testingFractionBase * (ASILTEST[am.asilUsed]/0.38);
-  const cyberPct = adef.hasCybersecRequirement ? (am.asilUsed==='D'?14:am.asilUsed==='C'?10:8) : 0;
+  const cyberPct = CYBER_UPLIFT_BY_CAL[am.calUsed] * 100;   // keyed on the ISO/SAE 21434 CAL (P2 #12)
   const d = am.development;
   const anatomy = `
     <div class="card reveal" style="margin-bottom:16px;">

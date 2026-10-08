@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP, CYBER_UPLIFT_BY_CAL, calFor } from '../src/engine/sw-should-cost.js';
 import { USD_PER_GBP } from '../src/engine/gear-heat-treat-data.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 
@@ -131,5 +131,48 @@ describe('#11 per-vehicle royalties scale with volume', () => {
     const d = def('voice_assistant');
     const v = unitRoyaltyGBP(d, { annualProductionVolume: 1000, programLifeYears: 2, discountRatePct: 10 });
     expect(v).toBeCloseTo(1000 * 15 / 1.1 + 1000 * 15 / 1.21, 4);
+  });
+});
+
+describe('#12 cybersecurity uplift follows the ISO/SAE 21434 CAL, not the ASIL', () => {
+  const one = (id: string, mut: (m: SWProgramInputs['modules'][number]) => void = () => {}) => {
+    const p = prog(q => { q.modules = q.modules.map(m => ({ ...m, enabled: m.moduleId === id })); });
+    mut(p.modules.find(m => m.moduleId === id)!);
+    return computeSWProgram(p).modules.find(m => m.moduleId === id)!;
+  };
+  const devTotal = (r: ReturnType<typeof one>) => r.development.total;
+
+  it('the QM infotainment OS (network attack vector) now gets the top uplift', () => {
+    const r = one('ivi_os');
+    expect(r.asilUsed).toBe('QM');
+    expect(r.calUsed).toBe('CAL4');
+    expect(r.cybersecCost / devTotal(r)).toBeCloseTo(0.14, 10);     // was 8 % (keyed on QM)
+  });
+
+  it('changing the ASIL no longer changes the cyber share; changing the CAL does', () => {
+    const qm = one('tcu_software', m => { m.asil = 'QM'; });
+    const d  = one('tcu_software', m => { m.asil = 'D'; });
+    expect(qm.cybersecCost / devTotal(qm)).toBeCloseTo(d.cybersecCost / devTotal(d), 10);
+    const c1 = one('tcu_software', m => { m.cal = 'CAL1'; });
+    expect(c1.cybersecCost / devTotal(c1)).toBeCloseTo(CYBER_UPLIFT_BY_CAL.CAL1, 10);
+  });
+
+  it('a module with no cyber goal can be given a CAL, and gains the uplift and a pen-test slice', () => {
+    const none = one('navigation');
+    expect(none.calUsed).toBe('none');
+    expect(none.cybersecCost).toBe(0);
+    expect(none.testing.penTest).toBe(0);
+    const c3 = one('navigation', m => { m.cal = 'CAL3'; });
+    expect(c3.cybersecCost / devTotal(c3)).toBeCloseTo(0.10, 10);
+    expect(c3.testing.penTest).toBeGreaterThan(0);
+  });
+
+  it('every cyber module has a CAL; an unknown CAL is refused', () => {
+    for (const d of SW_MODULES) expect(calFor(d, {}) !== 'none', d.id).toBe(d.hasCybersecRequirement);
+    expect(validateSWInputs(prog(p => { (p.modules[0] as { cal?: string }).cal = 'CAL5'; })).join(' ')).toMatch(/CAL/);
+  });
+
+  it('the advanced table offers a CAL per module', () => {
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/sw-cal-sel/);
   });
 });

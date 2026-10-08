@@ -16,11 +16,11 @@
 
 import type {
   ASILLevel, SWComplexity, SWReuse, SWRegion, DevSource,
-  SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain,
+  SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal,
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
-  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
@@ -616,6 +616,8 @@ function renderSWPanelHTML(): string {
         `<option value="${esc(c)}" ${inp.complexity === c ? 'selected' : ''}>${esc(c)}</option>`).join('');
       const reuseOpts = (['Fresh','Light','Medium','Heavy','Platform'] as SWReuse[]).map(r =>
         `<option value="${r}" ${inp.reuse === r ? 'selected' : ''}>${r}</option>`).join('');
+      const cal = calFor(def, inp);
+      const calOpts = SW_CALS.map(c => `<option value="${c}" ${cal === c ? 'selected' : ''}>${c === 'none' ? '—' : c}</option>`).join('');
       const tags: string[] = [];
       if (def.hasMLContent) tags.push('<span class="sw-tag sw-tag-ml">ML</span>');
       if (def.hasCloudDependency) tags.push('<span class="sw-tag sw-tag-cloud">Cloud</span>');
@@ -635,6 +637,7 @@ function renderSWPanelHTML(): string {
         <td><select class="sw-sel sw-asil-sel" data-id="${def.id}">${asilOpts}</select>${asilWarn}</td>
         <td><select class="sw-sel sw-comp-sel" data-id="${def.id}">${compOpts}</select></td>
         <td><select class="sw-sel sw-reuse-sel" data-id="${def.id}">${reuseOpts}</select></td>
+        <td><select class="sw-sel sw-cal-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} cybersecurity assurance level" title="ISO/SAE 21434 CAL — drives the cybersecurity uplift (default from the Annex E example table; your TARA decides)">${calOpts}</select></td>
         <td><input type="number" class="sw-pm-input" data-id="${def.id}" placeholder="auto" value="${inp.customPersonMonths ?? ''}" min="0" step="1" style="width:60px"></td>
       </tr>`;
     }).join('');
@@ -657,6 +660,7 @@ function renderSWPanelHTML(): string {
               <th style="width:80px">ASIL</th>
               <th style="width:100px">Complexity</th>
               <th style="width:90px">Reuse</th>
+              <th style="width:76px" title="ISO/SAE 21434 cybersecurity assurance level">CAL</th>
               <th style="width:70px">Custom PM</th>
             </tr>
           </thead>
@@ -1274,6 +1278,10 @@ function readConfig(): void {
   document.querySelectorAll<HTMLSelectElement>('.sw-reuse-sel').forEach(sel => {
     const m = _swInputs.modules.find(x => x.moduleId === sel.dataset.id);
     if (m) m.reuse = sel.value as SWReuse;
+  });
+  document.querySelectorAll<HTMLSelectElement>('.sw-cal-sel').forEach(sel => {
+    const m = _swInputs.modules.find(x => x.moduleId === sel.dataset.id);
+    if (m) m.cal = sel.value as SWCal;
   });
   document.querySelectorAll<HTMLInputElement>('.sw-pm-input').forEach(inp => {
     const m = _swInputs.modules.find(x => x.moduleId === inp.dataset.id);
