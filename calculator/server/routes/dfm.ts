@@ -22,8 +22,9 @@ router.post('/analyze', aiLimit('dfm'), async (req: Request, res: Response) => {
       dfmResult: {
         dfm: { score: number; issues: Array<{ severity: string; title: string; recommendation: string }>; summary: string };
         dfa: { score: number; issues: Array<{ severity: string; title: string; recommendation: string }>; summary: string };
-        costOptimisations: Array<{ title: string; expectedSavingPct: number; technicalJustification: string; timeframe: string }>;
-        totalPotentialSavingPct: number;
+        costOptimisations: Array<{ title: string; expectedSavingPct: number; technicalJustification: string; timeframe: string;
+          savingBasis?: 'recosted' | 'heuristic'; savingGBP?: number }>;
+        totalPotentialSavingPct?: number;
       };
     };
 
@@ -40,8 +41,11 @@ router.post('/analyze', aiLimit('dfm'), async (req: Request, res: Response) => {
       .map(i => `[${i.severity.toUpperCase()}] ${i.title}: ${i.recommendation}`)
       .join('\n');
 
+    // Only a lever re-costed through the rate library carries a figure; a rule-of-thumb percentage is never handed to
+    // the model, or it is repeated back as a saving (review, Oct 2026).
     const optimSummary = dfmResult.costOptimisations
-      .map(o => `• ${o.title} (~${o.expectedSavingPct.toFixed(1)}% saving, ${o.timeframe})`)
+      .map(o => `• ${o.title} (${o.savingBasis === 'recosted' && (o.savingGBP ?? 0) > 0
+        ? `re-costed: £${(o.savingGBP as number).toFixed(2)}/part` : 'not priced'}, ${o.timeframe})`)
       .join('\n');
 
     const prompt = `You are a world-class manufacturing cost engineer specialising in DFM (Design for Manufacture) and DFA (Design for Assembly) analysis.
@@ -50,7 +54,6 @@ A should-cost model has been run for a **${commodity.replace(/_/g, ' ')}** compo
 
 **DFM Score:** ${dfmResult.dfm.score}/10
 **DFA Score:** ${dfmResult.dfa.score}/10
-**Total Potential Saving:** ~${dfmResult.totalPotentialSavingPct.toFixed(1)}%
 
 **DFM Issues Identified:**
 ${dfmIssuesSummary || 'None detected.'}
@@ -71,7 +74,9 @@ Provide a deep engineering analysis covering:
 4. **Process Alternatives** — one or two alternative manufacturing processes that could deliver a better cost/quality trade-off
 5. **Risk Assessment** — any red flags in the cost structure that warrant further investigation
 
-Be specific, engineering-literate, and concise. Target 400–500 words. Do not repeat verbatim what the rule-based engine already said — provide expert commentary and depth.`;
+Be specific, engineering-literate, and concise. Target 400–500 words. Do not repeat verbatim what the rule-based engine already said — provide expert commentary and depth.
+
+HARD RULE — numbers: do not state ANY figure (money, percentage, time, rate, quantity, saving) that does not appear above. Never estimate a saving or a cost. Where a lever is "not priced", say it is not priced; where you would want a number, say which measurement or quote would provide it.`;
 
     const client = createAnthropic();
     const message = await client.messages.create({

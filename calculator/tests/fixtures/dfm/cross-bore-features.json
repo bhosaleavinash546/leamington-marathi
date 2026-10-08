@@ -1,5 +1,5 @@
 {
-"source": "tests/fixtures/dfm/cross-bore.gen.py, kernel with CV_EXTRACT_FEATURES=1 (Oct 2026 review fix)",
+"source": "tests/fixtures/dfm/cross-bore.gen.py, kernel with CV_EXTRACT_FEATURES=1 (two-half release test, Oct 2026)",
 "boundingBox": {
 "xMm": 40.0,
 "yMm": 40.0,
@@ -7,8 +7,8 @@
 },
 "draftAnalysis": {
 "drawDirectionXYZ": [
-0.0,
 1.0,
+0.0,
 0.0
 ],
 "undercutFaceCount": 0,
@@ -20,14 +20,6 @@
 "analyzedFaceCount": 5,
 "pullDirectionSearch": {
 "candidates": [
-{
-"drawDirectionXYZ": [
-0.0,
-1.0,
-0.0
-],
-"undercutFaceCount": 0
-},
 {
 "drawDirectionXYZ": [
 1.0,
@@ -43,15 +35,23 @@
 1.0
 ],
 "undercutFaceCount": 1
+},
+{
+"drawDirectionXYZ": [
+0.0,
+1.0,
+0.0
+],
+"undercutFaceCount": 1
 }
 ],
 "runnerUp": {
 "drawDirectionXYZ": [
-1.0,
 0.0,
-0.0
+0.0,
+1.0
 ],
-"undercutFaceCount": 0
+"undercutFaceCount": 1
 },
 "ambiguous": false
 }
@@ -110,8 +110,8 @@
 -0.0,
 0.0
 ],
-"draftClass": "zero_draft",
-"draftDeg": 0.0
+"draftClass": "not_applicable",
+"releaseHalf": -1
 },
 {
 "id": "P2",
@@ -131,8 +131,8 @@
 -0.0
 ],
 "thicknessMm": 15.0,
-"draftClass": "not_applicable",
-"releaseHalf": -1
+"draftClass": "zero_draft",
+"draftDeg": 0.0
 },
 {
 "id": "P3",
@@ -194,8 +194,8 @@
 0.0
 ],
 "thicknessMm": 15.0,
-"draftClass": "not_applicable",
-"releaseHalf": 1
+"draftClass": "zero_draft",
+"draftDeg": 0.0
 },
 {
 "id": "P7",
@@ -214,8 +214,8 @@
 0.0,
 -0.0
 ],
-"draftClass": "zero_draft",
-"draftDeg": 0.0
+"draftClass": "not_applicable",
+"releaseHalf": 1
 }
 ],
 "note": "solid-bodied part (fill ratio 0.9509) \u2014 single-ray thickness measures part extent, not wall; section-change and hot-spot rules suppressed",
@@ -227,8 +227,8 @@
 "fillRatio": 0.9509,
 "adjacencyAvailable": true,
 "drawDirectionXYZ": [
-0.0,
 1.0,
+0.0,
 0.0
 ]
 }

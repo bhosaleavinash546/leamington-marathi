@@ -23,7 +23,8 @@ import {
   type GeometricAnalysis, type PartContext, type CostContext,
 } from '../../src/engine/dfm-geometry/index.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
-import { partWeightKgFor } from '../../src/engine/dfm-geometry/cost-impact.js';
+import { partWeightKgFor, timeFactorFor } from '../../src/engine/dfm-geometry/cost-impact.js';
+import { withRates } from '../../src/engine/rate-context.js';
 import type { CommodityType } from '../../src/engine/types.js';
 
 export type DFMJobStatus = 'queued' | 'running' | 'done' | 'error';
@@ -193,9 +194,12 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
       medianWallMm: geo.manufacturingFeatures?.medianThicknessMm ?? geo.wallThickness?.meanMm ?? null,
       materialFamily: req.materialFamily,
       process: req.process,
-      cost: resolveCostContext(req, geo.volume?.cm3),
+      cost: { ...resolveCostContext(req, geo.volume?.cm3),
+        ...(geo.projectedArea?.alongDrawMm2 ? { projectedAreaCm2: geo.projectedArea.alongDrawMm2 / 100 } : {}) },
     };
-    finish(id, analyseGeometricDFM(part));
+    // Priced in the requested country's book — toolroom, fixtures and the mould estimator read the ACTIVE book, and
+    // the job used to leave it on the UK while the machine and labour rates were the country's.
+    finish(id, withRates(costBook(req), () => analyseGeometricDFM(part)));
   } catch (e) {
     db.prepare("UPDATE dfm_jobs SET status = 'error', error = ?, finished_at = ? WHERE id = ?")
       .run(String((e as Error).message ?? e).slice(0, 500), new Date().toISOString(), id);
@@ -216,14 +220,16 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
  * reference pair, because a DFM finding is about the feature, not about which
  * specific machine a supplier happens to own. The basis string says so.
  */
+/** The deployment's active book (company rates when loaded) in the requested country — the book the CAD rules price in. */
+function costBook(req: DFMJobRequest) {
+  // An unrecognised region falls back to the default library rather than throwing — a bad region code must not lose
+  // the whole DFM report.
+  try { return rateBookForRegion(regionOf(req.region)); }
+  catch { return DEFAULT_RATE_LIBRARY; }
+}
+
 function resolveCostContext(req: DFMJobRequest, volumeCm3?: number): CostContext {
-  // An unrecognised region falls back to the default library rather than
-  // throwing — a bad region code must not lose the whole DFM report.
-  // The deployment's active book (company rates when loaded) in the requested
-  // country — services/rate-book.ts, the same book the CAD rules price in.
-  let lib = DEFAULT_RATE_LIBRARY;
-  try { lib = rateBookForRegion(regionOf(req.region)); }
-  catch { /* keep the default */ }
+  const lib = costBook(req);
   const machine = lib.machines.find(m => /vmc|machining/i.test(m.id))
     ?? lib.machines[0];
   const labour = lib.labour.find(l => /semiskilled|semi-skilled/i.test(l.id))
@@ -236,6 +242,9 @@ function resolveCostContext(req: DFMJobRequest, volumeCm3?: number): CostContext
     labourRatePerHr: labour?.fullyLoadedRatePerHr,
     engineerRatePerHr: engineer?.fullyLoadedRatePerHr,
     partWeightKg: partWeightKgFor(req.materialFamily, volumeCm3),
+    timeFactor: timeFactorFor(req.materialFamily),
+    rateBasis: `reference ${machine?.id ?? 'machine'} + ${labour?.id ?? 'labour'} (with a costing on screen, Design to Cost re-prices `
+      + 'the minutes at the costed operation\u2019s own rates)',
   };
 }
 

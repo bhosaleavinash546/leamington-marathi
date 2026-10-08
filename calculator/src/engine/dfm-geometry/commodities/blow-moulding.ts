@@ -15,18 +15,19 @@
 import type { GeometricRule, PartContext } from '../types.js';
 import { isBlend, finding, undercutEvidence } from '../types.js';
 
-/** Below this, a blown wall pinholes and fails top-load. Mirrors analyseBlowDFM. */
-export const MIN_BLOWN_WALL_MM = 0.5;
+/** Below this, a blown wall pinholes and fails top-load — the bottom of the 0.25–6 mm range published guides give
+ *  (it was 0.5 mm, which flagged walls those guides allow). */
+export const MIN_BLOWN_WALL_MM = 0.25;
 /** External corners must be radiused to at least this multiple of wall. */
 export const CORNER_RADIUS_WALL_MULTIPLE = 2;
 /** Parison length-to-diameter beyond which sag drifts the wall shot-to-shot. */
 export const MAX_PARISON_L_TO_D = 8;
 
 const BLOW_GUIDE = {
-  standard: 'Blow-moulding design guidance (SPI/SPE extrusion blow-moulding design guides; '
-          + 'mirrored in this tool\'s blow-advisor module)',
-  note: 'Industry design-guide figures rather than a formal standard, stated as such so the '
-      + 'threshold can be argued with directly.',
+  standard: 'CostVision engineering heuristic (not a published standard)',
+  note: 'The tool\u2019s own blow-moulding thresholds, mirrored in its blow-advisor module. No named design guide stands behind '
+      + 'them (an earlier "SPI/SPE design guides" attribution could not be traced and was withdrawn). Published guidance seen '
+      + 'gives blown walls of 0.25\u20136 mm and a minimum corner radius around 3 mm; argue with the numbers directly.',
 };
 
 export const BLOW_MOULDING_RULES: readonly GeometricRule[] = [

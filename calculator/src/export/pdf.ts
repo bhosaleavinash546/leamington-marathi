@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
-import { generateInsights, totalPotentialSaving, currencySymbol } from '../engine/insights.js';
+import { generateInsights, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
@@ -1459,7 +1459,7 @@ export function renderShouldCostSections(
   const insights = generateInsights(result, input, library, commodityType, suggestionCtx);
   if (insights.length > 0) {
     doc.addPage(); y = 18;
-    y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} findings  ·  ~${totalPotentialSaving(insights).toFixed(0)}% combined saving`);
+    y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} observations  ·  prompts to look, no saving claimed`);
 
     const impCol = (imp: string): RGB => imp === 'High' ? RD : imp === 'Medium' ? AM : GREY;
     const typeLabel: Record<string, string> = {
@@ -1479,9 +1479,9 @@ export function renderShouldCostSections(
         },
       }]);
       insRows.push(['Finding', ins.finding]);
-      insRows.push(['Impact', `${ins.impact}${ins.potentialSavingPct > 0 ? `  ·  up to ${ins.potentialSavingPct.toFixed(0)}% potential saving` : ''}`]);
+      insRows.push(['Impact', ins.impact]);
       if (ins.benchmark) {
-        insRows.push(['Benchmark', `${ins.benchmark.label}: yours ${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit} vs industry ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}`]);
+        insRows.push(['Reference', `${ins.benchmark.label}: yours ${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit} vs reference band ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit} (engineering estimate, not a sourced survey)`]);
       }
       ins.actions.slice(0, 2).forEach((act, i) => insRows.push([`Action ${i + 1}`, act]));
       insRows.push(['', '']);
@@ -1516,12 +1516,14 @@ export function renderShouldCostSections(
 
     // §12 — the ranked list
     y = chk(doc, y, 22);
-    y = secBar(doc, y, '§12 — Cost-Reduction Opportunities (ranked by saving)',
-      `${ranked.all.length} opportunities  ·  combined ${c(ranked.headlineSavingPerPart)}/part (~${ranked.headlineSavingPct.toFixed(0)}%)`);
+    y = secBar(doc, y, '§12 — Cost-Reduction Opportunities',
+      ranked.pricedCount
+        ? `${ranked.pricedCount} of ${ranked.all.length} re-costed  ·  largest ${c(ranked.headlineSavingPerPart)}/part`
+        : `${ranked.all.length} checks  ·  none re-costed, no £ claimed`);
 
     doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
     {
-      const note = 'Ranked on money per part against this costing. The combined figure is the root-sum-square of the top three, capped at 40% — overlapping actions do not save twice, so the column is deliberately not summed.';
+      const note = 'Only a lever re-costed through the rate library carries a £; the rest are rules of thumb from the cost shares, listed as checks with no figure. Levers overlap, so the column is not summed.';
       const ls = doc.splitTextToSize(note, CW) as string[];
       doc.text(ls, MG, y); y += ls.length * 4.2 + 5;
     }
@@ -1531,7 +1533,7 @@ export function renderShouldCostSections(
       let rankNo = 0;
       const rows = ranked.groups.flatMap(g => g.opportunities.map(o => [
         String(++rankNo), g.label, o.action, o.basis,
-        `${c(o.savingPerPart)}`, `${o.savingPct.toFixed(1)}%`, o.timeframe, o.risk,
+        o.priced ? `${c(o.savingPerPart)}` : 'not priced', o.priced ? `${o.savingPct.toFixed(1)}%` : '—', o.timeframe, o.risk,
       ]));
       const flat = ranked.groups.flatMap(g => g.opportunities);
       autoTable(doc, {
@@ -1579,10 +1581,11 @@ export function renderShouldCostSections(
 
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG },
-        head: [['Category', 'Opportunities', 'Best single action', 'Best save/part', 'Category total (indicative)']],
+        // No category total: levers overlap, and a sum of them is not a saving anyone can bank.
+        head: [['Category', 'Opportunities', 'First action', 'Best re-costed save/part', 'Re-costed']],
         body: ranked.groups.map(g => [
           g.label, String(g.opportunities.length), g.opportunities[0].action,
-          c(g.topSavingPerPart), c(g.groupSavingPerPart),
+          g.topSavingPerPart > 0 ? c(g.topSavingPerPart) : 'not priced', String(g.opportunities.filter(o => o.priced).length),
         ]),
         theme: 'plain',
         headStyles: { ...TH.headStyles, fontSize: 7 },

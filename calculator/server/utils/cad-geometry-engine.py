@@ -201,14 +201,33 @@ def _cylinder_features_uncached(wrapped, face_map, diag):
             # Only a full cylinder (a hole or a boss) is ever read for breakout — a partial one is a corner / blend.
             reach = 0.6 * r + 0.5
             samples = [0.5 + (reach - 0.5) * i / 6 for i in range(7)]
+            # A RING of four points at 0.8 r, not the axis: past a counterbore's end the axis runs into the smaller
+            # coaxial hole's air (read "through"), and a drill point's thin skin sits on the axis. The annular floor /
+            # the cone wall is under the ring. Open when at least 3 of the 4 ring points stay in air all the way
+            # (a hole breaking into a cross bore or a pocket on one side still reads open).
+            e1 = [0.0, 0.0, 0.0]
+            k0 = min(range(3), key=lambda k: abs(dc[k]))
+            e1[k0] = 1.0
+            dd = sum(e1[k] * dc[k] for k in range(3))
+            e1 = [e1[k] - dd * dc[k] for k in range(3)]
+            l1 = math.sqrt(sum(c * c for c in e1)) or 1.0
+            e1 = [c / l1 for c in e1]
+            e2 = [dc[1] * e1[2] - dc[2] * e1[1], dc[2] * e1[0] - dc[0] * e1[2], dc[0] * e1[1] - dc[1] * e1[0]]
+            ring = [[0.8 * r * (math.cos(a) * e1[k] + math.sin(a) * e2[k]) for k in range(3)]
+                    for a in (0.0, math.pi / 2, math.pi, 1.5 * math.pi)]
             def _breaks_out(pt, dirv):
-                for t in samples:               # the first sample in material settles it: blind
-                    a = _air([pt[k] + dirv[k] * t for k in range(3)])
-                    if a is None:
-                        return None
-                    if not a:
-                        return False
-                return True
+                opens = 0
+                for off in ring:
+                    open_ = True
+                    for t in samples:           # the first sample in material settles this ring point: closed
+                        a = _air([pt[k] + off[k] + dirv[k] * t for k in range(3)])
+                        if a is None:
+                            return None
+                        if not a:
+                            open_ = False
+                            break
+                    opens += 1 if open_ else 0
+                return opens >= 3
             full = coverage >= 0.83
             brk = ([_breaks_out(p0, [-dc[0], -dc[1], -dc[2]]), _breaks_out(p1, dc)] if full and concave
                    else [None, None])
@@ -1472,6 +1491,59 @@ def _shape_intersector(wrapped):
         return None
 
 
+def _cylinder_release(cyl, inter, d, diag):
+    """Release-test a cylinder face at the points whose outward normal faces +draw and −draw (when the face covers them).
+    Returns [(half, blockedAtMm|None), ...]."""
+    from OCP.BRepTopAdaptor import BRepTopAdaptor_FClass2d
+    from OCP.gp import gp_Pnt2d
+    from OCP.TopAbs import TopAbs_State
+    out = []
+    ax = None
+    try:
+        # the axis from the frame (x × y)
+        x, y = cyl["x"], cyl["y"]
+        ax = (x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0])
+    except Exception:
+        return out
+    da = sum(d[k] * ax[k] for k in range(3))
+    dp = [d[k] - da * ax[k] for k in range(3)]
+    ln = math.sqrt(sum(c * c for c in dp))
+    if ln < 1e-6:
+        return out                      # axis along the draw: every normal is side-on, a draft question
+    dp = [c / ln for c in dp]
+    try:
+        fc = BRepTopAdaptor_FClass2d(cyl["face"], 1e-6)
+    except Exception:
+        fc = None
+    u0, u1 = cyl["u"]
+    v0, v1 = cyl["v"]
+    for sgn in (1.0, -1.0):
+        t = [sgn * c for c in dp]                     # wanted material-outward normal
+        # material-outward = radial × (+1 direct frame / −1 left-handed) × (−1 on a REVERSED face) — the same parity the
+        # concavity test uses; solve for the radial direction that gives t
+        flip = (1.0 if cyl["direct"] else -1.0) * (-1.0 if cyl["rev"] else 1.0)
+        g = [flip * c for c in t]
+        u = math.atan2(sum(g[k] * cyl["y"][k] for k in range(3)), sum(g[k] * cyl["x"][k] for k in range(3)))
+        while u < u0 - 1e-9:
+            u += 2 * math.pi
+        while u > u1 + 1e-9:
+            u -= 2 * math.pi
+        if u < u0 - 1e-9 or u > u1 + 1e-9:
+            continue                                  # this face does not reach round to that side
+        for fv in (0.5, 0.25, 0.75):
+            v = v0 + (v1 - v0) * fv
+            if fc is not None:
+                try:
+                    if fc.Perform(gp_Pnt2d(u, v)) != TopAbs_State.TopAbs_IN:
+                        continue
+                except Exception:
+                    pass
+            p = cyl["ad"].Value(u, v)
+            out.append(_release_blocked(inter, (p.X(), p.Y(), p.Z()), tuple(t), d, diag))
+            break
+    return out
+
+
 _RELEASE_CACHE = {}
 _FACE_GEOM_CACHE = {}
 
@@ -1524,6 +1596,7 @@ def _release_table(wrapped, face_map, diag, draw_dir, inter):
     from OCP.GeomAbs import GeomAbs_SurfaceType
     from OCP.BRepGProp import BRepGProp
     from OCP.GProp import GProp_GProps
+    from OCP.TopAbs import TopAbs_Orientation
     gprops = GProp_GProps()
     n_faces = face_map.Extent()
     dx, dy, dz = draw_dir
@@ -1562,12 +1635,19 @@ def _release_table(wrapped, face_map, diag, draw_dir, inter):
                 if nm < 1e-10:
                     continue
                 cyl_axis = None
+                cyl = None
                 if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
-                    a = BRepAdaptor_Surface(face).Cylinder().Axis().Direction()
+                    adc = BRepAdaptor_Surface(face)
+                    cy = adc.Cylinder()
+                    a = cy.Axis().Direction()
                     cyl_axis = (a.X(), a.Y(), a.Z())
+                    xd, yd = cy.XAxis().Direction(), cy.YAxis().Direction()
+                    cyl = {"face": face, "ad": adc, "x": (xd.X(), xd.Y(), xd.Z()), "y": (yd.X(), yd.Y(), yd.Z()),
+                           "rev": face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED, "direct": cy.Position().Direct(),
+                           "u": (adc.FirstUParameter(), adc.LastUParameter()), "v": (adc.FirstVParameter(), adc.LastVParameter())}
                 BRepGProp.SurfaceProperties_s(face, gprops)
                 geom[idx] = {"pt": pt, "n": (nx / nm, ny / nm, nz / nm), "plane": st == GeomAbs_SurfaceType.GeomAbs_Plane,
-                             "axis": cyl_axis, "area": abs(gprops.Mass()), "more": pts[1:]}
+                             "axis": cyl_axis, "area": abs(gprops.Mass()), "more": pts[1:], "cyl": cyl}
             except Exception:
                 continue
         _FACE_GEOM_CACHE["entry"] = (gkey, wrapped, geom)
@@ -1575,6 +1655,12 @@ def _release_table(wrapped, face_map, diag, draw_dir, inter):
     for idx, gm in geom.items():
         try:
             half, blocked = _release_blocked(inter, gm["pt"], gm["n"], d, diag)
+            if blocked is None and gm.get("cyl") is not None:
+                # A cylinder's uv-mid point can lie side-on to the draw (its normal perpendicular to it) and read "clear"
+                # while the half of the bore facing the draw is blocked: test the two points facing ±draw too.
+                for (hh, bb) in _cylinder_release(gm["cyl"], inter, d, diag):
+                    if bb is not None and (blocked is None or bb < blocked):
+                        half, blocked = hh, bb
             if blocked is not None and gm["area"] < MIN_RELEASE_FACE_MM2:
                 blocked = None
             recs[idx] = {"pt": gm["pt"], "n": gm["n"], "plane": gm["plane"], "axis": gm["axis"],
@@ -3046,6 +3132,24 @@ def analyze(filepath: str) -> dict:
         bbox_vol = x_sz * y_sz * z_sz
         fill_ratio = round(volume_mm3 / bbox_vol, 4) if bbox_vol > 0 else 0.5
 
+        # ── Orientation check: the tightest oriented box against the file-axis box ──
+        # Stock, the fill ratio and the draw candidates are all read in the FILE's axes; a part saved rotated (vehicle
+        # coordinates) inflates them — the manifold rotated 30° costs +34 % (recognition audit, Oct 2026). Measured and
+        # reported, not corrected silently: the guard warns when the file-axis box is clearly bigger than the part's own.
+        orientation_check = None
+        try:
+            from OCP.Bnd import Bnd_OBB
+            obb = Bnd_OBB()
+            BRepBndLib.AddOBB_s(wrapped, obb, False, True, False)
+            ox, oy, oz = 2 * obb.XHSize(), 2 * obb.YHSize(), 2 * obb.ZHSize()
+            obb_vol = ox * oy * oz
+            if obb_vol > 0 and bbox_vol > 0:
+                orientation_check = {"aabbOverObb": round(bbox_vol / obb_vol, 3),
+                                     "obbExtentsMm": sorted([round(ox, 2), round(oy, 2), round(oz, 2)], reverse=True),
+                                     "aabbExtentsMm": sorted([x_sz, y_sz, z_sz], reverse=True)}
+        except Exception:
+            orientation_check = None
+
         # ── Face & edge classification ────────────────────────────────────────
         faces = list(shape.Faces())
         edges = list(shape.Edges())
@@ -3237,6 +3341,7 @@ def analyze(filepath: str) -> dict:
             "status": "success",
             "partName": part_name,
             "boundingBox": {"xMm": x_sz, "yMm": y_sz, "zMm": z_sz},
+            "orientationCheck": orientation_check,
             "volume": {
                 "mm3": round(volume_mm3, 1),
                 "cm3": round(volume_mm3 / 1000, 3),

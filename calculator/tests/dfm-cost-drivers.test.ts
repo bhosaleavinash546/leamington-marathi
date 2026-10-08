@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { analyseGeometricDFM, type ManufacturingFeature, type PartContext } from '../src/engine/dfm-geometry/index.js';
 import { partWeightKgFor } from '../src/engine/dfm-geometry/cost-impact.js';
+import { orientationWarning } from '../server/utils/cad-sanity.js';
 import { coverDirections, partFrame, offFrameDeg, toothedSets, indexedGroup } from '../src/engine/dfm-geometry/commodities/machining-access.js';
 import { nadcaMaxCoredDepthMm } from '../src/engine/dfm-geometry/commodities/casting.js';
 import { plausibleWall } from '../src/engine/dfm-geometry/types.js';
@@ -50,12 +51,13 @@ describe('the real hydraulic manifold (recorded kernel output) — recognition a
     commodity: 'machining', featureSet: fx.manufacturingFeatures,
     bboxMm: { x: fx.boundingBox.xMm, y: fx.boundingBox.yMm, z: fx.boundingBox.zMm }, cost: COST,
   });
-  it('finds 3 setups (+Z, −X, −Y), priced from the costing\'s own constants', () => {
+  it('finds 3 setups (+Z, −X, −Y) — stated, not priced: the costing prices its own fixturing count (arithmetic audit)', () => {
     const s = r.findings.find(f => f.ruleId === 'machining.setup.access-directions')!;
     expect(s.measured.value).toBe(3);
     expect(s.detail).toMatch(/\+Z.*−X.*−Y/);
-    const per = (HANDLING_MIN_PER_FIXTURING / 60) * 85 + (FIXTURE_GBP.dedicated + PROGRAMMING_HR.perFixturing * 55) / 10_000;
-    expect(s.costImpact!.perPartGBP).toBeCloseTo(per, 3);
+    expect(s.costImpact).toBeUndefined();
+    expect(s.costNotModelled).toMatch(/costing prices its OWN fixturing count/);
+    void HANDLING_MIN_PER_FIXTURING; void FIXTURE_GBP; void PROGRAMMING_HR;
   });
   it('finds the two ports that break into bolt holes (Ø18 at y 20 / 60 against Ø11 at y 10 / 70)', () => {
     const x = r.findings.filter(f => f.ruleId === 'machining.hole.intersecting');
@@ -129,11 +131,12 @@ describe('cross holes and hole sizes', () => {
     expect(rules(analyseGeometricDFM(ctx([a, hole('H4', 6, [40, 0, 0], [0, 1, 0], 30)])))).not.toContain('machining.hole.intersecting');
     expect(rules(analyseGeometricDFM(ctx([a, hole('H5', 6, [0, 2, 0], [1, 0, 0], 40)])))).not.toContain('machining.hole.intersecting'); // parallel
   });
-  it('six or more hole sizes is an advisory, priced as tool changes and CAM', () => {
+  it('six or more hole sizes is an advisory, priced as the costing\'s tool changes (machine + labour), with minutes', () => {
     const feats = [3, 4, 5, 6, 8, 10].map((d, i) => hole(`H${i + 1}`, d, [i * 30, 0, 0], [0, 0, 1], 5));
     const f = analyseGeometricDFM(ctx(feats)).findings.find(x => x.ruleId === 'machining.hole.many-sizes')!;
     expect(f.measured.value).toBe(6);
-    expect(f.costImpact!.perPartGBP).toBeCloseTo(5 * (6 / 3600) * 60, 4);
+    expect(f.costImpact!.minutes).toBeCloseTo(5 * 6 / 60, 6);
+    expect(f.costImpact!.perPartGBP).toBeCloseTo(5 * (6 / 3600) * (60 + 25), 4);
     expect(rules(analyseGeometricDFM(ctx(feats.slice(0, 5))))).not.toContain('machining.hole.many-sizes');
   });
 });
@@ -154,12 +157,13 @@ describe('moulding core pins and die-cast cored holes', () => {
     expect(nadcaMaxCoredDepthMm(8)).toBeGreaterThan(25.4);
     expect(nadcaMaxCoredDepthMm(8)).toBeLessThan(38.1);
   });
-  it('die casting only (the route must be known), and priced as the drilling that replaces the core', () => {
+  it('die casting only (the route must be known); a routing correction stating BOTH times, never a "+£" (wrong sign)', () => {
     const deep = h({ diaMm: 8, depthMm: 45 });
     const dc = analyseGeometricDFM(ctx([deep], { commodity: 'casting', process: 'hpdc' }));
     const f = dc.findings.find(x => x.ruleId === 'casting.hole.beyond-cored-depth')!;
     expect(f).toBeDefined();
-    expect(f.costImpact?.kind).toBe('feature_cost');
+    expect(f.costImpact).toBeUndefined();
+    expect(f.detail).toMatch(/cored \+ finish-bored \([\d.]+ min\); drilled from solid it is [\d.]+ min/);
     expect(rules(analyseGeometricDFM(ctx([deep], { commodity: 'casting', process: 'sand' })))).not.toContain('casting.hole.beyond-cored-depth');
     expect(rules(analyseGeometricDFM(ctx([deep], { commodity: 'casting' })))).not.toContain('casting.hole.beyond-cored-depth');
   });
@@ -219,18 +223,14 @@ describe('independent-review regressions (OCP-built parts, recorded kernel outpu
     ];
     expect(rules(analyseGeometricDFM(ctx(feats, { commodity: 'cast_and_machine' })))).not.toContain('machining.hole.compound-angle');
   });
-  it('a hole priced by three rules counts its cost once in the total', () => {
-    const h: ManufacturingFeature = { id: 'H1', kind: 'hole', faceIds: [1], diaMm: 6.3, depthMm: 60, ldRatio: 9.5, openEnds: 1, axis: [0, 0, 1], positionMm: [0, 0, 0], openDirs: [[0, 0, 1]] };
+  it('a hole flagged by several rules is priced once — the hole\'s own time; a non-stock size carries no £', () => {
+    const h: ManufacturingFeature = { id: 'H1', kind: 'hole', faceIds: [1], diaMm: 6.33, depthMm: 60, ldRatio: 9.5, openEnds: 1, axis: [0, 0, 1], positionMm: [0, 0, 0], openDirs: [[0, 0, 1]] };
     const r = analyseGeometricDFM(ctx([h]));
+    expect(rules(r)).toContain('machining.hole.non-preferred-diameter');
     const priced = r.findings.filter(f => f.featureId === 'H1' && f.costImpact);
-    expect(priced.length).toBeGreaterThanOrEqual(2);
-    // The hole's own cost once (deep-hole and any other rule pricing the hole) + the non-preferred size's tool change,
-    // which is a different cost (the special tool), counted once per size.
-    const hole = Math.max(...priced.filter(f => !f.costImpact!.costGroup).map(f => f.costImpact!.perPartGBP));
-    const size = priced.find(f => f.ruleId === 'machining.hole.non-preferred-diameter')!.costImpact!;
-    expect(size.costGroup).toBe('size:6.3');
-    expect(size.perPartGBP).toBeCloseTo((TOOL_CHANGE_SEC / 3600) * 60, 4);
-    expect(r.totalAddressableGBP).toBeCloseTo(hole + size.perPartGBP, 4);
+    expect(priced.map(f => f.ruleId)).toEqual(['machining.hole.depth-beyond-standard-drill']);
+    expect(r.totalAddressableGBP).toBeCloseTo(priced[0].costImpact!.perPartGBP, 4);
+    void TOOL_CHANGE_SEC;
   });
   it('the cored-hole rule takes the route in any case, and only blind holes the cost sheet assumes are cored', () => {
     const h: ManufacturingFeature = { id: 'H1', kind: 'hole', faceIds: [1], diaMm: 8, depthMm: 45, ldRatio: 5.6, openEnds: 1 };
@@ -338,14 +338,18 @@ describe('the DFM job prices handling on the part\'s weight when the family is c
 });
 
 describe('independent review fixes (Oct 2026)', () => {
-  it('a long cross bore in a SOLID block is an undercut along Z, never "the inside of a hollow body"', () => {
+  it('a bore through a SOLID block is an undercut for any draw across it, and never "the inside of a hollow body"', () => {
+    // Corrected after the recognition audit (Oct 2026): the bore's air is enclosed above and below, so no parting plane
+    // can form it — drawn across it (Y or Z) it needs a side core; drawn ALONG it (X) a core pin forms it in a straight
+    // pull, so the search picks X. (This test once pinned draw Y with 0 undercuts, which was wrong.)
     const fx = JSON.parse(readFileSync('tests/fixtures/dfm/cross-bore-features.json', 'utf8'));
-    const z = fx.draftAnalysis.pullDirectionSearch.candidates.find((c: { drawDirectionXYZ: number[] }) => c.drawDirectionXYZ[2] === 1);
-    expect(z.undercutFaceCount).toBeGreaterThanOrEqual(1);       // the probe called it a cavity: 0
+    const cand = (d: number[]) => fx.draftAnalysis.pullDirectionSearch.candidates.find((c: { drawDirectionXYZ: number[] }) =>
+      c.drawDirectionXYZ.every((v: number, i: number) => v === d[i])).undercutFaceCount;
+    expect(cand([0, 0, 1])).toBeGreaterThanOrEqual(1);
+    expect(cand([0, 1, 0])).toBeGreaterThanOrEqual(1);
+    expect(cand([1, 0, 0])).toBe(0);
+    expect(fx.draftAnalysis.drawDirectionXYZ).toEqual([1, 0, 0]);
     expect(fx.draftAnalysis.cavityFaceCount).toBe(0);
-    // the pull search parts it through the bore's axis (Y): each half forms half the bore — no core needed
-    expect(fx.draftAnalysis.drawDirectionXYZ).toEqual([0, 1, 0]);
-    expect(fx.draftAnalysis.undercutFaceCount).toBe(0);
   });
   it('a prismatic block with holes on five faces is five setups — its sides are not a rotary index', () => {
     const dirs: [number, number, number][] = [[0, 0, 1], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]];
@@ -364,5 +368,18 @@ describe('independent review fixes (Oct 2026)', () => {
         sweepDeg: 90, axis: [0, 0, 1], positionMm: [rr * Math.cos(a), rr * Math.sin(a), 5], depthMm: 10, toolReachMm: 10, openDirs: [[0, 0, 1]] });
     }
     expect(toothedSets(pocketCorners)).toHaveLength(0);
+  });
+});
+
+describe('a part saved rotated in its file is stated, not costed silently (recognition audit E1)', () => {
+  it('warns when the file-axis box is over 1.15× the part\'s own oriented box — the manifold rotated 30° reads 1.81', () => {
+    const w = orientationWarning({ orientationCheck: { aabbOverObb: 1.809, obbExtentsMm: [121.56, 80.17, 63.34], aabbExtentsMm: [143.92, 129.28, 60] } });
+    expect(w).toHaveLength(1);
+    expect(w[0].code).toBe('orientation_skew');
+    expect(w[0].blocking).toBeUndefined();
+    expect(w[0].message).toMatch(/1\.81× the volume/);
+    // the uploaded parts sit square in their files (knuckle 0.98, stub axle 1.00): no warning
+    expect(orientationWarning({ orientationCheck: { aabbOverObb: 0.984, obbExtentsMm: [], aabbExtentsMm: [] } })).toHaveLength(0);
+    expect(orientationWarning({ orientationCheck: null })).toHaveLength(0);
   });
 });

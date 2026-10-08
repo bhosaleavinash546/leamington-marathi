@@ -163,6 +163,8 @@ export interface OCCTGeometry {
     p95Mm?: number | null;
     sampleCount: number; method: 'ray_cast' | 'formula' | 'volume_surface_shell'; uniformity: string;
   } | null;
+  /** The tightest oriented box against the file-axis box (aabbOverObb > ~1.15 = the part was saved rotated). */
+  orientationCheck?: { aabbOverObb: number; obbExtentsMm: number[]; aabbExtentsMm: number[] } | null;
   draftAnalysis?: {
     drawDirectionXYZ: [number, number, number];
     /** Faces the part blocks along their line of release toward the half they face (two-half tool, Oct 2026). */

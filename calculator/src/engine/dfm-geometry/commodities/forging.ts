@@ -21,6 +21,8 @@ import {
 } from '../../modules/forging-advisor.js';
 
 const ROUTES = Object.keys(FORGING_PROCESS_REFERENCE) as ForgingProcess[];
+/** Below this a radius on a finished (machined) model is more likely an edge break than a formed fillet. */
+export const EDGE_BREAK_MAX_MM = 0.5;
 
 /** Resolve the route from the part context, or null when it was not stated. */
 function routeOf(part: PartContext): ForgingProcess | null {
@@ -40,7 +42,7 @@ const LOOSEST_WEB_MM = Math.min(...ROUTES.map(r => FORGING_PROCESS_REFERENCE[r].
 function webSource(route: ForgingProcess | null): RuleSource {
   const ref = route ? FORGING_PROCESS_REFERENCE[route] : null;
   return {
-    standard: 'ASM Handbook Vol. 14A, Metalworking: Bulk Forming — forging design',
+    standard: 'CostVision forging table (FORGING_PROCESS_REFERENCE \u2014 engineering-typical values, not ASM figures)',
     clause: ref ? `${ref.label}: minimum web ${ref.minWebMm} mm` : 'Minimum forged web by route',
     note: ref
       ? `Threshold read from FORGING_PROCESS_REFERENCE.${route}, the same table the forging `
@@ -54,7 +56,7 @@ function webSource(route: ForgingProcess | null): RuleSource {
 function draftSource(route: ForgingProcess | null): RuleSource {
   const ref = route ? FORGING_PROCESS_REFERENCE[route] : null;
   return {
-    standard: 'ASM Handbook Vol. 14A, Metalworking: Bulk Forming — die draft',
+    standard: 'CostVision forging table (FORGING_PROCESS_REFERENCE \u2014 engineering-typical values, not ASM figures)',
     clause: ref ? `${ref.label}: minimum draft ${ref.draftDegMin}°` : 'Minimum die draft by route',
     note: ref
       ? 'Threshold read from FORGING_PROCESS_REFERENCE, the table the costing uses. Deep '
@@ -132,7 +134,7 @@ export const FORGING_RULES: readonly GeometricRule[] = [
     title: 'Undercut — cannot release from an impression die',
     appliesTo: ['planar_face'],
     source: {
-      standard: 'ASM Handbook Vol. 14A, Metalworking: Bulk Forming — die design and parting',
+      standard: 'Impression-die forging practice (a forging die has no slides) \u2014 a principle, not a numeric threshold',
       note: 'A forging die has no slides or cores: the part must lift straight out of the '
           + 'impression. A face the part blocks along its line of release cannot be forged on that parting '
           + 'and has to be machined afterwards, or the parting has to move.',
@@ -155,8 +157,8 @@ export const FORGING_RULES: readonly GeometricRule[] = [
     title: 'Fillet too sharp for hot metal flow',
     appliesTo: ['fillet'],
     source: {
-      standard: 'ASM Handbook Vol. 14A, Metalworking: Bulk Forming — fillet and corner radii',
-      clause: 'Minimum fillet radius on hot forgings ≈ 3 mm',
+      standard: 'CostVision engineering heuristic (not a published standard; ASM 14A and DIN 7523-2 give fillet radii by rib height, which this check does not compute)',
+      clause: 'The tool\u2019s own 3 mm floor for hot forging (published tables give 5–6 mm at 12–25 mm rib height)',
       note: 'Mirrors the 3 mm threshold in analyseForgingDFM. Cold forming is exempt: it flows '
           + 'metal at room temperature into tighter radii, so the rule does not run for that route.',
     },
@@ -164,10 +166,15 @@ export const FORGING_RULES: readonly GeometricRule[] = [
       if (!isBlend(f) || f.radiusMm === undefined) return null; // a blend — not a slot end or a half-hole
       if (routeOf(part) === 'cold-forming') return null;
       if (f.radiusMm >= 3) return null;
+      // Under 0.5 mm on a FINISHED model this is most likely an edge break on a machined face, not a forged fillet —
+      // the kernel cannot tell the two apart, so it says so and lowers the severity (demo review, Oct 2026).
+      const edgeBreak = f.radiusMm < EDGE_BREAK_MAX_MM;
       return finding(this, f, part, {
-        severity: 'major',
+        severity: edgeBreak ? 'minor' : 'major',
         detail: `Fillet at face ${f.faceIds.join(', ')} is R${f.radiusMm.toFixed(2)} mm against a `
-              + '3 mm minimum for hot forging.',
+              + '3 mm minimum for hot forging.'
+              + (edgeBreak ? ' Under R0.5 it is probably an edge break on a machined face of the finished model — check it '
+                + 'against the forging drawing.' : ''),
         measuredField: 'radiusMm', measuredValue: f.radiusMm, unit: 'mm',
         thresholdValue: 3, comparator: '<',
         recommendation: 'Open the fillet to at least R3 mm. Hot metal will not turn a sharp '

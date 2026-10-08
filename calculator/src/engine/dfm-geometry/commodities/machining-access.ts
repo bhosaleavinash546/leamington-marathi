@@ -30,12 +30,12 @@ export const SETUPS_REPORTED_AT = 3;
 export const HOLE_SIZES_REPORTED_AT = 6;
 
 export const ACCESS_SOURCE: RuleSource = {
-  standard: 'Fictiv, "CNC Machining Design Guide" — setups',
-  url: 'https://www.fictiv.com/articles/fictiv-cnc-machining-design-guide',
-  note: '"Most parts can be machined in six setups or less, but 1 or 2 is ideal, since each setup requires its own CAM '
-    + 'program and fixturing step." Hubs: a part "must be rotated to access each side". Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL. Each direction a tool must come from is a re-fixturing on a 3-axis machine: load / clamp / unload '
-    + 'every part, a fixture and CAM programming. Counted here as the smallest set of directions that '
-    + 'reaches every measured hole and internal corner (greedy set cover).',
+  standard: 'Protolabs, CNC machining design guidance \u2014 orthogonal sides and setups',
+  note: 'A 3-axis machine reaches a part from "up to 6 orthogonal sides", one fixturing per side. Search-engine extract '
+    + '\u2014 verify against the live page. (An earlier Fictiv "six setups or less, 1 or 2 is ideal" quote could not be found '
+    + 'and was withdrawn.) Each direction a tool must come from is a re-fixturing on a 3-axis machine; counted here as the '
+    + 'smallest set of directions that reaches every measured hole and internal corner (greedy set cover). The 3-direction '
+    + 'reporting threshold is the tool\u2019s own.',
 };
 export const COMPOUND_SOURCE: RuleSource = {
   standard: 'Protolabs, "CNC Machining: 3-Axis vs 5-Axis Indexed vs 5-Axis Continuous"',
@@ -44,17 +44,18 @@ export const COMPOUND_SOURCE: RuleSource = {
     + 'spindle in a square setup: it needs a 4th/5th axis, a sine / angle plate or a dedicated fixture.',
 };
 export const CROSS_HOLE_SOURCE: RuleSource = {
-  standard: 'L. K. Gillespie, "Deburring small intersecting holes" (SME); Cutting Tool Engineering, "Intersection ahead"',
-  url: 'https://ctemag.com/articles/intersection-ahead/',
+  standard: 'LaRoux K. Gillespie (Bendix), "Deburring Small Intersecting Holes"',
   note: '"Only 14 of the 37 major deburring processes are applicable to most intersecting hole applications"; deburring '
-    + '"as high as 30% of total part cost" on precision parts. Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL. Where one drilled bore breaks into another the exit burr is inside the part and out of reach of '
-    + 'normal deburring: it needs a cross-hole deburring tool, brushing, thermal (TEM) or ECM deburring.',
+    + 'has been estimated "as high as 30% of total part cost" (a 1970s\u201380s upper estimate for manual deburring of precision '
+    + 'parts \u2014 a ceiling, not a typical figure). Search-engine extract of a copy of the paper \u2014 verify against the original. '
+    + 'Where one drilled bore breaks into another the exit burr is inside the part and out of reach of normal deburring: it '
+    + 'needs a cross-hole deburring tool, brushing, thermal (TEM) or ECM deburring.',
 };
 export const TOOL_COUNT_SOURCE: RuleSource = {
-  standard: 'Fictiv, "Optimizing part design for CNC machining" — drill sizes',
-  url: 'https://help.fictiv.com/en/articles/2270888-optimizing-part-design-for-cnc-machining',
+  standard: 'Fictiv, "Optimizing part design for CNC machining" \u2014 drill sizes',
+  url: 'https://www.fictiv.com/?p=1397',
   note: '"Minimize the number of different drill sizes… reduce the amount of time spent on tool changes." A VMC tool '
-    + 'change is ~4–5 s chip-to-chip (Haas VF-2, 4.5 s); the costing uses 6 s. Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL. Each distinct hole diameter is a separate drill (and tap / reamer where it is threaded or fitted): '
+    + 'change is ~3.6\u20134.5 s chip-to-chip (Haas VF-2 generations); the costing uses 6 s. The 6-size reporting threshold is the tool\u2019s own. Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL. Each distinct hole diameter is a separate drill (and tap / reamer where it is threaded or fitted): '
     + 'a tool change in the cycle and a CAM operation to program.',
 };
 
@@ -424,15 +425,18 @@ export function priceExtraSetups(f: GeometricFinding, ctx: { machineRatePerHr?: 
 }
 
 /** Tool changes for each hole size beyond the first — the costing's tool-change time. */
-export function priceHoleSizes(f: GeometricFinding, ctx: { machineRatePerHr?: number }) {
-  const { machineRatePerHr: mr } = ctx;
+export function priceHoleSizes(f: GeometricFinding, ctx: { machineRatePerHr?: number; labourRatePerHr?: number; rateBasis?: string }) {
+  const { machineRatePerHr: mr, labourRatePerHr: lr } = ctx;
   if (mr === undefined) return null;
   const extra = f.measured.value - 1;
+  const minutes = extra * (TOOL_CHANGE_SEC / 60);
   return {
-    perPartGBP: r4(extra * (TOOL_CHANGE_SEC / 3600) * mr),
+    perPartGBP: r4((minutes / 60) * (mr + (lr ?? 0))),
+    minutes: r4(minutes),
     kind: 'feature_cost' as const,
-    basis: `${extra} size(s) beyond the first × tool change ${TOOL_CHANGE_SEC} s × £${mr.toFixed(2)}/h machine — the upper bound of `
-      + 'what consolidation saves per part; tool stock and programming effort are the larger, unpriced, cost of many sizes.',
+    basis: `${extra} size(s) beyond the first × the costing\u2019s tool change ${TOOL_CHANGE_SEC} s = ${minutes.toFixed(2)} min `
+      + `× £${(mr + (lr ?? 0)).toFixed(2)}/h ${ctx.rateBasis ?? 'reference machine + labour'} — an upper bound (every size consolidated); `
+      + 'tool stock and programming effort, the larger cost of many sizes, are not priced.',
     confidence: 'modelled' as const,
   };
 }

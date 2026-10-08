@@ -16,6 +16,19 @@
         "yMm": 46,
         "zMm": 80
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          80,
+          46,
+          46
+        ],
+        "aabbExtentsMm": [
+          80,
+          46,
+          46
+        ]
+      },
       "volume": {
         "mm3": 10636.3,
         "cm3": 10.636
@@ -29,7 +42,7 @@
         "zMm2": 1650,
         "yMm2": 3680,
         "xMm2": 3664,
-        "alongDrawMm2": 3680,
+        "alongDrawMm2": 1650,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -180,26 +193,18 @@
       "draftAnalysis": {
         "drawDirectionXYZ": [
           0,
-          1,
-          0
+          0,
+          1
         ],
         "undercutFaceCount": 0,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 4,
+        "zeroDraftFaceCount": 2,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 4,
+        "analyzedFaceCount": 2,
         "pullDirectionSearch": {
           "candidates": [
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
             {
               "drawDirectionXYZ": [
                 0,
@@ -207,6 +212,14 @@
                 1
               ],
               "undercutFaceCount": 0
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -220,10 +233,10 @@
           "runnerUp": {
             "drawDirectionXYZ": [
               0,
-              0,
-              1
+              1,
+              0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
           "ambiguous": false
         }
@@ -588,6 +601,19 @@
         "xMm": 1800,
         "yMm": 150,
         "zMm": 60
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1800,
+          150,
+          60
+        ],
+        "aabbExtentsMm": [
+          1800,
+          150,
+          60
+        ]
       },
       "volume": {
         "mm3": 2587500,
@@ -979,6 +1005,19 @@
         "yMm": 140,
         "zMm": 40
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1300,
+          140,
+          40
+        ],
+        "aabbExtentsMm": [
+          1300,
+          140,
+          40
+        ]
+      },
       "volume": {
         "mm3": 1489800,
         "cm3": 1489.8
@@ -1341,6 +1380,19 @@
         "yMm": 40,
         "zMm": 10
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          400,
+          40,
+          10
+        ],
+        "aabbExtentsMm": [
+          400,
+          40,
+          10
+        ]
+      },
       "volume": {
         "mm3": 158099.3,
         "cm3": 158.099
@@ -1544,7 +1596,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 2
             },
             {
               "drawDirectionXYZ": [
@@ -1561,7 +1613,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 2
           },
           "ambiguous": false
         }
@@ -1681,6 +1733,19 @@
         "xMm": 400,
         "yMm": 120,
         "zMm": 80
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          400,
+          120,
+          80
+        ],
+        "aabbExtentsMm": [
+          400,
+          120,
+          80
+        ]
       },
       "volume": {
         "mm3": 552515,
@@ -1939,30 +2004,30 @@
             },
             {
               "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 4
-            },
-            {
-              "drawDirectionXYZ": [
                 1,
                 0,
                 0
               ],
               "undercutFaceCount": 8
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 12
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              0,
               1,
+              0,
               0
             ],
-            "undercutFaceCount": 4
+            "undercutFaceCount": 8
           },
-          "ambiguous": true
+          "ambiguous": false
         }
       },
       "manufacturingFeatures": null,
@@ -2095,6 +2160,19 @@
         "xMm": 150,
         "yMm": 120,
         "zMm": 41
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          150,
+          120,
+          41
+        ],
+        "aabbExtentsMm": [
+          150,
+          120,
+          41
+        ]
       },
       "volume": {
         "mm3": 213000,
@@ -2606,6 +2684,19 @@
         "yMm": 80,
         "zMm": 60
       },
+      "orientationCheck": {
+        "aabbOverObb": 0.818,
+        "obbExtentsMm": [
+          401.41,
+          104.7,
+          55.87
+        ],
+        "aabbExtentsMm": [
+          400,
+          80,
+          60
+        ]
+      },
       "volume": {
         "mm3": 311242.8,
         "cm3": 311.243
@@ -2844,7 +2935,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 2
             },
             {
               "drawDirectionXYZ": [
@@ -2861,7 +2952,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 2
           },
           "ambiguous": false
         }
@@ -2991,6 +3082,19 @@
         "xMm": 2000,
         "yMm": 30,
         "zMm": 20
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          2000,
+          30,
+          20
+        ],
+        "aabbExtentsMm": [
+          2000,
+          30,
+          20
+        ]
       },
       "volume": {
         "mm3": 264000,
@@ -3372,6 +3476,19 @@
         "yMm": 40,
         "zMm": 15
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1200,
+          40,
+          15
+        ],
+        "aabbExtentsMm": [
+          1200,
+          40,
+          15
+        ]
+      },
       "volume": {
         "mm3": 158400,
         "cm3": 158.4
@@ -3724,6 +3841,19 @@
         "yMm": 350,
         "zMm": 70
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          500,
+          350,
+          70
+        ],
+        "aabbExtentsMm": [
+          500,
+          350,
+          70
+        ]
+      },
       "volume": {
         "mm3": 324654.6,
         "cm3": 324.655
@@ -4009,7 +4139,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 10
+              "undercutFaceCount": 12
             },
             {
               "drawDirectionXYZ": [
@@ -4026,9 +4156,9 @@
               1,
               0
             ],
-            "undercutFaceCount": 10
+            "undercutFaceCount": 12
           },
-          "ambiguous": true
+          "ambiguous": false
         }
       },
       "manufacturingFeatures": null,
@@ -4512,6 +4642,19 @@
         "xMm": 1160,
         "yMm": 760,
         "zMm": 120
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1160,
+          760,
+          120
+        ],
+        "aabbExtentsMm": [
+          1160,
+          760,
+          120
+        ]
       },
       "volume": {
         "mm3": 1146113.2,
@@ -5238,6 +5381,19 @@
         "yMm": 60,
         "zMm": 40
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          240,
+          60,
+          40
+        ],
+        "aabbExtentsMm": [
+          240,
+          60,
+          40
+        ]
+      },
       "volume": {
         "mm3": 63250.2,
         "cm3": 63.25
@@ -5469,7 +5625,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 4
+              "undercutFaceCount": 7
             }
           ],
           "runnerUp": {
@@ -5838,6 +5994,19 @@
         "yMm": 455,
         "zMm": 70
       },
+      "orientationCheck": {
+        "aabbOverObb": 1.022,
+        "obbExtentsMm": [
+          608.4,
+          296.39,
+          70
+        ],
+        "aabbExtentsMm": [
+          455,
+          405,
+          70
+        ]
+      },
       "volume": {
         "mm3": 315527.1,
         "cm3": 315.527
@@ -6019,9 +6188,9 @@
           0,
           0
         ],
-        "undercutFaceCount": 0,
+        "undercutFaceCount": 1,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 4,
+        "zeroDraftFaceCount": 3,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
@@ -6034,7 +6203,7 @@
                 0,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -6042,7 +6211,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -6059,9 +6228,9 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -6108,13 +6277,13 @@
       },
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 80000,
-        "gravityMouldCostGBP": 15000,
+        "gravityMouldCostGBP": 26000,
         "sandPatternCostGBP": 15000,
         "imMouldCostGBP": 55000,
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 35000
       },
-      "manufacturabilityScore": 100,
+      "manufacturabilityScore": 92,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1841,
         "sandCycleTimeHrFerrous": 0.2402,
@@ -7182,6 +7351,19 @@
         "yMm": 160,
         "zMm": 165
       },
+      "orientationCheck": {
+        "aabbOverObb": 0.977,
+        "obbExtentsMm": [
+          222.78,
+          166.84,
+          160
+        ],
+        "aabbExtentsMm": [
+          220,
+          165,
+          160
+        ]
+      },
       "volume": {
         "mm3": 377564.9,
         "cm3": 377.565
@@ -7428,7 +7610,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 3
             },
             {
               "drawDirectionXYZ": [
@@ -7445,7 +7627,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 3
           },
           "ambiguous": false
         }
@@ -8239,6 +8421,19 @@
         "yMm": 500,
         "zMm": 72.13
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          700,
+          500,
+          72.13
+        ],
+        "aabbExtentsMm": [
+          700,
+          500,
+          72.13
+        ]
+      },
       "volume": {
         "mm3": 1464403.7,
         "cm3": 1464.404
@@ -8845,6 +9040,19 @@
         "xMm": 398.29,
         "yMm": 120,
         "zMm": 45.14
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          398.29,
+          120,
+          45.14
+        ],
+        "aabbExtentsMm": [
+          398.29,
+          120,
+          45.14
+        ]
       },
       "volume": {
         "mm3": 195358.2,
@@ -9647,6 +9855,19 @@
         "yMm": 900,
         "zMm": 107.5
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1200,
+          900,
+          107.5
+        ],
+        "aabbExtentsMm": [
+          1200,
+          900,
+          107.5
+        ]
+      },
       "volume": {
         "mm3": 2785246.4,
         "cm3": 2785.246
@@ -10038,6 +10259,19 @@
         "yMm": 120,
         "zMm": 125
       },
+      "orientationCheck": {
+        "aabbOverObb": 0.943,
+        "obbExtentsMm": [
+          163.61,
+          138.76,
+          92.44
+        ],
+        "aabbExtentsMm": [
+          132,
+          125,
+          120
+        ]
+      },
       "volume": {
         "mm3": 320015.4,
         "cm3": 320.015
@@ -10277,7 +10511,7 @@
           "kind": "hole",
           "diaMm": 20,
           "depthMm": 1,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             9,
@@ -10782,16 +11016,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 39.46,
+      "total": 40.31,
       "breakdown": {
-        "rawMaterial": 10.48,
-        "process": 13.44,
-        "labour": 7.8,
+        "rawMaterial": 10.56,
+        "process": 13.89,
+        "labour": 7.97,
         "tooling": 0.53,
         "packaging": 0.15,
         "logistics": 0.27,
-        "overhead": 3.87,
-        "margin": 2.92
+        "overhead": 3.95,
+        "margin": 2.99
       }
     }
   },
@@ -10811,6 +11045,19 @@
         "yMm": 8,
         "zMm": 8
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          600,
+          8,
+          8
+        ],
+        "aabbExtentsMm": [
+          600,
+          8,
+          8
+        ]
+      },
       "volume": {
         "mm3": 13194.7,
         "cm3": 13.195
@@ -10824,7 +11071,7 @@
         "zMm2": 4500,
         "yMm2": 4500,
         "xMm2": 22,
-        "alongDrawMm2": 4500,
+        "alongDrawMm2": 22,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -10968,27 +11215,19 @@
       "wallThickness": null,
       "draftAnalysis": {
         "drawDirectionXYZ": [
-          0,
           1,
+          0,
           0
         ],
         "undercutFaceCount": 0,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 4,
+        "zeroDraftFaceCount": 2,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 4,
+        "analyzedFaceCount": 2,
         "pullDirectionSearch": {
           "candidates": [
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
             {
               "drawDirectionXYZ": [
                 1,
@@ -11004,15 +11243,23 @@
                 1
               ],
               "undercutFaceCount": 1
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              1,
               0,
-              0
+              0,
+              1
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
           "ambiguous": false
         }
@@ -11321,6 +11568,19 @@
         "xMm": 2000,
         "yMm": 40,
         "zMm": 25
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          2000,
+          40,
+          25
+        ],
+        "aabbExtentsMm": [
+          2000,
+          40,
+          25
+        ]
       },
       "volume": {
         "mm3": 572000,
@@ -11668,6 +11928,19 @@
         "yMm": 32,
         "zMm": 32
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1000,
+          32,
+          32
+        ],
+        "aabbExtentsMm": [
+          1000,
+          32,
+          32
+        ]
+      },
       "volume": {
         "mm3": 273318.6,
         "cm3": 273.319
@@ -11681,7 +11954,7 @@
         "zMm2": 32500,
         "yMm2": 32500,
         "xMm2": 271,
-        "alongDrawMm2": 32500,
+        "alongDrawMm2": 271,
         "method": "silhouette_raster"
       },
       "topology": {
@@ -11825,27 +12098,19 @@
       "wallThickness": null,
       "draftAnalysis": {
         "drawDirectionXYZ": [
-          0,
           1,
+          0,
           0
         ],
         "undercutFaceCount": 0,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 4,
+        "zeroDraftFaceCount": 2,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
-        "analyzedFaceCount": 4,
+        "analyzedFaceCount": 2,
         "pullDirectionSearch": {
           "candidates": [
-            {
-              "drawDirectionXYZ": [
-                0,
-                1,
-                0
-              ],
-              "undercutFaceCount": 0
-            },
             {
               "drawDirectionXYZ": [
                 1,
@@ -11861,15 +12126,23 @@
                 1
               ],
               "undercutFaceCount": 1
+            },
+            {
+              "drawDirectionXYZ": [
+                0,
+                1,
+                0
+              ],
+              "undercutFaceCount": 1
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              1,
               0,
-              0
+              0,
+              1
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
           "ambiguous": false
         }
@@ -12181,6 +12454,19 @@
         "yMm": 50,
         "zMm": 30
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          250,
+          50,
+          30
+        ],
+        "aabbExtentsMm": [
+          250,
+          50,
+          30
+        ]
+      },
       "volume": {
         "mm3": 182599,
         "cm3": 182.599
@@ -12424,9 +12710,9 @@
           1,
           0
         ],
-        "undercutFaceCount": 0,
+        "undercutFaceCount": 2,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 36,
+        "zeroDraftFaceCount": 34,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
@@ -12439,7 +12725,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 2
             },
             {
               "drawDirectionXYZ": [
@@ -12555,13 +12841,13 @@
       },
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 40000,
-        "gravityMouldCostGBP": 8000,
+        "gravityMouldCostGBP": 16000,
         "sandPatternCostGBP": 4000,
         "imMouldCostGBP": 30000,
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 20000
       },
-      "manufacturabilityScore": 100,
+      "manufacturabilityScore": 84,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1697,
         "sandCycleTimeHrFerrous": 0.2022,
@@ -12623,6 +12909,19 @@
         "xMm": 140,
         "yMm": 140,
         "zMm": 50
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          140,
+          140,
+          50
+        ],
+        "aabbExtentsMm": [
+          140,
+          140,
+          50
+        ]
       },
       "volume": {
         "mm3": 279941,
@@ -12846,7 +13145,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 7
             },
             {
               "drawDirectionXYZ": [
@@ -12863,7 +13162,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 7
           },
           "ambiguous": false
         }
@@ -12979,6 +13278,19 @@
         "xMm": 40,
         "yMm": 25,
         "zMm": 12
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          40,
+          25,
+          12
+        ],
+        "aabbExtentsMm": [
+          40,
+          25,
+          12
+        ]
       },
       "volume": {
         "mm3": 4174.3,
@@ -13156,9 +13468,9 @@
           1,
           0
         ],
-        "undercutFaceCount": 2,
+        "undercutFaceCount": 3,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 15,
+        "zeroDraftFaceCount": 14,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
@@ -13171,7 +13483,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 2
+              "undercutFaceCount": 3
             },
             {
               "drawDirectionXYZ": [
@@ -13198,7 +13510,7 @@
             ],
             "undercutFaceCount": 4
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -13257,13 +13569,13 @@
       },
       "toolingCostEstimates": {
         "hpdcDieCostGBP": 40000,
-        "gravityMouldCostGBP": 14000,
+        "gravityMouldCostGBP": 20000,
         "sandPatternCostGBP": 2500,
-        "imMouldCostGBP": 18000,
+        "imMouldCostGBP": 26000,
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 20000
       },
-      "manufacturabilityScore": 76,
+      "manufacturabilityScore": 68,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1505,
         "sandCycleTimeHrFerrous": 0.1512,
@@ -13326,6 +13638,19 @@
         "xMm": 180,
         "yMm": 120,
         "zMm": 40
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          180,
+          120,
+          40
+        ],
+        "aabbExtentsMm": [
+          180,
+          120,
+          40
+        ]
       },
       "volume": {
         "mm3": 122349.8,
@@ -13603,7 +13928,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 18
+              "undercutFaceCount": 26
             },
             {
               "drawDirectionXYZ": [
@@ -13620,7 +13945,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 18
+            "undercutFaceCount": 26
           },
           "ambiguous": false
         }
@@ -14171,6 +14496,19 @@
         "xMm": 600,
         "yMm": 400,
         "zMm": 60
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          600,
+          400,
+          60
+        ],
+        "aabbExtentsMm": [
+          600,
+          400,
+          60
+        ]
       },
       "volume": {
         "mm3": 1075025.2,
@@ -14874,6 +15212,19 @@
         "yMm": 80,
         "zMm": 60
       },
+      "orientationCheck": {
+        "aabbOverObb": 0.933,
+        "obbExtentsMm": [
+          121.56,
+          80.17,
+          63.34
+        ],
+        "aabbExtentsMm": [
+          120,
+          80,
+          60
+        ]
+      },
       "volume": {
         "mm3": 485848.6,
         "cm3": 485.849
@@ -15174,30 +15525,30 @@
             },
             {
               "drawDirectionXYZ": [
-                0,
                 1,
+                0,
                 0
               ],
-              "undercutFaceCount": 6
+              "undercutFaceCount": 16
             },
             {
               "drawDirectionXYZ": [
-                1,
                 0,
+                1,
                 0
               ],
-              "undercutFaceCount": 14
+              "undercutFaceCount": 17
             }
           ],
           "runnerUp": {
             "drawDirectionXYZ": [
-              0,
               1,
+              0,
               0
             ],
-            "undercutFaceCount": 6
+            "undercutFaceCount": 16
           },
-          "ambiguous": true
+          "ambiguous": false
         }
       },
       "manufacturingFeatures": null,
@@ -15339,6 +15690,19 @@
         "xMm": 40,
         "yMm": 40,
         "zMm": 190
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          190.02,
+          40.01,
+          40
+        ],
+        "aabbExtentsMm": [
+          190,
+          40,
+          40
+        ]
       },
       "volume": {
         "mm3": 116715.4,
@@ -15590,9 +15954,9 @@
           1,
           0
         ],
-        "undercutFaceCount": 0,
+        "undercutFaceCount": 1,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 15,
+        "zeroDraftFaceCount": 14,
         "adequateDraftFaceCount": 1,
         "minPositiveDraftDeg": 36,
         "maxPositiveDraftDeg": 36,
@@ -15605,7 +15969,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -15632,7 +15996,7 @@
             ],
             "undercutFaceCount": 2
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -15694,7 +16058,7 @@
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 20000
       },
-      "manufacturabilityScore": 92,
+      "manufacturabilityScore": 84,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1626,
         "sandCycleTimeHrFerrous": 0.1834,
@@ -15759,6 +16123,19 @@
         "xMm": 274.51,
         "yMm": 222.36,
         "zMm": 177
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1.003,
+        "obbExtentsMm": [
+          273.66,
+          222.29,
+          177
+        ],
+        "aabbExtentsMm": [
+          274.51,
+          222.36,
+          177
+        ]
       },
       "volume": {
         "mm3": 1037112.9,
@@ -16118,7 +16495,7 @@
           "kind": "hole",
           "diaMm": 16,
           "depthMm": 3.2,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             263,
@@ -16140,7 +16517,7 @@
           "kind": "hole",
           "diaMm": 31,
           "depthMm": 10.6,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             251,
@@ -16364,7 +16741,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 39
+              "undercutFaceCount": 40
             }
           ],
           "runnerUp": {
@@ -16821,16 +17198,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 84.25,
+      "total": 84.93,
       "breakdown": {
-        "rawMaterial": 25.29,
-        "process": 28.22,
-        "labour": 14.04,
+        "rawMaterial": 25.34,
+        "process": 28.59,
+        "labour": 14.18,
         "tooling": 1.15,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 8.24,
-        "margin": 6.24
+        "overhead": 8.31,
+        "margin": 6.29
       }
     }
   },
@@ -16849,6 +17226,19 @@
         "xMm": 58.19,
         "yMm": 270,
         "zMm": 110
+      },
+      "orientationCheck": {
+        "aabbOverObb": 0.784,
+        "obbExtentsMm": [
+          270,
+          118.07,
+          69.13
+        ],
+        "aabbExtentsMm": [
+          270,
+          110,
+          58.19
+        ]
       },
       "volume": {
         "mm3": 429433.5,
@@ -17035,7 +17425,7 @@
           "kind": "hole",
           "diaMm": 14,
           "depthMm": 10,
-          "through": true,
+          "through": false,
           "count": 2,
           "faceIds": [
             25,
@@ -17048,7 +17438,7 @@
           "kind": "hole",
           "diaMm": 22,
           "depthMm": 39.6,
-          "through": true,
+          "through": false,
           "count": 2,
           "faceIds": [
             20,
@@ -17072,7 +17462,7 @@
           "kind": "hole",
           "diaMm": 43,
           "depthMm": 8,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             245,
@@ -17083,7 +17473,7 @@
           "kind": "hole",
           "diaMm": 50,
           "depthMm": 12.9,
-          "through": true,
+          "through": false,
           "count": 1,
           "faceIds": [
             240,
@@ -17611,16 +18001,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 88.57,
+      "total": 90.56,
       "breakdown": {
-        "rawMaterial": 19.1,
-        "process": 41.03,
-        "labour": 12.65,
+        "rawMaterial": 19.18,
+        "process": 42.19,
+        "labour": 13.07,
         "tooling": 0.21,
         "packaging": 0.1,
         "logistics": 0.15,
-        "overhead": 8.76,
-        "margin": 6.56
+        "overhead": 8.96,
+        "margin": 6.71
       }
     }
   },
@@ -17640,6 +18030,19 @@
         "xMm": 450,
         "yMm": 320,
         "zMm": 300
+      },
+      "orientationCheck": {
+        "aabbOverObb": 0.992,
+        "obbExtentsMm": [
+          452.08,
+          320,
+          301.14
+        ],
+        "aabbExtentsMm": [
+          450,
+          320,
+          300
+        ]
       },
       "volume": {
         "mm3": 3120734.8,
@@ -17898,7 +18301,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -17915,7 +18318,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
           "ambiguous": false
         }
@@ -18079,6 +18482,19 @@
         "xMm": 240,
         "yMm": 160,
         "zMm": 170
+      },
+      "orientationCheck": {
+        "aabbOverObb": 0.984,
+        "obbExtentsMm": [
+          241.94,
+          171.32,
+          160
+        ],
+        "aabbExtentsMm": [
+          240,
+          170,
+          160
+        ]
       },
       "volume": {
         "mm3": 683543.1,
@@ -18331,7 +18747,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -18348,7 +18764,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
           "ambiguous": false
         }
@@ -19109,6 +19525,19 @@
         "yMm": 60,
         "zMm": 35
       },
+      "orientationCheck": {
+        "aabbOverObb": 0.74,
+        "obbExtentsMm": [
+          69.74,
+          69.74,
+          35
+        ],
+        "aabbExtentsMm": [
+          60,
+          60,
+          35
+        ]
+      },
       "volume": {
         "mm3": 118750.5,
         "cm3": 118.75
@@ -19293,7 +19722,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -19310,7 +19739,7 @@
               1,
               0
             ],
-            "undercutFaceCount": 0
+            "undercutFaceCount": 1
           },
           "ambiguous": false
         }
@@ -19449,6 +19878,19 @@
         "xMm": 1000,
         "yMm": 18,
         "zMm": 17
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          1000,
+          18,
+          17
+        ],
+        "aabbExtentsMm": [
+          1000,
+          18,
+          17
+        ]
       },
       "volume": {
         "mm3": 129560.1,
@@ -19881,6 +20323,19 @@
         "yMm": 40,
         "zMm": 20
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          40,
+          40,
+          20
+        ],
+        "aabbExtentsMm": [
+          40,
+          40,
+          20
+        ]
+      },
       "volume": {
         "mm3": 10957.9,
         "cm3": 10.958
@@ -20086,9 +20541,9 @@
           1,
           0
         ],
-        "undercutFaceCount": 0,
+        "undercutFaceCount": 1,
         "cavityFaceCount": 0,
-        "zeroDraftFaceCount": 10,
+        "zeroDraftFaceCount": 9,
         "adequateDraftFaceCount": 0,
         "minPositiveDraftDeg": null,
         "maxPositiveDraftDeg": null,
@@ -20101,7 +20556,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 0
+              "undercutFaceCount": 1
             },
             {
               "drawDirectionXYZ": [
@@ -20128,7 +20583,7 @@
             ],
             "undercutFaceCount": 1
           },
-          "ambiguous": false
+          "ambiguous": true
         }
       },
       "manufacturingFeatures": null,
@@ -20177,7 +20632,7 @@
         "forgeDieCostGBP": 15000,
         "progressiveDieCostGBP": 20000
       },
-      "manufacturabilityScore": 100,
+      "manufacturabilityScore": 92,
       "processSpecificEstimates": {
         "sandCycleTimeHr": 0.1512,
         "sandCycleTimeHrFerrous": 0.1531,
@@ -20240,6 +20695,19 @@
         "xMm": 255.77,
         "yMm": 226.07,
         "zMm": 19.4
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1.038,
+        "obbExtentsMm": [
+          292.36,
+          223.27,
+          16.55
+        ],
+        "aabbExtentsMm": [
+          255.77,
+          226.07,
+          19.4
+        ]
       },
       "volume": {
         "mm3": 71066.4,
@@ -22782,6 +23250,19 @@
         "yMm": 600,
         "zMm": 270.9
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          900,
+          600,
+          270.9
+        ],
+        "aabbExtentsMm": [
+          900,
+          600,
+          270.9
+        ]
+      },
       "volume": {
         "mm3": 5082692.2,
         "cm3": 5082.692
@@ -23167,6 +23648,19 @@
         "xMm": 300,
         "yMm": 200,
         "zMm": 46.57
+      },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          300,
+          200,
+          46.57
+        ],
+        "aabbExtentsMm": [
+          300,
+          200,
+          46.57
+        ]
       },
       "volume": {
         "mm3": 244815.8,
@@ -24062,6 +24556,19 @@
         "yMm": 236.4,
         "zMm": 210
       },
+      "orientationCheck": {
+        "aabbOverObb": 0.984,
+        "obbExtentsMm": [
+          248.04,
+          222.48,
+          104.58
+        ],
+        "aabbExtentsMm": [
+          236.4,
+          210,
+          114.4
+        ]
+      },
       "volume": {
         "mm3": 356101.1,
         "cm3": 356.101
@@ -24594,7 +25101,7 @@
                 0,
                 1
               ],
-              "undercutFaceCount": 43
+              "undercutFaceCount": 44
             }
           ],
           "runnerUp": {
@@ -25026,6 +25533,19 @@
         "yMm": 119.76,
         "zMm": 30
       },
+      "orientationCheck": {
+        "aabbOverObb": 1,
+        "obbExtentsMm": [
+          120,
+          119.8,
+          30
+        ],
+        "aabbExtentsMm": [
+          120,
+          119.76,
+          30
+        ]
+      },
       "volume": {
         "mm3": 265959.5,
         "cm3": 265.959
@@ -25232,7 +25752,7 @@
                 1,
                 0
               ],
-              "undercutFaceCount": 18
+              "undercutFaceCount": 19
             }
           ],
           "runnerUp": {

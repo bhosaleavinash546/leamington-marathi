@@ -21,10 +21,9 @@ export const HOLE_TO_BEND_MIN_T = 2.5;
 export const MIN_PUNCH_DIA_T = 1.0;
 
 const SM_GUIDE = {
-  standard: 'Sheet-metal design guidelines (widely published; e.g. Xometry / Protolabs '
-          + 'sheet-metal design guides, and Machinery\'s Handbook press-working sections)',
-  note: 'Industry design-guide figures rather than a formal standard, stated as such so the '
-      + 'threshold can be argued with directly.',
+  standard: 'Sheet-metal design guidance (Protolabs-style design guides)',
+  note: '"Holes and slots should be a minimum of material thickness in diameter." Search-engine extract of a sheet-metal design '
+      + 'guide \u2014 verify against the live page.',
 };
 
 export const SHEET_METAL_RULES: readonly GeometricRule[] = [
@@ -58,7 +57,7 @@ export const SHEET_METAL_RULES: readonly GeometricRule[] = [
     commodity: 'sheet_metal',
     title: 'Hole depth inconsistent with a sheet part',
     appliesTo: ['hole'],
-    source: { ...SM_GUIDE, clause: 'Punched features in thin material' },
+    source: { standard: 'CostVision engineering heuristic (not a published standard)', note: 'A hole deeper than 3× its diameter is unlikely on a sheet part — it flags a possible mis-classification (formed collar, or not a sheet part). The 3× threshold is the tool\u2019s own.' },
     evaluate(f, part) {
       if (f.ldRatio === undefined || f.diaMm === undefined) return null;
       if (f.ldRatio <= 3) return null;

@@ -202,7 +202,7 @@ import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting } from '../engine/feature-costing.js';
 import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
-import { generateInsights, totalPotentialSaving, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
+import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities, CATEGORY_LABELS } from '../engine/opportunity-ranking.js';
 import type { RankedOpportunity } from '../engine/opportunity-ranking.js';
@@ -14655,10 +14655,7 @@ function renderDesignToCost(): void {
   const host = document.getElementById('results-dtc');
   if (!host || !lastInput) return;
   const tgt = _targetPriceGbp();
-  // The DFM levers belong to the CAD part they were measured on: only when the costing on screen is that part, in the
-  // commodity it was applied to. A hand-entered costing of another part used to inherit the last upload's levers.
-  const ours = !!cadAnalysisResult && _cadAppliedTo === activeCommodity
-    && (!cadAnalysisResult.partName || cadAnalysisResult.partName === lastInput.partName);
+  const ours = dfmBelongsToCosting();
   try {
     mountDtcPanel(host, {
       input: lastInput, library,
@@ -14675,6 +14672,15 @@ function renderDesignToCost(): void {
     host.innerHTML = `<p class="dtc-empty">Design to Cost could not be computed: ${escHtml(err instanceof Error ? err.message : String(err))}</p>`;
   }
 }
+/**
+ * Do the geometric DFM findings belong to the costing on screen? Only when it is the CAD part they were measured on,
+ * in the commodity it was applied to — a hand-entered costing of another part used to inherit the last upload's
+ * levers and restacked £ (review, Oct 2026).
+ */
+function dfmBelongsToCosting(): boolean {
+  return !!lastInput && !!cadAnalysisResult && _cadAppliedTo === activeCommodity
+    && (!cadAnalysisResult.partName || cadAnalysisResult.partName === lastInput.partName);
+}
 function dtcTabActive(): boolean { return document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel === 'dtc'; }
 // The target is typed in the form: the tab follows it live (the gap, and every driver's "to hit target alone").
 document.getElementById('target-price')?.addEventListener('input', () => { if (dtcTabActive()) renderDesignToCost(); });
@@ -14688,11 +14694,11 @@ function updateTabBadges(result: PartCostResult, input: UniversalStackInput): vo
   if (insightsBadge) {
     try {
       const insights = generateInsights(result, input, library, activeCommodity, uiSuggestionContext());
-      const highVal = insights.filter(i => (i as any).savingPct >= 10);
-      const count = highVal.length || insights.length;
+      // A count of observations — no saving is claimed for them (see renderInsights).
+      const count = insights.length;
       if (count > 0) {
         insightsBadge.textContent = String(count);
-        insightsBadge.className = `rtab-badge rtab-badge--${highVal.length > 0 ? 'green' : 'amber'}`;
+        insightsBadge.className = 'rtab-badge rtab-badge--amber';
         insightsBadge.style.display = '';
       } else {
         insightsBadge.style.display = 'none';
@@ -15968,7 +15974,6 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
   const panel = el('results-insights');
   const cf = _currFmt;
   const insights = generateInsights(result, input, library, activeCommodity, uiSuggestionContext());
-  const totalSaving = totalPotentialSaving(insights);
 
   const typeLabel: Record<string, string> = {
     critical: 'Critical', warning: 'Warning', opportunity: 'Opportunity', benchmark: 'Benchmark', info: 'Info',
@@ -15984,17 +15989,18 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         <div class="insight-benchmark-bar">
           <span style="white-space:nowrap;font-weight:600">${ins.benchmark.label}</span>
           <div class="bm-bar-track">
-            <div class="bm-bar-range" style="left:${rangeLow}%;width:${rangeWidth}%" title="Industry range: ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}"></div>
+            <div class="bm-bar-range" style="left:${rangeLow}%;width:${rangeWidth}%" title="Reference band (engineering estimate): ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}"></div>
             <div class="bm-bar-yours" style="left:${Math.min(97, yourPos)}%" title="Your value: ${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit}"></div>
           </div>
           <span style="white-space:nowrap">Yours: <strong>${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit}</strong></span>
-          <span style="white-space:nowrap;color:#888">Benchmark: ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}</span>
+          <span style="white-space:nowrap;color:#888">Reference band: ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}</span>
         </div>`;
     })() : '';
 
     const actions = ins.actions.map(a => `<li>${escHtml(a)}</li>`).join('');
-    const savingBadge = ins.potentialSavingPct > 0
-      ? `<span class="insight-saving">~${ins.potentialSavingPct.toFixed(0)}% saving potential</span>` : '';
+    // No "% saving potential": it was a rule of thumb (excess × a coefficient), not a costing. Savings are claimed only
+    // where the stack re-costs them — the Design to Cost tab and the re-costed levers.
+    const savingBadge = '';
 
     return `
     <div class="insight-card ${ins.type}">
@@ -16092,15 +16098,15 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     <div style="padding:12px 16px;overflow-y:auto">
       <div class="insights-summary-bar">
         <div>
-          <div class="big-lbl">Combined Saving Potential</div>
-          <div class="big-num">~${totalSaving.toFixed(0)}%</div>
+          <div class="big-lbl">Observations</div>
+          <div class="big-num">${insights.length}</div>
         </div>
         <div style="flex:1;font-size:0.78rem;color:var(--text-secondary)">
-          Based on ${insights.length} insights across material, process, commercial and regional dimensions.
-          Savings are illustrative — not all measures are simultaneously achievable.
+          Where this costing's shares sit against reference bands. These are prompts to look, not savings: no £ or % is
+          claimed here. Re-costed savings are in the Design to Cost tab.
         </div>
         <div style="font-size:0.72rem;color:var(--text-secondary);text-align:right">
-          Methodology: industry-calibrated benchmarks<br>
+          Reference bands: engineering estimates, not a sourced industry survey<br>
           Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong>
         </div>
       </div>
@@ -16303,8 +16309,11 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
             ${o.detail ? `<p style="font-size:0.72rem;color:#888;margin:0;font-style:italic">${escHtml(o.detail)}</p>` : ''}
           </div>
           <div style="min-width:118px;text-align:right">
-            <div style="font-size:1.02rem;font-weight:800;color:var(--green);line-height:1.2">${fmt(o.savingPerPart)}</div>
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">per part · ${o.savingPct.toFixed(1)}%</div>
+            ${o.priced
+              ? `<div style="font-size:1.02rem;font-weight:800;color:var(--green);line-height:1.2" title="${escHtml(o.recostBasis ?? 'Re-costed through the rate library')}">${fmt(o.savingPerPart)}</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">per part · re-costed</div>`
+              : `<div style="font-size:0.74rem;font-weight:600;color:var(--text-secondary);line-height:1.2" title="A rule of thumb from the cost shares — not re-costed, so no figure is claimed">not priced</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">check — no £ claimed</div>`}
             <div style="font-size:0.66rem;color:${timeColor(o.timeframe)};font-weight:700">${o.timeframe}</div>
             <div style="font-size:0.66rem;color:${riskColor(o.risk)}">${o.risk} risk</div>
           </div>
@@ -16316,7 +16325,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
           <div style="display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:8px">
             <span style="font-weight:700;font-size:0.9rem">${escHtml(g.label)}</span>
             <span style="font-size:0.72rem;color:var(--text-muted)">${g.opportunities.length} ${g.opportunities.length === 1 ? 'opportunity' : 'opportunities'}</span>
-            <span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-weight:700">best ${fmt(g.topSavingPerPart)}/part</span>
+            ${g.topSavingPerPart > 0 ? `<span style="margin-left:auto;font-size:0.75rem;color:var(--green);font-weight:700">best ${fmt(g.topSavingPerPart)}/part (re-costed)</span>` : ''}
           </div>
           ${g.opportunities.map(o => oppRow(o, ++rankNo)).join('')}
         </div>`).join('') || '<p style="color:#888;font-size:0.82rem">No cost-reduction opportunities triggered on this costing.</p>';
@@ -16335,15 +16344,15 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
           <!-- Headline: money, not marks out of ten -->
           <div style="display:flex;gap:16px;flex-wrap:wrap;background:var(--surface-elevated);border-radius:8px;padding:14px 16px;margin-bottom:16px;align-items:center">
             <div style="min-width:150px">
-              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase">Combined opportunity</div>
-              <div style="font-size:1.6rem;font-weight:800;color:var(--green);line-height:1.2">${fmt(ranked.headlineSavingPerPart)}</div>
-              <div style="font-size:0.72rem;color:var(--text-muted)">per part · ~${ranked.headlineSavingPct.toFixed(1)}% of ${fmt(ranked.partTotal)}</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase">Largest re-costed lever</div>
+              <div style="font-size:1.6rem;font-weight:800;color:${ranked.pricedCount ? 'var(--green)' : 'var(--text-muted)'};line-height:1.2">${ranked.pricedCount ? fmt(ranked.headlineSavingPerPart) : '—'}</div>
+              <div style="font-size:0.72rem;color:var(--text-muted)">${ranked.pricedCount ? `per part · ${ranked.headlineSavingPct.toFixed(1)}% of ${fmt(ranked.partTotal)}` : 'no lever on this costing has a re-costed saving'}</div>
             </div>
             <div style="flex:1;min-width:240px;font-size:0.76rem;color:var(--text-secondary)">
               <strong>${ranked.all.length}</strong> ranked ${ranked.all.length === 1 ? 'opportunity' : 'opportunities'} across
               <strong>${ranked.groups.length}</strong> ${ranked.groups.length === 1 ? 'category' : 'categories'} ·
               commodity <strong>${activeCommodity.replace(/_/g, ' ')}</strong><br>
-              <span style="color:var(--text-muted)">Headline is the root-sum-square of the top three, capped at 40% — overlapping actions never save twice, so the list is not summed.</span>
+              <span style="color:var(--text-muted)">Only a lever re-costed through the rate library carries a £ (${ranked.pricedCount} of ${ranked.all.length}); the rest are rules of thumb from the cost shares, listed as checks with no figure. Levers overlap, so they are not added — the Design to Cost tab re-costs the ones you choose together.</span>
             </div>
           </div>
 
@@ -16355,13 +16364,13 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
                 <span style="font-size:0.72rem;color:var(--text-muted);min-width:16px">${i + 1}</span>
                 <span style="font-size:0.8rem;font-weight:600;flex:1">${escHtml(o.action)}</span>
                 <span style="font-size:0.7rem;color:var(--text-muted)">${escHtml(CATEGORY_LABELS[o.category])}</span>
-                <span style="font-size:0.85rem;font-weight:700;color:var(--green);min-width:80px;text-align:right">${fmt(o.savingPerPart)}</span>
+                <span style="font-size:0.85rem;font-weight:700;color:${o.priced ? 'var(--green)' : 'var(--text-muted)'};min-width:80px;text-align:right">${o.priced ? fmt(o.savingPerPart) : 'not priced'}</span>
               </div>`).join('')}
           </div>` : ''}
 
           <!-- Ranked opportunities by category -->
           <div style="margin-bottom:8px">
-            <div class="detail-section-title" style="margin-bottom:8px">Cost-reduction opportunities — ranked by saving, grouped by category</div>
+            <div class="detail-section-title" style="margin-bottom:8px">Cost-reduction opportunities — re-costed ones first, by saving; checks after</div>
             ${groupsHtml}
           </div>
 
@@ -17233,7 +17242,7 @@ function renderGeometricDFMPanel(): void {
   if (!html) return;
   // With a costing on screen, show what each priced finding moves the WHOLE
   // stack by (overhead and margin included), next to the job's naked line.
-  if (lastInput && cadGeometricDFM?.grouped?.length) {
+  if (lastInput && cadGeometricDFM?.grouped?.length && dfmBelongsToCosting()) {
     try {
       const re = restackFindingCosts(cadGeometricDFM.grouped, lastInput, library);
       for (const r of re) {

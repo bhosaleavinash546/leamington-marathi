@@ -27,7 +27,7 @@ export type { FindingCostImpact, CostContext, CostImpactKind } from './cost-impa
 export type { DFAHandlingResult } from './dfa-handling.js';
 export { CASTING_RULES, CASTING_LIMITATIONS, MIN_DRAFT_DEG } from './commodities/casting.js';
 export { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
-export { MACHINING_RULES, MACHINING_LIMITATIONS, PREFERRED_DRILL_DIA_MM, STANDARD_DRILL_LD } from './commodities/machining.js';
+export { MACHINING_RULES, MACHINING_LIMITATIONS, STANDARD_DRILL_LD, isStockDrill, nearestStockDrill } from './commodities/machining.js';
 export { machiningPartLevelFindings, partFrame, coverDirections } from './commodities/machining-access.js';
 export { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
 export { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';

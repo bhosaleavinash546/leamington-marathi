@@ -135,14 +135,22 @@ describe('a real part: the hydraulic manifold\'s measured findings become levers
     cost: { annualVolume: 50_000, machineRatePerHr: mr, labourRatePerHr: lr, engineerRatePerHr: 55 },
   });
   void feats;
-  it('every priced finding is a lever; each saves its own £ × (1+OH)(1+M)', () => {
+  it('every priced finding is a lever; it saves its MINUTES at the costed operation\'s own rates, × (1+OH)(1+M)', () => {
+    // arithmetic audit, Oct 2026: the job's £ is at reference rates; the lever must move the costing's own numbers
     const priced = dfm.grouped.filter(g => g.totalCostGBP > 0);
     expect(priced.length).toBeGreaterThan(0);
     const levers = dfmLevers(dfm.grouped as unknown as DtcFindingLike[], input, lib);
     expect(levers.length).toBe(priced.length);
     for (const l of levers) {
       if (l.basis.includes('capped')) continue;
-      expect(l.savingGBP).toBeCloseTo(l.jobGBP * (1 + OH) * (1 + MG), 3);
+      const g = dfm.grouped.find(x => `dfm:${x.ruleId}` === l.id)!;
+      // the costing's minutes, once per feature
+      const minutes = [...new Map(g.instances.filter(x => x.costImpact?.minutes)
+        .map(x => [x.featureId, x.costImpact!.minutes!])).values()].reduce((a, b) => a + b, 0);
+      const op = input.operations.find(o => /drill|bore|hole/i.test(o.operationName)) ?? input.operations[0];
+      const rate = lib.machines.find(m => m.id === op.machineId)!.computedRatePerHr / op.partsPerCycle / op.oee
+        + lib.labour.find(x => x.id === op.labourId)!.fullyLoadedRatePerHr * op.manning / op.partsPerCycle / op.labourEfficiency;
+      expect(l.savingGBP).toBeCloseTo((minutes / 60) * rate * (1 + OH) * (1 + MG), 3);
     }
   });
 });
@@ -216,7 +224,7 @@ describe('independent review fixes (Oct 2026)', () => {
   it('one hole flagged by two rules comes out once when both levers are on', () => {
     const a: DtcFindingLike = { ruleId: 'machining.hole.depth-beyond-standard-drill', title: 'deep', totalCostGBP: 0.25, worst: { costImpact: { kind: 'feature_cost' } },
       instances: [{ featureId: 'H1', costImpact: { perPartGBP: 0.25, kind: 'feature_cost' } }] };
-    const b: DtcFindingLike = { ruleId: 'sheetmetal.hole.smaller-than-thickness', title: 'small', totalCostGBP: 0.25, worst: { costImpact: { kind: 'feature_cost' } },
+    const b: DtcFindingLike = { ruleId: 'machining.hole.other-rule-same-hole', title: 'other', totalCostGBP: 0.25, worst: { costImpact: { kind: 'feature_cost' } },
       instances: [{ featureId: 'H1', costImpact: { perPartGBP: 0.25, kind: 'feature_cost' } }] };
     const levers = dfmLevers([a, b], input, lib);
     expect(levers).toHaveLength(2);
@@ -224,8 +232,8 @@ describe('independent review fixes (Oct 2026)', () => {
     expect(factoryBase(both.base) - factoryBase(both.projected)).toBeCloseTo(0.25, 6);   // not 0.50
   });
 
-  it('a hole the sheet assumes is cored is a cost to ADD, never a lever to take out', () => {
-    const cored: DtcFindingLike = { ruleId: 'casting.hole.beyond-cored-depth', title: 'cored', totalCostGBP: 0.3, worst: { costImpact: { kind: 'feature_cost' } } };
+  it('a hole the sheet prices as pierced but must drill is a cost to ADD, never a lever to take out', () => {
+    const cored: DtcFindingLike = { ruleId: 'sheetmetal.hole.smaller-than-thickness', title: 'small hole', totalCostGBP: 0.3, worst: { costImpact: { kind: 'feature_cost' } } };
     expect(dfmLevers([cored], input, lib)).toHaveLength(0);
     expect(costsNotInStack([cored])).toEqual([expect.objectContaining({ gbp: 0.3 })]);
     expect(restackFindingCosts([cored as never], input, lib)).toEqual([]);

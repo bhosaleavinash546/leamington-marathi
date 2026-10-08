@@ -28,9 +28,10 @@ export const BOOTHROYD_SOURCE: RuleSource = {
   standard: 'Boothroyd, Dewhurst & Knight — Product Design for Manufacture and Assembly',
   clause: 'Manual handling and insertion time tables',
   note: 'Handling time is derived from the geometric characteristics the tables key on '
-      + '(rotational symmetry, size, thickness). The theoretical-minimum part count, and '
-      + 'therefore the design-efficiency index, requires the assembly and is not computed for a '
-      + 'single part.',
+      + '(rotational symmetry, size = the LONGEST side of the enclosing box, thickness). The added seconds are '
+      + 'approximations of the chart\u2019s steps, not values read from the chart; the 1.13 s base and ~3 s ideal part time '
+      + 'are the published method\u2019s figures as commonly quoted. The theoretical-minimum part count, and therefore the '
+      + 'design-efficiency index, requires the assembly and is not computed for a single part.',
 };
 
 /** Base manual handling time for an easy-to-grasp part, seconds. */
@@ -38,7 +39,7 @@ export const BASE_HANDLING_SEC = 1.13;
 /** The nominal per-part assembly time the method uses for the ideal case, seconds. */
 export const IDEAL_PART_SEC = 3.0;
 
-/** Below this smallest dimension a part needs tweezers rather than fingers, mm. */
+/** Below this SIZE (Boothroyd: the longest side of the enclosing box) a part needs tweezers rather than fingers, mm. */
 export const SMALL_PART_MM = 6;
 /** Below this thickness a flat part is hard to pick off a surface, mm. */
 export const THIN_PART_MM = 2;
@@ -121,12 +122,14 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
     });
   }
 
-  if (smallest < SMALL_PART_MM) {
+  // Boothroyd's "size" is the LONGEST side; a 300 × 200 × 5 plate is not a tweezers part (it used the smallest).
+  const largestDim = Math.max(bbox.x, bbox.y, bbox.z);
+  if (largestDim < SMALL_PART_MM) {
     handling += 0.9;
     penalties.push({
       reason: 'Small part — needs tweezers or a fixture rather than fingers',
       addedSec: 0.9, severity: 'major',
-      measured: `smallest dimension ${smallest.toFixed(1)} mm < ${SMALL_PART_MM} mm`,
+      measured: `largest dimension ${largestDim.toFixed(1)} mm < ${SMALL_PART_MM} mm`,
     });
   }
   if (smallest < THIN_PART_MM) {

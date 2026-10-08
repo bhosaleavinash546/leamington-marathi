@@ -126,7 +126,7 @@ describe('DFM finding restated through the whole stack', () => {
     // EXACTLY the finding's £ comes off the factory base, then overhead 12 % and margin 8 % follow. The hours used
     // to be £ ÷ (machine + labour rate), which ignored OEE 0.85 / efficiency 0.92 and overstated it by ~1/OEE.
     expect(r.stackGBP).toBeCloseTo(0.5 * 1.12 * 1.08, 3);
-    expect(r.basis).toMatch(/off Mill \(£[\d.]+ per hour of cycle after parts\/cycle, OEE and crew\) through the stack/);
+    expect(r.basis).toMatch(/off Mill at that operation\u2019s own rates \(£[\d.]+ per hour of cycle after parts\/cycle, OEE and crew\) through the stack/);
   });
   it('unpriced findings stay unpriced', () => {
     expect(restackFindingCosts([{ ruleId: 'casting.draft.insufficient', totalCostGBP: 0, worst: {} }], input, lib)).toEqual([]);

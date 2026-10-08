@@ -143,7 +143,8 @@ export function buildGeometricDFMPanel(g: GeometricDFMMeta | null): string {
     <p class="muted small">${g.grouped.length} issue(s) across ${g.findings.length} instance(s)
       from ${g.featuresExamined} measured feature(s), ${g.rulesEvaluated} rule(s) evaluated,
       ranked by cost. ${priced
-        ? `<strong>${dfmMoney(g.totalAddressableGBP ?? 0)}/part</strong> priced; issues without a
+        ? `<strong>${dfmMoney(g.totalAddressableGBP ?? 0)}/part</strong> priced at the job\u2019s reference rates (with a
+           costing on screen each line shows its Δ through the costing\u2019s own operations instead); issues without a
            figure are quality or yield risks with no modelled cost path.`
         : 'No finding here has a modelled cost path — each says why.'}
       Click an issue to highlight the faces that caused it.</p>`;

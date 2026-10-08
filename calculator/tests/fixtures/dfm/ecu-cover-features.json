@@ -34,7 +34,7 @@
 1.0,
 0.0
 ],
-"undercutFaceCount": 18
+"undercutFaceCount": 26
 },
 {
 "drawDirectionXYZ": [
@@ -51,7 +51,7 @@
 1.0,
 0.0
 ],
-"undercutFaceCount": 18
+"undercutFaceCount": 26
 },
 "ambiguous": false
 }

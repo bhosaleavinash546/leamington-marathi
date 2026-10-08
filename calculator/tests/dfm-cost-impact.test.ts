@@ -88,8 +88,9 @@ describe('a price reconciles to the engine it came from', () => {
   it('prints the arithmetic, so a supplier can check it', () => {
     const r = analyseGeometricDFM(ctx([DEEP_HOLE], { commodity: 'machining' }));
     const f = r.findings.find(x => x.costImpact)!;
-    expect(f.costImpact!.basis).toMatch(/featureMinutesEach/);
-    expect(f.costImpact!.basis).toMatch(/machine\+labour/);
+    expect(f.costImpact!.basis).toMatch(/the costing\u2019s hole time/);
+    expect(f.costImpact!.basis).toMatch(/reference machine \+ labour/);
+    expect(f.costImpact!.minutes).toBeGreaterThan(0);   // what Design to Cost takes off the costed operation
     expect(f.costImpact!.confidence).toBe('modelled');
   });
 });
@@ -225,14 +226,12 @@ describe('coverage is explicit', () => {
     }
   });
 
-  it('prices exactly the rules whose cost path is modelled', () => {
+  it('prices exactly the rules whose £ the costing reproduces (arithmetic audit, Oct 2026)', () => {
+    // Withdrawn: per-corner pocket passes (not in the cost model), setups at reference rates (the costing prices its
+    // own count), the cored-depth "+£" (wrong sign — a routing correction), the non-stock size (no tool-count change).
     expect(Object.keys(PRICERS).sort()).toEqual([
-      'casting.hole.beyond-cored-depth',
-      'machining.corner.radius-below-economic-cutter',
       'machining.hole.depth-beyond-standard-drill',
       'machining.hole.many-sizes',
-      'machining.hole.non-preferred-diameter',
-      'machining.setup.access-directions',
       'moulding.undercut.requires-side-action',
       'sheetmetal.hole.smaller-than-thickness',
     ]);

@@ -25,9 +25,17 @@ export interface RankedOpportunity {
   basis: string;
   /** Supporting engineering/commercial reasoning, where the source carries it. */
   detail?: string;
+  /**
+   * PRICED only when the lever was re-costed through the stack (`recostLevers`): then `savingPerPart` is that
+   * measured Δ and `savingPct` its share. A heuristic lever or a cost-ratio finding is NOT priced — its percentage was a
+   * rule of thumb, and multiplying it by the part total printed an invented £ (review, Oct 2026). Unpriced rows carry
+   * 0 here and `priced: false`; the screen and the PDF show them as checks, without a figure.
+   */
+  priced: boolean;
   savingPct: number;
-  /** Money per part — partTotal × savingPct. The number the ranking uses. */
   savingPerPart: number;
+  /** The re-costing's own arithmetic, when priced. */
+  recostBasis?: string;
   risk: 'Low' | 'Medium' | 'High';
   timeframe: 'Quick Win' | 'Medium Term' | 'Long Term';
   /** Who can actually pull this lever. */
@@ -61,9 +69,11 @@ export interface RankedOpportunities {
   /** Every opportunity, flat, biggest saving first. */
   all: RankedOpportunity[];
   verificationChecks: VerificationCheck[];
-  /** Root-sum-square of the top three — the same honest headline as before. */
+  /** The largest single RE-COSTED saving (0 when nothing was re-costed) — never a combination of rules of thumb. */
   headlineSavingPct: number;
   headlineSavingPerPart: number;
+  /** How many rows carry a re-costed £; the rest are checks with no figure. */
+  pricedCount: number;
   partTotal: number;
 }
 
@@ -143,13 +153,16 @@ function timeframeOf(risk: DFMIssue['risk']): RankedOpportunity['timeframe'] {
 }
 
 function fromLever(o: CostOptimisation, partTotal: number): RankedOpportunity {
+  const priced = o.savingBasis === 'recosted' && (o.savingGBP ?? 0) > 0;
   return {
     category: o.category ?? 'process',
     action: o.title,
     basis: o.description,
     detail: o.technicalJustification,
-    savingPct: o.expectedSavingPct,
-    savingPerPart: (partTotal * o.expectedSavingPct) / 100,
+    priced,
+    savingPct: priced && partTotal > 0 ? Math.round(((o.savingGBP as number) / partTotal) * 1000) / 10 : 0,
+    savingPerPart: priced ? (o.savingGBP as number) : 0,
+    ...(priced && o.recostBasis ? { recostBasis: o.recostBasis } : {}),
     risk: o.risk,
     timeframe: o.timeframe,
     owner: o.lever,
@@ -157,15 +170,17 @@ function fromLever(o: CostOptimisation, partTotal: number): RankedOpportunity {
   };
 }
 
-function fromIssue(i: DFMIssue, partTotal: number): RankedOpportunity {
+function fromIssue(i: DFMIssue, _partTotal: number): RankedOpportunity {
   return {
     category: categoryOf(i),
     // The recommendation IS the action — the finding title only says what was
     // observed, and leading with an observation is what reads as criticism.
     action: i.recommendation,
     basis: `${i.title} — ${i.description}`,
-    savingPct: i.savingPct,
-    savingPerPart: (partTotal * i.savingPct) / 100,
+    // A cost-ratio finding's percentage is a rule of thumb, never re-costed: listed, not priced.
+    priced: false,
+    savingPct: 0,
+    savingPerPart: 0,
     risk: i.risk,
     timeframe: timeframeOf(i.risk),
     owner: i.lever,
@@ -191,9 +206,9 @@ export function rankOpportunities(dfm: DFMDFAResult, partTotal: number): RankedO
   // 1 · Every lever, as authored.
   const leverSignals = new Set<string>();
   for (const lever of dfm.costOptimisations) {
+    if (!(lever.expectedSavingPct > 0) && lever.savingBasis !== 'recosted') continue;
     const o = fromLever(lever, total);
     leverSignals.add(o.signal);
-    if (o.savingPct <= 0) continue;
     opportunities.push(o);
   }
 
@@ -219,7 +234,8 @@ export function rankOpportunities(dfm: DFMDFAResult, partTotal: number): RankedO
     opportunities.push(o);
   }
 
-  opportunities.sort((a, b) => b.savingPerPart - a.savingPerPart || b.savingPct - a.savingPct);
+  // Priced (re-costed) first, by money; then the unpriced checks in the order the engine authored them.
+  opportunities.sort((a, b) => Number(b.priced) - Number(a.priced) || b.savingPerPart - a.savingPerPart);
 
   // 3 · Group by category; within a group biggest first, groups by their best.
   const groups: OpportunityGroup[] = [];
@@ -231,30 +247,25 @@ export function rankOpportunities(dfm: DFMDFAResult, partTotal: number): RankedO
       label: CATEGORY_LABELS[category],
       opportunities: inCat,
       groupSavingPerPart: inCat.reduce((s, o) => s + o.savingPerPart, 0),
-      topSavingPerPart: inCat[0].savingPerPart,
+      topSavingPerPart: Math.max(0, ...inCat.map(o => o.savingPerPart)),
     });
   }
   groups.sort((a, b) => b.topSavingPerPart - a.topSavingPerPart);
 
-  // 4 · Headline: root-sum-square of the top three ROWS SHOWN, capped at 40%.
-  //     It must be computed from the ranked list, not from the engine's
-  //     issue-based totalPotentialSavingPct — those are different populations,
-  //     and on a real part the issue-based figure came out SMALLER than the
-  //     biggest row in the list (12.8% against an 18% lever). A total that is
-  //     less than one of its own components is indefensible in front of an
-  //     engineer. Still root-sum-square rather than a sum, so overlapping
-  //     actions never claim to save twice.
-  const headlineSavingPct = opportunities.length === 0 ? 0 : Math.round(
-    Math.min(40, Math.sqrt(
-      opportunities.slice(0, 3).reduce((acc, o) => acc + o.savingPct ** 2, 0),
-    )) * 10) / 10;
+  // 4 · Headline: the LARGEST SINGLE re-costed saving. Levers overlap, so they are not added; the root-sum-square of
+  //     the top three rule-of-thumb percentages (capped at 40 %) that stood here was not arithmetic — the combined
+  //     effect of chosen levers is what the Design-to-Cost tab re-costs through the stack.
+  const best = opportunities.find(o => o.priced);
+  const headlineSavingPerPart = best ? best.savingPerPart : 0;
+  const headlineSavingPct = best && total > 0 ? Math.round((headlineSavingPerPart / total) * 1000) / 10 : 0;
 
   return {
     groups,
     all: opportunities,
     verificationChecks,
     headlineSavingPct,
-    headlineSavingPerPart: (total * headlineSavingPct) / 100,
+    headlineSavingPerPart,
+    pricedCount: opportunities.filter(o => o.priced).length,
     partTotal: total,
   };
 }

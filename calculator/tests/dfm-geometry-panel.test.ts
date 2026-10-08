@@ -62,7 +62,7 @@ describe('the panel renders what the engine actually returned', () => {
       expect(html, `threshold missing for ${x.ruleId}`)
         .toContain(`${x.threshold.value}${x.threshold.unit}`);
       expect(html, `recommendation missing for ${x.ruleId}`).toContain(x.recommendation);
-      expect(html, `source missing for ${x.ruleId}`).toContain(x.source.standard);
+      expect(html, `source missing for ${x.ruleId}`).toContain(x.source.standard.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'));
       expect(html, `face count missing for ${x.ruleId}`)
         .toContain(`${x.faceIds.length} face(s)`);
     }

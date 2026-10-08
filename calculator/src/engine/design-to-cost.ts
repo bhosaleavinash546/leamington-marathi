@@ -24,6 +24,8 @@ import type { UniversalStackInput, RateLibrary, PartCostResult } from './types.j
 /** Structural — what the DFM report's grouped finding carries; no import from dfm-geometry (no cycle). */
 export interface DtcCostImpactLike {
   perPartGBP?: number; kind?: string; basis?: string; confidence?: string; costGroup?: string;
+  /** Time findings: minutes per part in the costing's own time model — what comes off the costed operation. */
+  minutes?: number;
   /** Tooling findings: the one-off NRE the per-part figure was amortised from. */
   nreGBP?: number;
 }
@@ -47,8 +49,9 @@ export interface DtcFindingLike {
  * would remove money that was never in it; the tab lists them as costs to add.
  */
 export type LeverKind = 'redesign' | 'upper-bound';
-const UPPER_BOUND_RULES = /\.hole\.depth-beyond-standard-drill|\.corner\.radius-below-economic-cutter|sheetmetal\.hole\.smaller-than-thickness/;
-export const NOT_IN_STACK_RULES = new Set(['casting.hole.beyond-cored-depth']);
+const UPPER_BOUND_RULES = /\.hole\.depth-beyond-standard-drill|\.hole\.many-sizes/;
+/** Priced on work the cost sheet does not carry (a hole the sheet prices as pierced but must be drilled). */
+export const NOT_IN_STACK_RULES = new Set(['sheetmetal.hole.smaller-than-thickness']);
 
 export interface DtcLever {
   id: string;
@@ -71,12 +74,12 @@ export interface DtcLever {
 }
 
 /** A finding's cost items, de-duplicated the way `totalCostGBP` counts them: a feature's own cost once, a cost group once. */
-interface CostItem { key: string; gbp: number; nre?: number }
+interface CostItem { key: string; gbp: number; nre?: number; minutes?: number }
 function costItems(g: DtcFindingLike): CostItem[] {
   const inst = g.instances?.filter(x => (x.costImpact?.perPartGBP ?? 0) > 0) ?? [];
   if (!inst.length) {
     const gbp = g.totalCostGBP ?? 0;
-    return gbp > 0 ? [{ key: `rule:${g.ruleId}`, gbp, nre: g.worst.costImpact?.nreGBP }] : [];
+    return gbp > 0 ? [{ key: `rule:${g.ruleId}`, gbp, nre: g.worst.costImpact?.nreGBP, minutes: g.worst.costImpact?.minutes }] : [];
   }
   const by = new Map<string, CostItem>();
   inst.forEach((x, n) => {
@@ -84,7 +87,7 @@ function costItems(g: DtcFindingLike): CostItem[] {
     const key = c.costGroup ? `group:${c.costGroup}`
       : c.kind === 'feature_cost' && !x.featureId.startsWith('PART:') ? `feature:${x.featureId}` : `rule:${g.ruleId}:${n}`;
     const prev = by.get(key);
-    if (!prev || (c.perPartGBP ?? 0) > prev.gbp) by.set(key, { key, gbp: c.perPartGBP ?? 0, nre: c.nreGBP });
+    if (!prev || (c.perPartGBP ?? 0) > prev.gbp) by.set(key, { key, gbp: c.perPartGBP ?? 0, nre: c.nreGBP, minutes: c.minutes });
   });
   return [...by.values()];
 }
@@ -116,10 +119,13 @@ function opSlopes(op: UniversalStackInput['operations'][number], library: RateLi
  * figure × the stack's amortisation volume (a slide priced over 50k parts a year read as five slides over 250k).
  */
 export function findingVariant(
-  g: DtcFindingLike, input: UniversalStackInput, library: RateLibrary, amount?: { gbp: number; nre?: number },
+  g: DtcFindingLike, input: UniversalStackInput, library: RateLibrary, amount?: { gbp: number; nre?: number; minutes?: number },
 ): { next: UniversalStackInput; basis: string; removedGBP: number } | null {
   const items = costItems(g);
   const gbp = amount?.gbp ?? items.reduce((a, x) => a + x.gbp, 0);
+  // Minutes in the costing's own time model, when every item carries them (the time pricers do): the saving is then
+  // those minutes at the costed operation's rates — not the job's reference-rate £.
+  const minutes = amount ? amount.minutes : (items.every(x => x.minutes !== undefined) ? items.reduce((a, x) => a + (x.minutes ?? 0), 0) : undefined);
   if (!(gbp > 0)) return null;
   const kind = g.worst.costImpact?.kind ?? (/undercut|side-action|slide/.test(g.ruleId) ? 'tooling' : 'feature_cost');
   if (kind === 'tooling') {
@@ -143,16 +149,26 @@ export function findingVariant(
   const { m, l } = opSlopes(op, library);
   if (!(m + l > 0)) return null;
   const hrCap = op.cycleTimeHr * 0.9, labCap = op.labourTimeHr * 0.9;
-  // labour falls with the cycle until its own time runs out; past that only the machine term removes cost
-  let hr = gbp / (m + l);
-  if (l > 0 && hr > labCap) hr = m > 0 ? labCap + (gbp - (m + l) * labCap) / m : labCap;
-  hr = Math.min(hr, hrCap);
+  let hr: number;
+  let want: number;
+  if (minutes !== undefined && minutes > 0) {
+    // the costing's own minutes, off its own operation (labour falls with the cycle, as the costing adds it)
+    want = minutes / 60;
+    hr = Math.min(want, hrCap);
+  } else {
+    // no minutes (an older payload): the time that removes the £ at this operation's rates
+    hr = gbp / (m + l);
+    if (l > 0 && hr > labCap) hr = m > 0 ? labCap + (gbp - (m + l) * labCap) / m : labCap;
+    want = hr;
+    hr = Math.min(hr, hrCap);
+  }
   const labourHr = l > 0 ? Math.min(hr, labCap) : 0;
   const removed = m * hr + l * labourHr;
   return {
     next: { ...input, operations: ops.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr - hr, labourTimeHr: o.labourTimeHr - labourHr } : o) },
-    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} (£${(m + l).toFixed(2)} per hour of cycle after parts/cycle, OEE and crew)`
-      + (removed < gbp - 1e-9 ? ` — capped at 90 % of the operation: £${removed.toFixed(4)} of the £${gbp.toFixed(4)} comes out` : '')
+    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} at that operation\u2019s own rates (£${(m + l).toFixed(2)} per hour `
+      + 'of cycle after parts/cycle, OEE and crew)'
+      + (hr < want - 1e-12 ? ` — capped at 90 % of the operation (${(want * 60).toFixed(2)} min asked)` : '')
       + ' through the stack',
     removedGBP: removed,
   };
@@ -178,7 +194,7 @@ export function dfmLevers(
       id: `dfm:${g.ruleId}`,
       title: g.title ?? g.ruleId,
       // What the £ IS (the finding's own pricing), then how it moves the stack.
-      basis: (kind === 'upper-bound' ? 'Upper bound — the whole feature\'s cost (deleting it); shortening or opening it recovers part. ' : '')
+      basis: (kind === 'upper-bound' ? 'Upper bound — what the feature costs at all; deleting it recovers this, changing it recovers part. ' : '')
         + (g.worst.costImpact?.basis ? `${g.worst.costImpact.basis} — applied as ${v.basis}` : v.basis),
       confidence: g.worst.costImpact?.confidence === 'indicative' ? 'indicative' : 'modelled',
       kind,
@@ -189,15 +205,20 @@ export function dfmLevers(
       apply: (inp, removed) => {
         if (!removed) return findingVariant(g, inp, library)?.next ?? inp;
         // only what no earlier lever already took out
-        let gbp = 0, nre = 0;
+        let gbp = 0, nre = 0, mins = 0;
+        const allMinutes = items.every(x => x.minutes !== undefined);
         for (const it of items) {
           const done = removed.get(it.key) ?? 0;
           const left = Math.max(0, it.gbp - done);
-          if (left > 0) { gbp += left; nre += it.nre !== undefined ? it.nre * (left / it.gbp) : 0; }
+          if (left > 0) {
+            gbp += left;
+            nre += it.nre !== undefined ? it.nre * (left / it.gbp) : 0;
+            mins += it.minutes !== undefined ? it.minutes * (left / it.gbp) : 0;
+          }
           removed.set(it.key, Math.max(done, it.gbp));
         }
         if (!(gbp > 0)) return inp;
-        return findingVariant(g, inp, library, { gbp, ...(nre > 0 ? { nre } : {}) })?.next ?? inp;
+        return findingVariant(g, inp, library, { gbp, ...(nre > 0 ? { nre } : {}), ...(allMinutes ? { minutes: mins } : {}) })?.next ?? inp;
       },
     });
   }

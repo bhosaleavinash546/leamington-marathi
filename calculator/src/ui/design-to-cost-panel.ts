@@ -156,7 +156,7 @@ export function buildDtcPanel(m: DtcPanelModel, st: DtcState, levers: DtcLever[]
       ${gs ? `<div class="dtc-kpi dtc-${gs.cls}"><span>Gap</span><strong>${gap > 0 ? m.money(gap) : m.money(-gap)}</strong><em>${escHtml(gs.text)}</em></div>` : ''}
       <div class="dtc-proj" data-dtc-proj aria-live="polite">${buildDtcProjection(proj, m)}</div>
     </div>
-    <p class="dtc-note">Every figure is this part re-costed through the same 8-bucket stack as the headline — overhead and margin follow. Design levers are measured on the part and priced by the costing's own constants; drivers and what-ifs hold everything else equal.</p>
+    <p class="dtc-note">Every figure is this part re-costed through the same 8-bucket stack as the headline — overhead and margin follow. Design levers are measured on the part: their minutes and tooling come off the costing's own operations, at those operations' rates. Drivers and what-ifs hold everything else equal.</p>
 
     <section aria-labelledby="dtc-h-design"><h4 id="dtc-h-design">Design levers</h4>${designBody}</section>
 

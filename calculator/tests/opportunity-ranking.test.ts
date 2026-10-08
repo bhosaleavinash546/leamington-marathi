@@ -12,6 +12,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { generateDFMDFA } from '../src/engine/dfm-dfa.js';
+import { computeUniversalStack } from '../src/engine/core.js';
+import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { rankOpportunities, CATEGORY_LABELS } from '../src/engine/opportunity-ranking.js';
 import type { PartCostResult, UniversalStackInput, CommodityType } from '../src/engine/types.js';
 
@@ -133,7 +135,8 @@ describe('zero-saving findings are checks, not shortfalls', () => {
       tooling: { amortizationVolume: 60_000, totalToolingCost: 40_000 },
     }), 'machining');
     expect(r.verificationChecks.some(v => /amortised over less than the annual volume/i.test(v.title))).toBe(true);
-    expect(r.all.every(o => o.savingPerPart > 0)).toBe(true);
+    // a row carries money only when it was re-costed; every other row is a check with no figure
+    expect(r.all.every(o => (o.priced ? o.savingPerPart > 0 : o.savingPerPart === 0 && o.savingPct === 0))).toBe(true);
   });
 
   it('a verified "already consolidated" routing is a check, not a criticism', () => {
@@ -181,12 +184,29 @@ describe('headline maths is unchanged', () => {
     expect(r.headlineSavingPerPart).toBeGreaterThanOrEqual(r.all[0].savingPerPart - 1e-9);
   });
 
-  it('keeps the engine root-sum-square headline, and never the sum of the list', () => {
+  it('the headline is the largest single RE-COSTED saving — never a combination of rule-of-thumb percentages', () => {
+    // review, Oct 2026: the root-sum-square of the top three percentages (capped at 40 %) printed an invented £
     const r = RICH();
-    const sum = r.all.reduce((s, o) => s + o.savingPct, 0);
-    expect(r.headlineSavingPct).toBeLessThan(sum);
-    expect(r.headlineSavingPct).toBeLessThanOrEqual(40);
-    expect(r.headlineSavingPerPart).toBeCloseTo((r.partTotal * r.headlineSavingPct) / 100, 6);
+    const priced = r.all.filter(o => o.priced);
+    expect(r.pricedCount).toBe(priced.length);
+    expect(r.headlineSavingPerPart).toBe(priced.length ? Math.max(...priced.map(o => o.savingPerPart)) : 0);
+    // without a rate library nothing is re-costed, so nothing carries a £
+    expect(priced.length).toBe(0);
+    expect(r.all.every(o => o.savingPerPart === 0 && !o.priced)).toBe(true);
+  });
+
+  it('with the rate library, the re-costed levers carry their measured Δ and rank first', () => {
+    const inp = input([op('Milling', { oee: 0.6 }), op('Drilling'), op('Deburr')], {
+      annualVolume: 50_000, partName: 'block', packagingPerPart: 0.15, logisticsPerPart: 0.25, marginPct: 0.08,
+      rawMaterial: { materialId: 'mat-al6061', netWeightKg: 0.5, materialUtilization: 0.45 },
+      tooling: { amortizationVolume: 50_000, totalToolingCost: 40_000, mode: 'amortized' } });
+    const res = computeUniversalStack(inp, DEFAULT_RATE_LIBRARY);
+    const r = rankOpportunities(generateDFMDFA(res, inp, 'machining', { library: DEFAULT_RATE_LIBRARY } as never), res.total);
+    const priced = r.all.filter(o => o.priced);
+    expect(priced.length).toBeGreaterThan(0);
+    for (const o of priced) expect(o.recostBasis ?? '').toMatch(/through the rate library/);
+    const firstUnpriced = r.all.findIndex(o => !o.priced);
+    if (firstUnpriced >= 0) expect(r.all.slice(firstUnpriced).every(o => !o.priced)).toBe(true);
   });
 
   it('is deterministic', () => {

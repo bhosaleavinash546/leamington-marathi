@@ -13,6 +13,7 @@
 import type { GeometricRule, PartContext, ManufacturingFeature } from '../types.js';
 import { finding, plausibleWall, isBlend, undercutEvidence } from '../types.js';
 import { coredAbove } from './machining.js';
+import { featureMinutesEach, nearNetHoleMinutes } from '../../feature-machining.js';
 
 /**
  * Minimum draft by casting route, degrees per side, on an external wall.
@@ -36,33 +37,32 @@ const DEFAULT_MIN_DRAFT = 0.5;   // the most permissive — never over-report
  */
 const DRAFT_SOURCE: Record<string, { standard: string; clause?: string; note?: string }> = {
   hpdc: {
-    standard: 'NADCA Product Specification Standards for Die Castings',
-    clause: 'Draft requirements, external surfaces',
-    note: 'Published band 0.5°–1° per side on external walls; the lower bound is used so that '
-        + 'only an unarguable failure is reported.',
+    standard: 'NADCA Product Specification Standards for Die Castings (S-4A-7, draft) \u2014 used as a floor',
+    note: 'NADCA computes draft from wall depth (draft distance \u221aL / C, aluminium C = 12 outside walls, 6 inside); it is '
+        + 'not a fixed band. 0.5\u00b0 is the tool\u2019s own floor, reported only below it \u2014 a deep inside wall needs more, '
+        + 'which this check does not compute. From search-engine extracts of NADCA S-4A-7; verify against the current edition.',
   },
   investment: {
-    standard: 'Investment Casting Institute — design guidance for draft and pattern removal',
-    note: 'Investment tolerates the least draft because the pattern is consumed; band 0.5°–1°, '
-        + 'lower bound used.',
+    standard: 'CostVision engineering heuristic (not a published standard)',
+    note: '0.5\u00b0 floor for investment casting. No published figure was read for it; patterns can be drawn with less.',
   },
   sand: {
-    standard: 'ASM Handbook Vol. 15, Casting — sand mould design, pattern draft',
-    note: 'Sand practice needs more draft than die casting because the pattern must withdraw from '
-        + 'a rammed mould. Published band 1°–3° per side; the lower bound is used.',
+    standard: 'Sand-casting practice (secondary design guides) \u2014 used as a floor',
+    note: 'External draft in sand practice is "normally between 1 and 3 degrees" (secondary sources, not ASM); 1\u00b0 is the floor '
+        + 'used. Search-engine extract \u2014 verify against a foundry standard.',
   },
 };
 const GENERIC_DRAFT_SOURCE = {
-  standard: 'ASM Handbook Vol. 15, Casting — pattern and die draft',
-  note: 'Route not stated, so the most permissive published minimum (0.5°) is applied — this '
-      + 'under-reports rather than over-reports when the process is unknown.',
+  standard: 'CostVision engineering heuristic (not a published standard)',
+  note: 'Route not stated, so the most permissive floor (0.5\u00b0) is applied \u2014 this under-reports rather than over-reports '
+      + 'when the process is unknown.',
 };
 DRAFT_SOURCE.diecast = DRAFT_SOURCE.hpdc;
 DRAFT_SOURCE.gravity = {
-  standard: 'ASM Handbook Vol. 15, Casting — permanent mould (gravity die) casting design',
-  note: 'Gravity die is a permanent metal mould, not a rammed sand mould, and has its own draft '
-      + 'practice — aliasing it to sand would cite the wrong process. Published band 1°–3° per '
-      + 'side; the lower bound is used.',
+  standard: 'Permanent-mould (gravity die) practice \u2014 used as a floor',
+  note: 'Published permanent-mould tables give outside-wall draft by depth (about 10\u00b0 for walls under 3 mm deep down to 1.5\u00b0 '
+      + 'at 150\u2013300 mm); 1\u00b0 is the tool\u2019s floor, so shallow walls are under-reported. Search-engine extract of a foundry '
+      + 'table \u2014 verify against the supplier\u2019s design guide.',
 };
 DRAFT_SOURCE.shell = DRAFT_SOURCE.sand;
 
@@ -124,7 +124,7 @@ export const CASTING_RULES: readonly GeometricRule[] = [
     title: 'Abrupt section change',
     appliesTo: ['planar_face'],
     source: {
-      standard: 'ASM Handbook Vol. 15, Casting — design for solidification',
+      standard: 'CostVision engineering heuristic (not a published standard; ASM Vol. 15 discusses the topic but the threshold is the tool\u2019s own)',
       note: 'A thick-to-thin ratio above ~2:1 across a junction concentrates solidification '
           + 'shrinkage and residual stress. Widely published as a 2:1 guideline; blended '
           + 'transitions are the standard remedy.',
@@ -155,7 +155,7 @@ export const CASTING_RULES: readonly GeometricRule[] = [
     title: 'Sharp internal corner',
     appliesTo: ['fillet'],
     source: {
-      standard: 'ASM Handbook Vol. 15, Casting — fillets and corner radii',
+      standard: 'CostVision engineering heuristic (not a published standard; ASM Vol. 15 discusses the topic but the threshold is the tool\u2019s own)',
       note: 'Internal corners are stress raisers and hot spots. Common guidance is a fillet of '
           + 'roughly half the local wall; a radius under ~1 mm is treated as effectively sharp.',
     },
@@ -166,7 +166,10 @@ export const CASTING_RULES: readonly GeometricRule[] = [
       return finding(this, f, part, {
         severity: 'minor',
         detail: `Fillet at face ${f.faceIds.join(', ')} is R${f.radiusMm.toFixed(2)} mm — `
-              + 'effectively a sharp internal corner.',
+              + 'effectively a sharp internal corner.'
+              // a finished model carries machined edge breaks the kernel cannot tell from cast fillets
+              + (f.radiusMm <= 0.5 ? ' At R0.5 or less it may be an edge break on a machined face of the finished model — '
+                + 'check it against the casting drawing.' : ''),
         measuredField: 'radiusMm', measuredValue: f.radiusMm, unit: 'mm',
         thresholdValue: 1.0, comparator: '<',
         recommendation: 'Increase the fillet toward half the adjoining wall thickness to relieve '
@@ -192,7 +195,7 @@ export function castingHotSpotFindings(part: PartContext) {
     title: 'Isolated heavy section — shrinkage porosity risk',
     appliesTo: ['planar_face'],
     source: {
-      standard: 'ASM Handbook Vol. 15, Casting — riser and feeding design',
+      standard: 'CostVision engineering heuristic (not a published standard; ASM Vol. 15 discusses the topic but the threshold is the tool\u2019s own)',
       note: 'A section markedly heavier than the surrounding wall solidifies last and cannot be '
           + 'fed, producing centreline shrinkage. Flagged at 2x the part median wall.',
     },
@@ -278,14 +281,23 @@ export const CORED_HOLE_RULE: GeometricRule = {
     if (f.diaMm <= coredAbove(route)) return null;
     const max = nadcaMaxCoredDepthMm(f.diaMm);
     if (max !== null && f.depthMm <= max) return null;
+    // Both times in the costing's own model, so the note is arithmetic, not a claim: the sheet prices this hole as cored
+    // + finish-bored; it will be drilled from solid. The difference is a routing correction, not a design saving — and
+    // it can go either way (a short cored-and-bored hole costs MORE than drilling it).
+    const tf = part.cost?.timeFactor ?? 1;
+    const row = { kind: 'hole' as const, diaMm: f.diaMm, depthMm: f.depthMm, through: false, count: 1 };
+    const asCosted = nearNetHoleMinutes(row, coredAbove(route)) * tf;
+    const drilled = featureMinutesEach(row) * tf;
     return finding(this, f, part, {
       severity: 'minor',
       detail: `Blind ⌀${f.diaMm.toFixed(1)} mm hole ${f.depthMm.toFixed(1)} mm deep — a die-cast core of that diameter forms `
-        + `${(max ?? 0).toFixed(1)} mm at most, so it is drilled after casting (the cost sheet assumes it is cored).`,
+        + `${(max ?? 0).toFixed(1)} mm at most, so it is drilled after casting. The cost sheet prices it as cored + finish-bored `
+        + `(${asCosted.toFixed(2)} min); drilled from solid it is ${drilled.toFixed(2)} min in the same time model `
+        + `(${drilled >= asCosted ? '+' : '−'}${Math.abs(drilled - asCosted).toFixed(2)} min a hole).`,
       measuredField: 'depthMm', measuredValue: f.depthMm, unit: 'mm',
       thresholdValue: Math.round((max ?? 0) * 10) / 10, comparator: '>',
-      recommendation: 'Open the diameter or shorten the hole so it can be cored; otherwise add the drilling after casting — '
-        + 'priced here as that drilling, which the cost sheet does not yet carry.',
+      recommendation: 'Open the diameter or shorten the hole so it can be cored, or route it as drilled after casting on the '
+        + 'cost sheet (the times above are the difference).',
     });
   },
 };

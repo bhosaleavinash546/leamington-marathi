@@ -11,7 +11,9 @@ import { finding, plausibleWall, undercutEvidence } from '../types.js';
 
 /** Rib base thickness as a fraction of the wall it sits on, above which sink shows. */
 export const RIB_TO_WALL_MAX = 0.6;
-/** Boss outer diameter as a multiple of wall, above which sink shows on the A-side. */
+/** Boss wall as a fraction of the nominal wall, above which sink shows (Protolabs: 40–60 %). */
+export const BOSS_WALL_TO_WALL_MAX = 0.6;
+/** @deprecated the old outer-diameter test, kept only so older imports resolve; no rule reads it. */
 export const BOSS_TO_WALL_MAX = 2.5;
 /** Minimum draft per side on a moulded wall, degrees. */
 export const MIN_MOULD_DRAFT_DEG = 0.5;
@@ -55,21 +57,40 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
   {
     id: 'moulding.boss.wall-ratio',
     commodity: 'injection_moulding',
-    title: 'Boss diameter large relative to the local wall — sink risk',
+    title: 'Boss wall thick relative to the nominal wall — sink risk',
     appliesTo: ['boss'],
-    source: { ...DFM_TEXT, clause: 'Boss outer diameter ≈ 2–2.5 × nominal wall' },
+    source: {
+      standard: 'Protolabs, injection-moulding design guide \u2014 bosses',
+      note: 'The boss WALL should be "between 40 and 60 per cent of the thickness of the wall". Reported above 60 %. '
+        + 'The boss wall is (outer \u2300 \u2212 core-hole \u2300) / 2, from the boss and the hole on its axis; the nominal wall is the '
+        + 'part\u2019s median measured wall. A boss with no core hole is not judged here (its outer diameter alone does not say '
+        + 'how thick it is). Quoted from the search engine\u2019s extract of the publisher\u2019s page \u2014 verify against the live URL. '
+        + 'It used to compare the outer diameter with the wall, a test no source makes, and flagged correctly cored bosses.',
+    },
     evaluate(f, part) {
       if (part.featureSet.wallAnalysisValid === false) return null;
-      if (f.bossToWallRatio === undefined || f.diaMm === undefined) return null;
-      if (f.bossToWallRatio <= BOSS_TO_WALL_MAX) return null;
+      const nominal = part.featureSet.medianThicknessMm;
+      if (f.diaMm === undefined || !f.axis || !f.positionMm || !nominal || !(nominal > 0)) return null;
+      // the core hole on the boss's axis (same line, smaller diameter)
+      const a = f.axis, p = f.positionMm;
+      const core = (part.featureSet.features ?? []).filter(h => h.kind === 'hole' && h.diaMm !== undefined && h.diaMm < f.diaMm!
+        && h.axis && Math.abs(Math.abs(h.axis[0] * a[0] + h.axis[1] * a[1] + h.axis[2] * a[2]) - 1) < 1e-3 && h.positionMm
+        && (() => { const d = [h.positionMm![0] - p[0], h.positionMm![1] - p[1], h.positionMm![2] - p[2]];
+          const along = d[0] * a[0] + d[1] * a[1] + d[2] * a[2];
+          return Math.hypot(d[0] - along * a[0], d[1] - along * a[1], d[2] - along * a[2]) < 0.05; })())
+        .sort((x, y) => (y.diaMm ?? 0) - (x.diaMm ?? 0))[0];
+      if (!core) return null;
+      const bossWall = (f.diaMm - (core.diaMm as number)) / 2;
+      const ratio = bossWall / nominal;
+      if (ratio <= BOSS_WALL_TO_WALL_MAX) return null;
       return finding(this, f, part, {
         severity: 'minor',
-        detail: `Boss ⌀${f.diaMm.toFixed(1)} mm sits on a ${f.neighbourWallMm?.toFixed(2)} mm wall `
-              + `— ${f.bossToWallRatio.toFixed(2)}× the wall.`,
-        measuredField: 'bossToWallRatio', measuredValue: f.bossToWallRatio, unit: '×',
-        thresholdValue: BOSS_TO_WALL_MAX, comparator: '>',
-        recommendation: 'Core the boss to a uniform wall and support it with gussets rather than '
-          + 'making it solid; a solid boss this size will sink on the show face.',
+        detail: `Boss \u2300${f.diaMm.toFixed(1)} mm with a \u2300${(core.diaMm as number).toFixed(1)} mm core: its wall is ${bossWall.toFixed(2)} mm `
+              + `against a ${nominal.toFixed(2)} mm nominal wall \u2014 ${(ratio * 100).toFixed(0)} %.`,
+        measuredField: 'bossWallToWall', measuredValue: ratio, unit: '\u00d7',
+        thresholdValue: BOSS_WALL_TO_WALL_MAX, comparator: '>',
+        recommendation: 'Thin the boss wall to 40\u201360 % of the nominal wall (open the core or reduce the outer diameter) and '
+          + 'support it with gussets; a thick boss sinks on the show face.',
       });
     },
   },
@@ -134,6 +155,7 @@ export const CORE_PIN_BLIND_LD = 3;
 export const CORE_PIN_BLIND_LD_SMALL = 2;
 export const CORE_PIN_SMALL_DIA_MM = 5;
 export const CORE_PIN_THROUGH_LD = 6;
+export const CORE_PIN_THROUGH_LD_SMALL = 4;
 
 export const CORE_PIN_RULE: GeometricRule = {
   id: 'moulding.hole.core-pin-slender',
@@ -141,18 +163,18 @@ export const CORE_PIN_RULE: GeometricRule = {
   title: 'Moulded hole deeper than its core pin should be',
   appliesTo: ['hole'],
   source: {
-    standard: 'Envalior (ex-DSM) design guide, "Holes"; DuPont, "General Design Principles" (Module I)',
+    standard: 'Envalior (ex-DSM) design guide, "Holes"; Wevolver, injection-moulding hole design',
     url: 'https://www.envalior.com/en-us/holes',
-    note: 'Blind holes "should not exceed three times the hole diameter" (2× under Ø5 mm); through-hole cores can be '
-      + 'about twice as long. DuPont limits blind depth to about "two times the diameter of the core pin" '
-      + '(https://www.delrin.com/wp-content/uploads/2024/02/DESIGN-PRINCIPLES-1.pdf). Quoted from the search engine\'s '
-      + 'extract of the page (the page itself was not opened in this session) — verify against the live URL.',
+    note: 'Envalior: "The depth of a blind hole should not exceed three times the hole diameter"; under \u23005 mm the ratio is 2. '
+      + 'Through-hole cores, supported at both ends, may be longer: \u2264 4\u00d7D under \u23005 mm, \u2264 6\u00d7D above (Wevolver design guide). '
+      + 'Quoted from the search engine\u2019s extracts of the publishers\u2019 pages \u2014 verify against the live URLs.',
   },
   evaluate(f, part) {
     if (f.diaMm === undefined || f.diaMm <= 0 || f.ldRatio === undefined || f.openEnds === undefined) return null;
     const blind = f.openEnds === 1;
     if (!blind && f.openEnds !== 2) return null;
-    const limit = blind ? (f.diaMm < CORE_PIN_SMALL_DIA_MM ? CORE_PIN_BLIND_LD_SMALL : CORE_PIN_BLIND_LD) : CORE_PIN_THROUGH_LD;
+    const small = f.diaMm < CORE_PIN_SMALL_DIA_MM;
+    const limit = blind ? (small ? CORE_PIN_BLIND_LD_SMALL : CORE_PIN_BLIND_LD) : (small ? CORE_PIN_THROUGH_LD_SMALL : CORE_PIN_THROUGH_LD);
     if (f.ldRatio <= limit) return null;
     return finding(this, f, part, {
       severity: f.ldRatio > 2 * limit ? 'major' : 'minor',

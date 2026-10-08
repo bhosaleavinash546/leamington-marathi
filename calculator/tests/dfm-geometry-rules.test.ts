@@ -15,7 +15,7 @@ import { describe, it, expect } from 'vitest';
 import {
   analyseGeometricDFM, allGeometricRules, runGeometricRules,
   CASTING_RULES, MACHINING_RULES, INJECTION_MOULDING_RULES, SHEET_METAL_RULES,
-  MIN_DRAFT_DEG, STANDARD_DRILL_LD, PREFERRED_DRILL_DIA_MM,
+  MIN_DRAFT_DEG, STANDARD_DRILL_LD, isStockDrill,
   GEOMETRIC_DFM_COMMODITIES, highlightFaceIds,
   FORGING_RULES, BLOW_MOULDING_RULES, MIN_BLOWN_WALL_MM, UNDERCUT_SHARE_IMPLAUSIBLE,
 } from '../src/engine/dfm-geometry/index.js';
@@ -66,7 +66,7 @@ describe('invariant 1 — no citation, no ship', () => {
 
     const sand = analyseGeometricDFM(ctx([wall], { process: 'sand' }))
       .findings.find(f => f.ruleId === 'casting.draft.insufficient')!;
-    expect(sand.source.standard).toMatch(/ASM Handbook/);
+    expect(sand.source.standard).toMatch(/Sand-casting practice/);
     expect(sand.source.standard).not.toMatch(/NADCA/);
     expect(sand.threshold.value).toBe(MIN_DRAFT_DEG.sand);
 
@@ -76,14 +76,14 @@ describe('invariant 1 — no citation, no ship', () => {
     expect(hpdc.threshold.value).toBe(MIN_DRAFT_DEG.hpdc);
   });
 
-  it('every route source states that its figure came from a published band', () => {
-    // A midpoint or lower bound presented as a hard number is unattributable.
+  it('every route source says what its number is — a floor the tool uses, or its own heuristic (citation audit, Oct 2026)', () => {
+    // NADCA computes draft from depth (it is not a band); sand guides give 1–3°; investment had no source read.
     for (const route of ['sand', 'hpdc', 'investment']) {
       const f = analyseGeometricDFM(ctx(
         [{ id: 'P1', kind: 'planar_face', faceIds: [1], draftDeg: 0, draftClass: 'zero_draft' }],
         { process: route },
       )).findings.find(x => x.ruleId === 'casting.draft.insufficient')!;
-      expect(f.source.note, `${route} must state its band`).toMatch(/band/i);
+      expect(`${f.source.standard} ${f.source.note}`, `${route} must say what its figure is`).toMatch(/floor|heuristic/i);
     }
   });
 
@@ -211,8 +211,9 @@ describe('machining rules read the hole, not the invoice', () => {
     expect(r.findings.filter(f => f.ruleId.includes('depth-beyond'))).toHaveLength(0);
   });
 
-  it('accepts every preferred drill diameter without comment', () => {
-    for (const d of PREFERRED_DRILL_DIA_MM) {
+  it('accepts stock drills — 0.1 mm steps to ⌀10, 0.5 mm above (Hubs) — including the ones the old list called special', () => {
+    for (const d of [3.3, 5.2, 6.5, 6.6, 6.8, 8.5, 10.2, 11.5, 13.5, 17.5, 22.5]) {
+      expect(isStockDrill(d)).toBe(true);
       const r = analyseGeometricDFM(ctx(
         [{ id: 'H1', kind: 'hole', faceIds: [1], diaMm: d, depthMm: d * 2, ldRatio: 2 }],
         { commodity: 'machining' }));
@@ -221,25 +222,33 @@ describe('machining rules read the hole, not the invoice', () => {
     }
   });
 
-  it('suggests the nearest standard size for an odd diameter', () => {
+  it('suggests the nearest stock size for an odd diameter', () => {
     const r = analyseGeometricDFM(ctx(
-      [{ id: 'H1', kind: 'hole', faceIds: [1], diaMm: 7.3, depthMm: 14, ldRatio: 1.9 }],
+      [{ id: 'H1', kind: 'hole', faceIds: [1], diaMm: 14.3, depthMm: 14, ldRatio: 1 }],
       { commodity: 'machining' }));
     const f = r.findings.find(x => x.ruleId === 'machining.hole.non-preferred-diameter')!;
     expect(f.severity).toBe('advisory');
-    expect(f.recommendation).toContain('7.5');
+    expect(f.recommendation).toContain('14.5');
+    expect(isStockDrill(7.33)).toBe(false);
   });
 });
 
 describe('moulding rules use the ratios the trade actually argues about', () => {
-  it('flags a boss too fat for its wall, quoting both measurements', () => {
-    const r = analyseGeometricDFM(ctx(
-      [{ id: 'B3', kind: 'boss', faceIds: [3], diaMm: 12, neighbourWallMm: 2, bossToWallRatio: 6 }],
-      { commodity: 'injection_moulding' }));
-    const f = r.findings.find(x => x.ruleId === 'moulding.boss.wall-ratio')!;
-    expect(f.measured.value).toBe(6);
+  it('flags a boss whose WALL is over 60 % of the nominal wall (Protolabs), from the boss and its core hole', () => {
+    // ⌀12 boss with a ⌀4 core on a 2 mm nominal wall: boss wall 4 mm = 200 % of the wall
+    const r2 = analyseGeometricDFM({ commodity: 'injection_moulding', featureSet: { available: true, medianThicknessMm: 2, wallAnalysisValid: true,
+      adjacencyAvailable: true, features: [
+        { id: 'B3', kind: 'boss', faceIds: [3], diaMm: 12, axis: [0, 0, 1], positionMm: [0, 0, 5] },
+        { id: 'H4', kind: 'hole', faceIds: [4], diaMm: 4, axis: [0, 0, 1], positionMm: [0, 0, 8], depthMm: 8, ldRatio: 2, openEnds: 1 }] } });
+    const f = r2.findings.find(x => x.ruleId === 'moulding.boss.wall-ratio')!;
+    expect(f.measured.value).toBe(2);
     expect(f.detail).toContain('⌀12.0');
-    expect(f.recommendation).toMatch(/core/i);
+    expect(f.detail).toContain('⌀4.0');
+    expect(f.recommendation).toMatch(/core|wall/i);
+    // a solid boss (no core hole on its axis) is not judged — its outer diameter alone does not say how thick it is
+    const solid = analyseGeometricDFM({ commodity: 'injection_moulding', featureSet: { available: true, medianThicknessMm: 2, wallAnalysisValid: true,
+      features: [{ id: 'B3', kind: 'boss', faceIds: [3], diaMm: 12, axis: [0, 0, 1], positionMm: [0, 0, 5] }] } });
+    expect(solid.findings.filter(x => x.ruleId === 'moulding.boss.wall-ratio')).toHaveLength(0);
   });
 
   it('accepts a boss within the published ratio', () => {
@@ -360,9 +369,9 @@ describe('blow moulding is honest about a weak measurement', () => {
   });
 
   it('flags a wall below the blow-moulding floor as a PART-level finding', () => {
-    const r = analyseGeometricDFM(ctx([], { commodity: 'blow_moulding', medianWallMm: 0.3 }));
+    const r = analyseGeometricDFM(ctx([], { commodity: 'blow_moulding', medianWallMm: 0.2 }));
     const f = r.findings.find(x => x.ruleId === 'blow.wall.below-minimum')!;
-    expect(f.measured.value).toBe(0.3);
+    expect(f.measured.value).toBe(0.2);
     expect(f.threshold.value).toBe(MIN_BLOWN_WALL_MM);
   });
 

@@ -1,5 +1,9 @@
 # DFM cost drivers and Design to Cost (Oct 2026)
 
+> **Superseded in part (8 Oct 2026):** the demo review `docs/review/dfm-dtc-demo-review-2026-10-08.md` re-audited
+> this work. Pricing, several thresholds and citations changed — the per-part figures in §4 below (e.g. the gearbox
+> "£3.31" cored-depth price, which had the wrong sign) are historical. Read the review first.
+
 What the geometric DFM now finds, what it was getting wrong, and the live
 Design-to-Cost tab built on it. Tests: `tests/dfm-cost-drivers.test.ts`,
 `tests/design-to-cost.test.ts`, `tests/sprint6-honest-uncertainty.test.ts` (restack).

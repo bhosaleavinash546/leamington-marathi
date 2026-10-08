@@ -560,6 +560,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   should-cost, priced findings as switches, drivers with "to hit target alone", what-ifs — every figure is
   `computeUniversalStack` on a varied input; `findingVariant` (shared with the DFM restack) takes EXACTLY a finding's £
   off the factory base (÷ the op's £ per cycle-hour after parts/cycle, OEE and crew). Live: `npx tsx e2e/dtc-live.ts`.
+- DFM / DtC "pure arithmetic" rules (demo review, Oct 2026, `docs/review/dfm-dtc-demo-review-2026-10-08.md`): a DFM £ must
+  move the COSTING's numbers — time pricers carry `minutes` in the costing's model (cast routes: `nearNetHoleMinutes`),
+  removed from the costed op at its own rates; tooling carries `nreGBP`. Anything the cost model does not carry is
+  unpriced with a stated reason (corners, setups, cored-depth, non-stock size). The DFM/DFA and Insights tabs show £ ONLY
+  for levers re-costed through the stack (`savingBasis: 'recosted'`); never print a rule-of-thumb % as money, never send
+  one to the AI. A threshold with no source read is labelled "CostVision engineering heuristic". Drill rules stop at Ø26
+  (bored above). Kernel: release tested at a cylinder's ±draw points; breakout on a 0.8 r ring; `orientationCheck` →
+  `orientation_skew` warning.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

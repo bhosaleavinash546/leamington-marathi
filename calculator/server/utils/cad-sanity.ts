@@ -318,3 +318,22 @@ export function runCADSanityChecks(
 
   return w;
 }
+
+/** The tightest oriented box against the file-axis box, above which a part counts as saved rotated. */
+export const ORIENTATION_SKEW_RATIO = 1.15;
+
+/**
+ * A part saved rotated in its file (vehicle coordinates) inflates every file-axis measure — stock, fill ratio, the draw
+ * candidates: the manifold rotated 30° costs +34 % (recognition audit, Oct 2026). Stated, not corrected silently.
+ */
+export function orientationWarning(geo: { orientationCheck?: { aabbOverObb?: number; obbExtentsMm?: number[]; aabbExtentsMm?: number[] } | null }): CADSanityWarning[] {
+  const oc = geo.orientationCheck;
+  if (!oc?.aabbOverObb || oc.aabbOverObb <= ORIENTATION_SKEW_RATIO) return [];
+  const fmt = (e?: number[]) => (e ?? []).map(v => v.toFixed(0)).join(' × ');
+  return [{
+    code: 'orientation_skew', severity: 'warn',
+    message: `The part sits rotated in its file: the file-axis box (${fmt(oc.aabbExtentsMm)} mm) is ${oc.aabbOverObb.toFixed(2)}× the `
+      + `volume of the part\u2019s own oriented box (${fmt(oc.obbExtentsMm)} mm). Stock size, fill ratio and the draw are read in the `
+      + 'file\u2019s axes, so stock-based material and machining may be overstated. Re-export the part aligned to its main faces.',
+  }];
+}

@@ -16,43 +16,70 @@ export function coredAbove(process: string | undefined): number {
   return CORED_ABOVE_MM[key] ?? CORED_ABOVE_MM.sand;
 }
 
+/** Source text found in the publishers' OWN pages, as a search engine extracted them — the pages themselves could
+ *  not be opened from this environment (egress policy), so every quote below says so. Verify against the live URL. */
+const EXTRACT_NOTE = 'Quoted from the search engine’s extract of the publisher’s page (the page itself could not be opened '
+  + 'here) — verify against the live URL.';
+
+/** A CostVision rule of thumb with no published figure behind it — said so, not dressed as a citation. */
+export const OWN_HEURISTIC = (what: string) => ({
+  standard: 'CostVision engineering heuristic (not a published standard)',
+  note: what,
+});
+
 /**
- * Depth-to-diameter beyond which a standard jobber drill will not reach and the
- * hole needs peck-drilling, an extended-reach tool or gun drilling.
- *
- * Standard jobber drills run to roughly 5×D; parabolic and coolant-through
- * tooling reaches 10–12×D; beyond that it is gun drilling. 5 is the point at
- * which the process changes and cost steps, so that is the reporting threshold.
+ * Depth-to-diameter beyond which a standard drill is no longer the recommended tool, and beyond which it is a
+ * specialist operation. Hubs: "Recommended hole depth: 4 x nominal diameter. Typical: 10 x nominal diameter";
+ * MSC: holes "more than 10 diameters deep … requires a specialty drill".
  */
-export const STANDARD_DRILL_LD = 5;
+export const STANDARD_DRILL_LD = 4;
 export const EXTENDED_DRILL_LD = 10;
-
-/** Preferred metric drill diameters, mm — a non-listed size means a special tool. */
-export const PREFERRED_DRILL_DIA_MM = [
-  1, 1.5, 2, 2.5, 3, 3.3, 3.5, 4, 4.2, 4.5, 5, 5.5, 6, 6.8, 7, 7.5, 8, 8.5, 9, 9.5,
-  10, 10.5, 11, 12, 12.5, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 28, 30,
-  32, 35, 36, 38, 40, 42, 45, 48, 50,
-];
+/**
+ * Above this diameter the costing does not drill: it helical-mills or bores (feature-machining.ts, d > 26). Drill-reach
+ * and stock-drill rules stop here — a Ø29.9 bore through a hollow driveshaft is not a drilling question.
+ */
+export const DRILLED_MAX_DIA_MM = 26;
 
 /**
- * Cutter length-to-diameter: a standard end mill cuts to about 3× its diameter; long-series cutters reach
- * further at reduced feed; past about 6× the tool deflects and the corner needs light passes or EDM.
+ * Stock drill diameters: Hubs, "specify hole diameters in 0.1 mm increments up to 10 mm, and in 0.5 mm increments
+ * above 10 mm" (the ISO 235 pattern). The old 49-size list called stock drills (5.2, 6.5, 11.5, 13.5) "special".
+ */
+export const FINE_STEP_TO_MM = 13;
+export function isStockDrill(dia: number): boolean {
+  const step = dia <= FINE_STEP_TO_MM ? 0.1 : 0.5;
+  return Math.abs(dia / step - Math.round(dia / step)) * step <= 0.01;
+}
+export function nearestStockDrill(dia: number): number {
+  const step = dia <= FINE_STEP_TO_MM ? 0.1 : 0.5;
+  return Math.round(Math.round(dia / step) * step * 100) / 100;
+}
+const DRILL_SIZE_SOURCE = {
+  standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — holes',
+  url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
+  note: '"Specify hole diameters in 0.1 mm increments up to 10 mm, and in 0.5 mm increments above 10 mm." ' + EXTRACT_NOTE
+    + ' The tool accepts 0.1 mm steps to \u230013 because jobber drills are stocked that finely there (the M12 tap drill is \u230010.2), '
+    + 'so a stock tap drill is never called special.',
+};
+
+/**
+ * Cutter length-to-diameter. Hubs: cutting length "2-3 times" the diameter is best and "up to four times" costs more;
+ * a cavity "greater than six times the tool diameter" is deep.
  */
 export const CUTTER_LD_STANDARD = 4;
 export const CUTTER_LD_LONG = 6;
 const LONG_REACH_SOURCE = {
   standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — internal edges and cavities',
   url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
-  note: '"End mill tools have a limited cutting length (typically 3-4 times their diameter)"; internal corner '
-    + 'radius "⅓ x cavity depth (or larger)"; a tool past 6×D counts as deep. Sandvik Coromant fits damped '
-    + 'adaptors from 4×D overhang (https://sandvik.coromant.com/en-us/tools/silent-tools/what-is-silent-tools). '
-    + 'Reported past 4×D (beyond a standard flute), major past 6×D. ' + "Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL.",
+  note: 'Tools cut best at 2–3× their diameter and reach "up to four times" at extra cost; cavities "greater than six times '
+    + 'the tool diameter are considered deep"; internal corner radius "⅓ x cavity depth (or larger)". Sandvik Coromant fits '
+    + 'damped adaptors from 4×D overhang. Reported past 4×D, major past 6×D. ' + EXTRACT_NOTE,
 };
 
-const MACHINERYS = {
-  standard: "Machinery's Handbook — drilling: depth-to-diameter limits and standard drill sizes",
-  note: 'Standard jobber drills reach ~5×D; parabolic / coolant-through tooling reaches ~10×D; '
-      + 'beyond that gun drilling. Reported at the point the process and the cost step.',
+const DRILL_DEPTH_SOURCE = {
+  standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — holes; MSC Industrial Supply, deep-hole drilling',
+  url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
+  note: 'Hubs: "Recommended hole depth: 4 x nominal diameter. Typical: 10 x nominal diameter." MSC: a hole "more than 10 '
+    + 'diameters deep … requires a specialty drill". Reported past 4×D, major past 10×D. ' + EXTRACT_NOTE,
 };
 
 export const MACHINING_RULES: readonly GeometricRule[] = [
@@ -61,9 +88,10 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
     commodity: 'machining',
     title: 'Hole deeper than standard drill reach',
     appliesTo: ['hole'],
-    source: MACHINERYS,
+    source: DRILL_DEPTH_SOURCE,
     evaluate(f, part) {
       if (f.ldRatio === undefined || f.diaMm === undefined) return null;
+      if (f.diaMm > DRILLED_MAX_DIA_MM) return null;   // bored / helical-milled, not drilled
       if (f.ldRatio <= STANDARD_DRILL_LD) return null;
       const extreme = f.ldRatio > EXTENDED_DRILL_LD;
       return finding(this, f, part, {
@@ -75,7 +103,7 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
         recommendation: extreme
           ? 'Beyond ~10:1 this is a gun-drilling or trepanning operation. Open the diameter, '
             + 'drill from both ends, or accept a specialist operation and its setup.'
-          : 'Beyond ~5:1 needs peck-drilling or extended-reach tooling — slower cycle, higher '
+          : 'Beyond ~4:1 needs peck-drilling or extended-reach tooling — slower cycle, higher '
             + 'tool cost and greater breakage risk. Open the diameter if the function allows.',
       });
     },
@@ -84,25 +112,19 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
   {
     id: 'machining.hole.non-preferred-diameter',
     commodity: 'machining',
-    title: 'Non-preferred hole diameter — special tool',
+    title: 'Non-stock hole diameter — special tool',
     appliesTo: ['hole'],
-    source: {
-      standard: "Machinery's Handbook — standard twist-drill diameters (metric series)",
-      note: 'A diameter off the standard series needs a special or a bore/ream cycle instead of a '
-          + 'single drilled pass. Tolerance ±0.05 mm on the match.',
-    },
+    source: DRILL_SIZE_SOURCE,
     evaluate(f, part) {
       if (f.diaMm === undefined || f.diaMm <= 0) return null;
-      const near = PREFERRED_DRILL_DIA_MM.some(d => Math.abs(d - f.diaMm!) <= 0.05);
-      if (near) return null;
-      if (f.diaMm > 50) return null;   // above the drilled range — bored anyway, not a finding
+      if (isStockDrill(f.diaMm)) return null;
+      if (f.diaMm > DRILLED_MAX_DIA_MM) return null;   // above the drilled range — bored / helical-milled, any size, one tool
       // On a casting a hole above the cored size is cast in and finish-bored, never drilled (CORED_ABOVE_MM).
       if (part.commodity === 'cast_and_machine' && f.diaMm > coredAbove(part.process)) return null;
-      const closest = PREFERRED_DRILL_DIA_MM
-        .reduce((a, b) => (Math.abs(b - f.diaMm!) < Math.abs(a - f.diaMm!) ? b : a));
+      const closest = nearestStockDrill(f.diaMm);
       return finding(this, f, part, {
         severity: 'advisory',
-        detail: `⌀${f.diaMm.toFixed(2)} mm is not a standard drill size; nearest is `
+        detail: `⌀${f.diaMm.toFixed(2)} mm is not a stock drill size (0.1 mm steps to ⌀13, 0.5 mm above); nearest is `
               + `⌀${closest} mm.`,
         measuredField: 'diaMm', measuredValue: f.diaMm, unit: 'mm',
         thresholdValue: closest, comparator: '>',
@@ -117,11 +139,8 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
     commodity: 'machining',
     title: 'Internal corner radius below any economic end mill',
     appliesTo: ['fillet'],
-    source: {
-      standard: "Machinery's Handbook — end milling: cutter diameter and corner radii",
-      note: 'An internal corner cannot be smaller than the cutter that makes it. Below R1 mm the '
-          + 'cutter is fragile and slow; the corner is then usually EDM or a broach.',
-    },
+    source: OWN_HEURISTIC('An internal corner cannot be smaller than the cutter that makes it; below R1 mm the cutter is '
+      + 'fragile and slow, and the corner is usually EDM or a broach. R1 is the tool\u2019s own threshold, not a published figure.'),
     evaluate(f, part) {
       // An INTERNAL corner (concave) — the radius a cutter must fit. An external round is cut by the
       // side of the tool and costs nothing extra; it used to be the only kind this rule ever saw.
