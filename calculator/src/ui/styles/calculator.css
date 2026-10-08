@@ -216,7 +216,7 @@ header .back-link:hover { color: var(--accent); }
   background: var(--surface-elevated);
   cursor: pointer;
   font-size: 1rem;
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   color: var(--text-secondary);
   flex-shrink: 0;
 }
@@ -310,7 +310,7 @@ header .back-link:hover { color: var(--accent); }
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   font-family: var(--font);
   white-space: nowrap;
   text-decoration: none;
@@ -363,7 +363,7 @@ header .back-link:hover { color: var(--accent); }
   color: var(--text-muted);
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   font-family: var(--font);
   white-space: nowrap;
 }
@@ -631,7 +631,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   cursor: pointer;
   font-weight: 600;
   font-family: var(--font);
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -806,7 +806,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   cursor: pointer;
   background: var(--surface-elevated);
   color: var(--text-secondary);
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   white-space: nowrap;
 }
 .ctab:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
@@ -846,7 +846,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   color: var(--text-secondary);
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   font-family: var(--font);
   /* Never shrink/squish a tab into an unreadable state — wrap instead. */
   flex-shrink: 0;
@@ -947,7 +947,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   padding: 24px 16px;
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition-md);
+  transition: color var(--transition-md), background-color var(--transition-md), border-color var(--transition-md), box-shadow var(--transition-md), opacity var(--transition-md), transform var(--transition-md);
   background: var(--surface-elevated);
   margin-bottom: 12px;
 }
@@ -1373,9 +1373,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 /* ── Animations ──────────────────────────────────────────────────────────── */
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Tablet (769px–1024px): two-column narrower input panel ─────────────── */
 
@@ -2090,7 +2088,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   font-size: 0.73rem;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
   font-family: var(--font);
   white-space: nowrap;
 }
@@ -2124,7 +2122,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   color: var(--text-muted);
   cursor: pointer;
   font-family: var(--font);
-  transition: all var(--transition);
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition), box-shadow var(--transition), opacity var(--transition), transform var(--transition);
 }
 .dash-filter-reset:hover { color: var(--red); border-color: var(--red); }
 
@@ -2206,7 +2204,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   padding: 14px 12px;
   text-align: left;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
   font-family: var(--font);
   display: flex;
   flex-direction: column;
@@ -3105,7 +3103,7 @@ textarea:focus-visible {
   font-family: var(--font);
   white-space: nowrap;
   margin-top: 6px;
-  transition: all var(--dur-hover) var(--ease-std);
+  transition: color var(--dur-hover) var(--ease-std), background-color var(--dur-hover) var(--ease-std), border-color var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std), opacity var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
 }
 .cpicker-back-btn:hover {
   background: var(--surface-elevated);
@@ -3227,7 +3225,7 @@ textarea:focus-visible {
   z-index: 58;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.26s cubic-bezier(0.4,0,0.2,1);
+  transition: opacity 0.26s var(--ease-std);
   cursor: pointer;
 }
 .picker-backdrop.visible {
@@ -3253,7 +3251,7 @@ textarea:focus-visible {
   box-shadow: -20px 0 60px rgba(0,0,0,0.55);
   z-index: 60;
   transform: translateX(102%);
-  transition: transform 0.26s cubic-bezier(0.4,0,0.2,1);
+  transition: transform 0.26s var(--ease-std);
   will-change: transform;
   /* remove grid */
   grid-template-columns: unset !important;
@@ -3305,7 +3303,7 @@ textarea:focus-visible {
   border-radius: 7px;
   cursor: pointer;
   font-family: var(--font);
-  transition: all var(--dur-hover) var(--ease-std);
+  transition: color var(--dur-hover) var(--ease-std), background-color var(--dur-hover) var(--ease-std), border-color var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std), opacity var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
 }
 .wf-panel-close:hover { background: var(--surface-hover); border-color: var(--accent); color: var(--accent); }
 .wf-panel-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -3528,7 +3526,7 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon svg { width: 22px; heig
   border-radius: 6px;
   cursor: pointer;
   font-family: var(--font);
-  transition: all var(--dur-hover) var(--ease-std);
+  transition: color var(--dur-hover) var(--ease-std), background-color var(--dur-hover) var(--ease-std), border-color var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std), opacity var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
 }
 .sidebar-toggle-btn:hover { background: var(--surface-hover); color: var(--accent); border-color: var(--accent); }
 
@@ -3543,7 +3541,7 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon svg { width: 22px; heig
   cursor: pointer;
   color: var(--text-muted);
   font-family: var(--font);
-  transition: all var(--dur-hover) var(--ease-std);
+  transition: color var(--dur-hover) var(--ease-std), background-color var(--dur-hover) var(--ease-std), border-color var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std), opacity var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
 }
 .chart-mode-toggle button.active { background: var(--accent); color: #fff; }
 .chart-mode-toggle button:hover:not(.active) { background: var(--surface-hover); color: var(--text-primary); }
@@ -3636,7 +3634,7 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon svg { width: 22px; heig
   font-size: 0.7rem; font-weight: 700;
   background: var(--surface-elevated); color: var(--text-muted);
   border: 2px solid var(--border-strong); flex-shrink: 0;
-  transition: all 0.2s;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
 }
 .wizard-step-dot.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 .wizard-step-dot.done   { background: var(--green);  color: #fff; border-color: var(--green); }
@@ -3806,14 +3804,16 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon svg { width: 22px; heig
   content: '';
   position: absolute;
   bottom: -1px;
-  left: 50%;
-  right: 50%;
+  left: 0;
+  right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
   border-radius: 2px 2px 0 0;
-  transition: left var(--dur-hover) var(--ease-std), right var(--dur-hover) var(--ease-std);
+  /* Grows from the centre on the compositor (scaleX), not by animating left / right (layout every frame). */
+  transform: scaleX(0);
+  transition: transform var(--dur-hover) var(--ease-std);
 }
-.rtab.active::after { left: 0; right: 0; }
+.rtab.active::after { transform: scaleX(1); }
 .rtab.active { color: var(--accent); border-bottom-color: transparent; }
 
 /* ── Commodity tab active — gradient background ──────────────────────────────── */
@@ -5145,7 +5145,8 @@ button, .ctab, .rtab, .cpicker-tile, .demo-card,
   position: absolute;
   border-radius: 8px;
   box-shadow: 0 0 0 9999px rgba(0,0,0,0.72);
-  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  /* The spotlight tracks the toured element's box. */
+  transition: top 0.35s var(--ease-std), left 0.35s var(--ease-std), width 0.35s var(--ease-std), height 0.35s var(--ease-std);
   pointer-events: none;
   outline: 3px solid #2563eb;
   outline-offset: 2px;
@@ -5160,7 +5161,7 @@ button, .ctab, .rtab, .cpicker-tile, .demo-card,
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
   pointer-events: all;
   font-family: var(--font);
-  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  transition: top 0.35s var(--ease-std), left 0.35s var(--ease-std), opacity 0.35s var(--ease-std), transform 0.35s var(--ease-std);
 }
 .cv-tour-step-counter {
   font-size: 0.68rem;
@@ -5222,7 +5223,7 @@ button, .ctab, .rtab, .cpicker-tile, .demo-card,
   cursor: pointer;
   font-family: var(--font);
   border: none;
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
 }
 .cv-tour-prev {
   background: #f1f5f9;
@@ -5274,7 +5275,7 @@ button, .ctab, .rtab, .cpicker-tile, .demo-card,
   justify-content: center;
   font-size: 0.9rem;
   color: #fff;
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
 }
 .cv-video-card:hover .cv-video-play { background: #2563eb; border-color: #2563eb; }
 .cv-video-duration {
@@ -5560,7 +5561,7 @@ kbd {
   border: 1px solid var(--border-strong);
   background: var(--surface-elevated);
   color: var(--text-secondary);
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -5581,7 +5582,7 @@ kbd {
   border: 1.5px solid #2563eb;
   background: #eff6ff;
   color: #2563eb;
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
   white-space: nowrap;
 }
 #help-tour-btn:hover { background: #2563eb; color: #fff; }
@@ -6202,7 +6203,7 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   margin-right: 4px;
   border-radius: 7px;
   cursor: pointer;
-  transition: all var(--dur-hover) var(--ease-std);
+  transition: color var(--dur-hover) var(--ease-std), background-color var(--dur-hover) var(--ease-std), border-color var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std), opacity var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
 }
 .results-focus-btn:hover { background: var(--surface-hover); border-color: var(--accent); color: var(--accent); }
 .results-focus-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

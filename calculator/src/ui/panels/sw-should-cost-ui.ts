@@ -790,7 +790,7 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Calculate button ─────────────────────────────────────── -->
   <div style="margin:20px 0;text-align:center">
-    <button id="sw-calc-btn" style="background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border:none;border-radius:10px;padding:14px 48px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;box-shadow:0 4px 14px rgba(37,99,235,0.35);transition:all 0.2s">
+    <button id="sw-calc-btn" style="background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border:none;border-radius:10px;padding:14px 48px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;box-shadow:0 4px 14px rgba(37,99,235,0.35);transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s">
       Calculate Software Should-Cost
     </button>
   </div>
@@ -998,7 +998,7 @@ function renderSWPanelHTML(): string {
   color: var(--sw-text-body);
   font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
 }
 .sw-preset-btn:hover { background: var(--sw-border-light); border-color: var(--sw-text-muted); }
 .sw-preset-active { background: var(--sw-accent-bg) !important; border-color: var(--sw-accent) !important; color: var(--sw-accent) !important; font-weight: 700; }
@@ -1150,13 +1150,13 @@ function renderSWPanelHTML(): string {
 
 /* ── Guided wizard (Part 4) ────────────────────────────────────────────────── */
 .sw-mode-toggle { display: inline-flex; gap: 2px; background: var(--sw-surface-alt); border: 1px solid var(--sw-border); border-radius: 8px; padding: 3px; margin-bottom: 16px; }
-.sw-mode-btn { border: none; background: transparent; color: var(--sw-text-muted); font-size: 0.8rem; font-weight: 600; padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+.sw-mode-btn { border: none; background: transparent; color: var(--sw-text-muted); font-size: 0.8rem; font-weight: 600; padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s; }
 .sw-mode-btn:hover { color: var(--sw-text-body); }
 .sw-mode-active { background: var(--sw-surface); color: var(--sw-accent) !important; box-shadow: var(--sw-shadow-sm); }
 
 .sw-wiz-progress { display: flex; align-items: center; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
 .sw-wiz-dot { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
-.sw-wiz-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; border: 2px solid var(--sw-border); color: var(--sw-text-muted); background: var(--sw-surface); transition: all 0.25s; }
+.sw-wiz-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; border: 2px solid var(--sw-border); color: var(--sw-text-muted); background: var(--sw-surface); transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s, opacity 0.25s, transform 0.25s; }
 .sw-wiz-dot-label { font-size: 0.72rem; font-weight: 600; color: var(--sw-text-muted); white-space: nowrap; }
 .sw-wiz-connector { flex: 1; min-width: 14px; height: 2px; background: var(--sw-border); margin: 0 8px; }
 .sw-wiz-active .sw-wiz-num { border-color: var(--sw-accent); color: var(--sw-accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
@@ -1177,7 +1177,7 @@ function renderSWPanelHTML(): string {
 .sw-wiz-btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .sw-domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
-.sw-domain-card { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--sw-border); border-radius: var(--sw-radius); background: var(--sw-surface); cursor: pointer; transition: all 0.15s; }
+.sw-domain-card { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--sw-border); border-radius: var(--sw-radius); background: var(--sw-surface); cursor: pointer; transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s; }
 .sw-domain-card:hover { border-color: var(--sw-text-muted); }
 .sw-domain-on { background: var(--sw-accent-bg); border-color: var(--sw-accent-border); }
 .sw-domain-card input { margin-top: 3px; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }

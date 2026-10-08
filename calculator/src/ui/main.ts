@@ -225,7 +225,7 @@ Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale,
 import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
-import { escHtml } from './toast.js';
+import { escHtml, showToast as sharedShowToast } from './toast.js';
 import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measuredText, thresholdText, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
 import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
@@ -240,10 +240,9 @@ import { PCB_COUNTRY_META, computeClientRiskProfile } from './data/pcb-country-m
 import { apiBase } from '../api-base.js';
 import {
   initCVAnimations, onViewShown, onDashboardRendered, onTableRendered,
-  onResultsReady, onChatToggled, onChatMessageAdded, onToastShown, dismissToast,
+  onResultsReady, onChatToggled, onChatMessageAdded,
   animateResultHero, pulseCalculate,
 } from './animations.js';
-import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.js';
 import { exportFilename } from '../export/filename.js';
 
 /** What the suggestion layer may know about the current costing — the region
@@ -2111,10 +2110,9 @@ function renderDashboard(): void {
     if (bannerText) bannerText.textContent = `Filtered by: ${activeFilters.map(([k, v]) => `${k} = ${v}`).join(' · ')} — showing ${records.length} of ${all.length} records`;
   }
 
-  // Trigger GSAP + Framer Motion entrance animations now that all DOM is ready
+  // Entrance fade now that all DOM is ready (animations.ts)
   requestAnimationFrame(() => {
     onDashboardRendered();
-    motionInViewReveal('#dashboard-view, .dash-main, .dash-content');
   });
 }
 
@@ -2481,7 +2479,6 @@ function renderRecentTable(records: CostingRecord[]): void {
   // Animate rows after paint (GSAP + motion)
   requestAnimationFrame(() => {
     onTableRendered();
-    motionRevealRows('#dash-recent-tbody');
   });
 }
 
@@ -2590,7 +2587,7 @@ function toggleChat(): void {
     _chatMessages.push({ role: 'ai', text: 'Hi! I\'m your CostVision AI assistant. Ask me anything about should-cost analysis, commodity pricing, DFM, or manufacturing processes.' });
     renderChatMessages();
   }
-  // GSAP-powered drawer animation (replaces direct display toggle)
+  // Shows / hides the drawer (animated unless reduced motion — it used to stay shut under reduced motion).
   onChatToggled(_chatOpen);
   if (_chatOpen) setTimeout(() => document.getElementById('ai-chat-input')?.focus(), 300);
 }
@@ -2640,23 +2637,8 @@ async function sendChatMessage(): Promise<void> {
 
 // ─── Toast notification ───────────────────────────────────────────────────────
 
-function showToast(message: string, type: 'error' | 'warning' | 'info' = 'info'): void {
-  const container = document.getElementById('toast-container') ?? (() => {
-    const c = document.createElement('div');
-    c.id = 'toast-container';
-    c.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:360px';
-    document.body.appendChild(c);
-    return c;
-  })();
-  const bg = type === 'error' ? '#c62828' : type === 'warning' ? '#e65100' : '#1565c0';
-  const icon = type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ';
-  const toast = document.createElement('div');
-  toast.style.cssText = `background:${bg};color:#fff;border-radius:6px;padding:10px 14px;font-size:0.78rem;box-shadow:0 4px 12px rgba(0,0,0,0.25);display:flex;gap:8px;align-items:flex-start`;
-  toast.innerHTML = `<span style="font-weight:700;flex-shrink:0">${icon}</span><span>${escHtml(message)}</span>`;
-  container.appendChild(toast);
-  onToastShown(toast);
-  setTimeout(() => dismissToast(toast, () => toast.remove()), 6000);
-}
+// One implementation for the whole app: src/ui/toast.ts (accessible, themed, dismissible).
+function showToast(message: string, type: 'error' | 'warning' | 'info' = 'info'): void { sharedShowToast(message, type); }
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
 // el / val / num / sel / fmtPct / validSel live in ./helpers.js and escHtml in
@@ -7127,7 +7109,7 @@ function buildInlineDemoSection(commodity: string): string {
       Export Full Report PDF
     </button>
   </div>`;
-  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— illustrative inputs, not OEM data · click a card to load it</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
+  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— illustrative inputs, not OEM data · click a card to load it</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
 }
 
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────
@@ -7432,7 +7414,7 @@ function buildPCBDemoSection(): string {
         <span style="flex:1;height:1px;background:var(--border)"></span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div style="padding:12px;border:1px solid rgba(79,142,247,0.3);border-radius:10px;background:rgba(79,142,247,0.04);cursor:pointer;transition:all 0.15s"
+        <div style="padding:12px;border:1px solid rgba(79,142,247,0.3);border-radius:10px;background:rgba(79,142,247,0.04);cursor:pointer;transition:border-color 0.15s,background-color 0.15s,box-shadow 0.15s"
              onmouseenter="this.style.background='rgba(79,142,247,0.09)'" onmouseleave="this.style.background='rgba(79,142,247,0.04)'"
              onclick="window.__loadPCBDemo('ecu')">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
@@ -7451,7 +7433,7 @@ function buildPCBDemoSection(): string {
             <span style="font-size:0.68rem;color:var(--accent);font-weight:600">▶ Try this demo</span>
           </div>
         </div>
-        <div style="padding:12px;border:1px solid rgba(139,92,246,0.3);border-radius:10px;background:rgba(139,92,246,0.04);cursor:pointer;transition:all 0.15s"
+        <div style="padding:12px;border:1px solid rgba(139,92,246,0.3);border-radius:10px;background:rgba(139,92,246,0.04);cursor:pointer;transition:border-color 0.15s,background-color 0.15s,box-shadow 0.15s"
              onmouseenter="this.style.background='rgba(139,92,246,0.09)'" onmouseleave="this.style.background='rgba(139,92,246,0.04)'"
              onclick="window.__loadPCBDemo('adas')">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
@@ -7470,7 +7452,7 @@ function buildPCBDemoSection(): string {
             <span style="font-size:0.68rem;color:#7c3aed;font-weight:600">▶ Try this demo</span>
           </div>
         </div>
-        <div style="padding:12px;border:1px solid rgba(239,68,68,0.3);border-radius:10px;background:rgba(239,68,68,0.04);cursor:pointer;transition:all 0.15s"
+        <div style="padding:12px;border:1px solid rgba(239,68,68,0.3);border-radius:10px;background:rgba(239,68,68,0.04);cursor:pointer;transition:border-color 0.15s,background-color 0.15s,box-shadow 0.15s"
              onmouseenter="this.style.background='rgba(239,68,68,0.09)'" onmouseleave="this.style.background='rgba(239,68,68,0.04)'"
              onclick="window.__loadPCBDemo('bosch_radar')">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
@@ -14641,7 +14623,6 @@ function showResultsArea(): void {
   // Animate results panel after Chart.js renders (needs one frame)
   setTimeout(() => {
     onResultsReady();
-    motionRevealRows('#results-tabs .breakdown-row, #results-tabs tr');
   }, 80);
   // Failsafe: whatever the reveal animation does, guarantee the tab bar is
   // visible shortly after (a stranded autoAlpha/opacity tween must never leave
@@ -14763,6 +14744,9 @@ function switchResultTab(tab: string): void {
   document.getElementById('results-dtc')?.style.setProperty('display', tab === 'dtc' ? '' : 'none');
   const uploadEl = document.getElementById('results-upload');
   if (uploadEl) uploadEl.style.display = tab === 'upload' ? '' : 'none';
+  // The new panel fades in (150 ms, CSS .cv-tab-enter) — tabs used to swap with no transition at all.
+  const shown = document.getElementById(`results-${tab}`);
+  if (shown) { shown.classList.remove('cv-tab-enter'); void shown.offsetWidth; shown.classList.add('cv-tab-enter'); }
 
   if (tab === 'detail' && lastResult && lastInput) renderDetail(lastResult, lastInput);
   if (tab === 'insights' && lastResult && lastInput) renderInsights(lastResult, lastInput);
@@ -20217,8 +20201,6 @@ async function init(): Promise<void> {
   // Initialise GSAP animation layer
   initCVAnimations();
 
-  // Initialise Framer Motion (motion) hover/press/parallax layer
-  initMotionFX();
 
   // Global keyboard shortcuts
   document.addEventListener('keydown', (e: KeyboardEvent) => {

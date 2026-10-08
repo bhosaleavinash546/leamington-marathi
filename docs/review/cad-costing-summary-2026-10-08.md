@@ -156,11 +156,21 @@ overflow, 0 console errors; first paint 0.3 s.
 1. ~~CAD analysis progress stuck at 20 %~~ — **done**: the bar runs indeterminate while the server measures (no
    invented percentage), with the step, an elapsed clock, "the server allows up to 5 min 6 s for this 31.1 MB file",
    Cancel and a progressbar role (`src/ui/long-task-progress.ts`; live: `e2e/cad-progress-live.ts`).
-2. **Four animation systems** (CSS, GSAP, Motion, hand-written) act on the same elements: buttons scale, tilt and
-   spring and get two click ripples; bouncy / elastic easing reads consumer, not engineering tool.
-3. Menus, command palette, trace drawer and result tabs appear / disappear with no transition.
-4. Toasts: two copies, hard-coded colours, no screen-reader announcement, no dismiss.
-5. Design-system debt: `main.ts` 20,700 lines, ~2,200 inline styles, 279 `!important`, ~25 distinct durations.
+2. ~~Four animation systems~~ — **done**: ONE restrained system. The `motion` package and `motion-fx.ts` are deleted;
+   `animations.ts` is rewritten to fades with ≤ 8 px travel, 150–260 ms, one ease-out curve — no scale, no 3-D tilt,
+   no magnetic button, no ripple, no back / elastic bounce, one count-up of the total (it ran twice). Hover is colour /
+   shadow (buttons) or a 2 px lift (cards), enforced last in the cascade; press is a 1 px nudge.
+3. ~~Overlays with no transition~~ — **done**: the More / account / commodity menus, ⌘K palette and trace drawer fade
+   (and slide a few px) both IN and OUT (`display` transitioned as a discrete property + `@starting-style`); a result
+   tab's panel fades in. Live: the More menu's opacity runs 1 → 0 over ~150 ms on close (it used to vanish).
+4. ~~Toasts~~ — **done**: one module (`toast.ts`), theme colours, `role="status"` / `alert` (announced), a Dismiss
+   button, timer paused on hover / focus, at most three, a repeated message restarts its timer.
+5. CSS hygiene: no `transition: all` left (25 replaced with explicit properties); the tab underline grows by
+   `transform: scaleX`, not by animating left / right; duplicate `@keyframes` removed; literal copies of the standard
+   curve use the token. Pinned by `tests/motion-system.test.ts`; live check `e2e/motion-live.ts`.
+6. Still open (design-system debt, not motion): `main.ts` 20,700 lines, ~2,200 inline styles, ~280 `!important`, ~25
+   literal durations in older CSS; the sidebar collapse still animates the content's margin (rare action; making it
+   instant would let the shrinking sidebar overlap the content).
 
 **Fixed today:** the hover / spring / parallax / cursor-glow layer now switches off under the OS "reduce motion"
 setting (it ignored it), looping spinners stop under it instead of cycling every millisecond, the drop-zone
@@ -168,6 +178,8 @@ accessibility error, the CAD panel no longer shows the API-key box / Opus checkb
 without AI and says "Auto-detect (from the geometry)" instead of "AI selects", and the machining form's example cards
 (named after OEM parts) now say "illustrative inputs, not OEM data".
 
-**Verdict:** professional and credible for a director demo — clean, consistent, accessible, fast. Not yet
-best-in-class in motion design: it needs one restrained motion system, a real progress experience on the long CAD
-analysis, and enter / exit transitions on overlays.
+**Verdict:** professional and credible for a director demo — clean, consistent, accessible (0 WCAG 2.1 AA violations
+on 65 states), fast — and the motion is now restrained and consistent in the way Linear / Stripe / Vercel are: it says
+what changed and gets out of the way. The remaining gap to best-in-class is structural (the 20,700-line `main.ts` and
+inline styles), not visible motion.
+

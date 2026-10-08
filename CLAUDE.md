@@ -601,6 +601,11 @@ what is true** — nothing here has been compared with a price JLR paid.
     the model supply a number); RFQ should-cost is the engine's or "not costed" (no conversion-factor fallback).
   - Long server waits use `src/ui/long-task-progress.ts` (indeterminate bar + step + elapsed + allowance + Cancel) —
     never a percentage the server did not report.
+- Motion (review, Oct 2026): ONE system — `src/ui/animations.ts` (GSAP: fades ≤ 8 px, 150–260 ms, power2 out / in,
+  no scale, no back / elastic, one count-up) + CSS. The `motion` package is gone; never add a second animation library or
+  a mousemove effect. Hover = colour / shadow (buttons) or a 2 px lift (cards) — the policy block at the end of
+  `saas-polish.css`; overlays enter AND exit via `display … allow-discrete` + `@starting-style`; no `transition: all`.
+  Toasts are `src/ui/toast.ts` only (main.ts's `showToast` delegates). `tests/motion-system.test.ts`, `e2e/motion-live.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

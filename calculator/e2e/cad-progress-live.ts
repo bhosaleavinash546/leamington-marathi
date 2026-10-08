@@ -63,7 +63,9 @@ async function main(): Promise<void> {
     out.afterCancel = await page.evaluate(() => ({
       analyzeEnabled: !document.getElementById('cad-analyze-btn')?.hasAttribute('disabled'),
       errorCard: !!document.querySelector('#cad-results .risk-card'),
-      toast: Array.from(document.querySelectorAll('#toast-container *')).map(e => e.textContent).join(' ').slice(0, 200),
+      toasts: Array.from(document.querySelectorAll('#toast-container .cv-toast')).map(t => ({
+        role: t.getAttribute('role'), text: t.querySelector('.cv-toast-msg')?.textContent,
+        dismiss: !!t.querySelector('button.cv-toast-close[aria-label]'), bg: getComputedStyle(t).backgroundColor })),
     }));
     out.pageErrors = errors;
   } finally {

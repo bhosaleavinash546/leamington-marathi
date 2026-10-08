@@ -174,7 +174,7 @@ body.cv-header-menu-open header, body.cv-header-menu-open .header { z-index: 70;
   border: 2px solid color-mix(in srgb, var(--accent) 25%, transparent); border-top-color: var(--accent);
   animation: cv-spin 0.8s linear infinite;
 }
-@keyframes cv-spin { to { transform: rotate(360deg); } }
+/* The cv-spin keyframes are defined once, in calculator.css. */
 @media (prefers-reduced-motion: reduce) { .cv-busy-spin { animation-duration: 2.4s; } }
 #calc-btn:disabled { opacity: 0.55; cursor: progress; }
 
@@ -306,3 +306,113 @@ input.cv-field-invalid, input[aria-invalid="true"] {
   /* No sweep: a steady half-tone bar says "working" without motion. */
   .cad-progress-fill.is-indeterminate { animation: none; width: 100% !important; opacity: 0.45; }
 }
+
+/* ── Toasts (toast.ts): theme colours, dismiss, enter / exit (motion review, Oct 2026) ────────────────────────────── */
+.cv-toasts {
+  position: fixed; top: 12px; right: 12px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px; width: min(380px, calc(100vw - 24px));
+  pointer-events: none;
+}
+.cv-toast {
+  pointer-events: auto;
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 10px 10px 12px; border-radius: 8px;
+  background: var(--surface-elevated, var(--surface)); color: var(--text-primary);
+  border: 1px solid var(--border); border-left-width: 1px;
+  box-shadow: var(--shadow-md);
+  font-size: 0.8rem; line-height: 1.4;
+  animation: cv-toast-in var(--dur-hover, 200ms) var(--ease-decel, ease-out);
+}
+.cv-toast.is-leaving { animation: cv-toast-out var(--dur-micro, 150ms) ease-in forwards; }
+.cv-toast-icon { flex: none; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 0.7rem; font-weight: 700; }
+.cv-toast--info .cv-toast-icon { background: var(--info-bg); color: var(--info); }
+.cv-toast--warning .cv-toast-icon { background: var(--warning-bg); color: var(--warning); }
+.cv-toast--error .cv-toast-icon { background: var(--danger-bg); color: var(--danger); }
+.cv-toast--error { border-color: var(--danger-border); }
+.cv-toast-msg { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.cv-toast-close {
+  flex: none; border: 0; background: transparent; color: var(--text-muted); cursor: pointer;
+  width: 22px; height: 22px; border-radius: 4px; font-size: 1rem; line-height: 1;
+  transition: background-color var(--dur-micro, 150ms) var(--ease-std, ease), color var(--dur-micro, 150ms) var(--ease-std, ease);
+}
+.cv-toast-close:hover { background: var(--surface-hover); color: var(--text-primary); }
+@keyframes cv-toast-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes cv-toast-out { to { opacity: 0; transform: translateY(-4px); } }
+
+/* Calculate pressed: one accent ring, the theme's own colour (animations.ts pulseCalculate). */
+.cv-pulse { animation: cv-pulse 600ms var(--ease-decel, ease-out); }
+@keyframes cv-pulse {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  to   { box-shadow: 0 0 0 12px color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+
+/* ── Overlays enter AND leave (motion review, Oct 2026) ───────────────────────────────────────────────────────────────
+   Menus, the command palette and the trace drawer were display toggles: they popped in and vanished. They now fade with
+   a few pixels of travel — in on --ease-decel, out a little faster on ease-in. `display` is transitioned as a discrete
+   property and @starting-style gives the first frame, so the toggles in saas-shell.ts / commodity-switcher.ts / main.ts
+   are unchanged (data-open / .open). A browser without these features simply shows and hides as before. */
+.cv-more-menu, .cv-account-menu, .cv-switch-pop {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--dur-micro, 150ms) ease-in,
+    transform var(--dur-micro, 150ms) ease-in,
+    display var(--dur-micro, 150ms) allow-discrete;
+}
+.cv-more-menu { transform: translateY(4px); }        /* opens upward from the action bar */
+.cv-more-menu[data-open="true"], .cv-account-menu[data-open="true"], .cv-switch-pop[data-open="true"] {
+  opacity: 1; transform: none;
+  transition-timing-function: var(--ease-decel, ease-out);
+}
+@starting-style {
+  .cv-account-menu[data-open="true"], .cv-switch-pop[data-open="true"] { opacity: 0; transform: translateY(-4px); }
+  .cv-more-menu[data-open="true"] { opacity: 0; transform: translateY(4px); }
+}
+
+#cv-cmdk {
+  opacity: 0;
+  transition: opacity var(--dur-micro, 150ms) ease-in, display var(--dur-micro, 150ms) allow-discrete;
+}
+#cv-cmdk.open { opacity: 1; transition-timing-function: var(--ease-decel, ease-out); }
+#cv-cmdk .cmdk-panel {
+  animation: none;
+  transform: translateY(-6px);
+  transition: transform var(--dur-hover, 200ms) var(--ease-decel, ease-out);
+}
+#cv-cmdk.open .cmdk-panel { transform: none; }
+@starting-style {
+  #cv-cmdk.open { opacity: 0; }
+  #cv-cmdk.open .cmdk-panel { transform: translateY(-6px); }
+}
+
+#cv-trace-drawer { transition: display var(--dur-hover, 200ms) allow-discrete; }
+#cv-trace-drawer .ctd-scrim { opacity: 1; transition: opacity var(--dur-hover, 200ms) var(--ease-std, ease); }
+#cv-trace-drawer .ctd-panel {
+  animation: none;
+  transition: transform var(--dur-page, 260ms) var(--ease-decel, ease-out), opacity var(--dur-hover, 200ms) var(--ease-std, ease);
+}
+#cv-trace-drawer:not(.open) .ctd-scrim { opacity: 0; }
+#cv-trace-drawer:not(.open) .ctd-panel { transform: translateX(24px); opacity: 0; transition-timing-function: ease-in; }
+@starting-style {
+  #cv-trace-drawer.open .ctd-scrim { opacity: 0; }
+  #cv-trace-drawer.open .ctd-panel { transform: translateX(24px); opacity: 0; }
+}
+
+/* A result tab's panel fades in when it is chosen (switchResultTab). */
+.cv-tab-enter { animation: cv-fade-in var(--dur-micro, 150ms) var(--ease-decel, ease-out); }
+@keyframes cv-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Motion policy, enforced (motion review, Oct 2026) ────────────────────────────────────────────────────────────────
+   calculator.css states "hover = elevation, not growth — never scale or rotate a structural control", and then scaled
+   tiles 1.02–1.03, the chat button 1.1, the send button 1.06 and checked boxes 1.1, lifted buttons 2 px and ran a
+   Material-style ripple on every press. One rule set, here, last in the cascade:
+   - cards / tiles: at most a 2 px lift + shadow on hover, no scale;
+   - buttons: colour and shadow only on hover; a 1 px press; no ripple. */
+.dash-tile:hover, .cpicker-tile:hover, .comm-card:hover, .news-card:hover, .hs-mode:hover,
+.demo-card--ai-cad:hover { transform: translateY(-2px) !important; }
+.btn:hover, .btn-primary:hover, .btn-secondary:hover, .ai-chat-send:not(:disabled):hover { transform: none !important; }
+.btn:active, .btn-primary:active, .btn-secondary:active { transform: translateY(1px) !important; }
+.btn:active::after { animation: none !important; opacity: 0 !important; }
+.ai-chat-fab:hover { transform: translateY(-2px) !important; }
+.cmp-chk:checked { transform: none; }
