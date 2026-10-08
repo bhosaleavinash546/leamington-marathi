@@ -47,3 +47,17 @@ describe('#2 a company rate book is honoured (base rate and vehicle demos)', () 
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/buildVehicleInputs\(v, _swInputs\.rateLibrary\)/);
   });
 });
+
+describe('#7 no invented savings on the software screen', () => {
+  const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+  it('no rule-of-thumb saving percentages in the insights', () => {
+    for (const s of ['30–50%', '25–35%', '+15%', '~40%', 'is the main driver', 'is healthy', 'Typical for an OEM']) expect(ui, s).not.toContain(s);
+  });
+  it('the lifecycle insight names the bucket that actually leads', () => {
+    expect(ui).toMatch(/The largest lifecycle bucket is \$\{lifeTop\.name\}/);
+  });
+  it('the AI narrative is told not to add numbers and is no longer asked for savings', () => {
+    expect(ui).not.toMatch(/with estimated savings/);
+    expect(ui).toMatch(/Do NOT state any saving, percentage or amount that is not in the data above/);
+  });
+});

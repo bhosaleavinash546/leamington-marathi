@@ -1728,7 +1728,7 @@ function renderResults(result: SWProgramResult): void {
   // Rec 4: OEM / Tier-1 / Startup decomposition
   const sourceDecomp: { src: string; label: string; srcMult: number; riskNote: string; ipNote: string; warrantyNote: string }[] = [
     { src: 'OEM_Internal',   label: 'OEM Internal',    srcMult: 1.00, riskNote: 'Full visibility & control', ipNote: 'IP owned outright', warrantyNote: 'Full in-house warranty liability' },
-    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', srcMult: 0.88, riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier warranty share ~40%' },
+    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', srcMult: 0.88, riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier carries a contractual warranty share' },
     { src: 'Startup_OSS',   label: 'Startup / OSS',   srcMult: 0.72, riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
   ];
   const currentSrc = result.inputs.devSource;
@@ -1769,7 +1769,7 @@ function renderResults(result: SWProgramResult): void {
       const top = sorted[0];
       insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>', level: 'info',
         title: `Top cost driver: ${top.moduleName}`,
-        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} dominates programme cost. Evaluate build-vs-buy: licensed platform IP could reduce this by 30–50%.`,
+        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} is the largest single module. Evaluate build-vs-buy: price a licensed platform against this figure (no saving is assumed here).`,
       });
     }
 
@@ -1783,15 +1783,21 @@ function renderResults(result: SWProgramResult): void {
 
     const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;
     const lifecyclePct = s.grandTotal > 0 ? lifecycleTotal / s.grandTotal * 100 : 0;
+    // Name the bucket that actually leads — the text used to say "cloud" whatever the numbers were (P1 #7).
+    const lifeTop = [
+      { name: 'maintenance', value: s.totalMaintenance },
+      { name: 'cloud', value: s.totalCloud },
+      { name: 'IP licensing', value: s.totalLicensing },
+    ].sort((a, b) => b.value - a.value)[0];
     if (lifecyclePct > 45) {
       insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', level: 'warn',
         title: `High lifecycle cost (${fmt(lifecyclePct,0)}% of total)`,
-        body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). Cloud infrastructure for AI retraining is the main driver. Hybrid cloud/on-premise architecture could reduce by 25–35%.`,
+        body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). The largest lifecycle bucket is ${lifeTop.name} at ${fmtM(lifeTop.value)} — review its assumptions first.`,
       });
     } else {
       insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-check-circle"/></svg>', level: 'ok',
-        title: `NRE/lifecycle split is healthy (${fmt(100-lifecyclePct,0)}% NRE)`,
-        body: `Development NRE accounts for ${fmt(100-lifecyclePct,0)}% of total. Typical for an OEM insourcing most development.`,
+        title: `NRE / lifecycle split: ${fmt(100-lifecyclePct,0)}% NRE`,
+        body: `Development NRE is ${fmt(100-lifecyclePct,0)}% of the total; lifecycle (maintenance, cloud, IP) is ${fmt(lifecyclePct,0)}%.`,
       });
     }
 
@@ -1821,7 +1827,7 @@ function renderResults(result: SWProgramResult): void {
         const saving = s.grandTotal - indiaTotal;
         insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>', level: 'info',
           title: `Offshoring to India could save ${fmtM(saving)}`,
-          body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. Factor in coordination overhead (+15%), knowledge transfer, and time zone risk.`,
+          body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. This is the whole programme re-costed at the India hub; add your own figure for coordination, knowledge transfer and time-zone risk.`,
         });
       }
     }
@@ -1903,8 +1909,10 @@ ${top3.map((m,i) => `${i+1}. ${m.moduleName}: £${(m.grandTotal/1e6).toFixed(1)}
 
 Provide:
 1. A 2-sentence executive summary
-2. Top 3 cost reduction opportunities with estimated savings
+2. Top 3 cost-reduction levers, naming the cost bucket each acts on
 3. Key risk factors requiring management attention
+Use ONLY the figures above. Do NOT state any saving, percentage or amount that is not in the data above — the cost is
+calculated by the CostVision engine and this text must not add numbers to it.
 Keep response concise and actionable (under 250 words).`;
 
   const render = (text: string, cached: boolean) => {
