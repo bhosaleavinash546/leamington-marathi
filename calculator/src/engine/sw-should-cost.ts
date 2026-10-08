@@ -871,9 +871,6 @@ export const SW_MODULES: SWModuleDef[] = [
 // ─── Cost Calculation Engine ──────────────────────────────────────────────────
 
 // ─── Model-tuning constants (calibrated against the sw-validation back-test) ──
-/** Mean per-module testingFractionBase — re-bases the ASIL test scale so reviving
- *  the per-module fraction (SW1) is neutral on the average module. */
-const TEST_INTENSITY_REF = 0.38;
 /** Fraction of the complexity delta also carried by the implementation bucket
  *  (SW2). 0 = old algorithm-only behaviour; Medium (complexity=1) is always neutral. */
 const IMPL_COMPLEXITY_WEIGHT = 0.15;
@@ -900,9 +897,9 @@ function computeModuleCost(
   const asilDev    = rates.asilDev[input.asil];
   const complexity = rates.complexity[input.complexity];
   const reuse      = rates.reuse[input.reuse];
-  // SW1: per-module test intensity honoured, scaled by ASIL and re-based so the
-  // mean module (testingFractionBase = TEST_INTENSITY_REF) reproduces the old value.
-  const testFrac   = def.testingFractionBase * (rates.asilTest[input.asil] / TEST_INTENSITY_REF);
+  // Per-module test intensity. The ASIL uplift is already in devTotal (asilDev), which testing is a fraction of, so the
+  // test multiplier is relative to QM and neutral by default — it compounded the uplift (P1 #20).
+  const testFrac   = def.testingFractionBase * (rates.asilTest[input.asil] / (rates.asilTest.QM || 1));
 
   // SW3: safety bucket resists reuse — floor the reuse it sees, then scale the
   // 0.15 safety slice up relative to the dev reuse (neutral when reuse ≥ floor,

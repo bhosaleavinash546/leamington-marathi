@@ -102,3 +102,31 @@ describe('#1 base effort is NOMINAL (QM, Medium, fresh) — one definition, no s
     expect(src('docs/auto-sw-cost.md')).toMatch(/effortPM\s+= basePersonMonths × reuse/);
   });
 });
+
+import { ASIL_DEV_MULT, ASIL_TEST_MULT } from '../src/engine/sw-should-cost.js';
+import { DEFAULT_SW_RATE_LIBRARY as LIB } from '../src/engine/sw-rate-library.js';
+
+describe('#20 ASIL uplift: one sourced factor on total effort (×1.82 at D), not dev × test compounding', () => {
+  const moduleCost = (asil: 'QM' | 'B' | 'D') => {
+    const p = defaultSWProgramInputs();
+    p.includeMaintenanceCost = false; p.includeCloudCost = false;
+    p.modules = p.modules.map(m => ({ ...m, enabled: m.moduleId === 'bms_core', asil }));
+    const m = computeSWProgram(p).modules[0];
+    return m.development.total + m.testing.total + m.integrationCost + m.calibrationCost;   // effort-driven buckets
+  };
+  it('an ASIL-D module costs 1.82× its QM self (it was ~10×) and ASIL-B 1.40×', () => {
+    expect(moduleCost('D') / moduleCost('QM')).toBeCloseTo(1.82, 6);
+    expect(moduleCost('B') / moduleCost('QM')).toBeCloseTo(1.40, 6);
+  });
+  it('testing stays the module\'s own fraction of development at every ASIL', () => {
+    expect(Object.values(ASIL_TEST_MULT).every(v => v === 1)).toBe(true);
+  });
+  it('every non-baseline factor names its source or says it is interpolated, with Low confidence', () => {
+    for (const k of ['A', 'B', 'C', 'D'] as const) {
+      const e = LIB.asilDevMultipliers[k];
+      expect(e.source, k).toMatch(/solcept\.ch|Interpolated/);
+      expect(e.confidence).toBe('Low');
+    }
+    expect(ASIL_DEV_MULT.D).toBe(1.82);
+  });
+});

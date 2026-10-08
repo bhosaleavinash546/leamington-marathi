@@ -6,11 +6,13 @@ import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 const base = (): SWProgramInputs => defaultSWProgramInputs();
 const total = (p: SWProgramInputs) => computeSWProgram(p, { summaryOnly: true }).summary.grandTotal;
 
-describe('SW — validation back-test still passes after the accuracy fixes', () => {
-  it('MAPE stays within should-cost tolerance and the band count holds', () => {
+describe('SW — validation back-test runs and reports (it is not a pass/fail gate)', () => {
+  // It used to assert MAPE < 30 % against the seven published figures — but none of them is sourced (sw-benchmarks.ts),
+  // so the assertion pinned the model to untraceable numbers. Software review P1 #6 / #20, Oct 2026.
+  it('every case is costed and its variance reported', () => {
     const r = runValidation();
-    expect(r.mapeTotal).toBeLessThan(30);
-    expect(r.withinBandCount).toBeGreaterThanOrEqual(5);
+    expect(r.caseCount).toBe(7);
+    for (const c of r.cases) expect(Number.isFinite(c.totalVariancePct)).toBe(true);
   });
 });
 
