@@ -24,8 +24,13 @@ const OPT_STIFF   = { type: 'spring' as const, bounce: 0.40, duration: 0.25 };
 
 // ── Entry point ───────────────────────────────────────────────────────────────
 
+/** The OS "reduce motion" setting, read live — every effect here is decoration and is skipped under it. */
+const reducedMotion = (): boolean =>
+  typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 /** Call once from init(), after GSAP initCVAnimations() */
 export function initMotionFX(): void {
+  if (reducedMotion()) return;
   _applyButtonHoverPress();
   _applyNavHover();
   _applyCardHover();
@@ -41,7 +46,7 @@ export function initMotionFX(): void {
 /** Trigger motion inView reveals whenever a section of content renders */
 export function motionInViewReveal(containerSelector: string): void {
   const container = document.querySelector(containerSelector);
-  if (!container) return;
+  if (!container || reducedMotion()) return;
   const items = Array.from(container.querySelectorAll<HTMLElement>(
     '.dash-kpi-card, .dash-chart-card, .dash-tile, .comm-card, .news-card, .help-card, .summary-card'
   ));
@@ -61,7 +66,7 @@ export function motionRevealRows(containerSelector: string): void {
   const rows = Array.from(document.querySelectorAll<HTMLElement>(
     `${containerSelector} tr:not(:first-child), ${containerSelector} .breakdown-row, ${containerSelector} .cost-row`
   ));
-  if (!rows.length) return;
+  if (!rows.length || reducedMotion()) return;
   animate(
     rows,
     { opacity: [0, 1], x: [-16, 0] },

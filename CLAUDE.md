@@ -592,6 +592,10 @@ what is true** — nothing here has been compared with a price JLR paid.
     the cost (`featureLinesInCost`), one confidence grade. Excel money is numeric (`money()` cells); sheet 7 checks the
     arithmetic and lists every question asked. No rule-of-thumb £ or % in observation text; reference bands say
     "engineering estimate".
+  - Confidence grade (`overallConfidence`): ≥ 40 % Low → Low, ≥ 70 % High → High, else the mix's score (High 1, Medium ½)
+    ≥ 0.45 → Medium. It graded on the High share alone and printed "Low" on costings with no Low data.
+  - Open AI-mode gaps (rules-only is clean): no-rule-pack commodities, "Alternative processes" Apply, drawing-read
+    coating thickness / masks, the agent's `calculate_cost`, RFQ — see `docs/review/cad-costing-summary-2026-10-08.md` §3.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

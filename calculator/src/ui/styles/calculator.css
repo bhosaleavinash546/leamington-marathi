@@ -2950,6 +2950,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;   /* a looping spinner / shimmer would otherwise cycle every 1 ms */
     transition-duration: 1ms !important;
   }
 }

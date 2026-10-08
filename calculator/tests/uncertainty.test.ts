@@ -45,4 +45,23 @@ describe('cost uncertainty — Monte Carlo bands', () => {
     expect(overallConfidence(makeResult('High'))).toBe('High');
     expect(overallConfidence(makeResult('Low'))).toBe('Low');
   });
+
+  it('a mix of Medium and High with few Low is Medium, not Low (it graded on the High share alone)', () => {
+    const mix = (h: number, m: number, l: number) => {
+      const r = makeResult('High');
+      const t = r.traceability[0];
+      r.traceability = [
+        ...Array(h).fill(0).map(() => ({ ...t, confidence: 'High' as const })),
+        ...Array(m).fill(0).map(() => ({ ...t, confidence: 'Medium' as const })),
+        ...Array(l).fill(0).map(() => ({ ...t, confidence: 'Low' as const })),
+      ];
+      return overallConfidence(r);
+    };
+    expect(mix(9, 12, 2)).toBe('Medium');   // stub axle
+    expect(mix(1, 5, 0)).toBe('Medium');    // bumper
+    expect(mix(0, 4, 2)).toBe('Low');       // fuel tank: score 0.33
+    expect(mix(0, 6, 0)).toBe('Medium');
+    expect(mix(7, 3, 0)).toBe('High');
+    expect(mix(5, 1, 4)).toBe('Low');       // 40 % Low
+  });
 });

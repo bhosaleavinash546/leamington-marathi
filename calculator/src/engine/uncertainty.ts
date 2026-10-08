@@ -39,15 +39,22 @@ const BUCKET_CV_FACTOR: Record<keyof Breakdown8Bucket, number> = {
   overhead: 0.0, margin: 0.0,   // driven by %, recomputed each trial (not perturbed directly)
 };
 
-/** Overall confidence from the traceability mix (≥70% High → High, ≥40% → Medium). */
+/**
+ * Overall confidence from the traceability mix: ≥ 40 % Low → Low; ≥ 70 % High → High; otherwise
+ * the mix's score (High 1, Medium ½, Low 0) — ≥ 0.45 is Medium, below is Low.
+ *
+ * It used to grade on the High share alone (< 40 % High → Low), so a costing whose data points were
+ * all Medium or High — 12 Medium, 9 High, 2 Low on the stub axle; 5 Medium, 1 High on the bumper —
+ * printed "Model Confidence: Low" (uploaded-parts review, Oct 2026).
+ */
 export function overallConfidence(result: PartCostResult): Confidence {
   const all = result.traceability;
   if (!all.length) return 'Medium';
-  const high = all.filter(t => t.confidence === 'High').length / all.length;
-  const low = all.filter(t => t.confidence === 'Low').length / all.length;
+  const n = (c: Confidence) => all.filter(t => t.confidence === c).length / all.length;
+  const high = n('High'), medium = n('Medium'), low = n('Low');
   if (low >= 0.4) return 'Low';
   if (high >= 0.7) return 'High';
-  return high >= 0.4 ? 'Medium' : 'Low';
+  return high + medium / 2 >= 0.45 ? 'Medium' : 'Low';
 }
 
 /**

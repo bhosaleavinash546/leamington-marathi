@@ -5599,24 +5599,24 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
 
 function _buildCadMaterialOptions(commodity: string): string {
   const mats = CAD_MATERIALS_BY_COMMODITY[commodity] ?? [];
-  if (!mats.length) return '<option value="">— AI selects material —</option>';
+  if (!mats.length) return '<option value="">— Auto-detect material —</option>';
   // Casting, forging and moulding grades are grouped family · standard (or polymer), as on their forms.
   const tax = commodity === 'casting' || commodity === 'cast_and_machine' ? CASTING_TAXONOMY
     : commodity === 'forging' ? FORGING_TAXONOMY
     : commodity === 'sheet_metal' || commodity === 'sheet_metal_fab' ? SHEET_TAXONOMY : POLYMER_TAXONOMIES[commodity] ?? null;
   if (tax) {
     const scope = MATERIAL_SCOPE_BY_COMMODITY[commodity];
-    return '<option value="">— AI selects material —</option>'
+    return '<option value="">— Auto-detect material —</option>'
       + materialOptionsHtml(tax, library.materials.filter(m => scope.test(m.category)), _currFmt);
   }
-  return '<option value="">— AI selects material —</option>' +
+  return '<option value="">— Auto-detect material —</option>' +
     mats.map(m => `<option value="${m.id}">${escHtml(m.label)}</option>`).join('');
 }
 
 /** Casting process-route override options (used in the CAD adjust panel). */
 function _buildCadProcessOptions(): string {
   const opts: Array<[string, string]> = [
-    ['', '— AI selects process —'], ['hpdc', 'HPDC (high-pressure die)'],
+    ['', '— Auto-detect process —'], ['hpdc', 'HPDC (high-pressure die)'],
     ['gravity', 'Gravity die'], ['sand', 'Sand casting'], ['investment', 'Investment casting'],
   ];
   return opts.map(([v, l]) => `<option value="${v}">${escHtml(l)}</option>`).join('');
@@ -5689,10 +5689,10 @@ function renderCADAnalysisForm(): string {
           <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent-ink);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
         </label>
         <select id="cad-material-override" style="font-size:0.8rem">
-          <option value="">— Auto-detect (AI selects) —</option>
+          <option value="">— Auto-detect (from the geometry) —</option>
         </select>
       </div>
-      <div class="field-group">
+      <div class="field-group ai-only">
         <label style="font-size:0.75rem">Analysis mode</label>
         <select id="cad-analysis-mode" style="font-size:0.8rem"
                 title="Rules only: every cost input is derived from the measured geometry — no AI call, no API key. Compare: runs both and shows where they disagree. AI-led: the old behaviour, kept for comparison.">
@@ -5709,12 +5709,12 @@ function renderCADAnalysisForm(): string {
         <label style="font-size:0.75rem">Annual Volume (pcs/year)</label>
         <input type="number" id="cad-annual-volume" value="100000" min="1" step="1000"
                style="font-size:0.8rem" title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
-        <label style="font-size:0.72rem;display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 5.5 instead of Sonnet 5.5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
-          <input type="checkbox" id="cad-deep-analysis" style="margin:0"/>
+        <label class="ai-only" style="font-size:0.72rem;display:flex;align-items:center;justify-content:flex-start;text-align:left;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 5.5 instead of Sonnet 5.5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
+          <input type="checkbox" id="cad-deep-analysis" style="margin:0;width:auto;flex:none"/>
           <span>Deep analysis — Claude Opus 5.5 (complex parts, slower)</span>
         </label>
       </div>
-      <div class="field-group">
+      <div class="field-group ai-only">
         <label style="font-size:0.75rem">Claude API Key <span style="color:var(--text-muted);font-weight:400">(or set on server)</span></label>
         <input type="password" id="cad-api-key" placeholder="sk-ant-api03-…"
                value="${sessionStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.78rem"/>
@@ -5761,7 +5761,7 @@ function renderCADAnalysisForm(): string {
     <!-- Optional part photo (helps AI identify material/finish) -->
     <div style="margin-top:6px;border:1px solid var(--border);border-radius:6px;padding:6px 10px">
       <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary)">
-        Part photo <span style="font-weight:400;color:var(--text-muted)">(optional — phone photo helps AI identify material &amp; surface finish)</span>
+        Part photo <span style="font-weight:400;color:var(--text-muted)">(optional — printed on the report; with AI on it also helps identify material &amp; surface finish)</span>
       </div>
       <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <label class="btn btn-secondary btn-sm" for="cad-photo-input" style="cursor:pointer">Add Photo</label>
@@ -7087,7 +7087,7 @@ function buildInlineDemoSection(commodity: string): string {
       Export Full Report PDF
     </button>
   </div>`;
-  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— click any card to load instantly</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
+  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— illustrative inputs, not OEM data · click a card to load it</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
 }
 
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────

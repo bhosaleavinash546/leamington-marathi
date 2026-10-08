@@ -1,7 +1,7 @@
 // AI CAD-to-Cost commodity + material option lists (pure data).
 
 export const CAD_COMMODITY_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: '', label: '— Auto-detect (AI selects) —' },
+  { value: '', label: '— Auto-detect (from the geometry) —' },
   { value: 'machining', label: 'Machining (CNC)' },
   { value: 'gear', label: 'Gear Cutting (hands off to the Gear form)' },
   { value: 'casting', label: 'Casting (HPDC / Sand / Gravity)' },
