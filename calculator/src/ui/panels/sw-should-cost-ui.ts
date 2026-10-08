@@ -518,7 +518,13 @@ function readWizStep(step: number): void {
 
 function wizCompute(): void {
   applyGuidedToInputs();
-  _swResult = computeSWProgram(_swInputs);
+  try {
+    _swResult = computeSWProgram(_swInputs);
+  } catch (err) {
+    // An invalid input is reported, not costed (engine validateSWInputs, P2 #8).
+    showSWError((err as Error).message);
+    throw err;
+  }
 }
 
 function renderWizCost(): void {
@@ -1231,8 +1237,9 @@ function readConfig(): void {
 
   const region     = (get('sw-region') as HTMLSelectElement)?.value as SWRegion || 'UK';
   const devSrc     = (get('sw-dev-source') as HTMLSelectElement)?.value as DevSource || 'OEM_Internal';
-  const life       = parseInt((get('sw-prog-life') as HTMLInputElement)?.value) || 10;
-  const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
+  // A blank or zero life / volume is reported by the engine's validation, not silently replaced (P2 #8).
+  const life       = parseInt((get('sw-prog-life') as HTMLInputElement)?.value);
+  const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value);
   const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || SW_DEFAULT_OVERHEAD;
   const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
   const baseRateEl = get('sw-base-rate') as HTMLInputElement | null;
@@ -1241,8 +1248,8 @@ function readConfig(): void {
 
   _swInputs.region                 = region;
   _swInputs.devSource              = devSrc;
-  _swInputs.programLifeYears       = Math.max(1, life);
-  _swInputs.annualProductionVolume = Math.max(1, vol);
+  _swInputs.programLifeYears       = life;
+  _swInputs.annualProductionVolume = vol;
   _swInputs.overheadMultiplier     = Math.max(1, overhead);
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
   // Only a TYPED base rate overrides the active (company or built-in) rate book — P1 #2.

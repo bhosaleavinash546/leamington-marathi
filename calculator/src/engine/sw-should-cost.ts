@@ -1273,10 +1273,57 @@ const EMPTY_MC: SWMonteCarlo = {
   p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0,
 };
 
+// ─── Input validation (software review P2 #8, Oct 2026) ─────────────────────────────────────────────────────────
+// The engine took any number: a negative overhead gave a negative programme, a negative custom effort subtracted cost,
+// a blank life gave NaN, an unknown region NaN, an unknown module id a crash, a duplicated module was counted twice.
+// The PLAUSIBILITY limits below (life ≤ 40 yr, volume ≤ 20 M / yr, effort ≤ 50,000 PM a module, base rate ≤ £500k / PM)
+// are CostVision engineering limits, not sourced figures — they catch a unit slip, not a judgement.
+
+export class SWInputError extends Error {
+  constructor(public readonly problems: string[]) {
+    super(`Software cost inputs are not valid — ${problems.join('; ')}`);
+    this.name = 'SWInputError';
+  }
+}
+
+export function validateSWInputs(prog: SWProgramInputs): string[] {
+  const p: string[] = [];
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const fin = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+  if (!(prog.region in lib.regionMultipliers)) p.push(`region "${String(prog.region)}" is not one of the rate book's hubs`);
+  if (!(prog.devSource in lib.devSourceMultipliers)) p.push(`development source "${String(prog.devSource)}" is not known`);
+  if (!fin(prog.programLifeYears) || prog.programLifeYears < 1 || prog.programLifeYears > 40) p.push('programme life must be 1–40 years');
+  if (!fin(prog.annualProductionVolume) || prog.annualProductionVolume < 1 || prog.annualProductionVolume > 20_000_000) p.push('annual volume must be 1–20,000,000 vehicles');
+  if (!fin(prog.teamSeniorFraction) || prog.teamSeniorFraction < 0 || prog.teamSeniorFraction > 1) p.push('senior share must be between 0 and 1');
+  if (!fin(prog.overheadMultiplier) || prog.overheadMultiplier < 1 || prog.overheadMultiplier > 5) p.push('overhead multiplier must be 1–5 (1 = no overhead)');
+  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP <= 0 || prog.baseRateGBP > 500_000)) p.push('base rate must be £1–£500,000 per person-month');
+  if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
+  if (prog.scheduleCompression !== undefined && (!fin(prog.scheduleCompression) || prog.scheduleCompression <= 0 || prog.scheduleCompression > 1.5)) p.push('schedule compression must be above 0 and at most 1.5');
+  if (prog.costRecoveryYears !== undefined && (!fin(prog.costRecoveryYears) || prog.costRecoveryYears < 1 || prog.costRecoveryYears > 40)) p.push('cost-recovery window must be 1–40 years');
+  if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');
+  const seen = new Set<string>();
+  for (const m of prog.modules) {
+    if (!SW_MODULES.some(d => d.id === m.moduleId)) { p.push(`unknown module "${m.moduleId}"`); continue; }
+    if (seen.has(m.moduleId)) p.push(`module "${m.moduleId}" appears twice`);
+    seen.add(m.moduleId);
+    if (!m.enabled) continue;
+    if (!(m.asil in lib.asilDevMultipliers)) p.push(`${m.moduleId}: ASIL "${String(m.asil)}" is not known`);
+    if (!(m.complexity in lib.complexityMultipliers)) p.push(`${m.moduleId}: complexity "${String(m.complexity)}" is not known`);
+    if (!(m.reuse in lib.reuseFactors)) p.push(`${m.moduleId}: reuse "${String(m.reuse)}" is not known`);
+    if (m.customPersonMonths !== null && m.customPersonMonths !== undefined
+        && (!fin(m.customPersonMonths) || m.customPersonMonths < 0 || m.customPersonMonths > 50_000)) {
+      p.push(`${m.moduleId}: custom effort must be 0–50,000 person-months`);
+    }
+  }
+  return p;
+}
+
 export function computeSWProgram(
   prog: SWProgramInputs,
   opts: { summaryOnly?: boolean } = {},
 ): SWProgramResult {
+  const problems = validateSWInputs(prog);
+  if (problems.length) throw new SWInputError(problems);
   const rates = resolveRates(prog);
   const enabledModules = prog.modules.filter(m => m.enabled);
   const modules: SWModuleCostResult[] = enabledModules.map(m => {
