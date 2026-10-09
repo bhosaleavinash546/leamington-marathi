@@ -625,6 +625,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   ACTIVE book; the dev-source table is `devSourceComparison`; exports print `swRateBasis`; `effortCalibration` comes
   only from the user's logged actuals (`sw-calibration.ts`, ratio of sums) and scales the model's base PM, never a
   typed custom PM. The static report pages are reference examples (`scripts/sw-review/reference-banner.ts`).
+  P3 (`docs/review/software-costing-p3-fixes-2026-10.md`): `monteCarlo.headlinePercentile` is printed beside P50 (the
+  headline is ≈ P33, not the median); cloud is per connected vehicle-year (`unitCloudGBP`, module £/yr ÷
+  `SW_CLOUD_REFERENCE_FLEET` 440k — reproduces the default programme) and never platform-apportioned; tool licences run
+  over `developmentMonths` (default 90 = the phase timeline); the company SW workbook refuses unknown keys, 0, > 20 and
+  duplicates, the base rate shares `SW_BASE_RATE_RANGE` (£1k–500k) with the engine, and every SW book is versioned
+  ('sw-active', `/sw/versions`); results follow the page currency via `sw-currency.ts` (`applySWCurrency` from
+  `_applyCurrency`) — inputs stay £; `sizeKSLOC` switches a module's nominal effort to COCOMO II.2000 (`cocomoNominalPM`,
+  2.94 × KSLOC^1.0997); `result.inputs` is a COPY; only real AI replies are cached (`aiUnavailable`); the panel is
+  axe-clean — link every `sw-label` with `for=`, name row controls, use `--sw-good` / `--sw-bad`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
