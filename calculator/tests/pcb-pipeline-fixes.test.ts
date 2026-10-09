@@ -254,3 +254,16 @@ describe('F18 — a "read off the chip" claim needs a real part token, not a fra
   it('fragments are rejected', () => { for (const pn of ['FS32', 'R294', 'S32R2', 'TDA4VH']) expect(ok(pn), pn).toBe(false); });
   it('true top marks are accepted', () => { for (const pn of ['FS32R294KCMJD', 'S32R294', 'TCAN1044AVDRQ1', 'TEF8105', 'W25Q32JWSSIQ']) expect(ok(pn), pn).toBe(true); });
 });
+
+import { guardAsil } from '../server/utils/pcb-asil-guard.js';
+
+describe('F22 — ASIL-C/D is costed only with a named safety supply', () => {
+  it('a lockstep MCU family alone, or the model\'s words, do not keep ASIL-C', () => {
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'FS32R294KCMJD' }] }).costed).toBe('ASIL-B');
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: '', description: 'safety PMIC (ASIL-D)' }] }).costed).toBe('ASIL-B');
+  });
+  it('a safety PMIC / SBC named by part number keeps it', () => {
+    expect(guardAsil({ asil: 'ASIL-D', bom: [{ partNumber: 'TLF35584QVVS1' }] }).costed).toBe('ASIL-D');
+    expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'MFS2633HMDA0ADR2' }] }).costed).toBe('ASIL-C');
+  });
+});
