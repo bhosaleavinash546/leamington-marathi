@@ -9457,7 +9457,6 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
 
   // Programme parameters strip
   sectionTitle('Programme Parameters');
-  const prog = r._programPricing;
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
@@ -9466,7 +9465,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
       ['Part', r.partName, 'Domain', domainLabel],
       ['Manufacturing region', regionName, 'Functional safety', asil ? `ISO 26262 · ${asil}` : 'Not safety-rated'],
       ['Annual volume', annualQty ? `${Number(annualQty).toLocaleString('en-GB')} /yr` : '—', 'Currency', _displayCurrency],
-      ['Program pricing tier', prog ? String(prog.pricingTier).replace(/_/g, ' ') : '—', 'Program BOM saving', prog ? `${prog.savingsPct}%` : '—'],
+      ['Component prices', 'Catalogue / distributor at the parts bought', 'Above published breaks', 'Derived along the part\'s slope (labelled)'],
       ['Analysis confidence', r.confidenceLevel, 'Generated', dateStr],
     ],
     styles: { fontSize: 7.5, cellPadding: 2 },

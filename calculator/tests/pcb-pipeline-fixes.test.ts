@@ -177,3 +177,10 @@ describe('F6 / F7 / F8 — volume is continuous and the curve agrees with a re-r
     }
   });
 });
+
+describe('F20 — no "Program BOM saving" on top of volume prices', () => {
+  it('Stage 4 no longer computes a programme discount', async () => {
+    const r = await radar();
+    expect(r.s4.programPricing).toBeNull();
+  });
+});

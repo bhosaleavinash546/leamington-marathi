@@ -1008,32 +1008,11 @@ function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlaceme
   };
 }
 
-// ── Program Pricing (volume-committed) vs Spot Correction ─────────────────────
-interface ProgramPricingResult {
-  spotBOMTotal: number;
-  programBOMTotal: number;
-  savingsGBP: number;
-  savingsPct: number;
-  annualProgramVolume: number;
-  pricingTier: 'distributor_spot' | 'blanket_order' | 'direct_contract' | 'tier1_contract';
-  multiplier: number;
-}
-function computeProgramPricing(bomTotal: number, orderQty: number, domain: string): ProgramPricingResult {
-  // The quantity field IS the annual volume (the PDF labels it so). It used to be
-  // multiplied by 4 — 250k/yr became a 1M "Tier-1 contract" and a −50% BOM.
-  const annualProgramVolume = orderQty;
-  let multiplier: number; let pricingTier: ProgramPricingResult['pricingTier'];
-  if (domain !== 'automotive_adas') { multiplier = 1.0; pricingTier = 'distributor_spot'; }
-  else if (annualProgramVolume >= 500_000) { multiplier = 0.50; pricingTier = 'tier1_contract'; }
-  else if (annualProgramVolume >= 200_000) { multiplier = 0.60; pricingTier = 'direct_contract'; }
-  else if (annualProgramVolume >= 50_000) { multiplier = 0.72; pricingTier = 'blanket_order'; }
-  else if (annualProgramVolume >= 10_000) { multiplier = 0.85; pricingTier = 'blanket_order'; }
-  else { multiplier = 1.0; pricingTier = 'distributor_spot'; }
-  const programBOMTotal = Math.round(bomTotal * multiplier * 100) / 100;
-  const savingsGBP = Math.round((bomTotal - programBOMTotal) * 100) / 100;
-  const savingsPct = bomTotal > 0 ? Math.round((1 - multiplier) * 100) : 0;
-  return { spotBOMTotal: Math.round(bomTotal * 100) / 100, programBOMTotal, savingsGBP, savingsPct, annualProgramVolume, pricingTier, multiplier };
-}
+// ── Program pricing ─────────────────────────────────────────────────────────
+// A "Program BOM saving" (×0.85 … ×0.50 by annual volume, printed as −15 … −50 %) was shown on screen and in the PDF
+// on top of catalogue prices already taken at the 100k–300k breaks: it counted volume twice and had no source
+// (pipeline review F20, removed with approval 9 Oct 2026). `programPricing` stays in the payload as null.
+type ProgramPricingResult = never;
 
 /**
  * Boards ordered, from a form field. parseInt read "1e7" (what a number input sends for 10,000,000) as 1 —
@@ -1814,7 +1793,6 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     setDeterministicCostEstimates(a, bd, bomTotal);
     // Panels that quote a "production" or "programme" figure start from the headline.
     out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0, a.bomSource === 'file' || a.bomSource === 'image');
-    out.programPricing = computeProgramPricing(bd.bomCostPerBoard, orderQty, domain);
     out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard);
 
     // Volume curves: include the analysed quantity, so the curve passes through the headline.
