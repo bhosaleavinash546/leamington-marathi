@@ -112,8 +112,10 @@ export default function PartVisionPanel({ file, token, apiKey, geo, partName, ma
       if (!r.ok) throw new Error(d.error || 'Vision read failed');
       const list: VisionObservation[] = d.observations ?? [];
       setObs(list);
-      // Default: tick everything — the engineer UNticks what they disagree with.
-      setTicked(new Set(list.map((_, i) => i)));
+      // Nothing is pre-ticked: the dossier calls these lines "confirmed by the
+      // engineer", which is only true once an engineer ticked them (Prism
+      // review PR-07). "Tick all" is one click for an engineer who agrees.
+      setTicked(new Set());
       setSummary(d.read?.functionSummary ?? '');
       setCaution(d.caution ?? '');
     } catch (e) {
@@ -162,7 +164,9 @@ export default function PartVisionPanel({ file, token, apiKey, geo, partName, ma
       {obs.length > 0 && (
         <div className="mt-4">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <p className="text-xs text-slate-300"><span className="text-white font-semibold">{ticked.size}</span> of {obs.length} observations ticked — only ticked ones reach the analysis.</p>
+            <p className="text-xs text-slate-300"><span className="text-white font-semibold">{ticked.size}</span> of {obs.length} observations ticked — only ticked ones reach the analysis, as engineer-confirmed.
+              {ticked.size < obs.length && <button type="button" onClick={() => setTicked(new Set(obs.map((_, i) => i)))} className="ml-2 text-teal-300 hover:text-teal-200 underline underline-offset-2">Tick all</button>}
+            </p>
             {summary && (
               <button onClick={() => onUseDescription(summary)}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20">

@@ -133,9 +133,9 @@ test('CAD mass uses the catalogue density and names it', () => {
   const pom = Object.keys(MATERIALS).find(k => /POM|Acetal/i.test(k));
   assert.ok(pom, 'catalogue has POM');
   const m = cadMass(geo, pom, MATERIALS);
-  assert.equal(m.kg, Math.round(100 * MATERIALS[pom].density) / 1000);
+  assert.equal(m.kg, Math.round(100 * MATERIALS[pom].density * 10) / 10000);
   assert.notEqual(m.kg, 0.105, 'not the flat 1.05 g/cm³ stock plastic');
-  assert.match(m.basis, /measured 100\.0 cm³ ×/);
+  assert.match(m.basis, /measured 100\.00 cm³ ×/);
   assert.equal(cadMassKg(geo, pom, MATERIALS), m.kg);
 });
 

@@ -38,13 +38,18 @@ const round = (n: number) => Math.round(n * 10) / 10;
 export default function FunctionModelPanel({ token, apiKey, partName, partContext, observations, geo, onChange }: Props) {
   const aiAvailable = useAiAvailable();
   const [draft, setDraft] = useState<FunctionDraft | null>(null);
-  const [use, setUse] = useState(true);
+  // Off until the engineer confirms: the dossier calls this model
+  // "engineer-confirmed" (Prism review PR-06).
+  const [use, setUse] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [check, setCheck] = useState<FnRow[] | null>(null);
   const [checkError, setCheckError] = useState('');
 
-  useEffect(() => { onChange(draft && use ? draft : null); }, [draft, use]);   // eslint-disable-line react-hooks/exhaustive-deps
+  // A draft whose allocation rows or cost shares do not sum to 100% (±2) is
+  // never passed on — it used to be quietly rescaled (70 + 70 → 50 + 50).
+  const allocOk = (d: FunctionDraft) => d.alloc.every(r => Math.abs(sum(r) - 100) <= 2) && Math.abs(sum(d.components.map(c => c.costSharePct)) - 100) <= 2;
+  useEffect(() => { onChange(draft && use && allocOk(draft) ? draft : null); }, [draft, use]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
@@ -62,7 +67,7 @@ export default function FunctionModelPanel({ token, apiKey, partName, partContex
       const comps = (d.components ?? []) as { name: string; costSharePct: number }[];
       const alloc = comps.map((_, i) => fns.map((__, j) => Number(d.alloc?.[i]?.[j]) || 0));
       setDraft({ components: comps.map(c => ({ name: c.name, costSharePct: Number(c.costSharePct) || 0 })), functions: fns.map(f => ({ name: f.name, worthPct: Number(f.worthPct) || 0 })), alloc });
-      setUse(true);
+      setUse(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Function draft failed');
     } finally { setBusy(false); }
@@ -141,8 +146,9 @@ export default function FunctionModelPanel({ token, apiKey, partName, partContex
               className="text-xs text-slate-400 hover:text-white flex items-center gap-1"><Plus size={13} /> Component</button>
             <button onClick={runCheck} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-hairline hover:border-teal-500/40 text-slate-200 flex items-center gap-1.5"><Calculator size={13} /> Check value indices</button>
             <label className="text-xs text-slate-300 flex items-center gap-2 ml-auto cursor-pointer">
-              <input type="checkbox" checked={use} onChange={e => setUse(e.target.checked)} className="accent-teal-500" /> Use in the analysis
+              <input type="checkbox" checked={use} onChange={e => setUse(e.target.checked)} className="accent-teal-500" /> I have checked this model — use it in the analysis
             </label>
+            {use && draft && !allocOk(draft) && <p className="w-full text-2xs text-amber-300">Not used: every allocation row and the cost shares must each sum to 100% (±2) before the model reaches the analysis.</p>}
           </div>
           {(badRows > 0 || Math.abs(worthSum - 100) > 2) && (
             <p className="text-2xs text-amber-400 mt-2">

@@ -77,6 +77,10 @@ export interface EngineCheck {
   basis: string;
   /** Other phrasings of the same move the engine ran, and why they did not price. */
   alsoTried?: { kind: string; reason: string }[];
+  /** The idea claims a mass cut beyond 50% — priced, but unverified against the geometry. */
+  largeMassClaim?: boolean;
+  /** |savingPct| ≤ 0.5 — the engine cannot separate the two sides. */
+  nearZero?: boolean;
 }
 
 export interface EvidenceSource {
@@ -219,6 +223,8 @@ export interface AnalysisConfig {
   bodyStyle?: BodyStyle;
   annualVolume?: number;
   plantRegion?: PlantRegion;
+  /** The cost engine's own region name (Prism), preferred over plantRegion for engine checks. */
+  engineRegion?: string;
   currency?: Currency;
   programmeLengthYears?: number;
   cadFileName?: string;

@@ -237,6 +237,11 @@ export default function Part360Page() {
   const [measureLog, setMeasureLog] = useState<string[]>([]);
   const [shouldCost, setShouldCost] = useState<{ totalShouldCost: string; totalValue: number; symbol: string } | null>(null);
   const [dfmResult, setDfmResult] = useState<DfmResponse | null>(null);
+  // A change of material, process, region or volume after measuring leaves the
+  // should-cost and the DFM verdicts describing a different part; a change of
+  // mass leaves the should-cost stale. Clear what the change invalidates so the
+  // next "Measure" re-runs it, instead of carrying it into the dossier (PR-21).
+  const measuredFor = useRef<{ k: string; w: string } | null>(null);
   const [dfmFailed, setDfmFailed] = useState(false);
   const [drawingRead, setDrawingRead] = useState<{ dims: number; toleranced: number } | null>(null);
   // The whole drawing extraction (title block, dimensions, GD&T, finish,
@@ -265,6 +270,16 @@ export default function Part360Page() {
   // mass) scales every downstream figure; ideas built on it are built on a
   // wrong part. Generation waits for an explicit acknowledgement.
   const [massAck, setMassAck] = useState(false);
+  useEffect(() => {
+    const k = `${material}|${processName}|${region}|${annualVolume}`;
+    const prev = measuredFor.current;
+    if (prev && prev.k !== k) { setShouldCost(null); setDfmResult(null); setDfmFailed(false); }
+    else if (prev && prev.w !== weightKg) setShouldCost(null);
+    if (prev) measuredFor.current = { k, w: weightKg };
+  }, [material, processName, region, annualVolume, weightKg]);
+  // Inputs changed after measuring → the engine and DFM results describe a
+  // different part (PR-21). They are cleared so the next run re-measures.
+  // (Declared below the state it touches; runs only on genuine changes.)
   // Deliberation level. 'critique' (panel + small-model repair on every
   // batch) is the default: measured on four live runs the panel had never
   // once been used because it sat behind an off-by-default toggle.
@@ -370,8 +385,10 @@ export default function Part360Page() {
         });
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || 'Drawing extraction failed');
-        const dims: Array<{ toleranced: boolean; bandMm?: number }> = d.drawing?.dimensions ?? [];
-        const toleranced = dims.filter(x => x.toleranced && Number.isFinite(Number(x.bandMm)));
+        const dims: Array<{ toleranced: boolean; bandMm?: number; type?: string }> = d.drawing?.dimensions ?? [];
+        // An angle's band is in DEGREES: a ±0.01° angle must not become the
+        // "tightest band in mm" and push the spec to precision (PR-10).
+        const toleranced = dims.filter(x => x.toleranced && x.type !== 'angle' && Number.isFinite(Number(x.bandMm)));
         const tightest = toleranced.length ? Math.min(...toleranced.map(x => Number(x.bandMm))) : null;
         const ras: number[] = (d.drawing?.roughness ?? []).map((x: { raUm?: number }) => Number(x.raUm)).filter((n: number) => Number.isFinite(n) && n > 0);
         setDrawingRead({ dims: dims.length, toleranced: toleranced.length });
@@ -452,6 +469,7 @@ export default function Part360Page() {
           log(`3D measurement failed (${dfmErr instanceof Error ? dfmErr.message : 'unknown error'}) — continuing without geometry. The waterfall will state "geometry absent" for the process step.`);
         }
       }
+      measuredFor.current = { k: `${material}|${processName}|${region}|${annualVolume}`, w: weightKg };
       log('Measurement complete.');
     } catch (e) {
       setMeasureError(e instanceof Error ? e.message : 'Measurement failed');
@@ -497,22 +515,6 @@ export default function Part360Page() {
     setBuilding(true); setError('');
     try {
       const hasQuote = Number(quoteTotal) > 0;
-      // Optionally teach the calibration corpus first, breakdown included.
-      if (hasQuote && saveToCalibration) {
-        try {
-          await fetch('/api/should-cost/quotes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({
-              partName, material, process: processName, weightKg: Number(weightKg),
-              annualVolume: Number(annualVolume), region, currency: quoteCurrency,
-              actualPrice: Number(quoteTotal),
-              breakdown: quoteLines.filter(l => Number(l.amount) > 0).map(l => ({ label: l.label, kind: l.kind, amount: Number(l.amount) })),
-            }),
-          });
-        } catch { /* calibration is best-effort — the dossier must still build */ }
-      }
-
       const best = dfmResult?.results?.[0];
       const body = {
         partName, material, process: processName, weightKg: Number(weightKg),
@@ -536,6 +538,7 @@ export default function Part360Page() {
         photoReads: photoReads.length ? photoReads : undefined,
         drawingExtract: drawingExtract ? {
           titleBlock: drawingExtract.titleBlock, readability: drawingExtract.readability,
+          units: (drawingExtract as { units?: unknown }).units,
           dimensions: Array.isArray(drawingExtract.dimensions) ? (drawingExtract.dimensions as unknown[]).slice(0, 80) : undefined,
           gdt: drawingExtract.gdt, roughness: drawingExtract.roughness, notes: drawingExtract.notes,
         } : undefined,
@@ -575,6 +578,27 @@ export default function Part360Page() {
       if (!r.ok) throw new Error(d.error || 'The dossier could not be computed');
       setDossier(d);
       setMassAck(false);
+      // The what-if starts FROM the dossier's spec, so it shows no saving before
+      // anyone touches it (PR-20).
+      if (d?.spec) { setWiTol(d.spec.toleranceClass ?? 'standard'); setWiFin(d.spec.surfaceFinish ?? 'standard'); }
+      // Teach the calibration corpus AFTER the dossier is built: saving first
+      // calibrated the engine on the very quote it was about to judge (Prism
+      // review PR-01). The server also refuses a duplicate of the same quote.
+      if (hasQuote && saveToCalibration) {
+        try {
+          await fetch('/api/should-cost/quotes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({
+              partName, material, process: processName, weightKg: Number(weightKg),
+              annualVolume: Number(annualVolume), region, currency: quoteCurrency,
+              actualPrice: Number(quoteTotal),
+              breakdown: quoteLines.filter(l => Number(l.amount) > 0).map(l => ({ label: l.label, kind: l.kind, amount: Number(l.amount) })),
+            }),
+          });
+        } catch { /* calibration is best-effort — the dossier must still build */ }
+      }
+
       setStep(3);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Dossier failed');
@@ -601,6 +625,9 @@ export default function Part360Page() {
         annualVolume: Number(annualVolume),
         partWeightKg: Number(weightKg) > 0 ? Number(weightKg) : undefined,
         plantRegion: REGION_TO_PLANT[region] ?? 'germany',
+        // The engine's own region name, so engine checks price in the region
+        // the user chose (the plant slug list is shorter than the engine's).
+        engineRegion: region,
         currency: 'EUR',
         additionalContext: `Prism review of "${partName || 'the part'}" (${material}, ${processName}, ${weightKg} kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}).${partContext.trim() ? ` Part function as stated by the user: ${partContext.trim().slice(0, 500)}` : ''}`,
         deepMode,
@@ -633,7 +660,9 @@ export default function Part360Page() {
       sessionStorage.setItem('analysisSubName', subName);
       // The measured dossier rides along so the Results chat can answer
       // waterfall/forensics questions from evidence (negotiation briefing).
-      try { sessionStorage.setItem('prismDossier', dossier.promptBlock); } catch { /* quota — chat just loses grounding */ }
+      // Keyed by the result id too, so the PDF appendix and the chat read THIS
+      // result's dossier, not whichever Prism run was built last (PR-22).
+      try { sessionStorage.setItem('prismDossier', dossier.promptBlock); sessionStorage.setItem(`prismDossier:${resultId}`, dossier.promptBlock); } catch { /* quota — chat just loses grounding */ }
       saveFullResult(resultId, result, sysName, subName);
       return '/results';
     } });
@@ -720,7 +749,7 @@ export default function Part360Page() {
         const r = await fetch('/api/should-cost', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ partName, material, process: processName, weightKg: Number(weightKg), annualVolume: vol, region: reg, currency: 'EUR', toleranceClass: wiTol, surfaceFinish: wiFin }),
+          body: JSON.stringify({ partName, material, process: processName, weightKg: Number(weightKg), annualVolume: vol, region: reg, currency: 'EUR', toleranceClass: wiTol, surfaceFinish: wiFin, criticalCharacteristics: dossier?.spec?.criticalCharacteristics ?? 0 }),
         });
         const d = await r.json();
         if (seq === wiSeq.current && r.ok) setWiTotal(Number(d.totalValue));
@@ -784,7 +813,12 @@ export default function Part360Page() {
           rows: asmRows.map(r2 => ({
             index: r2.index,
             name: r2.name, subassembly: r2.subassembly, material: r2.material, process: r2.process,
-            qty: r2.qty, volumeMm3: r2.volumeMm3, massKg: r2.massKg ?? r2.suggestedMassKg,
+            // Only a TYPED mass is sent. The suggestion was computed with the
+            // suggested material's density; sending it after the engineer changed
+            // the material priced the part at the wrong mass, labelled "stated by
+            // the user" (PR-17). The server derives the mass from the measured
+            // volume and the CONFIRMED material, and says so.
+            qty: r2.qty, volumeMm3: r2.volumeMm3, massKg: r2.massKg ?? undefined,
             boughtPriceEur: r2.boughtPart ? r2.boughtPriceEur : undefined,
           })),
         }),
@@ -831,7 +865,8 @@ export default function Part360Page() {
       sessionStorage.setItem('analysisResult', JSON.stringify(result));
       sessionStorage.setItem('analysisSystemName', 'Prism');
       sessionStorage.setItem('analysisSubName', asmName || 'Assembly');
-      try { sessionStorage.setItem('prismDossier', asmDossier.lensBlocks[0]?.text ?? ''); } catch { /* quota */ }
+      // The FULL block (every lens's evidence), not the first lens's only (PR-22).
+      try { const full = asmDossier.lensBlocks.map(l => l.text).join('\n\n'); sessionStorage.setItem('prismDossier', full); sessionStorage.setItem(`prismDossier:${resultId}`, full); } catch { /* quota */ }
       saveFullResult(resultId, result, 'Prism', asmName || 'Assembly');
       return '/results';
     } });
@@ -1279,7 +1314,7 @@ export default function Part360Page() {
                     <div className="text-2xs text-slate-500 mt-1 pl-6">{cadFile ? 'Will be measured by the DFM engines and priced down every viable process route.' : 'Without it, the waterfall’s process step is honestly skipped ("geometry absent").'}</div>
                   </motion.button>
                   <input ref={drawingInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="hidden"
-                    onChange={e => { setDrawingFile(e.target.files?.[0] ?? null); setDrawingRead(null); setDrawingExtract(null); }} />
+                    onChange={e => { setDrawingFile(e.target.files?.[0] ?? null); setDrawingRead(null); setDrawingExtract(null); setTightestTolMm(''); setRoughnessRaUm(''); }} />
                   <motion.button {...m.press} onClick={() => drawingInputRef.current?.click()}
                     className={`dfm-lift w-full border-2 border-dashed rounded-xl p-4 text-left ${drawingFile ? 'border-teal-500/40 bg-teal-500/5' : 'border-white/15 hover:border-white/30'}`}>
                     <div className="flex items-center gap-2 text-sm text-white font-medium">

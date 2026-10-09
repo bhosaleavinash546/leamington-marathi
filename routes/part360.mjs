@@ -33,7 +33,7 @@ import crypto from 'crypto';
 import multer from 'multer';
 import {
   entitlementWaterfall, quoteForensics, buildDossier, dossierToPromptBlock,
-  inferSpecFromDrawing, allocateGap, LENSES, cadMass, cadMassKg, inputAnomalies, counterOffer,
+  inferSpecFromDrawing, allocateGap, LENSES, cadMass, cadMassKg, inputAnomalies, counterOffer, defensibleRoutes,
 } from '../part360.mjs';
 import { geoSignature, rankSimilarRuns, rankTeardowns } from '../prism-memory.mjs';
 import {
@@ -329,7 +329,7 @@ Rules:
     if (!resolveMaterial(material, library?.MATERIALS) || !resolveRoute(processName, library?.PROCESSES)?.keys?.length) {
       return res.status(400).json({ error: 'Material or process not recognised by the catalogue.' });
     }
-    const calibration = shouldCostApi.getUserCalibration(req.user.id);
+    let calibration = shouldCostApi.getUserCalibration(req.user.id);
 
     // Specification: drawing-inferred prefill unless the user stated classes.
     const drawing = b.drawing && typeof b.drawing === 'object' ? b.drawing : null;
@@ -364,6 +364,14 @@ Rules:
             amountEur: toEur(l.amount ?? l.amountEur),
           })),
       };
+    }
+
+    // The quote under judgement must not calibrate the engine that judges it
+    // (PR-01): leave any saved copy of it out of the fit.
+    if (quote) {
+      const mk = resolveMaterial(material, library?.MATERIALS)?.key;
+      const pk = resolveRoute(processName, library?.PROCESSES)?.keys?.[0];
+      if (mk && pk) calibration = shouldCostApi.getUserCalibration(req.user.id, { exclude: { material: mk, process: pk, weightKg, annualVolume, region, priceEur: quote.totalEur } });
     }
 
     const base = { material, process: processName, weightKg, annualVolume, region };
@@ -485,7 +493,13 @@ Rules:
       if (geoFull?.dfm) {
         try {
           const cmp = compareRoutes(geoFull, { material: resolveMaterial(material, library.MATERIALS)?.key ?? material, region, annualVolume, weightKg, chosenProcess: resolveRoute(processName, library.PROCESSES)?.keys?.[0] ?? processName, library });
-          routeLines = clean(routeEvidenceLines(cmp.routes, recommendableRoutes(cmp.routes)));
+          // Only routes the waterfall itself would defend (DFM ≥ 50 on ≥ 40% of
+          // the family's rules): the process lens was offered a squeeze-casting
+          // route scoring 0 that W3 refused as an entitlement basis (PR-12).
+          const rec = recommendableRoutes(cmp.routes);
+          const def = defensibleRoutes(rec);
+          routeLines = clean(routeEvidenceLines(cmp.routes, def));
+          if (rec.length > def.length) routeLines.push(sanitize(`${rec.length - def.length} further route(s) can form the shape but score below the DFM floor (score < 50 or < 40% of their rules evaluated); they are not offered as alternatives.`, 300));
         } catch { /* stays null — the section states its absence */ }
       }
       const drawingLines = b.drawingExtract && typeof b.drawingExtract === 'object' ? clean(drawingEvidenceLines(b.drawingExtract)) : null;
@@ -826,7 +840,10 @@ Rules:
       return res.status(400).json({ error: `Region "${String(b.region).slice(0, 40)}" is not in the engine's rate library.` });
     }
     const region = Object.hasOwn(REGIONS, b.region) ? b.region : 'Germany';
-    const inRows = Array.isArray(b.rows) ? b.rows.slice(0, 120) : [];
+    // More than 120 rows used to be cut silently while the roll-up said every
+    // row was costed (PR-15). Refuse with the count instead.
+    if (Array.isArray(b.rows) && b.rows.length > 120) return res.status(400).json({ error: `The BOM has ${b.rows.length} rows; Prism costs up to 120 per assembly. Split it by subassembly and run each.` });
+    const inRows = Array.isArray(b.rows) ? b.rows : [];
     if (!inRows.length) return res.status(400).json({ error: 'rows is required — confirm the BOM before it can be costed.' });
 
     const { library } = shouldCostApi.liveLibrary();
@@ -838,7 +855,9 @@ Rules:
       const qty = Number.isFinite(Number(r.qty)) && Number(r.qty) > 0 ? Math.min(Number(r.qty), 10_000) : 1;
       const base = { name, subassembly, qty };
       // A bought part carries the user's own price, labelled as such.
-      if (Number.isFinite(Number(r.boughtPriceEur)) && Number(r.boughtPriceEur) >= 0) {
+      // Present AND > 0: a typed-then-cleared price arrives as null or '' and
+      // Number(null) is 0, which read as "€0 entered by the user" (PR-16).
+      if (r.boughtPriceEur != null && r.boughtPriceEur !== '' && Number.isFinite(Number(r.boughtPriceEur)) && Number(r.boughtPriceEur) > 0) {
         return { ...base, boughtPriceEur: Number(r.boughtPriceEur), massKg: Number(r.massKg) || null };
       }
       const material = String(r.material || '');

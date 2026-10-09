@@ -115,7 +115,8 @@ export function cadMass(geometry, material, materials = null) {
     const mat = resolveMaterial(String(material || ''), materials);
     const rho = Number(mat ? materials[mat.key]?.density : NaN);
     if (rho > 0) {
-      return { kg: Math.round(cm3 * rho) / 1000, basis: `measured ${cm3.toFixed(1)} cm³ × ${rho} g/cm³ (${mat.key})` };
+      // Grams rounded to 0.1 g: whole-gram rounding read a 0.05 cm³ steel part as 0 kg (PR-30).
+      return { kg: Math.round(cm3 * rho * 10) / 10000, basis: `measured ${cm3.toFixed(2)} cm³ × ${rho} g/cm³ (${mat.key})` };
     }
   }
   const key = weightsKeyForMaterial(material);
@@ -154,9 +155,33 @@ export function quoteForensics(lines, calc, { annualVolume = null, materialPrice
   const bucketEur = (keys) => keys.reduce((s, k) => s + (Number(calc?.breakdown?.[k]?.value) || 0), 0);
   const band = MODEL_DISPERSION;   // the engine's measured model-error half-width
 
-  const rows = list.map((l) => {
+  // Lines are judged PER KIND, not one by one. Two material lines that each
+  // sit inside the band can together be 140% of the engine's material bucket,
+  // and judging each against the whole bucket read both "in-band" and asked
+  // €0 (Prism review PR-02). So the lines of a kind are summed, the SUM is
+  // judged against the bucket, and every line of that kind carries the verdict.
+  //
+  // A tooling line far larger than the per-part bucket is almost always the
+  // one-off die cheque, not a per-part amortisation: comparing €45,000 with
+  // €0.71/part read +6,249,900% (PR-03). It is amortised over the engine's own
+  // tool volume and said so. Any other ratio outside 0.05–20× is a units
+  // question (per-100 price, cents, a currency slip) and is not judged at all.
+  const amortVol = Number(calc?.drivers?.amortVolume);
+  const perPart = list.map((l) => {
     const kind = KIND_TO_BUCKETS[l.kind] ? l.kind : 'other';
-    const quoteEur = round2(Number(l.amountEur));
+    const raw = Number(l.amountEur);
+    const engineBucket = kind === 'other' ? null : bucketEur(KIND_TO_BUCKETS[kind]);
+    const oneOff = kind === 'tooling' && Number.isFinite(amortVol) && amortVol > 1 && engineBucket > 0
+      && raw > 50 * engineBucket && raw > (Number(calc?.totalShouldCost) || 0) * 5;
+    return { l, kind, raw, perPartEur: oneOff ? raw / amortVol : raw, oneOff };
+  });
+  const kindSum = {};
+  for (const x of perPart) if (x.kind !== 'other') kindSum[x.kind] = (kindSum[x.kind] || 0) + x.perPartEur;
+  const kindCount = {};
+  for (const x of perPart) kindCount[x.kind] = (kindCount[x.kind] || 0) + 1;
+
+  const rows = perPart.map(({ l, kind, raw, perPartEur, oneOff }) => {
+    const quoteEur = round2(perPartEur);
     if (kind === 'other') {
       return {
         label: String(l.label ?? '').slice(0, 80), kind: l.kind, quoteEur,
@@ -172,28 +197,39 @@ export function quoteForensics(lines, calc, { annualVolume = null, materialPrice
         basis: 'The engine produced no figure for this bucket, so the line cannot be judged.',
       };
     }
-    const ratio = quoteEur / engineEur;
+    const sumEur = kindSum[kind];
+    const n = kindCount[kind];
+    const ratio = sumEur / engineEur;
+    const oneOffNote = oneOff ? ` The quoted €${Math.round(raw).toLocaleString('en-GB')} reads as a ONE-OFF tooling cheque, so it is amortised over the engine's ${Math.round(amortVol).toLocaleString('en-GB')} good parts (€${perPartEur.toFixed(2)}/part) before it is compared — confirm with the supplier how tooling is charged.` : '';
+    if (ratio > 20 || ratio < 0.05) {
+      return {
+        label: String(l.label ?? '').slice(0, 80), kind, quoteEur, engineEur,
+        ratio: Number(ratio.toFixed(2)), verdict: 'units-suspect', kindLines: n, kindTotalEur: round2(sumEur),
+        basis: `The ${n > 1 ? `${n} ${kind} lines total` : 'line is'} €${sumEur.toFixed(2)}/part against an engine ${KIND_TO_BUCKETS[kind].join('+')} of €${engineEur.toFixed(2)} — ${ratio.toFixed(2)}×, outside any plausible model error. Check the units first (a per-100 or per-1,000 price, cents, a one-off charge, a different currency); the line is NOT judged until then.${oneOffNote}`,
+      };
+    }
     const verdict = ratio > 1 + band ? 'above-model' : ratio < 1 - band ? 'below-model' : 'in-band';
     const extra = kind === 'tooling' && Number.isFinite(calc?.drivers?.amortVolume)
       ? ` Engine amortises €${Math.round(calc.drivers.toolingTotal).toLocaleString('en-GB')} tooling over ${Math.round(calc.drivers.amortVolume).toLocaleString('en-GB')} good parts — one tool life or the programme volume, whichever is smaller${annualVolume ? ` (your stated volume ${Number(annualVolume).toLocaleString('en-GB')}/yr)` : ''}. Once tool life binds, unit tooling stops falling with volume.`
       : kind === 'material' && matPrice?.pricedAt
         ? ` Engine material uses ${matPrice.commodityLabel ?? 'the commodity index'} as of ${String(matPrice.pricedAt).slice(0, 10)}.`
         : '';
+    const sumNote = n > 1 ? ` Judged as the ${n} ${kind} lines together (€${sumEur.toFixed(2)}), since the engine bucket covers all of them.` : '';
     return {
       label: String(l.label ?? '').slice(0, 80), kind, quoteEur, engineEur,
-      ratio: Number(ratio.toFixed(2)), verdict,
-      basis: `Engine ${KIND_TO_BUCKETS[kind].join('+')} = €${engineEur.toFixed(2)}; quote is ${ratio > 1 ? '+' : ''}${((ratio - 1) * 100).toFixed(0)}% vs model (±${Math.round(band * 100)}% band from measured model dispersion — per-bucket spread is wider, treat as directional).${extra}`,
+      ratio: Number(ratio.toFixed(2)), verdict, kindLines: n, kindTotalEur: round2(sumEur),
+      basis: `Engine ${KIND_TO_BUCKETS[kind].join('+')} = €${engineEur.toFixed(2)}; quote is ${ratio > 1 ? '+' : ''}${((ratio - 1) * 100).toFixed(0)}% vs model (±${Math.round(band * 100)}% band from measured model dispersion — per-bucket spread is wider, treat as directional).${sumNote}${oneOffNote}${extra}`,
     };
   });
 
-  const linesSum = round2(list.reduce((s, l) => s + Number(l.amountEur), 0));
+  const linesSum = round2(perPart.reduce((s, x) => s + x.perPartEur, 0));
   const engineTotal = round2(calc?.totalShouldCost);
   const totals = {
     linesSumEur: linesSum,
     engineTotalEur: engineTotal,
     ratio: Number.isFinite(engineTotal) && engineTotal > 0 ? Number((linesSum / engineTotal).toFixed(2)) : null,
   };
-  const unjudged = rows.filter(r => r.verdict === 'unmapped' || r.verdict === 'no-engine-basis').length;
+  const unjudged = rows.filter(r => r.verdict === 'unmapped' || r.verdict === 'no-engine-basis' || r.verdict === 'units-suspect').length;
   return {
     rows,
     totals,
@@ -288,7 +324,10 @@ export function counterOffer(forensics, waterfall) {
   const band = MODEL_DISPERSION;
   const rows = forensics.rows.map((r) => {
     if (r.verdict === 'above-model') {
-      const targetEur = round2(r.engineEur * (1 + band));
+      // The kind's target (engine + band) is shared across its lines in
+      // proportion to what each quoted — never the whole bucket to each (PR-02).
+      const kindTotal = Number(r.kindTotalEur) > 0 ? Number(r.kindTotalEur) : r.quoteEur;
+      const targetEur = round2(r.engineEur * (1 + band) * (r.quoteEur / kindTotal));
       return {
         label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur,
         askEur: round2(r.quoteEur - targetEur),
@@ -298,6 +337,7 @@ export function counterOffer(forensics, waterfall) {
     if (r.verdict === 'in-band' || r.verdict === 'below-model') {
       return { label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur: r.quoteEur, askEur: 0, argument: `Within the engine's band${r.verdict === 'below-model' ? ' (below model — no ask; check scope coverage instead)' : ''} — hold, spend negotiation capital elsewhere.` };
     }
+    if (r.verdict === 'units-suspect') return { label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur: null, askEur: null, argument: 'Not judged: the amount is implausible against the engine bucket — confirm its units and how it is charged before negotiating it.' };
     return { label: r.label, kind: r.kind, quotedEur: r.quoteEur, targetEur: null, askEur: null, argument: 'No engine counterpart — ask the supplier to break this line down before it can be judged.' };
   });
   const totalAskEur = round2(rows.reduce((s2, r) => s2 + (Number(r.askEur) || 0), 0));
@@ -305,7 +345,7 @@ export function counterOffer(forensics, waterfall) {
   return {
     rows,
     totalAskEur,
-    caveat: `Per-line targets anchor at engine + ${Math.round(band * 100)}% band — the defensible edge, not the model centre.${commercial ? ` The overall commercial gap is €${commercial.deltaEur.toFixed(2)} (${commercial.deltaEur < totalAskEur ? 'less than' : 'more than'} the per-line asks — lines and total are different negotiations).` : ''} Directional until your calibration corpus grows; execution stays with the buyer.`,
+    caveat: `Per-line targets anchor at engine + ${Math.round(band * 100)}% band — the defensible edge, not the model centre.${commercial ? ` The overall commercial gap is €${commercial.deltaEur.toFixed(2)} (${Math.abs(commercial.deltaEur - totalAskEur) < 0.005 ? 'equal to' : commercial.deltaEur < totalAskEur ? 'less than' : 'more than'} the per-line asks — lines and total are different negotiations).` : ''} Directional until your calibration corpus grows; execution stays with the buyer.`,
   };
 }
 
@@ -388,6 +428,25 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
     library, calibration,
   );
   let cursor = asSpec.totalEur;
+  // ONE calibration factor for the whole chain: the anchor's. Calibrating each
+  // step on its own cell (the alternative process's factor, the cheaper
+  // region's factor) made part of every premium an artefact of WHICH cells the
+  // user's quotes happened to fill — a four-quote fit inflated a region step
+  // from €1.53 to €1.74 (Prism review PR-11). Steps are re-costed uncalibrated
+  // and scaled by the anchor's own calibrated/uncalibrated ratio.
+  let anchorK = 1;
+  if (calibration) {
+    try {
+      const raw = engineCost({ material, process, weightKg, annualVolume, region, toleranceClass, surfaceFinish, criticalCharacteristics }, library, null);
+      if (raw.totalEur > 0) anchorK = asSpec.totalEur / raw.totalEur;
+    } catch { anchorK = 1; }
+  }
+  const stepCost = (input) => {
+    const c = engineCost(input, library, null);
+    if (anchorK === 1) return c;
+    const scaled = Object.fromEntries(Object.entries(c.calc?.breakdown ?? {}).map(([k, v]) => [k, { ...v, value: (Number(v?.value) || 0) * anchorK }]));
+    return { ...c, totalEur: c.totalEur * anchorK, calc: { ...c.calc, breakdown: scaled } };
+  };
 
   // W1 — commercial gap: what the market charges over (or under) the model.
   if (Number.isFinite(quoteTotalEur) && quoteTotalEur > 0) {
@@ -403,9 +462,8 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
   const specTight = toleranceClass !== 'standard' || surfaceFinish !== 'standard' || criticalCharacteristics > 0;
   if (specTight) {
     try {
-      const relaxed = engineCost(
+      const relaxed = stepCost(
         { material, process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
-        library, calibration,
       );
       push('Specification premium', cursor, relaxed.totalEur,
         `Re-costed at standard tolerance/finish with no critical characteristics (was ${toleranceClass}/${surfaceFinish}/${criticalCharacteristics} CC). Only justified if the FUNCTION allows relaxation — the spec sections of the dossier say which callouts drive this.`);
@@ -421,7 +479,14 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
   // W3 — process premium: the best DFM-viable net-shape alternative, re-costed
   // at the relaxed spec so the steps compose rather than double-count.
   let bestProcess = null;
-  if (geo) {
+  if (geo && typeof geo.unitWarning === 'string' && geo.unitWarning) {
+    // A metre-scaled model: every route verdict would be judged at the wrong
+    // scale, so "the stated process is already the best fit" was a verdict on
+    // nothing (PR-23). The step is skipped with its reason.
+    push('Process premium', cursor, cursor,
+      'The 3D model’s units look wrong (often a metre-scaled export), so no process alternative can be judged on this geometry. Re-export in millimetres.',
+      { skipped: true, reason: 'model units suspect' });
+  } else if (geo) {
     try {
       const cmp = compareRoutes(geo, {
         material, region, annualVolume, weightKg, library,
@@ -451,9 +516,8 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
       let bestAlt = null;
       for (const r of viable) {
         try {
-          const c = engineCost(
+          const c = stepCost(
             { material, process: r.process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
-            library, calibration,
           );
           if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, calc: c.calc, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: Math.round(ruleDepthPct(r)), kgCo2e: r.kgCo2e ?? null, shapeBasis: r.shapeBasis ?? null };
         } catch { /* a route the engine refuses at this spec is not an option */ }
@@ -467,9 +531,8 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
         // die-life assumptions, not the part (Prism review, 9 Oct 2026).
         let bridge = '';
         try {
-          const cur = engineCost(
+          const cur = stepCost(
             { material, process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
-            library, calibration,
           );
           const step = cur.totalEur - bestAlt.totalEur;
           const rows = Object.keys(cur.calc?.breakdown ?? {})
@@ -512,9 +575,8 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
     for (const r of Object.keys(REGIONS)) {
       if (r === region) continue;
       try {
-        const c = engineCost(
+        const c = stepCost(
           { material, process: proc, weightKg, annualVolume, region: r, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
-          library, calibration,
         );
         if (c.totalEur < best.totalEur) best = { region: r, totalEur: c.totalEur };
       } catch { /* region rejected for this input — not an option */ }
@@ -573,7 +635,12 @@ export function buildDossier({
   const sections = [];
   const add = (id, title, linesOrReason) => {
     if (Array.isArray(linesOrReason)) {
-      sections.push({ id, title, present: true, lines: linesOrReason.filter(Boolean).map(text => ({ ref: ref(), text })) });
+      // One evidence line is ONE line. Text from a supplier PDF, a drawing or an
+      // AI read can carry a newline and a forged "[W9] ENTITLEMENT…" tag that
+      // the generator would take as engine evidence (Prism review PR-13): the
+      // line is flattened and any embedded reference tag is neutralised.
+      const flat = (t) => String(t).replace(/\s+/g, ' ').replace(/\[\s*([EW])\s*(\d{1,3})\s*\]/gi, '($1$2)').trim();
+      sections.push({ id, title, present: true, lines: linesOrReason.filter(Boolean).map(text => ({ ref: ref(), text: flat(text) })) });
     } else {
       sections.push({ id, title, present: false, reason: linesOrReason, lines: [] });
     }

@@ -99,14 +99,23 @@ export function drawingEvidenceLines(drawing) {
   const head = [tb.title && `title "${clip(tb.title, 80)}"`, tb.drawingNumber && `drawing ${clip(tb.drawingNumber, 40)}${tb.revision ? ` rev ${clip(tb.revision, 10)}` : ''}`, tb.material && `material callout "${clip(tb.material, 80)}"`, tb.generalToleranceNote && `general tolerance "${clip(tb.generalToleranceNote, 60)}"`].filter(Boolean);
   if (head.length) out.push(`Title block: ${head.join('; ')}.`);
   const dims = Array.isArray(drawing.dimensions) ? drawing.dimensions : [];
-  const tol = dims.filter(d => d.toleranced);
+  // Units first: an inch drawing read as millimetres is 25.4× wrong in every
+  // figure below, and the caution used to stop at the DFM report (PR-09).
+  if (drawing.units === 'unknown') out.push('DRAWING UNITS NOT STATED — values were taken as millimetres; if the drawing is in inches every drawing figure below is 25.4× too small.');
+  else if (drawing.units === 'inch') out.push('Drawing units: inches, converted to millimetres (×25.4).');
+  // The page sends the NORMALISED extraction (bandMm, toleranceMm); the raw
+  // shape (totalBand, plus/minus, tolerance) is still accepted. Reading only
+  // the raw names dropped every tolerance and GD&T value (PR-09). An angle's
+  // band is in degrees, so it never competes for "tightest" in millimetres.
+  const tol = dims.filter(d => d.toleranced && d.type !== 'angle');
   if (dims.length) {
-    const band = (d) => n(d.totalBand) ?? ((n(d.plus) ?? 0) + (n(d.minus) ?? 0));
+    const band = (d) => n(d.bandMm) ?? n(d.totalBand) ?? ((n(d.plus) ?? 0) + (n(d.minus) ?? 0));
     const tight = tol.map(d => ({ d, b: band(d) })).filter(x => x.b > 0).sort((a, b) => a.b - b.b).slice(0, 5);
-    out.push(`${dims.length} dimensions read, ${tol.length} individually toleranced${tight.length ? `; tightest: ${tight.map(x => `"${clip(x.d.sourceText, 30)}" (band ${r1(x.b * 1000) / 1000})`).join(', ')}` : ''}.`);
+    out.push(`${dims.length} dimensions read, ${tol.length} individually toleranced${tight.length ? `; tightest: ${tight.map(x => `"${clip(x.d.sourceText, 30)}" (band ${r1(x.b * 1000) / 1000} mm)`).join(', ')}` : ''}.`);
   }
   const gdt = Array.isArray(drawing.gdt) ? drawing.gdt : [];
-  if (gdt.length) out.push(`GD&T frames: ${gdt.slice(0, 8).map(g => `${g.symbol}${n(g.tolerance) != null ? ` ${g.tolerance}` : ''}${g.datums?.length ? ` |${g.datums.join('|')}` : ''}`).join('; ')}.`);
+  const gTol = (g) => n(g.toleranceMm) ?? n(g.tolerance);
+  if (gdt.length) out.push(`GD&T frames: ${gdt.slice(0, 8).map(g => `${g.symbol}${gTol(g) != null ? ` ${gTol(g)} mm` : ''}${g.datums?.length ? ` |${g.datums.join('|')}` : ''}`).join('; ')}.`);
   const ra = Array.isArray(drawing.roughness) ? drawing.roughness : [];
   if (ra.length) out.push(`Surface finish callouts: ${ra.slice(0, 6).map(x => `${x.raUm != null ? `Ra ${x.raUm} µm` : clip(x.sourceText, 20)}${x.scope ? ` on ${clip(x.scope, 40)}` : ''}`).join('; ')}.`);
   const notes = Array.isArray(drawing.notes) ? drawing.notes : [];
@@ -130,7 +139,15 @@ export function joiningEvidenceLines({ counts = null, photoFasteners = [], labou
   const c = counts && typeof counts === 'object' ? counts : {};
   const joints = ['boss', 'counterbore', 'countersink', 'through-hole', 'blind-hole']
     .map(k => [k, n(c[k])]).filter(([, v]) => v > 0);
-  const photo = (Array.isArray(photoFasteners) ? photoFasteners : []).filter(f => Number.isInteger(f?.count) && f.count > 0);
+  // One row per fastener type at its HIGHEST photo count — the same bolts seen
+  // in two photos are one set, so a sum overstated the floor (PR-08).
+  const maxByType = new Map();
+  for (const f of (Array.isArray(photoFasteners) ? photoFasteners : [])) {
+    if (!Number.isInteger(f?.count) || f.count <= 0) continue;
+    const k = String(f.fastener ?? 'other');
+    if (!maxByType.has(k) || maxByType.get(k).count < f.count) maxByType.set(k, f);
+  }
+  const photo = [...maxByType.values()];
   if (!joints.length && !photo.length) return [];
   const out = [];
   if (joints.length) {

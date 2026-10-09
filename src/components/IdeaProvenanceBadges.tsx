@@ -62,10 +62,10 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
       {ec ? (
         <Badge
           title={`The percentage here is the ENGINE's figure for ${ec.referenceCase}, not the saving claimed above — the two answer different questions.\n\n${ec.basis}${ec.alsoTried?.length ? `\n\nThe engine also tried ${ec.alsoTried.length} other phrasing${ec.alsoTried.length === 1 ? '' : 's'} of this move:\n${ec.alsoTried.map(a => `• ${a.kind} — ${a.reason}`).join('\n')}` : ''}${idea.rank ? `\n\nRank factors: ${idea.rank.basis}` : ''}`}
-          cls={ec.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}
+          cls={ec.nearZero ? 'bg-tint text-slate-300 border-hairline' : ec.direction === 'confirmed' ? (ec.largeMassClaim ? 'bg-amber-500/10 text-amber-400 border-amber-500/25' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25') : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}
         >
           <Gauge size={10} />
-          {ec.direction === 'confirmed' ? `Engine ✓ ${ec.savingPct > 0 ? '−' : ''}${Math.abs(ec.savingPct)}%` : 'Engine contradicts'}
+          {ec.nearZero ? `Engine: no difference (±0.5%)` : ec.direction === 'confirmed' ? `Engine ✓ ${ec.savingPct > 0 ? '−' : ''}${Math.abs(ec.savingPct)}%${ec.largeMassClaim ? ' · mass claim unverified' : ''}` : 'Engine contradicts'}
         </Badge>
       ) : (
         // Absence of a badge is not the same as a pass.
@@ -102,9 +102,11 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
           were wrong before the Sept 2026 false-positive review. */}
       {variant === 'full' && idea.arithmetic && idea.arithmetic.status !== 'unparsed' && (
         <Badge
-          title={`${idea.arithmetic.note}.\nRead as: ${idea.arithmetic.basis}`}
+          title={`${idea.arithmetic.note}.\nRead as: ${idea.arithmetic.basis}${idea.arithmetic.status === 'computed' ? '\nThe terms (amounts per part, per year) are the model\'s own estimates; the arithmetic that totals them is deterministic. Only an Engine ✓ badge means the cost engine priced the move.' : ''}`}
           cls={
-            idea.arithmetic.status === 'computed' ? 'bg-teal-500/10 text-teal-300 border-teal-500/25'
+            // Neutral, not teal: teal is the engine's measurement, and these
+            // TERMS are the model's own (PR-18). Only the total is computed.
+            idea.arithmetic.status === 'computed' ? 'bg-tint text-slate-300 border-hairline'
               : idea.arithmetic.status === 'consistent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
               : idea.arithmetic.status === 'partial' ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
                 : 'bg-danger-500/10 text-danger-400 border-danger-500/25'
@@ -113,7 +115,7 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
           <Calculator size={10} /> {
             /* Computed outranks consistent: one was verified after the fact, the
                other could never have been wrong. */
-            idea.arithmetic.status === 'computed' ? 'Computed, not claimed'
+            idea.arithmetic.status === 'computed' ? 'Total computed from AI terms'
               : idea.arithmetic.status === 'consistent' ? 'Sums check'
               // Partial is a floor (an unpriced saving) OR a ceiling (an unpriced
               // deduction) — calling both a floor told the reader the wrong direction.

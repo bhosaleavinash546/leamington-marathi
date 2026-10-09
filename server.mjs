@@ -28,7 +28,7 @@ import { depthSummary } from './idea-depth.mjs';
 import { LENSES as PRISM_LENSES } from './part360.mjs';
 import { ASSEMBLY_LENSES } from './prism-assembly.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
-import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
+import { computeShouldCost, simulateShouldCost, REGIONS as ENGINE_REGIONS } from './costing-engine.mjs';
 import { featureAccuracyClause } from './engine-accuracy.mjs';
 import { featuredMachiningCost } from './machining-feature-cost.mjs';
 import { stampingFeatureCost, geometryToStampingInput } from './stamping-feature-cost.mjs';
@@ -2774,6 +2774,18 @@ Provide 5 recommendations ordered by annual saving potential (highest first). DF
 
 // CAD-page region values → deterministic-engine region keys.
 const CAD_REGION_MAP = { germany: 'Germany', uk: 'UK', czech: 'Czech Republic', slovak: 'Czech Republic', spain: 'Spain', mexico: 'Mexico', usa: 'USA', china: 'China', india: 'India', korea: 'Korea' };
+// The engine region an idea check runs in. Prism sends the engine's own region
+// name (config.engineRegion); otherwise the plant slug is mapped. The old inline
+// map knew six slugs, so UK, Spain, Korea and Czech parts were engine-checked at
+// German rates (Prism review PR-05).
+function engineRegionFor(config) {
+  if (config?.engineRegion && Object.hasOwn(ENGINE_REGIONS, config.engineRegion)) return config.engineRegion;
+  const slug = String(config?.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '');
+  if (CAD_REGION_MAP[slug]) return CAD_REGION_MAP[slug];
+  if (slug === 'easterneurope' || slug === 'czechrepublic') return 'Czech Republic';
+  const direct = Object.keys(ENGINE_REGIONS).find(k => k.toLowerCase().replace(/[^a-z]/g, '') === slug);
+  return direct || 'Germany';
+}
 const CONF_RANK = ['theoretical', 'estimated', 'benchmarked', 'verified'];
 const capConfidence = (c, max) => { const i = CONF_RANK.indexOf(c), m = CONF_RANK.indexOf(max); return (i === -1 || i > m) ? max : c; };
 
@@ -3433,7 +3445,20 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     const blocks = req.body.partEvidence.blocks
       .filter(b => b && typeof b.text === 'string' && b.text.trim())
       .slice(0, 6)
-      .map(b => ({ lensId: sanitize(String(b.lensId ?? 'all'), 24), text: sanitize(String(b.text), 20000) }));
+      .map(b => {
+        // Cut on a LINE boundary and say so: a silent cut at 20,000 characters
+        // dropped the catalogue grades the material lens is told to name, mid-
+        // section and unannounced (Prism review PR-14).
+        const LIM = 40000;
+        let t = String(b.text);
+        if (t.length > LIM) {
+          const cut = t.lastIndexOf('\n', LIM);
+          const kept = t.slice(0, cut > 0 ? cut : LIM);
+          const dropped = (t.slice(kept.length).match(/^\[(?:E|W)\d+\]/gm) || []).length;
+          t = `${kept}\n(EVIDENCE TRUNCATED: ${dropped} further evidence line(s) were not sent with this lens — do not assume what they said.)`;
+        }
+        return { lensId: sanitize(String(b.lensId ?? 'all'), 24), text: sanitize(t, LIM + 400) };
+      });
     // Which lenses the dossier OFFERED (a lens such as DFA consolidation exists
     // only with its evidence) — so the coverage stamp never reports a lens as
     // "skipped" that was never on offer.
@@ -3594,7 +3619,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     // seeds get, now on live ideas. Stamps engineCheck (or honest null).
     try {
       const lib = getActiveLibrary();
-      const region = ({ germany: 'Germany', china: 'China', mexico: 'Mexico', usa: 'USA', india: 'India', easterneurope: 'Czech Republic' })[String(config.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany';
+      const region = engineRegionFor(config);
       const ecSummary = runEngineChecks(ideas, {
         region,
         annualVolume: effectiveVolume,
@@ -3604,6 +3629,10 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         // without a stated mass was priced on a 1 kg part (Prism review, 3 Oct 2026).
         defaultWeightKg: Number(cadGeometry?.estimatedMass) > 0 ? Number(cadGeometry.estimatedMass)
           : Number(config.partWeightKg) > 0 && Number(config.partWeightKg) <= 500 ? Number(config.partWeightKg) : 1.0,
+        // A KNOWN part mass also anchors idea reference masses (PR-19); the
+        // 1 kg fallback is not a known mass and anchors nothing.
+        partWeightKg: Number(cadGeometry?.estimatedMass) > 0 ? Number(cadGeometry.estimatedMass)
+          : Number(config.partWeightKg) > 0 && Number(config.partWeightKg) <= 500 ? Number(config.partWeightKg) : null,
       });
       validationSummary.engineChecks = ecSummary;
       if (ecSummary.checked > 0) emit({ type: 'progress', message: `Engine-verified ${ecSummary.checked} idea${ecSummary.checked === 1 ? '' : 's'} (${ecSummary.confirmed} confirmed, ${ecSummary.contradicted} contradicted).` });
@@ -3662,7 +3691,7 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
           partName: prtName || subName || sysName,
           manufacturingContext: kbDetailFor(domain, null, prtName || subName || sysName),
           commercialContext: retrievalCtx,
-          region: ({ germany: 'Germany', china: 'China', mexico: 'Mexico', usa: 'USA', india: 'India', easterneurope: 'Czech Republic' })[String(config.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany',
+          region: engineRegionFor(config),
           annualVolume: effectiveVolume,
           library: getActiveLibrary(),
           smallModel: SMALL_MODEL,

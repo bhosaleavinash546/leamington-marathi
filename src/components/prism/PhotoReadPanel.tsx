@@ -87,7 +87,7 @@ export default function PhotoReadPanel({ token, apiKey, partName, material, proc
       const obs: PhotoObservation[] = d.observations ?? [];
       setReads(prev => [...prev, {
         id: crypto.randomUUID(), subject, label: subject === 'ours' ? 'our part' : label.trim(),
-        thumbs: photos.map(p => p.dataUrl), obs, ticked: new Set(obs.map((_, i) => i)), caution: d.caution ?? '',
+        thumbs: photos.map(p => p.dataUrl), obs, ticked: new Set<number>(), caution: d.caution ?? '',
       }]);
       setFiles([]); setNotes('');
       if (fileRef.current) fileRef.current.value = '';
@@ -160,7 +160,7 @@ export default function PhotoReadPanel({ token, apiKey, partName, material, proc
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <p className="text-xs text-slate-300">
               <span className={`text-2xs uppercase tracking-wider mr-2 ${r.subject === 'ours' ? 'text-teal-400' : 'text-gold-400'}`}>{r.subject === 'ours' ? 'Our part' : 'Benchmark'}</span>
-              <span className="text-white font-semibold">{r.label}</span> · {r.ticked.size} of {r.obs.length} ticked
+              <span className="text-white font-semibold">{r.label}</span> · {r.ticked.size} of {r.obs.length} ticked{r.ticked.size < r.obs.length && <button type="button" onClick={() => setReads(prev => prev.map(x => x.id === r.id ? { ...x, ticked: new Set(x.obs.map((_, i) => i)) } : x))} className="ml-2 text-teal-300 hover:text-teal-200 underline underline-offset-2">Tick all</button>}
             </p>
             <div className="flex items-center gap-2">
               {r.subject === 'benchmark' && (

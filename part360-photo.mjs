@@ -242,8 +242,9 @@ export function photoObservations(read) {
 }
 
 /**
- * Teardown attributes rebuilt from TICKED observations' attrs. Counts are
- * summed per type and in total; methods and markings are de-duplicated and
+ * Teardown attributes rebuilt from TICKED observations' attrs. Counts are the
+ * highest seen per type (a floor that holds across overlapping photos), and
+ * the total is the sum of those per-type floors; methods and markings are de-duplicated and
  * sorted so a categorical comparison is order-independent.
  */
 export function attributesFromObservations(ticked) {
@@ -256,9 +257,12 @@ export function attributesFromObservations(ticked) {
     const a = o?.attr;
     if (!a || typeof a !== 'object') continue;
     if (a.type === 'fasteners' && Number.isInteger(a.count) && a.count >= 0 && a.count <= 200) {
-      any = true; total += a.count;
+      any = true;
       const t = pick(a.fastener, FASTENER_TYPES, 'other');
-      byType.set(t, (byType.get(t) ?? 0) + a.count);
+      // The HIGHEST count per type, not the sum: the same bolts seen in two
+      // photos were counted twice, so the "visible floor" could exceed the real
+      // number (Prism review PR-08). A maximum is a floor that always holds.
+      byType.set(t, Math.max(byType.get(t) ?? 0, a.count));
     } else if (a.type === 'joining' && JOINING.includes(a.method)) {
       methods.add(a.method);
     } else if (a.type === 'marking' && typeof a.verbatim === 'string') {
@@ -266,6 +270,7 @@ export function attributesFromObservations(ticked) {
       if (d.recognised) marks.add(d.code);
     }
   }
+  for (const c of byType.values()) total += c;
   const attrs = [];
   if (any) {
     attrs.push({ name: 'visible fasteners', value: String(total), better: 'lower' });

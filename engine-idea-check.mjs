@@ -107,7 +107,7 @@ function checkHarness(req, { region, annualVolume, library }) {
       kind: 'harness',
       referenceCase: `wiring harness, ${changed}, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}`,
       baselineEur: Number(bt.toFixed(2)), proposedEur: Number(pt.toFixed(2)), savingPct,
-      direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+      direction: dirOf(savingPct),
       basis: 'Deterministic wiring-harness cost model (copper, connectors, crimp/insertion/test labour) — validates the DIRECTION of the move, not this harness’s exact figure.',
     } };
   } catch (e) {
@@ -159,11 +159,38 @@ function standInReason(base, prop) {
   return `"${which}" is priced on the ${key} model, which cannot price the difference this idea is about — no verdict rather than a verdict on a different process`;
 }
 
+// Binary on purpose: every consumer (badges, deep-mode repair, evals) reads
+// confirmed/contradicted. A |Δ| within 0.5% is flagged on the stamp instead
+// (nearZero) so the badge can say the engine cannot separate the sides (PR-31).
+const dirOf = (pct) => (pct > 0 ? 'confirmed' : 'contradicted');
+
 const SUBSTITUTION_BASIS = 'Deterministic should-cost engine on a reference part — validates the DIRECTION of the move, not this part’s exact figure.';
 
-function checkSubstitution(req, { region, annualVolume, library, defaultWeightKg }) {
-  const wBase = clampW(req.referenceWeightKg, defaultWeightKg);
-  const wProp = clampW(req.proposedWeightKg, wBase);
+// The engine prices the CONSEQUENCE of a mass the idea states; it does not
+// verify that the mass can come out. A "25 → 5 kg" claim on a 1.2 kg part was
+// stamped "Engine ✓ −78%" (Prism review PR-19). So: (1) when the part's own
+// mass is known, a reference mass more than 15% away from it is re-anchored to
+// the part, keeping the idea's stated RATIO; (2) every stamp whose mass moved
+// says the mass change is the idea's claim; (3) a claimed cut beyond 50% is
+// marked as an unverified large claim on the stamp.
+const MASS_ANCHOR_TOL = 0.15;
+function anchorMass(wBase, wProp, partWeightKg) {
+  const part = Number(partWeightKg);
+  if (!(part > 0) || !(wBase > 0)) return { wBase, wProp, note: null };
+  if (Math.abs(wBase - part) / part <= MASS_ANCHOR_TOL) return { wBase, wProp, note: null };
+  const k = part / wBase;
+  return { wBase: Number(part.toFixed(4)), wProp: Number((wProp * k).toFixed(4)), note: `The idea's reference mass (${wBase} kg) is not this part's ${part} kg, so both sides were re-anchored to the part, keeping the idea's stated ratio.` };
+}
+const massClaimNote = (wBase, wProp) => {
+  if (!(wBase > 0) || wBase === wProp) return '';
+  const cut = (wBase - wProp) / wBase;
+  return ` The mass change (${wBase} → ${wProp} kg, ${cut >= 0 ? '−' : '+'}${Math.round(Math.abs(cut) * 100)}%) is the idea's own claim: the engine prices its consequence, it does not verify the mass can come out.${cut > 0.5 ? ' A cut beyond 50% is a large, unverified claim — check it against the geometry before using this figure.' : ''}`;
+};
+
+function checkSubstitution(req, { region, annualVolume, library, defaultWeightKg, partWeightKg = null }) {
+  const anchored = anchorMass(clampW(req.referenceWeightKg, defaultWeightKg), clampW(req.proposedWeightKg, clampW(req.referenceWeightKg, defaultWeightKg)), partWeightKg);
+  const wBase = anchored.wBase;
+  const wProp = anchored.wProp;
   const base = computeSide(req.baselineMaterial, req.baselineProcess, wBase, annualVolume, region, library);
   if (base.reason) return { reason: `baseline ${base.reason}` };
   const prop = computeSide(req.proposedMaterial ?? req.baselineMaterial, req.proposedProcess ?? req.baselineProcess, wProp, annualVolume, region, library);
@@ -179,8 +206,9 @@ function checkSubstitution(req, { region, annualVolume, library, defaultWeightKg
     kind: wBase !== wProp && base.material === prop.material && base.process === prop.process ? 'mass' : 'substitution',
     referenceCase: `${wBase} kg ${base.material} via ${base.process} → ${wProp} kg ${prop.material} via ${prop.process}, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}`,
     baselineEur: Number(base.totalEur.toFixed(2)), proposedEur: Number(prop.totalEur.toFixed(2)), savingPct,
-    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
-    basis: SUBSTITUTION_BASIS,
+    direction: dirOf(savingPct),
+    basis: SUBSTITUTION_BASIS + (anchored.note ? ` ${anchored.note}` : '') + massClaimNote(wBase, wProp),
+    ...(wBase > 0 && (wBase - wProp) / wBase > 0.5 ? { largeMassClaim: true } : {}),
   } };
 }
 
@@ -210,7 +238,7 @@ function checkTolerance(req, { region, annualVolume, library, defaultWeightKg })
     kind: 'tolerance',
     referenceCase: `${w} kg ${base.material} via ${base.process}: ${desc(b)} → ${desc(p)}, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}`,
     baselineEur: Number(base.totalEur.toFixed(2)), proposedEur: Number(prop.totalEur.toFixed(2)), savingPct,
-    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    direction: dirOf(savingPct),
     basis: 'Deterministic should-cost engine re-run with the relaxed drawing drivers (tolerance cycle multiplier, finish multiplier, critical-characteristic inspection) — validates the DIRECTION, not this part’s exact figure. Whether the characteristic CAN be relaxed is an engineering judgement the engine does not make.',
   } };
 }
@@ -254,7 +282,7 @@ function checkAssembly(req, { region, annualVolume }) {
     kind: 'assembly',
     referenceCase: `${base.parts} parts (${fl(base)}) → ${prop.parts} parts (${fl(prop)}), ${base.sec}s → ${prop.sec}s assembly time, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}`,
     baselineEur: Number(base.totalEur.toFixed(2)), proposedEur: Number(prop.totalEur.toFixed(2)), savingPct,
-    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    direction: dirOf(savingPct),
     basis: 'Deterministic DFA time model (BrainSpark coefficients, MTM-structured, calibratable) at the region’s loaded labour rate, plus illustrative fastener piece prices — validates the DIRECTION of the assembly-content change ONLY. Material and tooling consequences of a consolidation are NOT included; add a substitution request for those.',
   } };
 }
@@ -308,7 +336,7 @@ function checkFootprint(req, { region, annualVolume, library, defaultWeightKg })
     kind: 'footprint',
     referenceCase: `${side.w} kg ${side.matKey} via ${side.routeKeys.join(' → ')}, ${(annualVolume / 1000).toFixed(0)}k/yr: ${from} → ${to}`,
     baselineEur: Number(baselineEur.toFixed(2)), proposedEur: Number(proposedEur.toFixed(2)), savingPct,
-    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    direction: dirOf(savingPct),
     basis: 'Deterministic should-cost engine re-run against the proposed region\u2019s labour, machine, energy and commercial rates \u2014 EX-WORKS. Freight, duty, tariff, inventory and the launch cost of a resourcing are NOT in this figure, and on a low-value part they can exceed the whole saving.',
   } };
 }
@@ -344,7 +372,7 @@ function checkCommonisation(req, { region, annualVolume, library, defaultWeightK
     kind: 'commonisation',
     referenceCase: `${side.w} kg ${side.matKey} via ${side.routeKeys.join(' \u2192 ')} in ${region}: ${variants} variants at ${(baseVol / 1000).toFixed(0)}k/yr each \u2192 one common part at ${(commonVol / 1000).toFixed(0)}k/yr`,
     baselineEur: Number(baselineEur.toFixed(2)), proposedEur: Number(proposedEur.toFixed(2)), savingPct,
-    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    direction: dirOf(savingPct),
     basis: 'Deterministic should-cost engine at the per-variant volume versus the consolidated volume \u2014 the tooling-amortisation and setup effect of commonisation, per part. It does NOT price the content penalty of one part covering every variant\u2019s duty (a common part is usually the heaviest variant), nor the engineering and validation cost of the change.',
   } };
 }
@@ -380,7 +408,7 @@ function checkCycle(req, { region, annualVolume, library, defaultWeightKg }) {
     kind: 'cycle',
     referenceCase: `${side.w} kg ${side.matKey} via ${side.routeKeys[0]}, ${(annualVolume / 1000).toFixed(0)}k/yr, ${region}: cycle ${pctOf(cycleMult)}, machine rate ${pctOf(machineMult)}`,
     baselineEur: Number(baselineEur.toFixed(2)), proposedEur: Number(proposedEur.toFixed(2)), savingPct,
-    direction: savingPct > 0 ? 'confirmed' : 'contradicted',
+    direction: dirOf(savingPct),
     basis: 'Deterministic should-cost engine re-run with the stated cycle-time and machine-rate multipliers \u2014 it prices the CONSEQUENCE of the claimed rate, not the claim itself. Whether the line can actually run that fast on this part is an engineering judgement, and the capital cost of the faster asset is not in the machine-rate multiplier unless you put it there.',
   } };
 }
@@ -418,9 +446,9 @@ function runOneCheck(req, ctx) {
 
 export const KINDS = Object.freeze(['substitution', 'mass', 'tolerance', 'assembly', 'footprint', 'commonisation', 'cycle', 'harness']);
 
-export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 80000, library = undefined, defaultWeightKg = 1.0 } = {}) {
+export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 80000, library = undefined, defaultWeightKg = 1.0, partWeightKg = null } = {}) {
   const summary = { checked: 0, confirmed: 0, contradicted: 0, unexpressible: 0, byKind: {}, reasons: {} };
-  const ctx = { region, annualVolume, library, defaultWeightKg };
+  const ctx = { region, annualVolume, library, defaultWeightKg, partWeightKg };
   // The REQUEST travels with the verdict (Sept 2026). It used to be deleted as
   // "model-internal", which made a deterministic check the one thing in this
   // pipeline that could not be re-derived: when the resolver improved, there was
@@ -431,6 +459,7 @@ export function runEngineChecks(ideas, { region = 'Germany', annualVolume = 8000
   const stamp = (idea, res, req = null) => {
     if (req) idea.engineCheckInput = req;
     if (res.stamp) {
+      if (Number.isFinite(res.stamp.savingPct) && Math.abs(res.stamp.savingPct) <= 0.5) res.stamp.nearZero = true;
       idea.engineCheck = res.stamp;
       delete idea.engineCheckReason;
       summary.checked++;

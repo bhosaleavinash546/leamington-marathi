@@ -1122,7 +1122,7 @@ export default function ResultsPage() {
     setExporting('pdf');
     // Prism runs append the evidence dossier as an appendix so every [E#]/[W#]
     // citation in the ideas resolves inside the document itself.
-    const legend = systemName === 'Prism' ? sessionStorage.getItem('prismDossier') : null;
+    const legend = systemName === 'Prism' ? (sessionStorage.getItem(`prismDossier:${result.id}`) ?? sessionStorage.getItem('prismDossier')) : null;
     try { await Promise.resolve(exportToPdf(result, systemName, subName, legend)); } finally { setExporting(null); }
   };
 
@@ -1259,7 +1259,7 @@ export default function ResultsPage() {
         // answers waterfall/forensics questions from evidence, not memory.
         // Guarded on the run's own stamp — a later non-Prism analysis in the
         // same tab must not inherit a stale part's dossier.
-        (systemName === 'Prism' && sessionStorage.getItem('prismDossier')) || undefined,
+        (systemName === 'Prism' && (sessionStorage.getItem(`prismDossier:${result.id}`) ?? sessionStorage.getItem('prismDossier'))) || undefined,
         controller.signal
       );
     } catch (err) {

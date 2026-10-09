@@ -75,14 +75,23 @@ function invalidateUserCal(userId) {
   try { _calVBump.run(userId); } catch { /* table missing — cache falls back to per-process */ }
   for (const k of calCache.keys()) if (k.startsWith(`${userId}:`)) calCache.delete(k);
 }
-function getUserCalibration(userId) {
+// `exclude`: a quote that must NOT calibrate the engine judging it. Prism
+// saves the supplier quote to the corpus and then builds a dossier that
+// compares the engine with that same quote; fitting the engine to the quote
+// shrank the commercial gap toward zero with every save (Prism review, 9 Oct
+// 2026, PR-01). Rows matching the excluded quote are left out of the fit.
+const sameQuote = (r, x) => x && r.material === x.material && r.process === x.process
+  && Math.abs(Number(r.weightKg) - Number(x.weightKg)) < 1e-6 && Number(r.annualVolume) === Number(x.annualVolume)
+  && (r.region || 'Germany') === (x.region || 'Germany') && Math.abs(Number(r.actualPriceEur) - Number(x.priceEur)) < 0.005;
+function getUserCalibration(userId, { exclude = null } = {}) {
   const { library: lib, pricedAt } = liveLibrary();
   // Include the price vintage in the cache key: a commodity refresh changes both
   // the modelled baseline and the index-rebasing, so the fit must refresh with it.
   const calV = (() => { try { return _calVGet.get(userId)?.v ?? 0; } catch { return 0; } })();
   const key = `${userId}:${calV}:${getActiveMeta().version ?? 'builtin'}:${pricedAt ? pricedAt.slice(0, 10) : 'static'}`;
-  if (calCache.has(key)) return calCache.get(key);
-  const rows = db.prepare('SELECT material, process, weightKg, annualVolume, region, actualPriceEur, matEurAtQuote FROM cost_quotes WHERE userId = ?').all(userId);
+  if (!exclude && calCache.has(key)) return calCache.get(key);
+  const rows = db.prepare('SELECT material, process, weightKg, annualVolume, region, actualPriceEur, matEurAtQuote FROM cost_quotes WHERE userId = ?').all(userId)
+    .filter(r => !sameQuote(r, exclude));
   const pairs = [];
   for (const r of rows) {
     let now;
@@ -101,7 +110,7 @@ function getUserCalibration(userId) {
     if (actual > 0) pairs.push({ process: r.process, modelled: now.totalShouldCost, actual, region: r.region, annualVolume: r.annualVolume });
   }
   const cal = fitCalibration(pairs);
-  calCache.set(key, cal);
+  if (!exclude) calCache.set(key, cal);
   return cal;
 }
 
@@ -155,6 +164,15 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
         })))
     : null;
 
+  // Idempotent: the same quote for the same part saved twice (a second
+  // "Build dossier" click) is one data point, not two — a duplicate doubles
+  // its weight in the fit (PR-01).
+  const dup = db.prepare('SELECT id FROM cost_quotes WHERE userId = ? AND material = ? AND process = ? AND ABS(weightKg - ?) < 1e-6 AND annualVolume = ? AND region = ? AND ABS(actualPriceEur - ?) < 0.005 LIMIT 1')
+    .get(req.user.id, matRes.key, procRes.key, Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur);
+  if (dup) {
+    const cal0 = getUserCalibration(req.user.id);
+    return res.json({ ok: true, duplicate: true, quotes: cal0.n, calibration: { global: cal0.global, process: cal0.process } });
+  }
   db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, matEurAtQuote, breakdown, createdAt)
               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
     crypto.randomUUID(), req.user.id, String(partName || '').slice(0, 200), matRes.key, procRes.key,
