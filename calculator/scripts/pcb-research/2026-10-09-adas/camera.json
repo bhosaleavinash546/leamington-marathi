@@ -1,0 +1,879 @@
+{
+  "domain": "adas-camera",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "AR0147ATSC00XUEA5-DPBR",
+      "family": "AR0147AT",
+      "mfr": "onsemi",
+      "desc": "1.3 MP automotive HDR CMOS image sensor, colour, tray",
+      "category": "ic_bga",
+      "pkg": "iBGA-89",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "AR0147ATSC00XUEA5-DPBR",
+      "observations": [
+        {
+          "distributor": "Master Electronics",
+          "qty": 1300,
+          "price": 20.62,
+          "currency": "USD",
+          "url": "https://masterelectronics.com/en/onsemi/ar0147atsc00xuea5dpbr-60414286.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Master Electronics",
+          "qty": 2600,
+          "price": 13.76,
+          "currency": "USD",
+          "url": "https://masterelectronics.com/en/onsemi/ar0147atsc00xuea5dpbr-60414286.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Colour (SC) tray variant -DPBR. Master ladder also $40.38 @650 (MOQ) and $14.04 @1,950 \u2014 the ladder is steep (MOQ-loaded), so the 1,300 break overstates a volume price; 2,600 = SPQ. Stock 0, 39 wk, page dated Aug 2025. Digi-Key lists sibling AR0147ATSC00XUEG5-DPBR2 (~EUR 17.33 on digikey.gr, break not shown \u2014 not recorded). onlinecomponents.com (same ladder) not a PRICE_HOST."
+    },
+    {
+      "mpn": "AR0138AT3R00XUEA0-DPBR",
+      "family": "AR0138AT",
+      "mfr": "onsemi",
+      "desc": "1.2 MP 1/2.6in automotive CMOS image sensor, 4.2 um BSI pixel",
+      "category": "ic_bga",
+      "pkg": "iBGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Digi-Key lists AR0138AT3R00XUEA0-DPBR with no price (0 stock, 'no prices available'). No other franchised listing found in 2 searches. RCCC/RGB filter variants exist."
+    },
+    {
+      "mpn": "AR0144ATSM20XUEA0-DRBR",
+      "family": "AR0144AT",
+      "mfr": "onsemi",
+      "desc": "1 MP 1/4in global-shutter monochrome CMOS image sensor, 1280x800, 60 fps",
+      "category": "ic_bga",
+      "pkg": "iBGA-63",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "AR0144ATSM20XUEA0-DRBR",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 4160,
+          "price": 174.41,
+          "currency": "NOK",
+          "url": "https://no.farnell.com/en-NO/onsemi/ar0144atsm20xuea0-drbr/cmos-image-sensor-1280x800-ibga/dp/3613812",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mono (SM) variant, Farnell NO order code 3613812, min/mult 4,160, 54 wk. Price is in NOK (not in the engine FX table \u2014 needs conversion or a GBP/EUR storefront read before merge). Digi-Key AR0144ATSM20XUEA0-DRBR shown at $15.01 (break not stated, via electronicspecifier) \u2014 not recorded. LCSC sibling -DPBR (discontinued) $13.48 @30 \u2014 below 100-unit floor, not recorded."
+    },
+    {
+      "mpn": "AR0234AT",
+      "family": "AR0234AT",
+      "mfr": "onsemi",
+      "desc": "2.3 MP global-shutter CMOS image sensor (in-cabin automotive)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No automotive AR0234AT orderable code found at a franchised distributor in 2 searches (only AR0234CS industrial variants and an eval kit ONS-MARS1-AR0234ATSMS-GEVB). Eval kit price is not a sensor price."
+    },
+    {
+      "mpn": "AR0341AT",
+      "family": "AR0341AT",
+      "mfr": "onsemi",
+      "desc": "3 MP 1/3.6in Hyperlux automotive CMOS image sensor, 1920x1536",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "1 search: Mouser India has a product-introduction page (no price in result); no Digi-Key listing found. Search budget ran out before a second attempt."
+    },
+    {
+      "mpn": "AR0822",
+      "family": "AR0822",
+      "mfr": "onsemi",
+      "desc": "8 MP CMOS image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": false,
+      "ecuRoles": [
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. AEC-Q100 status of an AR0822 orderable not confirmed."
+    },
+    {
+      "mpn": "AR0323AT",
+      "family": "AR0323AT",
+      "mfr": "onsemi",
+      "desc": "3 MP automotive CMOS image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "AP0101AT",
+      "family": "AP0101AT",
+      "mfr": "onsemi",
+      "desc": "Automotive HDR image signal processor (ISP) for 1.2 MP sensors",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "AP0100AT",
+      "family": "AP0100AT",
+      "mfr": "onsemi",
+      "desc": "Automotive HDR image signal processor (ISP)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "AP0300AT",
+      "family": "AP0300AT",
+      "mfr": "onsemi",
+      "desc": "Automotive image signal processor (ISP)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "IMX390",
+      "family": "IMX390",
+      "mfr": "Sony",
+      "desc": "2.45 MP automotive HDR CMOS image sensor (LFM)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "surround camera",
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "IMX490",
+      "family": "IMX490",
+      "mfr": "Sony",
+      "desc": "5.4 MP automotive HDR CMOS image sensor (LFM)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "IMX623",
+      "family": "IMX623",
+      "mfr": "Sony",
+      "desc": "3 MP automotive HDR CMOS image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "IMX728",
+      "family": "IMX728",
+      "mfr": "Sony",
+      "desc": "8 MP automotive HDR CMOS image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "ISX016",
+      "family": "ISX016",
+      "mfr": "Sony",
+      "desc": "Automotive CMOS image sensor with integrated ISP",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "ISX019",
+      "family": "ISX019",
+      "mfr": "Sony",
+      "desc": "Automotive CMOS image sensor with integrated ISP",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "ISX031",
+      "family": "ISX031",
+      "mfr": "Sony",
+      "desc": "3 MP automotive CMOS image sensor with integrated ISP",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX08B40",
+      "family": "OX08B40",
+      "mfr": "OmniVision",
+      "desc": "8 MP automotive HDR CMOS image sensor (front ADAS)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX08D10",
+      "family": "OX08D10",
+      "mfr": "OmniVision",
+      "desc": "8 MP automotive HDR CMOS image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX03C10",
+      "family": "OX03C10",
+      "mfr": "OmniVision",
+      "desc": "2.5 MP automotive HDR CMOS image sensor (LFM)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX03F10",
+      "family": "OX03F10",
+      "mfr": "OmniVision",
+      "desc": "3 MP automotive HDR CMOS image sensor",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "ADAS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX01F10",
+      "family": "OX01F10",
+      "mfr": "OmniVision",
+      "desc": "1.3 MP automotive SoC image sensor with integrated ISP",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX01E20",
+      "family": "OX01E20",
+      "mfr": "OmniVision",
+      "desc": "1.3 MP automotive SoC image sensor with integrated ISP",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OV2312",
+      "family": "OV2312",
+      "mfr": "OmniVision",
+      "desc": "2 MP RGB-IR global-shutter image sensor (in-cabin)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OG01A1B",
+      "family": "OG01A1B",
+      "mfr": "OmniVision",
+      "desc": "1.3 MP global-shutter monochrome image sensor (in-cabin)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OAX4010",
+      "family": "OAX4010",
+      "mfr": "OmniVision",
+      "desc": "Automotive image signal processor (ISP)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "OX05B1S",
+      "family": "OX05B1S",
+      "mfr": "OmniVision",
+      "desc": "5 MP RGB-IR automotive image sensor (in-cabin)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Expected not to be listed at a franchised distributor (OEM-direct / NDA) \u2014 unverified."
+    },
+    {
+      "mpn": "GW5400",
+      "family": "GW5400",
+      "mfr": "GEO Semiconductor (indie Semiconductor)",
+      "desc": "Automotive camera video processor / ISP",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "DS90UB933-Q1",
+      "family": "DS90UB933-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "FPD-Link III serializer, 10/12-bit parallel camera input",
+      "category": "ic_qfn",
+      "pkg": "WQFN-32",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "DS90UB913A-Q1",
+      "family": "DS90UB913A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "FPD-Link III serializer, parallel camera input",
+      "category": "ic_qfn",
+      "pkg": "WQFN-32",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "DS90UB635-Q1",
+      "family": "DS90UB635-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "FPD-Link III CSI-2 camera serializer",
+      "category": "ic_qfn",
+      "pkg": "VQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "DS90UB971-Q1",
+      "family": "DS90UB971-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "FPD-Link IV CSI-2 camera serializer",
+      "category": "ic_qfn",
+      "pkg": "VQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX9295D",
+      "family": "MAX9295D",
+      "mfr": "Analog Devices",
+      "desc": "GMSL2 CSI-2 camera serializer",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX96793",
+      "family": "MAX96793",
+      "mfr": "Analog Devices",
+      "desc": "GMSL3 CSI-2 camera serializer",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX96705",
+      "family": "MAX96705",
+      "mfr": "Analog Devices",
+      "desc": "GMSL camera serializer, parallel input",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX96701",
+      "family": "MAX96701",
+      "mfr": "Analog Devices",
+      "desc": "GMSL camera serializer, parallel input",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX20019",
+      "family": "MAX20019",
+      "mfr": "Analog Devices",
+      "desc": "Automotive camera power-management IC",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue. Catalogue estimate for MAX20019 is NOT upgraded."
+    },
+    {
+      "mpn": "MAX20049",
+      "family": "MAX20049",
+      "mfr": "Analog Devices",
+      "desc": "Automotive camera power-management IC",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX20021",
+      "family": "MAX20021",
+      "mfr": "Analog Devices",
+      "desc": "Automotive multi-output step-down converter",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX20025",
+      "family": "MAX20025",
+      "mfr": "Analog Devices",
+      "desc": "Automotive multi-output step-down converter",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX20086",
+      "family": "MAX20086",
+      "mfr": "Analog Devices",
+      "desc": "Dual camera power protector (power-over-coax)",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX20089",
+      "family": "MAX20089",
+      "mfr": "Analog Devices",
+      "desc": "Quad camera power protector (power-over-coax)",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "TPS65000-Q1",
+      "family": "TPS65000-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Power-management IC, step-down converter + LDOs",
+      "category": "ic_qfn",
+      "pkg": "WSON",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "TPS650330-Q1",
+      "family": "TPS650330-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive camera PMIC, 3 bucks + LDO",
+      "category": "ic_qfn",
+      "pkg": "VQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "TPS650332-Q1",
+      "family": "TPS650332-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive camera PMIC, 3 bucks + LDO",
+      "category": "ic_qfn",
+      "pkg": "VQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "TPS7B7702-Q1",
+      "family": "TPS7B7702-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual-channel antenna/camera LDO with current sense (power-over-coax)",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "LM5050-1-Q1",
+      "family": "LM5050-1-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "High-side OR-ing ideal-diode controller",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "TPS62440-Q1",
+      "family": "TPS62440-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual step-down converter",
+      "category": "ic_qfn",
+      "pkg": "VQFN-16",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "TPS62420-Q1",
+      "family": "TPS62420-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual step-down converter",
+      "category": "ic_qfn",
+      "pkg": "VSON-10",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "LMR36506-Q1",
+      "family": "LMR36506-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "65 V 0.6 A synchronous step-down converter",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-12",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    },
+    {
+      "mpn": "MAX96717F",
+      "family": "MAX96717F",
+      "mfr": "Analog Devices",
+      "desc": "GMSL2 CSI-2 camera serializer (3 Gbps)",
+      "category": "ic_qfn",
+      "pkg": "TQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Not researched: the session's shared web-search budget (200 calls/turn) ran out before this part was reached; no distributor listing was read. Re-queue."
+    }
+  ]
+}

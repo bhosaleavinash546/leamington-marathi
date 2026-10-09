@@ -1,0 +1,833 @@
+{
+ "domain": "adas-compute",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "TDA4VH88TGAALYRQ1",
+   "family": "TDA4VH",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS / domain-controller SoC, 8x Cortex-A72, C7x/MMA",
+   "category": "ic_bga",
+   "pkg": "FCBGA-1414 (ALY)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": "TDA4VH88TGAALYRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 200,
+     "price": 240.5218,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA4VH88TGAALYRQ1/25811540",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 200,
+     "price": 208.53,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TDA4VH88TGAALYRQ1?qs=dbcCsuKDzFWQYiMoGOSM7w%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Only automotive orderable seen (T&R 200, -40..125C). Both distributors quote the 200 reel only (Mouser non-stocked, mult 200). ti.com list $171.80 (snippets also showed ~$156; qty unlabelled) https://www.ti.com/product/TDA4VH-Q1/part-details/TDA4VH88TGAALYRQ1 - not an observation."
+  },
+  {
+   "mpn": "TDA4VL21HGAALZRQ1",
+   "family": "TDA4VL",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 SoC, 2x Cortex-A72 1.2 GHz, 4 TOPS, C7x, GPU",
+   "category": "ic_bga",
+   "pkg": "FCBGA-770 (ALZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera",
+    "park assist"
+   ],
+   "observedMpn": "TDA4VL21HGAALZRQ1",
+   "observations": [],
+   "notes": "Orderable per ti.com (T&R 250). No franchised break with a readable quantity: Mouser category-page snippets gave only 1-piece prices (CA $189.62, SG $162.59) and an unlabelled lower break - not recorded. Dasenic (broker) ignored. ti.com list $63.871 (qty unlabelled) https://www.ti.com/product/TDA4VL-Q1/part-details/TDA4VL21HGAALZRQ1. Search budget then ran out."
+  },
+  {
+   "mpn": "TDA4VE88TGAALZRQ1",
+   "family": "TDA4VE",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS SoC, 2x Cortex-A72, C7x/MMA, R5F, C66x",
+   "category": "ic_bga",
+   "pkg": "FCBGA-770 (ALZ, 23x23)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS",
+    "park assist"
+   ],
+   "observedMpn": "TDA4VE88TGAALZRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 82.87,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TDA4VE88TGAALZRQ1?qs=amGC7iS6iy94hBzlpK8WJg%3D%3D",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 73.02,
+     "currency": "EUR",
+     "url": "https://www.digikey.at/en/products/detail/texas-instruments/TDA4VE88TGAALZRQ1/17873875",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate TDA4VE. Full reel = 250. Digi-Key US snippet gave T&R 250 at $129.1598 - discarded: inconsistent with Digi-Key AT (EUR 73.02) and above ti.com list $83.870 (qty unlabelled) https://www.ti.com/product/TDA4VE-Q1/part-details/TDA4VE88TGAALZRQ1. Mouser 1 pc $121.11."
+  },
+  {
+   "mpn": "TDA4AL-Q1",
+   "family": "TDA4AL",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS SoC (TDA4AL-Q1)",
+   "category": "ic_bga",
+   "pkg": "FCBGA-770 (ALZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate TDA4AL."
+  },
+  {
+   "mpn": "TDA4VEN-Q1",
+   "family": "TDA4VEN",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 SoC (TDA4VEN-Q1)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate TDA4VE."
+  },
+  {
+   "mpn": "TDA4AEN-Q1",
+   "family": "TDA4AEN",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 SoC (TDA4AEN-Q1)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "AM62A7-Q1",
+   "family": "AM62A7",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara vision SoC, 4x Cortex-A53, 2 TOPS (automotive)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "DMS",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "AM62A3-Q1",
+   "family": "AM62A3",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara vision SoC, Cortex-A53, 1 TOPS (automotive)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "DMS",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "AM68A",
+   "family": "AM68A",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AI vision SoC (industrial)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Industrial part; automotive equivalent is TDA4VL-Q1 (see that line), so per round rules it need not be priced."
+  },
+  {
+   "mpn": "TDA2SX",
+   "family": "TDA2SX",
+   "mfr": "Texas Instruments",
+   "desc": "TDA2x ADAS SoC (surround view)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist"
+   ],
+   "observedMpn": "TDA2SXBTQABCRQ1",
+   "observations": [],
+   "notes": "A fat.lcsc.com product-image snippet (C5218319) gave TDA2SXBTQABCRQ1 ~$8.26 at 1k+ (out of stock) - discarded as implausible for this SoC (same page family showed TDA4VM at $47.62, far below distributor/TI levels). Search budget then ran out; no price recorded."
+  },
+  {
+   "mpn": "TDA3MA",
+   "family": "TDA3MA",
+   "mfr": "Texas Instruments",
+   "desc": "TDA3x ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera",
+    "radar"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "R-CAR V3H",
+   "family": "RCARV3H",
+   "mfr": "Renesas",
+   "desc": "R-Car V3H vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "R-CAR V3M",
+   "family": "RCARV3M",
+   "mfr": "Renesas",
+   "desc": "R-Car V3M vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "R-CAR V4H",
+   "family": "RCARV4H",
+   "mfr": "Renesas",
+   "desc": "R-Car V4H ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "R-CAR V4M",
+   "family": "RCARV4M",
+   "mfr": "Renesas",
+   "desc": "R-Car V4M ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "R-CAR H3",
+   "family": "RCARH3",
+   "mfr": "Renesas",
+   "desc": "R-Car H3 SoC (mainly cockpit)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "S32V234",
+   "family": "S32V234",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32V234 vision processor",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "S32G399A",
+   "family": "S32G399A",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G3 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate S32G399."
+  },
+  {
+   "mpn": "S32G274A",
+   "family": "S32G274A",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G2 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate S32G274."
+  },
+  {
+   "mpn": "S32G254A",
+   "family": "S32G254A",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G2 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "S32K344EHT1VMMST",
+   "family": "S32K344",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32K344 Cortex-M7 lockstep MCU, 4 MB",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-257",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: S32K344EHT1VMMST."
+  },
+  {
+   "mpn": "S32K396",
+   "family": "S32K396",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32K39 automotive MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "SAF85xx",
+   "family": "SAF85",
+   "mfr": "NXP Semiconductors",
+   "desc": "SAF85xx RFCMOS radar one-chip",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "radar"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "TC397",
+   "family": "TC397",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 hexa-core TriCore",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate TC397."
+  },
+  {
+   "mpn": "TC387",
+   "family": "TC387",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 quad-core TriCore",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate TC387."
+  },
+  {
+   "mpn": "TC377",
+   "family": "TC377",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 tri-core TriCore",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate TC377."
+  },
+  {
+   "mpn": "TC4D9",
+   "family": "TC4D9",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4x MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "TC499",
+   "family": "TC499",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4x MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate TC499."
+  },
+  {
+   "mpn": "SPC58NH92",
+   "family": "SPC58NH92",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 H-line automotive MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Package not confirmed."
+  },
+  {
+   "mpn": "SPC584B",
+   "family": "SPC584B",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 B-line automotive MCU",
+   "category": "ic_tqfp",
+   "pkg": "eTQFP",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Upgrade target: estimate SPC584B."
+  },
+  {
+   "mpn": "RH850/U2A",
+   "family": "RH850U2A",
+   "mfr": "Renesas",
+   "desc": "RH850/U2A multi-core automotive MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "RH850/U2B",
+   "family": "RH850U2B",
+   "mfr": "Renesas",
+   "desc": "RH850/U2B multi-core automotive MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "RH850/E2x",
+   "family": "RH850E2",
+   "mfr": "Renesas",
+   "desc": "RH850/E2x automotive MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "XA7Z020",
+   "family": "XA7Z020",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq-7000 automotive SoC FPGA",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "XAZU2EG",
+   "family": "XAZU2EG",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "XAZU3EG",
+   "family": "XAZU3EG",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "XAZU5EV",
+   "family": "XAZU5EV",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC (EV)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "LiDAR"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "XAZU7EV",
+   "family": "XAZU7EV",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC (EV)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "LiDAR"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "XA7A50T",
+   "family": "XA7A50T",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Artix-7 automotive FPGA",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "LiDAR"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "LIFCL-17",
+   "family": "LIFCL-17",
+   "mfr": "Lattice Semiconductor",
+   "desc": "CrossLink-NX 17k FPGA (automotive grade)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue. Package (BGA or QFN) not confirmed."
+  },
+  {
+   "mpn": "EyeQ4",
+   "family": "EyeQ4",
+   "mfr": "Mobileye",
+   "desc": "EyeQ4 vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "EyeQ5",
+   "family": "EyeQ5",
+   "mfr": "Mobileye",
+   "desc": "EyeQ5 vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "EyeQ6L",
+   "family": "EyeQ6L",
+   "mfr": "Mobileye",
+   "desc": "EyeQ6 Lite vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "CV2AQ",
+   "family": "CV2AQ",
+   "mfr": "Ambarella",
+   "desc": "CV2AQ automotive vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "DMS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "CV3-AD685",
+   "family": "CV3-AD685",
+   "mfr": "Ambarella",
+   "desc": "CV3-AD685 ADAS domain SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "DRIVE AGX Orin SoC",
+   "family": "Orin",
+   "mfr": "NVIDIA",
+   "desc": "DRIVE Orin automotive SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue. Note: Jetson AGX Orin modules (non-automotive) are a different product."
+  },
+  {
+   "mpn": "SA8650P",
+   "family": "SA8650P",
+   "mfr": "Qualcomm",
+   "desc": "Snapdragon Ride SA8650P ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "SA8540P",
+   "family": "SA8540P",
+   "mfr": "Qualcomm",
+   "desc": "Snapdragon Ride SA8540P SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: shared web-search budget used up before this part was reached. Expected OEM-direct / NDA (not verified this round). No price recorded; re-queue."
+  },
+  {
+   "mpn": "TMS320F28388D-Q1",
+   "family": "TMS320F28388D",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU with connectivity manager",
+   "category": "ic_tqfp",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "TMS570LC4357-Q1",
+   "family": "TMS570LC4357",
+   "mfr": "Texas Instruments",
+   "desc": "Hercules lockstep safety MCU, Cortex-R5F",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not researched: the shared web-search budget for this run (200 calls/turn) was used up before this part was reached. No price recorded; re-queue."
+  }
+ ]
+}

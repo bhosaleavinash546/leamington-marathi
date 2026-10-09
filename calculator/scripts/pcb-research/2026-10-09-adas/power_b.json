@@ -1,0 +1,534 @@
+{
+  "domain": "adas-power-b",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "TPS62876QWRZVRQ1",
+      "family": "TPS62876-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2.7-6V 25A stackable synchronous buck (core rail), I2C",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-24 (RZV)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar",
+        "ADAS"
+      ],
+      "observedMpn": "TPS62876QWRZVRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 4.3691,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/TPS62876QWRZVRQ1/21298743",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 4.23381,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/TPS62876QWRZVRQ1/21298743",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Variant: 25 A, RZV VQFN-HR. No XSR-package orderable found at Digi-Key. Mouser 595-TPS62876QWRZVRQ1 seen only at $6.60 qty-1 via aggregator (not recorded). Second distributor not found before search budget ran out."
+    },
+    {
+      "mpn": "TPS62816QWRWYRQ1",
+      "family": "TPS62816-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2.75-6V 6A synchronous buck, adjustable",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-9 (RWY), 2x3 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar",
+        "ADAS domain controller",
+        "DMS"
+      ],
+      "observedMpn": "TPS62816QWRWYRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.91455,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62816QWRWYRQ1/15904144",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.84571,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62816QWRWYRQ1/15904144",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.3696,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C5219318.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Variant: adjustable 0.6V out, 6 A. Digi-Key 1k = cut tape, 3k = full reel. LCSC 1000+ break (reel 3000)."
+    },
+    {
+      "mpn": "TPS628502QDRLRQ1",
+      "family": "TPS628502-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2.7-6V 2A synchronous buck, adjustable",
+      "category": "ic_soic",
+      "pkg": "SOT-583-8 (DRL)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar",
+        "ADAS domain controller",
+        "DMS"
+      ],
+      "observedMpn": "TPS628502QDRLRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 1122.917,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPS628502QDRLRQ1/13563004",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 12000,
+          "price": 1089.55,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPS628502QDRLRQ1/13563004",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Variant: adjustable, 2 A, SOT-583. Only Digi-Key Korea (KRW, tape & reel) listed the exact code; out of stock / backorder, 12 wk lead - price may be stale. Sibling TPS6285021HQDRLRQ1 (fixed 3.3V 2A) at digikey.com: $0.95929 @1k, $0.91191 @4k (not recorded as observation)."
+    },
+    {
+      "mpn": "LMR51420-Q1",
+      "family": "LMR51420",
+      "mfr": "Texas Instruments",
+      "desc": "4.5-36V 2A synchronous buck (SIMPLE SWITCHER)",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6 (DDC)",
+      "aecq": false,
+      "ecuRoles": [
+        "front camera",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "No automotive -Q1 variant found: TI rates LMR51420 Catalog (orderables LMR51420XDDCR/XFDDCR/YDDCR/YFDDCR). Automotive siblings are LMR51425-Q1 / LMR51435-Q1 / LMR51440-Q1 (WSON-12 DRR); not priced. Two searches used."
+    },
+    {
+      "mpn": "LMR43610-Q1",
+      "family": "LMR43610-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 3-36V 1A synchronous buck, HotRod 2x2 mm wettable flank",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-10 (RPE)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observedMpn": "LMR43610RS3QRPERQ1",
+      "observations": [],
+      "notes": "Orderable LMR43610RS3QRPERQ1 found at Digi-Key Germany but out of stock (backorder, 12 wk) and the snippets gave inconsistent qty-1 EUR prices (EUR 1.92 vs 3.12) with no 1k/reel break - nothing recorded. Non-Q1 LMR43610MB3RPER seen at $1.3204 @3k via Findchips (wrong grade, not recorded)."
+    },
+    {
+      "mpn": "LMR38020-Q1",
+      "family": "LMR38020-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 4.2-80V 2A synchronous buck",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "ADAS domain controller",
+        "front camera"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS7B4253-Q1",
+      "family": "TPS7B4253-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 40V 150mA voltage-tracking LDO (off-board sensor supply)",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar",
+        "park assist"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS7A52-Q1",
+      "family": "TPS7A52-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2A low-noise high-PSRR LDO",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "front camera",
+        "LiDAR"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS7A85A-Q1",
+      "family": "TPS7A85A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 4A low-noise high-PSRR LDO",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "ADAS domain controller",
+        "LiDAR"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TLV760-Q1",
+      "family": "TLV760-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 30V 100mA LDO",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar",
+        "gateway"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS2HB08-Q1",
+      "family": "TPS2HB08-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 40V dual-channel 8 mOhm smart high-side switch",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS25985-Q1",
+      "family": "TPS25985",
+      "mfr": "Texas Instruments",
+      "desc": "eFuse / integrated hot-swap, high current (automotive grade to be confirmed)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS1663-Q1",
+      "family": "TPS1663-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "60V eFuse with power limiting (automotive grade to be confirmed)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar",
+        "front camera"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "LM74720-Q1",
+      "family": "LM74720-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive ideal-diode controller with load-dump protection",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar",
+        "front camera"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "LM74930-Q1",
+      "family": "LM74930-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive ideal-diode controller with circuit breaker and load-dump protection",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS3762-Q1",
+      "family": "TPS3762-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 65V window voltage supervisor",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar",
+        "front camera"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TPS38800-Q1",
+      "family": "TPS38800-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive multi-channel voltage supervisor",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "MAX20430",
+      "family": "MAX20430",
+      "mfr": "Analog Devices",
+      "desc": "Automotive 4-output PMIC (catalogue holds an engineering ESTIMATE; upgrade pending)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "radar",
+        "ADAS domain controller"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "MAX20410",
+      "family": "MAX20410",
+      "mfr": "Analog Devices",
+      "desc": "Automotive low-voltage-input synchronous buck converter (POL)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar",
+        "front camera"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "MAX20411",
+      "family": "MAX20411",
+      "mfr": "Analog Devices",
+      "desc": "Automotive low-voltage-input synchronous buck converter (POL)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "MAX20404",
+      "family": "MAX20404",
+      "mfr": "Analog Devices",
+      "desc": "Automotive 36V synchronous buck converter",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "MAX16993",
+      "family": "MAX16993",
+      "mfr": "Analog Devices",
+      "desc": "Automotive high-voltage step-down controller",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "MAX20034",
+      "family": "MAX20034",
+      "mfr": "Analog Devices",
+      "desc": "Automotive 36V dual synchronous buck converter",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "LT8638S",
+      "family": "LT8638S",
+      "mfr": "Analog Devices",
+      "desc": "Automotive 42V 10A Silent Switcher 2 synchronous buck",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "LT8653S",
+      "family": "LT8653S",
+      "mfr": "Analog Devices",
+      "desc": "Automotive dual-channel 42V 2A Silent Switcher 2 synchronous buck",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "radar",
+        "LiDAR"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "LTC3310S",
+      "family": "LTC3310S",
+      "mfr": "Analog Devices",
+      "desc": "5V 10A Silent Switcher 2 synchronous buck (POL)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "ADP5134W",
+      "family": "ADP5134W",
+      "mfr": "Analog Devices",
+      "desc": "Automotive dual 1.2A buck + dual LDO PMU",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "DMS"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    },
+    {
+      "mpn": "TCPP01-M12",
+      "family": "TCPP01-M12",
+      "mfr": "STMicroelectronics",
+      "desc": "USB Type-C port protection (CC/VBUS OVP)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": false,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+    }
+  ]
+}
