@@ -19,6 +19,14 @@ import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
 
 export type BomLine = Record<string, unknown>;
 
+/**
+ * Image sensors are priced at AUTOMOTIVE VOLUME (the imager class rule, £3–15 — camera-board trial, Oct 2026), never at
+ * a distributor listing: a listing (AR0233AT ≈ £24) is a small-quantity price several times the volume price, and a
+ * named imager used to take it while an unnamed one took the volume rule (decision of 9 Oct 2026). A catalogue or live
+ * hit for an imager is kept on the line as a REFERENCE only.
+ */
+export const IMAGER_RE = /image sensor|cmos sensor|camera sensor|imager\b/i;
+
 /** Below this line-confidence, a line that was NOT catalogue-verified is flagged for review. */
 export const VERIFY_CONFIDENCE_THRESHOLD = 0.6;
 
@@ -52,11 +60,29 @@ export function reconcileBomWithCatalogue(
     const qty = num(line.qty, 1);
     const hit = pn.length > 0 ? byMpn.get(pn) : undefined;
 
+    const hitEntry = hit && hit.provider === 'catalogue' ? catalogueEntry(pn) : null;
+    if (hit && IMAGER_RE.test(`${hitEntry?.desc ?? ''} ${hit.description ?? ''}`)) {
+      // An imager: the listing is a reference; capUnconfirmedPrices prices the line by the imager volume rule.
+      return {
+        ...line,
+        imagerVolumeRule: true,
+        distributorListingGBP: round(hit.unitPriceGBP, 4),
+        distributorListingNote: hit.sourceNote,
+        catalogueMpn: hit.distPartNumber ?? hit.mpn,
+        catalogueMfr: hit.manufacturer ?? hitEntry?.mfr,
+        catalogueDesc: hit.description ?? hitEntry?.desc,
+        catalogueAsOf: hitEntry?.asOf,
+        automotiveGrade: hit.automotiveGrade,
+        specSource: hit.provider === 'catalogue' ? 'catalogue' : hit.provider,
+        lineConf: Math.max(num(line.lineConf), 0.95),          // the part is identified; only its price basis differs
+      };
+    }
+
     if (hit) {
       matched++;
       const aiPrice = num(line.unitPriceGBP);
       const offline = hit.provider === 'catalogue';
-      const entry = offline ? catalogueEntry(pn) : null;
+      const entry = hitEntry;
       return {
         ...line,
         aiEstimatedPriceGBP: round(aiPrice, 4),
@@ -240,7 +266,9 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     // "AURIX-class" BGA must not enter at £60) and the description caps (an
     // inductor, an electrolytic, a SOT-23 diode) where they are tighter.
     const k = num(line.volumeMultiplier) > 0 ? num(line.volumeMultiplier) : opts.volumeMultiplier && opts.volumeMultiplier > 0 ? opts.volumeMultiplier : 1;
-    const cls0 = classRange({ ...line, description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}` }, opts.automotive === true);
+    // A catalogue-identified imager carries the catalogue's description, so the imager class row applies even when the
+    // BOM line names only the part number ("AR0233AT").
+    const cls0 = classRange({ ...line, description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}${line.imagerVolumeRule === true ? ` ${String(line.catalogueDesc ?? 'image sensor')}` : ''}` }, opts.automotive === true);
     const cls = k === 1 ? cls0 : { ...cls0, lo: round(cls0.lo * k, 5), hi: round(cls0.hi * k, 5) };
     const dCap = descriptionCap(String(line.description ?? ''));
     // The class median is a guard for an UNIDENTIFIED part ("some BGA"); a line
@@ -264,7 +292,10 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       priceBasis: cls.key,
       priceCapped: lowered,
       priceRaised: priced > unit + 1e-6 && unit > 0,
-      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}${unit > 0 ? `; AI estimate £${round(unit, 4)}` : '; no estimate — lower-half midpoint'}`,
+      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}${unit > 0 ? `; AI estimate £${round(unit, 4)}` : '; no estimate — lower-half midpoint'}`
+        + (line.imagerVolumeRule === true && line.distributorListingGBP != null
+          ? `; distributor listing £${round(num(line.distributorListingGBP), 2)} shown for reference only — imagers are priced at automotive volume`
+          : ''),
       // A table price is a class average, not a quote: worth an engineer's minute
       // only where the line moves the board (≥ £1). Passives priced by count from
       // the table are the best anyone can do without an order, and stay in the

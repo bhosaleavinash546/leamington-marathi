@@ -1805,7 +1805,8 @@ function pcbCacheKey(req: import('express').Request, files: Record<string, Expre
       // imager / bead / choke classes, -Q1 lookup, automotive from the BOM. Bump on every costing change:
       // the cache persists across restarts and would otherwise replay a result costed by the old rules.
       // v10: the ASIL is checked against the parts list (pcb-asil-guard.ts).
-      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 10,
+      // v11: named imagers priced at automotive volume, their listing a reference (IMAGER_RE, 9 Oct 2026).
+      deep, labels: labels.slice(0, (files?.pcbImages ?? []).length), v: 11,
     })),
     ...(files?.bomFile ?? []).map(f => f.buffer),
     ...(files?.fabFiles ?? []).flatMap(f => [Buffer.from(f.originalname), f.buffer]),
