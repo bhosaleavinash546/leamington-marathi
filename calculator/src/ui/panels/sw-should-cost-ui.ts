@@ -20,7 +20,7 @@ import type {
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
-  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
@@ -788,6 +788,14 @@ function renderSWPanelHTML(): string {
         <input id="sw-effort-cal" type="number" class="sw-config-inp" min="0.2" max="5" step="0.01" placeholder="none" value="${inputs.effortCalibration ?? ''}" title="Your own actual ÷ modelled effort (Calibrate to your actuals, below). Blank = the model as published. Scales the model's effort, not a typed custom PM.">
       </div>
       <div class="sw-field-group">
+        <label class="sw-label" for="sw-dev-months">Development Duration (months)</label>
+        <input id="sw-dev-months" type="number" class="sw-config-inp" min="6" max="180" step="1" placeholder="${SW_DEFAULT_DEVELOPMENT_MONTHS}" value="${inputs.developmentMonths ?? ''}" title="Feasibility to SOP. Development tool licences are paid over this, and the phase timeline follows it. Blank = ${SW_DEFAULT_DEVELOPMENT_MONTHS} months (the tool's own timeline).">
+      </div>
+      <div class="sw-field-group">
+        <label class="sw-label" for="sw-connected">Connected Vehicles (%)</label>
+        <input id="sw-connected" type="number" class="sw-config-inp" min="0" max="100" step="1" placeholder="100" value="${inputs.connectedVehicleShare != null ? Math.round(inputs.connectedVehicleShare * 100) : ''}" title="Share of vehicles that use the cloud back-end. Cloud is charged per connected vehicle in service. Blank = 100 %.">
+      </div>
+      <div class="sw-field-group">
         <label class="sw-label">Senior Engineer Fraction</label>
         <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0).">
       </div>
@@ -1294,6 +1302,11 @@ function readConfig(): void {
   // Blank = uncalibrated; a typed factor goes to the engine, which refuses one outside 0.2–5 (P2 #21).
   const calRaw = ((get('sw-effort-cal') as HTMLInputElement | null)?.value ?? '').trim();
   _swInputs.effortCalibration      = calRaw === '' ? undefined : parseFloat(calRaw);
+  // Blank = the defaults (tool timeline; every vehicle connected); a typed value goes to the engine's validation (P3 #17).
+  const devRaw = ((get('sw-dev-months') as HTMLInputElement | null)?.value ?? '').trim();
+  _swInputs.developmentMonths      = devRaw === '' ? undefined : parseFloat(devRaw);
+  const conRaw = ((get('sw-connected') as HTMLInputElement | null)?.value ?? '').trim();
+  _swInputs.connectedVehicleShare  = conRaw === '' ? undefined : parseFloat(conRaw) / 100;
 
   document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => {
     const m = _swInputs.modules.find(x => x.moduleId === cb.dataset.id);

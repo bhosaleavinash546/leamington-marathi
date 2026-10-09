@@ -155,7 +155,7 @@ describe('#4 ICE and hybrid powertrain software exists — as labelled estimates
   });
 });
 
-import { applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, attributedShare, unitRoyaltyGBP } from '../src/engine/sw-should-cost.js';
+import { applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, attributedShare, unitRoyaltyGBP, unitCloudGBP } from '../src/engine/sw-should-cost.js';
 import type { SWPowertrain } from '../src/engine/sw-should-cost.js';
 
 describe('#5 powertrain is an engine input; shared software is apportioned across variants', () => {
@@ -192,7 +192,8 @@ describe('#5 powertrain is an engine input; shared software is apportioned acros
     const solo = computeSWProgram(p).modules.find(m => m.moduleId === 'ivi_os')!;
     const shared = computeSWProgram({ ...p, platformAnnualVolume: 4 * vol }).modules.find(m => m.moduleId === 'ivi_os')!;
     // The AAOS royalty is paid per vehicle built, so it is not shared (P2 #11) — compare the rest.
-    const royalty = unitRoyaltyGBP(SW_MODULES.find(m => m.id === 'ivi_os')!, p);
+    // Cloud is per connected vehicle too (P3 #17) — also not shared.
+    const royalty = unitRoyaltyGBP(SW_MODULES.find(m => m.id === 'ivi_os')!, p) + unitCloudGBP(SW_MODULES.find(m => m.id === 'ivi_os')!, p);
     expect(royalty).toBeGreaterThan(0);
     expect((shared.grandTotal - royalty) / (solo.grandTotal - royalty)).toBeCloseTo(0.25, 12);
     // its £/vehicle is the whole module spread over the whole platform, plus this vehicle's own royalty

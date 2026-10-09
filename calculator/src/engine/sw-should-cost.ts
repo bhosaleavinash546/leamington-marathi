@@ -209,6 +209,11 @@ export interface SWProgramInputs {
    *  they logged (sw-calibration.ts::calibrateSWEffort). Multiplies the model's effort estimate (base person-months);
    *  a typed custom person-months is the user's own figure and is not scaled. 1 / absent = uncalibrated (P2 #21). */
   effortCalibration?:       number;
+  /** Development duration, months (feasibility → SOP). Tool licences are paid over it, and the phase timeline is
+   *  scaled to it. Absent = SW_DEFAULT_DEVELOPMENT_MONTHS, the tool's own M1–M90 timeline (software review P3 #17). */
+  developmentMonths?:       number;
+  /** Share of the vehicles built that use the cloud back-end (0–1). Absent = 1 (every vehicle connected). */
+  connectedVehicleShare?:   number;
 }
 
 export interface SWDevBreakdown {
@@ -1147,10 +1152,13 @@ function computeModuleCost(
   let   pvFactor = years;
   if (r > 0) { pvFactor = 0; for (let t = 1; t <= years; t++) pvFactor += 1 / Math.pow(1 + r, t); }
 
-  const toolchain   = def.annualToolLicenceGBP * pvFactor;
+  // Development tool licences are paid while the software is developed — not over the production life (P3 #17).
+  const devYears  = (prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS) / 12;
+  const devFactor = r > 0 ? (1 - Math.pow(1 + r, -devYears)) / r : devYears;
+  const toolchain   = def.annualToolLicenceGBP * devFactor;
   const licensing   = def.annualIPLicenceGBP   * pvFactor;
-  const cloudCost   = prog.includeCloudCost
-    ? def.annualCloudCostGBP * pvFactor : 0;
+  // Cloud is charged per connected vehicle in service and added after the platform share (unitCloudGBP, P3 #17).
+  const cloudCost   = 0;
   const maintenance = prog.includeMaintenanceCost
     ? devTotal * (def.maintenancePctPerYear / 100) * pvFactor : 0;
 
@@ -1196,17 +1204,43 @@ function computeModuleCost(
   // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
   const share = attributedShare(def.id, prog);
   const out = share < 1 ? scaleModuleResult(res, share) : res;
-  // Per-unit royalties (P2 #11) — on THIS programme's vehicles, after the platform share (each vehicle pays its own).
+  // Per-unit royalties (P2 #11) and cloud per connected vehicle (P3 #17) — on THIS programme's vehicles, after the
+  // platform share (each vehicle pays its own).
   const royalty = unitRoyaltyGBP(def, prog);
-  if (royalty === 0) return out;
+  const cloud   = prog.includeCloudCost ? unitCloudGBP(def, prog) : 0;
+  if (royalty === 0 && cloud === 0) return out;
   const lifeVeh = prog.annualProductionVolume * prog.programLifeYears;
   return {
     ...out,
     licensingCost:  out.licensingCost + royalty,
-    totalLifecycle: out.totalLifecycle + royalty,
-    grandTotal:     out.grandTotal + royalty,
-    perVehicle:     out.perVehicle + (lifeVeh > 0 ? royalty / lifeVeh : 0),
+    cloudCost:      out.cloudCost + cloud,
+    totalLifecycle: out.totalLifecycle + royalty + cloud,
+    grandTotal:     out.grandTotal + royalty + cloud,
+    perVehicle:     out.perVehicle + (lifeVeh > 0 ? (royalty + cloud) / lifeVeh : 0),
   };
+}
+
+/** The tool's own development timeline (M1–M90, the phase table) — the default development duration. */
+export const SW_DEFAULT_DEVELOPMENT_MONTHS = 90;
+
+/**
+ * The fleet the modules' annual cloud figures describe. They were written as flat £ / yr for the default programme
+ * (80,000 vehicles / yr × 10 yr — Likely, not documented); over that programme the fleet in service averages
+ * 80,000 × (1 + … + 10) / 10 = 440,000 vehicles. Re-expressing each figure per connected vehicle-year at that fleet
+ * reproduces the default programme exactly and scales any other one by its own fleet (P3 #17).
+ */
+export const SW_CLOUD_REFERENCE_FLEET = 440_000;
+
+/** Cloud cost over the programme, £: (annual £ ÷ reference fleet) per connected vehicle-year, on a fleet that grows by
+ *  the annual volume each year until the programme ends (the same rule as map data), NPV when discounted. */
+export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'connectedVehicleShare'>): number {
+  if (!def.annualCloudCostGBP) return 0;
+  const perVehicleYear = def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET;
+  const connected = prog.connectedVehicleShare ?? 1;
+  const r = (prog.discountRatePct ?? 0) / 100;
+  let vehicleYears = 0;
+  for (let t = 1; t <= prog.programLifeYears; t++) vehicleYears += prog.annualProductionVolume * t * (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
+  return perVehicleYear * vehicleYears * connected;
 }
 
 /**
@@ -1235,6 +1269,8 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Annual volume × life', `${prog.annualProductionVolume.toLocaleString('en-GB')} × ${prog.programLifeYears} yr`],
     ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
+    ['Development duration (tool licences)', `${prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS} months`],
+    ['Cloud', `per connected vehicle-year (module £/yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected`],
     ['Effort calibration', prog.effortCalibration && prog.effortCalibration !== 1
       ? `× ${prog.effortCalibration} (fitted to your logged actuals)` : 'none (model as published)'],
   ];
@@ -1395,13 +1431,16 @@ function runMonteCarlo(
 
 // ─── Programme Phases ─────────────────────────────────────────────────────────
 
-function buildPhases(nreTotal: number): SWPhase[] {
+function buildPhases(nreTotal: number, developmentMonths = SW_DEFAULT_DEVELOPMENT_MONTHS): SWPhase[] {
+  // Phase ends as shares of the M1–M90 timeline, scaled to the programme's development duration (P3 #17).
+  const ends = [6, 18, 54, 78, 90].map(m => Math.max(1, Math.round(m / 90 * developmentMonths)));
+  const span = (i: number) => `M${i === 0 ? 1 : ends[i - 1] + 1}–M${ends[i]}`;
   return [
-    { name: 'Feasibility',            months: 'M1–M6',    fraction: 0.05, nreCost: nreTotal * 0.05 },
-    { name: 'Concept / Architecture', months: 'M7–M18',   fraction: 0.15, nreCost: nreTotal * 0.15 },
-    { name: 'Series Development',     months: 'M19–M54',  fraction: 0.50, nreCost: nreTotal * 0.50 },
-    { name: 'Validation & V&V',       months: 'M55–M78',  fraction: 0.20, nreCost: nreTotal * 0.20 },
-    { name: 'Ramp / SOP',             months: 'M79–M90',  fraction: 0.10, nreCost: nreTotal * 0.10 },
+    { name: 'Feasibility',            months: span(0), fraction: 0.05, nreCost: nreTotal * 0.05 },
+    { name: 'Concept / Architecture', months: span(1), fraction: 0.15, nreCost: nreTotal * 0.15 },
+    { name: 'Series Development',     months: span(2), fraction: 0.50, nreCost: nreTotal * 0.50 },
+    { name: 'Validation & V&V',       months: span(3), fraction: 0.20, nreCost: nreTotal * 0.20 },
+    { name: 'Ramp / SOP',             months: span(4), fraction: 0.10, nreCost: nreTotal * 0.10 },
   ];
 }
 
@@ -1445,6 +1484,8 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP <= 0 || prog.baseRateGBP > 500_000)) p.push('base rate must be £1–£500,000 per person-month');
   if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
   if (prog.effortCalibration !== undefined && (!fin(prog.effortCalibration) || prog.effortCalibration < 0.2 || prog.effortCalibration > 5)) p.push('effort calibration must be between 0.2 and 5 (a fitted factor outside that says the logged actuals and the model describe different work)');
+  if (prog.developmentMonths !== undefined && (!fin(prog.developmentMonths) || prog.developmentMonths < 6 || prog.developmentMonths > 180)) p.push('development duration must be 6–180 months');
+  if (prog.connectedVehicleShare !== undefined && (!fin(prog.connectedVehicleShare) || prog.connectedVehicleShare < 0 || prog.connectedVehicleShare > 1)) p.push('connected-vehicle share must be 0–1');
   if (prog.scheduleCompression !== undefined && (!fin(prog.scheduleCompression) || prog.scheduleCompression <= 0 || prog.scheduleCompression > 1.5)) p.push('schedule compression must be above 0 and at most 1.5');
   if (prog.costRecoveryYears !== undefined && (!fin(prog.costRecoveryYears) || prog.costRecoveryYears < 1 || prog.costRecoveryYears > 40)) p.push('cost-recovery window must be 1–40 years');
   if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');
@@ -1589,7 +1630,7 @@ export function computeSWProgram(
   ];
 
   // NRE total for phase timeline
-  const phases = buildPhases(summary.nreTotal);
+  const phases = buildPhases(summary.nreTotal, prog.developmentMonths);
 
   // Monte Carlo cost distribution
   const monteCarlo = runMonteCarlo(prog, summary);
