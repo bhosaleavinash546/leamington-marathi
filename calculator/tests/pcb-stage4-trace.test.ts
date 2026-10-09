@@ -64,7 +64,7 @@ describe('radar board, China, 250k, ASIL-C — every figure from the headline', 
       conformalCoatAreaCm2: s4.conformalCoatingCost > 0 ? Number(bs.widthMm) * Number(bs.heightMm) / 100 : 0,
       totalBOMCostGBP: bomAtQty(bom(), QTY, QTY), orderQuantity: QTY };
     const sc = computePCBCountryCost(input, 'cn');
-    applyAutomotiveGrade(sc, bs, as, s4.asil.costed as never, QTY, 'automotive_adas');   // the level the costing used (F22: no named safety PMIC → ASIL-B)
+    applyAutomotiveGrade(sc, bs, as, (s4.asil?.costed ?? 'ASIL-B') as never, QTY, 'automotive_adas');   // the level the costing used (F22: no named safety PMIC → ASIL-B)
     expect(sc.totalPerBoard).toBeCloseTo(bd0.totalPerBoard, 2);
   });
 
