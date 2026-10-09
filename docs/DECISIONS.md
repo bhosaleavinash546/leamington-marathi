@@ -4913,3 +4913,33 @@ commodity) and ships at 397 (`docs/IDEA-LIBRARY-REVIEW-2026-10-08.md`).
   friction brakes, steering, restraints, crash structure and thermal-runaway
   barriers.
 
+
+## 126. The quote under judgement never calibrates the engine that judges it; AI reads start unconfirmed
+
+From the Prism 360° review (`docs/PRISM-REVIEW-2026-10-09.md`).
+
+- **Calibration excludes the judged quote.** `getUserCalibration(userId,
+  { exclude })` leaves the quote being judged out of the fit, the page saves
+  the quote only after the dossier is built, and a duplicate save is refused.
+  - **The defect it fixes:** fitting the engine to the quote made the
+    commercial gap shrink toward zero with every click.
+- **Forensics judge per kind.** The lines of one kind are summed and judged
+  against the engine bucket.
+  - **Above model:** the counter-offer splits one target across those lines.
+  - **One-off tooling:** a cheque far above the per-part bucket is amortised
+    over the engine's tool volume first.
+  - **Implausible units:** a line outside 0.05–20× of its bucket is not
+    judged at all.
+- **Engine checks price a stated mass change, never verify it.** The
+  reference mass is re-anchored to the part's known mass, keeping the idea's
+  ratio. The stamp says the change is the idea's claim, and a cut beyond 50%
+  is badged as unverified.
+- **AI reads start unconfirmed.** Vision, photo and function-model reads
+  start unticked or off. The dossier calls them "engineer-confirmed", so an
+  engineer must have confirmed them.
+- **One calibration factor per waterfall.** Every step uses the anchor's
+  factor, so a premium cannot come from which calibration cells the user's
+  quotes happened to fill.
+- **Engine constants are left alone.** The hot vs cold forging tooling
+  assumptions were not tuned to make one demo number look right
+  (benchmark-gate rule). The process step states its bucket bridge instead.
