@@ -46,7 +46,7 @@ describe('China breakdown by hand (rates as of 2026-09-29)', () => {
     expect(bd.assemblyPerBoard).toBeCloseTo(smt + th + test, 2);
   });
   it('components sourced in China at the country multiplier; duty on the customs value', () => {
-    expect(bd.bomCostPerBoard).toBeCloseTo(66.84 * r.components.priceMultiplier * (1 + materialBurdenFor(250000)), 2);   // + EMS material burden
+    expect(bd.bomCostPerBoard).toBeCloseTo(66.84 * (1 + materialBurdenFor(250000)), 2);   // + EMS material burden (no country sourcing index, F13)
     expect(bd.breakdown.importDuty).toBeCloseTo((bd.pcbFabPerBoard + bd.assemblyPerBoard + bd.bomCostPerBoard) * r.logistics.importDutyFraction, 2);
   });
   it('the total is the sum of its parts', () => {

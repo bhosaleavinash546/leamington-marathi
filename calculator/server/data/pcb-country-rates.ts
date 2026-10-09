@@ -87,13 +87,9 @@ export interface LogisticsToUK {
 export interface ComponentSourcing {
   /** Availability index 0–1 (1 = full global component availability on doorstep) */
   availabilityIndex: number;
-  /** Country-specific component-sourcing index vs UK distributor pricing —
-   *  reflects local availability, spot-market access and logistics into the EMS
-   *  (e.g. CN 0.88 = Shenzhen sourcing discount; UK 1.22 = distributor premium).
-   *  APPLIED to the BOM in computePCBCountryCost (audit fix — previously dead,
-   *  which held BOM cost constant across all countries). Region-scoped live
-   *  distributor pricing is the roadmap replacement for this index. */
-  priceMultiplier: number;
+  // (A per-country "component sourcing index" — CN ×0.88 … UK ×1.22 on every component — was removed: it had no
+  //  source and alone made about £18 of the £34 UK–China gap on the radar board. Components for an EMS programme are
+  //  bought on one global market; what differs by country — freight and duty — is modelled. Pipeline review F13.)
   /** Whether the region has good access to Asian spot market (grey/surplus) */
   hasSpotMarketAccess: boolean;
 }
@@ -213,7 +209,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 5,
       supplyChainRisk: 0.82,
     },
-    components: { availabilityIndex: 0.98, priceMultiplier: 0.88, hasSpotMarketAccess: true },
+    components: { availabilityIndex: 0.98, hasSpotMarketAccess: true },
     qualityIndex: 0.83,
     certifications: ['ISO9001', 'IATF16949', 'UL', 'RoHS', 'IPC-6012'],
     minPanelOrderQty: 5,
@@ -258,7 +254,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 6,
       supplyChainRisk: 0.78,
     },
-    components: { availabilityIndex: 0.85, priceMultiplier: 0.92, hasSpotMarketAccess: true },
+    components: { availabilityIndex: 0.85, hasSpotMarketAccess: true },
     qualityIndex: 0.80,
     certifications: ['ISO9001', 'UL', 'RoHS'],
     minPanelOrderQty: 10,
@@ -303,7 +299,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 5,
       supplyChainRisk: 0.76,
     },
-    components: { availabilityIndex: 0.80, priceMultiplier: 0.95, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.80, hasSpotMarketAccess: false },
     qualityIndex: 0.78,
     certifications: ['ISO9001', 'UL', 'RoHS'],
     minPanelOrderQty: 10,
@@ -348,7 +344,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 7,
       supplyChainRisk: 0.82,
     },
-    components: { availabilityIndex: 0.88, priceMultiplier: 0.93, hasSpotMarketAccess: true },
+    components: { availabilityIndex: 0.88, hasSpotMarketAccess: true },
     qualityIndex: 0.85,
     certifications: ['ISO9001', 'IATF16949', 'UL', 'RoHS'],
     minPanelOrderQty: 8,
@@ -393,7 +389,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 6,
       supplyChainRisk: 0.84,
     },
-    components: { availabilityIndex: 0.90, priceMultiplier: 0.91, hasSpotMarketAccess: true },
+    components: { availabilityIndex: 0.90, hasSpotMarketAccess: true },
     qualityIndex: 0.86,
     certifications: ['ISO9001', 'IATF16949', 'AS9100', 'UL'],
     minPanelOrderQty: 5,
@@ -438,7 +434,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 5,
       supplyChainRisk: 0.88,
     },
-    components: { availabilityIndex: 0.96, priceMultiplier: 0.90, hasSpotMarketAccess: true },
+    components: { availabilityIndex: 0.96, hasSpotMarketAccess: true },
     qualityIndex: 0.93,
     certifications: ['ISO9001', 'IATF16949', 'AS9100', 'UL', 'IPC-6012 Class 3'],
     minPanelOrderQty: 3,
@@ -483,7 +479,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 5,
       supplyChainRisk: 0.90,
     },
-    components: { availabilityIndex: 0.92, priceMultiplier: 0.92, hasSpotMarketAccess: true },
+    components: { availabilityIndex: 0.92, hasSpotMarketAccess: true },
     qualityIndex: 0.93,
     certifications: ['ISO9001', 'IATF16949', 'IPC-6012 Class 3'],
     minPanelOrderQty: 3,
@@ -528,7 +524,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 4,
       supplyChainRisk: 0.80,
     },
-    components: { availabilityIndex: 0.86, priceMultiplier: 0.98, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.86, hasSpotMarketAccess: false },
     qualityIndex: 0.84,
     certifications: ['ISO9001', 'IATF16949', 'UL'],
     minPanelOrderQty: 5,
@@ -573,7 +569,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 2,
       supplyChainRisk: 0.91,
     },
-    components: { availabilityIndex: 0.88, priceMultiplier: 1.05, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.88, hasSpotMarketAccess: false },
     qualityIndex: 0.91,
     certifications: ['ISO9001', 'IATF16949', 'AS9100', 'IPC-6012'],
     minPanelOrderQty: 2,
@@ -618,7 +614,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 2,
       supplyChainRisk: 0.91,
     },
-    components: { availabilityIndex: 0.86, priceMultiplier: 1.06, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.86, hasSpotMarketAccess: false },
     qualityIndex: 0.90,
     certifications: ['ISO9001', 'IATF16949', 'IPC-6012'],
     minPanelOrderQty: 2,
@@ -663,7 +659,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 1,
       supplyChainRisk: 0.97,
     },
-    components: { availabilityIndex: 0.90, priceMultiplier: 1.18, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.90, hasSpotMarketAccess: false },
     qualityIndex: 0.97,
     certifications: ['ISO9001', 'IATF16949', 'AS9100', 'IPC-6012 Class 3', 'AEC-Q100', 'ECSS'],
     minPanelOrderQty: 1,
@@ -708,7 +704,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 0,
       supplyChainRisk: 1.0,
     },
-    components: { availabilityIndex: 0.85, priceMultiplier: 1.22, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.85, hasSpotMarketAccess: false },
     qualityIndex: 0.96,
     certifications: ['ISO9001', 'IATF16949', 'AS9100', 'IPC-6012 Class 3', 'UKCA', 'Def Stan'],
     minPanelOrderQty: 1,
@@ -753,7 +749,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 2,
       supplyChainRisk: 0.95,
     },
-    components: { availabilityIndex: 0.88, priceMultiplier: 1.15, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.88, hasSpotMarketAccess: false },
     qualityIndex: 0.96,
     certifications: ['ISO9001', 'AS9100', 'ITAR', 'MIL-PRF-55110', 'IPC-6012 Class 3', 'IPC-A-610'],
     minPanelOrderQty: 1,
@@ -798,7 +794,7 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
       airTransitDays: 4,
       supplyChainRisk: 0.96,
     },
-    components: { availabilityIndex: 0.94, priceMultiplier: 1.20, hasSpotMarketAccess: false },
+    components: { availabilityIndex: 0.94, hasSpotMarketAccess: false },
     qualityIndex: 0.99,
     certifications: ['ISO9001', 'IATF16949', 'AS9100', 'JPCA', 'IPC-6012 Class 3'],
     minPanelOrderQty: 1,
@@ -1219,7 +1215,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   // programmes). It was missing: components passed through at cost, so every board sat below a real
   // quote. MATERIAL_BURDEN is an engineering figure by volume, stated in the breakdown.
   const materialBurdenPct = materialBurdenFor(input.orderQuantity);
-  const bomAtCost = input.totalBOMCostGBP * (rate.components?.priceMultiplier ?? 1);
+  const bomAtCost = input.totalBOMCostGBP;   // components are bought on one global market (no country index, F13)
   const materialBurden = bomAtCost * materialBurdenPct;
   const bomSourced = bomAtCost + materialBurden;
 
