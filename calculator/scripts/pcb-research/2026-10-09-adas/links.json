@@ -1,0 +1,1195 @@
+{
+ "domain": "adas-links",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "DS90UB9702TRURRQ1",
+   "family": "DS90UB9702-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV quad deserializer hub, CSI-2 D-PHY output",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-88 (RUR)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "DS90UB9702TRURRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 24.32,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB9702TRURRQ1?qs=dbcCsuKDzFXfWvpbPtkBXQ%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Automotive orderable DS90UB9702TRURRQ1 (large reel). Mouser non-stocked, full reels in multiples of 2,500, 26 wk lead. Spirit Electronics $20.36 @1,000 seen but not a listed franchised source; no Digi-Key listing found."
+  },
+  {
+   "mpn": "DS90UB962WRTDRQ1",
+   "family": "DS90UB962-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III quad deserializer hub, single CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "DS90UB962WRTDTQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 18.4692,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB962WRTDTQ1/9608018",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Priced on the small-reel sibling DS90UB962WRTDTQ1 (250 reel); no USD/EUR/GBP price found for the 2,000 reel DS90UB962WRTDRQ1. Digi-Key Denmark lists the RQ1 at DKK 100.50167 @2,000 ex VAT (https://www.digikey.dk/en/products/detail/texas-instruments/DS90UB962WRTDRQ1/9692632) - not recorded, DKK not in the merge FX table. TI list price 9.994 USD (maker price, not an observation). ED Inventory Mouser rows ignored (not an allowed source)."
+  },
+  {
+   "mpn": "DS90UB914ATRHSRQ1",
+   "family": "DS90UB914A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III deserializer, 10/12-bit parallel output, 25-100 MHz",
+   "category": "ic_qfn",
+   "pkg": "WQFN-48 (RHS)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist",
+    "ADAS"
+   ],
+   "observedMpn": "DS90UB914ATRHSRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.9,
+     "currency": "USD",
+     "url": "https://www.findchips.com/detail/DS90UB914ATRHSRQ1/Texas-Instruments",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 6.46,
+     "currency": "USD",
+     "url": "https://www.findchips.com/detail/DS90UB914ATRHSRQ1/Texas-Instruments",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 500,
+     "price": 5.263,
+     "currency": "USD",
+     "url": "https://www.findchips.com/detail/DS90UB914ATRHSRQ1/Texas-Instruments",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Confirmed on Findchips: Digi-Key 296-46271-1-ND $5.90 @1,000 ($10.64 @1); Mouser $6.46 @1,000 (0 stock); Arrow/Verical $5.263 @500. An older Findchips snapshot of Digi-Key showed $7.4703 @500. Maritex $2.552 @1,000 ignored (outlier, authorisation unconfirmed). Reel 1,000."
+  },
+  {
+   "mpn": "DS90UB934TRGZRQ1",
+   "family": "DS90UB934-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III deserializer, 12-bit parallel output, 1 MP camera",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist",
+    "ADAS"
+   ],
+   "observedMpn": "DS90UB934TRGZRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 9.98,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/DS90UB934TRGZRQ1/7312768",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 9.20302,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/DS90UB934TRGZRQ1/7312768",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key cut tape @1,000 and T&R @2,500 (7,852 in stock). No Mouser listing found."
+  },
+  {
+   "mpn": "DS90UB936TRGZRQ1",
+   "family": "DS90UB936-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III dual deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist",
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "DS90UB936TRGZRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 9.52,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB936TRGZRQ1/9371248",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 9.02445,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB936TRGZRQ1/9371248",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key cut tape @250 and T&R @2,500 (no 1,000 break published). Mouser $8.40 @2,500 seen only on OEMsTrade (not an allowed source) - not recorded."
+  },
+  {
+   "mpn": "DS90UB9724-Q1",
+   "family": "DS90UB9724-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV quad deserializer hub, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No distributor listing or orderable code found in 3 searches (only TI E2E threads and NVIDIA DRIVE docs mention it); likely limited release / not on ti.com public catalogue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "DS90UB949ATRGCRQ1",
+   "family": "DS90UB949A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "HDMI to FPD-Link III serializer, 2K",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RGC)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No price for the RQ1 code found at a franchised distributor. TI list price ~10.62 USD @1ku (https://www.ti.com/product/DS90UB949A-Q1/part-details/DS90UB949ATRGCRQ1) - maker price, not an observation. Octopart rows seen were for sibling CTQ1 / non-A codes with unlabelled breaks - not recorded."
+  },
+  {
+   "mpn": "DS90UB983RTDRQ1",
+   "family": "DS90UB983-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "DisplayPort/eDP to FPD-Link IV serializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only franchised price found: Digi-Key China CNY 108.85 @2,000 INCLUDING 13% VAT, 0 stock, prototype status (https://www.digikey.cn/zh/products/detail/texas-instruments/DS90UB983RTDRQ1/18178286) - not recorded because VAT-inclusive. Arrow page lists no price. Broker prices ignored."
+  },
+  {
+   "mpn": "DS90UB984RURRQ1",
+   "family": "DS90UB984-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV to eDP deserializer, 4K",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-88 (RUR)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No franchised distributor price found. TI list price 11.558 USD for DS90UB984RURRQ1 (https://www.ti.com/product/DS90UB984-Q1/part-details/DS90UB984RURRQ1) - maker price, not an observation. Orderable code from TI's part-details page."
+  },
+  {
+   "mpn": "MAX96714GTJ/VY+T",
+   "family": "MAX96714",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32 (GTJ)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "MAX96714GTJ/VY+T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 8.82494,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96714GTJ-VY-T/21411957",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 9.4864,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96714GTJ-VY-T/21411957",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "GMSL2 6 Gbps (GTJ, not the 3 Gbps FGTJ). Digi-Key cut tape @500 and T&R @2,500 as shown in two snapshots - the reel price reads ABOVE the 500 cut-tape price; check. Mouser 700-MAX96714GTJ/VY+T seen only as a Findchips min/max range ($7.29/$11.94), break not stated - not recorded."
+  },
+  {
+   "mpn": "MAX96716AGTM/VY+T",
+   "family": "MAX96716A",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 dual deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "SWTQFN-48 (7x7)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "MAX96716AGTM/VY+T",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 17.0442,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96716AGTM-VY-T/22107588",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 15.10495,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96716AGTM-VY-T/22107588",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Orderable is GTM (48-SWTQFN), not GTJ. Digi-Key Digi-Reel @100 and T&R @2,500. Tray MAX96716AGTM/VY+ $16.08962 @260. Digi-Key LT EUR 20.28782 @2,500 not recorded (inconsistent snapshot). No Mouser listing found."
+  },
+  {
+   "mpn": "MAX96724GTN/VY+T",
+   "family": "MAX96724",
+   "mfr": "Analog Devices",
+   "desc": "GMSL quad deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN (GTN)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "MAX96724GTN/VY+T; tray MAX96724GTN/VY+ for the 260 break",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 260,
+     "price": 25.73269,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96724GTN-VY/19534180",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 24.28118,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96724GTN-VY-T/21412074",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "GMSL2/1 quad deserializer. 260 break is the tray code MAX96724GTN/VY+ (packing sibling); 2,500 is T&R. Mouser 700-MAX96724GTN/VY+T $37.29 @1 only."
+  },
+  {
+   "mpn": "MAX96722GTB/V+T",
+   "family": "MAX96722",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 quad deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN (GTB)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "MAX96722GTB/V+T",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 12.7784,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C7458191.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "LCSC 100+ break (2,500 full reel). No Digi-Key or Mouser listing found; Win Source (broker) ignored."
+  },
+  {
+   "mpn": "MAX96792AGTM/VY+",
+   "family": "MAX96792A",
+   "mfr": "Analog Devices",
+   "desc": "GMSL deserializer (GMSL3 class), CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "SWTQFN-48 (7x7)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": "MAX96792AGTM/VY+",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 43.06,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96792AGTM-VY/25580959",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 45.48,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96792AGTM-VY/25580959",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "GMSL3 deserializer, orderable GTM (not GTN). Digi-Key tray @100; T&R (175-MAX96792AGTM/VY+TTR-ND, i.e. MAX96792AGTM/VY+T) @2,500 reads ABOVE the 100 price as listed - check. ADI 1ku list from $32.49 (https://www.analog.com/en/products/max96792a.html; maker price, not an observation)."
+  },
+  {
+   "mpn": "MAX96752GTN/VY+T",
+   "family": "MAX96752",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display deserializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN (GTN)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "MAX96752GTN/VY+T; tray MAX96752GTN/VY+ for the 520 break",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 520,
+     "price": 17.04296,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96752GTN-VY/24617869",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 18.634,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96752GTN-VY-T/24617876",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "GMSL2 display deserializer. Tray @520 (packing sibling) and T&R @2,500. ADI 1ku list from $12.68 (maker price, not an observation). No Mouser listing for this code."
+  },
+  {
+   "mpn": "MAX96755",
+   "family": "MAX96755",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display serializer",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched 2x: no franchised price. Digi-Key MAX96755GTN/VY+ shows 'Limited Supply - Call', no price; Mouser lists only MAX96755FGTN/V+T (not available). Digipart rows for F/R revisions come from unnamed sellers - not recorded. Orderable automotive code not confirmed."
+  },
+  {
+   "mpn": "MAX96751",
+   "family": "MAX96751",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display serializer",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched 2x: no franchised price. HDMI-to-GMSL2 serializer. Digi-Key MAX96751GTN/V+ is 'Discontinued at DigiKey', no price; no Mouser listing; IC-Components (broker) ignored. ADI 1ku list from $11.52 (https://www.analog.com/en/products/max96751.html; maker price, not an observation)."
+  },
+  {
+   "mpn": "DP83TC814SRHARQ1",
+   "family": "DP83TC814-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-36 (RHA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "front camera",
+    "gateway"
+   ],
+   "observedMpn": "DP83TC814SRHARQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.09047,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TC814SRHARQ1/15904180",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 1.99876,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TC814SRHARQ1/15904180",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "DP83TC814S (S = with TC10 sleep). No Mouser listing found."
+  },
+  {
+   "mpn": "DP83TC815-Q1",
+   "family": "DP83TC815-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched 2x: no distributor listing. TI datasheet SNLS797 (July 2025) is ADVANCE INFORMATION, 36-pin RHA; orderable code not published at a distributor."
+  },
+  {
+   "mpn": "DP83TG721SRHARQ1",
+   "family": "DP83TG721-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "1000BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-36 (RHA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "DP83TG721SRHARQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 5.14976,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TG721SRHARQ1/24753626",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key T&R @3,000 (non-stocked, 16 wk). Mouser rows on aggregators conflict ($10.89 @1,000 vs $4.89 @250) - not recorded."
+  },
+  {
+   "mpn": "DP83TD510ERHBR",
+   "family": "DP83TD510E",
+   "mfr": "Texas Instruments",
+   "desc": "10BASE-T1L single-pair Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 (RHB)",
+   "aecq": false,
+   "ecuRoles": [
+    "zonal"
+   ],
+   "observedMpn": "DP83TD510ERHBR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 6.19344,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TD510ERHBR/13627121",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 5.55531,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TD510ERHBR/13627121",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "10BASE-T1L, industrial grade (no -Q1 orderable). Digi-Key cut tape @250 and T&R @3,000."
+  },
+  {
+   "mpn": "TJA1100HNZ",
+   "family": "TJA1100",
+   "mfr": "NXP",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "TJA1100HNZ",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.71844,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1100HNZ/5981095",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 3.57438,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1100HNZ/5981095",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces the TJA1100 engineering estimate. Digi-Key @1,000 and T&R @4,000. A Mouser row ($3.68 @1,000, $3.54 @4,000) seen on an unnamed aggregator - not recorded."
+  },
+  {
+   "mpn": "TJA1121AHN/0J",
+   "family": "TJA1121",
+   "mfr": "NXP",
+   "desc": "MACsec 1000BASE-T1 automotive Ethernet PHY, ASIL-B, RGMII",
+   "category": "ic_qfn",
+   "pkg": "HVQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "TJA1121AHN/0J",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 2.96,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TJA1121AHN-0J?qs=7%2F6SraaimPQbpdivrtJEKA%3D%3D",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 2.67,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/NXP-Semiconductors/TJA1121AHN-0J?qs=7%2F6SraaimPQbpdivrtJEKA%3D%3D",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.67053,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/TJA1121AHN-0J/25972817",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "TJA1121A = RGMII variant (TJA1121B = SGMII). Digi-Key also $2.90224 @250. Mouser full reel 4,000."
+  },
+  {
+   "mpn": "88Q2220-B2-NYA2A0G1-P123",
+   "family": "88Q2220",
+   "mfr": "Infineon Technologies (ex-Marvell)",
+   "desc": "Automotive Ethernet PHY (BASE-T1; speed grade to confirm)",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway"
+   ],
+   "observedMpn": "88Q2220-B2-NYA2A0G1-P123; tray 88Q2220-B2-NYA2A0G1 for the 4,900 break",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 5.43,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/88Q2220-B2-NYA2A0G1-P123/29272919",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 4.9339,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/88Q2220-B2-NYA2A0G1-P123/29272919",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4900,
+     "price": 5.39,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/88Q2220-B2-NYA2A0G1/29513218",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Marvell automotive Ethernet now sold as Infineon. T&R @250/@2,000; tray @4,900 (non-stocked). Mouser 88Q2220-B0-NYA2A0G1 $5.37 @4,900 is the B0 revision - not recorded."
+  },
+  {
+   "mpn": "88Q5050",
+   "family": "88Q5050",
+   "mfr": "Marvell",
+   "desc": "Automotive Ethernet switch, 8-port, secure",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched 2x: no franchised price at >=100. LCSC $18.3946 @10+ only; a Findchips Digi-Key row (448-88Q5050-B0-LKJ2A000-ND) showed no attributable price; Octopart/Digipart/Win Source offers are brokers. Catalogue keeps its 88Q5050 engineering estimate (not upgraded). Orderable: 88Q5050-B0-LKJ2A000 (-P123 = T&R)."
+  },
+  {
+   "mpn": "88Q5072-B2-BYZ2A000-P123",
+   "family": "88Q5072",
+   "mfr": "Infineon Technologies (ex-Marvell)",
+   "desc": "Automotive Ethernet switch",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "88Q5072-B2-BYZ2A000-P123",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 24.1372,
+     "currency": "SGD",
+     "url": "https://www.digikey.sg/en/products/detail/infineon-technologies/88Q5072-B2-BYZ2A000-P123/29513260",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key Singapore T&R @500, SGD ex VAT, 26 wk lead. 11-port secure multi-gig switch, AEC-Q100 Grade 2. Infineon page shows out of stock. No Mouser listing found."
+  },
+  {
+   "mpn": "88Q6113-B2-BYZ2A000-P123",
+   "family": "88Q6113",
+   "mfr": "Infineon Technologies (ex-Marvell)",
+   "desc": "Automotive multi-gigabit Ethernet switch",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "88Q6113-B2-BYZ2A000-P123; tray 88Q6113-B2-BYZ2A000 at Rutronik",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 16.95,
+     "currency": "EUR",
+     "url": "https://www.digikey.pt/en/products/detail/infineon-technologies/88Q6113-B2-BYZ2A000-P123/29513254",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 3000,
+     "price": 17.35,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/88q6113-b2-byz2a000-p123/infineon-technologies-ag.html",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Rutronik",
+     "qty": 900,
+     "price": 20.87,
+     "currency": "EUR",
+     "url": "https://www.rutronik24.com/product/infineon/88q6113b2byz2a000/30901629.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key Portugal T&R @500 ex VAT (35 wk); Arrow @3,000 (out of stock, 26 wk); Rutronik24 tray MOQ 900. Infineon web price $24.91 (maker price, not an observation)."
+  },
+  {
+   "mpn": "BCM89811B1AWMLG",
+   "family": "BCM89811",
+   "mfr": "Broadcom",
+   "desc": "BroadR-Reach / 100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "MLP (QFN)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "gateway"
+   ],
+   "observedMpn": "BCM89811B1AWMLG",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 6.28,
+     "currency": "USD",
+     "url": "https://www.mouser.mx/c/semiconductors/communication-networking-ics/ethernet-ics?pg=3",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Mouser 630-BCM89811B1AWMLG @1,000 (7,133 stock). Farnell 3223156 JPY breaks only to 50; Digi-Key China CNY incl. VAT - not recorded. Lead times extended."
+  },
+  {
+   "mpn": "BCM89881",
+   "family": "BCM89881",
+   "mfr": "Broadcom",
+   "desc": "Automotive Ethernet PHY (BASE-T1)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched 2x: not listed at a franchised distributor - Digi-Key no longer carries BCM89881B1BFBG; no Mouser/Farnell listing; only broker offers (Win Source, Antdic etc.) ignored. Broadcom lists it Active (OEM-direct)."
+  },
+  {
+   "mpn": "SJA1110BEL/0Y",
+   "family": "SJA1110",
+   "mfr": "NXP",
+   "desc": "Automotive TSN Ethernet switch with integrated 100BASE-T1 PHYs",
+   "category": "ic_bga",
+   "pkg": "LFBGA-256",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "SJA1110BEL/0Y",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 12.79,
+     "currency": "USD",
+     "url": "https://www.mouser.com/c/semiconductors/communication-networking-ics/ethernet-ics/?m=NXP&series=SJA1110",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Variant B priced (catalogue already holds SJA1110AEL/0Y). Mouser 771-SJA1110BEL/0Y @1,000 reel, non-stocked, 20 wk. Avnet BEL/1Y T&R ($8.68649 @2,000, $8.035 @16,000) seen only via alldatasheet - not recorded. Digi-Key CA SJA1110CEL/0Y CAD 16.01566 @1,000 (variant C)."
+  },
+  {
+   "mpn": "LAN9370-V/KCXVAO",
+   "family": "LAN9370",
+   "mfr": "Microchip",
+   "desc": "Automotive Ethernet switch with 100BASE-T1 PHYs",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "LAN9370T-I/KCX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 7.2125,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN9370T-I-KCX/16915523",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Automotive code LAN9370-V/KCXVAO has no franchised price (Octopart $6.90/$6.55 distributor unnamed); priced on the industrial temperature-grade sibling LAN9370T-I/KCX (T&R) at Digi-Key."
+  },
+  {
+   "mpn": "LAN9373-V/ZMXVAO",
+   "family": "LAN9373",
+   "mfr": "Microchip",
+   "desc": "Automotive Ethernet switch",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-128-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "LAN9373-I/ZMX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 8.36,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN9373-I/ZMX/16915525",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Priced on the industrial sibling LAN9373-I/ZMX (Digi-Key @100, 37 stock). Findchips shows LAN9373-V/ZMXVAO tiers ($8.00 @1,000, $7.59 @5,000) without naming the distributor - not recorded."
+  },
+  {
+   "mpn": "LAN8770MT-I/PRA",
+   "family": "LAN8770",
+   "mfr": "Microchip",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "LAN8770MT-I/PRA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.325,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN8770MT-I-PRA/16915516",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "100BASE-T1 PHY, AEC-Q100 Grade 1 per product brief. Digi-Key T&R @1,000. Sibling LAN8770RT-I/5KX (RGMII, VQFN-36) $3.45 @3,000."
+  },
+  {
+   "mpn": "LAN8670C2T-E/LMX",
+   "family": "LAN8670",
+   "mfr": "Microchip",
+   "desc": "10BASE-T1S Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal",
+    "gateway"
+   ],
+   "observedMpn": "LAN8670C2T-E/LMX; Mouser row is tray LAN8670C2-E/LMX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 2.8375,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/an867?f=dsa",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 2.8375,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/an867?f=dsa",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 2.84,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/an867?f=dsa",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "B1 revision obsolete; C2 is current. Findchips rows: Digi-Key 150-LAN8670C2T-E/LMXCT-ND $2.8375 @100 and @5,000 (flat); Mouser 579-LAN8670C2-E/LMX $2.84 @100."
+  },
+  {
+   "mpn": "TCAN1145DMTRQ1",
+   "family": "TCAN1145-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "CAN FD transceiver with partial networking",
+   "category": "ic_soic",
+   "pkg": "VSON-14",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "TCAN1145DMTRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 2.24592,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1145DMTRQ1/15856936",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.69963,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCAN1145DMTRQ1/15856936",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.7027,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/CAN-Transceivers_Texas-Instruments-TCAN1145DMTRQ1_C3216153.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "LCSC @1,000 is far below Digi-Key (China channel) - check. SOIC-14 sibling TCAN1145DRQ1 Digi-Key $1.45617 @1,000."
+  },
+  {
+   "mpn": "PI7C9X2G404SVAFDEEX",
+   "family": "PI7C9X2G404SV",
+   "mfr": "Diodes Incorporated",
+   "desc": "PCIe 2.0 packet switch, 4-port",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-128",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "PI7C9X2G404SVAFDEEX",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 9.3,
+     "currency": "USD",
+     "url": "https://www.mouser.com/c/semiconductors/interface-ics/pci-interface-ic/?m=Diodes+Incorporated&series=PI7C9X2G404",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Mouser full reel 1,000. Automotive grade not confirmed (no Q code found). V-QFN sibling PI7C9X2G404EVAZXAEX $8.47 @1,000 reel."
+  },
+  {
+   "mpn": "PI7C9X2G608GPBNJE",
+   "family": "PI7C9X2G608GP",
+   "mfr": "Diodes Incorporated",
+   "desc": "PCIe 2.0 packet switch, 6-port",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "PI7C9X2G608GPBNJE",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 504,
+     "price": 13.11736,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/PI7C9X2G608GPBNJE/5980248",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key tray @504 (35 wk lead). Mouser ~$13.38 and Arrow ~$13.50 @126 seen without exact breaks - not recorded. Automotive grade not confirmed; package not confirmed."
+  },
+  {
+   "mpn": "PEX88024",
+   "family": "PEX88024",
+   "mfr": "Broadcom",
+   "desc": "PCIe Gen4 switch, 24-lane",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched 1x: no price at any distributor. Digi-Key lists SS07-0B00-00 (PEX88024B0) with 0 stock, 53 wk lead, no price; Mouser only hosts the product brief. Data-centre part, not AEC-Q100."
+  },
+  {
+   "mpn": "SN65DSI83TPAPRQ1",
+   "family": "SN65DSI83-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "MIPI DSI to single-link LVDS bridge",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64 (PAP)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "SN65DSI83TPAPRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 4.82,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/SN65DSI83TPAPRQ1?qs=34RfhUjJmKcir4UU7nRmyA%3D%3D",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.75672,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN65DSI83TPAPRQ1/6580110",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 4.749,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/sn65dsi83tpaprq1/texas-instruments",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "-Q1 is the HTQFP-64 package (the nFBGA ZXH code is not automotive). Mouser full reel 1,000; Digi-Key T&R @1,000 (another snapshot $5.5891); Arrow $4,749 per 1,000."
+  },
+  {
+   "mpn": "SN65LVDS93AIDGGRQ1",
+   "family": "SN65LVDS93A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FlatLink LVDS serializer / transmitter",
+   "category": "ic_soic",
+   "pkg": "TSSOP-56",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "SN65LVDS93AIDGGRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 7.53,
+     "currency": "USD",
+     "url": "https://digikey.com/product-detail/en/SN65LVDS93AIDGGRQ1/SN65LVDS93AIDGGRQ1-ND/5174177",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 7.02,
+     "currency": "USD",
+     "url": "https://digikey.com/product-detail/en/SN65LVDS93AIDGGRQ1/SN65LVDS93AIDGGRQ1-ND/5174177",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key cut tape @100/@500. An aggregator snapshot of Digi-Key showed $8.50 @100 and $7.61 @2,000 - conflicting, not recorded. No Mouser listing for this code."
+  },
+  {
+   "mpn": "TDP142RGFTQ1",
+   "family": "TDP142-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "DisplayPort linear redriver, 8.1 Gbps",
+   "category": "ic_qfn",
+   "pkg": "VQFN-40 (7x5)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "TDP142RGFTQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 4.60048,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDP142RGFTQ1/26639767",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Automotive TDP142-Q1 is the RGF 40-VQFN; Digi-Key small reel (TQ1) @250. Large-reel RQ1 code not found."
+  },
+  {
+   "mpn": "TS3DV642RUARQ1",
+   "family": "TS3DV642-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "High-speed differential 2:1 / 1:2 mux switch",
+   "category": "ic_qfn",
+   "pkg": "WQFN-42 (RUA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "TS3DV642RUARQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.0846,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TS3DV642RUARQ1/15857306",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key T&R @3,000 (0 stock); a second Digi-Key snapshot showed $1.96649 @2,500 - conflicting, check. Mouser 595-TS3DV642RUARQ1 breaks unlabelled on Octopart - not recorded."
+  }
+ ]
+}

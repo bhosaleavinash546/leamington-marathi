@@ -1,0 +1,13 @@
+{
+ "note": "Audit of the ADAS round (9 Oct 2026). Applied by scripts/pcb-catalogue-research-merge.ts before pricing. parts: research for this MPN is not used (reason given). Prices read on Digi-Key 'punchouttest' regional storefronts are accepted but labelled on the entry (no other round used that host).",
+ "parts": {
+  "AWR1443FQIGABLRQ1": "Only price is digikey.de (punchout storefront) EUR 19.69 @1k; not confirmed ex-VAT after two passes - not used, the catalogue estimate stays",
+  "CGA3E3X7R1H474K080AB": "Priced on the X5R sibling (-55..85 C), a lower temperature class than the listed X7R AEC-Q200 part - not a like-for-like sibling, not used",
+  "0347910042": "Molex Mini50 receptacle housing - a wire-side part, not the board-side connector this list asked for - not used",
+  "OX08B40-B86Y-00LD": "Only price is fat.lcsc.com (an LCSC staging host), 0 stock; OmniVision automotive sensors are not otherwise distributor-listed - not used; the imager class rule (automotive volume price) applies",
+  "OX03C10-E66Y-00LD": "Only price is fat.lcsc.com (an LCSC staging host), 0 stock - not used; the imager class rule applies",
+  "OX01F10-E48Y-LD": "Only price is fat.lcsc.com (an LCSC staging host), 0 stock, @100 - not used; the imager class rule applies"
+ },
+ "observations": [],
+ "disputed": {}
+}

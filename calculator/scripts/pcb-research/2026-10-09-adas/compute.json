@@ -1,0 +1,1056 @@
+{
+ "domain": "adas-compute",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "TDA4VH88TGAALYRQ1",
+   "family": "TDA4VH",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS / domain-controller SoC, 8x Cortex-A72, C7x/MMA",
+   "category": "ic_bga",
+   "pkg": "FCBGA-1414 (ALY)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": "TDA4VH88TGAALYRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 200,
+     "price": 240.5218,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA4VH88TGAALYRQ1/25811540",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 200,
+     "price": 208.53,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TDA4VH88TGAALYRQ1?qs=dbcCsuKDzFWQYiMoGOSM7w%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Only automotive orderable seen (T&R 200, -40..125C). Both distributors quote the 200 reel only (Mouser non-stocked, mult 200). ti.com list $171.80 (snippets also showed ~$156; qty unlabelled) https://www.ti.com/product/TDA4VH-Q1/part-details/TDA4VH88TGAALYRQ1 - not an observation."
+  },
+  {
+   "mpn": "TDA4VL21HGAALZRQ1",
+   "family": "TDA4VL",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 SoC, 2x Cortex-A72 1.2 GHz, 4 TOPS, C7x, GPU",
+   "category": "ic_bga",
+   "pkg": "FCBGA-770 (ALZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera",
+    "park assist"
+   ],
+   "observedMpn": "TDA4VL21HGAALZRQ1",
+   "observations": [],
+   "notes": "Orderable per ti.com (T&R 250). No franchised break >=100 found in 4 searches: Digi-Key NO lists TR (296-TDA4VL21HGAALZRQ1TR-ND) only to 25 pcs (NOK 1,065.18 @25, https://www.digikey.no/no/products/detail/texas-instruments/TDA4VL21HGAALZRQ1/17873897); Mouser category-page snippets gave 1-pc prices only (CA $189.62, SG $162.59). RCS Components (UA) and Dasenic not franchised. ti.com $63.871 (qty unlabelled) https://www.ti.com/product/TDA4VL-Q1/part-details/TDA4VL21HGAALZRQ1."
+  },
+  {
+   "mpn": "TDA4VE88TGAALZRQ1",
+   "family": "TDA4VE",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS SoC, 2x Cortex-A72, C7x/MMA, R5F, C66x",
+   "category": "ic_bga",
+   "pkg": "FCBGA-770 (ALZ, 23x23)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS",
+    "park assist"
+   ],
+   "observedMpn": "TDA4VE88TGAALZRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 82.87,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TDA4VE88TGAALZRQ1?qs=amGC7iS6iy94hBzlpK8WJg%3D%3D",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 73.02,
+     "currency": "EUR",
+     "url": "https://www.digikey.at/en/products/detail/texas-instruments/TDA4VE88TGAALZRQ1/17873875",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate TDA4VE. Full reel = 250. Digi-Key US snippet gave T&R 250 at $129.1598 - discarded: inconsistent with Digi-Key AT (EUR 73.02) and above ti.com list $83.870 (qty unlabelled) https://www.ti.com/product/TDA4VE-Q1/part-details/TDA4VE88TGAALZRQ1. Mouser 1 pc $121.11."
+  },
+  {
+   "mpn": "TDA4AL88TGAALZRQ1",
+   "family": "TDA4AL",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 ADAS SoC, 2x Cortex-A72, C7x/MMA, H.264/H.265 encode",
+   "category": "ic_bga",
+   "pkg": "FCBGA-770 (ALZ, 23x23)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": "TDA4AL88TGAALZRQ1",
+   "observations": [],
+   "notes": "Upgrade target: estimate TDA4AL - NOT replaced. 3 searches: no Digi-Key/Mouser product page with a break for this code (a Digi-Key AT 'related item' row showed EUR 71.75 with no quantity - not recorded). Brokers only (Jasinchip, Avaq)."
+  },
+  {
+   "mpn": "TDA4VEN8J5AAMWRQ1",
+   "family": "TDA4VEN",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 SoC (TDA4VEN-Q1), 594-pin FCBGA",
+   "category": "ic_bga",
+   "pkg": "FCBGA-594 (AMW, 18x18, 0.65 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "TDA4VEN8J5AAMWRQ1",
+   "observations": [],
+   "notes": "Upgrade target: estimate TDA4VE - NOT replaced. 2 searches: no franchised distributor listing found. ti.com $52.61 (qty unlabelled, out of stock) https://www.ti.com/product/TDA4VEN-Q1/part-details/TDA4VEN8J5AAMWRQ1; sibling TDA4VEN8K5AAMWRQ1 ti.com ~$58.24. T&R 500."
+  },
+  {
+   "mpn": "TDA4AEN8J5AAMWRQ1",
+   "family": "TDA4AEN",
+   "mfr": "Texas Instruments",
+   "desc": "Jacinto 7 SoC (TDA4AEN-Q1), 594-pin FCBGA",
+   "category": "ic_bga",
+   "pkg": "FCBGA-594 (AMW)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera"
+   ],
+   "observedMpn": "TDA4AEN8J5AAMWRQ1",
+   "observations": [],
+   "notes": "Searched with TDA4VEN (2 searches): no franchised listing; TrustedParts shows out of stock, no price. ti.com ~$50.11 (8J5) / ~$55.74 (8K5), qty unlabelled https://www.ti.com/product/TDA4AEN-Q1."
+  },
+  {
+   "mpn": "AM62A74AUMSIAMBRQ1",
+   "family": "AM62A7",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM62A7-Q1 vision SoC, 4x Cortex-A53, 2 TOPS",
+   "category": "ic_bga",
+   "pkg": "FCBGA-484 (AMB)",
+   "aecq": true,
+   "ecuRoles": [
+    "DMS",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "AM62A74AUMSIAMBRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 4077.05352,
+     "currency": "INR",
+     "url": "https://www.digikey.in/en/products/detail/texas-instruments/AM62A74AUMSIAMBRQ1/21600636",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "T&R 500 is the only TR break. Digi-Key AU same break AUD 62.12652 @500 (https://www.digikey.com.au/en/products/detail/texas-instruments/AM62A74AUMSIAMBRQ1/21600636; AUD not in FX table, not recorded). Mouser T&R tiers 62.46 / 51.54 USD seen via Octopart without readable quantities - not recorded. ti.com $39.801 (qty unlabelled)."
+  },
+  {
+   "mpn": "AM62A32ASMSIAMBRQ1",
+   "family": "AM62A3",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM62A3-Q1 vision SoC, 1 TOPS, RGB-IR ISP",
+   "category": "ic_bga",
+   "pkg": "FCBGA-484 (AMB)",
+   "aecq": true,
+   "ecuRoles": [
+    "DMS",
+    "surround camera"
+   ],
+   "observedMpn": "AM62A32ASMSIAMBRQ1",
+   "observations": [],
+   "notes": "2 searches: no Digi-Key/Mouser listing found for AM62A32/AM62A34 -Q1 codes. ti.com AM62A32ASMSIAMBRQ1 $22.524, AM62A34ASMSIAMBRQ1 ~$26.46 (qty unlabelled) https://www.ti.com/product/AM62A3-Q1. T&R 500."
+  },
+  {
+   "mpn": "AM68A",
+   "family": "AM68A",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AI vision SoC (industrial)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "Not priced by rule: industrial part whose automotive variant exists (TDA4VL-Q1, see that line)."
+  },
+  {
+   "mpn": "TDA2SX",
+   "family": "TDA2SX",
+   "mfr": "Texas Instruments",
+   "desc": "TDA2x ADAS SoC (surround view)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist"
+   ],
+   "observedMpn": "TDA2SXBTQABCRQ1",
+   "observations": [],
+   "notes": "fat.lcsc.com snippet (C5218319) gave TDA2SXBTQABCRQ1 ~$8.26 at 1k+ (out of stock) - discarded as implausible (same LCSC page family showed TDA4VM at $47.62, far below distributor levels). Not searched further this round."
+  },
+  {
+   "mpn": "TDA3MA",
+   "family": "TDA3MA",
+   "mfr": "Texas Instruments",
+   "desc": "TDA3x ADAS SoC, 15 mm FCBGA",
+   "category": "ic_bga",
+   "pkg": "FCBGA-367 (ABF, 15x15)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera",
+    "radar"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "2 searches: no franchised distributor listing; exact TDA3MA orderable code not confirmed (siblings TDA3MVRBFABFRQ1, TDA3MDDBABFRQ1 exist)."
+  },
+  {
+   "mpn": "R-CAR V3H",
+   "family": "RCARV3H",
+   "mfr": "Renesas",
+   "desc": "R-Car V3H vision SoC (R8A77980)",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing. Searched with V3M."
+  },
+  {
+   "mpn": "R-CAR V3M",
+   "family": "RCARV3M",
+   "mfr": "Renesas",
+   "desc": "R-Car V3M vision SoC (R8A77970)",
+   "category": "ic_bga",
+   "pkg": "FCBGA (0.8 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "R-CAR V4H",
+   "family": "RCARV4H",
+   "mfr": "Renesas",
+   "desc": "R-Car V4H ADAS SoC (R8A779G0)",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing. Searched with V4M/H3; Renesas: volume shipping Q1 2026."
+  },
+  {
+   "mpn": "R-CAR V4M",
+   "family": "RCARV4M",
+   "mfr": "Renesas",
+   "desc": "R-Car V4M ADAS SoC (R8A779H0)",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "R-CAR H3",
+   "family": "RCARH3",
+   "mfr": "Renesas",
+   "desc": "R-Car H3 SoC (mainly cockpit)",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "surround camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "FS32V234BMN2VUB",
+   "family": "S32V234",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32V234 vision processor, 4x Cortex-A53 800 MHz + M4",
+   "category": "ic_bga",
+   "pkg": "FCPBGA-621 (17x17)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "FS32V234BMN2VUB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 450,
+     "price": 67.78,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/nxp-usa-inc/FS32V234BMN2VUB/16592102",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Tray 450. Sibling FS32V234CKN2VUB (1 GHz) Digi-Key SG SGD 121.72 @450 (https://www.digikey.sg/en/products/detail/nxp-usa-inc/FS32V234CKN2VUB/16592099). FS32V234CON1VUB obsolete."
+  },
+  {
+   "mpn": "S32G399AAAK1VUCR",
+   "family": "S32G399A",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G3 vehicle network processor, 4x A53 + M7, 20x CAN FD, 4x GbE",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "S32G399AAAK1VUCR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 94.24758,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/base-product/nxp-usa-inc/568/S32G399/734426",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate S32G399. Only TR break (500), 0 stock. Sibling S32G399AACK1VUCT Digi-Key ~$170.96 (qty unclear) not recorded; Future 'as low as $70.58' unattributed - not recorded."
+  },
+  {
+   "mpn": "S32G274AABK1VUCT",
+   "family": "S32G274A",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G2 vehicle network processor, 4x A53 + 3x M7 lockstep",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "S32G274AABK1VUCT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 73.6391,
+     "currency": "EUR",
+     "url": "https://www.digikey.gr/en/products/detail/nxp-usa-inc/S32G274AABK1VUCT/19492720",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate S32G274. K0 code obsolete (Digi-Key), K1 is the substitute; tray 420. Newark K1 100 @ $69.96 seen without a page URL - not recorded. OEMsTrade/Nevsemi rows ignored (not price hosts)."
+  },
+  {
+   "mpn": "S32G254AABK1VUCT",
+   "family": "S32G254A",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G2 vehicle network processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "S32G254AABK1VUCT",
+   "observations": [],
+   "notes": "2 searches: no franchised listing with a break (Findchips tiers unattributed to a distributor; Chip1/Xecor are brokers)."
+  },
+  {
+   "mpn": "S32K344EHT1VMMST",
+   "family": "S32K344",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32K344 Cortex-M7 lockstep MCU, 4 MB",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-257",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": "S32K344EHT1VMMST",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 15.42,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/k344",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 500,
+     "price": 14.7,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/k344",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Same code as the catalogue entry (keep catalogue's; these cross-check it). Mouser 771-S32K344EHT1VMMST via Findchips; 250 @ $14.88. Rochester 1k $10.91 ignored (aftermarket)."
+  },
+  {
+   "mpn": "S32K396EHT1MJBST",
+   "family": "S32K396",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32K39 Cortex-M7 MCU, 320 MHz, 6 MB",
+   "category": "ic_bga",
+   "pkg": "LFBGA (MJB)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "S32K396EHT1MJBST",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 27.11,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/6EHT1",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 250,
+     "price": 31.14,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/6EHT1",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 3395.93,
+     "currency": "INR",
+     "url": "https://www.digikey.in/en/products/detail/nxp-usa-inc/S32K396EHT1MJBST/22676890",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Mouser/Newark rows read via aggregator snippet (page URL as given). Avnet MOQ 760 at $25.2763-27.3257 (break order unclear) not recorded. Farnell EUR 27.50 @50."
+  },
+  {
+   "mpn": "SAF85xx",
+   "family": "SAF85",
+   "mfr": "NXP Semiconductors",
+   "desc": "SAF85xx 28 nm RFCMOS 77 GHz radar one-chip",
+   "category": "ic_bga",
+   "pkg": "FC-CSP (10.6x11.3)",
+   "aecq": true,
+   "ecuRoles": [
+    "radar"
+   ],
+   "observedMpn": "SAF8544",
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing. nxp.com shows SAF8544EL/3Y $45.50 (qty unlabelled) - not an observation; reference design NDA-only."
+  },
+  {
+   "mpn": "TC397XX256F300SBDKXUMA2",
+   "family": "TC397",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 hexa-core TriCore 300 MHz, 16 MB",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "TC397XX256F300SBDKXUMA2",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 60.35,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/SAK-TC397XX-256F300SBD?manufacturer=Infineon-Technologies-AG",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Rutronik",
+     "qty": 1000,
+     "price": 49.68,
+     "currency": "EUR",
+     "url": "https://www.rutronik24.com/product/infineon/tc397xx256f300sbdkxuma2/21203372.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "SAK-TC397XX-256F300S BD; same code as catalogue entry. Mouser 1k also seen $58.52 (Alldatasheet) / $56.27 (Digipart) in older snapshots. Rutronik MOQ 1000 reel. LCSC $26.48 @100+ discarded (half every franchised price)."
+  },
+  {
+   "mpn": "TC387QP160F300SAEKXUMA2",
+   "family": "TC387",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 quad-core TriCore 300 MHz, 10 MB",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS"
+   ],
+   "observedMpn": "TC387QP160F300SAEKXUMA2",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 36.61,
+     "currency": "USD",
+     "url": "https://www.digipart.com/part/SAK-TC387QP-160F300S%20AE",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Rutronik",
+     "qty": 1000,
+     "price": 31.97,
+     "currency": "EUR",
+     "url": "https://www.rutronik24.com/product/infineon/tc387qp160f300saekxuma1/13743372.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate TC387 (SAK-TC387QP-160F300S AE). Mouser code ...KXUMA2 (726-TC387QP160F3); Rutronik row is ...KXUMA1, MOQ 1000 reel."
+  },
+  {
+   "mpn": "TC377TX96F300SABKXUMA1",
+   "family": "TC377",
+   "mfr": "Infineon",
+   "desc": "AURIX TC3 tri-core TriCore 300 MHz, 6 MB",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS"
+   ],
+   "observedMpn": "TC377TX96F300SABKXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 38.1,
+     "currency": "USD",
+     "url": "https://www.digipart.com/part/SAK-TC377TX-96F300S%20AB",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Rutronik",
+     "qty": 1000,
+     "price": 32.35,
+     "currency": "EUR",
+     "url": "https://www.rutronik24.com/product/infineon/sak-tc377tx-96f300s+ab/13469812.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate TC377 (SAK-TC377TX-96F300S AB; AA step at LCSC $34.0459 @1k+, out of stock, https://www.lcsc.com/product-detail/C538867.html). Rutronik MOQ 1000 reel."
+  },
+  {
+   "mpn": "TC4D9XP20MF500MCABKXUMA1",
+   "family": "TC4D9",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4Dx 6-core TriCore 500 MHz, 20 MB, ASIL-D",
+   "category": "ic_bga",
+   "pkg": "PG-F2BGA-436 (Digi-Key: PG-F2HBGA-436)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway"
+   ],
+   "observedMpn": "TC4D9XP20MF500MCABKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 86.6,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC4D9XP20MF500MCABKXUMA1/27346308",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 82.77,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC4D9XP20MF500MCABKXUMA1/27346308",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "SAK-TC4D9XP-20MF500MC AB, T&R 500. Avnet $89.10 @500 / $83.50 @8000 and Mouser $79.90 @500 seen on alldatasheet.co.uk (not a price host) - not recorded."
+  },
+  {
+   "mpn": "TC499PP20MF400MSABKXUMA1",
+   "family": "TC499",
+   "mfr": "Infineon",
+   "desc": "AURIX TC49x 5-core TriCore 400 MHz, 20 MB",
+   "category": "ic_bga",
+   "pkg": "PG-F2BGA-436",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway"
+   ],
+   "observedMpn": "TC499PP20MF400MSABKXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 59.75166,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC499PP20MF400MSABKXUMA1/27356926",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate TC499 (SAK-TC499PP-20MF400MS AB). Digi-Key T&R 500 only, not stocked, 52 wk. Avnet ~$59.77 @500 via OEMsTrade (not a price host) - not recorded."
+  },
+  {
+   "mpn": "SPC58NH92C3RMI0X",
+   "family": "SPC58NH92",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 H-line automotive MCU, 200 MHz, 10.5 MB flash",
+   "category": "ic_bga",
+   "pkg": "FPBGA-302",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "SPC58NH92C3RMI0X",
+   "observations": [
+    {
+     "distributor": "Avnet",
+     "qty": 1000,
+     "price": 25.186,
+     "currency": "USD",
+     "url": "https://octopart.com/spc58nh92c3rmi0x-stmicroelectronics-118489800",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 10000,
+     "price": 23.787,
+     "currency": "USD",
+     "url": "https://octopart.com/spc58nh92c3rmi0x-stmicroelectronics-118489800",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 26.0,
+     "currency": "USD",
+     "url": "https://octopart.com/spc58nh92c3rmi0x-stmicroelectronics-118489800",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Avnet/Arrow 1K minimum, 0 stock (Octopart snapshot). Mouser ~$26.10 at top break (column unclear). Digi-Key $31.93 @10. ST eStore E7HMI0X $26.42 @500 (maker store)."
+  },
+  {
+   "mpn": "SPC584B70E3EHC0X",
+   "family": "SPC584B",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC58 B-line body MCU, e200z4, 120 MHz",
+   "category": "ic_tqfp",
+   "pkg": "eTQFP-100 (TQFP-EP)",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "SPC584B70E3EHC0X",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 10.0488,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/SPC584B70E3EHC0X",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 10.64,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/SPC584B70E3EHC0X",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 15.376,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/spc584b70e3ehc0x/stmicroelectronics",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces estimate SPC584B (same code as catalogue SPC584B70E3EHC0X). Newark 1000+ $14.96 (https://www.newark.com/stmicroelectronics/spc584b70e3ehc0x/mcu-32bit-120mhz-tqfp-ep-100-rohs/dp/39AH5584). Arrow 0 stock, 52 wk."
+  },
+  {
+   "mpn": "R7F702300BFABA-C#BC6",
+   "family": "RH850U2A",
+   "mfr": "Renesas",
+   "desc": "RH850/U2A16 multi-core domain MCU, 16 MB flash",
+   "category": "ic_bga",
+   "pkg": "FBGA-292",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS"
+   ],
+   "observedMpn": "R7F702300BFABA-C#BC6",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 59.5,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F702300BFABA-C-BC6/19235696",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Same code as catalogue entry. Sibling BEBBC (516-FBGA) Digi-Key $60.05 @100. No 1k break published."
+  },
+  {
+   "mpn": "R7F70254FAFABA-C",
+   "family": "RH850U2B",
+   "mfr": "Renesas",
+   "desc": "RH850/U2B10 multi-core MCU, 10 MB flash",
+   "category": "ic_bga",
+   "pkg": "BGA-373 (21x21, 0.8 mm)",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "R7F70254FAFABA-C",
+   "observations": [],
+   "notes": "2 searches: no franchised distributor listing for R7F70254x / R7F70255x (U2B10 / U2B6) codes."
+  },
+  {
+   "mpn": "RH850/E2x",
+   "family": "RH850E2",
+   "mfr": "Renesas",
+   "desc": "RH850/E2x automotive MCU",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "2 searches: no franchised listing (R7F702012AEABG, BGA468 = E2UH, broker only)."
+  },
+  {
+   "mpn": "XA7Z020-1CLG400Q",
+   "family": "XA7Z020",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq-7000 automotive SoC FPGA",
+   "category": "ic_bga",
+   "pkg": "CSBGA-400 (CLG400)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "XA7Z020-1CLG400Q",
+   "observations": [],
+   "notes": "No break >=100 published: Digi-Key $180.70, Mouser $180.69, Avnet $187.65, all qty 1 (AMD prices flat at distributors). omo-ic EUR 142.19 @100 ignored (not a price host). 2 searches."
+  },
+  {
+   "mpn": "XAZU2EG-1SBVA484Q",
+   "family": "XAZU2EG",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA-484 (SBVA484)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": "XAZU2EG-1SBVA484Q",
+   "observations": [],
+   "notes": "Qty-1 prices only: Digi-Key ~$713.70, Mouser $712.86, Avnet $653.31 (Octopart, ~1 yr old). 1 search."
+  },
+  {
+   "mpn": "XAZU3EG-1SFVC784Q",
+   "family": "XAZU3EG",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA-784 (SFVC784)",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS"
+   ],
+   "observedMpn": "XAZU3EG-1SFVC784Q",
+   "observations": [],
+   "notes": "Qty-1 prices only, inconsistent: Digi-Key $1,203.80 / $1,426.04, Mouser $928.12, Avnet $1,179.62. 1 search."
+  },
+  {
+   "mpn": "XAZU5EV-1SFVC784Q",
+   "family": "XAZU5EV",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC (EV)",
+   "category": "ic_bga",
+   "pkg": "FCBGA-784 (SFVC784)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "LiDAR"
+   ],
+   "observedMpn": "XAZU5EV-1SFVC784Q",
+   "observations": [],
+   "notes": "Qty-1 prices only: Digi-Key $4,794.02, Avnet $3,704.47, Mouser $3,545.69. 1 search."
+  },
+  {
+   "mpn": "XAZU7EV-1FBVB900Q",
+   "family": "XAZU7EV",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Zynq UltraScale+ MPSoC (EV)",
+   "category": "ic_bga",
+   "pkg": "FCBGA-900 (FBVB900)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "LiDAR"
+   ],
+   "observedMpn": "XAZU7EV-1FBVB900Q",
+   "observations": [],
+   "notes": "Qty-1 prices only: Digi-Key EUR 6,745.73, Avnet $6,013.05. 1 search."
+  },
+  {
+   "mpn": "XA7A50T-1CSG325Q",
+   "family": "XA7A50T",
+   "mfr": "AMD (Xilinx)",
+   "desc": "XA Artix-7 automotive FPGA",
+   "category": "ic_bga",
+   "pkg": "CSBGA-324 (CSG325)",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "LiDAR"
+   ],
+   "observedMpn": "XA7A50T-1CSG325Q",
+   "observations": [],
+   "notes": "Qty-1 prices only: Mouser $110.11, Digi-Key $118.93, Avnet $114.68. 1 search."
+  },
+  {
+   "mpn": "LIFCL-17-7MG121A",
+   "family": "LIFCL-17",
+   "mfr": "Lattice Semiconductor",
+   "desc": "CrossLink-NX 17k FPGA, automotive grade",
+   "category": "ic_bga",
+   "pkg": "csfBGA-121",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "LIFCL-17-7MG121A",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 21.065,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/lattice-semiconductor-corporation/LIFCL-17-7MG121A/18138225",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Only 'A' (automotive) code found. Digi-Key 0 stock, 40 wk. Arrow $21.84 @1 (its page says Automotive: No / temp grade Automotive - conflicting)."
+  },
+  {
+   "mpn": "EyeQ4",
+   "family": "EyeQ4",
+   "mfr": "Mobileye",
+   "desc": "EyeQ4 vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing. Only figure: 2018 ASP ~$450 (Wikipedia, secondhand)."
+  },
+  {
+   "mpn": "EyeQ5",
+   "family": "EyeQ5",
+   "mfr": "Mobileye",
+   "desc": "EyeQ5 vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "EyeQ6L",
+   "family": "EyeQ6L",
+   "mfr": "Mobileye",
+   "desc": "EyeQ6 Lite vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "CV2AQ",
+   "family": "CV2AQ",
+   "mfr": "Ambarella",
+   "desc": "CV2AQ automotive stereo-vision SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "DMS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "CV3-AD685",
+   "family": "CV3-AD685",
+   "mfr": "Ambarella",
+   "desc": "CV3-AD685 ADAS domain SoC (5 nm)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "DRIVE AGX Orin SoC",
+   "family": "Orin",
+   "mfr": "NVIDIA",
+   "desc": "DRIVE Orin (Orin-X) automotive SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TA990SA-A1",
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing. TA990SA-A1 seen only at brokers (Fusion Worldwide, netCOMPONENTS). Jetson AGX Orin 32GB MODULE (non-automotive, incl. DRAM/PMIC): Arrow $1,799 @1000+, NVIDIA MSRP $1,799 1KU - a module, not the SoC; not recorded."
+  },
+  {
+   "mpn": "SA8650P",
+   "family": "SA8650P",
+   "mfr": "Qualcomm",
+   "desc": "Snapdragon Ride SA8650P ADAS SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing."
+  },
+  {
+   "mpn": "SA8540P",
+   "family": "SA8540P",
+   "mfr": "Qualcomm",
+   "desc": "Snapdragon Ride SA8540P SoC",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "not listed at a franchised distributor (OEM-direct / NDA): 2 searches (distributor + aggregator) found no Digi-Key/Mouser/Arrow/Avnet/Octopart/Findchips listing. Only an eBay open-box unit ($695) seen - ignored."
+  },
+  {
+   "mpn": "TMS320F28388D-Q1",
+   "family": "TMS320F28388D",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU with connectivity manager",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": null,
+   "observations": [],
+   "notes": "No automotive F28388D orderable confirmed: TI E2E says F28388DPTP-Q1 is not a valid part; TI F28388D page lists ZWTS (non-Q) only. Automotive sibling F28386D-Q1 = F28386DZWTQ (Digi-Key $38.98, qty not shown). 2 searches."
+  },
+  {
+   "mpn": "TMS5704357BZWTQQ1",
+   "family": "TMS570LC4357",
+   "mfr": "Texas Instruments",
+   "desc": "Hercules TMS570LC4357-Q1 lockstep safety MCU, Cortex-R5F",
+   "category": "ic_bga",
+   "pkg": "nFBGA-337 (ZWT)",
+   "aecq": true,
+   "ecuRoles": [
+    "radar",
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": "TMS5704357BZWTQQ1",
+   "observations": [],
+   "notes": "Orderable for TMS570LC4357-Q1. Franchised breaks stop at the 90-pc tray (below the 100 floor): Mouser $70.85 @90, Digi-Key ~$68.73 @90 (https://www.digikey.com/en/products/detail/texas-instruments/TMS5704357BZWTQQ1/6164977), Arrow $64.74 @90 (TrustedParts). Nevsemi Arrow-excess rows ($44) ignored."
+  }
+ ]
+}

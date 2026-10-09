@@ -1,0 +1,1378 @@
+{
+ "domain": "adas-memory-timing",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "MT53E512M32D1ZW-046 AUT:B",
+   "family": "MT53E512M32D1ZW",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 16Gb (512M x32), 2133 MHz, -40..125 C AEC-Q100",
+   "category": "ic_bga",
+   "pkg": "200-TFBGA 10x14.5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "MT53E512M32D1ZW-046 AUT:B",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 25.89,
+     "currency": "EUR",
+     "url": "https://punchouttest.digikey.es/en/products/detail/micron-technology-inc/MT53E512M32D1ZW-046-AUT-B/17631905",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 25.03,
+     "currency": "EUR",
+     "url": "https://punchouttest.digikey.es/en/products/detail/micron-technology-inc/MT53E512M32D1ZW-046-AUT-B/17631905",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key Spain punchout storefront, tray, ex VAT; 0 in stock, 24 wk lead time. Only one distributor found."
+  },
+  {
+   "mpn": "MT53E256M32D1KS-046 AUT:L",
+   "family": "MT53E256M32D1KS",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 8Gb (256M x32), 2133 MHz, automotive",
+   "category": "ic_bga",
+   "pkg": "200-VFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No break >=100 found: element14 KR qty 1 only (KRW 160,407); Avnet MOQ 1360 with no price, 0 stock. Third-party page reports a Micron LTB (30-Mar-2026) on this family."
+  },
+  {
+   "mpn": "MT53E2G32D4NQ-046 AUT",
+   "family": "MT53E2G32D4NQ",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 64Gb (2G x32), 2133 MHz, automotive",
+   "category": "ic_bga",
+   "pkg": "200-TFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not listed at a franchised distributor (2 searches); only non-automotive WT:A/WT:C stock listings without price and aggregator 'design reference' prices for DT-package siblings, not recorded."
+  },
+  {
+   "mpn": "MT62F1G32D2DS-023 AUT:C",
+   "family": "MT62F1G32D2DS",
+   "mfr": "Micron",
+   "desc": "LPDDR5 32Gb (1G x32), 4266 MHz, automotive",
+   "category": "ic_bga",
+   "pkg": "315-TFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only RS UK qty 1 (GBP 202.73 ex VAT) found for AUT:C; Digi-Key lists only WT/IT siblings. No break >=100."
+  },
+  {
+   "mpn": "MT62F2G32D4DS-023 AUT:C",
+   "family": "MT62F2G32D4DS",
+   "mfr": "Micron",
+   "desc": "LPDDR5 64Gb (2G x32), 4266 MHz, automotive",
+   "category": "ic_bga",
+   "pkg": "315-TFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not listed at a franchised distributor (2 searches); only a broker listing without price."
+  },
+  {
+   "mpn": "MT53D512M32D2DS-046 AAT",
+   "family": "MT53D512M32D2DS",
+   "mfr": "Micron",
+   "desc": "LPDDR4 16Gb (512M x32), 2133 MHz, -40..105 C",
+   "category": "ic_bga",
+   "pkg": "200-WFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not listed at a franchised distributor (1 search); aggregator lists AAT:D as obsolete."
+  },
+  {
+   "mpn": "IS46LQ32512A-046BLA1",
+   "family": "IS46LQ32512A",
+   "mfr": "ISSI",
+   "desc": "LPDDR4 16Gb (512M x32), 2133 MHz, A1 automotive -40..85 C",
+   "category": "ic_bga",
+   "pkg": "200-BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "IS46LQ32512A-046BLA1",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 136,
+     "price": 20.31,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/en-IT/integrated-silicon-solution-issi/is46lq32512a-046bla1/dram-2-133ghz-16gbit-1-1v-bga/dp/4732792",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Farnell IT, MOQ 136 (18 wk). A2 grade -046BLA2 at Farnell BE only to 50+ (EUR 31.23), not recorded. Second pass: no 1k / reel (-TR) break listed."
+  },
+  {
+   "mpn": "IS46LD32640",
+   "family": "IS46LD32640B",
+   "mfr": "ISSI",
+   "desc": "LPDDR2 2Gb (64M x32), automotive",
+   "category": "ic_bga",
+   "pkg": "134-BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "not listed at a franchised distributor (1 search); broker 'get quote' listings only (-25BLA2 / -25BLA25)."
+  },
+  {
+   "mpn": "K4F6E3S4HM-THCL",
+   "family": "K4F6E3S4HM",
+   "mfr": "Samsung",
+   "desc": "LPDDR4 16Gb, 200-FBGA",
+   "category": "ic_bga",
+   "pkg": "200-FBGA",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "LCSC lists qty 1 $12.64 / 10+ $12.21, out of stock, no break >=100; not recorded. Automotive grade of the -THCL code not confirmed."
+  },
+  {
+   "mpn": "MT35XU512ABA1G12-0AAT",
+   "family": "MT35XU512ABA",
+   "mfr": "Micron",
+   "desc": "Xccela octal xSPI NOR 512Mb, 200 MHz, 1.8 V, automotive",
+   "category": "ic_bga",
+   "pkg": "24-TPBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Aggregator shows Mouser $9.60 (1151 stock) without its quantity break; not recorded. No break >=100 read."
+  },
+  {
+   "mpn": "MT35XU02GCBA1G12-0AUT",
+   "family": "MT35XU02GCBA",
+   "mfr": "Micron",
+   "desc": "Xccela octal xSPI NOR 2Gb, 200 MHz, 1.8 V, automotive -40..125 C",
+   "category": "ic_bga",
+   "pkg": "24-TPBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No franchised price found (2 searches); only broker stock without price and siblings (0AAT) at qty 1."
+  },
+  {
+   "mpn": "S28HS512TGABHM010",
+   "family": "S28HS512T",
+   "mfr": "Infineon",
+   "desc": "SEMPER octal xSPI NOR 512Mb, 200 MHz, 1.8 V, -40..125 C AEC-Q100",
+   "category": "ic_bga",
+   "pkg": "24-BGA 6x8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "S28HS512TGABHM010",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 676,
+     "price": 11.25,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/s28hs512tgabhm010-infineon-4186278",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Future full tray (676); 0 stock, 8 wk. Only one distributor found."
+  },
+  {
+   "mpn": "S28HS01GTGZBHA030",
+   "family": "S28HS01GT",
+   "mfr": "Infineon",
+   "desc": "SEMPER octal xSPI NOR 1Gb, 200 MHz, 1.8 V",
+   "category": "ic_bga",
+   "pkg": "24-BGA 8x8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "S28HS01GTGZBHI030",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 15.97,
+     "currency": "EUR",
+     "url": "https://at.farnell.com/en-AT/cypress-semiconductor/s28hs01gtgzbhi030/flash-memory-1gbit-40-to-85deg/dp/3935552",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 520,
+     "price": 12.76,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/en-IT/infineon/s28hs01gtgzbhi030/flash-memory-1gbit-40-to-85deg/dp/3935552",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Exact BHA030 code not found; priced as industrial (-40..85 C) sibling BHI030. Two Farnell country sites (AT 100+, IT 520 MOQ). Second pass: no automotive (A/B/M) 1Gb code priced."
+  },
+  {
+   "mpn": "S25FL256LAGMFA010",
+   "family": "S25FL256L",
+   "mfr": "Infineon",
+   "desc": "Quad SPI NOR 256Mb, 133 MHz, 3 V, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Exact code not found (2 searches); sibling S25FL256LAGMFM003 at Digi-Key qty 1 only ($4.21). No break >=100."
+  },
+  {
+   "mpn": "S25FS512SAGMFV010",
+   "family": "S25FS512S",
+   "mfr": "Infineon",
+   "desc": "Quad SPI NOR 512Mb, 1.8 V, -40..105 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "S25FS512SAGMFI010",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 504,
+     "price": 4.8256,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C21715631.html",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1008,
+     "price": 4.7438,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C21715631.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "FV010 not priced; industrial (-40..85 C) sibling FI010 at LCSC (0 stock; LCSC page mislabels mfr as Nexperia). Not an AEC-Q100 code. Second pass: no automotive MFA/MFB/MFM code found."
+  },
+  {
+   "mpn": "S26HS512TGABHI010",
+   "family": "S26HS512T",
+   "mfr": "Infineon",
+   "desc": "SEMPER HyperFlash/HyperBus NOR 512Mb, 200 MHz, 1.8 V, -40..85 C",
+   "category": "ic_bga",
+   "pkg": "24-FBGA 6x8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "S26HS512TGABHI010",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 169,
+     "price": 250.0,
+     "currency": "TWD",
+     "url": "https://twcn.rs-online.com/web/p/flash-memory/1976886",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "RS Taiwan 169+ break. RS lists AEC-Q100. Digi-Key $8.49 seen without break; RS Thailand THB 427/169+ inconsistent with other regions, discarded. TWD is in the engine FX table. No USD/EUR/GBP break >=100 found on a second pass; automotive S26HS512TGABHM010 at Digi-Key $14.89/338 seen only via Zenode (design reference)."
+  },
+  {
+   "mpn": "IS25WX512M-JHLA3",
+   "family": "IS25WX512M",
+   "mfr": "ISSI",
+   "desc": "Octal xSPI NOR 512Mb, 1.8 V, A3 automotive -40..125 C",
+   "category": "ic_bga",
+   "pkg": "24-TBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No franchised price found (1 search); only broker stock without price."
+  },
+  {
+   "mpn": "IS25LP256D-JLLA3",
+   "family": "IS25LP256D",
+   "mfr": "ISSI",
+   "desc": "Quad SPI NOR 256Mb, 3 V, A3 automotive -40..125 C",
+   "category": "ic_soic",
+   "pkg": "WSON-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Mouser listing seen (qty 1 $9.73, tiers down to $7.90) but the quantity of each tier was not stated; not recorded. Follow-up search blocked (budget)."
+  },
+  {
+   "mpn": "MX25UM51245GXDR00-T",
+   "family": "MX25UM51245G",
+   "mfr": "Macronix",
+   "desc": "OctaFlash octal NOR 512Mb, 200 MHz, 1.8 V, automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "24-BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "MX25UM51245GXDR00-T",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 480,
+     "price": 12.4,
+     "currency": "USD",
+     "url": "https://www.mouser.co.il/c/semiconductors/memory-ics/nor-flash/?m=Macronix",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaced the industrial code with the automotive one (Mouser 'Automotive +105C', 492-547 stock). Industrial MX25UM51245GXDI00 for reference: Digi-Key $6.05/480, $5.81/1440; Farnell UK GBP 4.84/250 - automotive is ~2x."
+  },
+  {
+   "mpn": "MX25U25645GZ4I00",
+   "family": "MX25U25645G",
+   "mfr": "Macronix",
+   "desc": "Quad SPI NOR 256Mb, 1.8 V, -40..85 C (industrial)",
+   "category": "ic_soic",
+   "pkg": "8-WSON 8x6",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "MX25U25645GZ4I00",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 480,
+     "price": 2.89035,
+     "currency": "USD",
+     "url": "https://punchouttest.digikey.com.mx/en/products/detail/macronix/MX25U25645GZ4I00/9808866",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 480,
+     "price": 4.7025,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/macronix/mx25u25645gz4i00/evolve-35617251/",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 250,
+     "price": 2.25,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25u25645gz4i00-macronix-6112442",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Industrial grade, not AEC-Q100. Digi-Key (punchout, USD) and Future out of stock; a second Future listing showed $3.35 at 150+. Avnet ~60% above Digi-Key."
+  },
+  {
+   "mpn": "W25Q256JWEIQ",
+   "family": "W25Q256JW",
+   "mfr": "Winbond",
+   "desc": "Quad SPI NOR 256Mb, 1.8 V, industrial",
+   "category": "ic_soic",
+   "pkg": "8-WSON 8x6",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "W25Q256JWEIQ TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.9682,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/winbond-electronics/W25Q256JWEIQ-TR/15181820",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 4000,
+     "price": 2.92791,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/winbond-electronics/W25Q256JWEIQ-TR/15181820",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 960,
+     "price": 4.4007,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C2940048.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces catalogue estimate W25Q256JW. Industrial grade (IQ), not AEC-Q100. Digi-Key 1000 = cut tape, 4000 = full reel; LCSC tray of 480."
+  },
+  {
+   "mpn": "GD25LB512MEYIGR",
+   "family": "GD25LB512ME",
+   "mfr": "GigaDevice",
+   "desc": "Quad SPI NOR 512Mb, 1.8 V",
+   "category": "ic_soic",
+   "pkg": "8-WSON 8x6",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches): only broker listings (PCX, 'request quote'), which mark it NRND and AEC-Q100. AEC-Q100 not verified at a distributor."
+  },
+  {
+   "mpn": "MTFC32GAZAQHD-AAT",
+   "family": "MTFC32GAZAQHD",
+   "mfr": "Micron",
+   "desc": "eMMC 5.1 32GB, automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "153-VFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "MTFC32GAZAQHD-AAT",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 14.7547,
+     "currency": "USD",
+     "url": "https://fat.lcsc.com/product-image/C5128487.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "LCSC tray (std pack 1520), stock 0-100. Newark $36.90 seen without its break, not recorded; Digi-Key lists only the -TR code without prices in results."
+  },
+  {
+   "mpn": "MTFC64GBCAQTC-AAT",
+   "family": "MTFC64GBCAQTC",
+   "mfr": "Micron",
+   "desc": "eMMC 5.1 64GB, automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "153-LFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "MTFC64GBCAQTC-AAT",
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 250,
+     "price": 35.29,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/MTFC64GBCAQTC-AAT",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Newark break read via FindChips. Farnell DE EUR 28.40 at 50+ (below 100), not recorded."
+  },
+  {
+   "mpn": "THGBMJG7C2LBAU8",
+   "family": "THGBMJG7C2LBAU8",
+   "mfr": "Kioxia",
+   "desc": "eMMC 5.1 16GB (128Gb), automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "153-FBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches); only the industrial THGBMJG7C1LBAIL is listed (LCSC)."
+  },
+  {
+   "mpn": "THGAF8G9T43BAB7",
+   "family": "THGAF8G9T43BAB7",
+   "mfr": "Kioxia",
+   "desc": "UFS 64GB (Kioxia)",
+   "category": "ic_bga",
+   "pkg": "153-BGA",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches); exact code not found anywhere. Sibling THGAF8G9T43BAIR is consumer UFS (-25..85 C), obsolete. Automotive grade of BAB7 not confirmed."
+  },
+  {
+   "mpn": "KLMBG2JETD-B041",
+   "family": "KLMBG2JETD",
+   "mfr": "Samsung",
+   "desc": "eMMC 5.1 32GB (Samsung, commercial grade)",
+   "category": "ic_bga",
+   "pkg": "153-FBGA",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "KLMBG2JETD-B041",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 112,
+     "price": 5.0444,
+     "currency": "USD",
+     "url": "https://lcsc.com/product-detail/EMMC_Samsung-KLMBG2JETD-B041_C2803245.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Commercial-grade Samsung eMMC, not automotive. LCSC only."
+  },
+  {
+   "mpn": "SDINEDK4-64G-ZA",
+   "family": "SDINEDK4",
+   "mfr": "Western Digital / SanDisk",
+   "desc": "SanDisk iNAND UFS 64GB, automotive (-ZA)",
+   "category": "ic_bga",
+   "pkg": "153-BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches). SDINEDK4 is SanDisk's UFS line (Mouser lists SDINEDK4-128G only); the 64GB automotive eMMC is SDINBDG4-64G-ZA, not priced."
+  },
+  {
+   "mpn": "MTFC128GBCAUTC-AAT",
+   "family": "MTFC128GBCAUTC",
+   "mfr": "Micron",
+   "desc": "UFS 128GB (1Tb), automotive",
+   "category": "ic_bga",
+   "pkg": "153-LFBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "MTFC128GBCAVTC-AAT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1520,
+     "price": 50.6548,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/micron-technology-inc/MTFC128GBCAVTC-AAT/22041333",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "UTC code not listed; priced as UFS 3.1 sibling MTFC128GBCAVTC-AAT (tray 1520; unit = $76,995.33 / 1520). 26 wk."
+  },
+  {
+   "mpn": "AT24C02D-SSHM-T",
+   "family": "AT24C02D",
+   "mfr": "Microchip",
+   "desc": "I2C EEPROM 2Kb, 1.7-5.5 V, -40..85 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": false,
+   "ecuRoles": [
+    "front camera",
+    "radar",
+    "surround camera"
+   ],
+   "observedMpn": "AT24C02D-SSHM-T",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 4000,
+     "price": 0.0914,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--memory--RAM--eeprom--i2c-interface-protocol/at24c02d-sshm-t-microchip-5107017",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 0.1403,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C34807.html",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.1273,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C34807.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Industrial grade code, not AEC-Q100. LCSC C34807 is the Microchip part (LCSC also lists JSMSEMI/Tudi clones under similar names). Digi-Key out of stock."
+  },
+  {
+   "mpn": "M24C02-DRMN3TP/K",
+   "family": "M24C02",
+   "mfr": "STMicroelectronics",
+   "desc": "I2C EEPROM 2Kb, automotive -40..125 C",
+   "category": "ic_soic",
+   "pkg": "SO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "radar",
+    "surround camera"
+   ],
+   "observedMpn": "M24C02-DRMN3TP/K",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.2028,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C2061245.html",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 120,
+     "price": 42.267,
+     "currency": "JPY",
+     "url": "https://jp.rs-online.com/web/p/eeprom/2396313P",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1950,
+     "price": 38.667,
+     "currency": "JPY",
+     "url": "https://jp.rs-online.com/web/p/eeprom/2396313P",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "AEC-Q100 (RS CZ). RS Japan ex VAT. Digi-Key out of stock (14 wk)."
+  },
+  {
+   "mpn": "M24512-DRMN3TP/K",
+   "family": "M24512",
+   "mfr": "STMicroelectronics",
+   "desc": "I2C EEPROM 512Kb, automotive -40..125 C",
+   "category": "ic_soic",
+   "pkg": "SO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "front camera",
+    "radar",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches): only ST eStore ($1.56/500, manufacturer, not a distributor) and a Digi-Key substitute mention (EUR 1.31, no break)."
+  },
+  {
+   "mpn": "S25HL512TDPMHV010",
+   "family": "S25HL512T",
+   "mfr": "Infineon",
+   "desc": "SEMPER quad SPI NOR 512Mb, 3 V, -40..105 C",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "S25HL512TDPMHI010",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 240,
+     "price": 4.42,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/s25hl512tdpmhi010-infineon-technologies-1119547",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 240,
+     "price": 9.307,
+     "currency": "EUR",
+     "url": "https://fr.rs-online.com/web/p/memoires-flash/1976856",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "HV010 not listed; industrial sibling HI010. Wide spread: Future $4.42/240 (0 stock, 12 wk) vs RS EUR 9.31/240 tray; Mouser 240 $11.06 seen without a product URL, not recorded. Automotive HB010 at Mouser qty 1 only ($15.08). RS stock no. mapping to HI010 not fully confirmed."
+  },
+  {
+   "mpn": "SIT2024BA-S2-18E-25.000000",
+   "family": "SIT2024",
+   "mfr": "SiTime",
+   "desc": "AEC-Q100 MEMS oscillator, single-ended, SOT23-5",
+   "category": "crystal_osc",
+   "pkg": "SOT23-5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "SIT2024BA-S2-18E-25.000000",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 2.3225,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/sit2024ba-s2-18e-25.000000/SiTime-Corporation",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces catalogue estimate SIT2024. 25 MHz (Ethernet) chosen, 1.8 V, AEC-Q100. Digi-Key break read via FindChips; temporarily out of stock, 26 wk."
+  },
+  {
+   "mpn": "SIT8924AM-73-XXE-25.000000",
+   "family": "SiT8924",
+   "mfr": "SiTime",
+   "desc": "AEC-Q100 MEMS oscillator 1-110 MHz",
+   "category": "crystal_osc",
+   "pkg": "4-QFN 2.0x1.6",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "SIT8924AM-73-XXE-25.000000",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.73675,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/sitime/SIT8924AM-73-XXE-25-000000/11588327",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "25 MHz chosen; AEC-Q100, -55..125 C, +/-50 ppm, 2.25-3.63 V. Digi-Key 0 stock."
+  },
+  {
+   "mpn": "SiT9025",
+   "family": "SiT9025",
+   "mfr": "SiTime",
+   "desc": "AEC-Q100 spread-spectrum MEMS oscillator",
+   "category": "crystal_osc",
+   "pkg": "2016/2520/3225",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches): only SiTime's own store ($6.05 at 500-999 for SiT9025AAF21H18DA25.000000), not a distributor."
+  },
+  {
+   "mpn": "SiT1618",
+   "family": "SiT1618",
+   "mfr": "SiTime",
+   "desc": "AEC-Q100 MEMS oscillator",
+   "category": "crystal_osc",
+   "pkg": "2016/2520/3225",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found for a 25 MHz code (2 searches): Avnet shows ~$1.65 at 1000+ for other SiT1618BA frequencies, not recorded."
+  },
+  {
+   "mpn": "SiT8021",
+   "family": "SiT8021",
+   "mfr": "SiTime",
+   "desc": "Ultra-small MEMS oscillator 1-26 MHz",
+   "category": "crystal_osc",
+   "pkg": "1.5x0.8 CSP",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches): Digi-Key $1.15 for SIT8021AI-J4-18S-24.000000E without its break; Mouser $0.714/1000 for the commercial AC grade seen only via an aggregator without a product URL. Not an automotive part."
+  },
+  {
+   "mpn": "SiT5356",
+   "family": "SiT5356",
+   "mfr": "SiTime",
+   "desc": "MEMS Super-TCXO 1-60 MHz",
+   "category": "crystal_osc",
+   "pkg": "5.0x3.2",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (1 search); a non-automotive Stratum-3 TCXO, not pursued further."
+  },
+  {
+   "mpn": "ASDMB-25.000MHZ-LC-T",
+   "family": "ASDMB",
+   "mfr": "Abracon",
+   "desc": "MEMS oscillator 25 MHz",
+   "category": "crystal_osc",
+   "pkg": "4-QFN 2.5x2.0",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "ASDMB-25.000MHZ-LC-T",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.7181,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C2650748.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Not AEC-Q100 (industrial MEMS). Digi-Key ~$1.49/1000 seen only approximately, not recorded."
+  },
+  {
+   "mpn": "DSC1101DM2-025.0000",
+   "family": "DSC1101",
+   "mfr": "Microchip",
+   "desc": "MEMS oscillator CMOS (AEC-Q100 options exist)",
+   "category": "crystal_osc",
+   "pkg": "6-VDFN 2.5x2.0",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "DSC1101DM2-025.0000",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.27556,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/DSC1101DM2-025-0000/22468385",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "25 MHz chosen. Standard XO (-55..125 C), not AEC-Q100 (RS: automotive standard No); Microchip's automotive equivalent is DSA1101, not priced."
+  },
+  {
+   "mpn": "DSC6083",
+   "family": "DSC6083",
+   "mfr": "Microchip",
+   "desc": "Low-power MEMS kHz oscillator (Microchip DSC6000 family)",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6/2.5x2.0",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches); family prefix only (e.g. DSC6083MI2A-032K768), no distributor price in results."
+  },
+  {
+   "mpn": "FCX-07L",
+   "family": "FCX-07L",
+   "mfr": "River Eletec",
+   "desc": "River Eletec crystal 26-80 MHz, 1.6x1.2",
+   "category": "crystal_osc",
+   "pkg": "1.6x1.2",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches). Datasheet (LCSC C515336, 37.4 MHz) gives -40..85 C for mobile/W-LAN, not an automotive part."
+  },
+  {
+   "mpn": "FA2016AA 40.00M-A0AABBJ60RG0",
+   "family": "FA2016AA",
+   "mfr": "Epson",
+   "desc": "Epson automotive crystal 40 MHz, AEC-Q200 (FA-128-size automotive series)",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "FA2016AA 40.00M-A0AABBJ60RG0",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 0.265,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/electromechanical--timing-devices--crystals/fa2016aa-40-00m-a0aabbj60rg0-epson-electronics-america-5213759",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "FA-128 itself is not automotive (RS: automotive standard No); Epson's AEC-Q200 2016 crystal is FA2016AA. 40 MHz (radar) chosen."
+  },
+  {
+   "mpn": "FA-20H 25.0000MF20X-G0",
+   "family": "FA-20H",
+   "mfr": "Epson",
+   "desc": "Epson crystal 25 MHz 2.5x2.0",
+   "category": "crystal_osc",
+   "pkg": "2.5x2.0",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "FA-20H 25.0000MF20X-G0",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 0.32,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/es/p/electromechanical--timing-devices--crystals/fa-20h-25-0000mf20x-g0-epson-electronics-america-8100542",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 0.31,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/es/p/electromechanical--timing-devices--crystals/fa-20h-25-0000mf20x-g0-epson-electronics-america-8100542",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "25 MHz chosen. No AEC-Q200 FA-20H code found; grade of this code not confirmed automotive."
+  },
+  {
+   "mpn": "CS08891-24M",
+   "family": "NX2016SA",
+   "mfr": "NDK",
+   "desc": "NDK NX2016SA crystal 24 MHz 6 pF",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "CS08891-24M",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.48174,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/ndk-nihon-dempa-kogyo-co-ltd/CS08891-24M/7645291",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.45056,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/ndk-nihon-dempa-kogyo-co-ltd/CS08891-24M/7645291",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "24 MHz (video) chosen; Digi-Key's NX2016SA-series code CS08891-24M. 0 stock, 53 wk. AEC-Q200 not confirmed."
+  },
+  {
+   "mpn": "NX3225GA-25.000M-STD-CRG-2",
+   "family": "NX3225GA",
+   "mfr": "NDK",
+   "desc": "NDK automotive crystal 25 MHz 8 pF, AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "NX3225GA-25.000M-STD-CRG-2",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.1237,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C438901.html",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 6000,
+     "price": 0.1169,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C438901.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "25 MHz chosen; AEC-Q200 per NDK datasheet. Mouser $0.346/3000 and Digi-Key $0.3098/6000 seen only via OEMsTrade (not an allowed source) - ~2.5x LCSC."
+  },
+  {
+   "mpn": "TSX-3225 25.0000MF10P-C0",
+   "family": "TSX-3225",
+   "mfr": "Epson",
+   "desc": "Epson crystal 25 MHz 18 pF 3.2x2.5, -20..85 C",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "TSX-3225 25.0000MF10P-C0",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.24936,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/epson/TSX-3225-25-0000MF10P-C0/7430946",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 25000,
+     "price": 0.20496,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/epson/TSX-3225-25-0000MF10P-C0/7430946",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "No AEC-Q200 TSX-3225 code found (2 searches); standard sibling priced. For automotive 25 MHz 3225 see CX3225SB25000D0KPSC1."
+  },
+  {
+   "mpn": "FC-12M 32.768kHz",
+   "family": "FC-12M",
+   "mfr": "Epson",
+   "desc": "Epson 32.768 kHz crystal +/-30 ppm 2.05x1.2",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.2",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "FC-12M 32.768kHz (RS 173-2311)",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 250,
+     "price": 0.597,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/crystal-units/1732311",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "RS UK reel of 250 (250-1000 tier), temporarily out of stock; exact Epson suffix of the RS stock no. not shown. Digi-Key EU 1000-break figure inconsistent (extended price did not match), discarded. Not automotive."
+  },
+  {
+   "mpn": "CX3225SB25000D0KPSC1",
+   "family": "CX3225SB",
+   "mfr": "Kyocera",
+   "desc": "Kyocera AVX automotive crystal 25 MHz 8 pF +/-30 ppm, AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "3.2x2.5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "CX3225SB25000D0KPSC1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.42578,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/kyocera-avx/CX3225SB25000D0KPSC1/9446016",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces catalogue estimate CX3225. 25 MHz chosen. RS Japan JPY 230/1000+ for a 25 MHz CX3225SB seen (code unclear), not recorded."
+  },
+  {
+   "mpn": "LMK1C1104-Q1",
+   "family": "LMK1C1104",
+   "mfr": "Texas Instruments",
+   "desc": "1:4 LVCMOS clock buffer, automotive",
+   "category": "ic_soic",
+   "pkg": "TSSOP-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (2 searches); only non-Q1 LMK1C1104PWR/DQFR listings. Q1 family datasheet dated Mar 2026 - likely not yet stocked."
+  },
+  {
+   "mpn": "CDCE6214LTWRGERQ1",
+   "family": "CDCE6214",
+   "mfr": "Texas Instruments",
+   "desc": "Ultra-low-power 4-output clock generator, automotive",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 (RGE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "front camera"
+   ],
+   "observedMpn": "CDCE6214LTWRGERQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 3.83892,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/CDCE6214LTWRGERQ1/21298558",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "AEC-Q100. Digi-Key reel 2500, not stocked, 18 wk. CDCE6214TWRGERQ1 seen only in KRW (Digi-Key KR, 3000)."
+  },
+  {
+   "mpn": "LMK6C-Q1",
+   "family": "LMK6C",
+   "mfr": "Texas Instruments",
+   "desc": "BAW oscillator LVCMOS, automotive",
+   "category": "crystal_osc",
+   "pkg": "4-pin DLE",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "LMK6CE02500CDLER",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.8582,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/LMK6CE02500CDLER/Texas-Instruments",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.8311,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/LMK6CE02500CDLER/Texas-Instruments",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.91,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/LMK6CE02500CDLER/Texas-Instruments",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "No LMK6C-Q1 orderable found; priced as 25 MHz LMK6C (-40..105 C, not AEC). TI's automotive BAW is LMK6L-Q1 (differential), not priced. Breaks read via FindChips."
+  },
+  {
+   "mpn": "SI5332A-D-AM1R",
+   "family": "Si5332",
+   "mfr": "Skyworks (Silicon Labs)",
+   "desc": "Automotive any-frequency clock generator",
+   "category": "ic_qfn",
+   "pkg": "QFN-32 5x5",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "front camera"
+   ],
+   "observedMpn": "SI5332A-D-AM1R",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 13.12,
+     "currency": "USD",
+     "url": "https://findchips.com/search/SI5332A-D-AM1",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 13.12,
+     "currency": "USD",
+     "url": "https://findchips.com/search/SI5332A-D-AM1",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "AEC-Q100, -40..105 C, 6-output blank-programmable reel. Read via FindChips; both out of stock. Tray SI5332A-D-AM1 at Mouser $15.30/100, $14.30/490. SI5332B-D-AM1R EUR 10.22/1000 (Mouser BE)."
+  },
+  {
+   "mpn": "PL611s-Q1",
+   "family": "PL611s",
+   "mfr": "Microchip",
+   "desc": "Programmable clock generator, automotive",
+   "category": "ic_qfn",
+   "pkg": "DFN-6",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "no franchised-distributor price found (1 search): no Q1 code exists in results; PL611S-19 variants are 'contact for pricing'."
+  },
+  {
+   "mpn": "THGBMJG8C4LBAU8",
+   "family": "THGBMJG8C4LBAU8",
+   "mfr": "Kioxia",
+   "desc": "eMMC 5.1 32GB (256Gb), automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "153-FBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "surround camera",
+    "DMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not recorded: sources conflict. LCSC showed ~$10.05/152 and ~$9.55/1064 in one snapshot and $0.0088/1064 in another (corrupt), both 0 stock; Digi-Key China ~CNY 174 incl. VAT at 456 (approximate). No clean break."
+  }
+ ]
+}
