@@ -1,0 +1,467 @@
+{
+  "domain": "adas-power-b-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "LMR51420-Q1",
+      "family": "LMR51420",
+      "mfr": "Texas Instruments",
+      "desc": "4.5-36V 2A synchronous buck (catalog only - no automotive version)",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6 (DDC)",
+      "aecq": false,
+      "ecuRoles": [
+        "front camera",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "No automotive version exists: TI rates LMR51420 Catalog (LMR51420XDDCR/XFDDCR/YDDCR/YFDDCR). R2 forbids a non-automotive grade as a sibling. The automotive family is LMR51425-Q1 / LMR51435-Q1 (WSON-12 DRR; round 1 found no franchised price). Confirm the BOM MPN."
+    },
+    {
+      "mpn": "LMR43610RS3QRPERQ1",
+      "family": "LMR43610-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 3-36V 1A synchronous buck, fixed 3.3V (RS3), HotRod wettable flank",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-9 (RPE) 2x2",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observedMpn": "LMR43610RS3QRPERQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 2.24764,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMR43610RS3QRPERQ1/17878347",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 2.19,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C5752063.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key full reel (backorder, 12 wk). The LCSC 100+ break was read as 'about $2.19' (46 in stock). The 5V variant LMR43610RS5QRPERQ1 has its own entry."
+    },
+    {
+      "mpn": "LMR43610RS5QRPERQ1",
+      "family": "LMR43610-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 3-36V 1A synchronous buck, 5V variant (RS5), HotRod wettable flank",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-9 (RPE) 2x2",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observedMpn": "LMR43610RS5QRPERQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 2.06,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LMR43610RS5QRPERQ1?qs=Y0Uzf4wQF3kLfdypY4Nw2Q%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser full reel (6,781 in stock). Same device as RS3, different output option."
+    },
+    {
+      "mpn": "TPS2HB08-Q1",
+      "family": "TPS2HB08-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "40V 8 mOhm dual-channel smart high-side switch as named on the BOM line (MPN not found)",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "No TPS2HB08 orderable code exists at any franchised distributor (2 searches in round 1); probably a mis-typed MPN. The likely intended parts are priced as separate entries: TPS1HB08AQPWPRQ1 (single 8 mOhm) and TPS2HB16AQPWPRQ1 (dual 16 mOhm)."
+    },
+    {
+      "mpn": "LM74930QRGERQ1",
+      "family": "LM74930-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 3-65V ideal-diode / surge-stopper controller with circuit breaker and OVP",
+      "category": "ic_qfn",
+      "pkg": "VQFN-24 (RGE)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observedMpn": "LM74930QRGERQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.15733,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74930QRGERQ1/22147207",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 3.0611,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C22428070.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 3.63,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LM74930QRGERQ1?qs=Z%252BL2brAPG1KfyWCDNdSQWA%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key full reel (0 stock, 16 wk); LCSC 1,000+ (6,616 in stock); Mouser 100 (backorder). TI list price $1.800 @1k is far below these distributor prices."
+    },
+    {
+      "mpn": "TPS3762EUVF4DDFRQ1",
+      "family": "TPS3762-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 65V window (OV/UV) voltage supervisor, single channel, open-drain",
+      "category": "ic_soic",
+      "pkg": "SOT-23-THIN-8 (DDF)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar",
+        "front camera"
+      ],
+      "observedMpn": "TPS3762EUVF4DDFRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 1.17964,
+          "currency": "USD",
+          "url": "https://www.digikey.com/es/products/detail/texas-instruments/TPS3762EUVF4DDFRQ1/28948081",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.09359,
+          "currency": "USD",
+          "url": "https://www.digikey.com/es/products/detail/texas-instruments/TPS3762EUVF4DDFRQ1/28948081",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 9000,
+          "price": 1.06043,
+          "currency": "USD",
+          "url": "https://www.digikey.com/es/products/detail/texas-instruments/TPS3762EUVF4DDFRQ1/28948081",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "One threshold option of the TPS3762-Q1 family (the EVM device is TPS3762D02OVDDFRQ1; a Digi-Key snippet showed about $1.67 for it, qty unclear, so it is not recorded). USD prices from Digi-Key's Spanish-language page; 3,000 in stock."
+    },
+    {
+      "mpn": "MAX20034ATIR/VY+",
+      "family": "MAX20034",
+      "mfr": "Analog Devices",
+      "desc": "Automotive 3.5-42V 2.2MHz dual synchronous step-down controller",
+      "category": "ic_qfn",
+      "pkg": "TQFN-28 EP",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "radar"
+      ],
+      "observedMpn": "MAX20034ATIR/VY+",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2520,
+          "price": 3.7218,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20034ATIR-VY/11485763",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Variant ATIR/VY+ (round 1 named ATIS/VY+T, which has no franchised price). Digi-Key's largest break is 2,520; 115 in stock, 10 wk."
+    },
+    {
+      "mpn": "LT8653SEV#WPBF",
+      "family": "LT8653S",
+      "mfr": "Analog Devices",
+      "desc": "Automotive dual-channel 42V 2A Silent Switcher 2 synchronous buck",
+      "category": "ic_qfn",
+      "pkg": "LQFN-20",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "radar",
+        "LiDAR"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "The automotive W code appears in ADI's automotive product list but no franchised distributor prices it (2 more searches). Industrial LT8653SEV#PBF at Digi-Key: $7.82 @490, $7.65 @980 (not recorded - R2 allows only automotive siblings)."
+    },
+    {
+      "mpn": "ADP5134W",
+      "family": "ADP5134",
+      "mfr": "Analog Devices",
+      "desc": "Dual 1.2A buck + two 300mA LDO PMU (ADP5134); no automotive W grade exists",
+      "category": "ic_qfn",
+      "pkg": "LFCSP-24 4x4",
+      "aecq": false,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "DMS"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "No ADP5134W / ADP5134WACPZ found anywhere (2 more searches): ADI sells ADP5134 as a non-automotive part only (ADP5134ACPZ-R7; Arrow lists Automotive: No). ADI list price from $2.58 @1k. Confirm the BOM MPN."
+    },
+    {
+      "mpn": "TPS628502QDRLRQ1",
+      "family": "TPS628502-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2.7-6V 2A synchronous buck, adjustable",
+      "category": "ic_soic",
+      "pkg": "SOT-583-8 (DRL)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar",
+        "ADAS domain controller",
+        "DMS"
+      ],
+      "observedMpn": "TPS628502QDRLRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 1.12148,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS628502QDRLRQ1/13563004",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 1.0316,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS628502QDRLRQ1/13563004",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 8000,
+          "price": 1.01202,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS628502QDRLRQ1/13563004",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Re-price of the round-1 punchouttest observation. The 500 break is cut tape, 4k/8k are tape and reel; 6,750 in stock, 16 wk. Findchips also shows only Win Source, a broker, so no second distributor."
+    },
+    {
+      "mpn": "LMR38020SQDDARQ1",
+      "family": "LMR38020-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 4.2-80V 2A synchronous buck converter (no FPWM)",
+      "category": "ic_soic",
+      "pkg": "HSOIC-8 PowerPAD (DDA)",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "front camera",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "LMR38020SQDDARQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 2.35144,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMR38020SQDDARQ1/18177286",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 2.28142,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMR38020SQDDARQ1/18177286",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Re-price of the round-1 punchouttest observation; Digi-Key Bulk packaging, 994 in stock, 12 wk. Mouser lists the FSQ variant at $4.66 for 1 (no volume break seen)."
+    },
+    {
+      "mpn": "LMR38020FSQDDARQ1",
+      "family": "LMR38020-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 4.2-80V 2A synchronous buck converter, forced PWM",
+      "category": "ic_soic",
+      "pkg": "HSOIC-8 PowerPAD (DDA)",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "front camera",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "LMR38020FSQDDARQ1",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 2.1188,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/dc-dc-converters_texas-instruments-lmr38020fsqddarq1_C20345530.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "FPWM variant of the same device; LCSC 1,000+ break, 1,865 in stock."
+    },
+    {
+      "mpn": "TPS7A5201QRGRRQ1",
+      "family": "TPS7A52-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2A low-noise high-PSRR LDO, adjustable",
+      "category": "ic_qfn",
+      "pkg": "VQFN-20 (RGR) 3.5x3.5",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "front camera",
+        "LiDAR"
+      ],
+      "observedMpn": "TPS7A5201QRGRRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.37488,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS7A5201QRGRRQ1/8566093",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 3.16,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TPS7A5201QRGRRQ1?qs=1mbolxNpo8cdxsbFt%252By4TQ%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Re-price of the round-1 punchouttest observation. Both breaks are full reels. An LCSC snippet gave about $0.60 @1k, implausible against $3.2-3.4 elsewhere (possibly another listing), so it was discarded."
+    },
+    {
+      "mpn": "LT8638SJV#WPBF",
+      "family": "LT8638S",
+      "mfr": "Analog Devices",
+      "desc": "Automotive 2.8-42V 10A Silent Switcher 2 synchronous buck",
+      "category": "ic_qfn",
+      "pkg": "LQFN-28",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "radar"
+      ],
+      "observedMpn": null,
+      "observations": [],
+      "notes": "Re-price attempt (3 searches): no franchised distributor lists the automotive W code with a price. Octopart shows only ADI direct (tray $12.18 down to $7.72, a list price) and brokers. Round 1's observation was a punchouttest page for the industrial LT8638SJV#PBF ($8.025 @490); that is not an automotive sibling under R2, so nothing is recorded."
+    },
+    {
+      "mpn": "TPS1HB08AQPWPRQ1",
+      "family": "TPS1HB08-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 40V 8 mOhm single-channel smart high-side switch",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-16 (PWP)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway"
+      ],
+      "observedMpn": "TPS1HB08AQPWPRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 1.865,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1HB08AQPWPRQ1/11615928",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.59334,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1HB08AQPWPRQ1/11615928",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 3000,
+          "price": 1.268,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/tps1hb08aqpwprq1/texas-instruments",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "A version. Possibly what the BOM meant by 'TPS2HB08-Q1'. Digi-Key 0 in stock (3,000 due 13 Jan 2027); Arrow no stock, 12 wk, minimum 3,000."
+    },
+    {
+      "mpn": "TPS2HB16AQPWPRQ1",
+      "family": "TPS2HB16-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 40V 16 mOhm dual-channel smart high-side switch",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-16 (PWP)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway"
+      ],
+      "observedMpn": "TPS2HB16AQPWPRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 1.7111,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2HB16AQPWPRQ1/11308755",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.45838,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS2HB16AQPWPRQ1/11308755",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "A version. Possibly what the BOM meant by 'TPS2HB08-Q1' (dual channel). B version TPS2HB16BQPWPRQ1 at Digi-Key: $2.142 @1k, $1.96006 @3k (backorder)."
+    }
+  ]
+}
