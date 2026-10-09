@@ -222,3 +222,26 @@ describe('F11 — a named price range applies to the part number, not to prose o
     expect(icKnownRange({ description: '77/79GHz FMCW radar transceiver MMIC' })?.generic).toBe(true);
   });
 });
+
+import { consolidateBom } from '../server/utils/pcb-bom-consolidate.js';
+import { expandRefDes } from '../server/utils/pcb-vision-accuracy.js';
+
+describe('F16 — quantities the designators cannot show are not taken on trust', () => {
+  it('ranges written with "..", "~" or a spaced dash are counted', () => {
+    for (const r of ['C1..C90', 'C1~C90', 'C1 - C90']) expect(expandRefDes(r)).toHaveLength(90);
+  });
+  it('the same no-designator line from two photos is merged once and listed to verify', () => {
+    const l = { componentType: 'passive_0402', value: '100nF', pkg: '0402', description: 'MLCC', refDes: '', qty: 20 };
+    const r = consolidateBom([l, { ...l }]);
+    expect(r.bom).toHaveLength(1);
+    expect(r.bom[0].qtyUnverified).toBe(true);
+  });
+  it('a BOM-file quantity is evidence, not a guess', () => {
+    const r = consolidateBom([{ refDes: '', partNumber: 'X', qty: 3, bomSource: 'file' }]);
+    expect(r.bom[0].qtyUnverified).toBeUndefined();
+  });
+  it('on the radar board an uncountable quantity goes to verify', async () => {
+    const r = await radar(a => { Object.assign(a.bom[11], { refDes: 'R', qty: 700 }); });
+    expect(r.a.bom.find((l: any) => l.qty === 700)?.needsVerification).toBe(true);
+  });
+});

@@ -104,10 +104,15 @@ describe('8 views of one board: a part is counted once', () => {
     expect(r.warnings.map(w => w.code)).toEqual(expect.arrayContaining(['BOM_QTY_FROM_REFDES', 'BOM_QTY_NOT_WHOLE']));
   });
   it('a clean BOM is returned unchanged with no warnings', () => {
-    const bom = [{ refDes: 'U1', qty: 1 }, { refDes: 'R1, R2', qty: 2 }, { refDes: '', partNumber: 'X', qty: 3 }];
+    const bom = [{ refDes: 'U1', qty: 1 }, { refDes: 'R1, R2', qty: 2 }, { refDes: '', partNumber: 'X', qty: 1 }];
     const r = consolidateBom(bom);
     expect(r.bom).toEqual(bom);
     expect(r.warnings).toHaveLength(0);
+  });
+  it('a quantity no designator shows is kept but listed to verify (pipeline review F16)', () => {
+    const r = consolidateBom([{ refDes: '', partNumber: 'X', qty: 3 }, { refDes: 'C47', qty: 90 }]);
+    expect(r.bom.map(l => [l.qty, l.qtyUnverified])).toEqual([[3, true], [90, true]]);
+    expect(r.warnings.map(w => w.code)).toContain('BOM_QTY_NOT_COUNTABLE');
   });
 });
 

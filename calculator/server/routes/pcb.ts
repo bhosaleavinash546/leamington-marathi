@@ -1718,7 +1718,8 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       }
     }
     const grounded = groundAndSplit(bom, prices, knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier });
-    bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false } : l)) as Array<Record<string, unknown>>;
+    bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false }
+      : l.qtyUnverified === true ? { ...l, needsVerification: true } : l)) as Array<Record<string, unknown>>;
     // What the OCR stage SAW against the parts list: a quantity that differs from the
     // chips read, a connector where only pads were seen. Flagged to verify, never changed.
     {
