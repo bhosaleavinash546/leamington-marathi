@@ -125,3 +125,29 @@ describe('F3 / F4 — board figures the model gives stand only with evidence', (
     expect(t.copperOzByLayer).toEqual([]);
   });
 });
+
+import { catalogueEntry, isExactCatalogueMatch } from '../server/utils/pcb-price-catalogue.js';
+import { groundAndSplit, offlineCataloguePrices } from '../server/utils/pcb-bom-grounding.js';
+
+describe('F5 / F19 — a device variant is not priced as its sibling', () => {
+  it('a variant letter the catalogue does not show after the stem is another device', () => {
+    for (const k of ['TDA4VEN', 'TDA4VEN-Q1', 'TCAN1042A', 'SJA1110C', 'L9963Z']) expect(catalogueEntry(k), k).toBeNull();
+  });
+  it('packaging and temperature suffixes the catalogue does show still resolve', () => {
+    expect(catalogueEntry('W25Q32JWSSIM')?.family).toBe('W25Q32JW');
+    expect(catalogueEntry('TJA1044GT/3Z')?.family).toBe('TJA1044');
+    expect(catalogueEntry('MAX20431AATIF/V+')?.family).toBe('MAX20431');
+    expect(isExactCatalogueMatch('TJA1044GT/3Z', catalogueEntry('TJA1044GT/3Z')!)).toBe(true);   // a packing tail
+  });
+  it('the short form of a "-Q1" family finds it (DS90UB953)', () => {
+    expect(catalogueEntry('DS90UB953')?.mpn).toBe(catalogueEntry('DS90UB953-Q1')?.mpn);
+  });
+  it('a family price is labelled and listed to verify', () => {
+    const out = groundAndSplit([{ refDes: 'U1', partNumber: 'STM32F407VGT6', componentType: 'ic_tqfp', qty: 1, unitPriceGBP: 5, ocrExtracted: true, lineConf: 1 }],
+      offlineCataloguePrices(['STM32F407VGT6'], 200_000));
+    expect(out.bom[0].priceSource).toBe('catalogue');
+    expect(out.bom[0].catalogueExact).toBe(false);
+    expect(out.bom[0].needsVerification).toBe(true);
+    expect(String(out.bom[0].priceNote)).toMatch(/^Family price/);
+  });
+});

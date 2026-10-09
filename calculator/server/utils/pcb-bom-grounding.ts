@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, normaliseMPN } from './pcb-price-catalogue.js';
+import { catalogueEntry, cataloguePriceAt, classMedianCap, descriptionCap, isNotFitted, isExactCatalogueMatch } from './pcb-price-catalogue.js';
 import { classRange, classDefaultPrice } from './pcb-class-pricing.js';
 
 export type BomLine = Record<string, unknown>;
@@ -80,6 +80,9 @@ export function reconcileBomWithCatalogue(
 
     if (hit) {
       matched++;
+      // The catalogue matched a FAMILY entry or another variant, not this exact code: a family price, listed to verify
+      // (pipeline review F5 — "TDA4VEN" priced as TDA4VE at catalogue confidence).
+      const exact = hitEntry ? isExactCatalogueMatch(pn, hitEntry) : true;
       const aiPrice = num(line.unitPriceGBP);
       const offline = hit.provider === 'catalogue';
       const entry = hitEntry;
@@ -102,7 +105,7 @@ export function reconcileBomWithCatalogue(
         cataloguePkg: entry?.pkg,
         catalogueAsOf: entry?.asOf,
         // The catalogue matched a FAMILY entry, not this exact part — say which part priced it.
-        catalogueExact: entry ? [entry.mpn, ...(entry.aliases ?? [])].some(k => normaliseMPN(k) === normaliseMPN(pn)) : true,
+        catalogueExact: exact,
         stockQty: hit.stockQty,
         leadTimeWeeks: hit.leadTimeWeeks,
         automotiveGrade: hit.automotiveGrade,
@@ -112,10 +115,10 @@ export function reconcileBomWithCatalogue(
         // when the line is worth it.
         // A catalogue ESTIMATE, and a live single-unit price (RS) for a volume buy, are
         // prices with a stated basis, not quotes: listed to verify when the line matters.
-        needsVerification: hit.unitPriceGBP * qty >= 1 && (
+        needsVerification: (!exact && hit.unitPriceGBP * qty >= 0.1) || hit.unitPriceGBP * qty >= 1 && (
           (hit.provider === 'catalogue' && /engineering estimate/.test(hit.sourceNote ?? ''))
           || (hit.provider !== 'catalogue' && (hit.priceBreakQty ?? 0) <= 1 && num(line.partsBought) > 100)),
-        priceNote: hit.sourceNote ?? (line.priceNote as string | undefined),
+        priceNote: `${exact ? '' : `Family price: ${pn} is not catalogued itself — priced as ${hitEntry?.mpn ?? hit.mpn}; confirm the variant. `}${hit.sourceNote ?? (line.priceNote as string | undefined) ?? ''}`,
       };
     }
 

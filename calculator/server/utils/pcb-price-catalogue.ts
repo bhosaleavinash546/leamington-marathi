@@ -58,6 +58,22 @@ for (const e of CAT.parts) {
   for (const k of keys) if (k.length >= 4 && /\d/.test(k)) PREFIX.push([k, e]);
 }
 PREFIX.sort((a, b) => b[0].length - a[0].length);   // longest first
+// What the catalogue's own codes show right after a stem: TJA1044 → {G} (TJA1044GT), SJA1110 → {B} (SJA1110B),
+// TDA4VE → {8} (TDA4VE88…), W25Q32JW → {S} (…JWSSIQ). A request whose next character is NOT one of them names another
+// device variant (SJA1110C, TCAN1042A, L9963Z, TDA4VEN) and is not priced as its sibling (pipeline review F5, Oct
+// 2026: a family plus any one letter resolved 96 % of the time).
+const STEM_LETTERS = new Map<string, Set<string>>();
+{
+  const allKeys = [...new Set(PREFIX.map(([k]) => k).concat([...EXACT.keys()]))];
+  for (const [pre] of PREFIX) {
+    for (const k of allKeys) if (k.length > pre.length && k.startsWith(pre) && /[A-Z0-9]/.test(k[pre.length])) {
+      const s = STEM_LETTERS.get(pre) ?? new Set<string>(); s.add(k[pre.length]); STEM_LETTERS.set(pre, s);
+    }
+  }
+}
+// "DS90UB953" names the part catalogued as its "-Q1" family when nothing else carries the short form (F19).
+const SHORT_FORM = new Map<string, CatalogueEntry>();
+for (const [k, e] of EXACT) { const m = /^(.{5,})-Q1$/.exec(k); if (m && !EXACT.has(m[1]) && !SHORT_FORM.has(m[1])) SHORT_FORM.set(m[1], e); }
 
 /**
  * The catalogue entry for an MPN, or null if the string is not a plausible
@@ -87,8 +103,29 @@ export function catalogueEntry(mpn: string): CatalogueEntry | null {
     const hits = [...new Set(CAT.parts.filter(p => { const k = normaliseMPN(p.mpn); return k.startsWith(q1[1]) && /Q1$/.test(k) && k.length > q1[1].length + 2; }))];
     if (hits.length === 1) return hits[0];
   }
-  for (const c of cands) for (const [pre, e] of PREFIX) if (c.startsWith(pre) && orderingSuffix(c.slice(pre.length))) return e;
+  for (const c of cands) for (const [pre, e] of PREFIX) if (c.startsWith(pre) && orderingSuffix(c.slice(pre.length)) && sameVariant(pre, c.slice(pre.length))) return e;
+  for (const c of cands) { const e = SHORT_FORM.get(c.replace(/-$/, '')); if (e) return e; }
   return null;
+}
+
+/**
+ * A prefix hit prices a longer code as the catalogued family only when the tail is an ordering suffix of the SAME
+ * device: a letter straight after a letter-ending stem is another device (TDA4VE + N = TDA4VEN), and after a
+ * digit-ending stem the first letter must be one the catalogue already knows there (see STEM_LETTERS).
+ */
+function sameVariant(pre: string, rest: string): boolean {
+  if (rest === '' || /^[^A-Z0-9]/.test(rest)) return true;            // "/3Z", "#PBF", ",215": packing of the same code
+  const known = STEM_LETTERS.get(pre);
+  if (known) return known.has(rest[0]);
+  // No catalogued code continues this stem: a lone letter after a letter-ending stem is a variant (TDA4VEN-style).
+  return !(/[A-Z]$/.test(pre) && /^[A-Z](-?Q1)?$/.test(rest));
+}
+
+/** True when the catalogue entry IS the part asked for (its code or an alias), not a family or a variant's price. */
+export function isExactCatalogueMatch(mpn: string, e: CatalogueEntry): boolean {
+  const want = normaliseMPN(mpn), lit = literalKey(mpn);
+  // The catalogued code plus a packing tail ("TJA1044GT" + "/3Z", "LT8609" + "#PBF") is the same part.
+  return [e.mpn, ...(e.aliases ?? [])].some(k => { const n = normaliseMPN(k); return n === want || literalKey(k) === lit || (want.startsWith(n) && /^[/#,]/.test(want.slice(n.length))); });
 }
 
 /**
