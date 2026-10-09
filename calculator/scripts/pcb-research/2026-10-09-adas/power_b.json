@@ -130,7 +130,7 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "No automotive -Q1 variant found: TI rates LMR51420 Catalog (orderables LMR51420XDDCR/XFDDCR/YDDCR/YFDDCR). Automotive siblings are LMR51425-Q1 / LMR51435-Q1 / LMR51440-Q1 (WSON-12 DRR); not priced. Two searches used."
+      "notes": "No automotive -Q1 variant found: TI rates LMR51420 Catalog (orderables LMR51420XDDCR/XFDDCR/YDDCR/YFDDCR). Automotive siblings are LMR51425-Q1 / LMR51435-Q1 / LMR51440-Q1 (WSON-12 DRR); LMR51425-Q1 has its own entry (not priced). Two searches used."
     },
     {
       "mpn": "LMR43610-Q1",
@@ -150,29 +150,38 @@
       "notes": "Orderable LMR43610RS3QRPERQ1 found at Digi-Key Germany but out of stock (backorder, 12 wk) and the snippets gave inconsistent qty-1 EUR prices (EUR 1.92 vs 3.12) with no 1k/reel break - nothing recorded. Non-Q1 LMR43610MB3RPER seen at $1.3204 @3k via Findchips (wrong grade, not recorded)."
     },
     {
-      "mpn": "LMR38020-Q1",
+      "mpn": "LMR38020SQDDARQ1",
       "family": "LMR38020-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive 4.2-80V 2A synchronous buck",
+      "desc": "Automotive 4.2-80V 2A synchronous buck converter",
       "category": "ic_soic",
-      "pkg": "",
+      "pkg": "HSOIC-8 PowerPAD (DDA)",
       "aecq": true,
       "ecuRoles": [
         "radar",
-        "ADAS domain controller",
-        "front camera"
+        "front camera",
+        "ADAS domain controller"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "LMR38020SQDDARQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 1.9,
+          "currency": "EUR",
+          "url": "https://punchouttest.digikey.es/en/products/detail/texas-instruments/LMR38020SQDDARQ1/18177286",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Variant: SQ = no FPWM (FSQ = forced PWM; Digi-Key Korea shows LMR38020FSQDDARQ1 at KRW 2,516.84 @2,500, same level). 0 in stock, 12 wk lead time at Digi-Key. No Mouser listing found."
     },
     {
-      "mpn": "TPS7B4253-Q1",
+      "mpn": "TPS7B4253QDDARQ1",
       "family": "TPS7B4253-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive 40V 150mA voltage-tracking LDO (off-board sensor supply)",
+      "desc": "Automotive high-voltage voltage-tracking LDO (off-board sensor supply), adjustable, 300 mA per Digi-Key",
       "category": "ic_soic",
-      "pkg": "",
+      "pkg": "HSOIC-8 PowerPAD (DDA)",
       "aecq": true,
       "ecuRoles": [
         "front camera",
@@ -180,35 +189,61 @@
         "radar",
         "park assist"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "TPS7B4253QDDARQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.1792,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/tps7b4253qddarq1/Texas-Instruments",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 7500,
+          "price": 1.104,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/tps7b4253qddarq1/Texas-Instruments",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key breaks read via Findchips (Digi-Key named, 3,073 in stock, 12 wk). TSSOP (PWP) variant TPS7B4253QPWPRQ1 also exists."
     },
     {
-      "mpn": "TPS7A52-Q1",
+      "mpn": "TPS7A5201QRGRRQ1",
       "family": "TPS7A52-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive 2A low-noise high-PSRR LDO",
+      "desc": "Automotive 2A low-noise high-PSRR LDO, adjustable",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "VQFN-20 (RGR) 3.5x3.5",
       "aecq": true,
       "ecuRoles": [
         "radar",
         "front camera",
         "LiDAR"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "TPS7A5201QRGRRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 3805.98,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPS7A5201QRGRRQ1/8566093",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key Korea cut-tape break; part out of stock (backorder, 12 wk), so the price may be stale. Reel = 3,000; no T&R price seen."
     },
     {
       "mpn": "TPS7A85A-Q1",
-      "family": "TPS7A85A-Q1",
+      "family": "TPS7A85A",
       "mfr": "Texas Instruments",
-      "desc": "Automotive 4A low-noise high-PSRR LDO",
+      "desc": "4A low-noise LDO (TPS7A85A); no -Q1 orderable found",
       "category": "ic_qfn",
-      "pkg": "",
-      "aecq": true,
+      "pkg": "VQFN-20 (RGR)",
+      "aecq": false,
       "ecuRoles": [
         "radar",
         "ADAS domain controller",
@@ -216,31 +251,40 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "No automotive -Q1 orderable found at a franchised distributor or on TI (2 searches); TI lists catalog TPS7A8500ARGRR. Catalog part at Digi-Key: $3.29373 @3,000 (seen in snippet, not recorded - not the requested grade)."
     },
     {
-      "mpn": "TLV760-Q1",
-      "family": "TLV760-Q1",
+      "mpn": "TLV76033DBZR",
+      "family": "TLV760",
       "mfr": "Texas Instruments",
-      "desc": "Automotive 30V 100mA LDO",
+      "desc": "30V 100mA LDO, fixed 3.3V (catalog grade - TLV760 has no -Q1 version)",
       "category": "ic_soic",
-      "pkg": "",
-      "aecq": true,
+      "pkg": "SOT-23-3 (DBZ)",
+      "aecq": false,
       "ecuRoles": [
         "front camera",
         "surround camera",
         "radar",
         "gateway"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "TLV76033DBZR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.08755,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/TLV76033DBZR/7402851",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BOM line said TLV760-Q1 but TI rates TLV760 Catalog only (no AEC-Q100 orderable); priced the 3.3V catalog code. 5V TLV76050DBZR at Digi-Key Korea: KRW 112.56 @1k, KRW 105.58 @3k."
     },
     {
       "mpn": "TPS2HB08-Q1",
       "family": "TPS2HB08-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive 40V dual-channel 8 mOhm smart high-side switch",
+      "desc": "40V 8 mOhm dual-channel smart high-side switch (family as named on the BOM line; not confirmed)",
       "category": "ic_soic",
       "pkg": "",
       "aecq": true,
@@ -250,71 +294,138 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "No orderable TPS2HB08 code found at a franchised distributor (2 searches). Related automotive parts exist: TPS1HB08-Q1 (single-channel 8 mOhm, HTSSOP-16) and TPS2HB16-Q1 (dual 16 mOhm, TPS2HB16AQPWPRQ1). Confirm the MPN."
     },
     {
-      "mpn": "TPS25985-Q1",
+      "mpn": "TPS259851RQPR",
       "family": "TPS25985",
       "mfr": "Texas Instruments",
-      "desc": "eFuse / integrated hot-swap, high current (automotive grade to be confirmed)",
+      "desc": "eFuse with integrated FET, 60 A (Digi-Key), catalog grade - no -Q1 version",
       "category": "ic_qfn",
-      "pkg": "",
-      "aecq": true,
+      "pkg": "VQFN-HR-26 (RQP) 5x4.5",
+      "aecq": false,
       "ecuRoles": [
         "ADAS domain controller"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "TPS259851RQPR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 4.10736,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS259851RQPR/21595829",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.97873,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS259851RQPR/21595829",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BOM line said TPS25985-Q1; TI offers TPS25985 as a catalog part only. 1k = cut tape, 3k = T&R. Digi-Key Mexico showed $3.35661 @1k (older snapshot, not recorded)."
     },
     {
-      "mpn": "TPS1663-Q1",
-      "family": "TPS1663-Q1",
+      "mpn": "TPS16632RGER",
+      "family": "TPS1663",
       "mfr": "Texas Instruments",
-      "desc": "60V eFuse with power limiting (automotive grade to be confirmed)",
+      "desc": "60V 6A eFuse, 31 mOhm integrated FET, catalog grade - no -Q1 version",
       "category": "ic_qfn",
-      "pkg": "",
-      "aecq": true,
+      "pkg": "VQFN-24 (RGE) 4x4",
+      "aecq": false,
       "ecuRoles": [
         "ADAS domain controller",
         "radar",
         "front camera"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "TPS16632RGER",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 2.0655,
+          "currency": "USD",
+          "url": "https://punchouttest.digikey.com.mx/en/products/detail/texas-instruments/TPS16632RGER/10820425",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.7919,
+          "currency": "USD",
+          "url": "https://punchouttest.digikey.com.mx/en/products/detail/texas-instruments/TPS16632RGER/10820425",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 2.53,
+          "currency": "USD",
+          "url": "https://www.findchips.com/detail/TPS16632RGER/Texas-Instruments",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BOM line said TPS1663-Q1; no AEC-Q100 TPS1663 found (catalog only). Findchips shows Digi-Key T&R $2.3830 @3k - conflicts with the Mexico page's $1.7919 (different snapshot dates)."
     },
     {
-      "mpn": "LM74720-Q1",
+      "mpn": "LM74720QDRRRQ1",
       "family": "LM74720-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive ideal-diode controller with load-dump protection",
-      "category": "ic_soic",
-      "pkg": "",
+      "desc": "Automotive 3-65V ideal-diode controller with load-dump protection",
+      "category": "ic_qfn",
+      "pkg": "WSON-12 (DRR) 3x3, wettable flank",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
         "radar",
         "front camera"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "LM74720QDRRRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.32064,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74720QDRRRQ1/16516667",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.1575,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM74720QDRRRQ1/16516667",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.5875,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C5219205.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key 1k = cut tape, 3k = T&R (8,338 in stock, 6 wk). Sibling LM74722QDRRRQ1 is $1.37307 @3k at Digi-Key."
     },
     {
-      "mpn": "LM74930-Q1",
+      "mpn": "LM74930QRGERQ1",
       "family": "LM74930-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive ideal-diode controller with circuit breaker and load-dump protection",
+      "desc": "Automotive 3-65V ideal-diode / surge-stopper controller with circuit breaker and OVP",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "VQFN-24 (RGE)",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller"
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "Not listed with a readable price at a franchised distributor (3 searches): Findchips shows Digi-Key 296-LM74930QRGERQ1CT-ND with the 3,000 price cut off ('$3.1...'). Manufacturer list price (not an observation): TI $1.800 @1k, https://ti.com/product/ko-kr/LM74930-Q1/part-details/LM74930QRGERQ1"
     },
     {
       "mpn": "TPS3762-Q1",
@@ -322,7 +433,7 @@
       "mfr": "Texas Instruments",
       "desc": "Automotive 65V window voltage supervisor",
       "category": "ic_soic",
-      "pkg": "",
+      "pkg": "SOT-23-8 (DDF) 2.9x1.6",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
@@ -331,15 +442,15 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "No franchised-distributor price found for an automotive code (3 searches); TI EVM ships TPS3762D02OVDDFRQ1 (many threshold options). Catalog TPS3762D02OVDDFR at Digi-Key China CNY 12.97 incl. VAT @6k - not recorded."
     },
     {
       "mpn": "TPS38800-Q1",
       "family": "TPS38800-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Automotive multi-channel voltage supervisor",
+      "desc": "Automotive 2-8 channel I2C-programmable window supervisor, ASIL-B",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "QFN-16 3x3",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
@@ -347,15 +458,15 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "Not listed at a franchised distributor (2 searches); orderable code not identified."
     },
     {
-      "mpn": "MAX20430",
+      "mpn": "MAX20430ATIA/VY+",
       "family": "MAX20430",
       "mfr": "Analog Devices",
-      "desc": "Automotive 4-output PMIC (catalogue holds an engineering ESTIMATE; upgrade pending)",
+      "desc": "Automotive 4-output PMIC",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "TQFN",
       "aecq": true,
       "ecuRoles": [
         "front camera",
@@ -364,32 +475,41 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "Not listed at a franchised distributor (2 searches). ADI lists MAX20430ATIA/VY+ and MAX20430ATIBB/VY+ in production. Manufacturer list price (not an observation): from $4.69 @1k, https://www.analog.com/en/products/max20430.html. Catalogue estimate stays an estimate."
     },
     {
-      "mpn": "MAX20410",
+      "mpn": "MAX20410AFOC/VY+T",
       "family": "MAX20410",
       "mfr": "Analog Devices",
-      "desc": "Automotive low-voltage-input synchronous buck converter (POL)",
+      "desc": "Automotive 3-36V 10A synchronous buck converter, fixed 5V (AFOC variant)",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "FC2QFN-17 3.5x3.75",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
         "radar",
         "front camera"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "MAX20410AFOC/VY+T",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 2500,
+          "price": 3.21,
+          "currency": "EUR",
+          "url": "https://de.farnell.com/en-DE/analog-devices/max20410afoc-vy-t/switching-regulator-5v-swfc2qfn/dp/3926232",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Farnell Germany full reel (2,500 min), ex VAT, 12 wk. No Digi-Key / Mouser price found for this code."
     },
     {
-      "mpn": "MAX20411",
+      "mpn": "MAX20411AAFHA/VY+T",
       "family": "MAX20411",
       "mfr": "Analog Devices",
-      "desc": "Automotive low-voltage-input synchronous buck converter (POL)",
+      "desc": "Automotive synchronous step-down converter",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "FC2QFN-21",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
@@ -397,32 +517,41 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "Not listed at a franchised distributor (2 searches); ADI orderables are MAX20411AAFHA/VY+T, AAFHB/VY+T. Manufacturer list price (not an observation): from $3.84 @1k, https://www.analog.com/jp/products/max20411.html"
     },
     {
-      "mpn": "MAX20404",
+      "mpn": "MAX20404AFOA/VY+",
       "family": "MAX20404",
       "mfr": "Analog Devices",
-      "desc": "Automotive 36V synchronous buck converter",
+      "desc": "Automotive 36V 4A synchronous buck converter",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "FC2QFN-17",
       "aecq": true,
       "ecuRoles": [
         "front camera",
         "surround camera",
         "radar"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "MAX20404AFOA/VY+",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 420,
+          "price": 2.24,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20404AFOA-VY/17878637",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Tray (420) break. T&R code MAX20404AFOA/VY+T listed at Digi-Key (10 wk) but no price seen."
     },
     {
-      "mpn": "MAX16993",
+      "mpn": "MAX16993AGJE/VY+",
       "family": "MAX16993",
       "mfr": "Analog Devices",
-      "desc": "Automotive high-voltage step-down controller",
+      "desc": "Automotive 3.5-36V synchronous step-down controller (multi-output)",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "QFND-32 side-wettable",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
@@ -430,15 +559,15 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "No franchised price at a stated break (2 searches): Digi-Key ~$6.72 and Mouser ~$8.55 seen only on a non-approved aggregator with no quantity. MAX16993ATJI/V+T is obsolete at Digi-Key; Farnell lists MAX16993AGJG/VY+T on a 2,500 reel but the price was not in the snippet."
     },
     {
-      "mpn": "MAX20034",
+      "mpn": "MAX20034ATIS/VY+T",
       "family": "MAX20034",
       "mfr": "Analog Devices",
-      "desc": "Automotive 36V dual synchronous buck converter",
+      "desc": "Automotive 3.5-42V 2.2MHz dual synchronous step-down controller",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "TQFN-28 EP",
       "aecq": true,
       "ecuRoles": [
         "front camera",
@@ -446,31 +575,40 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "Not listed with a price at a franchised distributor (3 searches); Mouser stocks the family (no price in snippet)."
     },
     {
-      "mpn": "LT8638S",
+      "mpn": "LT8638SJV#WPBF",
       "family": "LT8638S",
       "mfr": "Analog Devices",
-      "desc": "Automotive 42V 10A Silent Switcher 2 synchronous buck",
+      "desc": "Automotive 2.8-42V 10A Silent Switcher 2 synchronous buck",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "LQFN-28",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
         "radar"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "LT8638SJV#PBF",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 490,
+          "price": 8.025,
+          "currency": "USD",
+          "url": "https://punchouttest.digikey.com.mx/en/products/detail/analog-devices-inc/LT8638SJV-PBF/14290674",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Automotive code LT8638SJV#WPBF found with no price; observation is the non-W (industrial) sibling LT8638SJV#PBF, tray of 490 - the W grade usually costs somewhat more."
     },
     {
-      "mpn": "LT8653S",
+      "mpn": "LT8653SEV#WPBF",
       "family": "LT8653S",
       "mfr": "Analog Devices",
       "desc": "Automotive dual-channel 42V 2A Silent Switcher 2 synchronous buck",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "LQFN",
       "aecq": true,
       "ecuRoles": [
         "front camera",
@@ -479,29 +617,38 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "No franchised-distributor price (3 searches). Only Richardson RFPD (not on the approved list) priced LT8653SEV#PBF: $6.11 @5k. LCSC LT8653SIV#PBF had a reference price with no break."
     },
     {
-      "mpn": "LTC3310S",
+      "mpn": "LTC3310SIV#WTRMPBF",
       "family": "LTC3310S",
       "mfr": "Analog Devices",
-      "desc": "5V 10A Silent Switcher 2 synchronous buck (POL)",
+      "desc": "Automotive 5V-input 10A Silent Switcher 2 synchronous buck (POL)",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "LQFN",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
         "radar"
       ],
-      "observedMpn": null,
-      "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "observedMpn": "LTC3310SEV#TRMPBF",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 4.78135,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LTC3310SEV-TRMPBF/10668282",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Automotive LTC3310SIV#WTRMPBF is at Digi-Key (out of stock, 37 wk) but its price was not readable; observation is the non-W sibling LTC3310SEV#TRMPBF (backorder). A non-approved aggregator gives Digi-Key W T&R $5.40 @500 / $5.20 @1k (not recorded). ADI list from $3.47 @1k."
     },
     {
       "mpn": "ADP5134W",
-      "family": "ADP5134W",
+      "family": "ADP5134",
       "mfr": "Analog Devices",
-      "desc": "Automotive dual 1.2A buck + dual LDO PMU",
+      "desc": "Automotive-grade ADP5134 power-management unit",
       "category": "ic_qfn",
       "pkg": "",
       "aecq": true,
@@ -512,23 +659,64 @@
       ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "No ADP5134W orderable listed at a franchised distributor (2 searches); orderable code not confirmed."
     },
     {
       "mpn": "TCPP01-M12",
-      "family": "TCPP01-M12",
+      "family": "TCPP01",
       "mfr": "STMicroelectronics",
-      "desc": "USB Type-C port protection (CC/VBUS OVP)",
+      "desc": "USB Type-C port protection (VBUS OVP + CC protection), -40 to 85 C, not automotive",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "QFN-12",
       "aecq": false,
       "ecuRoles": [
         "ADAS domain controller",
         "gateway"
       ],
+      "observedMpn": "TCPP01-M12",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 0.33,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/fr/p/semiconductors--signal-interface--usb/tcpp01-m12-stmicroelectronics-4124109",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 12000,
+          "price": 0.32,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/fr/p/semiconductors--signal-interface--usb/tcpp01-m12-stmicroelectronics-4124109",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 0.453,
+          "currency": "EUR",
+          "url": "https://fr.farnell.com/en-FR/stmicroelectronics/tcpp01-m12/usb-overvolt-protector-40-to-85deg/dp/3690355RL",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Consumer/industrial grade (no AEC-Q100). Digi-Key Canada: CAD 0.73341 @1k, CAD 0.69966 @3k (0 stock, 20 wk) - not recorded (3-observation cap)."
+    },
+    {
+      "mpn": "LMR51425SQDRRRQ1",
+      "family": "LMR51425-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive synchronous buck converter (LMR514x5-Q1 family) - automotive sibling of LMR51420",
+      "category": "ic_qfn",
+      "pkg": "WSON-12 (DRR)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "radar"
+      ],
       "observedMpn": null,
       "observations": [],
-      "notes": "Not researched: the session's WebSearch budget (200 calls, shared across agents) was exhausted before this part was reached; no price recorded. Re-queue. Desc/category are unverified placeholders."
+      "notes": "Not listed at a franchised distributor (2 searches); TI orderables LMR51425SQDRRRQ1 / LMR51425FSQDRRRQ1 (3,000 reel); LMR51435-Q1 same. Family released Sept 2024."
     }
   ]
 }
