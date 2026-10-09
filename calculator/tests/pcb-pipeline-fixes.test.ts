@@ -272,6 +272,8 @@ describe('F17 — one marking attached by function is one chip read', () => {
   it('a qty > 1 on that line is listed to verify', async () => {
     const r = await radar();
     const l = r.a.bom.find((x: any) => x.ocrMatchedByFunction === true && Number(x.qty) > 1);
-    if (l) { expect(l.needsVerification).toBe(true); expect(String(l.priceNote)).toMatch(/one marking was read/); }
+    expect(l).toBeTruthy();
+    expect(l.needsVerification).toBe(true);
+    expect(String(l.priceNote)).toMatch(/AI's count/);
   });
 });
