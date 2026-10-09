@@ -1,0 +1,946 @@
+{
+  "domain": "adas-passives",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "GCM31CR71A226KE02L",
+      "family": "GCM31CR71A226",
+      "mfr": "Murata",
+      "desc": "MLCC 22uF 10V X7R 1206, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "1206",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observedMpn": "GCM31CR71A226KE02L",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 0.24538,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM31CR71A226KE02L/6606068",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 0.22689,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM31CR71A226KE02L/6606068",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 2000,
+          "price": 0.1928,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/manufacturers/m/c/murata/capacitors/?page=17",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Also seen: Avnet $0.1776 @32k, LCSC $0.1843 @2k. Future Electronics $1.17 @2k (factory order, 0 stock) discarded as implausible vs the others."
+    },
+    {
+      "mpn": "GCM32ER71A476KE02L",
+      "family": "GCM32E_71A476",
+      "mfr": "Murata",
+      "desc": "MLCC 47uF 10V 1210, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "1210",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observedMpn": "GCM32EC71A476KE02L",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.669,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/GCM32EC71A476KE02L/16033371",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "TTI",
+          "qty": 3000,
+          "price": 0.591,
+          "currency": "USD",
+          "url": "https://www.tti.com/content/ttiinc/en/apps/part-detail.html?partsNumber=GCM32EC71A476KE02L&mfgShortname=MUR",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.8215,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C3019535.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Exact X7R code (ER) not listed by any distributor found; priced the orderable sibling GCM32EC71A476KE02L (X7S, same 47uF/10V/1210/GCM automotive) - temperature-characteristic sibling, record as alias."
+    },
+    {
+      "mpn": "GCM155R71E224KE02D",
+      "family": "GCM155R71E224",
+      "mfr": "Murata",
+      "desc": "MLCC 0.22uF 25V X7R 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "No distributor listing found for the exact 25V code; only the 16V GCM155R71C224KE02D is listed (different voltage - not substituted)."
+    },
+    {
+      "mpn": "CGA2B3X7R1H104K050BB",
+      "family": "CGA2B3X7R1H104",
+      "mfr": "TDK",
+      "desc": "MLCC 0.1uF 50V X7R 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observedMpn": "CGA2B3X7R1H104K050BB",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.02179,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk/CGA2B3X7R1H104K050BB/2672792",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 30000,
+          "price": 0.01955,
+          "currency": "USD",
+          "url": "https://www.trustedparts.com/en/part/tdk/CGA2B3X7R1H104K050BB",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key T&R breaks (30k read via TrustedParts naming Digi-Key). No 1k break found."
+    },
+    {
+      "mpn": "CGA3E3X7R1H474K080AB",
+      "family": "CGA3E3X7R1H474",
+      "mfr": "TDK",
+      "desc": "MLCC 0.47uF 50V X7R 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "No price for the exact code (SnapEDA shows out of stock); only 25V (1E) and X5R siblings listed - different rating, not substituted."
+    },
+    {
+      "mpn": "CGA4J1X7R1C106K125AC",
+      "family": "CGA4J1_1C106",
+      "mfr": "TDK",
+      "desc": "MLCC 10uF 16V X7R 0805, AEC-Q200",
+      "category": "passive_0805",
+      "pkg": "0805",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "Exact X7R code not found. Sibling CGA4J1X7S1C106K125AC (X7S) prices seen only via OEMsTrade (Newark $0.12 @2k, Avnet $0.0951 @2k - not an allowed host) and LCSC $0.4609 @1k with 0 stock (above Mouser's 1-pc price; discarded)."
+    },
+    {
+      "mpn": "CGA5L1X7R1C226M160AC",
+      "family": "CGA5L1X7R1C226",
+      "mfr": "TDK",
+      "desc": "MLCC 22uF 16V X7R 1206, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "1206",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "No distributor listing found for the exact code in two searches; only 10uF/6.8uF siblings listed (not substituted)."
+    },
+    {
+      "mpn": "CL05B104KB5VPNC",
+      "family": "CL05B104KB5VPNC",
+      "mfr": "Samsung Electro-Mechanics",
+      "desc": "MLCC 0.1uF 50V X7R 0402, automotive (AEC-Q200)",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "No price for the automotive VPNC code; only the commercial CL05B104KB54PNC listed (not substituted - different grade)."
+    },
+    {
+      "mpn": "CL10B105KP8VPNC",
+      "family": "CL10B105KP8VPNC",
+      "mfr": "Samsung Electro-Mechanics",
+      "desc": "MLCC 1uF 10V X7R 0603, automotive (AEC-Q200)",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "No price for the automotive VPNC code; only commercial CL10B105KP8NNNC (no price shown) and other-voltage siblings listed."
+    },
+    {
+      "mpn": "GRT155R61A105KE13D",
+      "family": "GRT155R61A105",
+      "mfr": "Murata",
+      "desc": "MLCC 1uF 10V X5R 0402, GRT AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "GCJ155R71H104KA55D",
+      "family": "GCJ155R71H104",
+      "mfr": "Murata",
+      "desc": "MLCC 0.1uF 50V X7R 0402, soft termination, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "LQW18AN",
+      "family": "LQW18AN",
+      "mfr": "Murata",
+      "desc": "Wirewound RF inductor series, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "BLM15PX121SN1",
+      "family": "BLM15PX121SN1",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 120 ohm @100MHz, high current, 0402",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "BLM18KG601SH1",
+      "family": "BLM18KG601SH1",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 600 ohm @100MHz, 0603",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "BLM18PG221SH1",
+      "family": "BLM18PG221SH1",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 220 ohm @100MHz, 0603",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "BLM15GG471SH1",
+      "family": "BLM15GG471SH1",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 470 ohm @100MHz, 0402",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "DLW21SN900HQ2",
+      "family": "DLW21SN900HQ2",
+      "mfr": "Murata",
+      "desc": "Common-mode choke 90 ohm, 0805, CAN/Ethernet lines",
+      "category": "passive_0805",
+      "pkg": "0805",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "DLP11TB800UL2",
+      "family": "DLP11TB800UL2",
+      "mfr": "Murata",
+      "desc": "Common-mode choke 80 ohm, 0504, high-speed differential",
+      "category": "passive_0603",
+      "pkg": "0504",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "ADL3225VM-100MT",
+      "family": "ADL3225VM",
+      "mfr": "TDK",
+      "desc": "Power-over-coax inductor 10uH, 3225",
+      "category": "passive_1206",
+      "pkg": "3225",
+      "aecq": true,
+      "ecuRoles": [
+        "power-over-coax",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "ADL2012VM",
+      "family": "ADL2012VM",
+      "mfr": "TDK",
+      "desc": "Power-over-coax inductor series, 2012",
+      "category": "passive_0805",
+      "pkg": "2012",
+      "aecq": true,
+      "ecuRoles": [
+        "power-over-coax",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "XFL3012-472MEB",
+      "family": "XFL3012",
+      "mfr": "Coilcraft",
+      "desc": "Power inductor 4.7uH, 3x3 mm, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "3.0x3.0 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "XGL4020-222MEB",
+      "family": "XGL4020",
+      "mfr": "Coilcraft",
+      "desc": "Power inductor 2.2uH, 4x4 mm, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "4.0x4.0 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "LQH3NPZ",
+      "family": "LQH3NPZ",
+      "mfr": "Murata",
+      "desc": "Power inductor series, 3x3 mm, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "3.0x3.0 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "CLF7045NIT-101M-D",
+      "family": "CLF7045",
+      "mfr": "TDK",
+      "desc": "Power inductor 100uH, 7x7 mm, automotive",
+      "category": "passive_1206",
+      "pkg": "7.0x7.0 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "SPM6530T-1R0M-HZ",
+      "family": "SPM6530",
+      "mfr": "TDK",
+      "desc": "Power inductor 1uH, 7.1x6.5 mm, automotive",
+      "category": "passive_1206",
+      "pkg": "7.1x6.5 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "VLS252012HBX-1R0M-1",
+      "family": "VLS252012HBX",
+      "mfr": "TDK",
+      "desc": "Power inductor 1uH, 2.5x2.0 mm, automotive",
+      "category": "passive_1206",
+      "pkg": "2520",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "XEL4030-102MEB",
+      "family": "XEL4030",
+      "mfr": "Coilcraft",
+      "desc": "Power inductor 1uH, 4x4 mm, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "4.0x4.0 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "DFE252012PD-1R0M=P2",
+      "family": "DFE252012PD",
+      "mfr": "Murata",
+      "desc": "Power inductor 1uH, 2.5x2.0 mm, automotive",
+      "category": "passive_1206",
+      "pkg": "2520",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "WSL0603R0500FEA",
+      "family": "WSL0603",
+      "mfr": "Vishay Dale",
+      "desc": "Current-sense resistor 50 mohm 1%, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "CRCW04021K00FKED",
+      "family": "CRCW0402",
+      "mfr": "Vishay Dale",
+      "desc": "Thick-film resistor 1k 1%, 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "CRCW060310K0FKEA",
+      "family": "CRCW0603",
+      "mfr": "Vishay Dale",
+      "desc": "Thick-film resistor 10k 1%, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "ERJ-2RKF1001X",
+      "family": "ERJ-2RK",
+      "mfr": "Panasonic",
+      "desc": "Thick-film resistor 1k 1%, 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "ERJ-PB3D1002V",
+      "family": "ERJ-PB3",
+      "mfr": "Panasonic",
+      "desc": "High-precision anti-surge thick-film resistor 10k 0.5%, 0603, AEC-Q200",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "PESD1CAN",
+      "family": "PESD1CAN",
+      "mfr": "Nexperia",
+      "desc": "CAN bus ESD protection diode, SOT23",
+      "category": "fuse_tvs",
+      "pkg": "SOT23",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue. [upgrade estimate PESD1CAN]"
+    },
+    {
+      "mpn": "PESD2CANFD24V",
+      "family": "PESD2CANFD24V",
+      "mfr": "Nexperia",
+      "desc": "CAN FD ESD protection diode 24V, SOT23",
+      "category": "fuse_tvs",
+      "pkg": "SOT23",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "PESD5V0F1BL",
+      "family": "PESD5V0F1BL",
+      "mfr": "Nexperia",
+      "desc": "Ultra-low-capacitance bidirectional ESD diode 5V, SOD882",
+      "category": "fuse_tvs",
+      "pkg": "SOD882",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "ESD9B5.0ST5G",
+      "family": "ESD9B5.0",
+      "mfr": "onsemi",
+      "desc": "Bidirectional ESD diode 5V, SOD-923",
+      "category": "fuse_tvs",
+      "pkg": "SOD-923",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "TPD1E04U04-Q1",
+      "family": "TPD1E04U04-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1-ch ESD diode 0.5pF for high-speed lines, automotive",
+      "category": "fuse_tvs",
+      "pkg": "X1SON",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "TPD4E05U06-Q1",
+      "family": "TPD4E05U06-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "4-ch ESD array 0.5pF for high-speed lines, automotive",
+      "category": "fuse_tvs",
+      "pkg": "USON-10",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue. [upgrade estimate TPD4E05U06]"
+    },
+    {
+      "mpn": "TPD2E2U06-Q1",
+      "family": "TPD2E2U06-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "2-ch ESD diode array, automotive",
+      "category": "fuse_tvs",
+      "pkg": "SC70",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "SMBJ33CA-Q",
+      "family": "SMBJ33CA",
+      "mfr": "Bourns",
+      "desc": "TVS diode 33V bidirectional 600W, SMB, AEC-Q101",
+      "category": "fuse_tvs",
+      "pkg": "SMB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "SMF5.0A",
+      "family": "SMF5.0A",
+      "mfr": "Littelfuse",
+      "desc": "TVS diode 5V unidirectional 200W, SOD-123FL",
+      "category": "fuse_tvs",
+      "pkg": "SOD-123FL",
+      "aecq": false,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "BAT54-Q",
+      "family": "BAT54",
+      "mfr": "Nexperia",
+      "desc": "Schottky diode 30V 200mA, SOT23, AEC-Q101",
+      "category": "ic_soic",
+      "pkg": "SOT23",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "NSR20F30NXT5G",
+      "family": "NSR20F30",
+      "mfr": "onsemi",
+      "desc": "Schottky diode 30V 2A, DSN2",
+      "category": "ic_soic",
+      "pkg": "DSN2",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "PMEG4010CEJ",
+      "family": "PMEG4010CEJ",
+      "mfr": "Nexperia",
+      "desc": "Schottky diode 40V 1A, SOD323F",
+      "category": "ic_soic",
+      "pkg": "SOD323F",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue. [upgrade estimate PMEG4010]"
+    },
+    {
+      "mpn": "PMV50EPEA",
+      "family": "PMV50EPEA",
+      "mfr": "Nexperia",
+      "desc": "P-channel MOSFET -30V, SOT23, AEC-Q101",
+      "category": "ic_soic",
+      "pkg": "SOT23",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "RQ3E130BNTB",
+      "family": "RQ3E130BN",
+      "mfr": "ROHM",
+      "desc": "N-channel MOSFET 30V 13A, HSMT8",
+      "category": "ic_qfn",
+      "pkg": "HSMT8",
+      "aecq": false,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "BUK7M10-40H",
+      "family": "BUK7M10-40H",
+      "mfr": "Nexperia",
+      "desc": "N-channel MOSFET 40V 10 mohm, LFPAK33, AEC-Q101",
+      "category": "ic_qfn",
+      "pkg": "LFPAK33",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "IAUC100N04S6L025",
+      "family": "IAUC100N04S6L025",
+      "mfr": "Infineon",
+      "desc": "OptiMOS-6 N-channel MOSFET 40V 100A 2.5 mohm, TDSON-8, AEC-Q101",
+      "category": "ic_qfn",
+      "pkg": "TDSON-8",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "NVMFS5C410NL",
+      "family": "NVMFS5C410NL",
+      "mfr": "onsemi",
+      "desc": "N-channel power MOSFET 40V, SO-8FL, AEC-Q101",
+      "category": "ic_qfn",
+      "pkg": "SO-8FL",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "59S2AQ-40MT5-Z_1",
+      "family": "59S2AQ-40MT5",
+      "mfr": "Rosenberger",
+      "desc": "FAKRA PCB jack, coding Z",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "D4S20D-40MA5-Z",
+      "family": "D4S20D",
+      "mfr": "Rosenberger",
+      "desc": "Automotive PCB connector (listed as FAKRA; D4S20 is Rosenberger's HSD PCB range)",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "E6S10A-40MT5-Z",
+      "family": "E6S10A",
+      "mfr": "Rosenberger",
+      "desc": "Automotive coax PCB jack (H-MTD/FAKRA family), coding Z",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "2337020-1",
+      "family": "MATEnet",
+      "mfr": "TE Connectivity",
+      "desc": "MATEnet automotive Ethernet PCB header",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "2387271-1",
+      "family": "2387271",
+      "mfr": "TE Connectivity",
+      "desc": "Automotive PCB connector (BOM line next to MATEnet; series not confirmed)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "9-2304350-1",
+      "family": "HFM",
+      "mfr": "TE Connectivity",
+      "desc": "HFM automotive coax PCB header",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "HSD D4S20H",
+      "family": "HSD D4S20H",
+      "mfr": "Rosenberger",
+      "desc": "HSD PCB connector series",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "MX150 (ref)",
+      "family": "MX150",
+      "mfr": "Molex",
+      "desc": "MX150 sealed automotive connector system (reference line)",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Reference line, no automotive orderable variant priced: web-search budget ran out before it was reached."
+    },
+    {
+      "mpn": "0347910042",
+      "family": "34791",
+      "mfr": "Molex",
+      "desc": "Molex automotive PCB connector (series not confirmed)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    },
+    {
+      "mpn": "1-2112996-1",
+      "family": "1-2112996-1",
+      "mfr": "TE Connectivity",
+      "desc": "TE automotive PCB connector (series not confirmed)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+    }
+  ]
+}
