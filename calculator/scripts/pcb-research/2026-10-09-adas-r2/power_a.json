@@ -1,0 +1,319 @@
+{
+ "domain": "adas-power-a-r2",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "LP876441B1RQKRQ1",
+   "family": "LP8764-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive 4-phase multi-output buck PMIC (4x5 A / 20 A), SoC companion",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR-32 5.5x5 (RQK)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": "LP876441B1RQKRQ1",
+   "observations": [],
+   "notes": "R2: 4 more searches (Arrow, Avnet, Mouser 595-, Digi-Key .com/.de for sibling LP876440C0RQKRQ1). No franchised listing found. The round-1 Digi-Key EUR figure for LP876440C0RQKRQ1 (about EUR 4.06 at 1k, EUR 3.94 at 3k, digikey.gr) could not be found on a page of its own. Its only URL pointed to an unrelated Arduino product, so it is still not recorded. TI lists LP876440C0RQKRQ1 and LP876441B1RQKRQ1 as active (3k reel)."
+  },
+  {
+   "mpn": "TPS65941421RWERQ1",
+   "family": "TPS6594-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs, OTP 21 variant",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS65941421RWERQ1",
+   "observations": [],
+   "notes": "R2: 1 more search (Mouser, Arrow, Avnet, findchips). No listing found anywhere; the OPN may be TI-direct only or mistyped on the BOM."
+  },
+  {
+   "mpn": "TPS6593C3A0RWERQ1",
+   "family": "TPS6593-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs (TPS6593-Q1 family)",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS6593C3A0RWERQ1",
+   "observations": [],
+   "notes": "R2: 2 more searches across the C3A0, 1211 and 0400 OPNs (Mouser, Digi-Key, LCSC). No franchised listing found; only AERI (no price) and szlcsc.com (not an allowed host)."
+  },
+  {
+   "mpn": "TPS65931211RWERQ1",
+   "family": "TPS6593-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs, OTP 1211",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS65931211RWERQ1",
+   "observations": [],
+   "notes": "R2: covered by the same 2 searches as TPS6593C3A0RWERQ1. No franchised listing found."
+  },
+  {
+   "mpn": "LP873344RHDRQ1",
+   "family": "LP8733-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive dual high-current buck + dual LDO PMIC",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28 (RHD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera"
+   ],
+   "observedMpn": "LP873344RHDRQ1",
+   "observations": [],
+   "notes": "R2: 2 more searches, including the 250-reel RHDTQ1 and findchips. No franchised listing found. Only Cytech (broker) and Lisleapex (broker, 9,200 in stock) list it. TI shows a 1k price on its own page; that was not read and is not an observation."
+  },
+  {
+   "mpn": "LP87332DRHDRQ1",
+   "family": "LP87332D-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive dual 3 A buck + dual LDO, for Jacinto 6 entry processors",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28 (RHD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "LP87332DRHDRQ1",
+   "observations": [],
+   "notes": "R2: 2 more searches, including the RHDTQ1 small reel and findchips. No franchised listing found; only Lion Circuits and Lisleapex (not franchised). One datasheet aggregator shows a 'Preview' status, which conflicts."
+  },
+  {
+   "mpn": "TPS6521920WRHBRQ1",
+   "family": "TPS65219-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 3 bucks + 4 LDOs, for AM62x / AM62A processors",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "DMS"
+   ],
+   "observedMpn": "TPS6521920WRHBRQ1",
+   "observations": [],
+   "notes": "R2: 1 more search across the 20 and 23 OPNs. Not found at Digi-Key, Mouser or Arrow. ERSA Electronics lists TPS6521920WRHBRQ1 at $3.28 at 25+ and TPS6521923WRHBRQ1 at $3.06 at 25+, but it is not a franchised distributor and the breaks are under 100, so neither is recorded."
+  },
+  {
+   "mpn": "TPS653850AQDCARQ1",
+   "family": "TPS653850A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Multi-rail safety PMIC for MCUs: buck-boost pre-regulator, LDOs, sensor-supply trackers, watchdog (ASIL-D)",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-48 (DCA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "front camera"
+   ],
+   "observedMpn": "TPS653850AQDCARQ1",
+   "observations": [],
+   "notes": "Upgrade-estimate line (TPS653850). R2: 2 more searches (the A and non-A TPS653850QDCARQ1, and TPS653852A) at Arrow, Mouser, Digi-Key and Avnet. No listing found. TI shows a 2k reel and active status. The estimate stands."
+  },
+  {
+   "mpn": "RAA2710004R1FHBG",
+   "family": "RAA271000",
+   "mfr": "Renesas",
+   "desc": "Automotive multi-output PMIC for R-Car SoCs",
+   "category": "ic_bga",
+   "pkg": "BGA (HBG suffix)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "RAA2710004R1FHBG",
+   "observations": [],
+   "notes": "R2: 1 more search (Future, Avnet, Digi-Key). No listing found; it appears to be sold through Renesas channels only. The Renesas list price of about $8.82 at MOQ 250 is not an observation: https://www.renesas.com/ja/products/raa271000/part-details/raa2710004r1fhbg-mc0"
+  },
+  {
+   "mpn": "RAA271005A4HBG#AC0",
+   "family": "RAA271005",
+   "mfr": "Renesas",
+   "desc": "R-Car PMIC: 5 bucks (Buck1 12 A; RAA271005L 6 A) + 6 LDOs, AEC-Q100 Grade 1",
+   "category": "ic_bga",
+   "pkg": "LFBGA-66 (6x11 array, 0.65 mm pitch)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "RAA271005A4HBG#AC0",
+   "observations": [],
+   "notes": "R2: 1 more search (Future, Avnet, Rutronik, Farnell). No listing found; datasheets only (Rev 1.03, July 2026)."
+  },
+  {
+   "mpn": "DA9063-A0HO1",
+   "family": "DA9063-A",
+   "mfr": "Renesas (Dialog)",
+   "desc": "Automotive (Grade 2) system PMIC for multicore SoCs: 6 bucks + 11 LDOs",
+   "category": "ic_bga",
+   "pkg": "BGA-100 8x8 mm, 0.8 mm pitch",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "DA9063-A0HO1",
+   "observations": [],
+   "notes": "R2: 1 more search (Mouser, Digi-Key, Future, Avnet; A0HO1 and A2HO1). No listing found. The Renesas part page gives a 100-ball BGA 8x8 and MOQ 4,940, and marks several DA9063-A variants out of stock. Only a broker price exists, which is not used."
+  },
+  {
+   "mpn": "LMQ62440APPQRJRRQ1",
+   "family": "LMQ62440-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "36 V, 4 A low-EMI synchronous buck with integrated bypass caps (adjustable, 2.1 MHz)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR-14 (RJR, wettable flanks)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "LMQ62440APPQRJRRQ1",
+   "observations": [],
+   "notes": "R2: 3 more searches (Mouser; Digi-Key for the BPP/CPP siblings; LCSC, Arrow, Avnet). No franchised listing found. Only the broker Lisleapex shows stock (7,317)."
+  },
+  {
+   "mpn": "TPS548A28-Q1",
+   "family": "TPS548A28",
+   "mfr": "Texas Instruments",
+   "desc": "2.7-16 V, 15 A D-CAP3 synchronous buck (commercial; no -Q1 found)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR-21 4x3 (RWW)",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS548A28-Q1",
+   "observations": [],
+   "notes": "R2: 1 more search. TI's product pages in every language list only the commercial TPS548A28RWWR, with no AEC-Q100 or -Q1 variant. The BOM line probably names the commercial part or a different -Q1 buck. Commercial siblings are in the round-1 note."
+  },
+  {
+   "mpn": "TPS65941213RWERQ1",
+   "family": "TPS6594-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs, 2.8-5.5 V in; OTP 13 (TDA4 / Jacinto primary PMIC)",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": "TPS65941213RWERQ1",
+   "observations": [],
+   "notes": "R2 re-source: 3 searches (Arrow; Mouser .com/.de/.co.uk; the digikey.com product URL). Only the punchouttest.digikey.kr page exists, so no normal-site or other franchised price was found. The round-1 KRW observations rest on a test storefront and should be treated with care. For reference, sibling TPS65941120RWERQ1 on digikey.com is $6.84677 at 1k."
+  },
+  {
+   "mpn": "TPS62870QWRXSRQ1",
+   "family": "TPS6287x-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "2.7-6 V, 6 A stackable synchronous buck with I2C (SoC core rail)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-FCRLF-16 EP (RXS)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS62870QWRXSRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 2.11,
+     "currency": "EUR",
+     "url": "https://www.mouser.ie/c/power/power-management-ics/voltage-regulators-switching-regulators?pg=4",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "R2 re-source of the round-1 punchouttest price. Mouser 595-TPS62870QWRXSRQ1 (about 2,527 in stock): EUR 2.11 at 3,000 (EUR 3.84 at 1) on Mouser's EU listing page; the Mouser India page shows INR 220.11 at 3,000. Only the EUR 3k break is recorded; the URL is Mouser's category listing page that shows the row. No normal digikey.com page for this exact code; sibling TPS62870Y1QWRXSRQ1 there is $2.53689 at 1k and $2.45017 at 3k."
+  },
+  {
+   "mpn": "MPF7100BVBA1ES",
+   "family": "PF7100",
+   "mfr": "NXP",
+   "desc": "7-channel PMIC (5 bucks + 2 LDOs) for i.MX 8 / S32, fit for ASIL-B",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-48 7x7 (wettable flanks)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "MPF7100BVBA1ES",
+   "observations": [],
+   "notes": "R2 re-source of the round-1 punchouttest price: 1 search. The only normal-site price is digikey.cn at CNY 52.79 at 260, which includes 13% VAT, so it is not recorded. No Mouser or Future listing. A priced sibling OPN is given as a separate entry, MPF7100BVMA1ES."
+  },
+  {
+   "mpn": "MPF7100BVMA1ES",
+   "family": "PF7100",
+   "mfr": "NXP",
+   "desc": "7-channel PMIC (5 bucks + 2 LDOs) for i.MX 8XL, QM, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-48 7x7 (SOT619)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "MPF7100BVMA1ES",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 260,
+     "price": 3.96,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--power-switches/mpf7100bvma1es-nxp-3172354",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 520,
+     "price": 3.93,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--power-switches/mpf7100bvma1es-nxp-3172354",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1040,
+     "price": 3.88,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--power-switches/mpf7100bvma1es-nxp-3172354",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Sibling PF7100 OPN (NXP table: i.MX 8XL, LPDDR4, QM), added because MPF7100BVBA1ES has no normal-site price. Future Electronics, tray, MOQ 260 (0 stock, 16-week lead time). A second Future URL for the same part (1172363) shows $3.88 at 1 on cut tape. Other Future prices, not recorded: MPF7100BVMA0ES $4.16 at 400+; MPF7100BMMA0ES $4.66 at 260 and $4.62 at 520."
+  }
+ ]
+}
