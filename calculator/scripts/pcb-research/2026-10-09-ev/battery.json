@@ -1,0 +1,566 @@
+{
+  "domain": "ev-battery",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "TLE9018DQKXUMA1",
+      "family": "TLE9018DQK",
+      "mfr": "Infineon",
+      "desc": "18-cell Li-ion battery monitoring and balancing IC, iso-UART daisy chain",
+      "category": "ic_tqfp",
+      "pkg": "PG-LQFP-64",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_CMU"
+      ],
+      "observedMpn": "TLE9018DQKXUMA1",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 1900,
+          "price": 5.39,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/semiconductors--analog--regulators-reference--battery-charger/tle9018dqkxuma1-infineon-technologies-2216377",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Future min order 1,900, 0 stock, 21 wk lead time. No Digi-Key/Mouser listing found. TLE90xx BMS family is Infineon's automotive range (AEC-Q100 not read on a datasheet for this code)."
+    },
+    {
+      "mpn": "ISL78714ANZ",
+      "family": "ISL78714",
+      "mfr": "Renesas",
+      "desc": "14-cell automotive Li-ion battery manager (cell monitor/balancer, daisy chain)",
+      "category": "ic_tqfp",
+      "pkg": "TQFP-64 10x10",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_CMU",
+        "BMS48"
+      ],
+      "observedMpn": "ISL78714ANZ",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 250,
+          "price": 9.7,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/isl78714anz-renesas-9163483",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 160,
+          "price": 8.99,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/battery-management/2638975",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS UK tray of 160 = GBP 1,438.88 ex VAT (8.99 each). Future 0 stock, 24 wk lead time. ISL78xxx is Renesas's automotive (AEC-Q100) line."
+    },
+    {
+      "mpn": "MC33774ATP1AE",
+      "family": "MC33774",
+      "mfr": "NXP",
+      "desc": "18-channel Li-ion battery cell controller (4-18 cells)",
+      "category": "ic_tqfp",
+      "pkg": "not confirmed in sources read",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_CMU"
+      ],
+      "observedMpn": "MC33774ATP1AE",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 160,
+          "price": 6.01,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nxp/mc33774atp1ae/evolve-69281273/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Avnet lists a 210-week factory lead time. Digi-Key only on a punchouttest storefront ($7.18 @1,120) - not recorded. NXP PCN names MC33774ATP1AER2 (reel) as the replacement code."
+    },
+    {
+      "mpn": "MC33777ATA1AE",
+      "family": "MC33777",
+      "mfr": "NXP",
+      "desc": "Battery junction box monitor IC: redundant pack current (27-bit + 16-bit ADC), voltage, temperature, pyro-fuse/switch actuation, ASIL-D",
+      "category": "ic_tqfp",
+      "pkg": "not confirmed in sources read",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "MC33777ATA1AE",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 480,
+          "price": 9.24,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nxp/mc33777ata1ae/evolve-119355131",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 7680,
+          "price": 8.97,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nxp/mc33777ata1ae/evolve-119355131",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Avnet: 0 stock, 196-week factory lead time, MOQ 480. NXP product page budgetary list 1k @ US$4.45 / US$6.47 for MC33777 variants (manufacturer list, not an observation). Package not confirmed."
+    },
+    {
+      "mpn": "BQ79631PAPRQ1",
+      "family": "BQ79631-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Battery junction box / pack monitor: HV divided-node voltages, shunt current ADC, insulation-resistance measurement, isolated daisy chain",
+      "category": "ic_tqfp",
+      "pkg": "HTQFP-64",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "BQ79631PAPRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 19.9801,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/BQ796",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 21.8957,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/BQ796",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Findchips snapshot of Digi-Key 296-BQ79631PAPRQ1CT-ND; the 500 break reads LOWER than the 1,000 break (two packings), so no slope taken. Mouser $20.77 seen with no stated break - not recorded."
+    },
+    {
+      "mpn": "BQ79731PHPRQ1",
+      "family": "BQ79731-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "High-voltage battery pack monitor (current sense path, OC comparators) for BJB/BDU",
+      "category": "ic_tqfp",
+      "pkg": "HTQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observations": [],
+      "notes": "No franchised distributor price found (4 searches): only a broker (Lion Circuits) and an unnamed-source series page (ERSA $7.18 @1k) - neither is a valid source. Orderable code and 1,000/reel from TI's ordering page."
+    },
+    {
+      "mpn": "DRV3901QDGQRQ1",
+      "family": "DRV3901-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Single-channel 40 V 3.4 A pyro-fuse (squib) driver for battery disconnect, SPI + HW trigger",
+      "category": "ic_soic",
+      "pkg": "HVSSOP-28 (DGQ)",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "DRV3901QDGQRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 6895.96,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/DRV3901QDGQRQ1/22106916",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 5317.59,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/DRV3901QDGQRQ1/22106916",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Only listing found is a Digi-Key 'punchouttest' (KR) storefront: 1,000 = cut tape, 2,500 = tape & reel; 0 stock, 12 wk. No digikey.com/Mouser listing found (3 searches). AEC-Q100 grade 1 per TI."
+    },
+    {
+      "mpn": "L9965P-FN-TR",
+      "family": "L9965P",
+      "mfr": "STMicroelectronics",
+      "desc": "Single-channel pyro-fuse / pyro-switch driver (HS+LS power stage, SPI or pin firing)",
+      "category": "ic_qfn",
+      "pkg": "VFQFN-32",
+      "aecq": false,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "L9965P-FN",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 100,
+          "price": 2.6,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/battery-management/0333585",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 500,
+          "price": 2.84,
+          "currency": "USD",
+          "url": "https://www.findchips.com/detail/L9965P-FN/STMicroelectronics",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 3.43,
+          "currency": "USD",
+          "url": "https://www.findchips.com/detail/L9965P-FN/STMicroelectronics",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS price is on L9965P-FN-TR; Newark and Mouser (511-L9965P-FN) on the sibling L9965P-FN (tray). Digi-Key lists 99 wk lead time, no price. ST lists it in its automotive range; AEC-Q100 not confirmed in the sources read."
+    },
+    {
+      "mpn": "TPSI2140QDWQRQ1",
+      "family": "TPSI2140-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1400 V 50 mA isolated solid-state switch for insulation-resistance monitoring (3.75 kVrms)",
+      "category": "ic_soic",
+      "pkg": "SOIC-11 (DWQ)",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "TPSI2140QDWQRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 5389.034,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPSI2140QDWQRQ1/21298426",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 5275.033,
+          "currency": "KRW",
+          "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPSI2140QDWQRQ1/21298426",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Only listing with breaks is a Digi-Key 'punchouttest' (KR) storefront (1,000 cut tape, 2,000 reel), 0 stock. Mouser seen only at qty 1 ($6.10, 2023 snapshot) - not used."
+    },
+    {
+      "mpn": "LTC2949HLXE#3ZZTRPBF",
+      "family": "LTC2949",
+      "mfr": "Analog Devices",
+      "desc": "High-voltage battery pack monitor: current, voltage, charge/energy, isoSPI, H grade",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-48 (LXE)",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "LTC2949HLXE#3ZZTRPBF",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 15.6034,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C683729.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "LCSC 0 stock. CHECK: Richardson RFPD (Arrow) lists the same family at $35.08 @1k ($37.04 @250) - not a counted host - so the LCSC figure may be stale (cf. the LTC6813 gap noted in the merge header)."
+    },
+    {
+      "mpn": "SAK-TC234L-32F200F AC",
+      "family": "TC234L",
+      "mfr": "Infineon",
+      "desc": "AURIX TC234L single-core TriCore 200 MHz, 2 MB flash, TQFP-144 (BYD Blade BMU MCU)",
+      "category": "ic_tqfp",
+      "pkg": "TQFP-144",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "SAK-TC234L-32F200F AC",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 7.5969,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C538781.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Sibling SAK-TC234LP-32F200F AC is already distributor-priced in the catalogue (3 obs). Farnell FR lists TC234LP32F200FACKXUMA1 at EUR 10.36-10.89 @100 (two conflicting pages; not recorded here)."
+    },
+    {
+      "mpn": "SPC5775BDK3MME2",
+      "family": "MPC5775B",
+      "mfr": "NXP",
+      "desc": "MPC5775B e200z7 220 MHz, 4 MB flash, BMS/inverter MCU, MAPBGA-416",
+      "category": "ic_bga",
+      "pkg": "MAPBGA-416 27x27",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "SPC5775BDK3MME2",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 33.76,
+          "currency": "EUR",
+          "url": "https://www.mouser.fi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=21",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 200,
+          "price": 33.38,
+          "currency": "EUR",
+          "url": "https://www.mouser.fi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=21",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser FI (771-SPC5775BDK3MME2), AEC-Q100 per listing. Replaces the catalogue's 'MPC5775' family estimate."
+    },
+    {
+      "mpn": "MM9Z1J638TM5EP",
+      "family": "MM9Z1_638",
+      "mfr": "NXP",
+      "desc": "12 V intelligent battery sensor: S12Z MCU + 3-ch AFE (shunt current, voltage, temperature) + LIN/CAN",
+      "category": "ic_qfn",
+      "pkg": "not confirmed in sources read",
+      "aecq": true,
+      "ecuRoles": [
+        "IBS"
+      ],
+      "observedMpn": "MM9Z1J638BM2EP",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 260,
+          "price": 5.99,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/fr/p/semiconductors--analog--system-management--voltage-supervisors/mm9z1j638bm2ep-nxp-7145841",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 8.9177,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C513823.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Prices are for MM9Z1J638BM2EP, which NXP marks not recommended for new designs; MM9Z1J638TM5EP is NXP's named replacement (no listing found). Future 0 stock, 16 wk. Package not confirmed on a datasheet in this round."
+    },
+    {
+      "mpn": "MLX91231KDC-BBA-000-SP",
+      "family": "MLX91231",
+      "mfr": "Melexis",
+      "desc": "Shunt-based smart IVT battery sensor IC: current, voltage, temperature, 32 KB flash, LIN/UART",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "IBS",
+        "BMS48"
+      ],
+      "observedMpn": "MLX91231KDC-BBA-000-SP",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 100,
+          "price": 4.25,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--analog--sensors--current/mlx91231kdc-bba-000-sp-melexis-4185620",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 500,
+          "price": 4.12,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--analog--sensors--current/mlx91231kdc-bba-000-sp-melexis-4185620",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 1000,
+          "price": 4.08,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/fr/p/semiconductors--analog--sensors--current/mlx91231kdc-bba-000-sp-melexis-4185620",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Future also lists the -RE (reel) code at $4.39 / $4.04 @3,000 (two conflicting pages) - not recorded. Melexis automotive sensor; AEC-Q100 not read on the datasheet this round."
+    },
+    {
+      "mpn": "2ED4820EMXUMA2",
+      "family": "2ED4820-EM",
+      "mfr": "Infineon",
+      "desc": "Dual-channel 48 V smart high-side MOSFET gate driver (battery disconnect switch)",
+      "category": "ic_soic",
+      "pkg": "TSDSO-24",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS48"
+      ],
+      "observedMpn": "2ED4820EMXUMA2",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 500,
+          "price": 2.84,
+          "currency": "GBP",
+          "url": "https://export.farnell.com/infineon/2ed4820emxuma2/gate-driver-ic-3v-5-5v-tsdso/dp/3922527",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Named in Infineon R 48V BATT SWITCH10. RS IE shows EUR 5.39 @100 (stock-number page not pinned - not recorded). element14 AU 1000+ $5.68 is AUD - not convertible here."
+    },
+    {
+      "mpn": "IAUT300N08S5N014ATMA1",
+      "family": "IAUT300N08S5",
+      "mfr": "Infineon",
+      "desc": "OptiMOS 5 80 V N-ch MOSFET 1.4 mOhm, TOLL (HSOF-8), 48 V battery switch class",
+      "category": "ic_soic",
+      "pkg": "HSOF-8 (TOLL)",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS48"
+      ],
+      "observedMpn": "IAUT300N08S5N014ATMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 2.40072,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/IAUT300N08S5N014ATMA1/8818760",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 1.96138,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/IAUT300N08S5N014ATMA1/8818760",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative of the IAUT300N08S5 family: Infineon's R 48V BATT SWITCH10 uses IAUT300N08S5N011 (1.1 mOhm), which no distributor page found priced (N012ATMA2 only out-of-stock / ambiguous RS pages). AEC-Q101."
+    },
+    {
+      "mpn": "SM91501AL-E",
+      "family": "SM91501AL",
+      "mfr": "Bourns",
+      "desc": "Dual-channel BMS daisy-chain (isoSPI/TPL) signal transformer with CM chokes, 1600 VDC working, AEC-Q200",
+      "category": "transformer",
+      "pkg": "SMD",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_CMU",
+        "BMS_BMU"
+      ],
+      "observedMpn": "SM91501AL-E",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 400,
+          "price": 3.1772,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/bourns-inc/SM91501AL-E/9650127",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key reel tier from 400; a ~$2.90 @2,800 tier was quoted only approximately - not recorded. Datasheet names LTC6804/6811 and MC33771/33772 reference designs."
+    },
+    {
+      "mpn": "SM91514AL-E",
+      "family": "SM91514AL",
+      "mfr": "Bourns",
+      "desc": "Single-channel BMS daisy-chain transformer 300 uH 1:1, SMD",
+      "category": "transformer",
+      "pkg": "SMD",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_CMU",
+        "BMS_BMU"
+      ],
+      "observedMpn": "SM91514AL-E",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 2.1062,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/bourns-inc/SM91514AL-E/13985705",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Cut-tape 100 break. Stand-in for single-channel BMS transformers: SM91574AL (Bourns' part for TI BQ79718) found no distributor price. AEC-Q200 per Bourns BMS line, not read on this code's page."
+    },
+    {
+      "mpn": "WSBE8518L1000JKA2",
+      "family": "WSBE8518",
+      "mfr": "Vishay Dale",
+      "desc": "Battery shunt 100 uOhm 5% 36 W, Power Metal Strip, 8518, AEC-Q200 (pack current sensing)",
+      "category": "mechanical",
+      "pkg": "8518 SMD bar",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "WSBE8518L1000JKA2",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 21.69,
+          "currency": "CAD",
+          "url": "https://punchouttest.digikey.ca/en/products/detail/vishay-dale/WSBE8518L1000JKA2/18587686",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Only a Digi-Key 'punchouttest' (CA) page gave a break >= 100 (0 stock, 18 wk). Regional Digi-Key PTM pages show unit prices with no currency/break - not used. Category 'mechanical' because no shunt-bar category exists."
+    },
+    {
+      "mpn": "ADBMS6822WCCSZ",
+      "family": "ADBMS6822",
+      "mfr": "Analog Devices",
+      "desc": "Dual isoSPI transceiver, 2 Mbps, capacitor or transformer isolation (BMS daisy-chain bridge)",
+      "category": "ic_qfn",
+      "pkg": "not confirmed in sources read",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observations": [],
+      "notes": "No franchised distributor price found (2 searches): Findchips shows only ADI direct ($3.36 @1k, -RL MOQ 5,000) and lists Digi-Key/Mouser/Arrow without prices. ADI list 1ku from $3.19 (analog.com) - manufacturer list, not an observation. Package not confirmed."
+    }
+  ]
+}

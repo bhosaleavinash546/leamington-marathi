@@ -2,6 +2,7 @@
  * PCB Image → BOM → Cost review (Oct 2026) — docs/pcb/pcb-review-2026-10.md.
  * Each test pins one defect found by the review so it cannot return.
  */
+import { classDefaultPrice, classRange } from '../server/utils/pcb-class-pricing.js';
 import { describe, it, expect } from 'vitest';
 import { groundAndSplit, offlineCataloguePrices } from '../server/utils/pcb-bom-grounding.js';
 
@@ -27,17 +28,18 @@ describe('offline catalogue is not "live"', () => {
     expect(l.priceSource).toBe('catalogue');
     expect(l.livePriced).toBe(false);
     expect(l.specSource).toBe('catalogue');
-    expect(l.catalogueMfr).toBe('NXP');
-    expect(l.cataloguePkg).toBe('SOIC-8');
+    expect(l.catalogueMfr).toMatch(/^NXP/);
+    expect(l.cataloguePkg).toMatch(/^SO(IC)?-8$/);   // the catalogue's own package text (round 3 re-keyed TJA1044GT)
     expect(l.catalogueExact).toBe(true);
   });
 });
 
 describe('arithmetic', () => {
-  it('cheap passives are not rounded away: 200 × £0.002 lines sum to £0.40, not £0', () => {
+  it('cheap passives are not rounded away: 200 single-resistor lines sum to 200 × the table point, not £0', () => {
     const bom = Array.from({ length: 200 }, (_, i) => ({ refDes: `R${i + 1}`, partNumber: '', componentType: 'passive_0402', description: 'resistor', qty: 1, unitPriceGBP: 0.002 }));
     const g = groundAndSplit(bom, []);
-    expect(g.bomTotal).toBeCloseTo(0.4, 2);
+    expect(g.bomTotal).toBeCloseTo(200 * classDefaultPrice(classRange({ componentType: 'passive_0402', description: 'resistor' })), 1);
+    expect(g.bomTotal).toBeGreaterThan(0.1);
   });
   it('the class range follows the order volume (a 100-board order is not clamped to 100K prices)', () => {
     const line = { refDes: 'L1', partNumber: '', componentType: 'inductor_smd', description: 'power inductor', qty: 1, unitPriceGBP: 0 };
@@ -64,7 +66,8 @@ describe('catalogue matching does not price a different variant', () => {
     });
   it.each([['TJA1044GT/3', 'TJA1044GT'], ['STM32F407VGT6', 'STM32F407'], ['TJA1044GTK', 'TJA1044GT']])(
     '%s (an ordering suffix) still resolves to %s', (mpn, want) => {
-      expect(catalogueEntry(mpn)?.mpn).toBe(want);
+      const e = catalogueEntry(mpn)!;
+      expect([e.mpn, ...(e.aliases ?? [])]).toContain(want);   // the orderable or an alias (round 3 keyed TJA1044GT/3Z)
     });
 });
 
@@ -102,10 +105,15 @@ describe('8 views of one board: a part is counted once', () => {
     expect(r.warnings.map(w => w.code)).toEqual(expect.arrayContaining(['BOM_QTY_FROM_REFDES', 'BOM_QTY_NOT_WHOLE']));
   });
   it('a clean BOM is returned unchanged with no warnings', () => {
-    const bom = [{ refDes: 'U1', qty: 1 }, { refDes: 'R1, R2', qty: 2 }, { refDes: '', partNumber: 'X', qty: 3 }];
+    const bom = [{ refDes: 'U1', qty: 1 }, { refDes: 'R1, R2', qty: 2 }, { refDes: '', partNumber: 'X', qty: 1 }];
     const r = consolidateBom(bom);
     expect(r.bom).toEqual(bom);
     expect(r.warnings).toHaveLength(0);
+  });
+  it('a quantity no designator shows is kept but listed to verify (pipeline review F16)', () => {
+    const r = consolidateBom([{ refDes: '', partNumber: 'X', qty: 3 }, { refDes: 'C47', qty: 90 }]);
+    expect(r.bom.map(l => [l.qty, l.qtyUnverified])).toEqual([[3, true], [90, true]]);
+    expect(r.warnings.map(w => w.code)).toContain('BOM_QTY_NOT_COUNTABLE');
   });
 });
 

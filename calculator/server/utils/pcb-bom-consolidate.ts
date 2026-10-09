@@ -28,6 +28,11 @@ export function consolidateBom(bom: BomLine[]): { bom: BomLine[]; warnings: Cons
   const trimmed: string[] = [];
   const seen = new Set<string>();
   const out: BomLine[] = [];
+  const unverifiedQty: string[] = [];
+  const mergedDup: string[] = [];
+  // Lines with NO designators that say exactly the same thing (the same parts seen in two photos) — pipeline review F16.
+  const sig = (l: BomLine) => [l.componentType, l.value, l.pkg, l.partNumber, l.description].map(v => String(v ?? '').trim().toLowerCase()).join('|');
+  const bare = new Map<string, number>();
 
   for (const line of bom) {
     // Name the line by what a reader recognises: its designators if it has real ones, else its part / description.
@@ -58,13 +63,34 @@ export function consolidateBom(bom: BomLine[]): { bom: BomLine[]; warnings: Cons
       if (explicit || qty === refs.length) qty = Math.max(own.length, qty - removed);
     }
     for (const r of own) seen.add(r);
-    out.push(qty === Number(line.qty) && own.length === refs.length ? line : {
+    if (refs.length === 0 && !notFitted) {
+      const k = sig(line);
+      const at = bare.get(k);
+      if (at != null) {
+        // Kept once, at the larger count, and listed to verify: a second view of the same parts is not a second set.
+        out[at] = { ...out[at], qty: Math.max(Number(out[at].qty) || 0, qty), qtyUnverified: true, duplicateLinesMerged: (Number(out[at].duplicateLinesMerged) || 1) + 1 };
+        mergedDup.push(label);
+        continue;
+      }
+      bare.set(k, out.length);
+    }
+    // A quantity the designators cannot show ("C47" × 90, "R" × 700) is the model's count, not a count of the board:
+    // kept, but listed to verify — unless the user's BOM file gave it.
+    const fromFile = line.bomSource === 'file' || line.bomSource === 'image';
+    const qtyUnverified = !fromFile && !notFitted && qty > Math.max(1, own.length) && !explicit;
+    if (qtyUnverified) unverifiedQty.push(`${label} (${qty})`);
+    out.push(qty === Number(line.qty) && own.length === refs.length && !qtyUnverified ? line : {
       ...line,
       qty,
       refDes: own.length === refs.length ? line.refDes : own.join(', '),
-      qtyAdjusted: true,
+      ...(qty !== Number(line.qty) || own.length !== refs.length ? { qtyAdjusted: true } : {}),
+      ...(qtyUnverified ? { qtyUnverified: true } : {}),
     });
   }
+  if (mergedDup.length) warnings.push({ code: 'BOM_DUPLICATE_LINES_MERGED', severity: 'warn',
+    message: `${mergedDup.length} line(s) without designators repeated another line exactly (the same parts in another photo) and were merged: ${mergedDup.slice(0, 10).join(', ')}${mergedDup.length > 10 ? ', …' : ''}.` });
+  if (unverifiedQty.length) warnings.push({ code: 'BOM_QTY_NOT_COUNTABLE', severity: 'warn',
+    message: `Quantities the designators do not show are the AI's count and are listed to verify: ${unverifiedQty.slice(0, 10).join(', ')}${unverifiedQty.length > 10 ? ', …' : ''}.` });
 
   if (dropped.length) warnings.push({ code: 'BOM_DUPLICATE_VIEWS', severity: 'warn',
     message: `${dropped.length} line(s) repeated a part already listed from another photo and were removed: ${dropped.slice(0, 10).join(', ')}${dropped.length > 10 ? ', …' : ''}.` });

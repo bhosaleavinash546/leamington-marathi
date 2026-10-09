@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import {
   PCB_COUNTRY_RATES,
   computePCBCountryCost,
+  materialBurdenFor,
   applyPCBCountryRateOverrides,
   getActivePCBCountryOverrides,
   type PCBCostInput,
@@ -50,11 +51,13 @@ describe('country cost model — new elements (energy / packaging / yield)', () 
 });
 
 describe('country cost model — sourcing, duty, freight (audit fixes)', () => {
-  it('BOM varies by country via the sourcing index (CN discount vs UK premium)', () => {
+  // Pipeline review F13 (9 Oct 2026): the unsourced country "sourcing index" (CN ×0.88 … UK ×1.22 on every component)
+  // was removed — components are bought on one global market; freight and duty differ by country and are modelled.
+  it('the component cost is the same in every country (burden only; no country sourcing index)', () => {
     const cn = computePCBCountryCost(BASE, 'cn');
     const gb = computePCBCountryCost(BASE, 'gb');
-    expect(cn.bomCostPerBoard).toBeLessThan(BASE.totalBOMCostGBP);   // 0.88×
-    expect(gb.bomCostPerBoard).toBeGreaterThan(BASE.totalBOMCostGBP); // 1.22×
+    expect(cn.bomCostPerBoard).toBeCloseTo(gb.bomCostPerBoard, 6);
+    expect(cn.bomCostPerBoard).toBeCloseTo(BASE.totalBOMCostGBP * (1 + materialBurdenFor(BASE.orderQuantity)), 4);
   });
 
   it('import duty base includes the BOM (customs value of a populated assembly)', () => {

@@ -1,0 +1,529 @@
+{
+  "domain": "ev-battery",
+  "researched": "2026-10-09",
+  "ecus": [
+    {
+      "ecu": "BMS_CMU",
+      "name": "HV battery cell monitoring unit (slave / CSC / BMU-slave boards)",
+      "function": "Per-module cell voltage and temperature measurement, passive balancing, isolated daisy-chain (or wireless) link to the master.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found for a production CMU; 4 layers (engineering judgement)",
+        "size": "not published in any source found for a production CMU. Reference: ST AEK-POW-BMS63EN (one L9963E node, 4-14 cells) is 100 x 76 mm (evaluation board, not production).",
+        "technology": "Rigid FR4 AFE board; the cell sense lines increasingly run on an FPC cell-contacting system (CCS) welded to the busbars instead of a wire harness. BYD Blade CMUs are laser-welded to the cell output poles.",
+        "laminate": "FR4 (engineering judgement); grade not published in any source found",
+        "boards": "BYD Blade pack: 11 CMUs of two types, each with 22 sampling points (AFE + daisy-chain chips; balancing presence reported inconsistently). NXP HVBMS reference: one CMU board carries 4 cell controllers for up to 56 cells. VW ID.3 (Huber) slaves: 20% (Slave 4) and 50% (Slave 1) of board area is processing; Xpeng G6 (PSA ITC) uses one board design for Slave 3 and Slave 4.",
+        "basis": "size: https://www.mouser.se/stm-aek-pow-bms63en-eval-board ; technology: https://www.molex.com/en-us/products/automotive-connectivity/volfinity-cell-contacting-system , https://chargedevs.com/whitepapers/why-integrated-fpc-based-cell-contact-solutions-are-essential-to-battery-pack-manufacturing/ , https://en.42how.com/2021/08/08/disassembly-of-blade-battery-system-and-design-of-battery-management-system-2/ ; boards: https://en.42how.com/?p=7235 , https://en.42how.com/2021/08/08/disassembly-of-blade-battery-system-and-design-of-battery-management-system-2/ , https://www.nxp.com/design/designs/hvbms-reference-design-bundle-using-etpl:RD-HVBMSCTBUN , https://www.yolegroup.com/strategy-insights/whats-in-the-box-xpeng-g6-vs-volkswagen-id3-a-bms-comparison-at-a-glance/ ; layers/laminate: engineering judgement"
+      },
+      "placements": {
+        "range": "150-400 per 12-18-cell AFE board",
+        "basis": "engineering judgement (one AFE, balancing resistors per cell, RC filters per sense line, NTC inputs, daisy-chain transformer + ESD); no source found"
+      },
+      "keyIcs": [
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "Maxim (now ADI) MAX17853, 14 channels (BYD Blade CMU)"
+          ],
+          "source": "https://en.42how.com/?p=7235"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "NXP MC33775A x4 per CMU, up to 56 cells (NXP RD33775ACNTEVB in the RD-HVBMSCTBUN reference design)"
+          ],
+          "source": "https://www.nxp.com/design/designs/hvbms-reference-design-bundle-using-etpl:RD-HVBMSCTBUN"
+        },
+        {
+          "role": "cell monitor AFE (IC teardown comparison)",
+          "examples": [
+            "NXP MC33771C",
+            "ADI ADBMS6834",
+            "Infineon TLE9012DQU",
+            "ST L9963E",
+            "TI BQ79731-Q1",
+            "MPS MP2797 (the six BMS ICs in Yole SPR25907, 'commonly used in automotive and industrial')"
+          ],
+          "source": "https://www.yolegroup.com/product/report/battery-management-system-controller-comparison-2025/"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "TI BQ79616-Q1 16S, stackable daisy chain, 240 mA internal balancing (maker product page)"
+          ],
+          "source": "https://www.ti.com/product/bq79616-Q1"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "NXP MC33775A 14-ch (maker / Mouser product page)"
+          ],
+          "source": "https://www.mouser.in/new/nxp-semiconductors/nxp-mc33775a-ics/"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "ADI ADBMS6830B 16-ch, isoSPI capacitor- or transformer-coupled (maker product page)"
+          ],
+          "source": "https://www.analog.com/en/products/ADBMS6830B.html"
+        },
+        {
+          "role": "cell monitor AFE + iso-UART",
+          "examples": [
+            "Infineon TLE9012DQU + TLE9015DQU (launch: MHEV, HEV, PHEV, BEV)"
+          ],
+          "source": "https://new-origin.infineon.com/cms/en/about-infineon/press/market-news/2022/INFATV202204-072.html"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "Infineon TLE9018DQK 18-cell (distributor listing)"
+          ],
+          "source": "https://www.futureelectronics.com/p/semiconductors--analog--regulators-reference--battery-charger/tle9018dqkxuma1-infineon-technologies-2216377"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "Renesas ISL78714 14-cell (distributor listing)"
+          ],
+          "source": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/isl78714anz-renesas-9163483"
+        },
+        {
+          "role": "cell monitor AFE",
+          "examples": [
+            "ST L9963E, 4-14 cells per node, 1-31 nodes, 48-800 V (ST AEK-POW-BMS63EN evaluation board)"
+          ],
+          "source": "https://www.mouser.se/stm-aek-pow-bms63en-eval-board"
+        },
+        {
+          "role": "daisy-chain isolation transformer",
+          "examples": [
+            "Bourns SM915xx/SM9157x AEC-Q200 BMS transformers, 1000/1600 V working, single or dual channel",
+            "Bourns SM91574AL (single channel, developed for TI BQ79718)"
+          ],
+          "source": "https://nl.farnell.com/wcsstore/ExtendedSitesCatalogAssetStore/cms/asset/pdf/common/bourns-magnetics-solutions/bourns-bms-brochure.pdf"
+        },
+        {
+          "role": "daisy-chain isolation transformer",
+          "examples": [
+            "Bourns SM91574AL for TI BQ79718 (press)"
+          ],
+          "source": "https://passive-components.eu/bourns-releases-automotive-bms-signal-transformer-3/?amp=1"
+        },
+        {
+          "role": "wireless cell monitoring",
+          "examples": [
+            "ADI wBMS chipset (GM Ultium; ICs not named in the source)"
+          ],
+          "source": "https://chargedevs.com/newswire/gm-to-debut-wireless-ev-battery-management-system/"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Yole: What's in the box - Xpeng G6 vs Volkswagen ID.3, a BMS comparison",
+          "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-xpeng-g6-vs-volkswagen-id3-a-bms-comparison-at-a-glance/",
+          "finding": "Both master-slave. G6 (PSA ITC) slaves 3/4 share one board design; ID.3 (Huber) slaves put 20-50% of board area into processing; Huber Slave 4 ~20% dearer than PSA ITC Slave 4. ICs not named in the public summary."
+        },
+        {
+          "title": "42how: Blade battery system - Part 2, battery management system",
+          "url": "https://en.42how.com/2021/08/08/disassembly-of-blade-battery-system-and-design-of-battery-management-system-2/",
+          "finding": "CMUs laser-welded to the cell output poles; main chips are an AFE and daisy-chain chips; one CMU has 22 sampling points."
+        },
+        {
+          "title": "42how: Blade battery board revisited",
+          "url": "https://en.42how.com/?p=7235",
+          "finding": "11 CMUs of two types; AFE is Maxim MAX17853 (14 channels)."
+        },
+        {
+          "title": "Yole SPR25907: Battery Management System Controller Comparison 2025",
+          "url": "https://www.yolegroup.com/product/report/battery-management-system-controller-comparison-2025/",
+          "finding": "Die/package teardown and cost of MC33771C, ADBMS6834, TLE9012DQU, L9963E, BQ79731-Q1, MP2797 (figures paywalled)."
+        },
+        {
+          "title": "NXP RD-HVBMSCTBUN HVBMS reference design bundle (reference design, not production)",
+          "url": "https://www.nxp.com/design/designs/hvbms-reference-design-bundle-using-etpl:RD-HVBMSCTBUN",
+          "finding": "CMU RD33775ACNTEVB with 4 ASIL-D BCCs monitoring up to 56 cells; ETPL or CAN FD internal link."
+        },
+        {
+          "title": "ST AEK-POW-BMS63EN (evaluation board, not production)",
+          "url": "https://www.mouser.se/stm-aek-pow-bms63en-eval-board",
+          "finding": "One L9963E node for 4-14 cells, 100 x 76 mm, centralized or dual-ring daisy chain."
+        },
+        {
+          "title": "Yole/ABI teardown list: CATL 800 V Cell Supervision Circuit (CSC) for Zeekr 001",
+          "url": "https://teardowns.abiresearch.com",
+          "finding": "Listed 'In Progress' (Apr 2024); no findings published in any source found."
+        }
+      ]
+    },
+    {
+      "ecu": "BMS_BMU",
+      "name": "HV battery management unit (master / BCU) + battery junction box (BJB / BDU) electronics",
+      "function": "Pack state estimation and safety master; contactor and pyro-fuse control, pack voltage / current / insulation measurement in the BJB, vehicle CAN.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found; 4-6 layers (engineering judgement)",
+        "size": "BCU board area 285 cm^2 (PSA ITC, Xpeng G6) and 270 cm^2 (Huber, VW ID.3).",
+        "technology": "FR4 (engineering judgement); the BJB measurement board sits in the HV domain next to contactors / pre-charge (IVT-type sensors are placed in the PDU / BJB / HV box).",
+        "laminate": "not published in any source found",
+        "boards": "Master BCU + BJB/BDU electronics. BYD Blade: BMU has no separate shell, embedded in the BDU; BDU holds two main contactors, a BYD-made shunt current sensor and a 400 A fuse. NXP HVBMS reference: separate BMU (RD-K344BMU) and BJB (RD772BJBTPLEVB) boards. PHEVs commonly centralized (one board), BEVs master-slave.",
+        "basis": "size: https://www.yolegroup.com/strategy-insights/whats-in-the-box-xpeng-g6-vs-volkswagen-id3-a-bms-comparison-at-a-glance/ ; technology: https://www.eenewseurope.com/en/researcher-use-precision-shunt-based-current-measurement-for-battery-management/ ; boards: https://en.42how.com/2021/07/20/blade-battery-system-disassembly-1-electronic-and-electrical-design/ , https://www.nxp.com/design/designs/hvbms-reference-design-bundle-using-etpl:RD-HVBMSCTBUN , https://www.yolegroup.com/strategy-insights/whats-in-the-box-xpeng-g6-vs-volkswagen-id3-a-bms-comparison-at-a-glance/ ; layers: engineering judgement"
+      },
+      "placements": {
+        "range": "400-1,000 (BCU) plus 150-400 (BJB measurement board)",
+        "basis": "engineering judgement; no source found"
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU",
+          "examples": [
+            "Infineon AURIX SAK-TC234L (BYD Blade BMU; replaced MC9S12XET256MAL)"
+          ],
+          "source": "https://en.42how.com/?p=7235"
+        },
+        {
+          "role": "main MCU",
+          "examples": [
+            "NXP S32K344 (RD-K344BMU reference design)"
+          ],
+          "source": "https://nxp.com/RD-K344BMU"
+        },
+        {
+          "role": "main MCU",
+          "examples": [
+            "NXP MPC5775B (NXP BMS system block diagram)"
+          ],
+          "source": "https://www.nxp.com/assets/block-diagram/en/MPC5775B-BATTERYSYSTEM.pdf"
+        },
+        {
+          "role": "SBC / PMIC",
+          "examples": [
+            "NXP FS26 safety SBC (RD-K344BMU)",
+            "BYD Blade BMU moved from DC-DC + LDO to an SBC (part not named)"
+          ],
+          "source": "https://nxp.com/RD-K344BMU"
+        },
+        {
+          "role": "daisy-chain gateway / transceiver",
+          "examples": [
+            "NXP MC33665A (RD-K344BMU)"
+          ],
+          "source": "https://nxp.com/RD-K344BMU"
+        },
+        {
+          "role": "daisy-chain transceiver",
+          "examples": [
+            "ADI ADBMS6822 dual isoSPI, capacitor or transformer coupled (maker product page)"
+          ],
+          "source": "https://www.analog.com/en/products/ADBMS6822.html"
+        },
+        {
+          "role": "CAN transceiver",
+          "examples": [
+            "NXP TJA1145A (RD-K344BMU)"
+          ],
+          "source": "https://nxp.com/RD-K344BMU"
+        },
+        {
+          "role": "actuator / switch drivers, RTC, pressure sensor",
+          "examples": [
+            "NXP HB2000 H-bridge",
+            "NXP MC40XS6500 eXtreme switch",
+            "NXP PCA2131 RTC",
+            "NXP NBP8 pressure sensor (all RD-K344BMU)"
+          ],
+          "source": "https://nxp.com/RD-K344BMU"
+        },
+        {
+          "role": "BJB battery sensing",
+          "examples": [
+            "NXP MC33772C x2 (BS1, BS2) on the BJB board (RD772BJBTPLEVB)"
+          ],
+          "source": "https://www.nxp.com:443/docs/en/fact-sheet/HVBMSFS.pdf"
+        },
+        {
+          "role": "BJB monitor IC (current, voltage, temperature, pyro actuation)",
+          "examples": [
+            "NXP MC33777: 27-bit precision + 16-bit fast current ADCs, Hall input, pyro-switch actuation, ASIL-D"
+          ],
+          "source": "https://www.allaboutcircuits.com/news/nxps-battery-junction-box-ic-first-to-sense-think-act-one-chip/"
+        },
+        {
+          "role": "BJB / pack monitor IC",
+          "examples": [
+            "TI BQ79631-Q1: Pack+/fuse/charge/link voltages, shunt current ADC, insulation-resistance measurement, isolated daisy chain"
+          ],
+          "source": "https://ti.com/document-viewer/lit/html/SSZT082"
+        },
+        {
+          "role": "pack monitor IC",
+          "examples": [
+            "ADI LTC2949 current / voltage / charge monitor for HV packs"
+          ],
+          "source": "https://eepower.com/new-industry-products/current-voltage-and-charge-monitor-for-high-voltage-battery-packs/"
+        },
+        {
+          "role": "pyro-fuse driver",
+          "examples": [
+            "TI DRV3901-Q1 (BDU / BJB target applications)"
+          ],
+          "source": "https://electronicdesign.com/markets/automotive/article/21285251/electronic-design-squib-driver-ic-helps-ensure-rapid-ev-hev-battery-pack-cutoff"
+        },
+        {
+          "role": "pyro-fuse driver",
+          "examples": [
+            "ST L9965P single-channel pyro-fuse driver"
+          ],
+          "source": "https://www.st.com/en/power-management/l9965p.html"
+        },
+        {
+          "role": "insulation monitoring",
+          "examples": [
+            "TI TPSI2140-Q1 isolated switch + AMC1301-Q1 + OPA320-Q1 + SN6501-Q1 + TL4050B25-Q1 + TPS763-Q1 (TIDA-01513 automotive reference design)"
+          ],
+          "source": "https://www.ti.com/document-viewer/lit/html/TIDUDJ6"
+        },
+        {
+          "role": "insulation monitoring",
+          "examples": [
+            "TI TPSI2140-Q1 + AMC3330 + TPS7A24 + REF2033 + TLV6001 (TIDA-010232 reference design, EV charging / solar)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-010232"
+        },
+        {
+          "role": "pack current sensor",
+          "examples": [
+            "BYD self-made shunt current sensor (Blade BDU)"
+          ],
+          "source": "https://en.42how.com/2021/07/20/blade-battery-system-disassembly-1-electronic-and-electrical-design/"
+        },
+        {
+          "role": "pack current sensor",
+          "examples": [
+            "Isabellenhutte IVT-S shunt sensor module (Fraunhofer IISB automotive battery systems up to 1,000 V)"
+          ],
+          "source": "https://www.eenewseurope.com/en/researcher-use-precision-shunt-based-current-measurement-for-battery-management/"
+        },
+        {
+          "role": "pack current sensor",
+          "examples": [
+            "Infineon TLE4972-AE35D5 coreless Hall on the high side + low-side shunt (Infineon R 48V BATT SWITCH10)"
+          ],
+          "source": "https://www.mouser.hk/infineon-r-48v-batt-switch10-board"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Yole: What's in the box - Xpeng G6 vs Volkswagen ID.3, a BMS comparison",
+          "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-xpeng-g6-vs-volkswagen-id3-a-bms-comparison-at-a-glance/",
+          "finding": "BCUs differ mainly in board area (285 cm^2 PSA ITC vs 270 cm^2 Huber) and shape."
+        },
+        {
+          "title": "42how: Blade battery system disassembly 1 - electronic and electrical design",
+          "url": "https://en.42how.com/2021/07/20/blade-battery-system-disassembly-1-electronic-and-electrical-design/",
+          "finding": "Two main contactors, BYD-made shunt current sensor and a 400 A fuse; the BMU has no independent shell and is embedded in the BDU."
+        },
+        {
+          "title": "42how: Blade battery board revisited",
+          "url": "https://en.42how.com/?p=7235",
+          "finding": "BMU MCU is Infineon SAK-TC234L (was MC9S12XET256MAL); power moved from DC-DC + LDO to an SBC; 8 MB flash."
+        },
+        {
+          "title": "NXP RD-K344BMU / RD772BJBTPLEVB (reference designs, not production)",
+          "url": "https://nxp.com/RD-K344BMU",
+          "finding": "BMU: S32K344, FS26, MC33665A, HB2000, TJA1145A, PCA2131, NBP8, MC40XS6500. BJB: MC33772C battery sensing."
+        },
+        {
+          "title": "TI TIDA-01513 automotive HV and isolation-leakage measurement (reference design)",
+          "url": "https://www.ti.com/document-viewer/lit/html/TIDUDJ6",
+          "finding": "Insulation resistance to chassis via TPSI2140-Q1 switched resistor branches; AMC1301-Q1 isolated amplifier, SN6501-Q1 isolated supply."
+        },
+        {
+          "title": "TI: How to design an intelligent battery junction box (SSZT082)",
+          "url": "https://ti.com/document-viewer/lit/html/SSZT082",
+          "finding": "BJB voltage, temperature and current measurement, over-current detection, V/I synchronisation with BQ79631-Q1."
+        }
+      ]
+    },
+    {
+      "ecu": "BMS48",
+      "name": "48 V battery management system (MHEV)",
+      "function": "12-14S Li-ion cell monitoring, current sensing / coulomb counting and fast over-current disconnect of the 48 V pack.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "not published in any source found; 4 layers (engineering judgement)",
+        "size": "not published in any source found",
+        "technology": "FR4 (engineering judgement); the disconnect switch is a separate high-current board (Infineon reference: air-cooled, up to 300 A)",
+        "laminate": "not published in any source found",
+        "boards": "Hitachi 48 V pack: BMS board, relay and fuse integrated in the pack. NXP reference: one board with 14-cell BCC, on-board shunt current sensing, SBC and MCU plus a relay driver. Infineon reference: separate MOSFET switch + current-sense board.",
+        "basis": "https://www.hitachi.com/en/press/articles/2016/04/0420/ , https://nxp.com/design/design-center/development-boards-and-designs/RD33771-48VEVM , https://www.mouser.hk/infineon-r-48v-batt-switch10-board ; layers/laminate: engineering judgement"
+      },
+      "placements": {
+        "range": "200-500 (BMS board; MOSFET switch board extra)",
+        "basis": "engineering judgement; no source found"
+      },
+      "keyIcs": [
+        {
+          "role": "cell monitor + MCU + SBC",
+          "examples": [
+            "NXP MC33771 (14 cells), MPC574xP MCU, FS6501 SBC, on-board shunt (RD33771-48VEVM reference design)"
+          ],
+          "source": "https://nxp.com/design/design-center/development-boards-and-designs/RD33771-48VEVM"
+        },
+        {
+          "role": "disconnect switch gate driver + MOSFETs",
+          "examples": [
+            "Infineon 2ED4820-EM driving IAUT300N08S5N011 (R 48V BATT SWITCH10 reference board)"
+          ],
+          "source": "https://www.mouser.hk/infineon-r-48v-batt-switch10-board"
+        },
+        {
+          "role": "current sensor",
+          "examples": [
+            "Infineon TLE4972-AE35D5 coreless Hall (high side) + low-side shunt (R 48V BATT SWITCH10)"
+          ],
+          "source": "https://www.mouser.hk/infineon-r-48v-batt-switch10-board"
+        },
+        {
+          "role": "cell monitor",
+          "examples": [
+            "Infineon TLE9012DQU (launch names MHEV)"
+          ],
+          "source": "https://new-origin.infineon.com/cms/en/about-infineon/press/market-news/2022/INFATV202204-072.html"
+        },
+        {
+          "role": "chipset",
+          "examples": [
+            "Infineon ASIL-D 48 V BMS system solution (application page; coulomb counting, fast OCD disconnect)"
+          ],
+          "source": "https://infineon.com/cms/en/applications/automotive/powertrain-systems/mild-hybrid-48v-mhev/48V-Battery-Management-System-BMS"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "NXP RD33771-48VEVM (reference design, not production)",
+          "url": "https://nxp.com/design/design-center/development-boards-and-designs/RD33771-48VEVM",
+          "finding": "14-cell sensing, on-board shunt, FS6501 SBC, MPC574xP MCU, relay driver for contactor and fan."
+        },
+        {
+          "title": "Infineon R 48V BATT SWITCH10 (reference board, not production)",
+          "url": "https://www.mouser.hk/infineon-r-48v-batt-switch10-board",
+          "finding": "300 A 48 V protection switch: 2ED4820-EM, IAUT300N08S5N011 MOSFETs, TLE4972-AE35D5 + low-side shunt."
+        },
+        {
+          "title": "Hitachi Automotive Systems 48 V Li-ion pack (press)",
+          "url": "https://www.hitachi.com/en/press/articles/2016/04/0420/",
+          "finding": "Pack integrates BMS board, relay and fuse with the cells; ICs not named."
+        }
+      ]
+    },
+    {
+      "ecu": "IBS",
+      "name": "12 V intelligent battery sensor",
+      "function": "Shunt current, voltage and temperature of the 12 V battery; SoC / SoF / SoH for energy management over LIN (or CAN).",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Shunt in the load path at the negative terminal with a single-chip ASIC (Hella Gen II); NXP MM9Z1J638 puts MCU and analog IC in one package.",
+        "laminate": "not published in any source found",
+        "boards": "One small board in the battery-terminal clamp (Hella / Continental shunt-type IBS)",
+        "basis": "https://hella.com/resources-soe/assets/documents_global/2044_ki_ibs_generation_ii_12v_forvia_hella_en.pdf , https://www.hella.com/hella-sg/assets/media/J01213_Intelligent%20battery%20sensor%20%28IBS%29%2012%20V.pdf , https://www.continental-automotive.com/en-gl/Passenger-Cars/Safety-and-Motion/Products/Sensors/Battery-and-Current-Sensors/Intelligent-Battery-Sensor , https://www.electronicspecifier.com/products/sensors/freescale-introduces-first-can-based-intelligent-sensor-for-automotive-battery-monitoring/"
+      },
+      "placements": {
+        "range": "20-60",
+        "basis": "engineering judgement (single-chip ASIC/SoC, LIN transceiver if not integrated, filters, protection); no source found"
+      },
+      "keyIcs": [
+        {
+          "role": "battery sensor SoC",
+          "examples": [
+            "NXP MM9Z1J638 (S12Z MCU + SMARTMOS AFE, LIN 2.2 + msCAN; RD9Z1-638-12V reference design)",
+            "BM2EP not recommended for new designs, TM5EP replacement"
+          ],
+          "source": "https://nxp.com/cn/products/power-management/battery-management/battery-sensors/reference-design-mm9z1-638-12v-lead-acid-batterylin:RD9Z1-638-12V"
+        },
+        {
+          "role": "battery sensor SoC",
+          "examples": [
+            "NXP MM9Z1_638 family launch: external shunt at the negative terminal, series resistor to battery plus"
+          ],
+          "source": "https://www.electronicspecifier.com/products/sensors/freescale-introduces-first-can-based-intelligent-sensor-for-automotive-battery-monitoring/"
+        },
+        {
+          "role": "battery sensor SoC (older)",
+          "examples": [
+            "NXP MM912J637 / MM912I637 LIN battery monitor"
+          ],
+          "source": "https://nxp.com/docs/en/data-sheet/MM912_637D1.pdf"
+        },
+        {
+          "role": "battery sensor IC",
+          "examples": [
+            "Melexis MLX91231 shunt-based smart IVT sensor: current, voltage, temperature, 32 KB flash, LIN or UART"
+          ],
+          "source": "https://www.mouser.in/new/melexis/melexis-mlx91231-sensor"
+        },
+        {
+          "role": "battery sensor ASIC",
+          "examples": [
+            "Hella IBS Gen II single-chip ASIC with regulator, flash controller, LIN transceiver and I/V measurement (maker of the ASIC not named)"
+          ],
+          "source": "https://hella.com/resources-soe/assets/documents_global/2044_ki_ibs_generation_ii_12v_forvia_hella_en.pdf"
+        },
+        {
+          "role": "product (no IC named)",
+          "examples": [
+            "Continental / Aumovio shunt-type IBS"
+          ],
+          "source": "https://www.continental-automotive.com/en-gl/Passenger-Cars/Safety-and-Motion/Products/Sensors/Battery-and-Current-Sensors/Intelligent-Battery-Sensor"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Hella IBS Generation II 12 V (manufacturer technical brochure)",
+          "url": "https://hella.com/resources-soe/assets/documents_global/2044_ki_ibs_generation_ii_12v_forvia_hella_en.pdf",
+          "finding": "Shunt + single-chip ASIC (current, voltage, temperature), LIN output, negative-terminal mounting; 6-18 V, up to 500 Ah."
+        },
+        {
+          "title": "NXP RD9Z1-638-12V (reference design, not production)",
+          "url": "https://nxp.com/cn/products/power-management/battery-management/battery-sensors/reference-design-mm9z1-638-12v-lead-acid-batterylin:RD9Z1-638-12V",
+          "finding": "MM9Z1_638-based 12 V lead-acid IBS with LIN."
+        }
+      ]
+    }
+  ],
+  "boardCostEvidence": [
+    {
+      "claim": "Huber Automotive's VW ID.3 BMS Slave 4 is about 20% more expensive than PSA ITC's Xpeng G6 Slave 4 (Yole teardown; absolute figures paywalled).",
+      "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-xpeng-g6-vs-volkswagen-id3-a-bms-comparison-at-a-glance/"
+    }
+  ],
+  "notes": [
+    "No public absolute cost / ASP for a CMU, BMU, BJB board, 48 V BMS or IBS was found. NXP's RD-HVBMSCTBUN kit is listed by distributors at $2,699 - an evaluation-kit price, not a board cost, so it is not given as evidence.",
+    "Production CMU chip identity found only for BYD Blade (MAX17853). VW ID.3 / Xpeng G6 slave ICs, Tesla Model 3 BMB and the CATL Zeekr 001 CSC were searched without a named IC.",
+    "NXP claims the MC33777 cuts BJB monitoring component count by up to 80% (vendor claim): https://nxp.com/products/MC33777",
+    "ADI says its wBMS (GM Ultium) removes up to 90% of the pack wiring and up to 15% of pack volume (vendor claim): https://chargedevs.com/newswire/gm-to-debut-wireless-ev-battery-management-system/",
+    "Already priced in the catalogue (distributor, with observations) - not re-researched: BQ79616PAPRQ1, BQ79612PAPRQ1, BQ79656PAPRQ1, BQ79718BQPAPRQ1, BQ79600PWRQ1, MC33771CTA1AE, MC33772CTA1AE, MC33775ATA1AER2, MC33664ATL1EGR2, MC33665ATS4AE, ADBMS6830BCSWZ, ADBMS6815WCSWZ, ADBMS1818ASWAZ, ADBMS2950WFSCCSZ, LTC6813HLWE-1, LTC6811HG-1, LTC6820HMS, MAX17853, MAX17841B, L9963E-TR, L9963T-TR, TLE9012DQUXUMA1, TLE9015DQUXUMA1, TLE4972AE35D5XUMA1, MLX91220, ACS37002, TMCS1123, AMC1301, AMC1302, AMC3301, AMC3330, ISO1042, ISO7741, SN6501-Q1, SN6505B-Q1, UCC14240-Q1, DRV3946-Q1, S32K344, S32K358, TC375 / TC377 / TC387 / TC397, SAK-TC234LP-32F200F AC, FS26 (MFS2633), FS6500, TLF35584, TJA1145A, MPC5744P.",
+    "Not researched for price: MPS MP2797 (automotive orderable code not confirmed; MPS JP list price only), ADI ADBMS6834 (named by Yole; orderable code not found), NXP MM912J637 (superseded by MM9Z1_638), NXP HB2000 / MC40XS6500 / PCA2131 / NBP8 (support parts of the NXP reference BMU)."
+  ]
+}

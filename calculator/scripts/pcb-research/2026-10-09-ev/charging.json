@@ -1,0 +1,699 @@
+{
+  "domain": "ev-charging",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "NVHL080N120SC1",
+      "family": "NVHL080N120SC1",
+      "mfr": "onsemi",
+      "desc": "Automotive SiC MOSFET 1200 V 80 mOhm (11 kW OBC PFC + LLC, onsemi SEC-3PH-11-OBC-EVB)",
+      "category": "through_hole",
+      "pkg": "TO-247-3",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "NVHL080N120SC1",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 450,
+          "price": 8.97,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvhl080n120sc1-onsemi-1112062",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 250,
+          "price": 8.0,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/on-semiconductor/nvhl080n120sc1/mosfet-aec-q101-n-ch-1-2kv-to/dp/3018978",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Future lists the part as Not Recommended for New Designs (another Future listing showed $7.74 @450 with 0 stock). Digi-Key stocks the newer NVHL080N120SC1A (EUR 4.79 @510) - a different orderable code, not used."
+    },
+    {
+      "mpn": "FFSB3065B-F085",
+      "family": "FFSB3065B",
+      "mfr": "onsemi",
+      "desc": "Automotive SiC Schottky diode 650 V 30 A (onsemi 11 kW OBC kit)",
+      "category": "ic_soic",
+      "pkg": "D2PAK-3 (TO-263)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "FFSB3065B-F085",
+      "observations": [
+        {
+          "distributor": "Master Electronics",
+          "qty": 800,
+          "price": 3.63,
+          "currency": "USD",
+          "url": "https://masterelectronics.com/en/onsemi/ffsb3065bf085-60422714.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "The library names 'FFSH3065B'; onsemi's SEC-3PH-11-OBC-EVB announcement names FFSB3065B-F085 (D2PAK). Master: 800-unit reel, 0 stock, 18 wk. LCSC break 100+ $6.30 was read only on a datasheet-host page (not used). Future lists the non-F085 FFSB3065B at $3.13 @800 (different code, not used)."
+    },
+    {
+      "mpn": "SCTH35N65G2V-7AG",
+      "family": "SCTH35N65G2V-7AG",
+      "mfr": "STMicroelectronics",
+      "desc": "Automotive SiC MOSFET 650 V 45 A, 55 mOhm (STDES-7KWOBC totem-pole PFC)",
+      "category": "ic_soic",
+      "pkg": "H2PAK-7",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "SCTH35N65G2V-7AG",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 250,
+          "price": 7.65,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/stmicroelectronics/scth35n65g2v-7ag/mosfet-sic-650v-45a-h2pak/dp/3764233RL",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 500,
+          "price": 10.45,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/th35n",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Newark break read via FindChips. Digi-Key lists only the non-automotive SCTH35N65G2V-7 ($6.525 @1000) - not used."
+    },
+    {
+      "mpn": "LMG3522R030QRQSRQ1",
+      "family": "LMG3522R030-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 650 V 30 mOhm GaN FET with integrated driver and protection (TIDM-02013 OBC, PMP41078 HV-LV DC-DC)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-52 (RQS)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV"
+      ],
+      "observedMpn": "LMG3522R030QRQSTQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 25.46,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/LMG3522R030QRQSTQ1/21283875",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 24.59,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/LMG3522R030QRQSTQ1/21283875",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Priced on the small-reel sibling LMG3522R030QRQSTQ1 (cut tape @100, 250-unit reel); the R (large reel) code was not found at a distributor."
+    },
+    {
+      "mpn": "AMC3302QDWERQ1",
+      "family": "AMC3302-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive reinforced isolated amplifier +/-50 mV with integrated DC/DC (TIDM-02013 OBC)",
+      "category": "ic_soic",
+      "pkg": "SOIC-16 (DWE)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "AMC3302QDWERQ1",
+      "observations": [],
+      "notes": "No valid observation: Digi-Key China lists the 2,000 reel at CNY 60.116 INCLUDING 13% VAT (VAT-inclusive, not used); Cytech is a reference/RFQ broker; no Mouser/Digi-Key US listing found in 3 searches."
+    },
+    {
+      "mpn": "UCC21222QDRQ1",
+      "family": "UCC21222-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 4 A/6 A dual-channel basic isolated gate driver (TIDM-02013 OBC)",
+      "category": "ic_soic",
+      "pkg": "SOIC-16 (D)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "UCC21222QDRQ1",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.4072,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C1848357.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "LCSC 2,500 reel standard pack, 2 in stock. FindChips shows a Mouser (595-) row at $1.55 / $3.16 without its breaks - not used."
+    },
+    {
+      "mpn": "F280039CPZRQ1",
+      "family": "TMS320F280039C-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "C2000 TMS320F280039C-Q1 real-time MCU 120 MHz, 384 KB flash (single controller for PFC + CLLLC in TIDM-02013)",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-100 (PZ)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "F280039CPZRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1019,
+          "currency": "JPY",
+          "url": "https://www.mouser.jp/en/c/semiconductors/embedded-processors-controllers/?core=C28x",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser Japan tier JPY 1,019 @1,000 (JPY 1,822 @1), 1,000-unit reel. Mouser US breaks seen only via an aggregator ($6.43 @100) - not used."
+    },
+    {
+      "mpn": "F28P659DK8PTPQ1",
+      "family": "F28P659",
+      "mfr": "Texas Instruments",
+      "desc": "C2000 TMS320F28P659DK-Q1 dual C28x + CLA real-time MCU (alternative controller in TIDM-02013; F28P650DK in PMP41139)",
+      "category": "ic_tqfp",
+      "pkg": "HLQFP-176 (PTP)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV"
+      ],
+      "observedMpn": "F28P659DK8PTPQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 120,
+          "price": 13.64,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/F28P659DK8PTPQ1/22462747",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 520,
+          "price": 12.89,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/F28P659DK8PTPQ1/22462747",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Tray breaks; 0 stock, 12 wk lead time at the time read."
+    },
+    {
+      "mpn": "SPC58NN84E7RMHBR",
+      "family": "SPC58NN84E7",
+      "mfr": "STMicroelectronics",
+      "desc": "SPC58 N-line automotive MCU (STDES-7KWOBC 7 kW OBC controller)",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-176",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "SPC58NN84E7RMHBR",
+      "observations": [],
+      "notes": "No break >= 100 found: Farnell IE EUR 22.24 @50 (US$25.43 @50 on Farnell UK); Mouser lists the RMHBY code at $32.27 @1. Not used (below 100 units)."
+    },
+    {
+      "mpn": "SR5E1E770C30F00X",
+      "family": "SR5E1",
+      "mfr": "STMicroelectronics",
+      "desc": "Stellar E1 SR5E1E7 automotive MCU, Cortex-M7, 2 MB flash (ST 7 kW OBC reference in the library)",
+      "category": "ic_tqfp",
+      "pkg": "not read",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "SR5E1E770C30F00X",
+      "observations": [],
+      "notes": "Code taken from the ST eStore listing URL. Manufacturer list price only (ST eStore $17.66 @25) - not an observation. No franchised distributor listing found in 2 searches."
+    },
+    {
+      "mpn": "UCC21530QDWKRQ1",
+      "family": "UCC21530-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 4 A/6 A 5.7 kVrms reinforced isolated dual-channel gate driver (TIDA-020031 SiC full bridge)",
+      "category": "ic_soic",
+      "pkg": "SOIC-14 (DWK)",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC_HV"
+      ],
+      "observedMpn": "UCC21530QDWKRQ1",
+      "observations": [],
+      "notes": "No break readable: aggregators show Mouser 595-UCC21530QDWKRQ1 at $6.51 and a $2.73-$6.52 range without quantities; RS lists the tube code UCC21530QDWKQ1. Not used."
+    },
+    {
+      "mpn": "UCC27712QDRQ1",
+      "family": "UCC27712-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 620 V 1.8 A/2.8 A high-side/low-side gate driver (TIDA-020031)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC_HV"
+      ],
+      "observedMpn": "UCC27712QDRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 0.9015,
+          "currency": "USD",
+          "url": "https://findchips.com/search/ucc27712qdrq1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2500,
+          "price": 0.887,
+          "currency": "USD",
+          "url": "https://findchips.com/search/ucc27712qdrq1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Both 2,500-reel breaks read via FindChips (snapshot; stock 5,784 Digi-Key / 4,212 Mouser)."
+    },
+    {
+      "mpn": "UCC27524AQDGNRQ1",
+      "family": "UCC27524A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive dual 5 A low-side gate driver (TIDA-020031 synchronous rectifier drive)",
+      "category": "ic_soic",
+      "pkg": "HVSSOP-8 (DGN)",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC_HV"
+      ],
+      "observedMpn": "UCC27524AQDGNRQ1",
+      "observations": [],
+      "notes": "Only a Digi-Key Hong Kong page (HKD, out of stock, marked Not For New Designs; substitute UCC27524A1QDGNRQ1). No valid observation."
+    },
+    {
+      "mpn": "LM74801QDRRRQ1",
+      "family": "LM7480-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive ideal-diode / reverse-battery controller with load-dump protection (TIDA-020031 12 V output)",
+      "category": "ic_qfn",
+      "pkg": "WSON-12 (DRR)",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC_HV"
+      ],
+      "observedMpn": "LM74801QDRRRQ1",
+      "observations": [],
+      "notes": "Only Digi-Key 'punchouttest' storefronts (EUR 1.349 @3,000) - forbidden host in this round; sibling LM74800QDRRRQ1 is already priced in the catalogue."
+    },
+    {
+      "mpn": "INA293B3QDBVRQ1",
+      "family": "INA293-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive -4 V to 110 V high-side current-sense amplifier, gain 100 V/V (TIDA-020031 names INA293-Q1)",
+      "category": "ic_soic",
+      "pkg": "SOT-23-5",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC_HV"
+      ],
+      "observedMpn": "INA293B3QDBVRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 2.03069,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA293B3QDBVRQ1/13545360",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 3.0858,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C2864602.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "TIDA-020031 names the INA293-Q1 family, not its gain/variant; B3 is the variant with distributor prices found (A1 only on a punchouttest storefront). Representative, not the design's exact code."
+    },
+    {
+      "mpn": "LTC3752EUHJ-2#PBF",
+      "family": "LTC3752-2",
+      "mfr": "Analog Devices",
+      "desc": "Isolated synchronous forward controller with active clamp (12 V LDC controller in the Hyundai E-GMP ICCU per a forum investigation)",
+      "category": "ic_qfn",
+      "pkg": "QFN (UHJ)",
+      "aecq": false,
+      "ecuRoles": [
+        "DCDC_HV"
+      ],
+      "observedMpn": "LTC3752EUHJ-2#PBF",
+      "observations": [],
+      "notes": "No listing for LTC3752EUHJ-2 or -HUHJ-2 found in 2 searches. AEC-Q100 status not read in any source."
+    },
+    {
+      "mpn": "UCC25800AQDGNRQ1",
+      "family": "UCC25800-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive ultra-low-EMI open-loop LLC transformer driver for isolated bias (Wolfspeed CRD-22DD12N-U2)",
+      "category": "ic_soic",
+      "pkg": "HVSSOP-8 (DGN)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV"
+      ],
+      "observedMpn": "UCC25800AQDGNRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 7500,
+          "price": 1.3092,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/CC258",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key reel break read via FindChips (another snapshot: $1.5625 @5,000). Cytech reference prices not used."
+    },
+    {
+      "mpn": "UCC14131QDWNRQ1",
+      "family": "UCC14131-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 1.5 W isolated DC/DC bias module for SiC/IGBT gate-driver supplies",
+      "category": "ic_soic",
+      "pkg": "SSOP-36 (DWN)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV"
+      ],
+      "observedMpn": "UCC14131QDWNRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 5.96,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/UCC14131QDWNRQ1/22106940",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 750,
+          "price": 5.45,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/UCC14131QDWNRQ1/22106940",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1500,
+          "price": 5.33,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/UCC14131QDWNRQ1/22106940",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Named on TI's UCC14131EVM-070 (bias for GaN/Si/SiC/IGBT drivers), not in a production converter source. Sibling UCC14240-Q1 already priced."
+    },
+    {
+      "mpn": "TMS320F28027FPTQ",
+      "family": "TMS320F28027F",
+      "mfr": "Texas Instruments",
+      "desc": "C2000 Piccolo TMS320F28027F 60 MHz MCU with InstaSPIN (TIDA-01168 48 V/12 V voltage loop)",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-48 (PT)",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48"
+      ],
+      "observedMpn": "TMS320F28027FPTQ",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 4.5575,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C504368.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key HK page marks this code Automotive / AEC-Q100. Mouser rows only via aggregator without breaks ($7.75 / $10.74) - not used."
+    },
+    {
+      "mpn": "LTC3871HLXE#PBF",
+      "family": "LTC3871",
+      "mfr": "Analog Devices",
+      "desc": "100 V bidirectional PolyPhase synchronous buck/boost controller (48 V/12 V)",
+      "category": "ic_tqfp",
+      "pkg": "eLQFP-48",
+      "aecq": false,
+      "ecuRoles": [
+        "DCDC48"
+      ],
+      "observedMpn": "LTC3871HLXE#PBF",
+      "observations": [],
+      "notes": "Digi-Key shows a single-unit price only ($19.59); Newark/Mouser breaks were seen only on ciiva (not a price host) and Richardson RFPD is not on the franchised list. ADI 1ku list from $6.36 (manufacturer list price, not an observation). H-grade; AEC-Q100 not read."
+    },
+    {
+      "mpn": "TPS560200QDBVRQ1",
+      "family": "TPS560200-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 17 V 500 mA synchronous buck converter (TIDA-01168 auxiliary supply)",
+      "category": "ic_soic",
+      "pkg": "SOT-23-5",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48"
+      ],
+      "observedMpn": "TPS560200QDBVRQ1",
+      "observations": [],
+      "notes": "Only the commercial TPS560200DBVR was listed (Digi-Key $0.31 @3,000) - a different grade, not used."
+    },
+    {
+      "mpn": "XPQR3004PB,LXHQ",
+      "family": "XPQR3004PB",
+      "mfr": "Toshiba",
+      "desc": "Automotive 40 V 400 A N-ch MOSFET, 0.23 mOhm typ. (Toshiba 3 kW 48 V-12 V reference, 12 V side)",
+      "category": "ic_soic",
+      "pkg": "L-TOGL",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48"
+      ],
+      "observedMpn": "XPQR3004PB,LXHQ",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 200,
+          "price": 8.31,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/toshiba/xpqr3004pb-lxhq-o/mosfet-n-ch-400v-40a-750w/dp/4132235",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 500,
+          "price": 7.81,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/toshiba/xpqr3004pb-lxhq-o/mosfet-n-ch-400v-40a-750w/dp/4132235",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ",LXHQ is the AEC-Q101 suffix (Toshiba EU page). Farnell IE ex-VAT breaks."
+    },
+    {
+      "mpn": "XPW4R10ANB,L1XHQ",
+      "family": "XPW4R10ANB",
+      "mfr": "Toshiba",
+      "desc": "Automotive 100 V 70 A N-ch MOSFET, 3.4 mOhm typ. (Toshiba 3 kW 48 V-12 V reference, 48 V line switch)",
+      "category": "ic_soic",
+      "pkg": "DSOP Advance(WF)L 5x6",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48"
+      ],
+      "observedMpn": "XPW4R10ANB,L1XHQ",
+      "observations": [],
+      "notes": "No distributor listing found; Toshiba lists MOQ 5,000 for ,L1XHQ (AEC-Q101)."
+    },
+    {
+      "mpn": "TPD7106F",
+      "family": "TPD7106F",
+      "mfr": "Toshiba",
+      "desc": "Automotive high-side N-ch MOSFET gate driver IPD with reverse-connection protection (Toshiba 48 V-12 V reference, 12 V line)",
+      "category": "ic_soic",
+      "pkg": "SSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48"
+      ],
+      "observedMpn": "TPD7106F",
+      "observations": [],
+      "notes": "No distributor listing found; a datasheet listing shows status 'under development'."
+    },
+    {
+      "mpn": "QCA7005-AL33",
+      "family": "QCA7005",
+      "mfr": "Qualcomm",
+      "desc": "HomePlug Green PHY PLC modem for CCS / ISO 15118-3 (Hyundai Ioniq CCM; Foccci open controller)",
+      "category": "ic_qfn",
+      "pkg": "QFN-68",
+      "aecq": true,
+      "ecuRoles": [
+        "CCU"
+      ],
+      "observedMpn": "QCA7005-AL33",
+      "observations": [],
+      "notes": "Only broker listings (RC Freelance QCA7005-AL33-1 ~$9.52 @188+, PCX) - brokers not allowed; no Digi-Key/Mouser/Arrow/Avnet listing in 4 searches. Digi-Key lists QCA7000-AL3C ($6.925 @2,000) - a different (non-automotive) part. Foccci's hobby BOM quotes EUR 12 per QCA7005 (not a distributor price). AEC grade: the task's library says AEC-Q100 Grade 3; not confirmed in sources found."
+    },
+    {
+      "mpn": "QCA7006AQ",
+      "family": "QCA7006AQ",
+      "mfr": "Qualcomm",
+      "desc": "AEC-Q100 Grade 2 HomePlug Green PHY PLC modem, drop-in for QCA7005/QCA7000",
+      "category": "ic_qfn",
+      "pkg": "not read",
+      "aecq": true,
+      "ecuRoles": [
+        "CCU"
+      ],
+      "observedMpn": "QCA7006AQ",
+      "observations": [],
+      "notes": "No distributor listing found."
+    },
+    {
+      "mpn": "IS32CG5317-LQLA2",
+      "family": "CG5317",
+      "mfr": "Lumissil (ISSI)",
+      "desc": "AEC-Q100 Grade 2 HomePlug Green PHY transceiver, SPI/MII/RMII host (ISO 15118 / DIN 70121)",
+      "category": "ic_tqfp",
+      "pkg": "EP-LQFP-80",
+      "aecq": true,
+      "ecuRoles": [
+        "CCU"
+      ],
+      "observedMpn": "IS32CG5317-LQLA2",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 7.28,
+          "currency": "EUR",
+          "url": "https://www.mouser.bg/c/semiconductors/communication-networking-ics/ethernet-ics/?m=Lumissil",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser tape-and-reel listing of the automotive LQLA2, EUR 11.81 @1 to EUR 7.28 @1,000 (1,000 expected 3/4/2026). Digi-Key LQLA2 seen only on a punchouttest storefront (HKD) - not used. Newark lists the industrial IS31CG5317-LQLS3 ($8.37 @500) - not used."
+    },
+    {
+      "mpn": "MSE1022",
+      "family": "MSE1022",
+      "mfr": "Vertexcom",
+      "desc": "AEC-Q100 Grade 2 HomePlug Green PHY EVCC chip (with MSEX25-i companion), ISO 15118-3",
+      "category": "ic_qfn",
+      "pkg": "not read",
+      "aecq": true,
+      "ecuRoles": [
+        "CCU"
+      ],
+      "observedMpn": "MSE1022",
+      "observations": [],
+      "notes": "No distributor listing found (searches return only an unrelated LCSC MS1022)."
+    },
+    {
+      "mpn": "STM32F103RET6",
+      "family": "STM32F103RE",
+      "mfr": "STMicroelectronics",
+      "desc": "STM32F103RE Cortex-M3 72 MHz, 512 KB flash (host MCU on the Foccci open CCS controller)",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-64",
+      "aecq": false,
+      "ecuRoles": [
+        "CCU"
+      ],
+      "observedMpn": "STM32F103RET6",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 320,
+          "price": 6.5618,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/stm32f103ret6",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1120,
+          "price": 6.2809,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/stm32f103ret6",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 960,
+          "price": 5.75,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/stm32f103ret6",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Industrial (-40/85 C) code used by the open-source Foccci board, not an automotive part; production EVCCs use an automotive host MCU (not named in any source found). Breaks read via FindChips (tray)."
+    },
+    {
+      "mpn": "E3M0032120J2-TR",
+      "family": "E3M0032120J2",
+      "mfr": "Wolfspeed",
+      "desc": "Automotive 1200 V 32 mOhm SiC MOSFET (CRD-22DD12N-J2 22 kW bidirectional OBC DC/DC on IMS)",
+      "category": "ic_soic",
+      "pkg": "TO-263-7",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC"
+      ],
+      "observedMpn": "E3M0032120J2-TR",
+      "observations": [],
+      "notes": "Digi-Key price seen only on a punchouttest storefront ($19.48 @800, forbidden host); Richardson RFPD ($6.96 @800, 0 stock) is not on the franchised list. The two disagree 3x - no observation kept."
+    },
+    {
+      "mpn": "MCP14C1",
+      "family": "MCP14C1",
+      "mfr": "Microchip",
+      "desc": "Isolated SiC/IGBT gate driver, SOIC-8 WB reinforced / NB basic (Microchip OBC solution)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV"
+      ],
+      "observedMpn": "MCP14C1",
+      "observations": [],
+      "notes": "Microchip's product page lists it as 'Future Product'; no distributor listing found."
+    }
+  ]
+}

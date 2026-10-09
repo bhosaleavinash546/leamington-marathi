@@ -1,0 +1,559 @@
+{
+  "domain": "ev-power-components",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "MKP1848E66050JP4",
+      "family": "MKP1848e",
+      "mfr": "Vishay",
+      "desc": "DC-link MKP film capacitor 60 uF 500 VDC, 125 C, AEC-Q200 (line: DC-link film 450-500 V, 50-100 uF)",
+      "category": "through_hole",
+      "pkg": "Radial 4-lead, 37.5 mm pitch",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "ECOMP",
+        "PTC"
+      ],
+      "observedMpn": "MKP1848E66050JP4",
+      "observations": [],
+      "notes": "Representative: Vishay's AEC-Q200 DC-link series (MKP1848e, launched for automotive high-temp/humidity use), 500 VDC / 60 uF sits in the 450-500 V, 50-100 uF line; element14 lists it (no price in snippet). No franchised >=100 break found: KEMET C4AQLBW5500M3JK (50 uF 500 V AEC-Q200) element14 SG tiers (S$10.16 @1000) seen only via an OEMsTrade relisting (not a price host); Mouser MKP1848e 12 uF 500 V EUR 2.15 @100 seen on a category page without an MPN; TDK B32776G4506K000 (450 V 50 uF, RS) is non-automotive and being discontinued. 5 searches."
+    },
+    {
+      "mpn": "EZP-V80506MTS",
+      "family": "EZPV",
+      "mfr": "Panasonic",
+      "desc": "DC-link PP film capacitor 50 uF 800 VDC, 105 C, AEC-Q200",
+      "category": "through_hole",
+      "pkg": "Radial molded 4-lead",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "TINV",
+        "ECOMP"
+      ],
+      "observedMpn": "EZP-V80506MTS",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 12.3752,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/EZP-V80506MTS/11687429",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative: Panasonic EZPV is its automotive AEC-Q200 DC-link film series; 800 VDC / 50 uF is the 800-900 V class board-mount DC-link (Digi-Key lists AEC-Q200). Avnet $11.53 @1 only (not used). Also seen: TDK B32718P9506K000 (50 uF 900 V AEC-Q200) at Digi-Key with no price in snippet; TDK B32776H8276K000 (27 uF 700 V) Digi-Key NL EUR 4.47823 @1100 (700 V, not recorded); Future EZP-V80456MTC (45 uF, different part) $9.03 @250. KEMET C4AQ/C4AK: no >=100 break found."
+    },
+    {
+      "mpn": "B32032A4472M000",
+      "family": "B32032",
+      "mfr": "TDK",
+      "desc": "Y2 safety film capacitor 4.7 nF, 1 kVDC / Y2, PP metallized, AEC-Q200",
+      "category": "through_hole",
+      "pkg": "Radial 15 mm pitch, 18 x 5 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "TINV",
+        "ECOMP",
+        "PTC"
+      ],
+      "observedMpn": "B32032A4472M000",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.20778,
+          "currency": "EUR",
+          "url": "https://www.digikey.nl/en/products/detail/tdk/B32032A4472M000/9599216",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative: AEC-Q200 Y2 film cap (Digi-Key lists AEC-Q200 and Y2) for HV-to-chassis EMI filtering on OBC / DC-DC / inverter boards. Digi-Key NL taken as the ex-VAT EUR price; other Digi-Key EU sites read EUR 0.2052 (FI) to EUR 0.2884 (BE, likely VAT-incl.); Digi-Key SG SGD 0.33116 @1000 consistent. KEMET R41-T 4.7 nF Y2 AEC-Q200 at Mouser IN: no 1000 break captured. B32922C3104M000 (X2) already in catalogue."
+    },
+    {
+      "mpn": "C1210X103JDGACAUTO",
+      "family": "C1210X103JDGAC",
+      "mfr": "KEMET",
+      "desc": "MLCC 10 nF 1000 V C0G 5%, 1210, flexible termination, AEC-Q200 (HV snubber)",
+      "category": "passive_1206",
+      "pkg": "1210",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "TINV"
+      ],
+      "observedMpn": "C1210X103JDGACAUTO",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 100,
+          "price": 1.35,
+          "currency": "EUR",
+          "url": "https://de.farnell.com/en-DE/kemet/c1210x103jdgacauto/cap-aec-q200-0-01uf-1kv-mlcc-1210/dp/3131570RL",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 1.12,
+          "currency": "EUR",
+          "url": "https://de.farnell.com/en-DE/kemet/c1210x103jdgacauto/cap-aec-q200-0-01uf-1kv-mlcc-1210/dp/3131570RL",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 800,
+          "price": 207.0,
+          "currency": "JPY",
+          "url": "https://jp.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1871468",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative: KEMET AUTO-suffix 1 kV C0G snubber MLCC with flex termination (AEC-Q200), the 1-2 kV C0G line. Farnell DE ex VAT; RS JP ex tax. TDK CGA9 / Murata KCM not searched (budget)."
+    },
+    {
+      "mpn": "WSBS8518L0500JT",
+      "family": "WSBS8518",
+      "mfr": "Vishay Dale",
+      "desc": "Battery shunt 50 uOhm 5% 36 W, Power Metal Strip, 8518",
+      "category": "mechanical",
+      "pkg": "8518 bolt/solder shunt",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU",
+        "BMS48",
+        "IBS"
+      ],
+      "observedMpn": "WSBS8518L0500JT",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 952,
+          "price": 6.46075,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSBS8518L0500JT/6709526",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative 25-100 uOhm pack shunt: WSBE8518L1000JKA2 (100 uOhm) is already in battery.json, so the 50 uOhm WSBS8518 sibling family is priced here. AEC-Q200 status is from Vishay's WSBS8518 family literature, not shown in the search snippet - check. Isabellenhutte BVR is 0.2-3 mOhm; BSS / KVM (100 uOhm, AEC-Q200) and Bourns CSS2H-5930 (0.2-3 mOhm) gave no >=100 break. RS WSBM8518L0500JK GBP 25.04 @50 (below 100)."
+    },
+    {
+      "mpn": "CSS2H-3920R-1L00F",
+      "family": "CSS2H-3920",
+      "mfr": "Bourns",
+      "desc": "Metal-element current-sense resistor 1 mOhm 1% 8 W, 3920, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "3920 (3921)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "DCDC48",
+        "BSG_INV",
+        "BMS48"
+      ],
+      "observedMpn": "CSS2H-3920R-1L00F",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 1500,
+          "price": 0.424,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/bourns/css2h-3920r-1l00f/current-sense-res-0r001-1-8-w/dp/2576344",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative 0.5-2 mOhm 3920 shunt (Bourns CSS2H is the AEC-Q200 series; Farnell also lists a CSS2H-3920R-1L00FE variant flagged AEC-Q200 - check suffix). CSS2H-2512R-L500F and WSLP2512R0050FEA already priced. WSLP3921L5000FEA: LCSC $0.206 @1000 discarded as implausible (5x below Mouser $1.15 @1000, which was seen only via OEMsTrade)."
+    },
+    {
+      "mpn": "MLX91218LDC-AFV-503-RE",
+      "family": "MLX91218",
+      "mfr": "Melexis",
+      "desc": "IMC-Hall current sensor 400 kHz, dual OCD, 5 V ratiometric, SOIC-8 (busbar / U-shield, high current)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "OBC",
+        "DCDC_HV",
+        "BMS_BMU"
+      ],
+      "observedMpn": "MLX91218LDC-AFV-503-RE",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 2.49,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/7199949",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative coreless/busbar Hall sensor for 100-600 A: Melexis MLX91218 (automotive IMC-Hall, low/very-high/extra-high field variants up to 2000 A). Already priced and skipped: MLX91220, ACS724, ACS37002, TLE4972, TMCS1123 (catalogue); TLE4973, MLX91216, ACS37610 in drives.json. URL-to-MPN mapping from the search result order (Future p/7199949 = -AFV-503-RE reel); field-range variant not confirmed. Sibling MLX91218LDC-AFL-500-SP: Future $2.58 @100, $2.49 @750 (not recorded)."
+    },
+    {
+      "mpn": "DHAB S/124",
+      "family": "DHAB",
+      "mfr": "LEM",
+      "desc": "Dual-range open-loop Hall current sensor module 75 A / 500 A, 5 V, automotive BMS",
+      "category": "power_module",
+      "pkg": "Module, connector",
+      "aecq": false,
+      "ecuRoles": [
+        "BMS_BMU"
+      ],
+      "observedMpn": "DHAB S/124",
+      "observations": [
+        {
+          "distributor": "Newark",
+          "qty": 100,
+          "price": 47.25,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/HABS1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 500,
+          "price": 37.65,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/HABS1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative automotive current-sensor module: LEM DHAB is LEM's dual-range automotive battery-pack sensor (no AEC-Q designation for modules). Findchips row names Newark (DISTI# 46AM9032); tiers include US tariffs per the page, and DHAB S/137 shows identical tiers on the same page - verify. HAH1BV S/24 Digi-Key $24.44 (qty 1, not stocked) and HAH3DR 800-S07 (prior rounds) have no >=100 break; azcus.digikey.com pages not used."
+    },
+    {
+      "mpn": "UCC15240QDWNRQ1",
+      "family": "UCC15240-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 2.5 W isolated DC/DC bias module, integrated transformer, 21-27 V in, for SiC/IGBT gate drive",
+      "category": "power_module",
+      "pkg": "SO-MOD-36 (DWN)",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "OBC",
+        "DCDC_HV",
+        "ECOMP"
+      ],
+      "observedMpn": "UCC15240QDWNRQ1",
+      "observations": [],
+      "notes": "Representative: Murata MGJ2/MGJ6 and RECOM R24C2T25 are industrial (no AEC-Q found), so the AEC-Q100 gate-drive bias module is TI's; UCC14240QDWNRQ1 is already priced and UCC14131 is in charging.json, so the 2.5 W UCC15240-Q1 is the gap. No attributable >=100 break: a Mouser family-page table showing $7.88 @750 was seen but its page/URL could not be identified; Digi-Key UCC14x41 hits were punchouttest hosts only (forbidden). Mornsun CF0505XT-1WR3 (AEC-Q100 1 W) is general-purpose, not searched for price."
+    },
+    {
+      "mpn": "HCTSM80201AAL-E",
+      "family": "HCTSM8",
+      "mfr": "Bourns",
+      "desc": "AEC-Q200 SMD isolation transformer, HCT series, for push-pull isolated gate-drive / aux bias (SN6501 / SN6505)",
+      "category": "transformer",
+      "pkg": "SMD",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "OBC",
+        "DCDC_HV",
+        "BMS_BMU"
+      ],
+      "observedMpn": "HCTSM80201AAL-E",
+      "observations": [
+        {
+          "distributor": "Master Electronics",
+          "qty": 1250,
+          "price": 3.8,
+          "currency": "USD",
+          "url": "https://masterelectronics.com/en/bourns/hctsm80201aale-53134481.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Master Electronics",
+          "qty": 2500,
+          "price": 2.56,
+          "currency": "USD",
+          "url": "https://masterelectronics.com/en/bourns/hctsm80201aale-53134481.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative: Bourns HCTSM8 is an Automotive AEC-Q200 series intended for SN6501 / SN6505B / NXF6501-Q100 push-pull isolated supplies. Master MOQ 625, 14-week lead time; large 1250->2500 step (merge clamps slope). Sibling HCTSM80101AAL-E (1:1, 250 uH) seen only at a reseller ($3.155 @1000) and an unnamed findchips row ($3.14 @2000) - not recorded. Wurth 750-series not searched (budget)."
+    },
+    {
+      "mpn": "IHLP6767GZER100M5A",
+      "family": "IHLP-6767GZ-5A",
+      "mfr": "Vishay Dale",
+      "desc": "Power inductor 10 uH 20% 16 A, IHLP-6767GZ-5A (automotive grade), SMD 17 x 17 mm",
+      "category": "passive_0805",
+      "pkg": "SMD 6767",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48",
+        "DCDC_HV",
+        "OBC",
+        "BSG_INV"
+      ],
+      "observedMpn": "IHLP6767GZER100M5A",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 200,
+          "price": 1.62,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/7144630",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 1000,
+          "price": 1.57,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/7144630",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "SUBSTITUTE: a high-current automotive (IHLP-5A = AEC-Q200) SMD DC-DC inductor, not a PFC/LLC choke; no PFC/LLC choke with a franchised break was found. Coilcraft AGP4233 (AEC-Q200 Grade 1 flat-wire, 6.8-470 uH, to 101.8 A) is priced only on Coilcraft's own store ($8.90 @1000, $7.64 @2500 - maker list, not an observation); Wurth WE-HCFT only at qty <=50. Another Future snapshot shows $1.52 @200."
+    },
+    {
+      "mpn": "ACM12V-701-2PL-TL00",
+      "family": "ACM12V",
+      "mfr": "TDK",
+      "desc": "Common-mode choke 700 Ohm @100 MHz, 8 A, 80 VDC, 2-line, AEC-Q200 (DC power line)",
+      "category": "transformer",
+      "pkg": "SMD 12 x 11 x 6 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48",
+        "OBC",
+        "DCDC_HV",
+        "ECOMP"
+      ],
+      "observedMpn": "ACM12V-701-2PL-TL00",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 500,
+          "price": 0.97806,
+          "currency": "USD",
+          "url": "https://www.avnet.com/apac/product/tdk/acm12v-701-2pl-tl00/arise-tdk-tdkacm12v-701-2pl/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "SUBSTITUTE: an AEC-Q200 automotive DC-power-line CMC rated 80 VDC / 8 A (12 V / 48 V side), not an HV choke - no HV / high-current CMC with an attributable franchised break was found. Avnet APAC currency taken as USD (not stated in snippet). Newark $0.973 @1000 seen without an attributable URL. Vishay ICMS2321-1A (AEC-Q200, to 30 A, 1500 VDC between coils, for OBCs) is the HV candidate: a findchips Digi-Key row for the ICMS2321 family ($2.975 @2520) did not name the MPN - not recorded."
+    },
+    {
+      "mpn": "NVH4L022N120M3S",
+      "family": "NVH4L022N120M3S",
+      "mfr": "onsemi",
+      "desc": "Automotive SiC MOSFET 1200 V 22 mOhm 68 A, M3S EliteSiC, TO-247-4L, AEC-Q101",
+      "category": "through_hole",
+      "pkg": "TO-247-4L",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "ECOMP"
+      ],
+      "observedMpn": "NVH4L022N120M3S",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 450,
+          "price": 16.07,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvh4l022n120m3s-onsemi-9191191",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative 1200 V automotive SiC discrete in TO-247-4 (AEC-Q101, OBC / DC-DC). Already priced and skipped: AIMW120R045M1, NVHL020N120SC1, C3M0032120K/C3M0075120K (industrial) in catalogue; NVHL080N120SC1, E3M0032120J2 in charging.json. A second Future listing (…-9189749) shows $14.97 @450 (not recorded twice); Digi-Key US $28.79 @30 (below 100)."
+    },
+    {
+      "mpn": "AIMZA75R016M1HXKSA1",
+      "family": "AIMZA75R016M1H",
+      "mfr": "Infineon",
+      "desc": "Automotive CoolSiC MOSFET 750 V 16 mOhm 89 A, PG-TO247-4, AEC-Q101",
+      "category": "through_hole",
+      "pkg": "PG-TO247-4",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "TINV",
+        "ECOMP"
+      ],
+      "observedMpn": "AIMZA75R016M1HXKSA1",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 100,
+          "price": 22.39,
+          "currency": "EUR",
+          "url": "https://ie.rs-online.com/web/p/mosfets/0348938",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative 650/750 V automotive SiC discrete (Infineon 750 V CoolSiC G1, AEC-Q101 per RS). Already priced and skipped: AIKW40N65DH5, SCTW35N65G2V (catalogue); AFGHL40T65SPD in drives.json. RS IE price ex VAT. Sibling AIMZA75R027M1HXKSA1: RS ZA R309.75 @100 (not recorded)."
+    },
+    {
+      "mpn": "BUK9Y8R5-80EX",
+      "family": "BUK9Y8R5-80E",
+      "mfr": "Nexperia",
+      "desc": "Automotive N-MOSFET 80 V 8.5 mOhm 100 A logic level, LFPAK56, AEC-Q101",
+      "category": "ic_soic",
+      "pkg": "LFPAK56 (SOT669)",
+      "aecq": true,
+      "ecuRoles": [
+        "DCDC48",
+        "BMS48",
+        "BSG_INV",
+        "PTC"
+      ],
+      "observedMpn": "BUK9Y8R5-80EX",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 1500,
+          "price": 0.6389,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/buk9y8r5-80ex",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 12000,
+          "price": 0.617,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/buk9y8r5-80ex",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1500,
+          "price": 0.7724,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/buk9y8r5-80ex",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative 80 V AEC-Q101 MOSFET for 48 V auxiliary switching (Nexperia BUK9 / BUK7 automotive). The high-current 48 V parts IAUT300N08S5N014 and IAUS240N08S5N019 are already priced in battery.json / drives.json. BUK7S1R2-80M (LFPAK88) is in Development status; BUK7Y3R1-80MX only on element14.cn (CNY 8.85 @1000, host not accepted) and a broker. Digi-Key $0.5455 @4500 also on the page (not recorded, 3-obs limit)."
+    },
+    {
+      "mpn": "TPSI3050QDWZRQ1",
+      "family": "TPSI3050-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 5 kVrms reinforced isolated switch driver with integrated 10 V gate supply (solid-state precharge / HV relay replacement)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8 (DWZ)",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU",
+        "OBC",
+        "PTC"
+      ],
+      "observedMpn": "TPSI3050QDWZRQ1",
+      "observations": [],
+      "notes": "Representative solid-state precharge / HV isolator (TI TPSI3050-Q1 drives back-to-back MOSFETs in place of a precharge relay). No valid franchised break: Lion Circuits (not franchised); Digi-Key only on punchouttest.digikey.kr (sibling TPSI3052QDWZRQ1 KRW 3,429.93 @1000 - forbidden host). Relay alternative TE Mini K HV 2-1904058-5 (450 VDC, PCB) Digi-Key $63.22 @1 only; Panasonic AEV14024 is chassis-mount (AEV14012 contactor already priced)."
+    },
+    {
+      "mpn": "0885002.DR",
+      "family": "885 Nano2",
+      "mfr": "Littelfuse",
+      "desc": "SMD fuse 2 A 500 VDC, Nano2 885 series, high interrupting rating, AEC-Q200",
+      "category": "fuse_tvs",
+      "pkg": "SMD Nano2",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "BMS_BMU",
+        "PTC"
+      ],
+      "observedMpn": "0885002.DR",
+      "observations": [],
+      "notes": "Representative board-level HV fuse: Littelfuse 885 series is a 500 VDC SMD fuse meeting AEC-Q200 (some ratings 450 VDC). No franchised >=100 break found: Novapart / Cytech are not franchised (0885001.DR $4.76 @1000 reference); Digi-Key pages only on azcus/punchouttest hosts. Larger PCB-mount HV fuses (526 series 500 VDC 10x32 AEC-Q200 for OBC/PDU; 827/828 series 800/1000 VDC AEC-Q200) gave no distributor price."
+    },
+    {
+      "mpn": "2103124-2",
+      "family": "HVA 280",
+      "mfr": "TE Connectivity",
+      "desc": "HVA 280 automotive HV 2-position PCB header, 10.4 mm pitch, shrouded, through-hole",
+      "category": "through_hole",
+      "pkg": "THT header 2-pos",
+      "aecq": false,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "ECOMP",
+        "PTC"
+      ],
+      "observedMpn": "2103124-2",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 100,
+          "price": 5.56,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/te-connectivity/2103124-2/automotive-housing-header-2pos/dp/3394011",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative HV board connector (TE HVA 280 board-side header; connectors carry no AEC-Q). Farnell UK ex VAT. 2103124-4: aggregator snapshot (electronicsdatasheets, not a price host) Digi-Key $7.35 / Mouser $11.83, qty unstated. HVP 800 headers (e.g. 2-2322122-2): no distributor price found - treat as quote-only."
+    },
+    {
+      "mpn": "AMC1350QDWVRQ1",
+      "family": "AMC1350-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive reinforced isolated amplifier, +/-5 V input, differential output (HV voltage sensing)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8 (DWV)",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DCDC_HV",
+        "TINV",
+        "BMS_BMU"
+      ],
+      "observedMpn": "AMC1350QDWVRQ1",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 4.0416,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C5214206.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative isolated amp for HV sensing not yet catalogued. Already priced and skipped: AMC1311B, AMC3330, AMC1302, AMC1301 (catalogue); AMC3301 (6 Oct); AMC3302, AMC0386 in EV files. Digi-Key CN CNY 38.42189 @1000 includes 13% VAT (not recorded). AMC3311QDWERQ1: Digi-Key CN VAT-incl. and punchouttest only."
+    },
+    {
+      "mpn": "TPSI2072QDWQRQ1",
+      "family": "TPSI2072-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive 600 V 50 mA dual-channel isolated solid-state relay (insulation-resistance monitoring)",
+      "category": "ic_soic",
+      "pkg": "SOIC-11 (DWQ)",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS_BMU",
+        "OBC"
+      ],
+      "observedMpn": "TPSI2072QDWQRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 3.11609,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPSI2072QDWQRQ1/21298724",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative isolation-monitoring part on a 400 V pack: TI's TPSI2072-Q1 SSR switches the measurement resistor ladder for insulation-resistance monitoring (no dedicated IMD IC with a distributor price was found). TPSI2140QDWQRQ1 (1400 V, 800 V packs) already in battery.json; TPSI2240-Q1 not found at a distributor. Digi-Key: not stocked, T&R only. Bender iso165C module not searched (budget)."
+    }
+  ]
+}

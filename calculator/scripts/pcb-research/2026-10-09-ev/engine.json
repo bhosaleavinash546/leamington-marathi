@@ -1,0 +1,516 @@
+{
+ "domain": "ev-engine",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "TLE8888QKXUMA1",
+   "family": "TLE8888",
+   "mfr": "Infineon",
+   "desc": "Engine management system IC, 4-cylinder: supplies, CAN + LIN, 29 power outputs (injectors, ignition pre-drivers, relays, stepper)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "TLE8888QKXUMA1",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 15.6,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/tle8888qkxuma1-infineon-3182676",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 11.645,
+     "currency": "USD",
+     "url": "https://il.farnell.com/infineon/tle8888qkxuma1/engine-machine-system-ic-40to150deg/dp/3514465",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "TLE8888QK (not the obsolete TLE8888-1QK, whose code TLE88881QKXUMA1 earlier rounds could not price). Future $15.60 @1,000 (0 stock, 8 wk); Farnell (US$ store) $11.645 @100, 30k in stock - wide spread between the two. IBS Electronics $15.79 @1,000 not recorded (not franchised)."
+  },
+  {
+   "mpn": "MC33PT2000AFR2",
+   "family": "MC33PT2000",
+   "mfr": "NXP",
+   "desc": "Programmable direct-injection / solenoid pre-driver (PT2000), 3/4/6-cylinder",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "MC33PT2000AFR2",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 11.6,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/mc33pt2000afr2/NXP-Semiconductors",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 11.9748,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/mc33pt2000afr2/NXP-Semiconductors",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Breaks read on the Findchips detail page naming Mouser and Digi-Key (Digi-Key temporarily out of stock). The task's 'MC33PT2000AE' is not a listed code; the orderable codes are MC33PT2000AF (tray) / AFR2 (reel). Same aggregator shows Mouser tray MC33PT2000AF $9.50 @10,000 (not recorded - other packing). Digi-Key CN CNY 95.77 @2,000 incl. 13% VAT not recorded."
+  },
+  {
+   "mpn": "MCZ33810EKR2",
+   "family": "MC33810",
+   "mfr": "NXP",
+   "desc": "Engine control IC: 4 low-side injector drivers + 4 IGBT / MOSFET gate pre-drivers (ignition), SPI",
+   "category": "ic_soic",
+   "pkg": "SOIC-32 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM",
+    "IGN"
+   ],
+   "observedMpn": "MCZ33810EKR2",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 5.22,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/mcz33810ekr2-nxp-9081189",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "The French Future page shows $5.60 at the same 1,000 break (recorded once, the English page). Newark $5.74 @1,000 seen only via OEMsTrade (not an allowed host). Mouser single-piece $7.86-9.72 only (Flux.ai snapshots). 16 wk lead time."
+  },
+  {
+   "mpn": "TLE82422LXUMA2",
+   "family": "TLE8242-2L",
+   "mfr": "Infineon",
+   "desc": "8-ch low-side constant-current control pre-driver for transmission / variable-force solenoids, SPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "TCM"
+   ],
+   "observedMpn": "TLE82422LXUMA2",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1900,
+     "price": 8.3,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--system-management--current-monitors/tle82422lxuma2-infineon-2063326",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 9.3,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/infineon/tle82422lxuma2/predriver-contr-le-de-courant/dp/3155073",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Future $8.30 @1,900 (0 stock, 20 wk); Farnell FR EUR 9.30 @100 ex VAT. Farnell NO NOK 113.35 @1,900 not recorded (currency not accepted). Newark via Findchips showed $16.93 @1,900 but $8.73 @1 on the same page - inconsistent, not recorded. IBS $15.37 not franchised."
+  },
+  {
+   "mpn": "TLE92466EDXUMA1",
+   "family": "TLE92466ED",
+   "mfr": "Infineon",
+   "desc": "6-ch constant-current solenoid driver, integrated FETs and sense resistors, 0-1.5 A, dither, SPI with CRC (transmission / ESC / suspension)",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "TCM"
+   ],
+   "observedMpn": "TLE92466EDXUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 9.26,
+     "currency": "USD",
+     "url": "https://www.mouser.co.za/ProductDetail/726-TLE92466EDXUMA1",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 16850.44,
+     "currency": "KRW",
+     "url": "https://kr.rs-online.com/web/p/motor-driver-ics/2334401",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 5000,
+     "price": 16514,
+     "currency": "KRW",
+     "url": "https://kr.rs-online.com/web/p/motor-driver-ics/2334401",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Mouser full-reel break (multiples of 1,000); same break on mouser.co.uk GBP 7.59 and mouser.fi EUR 7.96 (recorded once). RS Korea stock no. 233-4401 (search summary ties it to this part; page title gives no MPN) KRW 16,850 @1,000 and 16,514 @5,000, labelled a reference price - about 30% above Mouser; check whether VAT is included."
+  },
+  {
+   "mpn": "ISL9V3040D3ST",
+   "family": "ISL9V3040",
+   "mfr": "onsemi",
+   "desc": "EcoSPARK 400 V N-channel ignition IGBT, 300 mJ SCIS, logic-level gate, coil-on-plug driver",
+   "category": "ic_soic",
+   "pkg": "DPAK (TO-252)",
+   "aecq": true,
+   "ecuRoles": [
+    "IGN",
+    "ECM"
+   ],
+   "observedMpn": "ISL9V3040D3ST",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 1.07,
+     "currency": "USD",
+     "url": "https://findchips.com/search/isl9v3040d3st",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 0.984,
+     "currency": "USD",
+     "url": "https://findchips.com/search/isl9v3040d3st",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 2500,
+     "price": 0.9126,
+     "currency": "USD",
+     "url": "https://findchips.com/search/isl9v3040d3st",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Findchips search page naming Mouser (512-ISL9V3040D3ST; also $0.939 @5,000) and Arrow (min 2,500, 15 wk; Arrow's description cites AEC-Q101). LCSC $0.7725 @1,000 out of stock, not recorded. Digi-Key prices seen were for ISL9V3040D3STV (different code)."
+  },
+  {
+   "mpn": "STGD18N40LZT4",
+   "family": "STGD18N40LZ",
+   "mfr": "STMicroelectronics",
+   "desc": "Internally clamped ~390 V ignition IGBT, 180 mJ SCIS, pencil-coil driver, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "DPAK",
+   "aecq": true,
+   "ecuRoles": [
+    "IGN"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "3 searches: no franchised-distributor break found. ST budgetary price US$1.6283 @1k (st.com) and ST eStore $0.76 @500 are maker prices (notes only). ST page lists stock at Farnell, Mouser, Digi-Key (Apr 2025) without breaks."
+  },
+  {
+   "mpn": "VB525SPTR-E",
+   "family": "VB525SP",
+   "mfr": "STMicroelectronics",
+   "desc": "VIPower smart ignition driver: Darlington output, coil current limit, collector clamp",
+   "category": "ic_soic",
+   "pkg": "PowerSO-10",
+   "aecq": false,
+   "ecuRoles": [
+    "IGN"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "2 searches: only broker / reseller reference prices (Cytech $6.47-8.20, Kynix $7.49); Findchips lists franchised distributors without prices; marked Not For New Designs / obsolete at some distributors. AEC-Q status not confirmed."
+  },
+  {
+   "mpn": "BTS500101TADATMA2",
+   "family": "BTS50010-1TAD",
+   "mfr": "Infineon",
+   "desc": "Power PROFET 12 V single smart high-side switch 1.0 mOhm (heater / high-current loads, glow-plug class)",
+   "category": "ic_soic",
+   "pkg": "TO-263-7",
+   "aecq": true,
+   "ecuRoles": [
+    "GPCU",
+    "DCU"
+   ],
+   "observedMpn": "BTS500101TADATMA2",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 17.309,
+     "currency": "MYR",
+     "url": "https://my.rs-online.com/web/p/power-switch-ics/2291772",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 4.847,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C2150443.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "RS Malaysia reel of 1,000 MYR 17,309 (17.309 each); LCSC $4.847 @100 (756 in stock). Mouser SG ladder ($5.12-5.56 near the top breaks) too unclear to record. Glow plugs are named for PROFET+2 / High Current PROFET and BTH50030, not for this code (Rutronik lists heaters). Sibling BTS50015-1TAD already priced."
+  },
+  {
+   "mpn": "TLE98932QKW62SXUMA1",
+   "family": "TLE9893-2QK",
+   "mfr": "Infineon",
+   "desc": "MOTIX 32-bit Arm Cortex-M3 BLDC MCU with integrated 3-phase gate driver and LIN, 248 kB flash",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "FPC"
+   ],
+   "observedMpn": "TLE98932QKW62SXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 5.33906,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE98932QKW62SXUMA1/20841977",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1900,
+     "price": 5.12,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE98932QKW62SXUMA1/20841977",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 3.63,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/microcontrollers/0348984",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key cut tape $5.339 @500 and reel $5.12 @1,900 (1,382 in stock, 26 wk); RS UK GBP 3.63 @1,000 ex VAT (RS IE EUR 4.94 @1,000 same break, recorded once). Named on Infineon REF_COOLANTPUMP150W (coolant, not fuel pump)."
+  },
+  {
+   "mpn": "S912ZVML12AMKH",
+   "family": "S12ZVML128",
+   "mfr": "NXP",
+   "desc": "S12 MagniV 16-bit MCU with integrated 3-phase gate driver and LIN PHY, 128 kB flash (S12ZVM-EFP fuel-pump reference design)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "FPC"
+   ],
+   "observedMpn": "S912ZVML12AMKH",
+   "observations": [
+    {
+     "distributor": "Avnet",
+     "qty": 800,
+     "price": 4.95,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/nxp/s912zvml12amkh/evolve-52749808",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 12800,
+     "price": 4.225,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/nxp/s912zvml12amkh/evolve-52749808",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Avnet Americas tray: $4.95 @800 (min) to $4.225 @12,800; 0 stock, 112 wk factory lead time. The reference design names 'S12ZVML128' (no orderable suffix); AMKH is a current 128 kB ZVML code (Digi-Key lists AMKHR reel, no price found). Future's S912ZVMC12F3MKH ($4.09 @150) is the CAN variant, not recorded."
+  },
+  {
+   "mpn": "BUK7J1R4-40HX",
+   "family": "BUK7J1R4-40H",
+   "mfr": "Nexperia",
+   "desc": "40 V N-channel MOSFET 1.4 mOhm, LFPAK56E, AEC-Q101 (fuel-pump BLDC bridge)",
+   "category": "ic_qfn",
+   "pkg": "LFPAK56E (SOT1023)",
+   "aecq": true,
+   "ecuRoles": [
+    "FPC"
+   ],
+   "observedMpn": "BUK7J1R4-40HX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 1.68,
+     "currency": "USD",
+     "url": "https://punchouttest.digikey.com.mx/en/products/detail/nexperia-usa-inc/BUK7J1R4-40HX/7669958",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Only usable listing is a Digi-Key 'punchouttest' (MX) storefront: $1.68 @1,500 reel, 0 stock - check against live Digi-Key. LCSC C458262 shows ~$1.51 @1,500 but its product-page URL was not in the results (only the datasheet PDF), so not recorded. Future implied $6.04 @1,500 ($9,060 / 1,500) is out of line, not recorded. IBS not franchised."
+  },
+  {
+   "mpn": "TPIC8101DWR",
+   "family": "TPIC8101",
+   "mfr": "Texas Instruments",
+   "desc": "Dual-channel engine knock / vibration sensor interface, SPI",
+   "category": "ic_soic",
+   "pkg": "SOIC-20",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "TPIC8101DWR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.0757,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/pic810",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key (SKU 296-15132-1-ND) $3.0757 @1,000 read on a Findchips search listing (snapshot date not shown). TI lists TPIC8101DWR as automotive; no separate -Q1 code found. Mouser $5.10 without a stated break, Digi-Key CN CNY 32.11 @1,000 incl. VAT - not recorded. fat.lcsc.com staging page ignored."
+  },
+  {
+   "mpn": "L9960TR",
+   "family": "L9960",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive H-bridge for DC-motor actuators (electronic throttle / valves), PowerSSO-36",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "L9960TR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.9659,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/L9960",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Engineering judgement pick for the ECM throttle H-bridge (the Wuling teardown shows the older ST L9929; no source names L9960 on a board). Digi-Key 497-L9960TR-ND $2.9659 @1,000 via Findchips; another Findchips row $2.6264 @1,000 / $2.4768 @16,000 names no distributor - not recorded."
+  },
+  {
+   "mpn": "MC33FS6520LAER2",
+   "family": "FS6520",
+   "mfr": "NXP",
+   "desc": "Safety system basis chip FS65 (buck VCORE, CAN FD + LIN), named on the MPC5777C engine-management evaluation system",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "MC33FS6520LAER2",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 2000,
+     "price": 5.293,
+     "currency": "USD",
+     "url": "https://il.farnell.com/nxp/mc33fs6520laer2/power-management-specialized-pmic/dp/4784773",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Board names MC33FS6520LAE (tray); priced on the reel code LAER2 (Farnell US$ store, 2,000+). Element14 AU tray ~AUD 7.85 @500 (currency not accepted); Findchips tray $5.34 @500 names no distributor. Sibling MC33FS6500NAER2 already priced."
+  },
+  {
+   "mpn": "MY9706",
+   "family": "MY9706",
+   "mfr": "Mysentech",
+   "desc": "NOx-sensor signal-conditioning chip: pump-cell drive, 14-bit ADC, heater control, SPI",
+   "category": "ic_soic",
+   "pkg": "SSOP-24",
+   "aecq": false,
+   "ecuRoles": [
+    "NOX"
+   ],
+   "observedMpn": "MY9706",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 116,
+     "price": 4.1756,
+     "currency": "USD",
+     "url": "https://lcsc.com/product-detail/Gas-Sensors_Mysentech-MY9706_C3025193.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Chinese merchant NOx ASIC (LCSC C3025193): $4.1756 @116 (largest break), 19 in stock; tube of 58. -40..125 C; AEC-Q100 qualification not stated in the sources (datasheet says ESD to automotive levels). Not known to be in Bosch / Continental / NGK units."
+  },
+  {
+   "mpn": "CJ125",
+   "family": "CJ125",
+   "mfr": "Bosch",
+   "desc": "Wide-band lambda-sensor (LSU4.x) interface IC, SPI",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "ECM"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "1 search: sold by Bosch directly (bosch-semiconductors.com invites direct orders); IBS lists Bosch 0272240104 'call for quote'. No franchised-distributor price. Successor CJ135 is not pin-compatible."
+  },
+  {
+   "mpn": "SAK-TC1766-192F80HL BD",
+   "family": "TC1766",
+   "mfr": "Infineon",
+   "desc": "TriCore 32-bit MCU 80 MHz, 1.5 MB flash (Bosch DCU17HD01 dosing control unit)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-176",
+   "aecq": true,
+   "ecuRoles": [
+    "DCU",
+    "ECM"
+   ],
+   "observedMpn": "SAK-TC1766-192F80HL BD",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 22.9642,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C538735.html",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 22.5507,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C538735.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "LCSC reference prices with 0 units in stock (reel of 500); legacy AUDO part. No Digi-Key / Mouser / Arrow break found. Companion SAK-CIC751-EOM16T not searched (not a distributor part found in any source)."
+  }
+ ],
+ "notes": [
+  "Already priced in the catalogue (distributor + observations), not re-researched: L9779WD-SPI-TR, MC33816AE, TLE8110EEXUMA2, TLE6240GP, SPC5777CCK3MME3, R7F702002AEABA-C#BC0 (RH850/E2M), AURIX TC2xx / TC3xx members (TC234LP, TC275TP, TC277TP, TC297TP, TC377TX, TC387QP, TC397XX), TLF35584QVVS2, SPC58NH92C3RMI0X, MPC5744P, BTS500151TADATMA2, TJA1100HNZ, TJA1145AT/FD/0Z and other CAN / LIN transceivers, KP236N6165XTMA1, TLE4966GHTSA1, TLE9201SGAUMA1.",
+  "Priced in this round by other domains, not repeated: L9788TR and L9301-TR (chassis.json), DRV3901QDGQRQ1 (battery.json).",
+  "Bosch in-house ICs (CY327, CY329, CJ135/136/138, CJ960, CJ970, CIC751) have no franchised-distributor listing; CJ125 is listed as researched with none."
+ ]
+}

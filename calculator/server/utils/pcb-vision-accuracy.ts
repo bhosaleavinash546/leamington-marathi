@@ -39,7 +39,8 @@ const lineTotal = (i: BomItem) => (Number(i.qty) || 0) * (Number(i.unitPriceGBP)
  * and plain single refs. Malformed ranges fall back to the raw token.
  */
 export function expandRefDes(refDes: unknown): string[] {
-  const raw = norm(refDes);
+  // "R1..R90", "C1~C90", "C1 - C90" are ranges too (they expanded to 0 or 2 designators — pipeline review F16).
+  const raw = norm(refDes).replace(/([A-Z]+\d+)\s*(?:\.\.|~|[-–]\s)\s*([A-Z]*\d+)/g, '$1-$2').replace(/([A-Z]+\d+)\s+[-–]\s*([A-Z]*\d+)/g, '$1-$2');
   if (!raw) return [];
   const out: string[] = [];
   for (const token of raw.split(/[,;/\s]+/).filter(Boolean)) {

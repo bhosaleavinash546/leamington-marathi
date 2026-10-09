@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runStage4, applyAutomotiveGrade, bomAtQty } from '../server/routes/pcb.js';
-import { computePCBCountryCost, PCB_COUNTRY_RATES, materialBurdenFor } from '../server/data/pcb-country-rates.js';
+import { computePCBCountryCost, materialBurdenFor } from '../server/data/pcb-country-rates.js';
 
 const R = JSON.parse(readFileSync('e2e/fixtures/pcb-radar-replies.json', 'utf8'));
 const QTY = 250_000;
@@ -35,7 +35,7 @@ describe('radar board, China, 250k, ASIL-C — every figure from the headline', 
     const ce = a.costEstimates as Record<string, number>;
     expect(ce.totalBOMCostGBP).toBeCloseTo(sum, 2);
     expect(ce.confirmedBOMCostGBP + ce.unverifiedBOMCostGBP).toBeCloseTo(ce.totalBOMCostGBP, 2);
-    expect(s4.selectedCountryBreakdown!.bomCostPerBoard).toBeCloseTo(ce.totalBOMCostGBP * PCB_COUNTRY_RATES.cn.components.priceMultiplier * (1 + materialBurdenFor(250000)), 2);
+    expect(s4.selectedCountryBreakdown!.bomCostPerBoard).toBeCloseTo(ce.totalBOMCostGBP * (1 + materialBurdenFor(250000)), 2);
   });
 
   it('the headline is the sum of its parts', () => {
@@ -64,7 +64,7 @@ describe('radar board, China, 250k, ASIL-C — every figure from the headline', 
       conformalCoatAreaCm2: s4.conformalCoatingCost > 0 ? Number(bs.widthMm) * Number(bs.heightMm) / 100 : 0,
       totalBOMCostGBP: bomAtQty(bom(), QTY, QTY), orderQuantity: QTY };
     const sc = computePCBCountryCost(input, 'cn');
-    applyAutomotiveGrade(sc, bs, as, 'ASIL-C', QTY, 'automotive_adas');
+    applyAutomotiveGrade(sc, bs, as, (s4.asil?.costed ?? 'ASIL-B') as never, QTY, 'automotive_adas');   // the level the costing used (F22: no named safety PMIC → ASIL-B)
     expect(sc.totalPerBoard).toBeCloseTo(bd0.totalPerBoard, 2);
   });
 

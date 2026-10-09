@@ -7,7 +7,8 @@
  * Its board facts (`pcb`) and placements are replaced by the research's when the research states a basis.
  * A new ECU is added and listed under every powertrain it names. A key-IC row with no source ("no source
  * found") is dropped — every claim must carry a URL or "engineering judgement". Teardown links and the
- * board-cost evidence travel with the entry / file. Nothing is invented here: the research file is the source.
+ * board-cost evidence ADD to what the library holds (the same link / claim once) — a later round never wipes an earlier
+ * round's evidence. Nothing is invented here: the research file is the source.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -19,7 +20,7 @@ const FILE = new URL('../server/data/pcb-ecu-library.json', import.meta.url);
 const sourced = (s: string) => /^https?:\/\/|engineering judgement/i.test(String(s ?? ''));
 
 export function mergeEcuResearch(lib: { ecus: Ecu[]; powertrains: Array<Record<string, unknown>>; notes?: string[]; sources?: string[]; [k: string]: unknown },
-                                 research: { researched: string; ecus: Ecu[]; boardCostEvidence?: Array<{ claim: string; url: string }>; notes?: string[] }) {
+                                 research: { domain?: string; researched: string; ecus: Ecu[]; boardCostEvidence?: Array<{ claim: string; url: string }>; notes?: string[] }) {
   const report = { updated: [] as string[], added: [] as string[], droppedKeyIcs: [] as string[] };
   for (const r of research.ecus) {
     const keyIcs = r.keyIcs.filter(k => {
@@ -35,7 +36,10 @@ export function mergeEcuResearch(lib: { ecus: Ecu[]; powertrains: Array<Record<s
       have.keyIcs.push(...keyIcs.filter(k => !seen.has(sig(k))));
       if (pcb) have.pcb = pcb;
       if (placements) have.placements = placements;
-      if (r.teardowns?.length) have.teardowns = r.teardowns;
+      if (r.teardowns?.length) {
+        const urls = new Set((have.teardowns ?? []).map(t => t.url));
+        have.teardowns = [...(have.teardowns ?? []), ...r.teardowns.filter(t => !urls.has(t.url))];
+      }
       have.name = r.name || have.name;
       report.updated.push(r.ecu);
     } else {
@@ -49,8 +53,13 @@ export function mergeEcuResearch(lib: { ecus: Ecu[]; powertrains: Array<Record<s
       report.added.push(r.ecu);
     }
   }
-  if (research.boardCostEvidence?.length) lib.boardCostEvidence = research.boardCostEvidence;
-  lib.notes = [...(lib.notes ?? []), ...(research.notes ?? []).map(n => `ADAS boards (${research.researched}): ${n}`)];
+  if (research.boardCostEvidence?.length) {
+    const have = (lib.boardCostEvidence ?? []) as Array<{ claim: string; url: string }>;
+    const seen = new Set(have.map(x => `${x.url}|${x.claim}`));
+    lib.boardCostEvidence = [...have, ...research.boardCostEvidence.filter(x => !seen.has(`${x.url}|${x.claim}`))];
+  }
+  const label = research.domain ?? 'board research';
+  lib.notes = [...(lib.notes ?? []), ...(research.notes ?? []).map(n => `${label} (${research.researched}): ${n}`)];
   const urls = research.ecus.flatMap(e => [...e.keyIcs.map(k => k.source), ...(e.teardowns ?? []).map(t => t.url)]).filter(u => /^https?:\/\//.test(u));
   lib.sources = [...new Set([...(lib.sources ?? []), ...urls])];
   return report;

@@ -1,0 +1,40 @@
+## TINV — Traction inverter (front / rear e-axle) [PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - main MCU: Infineon AURIX TC3x7 (logic board in Infineon HybridPACK Drive CoolSiC G2 eval kit)
+  - inverter control reference (NXP): NXP EV-INVERTERGEN3 control reference design
+  - isolated gate driver: Infineon 1EDI303xAS EiceDRIVER G3 (1EDI3026AS/1EDI3035AS 20 A, inverters >300 kW)
+  - power module: Infineon HybridPACK Drive CoolSiC G2; Wolfspeed SiC (300 kW TIDM-02014 reference)
+  - current sensor: Infineon TLE4972 coreless Hall
+
+## PCU — Hybrid power control unit (motor + generator inverters + boost converter) [HEV,PHEV]
+key ICs already in the library:
+  - controller ASIC + 2 MCUs (vector control of motor and generator, resolver, CAN): Toyota/Denso custom ASIC + 2 MCUs (Prius ZVW51)
+  - boost/inverter architecture: 2010 Prius PCU: inverter + boost converter (ORNL evaluation)
+
+## BSG_INV — 48 V belt starter-generator inverter/controller [MHEV]
+key ICs already in the library:
+  - half-bridge gate driver: Allegro AMT49502 (5.5–80 V, 12 V & 48 V BSG)
+  - isolated gate driver (5-phase BSG): TI UCC20225-Q1 (5 drivers: 3 stator + 2 rotor excitation)
+  - MCU + gate driver (published 48 V BSG prototype): Infineon TC1782 + TLE9180
+  - system solution guide (48 V starter-generator): onsemi BRD8212/D parts list
+
+## EBOOST — 48 V electric supercharger / e-booster controller [MHEV]
+key ICs already in the library:
+  - MCU + 3-phase gate driver + 80–100 V MOSFETs: AURIX TC2xx/TC3xx + motor gate driver
+
+## ECOMP — HV electric A/C compressor inverter [HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - MCU: TI C2000 TMS320F28003x (TIDM-02012, 5 kW, 400/800 V); Infineon TRAVEO T2G / PSoC 4
+  - isolated gate driver: TI UCC21530-Q1
+  - system solution: Infineon HV e-compressor application
+
+## PTC — HV PTC heater controller [PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - IGBT + isolated gate driver: onsemi FGH40T65 + NCV57000 (TND6319); ROHM RGS80TSX2DHR 1200 V IGBT (REF66011, 7 kW); TI UCC21551-Q1
+  - design considerations: TI PTC heater module app note
+
+## TMS — Thermal management controller / heat-pump controller [PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - MCU: NXP S32K3; Infineon TRAVEO T2G
+  - valve/EXV stepper and pump drivers: Infineon TLE94xxx; TI DRV8xxx-Q1
+

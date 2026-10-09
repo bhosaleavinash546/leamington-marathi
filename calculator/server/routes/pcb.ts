@@ -22,14 +22,15 @@ import {
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
+import { gateIdentities } from '../utils/pcb-identity.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { ecuLibrary } from '../utils/pcb-ecu-library.js';
-import { isNotFitted } from '../utils/pcb-price-catalogue.js';
+import { isNotFitted, cataloguePriceAt } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
 import { readBomImage, isBomImage } from '../utils/pcb-bom-image.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
 import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
-import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec } from '../utils/pcb-boardspec-stabilise.js';
+import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec, gateBoardEvidence } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
@@ -44,16 +45,32 @@ import { guardAsil, type AsilLevel, type AsilGuardResult } from '../utils/pcb-as
 // aggressive. NB: catalogue-grounded lines ignore this entirely (their price comes
 // straight from the catalogue/distributor at the order qty), so this now only
 // affects OCR-confirmed lines whose exact MPN isn't in the catalogue.
-const VOLUME_BOM_MULTIPLIERS: [number, number][] = [
-  [50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0],
-  [2500, 1.55], [5000, 1.28], [10000, 1.12], [25000, 1.05],
-  [50000, 1.02], [100000, 1.00],
+//
+// Pipeline review F6–F8 (9 Oct 2026): the tool's price tables (class ranges, named ranges) were labelled "at 100K"
+// but their evidence is distributor listings at 1k–28k, and the factor stepped 1.00 → 0.88 at exactly 100,000 parts
+// (a 4 % cliff on the headline) and was flat from 100k to 10M. The tables are now read as ~10k reel prices
+// (TABLE_BASIS_QTY, the middle of their evidence breaks — a stated assumption) and move with the parts bought along
+// the catalogue's own franchise curve (10k = 1k × 0.85, b = 0.0706), continuously, flat above 300k parts exactly as
+// catalogue lines are. Below 10k the prototype steps stay (re-based to 10k) and are interpolated, not stepped.
+export const TABLE_BASIS_QTY = 10_000;
+const TABLE_SLOPE_B = -Math.log(0.85) / Math.log(10);
+const TABLE_FLAT_ABOVE = 300_000;
+const PROTOTYPE_STEPS: [number, number][] = [
+  [50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0], [2500, 1.55], [5000, 1.28], [10000, 1.12],
 ];
-function getVolumeMultiplier(orderQty: number): number {
-  for (const [maxQty, mult] of VOLUME_BOM_MULTIPLIERS) {
-    if (orderQty <= maxQty) return mult;
+export function getVolumeMultiplier(orderQty: number): number {
+  const q = Math.max(1, orderQty || 1);
+  if (q >= TABLE_BASIS_QTY) return Math.round(Math.pow(Math.min(q, TABLE_FLAT_ABOVE) / TABLE_BASIS_QTY, -TABLE_SLOPE_B) * 100000) / 100000;
+  const base = PROTOTYPE_STEPS[PROTOTYPE_STEPS.length - 1][1];
+  if (q <= PROTOTYPE_STEPS[0][0]) return Math.round(PROTOTYPE_STEPS[0][1] / base * 100000) / 100000;
+  for (let i = 1; i < PROTOTYPE_STEPS.length; i++) {
+    const [q1, m1] = PROTOTYPE_STEPS[i - 1], [q2, m2] = PROTOTYPE_STEPS[i];
+    if (q <= q2) {
+      const t = (Math.log(q) - Math.log(q1)) / (Math.log(q2) - Math.log(q1));
+      return Math.round((m1 + (m2 - m1) * t) / base * 100000) / 100000;
+    }
   }
-  return 0.88; // >100K benefits from super-volume pricing
+  return 1;
 }
 
 // ── Cost confidence band ───────────────────────────────────────────────────
@@ -158,8 +175,14 @@ export function prepareBOMFromOCR(
 ): { bom: Array<Record<string, unknown>>; warnings: SanityWarning[] } {
   // The model's own "read off the chip" flag stands only where a real OCR marking agrees.
   const claims = verifyOcrClaims(rawBOM, icMarkings ?? []);
-  const rec = reconcileOcrMarkings(claims.bom, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
+  // A part number counts only with evidence — an agreeing OCR marking, the user's BOM file, or the user's
+  // correction; the model's own suggestion is shown, never priced (pipeline review F1, Oct 2026). Gated BEFORE the
+  // markings are attached, so a line carrying an invented number can still take the marking read on its chip.
+  const gated = gateIdentities(claims.bom);
+  const rec = reconcileOcrMarkings(gated.bom, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
   const warnings: SanityWarning[] = [];
+  if (gated.withheld.length) warnings.push({ code: 'PART_NUMBER_NOT_EVIDENCED', severity: 'warn',
+    message: `${gated.withheld.length} part number(s) were suggested by the AI but not read on a chip, in a BOM file or by you, so they are not priced from the catalogue (class range instead, to verify): ${gated.withheld.slice(0, 8).join(', ')}${gated.withheld.length > 8 ? ', …' : ''}.` });
   if (claims.revoked.length) warnings.push({ code: 'OCR_CLAIM_NOT_CONFIRMED', severity: 'warn',
     message: `${claims.revoked.length} line(s) were marked as read off the chip, but no marking the OCR stage read agrees: ${claims.revoked.slice(0, 10).join(', ')}${claims.revoked.length > 10 ? ', …' : ''}. Their part numbers are kept as readings to confirm.` });
   if (rec.attached.length) warnings.push({ code: 'OCR_MATCHED_BY_FUNCTION', severity: 'warn',
@@ -300,7 +323,32 @@ export function derivePlacementsFromBOM(bom: Array<Record<string, unknown>>, ass
     assemblyData.smtPlacements = smt;
   }
   if (bga > 0) assemblyData.bgaCount = Math.max(bga, Number(assemblyData.bgaCount) || 0);
-  if (th > 0 && !(Number(assemblyData.throughHoleJoints) > 0)) assemblyData.throughHoleJoints = th * 2;
+  // Through-hole and hand-soldered joints are counted from the BOM lines — qty × the pin count the package or
+  // description states, else 2 — never taken from the model's own total, which had no upper bound (5,000 joints added
+  // £63 to the radar board, pipeline review F4). The model's figures are kept for the record.
+  const pinsOf = (l: Record<string, unknown>) => {
+    const t = `${l.pkg ?? ''} ${l.description ?? ''} ${l.value ?? ''}`;
+    const m = /(\d{1,3})\s*[- ]?(?:pins?|ways?|pos(?:ition)?s?)\b/i.exec(t) ?? /\b(?:P?DIP|SIP|HDR)[- ]?(\d{1,3})\b/i.exec(t);
+    const p = m ? Number(m[1]) : 2;
+    return p >= 1 && p <= 200 ? p : 2;
+  };
+  let thJ = 0, manJ = 0;
+  for (const l of bom) {
+    if (l.notFitted === true || l.priceSource === 'not-fitted' || isNotFitted(l)) continue;
+    const ct = String(l.componentType ?? '');
+    const q = Math.max(0, Number(l.qty) || 0);
+    if (ct === 'through_hole') thJ += q * pinsOf(l);
+    else if (ct === 'manual_solder') manJ += q * pinsOf(l);
+  }
+  for (const [k, v, label] of [['throughHoleJoints', thJ, 'through-hole'], ['manualJoints', manJ, 'hand-soldered']] as const) {
+    const ai = Number(assemblyData[k]) || 0;
+    if (ai !== v) {
+      if (Math.abs(ai - v) > Math.max(2, 0.1 * Math.max(ai, v))) out.push({ code: 'JOINTS_FROM_BOM', severity: 'warn',
+        message: `${label} joints set to ${v} from the BOM lines (qty × stated pins, else 2; the AI reported ${ai}).` });
+      assemblyData[k === 'throughHoleJoints' ? 'aiThroughHoleJoints' : 'aiManualJoints'] = ai;
+      assemblyData[k] = v;
+    }
+  }
   return out;
 }
 
@@ -960,32 +1008,11 @@ function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlaceme
   };
 }
 
-// ── Program Pricing (volume-committed) vs Spot Correction ─────────────────────
-interface ProgramPricingResult {
-  spotBOMTotal: number;
-  programBOMTotal: number;
-  savingsGBP: number;
-  savingsPct: number;
-  annualProgramVolume: number;
-  pricingTier: 'distributor_spot' | 'blanket_order' | 'direct_contract' | 'tier1_contract';
-  multiplier: number;
-}
-function computeProgramPricing(bomTotal: number, orderQty: number, domain: string): ProgramPricingResult {
-  // The quantity field IS the annual volume (the PDF labels it so). It used to be
-  // multiplied by 4 — 250k/yr became a 1M "Tier-1 contract" and a −50% BOM.
-  const annualProgramVolume = orderQty;
-  let multiplier: number; let pricingTier: ProgramPricingResult['pricingTier'];
-  if (domain !== 'automotive_adas') { multiplier = 1.0; pricingTier = 'distributor_spot'; }
-  else if (annualProgramVolume >= 500_000) { multiplier = 0.50; pricingTier = 'tier1_contract'; }
-  else if (annualProgramVolume >= 200_000) { multiplier = 0.60; pricingTier = 'direct_contract'; }
-  else if (annualProgramVolume >= 50_000) { multiplier = 0.72; pricingTier = 'blanket_order'; }
-  else if (annualProgramVolume >= 10_000) { multiplier = 0.85; pricingTier = 'blanket_order'; }
-  else { multiplier = 1.0; pricingTier = 'distributor_spot'; }
-  const programBOMTotal = Math.round(bomTotal * multiplier * 100) / 100;
-  const savingsGBP = Math.round((bomTotal - programBOMTotal) * 100) / 100;
-  const savingsPct = bomTotal > 0 ? Math.round((1 - multiplier) * 100) : 0;
-  return { spotBOMTotal: Math.round(bomTotal * 100) / 100, programBOMTotal, savingsGBP, savingsPct, annualProgramVolume, pricingTier, multiplier };
-}
+// ── Program pricing ─────────────────────────────────────────────────────────
+// A "Program BOM saving" (×0.85 … ×0.50 by annual volume, printed as −15 … −50 %) was shown on screen and in the PDF
+// on top of catalogue prices already taken at the 100k–300k breaks: it counted volume twice and had no source
+// (pipeline review F20, removed with approval 9 Oct 2026). `programPricing` stays in the payload as null.
+type ProgramPricingResult = never;
 
 /**
  * Boards ordered, from a form field. parseInt read "1e7" (what a number input sends for 10,000,000) as 1 —
@@ -1215,7 +1242,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /TLF35584|TLF35577/i.test(m), label: 'Infineon TLF3558x automotive safety PMIC (ASIL-D)', price: '£2–6' },   // $2.54–3.70 @1k (2026-10-01)
   { test: m => /FS65|FS85|FS6500/i.test(m), label: 'NXP FS65/FS85 System Basis Chip (safety SBC)', price: '£2.50–7' },
   { test: m => /UJA117[0-9]|UJA1167/i.test(m), label: 'NXP UJA117x Mini SBC', price: '£1.80–5' },
-  { test: m => /BD9V100|BD9S400|ROHM/i.test(m), label: 'Rohm BD automotive PMIC', price: '£2–8' },
+  { test: m => /BD9V100|BD9S400/i.test(m), label: 'Rohm BD automotive PMIC', price: '£2–8' },   // not 'ROHM': a Rohm diode is not a PMIC (F11)
   { test: m => /RAA271|RAA272|ISL78/i.test(m), label: 'Renesas RAA/ISL automotive multi-rail PMIC', price: '£4–14' },
   { test: m => /TPS929|TPS928|TPS9264/i.test(m), label: 'TI TPS92x automotive LED driver', price: '£1.50–6' },
   { test: m => /TLE926|TLE4471|TLE7|TLS/i.test(m), label: 'Infineon TLE/TLS automotive voltage reg / SBC', price: '£0.60–4' },   // TLE9261 $1.95 @1k (2026-10-01)
@@ -1224,7 +1251,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /UCC5320|UCC5390|UCC2153/i.test(m), label: 'TI UCC isolated automotive gate driver', price: '£1.80–5' },
   { test: m => /ISO784|ISO774|DRV840|DRV862/i.test(m), label: 'TI ISO/DRV automotive driver', price: '£2–8' },
   { test: m => /BTS700|BTS600|BTS500/i.test(m), label: 'Infineon BTS automotive smart power switch', price: '£0.50–3' },   // BTS7008 $0.71–1.27 @1k (2026-10-01)
-  { test: m => /AUIPS|IPD|IPS200/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },
+  { test: m => /AUIPS|\bIPS[0-9]{3}/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },   // not 'IPD': that is a MOSFET series (F11)
   // ── Radar & RF (Automotive) ────────────────────────────────────────────────
   { test: m => /BGT60|BGT24|BGT12/i.test(m), label: 'Infineon BGT60/24 77GHz/24GHz radar frontend', price: '£18–80' },
   // Same range as the automotive system prompt — the two used to disagree (£25–90 here vs £9–22 there).
@@ -1235,7 +1262,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /77\s*(\/\s*79)?\s*GHZ[^,;]*(TRANSCEIVER|MMIC|FRONT)|RADAR (TRANSCEIVER|MMIC|FRONT[- ]?END)/i.test(m), label: '77 GHz radar transceiver MMIC (part not read; TEF810x-class)', price: '£9–22', generic: true },
   // ── Memory (Automotive) ────────────────────────────────────────────────────
   { test: m => /IS42S|IS43T|IS66W/i.test(m), label: 'ISSI automotive SDRAM/SRAM', price: '£1.50–8' },
-  { test: m => /K4A|K4B|K9F/i.test(m), label: 'Samsung automotive LPDDR/NAND (AEC-Q grade)', price: '£3–20' },
+  { test: m => /(^|[^A-Z0-9])(K4A|K4B|K9F)/i.test(m), label: 'Samsung automotive LPDDR/NAND (AEC-Q grade)', price: '£3–20' },
   { test: m => /MT41K|MT47H|MT25Q/i.test(m), label: 'Micron automotive DDR/Flash', price: '£2.50–15' },
   { test: m => /THGBM|THGLF/i.test(m), label: 'Kioxia automotive eMMC/NAND', price: '£3–18' },
   // Winbond's top marking drops the W: "winbond 25Q32JWSIQ".
@@ -1246,15 +1273,17 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /ESP32|ESP8266|ESP32-S/i.test(m), label: 'Espressif WiFi/BT SoC', price: '£0.50–2.20' },
   { test: m => /LAN9|LAN8|KSZ89|KSZ80/i.test(m), label: 'Microchip LAN/KSZ Ethernet IC', price: '£0.70–5' },
   { test: m => /MAX2043[0-9]|MAX2041[0-9]|MAX2002[0-9]|MAX2008[0-9]/i.test(m), label: 'Maxim/ADI automotive multi-output PMIC', price: '£2.50–6.50' },
-  { test: m => /MAX[0-9]{4}|MAX3|MAX4/i.test(m), label: 'Maxim/Analog interface IC', price: '£0.30–4.50' },
   { test: m => /TLV3|TLV6|TLV7/i.test(m), label: 'TI TLV comparator/op-amp', price: '£0.12–1.80' },
   { test: m => /LM317|LM358|LM741|LM324/i.test(m), label: 'TI/Fairchild classic linear IC', price: '£0.08–0.80' },
 ];
 
 /** The tool's stated 100K range for a BOM line it can name, for the grounding cap. */
 export function icKnownRange(line: { partNumber?: unknown; description?: unknown }, opts: { specificOnly?: boolean } = {}): { lo: number; hi: number; label: string; generic?: boolean } | null {
-  const text = `${String(line.partNumber ?? '')} ${String(line.description ?? '')}`.toUpperCase();
-  const hit = IC_PRICE_HINTS.find(h => h.test(text) && !(opts.specificOnly && h.generic));
+  // A NAMED range applies to the part number only — the description is the model's prose ("…for AURIX MCUs" put a
+  // TLF35585 in the £15–60 AURIX row; pipeline review F11). Only the generic function rows read the description.
+  const pn = String(line.partNumber ?? '').toUpperCase();
+  const text = `${pn} ${String(line.description ?? '')}`.toUpperCase();
+  const hit = IC_PRICE_HINTS.find(h => !(opts.specificOnly && h.generic) && (h.generic ? h.test(text) : pn.trim().length > 0 && h.test(pn)));
   if (!hit) return null;
   const m = /£\s*([0-9.]+)\s*[–-]\s*([0-9.]+)/.exec(hit.price);
   return m ? { lo: Number(m[1]), hi: Number(m[2]), label: hit.label, ...(hit.generic ? { generic: true } : {}) } : null;
@@ -1266,7 +1295,7 @@ export function markingLabel(marking: string): string | null {
   return IC_PRICE_HINTS.find(h => !h.generic && h.test(m))?.label ?? null;
 }
 
-/** icKnownRange scaled to the order volume — the table is stated at 100K. */
+/** icKnownRange scaled to the parts bought — the table is read at its ~10k evidence basis (TABLE_BASIS_QTY). */
 export function knownRangeAtVolume(volumeMultiplier: number) {
   return (line: Record<string, unknown>) => {
     const r = icKnownRange(line);
@@ -1600,22 +1629,34 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // and never applies the volume factor or the grading twice.
     if (Array.isArray(a.rawBom)) a.bom = JSON.parse(JSON.stringify(a.rawBom));
     else a.rawBom = JSON.parse(JSON.stringify(Array.isArray(a.bom) ? a.bom : []));
-    // The classifier's ASIL against the parts list (pcb-asil-guard.ts): ASIL-C/D is costed only
-    // with the safety hardware it needs, and a rationale the BOM contradicts is withheld.
-    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions,
-      bom: Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [] });
-    asilLevel = out.asil.costed as ASILLevel;
-    for (const n of out.asil.notes) warnings.push({ code: 'ASIL_CHECKED_AGAINST_BOM', severity: 'warn', message: n });
     // 2. One part, one line, whole-number quantities — across all the photos.
     const cons = consolidateBom(Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : []);
     warnings.push(...cons.warnings);
     // 3. OCR markings into the BOM; the model's "read off the chip" claims checked.
     const prepared = prepareBOMFromOCR(cons.bom, ocrResult.icMarkings, assemblyData);
     warnings.push(...prepared.warnings);
+    // The classifier's ASIL against the parts list (pcb-asil-guard.ts): ASIL-C/D is costed only
+    // with the safety hardware it needs — on EVIDENCED part numbers (gateIdentities, in prepareBOMFromOCR) — and a
+    // rationale the BOM contradicts is withheld.
+    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: prepared.bom });
+    asilLevel = out.asil.costed as ASILLevel;
+    for (const n of out.asil.notes) warnings.push({ code: 'ASIL_CHECKED_AGAINST_BOM', severity: 'warn', message: n });
     // 4. Placements from the list BEFORE the board is sized from them — the fab
     //    stabiliser and the assembly cost used to read two different counts.
     warnings.push(...derivePlacementsFromBOM(prepared.bom, assemblyData));
+    // A board figure the model says it read stands only with evidence (fab data, the user, or OCR board text).
+    for (const m of gateBoardEvidence(boardSpec, ocrResult.boardText ?? [])) warnings.push({ code: 'BOARD_FIGURE_NOT_EVIDENCED', severity: 'warn', message: m });
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
+    // What the cost model does NOT price, said on the result (pipeline review F14; cost-basis evidence of 9 Oct 2026 —
+    // scripts/pcb-research/2026-10-09-ev/evidence/cost-basis-evidence.json — found only low-confidence fabricator figures).
+    if (String(boardSpec.technologyType ?? '') === 'RF_MICRO' || /rogers|ptfe|ro4350|ro3003|teflon/i.test(`${boardSpec.laminate ?? ''} ${boardSpec.technologyType ?? ''}`)) {
+      warnings.push({ code: 'LAMINATE_NOT_COSTED', severity: 'warn',
+        message: 'An RF laminate (Rogers / PTFE / hybrid stack) is not costed: the fab price is FR4. Published fabricator figures (low confidence, not used) put a Rogers board 20–50 % above FR4 — get a fab quote.' });
+    }
+    if (Number(assemblyData.reflowSides) >= 2) {
+      warnings.push({ code: 'SECOND_SIDE_NOT_COSTED', severity: 'warn',
+        message: 'Double-sided reflow: the second side (stencil, set-up, reflow pass) is not costed — no sourced volume figure was found. The placements on both sides are costed.' });
+    }
     {
       const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', auto);
       if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
@@ -1687,7 +1728,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
       }
     }
     const grounded = groundAndSplit(bom, prices, knownRangeAtVolume(volumeMultiplier), { automotive: auto, volumeMultiplier });
-    bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false } : l)) as Array<Record<string, unknown>>;
+    bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false }
+      : l.qtyUnverified === true ? { ...l, needsVerification: true,
+        priceNote: `${l.priceNote ? `${String(l.priceNote)} · ` : ''}Quantity ${String(l.qty)} is the AI's count — no designators or chip markings show it; confirm` } : l)) as Array<Record<string, unknown>>;
     // What the OCR stage SAW against the parts list: a quantity that differs from the
     // chips read, a connector where only pads were seen. Flagged to verify, never changed.
     {
@@ -1764,7 +1807,6 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     setDeterministicCostEstimates(a, bd, bomTotal);
     // Panels that quote a "production" or "programme" figure start from the headline.
     out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0, a.bomSource === 'file' || a.bomSource === 'image');
-    out.programPricing = computeProgramPricing(bd.bomCostPerBoard, orderQty, domain);
     out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard);
 
     // Volume curves: include the analysed quantity, so the curve passes through the headline.
@@ -1824,6 +1866,12 @@ export function bomAtQty(lines: Array<Record<string, unknown>>, q: number, analy
     const lt = Number(l.lineTotalGBP) || 0;
     if (l.userCorrected === true || q === analysedQty) return t + lt;
     const n = Math.max(1, Number(l.qty) || 1);
+    // A catalogue line moves along ITS OWN breaks (the generic table moved it 13.6 % where its breaks say 5 %, so the
+    // curve disagreed with a re-run at that quantity — pipeline review F6); every other line along the table factor.
+    if (l.priceSource === 'catalogue' && l.livePriced !== true && l.catalogueMpn) {
+      const a = cataloguePriceAt(String(l.catalogueMpn), n * q), b = cataloguePriceAt(String(l.catalogueMpn), n * analysedQty);
+      if (a != null && b != null && b > 0) return t + lt * a / b;
+    }
     return t + lt * getVolumeMultiplier(n * q) / getVolumeMultiplier(n * analysedQty);
   }, 0) * 100) / 100;
 }

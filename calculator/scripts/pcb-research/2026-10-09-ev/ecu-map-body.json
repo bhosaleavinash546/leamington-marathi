@@ -1,0 +1,554 @@
+{
+  "domain": "ev-body",
+  "researched": "2026-10-09",
+  "ecus": [
+    {
+      "ecu": "BCM",
+      "name": "Body control module / body zone controller",
+      "function": "Switches and protects body loads (exterior and interior lamps, locks, wipers, heaters, horn, window and seat motors in some architectures) through smart high-side / low-side switches and motor drivers, reads switches, and talks CAN / CAN FD / LIN (and 100BASE-T1 on zonal designs). In zonal architectures it also distributes power as an electronic fuse box.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Production example: Tesla Model 3 body controllers act as both fuse boxes and body controllers with no fuses, relying on MOSFETs and current detection for protection (Ingineerix teardown as reported by Jalopnik). Other facts: not published in any source found.",
+        "laminate": "not published in any source found",
+        "boards": "Tesla Model 3 splits body control across three controllers: VCFRONT (behind the frunk), VCLEFT and VCRIGHT (footwells), each controlling the loads near it (Jalopnik on the Ingineerix teardown). VW ID.3: Continental ICAS1 server absorbs the former gateway and comprehensive body-domain functions (Continental, eeNews Europe). Board count of a conventional BCM: not published in any source found.",
+        "basis": "technology / boards: https://jalopnik.com/how-tesla-made-the-model-3-better-than-the-model-s-1828052113 , https://www.eenewseurope.com/en/central-server-takes-control-in-volkswagens-id-3/ ; layers, size, laminate: no teardown with these figures found (searched BCM teardowns in English and Chinese)"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "Munro describes the Model 3 Gen 1 body controller board as heavily populated but gives no count (https://leandesign.com/?p=2316); no public BCM component count found."
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + safety SBC + high-side switch + transceivers (NXP body controller concept, training deck Jan 2021)",
+          "examples": [
+            "NXP S32K3 MCU with FS26 / FS56 SBC, MC17XS6500 SPI high-side switch, TJA1145 CAN partial-networking transceiver, TJA1101 100BASE-T1 PHY (NXP body solution training deck; illustrative concept)"
+          ],
+          "source": "https://www.nxp.com.cn/docs/zh/training-reference-material/TIP-AUTOMOTIVE-BODY-SOLUTION-3.pdf"
+        },
+        {
+          "role": "MCU + SBC + switch + LIN/CAN (NXP evaluation board for zonal / body)",
+          "examples": [
+            "NXP S32K344 (257 MAPBGA) with FS26 safety SBC, SJA1105 Ethernet switch + 100BASE-T1, 4x CAN, 8x LIN, 4x high-side, 8x low-side, 2x H-bridge, NCK2910 RF receiver and NJJ29C2 LF driver for passive entry (S32K344-WB evaluation board, not a production BCM)"
+          ],
+          "source": "https://www.nxp.com/design/design-center/development-boards/automotive-development-platforms/s32k-mcu-platforms/s32k344-white-evaluation-board-for-automotive-general-purpose:S32K344-WB"
+        },
+        {
+          "role": "high-side / low-side drivers, LED driver, I/O expansion (TI BCM driver reference design)",
+          "examples": [
+            "TI TPS1H100-Q1 smart high-side switch, LM9061 and TPIC44H01 pre-FET drivers, TPL7407L 7-ch low-side array, TPS92630-Q1 3-ch linear LED driver, TCA9539-Q1 I/O expander, TXB0104-Q1, LMV341-Q1, TLV700 (TIDA-00296 reference design)"
+          ],
+          "source": "https://ti.com/tool/TIDA-00296"
+        },
+        {
+          "role": "zone controller MCU, PMIC, smart eFuses, Ethernet, load drivers (TI zone reference design)",
+          "examples": [
+            "TI AM263P4-Q1 MCU, TPS653860-Q1 safety PMIC, TPS2HCS10-Q1 smart eFuse, LM74900-Q1 ideal diode, DP83TG721S-Q1 1000BASE-T1 and DP83TD555-Q1 10BASE-T1S PHYs, DRV8245-Q1 H-bridge, TIC12400-Q1 switch detection (TIDA-020079 / TIDUFB5 reference design)"
+          ],
+          "source": "https://www.ti.com/lit/pdf/TIDUFB5"
+        },
+        {
+          "role": "smart fuse (TI reference design)",
+          "examples": [
+            "TI TPS1213-Q1 high-side switch controller + INA296B-Q1 current-sense amplifier + MSPM0L1306-Q1 MCU running I2t protection (TIDA-020065 reference design)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-020065"
+        },
+        {
+          "role": "MCU tiers and power switching (Infineon BCM portfolio)",
+          "examples": [
+            "Infineon AURIX for highly aggregated BCMs and BCM + gateway in one device; TRAVEO T2G as the price-optimised low end; PROFET smart switches, MOSFETs with gate drivers, half-bridge ICs and LED drivers replacing relays and fuses (Infineon application pages)"
+          ],
+          "source": "https://www.infineon.com/cms/en/applications/automotive/body-electronics-and-lighting/body-control-module-with-integrated-gateway/"
+        },
+        {
+          "role": "production body controller (Tesla Model 3 VCFRONT)",
+          "examples": [
+            "Tesla in-house ASICs plus an STMicroelectronics Power Architecture MCU and many discrete components (EE Times summary of the Ingineerix teardown; part numbers not given)"
+          ],
+          "source": "https://www.eetimes.com/inside-teslas-model-3/"
+        },
+        {
+          "role": "main MCU (already in the library)",
+          "examples": [
+            "NXP S32K344; NXP MPC574xB/C (task file)"
+          ],
+          "source": "engineering judgement"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Jalopnik: How Tesla made the Model 3 better than the Model S (Ingineerix teardown)",
+          "url": "https://jalopnik.com/how-tesla-made-the-model-3-better-than-the-model-s-1828052113",
+          "finding": "Body functions run by VCFRONT (behind the frunk), VCLEFT and VCRIGHT (footwells); the modules double as fuse boxes with no fuses, using MOSFETs and current detection."
+        },
+        {
+          "title": "EE Times: Inside Tesla's Model 3",
+          "url": "https://www.eetimes.com/inside-teslas-model-3/",
+          "finding": "One body controller board: many discrete components, Tesla ASICs and an STMicroelectronics Power Architecture chip (no part numbers)."
+        },
+        {
+          "title": "Ingineerix: Tesla Model 3 teardown of VCFRONT (video)",
+          "url": "https://www.youtube.com/watch?v=AVCHC2cw0v0",
+          "finding": "Video teardown of the front body controller; chip markings were not available in text form to this search."
+        },
+        {
+          "title": "Munro & Associates Model Y Episode 39: body controllers",
+          "url": "https://leandesign.com/?p=2316",
+          "finding": "Compares Model 3 (Gen 1, heavily populated) and Model Y body controller boards; Munro sees continual improvement on Model Y. No part list or count in the summary."
+        },
+        {
+          "title": "NXP S32K344-WB evaluation board (reference, not a production board)",
+          "url": "https://www.nxp.com/design/design-center/development-boards/automotive-development-platforms/s32k-mcu-platforms/s32k344-white-evaluation-board-for-automotive-general-purpose:S32K344-WB",
+          "finding": "S32K344 + FS26 + SJA1105, 4 CAN, 8 LIN, 4 HS / 8 LS drivers, 2 H-bridges, PEPS RF/LF; positioned for zonal aggregator / domain control."
+        }
+      ]
+    },
+    {
+      "ecu": "GW",
+      "name": "Central gateway / vehicle network processor",
+      "function": "Routes and filters messages between CAN / CAN FD / LIN / FlexRay and automotive Ethernet domains, hosts diagnostics (DoIP), secure boot / key storage, firewalling and OTA update orchestration; in newer vehicles merged with body-domain functions in a central server.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "not published in any source found",
+        "laminate": "not published in any source found",
+        "boards": "Reference designs: NXP MPC5748G-GW-RDB is one 'A-sample-like central gateway ECU' board; NXP S32G-VNP-RDB2 one board with 64 MB NOR, 32 GB eMMC, 4 GB LPDDR4. Production: VW ID.3 ICAS1 (Continental) replaces the gateway and body-domain ECUs, processor undisclosed. Production board count: not published in any source found.",
+        "basis": "https://www.nxp.com/docs/en/fact-sheet/MPC5748G-GW-RDB-FS.pdf , https://NXP.com/docs/en/fact-sheet/SG32VNPRDB2FS.pdf , https://www.eenewseurope.com/en/central-server-takes-control-in-volkswagens-id-3/"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public gateway teardown with a component count found."
+      },
+      "keyIcs": [
+        {
+          "role": "gateway MCU + sub-MCU + Ethernet switch + safety SBC + transceivers (NXP MPC5748G gateway reference design)",
+          "examples": [
+            "NXP MPC5748G (176 LQFP) with S32K144 sub-MCU, SJA1105Q 5-port Ethernet switch, FS6522 safety SBC (quick-start guide; the fact sheet block diagram labels it FS6500), TJA1044 / TJA1043T CAN FD, TJA1021T LIN, TJA1102 / TJA1100 100BASE-T1 PHYs; 8x CAN FD (12 with SPI expansion), 4x 100BASE-T1, 1x 100BASE-TX (MPC5748G-GW-RDB)"
+          ],
+          "source": "https://Community.freescale.com/docs/en/quick-reference-guide/MPC5748G-GW-QSG.pdf"
+        },
+        {
+          "role": "vehicle network processor + safety PMIC + switch + transceivers (NXP S32G reference design 2)",
+          "examples": [
+            "NXP S32G274A, VR5510 ASIL-D PMIC, SJA1110A switch, TJA1102 / TJA1102S PHYs, TJA1043 and TJA1463 CAN transceivers; 18x FlexCAN, 6x 100BASE-T1, 5x 1000BASE-T (S32G-VNP-RDB2)"
+          ],
+          "source": "https://www.mouser.in/new/nxp-semiconductors/nxp-s32g-reference-design-2/"
+        },
+        {
+          "role": "secure CAN transceiver (on some S32G-VNP-RDB2 revisions)",
+          "examples": [
+            "NXP TJA1153 (activation guide for listed board serial numbers)"
+          ],
+          "source": "https://community.nxp.com/t5/S32G/How-to-activate-TJA1153-PHY-on-RDB2-GoldBox/m-p/1369690"
+        },
+        {
+          "role": "service-oriented gateway chipset",
+          "examples": [
+            "NXP MPC5748G + LS1043A (MPC-LS vehicle network processing chipset, 2019 announcement)"
+          ],
+          "source": "https://www.globenewswire.com/news-release/2019/02/26/1742085/0/en/NXP-Enables-Service-Oriented-Gateways-for-Automakers-to-Unlock-Value-of-Connected-Vehicle-Data.html"
+        },
+        {
+          "role": "secure automotive Ethernet switch",
+          "examples": [
+            "Marvell 88Q5050 8-port switch (4x 100BASE-T1 + 4 configurable), integrated into NVIDIA DRIVE Pegasus (Marvell press)"
+          ],
+          "source": "https://www.marvell.com/company/newsroom/marvell-announces-integration-of-industrys-first-secure-automotive-ethernet-switch-into-nvidia-drive-pegasus.html"
+        },
+        {
+          "role": "central server processor (VW ID.3 ICAS1, production)",
+          "examples": [
+            "Continental declined to name the processor (eeNews Europe); a fan wiki lists Renesas R-Car M3 + RH850 co-processor - unofficial, not confirmed"
+          ],
+          "source": "https://www.eenewseurope.com/en/central-server-takes-control-in-volkswagens-id-3/"
+        },
+        {
+          "role": "BCM + gateway in one MCU (Infineon)",
+          "examples": [
+            "Infineon AURIX multicore running BCM and gateway applications in one device (Infineon application page)"
+          ],
+          "source": "https://www.infineon.com/cms/en/applications/automotive/body-electronics-and-lighting/body-control-module-with-integrated-gateway/"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "eeNews Europe: Central server takes control in Volkswagen's ID.3",
+          "url": "https://www.eenewseurope.com/en/central-server-takes-control-in-volkswagens-id-3/",
+          "finding": "ICAS1 replaces previous gateway functions plus comprehensive body-domain functions, OTA coordination and charging management; Continental would not name the processor."
+        },
+        {
+          "title": "Continental: Vehicle server connects VW ID. electric vehicles (press, 2019)",
+          "url": "https://continental.com/en/press/press-releases/2019-11-12-icas-vw",
+          "finding": "ICAS1 built on Continental's gateway experience; supplier press, no chip list."
+        },
+        {
+          "title": "NXP MPC5748G-GW-RDB fact sheet (reference design, not a production board)",
+          "url": "https://www.nxp.com/docs/en/fact-sheet/MPC5748G-GW-RDB-FS.pdf",
+          "finding": "A-sample-like central gateway: MPC5748G + S32K144 + SJA1105Q + ASIL-D SBC; 8x CAN FD, 4x 100BASE-T1, 100BASE-TX for DoIP; eMMC for OTA."
+        },
+        {
+          "title": "NXP S32G-VNP-RDB2 fact sheet (reference design)",
+          "url": "https://NXP.com/docs/en/fact-sheet/SG32VNPRDB2FS.pdf",
+          "finding": "S32G274A + VR5510 (ASIL D) + SJA1110A (ASIL B); 18 FlexCAN, 6x 100BASE-T1, 5x 1000BASE-T."
+        }
+      ]
+    },
+    {
+      "ecu": "SEAT",
+      "name": "Seat control module (power seat, memory, heating / ventilation)",
+      "function": "Drives the seat adjustment DC motors (fore/aft, height, tilt, recline, lumbar) through multi-half-bridge drivers or relays with Hall / ripple position counting, plus seat heater (high-side) and ventilation fan, under a small body MCU on LIN / CAN.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "not published in any source found",
+        "laminate": "not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "No seat-module teardown or production board description found; only manufacturer application notes and evaluation kits."
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public seat-module component count found."
+      },
+      "keyIcs": [
+        {
+          "role": "multi-half-bridge gate drivers (TI seat application note)",
+          "examples": [
+            "TI DRV8714-Q1 (4 half-bridge gate drivers) driving three seat motors through shared half-bridges; DRV8718-Q1 (8) driving four seat motors plus a fan (one half-bridge) and a heater (one high-side MOSFET) (TI SSZT086)"
+          ],
+          "source": "https://www.ti.com/document-viewer/lit/html/SSZT086/GUID-2D1EA37D-A44B-41DD-B125-8043AE4780C0"
+        },
+        {
+          "role": "8-half-bridge MOSFET driver (Infineon application kit)",
+          "examples": [
+            "Infineon TLE92108-23QX with eight half-bridge MOSFETs and a reverse-polarity MOSFET (TLE92108-23QX APPKIT; steering column / pedal adjustment listed)"
+          ],
+          "source": "https://www.mouser.pl/infineon-tle92108-23qx-board"
+        },
+        {
+          "role": "multi-motor chipset for seat / zonal / thermal (Infineon evaluation kit)",
+          "examples": [
+            "Infineon MULTI MOTOR EVALKIT: 2 BLDC + up to 18 DC motors, includes TLE94112ES 12-half-bridge driver"
+          ],
+          "source": "https://www.infineon.com/api/redirect/ispn/MULTI MOTOR EVALKIT"
+        },
+        {
+          "role": "MCU (already in the library)",
+          "examples": [
+            "NXP S32K1xx; Infineon TRAVEO T2G Body Entry (task file; no seat source found naming the MCU)"
+          ],
+          "source": "engineering judgement"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "TI SSZT086: multichannel gate drivers in automotive power seats (application note, not a production board)",
+          "url": "https://www.ti.com/document-viewer/lit/html/SSZT086/GUID-2D1EA37D-A44B-41DD-B125-8043AE4780C0",
+          "finding": "One DRV8718-Q1 can run up to seven motors or a mix of motors and heaters, reducing the seat module's part count."
+        },
+        {
+          "title": "Infineon TLE92108-23QX APPKIT (evaluation board)",
+          "url": "https://www.mouser.pl/infineon-tle92108-23qx-board",
+          "finding": "Eight half-bridge MOSFETs + reverse-polarity MOSFET, GUI control and diagnostics."
+        }
+      ]
+    },
+    {
+      "ecu": "DOOR",
+      "name": "Door control module (window lift, mirror, lock, door lamps)",
+      "function": "Drives the window-lift motor (H-bridge with anti-pinch from Hall / ripple counting), mirror X/Y, fold and heater, electrochromic glass, door lock / safe lock and door LEDs, reads the switch pack, on LIN / CAN.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Patent US6875050 describes a door ECU joined to the window motor through a connector with an elastic waterproof seal; other facts: not published in any source found.",
+        "laminate": "not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "technology: https://patents.google.com/patent/US6875050 ; no door-module teardown found (searched Brose / Continental / Hella)"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public door-module component count found."
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + SBC + bridges + switch + MOSFET (Infineon door control reference board)",
+          "examples": [
+            "Infineon TRAVEO II MCU, MOTIX SBC TLE9562, MOTIX bridge TLE9166EQ, MOTIX bridge BTM90x1, PROFET BTS7200, OptiMOS 7 IAUCN04S7N040H (REFDOORCONTROLTOBO1)"
+          ],
+          "source": "https://eu.mouser.com/infineon-door-control-ref-board"
+        },
+        {
+          "role": "integrated door driver (TI)",
+          "examples": [
+            "TI DRV8000-Q1: 6 integrated half-bridges, 6 high-side drivers, 2 half-bridge gate drivers (external window-lift H-bridge with shunt amp), electrochromic charge driver + discharge LS FET, external heater HS gate driver; loads: lock, mirror X/Y, heater, EC, window lift, safe lock, mirror fold, LEDs"
+          ],
+          "source": "https://ti.com/lit/gpn/drv8000-q1"
+        },
+        {
+          "role": "door zone IC + MCU (ST evaluation board)",
+          "examples": [
+            "ST L99DZ200G (drives front and rear window lifts from the front door, 5 HS LED + 2 bulb drivers) with SPC582B60 MCU, LIN + HS-CAN (EVAL-L99DZ200; also AEK-MOT-TK200G1 liftgate board)"
+          ],
+          "source": "https://www.st.com/content/st_com/en/campaigns/eval-l99dz200-evaluation-board-for-l99dz200g-door-zone-systems-ic.html"
+        },
+        {
+          "role": "window-lift MCU with relay drivers (NXP reference board)",
+          "examples": [
+            "NXP S12VR 16-bit mixed-signal MCU driving a relay-based DC motor with Hall-encoder anti-pinch and stall detection (TRK-S12VR-WLFT)"
+          ],
+          "source": "https://www.nxp.com/assets/block-diagram/en/TRK-S12VR-WLFT-1.pdf"
+        },
+        {
+          "role": "multi-half-bridge for lock / mirror (Infineon)",
+          "examples": [
+            "Infineon TLE9166EQ: six half-bridges for door lock, safe lock, mirror fold and adjust (product page)"
+          ],
+          "source": "https://new-origin.infineon.com/cms/cn/product/power/motor-control-ics/brushed-dc-motor-control-ics/multi-half-bridge-ics/tle9166eq"
+        },
+        {
+          "role": "MCU and drivers (already in the library)",
+          "examples": [
+            "NXP S32K1xx; Infineon TRAVEO T2G; Infineon TLE94xxx; TI DRV8xxx-Q1 (task file)"
+          ],
+          "source": "engineering judgement"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Infineon door control reference board (reference design, not a production board)",
+          "url": "https://eu.mouser.com/infineon-door-control-ref-board",
+          "finding": "TRAVEO II + TLE9562 SBC + TLE9166EQ + BTM90x1 + BTS7200 + IAUCN04S7N040H; 5.5-20 V, CAN / LIN."
+        },
+        {
+          "title": "ST EVAL-L99DZ200 (evaluation board)",
+          "url": "https://www.st.com/content/st_com/en/campaigns/eval-l99dz200-evaluation-board-for-l99dz200g-door-zone-systems-ic.html",
+          "finding": "SPC582B60 motherboard + L99DZ200G daughterboard; LIN and HS-CAN; dual H-bridge driving."
+        },
+        {
+          "title": "NXP TRK-S12VR-WLFT window-lift block diagram (reference)",
+          "url": "https://www.nxp.com/assets/block-diagram/en/TRK-S12VR-WLFT-1.pdf",
+          "finding": "S12VR MCU, relay-based DC motor, Hall encoder anti-pinch."
+        }
+      ]
+    },
+    {
+      "ecu": "HVAC",
+      "name": "HVAC / climate control module (often with control panel HMI)",
+      "function": "Positions the air-mix / mode / recirculation flaps (DC or stepper actuators, or LIN smart actuators), commands the blower, reads cabin / evaporator temperature, humidity and sun-load sensors, and drives the control-panel LEDs and knobs.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "not published in any source found",
+        "laminate": "not published in any source found",
+        "boards": "Reference design TIDA-020010 is one board combining HVAC control and HMI. Production: not published in any source found.",
+        "basis": "https://www.ti.com/tool/TIDA-020010 ; no production HVAC module teardown found"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public HVAC module component count found."
+      },
+      "keyIcs": [
+        {
+          "role": "flap motor driver, LED driver, sensors, power (TI HVAC control + HMI reference design)",
+          "examples": [
+            "TI DRV8912-Q1 (12 half-bridges, up to 6 BDC flap motors), TLC6C5716-Q1 LED driver, OPT3001-Q1 ambient light sensor, DRV5055-Q1 Hall sensors for knobs, SN74LV4051-Q1 analog mux, TPS1H100-Q1 high-side switch, TPS7B4250-Q1 tracking LDO, LMR36006-Q1 buck (TIDA-020010 / TIDUEE8)"
+          ],
+          "source": "https://ti.com/lit/pdf/tiduee8"
+        },
+        {
+          "role": "flap actuator driver (TI reference design)",
+          "examples": [
+            "Cost-effective driver for six flap actuators, 0.4 A per motor, all six simultaneously (TIDA-01357; driver part not named in the summary read)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-01357"
+        },
+        {
+          "role": "12-half-bridge flap driver (Infineon)",
+          "examples": [
+            "Infineon TLE94112ES, designed for HVAC flap DC motor control (MULTI MOTOR EVALKIT description)"
+          ],
+          "source": "https://www.infineon.com/api/redirect/ispn/MULTI MOTOR EVALKIT"
+        },
+        {
+          "role": "LIN smart flap actuator IC (in the actuator, not the ECU)",
+          "examples": [
+            "Melexis MLX81310 / MLX81315 (MCU + 4 half-bridges, 0.4 / 0.8 A, HVAC flaps first listed); MLX81350 (Nov 2025) for EV air-conditioning flaps and air vents"
+          ],
+          "source": "https://www.melexis.com/en/product/MLX81310-MLX81315/Smart-LIN-Driver"
+        },
+        {
+          "role": "humidity / temperature sensor",
+          "examples": [
+            "TI HDC3020-Q1 (AEC-Q100, heater for condensation; HDC3021-Q1 tape, HDC3022-Q1 IP67 membrane), HVAC control modules listed as target"
+          ],
+          "source": "https://www.ti.com/product/HDC3020-Q1"
+        },
+        {
+          "role": "sun-load sensor",
+          "examples": [
+            "Photodiode-type solar sensor feeding the HVAC module, 0-3.5 klx, separate sensor per side on dual zone (Littelfuse)"
+          ],
+          "source": "https://littelfuse.com/products/sensors/light-solar-sensors/solar-sensor"
+        },
+        {
+          "role": "MCU (already in the library)",
+          "examples": [
+            "NXP S32K1xx; Renesas RH850/F1x (task file; no HVAC source found naming the production MCU)"
+          ],
+          "source": "engineering judgement"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "TI TIDA-020010 automotive HVAC control reference design with HMI (reference, not a production board)",
+          "url": "https://www.ti.com/tool/TIDA-020010",
+          "finding": "Reverse-battery protected, drives up to 6 BDC flap motors with DRV8912-Q1, 18-LED driver without current-limit resistors, Hall knobs."
+        },
+        {
+          "title": "Melexis: 3-core LIN motor driver for EV air-conditioning flaps (press, Nov 2025)",
+          "url": "https://www.melexis.com/en/news/2025/6nov2025-melexis-launches-3-core-automotive-lin-motor-driver-for-ev-air-conditioning-flaps",
+          "finding": "MLX81350, 0.5 A per motor, sensorless FOC, for EV AC flaps and automated vents."
+        }
+      ]
+    },
+    {
+      "ecu": "HEADLAMP",
+      "name": "Headlamp LED driver / matrix (ADB) controller",
+      "function": "Converts 12 V to LED string voltages (boost / buck / buck-boost / SEPIC current regulators) for low / high beam, DRL, position and turn, and on adaptive (ADB) headlamps bypasses individual LEDs through a matrix manager commanded over UART / CAN from a lighting MCU.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Production (Hella, Audi A7 LED headlamp control unit): circuit board on the lower half of a metal housing with cooling fins, a grounded metal heat shield above the board against EMI. Reference TIDA-050030: heatsinked enclosure using the buck drivers' top exposed pad.",
+        "laminate": "not published in any source found",
+        "boards": "Control units (power modules) are usually fitted directly on the headlamp housing; several types per vehicle depending on system (Hella). Audi A7 unit scalable 4 / 6 / 8 channels driving the 32 LEDs of the HD matrix module.",
+        "basis": "https://www.hella.com/techworld/za/technical/automotive-lighting/electronic-control-units-in-contemporary-vehicles-with-led-headlamps/ ; https://www.ti.com/lit/tidueu1"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public headlamp ECU component count found (Yole / System Plus 'Other ECUs' teardown track covers LED power stages behind a paywall)."
+      },
+      "keyIcs": [
+        {
+          "role": "boost + buck LED drivers + MCU (TI matrix headlight ECU reference design)",
+          "examples": [
+            "TI TPS92682-Q1 two-phase interleaved boost (130 W) feeding two TPS92520-Q1 dual synchronous buck drivers (4 channels, 120 W), MSP432 MCU on CAN, UART to the matrix module through a CAN transceiver (TIDA-050030)"
+          ],
+          "source": "https://www.ti.com/lit/tidueu1"
+        },
+        {
+          "role": "three-channel headlight driver (TI reference design)",
+          "examples": [
+            "TI TPS92682-Q1 (CV boost + CC SEPIC for DRL / position) with TPS92520-Q1 (HB/LB 30 W, turn 15 W), MSP432 over SPI (TIDA-050040)"
+          ],
+          "source": "https://ti.com/lit/pdf/tiduex4"
+        },
+        {
+          "role": "LED matrix manager",
+          "examples": [
+            "TI TPS92662-Q1 / TPS92662A-Q1: 12 switches in four sub-strings of three, multidrop UART; TPS92664-Q1: 16 channels, 10-bit PWM, EEPROM"
+          ],
+          "source": "https://www.ti.com/product/TPS92662-Q1"
+        },
+        {
+          "role": "LED DC-DC controllers (Infineon LITIX Power)",
+          "examples": [
+            "Infineon TLD6098-2ES dual-channel multi-topology controller driving HB, LB, DRL and turn without an MCU; TLD5541-1QV H-bridge buck-boost with SPI; TLD5190QV without SPI"
+          ],
+          "source": "https://www.eenewseurope.com/en/dual-channel-dc-dc-led-headlamp-driver-eliminates-microcontroller/"
+        },
+        {
+          "role": "matrix dimmer (ADI)",
+          "examples": [
+            "Analog Devices LT3965 8-switch matrix LED dimmer with fault reporting"
+          ],
+          "source": "https://www.analog.com/en/resources/technical-articles/control-individual-leds-in-matrix-headlights.html"
+        },
+        {
+          "role": "production headlamp control unit (Hella, Audi A7)",
+          "examples": [
+            "4 / 6 / 8-channel PWM LED control unit, CAN diagnostics to the BCM, LIN to other units (chip identities not given)"
+          ],
+          "source": "https://www.hella.com/techworld/za/technical/automotive-lighting/electronic-control-units-in-contemporary-vehicles-with-led-headlamps/"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Hella TechWorld: Electronic control units in vehicles with LED headlamps",
+          "url": "https://www.hella.com/techworld/za/technical/automotive-lighting/electronic-control-units-in-contemporary-vehicles-with-led-headlamps/",
+          "finding": "Control units sit on the headlamp housing; Audi A7 unit 4/6/8 channels, 32-LED HD matrix, twelve-segment DRL, metal housing with fins and grounded heat shield, CAN + LIN."
+        },
+        {
+          "title": "TI TIDA-050030 120 W headlight ECU (reference design, not a production board)",
+          "url": "https://www.ti.com/lit/tidueu1",
+          "finding": "TPS92682-Q1 boost + 2x TPS92520-Q1 buck, MSP432, CAN, UART to matrix module, heatsinked enclosure."
+        },
+        {
+          "title": "EE Times: TI unveils LED matrix manager for adaptive headlights",
+          "url": "https://www.eetimes.com/ti-unveils-led-matrix-manager-adaptive-headlights/",
+          "finding": "Launch coverage of the TI matrix manager family for ADB headlamps."
+        },
+        {
+          "title": "Yole SystemPlus: Other ECUs teardown track",
+          "url": "https://www.yolegroup.com/automotive-teardown-track/other-ecus-teardown-track-module/",
+          "finding": "Paid track covering LED power stages and low-beam modules among other ECUs; contents not public."
+        }
+      ]
+    }
+  ],
+  "boardCostEvidence": [],
+  "notes": [
+    "No public board or module cost figure was found for any body / comfort board (searched English and Chinese; results were aftermarket resale and repair prices, which are not production costs and are not recorded).",
+    "No production teardown naming chips was found for a BCM (beyond Tesla Model 3: Tesla ASICs + ST Power Architecture MCU, EE Times), gateway, seat, door, HVAC or headlamp module. Layer count, size and laminate are unpublished for all six boards.",
+    "VW ID.3 ICAS1: the Renesas R-Car M3 + RH850 claim comes from a fan wiki (meinid.com/wiki/entry/17-icas1/) and is not used as evidence; Continental declined to name the processor.",
+    "The task's TIDA-00296 parts list does not include a DRV motor driver or a TCAN transceiver (TI tool page).",
+    "Seat, HVAC and part of the door / BCM MCU rows say 'engineering judgement': no source found names the production MCU for these modules; the parts listed come from the library task file."
+  ]
+}

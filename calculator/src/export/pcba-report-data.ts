@@ -166,7 +166,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const bom: PcbaBomRow[] = lines.map(l => {
     const unit = num(l.unitPriceGBP) * sourcingFactor;
     return {
-      ref: refOf(l), description: tidyCaps(String(l.description || l.componentType || '')), partNumber: String(l.partNumber ?? ''),
+      ref: refOf(l), description: tidyCaps(String(l.description || l.componentType || '')), partNumber: String(l.partNumber || ((l as { suggestedPartNumber?: string }).suggestedPartNumber ? `${(l as { suggestedPartNumber?: string }).suggestedPartNumber} (suggested, not read)` : '')),
       pkg: String(l.pkg ?? ''), qty: num(l.qty), unit, ext: unit * num(l.qty), source: priceSourceLabel(l),
       // The server's own flag when present, so the export's "to verify" list is the screen's (360 review);
       // the £1 rule is the screen's too.

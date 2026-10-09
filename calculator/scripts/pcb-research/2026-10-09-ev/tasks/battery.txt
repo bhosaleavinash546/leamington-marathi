@@ -1,0 +1,22 @@
+## BMS_CMU — HV battery cell monitoring unit (slave boards) [HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - cell monitor AFE: TI BQ79616-Q1 (16S, ASIL-D, 240 mA balancing)
+  - cell monitor AFE (alternatives): NXP MC33771C (14 ch)
+  - cell monitor AFE (ADI): ADI ADBMS6830
+  - isolated daisy-chain transceiver: NXP MC33664 (TPL)
+
+## BMS_BMU — HV battery management unit (master) + battery junction box electronics [HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - main MCU: Infineon AURIX TC3xx; NXP S32K3 / MPC5775B
+  - BMS reference (BCC + MCU on board): NXP RD33771CNTREVM: 4× MC33771C + S32K1xx
+  - pack current sensor: Infineon TLE4972 (named for battery main switch)
+
+## BMS48 — 48 V battery management system [MHEV]
+key ICs already in the library:
+  - cell monitor (14 ch; 48 V pack is 12–14S): NXP MC33771C
+  - MCU: NXP S32K1xx
+
+## IBS — 12 V intelligent battery sensor [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - battery sensor SoC (AFE + MCU + LIN/CAN): NXP MM9Z1J638 (LIN and CAN reference designs)
+

@@ -8339,6 +8339,9 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     dimensionsSource:         (gNum('pcb-edit-width', r.boardSpec.widthMm) !== r.boardSpec.widthMm
                                || gNum('pcb-edit-height', r.boardSpec.heightMm) !== r.boardSpec.heightMm)
                                ? 'measured' : r.boardSpec.dimensionsSource,
+    // Who stands behind a "measured" size (pipeline review F3): the user here, else what the server stamped.
+    ...((gNum('pcb-edit-width', r.boardSpec.widthMm) !== r.boardSpec.widthMm || gNum('pcb-edit-height', r.boardSpec.heightMm) !== r.boardSpec.heightMm)
+      ? { dimensionsEvidence: 'user' } : (r.boardSpec as { dimensionsEvidence?: string }).dimensionsEvidence ? { dimensionsEvidence: (r.boardSpec as { dimensionsEvidence?: string }).dimensionsEvidence } : {}),
     conformalCoating:         r.boardSpec.conformalCoating,
     surfaceFinish:            g('pcb-edit-surface')?.value ?? r.boardSpec.surfaceFinish,
     solderMaskColour:         r.boardSpec.solderMaskColour,
@@ -8358,7 +8361,14 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     boardWeightG:             r.boardSpec.boardWeightG,
     qualityGrade:             g('pcb-edit-quality')?.value ?? r.boardSpec.qualityGrade,
     panelUtilisation:         r.boardSpec.panelUtilisation,
-  };
+    // Evidence the server stamped (fab data, board text) travels with the spec; a via count the user typed is theirs.
+    ...Object.fromEntries((['layersSource', 'layersEvidence', 'viasSource', 'viasEvidence', 'copperEvidence', 'weightEvidence'] as const)
+      .map(k => [k, (r.boardSpec as Record<string, unknown>)[k]]).filter(([, v]) => v != null)),
+    ...((Math.round(gNum('pcb-edit-through-vias', r.boardSpec.throughVias)) !== r.boardSpec.throughVias
+      || Math.round(gNum('pcb-edit-blind-vias', r.boardSpec.blindVias)) !== r.boardSpec.blindVias
+      || Math.round(gNum('pcb-edit-micro-vias', r.boardSpec.microVias)) !== r.boardSpec.microVias)
+      ? { viasSource: 'measured', viasEvidence: 'user' } : {}),
+  } as PCBImageAnalysis['boardSpec'];
 
   const correctedAssembly: PCBImageAnalysis['assembly'] = {
     smtPlacements:    Math.round(gNum('pcb-edit-smt', r.assembly.smtPlacements)),
@@ -8586,7 +8596,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${item.pkg}</td>
       <td>${item.value}</td>
       <td>${item.voltage}</td>
-      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="Read off the chip — matches a marking the OCR stage read" style="color:var(--green)">&#10003;</span>' : (item as unknown as { ocrClaimed?: boolean }).ocrClaimed ? ' <span title="The AI said it read this, but no OCR marking agrees — confirm" style="color:#b45309">?</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}${singleSourceRefDesSet.has(item.refDes) ? ' <span title="Single-source risk: limited qualified alternatives" style="background:#7c3aed;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">SSR</span>' : ''}</td>
+      <td>${!item.partNumber && (item as unknown as { suggestedPartNumber?: string }).suggestedPartNumber ? `<span title="Suggested by the AI but not read on the chip, in a BOM file or by you — not priced from the catalogue; confirm the part" style="font-size:0.68rem;font-family:monospace;padding:1px 4px;border-radius:3px;border:1px dashed var(--border)">${escHtml(String((item as unknown as { suggestedPartNumber?: string }).suggestedPartNumber))} (suggested)</span>` : ''}${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${escHtml(String(item.partNumber))}${item.ocrExtracted ? ' <span title="Read off the chip — matches a marking the OCR stage read" style="color:var(--green)">&#10003;</span>' : (item as unknown as { ocrClaimed?: boolean }).ocrClaimed ? ' <span title="The AI said it read this, but no OCR marking agrees — confirm" style="color:#b45309">?</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}${singleSourceRefDesSet.has(item.refDes) ? ' <span title="Single-source risk: limited qualified alternatives" style="background:#7c3aed;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">SSR</span>' : ''}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${pcbUnitFmt(item.unitPriceGBP)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem"></span>' : ''}`}</td>
       <td>&#163;${pcbLineFmt(Number((item as unknown as { lineTotalGBP?: number }).lineTotalGBP ?? item.qty * item.unitPriceGBP))}</td>
@@ -9447,7 +9457,6 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
 
   // Programme parameters strip
   sectionTitle('Programme Parameters');
-  const prog = r._programPricing;
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
@@ -9456,7 +9465,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
       ['Part', r.partName, 'Domain', domainLabel],
       ['Manufacturing region', regionName, 'Functional safety', asil ? `ISO 26262 · ${asil}` : 'Not safety-rated'],
       ['Annual volume', annualQty ? `${Number(annualQty).toLocaleString('en-GB')} /yr` : '—', 'Currency', _displayCurrency],
-      ['Program pricing tier', prog ? String(prog.pricingTier).replace(/_/g, ' ') : '—', 'Program BOM saving', prog ? `${prog.savingsPct}%` : '—'],
+      ['Component prices', 'Catalogue / distributor at the parts bought', 'Above published breaks', 'Derived along the part\'s slope (labelled)'],
       ['Analysis confidence', r.confidenceLevel, 'Generated', dateStr],
     ],
     styles: { fontSize: 7.5, cellPadding: 2 },

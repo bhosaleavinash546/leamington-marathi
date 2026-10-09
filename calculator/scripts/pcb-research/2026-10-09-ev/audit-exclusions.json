@@ -1,0 +1,15 @@
+{
+ "parts": {
+  "DHAB S/124": "the only price (Newark via Findchips) includes US tariffs and is identical to DHAB S/137 - not a clean distributor list price for this part",
+  "MLX91218LDC-AFV-503-RE": "the Future listing was matched to the part number by search-result order, not read on the part's own page - identity of the price unconfirmed"
+ },
+ "observations": [],
+ "disputed": {
+  "LTC2949HLXE#3ZZTRPBF": "only LCSC $15.60 @100; Arrow's Richardson RFPD shows about $35 @1k - the LCSC figure may be stale",
+  "MIMX8QM6AVUFFAB": "only Future $113.34 @350, well below Digi-Key's regional listing - one source, check before quoting",
+  "ISL78206AVEZ-T7A": "two Future snapshots disagreed; the higher ($3.49 @250) is kept",
+  "SAK-TC1766-192F80HL BD": "LCSC reference prices with 0 units in stock (legacy AURIX TC1766)",
+  "IAUS240N08S5N019ATMA1": "priced only on RS regional sites; the Japan price is about half the Taiwan one",
+  "BQ79631PAPRQ1": "the 500-unit break reads lower than the 1k break - read on Findchips, check the live listing"
+ }
+}

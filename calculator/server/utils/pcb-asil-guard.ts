@@ -8,8 +8,10 @@
  *
  * Geometry is the ground truth for CAD; the parts list is the ground truth here. This guard
  * reads the BOM (no AI) and:
- *  - costs ASIL-C/D only when the parts list carries the hardware an ASIL-C/D design needs
- *    (a safety PMIC / SBC, a lockstep safety MCU); otherwise it costs ASIL-B and says so;
+ *  - costs ASIL-C/D only when the parts list NAMES (evidenced part number) the independent safety supply an ASIL-C/D
+ *    design needs — a safety PMIC / SBC; otherwise it costs ASIL-B and says so. A lockstep MCU family alone (S32R,
+ *    S32K3, AURIX) is not enough: it sits on ASIL-B radars too, and every radar with an S32R kept ASIL-C and paid
+ *    burn-in; the model's own words ("safety PMIC" in a description) are not evidence (pipeline review F22, Oct 2026);
  *  - withholds a rationale that names a board function the parts list contradicts
  *    (radar text on a camera BOM, and the reverse), with the reason.
  * The claimed level is kept and shown; the engineer confirms against the safety concept.
@@ -28,7 +30,7 @@ const LIDAR = /\blidar\b|\bSPAD\b|laser driver|\bVCSEL\b/i;
 const ECU = /\bAURIX\b|\bTC[23]\d{2}|\bS32K\d|\bS32G\d|\bRH850|\bTMS570|\bSPC5\d|\bMPC57\d{2}/i;
 
 /** What an ASIL-C/D design carries: an independent safety supply / watchdog, a lockstep safety MCU. */
-const SAFETY_HW = /\bTLF3558\d|\bTLF3x?5584|\bFS8[45]\d*|\bFS6[5-9]\d*|\bFS4[5-9]\d*|\bMC3[34]FS|\bTPS6594|\bTPS65386|\bTPS653850|\bTLF4\d{3}|\bVR55\d\d|\bPF5\d{3}|\bPF8[12]00|\bSBC\b|safety (PMIC|SBC|MCU|monitor|supervisor)|lock-?step|\bAURIX\b|\bTC[23]\d{2}|\bS32K3\d|\bS32R\d|\bS32G\d|\bRH850|\bTMS570|window(ed)? watchdog|voltage supervisor/i;
+const SAFETY_HW = /\bTLF3558\d|\bTLF3x?5584|M?FS8[45]\d*|M?FS6[5-9]\d*|M?FS4[5-9]\d*|M?FS2[36]\d*|\bMC3[34]FS|\bTPS6594|\bTPS65386|\bTPS653850|\bTLF4\d{3}|\bVR55\d\d|\bPF5\d{3}|\bPF8[12]00/i;
 
 /** The board's function as its parts list shows it. */
 export function boardFunctionFromBom(bom: BomLine[]): BoardFunction {
@@ -66,7 +68,8 @@ export function guardAsil(inp: { asil: AsilLevel; rationale?: string; safetyFunc
   const bom = Array.isArray(inp.bom) ? inp.bom : [];
   const claimed = inp.asil ?? 'Unknown';
   const boardFunction = boardFunctionFromBom(bom);
-  const safetyHardware = bom.filter(l => SAFETY_HW.test(text(l)))
+  // The PART NUMBER only — a description is the model's prose.
+  const safetyHardware = bom.filter(l => SAFETY_HW.test(String(l.partNumber ?? '')))
     .map(l => String(l.partNumber || l.description || '').trim()).filter(Boolean).slice(0, 4);
   const notes: string[] = [];
   let costed = claimed;
@@ -83,7 +86,7 @@ export function guardAsil(inp: { asil: AsilLevel; rationale?: string; safetyFunc
 
   if ((claimed === 'ASIL-C' || claimed === 'ASIL-D') && bom.length > 0 && safetyHardware.length === 0) {
     costed = 'ASIL-B';
-    notes.push(`${claimed} was claimed from the photos, but the parts list has no safety PMIC / SBC or lockstep safety MCU that an ${claimed} design carries — costed at ASIL-B (no burn-in). Confirm the level against the safety concept; an ${claimed} answer adds burn-in and the higher NRE tier.`);
+    notes.push(`${claimed} was claimed from the photos, but the parts list names no safety PMIC / SBC (an independent safety supply) that an ${claimed} design carries — costed at ASIL-B (no burn-in). Confirm the level against the safety concept; an ${claimed} answer adds burn-in and the higher NRE tier.`);
   }
   return { claimed, costed, rationale, safetyFunctions, boardFunction, safetyHardware, notes };
 }

@@ -1,0 +1,33 @@
+## BCM — Body control module [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - main MCU: NXP S32K344; NXP MPC574xB/C
+  - high-side / low-side relay, motor and load drivers: TI high-/low-side driver portfolio in TIDA-00296 (loads: door locks, window lifts, seat heaters, HVAC, lamps, LEDs)
+  - SBC / LDO, CAN & LIN transceivers: TI BCM solution: LDOs, CAN, LIN, limp-home, high-side switches
+
+## GW — Central gateway / vehicle network processor [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - gateway processor / MCU: NXP S32G274A / S32G3; NXP MPC5748G (classic gateway)
+  - automotive Ethernet switch: NXP SJA1105Q; NXP SJA1110A
+  - interfaces (reference design counts): S32G-VNP-RDB: 16× CAN/CAN-FD, 14 Ethernet ports; S32G3 RDB3: 18× CAN-FD, 12 Ethernet; MPC5748G-GW-RDB: 8× CAN-FD, 4× 100BASE-T1
+
+## SEAT — Seat control module [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - MCU: NXP S32K1xx; Infineon TRAVEO T2G Body Entry
+  - motor H-bridge / relay drivers: TI DRV8xxx-Q1 family; Infineon TLE94xxx multi-half-bridge
+
+## DOOR — Door control module [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - MCU: NXP S32K1xx; Infineon TRAVEO T2G
+  - multi-half-bridge / H-bridge drivers: Infineon TLE94xxx; TI DRV8xxx-Q1
+  - window-lift / door-lock driver reference: TI TIDA-00296 BCM driver design (door locks, window lifts)
+
+## HVAC — HVAC / climate control module [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - MCU: NXP S32K1xx; Renesas RH850/F1x
+  - flap stepper / DC motor drivers: Infineon TLE94xxx; TI DRV8xxx-Q1
+
+## HEADLAMP — Headlamp LED driver / matrix controller [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - LED matrix manager (ADB): TI TPS92662-Q1 (12-channel, 4.5–60 V)
+  - LED driver selection (front headlight): TI front headlight selection guide parts
+

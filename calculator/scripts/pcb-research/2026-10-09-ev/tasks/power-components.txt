@@ -1,0 +1,22 @@
+Board-level power and HV components on MHEV / PHEV / BEV boards (OBC, DC-DC, traction inverter, BMS, PDU, e-compressor, PTC).
+One representative AUTOMOTIVE orderable part per line that franchised distributors stock (say why in notes):
+- DC-link film capacitor, 450–500 V, 50–100 µF, PCB mount (TDK B3277x/B3277xH automotive, KEMET C4AK, Vishay MKP1848, Panasonic EZPV)
+- DC-link film capacitor, 800–900 V class (TDK B3277xH, KEMET C4AQ, Vishay)
+- Y-capacitor / X-capacitor safety caps, automotive (KEMET R46/R53 AEC, Vishay, TDK)
+- HV ceramic snubber MLCC, 1–2 kV C0G, AEC-Q200 (TDK CGA9, Murata GCM / KCM, KEMET)
+- Shunt resistor, 50–100 µΩ / 25–100 µΩ for pack current (Isabellenhütte BVR/BAS, Vishay WSBE / WSLP, Bourns CSS2H)
+- Precision shunt 0.5–2 mΩ 2512 / 3920 AEC-Q200 (Vishay WSLP, Bourns CSS2, Susumu, Ohmite)
+- Hall current sensor IC, 100–600 A core-less (Melexis MLX91220/91221, Allegro ACS724/ACS37002, Infineon TLE4972/TLI4971) — skip any already priced
+- Closed-loop / open-loop current sensor module, automotive (LEM HAH1BV / HC6F / DHAB) — modules are often distributor-listed
+- Isolated gate-drive DC-DC converter module, automotive (Murata MGJ2/MGJ6, RECOM R24C2T / RxxP2 automotive, TDK)
+- Gate-drive / auxiliary transformer, automotive (Würth 750-series AEC, Bourns HCTSM, Pulse, TDK EPCOS)
+- PFC / LLC power inductor, high current automotive (TDK, Würth WE-HCFT, Coilcraft AEC)
+- Common-mode choke, HV / high current (TDK, Würth WE-CMBNC automotive, KEMET)
+- 1200 V SiC MOSFET discrete, TO-247-4 automotive (Wolfspeed E3M, Infineon AIMW120R, onsemi NVH4L, ST SCTW) — skip any already priced
+- 650/750 V SiC or IGBT discrete automotive (Infineon AIMW / AIKW, ST, onsemi)
+- 80–100 V automotive MOSFET for 48 V (Infineon IAUT/IAUS, Nexperia BUK7, onsemi NVMTS) — skip any already priced
+- Precharge / small HV relay, PCB-mount (Panasonic, TE, Omron automotive) and solid-state isolator (TI TPSI3050-Q1, Infineon)
+- HV fuse, PCB-mount / board-level (Littelfuse, Eaton Bussmann automotive, Mersen)
+- HV board connector, PCB header (TE HVA 280 / HVP 800 board side, Amphenol, Molex) — note if quote-only
+- Isolated ADC / amplifier for HV sensing (TI AMC1311B-Q1 / AMC3330-Q1, ADI) — skip any already priced
+- Isolation monitoring IC for HV battery (Bender module, Infineon / ADI / TI IMD ICs if listed)

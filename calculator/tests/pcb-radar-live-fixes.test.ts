@@ -46,10 +46,10 @@ describe('surface finish', () => {
 
 describe('price grounding', () => {
   const line = (o: Record<string, unknown>) => ({ qty: 1, needsVerification: false, ...o });
-  it('holds an OCR-confirmed S32R294 in the tool’s own £22–48 range, not the £18 BGA median', () => {
+  it('prices an OCR-confirmed S32R294 at the tool point of its own range (£18–34), not the model’s figure', () => {
     const { bom } = capUnconfirmedPrices([line({ partNumber: 'FS32R294KCMJD', description: 'radar MCU', componentType: 'ic_bga',
       unitPriceGBP: 22.88, ocrExtracted: true, lineConf: 1 })], icKnownRange);
-    expect(bom[0].unitPriceGBP).toBe(22.88);
+    expect(bom[0].unitPriceGBP).toBe(22);             // £18–34: the tool's lower-half midpoint, not the model's £22.88
     expect(bom[0].priceSource).toBe('known-range');
     expect(bom[0].needsVerification).toBe(true);   // a range is still not a quote
   });
@@ -61,7 +61,8 @@ describe('price grounding', () => {
   it('does not cap a power inductor at a chip capacitor’s £0.08', () => {
     const { bom } = capUnconfirmedPrices([line({ description: 'Power inductors (molded 4x4 mm)', componentType: 'passive_0805',
       unitPriceGBP: 0.158, partNumber: '' })]);
-    expect(bom[0].unitPriceGBP).toBe(0.158);
+    expect(bom[0].unitPriceGBP).toBeGreaterThan(0.08);   // its own row (power inductor), at the table point
+    expect(bom[0].priceBasis).toMatch(/passive_0805\.ind/);
   });
   it('the radar transceiver range agrees with the automotive prompt (£9–22, was £25–90)', () => {
     expect(icKnownRange({ partNumber: 'TEF8105' })).toMatchObject({ lo: 9, hi: 22 });

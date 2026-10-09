@@ -48,12 +48,16 @@ describe('ASIL guard — the classifier against the parts list', () => {
     expect(g.notes.join(' ')).toMatch(/no safety PMIC/);
   });
 
-  it('keeps ASIL-C where the hardware is there (radar: S32R + safety supervisor)', () => {
+  it('keeps ASIL-C only where a safety supply is NAMED by part number (pipeline review F22)', () => {
+    // The radar fixture's S32R and its "safety supervisor" description are not an independent safety supply named
+    // by part number: costed ASIL-B, with the reason; the rationale (radar on a radar board) is kept.
     const g = guardAsil({ asil: 'ASIL-C', rationale: 'Radar MCU with safety PMIC', bom: RADAR.analysis.bom });
-    expect(g.costed).toBe('ASIL-C');
-    expect(g.safetyHardware.length).toBeGreaterThan(0);
+    expect(g.costed).toBe('ASIL-B');
     expect(g.rationale).toMatch(/Radar/);
-    expect(g.notes).toEqual([]);
+    expect(g.notes.join(' ')).toMatch(/names no safety PMIC/);
+    const named = guardAsil({ asil: 'ASIL-C', rationale: 'Radar MCU with safety PMIC', bom: [...RADAR.analysis.bom, { partNumber: 'TLF35584QVVS1' }] });
+    expect(named.costed).toBe('ASIL-C');
+    expect(named.notes).toEqual([]);
   });
 
   it('a camera with a safety PMIC keeps its ASIL-C; ASIL-B and QM are never changed', () => {

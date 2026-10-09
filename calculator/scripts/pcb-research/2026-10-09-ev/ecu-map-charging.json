@@ -1,0 +1,488 @@
+{
+  "domain": "ev-charging",
+  "researched": "2026-10-09",
+  "ecus": [
+    {
+      "ecu": "OBC",
+      "name": "On-board charger (7-22 kW, 400 V and 800 V; PFC + isolated DC-DC, often bidirectional)",
+      "function": "AC grid to HV battery: power-factor-correction stage (totem-pole / 3-phase) then an isolated LLC / CLLC / DAB DC-DC stage; bidirectional units also supply V2L / V2G. Increasingly integrated with the HV-LV DC-DC in one housing.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "8 layers on the TI TIDM-02013 / PMP22650 7.4 kW GaN OBC power board (reference design; a TI E2E user reports the Gerber package as 8 layers with inner layers 2-7 missing). Production OBC layer counts: not published in any source found.",
+        "size": "not published in any source found. PMP22650 reports 3.8 kW/L open-frame power density (reference design).",
+        "technology": "Power stage on insulated metal substrate in several designs: Fraunhofer IISB 3.6 kW OBC puts all SiC devices on an IMS over the coolant; Wolfspeed CRD-22DD12N-J2 mounts TO-263-7 SiC on an IMS board. Top-side-cooled SMD packages (QDPAK / DDPAK, T2PAK, Wolfspeed U2) move device heat to a heatsink above the board instead of through vias / IMS. Separate control board(s) carry the DSP/MCU.",
+        "laminate": "not published in any source found",
+        "boards": "Hyundai E-GMP ICCU (11 kW OBC + 12 V LDC): 4 PCBs, 3 in the main box, the top one carrying the DSP (forum investigation by an electrical engineer, not a formal teardown). Wolfspeed CRD-22DD12N: main, controller and auxiliary boards. ST STDES-7KWOBC: one 7 kW module, paralleled or 3-phase to 21 kW.",
+        "basis": "layers: https://e2e.ti.com/f/1/t/1308009 ; size: https://www.ti.com/tool/PMP22650 ; technology: https://iisb.fraunhofer.de/content/dam/iisb2014/en/Documents/Research-Areas/power_electronics/Modular-3-6kW-On-Board-Charger_FraunhoferIISB_1V1_WWW.pdf , https://www.wolfspeed.com/products/power/reference-designs/crd-22dd12n-j2/ , https://powersystemsdesign.com/articles/top-side-cooling-in-obc-applications/22/21741 ; boards: https://www.goingelectric.de/forum/viewtopic.php?p=2381724 , https://www.wolfspeed.com/crd-22dd12n , https://www.st.com/en/evaluation-tools/stdes-7kwobc.html"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No teardown or reference design source found that states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "control MCU (single controller for PFC + CLLLC)",
+          "examples": [
+            "TI TMS320F280039C (TIDM-02013 / PMP22650 7.4 kW bidirectional OBC reference design); TMS320F28P650DK and TMS320F28P659DK-Q1 listed as alternatives"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-02013"
+        },
+        {
+          "role": "GaN power stage",
+          "examples": [
+            "TI LMG3522R030-Q1 650 V 30 mOhm GaN FET with integrated driver (TIDM-02013 reference design)"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-02013"
+        },
+        {
+          "role": "isolated sensing + gate drive",
+          "examples": [
+            "TI AMC3330-Q1, AMC3302-Q1 isolated amplifiers; TI UCC21222-Q1 isolated dual gate driver (TIDM-02013 design guide)"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-02013"
+        },
+        {
+          "role": "SiC MOSFET, SiC driver, SiC diode (3-phase 11 kW PFC + LLC)",
+          "examples": [
+            "onsemi NVHL080N120SC1 1200 V 80 mOhm; onsemi NCV51705 6 A SiC driver; onsemi FFSB3065B-F085 650 V 30 A SiC diode (SEC-3PH-11-OBC-EVB reference platform)"
+          ],
+          "source": "https://www.onsemi.com/company/newsroom/blog/automotive/development-kit-introduced-by-onsemi-for-electric-vehicle-on-board-charging"
+        },
+        {
+          "role": "control MCU + PFC SiC + LLC MOSFETs (7 kW)",
+          "examples": [
+            "ST SPC58NN84E7 automotive MCU; ST SCTH35N65G2V-7AG SiC MOSFET in the interleaved totem-pole PFC; MDmesh DM6 super-junction MOSFETs in the dual full-bridge LLC (STDES-7KWOBC reference design)"
+          ],
+          "source": "https://www.st.com/en/evaluation-tools/stdes-7kwobc.html"
+        },
+        {
+          "role": "DSC + isolated SiC driver + SiC MOSFET",
+          "examples": [
+            "Microchip dsPIC33C DSC, MCP14C1 isolated SiC gate driver, mSiC MOSFETs in AEC-Q101 D2PAK-7L XL (Microchip OBC solution; 11 kW totem-pole and 11 kW DAB demos)"
+          ],
+          "source": "https://www.microchip.com/en-us/solutions/automotive-and-transportation/ev-hev-powertrain/on-board-charger"
+        },
+        {
+          "role": "SiC MOSFET + bias transformer driver + isolated gate driver (22 kW bidirectional CLLC DC/DC)",
+          "examples": [
+            "Wolfspeed E3M0032120U2 SiC MOSFET, TI UCC25800 transformer driver, TI UCC5350 gate driver (CRD-22DD12N-U2 reference design)"
+          ],
+          "source": "https://www.we-online.com/en/components/icref/wolfspeed/E3M0032120U2-UCC25800-UCC5350-CRD-22DD12N-U2-Full-Bridge"
+        },
+        {
+          "role": "SiC MOSFET on IMS (22 kW bidirectional DC/DC)",
+          "examples": [
+            "Wolfspeed automotive-qualified 1200 V 32 mOhm E3M devices in TO-263-7 on an insulated metal substrate board (CRD-22DD12N-J2)"
+          ],
+          "source": "https://www.wolfspeed.com/products/power/reference-designs/crd-22dd12n-j2/"
+        },
+        {
+          "role": "SiC MOSFET + isolated driver (11 kW CLLC, 800 V, EV-charging reference)",
+          "examples": [
+            "Infineon CoolSiC IMZ120R030M1H driven by EiceDRIVER 1EDC20I12AH (REF-DAB11KIZSICSYS; industrial-grade parts)"
+          ],
+          "source": "https://content.futureelectronics.com/future-electronics-events/embedded-world/infineon-ref-dab11kizsicsys-ev-charging-reference-design-2/"
+        },
+        {
+          "role": "PFC power stage (11 kW 3-level ANPC, OBC listed as application)",
+          "examples": [
+            "Infineon 750 V CoolSiC and 600 V CoolMOS in Q-DPAK (REF_11KW_PFC_SIC_QD; controller not named)"
+          ],
+          "source": "https://www.mouser.ee/new/infineon/infineon-ref-11kw-pfc-sic-qd-ref-board"
+        },
+        {
+          "role": "controller (integrated 11 kW OBC + 2.5 kW LDC)",
+          "examples": [
+            "TI F29H85x C29x MCU; single-stage series-resonant DAB AC-DC, 450-850 V battery (TIDM-02021 reference design)"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-02021"
+        },
+        {
+          "role": "hybrid IGBT / SiC discretes (6.6 kW OBC/DCDC)",
+          "examples": [
+            "Infineon CoolSiC hybrid discrete (TRENCHSTOP 5 IGBT + half-rated SiC Schottky, D2PAK) in VMAX next-generation 6.6 kW OBC/DCDC (supplier announcement)"
+          ],
+          "source": "https://www.yolegroup.com/industry-news/infineon-and-vmax-intensify-collaboration-for-energy-efficient-and-cost-effective-fast-charging-of-electric-vehicles/"
+        },
+        {
+          "role": "control DSP (production ICCU)",
+          "examples": [
+            "Hyundai E-GMP ICCU: one DSP on the top board generates the PWM for all SiC MOSFETs except the 12 V LDC (forum investigation; DSP and SiC makers not named)"
+          ],
+          "source": "https://www.goingelectric.de/forum/viewtopic.php?p=2381724"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Yole / EE Times Europe: What's in the box? Tesla Cybertruck's Power Converter System at a glance",
+          "url": "https://www.eetimes.eu/?p=40814",
+          "finding": "PCS2 is an 800 V / 48 V OBC + DC/DC combo, twice as long but thinner than the MG Marvel R and XPeng G6 units it is compared with; two-in-one OBC + DC/DC now standard. Device-level content not in the public summary."
+        },
+        {
+          "title": "Yole SystemPlus: What's in the box? Chinese automotive electrification systems at a glance",
+          "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-chinese-automotive-electrification-systems-at-a-glance/",
+          "finding": "UAES OBC and VMAX combined charging unit: low-tech parts (mechanics, fuses, relays, inductors, film caps) local; MCU, ICs, Si/SiC discretes and electrolytics imported; non-Chinese parts ~40% of material cost; some SiC chips integrated."
+        },
+        {
+          "title": "GoingElectric forum: Hyundai Ioniq 5 ICCU investigation (forum, not a formal teardown)",
+          "url": "https://www.goingelectric.de/forum/viewtopic.php?p=2381724",
+          "finding": "ICCU = 11 kW OBC (partly reversible for V2L) + 12 V LDC; 4 PCBs, 3 in the main box; DSP drives all SiC switches; LDC is a single-switch active-clamp forward under a separate LTC3752-2; ~300 failures collected Jan 2024-Nov 2025."
+        },
+        {
+          "title": "TI TIDM-02013 / PMP22650 7.4 kW bidirectional OBC (reference design, not production)",
+          "url": "https://www.ti.com/tool/TIDM-02013",
+          "finding": "Interleaved CCM totem-pole PFC + CLLLC, one TMS320F280039C, LMG3522R030-Q1 GaN, AMC3330-Q1 / AMC3302-Q1, UCC21222-Q1; 96.5% peak, 3.8 kW/L open frame."
+        },
+        {
+          "title": "onsemi SEC-3PH-11-OBC-EVB 11 kW 3-phase OBC platform (reference design)",
+          "url": "https://www.onsemi.com/design/evaluation-board/SEC-3PH-11-OBC-EVB",
+          "finding": "195-265 Vac in, 200-450 V out, 735 V DC bus, up to 400 kHz; AEC-qualified SiC devices and drivers (NVHL080N120SC1, NCV51705, FFSB3065B-F085); BOM and Gerbers published."
+        },
+        {
+          "title": "ST STDES-7KWOBC 7 kW OBC (reference design)",
+          "url": "https://www.st.com/en/evaluation-tools/stdes-7kwobc.html",
+          "finding": "Interleaved SiC totem-pole PFC at 70 kHz + dual isolated full-bridge LLC at 140 kHz; SPC58NN84E7 MCU; SCTH35N65G2V-7AG; parallel / 3-phase to 21 kW; not for sale."
+        },
+        {
+          "title": "Wolfspeed CRD-22DD12N 22 kW bidirectional DC/DC for OBC (reference design)",
+          "url": "https://www.wolfspeed.com/crd-22dd12n",
+          "finding": "Full-bridge CLLC 135-250 kHz, 22 kW at 650-900 V; main, controller and aux boards; -J2 (TO-263-7 on IMS) and -U2 (top-side-cooled) variants."
+        },
+        {
+          "title": "TI TIDM-02021 11 kW OBC + 2.5 kW LDC (reference design)",
+          "url": "https://www.ti.com/tool/TIDM-02021",
+          "finding": "Integrated OBC + LDC on one F29H85x controller; three-phase single-stage series-resonant DAB, 450-850 V battery."
+        },
+        {
+          "title": "Fraunhofer IISB modular 3.6 kW on-board charger (research prototype)",
+          "url": "https://iisb.fraunhofer.de/content/dam/iisb2014/en/Documents/Research-Areas/power_electronics/Modular-3-6kW-On-Board-Charger_FraunhoferIISB_1V1_WWW.pdf",
+          "finding": "Totem-pole PFC + full-bridge resonant converter with 900 V SiC MOSFETs, all on an IMS bonded to the coolant; passive secondary rectifier."
+        },
+        {
+          "title": "Gasgoo: UAES scale delivery of CharCON5U (press)",
+          "url": "https://autonews.gasgoo.com/articles/ev/uaes-achieves-scale-delivery-of-next-gen-onboard-charging-power-distribution-unit-70036014",
+          "finding": "Next-generation UAES unit combines OBC and HV DC-DC (MarkLines lists 7.2 kW OBC + 3 kW DC/DC)."
+        }
+      ]
+    },
+    {
+      "ecu": "DCDC_HV",
+      "name": "HV-12 V DC-DC converter (APM / LDC)",
+      "function": "Isolated step-down from the HV battery (200-450 V or up to 850 V) to the 12 V (or 48 V) net, replacing the alternator; 2.5-3.6 kW, up to 250-300 A output.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Hyundai ICCU LDC: single-switch active-clamp forward with compact switched-current loops, current set by a current-sense transformer in the primary (forum). TI PMP41078: GaN phase-shifted full bridge with two-channel active clamps on the secondary. TIDA-020031: SiC primary, synchronous rectification. Board technology (copper weight, IMS) not published.",
+        "laminate": "not published in any source found",
+        "boards": "Often housed with the OBC (Hyundai ICCU; UAES CharCON5U 7.2 kW OBC + 3 kW DC/DC; TI TIDM-02021; Tesla Cybertruck PCS2 800 V -> 48 V).",
+        "basis": "technology: https://www.goingelectric.de/forum/viewtopic.php?p=2381724 , https://www.ti.com/tool/PMP41078 ; boards: https://www.goingelectric.de/forum/viewtopic.php?p=2381724 , https://autonews.gasgoo.com/articles/ev/uaes-achieves-scale-delivery-of-next-gen-onboard-charging-power-distribution-unit-70036014 , https://www.ti.com/tool/TIDM-02021 , https://www.eetimes.eu/?p=40814"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found that states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "PSFB controller, isolated + bootstrap gate drivers, protection, sensing (3.6 kW 400 V -> 12 V, 300 A)",
+          "examples": [
+            "TI UCC28951-Q1 PSFB controller, UCC21530-Q1 reinforced isolated dual driver, UCC27712-Q1, UCC27524-Q1, LM74801-Q1, INA293-Q1, SN6505B-Q1, LMV393-Q1; SiC MOSFETs on the HV side (TIDA-020031 reference design)"
+          ],
+          "source": "https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/14/TIDUEY2-_2800_1_2900_.PDF"
+        },
+        {
+          "role": "isolated bias transformer driver",
+          "examples": [
+            "TI SN6505 in TIDA-020031 (component reference listing)"
+          ],
+          "source": "https://www.we-online.com/de/components/icref/texas-instruments/SN6505-TIDA-020031-Full-Bridge"
+        },
+        {
+          "role": "GaN primary switches + C2000 control (3.5 kW, 200-450 V -> 14 V, 250 A)",
+          "examples": [
+            "TI LMG3522R030 650 V GaN; C2000 MCU (part not named on the page) (PMP41078 reference design)"
+          ],
+          "source": "https://www.ti.com/tool/PMP41078"
+        },
+        {
+          "role": "control MCU (3.5 kW 800 V -> 14 V stacked half-bridge)",
+          "examples": [
+            "TI TMS320F28P650DK (PMP41139 reference design)"
+          ],
+          "source": "https://www.ti.com/tool/PMP41139"
+        },
+        {
+          "role": "DSC + SiC + isolated gate driver (onboard 12 V DC-DC reference)",
+          "examples": [
+            "Microchip dsPIC33CK256MP506 Digital Power PIM, MSC080SMA120SA 1200 V 80 mOhm SiC MOSFETs, MCP14C1 gate driver (Microchip reference design documentation)"
+          ],
+          "source": "https://onlinedocs.microchip.com/oxy/GUID-74ECF7E5-978A-456F-838A-7C1BEF7A12C0-en-US-1/GUID-CE60E6F0-33C3-4D03-A946-89C836BDA18C.html"
+        },
+        {
+          "role": "12 V LDC controller (production ICCU)",
+          "examples": [
+            "Analog Devices LTC3752-2 active-clamp forward controller in the Hyundai E-GMP ICCU LDC (forum investigation)"
+          ],
+          "source": "https://www.goingelectric.de/forum/viewtopic.php?p=2381724"
+        },
+        {
+          "role": "isolated gate-driver bias supply",
+          "examples": [
+            "onsemi NCV3064 automotive controller in SECO-LVDCDC3064-SIC-GEVB 6-18 V isolated SiC gate-driver supply (evaluation kit)"
+          ],
+          "source": "https://www.onsemi.com/solution/automotive/vehicle-electrification/dc-dc-conversion"
+        },
+        {
+          "role": "isolated gate-driver bias module",
+          "examples": [
+            "TI UCC14131-Q1 isolated DC/DC module for GaN / Si / SiC / IGBT driver supplies (evaluation module; not tied to a production converter)"
+          ],
+          "source": "https://www.ti.com/tool/UCC14131EVM-070"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "TI TIDA-020031 3.6 kW 400 V -> 12 V automotive DC/DC (reference design)",
+          "url": "https://www.electronicsforu.com/news/reference-design-of-an-automotive-400-v-to-12-v-unidirectional-converter",
+          "finding": "200-450 V in, 12 V / 300 A out; SiC primary with 5.7 kVrms reinforced isolated dual drivers; host MCU for supervision and loops; synchronous rectification."
+        },
+        {
+          "title": "TI PMP41078 3.5 kW GaN PSFB HV-LV DC-DC (reference design)",
+          "url": "https://www.ti.com/tool/PMP41078",
+          "finding": "200-450 V in, 14 V / 250 A, 200 kHz, LMG3522R030 primaries, C2000 control, 95.48% at ~1 kW; BOM published (TIDMD81B)."
+        },
+        {
+          "title": "GoingElectric forum: Hyundai Ioniq 5 ICCU investigation (forum, not a formal teardown)",
+          "url": "https://www.goingelectric.de/forum/viewtopic.php?p=2381724",
+          "finding": "12 V LDC is a single-switch active-clamp forward controlled by LTC3752-2; 180 A limit set by a primary current-sense transformer; the LDC power path has the highest failure rate."
+        },
+        {
+          "title": "Yole / EE Times Europe: Tesla Cybertruck PCS2",
+          "url": "https://www.eetimes.eu/?p=40814",
+          "finding": "800 V -> 48 V OBC + DC/DC combo; compared with MG Marvel R and XPeng G6 units."
+        },
+        {
+          "title": "Nissan Leaf Power Delivery Module (community wiki)",
+          "url": "https://nissanleaf.carhackingwiki.com/index.php/Power_Delivery_Module_(PDM)",
+          "finding": "DC-DC is part of the PDM, maximum output about 135 A; no ICs named."
+        }
+      ]
+    },
+    {
+      "ecu": "DCDC48",
+      "name": "48 V-12 V bidirectional DC-DC converter (MHEV)",
+      "function": "Multiphase interleaved synchronous buck (48 V -> 12 V) / boost (12 V -> 48 V) between the 48 V and 12 V nets of a mild hybrid; 1-3 kW typical.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Multiphase interleaved (TI TIDA-01168: 4 phases; EPC9163: 2 phases; a patent describes 12 phases of 200 W); leadless SSO8 MOSFETs cited by Infineon for 96.5% at 1.5 kW; 40 V devices on the 12 V side, 80-100 V on the 48 V side; back-to-back 40 V MOSFET safety switch on the 12 V line. Board laminate / copper not published.",
+        "laminate": "not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "https://www.ti.com/tool/TIDA-01168 , https://www.businesswire.com/news/home/20211102005156/en/EPC-Launches-2-kW-48-V12-V-DC-DC-Demonstration-Board-for-More-Efficient-Smaller-Faster-Bidirectional-Converters-for-Mild-Hybrid-Cars , https://vde-verlag.de/proceedings-en/564687042.html , https://onsemi.com/solutions/automotive/vehicle-electrification/48-volt-lv-dc-dc-converter , https://toshiba.semicon-storage.com/info/docget.jsp?did=161504"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found that states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "multiphase bidirectional current controller + voltage-loop MCU",
+          "examples": [
+            "TI LM5170-Q1 x2 (4 phases) and TMS320F28027F; LM5010A and TPS560200-Q1 auxiliary bucks (TIDA-01168 reference design)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-01168"
+        },
+        {
+          "role": "power MOSFETs + high-side line-switch driver (3 kW reference)",
+          "examples": [
+            "Toshiba XPQR3004PB 40 V MOSFETs (switching and 12 V line switches), XPW4R10ANB 100 V MOSFETs (48 V line switches), TPD7106F high-side gate driver with reverse-connection protection (Toshiba 48 V-12 V reference guide)"
+          ],
+          "source": "https://toshiba.semicon-storage.com/info/docget.jsp?did=161504"
+        },
+        {
+          "role": "GaN power stage + DSC (2 kW, 2-phase)",
+          "examples": [
+            "EPC2218 100 V eGaN FETs x8; Microchip dsPIC33CK256MP503 (EPC9163 demonstration board)"
+          ],
+          "source": "https://www.businesswire.com/news/home/20211102005156/en/EPC-Launches-2-kW-48-V12-V-DC-DC-Demonstration-Board-for-More-Efficient-Smaller-Faster-Bidirectional-Converters-for-Mild-Hybrid-Cars"
+        },
+        {
+          "role": "bidirectional multiphase controller",
+          "examples": [
+            "Analog Devices LTC3871 100 V bidirectional PolyPhase buck/boost controller (maker product page)"
+          ],
+          "source": "https://www.analog.com/cn/products/ltc3871.html"
+        },
+        {
+          "role": "power MOSFET package (1.5 kW interleaved buck)",
+          "examples": [
+            "Infineon SSO8 leadless MOSFETs (conference paper; part numbers not in the abstract)"
+          ],
+          "source": "https://vde-verlag.de/proceedings-en/564687042.html"
+        },
+        {
+          "role": "device voltage classes / building blocks",
+          "examples": [
+            "onsemi 48 V-12 V solution guide: 40 V devices on the 12 V side, 80 V+ on the 48 V side; power modules, gate drivers, eFuses, peak-current PWM controllers"
+          ],
+          "source": "https://onsemi.com/solutions/automotive/vehicle-electrification/48-volt-lv-dc-dc-converter"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "TI TIDA-01168 4-phase 12 V/48 V bidirectional converter (reference design)",
+          "url": "https://www.ti.com/tool/TIDA-01168",
+          "finding": "Two LM5170-Q1 average-current controllers + TMS320F28027F voltage loop (no phase-balancing needed); 24-54 V and 6-18 V ranges; BOM TIDRRL4."
+        },
+        {
+          "title": "Toshiba 3 kW automotive 48 V-12 V bidirectional DC-DC reference guide",
+          "url": "https://toshiba.semicon-storage.com/info/docget.jsp?did=161504",
+          "finding": "40 V XPQR3004PB switching and 12 V line switches, 100 V XPW4R10ANB 48 V line switches, TPD7106F high-side driver."
+        },
+        {
+          "title": "EPC9163 2 kW 48 V/12 V demonstration board (press)",
+          "url": "https://www.businesswire.com/news/home/20211102005156/en/EPC-Launches-2-kW-48-V12-V-DC-DC-Demonstration-Board-for-More-Efficient-Smaller-Faster-Bidirectional-Converters-for-Mild-Hybrid-Cars",
+          "finding": "Two-phase, 96.5% efficient, eGaN FETs, dsPIC33 control."
+        },
+        {
+          "title": "Valeo 48 V DC-DC converters for the independent aftermarket (press)",
+          "url": "https://www.valeoservice.com/en-com/newsroom/valeo-launches-48v-dc-dc-converters-iam",
+          "finding": "Production bidirectional 48 V/12 V converters sold as service parts; no internal details published."
+        }
+      ]
+    },
+    {
+      "ecu": "CCU",
+      "name": "Charging communication controller (EVCC; CCS HomePlug Green PHY, CHAdeMO / GB-T, CP / PP)",
+      "function": "Vehicle-side charging communication: control-pilot / proximity sensing (IEC 61851 / J1772), HomePlug Green PHY PLC for ISO 15118-2/-20 and DIN 70121 (SLAC, V2G messages), CAN to the vehicle; may drive inlet locks and DC contactors.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Small control board: PLC modem on SPI to a host MCU, an RF coupling transformer on the CP line, contactor / lock drivers (Foccci open design). Production layouts not published.",
+        "laminate": "not published in any source found",
+        "boards": "Separate module in the Hyundai Ioniq Electric (Charging Control Module 91950-G7200 2017-19, 91950-G7300 facelift; location reported under the front passenger seat or by the fuse box - unresolved in the source). Foccci: one board.",
+        "basis": "https://github.com/uhi22/foccci , https://github.com/uhi22/pyPLC"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found that states a component count (the Foccci repository publishes its own design files, not read here)."
+      },
+      "keyIcs": [
+        {
+          "role": "HomePlug Green PHY modem (production CCM)",
+          "examples": [
+            "Qualcomm QCA7005 in the Hyundai Ioniq Electric Charging Control Module (firmware MAC-QCA7005-1.1.0.730 read over the PLC link; community investigation)"
+          ],
+          "source": "https://github.com/uhi22/pyPLC"
+        },
+        {
+          "role": "PLC modem + host MCU + contactor drivers (open-source controller)",
+          "examples": [
+            "Qualcomm QCA7005, STMicroelectronics STM32F103RE, 2x onsemi NCV8402 contactor drivers, RF coupling transformer (Foccci open CCS controller; supercharging demonstrated)"
+          ],
+          "source": "https://github.com/uhi22/foccci"
+        },
+        {
+          "role": "HomePlug Green PHY EVCC chip",
+          "examples": [
+            "Vertexcom MSE1022 + MSEX25-i, AEC-Q100 Grade 2, ISO 15118-3; >1 million EVCC chips shipped (company announcement)"
+          ],
+          "source": "https://chargedevs.com/newswire/vertexcom-electric-vehicle-communication-controller-chip-shipments-exceed-1-million-units/"
+        },
+        {
+          "role": "HomePlug Green PHY transceiver",
+          "examples": [
+            "Lumissil IS32CG5317, AEC-Q100 Grade 2, vehicle- or charger-side, SPI/MII/RMII host interface"
+          ],
+          "source": "https://www.charin.global/news/lumissil-automotive-homeplug-green-phy-transceiver/"
+        },
+        {
+          "role": "HomePlug Green PHY modem (automotive successor)",
+          "examples": [
+            "Qualcomm QCA7006AQ, AEC-Q100 Grade 2, backward compatible with QCA7000 / QCA7005 (maker page)"
+          ],
+          "source": "https://www.qualcomm.com/automotive/solutions/connectivity-positioning/products/qca7006aq"
+        },
+        {
+          "role": "reference platform (charger side, for comparison)",
+          "examples": [
+            "NXP i.MX 93 + Lumissil IS32CG5317 with CarMedialab ISO 15118 / OCPP stacks"
+          ],
+          "source": "https://www.globenewswire.com/news-release/2023/03/14/2626296/9275/en/Lumissil-Microsystems-NXP-Semiconductors-CarMedialab-Collaborate-to-Deliver-a-Comprehensive-EV-Charging-System-Reference-Design-Platform.html"
+        },
+        {
+          "role": "control pilot + PLC front end (charger side, for comparison)",
+          "examples": [
+            "TI TIDA-010939 EVSE front-end controller: +/-12 V 1 kHz CP generator, HomePlug Green PHY on SPI, MCU + application processor over UART"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-010939"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "pyPLC: Hyundai Ioniq CCM investigations (community)",
+          "url": "https://github.com/uhi22/pyPLC",
+          "finding": "CCM part numbers 91950-G7200 / G7300; PLC chip QCA7005; the Ioniq closes its contactors on the charger's reported voltage in PreChargeResponse."
+        },
+        {
+          "title": "Foccci - Fully Open CCS Charge Controller Interface (open-source hardware)",
+          "url": "https://github.com/uhi22/foccci",
+          "finding": "QCA7005 + STM32F103; board 2023-07-12 entered the charging loop; V3 charged on Alpitronic and ABB chargers (Oct 2023); supercharging Dec 2023."
+        },
+        {
+          "title": "Qualcomm QCA7005 product page",
+          "url": "https://www.qualcomm.com/automotive/solutions/connectivity-positioning/products/qca7005",
+          "finding": "HomePlug Green PHY, CCS and NACS; firmware QCA7000.NU.3.5 resolves the PIB issues of DEF CON 33 / CVE-2025-47324."
+        }
+      ]
+    }
+  ],
+  "boardCostEvidence": [
+    {
+      "claim": "US DOE VTO 2014 merit review: OBCs were expensive - $273 for a tier-one 3.3 kW charger, about one third of the cost in passive components.",
+      "url": "https://www.energy.gov/eere/vehicles/articles/vehicle-technologies-office-merit-review-2014-wbg-converters-and-chargers"
+    },
+    {
+      "claim": "Industry analysis (pre-2020 projection): on-board charger price $130-230 per kW, expected to fall 20-25% within 2020; DC-DC stage and PFC are the largest cost shares.",
+      "url": "https://chargedevs.com/newswire/report-ev-makers-slowly-increasing-power-capacity-of-onboard-chargers/"
+    },
+    {
+      "claim": "Forum-quoted GM service-part listing: Chevrolet Volt 3.6 kW charger $458.84 (a service-part price, not a production cost).",
+      "url": "https://www.chevybolt.org/threads/question-about-manufacturing-cost-of-onboard-charging-related-equipment.32713/page-2"
+    },
+    {
+      "claim": "Yole SystemPlus: in a UAES OBC and a VMAX combined charging unit, parts made outside China are ~40% of total material cost (share only; absolute figures paywalled).",
+      "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-chinese-automotive-electrification-systems-at-a-glance/"
+    },
+    {
+      "claim": "Foccci open CCS controller (hobby quantities): about EUR 25 for the populated PCB, EUR 12 for the QCA7005, EUR 4 for two NCV8402 drivers, EUR 1 for the RF transformer, under EUR 1 for connectors.",
+      "url": "https://github.com/uhi22/foccci"
+    }
+  ],
+  "notes": [
+    "No public absolute cost or teardown ASP for a production OBC, HV DC-DC, 48 V DC-DC or EVCC board was found; Munro and Yole cost figures for these units are paywalled. Munro's public figures are for inverters only.",
+    "Production chip identity found only from community / forum sources: Hyundai Ioniq CCM (QCA7005) and Hyundai E-GMP ICCU (LTC3752-2 LDC controller; DSP and SiC maker not named). Tesla PCS / PCS2, VW MEB OBC, BYD 8-in-1 and Ford units were searched without a named IC.",
+    "The library's 'FFSH3065B' for the onsemi 11 kW kit: onsemi's announcement names FFSB3065B-F085 (D2PAK); researched under that code.",
+    "The library's 'QCA7005 (AEC-Q100 Grade 3)': the sources found give AEC-Q100 Grade 2 for QCA7006AQ, MSE1022 and IS32CG5317; no source found stated QCA7005's grade.",
+    "Placements: no source states a component count for any of the four boards; left as not published.",
+    "Already priced in the catalogue (distributor, with observations) - not re-researched: LM5170QPHPRQ1, NCV51705MNTXG, UCC28951QPWRQ1, SN6505BQDBVRQ1, SN6501QDBVRQ1, UCC14240QDWNRQ1, AMC3330QDWERQ1, AMC1311BQDWVRQ1, AMC1301DWVRQ1, AMC1302QDWVRQ1, AMC3301QDWERQ1, UCC5350MCQDWVRQ1, UCC21750QDWRQ1, UCC5870QDWJRQ1, STGAP2SICS, STGAP4STR, NCV57000DWR2G, dsPIC33CK256MP506-E/PT, C3M0032120K, C3M0075120K, AIMW120R045M1, NVHL020N120SC1, SCTW35N65G2V, TMS320F28377DPTPQ, F28386DPTPQR, LM74800QDRRRQ1, NCV8402ASTT1G, TMCS1123, ACS37002, MLX91220, TLE4972.",
+    "Industrial-grade parts named only in Infineon's EV-charging reference (IMZ120R030M1H, 1EDC20I12AH) were not priced: no automotive orderable code is named by that source."
+  ]
+}

@@ -1,3 +1,4 @@
+import { classDefaultPrice, classRange } from '../server/utils/pcb-class-pricing.js';
 import { describe, it, expect } from 'vitest';
 import {
   reconcileBomWithCatalogue,
@@ -136,7 +137,7 @@ describe('capUnconfirmedPrices — magnitude / no-match guard', () => {
     const bom = [{ refDes: 'R1', partNumber: 'RC0402', componentType: 'passive_0402',
                    qty: 1, unitPriceGBP: 0.01, lineTotalGBP: 0.01, ocrExtracted: true }];
     const { bom: out } = capUnconfirmedPrices(bom);
-    expect(out[0].unitPriceGBP).toBe(0.003);          // 0402 resistor table ceiling at 100K
+    expect(out[0].unitPriceGBP).toBeCloseTo(classDefaultPrice(classRange({ componentType: 'passive_0402', description: '', refDes: 'R1' })), 5);   // the table point
     expect(out[0].aiEstimatedPriceGBP).toBe(0.01);    // kept for audit only
     expect(out[0].priceSource).toBe('class-range');
   });

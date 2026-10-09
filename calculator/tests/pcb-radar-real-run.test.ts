@@ -48,24 +48,27 @@ describe('chip markings read by OCR reach the BOM', () => {
 describe('prices held inside the tool\'s own ranges', () => {
   const at250k = knownRangeAtVolume(0.88);
 
-  it('an OCR-matched TEF8105 guessed at £4 is raised to the £9 floor (at volume)', () => {
+  it('an OCR-matched TEF8105 guessed at £4 takes the tool point of its £9–22 range (at volume)', () => {
     const { bom } = capUnconfirmedPrices([{ refDes: 'U2', componentType: 'ic_qfn', description: 'radar transceiver MMIC', partNumber: 'TEF8105', ocrExtracted: true, lineConf: 0.95, qty: 1, unitPriceGBP: 3.52 }], at250k);
-    expect(bom[0].unitPriceGBP).toBeCloseTo(9 * 0.88, 2);
+    expect(bom[0].unitPriceGBP).toBeCloseTo((9 + 13 * 0.25) * 0.88, 2);
     expect(bom[0].priceSource).toBe('known-range');
     expect(bom[0].priceRaised).toBe(true);
     expect(bom[0].needsVerification).toBe(true);
   });
   it('an unread 77 GHz transceiver is held in the TEF810x-class range', () => {
     const { bom } = capUnconfirmedPrices([{ refDes: 'U2', componentType: 'ic_qfn', description: '77/79GHz FMCW radar transceiver MMIC (glob-top)', partNumber: '', qty: 1, unitPriceGBP: 3.52 }], at250k);
-    expect(bom[0].unitPriceGBP).toBeCloseTo(9 * 0.88, 2);
+    expect(bom[0].unitPriceGBP).toBeCloseTo((9 + 13 * 0.25) * 0.88, 2);
     expect(bom[0].priceSource).toBe('function-range');
   });
   it('the radar MCU description does not trip the transceiver range', () => {
-    expect(icKnownRange({ description: 'NXP S32R294 automotive radar MCU (ASIL-B), 77GHz FMCW signal processing' })?.label).toMatch(/S32R294/);
+    // Neither the transceiver row nor — since pipeline review F11 — a named row from the model's prose alone.
+    expect(icKnownRange({ description: 'NXP S32R294 automotive radar MCU (ASIL-B), 77GHz FMCW signal processing' })).toBeNull();
+    expect(icKnownRange({ partNumber: 'FS32R294KCMJD', description: 'radar MCU' })?.label).toMatch(/S32R294/);
   });
-  it('an OCR-confirmed S32R294 above the range is still cut to its ceiling', () => {
+  it('an OCR-confirmed S32R294 guessed above the range takes the tool point', () => {
     const { bom } = capUnconfirmedPrices([{ partNumber: 'FS32R294KCMJD', componentType: 'ic_bga', ocrExtracted: true, lineConf: 1, qty: 1, unitPriceGBP: 60 }], at250k);
-    expect(bom[0].unitPriceGBP).toBeCloseTo(34 * 0.88, 2);   // range ceiling £34 (Arrow/Mouser/Avnet @1k, 2026-10-01)
+    const r = icKnownRange({ partNumber: 'FS32R294KCMJD' })!;
+    expect(bom[0].unitPriceGBP).toBeCloseTo((r.lo + (r.hi - r.lo) * 0.25) * 0.88, 2);
   });
 });
 
@@ -87,8 +90,9 @@ describe('lines with no part, and over-priced commodity parts', () => {
       { componentType: 'through_hole', description: 'Electrolytic capacitor 100V (JW 100V series)', qty: 2, unitPriceGBP: 1.584 },
       { componentType: 'fuse_tvs', description: 'Automotive AEC-Q101 TVS diodes / small-signal transistors, SOT-23/SOD-123', qty: 10, unitPriceGBP: 0.176 },
     ]);
-    expect(bom[0].unitPriceGBP).toBe(0.90);
-    expect(bom[1].unitPriceGBP).toBe(0.12);
+    expect(bom[0].unitPriceGBP).toBeLessThanOrEqual(0.90);   // at the table point, under the electrolytic cap
+    expect(bom[1].unitPriceGBP).toBeLessThanOrEqual(0.12);
+    expect(bom[0].priceCapped && bom[1].priceCapped).toBe(true);
   });
 });
 

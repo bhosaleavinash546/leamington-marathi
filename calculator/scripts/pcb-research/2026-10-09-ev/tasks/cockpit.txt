@@ -1,0 +1,16 @@
+## CLUSTER — Instrument cluster [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - graphics SoC / MCU: NXP i.MX 8; Renesas R-Car; Infineon TRAVEO T2G cluster
+  - DDR / flash: LPDDR4; eMMC / NOR
+
+## IVI — Infotainment head unit [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - application SoC: Qualcomm SA8155P / SA8295P; Renesas R-Car H3/M3; NXP i.MX 8QM
+  - audio amplifier: class-D automotive amp (TI TAS6424-Q1 class)
+
+## TEL — Telematics control unit (TCU) [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - cellular modem / SoC: Qualcomm MDM9250 / Snapdragon X16 LTE (CCARD reference TCU)
+  - composition (processor, GNSS, modem, Wi-Fi/BT, Ethernet): MCU/processor + GNSS + LTE modem + Wi-Fi/BLE + Ethernet PHY
+  - security controller / HSM: Infineon OPTIGA TPM class secure element
+

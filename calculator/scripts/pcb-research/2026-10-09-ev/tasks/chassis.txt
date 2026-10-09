@@ -1,0 +1,22 @@
+## VCU — Vehicle / hybrid control unit (VCU/HCU) [HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - main MCU: Infineon AURIX TC3xx; NXP MPC57xx / S32K3
+
+## EPS — Electric power steering controller [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - 3-phase gate driver unit: TI DRV3245Q-Q1 (ISO 26262, listed for EPS/EHPS)
+  - main MCU (lock-step): Infineon AURIX TC3xx; Renesas RH850/P1x
+  - power MOSFETs (12 V, 40 V class): Infineon OptiMOS 40 V; Nexperia LFPAK 40 V
+
+## ESC — ABS / ESC brake control unit [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - main MCU (dual-core lockstep): Infineon AURIX TC3xx; NXP MPC57xx
+  - valve/pump driver ASIC: supplier ASIC (Bosch/Continental in-house)
+  - 3-phase gate driver for e-brake/booster variants: TI DRV3245Q-Q1 (listed for electrical brake and brake assist)
+
+## ACU — Airbag / restraint control unit [ICE,MHEV,HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - airbag system IC (firing loops, PSI5, energy reserve, safety controller): Bosch CG912 (4 loops); Bosch CG902 (8 loops); Bosch CG903 (12 loops); Bosch CG904 (16 loops)
+  - squib driver: TI TPIC71008-Q1 (8-channel)
+  - main MCU: Infineon AURIX TC2xx/TC3xx; Renesas RH850
+

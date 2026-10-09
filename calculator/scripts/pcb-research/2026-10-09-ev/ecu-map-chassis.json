@@ -1,0 +1,485 @@
+{
+  "domain": "ev-chassis",
+  "researched": "2026-10-09",
+  "ecus": [
+    {
+      "ecu": "VCU",
+      "name": "Vehicle / hybrid control unit (VCU / HCU)",
+      "function": "Reads driver inputs (accelerator and brake pedal, switches), arbitrates torque requests between the drive units and the battery, manages energy recovery and high-voltage state, and talks to the powertrain domain over CAN / CAN FD / Ethernet under an ASIL-C/D safety concept.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "not published in any source found",
+        "laminate": "not published in any source found",
+        "boards": "Reference design: NXP RDVCU5775EVM is one board that integrates the BMS and VCU high-voltage functions (MPC5775B + FS6523 SBC + MC33664 TPL transceiver + CD1030 switch-detection interface; 1x 100BASE-T1, three CAN of which two CAN FD, LIN, UART, high- and low-side drivers). Production board count: not published in any source found.",
+        "basis": "boards: https://nxp.com/design/design-center/designs/mpc5775b-bms-and-vcu-reference-design:RDVCU5775EVM , https://nxp.com/docs/en/fact-sheet/RDVCU5775EVM_FS.pdf ; other facts: no production teardown found (searches in English and Chinese for VCU teardowns returned none)"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public VCU teardown or BOM count found."
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU + safety SBC + switch-detection interface (NXP reference design, BMS+VCU)",
+          "examples": [
+            "NXP MPC5775B MCU, NXP FS6523 functional-safety SBC (ASIL D), NXP MC33664 TPL transceiver, NXP CD1030 33-channel multiple switch detection interface (RDVCU5775EVM reference design)"
+          ],
+          "source": "https://nxp.com/design/design-center/designs/mpc5775b-bms-and-vcu-reference-design:RDVCU5775EVM"
+        },
+        {
+          "role": "main MCU + SBC (NXP S32K376 BMS + VCU reference design)",
+          "examples": [
+            "NXP S32K376 MCU, NXP FS2633 (FS26) SBC supplying the MCU, high-side / low-side drivers and an MSDI for the VCU function (reference design, as summarised by electronicsforu)"
+          ],
+          "source": "https://www.electronicsforu.com/electronics-projects/bms-and-vcu-reference-design-for-ev"
+        },
+        {
+          "role": "MCU + multifunction U-chip / SBC (ST VCU chipset tiers)",
+          "examples": [
+            "ST high-end: SPC574 (SPC57xx, functional safety) + L9788 U-chip; mid: SPC57xx + L9779; low: SPC560Bxx + L9741 SBC (ST presentation, Suzhou new-energy vehicle seminar)"
+          ],
+          "source": "https://image.big-bit.com/mpic/2017cdz/ST-苏州新能源汽車演讲檔案.pdf"
+        },
+        {
+          "role": "safety SBC (Tier-2 VCU platform)",
+          "examples": [
+            "NXP FS26 SBC in Embitel's VCU solution (ASIL-C/D target; supplier marketing page, not a teardown)"
+          ],
+          "source": "https://www.embitel.com/?p=98369"
+        },
+        {
+          "role": "main MCU (already in the library)",
+          "examples": [
+            "Infineon AURIX TC3xx; NXP MPC57xx / S32K3 (task file; AURIX TC3xx positioned by Infineon for hybrid domain control)"
+          ],
+          "source": "https://chargedevs.com/newswire/infineon-launches-aurix-family-of-tc3xx-microcontrollers-for-automotive-applications"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "42how: Vehicle Control Unit (VCU) introduction",
+          "url": "https://en.42how.com/2021/06/08/vehicle-control-unit-vcu-introduction/",
+          "finding": "Background article, not a teardown: early VCU products named are Delphi HCU-2, Unitek VCU, Continental H300 and Puhua VCU-1; functional safety and AUTOSAR are named as requirements. No chip list."
+        },
+        {
+          "title": "NXP RDVCU5775EVM fact sheet (reference design, not a production board)",
+          "url": "https://nxp.com/docs/en/fact-sheet/RDVCU5775EVM_FS.pdf",
+          "finding": "ASIL-D SBC + ASIL-D MCU + ASIL-C cell controller partitioning; 100BASE-T1, 3x CAN (2 FD), LIN, UART; pedal / switch inputs, ADC, HS/LS drivers."
+        }
+      ]
+    },
+    {
+      "ecu": "EPS",
+      "name": "Electric power steering controller (column / pinion / rack ECU)",
+      "function": "Measures steering torque and angle, runs field-oriented control of a 3-phase motor (BLDC/PMSM, ~100 A at low speed and large steering angle) through a gate driver and a 6-MOSFET bridge with phase-current shunts, under a lock-step MCU and safety PMIC (ASIL-D).",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "Production: not published in any source found. Infineon EVALKIT_TLE9189 (evaluation kit with AURIX TC364DP, TLF35585QV and an OptiMOS 6 40 V B6 bridge) is 12.5 x 8.5 cm (evaluation board, not a production ECU).",
+        "technology": "Control module (MCU board) and power module (three half-bridges of MOSFETs) linked by through-hole leads, bond wires or flex foil; a plastic carrier with lead frame can hold the large electrolytic capacitors (Electronic Design). Patents describe a separate power board on the heat sink with a signal board stacked above it, because one board carrying both needs thick copper and raises cost and thermal resistance (US 2018/0034349); EP4294138 describes stacked / split-level PCBs either side of a heat sink.",
+        "laminate": "not published in any source found",
+        "boards": "Typically control + power board (patents above). Tesla Model 3/Y steering racks carried two ECUs (one redundant); CNBC reported one was omitted on Shanghai-built cars during the 2022 chip shortage (Tesla did not confirm).",
+        "basis": "size: https://www.newark.com/new-products/development-boards-evaluation-tools/infineon-evalkittle9189quwtobo1 ; technology: https://www.electronicdesign.com/markets/automotive/article/21797427/building-ecus-for-electric-power-assisted-steering-systems , https://patents.justia.com/patent/20180034349 , https://data.epo.org/publication-server/rest/v1.2/patents/EP4294138NWA1/document.html ; boards: https://www.cnbc.com/2022/02/07/tesla-cut-a-steering-component-to-deal-with-chip-shortage.html"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No public EPS ECU teardown with a component count found (TechInsights / System Plus EPS reports not indexed)."
+      },
+      "keyIcs": [
+        {
+          "role": "3-phase gate driver unit (already in the library)",
+          "examples": [
+            "TI DRV3245Q-Q1: 3 half-bridges, charge pump for 100% duty, 3 (A) or 2 (B) current-shunt amplifiers, HTQFP-48, ISO 26262 (TI product launch, listed for EPS)"
+          ],
+          "source": "https://www.mouser.co.uk/new/texas-instruments/ti-drv3245q-q1-gate-driver-unit"
+        },
+        {
+          "role": "gate driver + MCU + safety PMIC + MOSFET bridge (Infineon evaluation kit)",
+          "examples": [
+            "Infineon MOTIX TLE9189QUW / TLE9189QVW (ASIL D, AEC-Q100 Grade 0) with AURIX TC364DP, OPTIREG TLF35585QV and a B6 bridge of OptiMOS 6 40 V MOSFETs plus a bridge-disconnect MOSFET (EVALKIT_TLE9189, for EPS and brake assist)"
+          ],
+          "source": "https://www.mouser.se/infineon-tle9189-evaluation-kits"
+        },
+        {
+          "role": "48 V EPS gate driver + MCU (TI reference design)",
+          "examples": [
+            "TI DRV3255-Q1 (48 V GDU, EPS listed) with TMS320F28P65x-Q1, LM25184-Q1 and TCAN1044A-Q1 (TIDUF56 reference design)"
+          ],
+          "source": "https://ti.com/document-viewer/lit/html/TIDUF56/GUID-802DB71E-C9F6-43DA-978E-BC676F7989FA"
+        },
+        {
+          "role": "safety PMIC for the MCU",
+          "examples": [
+            "TI TPS65381-Q1 / TPS65381A-Q1 with TMS570 (TI names EPS as a target; TPS65381-Q1 NRND, A version recommended)"
+          ],
+          "source": "https://www.ti.com/product/tps65381-q1"
+        },
+        {
+          "role": "main MCU + PMIC (Renesas EPS reference design)",
+          "examples": [
+            "Renesas RH850/P1M-E MCU with RAA270005KFP PMIC (Renesas EPS application page)"
+          ],
+          "source": "https://www.renesas.com/application/automotive/electric-power-steering"
+        },
+        {
+          "role": "3-phase pre-driver (NXP EPS solution)",
+          "examples": [
+            "NXP GD3000 3-phase brushless pre-driver with NXP automotive MCU (NXP EPS block diagram)"
+          ],
+          "source": "https://www.nxp.com/applications/ELECTRIC-POWER-STEERING"
+        },
+        {
+          "role": "torque / angle sensing (production)",
+          "examples": [
+            "Infineon TLE4998C4 linear Hall sensors, two per steering system, for steering torque sensing in Volkswagen EPS built in Braunschweig (Infineon press release 2011)"
+          ],
+          "source": "https://infineon.com/cms/en/about-infineon/press/press-releases/2011/INFATV201101-016.html"
+        },
+        {
+          "role": "steering / rotor angle sensor",
+          "examples": [
+            "Infineon TLE5014 GMR angle sensor (ASIL C single die, ASIL D dual die; Infineon says it can be integrated into a safety-critical EPS)"
+          ],
+          "source": "https://www.infineon.com/cms/en/about-infineon/press/market-news/2018/INFATV201806-065.html"
+        },
+        {
+          "role": "power MOSFETs",
+          "examples": [
+            "Infineon EPS chipset: 40 V MOSFETs down to 0.9 mOhm in SS08 or sTOLL; chipset = power supply, MCU, half-bridge drivers, MOSFETs, CAN transceivers, sensors (CAN Newsletter article by Infineon authors, 2019)"
+          ],
+          "source": "https://old.can-cia.org/fileadmin/resources/documents/publications/cnlm_issues/march_2019/19-1_p22_chipset_for_electric_power_steering_goran_keser_christoph_unterreiner_infineon.pdf"
+        },
+        {
+          "role": "complete controller (community design document, not a production board)",
+          "examples": [
+            "TI TMS320F28034 MCU, Allegro A4910 3-phase gate driver, 6x Infineon BSZ019N03LS (30 V) full bridge, ams AS5147 position sensor, TI SN65HVD230 CAN (EPS motor-controller design document posted on TI E2E China)"
+          ],
+          "source": "https://e2echina.ti.com/cfs-file/__key/communityserver-discussions-components-files/121/EPS_3575A852A9529B526C8F1154FB7CDF7EBE8BA18BB9654868_.docx"
+        },
+        {
+          "role": "main MCU (already in the library)",
+          "examples": [
+            "Infineon AURIX TC3xx (TC364DP on the TLE9189 kit); Renesas RH850/P1x (P1M-C named by Renesas for EPS)"
+          ],
+          "source": "https://eetimes.itmedia.co.jp/ee/articles/1411/14/news079_2.html"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Electronic Design: Building ECUs for Electric Power-Assisted Steering Systems",
+          "url": "https://www.electronicdesign.com/markets/automotive/article/21797427/building-ecus-for-electric-power-assisted-steering-systems",
+          "finding": "Packaging article (not a teardown): microprocessor control board takes angle-sensor inputs, monitors power-module temperature; power module = one MOSFET half-bridge per phase; modules joined by leads, bond wires or flex foil."
+        },
+        {
+          "title": "CNBC: Tesla cut a steering component to deal with chip shortage",
+          "url": "https://www.cnbc.com/2022/02/07/tesla-cut-a-steering-component-to-deal-with-chip-shortage.html",
+          "finding": "Shanghai-built Model 3/Y racks shipped with one of the two (redundant) steering ECUs omitted (reported from internal correspondence; not confirmed by Tesla). No chip identities."
+        },
+        {
+          "title": "Tesla recall: firmware to correct loss of EPAS steering (2023 Model 3/Y)",
+          "url": "https://www.tesla.com/en_gb/support/recall-vehicle-firmware-correct-loss-of-epas",
+          "finding": "OTA fix prevents overvoltage breakdown and overstress of motor-drive components on the EPAS printed circuit board. No chip identities."
+        },
+        {
+          "title": "Infineon EVALKIT_TLE9189 (evaluation kit, not a production board)",
+          "url": "https://www.newark.com/new-products/development-boards-evaluation-tools/infineon-evalkittle9189quwtobo1",
+          "finding": "12 V platform, 4.2-36 V supply, 12.5 x 8.5 cm; TLE9189 + TC364DP + TLF35585QV + OptiMOS 6 40 V B6 bridge; for EPS, brake assist and FuSa BLDC/PMSM."
+        },
+        {
+          "title": "TI TIDA-020106 electro-mechanical brake reference design (applies to EPS per TI)",
+          "url": "https://www.ti.com/tool/TIDA-020106",
+          "finding": "TI states the same approach can be applied to EPS because the key components are shared; parts listed under ESC."
+        }
+      ]
+    },
+    {
+      "ecu": "ESC",
+      "name": "ABS / ESC brake control unit, incl. integrated brake / brake-by-wire and e-booster variants",
+      "function": "Reads wheel-speed sensors, pressure and pedal sensors and the yaw / lateral-acceleration cluster, computes per-wheel brake force and drives the hydraulic unit's solenoid valves (current-controlled and on/off) and pump motor; integrated one-box and brake-by-wire variants add a 3-phase booster motor drive and regenerative-brake blending over CAN.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "ECU PCB bolted onto the hydraulic control unit; the solenoid coil leads are soldered (or routed) to traces on the PCB, the valve sleeves press-fitted into the aluminium HCU, coils sometimes potted in a housing frame (patents). 2004 Prius skid-control ECU: a single PC board with peripherally leaded ICs in a cast housing (EDN teardown).",
+        "laminate": "not published in any source found",
+        "boards": "One PCB on the HCU in the patents and the Prius SCM; ESP 9 adjusts pressure through 12 solenoid valves (parts-retailer description). One-box brake-by-wire (Continental MK C1) integrates actuation, booster and ABS/ESC control in one module.",
+        "basis": "technology: https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/6985060 , https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/6352317 , https://www.edn.com/?p=4004688 ; boards: https://www.repturn.com/en/product/block-esp-abs-camping-car-bosch-9/ , https://continental.com/en/press/press-releases/mk-c1-brake-system"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "Yole / System Plus 'Other ECUs' teardown module covers ABS ECUs (BOM and cost paywalled); no public count found."
+      },
+      "keyIcs": [
+        {
+          "role": "power SBC with wheel-speed-sensor interfaces + valve drivers (ST braking chipset)",
+          "examples": [
+            "ST L9396 (buck/boost + LDOs + 4-channel WSS interface, ABS/EPS/transmission; NRND, L9396L active), ST L9305 (4-channel current-controlled valve driver, programmable dither), ST L9301 (octal low-side on/off valve driver), ST L9352B (4-channel valve driver) (ST braking-ICs pages)"
+          ],
+          "source": "https://www.st.com/en/automotive-analog-and-power/braking-ics.html"
+        },
+        {
+          "role": "3-phase gate driver for brake-by-wire / brake assist",
+          "examples": [
+            "Infineon MOTIX TLE9189 (ASIL D, AEC-Q100 Grade 0; Infineon: particularly suitable for brake-by-wire and steer-by-wire)",
+            "TI DRV3245Q-Q1 (already in the library; listed for electrical brake and brake assist)"
+          ],
+          "source": "https://infineon.com/cms/jp/about-infineon/press/market-news/2024/INFATV202410-016.html"
+        },
+        {
+          "role": "electro-mechanical brake controller (TI reference design, not a production board)",
+          "examples": [
+            "TI F29P32 MCU (F29P329SM2), DRV3263-Q1 48 V 3-phase smart gate driver (DRV3233-Q1 also listed), TPS653860-Q1 safety PMIC, LM68645-Q1, LM74930-Q1, TCAN1043H-Q1, DRV8263-Q1 / DRV8243-Q1, LDC5072-Q1 inductive pedal-sensor front end, TMAG6180-Q1 AMR angle sensor (TIDA-020106, design guide TIDUFI0 May 2026)"
+          ],
+          "source": "https://www.ti.com/tool/TIDA-020106"
+        },
+        {
+          "role": "main MCU + watchdog + drivers (legacy Freescale ABS reference)",
+          "examples": [
+            "Freescale 68HC912D60 main MCU with 68HC08AZ32 asymmetric watchdog, later MC9S12DP256; MC33886 / MC33887 / MC33742 / MC33989 for valves, pump and CAN; 8 solenoid valves typical (NXP product guide; legacy architecture)"
+          ],
+          "source": "https://www.nxp.jp/docs/en/product-selector-guide/SG2006.pdf"
+        },
+        {
+          "role": "main MCUs (production, 2004 Toyota Prius skid-control ECU)",
+          "examples": [
+            "Toshiba TMP1984FDFG 32-bit (Toyota-branded) + Mitsubishi M30620 16-bit (EDN / Portelligent teardown)"
+          ],
+          "source": "https://www.edn.com/?p=4004688"
+        },
+        {
+          "role": "safety MCU for ABS (Renesas)",
+          "examples": [
+            "Renesas RH850/P1L-C, low-end safety MCU for anti-lock brake and airbag systems (launched Dec 2016); RH850/P1M-C (2014) targets mid-range applications such as stability control"
+          ],
+          "source": "https://www.renesas.com/en-eu/about/press-center/news/2016/news20161215.html"
+        },
+        {
+          "role": "integrated ABS controller (two-wheeler)",
+          "examples": [
+            "NXP SB0401 one-wheel ABS controller: 2 low-side solenoid-valve drivers, 2 active wheel-speed inputs, high-side gate drivers for pump motor and master relay (scooter / moped ABS)"
+          ],
+          "source": "https://nxp.com/products/power-management/smart-switches-and-drivers/braking-systems/one-wheel-antilock-braking-abs-controller-for-scooter-moped:SB0401"
+        },
+        {
+          "role": "wheel-speed sensor (off-board, in the wheel sensor - feeds the ECU's WSS interface)",
+          "examples": [
+            "Infineon TLE5045iC (successor) / TLE5041plusC iGMR wheel-speed sensors, 2-wire 7/14 mA current interface, ASIL B(D)"
+          ],
+          "source": "https://www.mouser.in/new/infineon/infineon-tle5045ic-sensor"
+        },
+        {
+          "role": "main MCU / valve-pump ASIC (already in the library)",
+          "examples": [
+            "Infineon AURIX TC3xx; NXP MPC57xx; supplier in-house valve/pump ASIC (Bosch / Continental) - no public identification of the in-house ASIC found"
+          ],
+          "source": "engineering judgement"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "EDN / TechOnline 'Under the Hood': Toyota Prius skid control module",
+          "url": "https://www.edn.com/?p=4004688",
+          "finding": "Toshiba TMP1984FDFG 32-bit + Mitsubishi M30620 16-bit MCUs; centrally symmetric layout (FR/RL and FL/RR split); analog conditioning and actuator drive; single board, leaded ICs, cast housing."
+        },
+        {
+          "title": "Continental: electro-hydraulic brake-by-wire system MK C1 (press)",
+          "url": "https://continental.com/en/press/press-releases/mk-c1-brake-system",
+          "finding": "One-box module integrating brake actuation, booster and ABS/ESC control; paired with an MK 100 HBE for redundancy in automated driving. No chip identities."
+        },
+        {
+          "title": "Yole / System Plus: Other ECUs teardown track module",
+          "url": "https://www.yolegroup.com/automotive-teardown-track/other-ecus-teardown-track-module/",
+          "finding": "Paid module covering ABS ECUs and airbag controls with BOMs and cost; contents not public."
+        },
+        {
+          "title": "TI TIDA-020106 electro-mechanical brake reference design",
+          "url": "https://www.ti.com/tool/TIDA-020106",
+          "finding": "12 V (6-20 V) and 48 V (32-60 V) variants, ASIL-D compatible, up to 500 W BLDC (48 V); full BOM in SLVMF39 (not opened)."
+        }
+      ]
+    },
+    {
+      "ecu": "ACU",
+      "name": "Airbag / restraint control unit (ACU / SDM)",
+      "function": "Crash-sensing accelerometers on the board and PSI5 / DSI3 satellite sensors detect a crash; the algorithm decides within about 10 ms; an airbag system IC (power, energy reserve, satellite interfaces, safety controller) and squib drivers behind a safing switch fire the pyrotechnic loops, from an energy-reserve capacitor charged to 25-35 V if the battery is lost.",
+      "powertrains": [
+        "ICE",
+        "MHEV",
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "Energy reserve: one electrolytic capacitor sized by required energy, or two or more as airbag counts rise (patent); vented capacitor-mounting cap on the PCB (patent); example 10,000 uF Al electrolytic in an older patent. Denso SDM (2016 Prius): aluminium housing with steel plate cover. Firing supply boosted to 25-35 V (Nexperia).",
+        "laminate": "not published in any source found",
+        "boards": "Bosch: CG90x enables a two-chip ACU (MCU + system IC). NXP reference: one board with MCU, MC33789, 2x MC33797, central accelerometer, autarky capacitor; PSI5 satellites are separate modules. Production board count: not published in any source found.",
+        "basis": "technology: https://patents.google.com/patent/EP4319514A1/en , https://patents.google.com/patent/US11270848 , https://patents.google.com/patent/US5101192A/en , https://electronics360.globalspec.com/article/7546/teardown-denso-toyota-airbag-sdm , https://nexperia.com/applications/automotive/airbag-controller-with-Safing-MOSFET ; boards: https://www.bosch-semiconductors.com/products/automotive-ics/safety/cg903/ , https://community.nxp.com/t5/MPC5xxx/Airbag-Reference-Demonstrator/m-p/1236974"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "IHS Denso SDM and EEVblog TRW teardowns do not publish a count in the indexed text."
+      },
+      "keyIcs": [
+        {
+          "role": "airbag system IC (already in the library)",
+          "examples": [
+            "Bosch CG903: 12 firing loops, 4 PSI5 interfaces, power / firing-loop / sensor-interface / safety modules on one chip, two-chip ACU with an MCU",
+            "Bosch CG904: 16 loops, 6 PSI5; CG902: 8 loops, 2 PSI5; CG912: 4 loops, 2 PAS, TQFP64"
+          ],
+          "source": "https://www.bosch-semiconductors.com/products/automotive-ics/safety/cg903/"
+        },
+        {
+          "role": "airbag system IC + companion + MCU (ST)",
+          "examples": [
+            "ST L9680 (advanced airbag system IC, TQFP-100, integrated active wheel-speed interface sharing PSI5 pins) + SPC560Px MCU + optional L9679E companion (octal squib driver + 4 PSI5) (ST AN5023)",
+            "ST L9678P + SPC560Px + on-board acceleration sensor or PSI5 sensor (ST product page)"
+          ],
+          "source": "https://www.st.com/resource/en/application_note/an5023-l9680-airbag-system-ic-stmicroelectronics.pdf"
+        },
+        {
+          "role": "MCU + airbag SBC + squib drivers + accelerometer (NXP reference platform, not a production board)",
+          "examples": [
+            "NXP SPC5602PEF0MLL6 MCU (e200z0h), MC33789 airbag power supply / 4 PSI5 masters, 2x MC33797 4-channel squib drivers cross-coupled for 8 loops, MMA6801QR2 central (local safing) accelerometer, autarky capacitor (RDAIRBAGPSI5)"
+          ],
+          "source": "https://community.nxp.com/t5/MPC5xxx/Airbag-Reference-Demonstrator/m-p/1236974"
+        },
+        {
+          "role": "squib driver (already in the library)",
+          "examples": [
+            "TI TPIC71008-Q1 8-channel (1.2 A / 1.75 A firing, two arming/safing inputs, HTSSOP-48); TPIC71004-Q1 4-channel; TPIC71002-Q1 2-channel"
+          ],
+          "source": "https://ti.com/product/TPIC71008-Q1"
+        },
+        {
+          "role": "central crash accelerometers (on board)",
+          "examples": [
+            "Bosch SMA760 dual-axis X/Y +/-128 g SafeSPI, SOIC8n (central sensor in airbag ECUs); Bosch SMA720 X/Z for rollover, companion to SMI860"
+          ],
+          "source": "https://www.bosch-semiconductors.com/products/mems-sensors/safety-systems/sma760/"
+        },
+        {
+          "role": "satellite crash sensors (off board, PSI5)",
+          "examples": [
+            "Bosch SMA790 (X, PSI5, LGA SiP), SMA782 (X/Y PSI5), SMA780 / SMA781 (single channel PSI5)"
+          ],
+          "source": "https://www.bosch-semiconductors.com/products/mems-sensors/safety-systems/sma790/"
+        },
+        {
+          "role": "safing MOSFET + boost converter",
+          "examples": [
+            "Nexperia ASFET BUK9M20-60EL (60 V, 13 mOhm, LFPAK33) as safing MOSFET in linear mode; boost from 12 V to 25-35 V; squibs n = 4 to 12 (Nexperia application / AN50016)"
+          ],
+          "source": "https://nexperia.com/applications/automotive/airbag-controller-with-Safing-MOSFET"
+        },
+        {
+          "role": "accelerometer + MCU (production, TRW ACU from a Hyundai)",
+          "examples": [
+            "Freescale MMA68xx / MMA685x accelerometer datasheets and a Renesas H8SX1725F link in the teardown's datasheet list (the blog text does not state which marking was read on which chip)"
+          ],
+          "source": "https://www.eevblog.com/2013/09/10/eevblog-517-car-airbag-controller-teardown/"
+        },
+        {
+          "role": "airbag ASIC (production, ZF-TRW ACU)",
+          "examples": [
+            "ASIC that monitors crash-sensor signals and handles firing commands; identified as 'DS84' in the summary of NHTSA investigation EA19-001 (electrical overstress)"
+          ],
+          "source": "https://m.carcomplaints.com/Kia/Forte/2013/investigations/electrical-overstress-ea19001.shtml"
+        },
+        {
+          "role": "crash accelerometers (production, Toyota Prius ACM)",
+          "examples": [
+            "Two Denso MEMS accelerometers (#7Q 32 and #8T J8) surface-mounted on the ACM board (EDN / TechOnline Prius series)"
+          ],
+          "source": "https://www.edn.com/?p=4011140"
+        },
+        {
+          "role": "safety MCU (Renesas)",
+          "examples": [
+            "Renesas RH850/P1L-C for anti-lock brake and airbag systems"
+          ],
+          "source": "https://www.renesas.com/en-eu/about/press-center/news/2016/news20161215.html"
+        },
+        {
+          "role": "main MCU (already in the library)",
+          "examples": [
+            "Infineon AURIX TC2xx / TC3xx; Renesas RH850 (task file)"
+          ],
+          "source": "engineering judgement"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Electronics360 / IHS: Teardown: Denso - Toyota Airbag SDM (2016 Prius)",
+          "url": "https://electronics360.globalspec.com/article/7546/teardown-denso-toyota-airbag-sdm",
+          "finding": "Sensing diagnostic module with sensors for airbags and vehicle dynamics; Panasonic MEMS gyroscopes (yaw rate, rollover); aluminium housing, steel plate cover; total cost (direct materials and manufacturing) USD 38.46. MCU not named in the indexed text."
+        },
+        {
+          "title": "EEVblog #517 - Car Airbag Controller Teardown",
+          "url": "https://www.eevblog.com/2013/09/10/eevblog-517-car-airbag-controller-teardown/",
+          "finding": "TRW unit from a late-model Hyundai; datasheet list names Freescale MMA68xx / MMA685x accelerometers and Renesas H8SX1725F; forum: squib driver rated to 35 V, ~2.24 A per channel, an 8,400 uF reserve capacitor (forum comments, unverified)."
+        },
+        {
+          "title": "EDN / TechOnline: Prius airbag control module (Part 1 of 7)",
+          "url": "https://www.edn.com/?p=4011140",
+          "finding": "Analog front end with two Denso MEMS accelerometers mounted on the ACM board; MCU and squib driver not named in the indexed text."
+        },
+        {
+          "title": "NHTSA EA19-001: ZF-TRW airbag control units (electrical overstress)",
+          "url": "https://static.nhtsa.gov/odi/inv/2019/INOA-EA19001-2536.PDF",
+          "finding": "An ASIC inside the ACU monitors crash-sensor signals; its failure may prevent deployment."
+        },
+        {
+          "title": "NXP RDAIRBAGPSI5 airbag reference platform (reference design, not a production board)",
+          "url": "https://nz.element14.com/nxp/rdairbagpsi5/reference-platform-e200z0h-airbag/dp/4757276",
+          "finding": "8-loop ECU: SPC5602PEF0MLL6 MCU, MC33789, 2x MC33797, central accelerometer, autarky capacitor, PSI5 satellite module."
+        }
+      ]
+    }
+  ],
+  "boardCostEvidence": [
+    {
+      "claim": "IHS (via Electronics360): Denso airbag sensing diagnostic module for the 2016 Toyota Prius - total cost (direct materials and manufacturing) USD 38.46 (whole module teardown cost estimate).",
+      "url": "https://electronics360.globalspec.com/article/7546/teardown-denso-toyota-airbag-sdm"
+    },
+    {
+      "claim": "US DOT ITS cost database: ABS + ESC unit USD 1,300 capital cost per unit (Ford Focus vehicle option price, 2011 base year) - a vehicle option price including hydraulics and sensors, not the ECU alone.",
+      "url": "https://www.itskrs.its.dot.gov/its/benecost.nsf/ID/3a2c3151b667588f85257b11005d4fca"
+    },
+    {
+      "claim": "RepairPal: 2020 Ford EcoSport air bag control module replacement, parts typically around USD 527 (retail aftermarket price, not a production cost).",
+      "url": "https://repairpal.com/estimator/ford/ecosport/2020/air-bag-control-module-replacement-cost"
+    }
+  ],
+  "notes": [
+    "No production board facts (layers, size, laminate) found for VCU, EPS, ESC or ACU; placements: no public component count for any of the four boards. TechInsights / System Plus / Yole EPS, ABS and airbag reports exist behind paywalls.",
+    "No public teardown naming chips was found for Bosch iBooster / IPB / ESP hev, Continental MK C1, ZF or Tesla EPS, or any production VCU (searched in English and Chinese). Production chip identities found only for the 2004 Prius skid-control ECU (Toshiba + Mitsubishi MCUs, EDN), the Prius ACM (Denso accelerometers), a TRW ACU (EEVblog datasheet list) and the ZF-TRW 'DS84' ASIC (NHTSA EA19-001 summary).",
+    "The task's TIDA-01474 and TIDA-020018 were not found in any search result; TIDA-020106 (electro-mechanical brake, TI says applicable to EPS) and TIDUF56 (48 V drive with DRV3255-Q1) are used instead.",
+    "TLI5590 not used: the TLI prefix is Infineon's industrial grade and no EPS source names it. Wheel-speed sensors (TLE5041plusC / TLE5045iC) sit in the wheel sensor, not on the ESC board; the board carries the WSS interface (ST L9396, or in-house ASIC).",
+    "The Bosch iBooster ECU (TC / gate driver identities) and Bosch in-house valve ASIC were searched without result.",
+    "Already priced in the catalogue (distributor, with observations) - not re-researched: DRV3245AQPHPRQ1, TLE9180D31QKXUMA1, TLE9183QKXUMA1, A4910KJPTR-T, L9907TR, DRV8343SQPHPRQ1, TLF35584QVVS2, TLF35585QVS01XUMA2, TPS65381AQDAPRQ1, MC33FS6500NAER2, MFS2633AMDAKADR2 (FS26), SAK-TC364DP-64F300W AA, TC377TX96F300SABKXUMA1, TC387QP160F300SAEKXUMA2, TC397XX256F300SBDKXUMA2, SAK-TC2xx (TC233/234/264/275/277/297), S32K311/312/314/344/358/396, MPC5744PK1AMLQ9, SPC5777CCK3MME3, SPC584B70E3EHC0X, SPC58NH92C3RMI0X, R7F7016904AFP (RH850/F1KM), R7F702300BFABA-C#BC6 (RH850/U2A), TLE5012BE1000XUMA1, TLE5014SP16XUMA1, A1335LLETR-T, MLX90363KDC-ABB-000-RE, SMI230, ASM330LHBTR, IAM-20680HT, SCL3300-D01-10, IAUC120N04S6L008ATMA1, IAUC100N04S6L025ATMA1, IAUC60N04S6L039ATMA1, IPB015N04LGATMA1, BUK7S1R0-40HJ, INA240A1QPWRQ1, WSLP2512R0050FEA, CSS2H-2512R-L500F, TJA1463AT/0Z, TLE9251VSJXUMA1, TCAN1043ADRQ1, DRV3946QPWPRQ1, MC33816AE, L9779WD-SPI-TR.",
+    "Parts file chassis.json: 33 parts researched, 18 with a valid observation (all pass priceFromObservations, none dropped), 5 with 2+ distributors. ST braking/airbag ICs and Bosch automotive ASICs/MEMS (CG903, SMA760) are rarely listed by franchised distributors."
+  ]
+}
