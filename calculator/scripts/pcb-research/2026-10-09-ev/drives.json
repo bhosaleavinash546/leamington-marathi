@@ -1,0 +1,717 @@
+{
+  "domain": "ev-drives",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "UCC5881QDFCRQ1",
+      "family": "UCC5881-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Isolated 20 A adjustable-strength SiC/IGBT gate driver, SPI (TIDM-02014 rev A)",
+      "category": "ic_soic",
+      "pkg": "SSOP-32 (DFC)",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "UCC5881QDFCRQ1",
+      "observations": [],
+      "notes": "No distributor listing found in 3 searches (TI addendum: active, reel of 2,000; a .B variant 'Call TI'). Sibling UCC5880QDFCRQ1 is already priced in the catalogue."
+    },
+    {
+      "mpn": "PGA411QPAPRQ1",
+      "family": "PGA411-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Resolver-to-digital converter with exciter amp and boost, HEV/EV traction",
+      "category": "ic_tqfp",
+      "pkg": "HTQFP-64",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "PCU"
+      ],
+      "observedMpn": "PGA411QPAPRQ1",
+      "observations": [],
+      "notes": "No valid observation: TI re-categorised PGA411-Q1 as a custom part (E2E: orders via TI sales); LCSC lists only a 30+ break (USD 17.63, below 100 units); Lisle Apex is a broker. The task's 'PGA411QPHPRQ1' does not exist; orderable is PGA411QPAPRQ1."
+    },
+    {
+      "mpn": "F280039CPZRQ1",
+      "family": "F280039C-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "C2000 real-time MCU 120 MHz, 384 KB flash, automotive (TIDM-02014 2023, TIDM-02012)",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-100 (PZ)",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "ECOMP"
+      ],
+      "observedMpn": "F280039CPZRQ1",
+      "observations": [],
+      "notes": "No valid observation: Mouser 595-F280039CPZRQ1 USD 5.83 @1,000 / 6.43 @100 seen only on an OEMsTrade mirror (not a permitted price host); Mouser India category page tier mapping ambiguous; Digi-Key only on a punchouttest storefront (forbidden). Tray sibling F280039CPZQ1."
+    },
+    {
+      "mpn": "F29H859TU-Q1",
+      "family": "F29H85x",
+      "mfr": "Texas Instruments",
+      "desc": "C2000 F29x C29 real-time MCU, automotive (TIDM-02014 rev A)",
+      "category": "ic_bga",
+      "pkg": "not confirmed",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "F29H859TU-Q1",
+      "observations": [],
+      "notes": "Not orderable at distributors: TI addendum lists XF29H859TU... as PREVIEW, 'Call TI'. Only the LAUNCHXL-F29H85X board is listed (Digi-Key USD 34.80)."
+    },
+    {
+      "mpn": "AMC0386-Q1",
+      "family": "AMC0386-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Isolated amplifier with integrated HV resistor divider, DC-link sensing (TIDM-02014)",
+      "category": "ic_soic",
+      "pkg": "SSOP-15 (TI page)",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "AMC0386-Q1",
+      "observations": [],
+      "notes": "Orderable code and distributor listing not found (1 search); TI page gives a 15-pin SSOP."
+    },
+    {
+      "mpn": "TPS653860-Q1",
+      "family": "TPS65386x-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Functional-safety PMIC with buck/boost pre-regulator, ASIL D (TIDM-02014 rev A, with F29H859TU-Q1)",
+      "category": "ic_qfn",
+      "pkg": "not confirmed",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "TPS653860-Q1",
+      "observations": [],
+      "notes": "No orderable code or distributor price found (1 search). Catalogue holds TPS653850 as an estimate and TPS65381AQDAPRQ1 priced."
+    },
+    {
+      "mpn": "LM5180QNGURQ1",
+      "family": "LM5180-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "PSR flyback converter 65 V, isolated gate-driver bias (6 per inverter in TI PMP31236)",
+      "category": "ic_qfn",
+      "pkg": "WSON-8 (NGU)",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "LM5180QNGURQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4500,
+          "price": 2.88501,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5180QNGURQ1/10820179",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Reel of 4,500; 12-week lead. Flywing-tech USD 165 listing ignored (implausible, not franchised)."
+    },
+    {
+      "mpn": "UCC20225AQNPLRQ1",
+      "family": "UCC20225A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Isolated dual-channel gate driver 4 A/6 A (5 per 48 V starter-generator, TI SSZT409)",
+      "category": "ic_qfn",
+      "pkg": "LGA-13 (NPL)",
+      "aecq": true,
+      "ecuRoles": [
+        "BSG_INV"
+      ],
+      "observedMpn": "UCC20225AQNPLRQ1",
+      "observations": [],
+      "notes": "No valid observation: Digi-Key breaks (EUR 2.64419 @1,000, 2.55695 @3,000) seen only on punchouttest.digikey.es (forbidden host); digikey.cn sibling UCC20225AQNPLTQ1 is VAT-inclusive and Last Time Buy; Sierra IC requires quote."
+    },
+    {
+      "mpn": "1EDI3031ASXUMA1",
+      "family": "1EDI303xAS",
+      "mfr": "Infineon",
+      "desc": "EiceDRIVER single-channel isolated SiC gate driver 20 A, DESAT + OCP, traction inverter",
+      "category": "ic_soic",
+      "pkg": "PG-DSO-20",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "1EDI3031ASXUMA1",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 500,
+          "price": 4.2927,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/infineon/1edi3031asxuma1/driver-sic-mosfet-high-side-pg/dp/3807509",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 500,
+          "price": 220.2,
+          "currency": "THB",
+          "url": "https://th.rs-online.com/web/p/gate-drivers/2323035",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Farnell IE cut tape, largest break 500 (EUR 7.4784 @1). RS UK GBP 1.92 ex VAT (break unclear) not used. Task names 1EDI3025/3031; Infineon HPD GD BOARD G1 SIC uses 1EDI3033AS (no price found; jp.farnell lists it)."
+    },
+    {
+      "mpn": "1EDI3025ASXUMA1",
+      "family": "1EDI302xAS",
+      "mfr": "Infineon",
+      "desc": "EiceDRIVER single-channel isolated IGBT gate driver, traction inverter (1EDI302xAS IGBT series)",
+      "category": "ic_soic",
+      "pkg": "PG-DSO-20",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "1EDI3025ASXUMA1",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 1000,
+          "price": 2.1227,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/manufacturers/m/c/infineon/uncategorized",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 4000,
+          "price": 2.05065,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/manufacturers/m/c/infineon/uncategorized",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Avnet Americas Infineon listing, min/mult 1,000, factory lead 140 (days); two undated snapshots seen, the later one used (earlier: USD 2.2077 @1k, 2.1854 @4k)."
+    },
+    {
+      "mpn": "1EDI3035ASXUMA1",
+      "family": "1EDI303xAS",
+      "mfr": "Infineon",
+      "desc": "EiceDRIVER single-channel isolated SiC gate driver 20 A, inverters >300 kW (library row 1EDI3026AS/1EDI3035AS)",
+      "category": "ic_soic",
+      "pkg": "PG-DSO-20",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "1EDI3035ASXUMA1",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 3.3702,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/infineon/1edi3035asxuma1/gate-driver-sic-mosfet-1-ch-soic/dp/4670244",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Farnell IE 1000+ break as read in one search summary; a second search did not return the page. Sibling 1EDI3038ASXUMA1 at Farnell IE EUR 3.0996 @1,000."
+    },
+    {
+      "mpn": "MGD3160AM515EK",
+      "family": "GD3160",
+      "mfr": "NXP",
+      "desc": "Advanced single-channel isolated IGBT/SiC gate driver, SPI, traction inverter (RDGD3160I3PH5EVB x6)",
+      "category": "ic_soic",
+      "pkg": "SOIC-32",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "MGD3160AM515EK",
+      "observations": [],
+      "notes": "No franchised listing found (3 searches); only Cytech (reference/RFQ broker, 0 stock). GD3162 (EV-INVERTERGEN3) not found either. Older MC33GD3100A3EK is at element14 (SGD 10.73 @250) - a different part."
+    },
+    {
+      "mpn": "MC33GD3000EPR2",
+      "family": "GD3000",
+      "mfr": "NXP",
+      "desc": "3-phase brushless motor pre-driver 6-58 V (S32K324 MCTPTX1AK324 thermal/pump reference)",
+      "category": "ic_qfn",
+      "pkg": "QFN-56",
+      "aecq": true,
+      "ecuRoles": [
+        "TMS",
+        "EBOOST"
+      ],
+      "observedMpn": "MC33GD3000EPR2",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 2000,
+          "price": 2.95,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/mc33gd3000epr2/NXP-Semiconductors",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 3.1474,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/mc33gd3000epr2/NXP-Semiconductors",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Findchips rows naming Mouser and Digi-Key; reel minimum 2,000, 24-week lead. Tray MC33GD3000EP: Mouser USD 3.05 @1,040 / 3.02 @2,600."
+    },
+    {
+      "mpn": "S32K324NHT1MPBST",
+      "family": "S32K324",
+      "mfr": "NXP",
+      "desc": "S32K3 Cortex-M7 lockstep MCU 160 MHz (MCTPTX1AK324 thermal-management reference)",
+      "category": "ic_tqfp",
+      "pkg": "HDQFP-172",
+      "aecq": true,
+      "ecuRoles": [
+        "TMS"
+      ],
+      "observedMpn": "S32K324NHT1MPBIT",
+      "observations": [
+        {
+          "distributor": "element14",
+          "qty": 100,
+          "price": 22906,
+          "currency": "KRW",
+          "url": "https://kr.element14.com/nxp/s32k324nht1mpbit/mcu-32bit-160mhz-hdqfp-172/dp/4784028",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Priced on sibling S32K324NHT1MPBIT (element14 Korea, largest break 100+); exact MPBST only on 773grp (RFQ) and Lisle Apex (no price). Catalogue holds S32K324 as an estimate."
+    },
+    {
+      "mpn": "TLE4973AE35D5S0001XUMA1",
+      "family": "TLE4973",
+      "mfr": "Infineon",
+      "desc": "XENSIV coreless Hall current sensor for busbar / inverter phase current",
+      "category": "ic_soic",
+      "pkg": "PG-TDSO-16",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "BSG_INV"
+      ],
+      "observedMpn": "TLE4973AE35D5S0001XUMA1",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 2500,
+          "price": 2.8,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--analog--sensors--current/tle4973ae35d5s0001xuma1-infineon-6181627",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Reel of 2,500, 39-week lead. Digi-Key lists the VSON variant TLE4973RE35S5S0010XUMA1 (price not captured). TLE4972AE35D5XUMA1 already priced."
+    },
+    {
+      "mpn": "MLX91216LDC-ACH-000-RE",
+      "family": "MLX91216",
+      "mfr": "Melexis",
+      "desc": "IMC-Hall high-speed programmable current sensor 100 mV/mT, busbar (task list)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV",
+        "BSG_INV"
+      ],
+      "observedMpn": "MLX91216LDC-ACH-000-RE",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 2.43,
+          "currency": "USD",
+          "url": "https://www.mouser.co.il/c/sensors/?m=Melexis",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser 482-91216LDCACH000RE reel of 3,000 (USD 5.53 @1). Future lists tube MLX91216LDC-ACH-000-TU USD 2.54 @1,200 (0 stock, 28 wk) - other packing, not used. No board source names MLX91216 on a specific inverter."
+    },
+    {
+      "mpn": "ACS37610LLUATR-010B5",
+      "family": "ACS37610",
+      "mfr": "Allegro",
+      "desc": "Coreless differential Hall current sensor 5 V, +/-200 G, busbar/PCB (Allegro iBSG diagram)",
+      "category": "ic_soic",
+      "pkg": "TSSOP-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BSG_INV",
+        "TINV"
+      ],
+      "observedMpn": "ACS37610LLUATR-010B5",
+      "observations": [],
+      "notes": "No valid observation: Mouser USD 2.55 @1,000 and Digi-Key USD 2.6775 @1,000 / 2.4263 @4,000 seen only on OEMsTrade (not a permitted price host); Mouser regional category pages do not label the break."
+    },
+    {
+      "mpn": "AMT49502KLPTR-5",
+      "family": "AMT49502",
+      "mfr": "Allegro",
+      "desc": "80 V automotive half-bridge MOSFET driver, ASIL, 12 V and 48 V BSG",
+      "category": "ic_soic",
+      "pkg": "TSSOP-24-EP",
+      "aecq": true,
+      "ecuRoles": [
+        "BSG_INV"
+      ],
+      "observedMpn": "AMT49502KLPTR-5",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 2.37375,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/AMT49502KLPTR-5/13979028",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key T&R 4,000 (cut tape ~USD 2.66 @1,000 read only approximately, not recorded); -3 suffix obsolete."
+    },
+    {
+      "mpn": "IAUS240N08S5N019ATMA1",
+      "family": "IAUS240N08S5N019",
+      "mfr": "Infineon",
+      "desc": "OptiMOS 5 80 V 1.9 mOhm 240 A automotive MOSFET, TOLG (24 per Infineon 48 V BSG demonstrator)",
+      "category": "ic_qfn",
+      "pkg": "PG-HSOG-8 (TOLG)",
+      "aecq": true,
+      "ecuRoles": [
+        "BSG_INV",
+        "EBOOST"
+      ],
+      "observedMpn": "IAUS240N08S5N019ATMA1",
+      "observations": [
+        {
+          "distributor": "RS Components (Japan)",
+          "qty": 1800,
+          "price": 294.25,
+          "currency": "JPY",
+          "url": "https://jp.rs-online.com/web/p/mosfets/2207363",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components (Japan)",
+          "qty": 36000,
+          "price": 275.0,
+          "currency": "JPY",
+          "url": "https://jp.rs-online.com/web/p/mosfets/2207363",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components (Taiwan)",
+          "qty": 900,
+          "price": 124.5,
+          "currency": "TWD",
+          "url": "https://twcn.rs-online.com/web/p/mosfets/2207364",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS regional storefronts priced separately (labelled so a Japan/Taiwan gap is not read as a volume slope). The JPY reel price is about half the TWD one; both are as listed. Digi-Key ES: out of stock (EUR 4.39 shown belongs to a substitute)."
+    },
+    {
+      "mpn": "TLE9140EQWXUMA1",
+      "family": "TLE9140",
+      "mfr": "Infineon",
+      "desc": "MOTIX 3-phase BLDC gate driver 24-72 V (to 110 V), SPI - 48 V pumps, fans, e-compressors",
+      "category": "ic_soic",
+      "pkg": "PG-TSDSO-32",
+      "aecq": true,
+      "ecuRoles": [
+        "EBOOST",
+        "TMS"
+      ],
+      "observedMpn": "TLE9140EQWXUMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 2.12234,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE9140EQWXUMA1/17399521",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 2.04744,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE9140EQWXUMA1/17399521",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 3000,
+          "price": 1.797,
+          "currency": "USD",
+          "url": "https://www.avnet.com/shop/us/products/infineon/tle9140eqwxuma1-3074457345651150742",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Farnell IT EUR 2.21 @1,000 also listed. Avnet factory lead time shown as 182 weeks."
+    },
+    {
+      "mpn": "NFVA35065L32",
+      "family": "NFVA35065L32",
+      "mfr": "onsemi",
+      "desc": "Automotive IPM 650 V 50 A 3-phase IGBT inverter with gate drivers (ASPM27) - e-compressors, HV pumps",
+      "category": "power_module",
+      "pkg": "DIP-27 (ASPM27)",
+      "aecq": true,
+      "ecuRoles": [
+        "ECOMP"
+      ],
+      "observedMpn": "NFVA35065L32",
+      "observations": [],
+      "notes": "No break >= 100 found: largest published break 60 (tube) - Digi-Key GR EUR 25.91 @60, RS UK GBP 25.709 @60; onsemi reference price USD 27.6 (maker, not used). 22-week lead."
+    },
+    {
+      "mpn": "NFVA25012NP2T",
+      "family": "NFVA25012NP2T",
+      "mfr": "onsemi",
+      "desc": "Automotive IPM 1200 V 50 A 3-phase IGBT, AlN DBC, AQG324 - 800 V e-compressors",
+      "category": "power_module",
+      "pkg": "DIP-34 (38-lead body)",
+      "aecq": true,
+      "ecuRoles": [
+        "ECOMP"
+      ],
+      "observedMpn": "NFVA25012NP2T",
+      "observations": [],
+      "notes": "No break >= 100 found: RS UK GBP 62.38 @1, 53.77 @10+ ex VAT; Cytech is an RFQ broker; Arrow lists it without price."
+    },
+    {
+      "mpn": "RGS80TSX2DHRC11",
+      "family": "RGS80TSX2DHR",
+      "mfr": "ROHM",
+      "desc": "1200 V 40 A field-stop trench IGBT, AEC-Q101 (ROHM REF66011 7 kW PTC heater)",
+      "category": "through_hole",
+      "pkg": "TO-247N",
+      "aecq": true,
+      "ecuRoles": [
+        "PTC"
+      ],
+      "observedMpn": "RGS80TSX2DHRC11",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 510,
+          "price": 7.15,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/RGS80",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Findchips row naming Digi-Key, tube break 510+ (T&R USD 6.88 @1 also shown)."
+    },
+    {
+      "mpn": "AFGHL40T65SPD",
+      "family": "AFGHL40T65SPD",
+      "mfr": "onsemi",
+      "desc": "650 V 40 A field-stop trench IGBT, AEC-Q101 (automotive successor to FGH40T65 in onsemi TND6319 PTC driver)",
+      "category": "through_hole",
+      "pkg": "TO-247-3",
+      "aecq": true,
+      "ecuRoles": [
+        "PTC"
+      ],
+      "observedMpn": "AFGHL40T65SPD",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 510,
+          "price": 3.05888,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/onsemi/AFGHL40T65SPD/9764708",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "TND6319 / SEC-PTC400-EVB name FGH40T65; FGH40T65SPD-F085 is listed obsolete by brokers and RS describes AFGHL40T65SPD as its AEC-Q101 upgrade. Digi-Key EU sites: EUR 2.642 @510."
+    },
+    {
+      "mpn": "NCV887103D1R2G",
+      "family": "NCV8871",
+      "mfr": "onsemi",
+      "desc": "Automotive non-synchronous boost/flyback controller 340 kHz (aux isolated supply, onsemi TND6319 PTC driver)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "PTC"
+      ],
+      "observedMpn": "NCV887103D1R2G",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 1.09334,
+          "currency": "USD",
+          "url": "https://www.digikey.com.mx/en/products/detail/onsemi/NCV887103D1R2G/2797241",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "TND6319 names 'NCV8871' without suffix; NCV887103D1R2G (340 kHz, AEC-Q100, active) picked as the representative. A 2,500 tier near EUR 0.96 was read only approximately (not recorded)."
+    },
+    {
+      "mpn": "UCC21530QDWKRQ1",
+      "family": "UCC21530-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Isolated dual-channel gate driver 4 A/6 A, 5.7 kVrms (TIDM-02012 e-compressor)",
+      "category": "ic_soic",
+      "pkg": "SOIC-14 (DWK)",
+      "aecq": true,
+      "ecuRoles": [
+        "ECOMP"
+      ],
+      "observedMpn": "UCC21530QDWKRQ1",
+      "observations": [],
+      "notes": "No valid observation: Mouser 595-UCC21530QDWKRQ1 USD 6.51 (break not stated) on an electronicsdatasheets aggregator; no Digi-Key / findchips row with a break found (3 searches)."
+    },
+    {
+      "mpn": "UCC21551AQDWRQ1",
+      "family": "UCC21551-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Isolated dual-channel gate driver 4 A/6 A, reinforced (TI PTC heater app note SLUAAY5)",
+      "category": "ic_soic",
+      "pkg": "SOIC-16 (DW)",
+      "aecq": true,
+      "ecuRoles": [
+        "PTC"
+      ],
+      "observedMpn": "UCC21551AQDWRQ1",
+      "observations": [],
+      "notes": "No valid observation: Mouser CA USD 8.29 @1 and an unlabelled lower tier (~USD 3.19); no Digi-Key listing found (2 searches)."
+    },
+    {
+      "mpn": "DRV8889QPWPRQ1",
+      "family": "DRV8889-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive stepper driver 1.5 A, 1/256 microstep, stall detect (EXV / valve)",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-24",
+      "aecq": true,
+      "ecuRoles": [
+        "TMS"
+      ],
+      "observedMpn": "DRV8889QPWPRQ1",
+      "observations": [],
+      "notes": "No valid observation: digikey.cn CNY 20.12 @1,000 is VAT-inclusive (not used); Digi-Key out of stock; Mouser USD 4.79 (break not stated) only on an aggregator."
+    },
+    {
+      "mpn": "LM25184QNGURQ1",
+      "family": "LM25184-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "PSR flyback converter 42 V (TIDM-02012 e-compressor aux supply)",
+      "category": "ic_qfn",
+      "pkg": "WSON-8 (NGU)",
+      "aecq": true,
+      "ecuRoles": [
+        "ECOMP"
+      ],
+      "observedMpn": "LM25184QNGURQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 3.4623,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM25184QNGURQ1/13169232",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 4500,
+          "price": 3.31714,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM25184QNGURQ1/13169232",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Cut tape 1,000 and reel 4,500 on the same Digi-Key page; 12-week lead."
+    },
+    {
+      "mpn": "TLE9879QXA40XUMA2",
+      "family": "TLE987x",
+      "mfr": "Infineon",
+      "desc": "MOTIX 3-phase BLDC motor-control SoC (Cortex-M3 + bridge driver) - pumps, fans (pairs with TLE9140 for 48 V)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "TMS"
+      ],
+      "observedMpn": "TLE9879QXA40XUMA2",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 500,
+          "price": 208.1,
+          "currency": "THB",
+          "url": "https://th.rs-online.com/web/p/motor-driver-ics/2449747",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Task names TLE987x; TLE9879QXA40 picked as the family's 3-phase member that distributors stock. Farnell IE lists XUMA1 at EUR 3.150 @2,500 (VAT basis unclear in the snippet; not used). Zenode aggregator (Digi-Key USD 3.83 @1k) not a permitted host."
+    },
+    {
+      "mpn": "SPC5777CDK3MMO4",
+      "family": "MPC5777C",
+      "mfr": "NXP",
+      "desc": "MPC5777C Power Architecture MCU, triple core (RDGD3160I3PH5EVB plug-in MCU)",
+      "category": "ic_bga",
+      "pkg": "BGA (MMO)",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "SPC5777CDK3MMO4",
+      "observations": [],
+      "notes": "No break >= 100 with a stated quantity: Mouser India INR 8,200.77 @1 with an unlabelled lowest break; Digi-Key only on punchouttest.digikey.ca (forbidden; 25-unit max). Catalogue holds MPC5775 as an estimate."
+    },
+    {
+      "mpn": "FS820R08A6P2BBPSA1",
+      "family": "HybridPACK Drive",
+      "mfr": "Infineon",
+      "desc": "HybridPACK Drive 750 V 820 A EDT2 IGBT six-pack power module (RDGD3160 / HYBRID KIT DRIVE)",
+      "category": "power_module",
+      "pkg": "HybridPACK Drive",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "FS820R08A6P2BBPSA1",
+      "observations": [],
+      "notes": "Quote-only at volume: no distributor price found for the OPN (Infineon community gives the OPN). Sibling FS950R08A6P2BBPSA1: RS UK GBP 264.72 @1, 258.10 @2+ ex VAT (below 100 units). onsemi VE-Trac and Infineon CoolSiC HybridPACK modules: no distributor price found; ST ACEPACK DRIVE only on ST's own e-store (maker list price)."
+    },
+    {
+      "mpn": "1EBN1002AE",
+      "family": "1EBN1002AE",
+      "mfr": "Infineon",
+      "desc": "EiceDRIVER BoostLite gate-drive booster (HYBRID KIT DRIVE 1200V gate board)",
+      "category": "ic_soic",
+      "pkg": "not confirmed",
+      "aecq": true,
+      "ecuRoles": [
+        "TINV"
+      ],
+      "observedMpn": "1EBN1002AE",
+      "observations": [],
+      "notes": "No distributor listing or orderable code found (1 search)."
+    }
+  ]
+}

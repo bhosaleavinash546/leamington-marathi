@@ -1,0 +1,639 @@
+{
+  "domain": "ev-drives",
+  "researched": "2026-10-09",
+  "ecus": [
+    {
+      "ecu": "TINV",
+      "name": "Traction inverter (front / rear e-axle): control board + gate-driver board, 400 V Si-IGBT and 800 V SiC",
+      "function": "DC link to 3-phase motor current: MCU runs field-oriented control from phase currents and rotor position (resolver or inductive sensor), commands six isolated gate drivers on a power module (IGBT or SiC), monitors DC-link voltage, temperatures and faults under an ASIL-C/D safety concept.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "Production sizes: not published in any source found. TI says the UCC5880-Q1 isolated driver + isolated bias module in TIDM-02014 gives a gate-driver PCB area more than 2X smaller (another version of the page says 30% smaller), under 4 mm height and 30+ fewer discrete components (reference design claim).",
+        "technology": "Separate gate-driver (power) board and logic/control board on the power module; Infineon HybridPACK Drive G2 documentation says gate-driver boards are fixed to the module by heat-staking or self-tapping screws. An academic traction-inverter design uses a three-PCB stack (power PCB, logic PCB, DC-link PCB).",
+        "laminate": "not published in any source found",
+        "boards": "Reference designs: Infineon EVINVHPD2 kits = gate driver board + phase current sensor + logic board; NXP EV-INVERTERGEN3 = power board EV-POWEREVBHD2 + control board S32K396-HPWR-MC; TIDM-02014 = TI gate driver board, control board and control cards on Wolfspeed XM3 modules. Yole: BYD 8-in-1 holds eleven boards, four of them in the inverter area.",
+        "basis": "size: https://www.ti.com/tool/TIDM-02014 ; technology: https://documentation.infineon.com/atv-high-power/docs/gjm1752292322331 , https://amslaurea.unibo.it/id/eprint/34879/ ; boards: https://infineon.com/cms/jp/product/evaluation-boards/ev-inv-hpd2-sic-fs01-08 , https://www.nxp.com/document/guide/getting-started-with-the-ev-invertergen3-ev-traction-inverter-control-reference-design-gen-3:GS-EV-INVERTERGEN3 , https://wolfspeed.com/products/power/reference-designs/tidm-02014 , https://www.yolegroup.com/strategy-insights/whats-in-the-box-byds-8-in-1-electrification-system-at-a-glance/"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "Munro's inverter report sells a PCB bill of materials; no public source states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "main MCU (TI reference design)",
+          "examples": [
+            "TI TMS320F280039C-Q1 or AM263P (TIDM-02014 can be controlled by either)",
+            "TI F29H859TU-Q1 with TPS653860-Q1 (TIDM-02014 guide revision A, May 2025)"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-02014"
+        },
+        {
+          "role": "main MCU + safety SBC + transceivers (NXP reference design)",
+          "examples": [
+            "NXP S32K396 control board S32K396-HPWR-MC (replaces MPC5775E), NXP FS26 ASIL D SBC (replaces FS65), NXP TJA146x CAN FD, NXP TJA1103 100BASE-T1 PHY (EV-INVERTERGEN3)"
+          ],
+          "source": "https://www.nxp.com/document/guide/getting-started-with-the-ev-invertergen3-ev-traction-inverter-control-reference-design-gen-3:GS-EV-INVERTERGEN3"
+        },
+        {
+          "role": "MCU + SBC + CAN (NXP 3-phase gate-drive reference)",
+          "examples": [
+            "NXP MPC5777C (plug-in MCU board), NXP FS6500 SBC, NXP TJA1042 CAN (RDGD3160I3PH5EVB distributor listing)"
+          ],
+          "source": "https://www.mouser.ca/new/nxp-semiconductors/nxp-rdgd3160i3ph5evb-reference-design"
+        },
+        {
+          "role": "main MCU (Infineon kit)",
+          "examples": [
+            "Infineon AURIX on the logic board of HYBRID KIT DRIVE 1200V (FS380R12A6T4B); AURIX integration on EVINVHPD2SICFS0108 and EVINVHPD2SIFS115008"
+          ],
+          "source": "https://www.infineon.com/cms/en/product/evaluation-boards/hybrid-kit-drive-1200v/"
+        },
+        {
+          "role": "main MCU (production, Tesla Model 3/Y rear drive)",
+          "examples": [
+            "TI C2000 MCU (exact device not stated; open-source firmware port and gate-driver work on original Tesla Model 3 inverters, not a formal teardown)"
+          ],
+          "source": "https://github.com/jsphuebner/stm32-sine/pull/49"
+        },
+        {
+          "role": "isolated gate driver (TI)",
+          "examples": [
+            "TI UCC5880-Q1 / UCC5881-Q1 20 A SPI-programmable (TIDM-02014)",
+            "TI UCC5880-Q1 x6 with LM5180-Q1 x6 isolated bias, +15 V / -8 V (PMP31236 HybridPACK Drive IGBT driver reference)"
+          ],
+          "source": "https://www.ti.com/tool/PMP31236"
+        },
+        {
+          "role": "isolated gate driver (NXP)",
+          "examples": [
+            "NXP GD3160 x6 (RDGD3160I3PH5EVB, HybridPACK Drive or VE-Trac module)",
+            "NXP GD3162 with dynamic gate strength (EV-INVERTERGEN3)"
+          ],
+          "source": "https://www.nxp.com/design/design-center/designs/3-phase-reference-design-for-hp-drive-featuring-gd3160:RDGD3160I3PH5EVB"
+        },
+        {
+          "role": "isolated gate driver (Infineon)",
+          "examples": [
+            "Infineon 1EDI3033AS six-channel driver board for HybridPACK Drive CoolSiC (HPD GD BOARD G1 SIC)",
+            "Infineon 1EDI2010AS / 1EDI2015AS + 1EBN1002AE booster (HYBRID KIT DRIVE 1200V)",
+            "Infineon 1EDI2010AS (EVAL-6ED100HPDRIVE-AS)"
+          ],
+          "source": "https://infineon.com/cms/en/product/evaluation-boards/hpd-gd-board-g1-sic"
+        },
+        {
+          "role": "isolated gate driver (production)",
+          "examples": [
+            "ST STGAP1AS (Tesla Model 3 inverter, per open-source driver work; not a formal teardown)",
+            "BYD Semiconductor BF1181 1200 V magnetic-isolated single-channel driver (BYD in-house; use in a named BYD inverter not confirmed by a teardown)"
+          ],
+          "source": "https://github.com/jsphuebner/stm32-sine/pull/49 ; https://autonews.gasgoo.com/articles/market-industry/byd-semiconductor-celebrates-triumphant-mass-production-of-1200v-power-device-driver-chip-70019344"
+        },
+        {
+          "role": "isolated bias supply",
+          "examples": [
+            "TI UCC14240-Q1 (TIDM-02014)",
+            "TI LM5180-Q1 flyback x6 (PMP31236)"
+          ],
+          "source": "https://www.ti.com/tool/PMP31236"
+        },
+        {
+          "role": "isolated DC-link voltage sensing",
+          "examples": [
+            "TI AMC0386-Q1 and AMC0381D-Q1 isolated amplifiers with integrated dividers (TIDM-02014)"
+          ],
+          "source": "https://www.ti.com/video/6372120745112"
+        },
+        {
+          "role": "rotor position",
+          "examples": [
+            "TI PGA411-Q1 resolver-to-digital converter for HEV/EV traction inverters (TI now treats it as a custom part)",
+            "ADI AD2S1210 (AEC-Q100, ASIL B certificate on the W grades)",
+            "TI LDC5072-Q1 inductive position sensor option (TIDM-02014 video)"
+          ],
+          "source": "https://eepower.com/new-industry-products/highly-integrated-resolver-to-digital-converter/ ; https://www.analog.com/ad2s1210 ; https://www.ti.com/video/6372120745112"
+        },
+        {
+          "role": "phase current sensor",
+          "examples": [
+            "Infineon XENSIV phase current sensors (EVINVHPD2 kits; part not named)",
+            "BYD in-house output current sensor module (BYD 8-in-1, Yole)"
+          ],
+          "source": "https://www.mouser.ee/new/infineon/infineon-hybridpack-inverter-eval-kits ; https://www.yolegroup.com/strategy-insights/whats-in-the-box-byds-8-in-1-electrification-system-at-a-glance/"
+        },
+        {
+          "role": "power module",
+          "examples": [
+            "Infineon HybridPACK Drive G2 FS1150R08A8P3 (IGBT), FS01MR08A8MA2LBC and FS02MR12A8MA2B (CoolSiC) (EVINVHPD2 kits)",
+            "Infineon FS820R08A6P2B 750 V EDT2 IGBT (HYBRID KIT DRIVE; RDGD3160 kit, not included)",
+            "Wolfspeed XM3 SiC (TIDM-02014)",
+            "STMicroelectronics SiC power module (Tesla Model 3, System Plus)",
+            "BYD proprietary trench SiC 1200 V 500 A (Denza D9) and BYD SiC (Han L rear inverter) (Yole)"
+          ],
+          "source": "https://www.mouser.ee/new/infineon/infineon-hybridpack-inverter-eval-kits ; https://www.globenewswire.com/de/news-release/2018/08/17/1553388/0/en/Complete-Teardown-Report-of-STMicroelectronics-s-Inverter-with-SiC-Power-Module-for-the-Tesla-Model-3.html ; https://www.yolegroup.com/product/report/byd-1200v-sic-power-module-in-denza-d9-bev/"
+        },
+        {
+          "role": "DC-link capacitor",
+          "examples": [
+            "BYD in-house DC-link capacitor (BYD 8-in-1, Yole); Faratronic named among local suppliers"
+          ],
+          "source": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-byds-8-in-1-electrification-system-at-a-glance/"
+        },
+        {
+          "role": "auxiliary supply / protection",
+          "examples": [
+            "TI LM5158-Q1 and LM74202-Q1 (TIDM-02014 highlighted parts)"
+          ],
+          "source": "https://edgeworker.ti.com/lit/pdf/tiduf23"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Munro & Associates inverter report (Charged EVs summary)",
+          "url": "https://chargedevs.com/newswire/teardown-expert-sandy-munro-compares-tesla-nissan-jaguar-inverters/",
+          "finding": "Compares Tesla Model 3, Nissan Leaf and Jaguar I-PACE inverters; Model 3 inverter ~USD 810 (2018) vs Model Y ~USD 522 (2020). Full report sells PCB schematics and a costed PCB BOM (paywalled)."
+        },
+        {
+          "title": "VASA: Munro report details the ins and outs of EV inverters",
+          "url": "https://vasa.org.au/munro-associates-report-details-the-ins-and-outs-of-ev-inverters/",
+          "finding": "Model 3 inverter USD 709, Nissan USD 636, Jaguar USD 754; masses 4.81 / 11.15 / 8.23 kg. Gives the 2018 Model 3 as USD 1,100 (differs from Charged's USD 810)."
+        },
+        {
+          "title": "System Plus: STMicroelectronics inverter with SiC power module for the Tesla Model 3",
+          "url": "https://www.globenewswire.com/de/news-release/2018/08/17/1553388/0/en/Complete-Teardown-Report-of-STMicroelectronics-s-Inverter-with-SiC-Power-Module-for-the-Tesla-Model-3.html",
+          "finding": "Tesla Model 3 inverter uses ST SiC power modules; board-level content paywalled."
+        },
+        {
+          "title": "Yole: What's in the box? BYD's 8-in-1 electrification system",
+          "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-byds-8-in-1-electrification-system-at-a-glance/",
+          "finding": "Eleven boards, four in the inverter area. Most electronic components still foreign (led by Texas Instruments); local suppliers Runic, Len Technology, Novosense, Faratronic; BYD makes the SiC module, output current sensor, relays and DC-link capacitor; Chinese players 79% of material cost."
+        },
+        {
+          "title": "Yole / EE Times Europe: Inverters in Tesla Model Y, SAIC IM LS6 and XPENG G6 at a glance",
+          "url": "https://www.eetimes.eu/?p=39603",
+          "finding": "Compares integrated and standalone inverters, Tesla 400 V rear inverter vs Chinese 800 V SiC units; device-level content not in the public summary."
+        },
+        {
+          "title": "Yole: BYD 1200 V SiC power module in Denza D9 (reverse costing)",
+          "url": "https://www.yolegroup.com/product/report/byd-1200v-sic-power-module-in-denza-d9-bev/",
+          "finding": "Trench SiC MOSFET, copper interconnection and sintering, 1200 V / 500 A nominal; cost figures paywalled."
+        },
+        {
+          "title": "TI + Wolfspeed TIDM-02014 800 V 300 kW SiC traction inverter (reference design, not production)",
+          "url": "https://www.ti.com/tool/TIDM-02014",
+          "finding": "UCC5880-Q1 / UCC5881-Q1 drivers, UCC14240-Q1 bias, AMC0386-Q1 / AMC0381D-Q1 sensing, F280039C-Q1 or AM263P (F29H859TU-Q1 + TPS653860-Q1 in rev A); Wolfspeed XM3 modules."
+        },
+        {
+          "title": "NXP EV-INVERTERGEN3 (reference design, not production)",
+          "url": "https://www.nxp.com/document/guide/getting-started-with-the-ev-invertergen3-ev-traction-inverter-control-reference-design-gen-3:GS-EV-INVERTERGEN3",
+          "finding": "S32K396 + FS26 + GD3162 + TJA146x + TJA1103; power board and control board; SiC module, DC link and busbar supplied by the user or Vepco."
+        },
+        {
+          "title": "Infineon EVINVHPD2 HybridPACK Drive G2 inverter evaluation kits (reference design)",
+          "url": "https://www.mouser.ee/new/infineon/infineon-hybridpack-inverter-eval-kits",
+          "finding": "Gate driver board + XENSIV phase current sensor + AURIX logic board on FS01MR08A8MA2LBC, FS02MR12A8MA2B or FS1150R08A8P3 modules."
+        },
+        {
+          "title": "Open-source Tesla Model 3 gate-driver support (stm32-sine PR #49)",
+          "url": "https://github.com/jsphuebner/stm32-sine/pull/49",
+          "finding": "Driver class targets STGAP1AS on an original Tesla Model 3 inverter with a TI C2000 MCU, tested at HV; community reverse engineering, not a formal teardown."
+        }
+      ]
+    },
+    {
+      "ecu": "PCU",
+      "name": "Hybrid power control unit (motor + generator inverters + boost converter)",
+      "function": "Toyota-type series-parallel hybrid: boost converter raises battery voltage, two inverters drive the traction motor and the generator, a DC-DC supplies 12 V; one control board runs vector control of both machines from resolvers.",
+      "powertrains": [
+        "HEV",
+        "PHEV"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found (2017 Prius PCU unit: 10.8 kg, 8.4 L as received)",
+        "technology": "2017 Prius: double-side-cooled power devices, upper and lower devices packaged together; IGBTs are Toyota in-house with current-sense emitters (hobbyist teardown of an earlier Prius inverter).",
+        "laminate": "not published in any source found",
+        "boards": "2017 Prius: microcontroller and driver circuitry combined onto one board. 2013 Camry: a separate driver board between the control board and the power modules.",
+        "basis": "https://www.energy.gov/sites/prod/files/2017/06/f34/edt087_burress_2017_o.pdf ; https://www.energy.gov/sites/prod/files/2014/07/f17/ape006_burress_2014_p.pdf ; https://www.techno-fandom.org/~hobbit/cars/ginv/i2compon.html"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "control processors (2017 Prius, tentative identification)",
+          "examples": [
+            "Renesas R5F72AZAKFP 32-bit (marked '?' by ORNL)",
+            "Denso MS9AA (possible FPGA, marked '?' by ORNL); no Tamagawa resolver chip on the control board"
+          ],
+          "source": "https://www.energy.gov/sites/prod/files/2017/06/f34/edt087_burress_2017_o.pdf"
+        },
+        {
+          "role": "power stage",
+          "examples": [
+            "Motor inverter: one upper and one lower IGBT/diode per phase; three lower devices of generator and motor share a gate-drive supply (2017 Prius, ORNL)"
+          ],
+          "source": "https://www.energy.gov/sites/prod/files/2017/06/f34/edt087_burress_2017_o.pdf"
+        },
+        {
+          "role": "IGBT (Toyota in-house)",
+          "examples": [
+            "Toyota-developed IGBTs with five control leads incl. a sense emitter (Prius inverter disassembly, hobbyist)"
+          ],
+          "source": "https://www.techno-fandom.org/~hobbit/cars/ginv/i2compon.html"
+        },
+        {
+          "role": "intelligent power module + control board",
+          "examples": [
+            "Prius IPM contains a control board with IGBTs; boost-converter software caused solder voids under the IGBTs (NHTSA recall 15V-449)"
+          ],
+          "source": "https://static.nhtsa.gov/odi/rcl/2015/RCLRPT-15V449-8432.PDF"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "ORNL / DOE VTO 2017 merit review: 2017 Prius electrical performance",
+          "url": "https://www.energy.gov/sites/prod/files/2017/06/f34/edt087_burress_2017_o.pdf",
+          "finding": "PCU = motor inverter, generator inverter, boost converter, DC-DC; 10.8 kg, 8.4 L; MCU and driver on one board; tentative Renesas 32-bit + Denso device."
+        },
+        {
+          "title": "ORNL / DOE 2014: 2013 Camry hybrid PCU",
+          "url": "https://www.energy.gov/sites/prod/files/2014/07/f17/ape006_burress_2014_p.pdf",
+          "finding": "Driver board sits between control board and power modules; reduced driver circuitry size and complexity."
+        },
+        {
+          "title": "Prius inverter disassembly (hobbyist, techno-fandom.org)",
+          "url": "https://www.techno-fandom.org/~hobbit/cars/ginv/index.html",
+          "finding": "Physical teardown of a third-generation Prius inverter; Toyota in-house IGBTs with sense FET leads."
+        },
+        {
+          "title": "NHTSA recall 15V-449 (Toyota Prius inverter)",
+          "url": "https://static.nhtsa.gov/odi/rcl/2015/RCLRPT-15V449-8432.PDF",
+          "finding": "IPM control board with IGBTs; solder voids from boost-converter control software."
+        }
+      ]
+    },
+    {
+      "ecu": "BSG_INV",
+      "name": "48 V belt starter-generator inverter / controller (MOSFET bridge)",
+      "function": "48 V MHEV: MOSFET 3-phase (or 5-phase) bridge drives the starter-generator for start, boost and regeneration; the MCU runs field-oriented control of the stator and, in alternator mode, the rotor exciter winding.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "Power stage: insulated metal substrate with a single-layer layout for heat spreading in an academic 48 V BSG drive; control-board layers not published in any source found.",
+        "size": "not published in any source found",
+        "technology": "Infineon 48 V BSG demonstrator: 24 x TOLG MOSFETs on an aluminium IMS board, 12 kW, 500 Arms (700 A peak), 105 C liquid cooling. A PCIM integrated motor-inverter module puts MOSFET dies on DBC with ribbon bonds instead of a PCB.",
+        "laminate": "Aluminium IMS (Infineon demonstrator); production: not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "https://infineon.com/cms/en/product/evaluation-boards/48v-bsg-inverter ; https://asu.elsevierpure.com/en/publications/a-high-current-high-power-density-motor-drive-for-a-48-volt-belt-/ ; https://www.vde-verlag.de/proceedings-en/564646015.html"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "power MOSFETs",
+          "examples": [
+            "Infineon IAUS240N08S5N019 80 V OptiMOS 5 TOLG x24 (48V BSG INVERTER demonstrator)"
+          ],
+          "source": "https://infineon.com/cms/en/product/evaluation-boards/48v-bsg-inverter"
+        },
+        {
+          "role": "MCU + PMIC + 3-phase gate driver (architecture)",
+          "examples": [
+            "Infineon: MCU does FOC and exciter control; MCU, power-management IC and 3-phase gate driver rated ISO 26262 ASIL-D (parts not named on the page)"
+          ],
+          "source": "https://infineon.com/cms/en/applications/automotive/powertrain-systems/belt-starter-generator-48v"
+        },
+        {
+          "role": "3-phase / half-bridge gate driver",
+          "examples": [
+            "Allegro AMT49100 / AMT49101 80 V 3-phase (iBSG application diagram)",
+            "Allegro AMT49502 and A89503 80 V half-bridge drivers (hybrid systems page)",
+            "Infineon TLE9180D (12/24/48 V, pins to 90 V, ISO 26262)",
+            "TI UCC20225-Q1 x5 (3 stator + 2 rotor excitation)"
+          ],
+          "source": "https://allegromicro.com/en/applications/automotive/hybrid-electric-48v/starter-generators ; https://www.allegromicro.com/en/applications/automotive/hybrid-electric-48v/hybrid-systems ; https://futureelectronics.com/resources/ftm/motor-control/infineon-tle9180d-gate-driver-ic ; https://ti.com/lit/pdf/sszt409"
+        },
+        {
+          "role": "current sensors",
+          "examples": [
+            "Allegro ACS37610 coreless differential, ACS70311, ACS37612, CT455, CT456 (iBSG application diagram)"
+          ],
+          "source": "https://allegromicro.com/en/applications/automotive/hybrid-electric-48v/starter-generators"
+        },
+        {
+          "role": "power supply",
+          "examples": [
+            "Allegro A81407 multi-output PMIC, ARG81800 and A8586 buck regulators (iBSG page)"
+          ],
+          "source": "https://allegromicro.com/en/applications/automotive/hybrid-electric-48v/starter-generators"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "Infineon 48V BSG INVERTER power-stage demonstrator (reference design, not production)",
+          "url": "https://infineon.com/cms/en/product/evaluation-boards/48v-bsg-inverter",
+          "finding": "24 x IAUS240N08S5N019 TOLG on aluminium IMS; 12 kW, 500 Arms / 700 A peak, 105 C coolant."
+        },
+        {
+          "title": "PCIM: 500 Arms 48 V power stage of BSG inverter with TO-Leadless MOSFET",
+          "url": "https://www.vde-verlag.de/proceedings-en/564429021.html",
+          "finding": "Phase current to 500 Arms with Vds spike under 70 V; scalable number of paralleled devices."
+        },
+        {
+          "title": "ASU: high-current high-power-density motor drive for a 48 V BSG",
+          "url": "https://asu.elsevierpure.com/en/publications/a-high-current-high-power-density-motor-drive-for-a-48-volt-belt-/",
+          "finding": "Individual gate resistor per paralleled MOSFET; IMS single-layer layout for heat spreading."
+        },
+        {
+          "title": "TI: Evolution of 48V starter-generator systems (SSZT409)",
+          "url": "https://ti.com/lit/pdf/sszt409",
+          "finding": "Five UCC20225-Q1 dual drivers for 3 stator + 2 rotor excitation coils."
+        }
+      ]
+    },
+    {
+      "ecu": "EBOOST",
+      "name": "48 V electric supercharger / e-booster controller",
+      "function": "48 V MHEV: high-speed motor (BLDC/PMSM or switched reluctance) spins a compressor wheel for transient boost; controller is a 3-phase MOSFET inverter with MCU, gate driver and ASIL-C/D safety goals.",
+      "powertrains": [
+        "MHEV"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "BorgWarner eBooster: integrated power electronics on light-vehicle 12 V / 48 V units; external water-cooled power electronics on the commercial-vehicle version.",
+        "laminate": "not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "https://www.borgwarner.com/technologies/electric-boosting-technologies"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "3-phase driver + MCU + MOSFETs",
+          "examples": [
+            "ST L9907 48 V 3-phase driver with an MCU and low-RDS(on) N-channel MOSFETs (ST 48 V electric supercharger application)"
+          ],
+          "source": "https://st.com/en/applications/electro-mobility/48v-electric-supercharger.html"
+        },
+        {
+          "role": "gate drivers + power + protection (block diagram)",
+          "examples": [
+            "Diodes API21550Q half-bridge and API21552Q dual-channel drivers, POL DC-DC / LDOs, inrush and reverse-polarity load management, TVS / ESD for CAN/LIN/Ethernet (Diodes e-Turbo solution; ASIL-C/D)"
+          ],
+          "source": "https://www.diodes.com/solutions/automotive-solutions/48v-automotive-solutions/e-turbo"
+        },
+        {
+          "role": "48 V BLDC gate driver (Infineon)",
+          "examples": [
+            "Infineon MOTIX TLE9140EQW 24-72 V gate driver (to 110 V), ~230 nC per MOSFET at 20 kHz; for pumps, fans, HVAC, e-compressors; pairs with MOTIX TLE987x / TLE989x"
+          ],
+          "source": "https://www.automotiveworld.com/?p=418078"
+        },
+        {
+          "role": "application listing",
+          "examples": [
+            "Infineon lists eTurboCharger among 48 V auxiliaries; sample MOSFET an 80 V, 100 A TDSON part (Avnet/EBV page)"
+          ],
+          "source": "https://my.avnet.com/ebv/products/product-highlights/infineon-advanced-e-e-architecture/auxiliary/"
+        },
+        {
+          "role": "motor (context)",
+          "examples": [
+            "BorgWarner eBooster: brushless DC motor with SmCo magnets",
+            "Valeo electric supercharger (Audi SQ7): switched-reluctance motor, 300 ms to boost"
+          ],
+          "source": "https://www.gardnerweb.com/news/borgwarner-launches-48-volt-ebooster ; https://www.wardsauto.com/suppliers/valeo-launching-two-electric-superchargers"
+        }
+      ],
+      "teardowns": []
+    },
+    {
+      "ecu": "ECOMP",
+      "name": "HV electric A/C compressor inverter (400 V / 800 V)",
+      "function": "Sensorless FOC of the compressor PMSM from the HV bus; MCU + isolated gate drivers + IGBT/MOSFET or IPM power stage, often integrated in the compressor and cooled by the refrigerant inlet; CAN/LIN to the thermal controller.",
+      "powertrains": [
+        "HEV",
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found (TIDM-02012 layer data is in its design-file ZIP, not read)",
+        "size": "not published in any source found",
+        "technology": "Inverter inside the compressor, IGBTs cooled by the cold refrigerant inlet (Honda MY2014). onsemi automotive IPMs for e-compressors: AlN or Al2O3 DBC substrate, 2500 Vrms isolation.",
+        "laminate": "not published in any source found",
+        "boards": "TIDM-02012: controlCARD-based (MCU on a plug-in card) with the power board; fully assembled board for validation only.",
+        "basis": "https://vasa.org.au/?p=13861 ; https://www.onsemi.com/products/discrete-power-modules/power-modules/intelligent-power-modules-ipms/nfva35065l32 ; https://www.ti.com/tool/TIDM-02012"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + gate driver + support (TI reference design)",
+          "examples": [
+            "TI TMS320F280039C (F28003x; guide header also lists F2800152-Q1..F2800157-Q1), UCC21530-Q1 isolated dual driver, OPA607-Q1, LM25184-Q1 flyback, TCAN1044A-Q1 (TIDM-02012, 5 kW, 400/800 V)"
+          ],
+          "source": "https://www.ti.com/tool/TIDM-02012"
+        },
+        {
+          "role": "intelligent power module",
+          "examples": [
+            "onsemi NFVA35065L32 650 V 50 A ASPM27 (climate-control e-compressors, HV pumps)",
+            "onsemi NFVA25012NP2T / NFVA22512NP2T 1200 V automotive IPMs, AQG324 (e-compressors first application)"
+          ],
+          "source": "https://www.onsemi.com/products/discrete-power-modules/power-modules/intelligent-power-modules-ipms/nfva35065l32 ; https://www.mouser.in/new/onsemi/onsemi-nfva25012np2t-ipm"
+        },
+        {
+          "role": "Infineon chipset",
+          "examples": [
+            "Infineon EiceDRIVER gate drivers + TRAVEO T2G MCU; flyback converter reference design; 400 V and 800 V chipsets (application page; parts not named)"
+          ],
+          "source": "https://infineon.com/cms/en/applications/automotive/ev-thermal-management/high-voltage-e-compressor"
+        },
+        {
+          "role": "compressor drive (production, Toyota)",
+          "examples": [
+            "Toyota compressor drive: IPM-like set of six transistors, six diodes and a control circuit; two orange wires = integral inverter (service training document)"
+          ],
+          "source": "https://automotivetechinfo.com/wp-content/uploads/2021/11/A-Look-Inside-How-Toyota-Inverters-Work-and-Diagnosing-Failures.pdf"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "TI TIDM-02012 5 kW HV e-compressor reference design (reference design, not production)",
+          "url": "https://www.ti.com/tool/TIDM-02012",
+          "finding": "F280039C + UCC21530-Q1 + OPA607-Q1 + LM25184-Q1 + TCAN1044A-Q1; sensorless FOC; 400 V and 800 V bus."
+        },
+        {
+          "title": "VASA: Hybrid power electronics - what are they?",
+          "url": "https://vasa.org.au/?p=13861",
+          "finding": "First HV compressors had an external inverter; Honda MY2014 put the inverter inside the compressor, cooling the IGBT with the cold inlet."
+        }
+      ]
+    },
+    {
+      "ecu": "PTC",
+      "name": "HV PTC heater controller (coolant or air)",
+      "function": "Switches HV PTC heater stages with IGBTs (or MOSFETs) under isolated gate drive, measures current, HV and temperatures, reports over LIN/CAN from a 12 V MCU side; can double as a HV discharge path.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "120 mm x 90 mm (ROHM REF66011 7 kW reference design)",
+        "technology": "not published in any source found",
+        "laminate": "not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "https://www.rohm.com/reference-designs/REF66011"
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "IGBT (7 kW, 250-470 V)",
+          "examples": [
+            "ROHM RGS80TSX2DHR 1200 V 40 A field-stop trench IGBT; block diagram also has DC/DC, driver, current sense, HV detection, temperature, MCU and LIN transceiver (parts not named) (REF66011, with Intron Technology)"
+          ],
+          "source": "https://www.rohm.com/reference-designs/REF66011"
+        },
+        {
+          "role": "IGBT + isolated gate driver + aux flyback (1.8 kW, 200-400 V)",
+          "examples": [
+            "onsemi FGH40T65 field-stop IGBT, NCV57000 isolated driver, NCV8871 flyback controller; GPIO/PWM control, MCU board not included (TND6319 / SEC-PTC400-EVB)"
+          ],
+          "source": "https://www.onsemi.com/design/evaluation-board/SEC-PTC400-EVB"
+        },
+        {
+          "role": "isolated gate driver (app note)",
+          "examples": [
+            "TI UCC21551-Q1 (TI PTC heater module design considerations, SLUAAY5; MCU and communication-interface sections)"
+          ],
+          "source": "https://ti.com/document-viewer/ja-jp/lit/html/SLUAAY5/important_notice"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "ROHM REF66011 7 kW HV PTC heater (reference design, not production)",
+          "url": "https://fscdn.rohm.com/en/products/databook/reference_design/ref66011/ref66011_qs-e.pdf",
+          "finding": "9-16 V LV / 250-470 V HV input, 7 kW, 120 x 90 mm board; RGS80TSX2DHR IGBT; LIN; also a HV battery discharge circuit."
+        },
+        {
+          "title": "onsemi TND6319 HVAC PTC IGBT driver (reference design, not production)",
+          "url": "https://mouser.com/pdfDocs/TND6319-D-2.pdf",
+          "finding": "200-400 Vdc, 1.8 kW, 40 Arms; high/low-side driver with isolated supply; OV/OC protection."
+        }
+      ]
+    },
+    {
+      "ecu": "TMS",
+      "name": "Thermal management / heat-pump controller (valves, pumps, fans)",
+      "function": "Coordinates the refrigerant and coolant loops: drives electronic expansion valves (steppers), multi-way coolant valves, pumps and fans (BLDC/PMSM), reads temperatures and pressures, commands compressor and PTC over CAN/LIN.",
+      "powertrains": [
+        "PHEV",
+        "BEV400",
+        "BEV800"
+      ],
+      "pcb": {
+        "layers": "not published in any source found",
+        "size": "not published in any source found",
+        "technology": "not published in any source found",
+        "laminate": "not published in any source found",
+        "boards": "not published in any source found",
+        "basis": "No source found describes a production thermal controller PCB; Munro's Model Y thermal report covers the Octovalve mechanically."
+      },
+      "placements": {
+        "range": "not published in any source found",
+        "basis": "No source found states a component count."
+      },
+      "keyIcs": [
+        {
+          "role": "MCU + 3-phase pre-driver (NXP reference design)",
+          "examples": [
+            "NXP S32K324 + GD3000 pre-driver; three sensorless PMSMs, one DC motor and four valves; aimed at thermal-management controllers and pumps (MCTPTX1AK324)"
+          ],
+          "source": "https://nxp.com:443/design/design-center/development-boards-and-designs/MCTPTX1AK324"
+        },
+        {
+          "role": "valve stepper driver",
+          "examples": [
+            "TI DRV8889-Q1 dual H-bridge stepper driver, 1/256 microstep, stall detection (DRV8889-Q1EVM)"
+          ],
+          "source": "https://www.we-online.com/en/components/icref/texas-instruments/DRV8889-Q1-DRV8889-Q1EVM-Half-Bridge-Isolated-"
+        },
+        {
+          "role": "pump / fan BLDC driver",
+          "examples": [
+            "Infineon MOTIX TLE987x motor-control SoCs (paired with TLE9140 for 8-72 V)"
+          ],
+          "source": "https://www.automotiveworld.com/?p=418078"
+        }
+      ],
+      "teardowns": [
+        {
+          "title": "NXP MCTPTX1AK324 S32K324 triple-PMSM reference board (reference design, not production)",
+          "url": "https://nxp.com:443/design/design-center/development-boards-and-designs/MCTPTX1AK324",
+          "finding": "One S32K324 drives three sensorless PMSMs, a DC motor and four valves via GD3000."
+        },
+        {
+          "title": "Munro: Tesla Model Y Octovalve / heat pump",
+          "url": "https://insideevs.com/news/420794/sandy-munro-explains-octovalve-tesla-model-y/",
+          "finding": "Mechanical layout of the Octovalve and heat pump; controller electronics not identified publicly."
+        }
+      ]
+    }
+  ],
+  "boardCostEvidence": [
+    {
+      "claim": "Munro (via VASA): inverter cost Tesla Model 3 USD 709, Nissan Leaf USD 636, Jaguar I-PACE USD 754 (whole inverter assemblies, teardown cost estimates).",
+      "url": "https://vasa.org.au/munro-associates-report-details-the-ins-and-outs-of-ev-inverters/"
+    },
+    {
+      "claim": "Munro (via Charged EVs): Tesla Model 3 inverter ~USD 810 in 2018, Model Y inverter ~USD 522 in 2020 (VASA gives the 2018 figure as USD 1,100 - sources disagree).",
+      "url": "https://chargedevs.com/newswire/teardown-expert-sandy-munro-compares-tesla-nissan-jaguar-inverters/"
+    },
+    {
+      "claim": "Yole: in BYD's 8-in-1 system Chinese players are 79% of total material cost (share only; absolute figures paywalled).",
+      "url": "https://www.yolegroup.com/strategy-insights/whats-in-the-box-byds-8-in-1-electrification-system-at-a-glance/"
+    },
+    {
+      "claim": "HybridPACK Drive IGBT module FS950R08A6P2BBPSA1: RS UK GBP 264.72 at 1 unit, GBP 258.10 at 2+ ex VAT (one-off distributor price of a power module, not a volume price).",
+      "url": "https://uk.rs-online.com/web/p/igbts/2445879"
+    },
+    {
+      "claim": "ST ACEPACK DRIVE ADP480120W3-L on ST's own e-store: USD 1,224.99 with a '500u' marker (maker's list price, NRND; quantity basis unclear).",
+      "url": "https://estore.st.com/en/products/power-modules-and-ipm/stpower-acepack-modules/acepack-drive/adp480120w3-l.html"
+    },
+    {
+      "claim": "onsemi NFVA35065L32 e-compressor IPM: onsemi reference price USD 27.6 (maker's page).",
+      "url": "https://www.onsemi.com/products/discrete-power-modules/power-modules/intelligent-power-modules-ipms/nfva35065l32"
+    }
+  ],
+  "notes": [
+    "No production board facts (layers, size, laminate) found for any of the seven boards; all board facts are from reference designs or ORNL/Infineon documents, as labelled. Placements: no source states a component count for any board.",
+    "Production chip identity found only for Tesla Model 3 (TI C2000 + ST STGAP1AS, from open-source reverse engineering, not a formal teardown) and the 2017 Prius PCU (ORNL, tentative). VW MEB APP310, Hyundai Ioniq 5, BYD (MCU) and the 5th-gen Prius PCU were searched without a named IC; Munro / Yole board BOMs are paywalled.",
+    "The task's TIDA-010075 was not found in any source; TIDM-02014 is used instead. PGA411-Q1 does not appear in TIDM-02014 (it uses the C2000 / AM263P with resolver or the LDC5072-Q1 option).",
+    "TIDM-02014 BOM changed between revisions: 2023 lists TMS320F280039C-Q1, UCC14240-Q1, UCC12051-Q1, AM2634-Q1; rev A (May 2025) lists UCC5881-Q1, F29H859TU-Q1, TPS653860-Q1, AMC0386-Q1, AMC0381D-Q1, LM5158-Q1, LM74202-Q1.",
+    "EBOOST: no teardown or production controller IC found (Valeo SQ7, BorgWarner eBooster searched); key-IC rows are supplier application pages.",
+    "Valeo's SQ7 supercharger uses a switched-reluctance motor; BorgWarner's eBooster a BLDC with SmCo magnets - the controller topology therefore differs by supplier.",
+    "Already priced in the catalogue (distributor, with observations) - not re-researched: UCC5880QDFCRQ1, UCC5870QDWJRQ1, UCC21750QDWRQ1, UCC14240QDWNRQ1, 1EDI2002ASXUMA2, 1EDI2010ASXUMA1, STGAP4STR, STGAP2SICS, NCV57000DWR2G, TLF35584QVVS2, TLF35585QVS01XUMA2, MC33FS6500NAER2, MFS2633AMDAKADR2 (FS26), TPS65941213RWERQ1, TPS65381AQDAPRQ1, AD2S1210WDSTZ, TLE4972AE35D5XUMA1, TLE9180D31QKXUMA1, TLE9183QKXUMA1, DRV8343SQPHPRQ1, L9907TR, AM2634COKFHMZCZRQ1, TC387QP160F300SAEKXUMA2, TC377TX96F300SABKXUMA1, TC4D9XP20MF500MCABKXUMA1, S32K396EHT1MJBST, TMS320F28377DPTPQ, F28386DPTPQR, TJA1103AHN/0Z, TJA1463AT/0Z, TJA1042T/3,118, AIKW40N65DH5, IKW40N120H3, TLE94713ESXUMA1, TLE9461ESXUMA1, AMC1311BQDWVRQ1, AMC3330QDWERQ1.",
+    "TCAN1044AVDRQ1 (TIDM-02012) is in the catalogue as 'distributor' with no stored observations - not re-researched in this domain."
+  ]
+}
