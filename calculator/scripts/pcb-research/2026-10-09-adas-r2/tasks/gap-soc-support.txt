@@ -1,0 +1,30 @@
+TPS650320-Q1 (TI camera PMIC, TIDA-050051) — exact code with distributor price
+MAX9286 (Maxim 4-channel GMSL deserializer, older SVC ECUs)
+OV10635 (OmniVision 1 MP automotive sensor, TIDA-00162) — check distributor listing
+LP876441B4-Q1 / LP8764 TDA4 companion PMIC — a distributor-priced orderable
+TPS74801-Q1 (TI LDO for SoC rails)
+TPS7A8401A-Q1 / TPS7A84 automotive LDO
+TPS22965-Q1 (TI load switch)
+TPS22918-Q1 (TI load switch)
+TPS3850-Q1 / TPS3851-Q1 (TI supervisor + watchdog) — retry if round 1 left it
+TPS3702-Q1 (TI window supervisor)
+INA226-Q1 (TI current / power monitor)
+INA240A1QPWRQ1 (TI current-sense amplifier)
+TMP112-Q1 / TMP102-Q1 (TI temperature sensor) — one code each
+DS160PR410-Q1 / DS160PR412 (TI PCIe 4.0 redriver) — automotive code
+TUSB1046-DCI / TUSB546-Q1 (TI USB / DP redriver) — automotive code
+SN74LVC1G08-Q1 / SN74AXC4T774-Q1 (TI logic / level translators) — one each
+TXB0104-Q1 / TXS0108E-Q1 (TI level translator automotive)
+PCA9555-Q1 / TCA9539-Q1 (I2C GPIO expander, automotive)
+TCA9548A-Q1 / PCA9548A (I2C switch) — automotive code
+LMK1C1104-Q1 (TI clock buffer) — retry
+CDCI6214-Q1 / CDCE6214-Q1 already priced — instead LMK3H0102-Q1 (TI BAW clock)
+TPS2HB16-Q1 (TI 2-ch high-side switch, camera power) — corrects TPS2HB08
+TPS1HB08-Q1 (TI 1-ch high-side switch) — corrects TPS2HB08
+TPS62441-Q1 / TPS62442-Q1 (TI dual buck) — corrects TPS62440
+MAX20021 / MAX20022 (ADI camera PMIC) — retry
+MAX20087 already priced — instead MAX20088 / MAX20089 (power-over-coax protector) — retry
+PF5024 / PF5020 (NXP S32G PMIC companion) — PF5024 if listed
+FS2633 / FS6500 (NXP SBC for radar / gateway) — one automotive orderable
+S32K311 / S32K312 (NXP safety MCU in radar / camera) — one code if not already priced
+NCV8163 / NCV8161 (onsemi automotive LDO for imager rails)
