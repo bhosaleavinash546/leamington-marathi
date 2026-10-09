@@ -1,0 +1,238 @@
+{
+  "domain": "adas-radar-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "AWR2544BGAMQRQ1",
+      "family": "AWR2544",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz launch-on-package (LOP) radar SoC, satellite/corner radar",
+      "category": "ic_bga",
+      "pkg": "FCCSP-248 (AMQ, 12.4x12 mm)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "AWR2544BGAMQRQ1",
+      "observations": [],
+      "notes": "R2 (4 searches): orderables AWR2544BGAMQRQ1 (T&R) / AWR2544BGAMQQ1 (tray 147) on ti.com, price field not readable; no Digi-Key/Mouser/Arrow/findchips listing. not listed at a franchised distributor (OEM-direct / NDA) so far."
+    },
+    {
+      "mpn": "AWR2944ALBGALTRQ1",
+      "family": "AWR2944",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz radar SoC, 4TX/4RX, C66x DSP + HWA, corner/front radar",
+      "category": "ic_bga",
+      "pkg": "FCBGA-266 (ALT, 12x12 mm)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "AWR2944ALBGALTRQ1",
+      "observations": [],
+      "notes": "R2 (3 more searches): no Digi-Key/Mouser/Arrow/Avnet/findchips/Octopart/TrustedParts listing with a price for AWR2944ALBGALTRQ1 / ALBGALTQ1 / ABGALTRQ1 (TrustedParts: out of stock). Mouser lists only IWR2944AQGALTR and AWR2944PEVM. ti.com shows ~USD 27.87 (qty unstated, not an observation). Lion Circuits (not franchised) lists ABGALTQ1."
+    },
+    {
+      "mpn": "AWR2944P",
+      "family": "AWR2944P",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz radar SoC (AWR2944 performance variant), corner/front radar",
+      "category": "ic_bga",
+      "pkg": "FCCSP",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "AWR2944P",
+      "observations": [],
+      "notes": "R2: orderable code not confirmed (datasheet SWRS318B, ALT 266 MPBGA, AEC-Q100); no distributor listing of the device, only AWR2944PEVM. Not at a franchised distributor."
+    },
+    {
+      "mpn": "AWR2E44P",
+      "family": "AWR2E44P",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz radar SoC (AWR2944P family, extended)",
+      "category": "ic_bga",
+      "pkg": "FCCSP",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "AWR2E44P",
+      "observations": [],
+      "notes": "R2: AWR2E44P = launch-on-package version of AWR2944P (SWRS318B); no device listing at any franchised distributor, only AWR2E44PEVM."
+    },
+    {
+      "mpn": "TEF8105",
+      "family": "TEF8105",
+      "mfr": "NXP",
+      "desc": "76-81 GHz RFCMOS radar transceiver (TEF810x)",
+      "category": "ic_bga",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "TEF8105",
+      "observations": [],
+      "notes": "R2: still no TEF8105 anywhere (NXP lists TEF8101EN, TEF8102EN in the TEF810x family, WFBGA155 7.5 mm); code probably a BOM typo - check the BOM."
+    },
+    {
+      "mpn": "FS32R274KSK2MMM",
+      "family": "S32R274",
+      "mfr": "NXP",
+      "desc": "S32R27 radar MCU, 3x e200z7 + SPT, 240 MHz",
+      "category": "ic_bga",
+      "pkg": "MAPBGA-257",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "FS32R274KSK2MMM",
+      "observations": [],
+      "notes": "R2: tried KSK2MMM / KCK2MMM / ...MMMR / KSK2VMM. Farnell/element14 only 1+ (out of stock). Newark $33.76 and Avnet Express $36.85 seen for FS32R274KSK2VMM only on electronicsdatasheets (not an allowed host, no break). No valid observation."
+    },
+    {
+      "mpn": "FS32R294HBK0MJDR",
+      "family": "S32R294",
+      "mfr": "NXP",
+      "desc": "S32R29 radar MCU, Power Architecture multicore 500 MHz, ISO 26262, CSE3",
+      "category": "ic_bga",
+      "pkg": "BGA (NXP SOT1989-1)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "FS32R294HBK0MJDR",
+      "observations": [],
+      "notes": "R2: no Arrow/Avnet/Future/Farnell/Newark/findchips listing with a price; only Suntsu (quote), 773grp, Lisle Apex (no price). No valid observation."
+    },
+    {
+      "mpn": "FS32R372SDK0MMMT",
+      "family": "S32R372",
+      "mfr": "NXP",
+      "desc": "S32R37 radar MCU, 240 MHz",
+      "category": "ic_bga",
+      "pkg": "MAPBGA-257",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "FS32R372SDK0MMMT",
+      "observations": [],
+      "notes": "R2: Farnell DK FS32R372SDK0MMMT DKK 302.39 @1 / SEK0MMMT DKK 352.63 @1 ex-VAT, element14 NZ to 50+ - all below 100; 52-53 wk lead time; Cytech (broker) only above. No valid observation."
+    },
+    {
+      "mpn": "MC33MR2001V2VKR2",
+      "family": "MR2001",
+      "mfr": "NXP",
+      "desc": "77 GHz radar chipset (MR2001 VCO/TX/RX)",
+      "category": "ic_bga",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "MC33MR2001V2VKR2",
+      "observations": [],
+      "notes": "R2: LCSC shows MC33MR2001R2VKR2 (the RX chip of the set) at $9.2335 @1,000+, out of stock - but only on fat.lcsc.com (excluded host) and the normal lcsc.com page was not found; Cytech broker only for V2VKR2. No valid observation."
+    },
+    {
+      "mpn": "SAK-TC357TA-64F300S AB",
+      "family": "TC357",
+      "mfr": "Infineon",
+      "desc": "AURIX TC35x radar MCU (TriCore + SPU)",
+      "category": "ic_bga",
+      "pkg": "LFBGA-292",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "TC357TA64F300SABKXUMA1",
+      "observations": [],
+      "notes": "R2: no Mouser/Arrow/Avnet/Rutronik/Future/findchips/Octopart listing for TC357TA64F300SABKXUMA1; only JLCPCB ($15.25 @1,000, out of stock - not allowed). No valid observation."
+    },
+    {
+      "mpn": "LMK00804BQWRGTRQ1",
+      "family": "LMK00804B-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1:4 LVCMOS clock fan-out buffer, automotive",
+      "category": "ic_qfn",
+      "pkg": "VQFN-16 (RGT)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "LMK00804BQWRGTRQ1",
+      "observations": [],
+      "notes": "R2: no Digi-Key/Mouser/Arrow/LCSC/findchips/Octopart listing; Fusion Worldwide (quote only), Lisle Apex (no price), Cytech broker (TTQ1). TI E2E reports an RGT land-pattern mismatch. No valid observation."
+    },
+    {
+      "mpn": "FS6531",
+      "family": "FS65",
+      "mfr": "NXP",
+      "desc": "FS65 safety system basis chip",
+      "category": "ic_tqfp",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "FS6531",
+      "observations": [],
+      "notes": "R2: still not found (3 searches); NXP FS6500 table does not list FS6531 - likely a BOM typo for an FS65xx (e.g. MC33FS6501/6512/6515/6516/6520/6521/6523 CAE/NAE). Check the BOM."
+    },
+    {
+      "mpn": "LMX2594RHAR",
+      "family": "LMX2594",
+      "mfr": "Texas Instruments",
+      "desc": "15 GHz wideband PLL synthesizer (non-automotive reference)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-40 (6x6)",
+      "aecq": false,
+      "ecuRoles": [
+        "radar"
+      ],
+      "observedMpn": "LMX2594RHAR",
+      "observations": [],
+      "notes": "R2: no Digi-Key/Mouser/findchips page found; Mouser 2,500 x $49.85 only via SnapEDA (not an allowed host); LCSC only to 30+ ($27.13); brokers (Cytech, PCX, Lisle Apex) disagree. No valid observation."
+    },
+    {
+      "mpn": "AWR1443FQIGABLRQ1",
+      "family": "AWR1443",
+      "mfr": "Texas Instruments",
+      "desc": "76-81 GHz single-chip radar sensor with HWA + R4F, 3TX/4RX",
+      "category": "ic_bga",
+      "pkg": "FCBGA-161 (ABL)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "AWR1443FQIGABLQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 176,
+          "price": 27.37534,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/AWR1443FQIGABLQ1/9757447",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Replaces round 1's digikey.de figure (excluded: punchouttest host, VAT unconfirmed). Observed on the TRAY sibling AWR1443FQIGABLQ1 (same device, AEC-Q100): Digi-Key USD tray 1 $34.80, 50 $28.7694, 176 $27.37534 (full tray, largest break), 153 in stock, 18 wk. Mouser 595-AWR1443FQIGABLQ1 tiers $36.63 down to ~$31.30 (break qty not read - not used). No normal-site price for the RQ1 reel found."
+    }
+  ]
+}
