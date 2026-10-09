@@ -129,7 +129,10 @@ export function reconcileOcrMarkings(
     l.ocrExtracted = true;
     l.lineConf = Math.max(Number(l.lineConf) || 0, 0.95);
     l.ocrMatchedByFunction = true;
-    l.priceNote = `Chip marking "${marking.trim()}" (${label}) matched to this line by function — confirm the RefDes`;
+    // One marking is one chip read: a quantity above 1 on a line the marking was attached to by function is the
+    // model's count, not the photo's (pipeline review F17: one MAX20431A marking priced U6, U7 twice).
+    if (Number(l.qty) > 1) l.qtyUnverified = true;
+    l.priceNote = `Chip marking "${marking.trim()}" (${label}) matched to this line by function — confirm the RefDes${Number(l.qty) > 1 ? ` and the quantity (${l.qty}; one marking was read)` : ''}`;
     attached.push({ marking: partTok, refDes: String(l.refDes ?? ''), label });
   }
   return { bom: out, attached, missing };

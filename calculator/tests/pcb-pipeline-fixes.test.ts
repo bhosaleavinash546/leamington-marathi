@@ -267,3 +267,11 @@ describe('F22 — ASIL-C/D is costed only with a named safety supply', () => {
     expect(guardAsil({ asil: 'ASIL-C', bom: [{ partNumber: 'MFS2633HMDA0ADR2' }] }).costed).toBe('ASIL-C');
   });
 });
+
+describe('F17 — one marking attached by function is one chip read', () => {
+  it('a qty > 1 on that line is listed to verify', async () => {
+    const r = await radar();
+    const l = r.a.bom.find((x: any) => x.ocrMatchedByFunction === true && Number(x.qty) > 1);
+    if (l) { expect(l.needsVerification).toBe(true); expect(String(l.priceNote)).toMatch(/one marking was read/); }
+  });
+});
