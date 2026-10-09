@@ -1,0 +1,773 @@
+{
+ "domain": "ev-chassis",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "TLE9189QUWXUMA1",
+   "family": "TLE9189",
+   "mfr": "Infineon Technologies",
+   "desc": "MOTIX 3-phase MOSFET gate driver, ASIL D, AEC-Q100 Grade 0, current-sense amps (EPS, brake-by-wire)",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-48 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "ESC"
+   ],
+   "observedMpn": "TLE9189QUWXUMA1",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 3.04,
+     "currency": "EUR",
+     "url": "https://fi.farnell.com/en-FI/infineon/tle9189quwxuma1/motor-driv-3-phase-bldc-tqfp-ep/dp/4695794RL",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 2.7,
+     "currency": "EUR",
+     "url": "https://fi.farnell.com/en-FI/infineon/tle9189quwxuma1/motor-driv-3-phase-bldc-tqfp-ep/dp/4695794RL",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Farnell FI ex-VAT, cut tape, MOQ 150, 28-week lead time. DigiKey video page shows USD 4.80 with no quantity - not recorded. VQFN sibling TLE9189QVWXUMA1 (Farnell 4695795RL) not priced."
+  },
+  {
+   "mpn": "MC33GD3000EP",
+   "family": "GD3000",
+   "mfr": "NXP Semiconductors",
+   "desc": "3-phase brushless motor pre-driver, 6-60 V, AEC-Q100 Grade 1 (NXP EPS block diagram)",
+   "category": "ic_qfn",
+   "pkg": "QFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "ESC"
+   ],
+   "observedMpn": "MC33GD3000EP",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2600,
+     "price": 3.02,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/mc33gd3000ep/NXP-Semiconductors",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2600,
+     "price": 3.12421,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/mc33gd3000ep/NXP-Semiconductors",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Tray. Findchips snapshot naming Mouser and Digi-Key. Reel code MC33GD3000EPR2: Mouser USD 2.95 @2,000, Digi-Key USD 3.15 @2,000 (findchips, not recorded - sibling). Digi-Key punchouttest pages ignored."
+  },
+  {
+   "mpn": "DRV3255EPAPRQ1",
+   "family": "DRV3255-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "48 V 3-phase smart gate driver unit, 3.5/4.5 A, active short circuit (48 V EPS, TIDUF56)",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64 (PAP)",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "DRV3255EPAPRQ1",
+   "observations": [],
+   "notes": "Orderable code from TI datasheet package table (active, 1,000/reel). No franchised distributor price found in 2 searches; only a reseller reference price (Cytech USD 9.90 @1k, 0 stock) - not recorded."
+  },
+  {
+   "mpn": "DRV3263-Q1",
+   "family": "DRV3263-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "48 V 3-phase smart gate driver (TIDA-020106 electro-mechanical brake)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ) 7x7",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC",
+    "EPS"
+   ],
+   "observedMpn": "DRV3263-Q1",
+   "observations": [],
+   "notes": "TI page marks it advance information (datasheet Mar 2026); orderable code not confirmed; no distributor listing found."
+  },
+  {
+   "mpn": "TPS65386003QDCARQ1",
+   "family": "TPS653860-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Safety PMIC 2.3-36 V, 2.8 A, for MCU (TIDA-020106 / TIDM-02014)",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-48 (DCA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC",
+    "EPS"
+   ],
+   "observedMpn": "TPS65386003QDCARQ1",
+   "observations": [],
+   "notes": "Orderable code from TI datasheet (2,500/reel). Only price found: Mouser 595-O386003QDCARQ1 USD 5.30 @1k / 5.16 @2.5k on OEMsTrade, a host not accepted (rule 1) - not recorded. Retry via Mouser/Digi-Key directly."
+  },
+  {
+   "mpn": "LDC5072-Q1",
+   "family": "LDC5072-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Inductive position sensor front end (brake-pedal sensor, TIDA-020106)",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (per TI)",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC"
+   ],
+   "observedMpn": "LDC5072-Q1",
+   "observations": [],
+   "notes": "Orderable code not confirmed; no distributor listing found in 1 search."
+  },
+  {
+   "mpn": "TMAG6180EDGKRQ1",
+   "family": "TMAG6180-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "High-precision AMR angle sensor, analog sin/cos (TIDA-020106)",
+   "category": "ic_soic",
+   "pkg": "VSSOP-8 (DGK)",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC",
+    "EPS"
+   ],
+   "observedMpn": "TMAG6180EDGKRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 1.8977,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/TMAG6",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.6811,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/TMAG6",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Cut tape breaks via findchips naming Digi-Key; reel (2,500) about USD 1.56-1.61. TMAG6180EDGKRQ1 is the code findchips lists for TMAG6180-Q1 (not cross-checked on TI's order table)."
+  },
+  {
+   "mpn": "RAA270005KFP",
+   "family": "RAA270005",
+   "mfr": "Renesas Electronics",
+   "desc": "PMIC for RH850/P1x MCUs, ASIL-D EPS reference design",
+   "category": "ic_qfn",
+   "pkg": "HLQFP-40 7x7",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "RAA270005KFP",
+   "observations": [],
+   "notes": "Mouser regional pages list it without a readable price; Renesas page shows USD 7.12104 unit price, quantity not stated (maker price, notes only)."
+  },
+  {
+   "mpn": "R7F701382EAFP-C#KA2",
+   "family": "RH850/P1M-E",
+   "mfr": "Renesas Electronics",
+   "desc": "RH850/P1M-E 32-bit MCU 160 MHz, 1 MB flash, 192 kB RAM (EPS)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "R7F701382EAFP-C#KA2",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 10.33,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--microcontrollers--32-bit/r7f701382eafp-c-ka2-renesas-9186676",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Tape and reel, 24-week lead time. No Digi-Key / Mouser listing found."
+  },
+  {
+   "mpn": "TLE4998C4",
+   "family": "TLE4998C4",
+   "mfr": "Infineon Technologies",
+   "desc": "Programmable linear Hall sensor, SPC interface (VW EPS torque sensing, 2 per system)",
+   "category": "ic_soic",
+   "pkg": "SSO-4 (per Infineon family)",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "TLE4998C4",
+   "observations": [],
+   "notes": "No C4 listing found. Siblings with other interfaces (S3 SENT: Mouser USD 2.02 @2,000; P3 PWM: Digi-Key USD 2.02 @4,000) are not packing/temperature siblings - not recorded."
+  },
+  {
+   "mpn": "MLX90372GVS-ACE-100-RE",
+   "family": "MLX90372",
+   "mfr": "Melexis",
+   "desc": "Triaxis rotary/linear position sensor, SENT/PWM, TSSOP (steering angle / torque)",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16 (GVS)",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "MLX90372GVS-ACE-100-SP",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 400,
+     "price": 4.56,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/6100620",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Price read on the tube code MLX90372GVS-ACE-100-SP (same device, packing suffix); MOQ 80, 0 stock. -RE reel page showed no price."
+  },
+  {
+   "mpn": "MLX90421GGO-ADC-000-RE",
+   "family": "MLX90421",
+   "mfr": "Melexis",
+   "desc": "Triaxis position sensor, analog/PWM output, TSSOP-16",
+   "category": "ic_soic",
+   "pkg": "TSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS"
+   ],
+   "observedMpn": "MLX90421GGO-ADC-000-RE",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 4500,
+     "price": 4.63,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/1158893?utm=API",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Reel 4,500; French Future page shows USD 4.91 @4,500 (other snapshot). Digi-Key EUR 4.02 @4,500 only on a punchouttest storefront - not recorded."
+  },
+  {
+   "mpn": "L9396",
+   "family": "L9396",
+   "mfr": "STMicroelectronics",
+   "desc": "Power SBC: buck/boost, LDOs, 4-channel wheel-speed-sensor interface (ABS / EPS)",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC",
+    "EPS"
+   ],
+   "observedMpn": "L9396",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 160,
+     "price": 4.2,
+     "currency": "EUR",
+     "url": "https://www.tme.eu/si/en/details/l9396/voltage-regulators-dc-dc-circuits/stmicroelectronics/",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "TME net price from 160 pcs (0 stock). ST lists L9396 as NRND (L9396L active). Cytech and Dasenic prices are reseller/broker - not recorded."
+  },
+  {
+   "mpn": "L9301-TR",
+   "family": "L9301",
+   "mfr": "STMicroelectronics",
+   "desc": "Octal low-side driver for on/off ABS valves, SPI, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC"
+   ],
+   "observedMpn": "L9301-TR",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 5.02,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/stmicroelectronics/l9301-tr/power-load-sw-aec-q100-powersso/dp/4069536",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 4.79,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/stmicroelectronics/l9301-tr/power-load-sw-aec-q100-powersso/dp/4069536",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 250,
+     "price": 5.23,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/power-switch-ics/2333006",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "UK ex-VAT. RS Australia AUD 11.475 @3,000 not recorded (currency not accepted)."
+  },
+  {
+   "mpn": "L9305EP",
+   "family": "L9305",
+   "mfr": "STMicroelectronics",
+   "desc": "4-channel current-controlled valve driver (ABS valves), dither, SPI",
+   "category": "ic_soic",
+   "pkg": "PowerSSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "ESC"
+   ],
+   "observedMpn": "L9305EP",
+   "observations": [],
+   "notes": "No franchised break >= 100 found: TME only up to 49 pcs; ST eStore USD 5.13 / 8.05 @500 (maker, conflicting snapshots) - notes only."
+  },
+  {
+   "mpn": "L9680TR",
+   "family": "L9680",
+   "mfr": "STMicroelectronics",
+   "desc": "Advanced airbag system IC: firing loops, PSI5, power, safety (TQFP-100)",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-100 14x14",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "L9680TR",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 9.79,
+     "currency": "USD",
+     "url": "https://findchips.com/search/l9680tr",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 7.47,
+     "currency": "USD",
+     "url": "https://findchips.com/search/l9680tr",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 8.1016,
+     "currency": "USD",
+     "url": "https://findchips.com/search/l9680tr",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Findchips snapshot naming Mouser (511-L9680TR) and Digi-Key (497-19279-1-ND, out of stock, 36 wk); Avnet USD 7.5316 @1k on the same page. ST eStore about USD 7.20 @500 (maker)."
+  },
+  {
+   "mpn": "L9679ETR",
+   "family": "L9679E",
+   "mfr": "STMicroelectronics",
+   "desc": "Airbag extension chip: octal squib/pyroswitch driver + 4 PSI5 (companion to L9680)",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-48",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "L9679ETR",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 2400,
+     "price": 3.84,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/l9679etr-C530892934",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "MOQ 2,400, 30-week lead time. Digi-Key CN CNY 35.03 @2,400 incl. 13% VAT - not recorded (VAT-inclusive)."
+  },
+  {
+   "mpn": "MCZ33789BAE",
+   "family": "MC33789",
+   "mfr": "NXP Semiconductors",
+   "desc": "Airbag power supply and 4x PSI5 sensor-interface SBC (RDAIRBAGPSI5)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "MCZ33789BAE",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 160,
+     "price": 8.45,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/en-IT/nxp/mcz33789bae/system-basis-chip-125deg-c-lqfp/dp/4333749",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "MCZ33789AE is obsolete (last time buy 2015); BAE is the replacement. Newark Canada lists 14.35 @100 / 12.47 @250 / 12.12 @500 but the currency (USD vs CAD) is unclear - not recorded. Digi-Key LT EUR 8.04 @160 ships from Rochester (marketplace) - not recorded."
+  },
+  {
+   "mpn": "MC33797BPEWR2",
+   "family": "MC33797",
+   "mfr": "NXP Semiconductors",
+   "desc": "4-channel airbag squib driver (RDAIRBAGPSI5, 2 per 8-loop ECU)",
+   "category": "ic_soic",
+   "pkg": "SOIC-32 wide",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "MC33797BPEWR2",
+   "observations": [],
+   "notes": "NXP: not recommended for new designs. Only Digi-Key CN CNY 91.46 at qty 1 incl. VAT found - no valid break."
+  },
+  {
+   "mpn": "TPIC71008TDCARQ1",
+   "family": "TPIC71008-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "8-channel airbag squib driver, SPI, 1.2/1.75 A firing",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-48 (DCA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "TPIC71008TDCARQ1",
+   "observations": [],
+   "notes": "Orderable code from TI part-details page (2,000/reel). No distributor price found in 3 searches."
+  },
+  {
+   "mpn": "TPIC71004TDCARQ1",
+   "family": "TPIC71004-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "4-channel airbag squib driver, SPI",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-48 (DCA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "TPIC71004TDCARQ1",
+   "observations": [],
+   "notes": "Code as listed on a datasheet aggregator; no distributor price found. TI launch price USD 3.25 @100 (maker, dated) - notes only."
+  },
+  {
+   "mpn": "BUK9M20-60ELX",
+   "family": "BUK9M20-60EL",
+   "mfr": "Nexperia",
+   "desc": "Automotive ASFET for airbag safing switch, 60 V 13 mOhm logic level, enhanced SOA",
+   "category": "ic_qfn",
+   "pkg": "LFPAK33",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "BUK9M20-60ELX",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 0.524,
+     "currency": "EUR",
+     "url": "https://es.farnell.com/en-ES/nexperia/buk9m20-60elx/mosfet-n-ch-60v-40a-lfpak33/dp/3958216RL",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 0.734,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/2604641",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "ELX is the reel orderable. Farnell ES ex-VAT; RS UK ex-VAT. LCSC USD 0.5058 with unclear break - not recorded."
+  },
+  {
+   "mpn": "SMA760",
+   "family": "SMA760",
+   "mfr": "Bosch",
+   "desc": "Dual-axis +/-128 g airbag central accelerometer, SafeSPI",
+   "category": "ic_soic",
+   "pkg": "SOIC-8n",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "SMA760",
+   "observations": [],
+   "notes": "Bosch automotive MEMS; no distributor listing found (Bosch sells direct)."
+  },
+  {
+   "mpn": "CG903",
+   "family": "CG903",
+   "mfr": "Bosch",
+   "desc": "Airbag system IC, 12 firing loops, 4 PSI5",
+   "category": "ic_tqfp",
+   "pkg": "not published",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "CG903",
+   "observations": [],
+   "notes": "No distributor listing found; Bosch automotive ASIC sold direct."
+  },
+  {
+   "mpn": "MMA6801KW",
+   "family": "MMA6801",
+   "mfr": "NXP Semiconductors",
+   "desc": "Dual-axis airbag central accelerometer, 16-QFN (RDAIRBAGPSI5 local safing sensor)",
+   "category": "ic_qfn",
+   "pkg": "QFN-16 6x6",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "MMA6801KW",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 756,
+     "price": 6.30533,
+     "currency": "EUR",
+     "url": "https://www.digikey.be/en/products/detail/nxp-usa-inc/MMA6801KW/2817418",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key BE tube, not for new designs; reel MMA6801KWR2 obsolete. NXP accelerometer families going NRND."
+  },
+  {
+   "mpn": "SPC5602PEF0MLL6",
+   "family": "MPC5602P",
+   "mfr": "NXP Semiconductors",
+   "desc": "MPC5602P e200z0h 64 MHz MCU (RDAIRBAGPSI5)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "SPC5602PEF0MLL6",
+   "observations": [],
+   "notes": "Only Digi-Key CN (VAT-inclusive CNY) and LCSC at 10+ found - no valid break."
+  },
+  {
+   "mpn": "SPC560P50L5CEFAR",
+   "family": "SPC560P50",
+   "mfr": "STMicroelectronics",
+   "desc": "SPC560P e200z0h 64 MHz MCU, 512 KB flash (SPC560Px named by ST for L9680 / L9678P airbag systems)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "SPC560P50L5CEFAR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 6.0734,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC560P50L5CEFAR/2746827",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 5.01784,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC560P50L5CEFAR/2746827",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Representative SPC560Px (ST names the line, not the variant). 100-pin SPC560P50L3CEFAR: no USD distributor break found."
+  },
+  {
+   "mpn": "AIS2120SXTR",
+   "family": "AIS2120SX",
+   "mfr": "STMicroelectronics",
+   "desc": "Dual-axis 120 g airbag accelerometer, SOIC-8",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "ACU"
+   ],
+   "observedMpn": "AIS2120SXTR",
+   "observations": [],
+   "notes": "Only a broker price (aipcba) found - not recorded."
+  },
+  {
+   "mpn": "MC33CD1030AER2",
+   "family": "CD1030",
+   "mfr": "NXP Semiconductors",
+   "desc": "33-channel multiple switch detection interface, SPI (RDVCU5775EVM)",
+   "category": "ic_qfn",
+   "pkg": "QFN-48 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU"
+   ],
+   "observedMpn": "MC33CD1030AER2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.17,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33CD1030AER2/7645876",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 3.1,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33CD1030AER2/7645876",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 2.85,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/6104538",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key breaks read on the azcus.digikey.com storefront (cut tape 1k, reel 2k). Tray MC33CD1030AE: Digi-Key USD 3.08 @2,500."
+  },
+  {
+   "mpn": "MC33FS6523CAE",
+   "family": "FS6523",
+   "mfr": "NXP Semiconductors",
+   "desc": "FS65 functional-safety SBC, ASIL D, VCORE SMPS 2.2 A, CAN FD (RDVCU5775EVM)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU"
+   ],
+   "observedMpn": "MC33FS6523CAE",
+   "observations": [
+    {
+     "distributor": "Avnet",
+     "qty": 750,
+     "price": 6.22,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/nxp/mc33fs6523cae/evolve-20661735",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 12000,
+     "price": 5.83,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/nxp/mc33fs6523cae/evolve-20661735",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Avnet Americas, 112-week factory lead time shown. Digi-Key CN CNY 55.15 @1k incl. VAT - not recorded. FS6500NAE family member already priced."
+  },
+  {
+   "mpn": "MC33FS6523NAE",
+   "family": "FS6523",
+   "mfr": "NXP Semiconductors",
+   "desc": "FS65 functional-safety SBC, ASIL D, CAN FD + LIN (N option)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU"
+   ],
+   "observedMpn": "MC33FS6523NAE",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 4.45,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/nxp/mc33fs6523nae/system-basis-chip-can-fd-lin-lqfpep/dp/4784786",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Farnell UK ex-VAT, MOQ 250. element14 AU/NZ prices incl. GST - not recorded."
+  },
+  {
+   "mpn": "SPC5775BDK3MME2",
+   "family": "MPC5775B",
+   "mfr": "NXP Semiconductors",
+   "desc": "MPC5775B dual-core 220 MHz MCU for BMS + VCU (RDVCU5775EVM)",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-416",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU"
+   ],
+   "observedMpn": "SPC5775BDK3MME2",
+   "observations": [],
+   "notes": "Farnell IE breaks stop at 50+ (EUR 22.80); Mouser CR only in CRC - no valid break >= 100."
+  },
+  {
+   "mpn": "L9788TR",
+   "family": "L9788",
+   "mfr": "STMicroelectronics",
+   "desc": "Multifunction U-chip for VCU / EMS (with SPC574), AEC-Q100",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100 EP 14x14",
+   "aecq": true,
+   "ecuRoles": [
+    "VCU"
+   ],
+   "observedMpn": "L9788TR",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 10.45,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--detectors/l9788tr-stmicroelectronics-5177306",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 10.22,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--wireless-rf--detectors/l9788tr-stmicroelectronics-7221566",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Two Future pages for the same code (1,000 stock vs 0 stock). ST eStore USD 9.32 @500 (maker) - notes only."
+  }
+ ]
+}
