@@ -2854,6 +2854,34 @@
     {
       "claim": "Patent: waveguide antenna lets the radar PCB use standard inexpensive FR4.",
       "url": "https://patents.google.com/patent/US11133594"
+    },
+    {
+      "claim": "Hesai Group Form 20-F FY2025 (SEC) (company disclosure, medium confidence): $260 per unit (module) — Blended ASP over ~1.62 M LiDAR units recognised in 2025 (about $530 in 2024).",
+      "url": "https://www.sec.gov/Archives/edgar/data/0001861737/000110465926048025/hsai-20251231x20f.htm"
+    },
+    {
+      "claim": "Hesai Q1 2025 earnings call, transcript via The Motley Fool (company disclosure, medium confidence): $200 per unit (module) — ATX price at mass production start (Q1 2025); ATP ~$350, AT ~$500.",
+      "url": "https://www.fool.com/earnings/call-transcripts/2025/05/27/hesai-group-hsai-q1-2025-earnings-call-transcript/"
+    },
+    {
+      "claim": "Yole SystemPlus, via Edge AI and Vision Alliance (teardown, medium confidence): $70 per unit (module) — Electronic core only, Scala gen 1 (gen 2: $110), Yole SystemPlus costing tools.",
+      "url": "https://www.edge-ai-vision.com/2022/09/first-and-second-generation-valeo-scala-lidars-the-technology-gap-revealed/"
+    },
+    {
+      "claim": "Yole SystemPlus, via Edge AI and Vision Alliance (teardown, medium confidence): $110 per unit (module) — Electronic core only, Scala gen 2.",
+      "url": "https://www.edge-ai-vision.com/2022/09/first-and-second-generation-valeo-scala-lidars-the-technology-gap-revealed/"
+    },
+    {
+      "claim": "System Plus Consulting, reported by EE Times Asia (teardown, medium confidence): $290 per unit (module) — Reverse-costed manufacturing cost of zFAS (~60% semiconductors), Audi A8 (2017).",
+      "url": "https://www.eetasia.com/teardown-lessons-learned-from-audi-a8/"
+    },
+    {
+      "claim": "IHS Markit teardown, reported by Electronics360 (teardown, medium confidence): $365.75 per unit (module) — Total manufacturing cost at 125,000 units/yr.",
+      "url": "https://electronics360.globalspec.com/article/14386/teardown-delphi-audi-zfas-controller"
+    },
+    {
+      "claim": "TechInsights teardown, via Electronics360 (teardown, low confidence): $249 per unit (module) — TechInsights teardown summary field 'Pricing'.",
+      "url": "https://electronics360.globalspec.com/article/19674/techinsights-teardown-lg-adas-front-camera"
     }
   ]
 }

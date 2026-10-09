@@ -163,3 +163,36 @@ describe('ADAS round 2 (9 Oct 2026): retries, gap lists, test-storefront rule', 
     expect(c.parts.filter((e: { confidence: string }) => e.confidence === 'distributor').length).toBeGreaterThanOrEqual(764);
   });
 });
+
+describe('ADAS round 2: OEM-direct chips from public cost evidence', () => {
+  it('EyeQ / CV2AQ are labelled estimates, flat across volumes, every claim linked', () => {
+    for (const [k, mpn] of [['EyeQ4H', 'EYEQ4'], ['EyeQ6L', 'EYEQ6L'], ['Mobileye EyeQ6H', 'EYEQ6H'], ['CV2AQ', 'CV2AQ']]) {
+      const e = catalogueEntry(k)!;
+      expect(e?.mpn, k).toBe(mpn);
+      expect(e.confidence).toBe('estimate');
+      expect(e.source).toMatch(/NOT a distributor price/);
+      expect(e.source).toMatch(/<https:\/\//);
+      expect(new Set(Object.values(e.gbp)).size).toBe(1);
+    }
+    // EyeQ6H's price is Mobileye's stated $125 at the engine's FX
+    expect(catalogueEntry('EYEQ6H')!.gbp.q1k).toBeCloseTo(125 * 0.7553, 3);
+    // no public figure for EyeQ5: nothing is invented
+    expect(catalogueEntry('EYEQ5H')).toBeNull();
+  });
+
+  it('only a per-chip company disclosure may price an entry', async () => {
+    const { oemEntries } = await import('../scripts/pcb-oem-evidence-merge.js');
+    const ev = JSON.parse(readFileSync(new URL('../scripts/pcb-research/2026-10-09-adas-r2/evidence/oem-evidence.json', import.meta.url), 'utf8'));
+    expect(oemEntries(ev).map((e: { mpn: string }) => e.mpn)).toEqual(['EYEQ4', 'EYEQ6L', 'EYEQ6H', 'CV2AQ']);
+    const analystOnly = { ...ev, groups: ev.groups.map((g: { claims: Array<{ type: string }> }) => ({ ...g, claims: g.claims.map(c => ({ ...c, type: 'analyst' })) })) };
+    expect(() => oemEntries(analystOnly)).toThrow(/company disclosure/);
+  });
+
+  it('unit-level teardown figures are board evidence in the ECU library, not catalogue prices', () => {
+    const lib = JSON.parse(readFileSync(new URL('../server/data/pcb-ecu-library.json', import.meta.url), 'utf8'));
+    const ev = lib.boardCostEvidence as Array<{ claim: string; url: string }>;
+    expect(ev.some(x => /zFAS/i.test(x.claim) || /zfas/i.test(x.url))).toBe(true);
+    expect(ev.some(x => /Hesai/.test(x.claim))).toBe(true);
+    for (const x of ev) expect(x.url).toMatch(/^https:\/\//);
+  });
+});

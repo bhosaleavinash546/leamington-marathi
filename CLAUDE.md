@@ -151,8 +151,8 @@ precedence catalogue → OCR-named part range → function range → class range
 line carrying `priceSource` / `priceBasis` / `priceNote`, `pcb-bom-grounding.ts`).
 Chip markings OCR read are attached to the BOM line of the same function
 (`pcb-ocr-reconcile.ts`). The offline catalogue is **data**:
-`server/data/pcb-component-catalogue.json` (1,018 parts, 1k–300k GBP breaks, a
-source and date on every entry — 679 from distributor listings, the rest labelled
+`server/data/pcb-component-catalogue.json` (1,106 parts, 1k–300k GBP breaks, a
+source and date on every entry — 764 from distributor listings, the rest labelled
 engineering estimates; see `docs/pcb/component-database-2026-10.md` and the ADAS round
 `docs/pcb/adas-component-research-2026-10.md`), loaded
 by `pcb-price-catalogue.ts` (`catalogueEntry` / `cataloguePriceAt`, aliases for chip
@@ -212,7 +212,7 @@ Real purchase prices go in `scripts/actuals/pcb-actuals.csv` (`npx tsx scripts/a
 not one (it once made 13 unlabelled lines read as duplicate views). File inputs are never written back
 (`country-recost.ts` — restoring a chosen photo's path threw and failed Calculate on the PCB form).
 
-**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 1,018 parts, 679 distributor-priced (ADAS round 9 Oct 2026: +175 parts, `docs/pcb/adas-component-research-2026-10.md` — one domain at a time, the web-search budget is shared by parallel agents; Digi-Key 'punchouttest' prices are labelled on the entry; `scripts/pcb-ecu-library-merge.ts` merges ECU board research, every claim a URL or "engineering judgement"), 185 by 2+ distributors before that round (six research rounds incl. a gap analysis of common automotive parts; unpriced parts with their last result in `queue.json`); run `npx tsx scripts/pcb-catalogue-audit.ts` after every merge (0 errors required; warnings are for a person); the literal orderable code is looked up before its normalised key; family-key estimates ("TC387") take a REVIEWED member's price from `scripts/pcb-research/family-links.json` and stay estimates;
+**Component database (Oct 2026, `docs/pcb/component-database-2026-10.md`):** the catalogue is 1,106 parts, 764 distributor-priced (ADAS rounds 1–2, 9 Oct 2026: +263 parts, `docs/pcb/adas-component-research-2026-10.md` — one domain at a time, the web-search budget is shared by parallel agents; merge rule 1a: a staging host (`fat.lcsc.com`) is never a price, a Digi-Key 'punchouttest' price only when nothing else is listed and labelled; OEM-direct chips (EyeQ, CV2AQ) take a FLAT labelled estimate only from the maker's own per-chip disclosure via `scripts/pcb-oem-evidence-merge.ts`, unit-level teardown figures go to the ECU library's `boardCostEvidence`; `scripts/pcb-ecu-library-merge.ts` merges ECU board research, every claim a URL or "engineering judgement"), 185 by 2+ distributors before that round (six research rounds incl. a gap analysis of common automotive parts; unpriced parts with their last result in `queue.json`); run `npx tsx scripts/pcb-catalogue-audit.ts` after every merge (0 errors required; warnings are for a person); the literal orderable code is looked up before its normalised key; family-key estimates ("TC387") take a REVIEWED member's price from `scripts/pcb-research/family-links.json` and stay estimates;
 researched entries carry `observations` (distributor, qty ≥ 100, price, URL, date) and `volumeModel` (slope b). Breaks are
 1k/10k/100k/200k/300k — above the largest published break they are DERIVED (`P1k × (Q/1000)^−b`), not quotes; lookups
 follow parts bought (qty × boards) and stay flat above 300k. Add prices only through `scripts/pcb-catalogue-research-merge.ts`

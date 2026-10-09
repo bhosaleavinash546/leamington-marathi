@@ -42357,6 +42357,82 @@
 "basis": "slope from the part's own breaks (1 pair)",
 "derivedAbove": 3000
 }
+},
+{
+"mpn": "EYEQ4",
+"family": "EyeQ4",
+"mfr": "Mobileye",
+"desc": "EyeQ4 vision SoC (front camera ADAS), sold with Mobileye software",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 34.7438,
+"q10k": 34.7438,
+"q100k": 34.7438,
+"q200k": 34.7438,
+"q300k": 34.7438
+},
+"confidence": "estimate",
+"source": "OEM-direct part: not sold through distributors. Estimate from public cost evidence, NOT a distributor price or a quote. Priced at $46 (Mobileye CCO Dan Galves at Canaccord Genuity Growth Conference, reported by Nasdaq/Zacks, 2026) = £34.7438 at the engine's FX, flat across volumes: it is a programme-volume average selling price, so no volume curve is applied. Why this figure: Mobileye's base ADAS price per system (one EyeQ + its software, which is what a Tier 1 buys per camera); the blended quarterly figures ($49–51) include SuperVision. Evidence: Mobileye Global Inc. (Q4/FY2024 results, 8-K / press release) (company disclosure, high confidence): $50 per chip — Average System Price, all EyeQ + SuperVision systems shipped in Q4 2024 (blended family) <https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2024-results-and>; Mobileye Global Inc. (Q4/FY2025 results) (company disclosure, high confidence): $50.8 per chip — Average System Price, Q4 2025 (blended family; Q1–Q3 2025 were $49.0 / $49.7 / $51.7) <https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2025-results-and>; Mobileye CCO Dan Galves at Canaccord Genuity Growth Conference, reported by Nasdaq/Zacks (company disclosure, medium confidence): $46 per chip — Core (base) ADAS ASP, i.e. excluding SuperVision; stated Aug 2026 <https://www.nasdaq.com/articles/mobileye-eyes-higher-asps-surround-adas-volkswagen-programs-ramp>. Read through web search on 2026-10-09.",
+"asOf": "2026-10-09"
+},
+{
+"mpn": "EYEQ6L",
+"family": "EyeQ6L",
+"mfr": "Mobileye",
+"desc": "EyeQ6 Lite vision SoC (front camera ADAS), sold with Mobileye software",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 34.7438,
+"q10k": 34.7438,
+"q100k": 34.7438,
+"q200k": 34.7438,
+"q300k": 34.7438
+},
+"confidence": "estimate",
+"source": "OEM-direct part: not sold through distributors. Estimate from public cost evidence, NOT a distributor price or a quote. Priced at $46 (Mobileye CCO Dan Galves at Canaccord Genuity Growth Conference, reported by Nasdaq/Zacks, 2026) = £34.7438 at the engine's FX, flat across volumes: it is a programme-volume average selling price, so no volume curve is applied. Why this figure: the base ADAS price covers EyeQ4 and its successor EyeQ6L in the same front-camera product; no EyeQ6L-only figure is published. Evidence: Mobileye Global Inc. (Q4/FY2024 results, 8-K / press release) (company disclosure, high confidence): $50 per chip — Average System Price, all EyeQ + SuperVision systems shipped in Q4 2024 (blended family) <https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2024-results-and>; Mobileye Global Inc. (Q4/FY2025 results) (company disclosure, high confidence): $50.8 per chip — Average System Price, Q4 2025 (blended family; Q1–Q3 2025 were $49.0 / $49.7 / $51.7) <https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2025-results-and>; Mobileye CCO Dan Galves at Canaccord Genuity Growth Conference, reported by Nasdaq/Zacks (company disclosure, medium confidence): $46 per chip — Core (base) ADAS ASP, i.e. excluding SuperVision; stated Aug 2026 <https://www.nasdaq.com/articles/mobileye-eyes-higher-asps-surround-adas-volkswagen-programs-ramp>. Read through web search on 2026-10-09.",
+"asOf": "2026-10-09"
+},
+{
+"mpn": "EYEQ6H",
+"family": "EyeQ6H",
+"mfr": "Mobileye",
+"desc": "EyeQ6 High vision SoC (Surround ADAS), sold with Mobileye software",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 94.4125,
+"q10k": 94.4125,
+"q100k": 94.4125,
+"q200k": 94.4125,
+"q300k": 94.4125
+},
+"confidence": "estimate",
+"source": "OEM-direct part: not sold through distributors. Estimate from public cost evidence, NOT a distributor price or a quote. Priced at $125 (Mobileye CCO Dan Galves at Canaccord Genuity conference, reported by Nasdaq/Zacks, 2026) = £94.4125 at the engine's FX, flat across volumes: it is a programme-volume average selling price, so no volume curve is applied. Why this figure: Mobileye's Surround ADAS price (one EyeQ6H + software; the ECU hardware is the Tier 1's); the company also gave $100–150, an analyst $150–200. Evidence: Mobileye CCO Dan Galves at Canaccord Genuity conference, reported by Nasdaq/Zacks (company disclosure, medium confidence): $125 per chip — Surround ADAS system price (one EyeQ6H + Mobileye software; ECU hardware supplied by Tier 1), programmes launching 2028 <https://www.nasdaq.com/articles/mobileye-eyes-higher-asps-surround-adas-volkswagen-programs-ramp>; Mobileye Q1 2026 earnings call transcript (The Motley Fool) (company disclosure, low confidence): $100 per chip — Surround ADAS ASP range $100–150 cited for three design wins (lower bound recorded) <https://www.fool.com/earnings/call-transcripts/2026/04/23/mobileye-mbly-q1-2026-earnings-transcript/>; Needham (Quinn Bolton) via Benzinga (analyst, low confidence): $150 per chip — Needham estimate of Surround ADAS ASP, range $150–200 (lower bound recorded), March 2025 <https://cdn1.benzinga.com/analyst-ratings/price-target/25/03/44498506/mobileye-lands-vw-deal-for-advanced-driving-tech-paving-way-to-higher-margins-market>. Read through web search on 2026-10-09.",
+"asOf": "2026-10-09"
+},
+{
+"mpn": "CV2AQ",
+"family": "CV2AQ",
+"mfr": "Ambarella",
+"desc": "CV2AQ automotive vision SoC (CV2 family)",
+"category": "ic_bga",
+"pkg": "FCBGA",
+"aecq": true,
+"gbp": {
+"q1k": 15.106,
+"q10k": 15.106,
+"q100k": 15.106,
+"q200k": 15.106,
+"q300k": 15.106
+},
+"confidence": "estimate",
+"source": "OEM-direct part: not sold through distributors. Estimate from public cost evidence, NOT a distributor price or a quote. Priced at $20 (Ambarella FQ2 2024 earnings call (CEO Fermi Wang), transcript via The Motley Fool / Nasdaq, 2023) = £15.106 at the engine's FX, flat across volumes: it is a programme-volume average selling price, so no volume curve is applied. Why this figure: Ambarella's CV2-family average across automotive and IoT (Aug 2023); individual parts run from under $10 to over $50, so the automotive CV2AQ may sit above it. Evidence: Ambarella FQ2 2024 earnings call (CEO Fermi Wang), transcript via The Motley Fool / Nasdaq (company disclosure, medium confidence): $20 per chip — CV2 family ASP (auto + IoT), fiscal Q2 2024 call (Aug 2023); range below $10 to above $50 per FQ3 2024 call <https://www.fool.com/earnings/call-transcripts/2023/08/29/ambarella-amba-q2-2024-earnings-call-transcript/>. Read through web search on 2026-10-09.",
+"asOf": "2026-10-09"
 }
 ]
 }
