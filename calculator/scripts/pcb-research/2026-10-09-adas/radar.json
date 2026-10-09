@@ -25,7 +25,7 @@
           "date": "2026-10-09"
         }
       ],
-      "notes": "AEC-Q100 automotive, tape & reel. Only one break found (1,000 T&R); Digi-Key cut tape $26.81@1, $22.96@25. Mouser/Arrow figures seen only on an undated aggregator without breaks - not used."
+      "notes": "AEC-Q100 automotive, tape & reel. Only one usable break (Digi-Key US 1,000 T&R). Second pass: Mouser/Arrow/Avnet appear only on an undated aggregator with no quantity break; Digi-Key CN tiers are CNY incl. 13% VAT - neither used."
     },
     {
       "mpn": "AWR1443FQIGABLRQ1",
@@ -50,7 +50,7 @@
           "date": "2026-10-09"
         }
       ],
-      "notes": "AEC-Q100 automotive, tape & reel. Digi-Key Germany site 1,000 T&R break (ex-VAT price column as read in summary; verify). Digi-Key CN shows CNY 166.40 @1k incl. 13% VAT (not used: VAT-inclusive). US page not indexed."
+      "notes": "AEC-Q100 automotive, tape & reel. Digi-Key Germany 1,000 T&R break. VAT basis NOT confirmed by search (digikey.de lists ex-VAT by default; cross-check: Digi-Key CN CNY 166.40 incl. 13% VAT = ~CNY 147 ex-VAT, consistent with ex-VAT). Treat with care; no second break found."
     },
     {
       "mpn": "AWR2544",
@@ -166,11 +166,11 @@
     },
     {
       "mpn": "TEF8233",
-      "family": "TEF8233",
+      "family": "TEF82xx",
       "mfr": "NXP",
       "desc": "76-81 GHz 2nd-gen RFCMOS radar transceiver (TEF82xx)",
       "category": "ic_bga",
-      "pkg": "eWLB-165",
+      "pkg": "",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
@@ -178,7 +178,7 @@
       ],
       "observedMpn": "TEF8233",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "searched: no TEF8233 product page or listing found; NXP lists TEF8221EN1/8222EN1/8231EN1/8232EN1 in the TEF82xx family (3rd gen is TEF8388). Orderable code unconfirmed; not listed at a franchised distributor (OEM-direct / NDA)"
     },
     {
       "mpn": "FS32R274KSK2MMM",
@@ -197,74 +197,42 @@
       "notes": "searched: not found at Digi-Key/Mouser in results. Farnell/element14 list FS32R274KCK2MMM / FS32R274KSK2MMM only at 1+ (local currency, out of stock) - below the 100-unit minimum, not used. Broker (Cytech) prices not allowed. Further search not possible (search budget exhausted)."
     },
     {
-      "mpn": "FS32R294KCMJD",
+      "mpn": "FS32R294HBK0MJDR",
       "family": "S32R294",
       "mfr": "NXP",
-      "desc": "S32R29 radar MCU",
+      "desc": "S32R29 radar MCU, Power Architecture multicore 500 MHz, ISO 26262, CSE3",
       "category": "ic_bga",
-      "pkg": "BGA",
+      "pkg": "BGA (NXP SOT1989-1)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "FS32R294KCMJD",
+      "observedMpn": "FS32R294HBK0MJDR",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "searched Digi-Key/Mouser: no franchised price. Orderables seen: FS32R294HBK0MJDR / LAK0MJDR / JAK0MJDR / LDK0MJDR (AEC-Q100); only quote-only or broker listings (Suntsu, Lisle Apex), LCSC stock 3 with no price shown. Catalogue estimate code FS32R294KCMJD not found."
     },
     {
-      "mpn": "S32R372",
+      "mpn": "FS32R372SDK0MMMT",
       "family": "S32R372",
       "mfr": "NXP",
-      "desc": "S32R37 radar MCU",
+      "desc": "S32R37 radar MCU, 240 MHz",
       "category": "ic_bga",
-      "pkg": "BGA",
+      "pkg": "MAPBGA-257",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "S32R372",
+      "observedMpn": "FS32R372SDK0MMMT",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "element14 NZ lists FS32R372SDK0MMMT at NZD 75.77 @1 / 64.88 @50+ (below the 100-unit minimum, not used); 53-week lead time; Farnell DK/JP FS32R372SEK0MMMT back-order. Not at Digi-Key/Mouser in results."
     },
     {
       "mpn": "S32R41",
       "family": "S32R41",
       "mfr": "NXP",
-      "desc": "S32R41 radar processor (corner/front radar)",
-      "category": "ic_bga",
-      "pkg": "BGA",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS",
-        "radar"
-      ],
-      "observedMpn": "S32R41",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
-    },
-    {
-      "mpn": "S32R45",
-      "family": "S32R45",
-      "mfr": "NXP",
-      "desc": "S32R45 imaging-radar processor (4D imaging radar)",
-      "category": "ic_bga",
-      "pkg": "BGA",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS",
-        "radar"
-      ],
-      "observedMpn": "S32R45",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
-    },
-    {
-      "mpn": "SAF8544",
-      "family": "SAF85xx",
-      "mfr": "NXP",
-      "desc": "SAF85xx RFCMOS radar one-chip (transceiver + processor)",
+      "desc": "S32R41 radar processor, Cortex-A53 + 2x lockstep Cortex-M7, 8 MB SRAM",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
@@ -272,15 +240,47 @@
         "ADAS",
         "radar"
       ],
-      "observedMpn": "SAF8544",
+      "observedMpn": "S32R41",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "searched twice: no orderable code or distributor listing found; not listed at a franchised distributor (OEM-direct / NDA)"
+    },
+    {
+      "mpn": "S32R458AAUK0MUDT",
+      "family": "S32R45",
+      "mfr": "NXP",
+      "desc": "S32R45 imaging-radar processor, Cortex-A53 + Cortex-M7 (4D imaging radar)",
+      "category": "ic_bga",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "S32R458AAUK0MUDT",
+      "observations": [],
+      "notes": "orderables on nxp.com: S32R458AAUK0MUDT / S32R458AASK0MUDT / S32R458AAAK0MUDT; no Digi-Key/Mouser/Arrow listing found in 3 searches; not listed at a franchised distributor (OEM-direct / NDA)"
+    },
+    {
+      "mpn": "SAF8544EL",
+      "family": "SAF85xx",
+      "mfr": "NXP",
+      "desc": "SAF85xx RFCMOS one-chip radar SoC (transceiver + processor), Gen6",
+      "category": "ic_bga",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar"
+      ],
+      "observedMpn": "SAF8544EL",
+      "observations": [],
+      "notes": "nxp.com parts SAF8544EL / SAF8544LEL1; Pluto reference design under NDA; not listed at a franchised distributor (OEM-direct / NDA)"
     },
     {
       "mpn": "SAF85xxHN",
       "family": "SAF85xx",
       "mfr": "NXP",
-      "desc": "SAF85xx RFCMOS radar one-chip (transceiver + processor)",
+      "desc": "SAF85xx RFCMOS one-chip radar SoC",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
@@ -290,10 +290,10 @@
       ],
       "observedMpn": "SAF85xxHN",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "'SAF85xxHN' ordering code not found; family SAF85xx is sold via NXP sales; not listed at a franchised distributor (OEM-direct / NDA)"
     },
     {
-      "mpn": "MR3003",
+      "mpn": "MC33MR3003AXVK",
       "family": "MR3003",
       "mfr": "NXP",
       "desc": "77 GHz radar transceiver, 3TX/4RX",
@@ -304,15 +304,15 @@
         "ADAS",
         "radar"
       ],
-      "observedMpn": "MR3003",
+      "observedMpn": "MC33MR3003AXVK",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "NXP lists MR3003 as discontinued (successor TEF810x). findchips: Avnet Silica MC33MR3003XVKR2 0 stock, no price. No franchised price."
     },
     {
-      "mpn": "MR2001",
+      "mpn": "MC33MR2001V2VKR2",
       "family": "MR2001",
       "mfr": "NXP",
-      "desc": "77 GHz radar transceiver chipset",
+      "desc": "77 GHz radar chipset (MR2001 VCO/TX/RX)",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
@@ -320,15 +320,15 @@
         "ADAS",
         "radar"
       ],
-      "observedMpn": "MR2001",
+      "observedMpn": "MC33MR2001V2VKR2",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "multi-chip set (MR2001VC/TX/RX); NXP forum: via Avnet quote only; only broker reference prices (Cytech) found - not allowed. No franchised price."
     },
     {
       "mpn": "RXS8160PL",
-      "family": "RXS816x",
+      "family": "RXS816xPL",
       "mfr": "Infineon",
-      "desc": "77 GHz RASIC radar transceiver",
+      "desc": "RASIC 77/79 GHz radar transceiver MMIC",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
@@ -338,13 +338,13 @@
       ],
       "observedMpn": "RXS8160PL",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "searched twice: no ordering code or distributor listing; not listed at a franchised distributor (OEM-direct / NDA)"
     },
     {
       "mpn": "RXS8161",
-      "family": "RXS816x",
+      "family": "RXS816xPL",
       "mfr": "Infineon",
-      "desc": "77 GHz RASIC radar transceiver",
+      "desc": "RASIC 77/79 GHz radar transceiver MMIC",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
@@ -354,13 +354,13 @@
       ],
       "observedMpn": "RXS8161",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "searched with RXS8160PL: no listing; not listed at a franchised distributor (OEM-direct / NDA)"
     },
     {
       "mpn": "CTRX8181",
       "family": "CTRX8181",
       "mfr": "Infineon",
-      "desc": "28nm CMOS 77 GHz radar transceiver, 4TX/4RX",
+      "desc": "RASIC 28nm CMOS 77 GHz radar transceiver, 4TX/4RX, ISO 26262",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
@@ -370,173 +370,301 @@
       ],
       "observedMpn": "CTRX8181",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "searched twice: no distributor listing; not listed at a franchised distributor (OEM-direct / NDA). Mouser announces the 8TX/8RX sibling CTRX8188F (FCBGA) but no price was read."
     },
     {
-      "mpn": "BGT60ATR24C",
+      "mpn": "BGT60ATR24CE6327XTMA1",
       "family": "BGT60ATR24C",
       "mfr": "Infineon",
-      "desc": "60 GHz radar sensor with antennas in package (in-cabin)",
+      "desc": "XENSIV 60 GHz radar MMIC with antennas in package (in-cabin occupancy)",
       "category": "ic_bga",
       "pkg": "",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
-        "radar"
+        "radar",
+        "DMS"
       ],
-      "observedMpn": "BGT60ATR24C",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "BGT60ATR24CE6327XTMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 18.31,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/BGT60ATR24CE6327XTMA1/16669045",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3500,
+          "price": 16.65,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/BGT60ATR24CE6327XTMA1/16669045",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100. 500 = cut tape, 3,500 = full T&R. Digi-Key shows LAST TIME BUY 31 Oct 2026."
     },
     {
-      "mpn": "BGT24ATR22",
+      "mpn": "BGT24ATR22E6433XUMA1",
       "family": "BGT24ATR22",
       "mfr": "Infineon",
-      "desc": "24 GHz radar transceiver, 2TX/2RX",
+      "desc": "24 GHz radar transceiver MMIC, 2TX/2RX",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "VQFN-32",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "BGT24ATR22",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "BGT24ATR22E6433XUMA1",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 100,
+          "price": 8.9,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/rf-ics/0349349?gb=s",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100 (RS IT listing). RS UK 1-9 GBP 10.72, 10-99 GBP 9.65, 100+ GBP 8.90 ex-VAT; Farnell order code 4531830 (no price read)."
     },
     {
-      "mpn": "TC357",
-      "family": "TC35x",
+      "mpn": "SAK-TC357TA-64F300S AB",
+      "family": "TC357",
       "mfr": "Infineon",
       "desc": "AURIX TC35x radar MCU (TriCore + SPU)",
       "category": "ic_bga",
-      "pkg": "BGA",
+      "pkg": "LFBGA-292",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "TC357",
+      "observedMpn": "TC357TA64F300SABKXUMA1",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "orderable TC357TA64F300SABKXUMA1; only JLCPCB prices found (USD 15.25 @1,000) - not a franchised distributor host, not used. No Digi-Key/Mouser/LCSC listing found."
     },
     {
-      "mpn": "LP87745-Q1",
+      "mpn": "LP877451A1RXVRQ1",
       "family": "LP87745-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Radar PMIC, 3 buck + LDO, low-noise",
+      "desc": "Radar PMIC: 3 buck + boost + LDO, low-noise, for AWR/IWR sensors",
       "category": "ic_qfn",
-      "pkg": "VQFN",
+      "pkg": "VQFN (RXV)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "LP87745-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "LP877451A1RXVRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 3.8526,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/LP877",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.4849,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/LP877",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100. Breaks read on findchips (Digi-Key 296-LP877451A1RXVRQ1CT-ND). Other OTP variant LP87745101RXVRQ1 listed, no price."
     },
     {
-      "mpn": "LP87702-Q1",
+      "mpn": "LP87702DRHBRQ1",
       "family": "LP87702-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Dual buck + boost PMIC for radar/camera",
+      "desc": "Dual buck + 5 V boost PMIC with diagnostics (radar/camera)",
       "category": "ic_qfn",
-      "pkg": "VQFN",
+      "pkg": "VQFN-32 (RHB)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "LP87702-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "LP87702DRHBRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 3.7286,
+          "currency": "USD",
+          "url": "https://findchips.com/search/lp87702drhbrq1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.3749,
+          "currency": "USD",
+          "url": "https://findchips.com/search/lp87702drhbrq1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 2.3436,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C2876674.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100. Digi-Key breaks from one findchips snapshot (another snapshot showed a Digi-Key low of $2.29 - undated); LCSC lower."
     },
     {
-      "mpn": "LP87524-Q1",
+      "mpn": "LP87524BRNFRQ1",
       "family": "LP87524-Q1",
       "mfr": "Texas Instruments",
-      "desc": "4-phase buck PMIC for radar SoCs",
+      "desc": "Quad-output step-down PMIC for radar SoCs",
       "category": "ic_qfn",
-      "pkg": "VQFN",
+      "pkg": "VQFN-HR-26",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "LP87524-Q1",
+      "observedMpn": "LP87524BRNFRQ1",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "3 searches: only an undated aggregator with single prices and no quantity breaks (Digi-Key $5.76, Mouser $6.88, Avnet $3.28) - not used."
     },
     {
-      "mpn": "TPS7A94-Q1",
-      "family": "TPS7A94-Q1",
+      "mpn": "TPS7A9401DSCR",
+      "family": "TPS7A94",
       "mfr": "Texas Instruments",
-      "desc": "1 A ultra-low-noise LDO (radar RF rails)",
+      "desc": "1 A ultra-low-noise (0.46 uVrms) high-PSRR LDO",
       "category": "ic_qfn",
-      "pkg": "",
-      "aecq": true,
+      "pkg": "WSON-10 (DSC)",
+      "aecq": false,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "TPS7A94-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "TPS7A9401DSCR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.88664,
+          "currency": "USD",
+          "url": "https://punchouttest.digikey.com.mx/en/products/detail/texas-instruments/TPS7A9401DSCR/16627790",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 3.33979,
+          "currency": "EUR",
+          "url": "https://punchouttest.digikey.fr/fr/products/detail/texas-instruments/TPS7A9401DSCR/16627790",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "NO -Q1 orderable found for TPS7A94 (searched Digi-Key/TI); priced the catalog-grade TPS7A9401DSCR - not AEC-Q100. Two Digi-Key regional pages, same 3,000 T&R break."
     },
     {
-      "mpn": "TPS7A91-Q1",
-      "family": "TPS7A91-Q1",
+      "mpn": "TPS7A9101DSKR",
+      "family": "TPS7A91",
       "mfr": "Texas Instruments",
       "desc": "1 A low-noise high-PSRR LDO",
       "category": "ic_qfn",
-      "pkg": "",
-      "aecq": true,
+      "pkg": "WSON (DSK)",
+      "aecq": false,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "TPS7A91-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "TPS7A9101DSKR",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 0.983,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/tps7a9101dskr",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 0.935,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/tps7a9101dskr",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.9432,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/tps7a9101dskr",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "NO -Q1 orderable found for TPS7A91; priced catalog-grade TPS7A9101DSKR - not AEC-Q100. Breaks via findchips (Mouser 595-TPS7A9101DSKR)."
     },
     {
-      "mpn": "LP5912-Q1",
+      "mpn": "LP5912Q1.8DRVRQ1",
       "family": "LP5912-Q1",
       "mfr": "Texas Instruments",
-      "desc": "500 mA low-noise LDO",
+      "desc": "500 mA low-noise LDO, 1.8 V",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "WSON-6 (DRV)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "LP5912-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "LP5912Q1.8DRVRQ1",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.4573,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C181463.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.5632,
+          "currency": "EUR",
+          "url": "https://punchouttest.digikey.de/en/products/detail/texas-instruments/LP5912Q1-8DRVRQ1/6047271",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100, 1.8 V option (other voltages are separate orderables). Digi-Key DE out of stock (backorder)."
     },
     {
-      "mpn": "LMK00804B-Q1",
+      "mpn": "LMK00804BQWRGTRQ1",
       "family": "LMK00804B-Q1",
       "mfr": "Texas Instruments",
-      "desc": "1:4 LVCMOS clock fan-out buffer",
-      "category": "ic_soic",
-      "pkg": "TSSOP",
+      "desc": "1:4 LVCMOS clock fan-out buffer, automotive",
+      "category": "ic_qfn",
+      "pkg": "VQFN-16 (RGT)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "LMK00804B-Q1",
+      "observedMpn": "LMK00804BQWRGTRQ1",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "orderable is VQFN-16 (RGT), not TSSOP; no Digi-Key/Mouser listing found in 2 searches; only broker (Cytech) reference prices - not allowed."
     },
     {
       "mpn": "FS6531",
       "family": "FS65",
       "mfr": "NXP",
-      "desc": "FS65 safety system basis chip (radar MCU supply)",
+      "desc": "FS65 safety system basis chip",
       "category": "ic_tqfp",
       "pkg": "",
       "aecq": true,
@@ -546,13 +674,13 @@
       ],
       "observedMpn": "FS6531",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "no FS6531 / MC33FS6531 part found (2 searches); NXP FS65 family is MC33FS65xx in HLQFP-48 (FS6500..FS6528). Code unconfirmed - check the BOM."
     },
     {
-      "mpn": "PF5020",
+      "mpn": "MPF5020CMMACESR2",
       "family": "PF5020",
       "mfr": "NXP",
-      "desc": "PF5020 safety PMIC",
+      "desc": "PF5020 safety PMIC (ASIL B), multi-rail",
       "category": "ic_qfn",
       "pkg": "",
       "aecq": true,
@@ -560,72 +688,124 @@
         "ADAS",
         "radar"
       ],
-      "observedMpn": "PF5020",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "MPF5020CMMACESR2",
+      "observations": [
+        {
+          "distributor": "Arrow",
+          "qty": 2000,
+          "price": 3.762,
+          "currency": "USD",
+          "url": "https://arrow.com/en/products/mpf5020cmmacesr2/nxp-semiconductors",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Arrow 2,000 MOQ/multiple, no stock. TME lists sibling OTP codes MPF5020AMMA0ES / CMMA0ES at ~$4.41 / $4.77 @490 (different OTP config, not used). Package not verified."
     },
     {
-      "mpn": "MAX20048",
+      "mpn": "MAX20048ATGB/VY+",
       "family": "MAX20048",
       "mfr": "Analog Devices",
-      "desc": "Automotive buck/PMIC (radar supply)",
+      "desc": "Automotive 40 V H-bridge buck-boost controller, 2.2 MHz",
       "category": "ic_qfn",
-      "pkg": "",
+      "pkg": "SWTQFN-24",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "MAX20048",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "MAX20048ATGB/VY+",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 250,
+          "price": 6.62,
+          "currency": "EUR",
+          "url": "https://it.rs-online.com/web/p/regolatori-di-tensione/2035848",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS Italy 250+ EUR 6.62 ex-VAT (1+ EUR 9.335). Digi-Key ATGA/VY+ 'limited supply - call'."
     },
     {
-      "mpn": "TPS6594-Q1",
+      "mpn": "TPS65941120RWERQ1",
       "family": "TPS6594-Q1",
       "mfr": "Texas Instruments",
-      "desc": "Safety PMIC, 5 buck + 4 LDO (radar processor supply)",
+      "desc": "Safety PMIC: 5 buck + 4 LDO (radar/ADAS processor supply)",
       "category": "ic_qfn",
-      "pkg": "VQFN",
+      "pkg": "VQFNP-56 (8x8)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "TPS6594-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "TPS65941120RWERQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 6.84677,
+          "currency": "USD",
+          "url": "https://digikey.com/en/products/detail/texas-instruments/TPS65941120RWERQ1/17873871",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 6.71666,
+          "currency": "USD",
+          "url": "https://digikey.com/en/products/detail/texas-instruments/TPS65941120RWERQ1/17873871",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100. One of several OTP variants (…111/…120/…212/…213); 1,000 = cut tape, 2,000 = T&R."
     },
     {
-      "mpn": "CDCLVC1102-Q1",
-      "family": "CDCLVC1102-Q1",
+      "mpn": "CDCLVC1102PWR",
+      "family": "CDCLVC1102",
       "mfr": "Texas Instruments",
       "desc": "1:2 LVCMOS clock buffer",
       "category": "ic_soic",
-      "pkg": "TSSOP",
-      "aecq": true,
+      "pkg": "TSSOP-8",
+      "aecq": false,
       "ecuRoles": [
         "ADAS",
         "radar"
       ],
-      "observedMpn": "CDCLVC1102-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "CDCLVC1102PWR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 1.9859,
+          "currency": "USD",
+          "url": "https://findchips.com/search/CDCLVC1102PWR",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 1.8821,
+          "currency": "USD",
+          "url": "https://findchips.com/search/CDCLVC1102PWR",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "No CDCLVC1102-Q1 exists (TI lists catalog grade -40..85 C only); priced CDCLVC1102PWR, not AEC-Q100. Breaks via findchips."
     },
     {
-      "mpn": "LMX2594",
+      "mpn": "LMX2594RHAR",
       "family": "LMX2594",
       "mfr": "Texas Instruments",
       "desc": "15 GHz wideband PLL synthesizer (non-automotive reference)",
       "category": "ic_qfn",
-      "pkg": "VQFN",
+      "pkg": "VQFN-40 (6x6)",
       "aecq": false,
       "ecuRoles": [
         "radar"
       ],
-      "observedMpn": "LMX2594",
+      "observedMpn": "LMX2594RHAR",
       "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "notes": "LCSC only to 30+ (USD 27.13, below 100); Mouser 2,500 x $49.85 read on SnapEDA (not an allowed host); sources disagree. No usable observation."
     },
     {
       "mpn": "DP83TC812SRHARQ1",
@@ -633,7 +813,7 @@
       "mfr": "Texas Instruments",
       "desc": "100BASE-T1 automotive Ethernet PHY",
       "category": "ic_qfn",
-      "pkg": "VQFN",
+      "pkg": "VQFN-36 (6x6)",
       "aecq": true,
       "ecuRoles": [
         "ADAS",
@@ -641,31 +821,23 @@
         "gateway"
       ],
       "observedMpn": "DP83TC812SRHARQ1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 2.51202,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/DP83TC812SRHATQ1/18159396",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "observed on the small-reel sibling DP83TC812SRHATQ1 (same device). Mouser 595-DP83TC812SRHARQ1 seen only in PEN (not usable)."
     },
     {
-      "mpn": "TJA1462AT",
+      "mpn": "TJA1462AT/0Z",
       "family": "TJA1462",
       "mfr": "NXP",
-      "desc": "CAN FD SIC transceiver",
-      "category": "ic_soic",
-      "pkg": "SO8",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS",
-        "radar",
-        "gateway"
-      ],
-      "observedMpn": "TJA1462AT",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
-    },
-    {
-      "mpn": "TCAN1462-Q1",
-      "family": "TCAN1462-Q1",
-      "mfr": "Texas Instruments",
-      "desc": "CAN SIC transceiver, 8 Mbps",
+      "desc": "CAN FD signal-improvement (SIC) transceiver, 8 Mbit/s",
       "category": "ic_soic",
       "pkg": "SOIC-8",
       "aecq": true,
@@ -674,9 +846,68 @@
         "radar",
         "gateway"
       ],
-      "observedMpn": "TCAN1462-Q1",
-      "observations": [],
-      "notes": "not researched: the shared WebSearch budget for this run was exhausted before this part was reached; no search made, no price recorded"
+      "observedMpn": "TJA1462AT/0Z",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 1.2,
+          "currency": "CAD",
+          "url": "https://punchouttest.digikey.ca/en/products/detail/nxp-usa-inc/TJA1462AT-0Z/13590240",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 1.0,
+          "currency": "CAD",
+          "url": "https://punchouttest.digikey.ca/en/products/detail/nxp-usa-inc/TJA1462AT-0Z/13590240",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 2500,
+          "price": 0.53,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/es/p/semiconductors--signal-interface--general-interface/tja1462at-0z-nxp-8135671",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100. Digi-Key CA out of stock (16 wk); Future MOQ 2,500, 20 wk. HVSON sibling TJA1462ATK/0Z ~EUR 0.56 @2,500 (Digi-Key ES)."
+    },
+    {
+      "mpn": "TCAN1462VDRBRQ1",
+      "family": "TCAN1462-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "CAN SIC transceiver, 8 Mbit/s, VIO",
+      "category": "ic_qfn",
+      "pkg": "VSON-8",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar",
+        "gateway"
+      ],
+      "observedMpn": "TCAN1462VDRBRQ1",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.7713,
+          "currency": "USD",
+          "url": "https://lcsc.com/product-detail/image/TCAN1462VDRBRQ1_C5215833.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 15000,
+          "price": 0.59912,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/TCAN1462VDRBRQ1/17878355",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "AEC-Q100, VSON-8 variant (the one with clear breaks). SOIC-8 TCAN1462VDRQ1 ~EUR 0.64 @1k / 0.60 @2.5k on Digi-Key DE (substitute row on the DRQ1 page, not used)."
     }
   ]
 }
