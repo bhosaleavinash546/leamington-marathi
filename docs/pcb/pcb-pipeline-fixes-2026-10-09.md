@@ -92,11 +92,15 @@ The "after" column of every case should be read against the after baseline, £61
   - **F15:** the prompts still carry price guidance. It no longer reaches a price.
 - **Class tables at ~10k (Likely).** Reading the class tables at ~10k is a stated assumption: their evidence breaks run from 1k to 28k.
 - **Accuracy is unmeasured:**
-  - The repo holds one real purchase price, the camera board: £17.00 paid. The camera fixture re-run without its BOM picture gives £18.78; the end-to-end run with the picture is in §5.
+  - The repo holds one real purchase price, the camera board: £17.00 paid. The end-to-end run with its BOM picture now gives **£16.37 (−3.7 %)**; before these fixes it gave £15.26 (−10 %). One point is not accuracy, and nothing was tuned to it.
   - There are no labelled board photos, so photo-reading accuracy is not measured.
 
 ## 5. Checks
 
 - `npx vitest run tests/pcb-`: 377 passed.
-- Full suite: see the commit that adds this report.
+- Full suite: 3,632 passed after one test was restated for F22 (`2b141df`).
 - Build: passes, and `dist` is rebuilt (`6dced5b`).
+- `npm run test:e2e:pcb-camera` passed, in a real server and browser with the stand-in model, across:
+  - photos and BOM picture → analysis → Calculate = analysis;
+  - the report, the Excel workbook and the PDF;
+  - an edit to 6 layers, re-priced to £16.26.
