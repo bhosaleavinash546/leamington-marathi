@@ -2,6 +2,9 @@
  * Software should-cost panel, live (P1 fixes, Oct 2026): a real server + browser opens the panel, checks the wizard's
  * Powertrain picker, switches the advanced form to each powertrain, calculates, and checks the estimate labels, the
  * unverified benchmark labels, a demo, and axe WCAG 2.1 AA on the panel.
+ * P2 fixes: an invalid input is refused on screen, the CAL column and royalty badges, a country change moving both hub
+ * pickers, the dev-source table, logging actuals → effort calibration → re-cost, the Excel rate basis, and the
+ * reference-example banner on a static report.
  *   npm run build && CV_OUT=<dir> npx tsx e2e/sw-live.ts
  */
 import { spawn, type ChildProcess } from 'node:child_process';
@@ -16,6 +19,7 @@ import jwt from 'jsonwebtoken';
 
 const ROOT = resolve('.');
 const OUT = process.env.CV_OUT ?? tmpdir();
+const XLSX = createRequire(import.meta.url)('xlsx') as typeof import('xlsx');
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
 
@@ -77,6 +81,57 @@ async function main(): Promise<void> {
       engineControlOn: (document.querySelector('.sw-mod-enable[data-id="engine_control"]') as HTMLInputElement | null)?.checked,
       staleNote: !!document.getElementById('sw-reports-stale'),
     }));
+    // ── P2 fixes ──
+    const headline = () => page.evaluate(() => Array.from(document.querySelectorAll('#sw-panel .sw-summary-card, #sw-panel .sw-card'))
+      .map(e => e.textContent?.replace(/\s+/g, ' ').trim() ?? '').find(x => /Total/i.test(x))?.slice(0, 80) ?? '');
+    await page.fill('#sw-vol', '0');
+    await page.click('#sw-calc-btn');
+    await page.waitForTimeout(500);
+    out.p2_invalidRefused = await page.evaluate(() => document.getElementById('sw-calc-error')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 160) ?? '');
+    await page.fill('#sw-vol', '80000');
+    out.p2_cal = await page.evaluate(() => ({
+      selects: document.querySelectorAll('.sw-cal-sel').length,
+      iviOs: (document.querySelector('.sw-cal-sel[data-id="ivi_os"]') as HTMLSelectElement | null)?.value,
+      navigation: (document.querySelector('.sw-cal-sel[data-id="navigation"]') as HTMLSelectElement | null)?.value,
+      royaltyBadges: Array.from(document.querySelectorAll('.sw-module-row')).filter(r => /per-vehicle royalty/.test(r.textContent ?? '')).length,
+    }));
+    await page.selectOption('#mfg-region-selector', 'IN');
+    await page.waitForTimeout(600);
+    out.p2_country = await page.evaluate(() => ({
+      swRegion: (document.getElementById('sw-region') as HTMLSelectElement | null)?.value,
+      basis: document.getElementById('sw-hub-basis')?.textContent ?? '',
+    }));
+    await page.click('#sw-calc-btn');
+    await page.waitForTimeout(900);
+    out.p2_totalIndia = await headline();
+    out.p2_devSourceRows = await page.$$eval('#sw-source-decomp tbody tr', rows => rows.map(r => r.textContent?.replace(/\s+/g, ' ').trim().slice(0, 60)));
+    await page.selectOption('#mfg-region-selector', 'UK');
+    await page.waitForTimeout(600);
+    await page.click('#sw-calc-btn');
+    await page.waitForTimeout(900);
+    const before = await headline();
+    await page.click('#sw-actuals-card > summary');
+    for (const [mod, pm] of [['gateway_ecu', '80'], ['body_control', '105'], ['rtos', '32']] as const) {
+      await page.selectOption('#swa-module', mod);
+      await page.fill('#swa-pm', pm);
+      await page.click('#swa-add');
+    }
+    out.p2_calibration = await page.evaluate(() => document.getElementById('swa-result')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 200) ?? '');
+    await page.locator('#sw-actuals-card').screenshot({ path: join(OUT, 'sw-p2-actuals-card.png') });
+    const applyBtn = page.locator('#swa-apply');
+    if (await applyBtn.count()) await applyBtn.click();
+    out.p2_effortField = await page.inputValue('#sw-effort-cal');
+    await page.click('#sw-calc-btn');
+    await page.waitForTimeout(900);
+    out.p2_totalBeforeAfterCalibration = [before, await headline()];
+    await page.screenshot({ path: join(OUT, 'sw-p2-actuals.png'), fullPage: false });
+    const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#sw-excel-btn')]);
+    const xlsxPath = join(OUT, 'sw-p2.xlsx');
+    await dl.saveAs(xlsxPath);
+    const wb = XLSX.readFile(xlsxPath);
+    const sum = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+    out.p2_excelRateBasis = sum.split('\n').filter(l => /RATE BASIS|Rate book|Base rate|Overhead|Effort calibration|Powertrain/.test(l));
+    out.p2_referenceBanner = /data-cv-reference-example/.test(await (await fetch(`${base}/calculator/reports/l460-deepdive.html`)).text());
     out.pageErrors = errors;
   } finally {
     writeFileSync(join(OUT, 'sw-live.json'), JSON.stringify(out, null, 1));

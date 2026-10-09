@@ -21,6 +21,9 @@ function snap(p: SWProgramInputs) {
     modules: r.modules.length,
     total: r2(s.grandTotal), nre: r2(s.nreTotal), lifecycle: r2(s.totalMaintenance + s.totalCloud + s.totalLicensing),
     perVehicle: r2(s.perVehicle), personMonths: r2(s.totalPersonMonths),
+    // Added with the P2 fixes (#9); absent on older commits.
+    effortPersonMonths: (s as { totalEffortPersonMonths?: number }).totalEffortPersonMonths ?? null,
+    licensing: r2(s.totalLicensing),
     development: r2(s.totalDevelopment), testing: r2(s.totalTesting), cybersecurity: r2(s.totalCybersecurity),
     p10: r2(r.monteCarlo.p10), p50: r2(r.monteCarlo.p50), p90: r2(r.monteCarlo.p90),
     byCategory: Object.fromEntries(Object.entries(s.byCategory).map(([k, v]) => [k, r2(v)])),

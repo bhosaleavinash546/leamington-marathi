@@ -174,7 +174,6 @@ import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault
 import { recostInCountries, formatRuleValue, type CountryCosting } from './country-recost.js';
 import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
 import { countryFactor } from '../engine/regional-services.js';
-import { swRegionFor } from '../engine/sw-should-cost.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -223,7 +222,7 @@ import { Chart, ArcElement, BarElement, LineElement, PointElement, CategoryScale
 Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController, LineController);
 
 import { showNews, refreshNews } from './panels/news.js';
-import { initSWPanel } from './panels/sw-should-cost-ui.js';
+import { initSWPanel, applySWCountry } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml, showToast as sharedShowToast } from './toast.js';
 import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measuredText, thresholdText, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
@@ -19756,8 +19755,7 @@ async function init(): Promise<void> {
     populateSelects();
     syncPcbPickers(region);   // PCB photo picker + PCB fab form follow the country
     // Software should-cost: the engineering hub follows the country (nearest hub — sw-should-cost.ts).
-    const swSel = document.getElementById('sw-region') as HTMLSelectElement | null;
-    if (swSel) swSel.value = swRegionFor(region).region;
+    applySWCountry(region);   // inputs, both hub pickers and the stated basis (P2 #13)
     if (document.getElementById('home-view')?.style.display !== 'none') renderDashboard();
     // A CAD part's rule values (tools, shot blast, route, tariff) were priced in the
     // country of the analysis — re-run the rules in this one before re-costing.

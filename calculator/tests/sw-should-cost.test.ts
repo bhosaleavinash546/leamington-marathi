@@ -187,11 +187,10 @@ describe('edge cases', () => {
     expect(Number.isFinite(r.summary.perVehicle)).toBe(true);
   });
 
-  it('zero production volume → finite (zero) per-vehicle cost', () => {
+  // It used to return £0 / vehicle for a zero volume — a silent wrong answer. Now refused (P2 #8).
+  it('zero production volume is refused, not costed at £0 / vehicle', () => {
     const inp = { ...defaultSWProgramInputs(), annualProductionVolume: 0 };
-    const r = computeSWProgram(inp);
-    expect(Number.isFinite(r.summary.perVehicle)).toBe(true);
-    expect(r.summary.perVehicle).toBe(0);
+    expect(() => computeSWProgram(inp)).toThrow(/annual volume/);
   });
 
   it('summaryOnly skips the expensive sensitivity / Monte Carlo build-out', () => {

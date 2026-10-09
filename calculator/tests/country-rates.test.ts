@@ -647,7 +647,11 @@ describe('13. all 39 countries × every real part: each costing is priced in its
     expect(swRegionFor('IN').region).toBe('India');
     expect(swRegionFor('PL').region).toBe('Eastern_Europe');
     expect(swRegionFor('VN').basis).toContain('nearest');
-    expect(readFileSync('src/ui/main.ts', 'utf8')).toContain("swSel.value = swRegionFor(region).region");
+    // The country moves the software INPUTS and both hub pickers, not only the advanced drop-down (software P2 #13).
+    expect(readFileSync('src/ui/main.ts', 'utf8')).toContain('applySWCountry(region);');
+    const ui = readFileSync('src/ui/panels/sw-should-cost-ui.ts', 'utf8');
+    expect(ui).toContain('const hub = swRegionFor(mfg);');
+    expect(ui).toContain("for (const id of ['sw-region', 'wiz-region'])");
   });
 
   it('the AI agent quotes the request country\'s £/hr (it quoted the UK\'s in every country)', () => {

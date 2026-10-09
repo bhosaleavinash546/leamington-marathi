@@ -19,6 +19,7 @@ import {
 import type { SWRateLibrary } from './sw-rate-library.js';
 import { mulberry32 } from './uncertainty.js';
 import { SW_PUBLISHED_PROGRAMMES } from './sw-benchmarks.js';
+import { USD_PER_GBP } from './gear-heat-treat-data.js';   // the app's one dated USD→GBP rate
 
 export type { SWRateLibrary, SWRateEntry, RateConfidence } from './sw-rate-library.js';
 export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
@@ -28,6 +29,8 @@ export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
 export type ASILLevel       = 'QM' | 'A' | 'B' | 'C' | 'D';
 export type SWComplexity    = 'Low' | 'Medium' | 'High' | 'Very High';
 export type SWReuse         = 'Fresh' | 'Light' | 'Medium' | 'Heavy' | 'Platform';
+/** ISO/SAE 21434 cybersecurity assurance level of a module's item / component ('none' = no cybersecurity goal). */
+export type SWCal           = 'none' | 'CAL1' | 'CAL2' | 'CAL3' | 'CAL4';
 export type SWCategory      = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
 export type SWRegion        = 'UK' | 'EU' | 'USA_Detroit' | 'USA_SV' | 'China' | 'India' | 'Mexico' | 'Eastern_Europe' | 'Japan';
 export type DevSource       = 'OEM_Internal' | 'Tier1_Supplier' | 'Startup_OSS';
@@ -124,6 +127,10 @@ export interface SWModuleDef {
   hasMLContent:              boolean;
   hasCloudDependency:        boolean;
   hasCybersecRequirement:    boolean;
+  /** Default ISO/SAE 21434 CAL. Read from the informative example table in 21434 Annex E (impact × attack vector) with
+   *  CostVision engineering judgement of each module's worst attack vector and impact — a TARA decides the real one.
+   *  Absent: 'CAL2' when hasCybersecRequirement, else 'none' (software review P2 #12). */
+  defaultCal?:               SWCal;
   testingFractionBase:       number;   // testing cost ÷ dev cost at QM baseline
   integrationFractionBase:   number;   // integration cost ÷ dev cost
   maintenancePctPerYear:     number;   // % of dev cost per year (lifecycle)
@@ -135,6 +142,14 @@ export interface SWModuleDef {
    *  present on premium trims but folded into the generic domain buckets on base
    *  vehicles, so leaving them off preserves the validated baseline. Undefined ⇒ on. */
   defaultEnabled?:           boolean;
+  /** Royalty paid per vehicle BUILT, £ (e.g. an OS or speech-engine licence). Charged on this programme's own
+   *  volume every year and never apportioned across a platform — each vehicle pays it (software review P2 #11). */
+  perVehicleRoyaltyGBP?:     number;
+  /** Royalty per vehicle IN SERVICE per year, £ (e.g. map data). The fleet grows by the annual volume each year and
+   *  pays until the programme ends — CostVision's assumption, stated in royaltyBasis. */
+  perVehiclePerYearGBP?:     number;
+  /** Where the royalty figure comes from. */
+  royaltyBasis?:             string;
   /** Set on modules whose figures are NOT their own: every number is copied from the named analogue module
    *  (software review P1 #4, Oct 2026). The screen labels these "estimate". */
   estimateBasis?:            string;
@@ -148,6 +163,8 @@ export interface SWModuleInput {
   complexity:         SWComplexity;
   reuse:              SWReuse;
   customPersonMonths: number | null;   // null = auto
+  /** ISO/SAE 21434 CAL; absent = the module's default (calFor). */
+  cal?:               SWCal;
 }
 
 export interface SWProgramInputs {
@@ -188,6 +205,10 @@ export interface SWProgramInputs {
    *  middleware, cyber, cloud). When it exceeds `annualProductionVolume`, each shared module is attributed to this
    *  variant in proportion to its volume — it used to be charged in full to every variant (P1 #5). */
   platformAnnualVolume?:    number;
+  /** Effort calibration from the user's own completed projects: Σ actual ÷ Σ modelled person-months over the modules
+   *  they logged (sw-calibration.ts::calibrateSWEffort). Multiplies the model's effort estimate (base person-months);
+   *  a typed custom person-months is the user's own figure and is not scaled. 1 / absent = uncalibrated (P2 #21). */
+  effortCalibration?:       number;
 }
 
 export interface SWDevBreakdown {
@@ -217,7 +238,14 @@ export interface SWModuleCostResult {
   asilUsed:           ASILLevel;
   complexityUsed:     SWComplexity;
   reuseUsed:          SWReuse;
+  calUsed:            SWCal;
+  /** Development person-months as COSTED: every development bucket after complexity, the safety-reuse floor and any
+   *  schedule penalty — development £ = personMonths × the loaded rate. It used to report the effort before those
+   *  scalings (BMS showed 172.8 PM while 258.5 PM were paid for — software review P2 #9). */
   personMonths:       number;
+  /** All engineering effort the cost pays for, person-months: development + testing + integration + cybersecurity +
+   *  calibration + ML data, ÷ the loaded rate. */
+  effortPersonMonths: number;
   development:        SWDevBreakdown;
   testing:            SWTestingBreakdown;
   integrationCost:    number;
@@ -251,6 +279,8 @@ export interface SWSummary {
   nreTotal:           number;  // dev + test + integration + toolchain + cybersec + calibration + ML data + homologation
   grandTotal:         number;
   totalPersonMonths:  number;
+  /** Σ effortPersonMonths — all engineering effort costed (P2 #9). */
+  totalEffortPersonMonths: number;
   perVehicle:         number;
   byCategory:         Record<SWCategory, number>;
 }
@@ -367,7 +397,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Battery pack monitoring, protection logic, cell voltage/temp acquisition, state machine management, ASIL-D safety logic.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 90,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 52_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.08,
@@ -411,7 +441,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'CCS/CHAdeMO/OCPP protocol stacks, dynamic power curve management, thermal derating during charge.',
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 25,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.38, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 11_000, annualIPLicenceGBP: 14_000, annualCloudCostGBP: 30_000,
     calibrationFractionBase: 0.08,
@@ -422,7 +452,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Integrated electric drive unit control, dual-motor torque vectoring, multi-speed gearbox integration, creep & one-pedal drive.',
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.12,
@@ -468,7 +498,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'B', categoryLabel: 'ADAS Level 2 & 2+',
     description: 'Object detection/classification (DNN), lane detection, traffic sign recognition, free-space estimation, parking vision. Mono + stereo cameras.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 130,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.50, integrationFractionBase: 0.20, maintenancePctPerYear: 16,
     annualToolLicenceGBP: 108_000, annualIPLicenceGBP: 160_000, annualCloudCostGBP: 850_000,
     calibrationFractionBase: 0.06,
@@ -534,7 +564,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'B', categoryLabel: 'ADAS Level 2 & 2+',
     description: 'Gaze tracking, drowsiness detection, attention estimation, hands-on-wheel detection. IR camera + CNN inference.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 55,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL2',
     testingFractionBase: 0.45, integrationFractionBase: 0.16, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 51_000, annualIPLicenceGBP: 90_000, annualCloudCostGBP: 180_000,
     calibrationFractionBase: 0.06,
@@ -558,10 +588,12 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'Android Automotive OS or QNX BSP integration, platform services, GPU driver optimisation, boot time optimisation, security hardening.',
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 160,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.22, maintenancePctPerYear: 18,
-    annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 220_000, annualCloudCostGBP: 120_000,
+    annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.02,
+    perVehicleRoyaltyGBP: Math.round(25 / USD_PER_GBP * 100) / 100,
+    royaltyBasis: 'This module\'s own note: AAOS licence ~$25 / vehicle, at the app\'s USD_PER_GBP. Replaces the flat £220k / yr IP figure (the note names the licence it stood for). Unsourced estimate.',
     notes: 'Google AAOS licence fee (~$25/vehicle) or QNX royalty. Boot < 4s target.',
   },
   {
@@ -571,8 +603,10 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 42,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 200_000, annualCloudCostGBP: 380_000,
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 380_000,
     calibrationFractionBase: 0.02,
+    perVehiclePerYearGBP: 11.5,
+    royaltyBasis: 'This module\'s own note: map data £8–15 / vehicle / yr — midpoint £11.50, paid on the fleet in service until programme end. Replaces the flat £200k / yr IP figure. Unsourced estimate.',
     notes: 'Map data licence: HERE ~£8-15/vehicle/yr OR TomTom similar. Real-time traffic API cloud cost significant.',
   },
   {
@@ -580,10 +614,12 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'Wake word detection, ASR (on-device + cloud), NLU, TTS, vehicle function control, 3rd-party assistant integration (Alexa/Google).',
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 220_000, annualCloudCostGBP: 450_000,
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 450_000,
     calibrationFractionBase: 0.04,
+    perVehicleRoyaltyGBP: 15,
+    royaltyBasis: 'This module\'s own note: on-device ASR engine licence ~£15 / vehicle. Replaces the flat £220k / yr IP figure. Unsourced estimate.',
     notes: 'On-device ASR engines (Cerence, SoundHound) licence ~£15/vehicle. Cloud NLU significant.',
   },
   {
@@ -591,7 +627,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: '5G/LTE modem management, emergency call (eCall), remote diagnostics, remote access, V2X readiness, OBD-II data relay.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.38, integrationFractionBase: 0.15, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 90_000,
     calibrationFractionBase: 0.04,
@@ -602,7 +638,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'BT5.x stack (audio, phone), WiFi 6/6E AP+client, 5G SA/NSA modem driver integration, hotspot management.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.30, integrationFractionBase: 0.12, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 20_000,
     calibrationFractionBase: 0.03,
@@ -648,7 +684,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'D', categoryLabel: 'Vehicle Domain Controllers',
     description: 'CAN/LIN/FlexRay/Ethernet routing, signal translation, diagnostic gateway, firewall, network management master.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 28,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.16, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.04,
@@ -659,7 +695,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'D', categoryLabel: 'Vehicle Domain Controllers',
     description: 'Zone controller software, power distribution management, ECU consolidation logic, 100BASE-T1 Ethernet backbone management.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.38, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 45_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.05,
@@ -694,7 +730,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'E', categoryLabel: 'Middleware & Platform',
     description: 'ara::com service-oriented communication, execution management, update management (UCM), PHM, crypto API, DDS integration.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 60,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.38, integrationFractionBase: 0.22, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 108_000, annualIPLicenceGBP: 110_000, annualCloudCostGBP: 30_000,
     calibrationFractionBase: 0.04,
@@ -751,7 +787,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'Hardware Security Module (HSM) integration, key provisioning, boot chain verification, anti-rollback, attestation.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 20,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.45, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 45_000,
     calibrationFractionBase: 0.04,
@@ -762,7 +798,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'AES-256, RSA-2048, ECC, TLS 1.3 for V2X/cloud, AUTOSAR Crypto Stack, hardware crypto acceleration.',
     defaultAsil: 'B', defaultComplexity: 'Medium', basePersonMonths: 15,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.40, integrationFractionBase: 0.14, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 16_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.03,
@@ -773,7 +809,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'In-vehicle network anomaly detection, CAN message monitoring, rate-limiting, VSOC integration, event reporting to cloud.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 28,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
     annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 45_000, annualCloudCostGBP: 90_000,
     calibrationFractionBase: 0.05,
@@ -784,7 +820,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'Delta update generation, signature verification, rollback protection, update orchestration, bandwidth management.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 20,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 30_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.04,
@@ -795,7 +831,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'F', categoryLabel: 'Cybersecurity (ISO 21434)',
     description: 'Certificate lifecycle management, PKI integration, key derivation, secure key storage, provisioning infrastructure.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 15,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.40, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 28_000, annualCloudCostGBP: 80_000,
     calibrationFractionBase: 0.04,
@@ -808,7 +844,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'G', categoryLabel: 'OTA & Cloud Backend',
     description: 'Vehicle-side update campaign execution, ECU coordination, rollback, consent management, network condition handling.',
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.38, integrationFractionBase: 0.18, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 55_000, annualCloudCostGBP: 180_000,
     calibrationFractionBase: 0.04,
@@ -819,7 +855,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'G', categoryLabel: 'OTA & Cloud Backend',
     description: 'Vehicle connectivity backend, API gateway, device shadow, remote command, data lake, microservices architecture (AWS/Azure/GCP).',
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.32, integrationFractionBase: 0.16, maintenancePctPerYear: 20,
     annualToolLicenceGBP: 48_000, annualIPLicenceGBP: 130_000, annualCloudCostGBP: 1_200_000,
     calibrationFractionBase: 0.03,
@@ -830,7 +866,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'G', categoryLabel: 'OTA & Cloud Backend',
     description: 'In-vehicle data collection agent, edge pre-processing, telemetry streaming, data lake ingestion, GDPR/data governance.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
-    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 27_000, annualIPLicenceGBP: 65_000, annualCloudCostGBP: 320_000,
     calibrationFractionBase: 0.04,
@@ -907,7 +943,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
     description: 'CCC Digital Key 3.0 phone-as-key, UWB ranging & relay-attack protection, BLE fallback, secure-element / HSM integration, key sharing & cloud provisioning backend.',
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 22,
-    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.32, integrationFractionBase: 0.14, maintenancePctPerYear: 9,
     annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 20_000, annualCloudCostGBP: 30_000,
     calibrationFractionBase: 0.03,
@@ -937,7 +973,7 @@ export const SW_MODULES: SWModuleDef[] = [
     category: 'A', categoryLabel: 'Powertrain & Battery',
     description: 'Combustion engine control: air / fuel / ignition, torque structure and torque monitoring, start-stop, knock and misfire control.',
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
-    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true, defaultCal: 'CAL3',
     testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.12,
@@ -1042,7 +1078,8 @@ function computeModuleCost(
   const sched         = prog.scheduleCompression && prog.scheduleCompression > 0 ? prog.scheduleCompression : 1;
   const schedPenalty  = sched >= 1 ? 1 : 1 + (1 - sched) * SCHEDULE_COMPRESSION_K;
 
-  const effectivePM = (input.customPersonMonths ?? def.basePersonMonths) * reuse;
+  const effortCal   = input.customPersonMonths != null ? 1 : (prog.effortCalibration ?? 1);
+  const effectivePM = (input.customPersonMonths ?? def.basePersonMonths * effortCal) * reuse;
 
   // Development sub-buckets. Complexity on the algorithm bucket in full, and a
   // weighted share on implementation (SW2). Safety bucket carries the reuse floor.
@@ -1067,7 +1104,7 @@ function computeModuleCost(
   let   silFrac    = 0.30;
   let   milFrac    = def.hasMLContent ? 0.18 : 0.08;
   let   regFrac    = 0.10;
-  let   penFrac    = def.hasCybersecRequirement ? 0.08 : 0;
+  let   penFrac    = calFor(def, input) !== 'none' ? 0.08 : 0;
   let   scenFrac   = def.category === 'B' ? 0.09 : 0;
   const fixedSum   = silFrac + milFrac + regFrac + penFrac + scenFrac;
   // If the fixed sub-buckets ever exceed the whole, normalise them down so the
@@ -1087,8 +1124,10 @@ function computeModuleCost(
 
   const integration = devTotal * def.integrationFractionBase;
 
-  const cybersecPct = def.hasCybersecRequirement
-    ? (input.asil === 'D' ? 0.14 : input.asil === 'C' ? 0.10 : 0.08) : 0;
+  // Cybersecurity engineering follows the ISO/SAE 21434 CAL, not the safety level (P2 #12): a QM infotainment OS with a
+  // network attack vector used to get the lowest uplift. The tiers are the old ASIL ones re-keyed.
+  const cal = calFor(def, input);
+  const cybersecPct = CYBER_UPLIFT_BY_CAL[cal];
   const cybersec    = devTotal * cybersecPct;
 
   // Physical/model calibration effort (dyno runs, proving ground, model fitting)
@@ -1131,8 +1170,10 @@ function computeModuleCost(
     categoryLabel:  def.categoryLabel,
     asilUsed:       input.asil,
     complexityUsed: input.complexity,
+    calUsed:        calFor(def, input),
     reuseUsed:      input.reuse,
-    personMonths:   Math.round(devPM * 10) / 10,
+    personMonths:   Math.round((reqsPM + archPM + algoPM + implPM + safetyPM) * schedPenalty * 10) / 10,
+    effortPersonMonths: Math.round((devTotal + testTotal + integration + cybersec + calibration + mlDataCost) / regionRate * 10) / 10,
     development:    { requirements: reqs, architecture: arch, algorithmDev: algo, implementation: impl, safetyCompliance: safety, total: devTotal },
     testing:        { sil: silCost, mil: milCost, hil: hilCost, regression: regCost, penTest: penCost, scenarios: scenCost, total: testTotal },
     integrationCost:  integration,
@@ -1151,7 +1192,86 @@ function computeModuleCost(
   };
   // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
   const share = attributedShare(def.id, prog);
-  return share < 1 ? scaleModuleResult(res, share) : res;
+  const out = share < 1 ? scaleModuleResult(res, share) : res;
+  // Per-unit royalties (P2 #11) — on THIS programme's vehicles, after the platform share (each vehicle pays its own).
+  const royalty = unitRoyaltyGBP(def, prog);
+  if (royalty === 0) return out;
+  const lifeVeh = prog.annualProductionVolume * prog.programLifeYears;
+  return {
+    ...out,
+    licensingCost:  out.licensingCost + royalty,
+    totalLifecycle: out.totalLifecycle + royalty,
+    grandTotal:     out.grandTotal + royalty,
+    perVehicle:     out.perVehicle + (lifeVeh > 0 ? royalty / lifeVeh : 0),
+  };
+}
+
+/**
+ * What the figures were priced on — every input a reader needs to reproduce the report (software review P2 #14: the
+ * Excel / PDF exports printed region and volume but not the base rate, the rate book or the overhead). Label / value
+ * pairs, shared by both exports.
+ */
+export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const r = resolveRates(prog);
+  const typed = !!(prog.baseRateGBP && prog.baseRateGBP > 0);
+  const seniorMult = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
+  const loaded = r.baseRate * r.region[prog.region] * r.devSource[prog.devSource] * seniorMult * prog.overheadMultiplier;
+  const gbp = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
+  return [
+    ['Rate book', `${prog.rateLibrary ? 'Company rates' : 'CostVision built-in'} v${lib.version} (reviewed ${lib.lastReviewed})`],
+    ['Base rate (£ / person-month, pre-overhead)', `${gbp(r.baseRate)} — ${typed ? 'typed override' : `rate book (${lib.ukBaseRatePerPM.source})`}`],
+    ['Engineering region', `${prog.region} × ${r.region[prog.region]}`],
+    ['Development source', `${prog.devSource} × ${r.devSource[prog.devSource]}`],
+    ['Senior share', `${Math.round(prog.teamSeniorFraction * 100)} % (× ${seniorMult.toFixed(3)})`],
+    ['Overhead multiplier', `× ${prog.overheadMultiplier}`],
+    ['Loaded rate (£ / person-month)', gbp(loaded)],
+    ['Powertrain', prog.powertrain ?? 'not set (modules as selected)'],
+    ['Platform annual volume', prog.platformAnnualVolume && prog.platformAnnualVolume > prog.annualProductionVolume
+      ? `${prog.platformAnnualVolume.toLocaleString('en-GB')} (shared software apportioned by volume share)` : 'not shared (this programme carries all of it)'],
+    ['Annual volume × life', `${prog.annualProductionVolume.toLocaleString('en-GB')} × ${prog.programLifeYears} yr`],
+    ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
+    ['Discount rate', `${prog.discountRatePct ?? 0} %`],
+    ['Effort calibration', prog.effortCalibration && prog.effortCalibration !== 1
+      ? `× ${prog.effortCalibration} (fitted to your logged actuals)` : 'none (model as published)'],
+  ];
+}
+
+/** The programme re-costed with each development source, in the programme's own rate book (P2 #13). The screen used
+ *  to re-price with its own copy of the multipliers (0.88 / 0.72), so a company book's multipliers never reached the
+ *  table, and it scaled the labour share linearly instead of re-costing. */
+export interface SWDevSourceRow { devSource: DevSource; multiplier: number; grandTotal: number; perVehicle: number }
+export function devSourceComparison(prog: SWProgramInputs): SWDevSourceRow[] {
+  const mult = resolveRates(prog).devSource;
+  return (Object.keys(mult) as DevSource[]).map(devSource => {
+    const s = computeSWProgram({ ...prog, devSource }, { summaryOnly: true }).summary;
+    return { devSource, multiplier: mult[devSource], grandTotal: s.grandTotal, perVehicle: s.perVehicle };
+  });
+}
+
+/** Cybersecurity engineering (TARA, cyber concept, verification) as a share of development, by ISO/SAE 21434 CAL.
+ *  CostVision engineering estimate: the review found no published effort ratio per CAL (software review §5), so these
+ *  are the previous ASIL-keyed tiers (8 / 10 / 14 %) re-keyed — CAL1 and CAL2 share the lowest. */
+export const CYBER_UPLIFT_BY_CAL: Record<SWCal, number> = { none: 0, CAL1: 0.08, CAL2: 0.08, CAL3: 0.10, CAL4: 0.14 };
+export const SW_CALS: SWCal[] = ['none', 'CAL1', 'CAL2', 'CAL3', 'CAL4'];
+
+/** The CAL a module is costed at: the input's, else the module's default. */
+export function calFor(def: SWModuleDef, input: Pick<SWModuleInput, 'cal'>): SWCal {
+  return input.cal ?? def.defaultCal ?? (def.hasCybersecRequirement ? 'CAL2' : 'none');
+}
+
+/** Per-unit royalties over the programme, £ (NPV when a discount rate is set). Built: volume × royalty each year.
+ *  In service: the fleet after year t is volume × t, each paying the yearly royalty until the programme ends. */
+export function unitRoyaltyGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct'>): number {
+  const built = def.perVehicleRoyaltyGBP ?? 0, perYear = def.perVehiclePerYearGBP ?? 0;
+  if (!built && !perYear) return 0;
+  const r = (prog.discountRatePct ?? 0) / 100;
+  let total = 0;
+  for (let t = 1; t <= prog.programLifeYears; t++) {
+    const df = r > 0 ? 1 / Math.pow(1 + r, t) : 1;
+    total += (prog.annualProductionVolume * built + prog.annualProductionVolume * t * perYear) * df;
+  }
+  return total;
 }
 
 /** The module's cost and effort scaled to the share attributed to this programme. */
@@ -1160,6 +1280,7 @@ function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult
   return {
     ...r,
     personMonths: Math.round(r.personMonths * k * 10) / 10,
+    effortPersonMonths: Math.round(r.effortPersonMonths * k * 10) / 10,
     development: scale(r.development), testing: scale(r.testing),
     integrationCost: r.integrationCost * k, licensingCost: r.licensingCost * k, cloudCost: r.cloudCost * k,
     cybersecCost: r.cybersecCost * k, maintenanceCost: r.maintenanceCost * k, toolchainCost: r.toolchainCost * k,
@@ -1207,49 +1328,63 @@ function runMonteCarlo(
   // bucket's own min/max so correlation widens the tail without distorting
   // any single bucket's range.
   const lerp = (lo: number, hi: number, t: number) => lo + (hi - lo) * t;
-  const buckets: Array<[number, number, number, number]> = [
-    // [value, low, mode, high]
-    [s.totalDevelopment,   0.70, 1.00, 1.40],
-    [s.totalTesting,       0.75, 1.00, 1.35],
-    [s.totalIntegration,   0.70, 1.00, 1.40],
-    [s.totalToolchain,     0.85, 1.00, 1.25],
-    [s.totalCybersecurity, 0.65, 1.00, 1.50],
-    [s.totalCalibration,   0.70, 1.00, 1.50],
-    [s.totalMaintenance,   0.75, 1.00, 1.35],
-    [s.totalCloud,         0.50, 1.00, 1.60],
-    [s.totalLicensing,     0.80, 1.00, 1.30],
+  // [value, low, mode, high, NRE?]. ML data and homologation were left out — turning them on moved the total and not the
+  // band (software review P2 #10). Their ranges are borrowed, said so: ML data follows development, homologation (fixed
+  // audit fees) follows licensing. All ranges are CostVision engineering estimates.
+  const buckets: Array<[number, number, number, number, boolean]> = [
+    [s.totalDevelopment,   0.70, 1.00, 1.40, true],
+    [s.totalTesting,       0.75, 1.00, 1.35, true],
+    [s.totalIntegration,   0.70, 1.00, 1.40, true],
+    [s.totalToolchain,     0.85, 1.00, 1.25, true],
+    [s.totalCybersecurity, 0.65, 1.00, 1.50, true],
+    [s.totalCalibration,   0.70, 1.00, 1.50, true],
+    [s.totalMLData,        0.70, 1.00, 1.40, true],
+    [s.totalHomologation,  0.80, 1.00, 1.30, true],
+    [s.totalMaintenance,   0.75, 1.00, 1.35, false],
+    [s.totalCloud,         0.50, 1.00, 1.60, false],
+    [s.totalLicensing,     0.80, 1.00, 1.30, false],
   ];
 
+  // £ / vehicle per trial by the SAME rule as the headline: NRE over the recovery window, lifecycle over the full
+  // life. It divided every trial's total by volume × life, so with a 2-year recovery the headline said £2,043 and the
+  // band's P50 £639 (P2 #10).
+  const recoveryYears = Math.max(1, prog.costRecoveryYears ?? prog.programLifeYears);
+  const nreVehicles   = prog.annualProductionVolume * recoveryYears;
+  const lifeVehicles  = prog.annualProductionVolume * prog.programLifeYears;
+
   const totals: number[] = [];
+  const perVeh: number[] = [];
   for (let i = 0; i < iterations; i++) {
     // One shared programme-wide percentile draw (0..1) reused across buckets.
     const sharedQ = rand();
-    let total = 0;
-    for (const [val, lo, mode, hi] of buckets) {
+    let nre = 0, life = 0;
+    for (const [val, lo, mode, hi, isNre] of buckets) {
       // Map the shared quantile onto this bucket's triangular range.
       const Fc = (mode - lo) / (hi - lo);
       const shared = sharedQ < Fc
         ? lo + Math.sqrt(sharedQ * (hi - lo) * (mode - lo))
         : hi - Math.sqrt((1 - sharedQ) * (hi - lo) * (hi - mode));
       const idio = tri(lo, mode, hi);
-      total += val * lerp(idio, shared, rho);
+      const v = val * lerp(idio, shared, rho);
+      if (isNre) nre += v; else life += v;
     }
-    totals.push(total);
+    totals.push(nre + life);
+    perVeh.push((nreVehicles > 0 ? nre / nreVehicles : 0) + (lifeVehicles > 0 ? life / lifeVehicles : 0));
   }
   totals.sort((a, b) => a - b);
+  perVeh.sort((a, b) => a - b);
 
   const n = totals.length;
-  const vehicles = prog.annualProductionVolume * prog.programLifeYears;
-  const pv = (t: number) => vehicles > 0 ? t / vehicles : 0;
+  const q = (arr: number[], p: number) => arr[Math.floor(n * p)];
 
   return {
-    p10:           totals[Math.floor(n * 0.10)],
-    p50:           totals[Math.floor(n * 0.50)],
-    p90:           totals[Math.floor(n * 0.90)],
+    p10:           q(totals, 0.10),
+    p50:           q(totals, 0.50),
+    p90:           q(totals, 0.90),
     mean:          totals.reduce((a, b) => a + b, 0) / n,
-    p10PerVehicle: pv(totals[Math.floor(n * 0.10)]),
-    p50PerVehicle: pv(totals[Math.floor(n * 0.50)]),
-    p90PerVehicle: pv(totals[Math.floor(n * 0.90)]),
+    p10PerVehicle: q(perVeh, 0.10),
+    p50PerVehicle: q(perVeh, 0.50),
+    p90PerVehicle: q(perVeh, 0.90),
     iterations:    n,
   };
 }
@@ -1273,10 +1408,59 @@ const EMPTY_MC: SWMonteCarlo = {
   p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0,
 };
 
+// ─── Input validation (software review P2 #8, Oct 2026) ─────────────────────────────────────────────────────────
+// The engine took any number: a negative overhead gave a negative programme, a negative custom effort subtracted cost,
+// a blank life gave NaN, an unknown region NaN, an unknown module id a crash, a duplicated module was counted twice.
+// The PLAUSIBILITY limits below (life ≤ 40 yr, volume ≤ 20 M / yr, effort ≤ 50,000 PM a module, base rate ≤ £500k / PM)
+// are CostVision engineering limits, not sourced figures — they catch a unit slip, not a judgement.
+
+export class SWInputError extends Error {
+  constructor(public readonly problems: string[]) {
+    super(`Software cost inputs are not valid — ${problems.join('; ')}`);
+    this.name = 'SWInputError';
+  }
+}
+
+export function validateSWInputs(prog: SWProgramInputs): string[] {
+  const p: string[] = [];
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const fin = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+  if (!(prog.region in lib.regionMultipliers)) p.push(`region "${String(prog.region)}" is not one of the rate book's hubs`);
+  if (!(prog.devSource in lib.devSourceMultipliers)) p.push(`development source "${String(prog.devSource)}" is not known`);
+  if (!fin(prog.programLifeYears) || prog.programLifeYears < 1 || prog.programLifeYears > 40) p.push('programme life must be 1–40 years');
+  if (!fin(prog.annualProductionVolume) || prog.annualProductionVolume < 1 || prog.annualProductionVolume > 20_000_000) p.push('annual volume must be 1–20,000,000 vehicles');
+  if (!fin(prog.teamSeniorFraction) || prog.teamSeniorFraction < 0 || prog.teamSeniorFraction > 1) p.push('senior share must be between 0 and 1');
+  if (!fin(prog.overheadMultiplier) || prog.overheadMultiplier < 1 || prog.overheadMultiplier > 5) p.push('overhead multiplier must be 1–5 (1 = no overhead)');
+  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP <= 0 || prog.baseRateGBP > 500_000)) p.push('base rate must be £1–£500,000 per person-month');
+  if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
+  if (prog.effortCalibration !== undefined && (!fin(prog.effortCalibration) || prog.effortCalibration < 0.2 || prog.effortCalibration > 5)) p.push('effort calibration must be between 0.2 and 5 (a fitted factor outside that says the logged actuals and the model describe different work)');
+  if (prog.scheduleCompression !== undefined && (!fin(prog.scheduleCompression) || prog.scheduleCompression <= 0 || prog.scheduleCompression > 1.5)) p.push('schedule compression must be above 0 and at most 1.5');
+  if (prog.costRecoveryYears !== undefined && (!fin(prog.costRecoveryYears) || prog.costRecoveryYears < 1 || prog.costRecoveryYears > 40)) p.push('cost-recovery window must be 1–40 years');
+  if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');
+  const seen = new Set<string>();
+  for (const m of prog.modules) {
+    if (!SW_MODULES.some(d => d.id === m.moduleId)) { p.push(`unknown module "${m.moduleId}"`); continue; }
+    if (seen.has(m.moduleId)) p.push(`module "${m.moduleId}" appears twice`);
+    seen.add(m.moduleId);
+    if (!m.enabled) continue;
+    if (!(m.asil in lib.asilDevMultipliers)) p.push(`${m.moduleId}: ASIL "${String(m.asil)}" is not known`);
+    if (!(m.complexity in lib.complexityMultipliers)) p.push(`${m.moduleId}: complexity "${String(m.complexity)}" is not known`);
+    if (!(m.reuse in lib.reuseFactors)) p.push(`${m.moduleId}: reuse "${String(m.reuse)}" is not known`);
+    if (m.cal !== undefined && !SW_CALS.includes(m.cal)) p.push(`${m.moduleId}: CAL "${String(m.cal)}" is not known (none, CAL1–CAL4)`);
+    if (m.customPersonMonths !== null && m.customPersonMonths !== undefined
+        && (!fin(m.customPersonMonths) || m.customPersonMonths < 0 || m.customPersonMonths > 50_000)) {
+      p.push(`${m.moduleId}: custom effort must be 0–50,000 person-months`);
+    }
+  }
+  return p;
+}
+
 export function computeSWProgram(
   prog: SWProgramInputs,
   opts: { summaryOnly?: boolean } = {},
 ): SWProgramResult {
+  const problems = validateSWInputs(prog);
+  if (problems.length) throw new SWInputError(problems);
   const rates = resolveRates(prog);
   const enabledModules = prog.modules.filter(m => m.enabled);
   const modules: SWModuleCostResult[] = enabledModules.map(m => {
@@ -1309,6 +1493,7 @@ export function computeSWProgram(
     nreTotal:           0,
     grandTotal:         sum(modules.map(m => m.grandTotal)) + homologation,
     totalPersonMonths:  sum(modules.map(m => m.personMonths)),
+    totalEffortPersonMonths: sum(modules.map(m => m.effortPersonMonths)),
     perVehicle:         0,
     byCategory:         {} as Record<SWCategory, number>,
   };
@@ -1373,10 +1558,12 @@ export function computeSWProgram(
       unit: '£M',
     },
     {
+      // Re-costed at each volume, so £ / vehicle follows the headline's rule (recovery window, platform share). It
+      // divided the total by volume × life, so its bracket could miss its own base (P2 #10).
       parameter: 'Production Volume (150k vs 50k units/yr, per-vehicle)',
-      low:  summary.grandTotal / Math.max(1, 150_000 * prog.programLifeYears),
+      low:  _recomputeSummary(prog, { volumeOverride: 150_000 }).perVehicle,
       base: summary.perVehicle,
-      high: summary.grandTotal / Math.max(1, 50_000 * prog.programLifeYears),
+      high: _recomputeSummary(prog, { volumeOverride: 50_000 }).perVehicle,
       unit: '£/vehicle',
     },
   ];
@@ -1399,20 +1586,25 @@ export function computeSWProgram(
   return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: prog };
 }
 
-function _recomputeTotal(
-  prog: SWProgramInputs,
-  overrides: {
-    asilOverride?:       ASILLevel;
-    complexityOverride?: SWComplexity;
-    reuseOverride?:      SWReuse;
-    regionOverride?:     SWRegion;
-    lifeOverride?:       number;
-  }
-): number {
+type SWRecomputeOverrides = {
+  asilOverride?:       ASILLevel;
+  complexityOverride?: SWComplexity;
+  reuseOverride?:      SWReuse;
+  regionOverride?:     SWRegion;
+  lifeOverride?:       number;
+  volumeOverride?:     number;
+};
+
+function _recomputeTotal(prog: SWProgramInputs, overrides: SWRecomputeOverrides): number {
+  return _recomputeSummary(prog, overrides).grandTotal;
+}
+
+function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverrides): SWSummary {
   const p2: SWProgramInputs = {
     ...prog,
     region:           overrides.regionOverride ?? prog.region,
     programLifeYears: overrides.lifeOverride   ?? prog.programLifeYears,
+    annualProductionVolume: overrides.volumeOverride ?? prog.annualProductionVolume,
     modules: prog.modules.map(m => ({
       ...m,
       asil:       overrides.asilOverride       ?? m.asil,
@@ -1420,7 +1612,7 @@ function _recomputeTotal(
       reuse:      overrides.reuseOverride      ?? m.reuse,
     })),
   };
-  return computeSWProgram(p2, { summaryOnly: true }).summary.grandTotal;
+  return computeSWProgram(p2, { summaryOnly: true }).summary;
 }
 
 // ─── Default program inputs ───────────────────────────────────────────────────
