@@ -245,3 +245,12 @@ describe('F16 — quantities the designators cannot show are not taken on trust'
     expect(r.a.bom.find((l: any) => l.qty === 700)?.needsVerification).toBe(true);
   });
 });
+
+import { verifyOcrClaims } from '../server/utils/pcb-ocr-reconcile.js';
+
+describe('F18 — a "read off the chip" claim needs a real part token, not a fragment', () => {
+  const marks = ['NXP FS32R294KCMJD 1N58P', 'TI 1044AV 4AB ARYS', 'TEF8105 TR7YC228 sKN2437', 'winbond 25Q32JWSIQ'];
+  const ok = (pn: string) => verifyOcrClaims([{ partNumber: pn, ocrExtracted: true }], marks).revoked.length === 0;
+  it('fragments are rejected', () => { for (const pn of ['FS32', 'R294', 'S32R2', 'TDA4VH']) expect(ok(pn), pn).toBe(false); });
+  it('true top marks are accepted', () => { for (const pn of ['FS32R294KCMJD', 'S32R294', 'TCAN1044AVDRQ1', 'TEF8105', 'W25Q32JWSSIQ']) expect(ok(pn), pn).toBe(true); });
+});

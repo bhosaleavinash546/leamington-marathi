@@ -14,6 +14,7 @@
  * by function so a reviewer sees it was not the model that made the link.
  * Markings with no plausible line are returned as `missing` for a sanity warning.
  */
+import { catalogueEntry } from './pcb-price-catalogue.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -144,12 +145,21 @@ export function reconcileOcrMarkings(
  */
 export function verifyOcrClaims(bom: BomLine[], markings: string[]): { bom: BomLine[]; revoked: string[] } {
   const marks = markings.map(m => squash(m)).filter(m => m.length >= 4);
+  // The part tokens of each marking (letters AND digits, ≥ 5 characters): "TI 1044AV 4AB ARYS" → 1044AV.
+  const tokens = markings.flatMap(m => m.toUpperCase().split(/[^A-Z0-9-]+/).map(t => t.replace(/-/g, ''))
+    .filter(t => t.length >= 5 && /[A-Z]/.test(t) && /[0-9]/.test(t)));
   const revoked: string[] = [];
   const out = bom.map(l => {
     if (l.ocrExtracted !== true) return l;
     const pn = squash(String(l.partNumber ?? ''));
     const core = coreToken(String(l.partNumber ?? ''));
-    const agrees = pn.length >= 4 && marks.some(m => m.includes(core.length >= 4 ? core : pn) || (m.length >= 5 && pn.includes(m)));
+    // Agreement needs a real part token, not a fragment (pipeline review F18): "FS32", "R294", "S32R2" all passed
+    // against "NXP FS32R294KCMJD", while TI's true top mark "1044AV" was rejected for TCAN1044AVDRQ1. The claimed code
+    // must contain a marking's part token (≥ 5 characters), or a marking must contain the code's core (≥ 6).
+    // A top mark that names the same catalogued part counts too (Winbond prints 25Q32JWSIQ on a W25Q32JWSSIQ).
+    const entry = pn.length >= 5 ? catalogueEntry(String(l.partNumber ?? '')) : null;
+    const agrees = pn.length >= 4 && (tokens.some(t => pn.includes(t)) || (core.length >= 6 && marks.some(m => m.includes(core)))
+      || (entry != null && tokens.some(t => catalogueEntry(t) === entry)));
     if (agrees) return l;
     revoked.push(String(l.refDes ?? l.partNumber ?? '?'));
     return { ...l, ocrExtracted: false, ocrClaimed: true, lineConf: Math.min(Number(l.lineConf) || 0, 0.8) };
