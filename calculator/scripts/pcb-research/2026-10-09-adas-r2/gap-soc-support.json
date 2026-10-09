@@ -1,0 +1,953 @@
+{
+  "domain": "adas-gap-soc-support-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "TPS650320-Q1",
+      "family": "TPS650320",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive camera PMIC, 3 buck + 1 LDO, PoC input to 18.3 V",
+      "category": "ic_qfn",
+      "pkg": "VQFN-24 4x4",
+      "aecq": true,
+      "ecuRoles": [
+        "camera"
+      ],
+      "observedMpn": "TPS650320-Q1",
+      "observations": [],
+      "notes": "Line 1. Not priced (4 searches): TI lists it ACTIVE, Mouser has only a new-product page; no distributor listing or orderable reel code (e.g. ...RGERQ1) with a price found on Digi-Key, Mouser, Findchips. Sibling TPS6503300DRGERQ1 seen only on digikey.cn as PROTOTYPE, VAT-inclusive CNY, not recorded."
+    },
+    {
+      "mpn": "MAX9286GTN/V+T",
+      "family": "MAX9286",
+      "mfr": "Analog Devices (Maxim)",
+      "desc": "GMSL 4-channel deserializer, 1.5 Gbps, CSI-2 out",
+      "category": "ic_qfn",
+      "pkg": "TQFN-56",
+      "aecq": true,
+      "ecuRoles": [
+        "SVC",
+        "surround view"
+      ],
+      "observedMpn": "MAX9286GTN/V+T",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 2500,
+          "price": 26.61,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/analog-devices/max9286gtn-v-t/gmsl-deserializer-1-5gbps-tqfn/dp/3920284",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 2. /V+T = automotive full reel (2,500); /V+ (tray) found only on components.ru (not franchised). Farnell IE full reel, ex VAT, 20 wk lead time. No Digi-Key/Mouser listing found in 3 searches. Price is high vs newer GMSL2 parts; it is an older GMSL1 device."
+    },
+    {
+      "mpn": "OV10635",
+      "family": "OV10635",
+      "mfr": "OmniVision",
+      "desc": "1 MP (1280x800) automotive CMOS image sensor with ISP",
+      "category": "ic_bga",
+      "pkg": "CSP",
+      "aecq": false,
+      "ecuRoles": [
+        "camera",
+        "SVC"
+      ],
+      "observedMpn": "OV10635",
+      "observations": [],
+      "notes": "Line 3. Not priced (2 searches): no Digi-Key/Mouser/Arrow listing. Only zenode.ai (Digi-Key 800 pcs $15.00, a reference page, not a permitted host) and lisleapex (broker). OmniVision sells imagers direct / via unnamed channel. aecq left false: automotive-qualified per OmniVision's 2012 release, AEC-Q100 grade not verified."
+    },
+    {
+      "mpn": "LP876441B1RQKRQ1",
+      "family": "LP8764",
+      "mfr": "Texas Instruments",
+      "desc": "4-phase buck PMIC, TDA4 companion (LP8764-Q1)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-32 (RQK)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "TDA4"
+      ],
+      "observedMpn": "LP876441B1RQKRQ1",
+      "observations": [],
+      "notes": "Line 4. Not priced: 2 more searches this round (10 across rounds) for LP876441B1RQKRQ1, LP876411B5RQKRQ1 and LP876440C0RQKRQ1; TI lists them active (3k reel) but no franchised listing with a price was found."
+    },
+    {
+      "mpn": "TPS74801TDRCRQ1",
+      "family": "TPS74801-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1.5 A low-Vin LDO, adjustable 0.8-3.6 V, power good",
+      "category": "ic_qfn",
+      "pkg": "VSON-10 3x3 (DRC)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera"
+      ],
+      "observedMpn": "TPS74801TDRCRQ1",
+      "observations": [],
+      "notes": "Line 5. Not priced (4 searches). TPS74801QDRCRQ1 does not exist; the orderable is TPS74801TDRCRQ1 (LCSC C523781 listed, no price in snippet; Digipart shows stock but 'Inquiry' only) and TPS74801AQWDRCRQ1 (only on punchouttest.digikey, forbidden). Industrial TPS74801DRCR is ~$0.74 @1k at Digi-Key (not recorded)."
+    },
+    {
+      "mpn": "TPS7A8401A-Q1",
+      "family": "TPS7A84A",
+      "mfr": "Texas Instruments",
+      "desc": "3 A low-noise LDO, 0.8-5.2 V",
+      "category": "ic_qfn",
+      "pkg": "VQFN-20 (RGR)",
+      "aecq": false,
+      "ecuRoles": [
+        "ADAS domain"
+      ],
+      "observedMpn": "TPS7A8401A-Q1",
+      "observations": [],
+      "notes": "Line 6. Not priced: no -Q1 (automotive) orderable of TPS7A84 / TPS7A84A found (2 searches); TI datasheet SBVS291 covers only TPS7A8400A/8401A (industrial). Industrial TPS7A8400RGRR ~$2.89 @3k Digi-Key (not recorded). Check the source BOM for the automotive part intended."
+    },
+    {
+      "mpn": "TPS22965QWDSGRQ1",
+      "family": "TPS22965-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Load switch 5.7 V 4 A, 16 mOhm, automotive",
+      "category": "ic_qfn",
+      "pkg": "WSON-8 (DSG)",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "TPS22965QWDSGRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.4641,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/tps22965qwdsgrq1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 21000,
+          "price": 0.4382,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/tps22965qwdsgrq1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 0.429,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/tps22965qwdsgrq1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 7. Findchips names Digi-Key 296-43345 and Mouser 595-TPS22965QWDSGRQ1. Mouser also lists $0.3680 @6,000 (not recorded: its 3k-to-6k step implies b>0.18). Snapshot dates not shown."
+    },
+    {
+      "mpn": "TPS22918TDBVRQ1",
+      "family": "TPS22918-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Load switch 5.5 V 2 A, 52 mOhm, configurable rise time",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "TPS22918TDBVRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 6000,
+          "price": 0.333,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/TPS22918TDBVRQ1?qs=LuYMPh7GGMSVycgJSMXc%2Fg%3D%3D",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 30000,
+          "price": 0.31,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/TPS22918TDBVRQ1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.22,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/TPS22918TDBVRQ1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 8. Prices as given (rounded) in the search summary of the Mouser page / Findchips. Mouser and Digi-Key out of stock, restock 19 Oct 2026. ciiva.com showed Mouser $0.317 @1k, $0.292 @10k (not a permitted host, not recorded). Win Source ~$0.21 ignored (broker)."
+    },
+    {
+      "mpn": "TPS3851G33SQDRBRQ1",
+      "family": "TPS3851-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Voltage supervisor + watchdog, 3.3 V, automotive",
+      "category": "ic_qfn",
+      "pkg": "SON-8 3x3 (DRB)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera",
+        "radar"
+      ],
+      "observedMpn": "TPS3851G33SQDRBRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.32595,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS3851G33SQDRBRQ1/7653230",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 1.30009,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS3851G33SQDRBRQ1/7653230",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 9. TPS3850-Q1 already in catalogue (TPS3850H01QDRCRQ1, Mouser). Representative TPS3851-Q1: G33S variant is the one Digi-Key stocks (1,748 in stock); G33E variant shows $1.17329 @3k but not stocked (not recorded)."
+    },
+    {
+      "mpn": "TPS3702CX33QDDCRQ1",
+      "family": "TPS3702-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Window voltage supervisor, 3.3 V, automotive",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6 (DDC)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "radar"
+      ],
+      "observedMpn": "TPS3702CX33QDDCRQ1",
+      "observations": [
+        {
+          "distributor": "Arrow",
+          "qty": 3000,
+          "price": 1.2213,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/tps3702cx33qddcrq1/texas-instruments",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 6000,
+          "price": 1.168,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/tps3702cx33qddcrq1/texas-instruments",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 10. Already in catalogue (Digi-Key only); Arrow added as a second distributor. Arrow: no stock, MOQ 3,000."
+    },
+    {
+      "mpn": "INA226AQDGSRQ1",
+      "family": "INA226-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "36 V I2C current / power monitor, automotive",
+      "category": "ic_soic",
+      "pkg": "VSSOP-10 (DGS)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "power monitoring"
+      ],
+      "observedMpn": "INA226AQDGSRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 1.63128,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA226AQDGSRQ1/5404241",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.0561,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/_Texas-Instruments-INA226AQDGSRQ1_C2653835.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 11. Catalogue holds only a family estimate 'INA226'. LCSC is well below Digi-Key (within the 2.5x rule). Mouser seen only at 1-25 pcs."
+    },
+    {
+      "mpn": "INA240A1QPWRQ1",
+      "family": "INA240-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Current-sense amp, -4 to 80 V CM, PWM rejection, gain 20",
+      "category": "ic_soic",
+      "pkg": "TSSOP-8",
+      "aecq": true,
+      "ecuRoles": [
+        "motor control",
+        "ADAS domain"
+      ],
+      "observedMpn": "INA240A1QPWRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 2.31205,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA240A1QPWRQ1/8322727",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 2.26689,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/INA240A1QPWRQ1/8322727",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2000,
+          "price": 2.06,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/INA240A1QPWRQ1?qs=Bho/beBaDEyQAp0P5DLExg%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 12. Catalogue has the A2 SOIC (INA240A2QDRQ1); this is the A1 TSSOP named on the line. Arrow showed $1.5008 @2,000 (no stock) - not recorded to keep 3 observations; LCSC snapshots conflicted ($1.95 vs $0.805 @1k), not recorded. Mouser lead time 81 wk."
+    },
+    {
+      "mpn": "TMP112AQDRLRQ1",
+      "family": "TMP112-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "I2C temperature sensor, 0.5 C, automotive",
+      "category": "ic_soic",
+      "pkg": "SOT-563 (DRL)",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "TMP112AQDRLRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.35744,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP112AQDRLRQ1/5032041",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 1.31219,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP112AQDRLRQ1/5032041",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 13a. Already in catalogue (Digi-Key 4,000 break); adds the Digi-Key 1,000 break (own slope). No second distributor found in 1 search (LCSC figures ambiguous, not recorded)."
+    },
+    {
+      "mpn": "TMP102AQDRLRQ1",
+      "family": "TMP102-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "I2C temperature sensor, 2 C, automotive",
+      "category": "ic_soic",
+      "pkg": "SOT-563 (DRL)",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "TMP102AQDRLRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 0.78251,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP102AQDRLRQ1/5032040",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 4000,
+          "price": 0.807,
+          "currency": "EUR",
+          "url": "https://eu.mouser.com/en/ProductDetail/Texas-Instruments/TMP102AQDRLRQ1?qs=asCBFxFfL1SM%2FKfsYcTt1w%3D%3D",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.527,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C130042.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 13b. Catalogue holds only a family estimate 'TMP102'. Mouser EU full reel (multiples of 4,000), ex VAT. TI list $0.353 @1ku (not an observation). TME ~$0.95 @1k with no stock (not recorded)."
+    },
+    {
+      "mpn": "DS160PR410RGFRQ1",
+      "family": "DS160PR410-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "PCIe 4.0 16 Gbps 4-channel linear redriver, automotive",
+      "category": "ic_qfn",
+      "pkg": "VQFN-40 5x7 (RGF)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "compute"
+      ],
+      "observedMpn": "DS160PR410RGFRQ1",
+      "observations": [],
+      "notes": "Line 14. Not priced (3 searches): Findchips shows Digi-Key SKU 296-DS160PR410RGFRQ1TR-ND but no price; no Mouser listing. TI list ~$4.80 @1ku (not an observation). Industrial DS160PR410RNQR is $6.4295 @3k Digi-Key (different part, not recorded). DS160PR412 not searched separately."
+    },
+    {
+      "mpn": "TUSB1146RGFRQ1",
+      "family": "TUSB1146-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "USB-C 10 Gbps / DP 2.1 alt-mode linear redriver crosspoint, automotive",
+      "category": "ic_qfn",
+      "pkg": "VQFN 5x7 (RGF)",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "ADAS domain"
+      ],
+      "observedMpn": "TUSB1146RGFRQ1",
+      "observations": [],
+      "notes": "Line 15. TUSB1046-DCI and TUSB546-DCI have no -Q1 orderable (TI E2E: TUSB1021-Q1, TUSB1064-Q1, TUSB1146-Q1 are TI's automotive 10 Gbps parts); TUSB1146-Q1 picked as the automotive source-side equivalent of TUSB1046. Not priced (3 searches): only the EVM is listed at distributors; TI list $3.97 (not an observation). TUSB1064RNQR (industrial) $4.0024 @3k Digi-Key, not recorded."
+    },
+    {
+      "mpn": "SN74LVC1G08QDCKRQ1",
+      "family": "SN74LVC1G08-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Single 2-input AND gate, automotive",
+      "category": "ic_soic",
+      "pkg": "SC-70-5 (DCK)",
+      "aecq": true,
+      "ecuRoles": [
+        "general"
+      ],
+      "observedMpn": "SN74LVC1G08QDCKRQ1",
+      "observations": [],
+      "notes": "Line 16a. Already in catalogue with Digi-Key and Mouser 1k breaks; not re-searched."
+    },
+    {
+      "mpn": "SN74AXC4T774QPWRQ1",
+      "family": "SN74AXC4T774-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "4-bit dual-supply bus transceiver / level translator, 0.65-3.6 V",
+      "category": "ic_soic",
+      "pkg": "TSSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera"
+      ],
+      "observedMpn": "SN74AXC4T774QPWRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 0.8021,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/SN74AXC4T774QPWRQ1",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.76324,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/SN74AXC4T774QPWRQ1/12342961",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 16b. Digi-Key 77,066 in stock. Mouser snapshots on Findchips conflict ($0.7130 vs $0.8770 @1-2k; $0.7120 @4k) - not recorded."
+    },
+    {
+      "mpn": "TXB0104QPWRQ1",
+      "family": "TXB0104-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "4-bit auto-direction level translator, automotive",
+      "category": "ic_soic",
+      "pkg": "TSSOP-14",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera"
+      ],
+      "observedMpn": "TXB0104QPWRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 0.52059,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TXB0104QPWRQ1/2385872",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2000,
+          "price": 0.605,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/104qp",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 4000,
+          "price": 0.583,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/104qp",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 17a. Digi-Key listings conflict: product id 2385872 (296-27760, in stock) $0.52059 @2k vs id 2232941 (out of stock, 16 wk) $0.82123 @2k / $0.80197 @4k - the in-stock listing recorded, the other noted. Mouser 595-TXB0104QPWRQ1 read from a Findchips summary. LCSC ~$0.39 @1k not recorded (rounded)."
+    },
+    {
+      "mpn": "TXS0108EQPWRQ1",
+      "family": "TXS0108E-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "8-bit bidirectional level translator (open-drain/push-pull), automotive",
+      "category": "ic_soic",
+      "pkg": "TSSOP-20",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera"
+      ],
+      "observedMpn": "TXS0108EQPWRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 1.15793,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TXS0108EQPWRQ1/5324256",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 1.13241,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TXS0108EQPWRQ1/5324256",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.732,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/Translators-Level-Shifters_Texas-Instruments_C1021790.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 17b. Catalogue holds only a family estimate 'TXS0108E'. Digi-Key table is CT/Digi-Reel; Findchips showed Digi-Key $0.8828 @2k (older cache, not recorded). Mouser AU AUD 1.73 @2k (AUD not in FX table)."
+    },
+    {
+      "mpn": "PCA9555-Q1",
+      "family": "PCA9555",
+      "mfr": "NXP / Texas Instruments",
+      "desc": "16-bit I2C GPIO expander",
+      "category": "ic_soic",
+      "pkg": "TSSOP-24",
+      "aecq": false,
+      "ecuRoles": [
+        "general"
+      ],
+      "observedMpn": "PCA9555-Q1",
+      "observations": [],
+      "notes": "Line 18a. Not priced: no automotive (-Q1 / AEC-Q100) PCA9555 orderable exists (2 searches; NXP PCA9555 and TI PCA9555PWR are industrial, TI PCA9555 NRND). The automotive equivalent is TCA9539-Q1 (entry below)."
+    },
+    {
+      "mpn": "TCA9539QPWRQ1",
+      "family": "TCA9539-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "16-bit I2C GPIO expander with interrupt and reset, automotive",
+      "category": "ic_soic",
+      "pkg": "TSSOP-24",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera",
+        "general"
+      ],
+      "observedMpn": "TCA9539QPWRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 1.91504,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCA9539QPWRQ1/6023986",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 4000,
+          "price": 1.87,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/TCA9539QPWRQ1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 18b. Already in catalogue (Mouser 1k $2.01); Digi-Key added as second distributor plus the Mouser 4,000 break. TME $1.35 @4k (not recorded to keep to Digi-Key/Mouser; TME tier not verified). LCSC snapshots conflict, not recorded."
+    },
+    {
+      "mpn": "TCA9548ARGERQ1",
+      "family": "TCA9548A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "8-channel I2C switch with reset, automotive",
+      "category": "ic_qfn",
+      "pkg": "VQFN-24 4x4 (RGE)",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "TCA9548ARGERQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.02112,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCA9548ARGERQ1/10434845",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 1.00034,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TCA9548ARGERQ1/10434845",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 0.937,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TCA9548ARGERQ1?qs=T3oQrply3y8QRq0kg9Jjrw%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 19. The only -Q1 orderable is the VQFN RGERQ1 (no TSSOP Q1; PCA9548A has no automotive code). LCSC $0.4593 @1k and Chip One Stop $0.559 @3k not recorded (Chip One Stop not on the list; LCSC far off)."
+    },
+    {
+      "mpn": "LMK1C1104-Q1",
+      "family": "LMK1C1104-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1:4 LVCMOS clock buffer, automotive",
+      "category": "ic_qfn",
+      "pkg": "WSON (DQF)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "camera"
+      ],
+      "observedMpn": "LMK1C1104-Q1",
+      "observations": [],
+      "notes": "Line 20. Not priced (retry, 1 search): TI orderables are still pre-production PLMK1C1104QDQFRQ1 / ...QDQFTQ1 ('P' prefix, out of stock); distributors list only the industrial LMK1C1104PWR/DQFR."
+    },
+    {
+      "mpn": "LMK3H0102-Q1",
+      "family": "LMK3H0102",
+      "mfr": "Texas Instruments",
+      "desc": "2-output reference-less BAW clock generator (PCIe), automotive",
+      "category": "ic_qfn",
+      "pkg": "WQFN-16",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain",
+        "compute"
+      ],
+      "observedMpn": "LMK3H0102-Q1",
+      "observations": [],
+      "notes": "Line 21. Not priced (2 searches): no distributor listing for the -Q1 orderable (TI E2E names LMK3H0102T07RGTRQ1); distributors list only industrial ...RERR codes (Digi-Key LMK3H0102A006RERR, Mouser LMK3H0102V33RERR) and the EVM. TI list ~$2.97 for industrial codes (not an observation)."
+    },
+    {
+      "mpn": "TPS2HB16AQPWPRQ1",
+      "family": "TPS2HB16-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "40 V 2-channel 16 mOhm smart high-side switch",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "camera power",
+        "body"
+      ],
+      "observedMpn": "TPS2HB16AQPWPRQ1",
+      "observations": [
+        {
+          "distributor": "Arrow",
+          "qty": 3000,
+          "price": 1.41,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/tps2hb16aqpwprq1/texas-instruments.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 22. Already in catalogue (3 Digi-Key breaks); Arrow added as second distributor (out of stock, 12 wk). Arrow 3,000 price as rounded in the search summary; Arrow also ~$1.23 @75,000 (rounded, not recorded)."
+    },
+    {
+      "mpn": "TPS1HB08BQPWPRQ1",
+      "family": "TPS1HB08-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "40 V 1-channel 8 mOhm smart high-side switch",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "camera power",
+        "body"
+      ],
+      "observedMpn": "TPS1HB08BQPWPRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.5362,
+          "currency": "USD",
+          "url": "https://www.findchips.com/distributors/digikey?search=-b08",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 23. Already in catalogue (Digi-Key 1k $1.5955 and 6k $1.5072 - the same table seen again); adds the Digi-Key 3,000 break. No second distributor found (1 search)."
+    },
+    {
+      "mpn": "TPS62442QWRQRRQ1",
+      "family": "TPS6244x-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual 2.25 MHz synchronous buck 2 A + 2 A, automotive",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR (RQR)",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "TPS62442QWRQRRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 2.36,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62442QWRQRRQ1/17878374",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 2.16,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS62442QWRQRRQ1/17878374",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 1.77,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS62442QWRQRRQ1?qs=vvQtp7zwQdME3fjyBTUnRQ%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 24. TPS62441QWRQRRQ1 (1 A + 1 A) not found at a franchised distributor (also unpriced in r2 camera.json); TPS62442-Q1 priced instead. Digi-Key figures as rounded in the summary. LCSC $1.89 @1k (not recorded, keeping 3). Mouser 4,210 in stock."
+    },
+    {
+      "mpn": "MAX20022ATIA/V+T",
+      "family": "MAX20021/MAX20022",
+      "mfr": "Analog Devices (Maxim)",
+      "desc": "Automotive quad low-voltage step-down converter (camera / SoC rails)",
+      "category": "ic_qfn",
+      "pkg": "TQFN-28",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "ADAS domain"
+      ],
+      "observedMpn": "MAX20022ATIA/V+T",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 3.1375,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/base-product/maxim-integrated/175/MAX20022/118880",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 25. MAX20021ATIA/V+ is marked no longer manufactured / no longer stocked at Farnell CH (CHF only); MAX20022 priced instead. Digi-Key T&R, no stock; tube MAX20022ATIA/V+ $5.40 @1. A Findchips row for /V+T ($2.67 @1k, $4.5276 @2.5k, distributor not named) conflicts and is not recorded."
+    },
+    {
+      "mpn": "MAX20089ATPA/VY+T",
+      "family": "MAX20088/MAX20089",
+      "mfr": "Analog Devices (Maxim)",
+      "desc": "Dual-channel power-over-coax protector / current-sense switch, I2C",
+      "category": "ic_qfn",
+      "pkg": "TQFN-20",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "SVC"
+      ],
+      "observedMpn": "MAX20089ATPA/VY+T",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 500,
+          "price": 2.77,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Analog-Devices-Maxim-Integrated/MAX20089ATPA-VY%2bT?qs=vmHwEFxEFR%2Bu2zECAW2Osg%3D%3D",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2500,
+          "price": 2.55,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Analog-Devices-Maxim-Integrated/MAX20089ATPA-VY%2bT?qs=vmHwEFxEFR%2Bu2zECAW2Osg%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 26. MAX20088ATPA/VY+: no listing found. MAX20089 reel code priced: Mouser 2,500 full reel $2.55; the summary called the $2.77 tier '1,000' but its extended price $1,385 is 500 x $2.77, so recorded at 500. Tray MAX20089ATPA/VY+ is in r2 camera.json (Digi-Key ~$2.58 @490)."
+    },
+    {
+      "mpn": "MPF5024AMMA0ESR2",
+      "family": "PF5024",
+      "mfr": "NXP",
+      "desc": "4-channel buck PMIC for S32G / i.MX, QM safety",
+      "category": "ic_qfn",
+      "pkg": "HVQFN-40 6x6",
+      "aecq": true,
+      "ecuRoles": [
+        "gateway",
+        "ADAS domain"
+      ],
+      "observedMpn": "MPF5024AMMA0ESR2",
+      "observations": [],
+      "notes": "Line 27. Not priced (3 searches): NXP direct list MPF5024AMBA0ES $5.47, MPF5024AVNA0ES $4.97 (manufacturer list, not observations); a Findchips row shows $4.8781 @2,000 to ~$4.64 @32,000 (MOQ 2,000, 26 wk) but the snippet does not name the distributor; Cytech (broker) ~$5.12. PF5020 already in catalogue (MPF5020CMMACESR2, Arrow)."
+    },
+    {
+      "mpn": "MFS2633HMDA0ADR2",
+      "family": "FS26",
+      "mfr": "NXP",
+      "desc": "FS26 safety system basis chip, ASIL D, radar / gateway",
+      "category": "ic_qfn",
+      "pkg": "HVQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "gateway"
+      ],
+      "observedMpn": "MFS2633HMDA0ADR2",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 2000,
+          "price": 5.9772,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/MFS2633HMDA0AD",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 32000,
+          "price": 5.8564,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/MFS2633HMDA0AD",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2000,
+          "price": 5.59,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/MFS2633HMDA0AD",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 28. FS2633 (MFS2633AMDAKADR2, Digi-Key) and FS6500 (MC33FS6500NAER2, Digi-Key + Arrow) are already in catalogue. Search for AMDAKADR2 found no new listing; Findchips gives Avnet Americas and Mouser for sibling MFS2633HMDA0ADR2 (all 0 stock). Its Digi-Key price $6.0376 @2,000 equals the catalogue's AMDAKADR2 price exactly - check that entry was not read on this code."
+    },
+    {
+      "mpn": "S32K311NHT0MPAST",
+      "family": "S32K311",
+      "mfr": "NXP",
+      "desc": "S32K311 Arm Cortex-M7 automotive MCU, 48-HLQFP",
+      "category": "ic_tqfp",
+      "pkg": "HLQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "radar",
+        "camera"
+      ],
+      "observedMpn": "S32K311NHT0MPAST",
+      "observations": [],
+      "notes": "Line 29. Already in catalogue (S32K311NHT0MPAST Farnell; S32K312NHT0VPBST Mouser + Arrow). 1 search for a second distributor: only Maritex / Unikey (not on the franchised list), Rochester (aftermarket, excluded) and NXP direct $3.93 @100 (manufacturer). No observation added."
+    },
+    {
+      "mpn": "NCV8161ASN330T1G",
+      "family": "NCV8161",
+      "mfr": "onsemi",
+      "desc": "450 mA low-noise LDO, 3.3 V, automotive",
+      "category": "ic_soic",
+      "pkg": "TSOP-5",
+      "aecq": true,
+      "ecuRoles": [
+        "camera",
+        "imager rails"
+      ],
+      "observedMpn": "NCV8161ASN330T1G",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.35467,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8161ASN330T1G/7556428",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.33744,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/NCV8161ASN330T1G/7556428",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.468,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/Pre-ordered-transistors_onsemi-NCV8161ASN330T1G_C604034.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 30. Representative: NCV8161 (450 mA) A-version 3.3 V, the most-stocked imager-rail code (Digi-Key 9,127 in stock). NCV8163ASN330T1G (250 mA) ~$0.29 @3k Digi-Key seen rounded, not recorded. Other voltages: NCV8161ASN180T1G $0.34810 @3k Digi-Key."
+    }
+  ]
+}
