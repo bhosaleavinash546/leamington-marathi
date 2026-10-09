@@ -156,7 +156,18 @@ engineering judgement and the rest are "not published". 38 teardown references a
 £ / m² laminate premium. Those sit in paywalled Yole / TechInsights reports, so those fields stay engineering
 judgement.
 
-## 6. Decisions for you
+## 6. Decisions
+
+**Decided 9 Oct 2026:**
+- **Imagers: the automotive volume rule.** A named imager (catalogue or live hit) is priced by the imager class rule
+  (£3–15 at volume, scaled to the order), exactly like an unnamed one. Its distributor listing is kept on the line
+  as a reference (`distributorListingGBP`, printed in the price note). Implemented with `IMAGER_RE` in
+  `server/utils/pcb-bom-grounding.ts` and pinned by `tests/pcb-imager-volume-rule.test.ts`. The PCB analysis cache
+  version is now 11.
+- **LCSC stays in the median.** The merge rules are unchanged.
+
+The original questions, kept for the record:
+
 
 1. **Named imagers.** A camera BOM line that names its imager is priced at the distributor listing (e.g.
    AR0233AT ≈ £24, AR0147AT). An unnamed imager gets the automotive volume rule (£3–15). Pick one basis.
