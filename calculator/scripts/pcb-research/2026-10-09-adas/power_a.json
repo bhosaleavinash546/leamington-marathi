@@ -1,0 +1,513 @@
+{
+ "domain": "adas-power-a",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "LP876441B1RQKRQ1",
+   "family": "LP8764-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive 4-phase multi-output buck PMIC (4x5 A / 20 A), SoC companion",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR-32 (RQK)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": "LP876441B1RQKRQ1",
+   "observations": [],
+   "notes": "No franchised-distributor price found in 3 searches. TI's orderable table lists LP876441B1RQKRQ1 as active (3k reel); the OTP pairing with TDA4 was not verified. One search summary cited a Digi-Key EUR listing for sibling LP876440C0RQKRQ1 (about EUR 3.94 at 3k T&R, EUR 6.84 at 1). It gave no URL, so the price is not recorded."
+  },
+  {
+   "mpn": "TPS65941213RWERQ1",
+   "family": "TPS6594-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs, 2.8-5.5 V in; OTP 13 (TDA4 / Jacinto primary PMIC)",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": "TPS65941213RWERQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 8447.73,
+     "currency": "KRW",
+     "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPS65941213RWERQ1/15926500",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 7703.18,
+     "currency": "KRW",
+     "url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPS65941213RWERQ1/15926500",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key Korea page (punchouttest.digikey.kr subdomain), priced in KRW: cut tape at 1k, T&R at 2k; 0 stock, 18-week lead time. Sibling OTP TPS65941120RWERQ1 on digikey.com is $6.84677 at 1k and $6.71666 at 2k T&R (consistent; not recorded because it is a different OTP)."
+  },
+  {
+   "mpn": "TPS65941421RWERQ1",
+   "family": "TPS6594-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs, OTP 21 variant",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS65941421RWERQ1",
+   "observations": [],
+   "notes": "No franchised-distributor listing found in 2 searches. For reference only, the sibling TPS65941120RWERQ1 on digikey.com is $6.84677 at 1k and $6.71666 at 2k (https://digikey.com/en/products/detail/texas-instruments/TPS65941120RWERQ1/17873871). It is a different OTP and is not recorded."
+  },
+  {
+   "mpn": "TPS6593C3A0RWERQ1",
+   "family": "TPS6593-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs (TPS6593-Q1 family)",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS6593C3A0RWERQ1",
+   "observations": [],
+   "notes": "This is a family line. The orderable C3A0 was taken from a TI E2E thread; distributor stocking was not checked. No franchised-distributor price found: searches for TPS65931211RWERQ1 on Digi-Key and Mouser returned nothing."
+  },
+  {
+   "mpn": "TPS65931211RWERQ1",
+   "family": "TPS6593-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 5 bucks + 4 LDOs, OTP 1211",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 8x8 (RWE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS65931211RWERQ1",
+   "observations": [],
+   "notes": "No franchised-distributor listing found in 2 searches (Digi-Key and Mouser)."
+  },
+  {
+   "mpn": "LP873344RHDRQ1",
+   "family": "LP8733-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive dual high-current buck + dual LDO PMIC",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28 (RHD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera"
+   ],
+   "observedMpn": "LP873344RHDRQ1",
+   "observations": [],
+   "notes": "No Q1 price at a franchised distributor in 1 search; the variant was seen only at the broker Cytech, which is not used. The non-Q1 LP873347RHDR shows Mouser at $1.71 at 3k via findchips (https://www.findchips.com/detail/LP873347RHDR/Texas-Instruments). That is not the automotive part, so it is not recorded. The search budget ran out before a second search."
+  },
+  {
+   "mpn": "LP87332DRHDRQ1",
+   "family": "LP87332D-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive dual 3 A buck + dual LDO, for Jacinto 6 entry processors",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28 (RHD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "LP87332DRHDRQ1",
+   "observations": [],
+   "notes": "No franchised-distributor listing found in 2 searches. Lion Circuits (not franchised) lists INR 253.55 at 1k. LCSC lists the non-Q1 LP87332DRHDR at $2.9963 at 100. Neither price is recorded."
+  },
+  {
+   "mpn": "TPS6521920WRHBRQ1",
+   "family": "TPS65219-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 3 bucks + 4 LDOs, for AM62x / AM62A processors",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 5x5 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "DMS"
+   ],
+   "observedMpn": "TPS6521920WRHBRQ1",
+   "observations": [],
+   "notes": "No franchised-distributor listing found in 3 searches. TI E2E names TPS6521920/23WRHBRQ1 as TPS65219-Q1. For reference only, the non-Q1 TPS6521905RHBR on digikey.com is $1.59828 at 1k and $1.53892 at 3k T&R (https://www.digikey.com/en/products/detail/texas-instruments/TPS6521905RHBR/21298829). It is not the automotive part, so it is not recorded."
+  },
+  {
+   "mpn": "TPS653850AQDCARQ1",
+   "family": "TPS653850A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Multi-rail safety PMIC for MCUs: buck-boost pre-regulator, LDOs, sensor-supply trackers, watchdog (ASIL-D)",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-48 (DCA)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "front camera"
+   ],
+   "observedMpn": "TPS653850AQDCARQ1",
+   "observations": [],
+   "notes": "Upgrade-estimate line (TPS653850). No franchised-distributor listing found in 2 searches. The estimate stands."
+  },
+  {
+   "mpn": "RAA2710004R1FHBG",
+   "family": "RAA271000",
+   "mfr": "Renesas",
+   "desc": "Automotive multi-output PMIC for R-Car SoCs",
+   "category": "ic_bga",
+   "pkg": "BGA (HBG suffix)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "RAA2710004R1FHBG",
+   "observations": [],
+   "notes": "No franchised-distributor listing found in 2 searches. The Renesas product page lists about $8.82 at MOQ 250 (RAA2710004R1FHBG $8.8242; RAA2710004R1EHBG $8.82976). That is a manufacturer price, not an observation: https://www.renesas.com/ja/products/raa271000/part-details/raa2710004r1fhbg-mc0"
+  },
+  {
+   "mpn": "RAA271005A4HBG#AC0",
+   "family": "RAA271005",
+   "mfr": "Renesas",
+   "desc": "R-Car PMIC: 5 bucks (Buck1 12 A; RAA271005L 6 A) + 6 LDOs, AEC-Q100 Grade 1",
+   "category": "ic_bga",
+   "pkg": "LFBGA-66 6x11, 0.65 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "RAA271005A4HBG#AC0",
+   "observations": [],
+   "notes": "No franchised-distributor price found in 1 search (only Renesas datasheets). The search budget ran out before a second search."
+  },
+  {
+   "mpn": "RAA271082",
+   "family": "RAA271082",
+   "mfr": "Renesas",
+   "desc": "Automotive multi-output PMIC (R-Car / ADAS companion)",
+   "category": "ic_qfn",
+   "pkg": "not verified",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "RAA271082",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The category and package are not verified."
+  },
+  {
+   "mpn": "RAA215300",
+   "family": "RAA215300",
+   "mfr": "Renesas",
+   "desc": "Multi-channel PMIC for RZ-series MPUs",
+   "category": "ic_qfn",
+   "pkg": "not verified",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "RAA215300",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. AEC-Q100 status and package are not verified."
+  },
+  {
+   "mpn": "DA9063-A",
+   "family": "DA9063-A",
+   "mfr": "Renesas (Dialog)",
+   "desc": "Automotive system PMIC: 6 bucks + 11 LDOs",
+   "category": "ic_bga",
+   "pkg": "VFBGA-100 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "DA9063-A",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified."
+  },
+  {
+   "mpn": "FS8530",
+   "family": "FS85",
+   "mfr": "NXP",
+   "desc": "Safety SBC / PMIC for S32 MCUs/MPUs, ASIL-D (FS85 family)",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "FS8530",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The OTP orderable code is not resolved."
+  },
+  {
+   "mpn": "FS8430",
+   "family": "FS84",
+   "mfr": "NXP",
+   "desc": "Safety SBC / PMIC for S32 MCUs/MPUs, ASIL-B (FS84 family)",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "front camera"
+   ],
+   "observedMpn": "FS8430",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The OTP orderable code is not resolved."
+  },
+  {
+   "mpn": "FS84",
+   "family": "FS84",
+   "mfr": "NXP",
+   "desc": "Safety SBC / PMIC family, ASIL-B (family line)",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar"
+   ],
+   "observedMpn": "FS84",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. This is a family line and no orderable code was chosen."
+  },
+  {
+   "mpn": "PF8100",
+   "family": "PF8100",
+   "mfr": "NXP",
+   "desc": "Automotive multi-output PMIC (7 bucks + 4 LDOs) for i.MX 8 / S32 processors",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "PF8100",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The OTP orderable code is not resolved."
+  },
+  {
+   "mpn": "PF71",
+   "family": "PF71",
+   "mfr": "NXP",
+   "desc": "Multi-output PMIC for S32 processors (PF71 family)",
+   "category": "ic_qfn",
+   "pkg": "not verified",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "PF71",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified."
+  },
+  {
+   "mpn": "TLF35585",
+   "family": "TLF35585",
+   "mfr": "Infineon",
+   "desc": "OPTIREG safety PMIC for AURIX MCUs (pre/post regulators, trackers, watchdog), ASIL-D",
+   "category": "ic_qfn",
+   "pkg": "PG-VQFN-48 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TLF35585",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified."
+  },
+  {
+   "mpn": "TLF30682",
+   "family": "TLF30682",
+   "mfr": "Infineon",
+   "desc": "OPTIREG safety PMIC for AURIX MCUs",
+   "category": "ic_qfn",
+   "pkg": "PG-VQFN-48 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar"
+   ],
+   "observedMpn": "TLF30682",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified."
+  },
+  {
+   "mpn": "TLF4277-2EL",
+   "family": "TLF4277",
+   "mfr": "Infineon",
+   "desc": "OPTIREG LDO with current monitor (antenna / camera supply)",
+   "category": "ic_soic",
+   "pkg": "PG-SSOP-14 EP (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "surround camera"
+   ],
+   "observedMpn": "TLF4277-2EL",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified."
+  },
+  {
+   "mpn": "LMQ62440-Q1",
+   "family": "LMQ62440-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "36 V, 4 A low-EMI synchronous buck converter",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "radar"
+   ],
+   "observedMpn": "LMQ62440-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The orderable code is not resolved."
+  },
+  {
+   "mpn": "LM61460-Q1",
+   "family": "LM61460-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "36 V, 6 A low-EMI synchronous buck converter",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "radar"
+   ],
+   "observedMpn": "LM61460-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The orderable code is not resolved."
+  },
+  {
+   "mpn": "LM62440-Q1",
+   "family": "LM62440-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "36 V, 4 A dual-phase / dual-output synchronous buck converter",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "LM62440-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The orderable code is not resolved."
+  },
+  {
+   "mpn": "LM5145QRGYRQ1",
+   "family": "LM5145-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "75 V synchronous buck controller",
+   "category": "ic_qfn",
+   "pkg": "VQFN-20 (RGY)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "LM5145QRGYRQ1",
+   "observations": [],
+   "notes": "Upgrade-estimate line (LM5145). NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. LCSC lists LM5145QRGYRQ1 (C3188678), but no price was read. The estimate stands."
+  },
+  {
+   "mpn": "LM25141-Q1",
+   "family": "LM25141-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "42 V synchronous buck controller, low EMI",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "LM25141-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified."
+  },
+  {
+   "mpn": "TPS548A28-Q1",
+   "family": "TPS548A28",
+   "mfr": "Texas Instruments",
+   "desc": "High-current (15 A class) synchronous buck converter",
+   "category": "ic_qfn",
+   "pkg": "not verified",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS548A28-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The existence of a -Q1 orderable is not verified."
+  },
+  {
+   "mpn": "TPS62870-Q1",
+   "family": "TPS6287x-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "2.7-6 V, 6 A stackable synchronous buck, I2C (SoC core rail)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS62870-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The orderable code is not resolved."
+  },
+  {
+   "mpn": "TPS62873-Q1",
+   "family": "TPS6287x-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "2.7-6 V, 15 A stackable synchronous buck, I2C (SoC core rail)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-HR (not verified)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "TPS62873-Q1",
+   "observations": [],
+   "notes": "NOT RESEARCHED: the session's shared web-search budget (200 searches per turn) ran out before this part. Re-queue it. Descriptive fields come from memory and are not verified. The orderable code is not resolved."
+  }
+ ]
+}
