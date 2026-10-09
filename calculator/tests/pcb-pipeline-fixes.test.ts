@@ -207,3 +207,18 @@ describe('F9 / F10 — volume prices say where they come from; a live price is n
     expect(p.sourceNote).toMatch(/DERIVED above the largest published break/);
   });
 });
+
+import { icKnownRange } from '../server/routes/pcb.js';
+
+describe('F11 — a named price range applies to the part number, not to prose or a vendor name', () => {
+  it('vendor names and description words do not select a named range', () => {
+    expect(icKnownRange({ partNumber: 'ROHM RB751' })).toBeNull();                                   // a diode, not a Rohm PMIC
+    expect(icKnownRange({ partNumber: 'IPD50N04S4L-08' })).toBeNull();                                // a MOSFET, not AUIPS
+    expect(icKnownRange({ partNumber: 'SK4BL' })).toBeNull();                                         // not Samsung K4B
+    expect(icKnownRange({ partNumber: 'MAX96712' })).toBeNull();                                      // GMSL deserializer, not a £4.50 interface IC
+    expect(icKnownRange({ partNumber: 'TLF35585', description: 'safety PMIC for AURIX MCUs' })?.label ?? '').not.toMatch(/AURIX/);
+  });
+  it('the generic function rows still read the description of an unread part', () => {
+    expect(icKnownRange({ description: '77/79GHz FMCW radar transceiver MMIC' })?.generic).toBe(true);
+  });
+});

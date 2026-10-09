@@ -61,7 +61,9 @@ describe('prices held inside the tool\'s own ranges', () => {
     expect(bom[0].priceSource).toBe('function-range');
   });
   it('the radar MCU description does not trip the transceiver range', () => {
-    expect(icKnownRange({ description: 'NXP S32R294 automotive radar MCU (ASIL-B), 77GHz FMCW signal processing' })?.label).toMatch(/S32R294/);
+    // Neither the transceiver row nor — since pipeline review F11 — a named row from the model's prose alone.
+    expect(icKnownRange({ description: 'NXP S32R294 automotive radar MCU (ASIL-B), 77GHz FMCW signal processing' })).toBeNull();
+    expect(icKnownRange({ partNumber: 'FS32R294KCMJD', description: 'radar MCU' })?.label).toMatch(/S32R294/);
   });
   it('an OCR-confirmed S32R294 guessed above the range takes the tool point', () => {
     const { bom } = capUnconfirmedPrices([{ partNumber: 'FS32R294KCMJD', componentType: 'ic_bga', ocrExtracted: true, lineConf: 1, qty: 1, unitPriceGBP: 60 }], at250k);

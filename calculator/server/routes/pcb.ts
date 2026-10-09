@@ -1242,7 +1242,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /TLF35584|TLF35577/i.test(m), label: 'Infineon TLF3558x automotive safety PMIC (ASIL-D)', price: '£2–6' },   // $2.54–3.70 @1k (2026-10-01)
   { test: m => /FS65|FS85|FS6500/i.test(m), label: 'NXP FS65/FS85 System Basis Chip (safety SBC)', price: '£2.50–7' },
   { test: m => /UJA117[0-9]|UJA1167/i.test(m), label: 'NXP UJA117x Mini SBC', price: '£1.80–5' },
-  { test: m => /BD9V100|BD9S400|ROHM/i.test(m), label: 'Rohm BD automotive PMIC', price: '£2–8' },
+  { test: m => /BD9V100|BD9S400/i.test(m), label: 'Rohm BD automotive PMIC', price: '£2–8' },   // not 'ROHM': a Rohm diode is not a PMIC (F11)
   { test: m => /RAA271|RAA272|ISL78/i.test(m), label: 'Renesas RAA/ISL automotive multi-rail PMIC', price: '£4–14' },
   { test: m => /TPS929|TPS928|TPS9264/i.test(m), label: 'TI TPS92x automotive LED driver', price: '£1.50–6' },
   { test: m => /TLE926|TLE4471|TLE7|TLS/i.test(m), label: 'Infineon TLE/TLS automotive voltage reg / SBC', price: '£0.60–4' },   // TLE9261 $1.95 @1k (2026-10-01)
@@ -1251,7 +1251,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /UCC5320|UCC5390|UCC2153/i.test(m), label: 'TI UCC isolated automotive gate driver', price: '£1.80–5' },
   { test: m => /ISO784|ISO774|DRV840|DRV862/i.test(m), label: 'TI ISO/DRV automotive driver', price: '£2–8' },
   { test: m => /BTS700|BTS600|BTS500/i.test(m), label: 'Infineon BTS automotive smart power switch', price: '£0.50–3' },   // BTS7008 $0.71–1.27 @1k (2026-10-01)
-  { test: m => /AUIPS|IPD|IPS200/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },
+  { test: m => /AUIPS|\bIPS[0-9]{3}/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },   // not 'IPD': that is a MOSFET series (F11)
   // ── Radar & RF (Automotive) ────────────────────────────────────────────────
   { test: m => /BGT60|BGT24|BGT12/i.test(m), label: 'Infineon BGT60/24 77GHz/24GHz radar frontend', price: '£18–80' },
   // Same range as the automotive system prompt — the two used to disagree (£25–90 here vs £9–22 there).
@@ -1262,7 +1262,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /77\s*(\/\s*79)?\s*GHZ[^,;]*(TRANSCEIVER|MMIC|FRONT)|RADAR (TRANSCEIVER|MMIC|FRONT[- ]?END)/i.test(m), label: '77 GHz radar transceiver MMIC (part not read; TEF810x-class)', price: '£9–22', generic: true },
   // ── Memory (Automotive) ────────────────────────────────────────────────────
   { test: m => /IS42S|IS43T|IS66W/i.test(m), label: 'ISSI automotive SDRAM/SRAM', price: '£1.50–8' },
-  { test: m => /K4A|K4B|K9F/i.test(m), label: 'Samsung automotive LPDDR/NAND (AEC-Q grade)', price: '£3–20' },
+  { test: m => /(^|[^A-Z0-9])(K4A|K4B|K9F)/i.test(m), label: 'Samsung automotive LPDDR/NAND (AEC-Q grade)', price: '£3–20' },
   { test: m => /MT41K|MT47H|MT25Q/i.test(m), label: 'Micron automotive DDR/Flash', price: '£2.50–15' },
   { test: m => /THGBM|THGLF/i.test(m), label: 'Kioxia automotive eMMC/NAND', price: '£3–18' },
   // Winbond's top marking drops the W: "winbond 25Q32JWSIQ".
@@ -1273,15 +1273,17 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /ESP32|ESP8266|ESP32-S/i.test(m), label: 'Espressif WiFi/BT SoC', price: '£0.50–2.20' },
   { test: m => /LAN9|LAN8|KSZ89|KSZ80/i.test(m), label: 'Microchip LAN/KSZ Ethernet IC', price: '£0.70–5' },
   { test: m => /MAX2043[0-9]|MAX2041[0-9]|MAX2002[0-9]|MAX2008[0-9]/i.test(m), label: 'Maxim/ADI automotive multi-output PMIC', price: '£2.50–6.50' },
-  { test: m => /MAX[0-9]{4}|MAX3|MAX4/i.test(m), label: 'Maxim/Analog interface IC', price: '£0.30–4.50' },
   { test: m => /TLV3|TLV6|TLV7/i.test(m), label: 'TI TLV comparator/op-amp', price: '£0.12–1.80' },
   { test: m => /LM317|LM358|LM741|LM324/i.test(m), label: 'TI/Fairchild classic linear IC', price: '£0.08–0.80' },
 ];
 
 /** The tool's stated 100K range for a BOM line it can name, for the grounding cap. */
 export function icKnownRange(line: { partNumber?: unknown; description?: unknown }, opts: { specificOnly?: boolean } = {}): { lo: number; hi: number; label: string; generic?: boolean } | null {
-  const text = `${String(line.partNumber ?? '')} ${String(line.description ?? '')}`.toUpperCase();
-  const hit = IC_PRICE_HINTS.find(h => h.test(text) && !(opts.specificOnly && h.generic));
+  // A NAMED range applies to the part number only — the description is the model's prose ("…for AURIX MCUs" put a
+  // TLF35585 in the £15–60 AURIX row; pipeline review F11). Only the generic function rows read the description.
+  const pn = String(line.partNumber ?? '').toUpperCase();
+  const text = `${pn} ${String(line.description ?? '')}`.toUpperCase();
+  const hit = IC_PRICE_HINTS.find(h => !(opts.specificOnly && h.generic) && (h.generic ? h.test(text) : pn.trim().length > 0 && h.test(pn)));
   if (!hit) return null;
   const m = /£\s*([0-9.]+)\s*[–-]\s*([0-9.]+)/.exec(hit.price);
   return m ? { lo: Number(m[1]), hi: Number(m[2]), label: hit.label, ...(hit.generic ? { generic: true } : {}) } : null;
