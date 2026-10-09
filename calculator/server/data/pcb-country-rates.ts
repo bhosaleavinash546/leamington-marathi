@@ -1138,7 +1138,14 @@ export const AOI_PROGRAM_GBP = 200;
  * as a fraction of the component cost, by annual volume — an engineering figure, lower on larger programmes.
  */
 export function materialBurdenFor(qty: number): number {
-  return qty >= 100_000 ? 0.05 : qty >= 10_000 ? 0.07 : 0.10;
+  // 10 % at 1k boards, 7 % at 10k, 5 % at 100k, log-linear between and flat outside — the same three figures, without
+  // the steps (7 % → 5 % at exactly 100,000 boards was a cliff in the headline, pipeline review F7).
+  const q = Math.max(1, qty || 1);
+  if (q <= 1_000) return 0.10;
+  if (q >= 100_000) return 0.05;
+  const t = Math.log10(q);
+  const pct = t <= 4 ? 0.10 - 0.03 * (t - 3) : 0.07 - 0.02 * (t - 4);
+  return Math.round(pct * 100000) / 100000;
 }
 
 export function computePCBCountryCost(input: PCBCostInput, countryId: string): PCBCountryCostBreakdown {

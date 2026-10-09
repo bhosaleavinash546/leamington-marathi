@@ -151,3 +151,29 @@ describe('F5 / F19 — a device variant is not priced as its sibling', () => {
     expect(String(out.bom[0].priceNote)).toMatch(/^Family price/);
   });
 });
+
+import { getVolumeMultiplier } from '../server/routes/pcb.js';
+import { materialBurdenFor } from '../server/data/pcb-country-rates.js';
+
+describe('F6 / F7 / F8 — volume is continuous and the curve agrees with a re-run', () => {
+  it('no cliff at 100,000 boards', async () => {
+    const [a, b] = [await radar(undefined, { qty: 99_999 }), await radar(undefined, { qty: 100_001 })];
+    expect(Math.abs(a.total - b.total) / a.total).toBeLessThan(0.001);   // was −4.2 %
+    for (const q of [9_999, 99_999]) expect(Math.abs(materialBurdenFor(q) - materialBurdenFor(q + 2))).toBeLessThan(0.0005);
+  });
+  it('table prices fall continuously with parts bought, flat above 300k, 1.00 at the 10k basis', () => {
+    expect(getVolumeMultiplier(10_000)).toBe(1);
+    expect(getVolumeMultiplier(100_000)).toBeCloseTo(0.85, 3);              // the catalogue's franchise curve
+    expect(getVolumeMultiplier(300_000)).toBeLessThan(getVolumeMultiplier(200_000));
+    expect(getVolumeMultiplier(3_000_000)).toBe(getVolumeMultiplier(300_000));
+    expect(getVolumeMultiplier(1_000)).toBeGreaterThan(getVolumeMultiplier(5_000));
+  });
+  it('the volume curve point at 100k equals a run at 100k, whatever volume was analysed', async () => {
+    const run100 = (await radar(undefined, { qty: 100_000 })).total;
+    for (const q of [200_000, 300_000]) {
+      const r = await radar(undefined, { qty: q });
+      const pt = (r.s4.volumeCurves.cn as Array<{ qty: number; totalPerBoard: number }>).find(p => p.qty === 100_000)!;
+      expect(Math.abs(pt.totalPerBoard - run100)).toBeLessThanOrEqual(0.02);   // was £58.21 / £57.40 against £56.19
+    }
+  });
+});

@@ -25,7 +25,7 @@ import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../uti
 import { gateIdentities } from '../utils/pcb-identity.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { ecuLibrary } from '../utils/pcb-ecu-library.js';
-import { isNotFitted } from '../utils/pcb-price-catalogue.js';
+import { isNotFitted, cataloguePriceAt } from '../utils/pcb-price-catalogue.js';
 import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../utils/pcb-fab-data.js';
 import { readBomImage, isBomImage } from '../utils/pcb-bom-image.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
@@ -45,16 +45,32 @@ import { guardAsil, type AsilLevel, type AsilGuardResult } from '../utils/pcb-as
 // aggressive. NB: catalogue-grounded lines ignore this entirely (their price comes
 // straight from the catalogue/distributor at the order qty), so this now only
 // affects OCR-confirmed lines whose exact MPN isn't in the catalogue.
-const VOLUME_BOM_MULTIPLIERS: [number, number][] = [
-  [50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0],
-  [2500, 1.55], [5000, 1.28], [10000, 1.12], [25000, 1.05],
-  [50000, 1.02], [100000, 1.00],
+//
+// Pipeline review F6–F8 (9 Oct 2026): the tool's price tables (class ranges, named ranges) were labelled "at 100K"
+// but their evidence is distributor listings at 1k–28k, and the factor stepped 1.00 → 0.88 at exactly 100,000 parts
+// (a 4 % cliff on the headline) and was flat from 100k to 10M. The tables are now read as ~10k reel prices
+// (TABLE_BASIS_QTY, the middle of their evidence breaks — a stated assumption) and move with the parts bought along
+// the catalogue's own franchise curve (10k = 1k × 0.85, b = 0.0706), continuously, flat above 300k parts exactly as
+// catalogue lines are. Below 10k the prototype steps stay (re-based to 10k) and are interpolated, not stepped.
+export const TABLE_BASIS_QTY = 10_000;
+const TABLE_SLOPE_B = -Math.log(0.85) / Math.log(10);
+const TABLE_FLAT_ABOVE = 300_000;
+const PROTOTYPE_STEPS: [number, number][] = [
+  [50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0], [2500, 1.55], [5000, 1.28], [10000, 1.12],
 ];
-function getVolumeMultiplier(orderQty: number): number {
-  for (const [maxQty, mult] of VOLUME_BOM_MULTIPLIERS) {
-    if (orderQty <= maxQty) return mult;
+export function getVolumeMultiplier(orderQty: number): number {
+  const q = Math.max(1, orderQty || 1);
+  if (q >= TABLE_BASIS_QTY) return Math.round(Math.pow(Math.min(q, TABLE_FLAT_ABOVE) / TABLE_BASIS_QTY, -TABLE_SLOPE_B) * 100000) / 100000;
+  const base = PROTOTYPE_STEPS[PROTOTYPE_STEPS.length - 1][1];
+  if (q <= PROTOTYPE_STEPS[0][0]) return Math.round(PROTOTYPE_STEPS[0][1] / base * 100000) / 100000;
+  for (let i = 1; i < PROTOTYPE_STEPS.length; i++) {
+    const [q1, m1] = PROTOTYPE_STEPS[i - 1], [q2, m2] = PROTOTYPE_STEPS[i];
+    if (q <= q2) {
+      const t = (Math.log(q) - Math.log(q1)) / (Math.log(q2) - Math.log(q1));
+      return Math.round((m1 + (m2 - m1) * t) / base * 100000) / 100000;
+    }
   }
-  return 0.88; // >100K benefits from super-volume pricing
+  return 1;
 }
 
 // ── Cost confidence band ───────────────────────────────────────────────────
@@ -1298,7 +1314,7 @@ export function markingLabel(marking: string): string | null {
   return IC_PRICE_HINTS.find(h => !h.generic && h.test(m))?.label ?? null;
 }
 
-/** icKnownRange scaled to the order volume — the table is stated at 100K. */
+/** icKnownRange scaled to the parts bought — the table is read at its ~10k evidence basis (TABLE_BASIS_QTY). */
 export function knownRangeAtVolume(volumeMultiplier: number) {
   return (line: Record<string, unknown>) => {
     const r = icKnownRange(line);
@@ -1858,6 +1874,12 @@ export function bomAtQty(lines: Array<Record<string, unknown>>, q: number, analy
     const lt = Number(l.lineTotalGBP) || 0;
     if (l.userCorrected === true || q === analysedQty) return t + lt;
     const n = Math.max(1, Number(l.qty) || 1);
+    // A catalogue line moves along ITS OWN breaks (the generic table moved it 13.6 % where its breaks say 5 %, so the
+    // curve disagreed with a re-run at that quantity — pipeline review F6); every other line along the table factor.
+    if (l.priceSource === 'catalogue' && l.livePriced !== true && l.catalogueMpn) {
+      const a = cataloguePriceAt(String(l.catalogueMpn), n * q), b = cataloguePriceAt(String(l.catalogueMpn), n * analysedQty);
+      if (a != null && b != null && b > 0) return t + lt * a / b;
+    }
     return t + lt * getVolumeMultiplier(n * q) / getVolumeMultiplier(n * analysedQty);
   }, 0) * 100) / 100;
 }
