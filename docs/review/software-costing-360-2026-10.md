@@ -323,7 +323,8 @@ any independently measured accuracy for software (a NASA blind study tested SEER
 **Status:** P1 items 1–7 and 20 fixed on branch `claude/sw-costing-p1-fixes` — before / after in
 `software-costing-p1-fixes-2026-10.md`. P2 items 8–14 and 21 fixed on branch `claude/sw-costing-p2-fixes` — before / after
 in `software-costing-p2-fixes-2026-10.md` (royalties +£71.3 M on the default; royalty and CAL figures remain unsourced
-estimates). P3 items (15–19) open; the panel's pre-existing axe findings are open.
+estimates). P3 items 15–19 fixed on branch `claude/sw-costing-p3-fixes`, with B19 and the panel's axe
+findings (now 0) — before / after in `software-costing-p3-fixes-2026-10.md` (default £393.3 M → £388.7 M, all from #17).
 
 (Original note:) Approve the list (or a subset) and I will work on a new branch, save the
 current outputs as a baseline, make one fix per commit with a test, then re-run the baseline and show what moved and why.

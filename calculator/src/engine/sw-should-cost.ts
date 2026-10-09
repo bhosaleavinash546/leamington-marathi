@@ -165,6 +165,10 @@ export interface SWModuleInput {
   customPersonMonths: number | null;   // null = auto
   /** ISO/SAE 21434 CAL; absent = the module's default (calFor). */
   cal?:               SWCal;
+  /** Size of the module's software, thousand source lines (KSLOC). When set, the nominal effort comes from the
+   *  COCOMO II.2000 equation (cocomoNominalPM) instead of the module catalogue; ASIL, complexity, reuse and the effort
+   *  calibration apply on top as usual. A typed custom PM still wins (software review P3 #16). */
+  sizeKSLOC?:         number;
 }
 
 export interface SWProgramInputs {
@@ -209,6 +213,11 @@ export interface SWProgramInputs {
    *  they logged (sw-calibration.ts::calibrateSWEffort). Multiplies the model's effort estimate (base person-months);
    *  a typed custom person-months is the user's own figure and is not scaled. 1 / absent = uncalibrated (P2 #21). */
   effortCalibration?:       number;
+  /** Development duration, months (feasibility → SOP). Tool licences are paid over it, and the phase timeline is
+   *  scaled to it. Absent = SW_DEFAULT_DEVELOPMENT_MONTHS, the tool's own M1–M90 timeline (software review P3 #17). */
+  developmentMonths?:       number;
+  /** Share of the vehicles built that use the cloud back-end (0–1). Absent = 1 (every vehicle connected). */
+  connectedVehicleShare?:   number;
 }
 
 export interface SWDevBreakdown {
@@ -239,6 +248,8 @@ export interface SWModuleCostResult {
   complexityUsed:     SWComplexity;
   reuseUsed:          SWReuse;
   calUsed:            SWCal;
+  /** Where the nominal effort came from: the module catalogue, the COCOMO II size equation, or the user's own PM. */
+  effortBasis:        'catalogue' | 'size' | 'custom';
   /** Development person-months as COSTED: every development bucket after complexity, the safety-reuse floor and any
    *  schedule penalty — development £ = personMonths × the loaded rate. It used to report the effort before those
    *  scalings (BMS showed 172.8 PM while 258.5 PM were paid for — software review P2 #9). */
@@ -309,6 +320,9 @@ export interface SWMonteCarlo {
   p50PerVehicle:  number;
   p90PerVehicle:  number;
   iterations:     number;
+  /** Where the deterministic headline sits in its own band: the share of trials at or below it, 0–100. The bucket
+   *  ranges are skewed upwards, so the headline is NOT the median — the screen states this (software review P3 #19). */
+  headlinePercentile: number;
 }
 
 export interface SWBenchmark {
@@ -1079,7 +1093,9 @@ function computeModuleCost(
   const schedPenalty  = sched >= 1 ? 1 : 1 + (1 - sched) * SCHEDULE_COMPRESSION_K;
 
   const effortCal   = input.customPersonMonths != null ? 1 : (prog.effortCalibration ?? 1);
-  const effectivePM = (input.customPersonMonths ?? def.basePersonMonths * effortCal) * reuse;
+  // Nominal effort: the user's own PM, else the COCOMO II size equation when a size is given, else the catalogue.
+  const nominalPM   = input.sizeKSLOC ? cocomoNominalPM(input.sizeKSLOC) : def.basePersonMonths;
+  const effectivePM = (input.customPersonMonths ?? nominalPM * effortCal) * reuse;
 
   // Development sub-buckets. Complexity on the algorithm bucket in full, and a
   // weighted share on implementation (SW2). Safety bucket carries the reuse floor.
@@ -1144,10 +1160,13 @@ function computeModuleCost(
   let   pvFactor = years;
   if (r > 0) { pvFactor = 0; for (let t = 1; t <= years; t++) pvFactor += 1 / Math.pow(1 + r, t); }
 
-  const toolchain   = def.annualToolLicenceGBP * pvFactor;
+  // Development tool licences are paid while the software is developed — not over the production life (P3 #17).
+  const devYears  = (prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS) / 12;
+  const devFactor = r > 0 ? (1 - Math.pow(1 + r, -devYears)) / r : devYears;
+  const toolchain   = def.annualToolLicenceGBP * devFactor;
   const licensing   = def.annualIPLicenceGBP   * pvFactor;
-  const cloudCost   = prog.includeCloudCost
-    ? def.annualCloudCostGBP * pvFactor : 0;
+  // Cloud is charged per connected vehicle in service and added after the platform share (unitCloudGBP, P3 #17).
+  const cloudCost   = 0;
   const maintenance = prog.includeMaintenanceCost
     ? devTotal * (def.maintenancePctPerYear / 100) * pvFactor : 0;
 
@@ -1171,6 +1190,7 @@ function computeModuleCost(
     asilUsed:       input.asil,
     complexityUsed: input.complexity,
     calUsed:        calFor(def, input),
+    effortBasis:    input.customPersonMonths != null ? 'custom' : input.sizeKSLOC ? 'size' : 'catalogue',
     reuseUsed:      input.reuse,
     personMonths:   Math.round((reqsPM + archPM + algoPM + implPM + safetyPM) * schedPenalty * 10) / 10,
     effortPersonMonths: Math.round((devTotal + testTotal + integration + cybersec + calibration + mlDataCost) / regionRate * 10) / 10,
@@ -1193,17 +1213,50 @@ function computeModuleCost(
   // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
   const share = attributedShare(def.id, prog);
   const out = share < 1 ? scaleModuleResult(res, share) : res;
-  // Per-unit royalties (P2 #11) — on THIS programme's vehicles, after the platform share (each vehicle pays its own).
+  // Per-unit royalties (P2 #11) and cloud per connected vehicle (P3 #17) — on THIS programme's vehicles, after the
+  // platform share (each vehicle pays its own).
   const royalty = unitRoyaltyGBP(def, prog);
-  if (royalty === 0) return out;
+  const cloud   = prog.includeCloudCost ? unitCloudGBP(def, prog) : 0;
+  if (royalty === 0 && cloud === 0) return out;
   const lifeVeh = prog.annualProductionVolume * prog.programLifeYears;
   return {
     ...out,
     licensingCost:  out.licensingCost + royalty,
-    totalLifecycle: out.totalLifecycle + royalty,
-    grandTotal:     out.grandTotal + royalty,
-    perVehicle:     out.perVehicle + (lifeVeh > 0 ? royalty / lifeVeh : 0),
+    cloudCost:      out.cloudCost + cloud,
+    totalLifecycle: out.totalLifecycle + royalty + cloud,
+    grandTotal:     out.grandTotal + royalty + cloud,
+    perVehicle:     out.perVehicle + (lifeVeh > 0 ? (royalty + cloud) / lifeVeh : 0),
   };
+}
+
+/** A copy of the inputs a result was costed on. `result.inputs` was the caller's live object, so editing the form
+ *  after Calculate changed a costed result's recorded inputs — a redraw (currency change, P3 #15) then re-costed the
+ *  dev-source table from half-typed inputs and threw. The rate book is shared (read-only). */
+function snapshotInputs(prog: SWProgramInputs): SWProgramInputs {
+  return { ...prog, modules: prog.modules.map(m => ({ ...m })) };
+}
+
+/** The tool's own development timeline (M1–M90, the phase table) — the default development duration. */
+export const SW_DEFAULT_DEVELOPMENT_MONTHS = 90;
+
+/**
+ * The fleet the modules' annual cloud figures describe. They were written as flat £ / yr for the default programme
+ * (80,000 vehicles / yr × 10 yr — Likely, not documented); over that programme the fleet in service averages
+ * 80,000 × (1 + … + 10) / 10 = 440,000 vehicles. Re-expressing each figure per connected vehicle-year at that fleet
+ * reproduces the default programme exactly and scales any other one by its own fleet (P3 #17).
+ */
+export const SW_CLOUD_REFERENCE_FLEET = 440_000;
+
+/** Cloud cost over the programme, £: (annual £ ÷ reference fleet) per connected vehicle-year, on a fleet that grows by
+ *  the annual volume each year until the programme ends (the same rule as map data), NPV when discounted. */
+export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'connectedVehicleShare'>): number {
+  if (!def.annualCloudCostGBP) return 0;
+  const perVehicleYear = def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET;
+  const connected = prog.connectedVehicleShare ?? 1;
+  const r = (prog.discountRatePct ?? 0) / 100;
+  let vehicleYears = 0;
+  for (let t = 1; t <= prog.programLifeYears; t++) vehicleYears += prog.annualProductionVolume * t * (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
+  return perVehicleYear * vehicleYears * connected;
 }
 
 /**
@@ -1232,6 +1285,14 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Annual volume × life', `${prog.annualProductionVolume.toLocaleString('en-GB')} × ${prog.programLifeYears} yr`],
     ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
+    ['Development duration (tool licences)', `${prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS} months`],
+    ['Cloud', `per connected vehicle-year (module £/yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected`],
+    ['Nominal effort basis', (() => {
+      const on = prog.modules.filter(m => m.enabled);
+      const sized = on.filter(m => m.customPersonMonths == null && m.sizeKSLOC).length;
+      const custom = on.filter(m => m.customPersonMonths != null).length;
+      return `${on.length - sized - custom} catalogue · ${sized} COCOMO II size (${SW_COCOMO.A} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) · ${custom} custom PM`;
+    })()],
     ['Effort calibration', prog.effortCalibration && prog.effortCalibration !== 1
       ? `× ${prog.effortCalibration} (fitted to your logged actuals)` : 'none (model as published)'],
   ];
@@ -1248,6 +1309,29 @@ export function devSourceComparison(prog: SWProgramInputs): SWDevSourceRow[] {
     return { devSource, multiplier: mult[devSource], grandTotal: s.grandTotal, perVehicle: s.perVehicle };
   });
 }
+
+/**
+ * COCOMO II.2000 Post-Architecture effort equation at NOMINAL ratings: PM = A × KSLOC^E, E = B + 0.01 × ΣSF.
+ * A = 2.94, B = 0.91; the five scale factors at Nominal (PREC 3.72, FLEX 3.04, RESL 4.24, TEAM 3.29, PMAT 4.68) sum to
+ * 18.97, so E = 1.0997. Source: Boehm et al., COCOMO II Model Definition Manual, v2000.0 (USC Center for Software
+ * Engineering) — calibrated on 161 projects, mostly not automotive. All effort multipliers are taken as Nominal here:
+ * CostVision's ASIL, complexity and reuse factors play their part on top. A COCOMO person-month is 152 hours and covers
+ * elaboration + construction; read it as this tool's nominal development PM — Likely overlaps part of what the tool
+ * adds as integration test, which is one reason to calibrate to your own projects (sw-calibration.ts).
+ */
+export const SW_COCOMO = {
+  A: 2.94, B: 0.91, scaleFactorSumNominal: 18.97,
+  source: 'Boehm et al., COCOMO II Model Definition Manual v2000.0, USC CSE — Post-Architecture, nominal scale factors',
+} as const;
+export const SW_COCOMO_EXPONENT = SW_COCOMO.B + 0.01 * SW_COCOMO.scaleFactorSumNominal;
+
+/** Nominal development person-months for a module of `ksloc` thousand source lines (COCOMO II.2000, nominal). */
+export function cocomoNominalPM(ksloc: number): number {
+  return SW_COCOMO.A * Math.pow(ksloc, SW_COCOMO_EXPONENT);
+}
+
+/** Accepted UK base rate, £ / person-month — the engine's validation and the company workbook share it. */
+export const SW_BASE_RATE_RANGE = [1_000, 500_000] as const;
 
 /** Cybersecurity engineering (TARA, cyber concept, verification) as a share of development, by ISO/SAE 21434 CAL.
  *  CostVision engineering estimate: the review found no published effort ratio per CAL (software review §5), so these
@@ -1386,18 +1470,22 @@ function runMonteCarlo(
     p50PerVehicle: q(perVeh, 0.50),
     p90PerVehicle: q(perVeh, 0.90),
     iterations:    n,
+    headlinePercentile: Math.round(100 * countAtOrBelow(totals, s.grandTotal) / n),
   };
 }
 
 // ─── Programme Phases ─────────────────────────────────────────────────────────
 
-function buildPhases(nreTotal: number): SWPhase[] {
+function buildPhases(nreTotal: number, developmentMonths = SW_DEFAULT_DEVELOPMENT_MONTHS): SWPhase[] {
+  // Phase ends as shares of the M1–M90 timeline, scaled to the programme's development duration (P3 #17).
+  const ends = [6, 18, 54, 78, 90].map(m => Math.max(1, Math.round(m / 90 * developmentMonths)));
+  const span = (i: number) => `M${i === 0 ? 1 : ends[i - 1] + 1}–M${ends[i]}`;
   return [
-    { name: 'Feasibility',            months: 'M1–M6',    fraction: 0.05, nreCost: nreTotal * 0.05 },
-    { name: 'Concept / Architecture', months: 'M7–M18',   fraction: 0.15, nreCost: nreTotal * 0.15 },
-    { name: 'Series Development',     months: 'M19–M54',  fraction: 0.50, nreCost: nreTotal * 0.50 },
-    { name: 'Validation & V&V',       months: 'M55–M78',  fraction: 0.20, nreCost: nreTotal * 0.20 },
-    { name: 'Ramp / SOP',             months: 'M79–M90',  fraction: 0.10, nreCost: nreTotal * 0.10 },
+    { name: 'Feasibility',            months: span(0), fraction: 0.05, nreCost: nreTotal * 0.05 },
+    { name: 'Concept / Architecture', months: span(1), fraction: 0.15, nreCost: nreTotal * 0.15 },
+    { name: 'Series Development',     months: span(2), fraction: 0.50, nreCost: nreTotal * 0.50 },
+    { name: 'Validation & V&V',       months: span(3), fraction: 0.20, nreCost: nreTotal * 0.20 },
+    { name: 'Ramp / SOP',             months: span(4), fraction: 0.10, nreCost: nreTotal * 0.10 },
   ];
 }
 
@@ -1405,8 +1493,15 @@ function buildPhases(nreTotal: number): SWPhase[] {
 
 const EMPTY_MC: SWMonteCarlo = {
   p10: 0, p50: 0, p90: 0, mean: 0,
-  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0,
+  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0, headlinePercentile: 0,
 };
+
+/** Trials ≤ x in an ascending array (binary search). */
+function countAtOrBelow(sorted: number[], x: number): number {
+  let lo = 0, hi = sorted.length;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted[mid] <= x) lo = mid + 1; else hi = mid; }
+  return lo;
+}
 
 // ─── Input validation (software review P2 #8, Oct 2026) ─────────────────────────────────────────────────────────
 // The engine took any number: a negative overhead gave a negative programme, a negative custom effort subtracted cost,
@@ -1431,9 +1526,12 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (!fin(prog.annualProductionVolume) || prog.annualProductionVolume < 1 || prog.annualProductionVolume > 20_000_000) p.push('annual volume must be 1–20,000,000 vehicles');
   if (!fin(prog.teamSeniorFraction) || prog.teamSeniorFraction < 0 || prog.teamSeniorFraction > 1) p.push('senior share must be between 0 and 1');
   if (!fin(prog.overheadMultiplier) || prog.overheadMultiplier < 1 || prog.overheadMultiplier > 5) p.push('overhead multiplier must be 1–5 (1 = no overhead)');
-  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP <= 0 || prog.baseRateGBP > 500_000)) p.push('base rate must be £1–£500,000 per person-month');
+  // £1,000 floor: a UK-base rate below it is a £k slip ("28" for £28,000), which costed a programme at 1/1000 (B8, P3 #18).
+  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP < SW_BASE_RATE_RANGE[0] || prog.baseRateGBP > SW_BASE_RATE_RANGE[1])) p.push(`base rate must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month (the UK base, before overhead)`);
   if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
   if (prog.effortCalibration !== undefined && (!fin(prog.effortCalibration) || prog.effortCalibration < 0.2 || prog.effortCalibration > 5)) p.push('effort calibration must be between 0.2 and 5 (a fitted factor outside that says the logged actuals and the model describe different work)');
+  if (prog.developmentMonths !== undefined && (!fin(prog.developmentMonths) || prog.developmentMonths < 6 || prog.developmentMonths > 180)) p.push('development duration must be 6–180 months');
+  if (prog.connectedVehicleShare !== undefined && (!fin(prog.connectedVehicleShare) || prog.connectedVehicleShare < 0 || prog.connectedVehicleShare > 1)) p.push('connected-vehicle share must be 0–1');
   if (prog.scheduleCompression !== undefined && (!fin(prog.scheduleCompression) || prog.scheduleCompression <= 0 || prog.scheduleCompression > 1.5)) p.push('schedule compression must be above 0 and at most 1.5');
   if (prog.costRecoveryYears !== undefined && (!fin(prog.costRecoveryYears) || prog.costRecoveryYears < 1 || prog.costRecoveryYears > 40)) p.push('cost-recovery window must be 1–40 years');
   if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');
@@ -1446,6 +1544,7 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
     if (!(m.asil in lib.asilDevMultipliers)) p.push(`${m.moduleId}: ASIL "${String(m.asil)}" is not known`);
     if (!(m.complexity in lib.complexityMultipliers)) p.push(`${m.moduleId}: complexity "${String(m.complexity)}" is not known`);
     if (!(m.reuse in lib.reuseFactors)) p.push(`${m.moduleId}: reuse "${String(m.reuse)}" is not known`);
+    if (m.sizeKSLOC !== undefined && m.sizeKSLOC !== null && (!fin(m.sizeKSLOC) || m.sizeKSLOC < 0.1 || m.sizeKSLOC > 10_000)) p.push(`${m.moduleId}: size must be 0.1–10,000 KSLOC`);
     if (m.cal !== undefined && !SW_CALS.includes(m.cal)) p.push(`${m.moduleId}: CAL "${String(m.cal)}" is not known (none, CAL1–CAL4)`);
     if (m.customPersonMonths !== null && m.customPersonMonths !== undefined
         && (!fin(m.customPersonMonths) || m.customPersonMonths < 0 || m.customPersonMonths > 50_000)) {
@@ -1517,7 +1616,7 @@ export function computeSWProgram(
   // Skip the (expensive, and otherwise infinitely-recursive) sensitivity /
   // Monte Carlo / phase / benchmark build-out.
   if (opts.summaryOnly) {
-    return { modules, summary, sensitivity: [], benchmarks: [], phases: [], monteCarlo: EMPTY_MC, inputs: prog };
+    return { modules, summary, sensitivity: [], benchmarks: [], phases: [], monteCarlo: EMPTY_MC, inputs: snapshotInputs(prog) };
   }
 
   // Sensitivity analysis
@@ -1578,12 +1677,12 @@ export function computeSWProgram(
   ];
 
   // NRE total for phase timeline
-  const phases = buildPhases(summary.nreTotal);
+  const phases = buildPhases(summary.nreTotal, prog.developmentMonths);
 
   // Monte Carlo cost distribution
   const monteCarlo = runMonteCarlo(prog, summary);
 
-  return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: prog };
+  return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: snapshotInputs(prog) };
 }
 
 type SWRecomputeOverrides = {

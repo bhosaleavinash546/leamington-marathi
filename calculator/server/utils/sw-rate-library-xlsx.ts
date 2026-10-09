@@ -10,6 +10,14 @@
  */
 import * as XLSX from 'xlsx';
 import type { SWRateLibrary, SWRateEntry, RateConfidence } from '../../src/engine/sw-rate-library.js';
+import { DEFAULT_SW_RATE_LIBRARY } from '../../src/engine/sw-rate-library.js';
+
+/** Highest multiplier / factor a sheet may carry. The largest built-in is ~9 (Silicon Valley vs India region ratio is
+ *  well inside); anything above this is a typing slip (a £ figure in a multiplier cell). P3 #18. */
+export const SW_MAX_MULTIPLIER = 20;
+/** Base rate bounds, £ / person-month — the engine's own validation range (validateSWInputs). */
+import { SW_BASE_RATE_RANGE } from '../../src/engine/sw-should-cost.js';
+export { SW_BASE_RATE_RANGE };
 
 export interface SWParseResult {
   library: Partial<SWRateLibrary> | null;
@@ -58,9 +66,11 @@ export function buildSWRateWorkbook(lib: SWRateLibrary): Buffer {
 
 // ─── Parse ──────────────────────────────────────────────────────────────────---
 
-function readGroup(wb: XLSX.WorkBook, sheet: string, errors: string[]): Record<string, SWRateEntry> {
+function readGroup(wb: XLSX.WorkBook, sheet: string, group: keyof SWRateLibrary, errors: string[]): Record<string, SWRateEntry> {
   const ws = wb.Sheets[sheet];
   if (!ws) return {};
+  // Only keys the engine knows: a misspelt region ("Indai") was stored and silently ignored (P3 #18).
+  const known = Object.keys(DEFAULT_SW_RATE_LIBRARY[group] as Record<string, unknown>);
   const rows = XLSX.utils.sheet_to_json(ws, { defval: '' }) as Record<string, unknown>[];
   const out: Record<string, SWRateEntry> = {};
   for (const [i, r] of rows.entries()) {
@@ -68,7 +78,10 @@ function readGroup(wb: XLSX.WorkBook, sheet: string, errors: string[]): Record<s
     if (!key) continue;
     const value = num(r.value);
     if (!Number.isFinite(value)) { errors.push(`${sheet} row ${i + 2} (${key}): value is not a number`); continue; }
-    if (value < 0) { errors.push(`${sheet} row ${i + 2} (${key}): value must not be negative`); continue; }
+    if (!known.includes(key)) { errors.push(`${sheet} row ${i + 2}: "${key}" is not a known key (expected one of ${known.join(', ')})`); continue; }
+    if (value <= 0) { errors.push(`${sheet} row ${i + 2} (${key}): value must be greater than 0 (a 0 multiplier would cost the work at £0)`); continue; }
+    if (value > SW_MAX_MULTIPLIER) { errors.push(`${sheet} row ${i + 2} (${key}): ${value} is above ${SW_MAX_MULTIPLIER} — a multiplier, not a £ figure`); continue; }
+    if (out[key]) { errors.push(`${sheet} row ${i + 2} (${key}): listed twice`); continue; }
     out[key] = { value, source: str(r.source), asOf: str(r.asOf), confidence: conf(r.confidence), note: str(r.note) || undefined };
   }
   return out;
@@ -88,16 +101,16 @@ export function parseSWRateWorkbook(buf: Buffer): SWParseResult {
   const baseRow = baseRows.find(r => str(r.key) === 'ukBaseRatePerPM') ?? baseRows[0];
   if (baseRow && str(baseRow.value ?? baseRow.key)) {
     const v = num(baseRow.value);
-    if (Number.isFinite(v) && v > 0) {
+    if (Number.isFinite(v) && v >= SW_BASE_RATE_RANGE[0] && v <= SW_BASE_RATE_RANGE[1]) {
       lib.ukBaseRatePerPM = { value: v, source: str(baseRow.source), asOf: str(baseRow.asOf), confidence: conf(baseRow.confidence), note: str(baseRow.note) || undefined };
       counts.base = 1;
     } else if (baseRow.value !== '') {
-      errors.push('Base: ukBaseRatePerPM must be a positive number');
+      errors.push(`Base: ukBaseRatePerPM must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month`);
     }
   }
 
   for (const g of GROUPS) {
-    const rec = readGroup(wb, g.sheet, errors);
+    const rec = readGroup(wb, g.sheet, g.key, errors);
     if (Object.keys(rec).length) { (lib as Record<string, unknown>)[g.key] = rec; counts[g.sheet] = Object.keys(rec).length; }
   }
 

@@ -38,7 +38,9 @@ router.post('/', async (req, res): Promise<void> => {
   }
   const apiKey = resolveApiKey(req);
   if (!apiKey) {
-    res.json({ reply: 'AI assistant requires an Anthropic API key. Add it in Settings or set the ANTHROPIC_API_KEY environment variable.' });
+    // A notice, not a model reply: flagged so no client caches it as the answer (B19 — adding a key then clicking again
+    // kept showing this text from the software panel's cache).
+    res.json({ reply: 'AI assistant requires an Anthropic API key. Add it in Settings or set the ANTHROPIC_API_KEY environment variable.', aiUnavailable: true });
     return;
   }
 
@@ -50,8 +52,8 @@ router.post('/', async (req, res): Promise<void> => {
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: message.trim() }],
     });
-    const text = (msg.content.map(b => b.type === 'text' ? b.text : '').join('') || 'No response.');
-    res.json({ reply: text });
+    const text = msg.content.map(b => b.type === 'text' ? b.text : '').join('');
+    res.json(text ? { reply: text } : { reply: 'No response.', aiUnavailable: true });
   } catch (err) {
     const msg2 = err instanceof Error ? err.message : String(err);
     console.error('[AiChat] Error:', msg2);

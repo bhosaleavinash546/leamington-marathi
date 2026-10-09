@@ -5,6 +5,8 @@
  * P2 fixes: an invalid input is refused on screen, the CAL column and royalty badges, a country change moving both hub
  * pickers, the dev-source table, logging actuals → effort calibration → re-cost, the Excel rate basis, and the
  * reference-example banner on a static report.
+ * P3 fixes: the headline's percentile note, development-duration / connected-share fields, the size column, results
+ * in the page's display currency (EUR) and back, and axe [] on the panel.
  *   npm run build && CV_OUT=<dir> npx tsx e2e/sw-live.ts
  */
 import { spawn, type ChildProcess } from 'node:child_process';
@@ -132,6 +134,25 @@ async function main(): Promise<void> {
     const sum = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
     out.p2_excelRateBasis = sum.split('\n').filter(l => /RATE BASIS|Rate book|Base rate|Overhead|Effort calibration|Powertrain/.test(l));
     out.p2_referenceBanner = /data-cv-reference-example/.test(await (await fetch(`${base}/calculator/reports/l460-deepdive.html`)).text());
+    // ── P3 fixes ──
+    out.p3_headlinePct = await page.evaluate(() => document.getElementById('sw-headline-pct')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 160) ?? '');
+    out.p3_fields = await page.evaluate(() => ['sw-dev-months', 'sw-connected'].map(id => !!document.getElementById(id)).concat(document.querySelectorAll('.sw-ksloc-input').length > 50));
+    await page.selectOption('#currency-selector', 'EUR');
+    await page.waitForTimeout(600);
+    out.p3_totalEUR = await headline();
+    out.p3_rateTableEUR = await page.evaluate(() => Array.from(document.querySelectorAll('#sw-ratelib-rows td')).map(t => t.textContent ?? '').find(t => /person-month/.test(t)) ?? '');
+    const [dl3] = await Promise.all([page.waitForEvent('download'), page.click('#sw-excel-btn')]);
+    const x3 = join(OUT, 'sw-p3-eur.xlsx'); await dl3.saveAs(x3);
+    const w3 = XLSX.readFile(x3);
+    out.p3_excelEUR = XLSX.utils.sheet_to_csv(w3.Sheets[w3.SheetNames[0]]).split('\n').filter(l => /Cost Bucket|TOTAL PROGRAMME|Per Vehicle|^Currency/.test(l));
+    await page.selectOption('#currency-selector', 'GBP');
+    await page.waitForTimeout(600);
+    out.p3_totalGBP = await headline();
+    out.p3_axe = await page.evaluate(async () => {
+      const r = await (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: unknown[] }> }> } })
+        .axe.run(document.getElementById('sw-panel'), { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
+      return r.violations.map(v => `${v.id} ×${v.nodes.length}`);
+    });
     out.pageErrors = errors;
   } finally {
     writeFileSync(join(OUT, 'sw-live.json'), JSON.stringify(out, null, 1));

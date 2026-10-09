@@ -42,6 +42,7 @@ export function renderActualsHTML(): string {
         <label class="sw-label" style="display:flex;flex-direction:column;gap:3px">Complexity<select id="swa-comp" class="sw-config-sel">${opts(['Low', 'Medium', 'High', 'Very High'], 'Medium')}</select></label>
         <label class="sw-label" style="display:flex;flex-direction:column;gap:3px">Reuse<select id="swa-reuse" class="sw-config-sel">${opts(['Fresh', 'Light', 'Medium', 'Heavy', 'Platform'], 'Fresh')}</select></label>
         <label class="sw-label" style="display:flex;flex-direction:column;gap:3px">Actual effort (PM)<input id="swa-pm" type="number" min="0.1" step="0.1" class="sw-config-inp" style="width:110px"></label>
+        <label class="sw-label" style="display:flex;flex-direction:column;gap:3px">Size (KSLOC)<input id="swa-ksloc" type="number" min="0.1" step="0.1" class="sw-config-inp" style="width:100px" placeholder="optional"></label>
         <label class="sw-label" style="display:flex;flex-direction:column;gap:3px">Project<input id="swa-project" type="text" class="sw-config-inp" style="width:140px" placeholder="optional"></label>
         <button type="button" id="swa-add" class="sw-preset-btn">Add</button>
       </div>
@@ -69,7 +70,7 @@ export function wireActuals(onApply: (factor: number) => void): void {
         const model = known ? modelledEffortPM(a) : NaN;
         return `<tr>
         <td>${esc(SW_MODULES.find(m => m.id === a.moduleId)?.shortName ?? a.moduleId)}</td><td>${esc(a.project ?? '')}</td>
-        <td>${esc(`${a.asil} · ${a.complexity} · ${a.reuse}`)}</td>
+        <td>${esc(`${a.asil} · ${a.complexity} · ${a.reuse}${a.sizeKSLOC ? ` · ${a.sizeKSLOC} KSLOC` : ''}`)}</td>
         <td class="sw-num">${Number(a.actualPersonMonths).toFixed(1)}</td>
         <td class="sw-num">${Number.isFinite(model) ? model.toFixed(1) : '—'}</td>
         <td class="sw-num">${Number.isFinite(model) && model > 0 ? (a.actualPersonMonths / model).toFixed(2) : '—'}</td>
@@ -105,6 +106,7 @@ export function wireActuals(onApply: (factor: number) => void): void {
       reuse:      g<HTMLSelectElement>('swa-reuse')!.value as SWReuse,
       actualPersonMonths: pm,
       project:    g<HTMLInputElement>('swa-project')?.value.trim() || undefined,
+      sizeKSLOC:  parseFloat(g<HTMLInputElement>('swa-ksloc')?.value ?? '') > 0 ? parseFloat(g<HTMLInputElement>('swa-ksloc')!.value) : undefined,
     }];
     saveActuals(actuals);
     const pmEl = g<HTMLInputElement>('swa-pm'); if (pmEl) pmEl.value = '';

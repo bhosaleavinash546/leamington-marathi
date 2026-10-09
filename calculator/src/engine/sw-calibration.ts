@@ -28,6 +28,9 @@ export interface SWEffortActual {
   actualPersonMonths: number;
   /** Free text: project / vehicle it came from. */
   project?:           string;
+  /** Its size, KSLOC, when known: the model then estimates it from the COCOMO II size path, so a size-based estimate
+   *  is calibrated against like (P3 #16). */
+  sizeKSLOC?:         number;
 }
 
 export interface SWCalibrationRow extends SWEffortActual { modelledPersonMonths: number; ratio: number }
@@ -44,14 +47,15 @@ export interface SWCalibrationResult {
 }
 
 /** What the model estimates for this module alone at these settings, uncalibrated (effort person-months). */
-export function modelledEffortPM(a: Pick<SWEffortActual, 'moduleId' | 'asil' | 'complexity' | 'reuse'>): number {
+export function modelledEffortPM(a: Pick<SWEffortActual, 'moduleId' | 'asil' | 'complexity' | 'reuse' | 'sizeKSLOC'>): number {
   const prog = defaultSWProgramInputs();
   prog.powertrain = undefined;
   prog.effortCalibration = undefined;
   prog.scheduleCompression = undefined;
   prog.platformAnnualVolume = undefined;
   prog.modules = prog.modules.map(m => m.moduleId === a.moduleId
-    ? { ...m, enabled: true, asil: a.asil, complexity: a.complexity, reuse: a.reuse, customPersonMonths: null }
+    ? { ...m, enabled: true, asil: a.asil, complexity: a.complexity, reuse: a.reuse, customPersonMonths: null,
+        ...(a.sizeKSLOC ? { sizeKSLOC: a.sizeKSLOC } : {}) }
     : { ...m, enabled: false });
   const r = computeSWProgram(prog, { summaryOnly: true });
   return r.summary.totalEffortPersonMonths;
