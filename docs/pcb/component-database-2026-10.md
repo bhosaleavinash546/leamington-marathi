@@ -1,6 +1,6 @@
 # Automotive component price database — research of 6 October 2026
 
-> **Update, 9 October 2026:** an ADAS round added 175 parts (catalogue now 1,018 parts, 679 distributor-priced) and 7 ADAS ECU types to the ECU library — see `adas-component-research-2026-10.md`.
+> **Update, 9 October 2026:** two ADAS rounds added 263 parts (843 → 1,106) (catalogue now 1,106 parts, 764 distributor-priced, 4 OEM-direct chips as labelled estimates from maker disclosures) and 7 ADAS ECU types to the ECU library — see `adas-component-research-2026-10.md` §8.
 
 **Goal:** a sourced component-price database for the PCBs in ICE, MHEV, HEV, PHEV and BEV vehicles, with prices at the annual volumes a Tier-1 buys at: 100k, 200k and 300k parts a year.
 

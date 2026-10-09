@@ -1,0 +1,26 @@
+LQW32FT220M0HL (Murata power-over-coax inductor 22 uH, 1210, automotive)
+LQH5BPZ / LQH5BPB (Murata power inductor for PoC, automotive) — one code
+1008PS / 1812PS (Coilcraft automotive PoC inductor) — one code
+4310LC / 0805LS (Coilcraft automotive ferrite / chip inductor for PoC) — one code
+ADL3225VM-100MT (TDK PoC inductor) — retry the exact VM code
+MPZ2012S221ATD25 (TDK automotive ferrite bead, 2012)
+BLM31KN601SH1 (Murata automotive ferrite bead 1206, high current)
+DLW43SH510XK2 (Murata automotive Ethernet common-mode choke)
+DLW32SH101XF2 (Murata CMC for automotive Ethernet)
+ACT1210L-201-2P-TL00 (TDK automotive Ethernet / CAN CMC)
+ACM2012D-900-2P-T (TDK CMC for high-speed lines, automotive)
+DLW21SN900HQ2 (Murata CMC — retry if round 1 left it)
+PESD1ETH (Nexperia ESD for automotive Ethernet)
+PESD2ETH100T-Q (Nexperia 100BASE-T1 ESD)
+ESD2CAN24-Q1 / ESD1LIN24-Q1 (TI automotive bus ESD) — one each
+TPD1E1B04-Q1 (TI coax / high-speed ESD, automotive)
+CDSOD323-T05LC / SZESD7451 (automotive coax ESD) — one code
+TE MATEnet 2-pin PCB header (pick the automotive PCB-mount code distributors stock)
+Rosenberger H-MTD PCB connector (single or dual port, PCB-mount) — distributor-listed code
+Amphenol HFM PCB-mount connector (automotive, distributor-listed code)
+Molex HSAutoLink II PCB header (automotive Ethernet, distributor-listed code)
+Rosenberger FAKRA mini (Mini-FAKRA / MFK) PCB jack
+TE HSD PCB connector (automotive LVDS / Ethernet) — distributor-listed code
+JAE MX150 / MX64 automotive ECU header — one board-side code
+TE 1-1534229 style automotive board-to-board / FFC connector (pick one distributor-listed automotive code)
+Würth 7427927 / Laird shield clip or board-level shield can (automotive EMC) — one code

@@ -1,0 +1,645 @@
+{
+  "domain": "adas-gap-coax-emc-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "LQW32FT220M0HL",
+      "family": "LQW32FT_0H",
+      "mfr": "Murata",
+      "desc": "Power-over-coax wirewound inductor 22uH 550mA, 1210 (3225), AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "1210 (3225)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 1500,
+          "price": 0.47,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/5198291",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 0.46,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/5198291",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 1500,
+          "price": 0.447,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/surface-mount-inductors/1833467",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Not in catalogue. Future reel 1,500 min; RS UK reel of 1,500 ex-VAT (temporarily out of stock). IBS (not franchised) $0.659 ignored."
+    },
+    {
+      "mpn": "LQH5BPZ150MT0L",
+      "family": "LQH5BPZ",
+      "mfr": "Murata",
+      "desc": "Power inductor 15uH 1.2A, 5.0x5.0 mm (2020), automotive (Z = powertrain/safety grade), PoC / decoupling",
+      "category": "passive_1206",
+      "pkg": "5.0x5.0 mm",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 500,
+          "price": 0.183,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/murata/lqh5bpz150mt0l/inductor-15uh-semishielded-1-2a/dp/3353951",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line names a series: picked LQH5BPZ150MT0L (15uH, a common PoC value; Z = automotive grade) because Farnell lists it on a reel. Farnell UK reel of 500 ex-VAT, 28-week lead. Siblings at Farnell: LQH5BPZ6R8NT0L GBP0.178 @500. No second distributor found (exact-code search returned only the consumer LQH5BPN)."
+    },
+    {
+      "mpn": "1008PS-103KLC",
+      "family": "1008PS",
+      "mfr": "Coilcraft",
+      "desc": "Shielded power chip inductor 10uH, 1008, AEC-Q200 grade 2 (PoC)",
+      "category": "passive_1206",
+      "pkg": "1008 (2520)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [],
+      "notes": "3 searches: no franchised-distributor price at >=100 (Farnell JP lists it, no price shown). Coilcraft direct list price (manufacturer, not an observation): $0.78 @750, $0.62 @1,500, $0.47 @3,000, $0.39 @6,000 (coilcraft.com, read 2026-10-09). -103KLB is the older packing code of -103KLC. 1812PS not searched (budget)."
+    },
+    {
+      "mpn": "4310LC-132KEC",
+      "family": "4310LC",
+      "mfr": "Coilcraft",
+      "desc": "Conical broadband bias choke 1.3uH (bias-tee / PoC)",
+      "category": "passive_1206",
+      "pkg": "4310",
+      "aecq": false,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [],
+      "notes": "2 searches (4310LC + 0805LS): no franchised-distributor price. 4310LC is an RF conical choke, NOT AEC-Q qualified - not an automotive part. Coilcraft list price (not an observation): $1.13 @1,400, $0.96 @2,800, $0.89 @5,000. 0805LS-103XGLB seen only on element14.cn (CNY 6.71 @1,000; host not in PRICE_HOSTS) - not recorded."
+    },
+    {
+      "mpn": "ADL3225VM-100MT",
+      "family": "ADL3225",
+      "mfr": "TDK",
+      "desc": "Power-over-coax / decoupling inductor 10uH, 3225, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "3225 (1210)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [],
+      "notes": "Already in catalogue (priced on sibling ADL3225VT-100M-TL000: Digi-Key + LCSC). R2 retry of the exact VM code (ADL3225VM-100M-TL000): still not listed at any distributor; Findchips shows only the VT code without naming the distributor. No new observation."
+    },
+    {
+      "mpn": "MPZ2012S221ATD25",
+      "family": "MPZ2012S221A",
+      "mfr": "TDK",
+      "desc": "Power ferrite bead 220R@100MHz, 0805 (2012), automotive",
+      "category": "passive_0805",
+      "pkg": "0805 (2012)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "camera",
+        "power filtering"
+      ],
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 4000,
+          "price": 0.026,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C307778.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 20000,
+          "price": 0.0232,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C307778.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 4000,
+          "price": 0.0617,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/passives--filters--ferrite-beads/mpz2012s221atd25-tdk-1063641",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Not in catalogue. Future is 2.4x LCSC (Future shows 0 factory stock, 15-week lead); the merge outlier rule will judge. Digi-Key lists it but out of stock, no price shown."
+    },
+    {
+      "mpn": "BLM31KN601SH1L",
+      "family": "BLM31KN601SH1",
+      "mfr": "Murata",
+      "desc": "Ferrite bead 600R@100MHz high current, 1206, automotive (SH)",
+      "category": "passive_1206",
+      "pkg": "1206",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "power filtering"
+      ],
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 5000,
+          "price": 0.2597,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C237603.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Not in catalogue. Only LCSC (reel 2,500). Future lists siblings only: SZ1L $0.11 @2,500, SN1L $0.365 @2,500 - different grades, not used. Digi-Key price seen only on a punchouttest host (forbidden)."
+    },
+    {
+      "mpn": "DLW43SH510XK2L",
+      "family": "DLW43SH510XK2",
+      "mfr": "Murata",
+      "desc": "CAN common-mode choke 51uH 2-line, 230mA, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "4532",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway",
+        "automotive Ethernet"
+      ],
+      "observations": [],
+      "notes": "Already in catalogue with 2 distributors (LCSC + Digi-Key) - not searched again. Note: DLW43SH is a CAN / CAN-FD choke, not an Ethernet one."
+    },
+    {
+      "mpn": "DLW32SH101XF2L",
+      "family": "DLW32SH101XF2",
+      "mfr": "Murata",
+      "desc": "CAN common-mode choke 100uH 2-line, 115mA, 3225, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "3225 (1210)",
+      "aecq": true,
+      "ecuRoles": [
+        "gateway",
+        "body",
+        "ADAS"
+      ],
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 950,
+          "price": 181.8,
+          "currency": "JPY",
+          "url": "https://jp.rs-online.com/web/p/common-mode-chokes/2235043",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 1200,
+          "price": 150.4,
+          "currency": "JPY",
+          "url": "https://jp.rs-online.com/web/p/common-mode-chokes/2235043",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 100,
+          "price": 0.976,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/murata/dlw32sh101xf2l/common-mode-choke-100uh-0-115a/dp/3639227RL",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Not in catalogue. Orderable code has the L (reel) suffix. RS Japan prices ex-tax JPY. Farnell UK re-reel GBP0.976 @100 read in the search summary of the same query. Note: DLW32SH is a CAN / CAN-FD choke (RS: \"car area networks like CAN or CAN-FD\"), not an Ethernet choke."
+    },
+    {
+      "mpn": "ACT1210L-201-2P-TL00",
+      "family": "ACT1210L",
+      "mfr": "TDK",
+      "desc": "CAN / Ethernet common-mode choke 200uH 2-line, 1210, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "1210 (3225)",
+      "aecq": true,
+      "ecuRoles": [
+        "gateway",
+        "ADAS",
+        "body"
+      ],
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.2898,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C131444.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Not in catalogue (catalogue has ACT1210-510). LCSC snapshots vary $0.28-0.38 @1,000; recorded the reference shown with the current stock figure. Western distributors appear ~3x higher (Digi-Key $0.89 @10k, Mouser $0.865 @1k) but were seen only via ciiva.com (not an allowed host) - not recorded; LCSC alone may understate."
+    },
+    {
+      "mpn": "ACM2012-900-2P-T001",
+      "family": "ACM2012",
+      "mfr": "TDK",
+      "desc": "Common-mode filter 90R@100MHz 2-line, 0805 (2012), AEC-Q200 (high-speed differential)",
+      "category": "passive_0805",
+      "pkg": "0805 (2012)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "camera",
+        "high-speed lines"
+      ],
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.2007,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C307642.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "SUBSTITUTE: the listed ACM2012D-900-2P-T00 is obsolete (Future: last-time buy 31 Dec 2025, final delivery 30 Jun 2026; Digi-Key: Not For New Designs; 85C rating). Representative AEC-Q200 sibling chosen: ACM2012-900-2P-T001. LCSC shows 0 stock (reference price). Digi-Key lists it (445-15969) but no price in the snippet."
+    },
+    {
+      "mpn": "DLW21SN900HQ2L",
+      "family": "DLW21SN900HQ2",
+      "mfr": "Murata",
+      "desc": "Common-mode choke 90 ohm, 330mA, 0805, AEC-Q200",
+      "category": "passive_0805",
+      "pkg": "0805",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 2000,
+          "price": 0.24,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/passives--filters--common-mode-chokes/dlw21sn900hq2l-murata-1200056",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 4000,
+          "price": 0.235,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/passives--filters--common-mode-chokes/dlw21sn900hq2l-murata-1200056",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 2000,
+          "price": 0.253,
+          "currency": "USD",
+          "url": "https://il.farnell.com/murata/dlw21sn900hq2l/common-mode-choke-90-ohm-0-28a/dp/2470372",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Already in catalogue (Digi-Key only). R2 adds second and third distributors: Future (two other Future pages showed $0.193 and $0.475 @2,000 - inconsistent snapshots, not recorded) and Farnell (IL site, USD, cut tape). Agree with Digi-Key $0.28 @1k."
+    },
+    {
+      "mpn": "PESD1ETH1GLS-QYL",
+      "family": "PESD1ETH1GLS-Q",
+      "mfr": "Nexperia",
+      "desc": "ESD protection diode for 1000BASE-T1 automotive Ethernet, DFN1006BD-2, AEC-Q101",
+      "category": "fuse_tvs",
+      "pkg": "DFN1006BD-2",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway",
+        "automotive Ethernet"
+      ],
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 500,
+          "price": 0.092,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/tvs-diodes/2434794P",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 5000,
+          "price": 0.057,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/tvs-diodes/2434794P",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line names a family (PESD1ETH): picked the AEC-Q101 1000BASE-T1 part PESD1ETH1GLS-QYL (-Q = AEC-Q101). RS UK ex-VAT, temporarily out of stock. Not to be confused with PESD1ETH1G-LSYL (not automotive, GBP0.049 @500). Digi-Key lists it (1727-PESD1ETH1GLS-QYL) but no price seen. Steep RS slope - merge clamps to 0.18."
+    },
+    {
+      "mpn": "PESD2ETH100-TR",
+      "family": "PESD2ETH100-T",
+      "mfr": "Nexperia",
+      "desc": "2-line ESD protection for 100BASE-T1 automotive Ethernet, SOT23, AEC-Q101 (24 V)",
+      "category": "fuse_tvs",
+      "pkg": "SOT23",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway",
+        "automotive Ethernet"
+      ],
+      "observations": [
+        {
+          "distributor": "element14",
+          "qty": 1000,
+          "price": 5.59,
+          "currency": "TWD",
+          "url": "https://tw.element14.com/en-TW/nexperia/pesd2eth100-tr/esd-protection-dev-aecq101-24v/dp/3387435",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "The listed PESD2ETH100T-Q (-QR) was found only on a punchouttest Digi-Key host (forbidden; EUR 0.30 @100) - not recorded. Priced the 100BASE-T1 device PESD2ETH100-TR, which element14 lists as AEC-Q101 24 V. element14 AU shows AUD 0.262 @1,000 (AUD not in the FX table - not recorded). LCSC \"PESD2ETH100-TR(TP)\" is a TECH PUBLIC clone - excluded."
+    },
+    {
+      "mpn": "ESD2CAN24DBZRQ1",
+      "family": "ESD2CAN24-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual 24 V ESD/TVS for CAN, 3 pF, SOT-23, AEC-Q101",
+      "category": "fuse_tvs",
+      "pkg": "SOT-23",
+      "aecq": true,
+      "ecuRoles": [
+        "gateway",
+        "body",
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "Already in catalogue (Digi-Key only). R2 search for a second distributor: Arrow Europe $0.17 @3,000 seen only via SnapEDA (not an allowed host) - not recorded. No new observation."
+    },
+    {
+      "mpn": "ESD1LIN24DYFRQ1",
+      "family": "ESD1LIN24-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Single 24 V ESD diode for LIN, SOD-323, AEC-Q101",
+      "category": "fuse_tvs",
+      "pkg": "SOD-323",
+      "aecq": true,
+      "ecuRoles": [
+        "body",
+        "gateway"
+      ],
+      "observations": [],
+      "notes": "2 searches: only a punchouttest Digi-Key page (forbidden; EUR 0.1129 @3,000) and JLCPCB for the commercial ESD1LIN24DYFR (not allowed). No valid observation."
+    },
+    {
+      "mpn": "TPD1E1B04-Q1",
+      "family": "TPD1E1B04",
+      "mfr": "Texas Instruments",
+      "desc": "1-ch bidirectional ESD diode 1 pF, 0402 (requested automotive variant)",
+      "category": "fuse_tvs",
+      "pkg": "0402 (DPY)",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [],
+      "notes": "2 searches: no -Q1 orderable (TPD1E1B04DPLRQ1 / DPYRQ1) found at any distributor or on TI pages - TI lists only the commercial TPD1E1B04DPYR; automotive variant appears not to exist. Not substituted."
+    },
+    {
+      "mpn": "SZESD7451N2T5G",
+      "family": "ESD7451",
+      "mfr": "onsemi",
+      "desc": "Single-line ESD diode 3.3 V, X2DFN2, AEC-Q101 (SZ prefix)",
+      "category": "fuse_tvs",
+      "pkg": "X2DFN2",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "power-over-coax"
+      ],
+      "observations": [],
+      "notes": "3 searches (SZESD7451 + CDSOD323-T05LC): SZESD7451N2T5G priced only on element14.cn (CNY 1.16 @5,000; host not in PRICE_HOSTS) and ciiva (not allowed). CDSOD323-T05LC (Bourns): Digi-Key lists it, out of stock, no price table. No valid observation."
+    },
+    {
+      "mpn": "2304372-1",
+      "family": "MATEnet",
+      "mfr": "TE Connectivity",
+      "desc": "MATEnet 1-port PCB header, 90 deg, unsealed, coding A (100/1000BASE-T1)",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway",
+        "automotive Ethernet"
+      ],
+      "observations": [],
+      "notes": "3 searches: TE header table names 2304372-1/-2/-3 (1-port 90 deg unsealed). Mouser 571-2304372-1 $2.91 @2,380 seen only via OEMsTrade (forbidden host) - not recorded. 9-2304372-9 (RS: \"MATEnet Header 2 Way\") only at <100 breaks (Digi-Key $14.83 @50, RS GBP16.62 @10) - a low-volume variant, not used."
+    },
+    {
+      "mpn": "E6S20A-40MT5-Z",
+      "family": "H-MTD",
+      "mfr": "Rosenberger",
+      "desc": "H-MTD right-angle PCB plug, single port, with housing, coding Z",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar",
+        "ADAS domain controller"
+      ],
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 3.08,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/E6S20",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 2500,
+          "price": 2.87,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/E6S20",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Picked the single-port right-angle PCB plug (board side) E6S20A-40MT5-Z: Mouser 476-E6S20A-40MT5-Z, 11,232 in stock, breaks read on Findchips naming Mouser. Dual E6S20B-40MT5-Z $11.99 @500 and quad E6S20D-40MT5-Z $17.26 @100 seen on the same page. Digi-Key lists 1868-E6S20A-40MT5-Z-ND, no price seen. Round-1 E6S10A (straight) still unpriced."
+    },
+    {
+      "mpn": "Amphenol HFM PCB (ref)",
+      "family": "HFM",
+      "mfr": "Amphenol",
+      "desc": "HFM (High-speed FAKRA Mini) PCB-mount connector - Amphenol (reference line)",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "ADAS domain controller"
+      ],
+      "observations": [],
+      "notes": "3 searches: no Amphenol HFM PCB part at any franchised distributor. Distributors list Molex HFM headers instead (2082410200 / -0201 at Digi-Key, no >=100 break seen); Molex HFM 2082410210 (key Z) is already in the catalogue. Not substituted."
+    },
+    {
+      "mpn": "1600631103",
+      "family": "HSAutoLink II",
+      "mfr": "Molex",
+      "desc": "HSAutoLink II unsealed PCB header, right angle, 6 circuits, key A (automotive Ethernet / USB)",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller",
+        "gateway",
+        "automotive Ethernet"
+      ],
+      "observations": [],
+      "notes": "3 searches: 1600631103 is the active board-side code (Mouser datasheet), but no distributor price found for it or for the sealed 34898-0503; 348611106 is NRND. No valid observation."
+    },
+    {
+      "mpn": "AMS29B-40MZ5-Z",
+      "family": "HFM",
+      "mfr": "Rosenberger",
+      "desc": "HFM (Mini-FAKRA) right-angle PCB plug with housing, coding Z, DC-9 GHz",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "3 searches: Rosenberger Mini-FAKRA is the HFM family (AMS29x PCB plugs, datasheets on Mouser). Prices only from a broker (Lisle Apex $3.805 @1,000 - not franchised); no Mouser / Digi-Key price found. No valid observation."
+    },
+    {
+      "mpn": "2286546-1",
+      "family": "HSD",
+      "mfr": "TE Connectivity",
+      "desc": "HSD 4-position PCB header, shielded, horizontal (right-angle), coding A",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "camera",
+        "infotainment"
+      ],
+      "observations": [],
+      "notes": "4 searches: TE HSD board-side 2286546-1 (Mouser TE HSD page; TE datasheet: horizontal, 4 pos, A code, 300/reel) - no distributor price found. (TE \"2MM-HSD\" headers are an unrelated 2 mm board-to-board family.) Rosenberger HSD D4S20D/D4S20Y are already in the catalogue."
+    },
+    {
+      "mpn": "MX34020UF1",
+      "family": "MX34",
+      "mfr": "JAE Electronics",
+      "desc": "MX34 automotive board-to-cable header, 20 pos, 2.2 mm, straight THT",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ECU",
+        "body",
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "3 searches: MX150 is a Molex series (0334824001 already in catalogue); JAE MX64 not found at any distributor, so picked JAE MX34 headers. Only 1-pc prices found (RS GBP1.58 @1, Digi-Key 670-2294-ND $1.81, no break); ic-direct lists MX34020UF1 obsolete. Mouser MX34016NFC $3.18 @2,500 seen without a page URL. LCSC MX34xxxSF1 are cable-side housings - not board side. No valid observation."
+    },
+    {
+      "mpn": "1-1534229-1",
+      "family": "1-1534229",
+      "mfr": "TE Connectivity",
+      "desc": "TE Connectivity automotive connector 1-1534229-1 (type not confirmed - no datasheet found)",
+      "category": "through_hole",
+      "pkg": "unconfirmed",
+      "aecq": false,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 900,
+          "price": 2.8526,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C574362.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Exact listed code priced (LCSC 900/bag, only 51 in stock). 3 searches found NO description, pitch or position count - board-to-board / FFC type and AEC status NOT verified; category is a placeholder. Powell (TE distributor, not on the merge list) $1.89 @40, $1.67 @60k. Reviewer may drop this entry."
+    },
+    {
+      "mpn": "BMI-S-202-F",
+      "family": "BMI-S-202",
+      "mfr": "Laird (Qnity)",
+      "desc": "Board-level shield FRAME 16.5 x 16.5 mm, SMT, tin-plated steel (lid BMI-S-202-C sold separately)",
+      "category": "mechanical",
+      "pkg": "16.5x16.5 mm SMT",
+      "aecq": false,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 700,
+          "price": 0.51667,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/laird-technologies-emi/BMI-S-202-F/2175889",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 17500,
+          "price": 0.45953,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/laird-technologies-emi/BMI-S-202-F/2175889",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 0.55,
+          "currency": "EUR",
+          "url": "https://be.farnell.com/laird/bmi-s-202-f/emi-shield-surface-mount/dp/2497717",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Würth 7427927 is a WE-CBF ferrite bead series, not a shield clip - so picked the Laird two-piece shield frame BMI-S-202-F as the representative camera shield can. Shields carry no AEC-Q qualification. Also: Digi-Key $0.49968 @1,400; RS UK GBP0.42 @250 (out of stock). Frame only - a two-piece can adds the cover."
+    }
+  ]
+}

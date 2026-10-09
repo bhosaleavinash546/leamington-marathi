@@ -1,0 +1,28 @@
+Mobileye EyeQ4 (Mid / High) vision SoC
+Mobileye EyeQ5 (Mid / High) vision SoC
+Mobileye EyeQ6L / EyeQ6H vision SoC
+Renesas R-Car V3H / V3M vision SoC
+Renesas R-Car V4H / V4M ADAS SoC
+Renesas R-Car H3 SoC (automotive)
+NXP TEF8102 / TEF8232 / TEF82xx 77 GHz radar transceiver
+NXP S32R41 / S32R45 radar processor
+NXP SAF85xx radar one-chip
+Infineon RXS8160 / CTRX8181 radar MMIC, RASIC family
+TI AWR2944 / AWR2544 radar SoC (TI list price as evidence where distributors show none)
+Arbe Phoenix / Lynx chipset (4D radar)
+Sony IMX390 / IMX490 / IMX623 / IMX728 automotive image sensor
+Sony ISX016 / ISX019 / ISX031 automotive image sensor + ISP
+OmniVision OX08B40 / OX08D10 / OX03C10 / OX03F10 / OX01F10 automotive image sensor
+OmniVision OV2311 / OV9284 / OG01A1B driver-monitoring sensor
+OmniVision OAX4010 ISP
+NVIDIA DRIVE Orin SoC (and Xavier)
+Qualcomm Snapdragon Ride SA8650P / SA8540P
+Ambarella CV2AQ / CV3-AD685 / CV3-AD
+Horizon Robotics Journey 5 / Journey 6
+Tesla FSD chip (HW3 / HW4) — cost evidence only, not purchasable
+Broadcom BCM89881 / BCM8957x automotive Ethernet
+Elmos E524.08 / .09 / .14 / .24 / .37 ultrasonic ICs
+Bosch SMI240 / SMI330 automotive IMU
+Micron / Samsung automotive LPDDR4X / LPDDR5 (per-GB contract or market price evidence)
+Hesai / Valeo / Luminar LiDAR BOM-level cost evidence (unit or component)
+Front camera / radar / ADAS domain controller BOM cost from public teardown reports (unit level)

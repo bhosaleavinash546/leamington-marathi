@@ -1,0 +1,172 @@
+{
+ "domain": "adas-links-r2",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "DS90UB9724-Q1",
+   "family": "DS90UB9724-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV quad deserializer hub, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "R2: still no orderable code or price. A TI E2E (China) post calls DS90UB9724-Q1 a RESTRICTED device (not publicly listed); by naming pattern it would be DS90UB9724TRURRQ1 / TRURTQ1 (unconfirmed). No distributor listing found."
+  },
+  {
+   "mpn": "DS90UB949ATRGCRQ1",
+   "family": "DS90UB949A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "HDMI to FPD-Link III serializer, 2K",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RGC)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "DS90UB949ATRGCTQ1",
+   "observations": [
+    {
+     "distributor": "Arrow",
+     "qty": 250,
+     "price": 20.08,
+     "currency": "USD",
+     "url": "https://octopart.com/search?q=DS90UB949&view=matrix",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "R2: priced on the small-reel sibling DS90UB949ATRGCTQ1 (250 reel): Octopart row names Arrow Electronics, MOQ 250, $20.08. Digi-Key 296-DS90UB949ATRGCTQ1CT-ND and Mouser rows on the same page had unlabelled breaks - not recorded. No price for the 2,000 reel RQ1 code. TI list price ~10.62 USD @1ku for RQ1 (maker price, not an observation)."
+  },
+  {
+   "mpn": "DS90UB983RTDRQ1",
+   "family": "DS90UB983-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "DisplayPort/eDP to FPD-Link IV serializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "DS90UB983RTDTQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 250,
+     "price": 18.2,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/ds90",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "R2: priced on the small-reel sibling DS90UB983RTDTQ1 (250 reel): Findchips Mouser row 595-DS90UB983RTDTQ1 $26.44 @1, $18.20 @250 (323 stock) - single snapshot. Zenode shows Digi-Key $11.06 @2,000 for RTDRQ1 (zenode not an allowed source). Digi-Key China CNY price is VAT-inclusive - not recorded. TI list 12.178 USD for RTDTQ1 (maker price)."
+  },
+  {
+   "mpn": "DS90UB984RURRQ1",
+   "family": "DS90UB984-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV to eDP deserializer, 4K",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-88 (RUR)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "R2: still no franchised price (4 searches). Findchips lists Mouser 595-DS90UB984RURTQ1 with no price; no Digi-Key/Arrow/Avnet page found. TI list price 11.558 USD for DS90UB984RURRQ1 (maker price, not an observation)."
+  },
+  {
+   "mpn": "MAX96755",
+   "family": "MAX96755",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display serializer",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "R2: still none (3 searches). Digi-Key MAX96755GTN/VY+ 'Limited Supply - Call'; MAX96755FGTN/V+ discontinued at Digi-Key; Mouser MAX96755FGTN/V+T not available; no Arrow/Avnet/Rutronik listing. Octopart/Digipart offers are brokers (UnikeyIC, Worldway, Weyland) - not recorded."
+  },
+  {
+   "mpn": "DP83TC815-Q1",
+   "family": "DP83TC815-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "R2: still none. No Digi-Key/Mouser page for DP83TC815SRHARQ1 or RRHARQ1; datasheet SNLS797 (July 2025) was Advance Information - not yet in distribution."
+  },
+  {
+   "mpn": "88Q5050-B0-LKJ2A000-P123",
+   "family": "88Q5050",
+   "mfr": "Infineon Technologies (ex-Marvell)",
+   "desc": "Automotive Ethernet switch, 8-port, secure",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "R2: no observation on an allowed host. Avnet Americas T&R ($14.245 @1,000, $12.3488 @16,000, 26 wk) and Mouser ($14.94 @1,000, 0 stock) were read only on OEMsTrade (not an allowed source); Rutronik24 lists the P123 code with MOQ 1,000 but no price shown. Catalogue keeps its 88Q5050 engineering estimate."
+  },
+  {
+   "mpn": "SS07-0B00-00",
+   "family": "PEX88024",
+   "mfr": "Broadcom",
+   "desc": "PCIe Gen4 switch, 24-lane",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "SS07-0B00-00",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 160,
+     "price": 301.33,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Broadcom-Avago/SS07-0B00-00?qs=Cb2nCFKsA8onAkW8/2ZCiw%3D%3D",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 160,
+     "price": 395.22563,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/broadcom-limited/SS07-0B00-00/10716492",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "R2: SS07-0B00-00 is Broadcom's orderable code for PEX88024B0 (26-lane PCIe Gen4 switch). Tray MOQ 160 at both; Digi-Key non-stocked, 53 wk. Another Mouser snapshot $312.47 @160. Data-centre part, not AEC-Q100."
+  }
+ ]
+}

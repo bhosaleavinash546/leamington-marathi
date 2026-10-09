@@ -1,0 +1,469 @@
+{
+  "domain": "adas-camera-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "AR0138AT3R00XUEA0-DPBR",
+      "family": "AR0138AT",
+      "mfr": "onsemi",
+      "desc": "1.2 MP 1/2.6in automotive CMOS image sensor, 4.2 um BSI pixel",
+      "category": "ic_bga",
+      "pkg": "BGA (not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (2 more searches, other codes AR0138AT3C00/2R00XUEA0 tried): still only Digi-Key AR0138AT3R00XUEA0-DPBR with 'no prices available'; hqchip lists -DPBR-E suffixes (no price). Not distributor-priced."
+    },
+    {
+      "mpn": "AR0234AT",
+      "family": "AR0234AT",
+      "mfr": "onsemi",
+      "desc": "2.3 MP global-shutter CMOS image sensor (in-cabin automotive)",
+      "category": "ic_bga",
+      "pkg": "BGA (not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: onsemi's AR0234AT product page marks the part OBSOLETE; no automotive orderable at any franchised distributor (only AR0234CS industrial at Arrow/Farnell). Not priced."
+    },
+    {
+      "mpn": "AR0341ATSC15XUEA0-DPBR",
+      "family": "AR0341AT",
+      "mfr": "onsemi",
+      "desc": "3 MP 1/3.6in Hyperlux automotive HDR/LFM CMOS image sensor, 1920x1536, 60 fps",
+      "category": "ic_bga",
+      "pkg": "BGA (not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: orderable AR0341ATSC15XUEA0-DPBR (active) confirmed by an onsemi overview hosted on mm.digikey.com; 3 searches found no distributor price for -DPBR or -TPBR (Mouser has a product-intro page only). Not priced."
+    },
+    {
+      "mpn": "AR0323ATSB17XUEA0-DRBR",
+      "family": "AR0323AT",
+      "mfr": "onsemi",
+      "desc": "Automotive CMOS image sensor, 2880x1080",
+      "category": "ic_bga",
+      "pkg": "BGA (not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (2 searches): no Future/Avnet/Arrow/Mouser/Digi-Key listing; only onlinecomponents.com (Master storefront, not an accepted host) and brokers (Cytech, IC-Direct shows -DPBR-E obsolete). Not priced."
+    },
+    {
+      "mpn": "AP0100AT2L00XUGA0-DR",
+      "family": "AP0100AT",
+      "mfr": "onsemi",
+      "desc": "1 MP automotive HDR image signal processor, 1280x960",
+      "category": "ic_bga",
+      "pkg": "VFBGA-100",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (3 searches): findchips shows a row 'SKU 30AC8949' (Newark-style number) at ~$8.01 @500, MOQ 2,600, but the snippet does not name the distributor \u2014 not recorded. Digi-Key -AM-DR/-AM-TR 'price range' $9.39 has no break. onsemi lists AP0100AT active. Not priced."
+    },
+    {
+      "mpn": "AP0300AT",
+      "family": "AP0300AT",
+      "mfr": "onsemi",
+      "desc": "Automotive image signal processor (ISP)",
+      "category": "ic_bga",
+      "pkg": "BGA (not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: no onsemi product page, orderable code or distributor listing found in 4 searches total \u2014 part number may not exist (AP0100/0101/0102/0200/0201/0202 do). Check the source BOM."
+    },
+    {
+      "mpn": "GW5400",
+      "family": "GW5400",
+      "mfr": "indie Semiconductor (ex GEO Semiconductor)",
+      "desc": "Camera video processor SoC (HDR ISP + eWARP) for ADAS / RGB-IR in-cabin",
+      "category": "ic_bga",
+      "pkg": "TGBGA-169 (7x7, per indie GW54x0 preliminary datasheet)",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera",
+        "DMS"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: indie GW54x0 datasheet (preliminary): AEC-Q100 Grade 2, 169-ball TGBGA 7x7. No listing at Avnet (indie agreement covers other lines), Mouser or Digi-Key \u2014 quote-only via indie. Not priced."
+    },
+    {
+      "mpn": "DS90UB635TRHBRQ1",
+      "family": "DS90UB635-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "FPD-Link III 4.16 Gbps CSI-2 camera serializer",
+      "category": "ic_qfn",
+      "pkg": "VQFN-32 (RHB, 5x5)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (2 more searches): no Mouser (595-DS90UB635\u2026) or US Digi-Key listing; only digikey.cn (CNY incl. 13% VAT, TRHBTQ1) \u2014 not recorded. Not priced."
+    },
+    {
+      "mpn": "MAX96793",
+      "family": "MAX96793",
+      "mfr": "Analog Devices",
+      "desc": "GMSL3 CSI-2 camera serializer, AEC-Q100 Grade 2",
+      "category": "ic_qfn",
+      "pkg": "TQFN (not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: no orderable chip code with a price in 4 searches (GTM/GTN/VY+ tried); only eval kits MAX96793-AAK/ACK-EVK# at Farnell (GBP 547.60 \u2014 kit). Not priced."
+    },
+    {
+      "mpn": "MAX96701GTG/V+T",
+      "family": "MAX96701",
+      "mfr": "Analog Devices",
+      "desc": "GMSL camera serializer, parallel input",
+      "category": "ic_qfn",
+      "pkg": "TQFN-24",
+      "aecq": true,
+      "ecuRoles": [
+        "rear camera",
+        "surround camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: Farnell 3270153 (MAX96701GTG/V+, TQFN-EP-24) storefronts show breaks only to 25+ (EUR 3.47 @25 PT; CHF 3.26 @25; SEK 37.93 @25) \u2014 below the 100-unit floor. JLCPCB only for /V+T. Not priced."
+    },
+    {
+      "mpn": "MAX20019ATBD/V+",
+      "family": "MAX20019",
+      "mfr": "Analog Devices",
+      "desc": "Dual 500 mA 3.2 MHz step-down converter for automotive cameras, 3.5\u201317 V in (PoC), AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "TDFN-10-EP (2x3)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (4 more searches): Mouser SKU 700-MAX20019ATBD/V+ exists but no price visible; Digipart 'Inquiry' for /V+ and /V+T; no Digi-Key listing found. Catalogue estimate NOT upgraded (its desc 'Dual 3 A buck' is wrong \u2014 dual 500 mA)."
+    },
+    {
+      "mpn": "MAX20021ATIB/V+",
+      "family": "MAX20021",
+      "mfr": "Analog Devices",
+      "desc": "Quad 1 A 3.2 MHz step-down PMIC (3.0\u20135.5 V in), AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "TQFN-28 (5x5)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (2 more searches): still only Farnell CH (CHF) and Farnell AT EUR 4.37 @1; no GBP/EUR/USD break \u2265100 found for ATIA/ATIB/ATIC /V+. Not priced."
+    },
+    {
+      "mpn": "MAX20025",
+      "family": "MAX20025",
+      "mfr": "Analog Devices",
+      "desc": "(unverified part number)",
+      "category": "ic_qfn",
+      "pkg": "unknown",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: no datasheet or product page exists for MAX20025/MAX20025S (4 searches total) \u2014 likely a wrong code. Nearest camera-power parts MAX20019/MAX20020 (dual 500 mA, TDFN-10) are themselves unpriced at franchised distributors (Digipart 'Inquiry'; JLCPCB only). No separate entry priced."
+    },
+    {
+      "mpn": "MAX20089ATPA/VY+",
+      "family": "MAX20089",
+      "mfr": "Analog Devices",
+      "desc": "Quad camera power protector (power-over-coax)",
+      "category": "ic_qfn",
+      "pkg": "TQFN-20 (4x4, by ATP code)",
+      "aecq": true,
+      "ecuRoles": [
+        "surround camera",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "MAX20089ATPA/VY+",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 490,
+          "price": 2.58,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX20089ATPA-VY/11682616",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key tray (505-MAX20089ATPA/VY+-ND): $4.41 @1, $2.68 @10, ~$2.58 @490 (search summary rounded to cents). Read on azcus.digikey.com (Digi-Key US mirror, same product id 11682616). JLCPCB not used."
+    },
+    {
+      "mpn": "TPS65000TRTERQ1",
+      "family": "TPS65000-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Step-down converter + dual LDO PMIC",
+      "category": "ic_qfn",
+      "pkg": "WQFN-16 (3x3)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: no franchised price for TPS65000TRTERQ1 (Newyang broker RFQ only). Variant TPS650002-Q1 (same 2.25 MHz buck + dual LDO, WQFN-16) IS priced \u2014 see the separate TPS650002-Q1 entry; not used for this code."
+    },
+    {
+      "mpn": "TPS650002TRTERQ1",
+      "family": "TPS650002-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "2.25 MHz step-down converter + dual LDO PMIC (TPS65000-Q1 sibling device)",
+      "category": "ic_qfn",
+      "pkg": "WQFN-16 (3x3)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "TPS650002TRTERQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.16,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/tps650002trterq1/Texas-Instruments",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 6000,
+          "price": 1.01,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/tps650002trterq1/Texas-Instruments",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.0712,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/tps650002trterq1/Texas-Instruments",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Separate entry: nearest priced automotive part to TPS65000-Q1 (TI TPS650002-Q1 product page; AEC-Q100). Findchips: Mouser $2.21 @1, $1.68 @100, $1.38 @500, $1.16 @1,000, $1.01 @6,000 (row text also shows 595-TPS650002TRTETQ1 \u2014 same device, small reel); Digi-Key $1.0712 @3,000, $1.0495 @6,000, temporarily out of stock, 12 wk."
+    },
+    {
+      "mpn": "TPS65033000RGERQ1",
+      "family": "TPS650330-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive camera PMIC, 3 bucks + LDO, 4\u201318.3 V in",
+      "category": "ic_qfn",
+      "pkg": "VQFN-24 (RGE, 4x4)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (3 more searches): Arrow lists TPS65033000RGERQ1 (active, AEC-Q100, PPAP) with no price; only digikey.cn TPS6503300DRGERQ1 (CNY incl. 13% VAT, 'prototype'). No Mouser / US Digi-Key / findchips row. Not priced."
+    },
+    {
+      "mpn": "TPS65033200RGERQ1",
+      "family": "TPS650332-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Automotive camera PMIC, 3 bucks + LDO, AEC-Q100 Grade 1",
+      "category": "ic_qfn",
+      "pkg": "VQFN-24 (4x4, wettable flank)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: TI package addendum names TPS65033200RGERQ1 / TPS65033201RGERQ1 (VQFN-24 RGE, reel 3,000); 2 searches found no distributor price for either. Not priced."
+    },
+    {
+      "mpn": "LM5050Q1MKX-1/NOPB",
+      "family": "LM5050-1-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "High-side OR-ing ideal-diode FET controller",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "ADAS domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (4 searches): only electronicsdatasheets.com (not an accepted aggregator, no breaks) shows LM5050Q1MK-1/NOPB at Newark $1.30, Avnet $1.11\u20131.66, Arrow Asia $1.11, Digi-Key $3.05, Mouser $3.04 \u2014 quantities unstated, not recorded. No findchips/Octopart row. Not priced."
+    },
+    {
+      "mpn": "TPS62440-Q1",
+      "family": "TPS62440-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual step-down converter (TPS6244x-Q1 family)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-14 (RQR, family; not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2: TPS62440-Q1 does not exist as an orderable; the TPS6244x-Q1 family is TPS62441-Q1 (dual 1 A/1 A) and TPS62442-Q1 \u2014 see the separate TPS62441-Q1 entry."
+    },
+    {
+      "mpn": "TPS62441QWRQRRQ1",
+      "family": "TPS62441-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual 1 A/1 A synchronous step-down converter, 2.75\u20136 V in, AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-14 (RQR, 2.3x2.7)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Separate entry: nearest real part to the TPS62440-Q1 line. Prices for TPS62441QWRQRRQ1 (EUR 1.39936 @1,000 CT, 1.23416 @3,000 T&R) and TPS62442QWRQRRQ1 (KRW 2,018.56 @1,000, 1,942.07 @3,000, 1,904.64 @6,000) were seen ONLY on punchouttest.digikey.* pages \u2014 forbidden host, not recorded; no normal Digi-Key/Mouser page found in 4 searches. Not priced."
+    },
+    {
+      "mpn": "TPS62420QDRCRQ1",
+      "family": "TPS62420-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual 600 mA / 1 A step-down converter",
+      "category": "ic_qfn",
+      "pkg": "VSON-10 (DRC)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (4 searches): no Mouser/Arrow/Newark/Avnet/Farnell row for the Q1 code; Digi-Key price only on punchouttest.* (forbidden). Non-Q1 TPS62420DRCR is widely priced (~$0.73\u20131.12) \u2014 not this code. Not priced."
+    },
+    {
+      "mpn": "LMR36506MSC5RPERQ1",
+      "family": "LMR36506-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "65 V 0.6 A synchronous step-down converter, 5 V fixed",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-12 (RPE; not verified)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "R2 (3 searches): only punchouttest.digikey.* pages (forbidden) \u2014 sibling LMR36506MSCQRPERQ1 KRW 3,620.96 @1,000 / 3,497.38 @3,000; LMR36506MSC3RPERQ1 HKD 23.27 @1,000. No normal Digi-Key/Mouser/findchips page. Not priced."
+    },
+    {
+      "mpn": "MAX96717FGTJ/VY+T",
+      "family": "MAX96717F",
+      "mfr": "Analog Devices",
+      "desc": "GMSL2 CSI-2 camera serializer, 3 Gbps",
+      "category": "ic_qfn",
+      "pkg": "TQFN-32-EP (5x5)",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera",
+        "rear camera"
+      ],
+      "observedMpn": "MAX96717FGTJ/VY+T",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 7.1809,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96717FGTJ-VY-T/16675125",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 7.00737,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96717FGTJ-VY-T/16675125",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key 175-MAX96717FGTJ/VY+TCT-ND: $7.18090 @1,000 (cut tape / Digi-Reel), $7.00737 @2,500 (T&R, std pack); 1,336 in stock, 10 wk. Read on azcus.digikey.com (Digi-Key US mirror, product id 16675125). JLCPCB's ~$2.87 @1k not used."
+    }
+  ]
+}

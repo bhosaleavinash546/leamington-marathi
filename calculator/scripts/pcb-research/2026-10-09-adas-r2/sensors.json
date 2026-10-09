@@ -1,0 +1,483 @@
+{
+ "domain": "adas-sensors-r2",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "SMI240",
+   "family": "SMI240",
+   "mfr": "Bosch Sensortec",
+   "desc": "6-DoF automotive IMU, ASIL-B, \u00b1300 \u00b0/s, 16 g",
+   "category": "ic_qfn",
+   "pkg": "LGA (not confirmed)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "SMI240",
+   "observations": [],
+   "notes": "Round 2: 1 more search (Digi-Key / Mouser / Arrow / Avnet) \u2014 no listing. Bosch sells SMI parts by direct quote only."
+  },
+  {
+   "mpn": "SMI330",
+   "family": "SMI330",
+   "mfr": "Bosch Sensortec",
+   "desc": "6-DoF automotive IMU, -40\u2013125 \u00b0C, non-safety (navigation, telematics)",
+   "category": "ic_qfn",
+   "pkg": "LGA (not confirmed)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "SMI330",
+   "observations": [],
+   "notes": "Round 2: 2 more searches \u2014 no franchised listing; Arrow hosts only a Bosch NDA technical PDF; Digi-Key/Mouser/Future list only the consumer BMI330 (not used)."
+  },
+  {
+   "mpn": "IAM-20685",
+   "family": "IAM-20685",
+   "mfr": "TDK InvenSense",
+   "desc": "6-axis automotive IMU, ASIL-B, AEC-Q100 grade 2",
+   "category": "ic_qfn",
+   "pkg": "QFN-24 (4.5x4.5x1.1)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "IAM-20685",
+   "observations": [],
+   "notes": "Round 2: 2 more searches (Mouser / Digi-Key / Arrow / Avnet / Future / Rutronik) \u2014 no listing. In production since 2022, but TDK sells it through InvenSense sales (sales.us@invensense.com)."
+  },
+  {
+   "mpn": "SCHA634-D03",
+   "family": "SCHA634",
+   "mfr": "Murata",
+   "desc": "6-DoF automotive gyro + accelerometer",
+   "category": "ic_soic",
+   "pkg": "not confirmed",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "SCHA634-D03",
+   "observations": [],
+   "notes": "Round 2: 2 more searches \u2014 code not found anywhere (also tried SCH1634-D03 / SCH1633-D01). Murata's current automotive 6DoF is the SCH1600 family (SCH1633-D05, mass production June 2026 per murata.com news 2026-05-26) \u2014 check the BOM code."
+  },
+  {
+   "mpn": "PGA450TPWRQ1",
+   "family": "PGA450",
+   "mfr": "Texas Instruments",
+   "desc": "Ultrasonic park-assist signal conditioner with 8051 MCU, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSSOP-28",
+   "aecq": true,
+   "ecuRoles": [
+    "park assist"
+   ],
+   "observedMpn": "PGA450TPWRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 5.49335,
+     "currency": "USD",
+     "url": "https://www.digikey.com/product-detail/en/texas-instruments/PGA450TPWRQ1/296-36711-1-ND/4341337",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key US tape & reel @2,000 (296-36711-2-ND). Cut tape $6.7396 @25 (below 100, not recorded). TI's own list price ~$2.60 @1k (manufacturer list, ti.com store \u2014 not an observation; well below Digi-Key)."
+  },
+  {
+   "mpn": "E52409A52C",
+   "family": "E524.09",
+   "mfr": "Elmos Semiconductor",
+   "desc": "Ultrasonic park-assist transducer driver and signal processor, 3-wire",
+   "category": "ic_qfn",
+   "pkg": "QFN-20 (4x4)",
+   "aecq": true,
+   "ecuRoles": [
+    "park assist"
+   ],
+   "observedMpn": "E52409A52C",
+   "observations": [],
+   "notes": "Round 2: orderable code is E52409A52C (-40\u2013105 \u00b0C; elmos.com). Avnet lists it (https://www.avnet.com/americas/product/elmos/e52409a52c/evolve-35580277/) with MOQ 5,700 and no published price \u2014 quote only."
+  },
+  {
+   "mpn": "E524.08",
+   "family": "E524.08",
+   "mfr": "Elmos Semiconductor",
+   "desc": "Ultrasonic park-assist transducer driver and signal processor, 2-wire",
+   "category": "ic_qfn",
+   "pkg": "QFN-20 (4x4)",
+   "aecq": true,
+   "ecuRoles": [
+    "park assist"
+   ],
+   "observedMpn": "E524.08",
+   "observations": [],
+   "notes": "Round 2: 1 more search \u2014 no distributor listing or price (Elmos parts at Avnet are quote-only, MOQ 1.5k\u20135.7k)."
+  },
+  {
+   "mpn": "E521.42",
+   "family": "E521.42",
+   "mfr": "Elmos Semiconductor",
+   "desc": "Ultrasonic park-assist sensor IC",
+   "category": "ic_qfn",
+   "pkg": "not confirmed",
+   "aecq": true,
+   "ecuRoles": [
+    "park assist"
+   ],
+   "observedMpn": "E521.42",
+   "observations": [],
+   "notes": "Round 2: 1 more search \u2014 no distributor listing or price."
+  },
+  {
+   "mpn": "TUSS4470TRTJR",
+   "family": "TUSS4470",
+   "mfr": "Texas Instruments",
+   "desc": "Direct-drive ultrasonic sensor IC with log amplifier (industrial)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-20 (4x4)",
+   "aecq": false,
+   "ecuRoles": [
+    "park assist"
+   ],
+   "observedMpn": "TUSS4470TRTJR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.49696,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TUSS4470TRTJR/11502045",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.27773,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TUSS4470TRTJR/11502045",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "No automotive (-Q1) variant exists; industrial part priced (aecq=false). Digi-Key US cut tape @500, tape & reel @3k. Another Digi-Key snapshot showed $2.14828 @3k (older) \u2014 not recorded."
+  },
+  {
+   "mpn": "MA58MF14-7N",
+   "family": "MA58MF14",
+   "mfr": "Murata",
+   "desc": "58 kHz enclosed ultrasonic transducer, 120 Vpp (park assist)",
+   "category": "mechanical",
+   "pkg": "enclosed transducer",
+   "aecq": true,
+   "ecuRoles": [
+    "park assist"
+   ],
+   "observedMpn": "MA58MF14-7N",
+   "observations": [],
+   "notes": "Round 2: 1 more search (Avnet / Future / Arrow) \u2014 no listing. Murata prices it on request (TI E2E)."
+  },
+  {
+   "mpn": "LMG1020YFFR",
+   "family": "LMG1020",
+   "mfr": "Texas Instruments",
+   "desc": "Low-side GaN gate driver, 60 MHz / 1 ns (industrial)",
+   "category": "ic_bga",
+   "pkg": "DSBGA-6 (YFF)",
+   "aecq": false,
+   "ecuRoles": [
+    "LiDAR"
+   ],
+   "observedMpn": "LMG1020YFFR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 3.16413,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/LMG1020YFFR/9489199",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Industrial (automotive counterpart LMG1025-Q1). Digi-Key US tape & reel @3k, 0 stock. Digi-Key UK shows \u00a31.87901 @3k (https://www.digikey.co.uk/en/products/detail/texas-instruments/LMG1020YFFR/9489199) \u2014 ~25% lower; not recorded as a second row because the merge keeps one distributor + break."
+  },
+  {
+   "mpn": "LMH32401-Q1",
+   "family": "LMH32401",
+   "mfr": "Texas Instruments",
+   "desc": "Programmable-gain differential-output TIA for LiDAR, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VQFN-16 (RGT)",
+   "aecq": true,
+   "ecuRoles": [
+    "LiDAR"
+   ],
+   "observedMpn": "LMH32401-Q1",
+   "observations": [],
+   "notes": "Round 2: 1 more search \u2014 TI product/datasheet only; no distributor lists an LMH32401-Q1 orderable (LMH32401QRGTRQ1 unconfirmed)."
+  },
+  {
+   "mpn": "DRV5055A1EDBZRQ1",
+   "family": "DRV5055",
+   "mfr": "Texas Instruments",
+   "desc": "Ratiometric linear Hall sensor \u00b121 mT, AEC-Q100 grade 0 (-40\u2013150 \u00b0C)",
+   "category": "ic_soic",
+   "pkg": "SOT-23-3 (DBZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "DRV5055A1EDBZRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.59465,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DRV5055A1EDBZRQ1/10448320",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.56089,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DRV5055A1EDBZRQ1/10448320",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.424,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/DRV5055A1EDBZRQ1?qs=%2BEew9%2B0nqrATnNdn/8yUww%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Round 1's DRV5055A1QDBZRQ1 is not an orderable code; the automotive A1 part is DRV5055A1EDBZRQ1 (E = grade 0). Digi-Key cut tape @1k, T&R @3k; Mouser reel @3k."
+  },
+  {
+   "mpn": "ADPD2140WBCPZN-R7",
+   "family": "ADPD2140",
+   "mfr": "Analog Devices",
+   "desc": "IR light-angle sensor, automotive (W)",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-8",
+   "aecq": true,
+   "ecuRoles": [
+    "DMS"
+   ],
+   "observedMpn": "ADPD2140WBCPZN-R7",
+   "observations": [],
+   "notes": "Round 2: 1 more search \u2014 still only Richardson RFPD ($3.72 @1, MOQ 3k, 0 stock; not a merge price host). Not at Digi-Key / Mouser / Arrow."
+  },
+  {
+   "mpn": "IAM-20680HT",
+   "family": "IAM-20680HT",
+   "mfr": "TDK InvenSense",
+   "desc": "6-axis automotive IMU (AEC-Q100), high-temp",
+   "category": "ic_qfn",
+   "pkg": "LGA-16 (3x3)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "surround camera"
+   ],
+   "observedMpn": "IAM-20680HT",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 10.6641,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk-invensense/IAM-20680HT/15792840",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 10.21,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/TDK-InvenSense/IAM-20680HT?qs=zW32dvEIR3sJjWNRY64Yvw%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Normal-site prices replacing round 1's punchouttest rows. Digi-Key US cut tape @100; Mouser full reel @5,000. Digi-Key T&R @5k shows $9.01221 or $9.37270 in different cached copies \u2014 not recorded."
+  },
+  {
+   "mpn": "OPA855QDSGRQ1",
+   "family": "OPA855",
+   "mfr": "Texas Instruments",
+   "desc": "8 GHz decompensated bipolar op amp / LiDAR TIA, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 (2x2)",
+   "aecq": true,
+   "ecuRoles": [
+    "LiDAR"
+   ],
+   "observedMpn": "OPA855QDSGRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 4.39,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/OPA855",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces round 1's punchouttest rows. Mouser @3k via Findchips (Mouser stock 5,562). No digikey.com price page found in 3 searches."
+  },
+  {
+   "mpn": "OPA858QDSGRQ1",
+   "family": "OPA858",
+   "mfr": "Texas Instruments",
+   "desc": "5.5 GHz FET-input op amp / LiDAR TIA, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 (2x2)",
+   "aecq": true,
+   "ecuRoles": [
+    "LiDAR"
+   ],
+   "observedMpn": "OPA858QDSGRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.33,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/OPA858QDSGRQ1/14124016",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 4.1957,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/OPA858QDSGRQ1/14124016",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces round 1's punchouttest row. Digi-Key US cut tape @1k, T&R @3k ($4.79 @100 also shown)."
+  },
+  {
+   "mpn": "TMP117AIDRVR",
+   "family": "TMP117",
+   "mfr": "Texas Instruments",
+   "desc": "\u00b10.1 \u00b0C digital temperature sensor, I2C (no -Q1 variant)",
+   "category": "ic_qfn",
+   "pkg": "WSON-6 (DRV, 2x2)",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "front camera"
+   ],
+   "observedMpn": "TMP117AIDRVR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.3605,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP117AIDRVR/9685284",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 4.10993,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP117AIDRVR/9685284",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.73,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TMP117AIDRVR?qs=qSfuJ%2Bfl%2Fd6nh9h5HydMXQ%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces round 1's punchouttest rows; replaces estimate TMP117. No TMP117-Q1 exists (aecq=false). Digi-Key US cut tape @1k, T&R @3k; Mouser cut tape @1k (Mouser notes an 8% US tariff may apply)."
+  },
+  {
+   "mpn": "TMP451AQDQFRQ1",
+   "family": "TMP451",
+   "mfr": "Texas Instruments",
+   "desc": "Remote + local temperature sensor, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "WSON-8 (DQF, 2x2)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "radar"
+   ],
+   "observedMpn": "TMP451AQDQFRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.14937,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP451AQDQFRQ1/5019040",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.08984,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMP451AQDQFRQ1/5019040",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 1.13,
+     "currency": "USD",
+     "url": "https://octopart.com/tmp451aqdqfrq1-texas+instruments-51080894",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Replaces round 1's punchouttest rows; replaces estimate TMP451. Digi-Key US cut tape @1k ($1,149.37 ext.) and @3k ($3,269.52 ext.); Mouser @1k via Octopart (snapshot ~13 months old). TME also lists the part (no price read)."
+  },
+  {
+   "mpn": "ASM330LHBTR",
+   "family": "ASM330LHB",
+   "mfr": "STMicroelectronics",
+   "desc": "6-axis automotive IMU (accel + gyro), ASIL-B",
+   "category": "ic_qfn",
+   "pkg": "LGA-14 (2.5x3)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "ASM330LHBTR",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 6.79212,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/ASM330LHBTR/18073041",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 6.06795,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/ASM330LHBTR/18073041",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Not on the retry list: round 1's Digi-Key rows for this part were also punchouttest (digikey.ca); these are the digikey.com equivalents. Round 1's Future $7.10 @5k stands."
+  }
+ ]
+}

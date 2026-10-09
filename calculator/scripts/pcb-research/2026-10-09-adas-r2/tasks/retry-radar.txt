@@ -1,0 +1,13 @@
+AWR2544  ||  round-1 note: searched Digi-Key/Mouser/findchips: no franchised distributor listing found in search results; only AWR2544LOPEVM (EVM) listed. No price recorded.
+AWR2944ALBGALTRQ1  ||  round-1 note: searched Digi-Key/Mouser/findchips: no franchised listing with a price break found (TrustedParts: out of stock, no price). ti.com product page shows ~USD 27.87 for AWR2944ALBGALTRQ1, quantity not stated (manufacturer pri
+AWR2944P  ||  round-1 note: searched Digi-Key/Mouser: only AWR2944PEVM evaluation module listed; no device listing or price found.
+AWR2E44P  ||  round-1 note: searched Digi-Key/Mouser: only AWR2E44PEVM evaluation module listed; no device listing or price found.
+TEF8105  ||  round-1 note: searched with TEF8102: no product page or distributor listing found for TEF8105; the orderable code could not be confirmed. No price recorded.
+FS32R274KSK2MMM  ||  round-1 note: searched: not found at Digi-Key/Mouser in results. Farnell/element14 list FS32R274KCK2MMM / FS32R274KSK2MMM only at 1+ (local currency, out of stock) - below the 100-unit minimum, not used. Broker (Cytech) prices not all
+FS32R294HBK0MJDR  ||  round-1 note: searched Digi-Key/Mouser: no franchised price. Orderables seen: FS32R294HBK0MJDR / LAK0MJDR / JAK0MJDR / LDK0MJDR (AEC-Q100); only quote-only or broker listings (Suntsu, Lisle Apex), LCSC stock 3 with no price shown. Cat
+FS32R372SDK0MMMT  ||  round-1 note: element14 NZ lists FS32R372SDK0MMMT at NZD 75.77 @1 / 64.88 @50+ (below the 100-unit minimum, not used); 53-week lead time; Farnell DK/JP FS32R372SEK0MMMT back-order. Not at Digi-Key/Mouser in results.
+MC33MR2001V2VKR2  ||  round-1 note: multi-chip set (MR2001VC/TX/RX); NXP forum: via Avnet quote only; only broker reference prices (Cytech) found - not allowed. No franchised price.
+SAK-TC357TA-64F300S AB  ||  round-1 note: orderable TC357TA64F300SABKXUMA1; only JLCPCB prices found (USD 15.25 @1,000) - not a franchised distributor host, not used. No Digi-Key/Mouser/LCSC listing found.
+LMK00804BQWRGTRQ1  ||  round-1 note: orderable is VQFN-16 (RGT), not TSSOP; no Digi-Key/Mouser listing found in 2 searches; only broker (Cytech) reference prices - not allowed.
+FS6531  ||  round-1 note: no FS6531 / MC33FS6531 part found (2 searches); NXP FS65 family is MC33FS65xx in HLQFP-48 (FS6500..FS6528). Code unconfirmed - check the BOM.
+LMX2594RHAR  ||  round-1 note: LCSC only to 30+ (USD 27.13, below 100); Mouser 2,500 x $49.85 read on SnapEDA (not an allowed host); sources disagree. No usable observation.

@@ -1,0 +1,19 @@
+TDA4VL21HGAALZRQ1  ||  round-1 note: Orderable per ti.com (T&R 250). No franchised break >=100 found in 4 searches: Digi-Key NO lists TR (296-TDA4VL21HGAALZRQ1TR-ND) only to 25 pcs (NOK 1,065.18 @25, https://www.digikey.no/no/products/detail/texas-instrumen
+TDA4AL88TGAALZRQ1  ||  round-1 note: Upgrade target: estimate TDA4AL - NOT replaced. 3 searches: no Digi-Key/Mouser product page with a break for this code (a Digi-Key AT 'related item' row showed EUR 71.75 with no quantity - not recorded). Brokers only (Ja
+TDA4VEN8J5AAMWRQ1  ||  round-1 note: Upgrade target: estimate TDA4VE - NOT replaced. 2 searches: no franchised distributor listing found. ti.com $52.61 (qty unlabelled, out of stock) https://www.ti.com/product/TDA4VEN-Q1/part-details/TDA4VEN8J5AAMWRQ1; sibl
+TDA4AEN8J5AAMWRQ1  ||  round-1 note: Searched with TDA4VEN (2 searches): no franchised listing; TrustedParts shows out of stock, no price. ti.com ~$50.11 (8J5) / ~$55.74 (8K5), qty unlabelled https://www.ti.com/product/TDA4AEN-Q1.
+AM62A32ASMSIAMBRQ1  ||  round-1 note: 2 searches: no Digi-Key/Mouser listing found for AM62A32/AM62A34 -Q1 codes. ti.com AM62A32ASMSIAMBRQ1 $22.524, AM62A34ASMSIAMBRQ1 ~$26.46 (qty unlabelled) https://www.ti.com/product/AM62A3-Q1. T&R 500.
+AM68A  ||  round-1 note: Not priced by rule: industrial part whose automotive variant exists (TDA4VL-Q1, see that line).
+TDA2SX  ||  round-1 note: fat.lcsc.com snippet (C5218319) gave TDA2SXBTQABCRQ1 ~$8.26 at 1k+ (out of stock) - discarded as implausible (same LCSC page family showed TDA4VM at $47.62, far below distributor levels). Not searched further this round.
+TDA3MA  ||  round-1 note: 2 searches: no franchised distributor listing; exact TDA3MA orderable code not confirmed (siblings TDA3MVRBFABFRQ1, TDA3MDDBABFRQ1 exist).
+S32G254AABK1VUCT  ||  round-1 note: 2 searches: no franchised listing with a break (Findchips tiers unattributed to a distributor; Chip1/Xecor are brokers).
+R7F70254FAFABA-C  ||  round-1 note: 2 searches: no franchised distributor listing for R7F70254x / R7F70255x (U2B10 / U2B6) codes.
+RH850/E2x  ||  round-1 note: 2 searches: no franchised listing (R7F702012AEABG, BGA468 = E2UH, broker only).
+XA7Z020-1CLG400Q  ||  round-1 note: No break >=100 published: Digi-Key $180.70, Mouser $180.69, Avnet $187.65, all qty 1 (AMD prices flat at distributors). omo-ic EUR 142.19 @100 ignored (not a price host). 2 searches.
+XAZU2EG-1SBVA484Q  ||  round-1 note: Qty-1 prices only: Digi-Key ~$713.70, Mouser $712.86, Avnet $653.31 (Octopart, ~1 yr old). 1 search.
+XAZU3EG-1SFVC784Q  ||  round-1 note: Qty-1 prices only, inconsistent: Digi-Key $1,203.80 / $1,426.04, Mouser $928.12, Avnet $1,179.62. 1 search.
+XAZU5EV-1SFVC784Q  ||  round-1 note: Qty-1 prices only: Digi-Key $4,794.02, Avnet $3,704.47, Mouser $3,545.69. 1 search.
+XAZU7EV-1FBVB900Q  ||  round-1 note: Qty-1 prices only: Digi-Key EUR 6,745.73, Avnet $6,013.05. 1 search.
+XA7A50T-1CSG325Q  ||  round-1 note: Qty-1 prices only: Mouser $110.11, Digi-Key $118.93, Avnet $114.68. 1 search.
+TMS320F28388D-Q1  ||  round-1 note: No automotive F28388D orderable confirmed: TI E2E says F28388DPTP-Q1 is not a valid part; TI F28388D page lists ZWTS (non-Q) only. Automotive sibling F28386D-Q1 = F28386DZWTQ (Digi-Key $38.98, qty not shown). 2 searches.
+TMS5704357BZWTQQ1  ||  round-1 note: Orderable for TMS570LC4357-Q1. Franchised breaks stop at the 90-pc tray (below the 100 floor): Mouser $70.85 @90, Digi-Key ~$68.73 @90 (https://www.digikey.com/en/products/detail/texas-instruments/TMS5704357BZWTQQ1/61649

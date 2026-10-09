@@ -1,0 +1,261 @@
+{
+  "domain": "adas-passives-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "GCM155R71E224KE02D",
+      "family": "GCM155R71E224",
+      "mfr": "Murata",
+      "desc": "MLCC 0.22uF 25V X7R 0402, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "R2 (3 more searches): no 25V 0.22uF 0402 GCM code (X7R or X7S) listed anywhere; only the 16V GCM155R71C224KE02D and the commercial GRM155R71E224KE14D - device appears not to exist in GCM; not substituted."
+    },
+    {
+      "mpn": "CGA5L1X7R1C226M160AC",
+      "family": "CGA5L1_1C226",
+      "mfr": "TDK",
+      "desc": "MLCC 22uF 16V 1206, AEC-Q200",
+      "category": "passive_1206",
+      "pkg": "1206",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observedMpn": "CGA5L1X5R1C226M160AC",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 0.37347,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA5L1X5R1C226M160AC/3950083",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 2000,
+          "price": 0.335,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga5l1x5r1c226m160ac-tdk-4076950",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 2000,
+          "price": 0.357,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/tdk/cga5l1x5r1c226m160ac/cap-aec-q200-22uf-16v-mlcc-1206/dp/3416404",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Exact X7R code not listed; priced the same-value/size/voltage AEC-Q200 dielectric sibling CGA5L1X5R1C226M160AC (X5R, 85C) - alias. Farnell IE ex-VAT EUR. Future shows 0 stock at that tier."
+    },
+    {
+      "mpn": "CL05B104KB5VPNC",
+      "family": "CL05B104KB5VPNC",
+      "mfr": "Samsung Electro-Mechanics",
+      "desc": "MLCC 0.1uF 50V X7R 0402, automotive (AEC-Q200)",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observedMpn": "CL05B104KB54PNC",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00988,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/samsung-electro-mechanics/CL05B104KB54PNC/11487801",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 10000,
+          "price": 0.0111,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/8121545",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 10000,
+          "price": 0.0053,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C307331.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "VPNC code not listed. Digi-Key lists CL05B104KB54PNC (same 0.1uF/50V/X7R/0402) as AEC-Q200 / Automotive - round 1 wrongly called it commercial; priced as the automotive orderable (alias). Future also $0.0104 @150k. Digi-Key lead time 31 weeks."
+    },
+    {
+      "mpn": "CL10B105KP8VPNC",
+      "family": "CL10B105KP8VPNC",
+      "mfr": "Samsung Electro-Mechanics",
+      "desc": "MLCC 1uF 10V X7R 0603, automotive (AEC-Q200)",
+      "category": "passive_0603",
+      "pkg": "0603",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "R2 (2 more searches, 4 total): no franchised price for the VPNC code (LCSC alternative table $0.0192, 0 stock, no break; capacitors-smd.com is a broker). Automotive sibling CL10B105KO8VPNC is 16V - different voltage, not substituted."
+    },
+    {
+      "mpn": "GCJ155R71H104KA55D",
+      "family": "GCJ155R71H104",
+      "mfr": "Murata",
+      "desc": "MLCC 0.1uF 50V X7R 0402, soft termination, AEC-Q200",
+      "category": "passive_0402",
+      "pkg": "0402",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "decoupling"
+      ],
+      "observations": [],
+      "notes": "R2 (1 more search, 4 total): no GCJ (soft-termination) 0.1uF 50V 0402 orderable at any distributor; GCM155R71H104KE02D is standard termination - not substituted."
+    },
+    {
+      "mpn": "TPD1E04U04-Q1",
+      "family": "TPD1E04U04-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1-ch ESD diode 0.5pF for high-speed lines, automotive",
+      "category": "fuse_tvs",
+      "pkg": "X1SON",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "front camera",
+        "surround camera"
+      ],
+      "observations": [],
+      "notes": "R2 (1 more search): TI lists only TPD1E04U04DPYR / DPLR (industrial); no -Q1 orderable exists in TI or distributor listings - nothing to price."
+    },
+    {
+      "mpn": "BUK7M10-40H",
+      "family": "BUK7M10-40H",
+      "mfr": "Nexperia",
+      "desc": "N-channel MOSFET 40V 10 mohm, LFPAK33, AEC-Q101",
+      "category": "ic_qfn",
+      "pkg": "LFPAK33",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "R2 (1 more search): Nexperia's Trench 9 LFPAK33 40V range has BUK7M9R5-40H and BUK7M11-40H but no BUK7M10-40H; the 10 mohm part is BUK7M10-40E(X) (older trench). Not substituted."
+    },
+    {
+      "mpn": "E6S10A-40MT5-Z",
+      "family": "H-MTD",
+      "mfr": "Rosenberger",
+      "desc": "H-MTD straight plug, PCB, with housing, coding Z (T&R 1,280)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "front camera",
+        "surround camera",
+        "radar"
+      ],
+      "observations": [],
+      "notes": "R2 (2 more searches, 4 total): no franchised listing; Rosenberger and RFMW quote on request (sales unit 1,280 T&R); only eBay/AliExpress prices."
+    },
+    {
+      "mpn": "2337020-1",
+      "family": "MATEnet",
+      "mfr": "TE Connectivity",
+      "desc": "MATEnet automotive Ethernet PCB header (per BOM)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observations": [],
+      "notes": "R2 (1 more search, 4 total): code not found at any distributor. Neighbour 2337019-1 is a TE UMCC micro-coax receptacle, so the BOM's MATEnet label is unconfirmed - nothing adopted."
+    },
+    {
+      "mpn": "2387271-1",
+      "family": "2387271",
+      "mfr": "TE Connectivity",
+      "desc": "TE automotive PCB connector (series not identified)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observations": [],
+      "notes": "R2 (1 more search, 3 total): code not found at any distributor, TE page or aggregator; series unknown."
+    },
+    {
+      "mpn": "34830-0801",
+      "family": "MX150",
+      "mfr": "Molex",
+      "desc": "MX150 dual-row right-angle PCB header 2x4 (8 circuits), keying A, solder tail",
+      "category": "through_hole",
+      "pkg": "PCB THT",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observedMpn": "34830-0801",
+      "observations": [
+        {
+          "distributor": "Newark",
+          "qty": 100,
+          "price": 5.22,
+          "currency": "USD",
+          "url": "https://www.newark.com/molex/34830-0801/mx150-ra-hdr-2x4-st-blk-key-a/dp/01AH1051",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 500,
+          "price": 4.71,
+          "currency": "USD",
+          "url": "https://www.newark.com/molex/34830-0801/mx150-ra-hdr-2x4-st-blk-key-a/dp/01AH1051",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 420,
+          "price": 7.29,
+          "currency": "USD",
+          "url": "https://us.rs-online.com/product/molex-incorporated/34830-0801/71458150/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Reference line 'MX150 (ref)': picked one automotive MX150 board-side header (8-circuit right-angle). RS sells in multiples of 420 ($6.71 @4,200)."
+    },
+    {
+      "mpn": "1-2112996-1",
+      "family": "1-2112996-1",
+      "mfr": "TE Connectivity",
+      "desc": "TE automotive connector (series not identified)",
+      "category": "through_hole",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS"
+      ],
+      "observations": [],
+      "notes": "R2 (1 more search, 4 total): string not found anywhere (distributors, TE, aggregators); series unknown."
+    }
+  ]
+}

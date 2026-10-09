@@ -1,0 +1,973 @@
+{
+ "researched": "2026-10-09",
+ "groups": [
+  {
+   "group": "Mobileye EyeQ4 (Mid / High) vision SoC",
+   "parts": [
+    {
+     "code": "EYEQ4",
+     "mfr": "Mobileye",
+     "desc": "EyeQ4 Mid/High vision SoC (28 nm FD-SOI, ST)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "EYEQ4",
+     "value": 50.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "Average System Price, all EyeQ + SuperVision systems shipped in Q4 2024 (blended family)",
+     "year": 2024,
+     "type": "company disclosure",
+     "publisher": "Mobileye Global Inc. (Q4/FY2024 results, 8-K / press release)",
+     "url": "https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2024-results-and",
+     "dateRead": "2026-10-09",
+     "quote": "Average System Price was $50.0 in fourth quarter 2024, compared to $52.7 in the prior year period primarily due to lower percentage of SuperVision related revenue",
+     "confidence": "high",
+     "notes": "Mobileye sells EyeQ SoC + its software to the Tier 1; 'Average System Price' = EyeQ + SuperVision revenue / systems shipped, so it is a per-SoC selling price including software, blended over EyeQ4/EyeQ5/EyeQ6L and a small SuperVision share. Not a silicon cost. Quote as rendered by the search summary (WebFetch blocked)."
+    },
+    {
+     "part": "EYEQ4",
+     "value": 50.8,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "Average System Price, Q4 2025 (blended family; Q1–Q3 2025 were $49.0 / $49.7 / $51.7)",
+     "year": 2025,
+     "type": "company disclosure",
+     "publisher": "Mobileye Global Inc. (Q4/FY2025 results)",
+     "url": "https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2025-results-and",
+     "dateRead": "2026-10-09",
+     "quote": "Average System Price was $50.8 in the fourth quarter of 2025, compared to $50.0 in the prior year period, primarily due to a higher percentage of SuperVision-related revenue",
+     "confidence": "high",
+     "notes": "Mobileye sells EyeQ SoC + its software to the Tier 1; 'Average System Price' = EyeQ + SuperVision revenue / systems shipped, so it is a per-SoC selling price including software, blended over EyeQ4/EyeQ5/EyeQ6L and a small SuperVision share. Not a silicon cost. Quarterly figures for Q1–Q3 2025 per the Q3 2025 8-K exhibit https://www.sec.gov/Archives/edgar/data/1910139/000110465925101678/tm2524891d2_ex99-1.htm"
+    },
+    {
+     "part": "EYEQ4",
+     "value": 46.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "Core (base) ADAS ASP, i.e. excluding SuperVision; stated Aug 2026",
+     "year": 2026,
+     "type": "company disclosure",
+     "publisher": "Mobileye CCO Dan Galves at Canaccord Genuity Growth Conference, reported by Nasdaq/Zacks",
+     "url": "https://www.nasdaq.com/articles/mobileye-eyes-higher-asps-surround-adas-volkswagen-programs-ramp",
+     "dateRead": "2026-10-09",
+     "quote": "The company's core advanced driver-assistance systems business has an average selling price of about $46",
+     "confidence": "medium",
+     "notes": "Spoken remark relayed by press (also summarised at https://quartr.com/events/mobileye-global-inc-mbly-canaccord-genuity-s-46th-annual-growth-conference_oCWnwrbc). Best single figure for an EyeQ4/EyeQ5/EyeQ6L base front-camera SoC incl. software."
+    }
+   ]
+  },
+  {
+   "group": "Mobileye EyeQ5 (Mid / High) vision SoC",
+   "parts": [
+    {
+     "code": "EYEQ5",
+     "mfr": "Mobileye",
+     "desc": "EyeQ5 Mid/High vision SoC (7 nm TSMC)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No EyeQ5-specific public figure. Yole/System Plus reverse-costing of EyeQ5M (Aptiv ADCAM, BMW iX) exists but cost/selling price are paywalled (https://www.yolegroup.com/product//mobileyes-eyeq5-mid-soc). EyeQ5 volumes are inside Mobileye's blended ~$46–51 Average System Price recorded under the EyeQ4 group."
+  },
+  {
+   "group": "Mobileye EyeQ6L / EyeQ6H vision SoC",
+   "parts": [
+    {
+     "code": "EYEQ6L",
+     "mfr": "Mobileye",
+     "desc": "EyeQ6 Lite front-camera SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "EYEQ6H",
+     "mfr": "Mobileye",
+     "desc": "EyeQ6 High SoC (7 nm), Surround ADAS",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "EYEQ6H",
+     "value": 125.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "Surround ADAS system price (one EyeQ6H + Mobileye software; ECU hardware supplied by Tier 1), programmes launching 2028",
+     "year": 2026,
+     "type": "company disclosure",
+     "publisher": "Mobileye CCO Dan Galves at Canaccord Genuity conference, reported by Nasdaq/Zacks",
+     "url": "https://www.nasdaq.com/articles/mobileye-eyes-higher-asps-surround-adas-volkswagen-programs-ramp",
+     "dateRead": "2026-10-09",
+     "quote": "Galves later characterized the product's price at about $125 per unit.",
+     "confidence": "medium",
+     "notes": "Also stated as 2.5–3x the ~$46 base ADAS ASP. Per-system = per EyeQ6H incl. software licence, excludes the Tier-1 ECU (Valeo builds the VW ECU)."
+    },
+    {
+     "part": "EYEQ6H",
+     "value": 100.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "Surround ADAS ASP range $100–150 cited for three design wins (lower bound recorded)",
+     "year": 2026,
+     "type": "company disclosure",
+     "publisher": "Mobileye Q1 2026 earnings call transcript (The Motley Fool)",
+     "url": "https://www.fool.com/earnings/call-transcripts/2026/04/23/mobileye-mbly-q1-2026-earnings-transcript/",
+     "dateRead": "2026-10-09",
+     "quote": "average ASPs cited at $100-$150 and gross margins similar to base ADAS (~70%)",
+     "confidence": "low",
+     "notes": "Range lower bound recorded; upper bound $150. Wording comes from a search summary of the transcript, not read verbatim."
+    },
+    {
+     "part": "EYEQ6H",
+     "value": 150.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "Needham estimate of Surround ADAS ASP, range $150–200 (lower bound recorded), March 2025",
+     "year": 2025,
+     "type": "analyst",
+     "publisher": "Needham (Quinn Bolton) via Benzinga",
+     "url": "https://cdn1.benzinga.com/analyst-ratings/price-target/25/03/44498506/mobileye-lands-vw-deal-for-advanced-driving-tech-paving-way-to-higher-margins-market",
+     "dateRead": "2026-10-09",
+     "quote": "ASPs are in the $150-$200 range versus Base ADAS at ~$50, Cloud Enhanced at ~$85 and full SuperVision (SV) at ~$1,200",
+     "confidence": "low",
+     "notes": "Superseded by the company's later ~$125; kept for the reviewer. Upper bound $200."
+    }
+   ]
+  },
+  {
+   "group": "Renesas R-Car V3H / V3M vision SoC",
+   "parts": [
+    {
+     "code": "R8A77980",
+     "mfr": "Renesas",
+     "desc": "R-Car V3H vision SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "R8A77970",
+     "mfr": "Renesas",
+     "desc": "R-Car V3M vision SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public chip price or teardown figure. Only related figure: TechInsights lists 'Pricing: $249' for the LG front camera module that uses the V3H (recorded under the front-camera/domain-controller group)."
+  },
+  {
+   "group": "Renesas R-Car V4H / V4M ADAS SoC",
+   "parts": [
+    {
+     "code": "R8A779G0",
+     "mfr": "Renesas",
+     "desc": "R-Car V4H ADAS SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "R-CAR-V4M",
+     "mfr": "Renesas",
+     "desc": "R-Car V4M ADAS SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price: sampled to OEMs only, mass production Q1 2026; Renesas press gives no figure."
+  },
+  {
+   "group": "Renesas R-Car H3 SoC (automotive)",
+   "parts": [
+    {
+     "code": "R8A77951",
+     "mfr": "Renesas",
+     "desc": "R-Car H3 SoC (16 nm)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price or teardown cost found (launch press only)."
+  },
+  {
+   "group": "NXP TEF8102 / TEF8232 / TEF82xx 77 GHz radar transceiver",
+   "parts": [
+    {
+     "code": "TEF8102",
+     "mfr": "NXP",
+     "desc": "77 GHz radar transceiver 3T4R (gen 1)",
+     "category": "ic_bga",
+     "catalogueNow": "TEF8102 £11.76 @1k (engineering estimate)"
+    },
+    {
+     "code": "TEF8232",
+     "mfr": "NXP",
+     "desc": "77 GHz RFCMOS radar transceiver (TEF82xx)",
+     "category": "ic_bga",
+     "catalogueNow": "TEF8232 / TEF8232EN1/N1/ZUZ £20.69 @1k (distributor-priced)"
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No OEM-level evidence (no teardown figure, no NXP list price). TEF8232 already distributor-priced in round A."
+  },
+  {
+   "group": "NXP S32R41 / S32R45 radar processor",
+   "parts": [
+    {
+     "code": "S32R41",
+     "mfr": "NXP",
+     "desc": "S32R41 radar processor",
+     "category": "ic_bga",
+     "catalogueNow": "S32R41 £52.94 @1k (engineering estimate)"
+    },
+    {
+     "code": "S32R45",
+     "mfr": "NXP",
+     "desc": "S32R45 radar processor",
+     "category": "ic_bga",
+     "catalogueNow": "S32R45 £82.35 @1k (engineering estimate)"
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price or teardown cost; fact sheets and launch press only."
+  },
+  {
+   "group": "NXP SAF85xx radar one-chip",
+   "parts": [
+    {
+     "code": "SAF85XX",
+     "mfr": "NXP",
+     "desc": "28 nm RFCMOS one-chip radar SoC 4T4R",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price; EVK under NDA, launch press only."
+  },
+  {
+   "group": "Infineon RXS8160 / CTRX8181 radar MMIC, RASIC family",
+   "parts": [
+    {
+     "code": "RXS8160",
+     "mfr": "Infineon",
+     "desc": "RASIC 77 GHz radar MMIC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "CTRX8181",
+     "mfr": "Infineon",
+     "desc": "RASIC 28 nm CMOS 77 GHz transceiver 4T4R",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price or teardown cost; launch press only."
+  },
+  {
+   "group": "TI AWR2944 / AWR2544 radar SoC (TI list price as evidence where distributors show none)",
+   "parts": [
+    {
+     "code": "AWR2944",
+     "mfr": "Texas Instruments",
+     "desc": "77 GHz radar SoC 4T4R",
+     "category": "ic_bga",
+     "catalogueNow": "AWR2944ALBGALTRQ1 £21.74 @1k (distributor-priced)"
+    },
+    {
+     "code": "AWR2544",
+     "mfr": "Texas Instruments",
+     "desc": "77 GHz radar SoC, launch-on-package",
+     "category": "ic_bga",
+     "catalogueNow": "AWR2544 £23.53 @1k (engineering estimate)"
+    }
+   ],
+   "claims": [],
+   "noEvidence": "TI's 1ku price field exists on ti.com (AWR2544BGAMQRQ1 / AWR2544BGAMQQ1) but no value came through search and WebFetch is blocked; only EVM prices seen (not chips). Re-check ti.com by hand."
+  },
+  {
+   "group": "Arbe Phoenix / Lynx chipset (4D radar)",
+   "parts": [
+    {
+     "code": "ARBE-PHOENIX",
+     "mfr": "Arbe",
+     "desc": "Phoenix 4D imaging radar chipset (TX/RX + processor)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No company or analyst figure. Unsourced claim seen: a Seeking Alpha user comment mentions ~$150 per chipset (not evidence). Weifu $11.6M preliminary order has no unit count."
+  },
+  {
+   "group": "Sony IMX390 / IMX490 / IMX623 / IMX728 automotive image sensor",
+   "parts": [
+    {
+     "code": "IMX390",
+     "mfr": "Sony",
+     "desc": "2.45 MP automotive CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "IMX490",
+     "mfr": "Sony",
+     "desc": "5.4 MP automotive HDR CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "IMX623",
+     "mfr": "Sony",
+     "desc": "3 MP automotive CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "IMX728",
+     "mfr": "Sony",
+     "desc": "8.39 MP automotive CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No per-chip figure; TechInsights IMX490 teardown is paywalled; only finished camera-module prices seen. A market listing quoted 'US$5 per unit' ASP for 8 MP automotive CIS (2024) without a named source — not recorded."
+  },
+  {
+   "group": "Sony ISX016 / ISX019 / ISX031 automotive image sensor + ISP",
+   "parts": [
+    {
+     "code": "ISX016",
+     "mfr": "Sony",
+     "desc": "1.26 MP automotive CIS + ISP",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "ISX019",
+     "mfr": "Sony",
+     "desc": "1.23 MP automotive CIS + ISP",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "ISX031",
+     "mfr": "Sony",
+     "desc": "3 MP automotive CIS + ISP",
+     "category": "sensor",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price or teardown cost (specs only; TechInsights ISX031 report paywalled)."
+  },
+  {
+   "group": "OmniVision OX08B40 / OX08D10 / OX03C10 / OX03F10 / OX01F10 automotive image sensor",
+   "parts": [
+    {
+     "code": "OX08B40",
+     "mfr": "OmniVision",
+     "desc": "8.3 MP automotive HDR CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "OX08D10",
+     "mfr": "OmniVision",
+     "desc": "8 MP automotive CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "OX03C10",
+     "mfr": "OmniVision",
+     "desc": "2.5 MP automotive HDR CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "OX03F10",
+     "mfr": "OmniVision",
+     "desc": "3 MP automotive CIS",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "OX01F10",
+     "mfr": "OmniVision",
+     "desc": "1.3 MP automotive SoC sensor",
+     "category": "sensor",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No per-chip figure. Yole front-camera teardown gives only a ratio (OmniVision CIS ~40% costlier than onsemi's); Will Semi discloses automotive CIS revenue, not units/ASP."
+  },
+  {
+   "group": "OmniVision OV2311 / OV9284 / OG01A1B driver-monitoring sensor",
+   "parts": [
+    {
+     "code": "OV2311",
+     "mfr": "OmniVision",
+     "desc": "2 MP global-shutter DMS sensor",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "OV9284",
+     "mfr": "OmniVision",
+     "desc": "1 MP global-shutter DMS sensor",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "OG01A1B",
+     "mfr": "OmniVision",
+     "desc": "1.3 MP global-shutter sensor",
+     "category": "sensor",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public figure; Yole BYD DMS teardown (OV9284) has per-part costs behind paywall."
+  },
+  {
+   "group": "OmniVision OAX4010 ISP",
+   "parts": [
+    {
+     "code": "OAX4010",
+     "mfr": "OmniVision",
+     "desc": "Automotive ISP, 169-BGA",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price; product brief and launch press only."
+  },
+  {
+   "group": "NVIDIA DRIVE Orin SoC (and Xavier)",
+   "parts": [
+    {
+     "code": "ORIN",
+     "mfr": "NVIDIA",
+     "desc": "DRIVE Orin SoC (254 TOPS)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "XAVIER",
+     "mfr": "NVIDIA",
+     "desc": "DRIVE Xavier SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "ORIN",
+     "value": 1599.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Jetson AGX Orin 64GB module, list price at 1KU+, 2022 launch",
+     "year": 2022,
+     "type": "list price",
+     "publisher": "CNX Software (NVIDIA launch pricing)",
+     "url": "https://www.cnx-software.com/2022/03/22/nvidia-launches-jetson-agx-orin-developer-kit-orin-nx-modules-and-isaac-nova-orin-amr-platform/",
+     "dateRead": "2026-10-09",
+     "quote": "1,000-unit pricing for the AGX Orin 64GB module at $1,599",
+     "confidence": "low",
+     "notes": "Jetson MODULE (Orin SoC + 64 GB LPDDR5 + eMMC + PMIC + board), industrial channel — NOT the automotive DRIVE Orin chip price. Upper bound only. Quote as rendered by search summary."
+    },
+    {
+     "part": "ORIN",
+     "value": 2999.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Jetson AGX Orin 64GB module, 1KU+ list after July 2026 increase (32GB: $899 → $1,799)",
+     "year": 2026,
+     "type": "list price",
+     "publisher": "CNX Software",
+     "url": "https://cnx-software.com/2026/07/22/nvidia-increases-the-price-of-jetson-modules-and-devkits-by-up-to-101",
+     "dateRead": "2026-10-09",
+     "quote": "Jetson AGX Orin 64GB module from $1,599 to $2,999",
+     "confidence": "low",
+     "notes": "Increase attributed to LPDDR4/5 memory cost; module, not DRIVE chip."
+    }
+   ],
+   "noEvidence": "No public per-chip DRIVE Orin/Xavier price (Yole Orin reverse-costing paywalled). NIO says its NX9031 chip saves ~RMB 10,000 per vehicle vs a 4x Orin-X set-up (Yicai) — a saving, not a price; not recorded. Only Jetson module list prices recorded (upper bound)."
+  },
+  {
+   "group": "Qualcomm Snapdragon Ride SA8650P / SA8540P",
+   "parts": [
+    {
+     "code": "SA8650P",
+     "mfr": "Qualcomm",
+     "desc": "Snapdragon Ride ADAS SoC (5 nm)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "SA8540P",
+     "mfr": "Qualcomm",
+     "desc": "Snapdragon Ride SoC gen 1",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No dollar figure. 36Kr cites unnamed insiders: Ride priced ~30% below Orin-X per unit (relative only, unverified; https://kr-asia.com/qualcomm-lands-autonomous-driving-projects-with-toyota-and-faws-hongqi)."
+  },
+  {
+   "group": "Ambarella CV2AQ / CV3-AD685 / CV3-AD",
+   "parts": [
+    {
+     "code": "CV2AQ",
+     "mfr": "Ambarella",
+     "desc": "CV2 family automotive CV SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "CV3-AD685",
+     "mfr": "Ambarella",
+     "desc": "CV3-AD domain-controller SoC",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "CV3-AD",
+     "mfr": "Ambarella",
+     "desc": "CV3-AD family",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "CV2AQ",
+     "value": 20.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "CV2 family ASP (auto + IoT), fiscal Q2 2024 call (Aug 2023); range below $10 to above $50 per FQ3 2024 call",
+     "year": 2023,
+     "type": "company disclosure",
+     "publisher": "Ambarella FQ2 2024 earnings call (CEO Fermi Wang), transcript via The Motley Fool / Nasdaq",
+     "url": "https://www.fool.com/earnings/call-transcripts/2023/08/29/ambarella-amba-q2-2024-earnings-call-transcript/",
+     "dateRead": "2026-10-09",
+     "quote": "This family of AI inference SoCs commands an ASP close to $20 and serves computer vision applications for auto and IoT.",
+     "confidence": "medium",
+     "notes": "Family ASP across auto and IoT, not CV2AQ specifically."
+    },
+    {
+     "part": "CV3-AD",
+     "value": 50.0,
+     "currency": "USD",
+     "unit": "per chip",
+     "quantityContext": "CV3 family SoC price range $50 to more than $400 per SoC (lower bound recorded)",
+     "year": 2023,
+     "type": "company disclosure",
+     "publisher": "Ambarella FQ2 2024 earnings call, transcript via Nasdaq",
+     "url": "https://www.nasdaq.com/articles/ambarella-amba-q2-2024-earnings-call-transcript",
+     "dateRead": "2026-10-09",
+     "quote": "The CV3 family SoC range from $50 to more than $400 per SoC",
+     "confidence": "medium",
+     "notes": "Upper end '>$400' applies to top CV3-AD (e.g. CV3-AD685 class); lower end to small CV3 parts. Range, not a quote for a specific code."
+    }
+   ]
+  },
+  {
+   "group": "Horizon Robotics Journey 5 / Journey 6",
+   "parts": [
+    {
+     "code": "JOURNEY5",
+     "mfr": "Horizon Robotics",
+     "desc": "Journey 5 ADAS SoC (128 TOPS)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "JOURNEY6",
+     "mfr": "Horizon Robotics",
+     "desc": "Journey 6 family (6E/6M/6P)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "JOURNEY6",
+     "value": 390.0,
+     "currency": "CNY",
+     "unit": "per chip",
+     "quantityContext": "Blended ASP of Journey processing hardware, 2H 2025 (flat vs 1H25; analysts had expected ~RMB 510)",
+     "year": 2025,
+     "type": "analyst",
+     "publisher": "Dolphin Research (Longbridge/Longport) on Horizon Robotics 2025 results",
+     "url": "https://longportapp.cn/topics/39384663",
+     "dateRead": "2026-10-09",
+     "quote": "chip ASP at roughly RMB 390 in 2H25, flat versus 1H25",
+     "confidence": "low",
+     "notes": "Blended across all Journey SKUs (J2/J3/J5/J6) — not J6 specifically. Search showed two Dolphin topics (also https://longportapp.cn/topics/39384481); which one carries the figure not confirmed. Company disclosed 2025 product-solutions revenue RMB 1.622 bn and 4.01 M Journey units shipped (results announcement); CEO said J5 is priced at half of Orin (relative). Wording from search summary."
+    }
+   ]
+  },
+  {
+   "group": "Tesla FSD chip (HW3 / HW4) — cost evidence only, not purchasable",
+   "parts": [
+    {
+     "code": "TESLA-FSD-HW3",
+     "mfr": "Tesla",
+     "desc": "FSD computer HW3 (2x FSD SoC, Samsung 14 nm)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "TESLA-FSD-HW4",
+     "mfr": "Tesla",
+     "desc": "FSD computer HW4 (Samsung 7 nm)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "TESLA-FSD-HW3",
+     "value": 190.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Whole HW3 FSD computer hardware cost (2 SoCs + board), excludes service/logistics",
+     "year": 2021,
+     "type": "teardown",
+     "publisher": "EE Times teardown, reported by Electrek",
+     "url": "https://electrek.co/2021/07/20/tesla-reduces-price-of-fsd-computer-upgrade-to-1000-but-not-zero-after-criticism/",
+     "dateRead": "2026-10-09",
+     "quote": "according to a teardown by EE Times, Tesla's HW 3.0 system costs about $190 per unit",
+     "confidence": "low",
+     "notes": "Second-hand (original EE Times article not found); Electrek itself calls it 'a little low'. Whole computer, not per chip. Year = report date; teardown likely 2019–2020. TechInsights: HW4 manufacturing cost ~32% above its previous unit (ratio only)."
+    }
+   ]
+  },
+  {
+   "group": "Broadcom BCM89881 / BCM8957x automotive Ethernet",
+   "parts": [
+    {
+     "code": "BCM89881",
+     "mfr": "Broadcom",
+     "desc": "1000BASE-T1 automotive PHY",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "BCM8957X",
+     "mfr": "Broadcom",
+     "desc": "Automotive Ethernet switch family",
+     "category": "ic_bga",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No OEM-level evidence; Broadcom says 'contact sales for samples and pricing'. Only a broker listing seen (not evidence)."
+  },
+  {
+   "group": "Elmos E524.08 / .09 / .14 / .24 / .37 ultrasonic ICs",
+   "parts": [
+    {
+     "code": "E524.08",
+     "mfr": "Elmos",
+     "desc": "Ultrasonic transducer driver/DSP 2-wire",
+     "category": "ic_qfn",
+     "catalogueNow": null
+    },
+    {
+     "code": "E524.09",
+     "mfr": "Elmos",
+     "desc": "Ultrasonic transducer driver/DSP 3-wire",
+     "category": "ic_qfn",
+     "catalogueNow": null
+    },
+    {
+     "code": "E524.14",
+     "mfr": "Elmos",
+     "desc": "Ultrasonic IC",
+     "category": "ic_qfn",
+     "catalogueNow": null
+    },
+    {
+     "code": "E524.24",
+     "mfr": "Elmos",
+     "desc": "Ultrasonic IC",
+     "category": "ic_qfn",
+     "catalogueNow": null
+    },
+    {
+     "code": "E524.37",
+     "mfr": "Elmos",
+     "desc": "Ultrasonic IC",
+     "category": "ic_qfn",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price; Avnet listing shows no value (MOQ 5,700); Elmos quotes direct."
+  },
+  {
+   "group": "Bosch SMI240 / SMI330 automotive IMU",
+   "parts": [
+    {
+     "code": "SMI240",
+     "mfr": "Bosch",
+     "desc": "6-axis ASIL-B automotive IMU",
+     "category": "sensor",
+     "catalogueNow": null
+    },
+    {
+     "code": "SMI330",
+     "mfr": "Bosch",
+     "desc": "6-axis automotive IMU (non-safety)",
+     "category": "sensor",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [],
+   "noEvidence": "No public price or teardown figure."
+  },
+  {
+   "group": "Micron / Samsung automotive LPDDR4X / LPDDR5 (per-GB contract or market price evidence)",
+   "parts": [
+    {
+     "code": "LPDDR5",
+     "mfr": "Micron / Samsung",
+     "desc": "LPDDR5 (per GB)",
+     "category": "ic_bga",
+     "catalogueNow": null
+    },
+    {
+     "code": "LPDDR4X",
+     "mfr": "Micron / Samsung",
+     "desc": "LPDDR4X (per GB)",
+     "category": "ic_bga",
+     "catalogueNow": "MT53E256M32D1KS-046 AUT:L (1 GB) £21.64 @1k; MT53E512M32D1ZW-046 AUT:B (2 GB) £20.42; MT53E1G32D2FW-046 AUT:B (4 GB) £83.57; MT53E family (1 GB) £8.82 estimate"
+    }
+   ],
+   "claims": [
+    {
+     "part": "LPDDR5",
+     "value": 10.0,
+     "currency": "USD",
+     "unit": "per GB",
+     "quantityContext": "LPDDR5 contract price, mobile, 'recently' (article May 2026), after ~3x rise since Q1 2025",
+     "year": 2026,
+     "type": "analyst",
+     "publisher": "SemiAnalysis, reported by Wccftech",
+     "url": "https://wccftech.com/mobile-dram-prices-expected-to-increase-by-100-quarter-over-quarter-as-long-term-agreements-now-getting-signed-at-prices-as-high-as-21-gb/amp/",
+     "dateRead": "2026-10-09",
+     "quote": "LPDDR5 contract prices were recently hovering at around $10/GB after undergoing a 3x increase since Q1 2025",
+     "confidence": "low",
+     "notes": "Mobile (smartphone) contract, not automotive grade; automotive parts carry a premium. Quarter not stated (≈ 1Q–2Q 2026). TrendForce publishes % changes only: 1Q26 ~+90% QoQ, 2Q26 LPDDR4X +70–75% / LPDDR5X +78–83%, 3Q26 +8–13%, 4Q26 0–5%."
+    },
+    {
+     "part": "LPDDR5",
+     "value": 19.3,
+     "currency": "USD",
+     "unit": "per GB",
+     "quantityContext": "2Q 2026 projection, $19.3–19.8/GB (lower bound recorded) = SemiAnalysis baseline x TrendForce 2Q26 increase",
+     "year": 2026,
+     "type": "analyst",
+     "publisher": "Wccftech (own projection on SemiAnalysis + TrendForce)",
+     "url": "https://wccftech.com/mobile-dram-prices-expected-to-increase-by-100-quarter-over-quarter-as-long-term-agreements-now-getting-signed-at-prices-as-high-as-21-gb/amp/",
+     "dateRead": "2026-10-09",
+     "quote": "a typical LPDDR5 module is now expected to cost between $19.3/GB and $19.8/GB in the second quarter of 2026",
+     "confidence": "low",
+     "notes": "Derived by the publisher, not a reported transaction. Same article cites an unnamed report of LTAs at ~$7.8–21/GB (not recorded)."
+    }
+   ]
+  },
+  {
+   "group": "Hesai / Valeo / Luminar LiDAR BOM-level cost evidence (unit or component)",
+   "parts": [
+    {
+     "code": "HESAI-ATX",
+     "mfr": "Hesai",
+     "desc": "ATX automotive LiDAR",
+     "category": "power_module",
+     "catalogueNow": null
+    },
+    {
+     "code": "HESAI-ALL",
+     "mfr": "Hesai",
+     "desc": "Hesai LiDAR, all products",
+     "category": "power_module",
+     "catalogueNow": null
+    },
+    {
+     "code": "VALEO-SCALA",
+     "mfr": "Valeo",
+     "desc": "Scala gen 1 / gen 2 LiDAR",
+     "category": "power_module",
+     "catalogueNow": null
+    },
+    {
+     "code": "LUMINAR-IRIS",
+     "mfr": "Luminar",
+     "desc": "Iris LiDAR",
+     "category": "power_module",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "HESAI-ALL",
+     "value": 260.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Blended ASP over ~1.62 M LiDAR units recognised in 2025 (about $530 in 2024)",
+     "year": 2025,
+     "type": "company disclosure",
+     "publisher": "Hesai Group Form 20-F FY2025 (SEC)",
+     "url": "https://www.sec.gov/Archives/edgar/data/0001861737/000110465926048025/hsai-20251231x20f.htm",
+     "dateRead": "2026-10-09",
+     "quote": "average selling price of about $260 per unit, down from about $530 in 2024",
+     "confidence": "medium",
+     "notes": "Selling price to OEM/Tier 1 of the complete sensor; wording as rendered by search summary of the 20-F."
+    },
+    {
+     "part": "HESAI-ATX",
+     "value": 200.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "ATX price at mass production start (Q1 2025); ATP ~$350, AT ~$500",
+     "year": 2025,
+     "type": "company disclosure",
+     "publisher": "Hesai Q1 2025 earnings call, transcript via The Motley Fool",
+     "url": "https://www.fool.com/earnings/call-transcripts/2025/05/27/hesai-group-hsai-q1-2025-earnings-call-transcript/",
+     "dateRead": "2026-10-09",
+     "quote": "the ATX LiDAR, priced at $200 per unit, entered mass production",
+     "confidence": "medium",
+     "notes": "Complete LiDAR sensor selling price. A third-party note says <$200 (~RMB 1,400) with discounts to large customers."
+    },
+    {
+     "part": "VALEO-SCALA",
+     "value": 70.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Electronic core only, Scala gen 1 (gen 2: $110), Yole SystemPlus costing tools",
+     "year": 2022,
+     "type": "teardown",
+     "publisher": "Yole SystemPlus, via Edge AI and Vision Alliance",
+     "url": "https://www.edge-ai-vision.com/2022/09/first-and-second-generation-valeo-scala-lidars-the-technology-gap-revealed/",
+     "dateRead": "2026-10-09",
+     "quote": "estimated at $70 for the first-generation scanner and $110 for the second",
+     "confidence": "medium",
+     "notes": "Electronics core cost only (not full sensor). Total manufacturing cost gen2 = 1.6x gen1 (ratio only)."
+    },
+    {
+     "part": "VALEO-SCALA",
+     "value": 110.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Electronic core only, Scala gen 2",
+     "year": 2022,
+     "type": "teardown",
+     "publisher": "Yole SystemPlus, via Edge AI and Vision Alliance",
+     "url": "https://www.edge-ai-vision.com/2022/09/first-and-second-generation-valeo-scala-lidars-the-technology-gap-revealed/",
+     "dateRead": "2026-10-09",
+     "quote": "estimated at $70 for the first-generation scanner and $110 for the second",
+     "confidence": "medium",
+     "notes": "Electronics core only."
+    },
+    {
+     "part": "LUMINAR-IRIS",
+     "value": 1000.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "2019 launch price target 'under $1,000' for L4 production vehicles; sub-$500 target for ADAS variant at volume",
+     "year": 2019,
+     "type": "company disclosure",
+     "publisher": "Luminar launch, reported by CleanTechnica",
+     "url": "https://cleantechnica.com/2019/07/12/500-lidar-from-luminar-could-move-autonomous-driving-forward/?amp=1",
+     "dateRead": "2026-10-09",
+     "quote": "Iris would cost under $1,000 per unit for production vehicles",
+     "confidence": "low",
+     "notes": "Target, not a realised ASP; Luminar 10-Ks do not disclose a per-unit price."
+    }
+   ]
+  },
+  {
+   "group": "Front camera / radar / ADAS domain controller BOM cost from public teardown reports (unit level)",
+   "parts": [
+    {
+     "code": "AUDI-ZFAS",
+     "mfr": "Aptiv (Delphi) for Audi",
+     "desc": "zFAS central ADAS controller (Audi A8)",
+     "category": "power_module",
+     "catalogueNow": null
+    },
+    {
+     "code": "LG-ADAS-FRONT-CAM",
+     "mfr": "LG",
+     "desc": "ADAS front camera, Mercedes C-Class (R-Car V3H)",
+     "category": "power_module",
+     "catalogueNow": null
+    }
+   ],
+   "claims": [
+    {
+     "part": "AUDI-ZFAS",
+     "value": 290.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Reverse-costed manufacturing cost of zFAS (~60% semiconductors), Audi A8 (2017)",
+     "year": 2018,
+     "type": "teardown",
+     "publisher": "System Plus Consulting, reported by EE Times Asia",
+     "url": "https://www.eetasia.com/teardown-lessons-learned-from-audi-a8/",
+     "dateRead": "2026-10-09",
+     "quote": "System Plus's reverse costing puts zFAS at about $290, with roughly 60% of that tied to semiconductor costs",
+     "confidence": "medium",
+     "notes": "Wording from search summary. Excludes software. Year approximate (article ~2018)."
+    },
+    {
+     "part": "AUDI-ZFAS",
+     "value": 365.75,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "Total manufacturing cost at 125,000 units/yr",
+     "year": 2018,
+     "type": "teardown",
+     "publisher": "IHS Markit teardown, reported by Electronics360",
+     "url": "https://electronics360.globalspec.com/article/14386/teardown-delphi-audi-zfas-controller",
+     "dateRead": "2026-10-09",
+     "quote": "total manufacturing cost: $365.75, based on an annual volume assumption of 125,000 units",
+     "confidence": "medium",
+     "notes": "Different method from System Plus; year approximate."
+    },
+    {
+     "part": "LG-ADAS-FRONT-CAM",
+     "value": 249.0,
+     "currency": "USD",
+     "unit": "per unit (module)",
+     "quantityContext": "TechInsights teardown summary field 'Pricing'",
+     "year": 2023,
+     "type": "teardown",
+     "publisher": "TechInsights teardown, via Electronics360",
+     "url": "https://electronics360.globalspec.com/article/19674/techinsights-teardown-lg-adas-front-camera",
+     "dateRead": "2026-10-09",
+     "quote": "Pricing: $249",
+     "confidence": "low",
+     "notes": "Not stated whether this is a BOM, a manufacturing cost or a product/replacement price — likely the latter; partial deep dive. Treat as an upper reference for a front camera with R-Car V3H + 512 MB LPDDR4X + onsemi CIS."
+    }
+   ]
+  }
+ ]
+}

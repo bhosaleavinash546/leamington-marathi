@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { catalogueEntry } from '../server/utils/pcb-price-catalogue.js';
 import { ecuLibrary } from '../server/utils/pcb-ecu-library.js';
-import { PRICE_HOSTS, FRANCHISED } from '../scripts/pcb-catalogue-research-merge.js';
+import { PRICE_HOSTS, FRANCHISED, priceFromObservations, mergeResearch } from '../scripts/pcb-catalogue-research-merge.js';
 import { mergeEcuResearch } from '../scripts/pcb-ecu-library-merge.js';
 
 const host = (u: string) => u.replace(/^https?:\/\//, '').split('/')[0].toLowerCase();
@@ -36,9 +36,12 @@ describe('ADAS parts in the catalogue', () => {
     for (const k of ['TDA4VE', 'TJA1100', 'W25Q256JW', 'TMP451']) expect(catalogueEntry(k)?.confidence, k).toBe('distributor');
   });
 
-  it('the round\'s exclusions hold: no OmniVision staging price, AWR1443 stays an estimate', () => {
+  it('the round\'s exclusions hold: no OmniVision staging price; AWR1443 is not priced on the excluded listing', () => {
     expect(catalogueEntry('OX08B40-B86Y-00LD')?.confidence ?? 'none').not.toBe('distributor');
-    expect(catalogueEntry('AWR1443')?.confidence).toBe('estimate');
+    // Round 1 excluded a test-storefront price (VAT unconfirmed); round 2 found the tray code on a normal Digi-Key site.
+    const awr = catalogueEntry('AWR1443')!;
+    expect(awr.observations!.every(o => !o.url.includes('punchouttest'))).toBe(true);
+    expect(awr.source).toMatch(/sibling orderable code AWR1443FQIGABLQ1/);
     const ex = JSON.parse(readFileSync(new URL('../scripts/pcb-research/2026-10-09-adas/audit-exclusions.json', import.meta.url), 'utf8'));
     expect(Object.keys(ex.parts)).toEqual(expect.arrayContaining(['AWR1443FQIGABLRQ1', 'OX08B40-B86Y-00LD', '0347910042', 'CGA3E3X7R1H474K080AB']));
   });
@@ -89,5 +92,107 @@ describe('ADAS ECUs in the vehicle-electronics library', () => {
       keyIcs: [{ role: 'a', examples: ['A1'], source: 'https://e.x' }, { role: 'b', examples: ['B1'], source: 'no source found' }] }] } as never);
     expect(r.droppedKeyIcs).toHaveLength(1);
     expect(lib.powertrains[0].ecus).toEqual(['X']);
+  });
+});
+
+describe('ADAS round 2 (9 Oct 2026): retries, gap lists, test-storefront rule', () => {
+  const cat = () => JSON.parse(readFileSync(new URL('../server/data/pcb-component-catalogue.json', import.meta.url), 'utf8'));
+  const ob = (url: string, qty = 1000, price = 1) => ({ distributor: 'Digi-Key', qty, price, currency: 'USD', url, date: '2026-10-09' });
+  const TEST = 'https://punchouttest.digikey.ca/x', LIVE = 'https://www.digikey.com/x';
+
+  it('a staging-site price (fat.lcsc.com) is never used', () => {
+    expect(priceFromObservations([{ ...ob('https://fat.lcsc.com/x'), distributor: 'LCSC' }])).toBeNull();
+    expect(cat().parts.some((e: { observations?: Array<{ url: string }> }) => e.observations?.some(o => o.url.includes('fat.lcsc.com')))).toBe(false);
+  });
+
+  it('a test-storefront price is used only when nothing else is listed, and then says so', () => {
+    expect(priceFromObservations([ob(TEST, 1000, 2)])!.gbp.q1k).toBeGreaterThan(0);
+    const p = priceFromObservations([ob(TEST, 1000, 2), { ...ob('https://www.mouser.com/x', 1000, 1), distributor: 'Mouser' }])!;
+    expect(p.obs.map(o => o.distributor)).toEqual(['Mouser']);
+    const c = { parts: [] as Parameters<typeof mergeResearch>[0]['parts'] };
+    mergeResearch(c, [{ mpn: 'TST1Q1', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true, observations: [ob(TEST)] }], '2026-10-09');
+    expect(c.parts[0].source).toMatch(/punchouttest/);
+  });
+
+  it('the same row read again on a normal listing replaces the test-storefront read and re-prices the entry', () => {
+    const c = { parts: [] as Parameters<typeof mergeResearch>[0]['parts'] };
+    mergeResearch(c, [{ mpn: 'TST2Q1', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true, observations: [ob(TEST, 1000, 2), ob(TEST, 3000, 1.8)] }], '2026-10-09');
+    const rep = mergeResearch(c, [{ mpn: 'TST2Q1', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true, observations: [ob(LIVE, 1000, 2)] }], '2026-10-09');
+    expect(rep.updated.length).toBe(1);
+    expect(c.parts[0].observations!.map(o => o.url)).toEqual([LIVE]);
+    expect(c.parts[0].source).not.toMatch(/punchouttest/);
+  });
+
+  it('no catalogue entry mixes test-storefront and normal listings', () => {
+    const P = (o: { url: string }) => o.url.includes('punchouttest');
+    const mixed = cat().parts.filter((e: { observations?: Array<{ url: string }> }) => e.observations?.some(P) && !e.observations.every(P));
+    expect(mixed.map((e: { mpn: string }) => e.mpn)).toEqual([]);
+  });
+
+  it.each([
+    'DRV5055A1EDBZRQ1', 'TDA2SXBTQABCRQ1', 'DS90UB983RTDRQ1', 'LM74930QRGERQ1', 'VSMA1094250', 'MLX75027RTC-ABA-210-TR',
+    'UCC27511AQDBVRQ1', 'DLW32SH101XF2L', 'INA226AQDGSRQ1', 'TCA9548ARGERQ1', 'CGA6P3X7R1E226M250AB', 'WSL1206R0100FEA',
+  ])('round 2 priced %s from franchised listings', mpn => {
+    const e = catalogueEntry(mpn)!;
+    expect(e?.confidence, mpn).toBe('distributor');
+    for (const o of e.observations!) {
+      expect(PRICE_HOSTS.test(host(o.url)), o.url).toBe(true);
+      expect(o.url).not.toMatch(/punchouttest|fat\.lcsc/);
+    }
+  });
+
+  it('the round 2 audit decisions hold', () => {
+    const ex = JSON.parse(readFileSync(new URL('../scripts/pcb-research/2026-10-09-adas-r2/audit-exclusions.json', import.meta.url), 'utf8'));
+    expect(catalogueEntry('1-1534229-1')).toBeNull();
+    for (const mpn of Object.keys(ex.disputed)) expect(catalogueEntry(mpn)!.source, mpn).toMatch(/DISPUTED:/);
+    // the eMMC priced only on LCSC's staging site leaves the catalogue
+    expect(cat().parts.some((e: { mpn: string }) => e.mpn === 'MTFC32GAZAQHD-AAT')).toBe(false);
+  });
+
+  it('family keys follow their reviewed automotive member and stay estimates', () => {
+    for (const [k, m] of [['INA226', 'INA226AQDGSRQ1'], ['TMP102', 'TMP102AQDRLRQ1'], ['TXS0108E', 'TXS0108EQPWRQ1']]) {
+      const e = cat().parts.find((p: { mpn: string }) => p.mpn === k);
+      expect(e.confidence, k).toBe('estimate');
+      expect(e.gbp.q1k, k).toBe(catalogueEntry(m)!.gbp.q1k);
+    }
+  });
+
+  it('the catalogue grew to 1,102 parts, 764 distributor-priced', () => {
+    const c = cat();
+    expect(c.parts.length).toBeGreaterThanOrEqual(1102);
+    expect(c.parts.filter((e: { confidence: string }) => e.confidence === 'distributor').length).toBeGreaterThanOrEqual(764);
+  });
+});
+
+describe('ADAS round 2: OEM-direct chips from public cost evidence', () => {
+  it('EyeQ / CV2AQ are labelled estimates, flat across volumes, every claim linked', () => {
+    for (const [k, mpn] of [['EyeQ4H', 'EYEQ4'], ['EyeQ6L', 'EYEQ6L'], ['Mobileye EyeQ6H', 'EYEQ6H'], ['CV2AQ', 'CV2AQ']]) {
+      const e = catalogueEntry(k)!;
+      expect(e?.mpn, k).toBe(mpn);
+      expect(e.confidence).toBe('estimate');
+      expect(e.source).toMatch(/NOT a distributor price/);
+      expect(e.source).toMatch(/<https:\/\//);
+      expect(new Set(Object.values(e.gbp)).size).toBe(1);
+    }
+    // EyeQ6H's price is Mobileye's stated $125 at the engine's FX
+    expect(catalogueEntry('EYEQ6H')!.gbp.q1k).toBeCloseTo(125 * 0.7553, 3);
+    // no public figure for EyeQ5: nothing is invented
+    expect(catalogueEntry('EYEQ5H')).toBeNull();
+  });
+
+  it('only a per-chip company disclosure may price an entry', async () => {
+    const { oemEntries } = await import('../scripts/pcb-oem-evidence-merge.js');
+    const ev = JSON.parse(readFileSync(new URL('../scripts/pcb-research/2026-10-09-adas-r2/evidence/oem-evidence.json', import.meta.url), 'utf8'));
+    expect(oemEntries(ev).map((e: { mpn: string }) => e.mpn)).toEqual(['EYEQ4', 'EYEQ6L', 'EYEQ6H', 'CV2AQ']);
+    const analystOnly = { ...ev, groups: ev.groups.map((g: { claims: Array<{ type: string }> }) => ({ ...g, claims: g.claims.map(c => ({ ...c, type: 'analyst' })) })) };
+    expect(() => oemEntries(analystOnly)).toThrow(/company disclosure/);
+  });
+
+  it('unit-level teardown figures are board evidence in the ECU library, not catalogue prices', () => {
+    const lib = JSON.parse(readFileSync(new URL('../server/data/pcb-ecu-library.json', import.meta.url), 'utf8'));
+    const ev = lib.boardCostEvidence as Array<{ claim: string; url: string }>;
+    expect(ev.some(x => /zFAS/i.test(x.claim) || /zfas/i.test(x.url))).toBe(true);
+    expect(ev.some(x => /Hesai/.test(x.claim))).toBe(true);
+    for (const x of ev) expect(x.url).toMatch(/^https:\/\//);
   });
 });
