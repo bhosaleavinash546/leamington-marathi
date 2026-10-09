@@ -1,0 +1,771 @@
+{
+  "domain": "adas-gap-optics-r2",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "SPL S4L90A_3 A01",
+      "family": "SPL S4L90A_3",
+      "mfr": "ams OSRAM",
+      "desc": "905 nm 4-channel pulsed laser, QFN, automotive LiDAR",
+      "category": "led",
+      "pkg": "QFN",
+      "aecq": true,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "SPL S4L90A_3 A01",
+      "observations": [],
+      "notes": "Line 1. No valid observation (3 searches): the only volume tiers ($57.78 @1k) are on fat.lcsc.com (forbidden staging host); Farnell NO 3481178 shows NOK 733.45 @1 only (NOK not in FX table, below 100). No Digi-Key/Mouser listing. aecq per task line (A01 automotive suffix), not re-verified."
+    },
+    {
+      "mpn": "SPL PL90_3",
+      "family": "SPL PL90_3",
+      "mfr": "ams OSRAM",
+      "desc": "905 nm pulsed laser diode, TO-56 metal can",
+      "category": "through_hole",
+      "pkg": "TO-56",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "SPL PL90_3",
+      "observations": [],
+      "notes": "Line 2. Not priced: Digi-Key marks it OBSOLETE (digikey.cn ¥95.05 @500 incl. 13% VAT, https://digikey.cn/en/products/detail/ams-osram-usa-inc/SPL-PL90-3/1642856 — VAT-inclusive CNY, not recorded); LCSC tier only on staging host. Not an AEC-Q part."
+    },
+    {
+      "mpn": "SPL DS90A_3",
+      "family": "SPL DS90A_3",
+      "mfr": "ams OSRAM",
+      "desc": "903 nm SMT pulsed laser diode",
+      "category": "led",
+      "pkg": "SMT (laser module)",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "SPL DS90A_3",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 10.6281,
+          "currency": "USD",
+          "url": "https://findchips.com/search/SPLDS90A_3",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 3. Findchips names Digi-Key 475-SPLDS90A_3-ND, bulk, min 100, 22 wk, 'limited supply'. Avnet Americas lists Q65112A3764 min/mult 2,000 but no price captured. AEC-Q102 status not confirmed (aecq=false)."
+    },
+    {
+      "mpn": "SPL S1L90H_3",
+      "family": "SPL S1L90H_3",
+      "mfr": "ams OSRAM",
+      "desc": "907 nm 65 W single-channel pulsed laser, QFN",
+      "category": "led",
+      "pkg": "QFN",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "SPL S1L90H_3",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 100,
+          "price": 10.13,
+          "currency": "EUR",
+          "url": "https://pt.farnell.com/ams-osram-group/spl-s1l90h-3/laser-diode-907nm-65w-20a-qfn/dp/4154506",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 4. Farnell PT 100+ break (VAT status not stated in the snippet; Farnell's table is normally ex-VAT). Ordering code Q65113A4598. No Digi-Key/Mouser listing found. AEC-Q102 not confirmed (aecq=false)."
+    },
+    {
+      "mpn": "V105Q121A-940",
+      "family": "V105Q121A",
+      "mfr": "ams OSRAM",
+      "desc": "940 nm VCSEL power array, 3.2 W, QFN (flood illumination)",
+      "category": "led",
+      "pkg": "4-SMD QFN",
+      "aecq": false,
+      "ecuRoles": [
+        "DMS",
+        "LiDAR"
+      ],
+      "observedMpn": "V105Q121A-940",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 8.85,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/ams-osram-usa-inc/V105Q121A-940/14123810",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 7.63,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/ams-osram-usa-inc/V105Q121A-940/14123810",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 5 (VCSEL array). The only distributor-listed 940 nm VCSEL array found with breaks. AEC-Q102 NOT confirmed (aecq=false); RS UK says being discontinued and gives 949 nm peak. The AEC-Q102 automotive VCSELs (ams OSRAM TARA2000-AUT/-AUT-SAFE, Lumentum, Coherent flood illuminators) have no distributor listing in 3 searches (direct quote)."
+    },
+    {
+      "mpn": "SFH 4725AS A01",
+      "family": "SFH 4725AS",
+      "mfr": "ams OSRAM",
+      "desc": "IR emitter 940/950 nm, OSLON Black, AEC-Q102",
+      "category": "led",
+      "pkg": "OSLON Black (3-SMD)",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "SFH 4725AS A01",
+      "observations": [],
+      "notes": "Line 6. No valid observation (3 searches). Digi-Key China lists the exact part (¥15.09 @600, ¥13.84 @1,200, ¥13.01 @6,000 — all incl. 13% VAT, https://digikey.cn/en/products/detail/ams-osram-usa-inc/SFH-4725AS-A01/13664848) and Farnell NO a reel (NOK) — neither usable. Avnet's $1.28 @1,200 is the plain SFH 4725AS (Q65112A0782), not A01 (Q65112A0273) — different part, not recorded. AEC-Q102 per datasheet v1.10."
+    },
+    {
+      "mpn": "SFH 4780S",
+      "family": "SFH 4780S",
+      "mfr": "ams OSRAM",
+      "desc": "OSLUX IR emitter 810/820 nm, ±10°",
+      "category": "led",
+      "pkg": "OSLUX SMD",
+      "aecq": false,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "SFH 4780S",
+      "observations": [],
+      "notes": "Line 7. Not priced: RS UK marks it being discontinued by the manufacturer; no Digi-Key/Mouser/Avnet listing; only a broker (ichome) price. Not AEC-Q."
+    },
+    {
+      "mpn": "SFH 4790S",
+      "family": "SFH 4790S",
+      "mfr": "ams OSRAM",
+      "desc": "OSLUX IR emitter 850 nm",
+      "category": "led",
+      "pkg": "OSLUX SMD",
+      "aecq": false,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "SFH 4790S",
+      "observations": [],
+      "notes": "Line 8. Not priced: no distributor listing of SFH 4790S found (1 search); likely discontinued like SFH 4780S."
+    },
+    {
+      "mpn": "SFH 4170S A01",
+      "family": "SFH 4170S",
+      "mfr": "ams OSRAM",
+      "desc": "High-power IR emitter 850 nm, OSLON P1616, AEC-Q102",
+      "category": "led",
+      "pkg": "OSLON P1616 SMD",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "SFH 4170S A01",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 4000,
+          "price": 1.571,
+          "currency": "SGD",
+          "url": "https://sg.rs-online.com/web/p/ir-leds/2020465",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 40000,
+          "price": 1.372,
+          "currency": "SGD",
+          "url": "https://sg.rs-online.com/web/p/ir-leds/2020465",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 9 (SFH 4171 / 4170). Picked SFH 4170S A01: the A01 orderable RS lists as AEC-Q102 qualified. RS SG reel of 4,000 (1 reel / 10+ reels); RS UK marks it being discontinued. Note 850 nm, not 940 nm; no SFH 4171 listing found. GST status of the SG price not stated."
+    },
+    {
+      "mpn": "VSMA1094250",
+      "family": "VSMA1094",
+      "mfr": "Vishay",
+      "desc": "High-power IR emitter 940/950 nm, ±14°, SMD",
+      "category": "led",
+      "pkg": "SMD (VSMA)",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "VSMA1094250",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 600,
+          "price": 1.37195,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/vishay-semiconductor-opto-division/VSMA1094250/15786352",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 1.19704,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/vishay-semiconductor-opto-division/VSMA1094250/15786352",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 100,
+          "price": 1.55,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/vishay/vsma1094250/r-emitter-950nm-28-deg-smd/dp/3873090RL",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 10. Digi-Key tape & reel 600 / 6,000; Farnell IE ex-VAT. Future Electronics also lists $1.19 @400 (zero stock, not recorded). aecq per task line ('automotive'), not re-verified in this search."
+    },
+    {
+      "mpn": "VSMY1940X01",
+      "family": "VSMY1940",
+      "mfr": "Vishay",
+      "desc": "High-speed IR emitter 940 nm, 0805, AEC-Q101",
+      "category": "led",
+      "pkg": "0805",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "VSMY1940ITX01",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 100,
+          "price": 0.535,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/vishay/vsmy1940itx01/infrared-emitter-940-nm0805/dp/2504141",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 500,
+          "price": 0.454,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/vishay/vsmy1940itx01/infrared-emitter-940-nm0805/dp/2504141",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 11. Priced on the sibling VSMY1940ITX01 (same 0805 940 nm emitter, -40..+105 °C, AEC-Q101 per Vishay datasheet). VSMY1940X01 itself: LCSC C6604344 page without a price; no other listing in 3 searches."
+    },
+    {
+      "mpn": "OV2311",
+      "family": "OV2311",
+      "mfr": "OmniVision",
+      "desc": "2 MP global-shutter NIR image sensor (DMS)",
+      "category": "ic_bga",
+      "pkg": "CSP",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "OV2311",
+      "observations": [],
+      "notes": "Line 12. Not priced: no bare-sensor listing at any franchised distributor (only Leopard Imaging camera modules at Digi-Key); OmniVision sells by quote."
+    },
+    {
+      "mpn": "OV09284-E64Y-RB",
+      "family": "OV9284",
+      "mfr": "OmniVision",
+      "desc": "1 MP global-shutter NIR image sensor (DMS), 64-CSP",
+      "category": "ic_bga",
+      "pkg": "64-CSP",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "OV09284-E64Y-RB",
+      "observations": [],
+      "notes": "Line 13. Not priced: Digi-Key lists OV09284-E64Y-RB / -PB at $7.20 @1 only (non-stocked, 8 wk, https://www.digikey.com/en/products/detail/omnivision-technologies-inc/OV09284-E64Y-RB/25322699) — no break >= 100; LCSC tiers only on the staging host. aecq per task line."
+    },
+    {
+      "mpn": "VB56G4A",
+      "family": "VB56G4A",
+      "mfr": "STMicroelectronics",
+      "desc": "1.5 MP BSI global-shutter NIR sensor, automotive (DMS)",
+      "category": "ic_bga",
+      "pkg": "die/CSP",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "VB56G4A",
+      "observations": [],
+      "notes": "Line 14. Not priced: ST reports no distributor availability (contact sales); Findchips shows only Wuhan P&S (not franchised) and Avnet Silica without price."
+    },
+    {
+      "mpn": "VD56G3",
+      "family": "VD56G3",
+      "mfr": "STMicroelectronics",
+      "desc": "1.5 MP global-shutter sensor (industrial/consumer)",
+      "category": "ic_bga",
+      "pkg": "die",
+      "aecq": false,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "VD56G3",
+      "observations": [],
+      "notes": "Line 15. Not priced: only ST eStore (manufacturer list, $7.95 @100-249, out of stock) and modules/kits at Digi-Key/Mouser. Not an automotive part."
+    },
+    {
+      "mpn": "AR0144ATSM20XUEA0-DRBR",
+      "family": "AR0144AT",
+      "mfr": "onsemi",
+      "desc": "1 MP 1/4in global-shutter mono CMOS sensor, 1280x800",
+      "category": "ic_bga",
+      "pkg": "iBGA-63",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "AR0144ATSM20XUEA0-DRBR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 440,
+          "price": 15.62784,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/on-semiconductor/AR0144ATSM20XUEA0-DRBR/9829016",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 16. Round 1 found no USD break; this round Digi-Key shows $15.62784 @440 but marks the part OBSOLETE (no longer stocked once depleted) — a last-stock price. AR0144CS is industrial (not recorded)."
+    },
+    {
+      "mpn": "AR0234AT",
+      "family": "AR0234AT",
+      "mfr": "onsemi",
+      "desc": "2.3 MP global-shutter CMOS sensor (in-cabin)",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS"
+      ],
+      "observedMpn": "AR0234AT",
+      "observations": [],
+      "notes": "Line 17. No new search: R2 camera.json already records onsemi marks AR0234AT OBSOLETE, no automotive orderable at a franchised distributor; AR0234CS is industrial only."
+    },
+    {
+      "mpn": "MLX75027RTC-ABA-210-TR",
+      "family": "MLX75027",
+      "mfr": "Melexis",
+      "desc": "VGA time-of-flight image sensor, AEC-Q100",
+      "category": "ic_bga",
+      "pkg": "BGA",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS",
+        "ToF"
+      ],
+      "observedMpn": "MLX75027RTC-ABA-210-TR",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1300,
+          "price": 77.91,
+          "currency": "EUR",
+          "url": "https://eu.mouser.com/Melexis/MLX75027-Series/_/N-1yodowbZ1y8svk6",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 952,
+          "price": 67.1182,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/Image-Sensors_Melexis-MLX75027RTC-ABA-210-TR_C17636530.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 18. Mouser EU min 1,300 (non-stocked, 28 wk); LCSC 952+ (out of stock). Digi-Key marks -210-TR 'Last Time Buy'; Mouser marks -200-TR NRND."
+    },
+    {
+      "mpn": "MLX75026RTH-AAA-210-SP",
+      "family": "MLX75026",
+      "mfr": "Melexis",
+      "desc": "QVGA time-of-flight image sensor, AEC-Q100",
+      "category": "ic_bga",
+      "pkg": "FCBGA-80",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS",
+        "ToF"
+      ],
+      "observedMpn": "MLX75026RTH-AAA-210-SP",
+      "observations": [],
+      "notes": "Line 19. Not priced: Mouser lists only the sample pack -SP at $71.95 @1 / $60.59 @10 / $56.80 @20 (below 100); no production -TR break found."
+    },
+    {
+      "mpn": "IRS2877A",
+      "family": "IRS2877A",
+      "mfr": "Infineon",
+      "desc": "REAL3 VGA ToF imager, automotive",
+      "category": "ic_bga",
+      "pkg": "PG-LFBGA-65",
+      "aecq": true,
+      "ecuRoles": [
+        "DMS",
+        "ToF"
+      ],
+      "observedMpn": "IRS2877A",
+      "observations": [],
+      "notes": "Line 20. Not priced: no franchised listing; only JLCPCB with an implausible $0.02-0.86 (not allowed, discarded)."
+    },
+    {
+      "mpn": "ARRAYRDM-0112A20-QFN-TR",
+      "family": "ARRAYRDM-0112A20",
+      "mfr": "onsemi",
+      "desc": "1x12 SiPM array for LiDAR, QFN",
+      "category": "ic_qfn",
+      "pkg": "QFN",
+      "aecq": true,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "ARRAYRDM-0112A20-QFN-TR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 30.97032,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/ARRAYRDM-0112A20-QFN-TR/23329582",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 1000,
+          "price": 33.74,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/arrayrdm-0112a20-qfn-tr/on-semiconductor",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 21. Digi-Key tape & reel 1,000 (not stocked); Arrow 1,000+ (no stock). The -TR1 strip variant is $57.50 @1 at Digi-Key. aecq per onsemi's AEC-Q102 claim for the RDM array (not re-verified)."
+    },
+    {
+      "mpn": "MICROFJ-30035-TSV-TR",
+      "family": "MICROFJ-30035",
+      "mfr": "onsemi",
+      "desc": "J-series SiPM 3 mm, TSV chip-scale",
+      "category": "ic_bga",
+      "pkg": "TSV CSP",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "MICROFJ-30035-TSV-TR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 17.304,
+          "currency": "USD",
+          "url": "https://octopart.com/part/onsemi/MICROFJ-30035-TSV-TR",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 14.4926,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/MICROFJ-30035-TSV-TR/9742620",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 22. Octopart names Digi-Key cut tape 5556-MICROFJ-30035-TSV-TRCT-ND (100 and 1,000 both $17.304); Digi-Key reel 3,000. Mouser 863-MFJ30035TSVTR seen with tiers $18.96-14.49 but breaks unreadable (not recorded). Not AEC-Q (industrial SiPM)."
+    },
+    {
+      "mpn": "S14645-05",
+      "family": "S14645",
+      "mfr": "Hamamatsu",
+      "desc": "Si APD for LiDAR, 0.5 mm, SMD",
+      "category": "ic_qfn",
+      "pkg": "SMD 1.8x3.1",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "S14645-05",
+      "observations": [],
+      "notes": "Line 23 (S14645 / S15639). Not priced: Hamamatsu sells by inquiry; no franchised listing for S14645-02/-05 or S15639-1325PS (an MPPC/SiPM for automotive LiDAR); only JLCPCB without a price."
+    },
+    {
+      "mpn": "AD500-8 TO52S1",
+      "family": "AD500-8",
+      "mfr": "TE Connectivity (First Sensor)",
+      "desc": "Si APD 0.5 mm, TO-52 (order 3001349)",
+      "category": "through_hole",
+      "pkg": "TO-52",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "AD500-8 TO",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 250,
+          "price": 22.13,
+          "currency": "GBP",
+          "url": "https://uk.farnell.com/te-connectivity/ad500-8-to/photodiode-sensor-detector-850nm/dp/4164063",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 24. Farnell UK lists 'AD500-8 TO' (= order 3001349, TO52S1) 250+ ex VAT, 54 wk. Marketplace prices (eBay/AliExpress) ignored. Not AEC-Q."
+    },
+    {
+      "mpn": "LMH6401IRMZT",
+      "family": "LMH6401",
+      "mfr": "Texas Instruments",
+      "desc": "4.5 GHz digital variable-gain amplifier, 16-UQFN",
+      "category": "ic_qfn",
+      "pkg": "UQFN-16",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "LMH6401IRMZT",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 20.19,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LMH6401IRMZT?qs=zEQ6BYqA5vGEIEDmrNSRWQ%3D%3D",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 250,
+          "price": 19.24,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/LMH6401IRMZT?qs=zEQ6BYqA5vGEIEDmrNSRWQ%3D%3D",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 250,
+          "price": 19.37,
+          "currency": "USD",
+          "url": "https://www.digikey.com/product-detail/en/texas-instruments/LMH6401IRMZT/296-42273-1-ND/5334508",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 25. No LMH6401-Q1 / LMH5401-Q1 exists at any distributor (1 search) — priced the industrial LMH6401IRMZT (aecq=false). TI's automotive LiDAR receive part is LMH32401-Q1: Mouser lists LMH32401QWRGTRQ1 ($14.33 @1, 2,633 in stock; tiers to $8.74 with breaks unreadable) — the orderable code R1/R2 could not find; not recorded."
+    },
+    {
+      "mpn": "TDC7201ZAXR",
+      "family": "TDC7201",
+      "mfr": "Texas Instruments",
+      "desc": "Time-to-digital converter, 2 ch, NFBGA-25",
+      "category": "ic_bga",
+      "pkg": "NFBGA-25 (ZAX)",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "TDC7201ZAXR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 1.99875,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDC7201ZAXR/6181556",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 26. No automotive (-Q1) variant exists (searched); commercial TDC7201ZAXR, Digi-Key tape & reel 2,000 (Digi-Key UK £2.04637 @2,000 agrees). Aggregator figures $1.66-2.87 @1k conflict and were not recorded."
+    },
+    {
+      "mpn": "MAX40025",
+      "family": "MAX40025",
+      "mfr": "Analog Devices (Maxim)",
+      "desc": "280 ps high-speed comparator, WLP",
+      "category": "ic_bga",
+      "pkg": "WLP-6",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "MAX40025",
+      "observations": [],
+      "notes": "Line 27 (ADA4895 / MAX40025). Not priced: no automotive variant — MAX40025 is WLP only and not AEC-Q100; the automotive member of the family is MAX40026 (TDFN, line 28). ADA4895 is an op-amp with no automotive grade."
+    },
+    {
+      "mpn": "MAX40026ATA/VY+T",
+      "family": "MAX40026",
+      "mfr": "Analog Devices (Maxim)",
+      "desc": "280 ps high-speed comparator, TDFN-8, AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "TDFN-8 2x2",
+      "aecq": true,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "MAX40026ATA/VY+T",
+      "observations": [],
+      "notes": "Line 28. Automotive orderable not priced: Mouser shows $12.25 @1 only; Digi-Key marks MAX40026ATA/VY+ discontinued; ADI list price ($5.88) is manufacturer only. Industrial MAX40026ATA+T priced as a separate entry below."
+    },
+    {
+      "mpn": "MAX40026ATA+T",
+      "family": "MAX40026",
+      "mfr": "Analog Devices (Maxim)",
+      "desc": "280 ps high-speed comparator, TDFN-8 (non-automotive grade)",
+      "category": "ic_qfn",
+      "pkg": "TDFN-8 2x2",
+      "aecq": false,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "MAX40026ATA+T",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 4.3146,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX40026ATA-T/11484281",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 3.91326,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX40026ATA-T/11484281",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 28 (companion). Same die as the /VY+T but without the automotive /V flow, so aecq=false; Digi-Key cut tape 1,000, tape & reel 2,500. Use as a floor for the /V part."
+    },
+    {
+      "mpn": "EPC2252",
+      "family": "EPC2252",
+      "mfr": "EPC",
+      "desc": "80 V eGaN FET, AEC-Q101, LiDAR laser drive",
+      "category": "ic_bga",
+      "pkg": "die (chip-scale)",
+      "aecq": true,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "EPC2252",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 0.98434,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/epc/EPC2252/16916434",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 0.82329,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/epc/EPC2252/16916434",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 7500,
+          "price": 0.75,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/epc/EPC2252/16916434",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 29. Digi-Key cut tape 500, tape & reel 2,500 / 7,500; 47,205 in stock. Digi-Key product highlight: 'automotive qualified'."
+    },
+    {
+      "mpn": "EPC2219",
+      "family": "EPC2219",
+      "mfr": "EPC",
+      "desc": "40 V eGaN FET with gate clamp, AEC-Q101, LiDAR laser drive",
+      "category": "ic_bga",
+      "pkg": "die (chip-scale)",
+      "aecq": true,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "EPC2219",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 0.56572,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/epc/EPC2219/13586398",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.6183,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C3288340.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 29 (second part). Digi-Key marks EPC2219 'Last Time Buy' (LTB date 19 Feb 2026, passed); LCSC 1,000+ out of stock. Prefer EPC2252 for new designs."
+    },
+    {
+      "mpn": "UCC27511AQDBVRQ1",
+      "family": "UCC27511A-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "4 A / 8 A single-channel low-side gate driver, 13 ns, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6 (DBV)",
+      "aecq": true,
+      "ecuRoles": [
+        "LiDAR"
+      ],
+      "observedMpn": "UCC27511AQDBVRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.64107,
+          "currency": "USD",
+          "url": "https://digikey.com/product-detail/en/texas-instruments/UCC27511AQDBVRQ1/296-41036-1-ND/5178913",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.6032,
+          "currency": "USD",
+          "url": "https://digikey.com/product-detail/en/texas-instruments/UCC27511AQDBVRQ1/296-41036-1-ND/5178913",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 0.616,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/UCC27511AQDBVRQ1?qs=gvhpkjpQEVREJr1LXmGE9g%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Line 30. Picked UCC27511A-Q1 as the representative AEC-Q100 fast low-side laser gate driver: no UCC27611-Q1 orderable exists at any distributor, and ADP3654 has no automotive grade (Arrow: Automotive No, PPAP No). A second cached Digi-Key page shows $0.57549 @1k / $0.54990 @3k (older snapshot, not recorded). UCC27517A-Q1 is already in the catalogue."
+    }
+  ]
+}
