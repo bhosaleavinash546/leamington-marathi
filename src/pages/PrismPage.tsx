@@ -29,7 +29,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { AnalysisConfig, AnalysisResult, PlantRegion } from '../types';
-import { CURRENCIES, CURRENCY_SYMBOLS } from '../constants/costing';
+import { QUOTE_CURRENCIES, CURRENCY_SYMBOLS } from '../constants/costing';
 import { useDfmMotion } from '../lib/motion';
 import { useSpotlight } from '../components/dfm/useSpotlight';
 import Stepper, { type StepperStep } from '../components/ui/Stepper';
@@ -49,7 +49,7 @@ import './dfm.css';
 type QuoteKind = 'material' | 'conversion' | 'tooling' | 'logistics' | 'overhead' | 'margin' | 'other';
 const QUOTE_KINDS: QuoteKind[] = ['material', 'conversion', 'tooling', 'logistics', 'overhead', 'margin', 'other'];
 
-interface QuoteLine { label: string; kind: QuoteKind; amount: string; note?: string }
+interface QuoteLine { label: string; kind: QuoteKind; amount: string; note?: string; noteAck?: boolean }
 
 interface WaterfallStep {
   id: string; name: string; fromEur: number; toEur: number; deltaEur: number;
@@ -92,7 +92,7 @@ interface RollUp {
 interface AssemblyDossier {
   assemblyName: string; rollUp: RollUp; rows: BomRow[];
   dossier: { sections: Array<{ id: string; title: string; lines: Array<{ ref: string; text: string }> }>; evidenceCount: number };
-  lensBlocks: Array<{ lensId: string; name: string; level: string; text: string }>;
+  lensBlocks: Array<{ lensId: string; name: string; level: string; text: string; sig?: string }>;
   basis: string;
   dfa?: DfaResult | null; dfaError?: string | null;
 }
@@ -105,7 +105,7 @@ interface DossierResponse {
   counter?: { rows: CounterRow[]; totalAskEur: number; caveat: string } | null;
   dossier: { sections: Array<{ id: string; title: string; present: boolean; reason?: string; lines: Array<{ ref: string; text: string }> }>; evidenceCount: number; absent: string[] };
   promptBlock: string;
-  lensBlocks: Array<{ lensId: string; name: string; text: string }>;
+  lensBlocks: Array<{ lensId: string; name: string; text: string; sig?: string }>;
   lenses: Array<{ id: string; name: string }>;
   waterfall: Waterfall;
   forensics: { rows: ForensicsRow[]; totals: { linesSumEur: number; engineTotalEur: number; ratio: number | null } | null; caveat: string | null } | null;
@@ -257,6 +257,7 @@ export default function Part360Page() {
   const [quoteCurrency, setQuoteCurrency] = useState('EUR');
   const [quoteTotal, setQuoteTotal] = useState('');
   const [quoteLines, setQuoteLines] = useState<QuoteLine[]>([]);
+  const [quoteReadability, setQuoteReadability] = useState<string | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [extractNote, setExtractNote] = useState('');
   const [saveToCalibration, setSaveToCalibration] = useState(true);
@@ -270,6 +271,8 @@ export default function Part360Page() {
   // mass) scales every downstream figure; ideas built on it are built on a
   // wrong part. Generation waits for an explicit acknowledgement.
   const [massAck, setMassAck] = useState(false);
+  // One memory per part for the AI panels, so Back does not wipe paid reads (PR-34).
+  const panelMemory = useRef<Record<string, unknown>>({});
   useEffect(() => {
     const k = `${material}|${processName}|${region}|${annualVolume}`;
     const prev = measuredFor.current;
@@ -372,6 +375,10 @@ export default function Part360Page() {
   async function runMeasurements() {
     setMeasuring(true); setMeasureError(''); setMeasureLog([]);
     const log = (msg: string) => setMeasureLog(prev => [...prev, msg]);
+    // The drawing read in THIS run (or an earlier one) also goes to the DFM
+    // analysis, so its tolerance-capability rules can evaluate instead of
+    // abstaining "no drawing" (PR-35).
+    let drawingForDfm: unknown = drawingExtract;
     try {
       // Drawing extract first — its tolerances feed the costed specification.
       if (drawingFile && !drawingRead) {
@@ -393,6 +400,7 @@ export default function Part360Page() {
         const ras: number[] = (d.drawing?.roughness ?? []).map((x: { raUm?: number }) => Number(x.raUm)).filter((n: number) => Number.isFinite(n) && n > 0);
         setDrawingRead({ dims: dims.length, toleranced: toleranced.length });
         setDrawingExtract(d.drawing ?? null);
+        drawingForDfm = d.drawing ?? null;
         if (tightest != null) setTightestTolMm(String(tightest));
         if (ras.length) setRoughnessRaUm(String(Math.min(...ras)));
         log(`Drawing read: ${dims.length} dimensions, ${toleranced.length} toleranced${tightest != null ? `, tightest band ${tightest} mm` : ''}. Confirm the spec fields below.`);
@@ -409,7 +417,7 @@ export default function Part360Page() {
       if (!sc.ok) throw new Error(scd.error || 'Should-cost failed');
       setShouldCost(scd);
       // totalShouldCost arrives server-formatted with its symbol already on it.
-      log(`Engine should-cost: ${scd.totalShouldCost} / unit.`);
+      log(`Engine should-cost: ${fmtMoney(scd.totalValue, dispCcy, fx)} / unit.`);
 
       // DFM geometry measurement — only when a 3D model was supplied. A DFM
       // failure (huge file, unsupported kernel case, timeout) must NOT sink
@@ -425,6 +433,7 @@ export default function Part360Page() {
           fd.append('costProcess', processName);
           fd.append('region', region);
           fd.append('annualVolume', String(Number(annualVolume)));
+          if (drawingForDfm) fd.append('drawing', JSON.stringify(drawingForDfm));
           const r = await fetch('/api/dfm/analyze', {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream' },
@@ -495,13 +504,16 @@ export default function Part360Page() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Quote could not be read');
       if (d.supplier) setSupplier(d.supplier);
-      if (d.currency) setQuoteCurrency(d.currency);
+      // A currency the reader could not identify is NOT left at the previous
+      // choice (default EUR): the field is blanked and must be chosen (PR-25).
+      setQuoteCurrency(d.currency && (QUOTE_CURRENCIES as readonly string[]).includes(d.currency) ? d.currency : '');
       if (d.total != null) setQuoteTotal(String(d.total));
       if (Array.isArray(d.lineItems) && d.lineItems.length) {
         setQuoteLines(d.lineItems.map((l: { label: string; kind: QuoteKind; amount: number; note?: string }) => ({
-          label: l.label, kind: l.kind, amount: String(l.amount), note: l.note,
+          label: l.label, kind: l.kind, amount: String(l.amount), note: l.note, noteAck: !l.note,
         })));
       }
+      setQuoteReadability(d.readability ?? null);
       setExtractNote(d.caution || 'Extracted by AI — confirm every value before continuing.');
     } catch (e) {
       toast(e instanceof Error ? e.message : 'Extraction failed', 'error');
@@ -515,6 +527,7 @@ export default function Part360Page() {
     setBuilding(true); setError('');
     try {
       const hasQuote = Number(quoteTotal) > 0;
+      if (hasQuote && !quoteCurrency) throw new Error('Choose the quote currency — it could not be read from the document.');
       const best = dfmResult?.results?.[0];
       const body = {
         partName, material, process: processName, weightKg: Number(weightKg),
@@ -613,7 +626,7 @@ export default function Part360Page() {
     if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
     const blocks = dossier.lensBlocks
       .filter(b => selectedLenses.has(b.lensId))
-      .map(b => ({ lensId: b.lensId, text: b.text }));
+      .map(b => ({ lensId: b.lensId, text: b.text, sig: b.sig }));
     if (!blocks.length) { toast('Pick at least one evidence lens.', 'error'); return; }
     setError('');
     const dossierNow = dossier;
@@ -836,7 +849,7 @@ export default function Part360Page() {
   async function generateAssembly() {
     if (!asmDossier) return;
     if (!apiKey && !aiAvailable) { toast('Add your Anthropic API key in Settings to generate ideas.', 'error'); return; }
-    const blocks = asmDossier.lensBlocks.filter(b => asmLenses.has(b.lensId)).map(b => ({ lensId: b.lensId, text: b.text }));
+    const blocks = asmDossier.lensBlocks.filter(b => asmLenses.has(b.lensId)).map(b => ({ lensId: b.lensId, text: b.text, sig: b.sig }));
     if (!blocks.length) { toast('Pick at least one level.', 'error'); return; }
     const asmDossierNow = asmDossier;
     const started = startRun({ kind: 'prism-assembly', label: `Prism · ${asmName || 'assembly'}`, returnTo: '/prism', exec: async ({ signal, onProgress }) => {
@@ -886,7 +899,7 @@ export default function Part360Page() {
     if (i < step) setStep(i);
   };
 
-  const sym = CURRENCY_SYMBOLS[quoteCurrency] || '€';
+  const sym = CURRENCY_SYMBOLS[quoteCurrency] || quoteCurrency || '?';
   // Display boundary: every engine EUR figure this page RENDERS goes through
   // money()/<Money>, converted to the reader's display currency with the rate
   // and date named (FxNote). Figures handed to the model stay EUR.
@@ -1303,7 +1316,7 @@ export default function Part360Page() {
                 <p className="text-2xs text-slate-500 mb-4">Each one unlocks more of the 360° — absence is stated, never guessed.</p>
                 <div className="space-y-3 flex-1">
                   <input ref={cadInputRef} type="file" accept=".step,.stp,.stl,.igs,.iges" className="hidden"
-                    onChange={e => { setCadFile(e.target.files?.[0] ?? null); setDfmResult(null); setDfmFailed(false); }} />
+                    onChange={e => { setCadFile(e.target.files?.[0] ?? null); setDfmResult(null); setDfmFailed(false); panelMemory.current = {}; }} />
                   <motion.button {...m.press} onClick={() => cadInputRef.current?.click()}
                     className={`dfm-lift w-full border-2 border-dashed rounded-xl p-4 text-left ${cadFile ? 'border-teal-500/40 bg-teal-500/5' : 'border-white/15 hover:border-white/30'}`}>
                     <div className="flex items-center gap-2 text-sm text-white font-medium">
@@ -1433,7 +1446,9 @@ export default function Part360Page() {
                   {shouldCost ? (
                     <>
                       <div className="dfm-kpi-value text-white">
-                        <TickNumber value={shouldCost.totalValue} decimals={2} prefix={shouldCost.symbol} delay={m.beat(1)} />
+                        {/* Display currency, like every other figure on the page (the
+                            server symbol was € while the waterfall showed £ — PR-24). */}
+                        <Money eur={shouldCost.totalValue} tick delay={m.beat(1)} />
                       </div>
                       <div className="text-2xs text-slate-500 mt-2">{material} · {processName} · {region}</div>
                     </>
@@ -1512,6 +1527,7 @@ export default function Part360Page() {
                   file={cadFile} token={token} apiKey={apiKey}
                   geo={dfmResult.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : null}
                   partName={partName} material={material} process={processName} partContext={partContext}
+                  memory={panelMemory.current}
                   onConfirmedChange={setVisionObs}
                   onUseDescription={(text) => {
                     setPartContext(prev => (prev.trim() ? `${prev.trim()}\n(AI vision, confirmed) ${text}` : text));
@@ -1521,12 +1537,13 @@ export default function Part360Page() {
               )}
 
               {/* PHOTOS — our physical part or a competitor's teardown (R3). */}
-              <PhotoReadPanel token={token} apiKey={apiKey} partName={partName} material={material} process={processName} onChange={setPhotoReads} />
+              <PhotoReadPanel token={token} apiKey={apiKey} partName={partName} material={material} process={processName} onChange={setPhotoReads} memory={panelMemory.current} />
 
               {/* WHAT IS IT FOR — the function-cost model, AI-drafted, engineer-edited. */}
               {shouldCost && (
                 <FunctionModelPanel
                   token={token} apiKey={apiKey} partName={partName} partContext={partContext}
+                  memory={panelMemory.current}
                   observations={[...visionObs, ...photoReads.filter(r => r.subject === 'ours').flatMap(r => r.observations.map(o => o.text))]}
                   geo={dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : null}
                   onChange={setFunctionDraft}
@@ -1589,7 +1606,8 @@ export default function Part360Page() {
                   <div>
                     <label className="dfm-label text-slate-500 block mb-1.5">Currency</label>
                     <select className="dfm-select" aria-label="Quote currency" value={quoteCurrency} onChange={e => setQuoteCurrency(e.target.value)}>
-                      {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      {!quoteCurrency && <option value="">— choose —</option>}
+                      {QUOTE_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
@@ -1605,6 +1623,7 @@ export default function Part360Page() {
                       className="text-teal-400 hover:text-teal-300 text-xs flex items-center gap-1"><Plus size={12} /> Add line</motion.button>
                   </div>
                   {quoteLines.length === 0 && <p className="text-2xs text-slate-500">No lines — forensics will be skipped and the dossier will say so.</p>}
+                  {quoteReadability && quoteReadability !== 'good' && <p className="text-2xs text-amber-300">The document was {quoteReadability === 'poor' ? 'poorly' : 'only partly'} legible to the reader — check every line against the original.</p>}
                   <motion.div variants={m.stagger()} initial="hidden" animate="show" className="space-y-2">
                     {quoteLines.map((l, i) => (
                       <motion.div key={i} variants={m.slideIn} className="grid grid-cols-[1fr_140px_110px_32px] gap-2 items-center">
@@ -1612,8 +1631,17 @@ export default function Part360Page() {
                         <select className="dfm-select" aria-label={`Line ${i + 1} kind`} value={l.kind} onChange={e => setQuoteLines(prev => prev.map((x, j) => j === i ? { ...x, kind: e.target.value as QuoteKind } : x))}>
                           {QUOTE_KINDS.map(k => <option key={k} value={k}>{k}</option>)}
                         </select>
-                        <input className="dfm-input" aria-label={`Line ${i + 1} amount`} type="number" min="0" step="0.01" value={l.amount} placeholder="0.00" onChange={e => setQuoteLines(prev => prev.map((x, j) => j === i ? { ...x, amount: e.target.value } : x))} />
+                        <input className="dfm-input" aria-label={`Line ${i + 1} amount`} type="number" min="0" step="0.01" value={l.amount} placeholder="0.00" onChange={e => setQuoteLines(prev => prev.map((x, j) => j === i ? { ...x, amount: e.target.value, noteAck: true } : x))} />
                         <button aria-label={`Remove line ${i + 1}`} onClick={() => setQuoteLines(prev => prev.filter((_, j) => j !== i))} className="text-slate-500 hover:text-danger-400"><Trash2 size={14} /></button>
+                        {/* The reader's note on HOW this amount is charged ("per 100",
+                            "amortised over 50k") — it changes what the number means,
+                            so it is shown and must be acknowledged or the amount edited (PR-04). */}
+                        {l.note && (
+                          <label className={`col-span-4 flex items-start gap-2 text-2xs rounded-lg px-2 py-1.5 border ${l.noteAck ? 'border-hairline text-slate-400' : 'border-amber-500/30 bg-amber-500/10 text-amber-200'}`}>
+                            <input type="checkbox" className="mt-0.5" checked={!!l.noteAck} onChange={e => setQuoteLines(prev => prev.map((x, j) => j === i ? { ...x, noteAck: e.target.checked } : x))} />
+                            <span>Read from the document: “{l.note}”. The amount above must be a per-part price in the quote currency — edit it if not, then tick.</span>
+                          </label>
+                        )}
                       </motion.div>
                     ))}
                   </motion.div>
@@ -1632,7 +1660,8 @@ export default function Part360Page() {
                 <motion.button
                   {...m.press}
                   onClick={buildDossier}
-                  disabled={building}
+                  disabled={building || quoteLines.some(l => l.note && !l.noteAck)}
+                  title={quoteLines.some(l => l.note && !l.noteAck) ? 'Acknowledge the reader’s note on each quote line first' : undefined}
                   className="dfm-cta text-navy-950 disabled:text-slate-400 font-semibold rounded-xl px-5 py-2.5 text-sm flex items-center gap-2"
                 >
                   {building ? <Loader2 size={15} className="animate-spin" /> : <Layers size={15} />}

@@ -136,18 +136,28 @@ wrong mass. Generation now **waits for an explicit acknowledgement**.
 `tests/prism-review-2026-10.test.mjs`, plus 25 integration tests; `tsc` is
 clean.
 
-## 5. Open — not fixed in this pass
+## 5. Open items — follow-up pass (same day)
 
-| # | Item | Why not now / what it needs |
+Fixed in the follow-up commit:
+
+| # | Item | Fix |
 |---|---|---|
-| R7 | **No real-model evidence on today's pipeline** | Needs an API key (paid). Run `benchmark/ideation-eval.mjs` on the four saved parts plus the demo part. |
-| Engine | Hot vs cold forging tooling assumptions dominate the W3 step on small forgings | A modelling change must pass `benchmark:cost`; it is surfaced honestly in the step text instead. Ask the toolmaker for die cost and life before the demo, if a forging is shown. |
-| PR-04 | Notes the AI read beside quote amounts ("per 100", "amortised") are not shown beside the amount | UI change in the quote step. The units-suspect verdict now catches the worst cases. |
-| PR-24/25 | The Measure step shows € while the rest of the page uses the display currency; the quote currency list offers 4 of the supported currencies; the FX rate used is not stated | Display only; engines are correct in EUR. |
-| PR-26 | Route prices in the routes section are uncalibrated while the dossier is calibrated | Apply the anchor factor as in PR-11. |
-| PR-27 | The arithmetic check ignores the currency symbol in the basis | Low impact: Prism runs in EUR. |
-| PR-32 | `/api/analyze` accepts unsigned lens blocks | Only a user's own run is affected; sign blocks server-side. |
-| PR-33/34/35 | Multi-step routes in the dossier (API only); Back wipes paid AI reads; drawing tolerance is not sent to the DFM tolerance rules | Small, separate changes. |
+| PR-04 | Quote-reader notes ("per 100", "amortised") were stored but never shown | Each note sits under its line; "Build dossier" waits until every noted line is ticked or its amount edited. A partly or poorly legible document is flagged. |
+| PR-24 | The Measure step showed € while the rest of the page showed the display currency | The KPI and the log use the display currency. Ideas are labelled with the run's engine currency (EUR). |
+| PR-25 | 4 of 16 quote currencies offered; an unreadable currency kept the previous one; the FX rate was never stated; a missing rate became 1 | All 16 offered, with a test keeping the list in step with the server. An unreadable currency must be chosen. A missing rate is refused, and the dossier states the rate, live or fallback, source and date. |
+| PR-26 | Route prices were uncalibrated next to a calibrated total | Scaled by the anchor factor and stated in the evidence. Verified live: the current route and the engine total now read the same €4.05. |
+| PR-27 | A £ basis "matched" a € claim | Mixed currencies are reported as not checkable. Only figures actually multiplied count, so an hourly rate in £ does not trip it. |
+| PR-32 | `/api/analyze` accepted any evidence text as engine evidence | Lens blocks are HMAC-signed per user by the dossier routes and verified before use. Verified live: a tampered block is refused. The badge now says E-lines are dossier evidence, not all of them engine measurements. |
+| PR-33 | Multi-operation routes mixed first-step and whole-route costs | One process per dossier; a multi-operation assembly row is left uncosted, with its reason. |
+| PR-34 | Back wiped paid AI reads | The vision, photo and function panels keep their state in page-owned memory per part. |
+| PR-35 | The drawing was never sent to the DFM analysis | Sent with the measurement, so the tolerance-capability rules can evaluate. |
+
+**Still open**, because they cannot be fixed in code:
+
+| # | Item | What it needs |
+|---|---|---|
+| R7 | No real-model evidence on today's pipeline | An API key. Run `benchmark/ideation-eval.mjs` and a rehearsal on the demo part. |
+| Engine | Hot vs cold forging die cost and life dominate the W3 step on small forgings | Toolmaker data, then a benchmark-gated change (`npm run benchmark:cost`). It is surfaced honestly in the step text. |
 
 ## 6. Competitive position and roadmap
 

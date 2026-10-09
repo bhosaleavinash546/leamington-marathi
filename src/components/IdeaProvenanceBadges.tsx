@@ -193,7 +193,7 @@ export default function IdeaProvenanceBadges({ idea, variant = 'full', className
 
       {Array.isArray(idea.evidenceRefs) && idea.evidenceRefs.length > 0 && (
         <Badge
-          title={`Cites measured evidence lines from the Prism dossier: ${idea.evidenceRefs.join(', ')} (E = engine measurement, W = waterfall step)`}
+          title={`Cites measured evidence lines from the Prism dossier: ${idea.evidenceRefs.join(', ')} (E = dossier evidence: engine measurements plus AI-read and user-stated lines, each labelled in the dossier; W = engine waterfall step)`}
           cls="bg-teal-500/10 text-teal-300 border-teal-500/25"
         >
           <FileSearch size={10} /> {idea.evidenceRefs.slice(0, 4).join(' ')}{idea.evidenceRefs.length > 4 ? ` +${idea.evidenceRefs.length - 4}` : ''}

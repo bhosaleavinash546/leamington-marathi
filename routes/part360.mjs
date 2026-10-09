@@ -30,6 +30,7 @@ import { volumeSensitivity, simulateShouldCost, REGIONS } from '../costing-engin
 import { resolveMaterial, resolveRoute } from '../material-process-resolve.mjs';
 import { specRelaxationDeltas } from '../innovation.mjs';
 import crypto from 'crypto';
+import { signEvidence } from '../evidence-sign.mjs';
 import multer from 'multer';
 import {
   entitlementWaterfall, quoteForensics, buildDossier, dossierToPromptBlock,
@@ -329,6 +330,12 @@ Rules:
     if (!resolveMaterial(material, library?.MATERIALS) || !resolveRoute(processName, library?.PROCESSES)?.keys?.length) {
       return res.status(400).json({ error: 'Material or process not recognised by the catalogue.' });
     }
+    // One process per dossier. A multi-operation route ("Sand Casting +
+    // Machining") was costed as its FIRST step in the cost section and as the
+    // whole route in the waterfall, so W1 and the cost line disagreed (PR-33).
+    if (resolveRoute(processName, library?.PROCESSES).keys.length > 1) {
+      return res.status(400).json({ error: 'Prism costs one manufacturing process per part. Choose the main process; secondary operations are costed inside it.' });
+    }
     let calibration = shouldCostApi.getUserCalibration(req.user.id);
 
     // Specification: drawing-inferred prefill unless the user stated classes.
@@ -349,10 +356,16 @@ Rules:
       // been compared with the engine at face value. Refuse it instead.
       if (!FX_CURRENCIES.includes(typedCur)) return res.status(400).json({ error: `Quote currency "${typedCur.slice(0, 8)}" is not supported.` });
       const currency = typedCur;
-      const fx = currency === 'EUR' ? { rates: FX_FALLBACK } : await getFxRates().catch(() => ({ rates: FX_FALLBACK }));
-      const rate = fx.rates[currency] ?? 1;
+      const fx = currency === 'EUR' ? { rates: FX_FALLBACK, live: true, source: 'none (EUR)' } : await getFxRates().catch(() => ({ rates: FX_FALLBACK, live: false, source: 'static reference' }));
+      // A missing rate used to become 1 silently — a ¥ quote read at face value
+      // as euros. Refuse instead, and state the rate that WAS used (PR-25).
+      const rate = fx.rates?.[currency];
+      if (!(Number(rate) > 0)) return res.status(400).json({ error: `No exchange rate available for ${currency}.` });
+      const fxNote = currency === 'EUR' ? null
+        : `Quote converted from ${currency} at ${Number(rate).toPrecision(5)} ${currency} per EUR (${fx.live ? 'live' : 'fallback'} rate, ${fx.source ?? 'source unstated'}${fx.date ? `, ${fx.date}` : ''}).`;
       const toEur = (n) => Number((Number(n) / rate).toFixed(4));
       quote = {
+        fxNote,
         totalEur: toEur(b.quote.totalEur ?? b.quote.total),
         supplier: sanitize(String(b.quote.supplier ?? ''), 120) || null,
         lines: (Array.isArray(b.quote.lines) ? b.quote.lines : [])
@@ -496,9 +509,24 @@ Rules:
           // Only routes the waterfall itself would defend (DFM ≥ 50 on ≥ 40% of
           // the family's rules): the process lens was offered a squeeze-casting
           // route scoring 0 that W3 refused as an entitlement basis (PR-12).
-          const rec = recommendableRoutes(cmp.routes);
+          // Route prices on the SAME calibration as the rest of the dossier:
+          // compareRoutes prices uncalibrated, so "Current route €3.77" sat
+          // next to a calibrated "Engine total €6.03" (PR-26). Piece prices
+          // are scaled by the anchor's calibrated/uncalibrated ratio — the
+          // waterfall's rule (PR-11); tooling cheques are up-front and unscaled.
+          let k = 1;
+          if (calibration) {
+            try {
+              const raw = computeShouldCost({ ...base, toleranceClass, surfaceFinish, criticalCharacteristics, material: resolveMaterial(material, library.MATERIALS).key, process: resolveRoute(processName, library.PROCESSES).keys[0] }, {}, null, library).totalShouldCost;
+              if (raw > 0) k = asSpec.totalShouldCost / raw;
+            } catch { k = 1; }
+          }
+          const scale = (r) => (k === 1 ? r : { ...r, piecePriceEur: Number.isFinite(r.piecePriceEur) ? r.piecePriceEur * k : r.piecePriceEur, deltaPieceEur: Number.isFinite(r.deltaPieceEur) ? r.deltaPieceEur * k : r.deltaPieceEur });
+          const routesK = cmp.routes.map(scale);
+          const rec = recommendableRoutes(routesK);
           const def = defensibleRoutes(rec);
-          routeLines = clean(routeEvidenceLines(cmp.routes, def));
+          routeLines = clean(routeEvidenceLines(routesK, def));
+          if (k !== 1) routeLines.push(sanitize(`Route piece prices carry the same calibration as the engine total (×${k.toFixed(3)} from your quote corpus); tooling cheques are up-front and unscaled.`, 300));
           if (rec.length > def.length) routeLines.push(sanitize(`${rec.length - def.length} further route(s) can form the shape but score below the DFM floor (score < 50 or < 40% of their rules evaluated); they are not offered as alternatives.`, 300));
         } catch { /* stays null — the section states its absence */ }
       }
@@ -633,7 +661,7 @@ Rules:
         // Per-lens renderings, ready to pass straight to /api/analyze as
         // partEvidence.blocks — the wizard picks how many lenses to run and
         // must never assemble evidence text itself.
-        lensBlocks: LENSES.map(l => ({ lensId: l.id, name: l.name, text: dossierToPromptBlock(dossier, l.id) })),
+        lensBlocks: LENSES.map(l => { const text = dossierToPromptBlock(dossier, l.id); return { lensId: l.id, name: l.name, text, sig: signEvidence(req.user.id, l.id, text) }; }),
         lenses: LENSES.map(l => ({ id: l.id, name: l.name })),
         waterfall,
         forensics,
@@ -867,6 +895,7 @@ Rules:
       if (!matRes || !procRes?.keys?.length) {
         return { ...base, uncostedReason: `no catalogue material/process confirmed${material || processName ? ` ("${material || '?'}" / "${processName || '?'}" did not resolve)` : ''}` };
       }
+      if (procRes.keys.length > 1) return { ...base, uncostedReason: 'a multi-operation route — name the one main process for this part (PR-33)' };
       // Mass: stated, else derived from the measured volume and the CONFIRMED
       // material's density — stated as derived either way.
       let massKg = Number(r.massKg);
@@ -942,7 +971,7 @@ Rules:
       rows: costed,
       dossier: { sections, evidenceCount: sections.reduce((n, s2) => n + s2.lines.length, 0) },
       promptBlock: assemblyPromptBlock(sections),
-      lensBlocks: lensesHere.map(l => ({ lensId: l.id, name: l.name, level: l.level, text: assemblyPromptBlock(sections, l) })),
+      lensBlocks: lensesHere.map(l => { const text = assemblyPromptBlock(sections, l); return { lensId: l.id, name: l.name, level: l.level, text, sig: signEvidence(req.user.id, l.id, text) }; }),
       lenses: lensesHere.map(l => ({ id: l.id, name: l.name, level: l.level })),
       dfa: dfa ? {
         totalParts: dfa.totalParts, distinctPartTypes: dfa.distinctPartTypes,

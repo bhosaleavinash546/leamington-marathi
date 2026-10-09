@@ -13,6 +13,7 @@
  */
 import { useAiAvailable } from '../../hooks/useAiAvailable';
 import { useEffect, useRef, useState } from 'react';
+import { usePanelState, type PanelMemory } from './panel-memory';
 import { Eye, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import CadViewer3D, { type CadViewerRef } from '../CadViewer3D';
 
@@ -47,18 +48,20 @@ interface Props {
   onConfirmedChange: (lines: string[]) => void;
   /** Offer the AI's function summary as the part description. */
   onUseDescription: (text: string) => void;
+  /** Page-owned memory so a remount (Back, then forward) restores the read. */
+  memory?: PanelMemory;
 }
 
-export default function PartVisionPanel({ file, token, apiKey, geo, partName, material, process, partContext, onConfirmedChange, onUseDescription }: Props) {
+export default function PartVisionPanel({ file, token, apiKey, geo, partName, material, process, partContext, onConfirmedChange, onUseDescription, memory }: Props) {
   const aiAvailable = useAiAvailable();
   const viewerRef = useRef<CadViewerRef | null>(null);
   const [busy, setBusy] = useState<string>('');
   const [error, setError] = useState('');
   const [shots, setShots] = useState<{ view: string; dataUrl: string }[]>([]);
-  const [obs, setObs] = useState<VisionObservation[]>([]);
-  const [ticked, setTicked] = useState<Set<number>>(new Set());
-  const [summary, setSummary] = useState('');
-  const [caution, setCaution] = useState('');
+  const [obs, setObs] = usePanelState<VisionObservation[]>(memory, 'vision.obs', []);
+  const [ticked, setTicked] = usePanelState<Set<number>>(memory, 'vision.ticked', new Set());
+  const [summary, setSummary] = usePanelState(memory, 'vision.summary', '');
+  const [caution, setCaution] = usePanelState(memory, 'vision.caution', '');
 
   // Paint what the analysis MEASURED, so the picture the AI reads and the one
   // the engineer sees carry the same evidence.

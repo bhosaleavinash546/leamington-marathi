@@ -169,3 +169,12 @@ describe('engine checks price the AI-stated mass, they do not verify it (PR-19)'
     assert.match(ec.basis, /idea's own claim/);
   });
 });
+
+describe('quote currencies (PR-25)', () => {
+  it('the page offers every currency the server converts', async () => {
+    const { FX_CURRENCIES } = await import('../fx-rates.mjs');
+    const src = (await import('node:fs')).readFileSync(new URL('../src/constants/costing.ts', import.meta.url), 'utf8');
+    const list = JSON.parse(src.match(/QUOTE_CURRENCIES = (\[[^\]]+\])/)[1].replace(/'/g, '"'));
+    assert.deepEqual([...list].sort(), [...FX_CURRENCIES].sort());
+  });
+});

@@ -10,6 +10,7 @@
  */
 import { useAiAvailable } from '../../hooks/useAiAvailable';
 import { useEffect, useRef, useState } from 'react';
+import { usePanelState, type PanelMemory } from './panel-memory';
 import { Camera, Loader2, Trash2, AlertTriangle, BookmarkPlus } from 'lucide-react';
 
 export interface PhotoObservation { kind: string; text: string; attr?: Record<string, unknown> }
@@ -31,6 +32,8 @@ interface Props {
   apiKey: string;
   partName: string; material: string; process: string;
   onChange: (reads: ConfirmedPhotoRead[]) => void;
+  /** Page-owned memory so a remount restores the reads (PR-34). */
+  memory?: PanelMemory;
 }
 
 const KIND_LABEL: Record<string, string> = {
@@ -51,7 +54,7 @@ async function toJpeg(file: File): Promise<string> {
   return c.toDataURL('image/jpeg', 0.85);
 }
 
-export default function PhotoReadPanel({ token, apiKey, partName, material, process, onChange }: Props) {
+export default function PhotoReadPanel({ token, apiKey, partName, material, process, onChange, memory }: Props) {
   const aiAvailable = useAiAvailable();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [subject, setSubject] = useState<'ours' | 'benchmark'>('ours');
@@ -60,7 +63,7 @@ export default function PhotoReadPanel({ token, apiKey, partName, material, proc
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
-  const [reads, setReads] = useState<Read[]>([]);
+  const [reads, setReads] = usePanelState<Read[]>(memory, 'photo.reads', []);
 
   useEffect(() => {
     onChange(reads.map(r => ({ subject: r.subject, label: r.label, observations: r.obs.filter((_, i) => r.ticked.has(i)) }))

@@ -12,6 +12,7 @@
  */
 import { useAiAvailable } from '../../hooks/useAiAvailable';
 import { useEffect, useState } from 'react';
+import { usePanelState, type PanelMemory } from './panel-memory';
 import { Workflow, Loader2, Plus, Trash2, AlertTriangle, Calculator } from 'lucide-react';
 
 export interface FunctionDraft {
@@ -30,17 +31,19 @@ interface Props {
   geo: Record<string, unknown> | null;
   /** The confirmed draft (null = not used in the analysis). */
   onChange: (draft: FunctionDraft | null) => void;
+  /** Page-owned memory so a remount restores the draft (PR-34). */
+  memory?: PanelMemory;
 }
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + (Number(b) || 0), 0);
 const round = (n: number) => Math.round(n * 10) / 10;
 
-export default function FunctionModelPanel({ token, apiKey, partName, partContext, observations, geo, onChange }: Props) {
+export default function FunctionModelPanel({ token, apiKey, partName, partContext, observations, geo, onChange, memory }: Props) {
   const aiAvailable = useAiAvailable();
-  const [draft, setDraft] = useState<FunctionDraft | null>(null);
+  const [draft, setDraft] = usePanelState<FunctionDraft | null>(memory, 'fn.draft', null);
   // Off until the engineer confirms: the dossier calls this model
   // "engineer-confirmed" (Prism review PR-06).
-  const [use, setUse] = useState(false);
+  const [use, setUse] = usePanelState(memory, 'fn.use', false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [check, setCheck] = useState<FnRow[] | null>(null);

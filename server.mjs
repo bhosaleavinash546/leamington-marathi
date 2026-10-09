@@ -29,6 +29,7 @@ import { LENSES as PRISM_LENSES } from './part360.mjs';
 import { ASSEMBLY_LENSES } from './prism-assembly.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
 import { computeShouldCost, simulateShouldCost, REGIONS as ENGINE_REGIONS } from './costing-engine.mjs';
+import { verifyEvidence } from './evidence-sign.mjs';
 import { featureAccuracyClause } from './engine-accuracy.mjs';
 import { featuredMachiningCost } from './machining-feature-cost.mjs';
 import { stampingFeatureCost, geometryToStampingInput } from './stamping-feature-cost.mjs';
@@ -3442,8 +3443,14 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
   // Blocks are per-lens renderings from /api/part360/dossier.
   let partEvidence = null;
   if (req.body.partEvidence && typeof req.body.partEvidence === 'object' && Array.isArray(req.body.partEvidence.blocks)) {
-    const blocks = req.body.partEvidence.blocks
-      .filter(b => b && typeof b.text === 'string' && b.text.trim())
+    // Only blocks the dossier route SIGNED for this user count as evidence:
+    // edited or hand-written text is refused, not presented as engine-computed
+    // (Prism review PR-32).
+    const rawBlocks = req.body.partEvidence.blocks.filter(b => b && typeof b.text === 'string' && b.text.trim()).slice(0, 8);
+    if (rawBlocks.some(b => !verifyEvidence(req.user.id, String(b.lensId ?? 'all'), b.text, b.sig))) {
+      return res.status(400).json({ error: 'The evidence dossier was changed after it was built (or built for another user). Rebuild the dossier and generate again.' });
+    }
+    const blocks = rawBlocks
       .slice(0, 6)
       .map(b => {
         // Cut on a LINE boundary and say so: a silent cut at 20,000 characters

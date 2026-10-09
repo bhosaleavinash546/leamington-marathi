@@ -502,6 +502,24 @@ export function checkArithmetic(idea, { annualVolume = null } = {}) {
   if (parsed.computedEur == null) return unparsed(parsed.form);
   const c = parsed.computedEur;
   const lo = stated.lo * (1 - ARITH_TOLERANCE_PCT / 100), hi = stated.hi * (1 + ARITH_TOLERANCE_PCT / 100);
+  // ONE CURRENCY PER CHECK. The money pattern treats €, £ and $ alike, so a
+  // "£0.40/part × 60,000/yr" basis "matched" a "€24K" claim and a 15–18% FX
+  // gap passed inside the tolerance (Prism review PR-27). When the claim and
+  // its basis name different currencies the honest answer is: not checkable.
+  const curs = (t) => {
+    const out = new Set(); const x = String(t ?? '');
+    if (/€|\bEUR\b/.test(x)) out.add('EUR');
+    if (/£|\bGBP\b/.test(x)) out.add('GBP');
+    if (/\$|\bUSD\b/.test(x)) out.add('USD');
+    return out;
+  };
+  // Only the figures the check actually multiplied count — an hourly rate or a
+  // refused programme total in another currency is not part of the sum.
+  const cA = curs(annualValueText), cB = curs((parsed.terms || []).map(t => t.how).join(' '));
+  if (cA.size && cB.size && [...cB].some(c => !cA.has(c))) {
+    return unparsed(`mixed currencies — the claim is in ${[...cA].join('/')} but the basis uses ${[...cB].join('/')}, so the two cannot be compared without an exchange rate`);
+  }
+
   let deltaPct = 0;
   if (c < lo) deltaPct = -Math.round((1 - c / stated.lo) * 100);
   else if (c > hi) deltaPct = Math.round((c / stated.hi - 1) * 100);

@@ -7,7 +7,14 @@
 export const CURRENCIES = ['GBP', 'EUR', 'USD', 'CNY'] as const;
 export type Currency = typeof CURRENCIES[number];
 
-export const CURRENCY_SYMBOLS: Record<string, string> = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' };
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+  EUR: '€', GBP: '£', USD: '$', CNY: '¥',
+  CZK: 'Kč', MXN: 'MX$', INR: '₹', KRW: '₩', PLN: 'zł', RON: 'lei',
+  TRY: '₺', MAD: 'DH', VND: '₫', THB: '฿', JPY: '¥', BRL: 'R$',
+};
+/** Every currency a supplier QUOTE may be in — mirrors FX_CURRENCIES in
+ *  fx-rates.mjs (a test keeps the two in step). Display stays on CURRENCIES. */
+export const QUOTE_CURRENCIES = ['EUR', 'GBP', 'USD', 'CNY', 'CZK', 'MXN', 'INR', 'KRW', 'PLN', 'RON', 'TRY', 'MAD', 'VND', 'THB', 'JPY', 'BRL'] as const;
 
 // Keys mirror the deterministic engine's breakdown (costing-engine.mjs). `hex`
 // drives recharts fills; `text`/`bar` are Tailwind classes for the bar view.

@@ -711,6 +711,7 @@ export function buildDossier({
 
   add('quote', 'Supplier quote (confirmed lines)', quote ? [
     `Quoted total ${fmtEur(quote.totalEur)}${quote.supplier ? ` from ${quote.supplier}` : ''}; ${quote.lines?.length ?? 0} breakdown lines confirmed by the user.`,
+    ...(quote.fxNote ? [quote.fxNote] : []),
     ...(quote.lines ?? []).slice(0, 8).map(l => `${l.kind}: ${l.label} = ${fmtEur(l.amountEur)}`),
   ] : 'No supplier quote supplied — commercial evidence (gap, forensics, negotiation angles) unavailable.');
 
