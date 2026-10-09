@@ -1,0 +1,759 @@
+{
+ "domain": "adas-links",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "DS90UB9702TRURRQ1",
+   "family": "DS90UB9702-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV quad deserializer hub, CSI-2 D-PHY output",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-88 (RUR)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "DS90UB9702TRURRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 24.32,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB9702TRURRQ1?qs=dbcCsuKDzFXfWvpbPtkBXQ%3D%3D",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Automotive orderable DS90UB9702TRURRQ1 (large reel). Mouser non-stocked, full reels in multiples of 2,500, 26 wk lead. Spirit Electronics $20.36 @1,000 seen but not a listed franchised source; no Digi-Key listing found."
+  },
+  {
+   "mpn": "DS90UB962WRTDRQ1",
+   "family": "DS90UB962-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III quad deserializer hub, single CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No USD/EUR/GBP franchised price found. Digi-Key Denmark lists T&R DKK 100.50167 @2,000 ex VAT (https://www.digikey.dk/en/products/detail/texas-instruments/DS90UB962WRTDRQ1/9692632) - not recorded, DKK not in the merge FX table. TI list price 9.994 USD (https://www.ti.com/product/DS90UB962-Q1/part-details/DS90UB962WRTDRQ1) - maker price, not an observation."
+  },
+  {
+   "mpn": "DS90UB914ATRHSRQ1",
+   "family": "DS90UB914A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III deserializer, 10/12-bit parallel output, 25-100 MHz",
+   "category": "ic_qfn",
+   "pkg": "WQFN-48 (RHS)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist",
+    "ADAS"
+   ],
+   "observedMpn": "DS90UB914ATRHSRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 5.9,
+     "currency": "USD",
+     "url": "https://www.findchips.com/detail/DS90UB914ATRHSRQ1/Texas-Instruments",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key 296-46271-1-ND via Findchips aggregator snippet ($10.64 @1 to $5.90 @1,000); reel 1,000. Single source - re-check. Mouser 595-S90UB914ATRHSRQ1 $5.64 seen on electronicsdatasheets (qty break not stated) - not recorded."
+  },
+  {
+   "mpn": "DS90UB934TRGZRQ1",
+   "family": "DS90UB934-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III deserializer, 12-bit parallel output, 1 MP camera",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist",
+    "ADAS"
+   ],
+   "observedMpn": "DS90UB934TRGZRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 9.98,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/DS90UB934TRGZRQ1/7312768",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 9.20302,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/DS90UB934TRGZRQ1/7312768",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key cut tape @1,000 and T&R @2,500 (7,852 in stock). No Mouser listing found."
+  },
+  {
+   "mpn": "DS90UB936TRGZRQ1",
+   "family": "DS90UB936-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III dual deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ)",
+   "aecq": true,
+   "ecuRoles": [
+    "surround camera",
+    "park assist",
+    "ADAS",
+    "ADAS domain controller"
+   ],
+   "observedMpn": "DS90UB936TRGZRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 9.52,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB936TRGZRQ1/9371248",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2500,
+     "price": 9.02445,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB936TRGZRQ1/9371248",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key cut tape @250 and T&R @2,500 (no 1,000 break published). Mouser $8.40 @2,500 seen only on OEMsTrade (not an allowed source) - not recorded."
+  },
+  {
+   "mpn": "DS90UB9724-Q1",
+   "family": "DS90UB9724-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV quad deserializer hub, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No distributor listing or orderable code found in 3 searches (only TI E2E threads and NVIDIA DRIVE docs mention it); likely limited release / not on ti.com public catalogue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "DS90UB949ATRGCRQ1",
+   "family": "DS90UB949A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "HDMI to FPD-Link III serializer, 2K",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RGC)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No price for the RQ1 code found at a franchised distributor. TI list price ~10.62 USD @1ku (https://www.ti.com/product/DS90UB949A-Q1/part-details/DS90UB949ATRGCRQ1) - maker price, not an observation. Octopart rows seen were for sibling CTQ1 / non-A codes with unlabelled breaks - not recorded."
+  },
+  {
+   "mpn": "DS90UB983RTDRQ1",
+   "family": "DS90UB983-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "DisplayPort/eDP to FPD-Link IV serializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only franchised price found: Digi-Key China CNY 108.85 @2,000 INCLUDING 13% VAT, 0 stock, prototype status (https://www.digikey.cn/zh/products/detail/texas-instruments/DS90UB983RTDRQ1/18178286) - not recorded because VAT-inclusive. Arrow page lists no price. Broker prices ignored."
+  },
+  {
+   "mpn": "DS90UB984RURRQ1",
+   "family": "DS90UB984-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV to eDP deserializer, 4K",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-88 (RUR)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No franchised distributor price found. TI list price 11.558 USD for DS90UB984RURRQ1 (https://www.ti.com/product/DS90UB984-Q1/part-details/DS90UB984RURRQ1) - maker price, not an observation. Orderable code from TI's part-details page."
+  },
+  {
+   "mpn": "MAX96714",
+   "family": "MAX96714",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96716A",
+   "family": "MAX96716A",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 dual deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96724",
+   "family": "MAX96724",
+   "mfr": "Analog Devices",
+   "desc": "GMSL quad deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96722",
+   "family": "MAX96722",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 quad deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "surround camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96792A",
+   "family": "MAX96792A",
+   "mfr": "Analog Devices",
+   "desc": "GMSL deserializer (GMSL3 class), CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "ADAS domain controller",
+    "front camera"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96752",
+   "family": "MAX96752",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display deserializer",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96755",
+   "family": "MAX96755",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display serializer",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96751",
+   "family": "MAX96751",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display serializer",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive orderable code not confirmed."
+  },
+  {
+   "mpn": "DP83TC814-Q1",
+   "family": "DP83TC814-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "front camera",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "DP83TC815-Q1",
+   "family": "DP83TC815-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "DP83TG721-Q1",
+   "family": "DP83TG721-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "1000BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "DP83TD510E",
+   "family": "DP83TD510E",
+   "mfr": "Texas Instruments",
+   "desc": "10BASE-T1L single-pair Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Industrial-grade part (no -Q1 variant known); confirm grade."
+  },
+  {
+   "mpn": "TJA1100",
+   "family": "TJA1100",
+   "mfr": "NXP",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Catalogue keeps its engineering estimate for TJA1100 (not upgraded)."
+  },
+  {
+   "mpn": "TJA1121",
+   "family": "TJA1121",
+   "mfr": "NXP",
+   "desc": "Automotive Ethernet PHY (BASE-T1; speed grade to confirm)",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue."
+  },
+  {
+   "mpn": "88Q2220",
+   "family": "88Q2220",
+   "mfr": "Marvell",
+   "desc": "Automotive Ethernet PHY (BASE-T1; speed grade to confirm)",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Marvell automotive parts may be OEM-direct only."
+  },
+  {
+   "mpn": "88Q5050",
+   "family": "88Q5050",
+   "mfr": "Marvell",
+   "desc": "Automotive Ethernet switch, 8-port, secure",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Catalogue keeps its engineering estimate for 88Q5050 (not upgraded). Package not confirmed."
+  },
+  {
+   "mpn": "88Q5072",
+   "family": "88Q5072",
+   "mfr": "Marvell",
+   "desc": "Automotive Ethernet switch",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Package not confirmed."
+  },
+  {
+   "mpn": "88Q6113",
+   "family": "88Q6113",
+   "mfr": "Marvell",
+   "desc": "Automotive multi-gigabit Ethernet switch",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Package not confirmed."
+  },
+  {
+   "mpn": "BCM89811",
+   "family": "BCM89811",
+   "mfr": "Broadcom",
+   "desc": "BroadR-Reach / 100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Broadcom automotive PHYs are typically OEM-direct / NDA."
+  },
+  {
+   "mpn": "BCM89881",
+   "family": "BCM89881",
+   "mfr": "Broadcom",
+   "desc": "Automotive Ethernet PHY (BASE-T1)",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Broadcom automotive PHYs are typically OEM-direct / NDA."
+  },
+  {
+   "mpn": "SJA1110",
+   "family": "SJA1110",
+   "mfr": "NXP",
+   "desc": "Automotive TSN Ethernet switch with integrated 100BASE-T1 PHYs",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Catalogue estimate for family key SJA1110 stays (already priced via member SJA1110AEL/0Y)."
+  },
+  {
+   "mpn": "LAN9370",
+   "family": "LAN9370",
+   "mfr": "Microchip",
+   "desc": "Automotive Ethernet switch with 100BASE-T1 PHYs",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "LAN9373",
+   "family": "LAN9373",
+   "mfr": "Microchip",
+   "desc": "Automotive Ethernet switch",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "LAN8770",
+   "family": "LAN8770",
+   "mfr": "Microchip",
+   "desc": "100BASE-T1 automotive Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "front camera",
+    "radar",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "LAN8670",
+   "family": "LAN8670",
+   "mfr": "Microchip",
+   "desc": "10BASE-T1S Ethernet PHY",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "zonal",
+    "gateway"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "TCAN1145-Q1",
+   "family": "TCAN1145-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "CAN FD transceiver with partial networking",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "radar",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "PI7C9X2G404SV",
+   "family": "PI7C9X2G404SV",
+   "mfr": "Diodes Incorporated",
+   "desc": "PCIe 2.0 packet switch, 4-port",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive grade not confirmed."
+  },
+  {
+   "mpn": "PI7C9X2G608GP",
+   "family": "PI7C9X2G608GP",
+   "mfr": "Diodes Incorporated",
+   "desc": "PCIe 2.0 packet switch, 6-port",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Package and automotive grade not confirmed."
+  },
+  {
+   "mpn": "PEX88024",
+   "family": "PEX88024",
+   "mfr": "Broadcom",
+   "desc": "PCIe Gen4 switch, 24-lane",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS domain controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Automotive grade not confirmed."
+  },
+  {
+   "mpn": "SN65DSI83-Q1",
+   "family": "SN65DSI83-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "MIPI DSI to single-link LVDS bridge",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "SN65LVDS93A-Q1",
+   "family": "SN65LVDS93A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FlatLink LVDS serializer / transmitter",
+   "category": "ic_soic",
+   "pkg": "TSSOP-56",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "TDP142-Q1",
+   "family": "TDP142-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "DisplayPort linear redriver, 8.1 Gbps",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  },
+  {
+   "mpn": "TS3DV642-Q1",
+   "family": "TS3DV642-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "High-speed differential 2:1 / 1:2 mux switch",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS domain controller",
+    "zonal"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Not researched this round: the shared web-search budget (200 calls/turn across all agents) ran out before this part was reached. No price recorded; re-queue. Orderable code not confirmed."
+  }
+ ]
+}
