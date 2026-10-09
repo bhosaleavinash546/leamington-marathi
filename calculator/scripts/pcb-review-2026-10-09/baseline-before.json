@@ -1,0 +1,1124 @@
+{
+ "volumes": {
+  "cn@99999": {
+   "headline": 57.18,
+   "bom": 50.69,
+   "fab": 1.53,
+   "asm": 2.24,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 16.2864,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 10.2,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5712,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.9139,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.3033,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 3.2,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.2,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 2,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 6,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "cn@100000": {
+   "headline": 56.19,
+   "bom": 49.74,
+   "fab": 1.53,
+   "asm": 2.24,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 16.2864,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 10.2,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5712,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.9139,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.3033,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 3.2,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.2,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 2,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 6,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "cn@100001": {
+   "headline": 54.76,
+   "bom": 48.37,
+   "fab": 1.53,
+   "asm": 2.24,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 16.2864,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 10.2,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5712,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.9139,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.3033,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 2.816,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.056,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 1.76,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 5.28,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "cn@200000": {
+   "headline": 53.31,
+   "bom": 47.01,
+   "fab": 1.53,
+   "asm": 2.21,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 15.5088,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 9.713,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5439,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.8317,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.2888,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 2.816,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.056,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 1.76,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 5.28,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "cn@300000": {
+   "headline": 52.57,
+   "bom": 46.33,
+   "fab": 1.53,
+   "asm": 2.19,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 15.0713,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 9.439,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5286,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.8317,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.2807,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 2.816,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.056,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 1.76,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 5.28,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "gb@99999": {
+   "headline": 92.26,
+   "bom": 70.27,
+   "fab": 11.01,
+   "asm": 10.29,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 16.2864,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 10.2,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5712,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.9139,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.3033,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 3.2,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.2,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 2,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 6,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "gb@100000": {
+   "headline": 90.94,
+   "bom": 68.96,
+   "fab": 11.01,
+   "asm": 10.29,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 16.2864,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 10.2,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5712,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.9139,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.3033,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 3.2,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.2,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 2,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 6,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "gb@100001": {
+   "headline": 89.05,
+   "bom": 67.06,
+   "fab": 11.01,
+   "asm": 10.29,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 16.2864,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 10.2,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5712,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.9139,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.3033,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 2.816,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.056,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 1.76,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 5.28,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "gb@200000": {
+   "headline": 87.11,
+   "bom": 65.18,
+   "fab": 10.99,
+   "asm": 10.25,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 15.5088,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 9.713,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5439,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.8317,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.2888,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 2.816,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.056,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 1.76,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 5.28,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  },
+  "gb@300000": {
+   "headline": 86.15,
+   "bom": 64.23,
+   "fab": 10.99,
+   "asm": 10.24,
+   "lines": [
+    {
+     "ref": "U1",
+     "src": "catalogue",
+     "unit": 15.0713,
+     "verify": false
+    },
+    {
+     "ref": "U2",
+     "src": "catalogue",
+     "unit": 9.439,
+     "verify": true
+    },
+    {
+     "ref": "U3",
+     "src": "catalogue",
+     "unit": 0.5286,
+     "verify": false
+    },
+    {
+     "ref": "U4, U5",
+     "src": "class-range",
+     "unit": 1.232,
+     "verify": true
+    },
+    {
+     "ref": "U6, U7",
+     "src": "catalogue",
+     "unit": 2.8317,
+     "verify": true
+    },
+    {
+     "ref": "U8",
+     "src": "catalogue",
+     "unit": 0.2807,
+     "verify": true
+    },
+    {
+     "ref": "U9",
+     "src": "class-range",
+     "unit": 2.816,
+     "verify": true
+    },
+    {
+     "ref": "U10",
+     "src": "class-range",
+     "unit": 1.056,
+     "verify": true
+    },
+    {
+     "ref": "D1-D6, Q1-Q4",
+     "src": "class-range",
+     "unit": 0.1056,
+     "verify": true
+    },
+    {
+     "ref": "C_bulk1, C_bulk2",
+     "src": "class-range",
+     "unit": 0.792,
+     "verify": true
+    },
+    {
+     "ref": "Y1",
+     "src": "class-range",
+     "unit": 1.76,
+     "verify": true
+    },
+    {
+     "ref": "R1-R70",
+     "src": "class-range",
+     "unit": 0.00528,
+     "verify": false
+    },
+    {
+     "ref": "C1-C90",
+     "src": "class-range",
+     "unit": 0.0132,
+     "verify": true
+    },
+    {
+     "ref": "C91-C120",
+     "src": "class-range",
+     "unit": 0.0264,
+     "verify": false
+    },
+    {
+     "ref": "L1-L10",
+     "src": "class-range",
+     "unit": 0.0792,
+     "verify": false
+    },
+    {
+     "ref": "J1",
+     "src": "class-range",
+     "unit": 5.28,
+     "verify": true
+    },
+    {
+     "ref": "J2, J3",
+     "src": "not-fitted",
+     "unit": 0,
+     "verify": true
+    }
+   ]
+  }
+ },
+ "sens": {
+  "baseline": 53.31,
+  "ai-prices-0": 57.54,
+  "ai-prices-1e6": 90.4,
+  "u2-adas-bga-400": 384.09,
+  "u2-invented-TDA4VH": 144.57,
+  "u2-invented-TDA4VH-claimed-ocr": 144.57,
+  "size-est-220x140": 63.33,
+  "size-measured-claim-240x240": 95.72,
+  "microVias-5000": 417.62,
+  "blindVias-3000": 180.79,
+  "copperOzByLayer-8x6": 55.12,
+  "boardWeightG-3000": 54.47,
+  "manualJoints-3000": 121.07,
+  "throughHoleJoints-5000": 116.77,
+  "ictTimeSec-3600": 56.55,
+  "R-qty-700-no-refs": 59.69,
+  "C-dup-no-refdes": 55.05,
+  "all-automotive-false": 70.2
+ }
+}

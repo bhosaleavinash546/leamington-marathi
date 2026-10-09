@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { runStage4 } from '/home/user/leamington-marathi/calculator/server/routes/pcb.ts';
-const R = JSON.parse(readFileSync('/home/user/leamington-marathi/calculator/e2e/fixtures/pcb-radar-replies.json', 'utf8'));
+import { runStage4 } from '../../server/routes/pcb.ts';
+const R = JSON.parse(readFileSync(new URL('../../e2e/fixtures/pcb-radar-replies.json', import.meta.url), 'utf8'));
 const ocr = { ...R.ocr, refDesGroups: R.ocr.refDesGroups ?? [], connectors: R.ocr.connectors ?? [], boardText: R.ocr.boardText ?? [] };
 export async function run(qty: number, mut?: (a: any) => void, opts: { domain?: string; asil?: string; country?: string; ocr?: any } = {}) {
   const a = JSON.parse(JSON.stringify(R.analysis));
@@ -73,4 +73,36 @@ if (mode === 'sens') {
     const { bd, s4 } = await run(Q, undefined, o as any);
     log(`${name.padEnd(48)} headline £${bd.totalPerBoard.toFixed(2)}  Δ ${(bd.totalPerBoard - base).toFixed(2)} asil costed ${s4.asil?.costed}`);
   }
+}
+
+if (mode === 'json') {
+  const out: any = { volumes: {}, sens: {} };
+  for (const c of ['cn', 'gb']) for (const q of [99_999, 100_000, 100_001, 200_000, 300_000]) {
+    const { bd, a } = await run(q, undefined, { country: c });
+    out.volumes[`${c}@${q}`] = { headline: bd.totalPerBoard, bom: bd.bomCostPerBoard, fab: bd.pcbFabPerBoard, asm: bd.assemblyPerBoard,
+      lines: a.bom.map((l: any) => ({ ref: l.refDes, src: l.priceSource, unit: l.unitPriceGBP, verify: !!l.needsVerification })) };
+  }
+  const Q = 200_000;
+  const cases: Array<[string, (a: any) => void, any?]> = [
+    ['ai-prices-0', a => a.bom.forEach((l: any) => { if (!l.ocrExtracted) l.unitPriceGBP = 0; })],
+    ['ai-prices-1e6', a => a.bom.forEach((l: any) => { if (!l.ocrExtracted) l.unitPriceGBP = 1e6; })],
+    ['u2-adas-bga-400', a => { Object.assign(a.bom[1], { componentType: 'ic_bga', description: 'ADAS radar processor', unitPriceGBP: 400 }); }],
+    ['u2-invented-TDA4VH', a => { Object.assign(a.bom[1], { partNumber: 'TDA4VH', ocrExtracted: false, lineConf: 0.7 }); }],
+    ['u2-invented-TDA4VH-claimed-ocr', a => { Object.assign(a.bom[1], { partNumber: 'TDA4VH', ocrExtracted: true, lineConf: 1 }); }],
+    ['size-est-220x140', a => { Object.assign(a.boardSpec, { widthMm: 220, heightMm: 140, dimensionsSource: 'estimated' }); }],
+    ['size-measured-claim-240x240', a => { Object.assign(a.boardSpec, { widthMm: 240, heightMm: 240, dimensionsSource: 'measured' }); }],
+    ['microVias-5000', a => { a.boardSpec.microVias = 5000; }],
+    ['blindVias-3000', a => { a.boardSpec.blindVias = 3000; }],
+    ['copperOzByLayer-8x6', a => { a.boardSpec.copperOzByLayer = [6,6,6,6,6,6,6,6]; }],
+    ['boardWeightG-3000', a => { a.boardSpec.boardWeightG = 3000; }],
+    ['manualJoints-3000', a => { a.assembly.manualJoints = 3000; }],
+    ['throughHoleJoints-5000', a => { a.assembly.throughHoleJoints = 5000; }],
+    ['ictTimeSec-3600', a => { a.assembly.ictTimeSec = 3600; }],
+    ['R-qty-700-no-refs', a => { Object.assign(a.bom[11], { refDes: 'R', qty: 700 }); }],
+    ['C-dup-no-refdes', a => { a.bom.push({ ...a.bom[12], refDes: '' }); }],
+    ['all-automotive-false', a => { a.bom.forEach((l: any) => { l.automotive = false; }); }],
+  ];
+  out.sens.baseline = (await run(Q)).bd.totalPerBoard;
+  for (const [name, mut] of cases) out.sens[name] = (await run(Q, mut)).bd.totalPerBoard;
+  log(JSON.stringify(out, null, 1));
 }
