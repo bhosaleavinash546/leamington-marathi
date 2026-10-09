@@ -277,3 +277,14 @@ describe('F17 — one marking attached by function is one chip read', () => {
     expect(String(l.priceNote)).toMatch(/AI's count/);
   });
 });
+
+describe('F14 — what the cost model does not price is said on the result', () => {
+  it('a double-sided board says its second reflow side is not costed', async () => {
+    const r = await radar(a => { a.assembly.reflowSides = 2; });
+    expect(r.s4.sanityWarnings.some((w: any) => w.code === 'SECOND_SIDE_NOT_COSTED')).toBe(true);
+  });
+  it('an RF laminate says it is not costed', async () => {
+    const r = await radar(a => { a.boardSpec.laminate = 'Rogers RO3003 hybrid'; });
+    expect(r.s4.sanityWarnings.some((w: any) => w.code === 'LAMINATE_NOT_COSTED')).toBe(true);
+  });
+});

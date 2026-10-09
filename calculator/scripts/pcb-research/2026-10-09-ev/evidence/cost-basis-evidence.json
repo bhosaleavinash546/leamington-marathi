@@ -1,0 +1,580 @@
+{
+  "researched": "2026-10-09",
+  "method": "WebSearch only (WebFetch blocked). Every 'quote' is the fragment the search result showed, not text read on the page itself. No number here was computed by the researcher; ratios are recorded only where the source states them. Vendor blogs carry a commercial interest and are graded low.",
+  "topics": [
+    {
+      "topic": "1. Laminate cost: Rogers RO4350B / RO3003 / PTFE hybrid and high-Tg FR4 versus standard FR4",
+      "claims": [
+        {
+          "claim": "RO4350B raw laminate costs 8-12 times standard FR-4 per unit area; finished boards on RO4350B are 20-50% dearer than FR-4 boards",
+          "value": "8-12x (laminate); +20-50% (finished board)",
+          "context": "Vendor comparison table, generic RF board, 2025",
+          "publisher": "Best Technology (bestpcbs.com) blog",
+          "url": "https://www.bestpcbs.com/blog/2025/07/ro4350b-pcb-material-why-choose-it-for-high-frequency-pcb/",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "full PCB fabrication using RO4350B typically results in a 20–50% higher price than using standard FR-4",
+          "attribution": "Search summary did not tie this fragment to one URL among the bestpcbs.com / dev.to results; page attribution unconfirmed."
+        },
+        {
+          "claim": "Rogers laminate $80-120 per sq ft, roughly 8-10x FR-4 at $8-15/sqft; 4-layer 100x100 mm, 5 pcs: full Rogers $200-450, hybrid $120-250, FR-4 $50-80",
+          "value": "$80-120/sqft vs $8-15/sqft; prototype 4L: $200-450 (Rogers) / $120-250 (hybrid) / $50-80 (FR-4)",
+          "context": "China fabricator pricing guide, 2026, prototype quantities (5 pcs); at 100 pcs $35-70/pc RO4350B vs $8-15/pc FR-4",
+          "publisher": "AtlasPCB (via DEV Community post)",
+          "url": "https://dev.to/abc_8b09c7009ee0029b85665/rogers-4350b-pcb-pricing-in-2026-cost-breakdown-hybrid-savings-and-order-economics-26d2",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "Rogers laminate runs $80-120 per square foot — roughly 8-10x more than FR-4 at $8-15/sqft",
+          "attribution": "Search summary did not tie this fragment to one URL among the bestpcbs.com / dev.to results; page attribution unconfirmed."
+        },
+        {
+          "claim": "Relative laminate cost vs FR-4: RO4350B 7-12x, RO3003 10-15x, RT/duroid 5880 15-22x; material is 40-55% of an RF board price vs 15-25% for FR-4",
+          "value": "RO4350B 7-12x; RO3003 10-15x; RT/duroid 5880 15-22x",
+          "context": "RF PCB cost breakdown, fabricator blog, 2026",
+          "publisher": "AtlasPCB",
+          "url": "https://atlaspcb.com/blog/rf-pcb-cost-breakdown-rogers-high-frequency-laminate-pricing",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "RO4350B at 7-12x FR-4 cost, with RO3003 at 10-15x and RT/duroid 5880 at 15-22x",
+          "attribution": "Search summary said 'An RF cost breakdown'; attributed to the AtlasPCB RF cost page in the result list, unconfirmed."
+        },
+        {
+          "claim": "Full-board cost multiples: 2-layer PTFE/woven glass 5.5x a standard FR-4 board; pure Rogers 4-layer 8x",
+          "value": "5.5x (2L PTFE board); 8x (4L Rogers board)",
+          "context": "Finished-board price multiples, fabricator blog, 2026",
+          "publisher": "AtlasPCB",
+          "url": "https://atlaspcb.com/blog/rf-pcb-cost-breakdown-rogers-ptfe-hybrid-pricing",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "2-layer PTFE/woven-glass board at 5.5x a standard FR-4 board, and pure Rogers 4-layer boards at 8x"
+        },
+        {
+          "claim": "Pure PTFE substrates cost 5-10x FR-4; hybrid stack-ups cut laminate cost 40-60%",
+          "value": "5-10x",
+          "context": "Laminate selection guide, fabricator blog",
+          "publisher": "PCBSync",
+          "url": "https://pcbsync.com/?p=35675",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "pure PTFE substrates (like Rogers RT/duroid) deliver the lowest loss available in a commercial laminate, but they cost 5–10× more than FR-4"
+        },
+        {
+          "claim": "TG150 laminate is typically 5-10% more expensive than TG130",
+          "value": "+5-10%",
+          "context": "Mid-Tg step (TG130 -> TG150), not the 170 C+ class",
+          "publisher": "PCBSync",
+          "url": "https://pcbsync.com/high-tg-pcb/",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "typically 5-10% more expensive than TG130"
+        },
+        {
+          "claim": "High-Tg FR4 (170-180 C) carries a 10-20% cost premium over standard FR4",
+          "value": "+10-20%",
+          "context": "Vendor comparison table, no quantity or board stated",
+          "publisher": "Best Technology (bestpcbs.com)",
+          "url": "https://www.bestpcbs.com/faq/high-tg-pcb/tg-130-vs-tg-170.htm",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "typical cost premium at 10-20% higher for high Tg FR4 (170–180°C) versus standard FR4"
+        },
+        {
+          "claim": "Isola 370HR costs roughly 60-70% of Megtron 4 (no figure against standard FR4)",
+          "value": "60-70% of Megtron 4",
+          "context": "Mid-loss laminate comparison, designs up to 16 Gbps",
+          "publisher": "AtlasPCB",
+          "url": "https://atlaspcb.com/blog/isola-370hr-vs-megtron4-mid-loss-laminate-10-25gbps",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "370HR is roughly 60-70% of the cost of Megtron 4 for designs up to 16 Gbps"
+        },
+        {
+          "claim": "JLCPCB offers high-Tg FR4 170 C+ for automotive in its instant quote and says high-Tg is dearer, but publishes no percentage",
+          "value": "no figure",
+          "context": "JLCPCB blog, 2025-2026",
+          "publisher": "JLCPCB",
+          "url": "https://jlcpcb.com/blog/right-tg-value-for-pcb",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "high Tg FR4 170 °C+ for automotive or industrial boards are all possible and available by way of a simple instant-quote interface"
+        }
+      ],
+      "noEvidence": "No laminate maker (Rogers, Isola, Panasonic) or independent index publishes a price or ratio; no Panasonic R-1566 figure found; Sierra Circuits publishes none (only an unanswered forum question). Every ratio found is a fabricator blog, and they disagree (RO4350B 3-5x, 7-12x, 8-12x laminate; +20-50% finished board).",
+      "toolUsesToday": "Rogers / PTFE laminate is NOT priced (F14, docs/pcb/pcb-pipeline-fixes-2026-10-09.md §4); the 'Rogers 4350B: 8–12×' figure appears only in the rf_microwave prompt text (server/routes/pcb.ts:1174, F15 - prompt guidance, no price). On automotive_adas boards an 'automotive laminate' premium = fabCost × 0.40 × (0.35, or 0.50 at ≥8 layers), i.e. 14% / 20% of fab (server/routes/pcb.ts:947-948), plus an IATF fab premium of 18% (server/routes/pcb.ts:946); both unsourced engineering figures."
+    },
+    {
+      "topic": "2. Double-sided SMT assembly: cost of a second reflow side",
+      "claims": [
+        {
+          "claim": "JLCPCB Standard PCBA setup fee is $25 for one assembly side and $50 for double-sided placement",
+          "value": "$25 single side; $50 double side (setup, per order)",
+          "context": "JLCPCB published PCBA price list, prototype / small batch, China, Sept 2025 version",
+          "publisher": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/pcb-assembly-price",
+          "dateRead": "2026-10-09",
+          "type": "price list",
+          "confidence": "high",
+          "quote": "Setup fee: $25 for one assembly side. For double sided placement, the setup fee is $50."
+        },
+        {
+          "claim": "JLCPCB Standard PCBA stencil fee doubles for double-sided assembly; a later version of the page shows $8.66 / $17.32",
+          "value": "$7.86 single side; $15.72 double side (later version $8.66 / $17.32)",
+          "context": "JLCPCB published PCBA price list, per order",
+          "publisher": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/pcb-assembly-price",
+          "dateRead": "2026-10-09",
+          "type": "price list",
+          "confidence": "high",
+          "quote": "$7.86/Single-side assembly $15.72/Double-side assembly"
+        },
+        {
+          "claim": "JLCPCB placement is charged per solder joint regardless of side",
+          "value": "$0.0016 per joint (1-50,000 joints; later page $0.0017 Economic)",
+          "context": "JLCPCB published PCBA price list, Sept 2025",
+          "publisher": "JLCPCB",
+          "url": "https://jlcpcb.com/help/article/pcb-assembly-price",
+          "dateRead": "2026-10-09",
+          "type": "price list",
+          "confidence": "high",
+          "quote": "$0.0016 per joint"
+        },
+        {
+          "claim": "JLCPCB prototype page lists Standard setup $25.56 single side / $51.12 double side",
+          "value": "$25.56 / $51.12",
+          "context": "JLCPCB prototype assembly page (differs from help-centre table)",
+          "publisher": "JLCPCB",
+          "url": "https://jlcpcb.com/solutions/pcb-prototype-assembly",
+          "dateRead": "2026-10-09",
+          "type": "price list",
+          "confidence": "medium",
+          "quote": "$25.56/Single-side and $51.12/Double-side"
+        },
+        {
+          "claim": "DFMA's PCB costing reference lists reflow soldering cost per board pass",
+          "value": "$0.50-$2.00 per board pass",
+          "context": "Boothroyd Dewhurst DFMA PCB cost-estimating page; no volume or country stated in the snippet",
+          "publisher": "Boothroyd Dewhurst (dfma.com)",
+          "url": "https://www.dfma.com/resources/pcb-cost-estimating.asp",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "medium",
+          "quote": "reflow soldering: $0.50–$2.00 per board pass"
+        },
+        {
+          "claim": "Double-sided assembly adds 60-100% for a 200-placement board versus single-sided SMT with AOI (basis - line vs whole board - not stated)",
+          "value": "+60-100%",
+          "context": "Fabricator cost guide, 200 placements, standard volumes, 2026",
+          "publisher": "AtlasPCB",
+          "url": "https://atlaspcb.com/blog/pcba-cost-breakdown-assembly-pricing-optimization",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "double-sided assembly adds 60-100%",
+          "attribution": "Search summary named Atlas PCB's cost guide; URL is the AtlasPCB PCBA cost page in the result list."
+        },
+        {
+          "claim": "Double-sided assembly is a modest per-board increase unless BGAs sit on both sides",
+          "value": "no figure",
+          "context": "Cofactr article on package cost drivers",
+          "publisher": "Cofactr",
+          "url": "https://www.cofactr.com/articles/which-component-packages-drive-cost-in-your-pcb-assembly",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "as long as we are not dealing with something like overlapping BGAs, double-sided assembly is a modest increase in per-board costs"
+        }
+      ],
+      "noEvidence": "No volume-production EMS price list found for a second side (PCBWay, MacroFab, Seeed publish none in search results; MacroFab is quote-only). JLCPCB's figures are prototype/small-batch per-order fees, not line time at 100k+. Only the DFMA per-pass reflow range is a per-board figure.",
+      "toolUsesToday": "Not priced (F14, docs/pcb/pcb-pipeline-fixes-2026-10-09.md §4). Double-sided reflow is only detected and reported (server/routes/pcb.ts:196, from pcb-bom-truth.ts:46 bottomSide); SMT cost is placements / 3600 × line rate + one batchSetupGBP per order (server/data/pcb-country-rates.ts, computePCBCountryCost smtAssembly), with no second setup, stencil or reflow pass."
+    },
+    {
+      "topic": "3. Import duty on PCBAs and ECUs (UK, EU, US incl. Section 301)",
+      "claims": [
+        {
+          "claim": "UK tariff has commodity code 8537109159 for ECUs controlling inter-axle torque transfer in all-wheel-drive vehicles, described as a PCB with programmable memory controller, one connector, 12 V - i.e. vehicle ECUs are classed under 8537 10 91 in the UK tariff",
+          "value": "classification only - rate not shown in the search result",
+          "context": "UK Integrated Online Tariff, commodity page",
+          "publisher": "HM Revenue & Customs / Department for Business and Trade (UK Trade Tariff)",
+          "url": "https://www.trade-tariff.service.gov.uk/commodities/8537109159",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "high",
+          "quote": "Electronic control units for controlling inter axle torque transferring in all-wheel drive vehicles including: -a printed circuit board with programmable memory controller, -one single connector, and -working at 12 V"
+        },
+        {
+          "claim": "UK heading 8537 lists 'Programmable memory controllers' 8537 10 91 for voltages not exceeding 1,000 V",
+          "value": "classification only",
+          "context": "UK Integrated Online Tariff, heading 8537",
+          "publisher": "UK Trade Tariff (GOV.UK)",
+          "url": "https://www.trade-tariff.service.gov.uk/headings/8537",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "high",
+          "quote": "Programmable memory controllers 8537 1091"
+        },
+        {
+          "claim": "A third-party aggregator of UK tariff data shows several 10-digit lines under heading 8537 at 2.00%",
+          "value": "2.00% (some UK 8537 lines; 8537109100 not confirmed)",
+          "context": "UK Global Tariff, third-country duty, aggregator view",
+          "publisher": "Treayo (aggregator)",
+          "url": "https://treayo.com/en/hs/uk/h/8537",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "primary rate of 2.00%"
+        },
+        {
+          "claim": "EU TARIC rate for 8537 10 91 (programmable memory controllers) shown as 2.1%",
+          "value": "2.1%",
+          "context": "EU Common Customs Tariff, third-country (erga omnes) duty, aggregator view",
+          "publisher": "TheTradeHub (aggregator of EU TARIC)",
+          "url": "https://www.thetradehub.eu/en/customs/classification-guide/8537",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "8537109100 Other 2.100 %"
+        },
+        {
+          "claim": "EU classification regulation 706/2013 placed a programmable control unit under CN 8537 10 91 as a programmable memory controller (washing-machine unit; precedent for the code, not for a vehicle ECU)",
+          "value": "classification only",
+          "context": "Commission Implementing Regulation (EU) No 706/2013",
+          "publisher": "EUR-Lex (European Union)",
+          "url": "https://eur-lex.europa.eu/eli/reg_impl/2013/706/oj/eng",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "high",
+          "quote": "falls under 8537 10 91 as a programmable memory controller for a voltage not exceeding 1 000 V"
+        },
+        {
+          "claim": "US CBP ruling H088421 classified an electric power steering ECU under HTSUS 8537.10.90 at a 2.7% column-one general rate (2007 rate)",
+          "value": "2.7% ad valorem (2007 schedule)",
+          "context": "US CBP ruling, EPS ECU from Japan, May 2012",
+          "publisher": "US Customs and Border Protection (via TariffLens ruling mirror)",
+          "url": "https://www.tarifflens.ai/rulings/H088421",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "medium",
+          "quote": "The merchandise is specifically classified in subheading 8537.10.90, HTSUS ... The 2007 column one, general rate of duty was 2.7% ad valorem."
+        },
+        {
+          "claim": "US CBP ruling N267462 classified a four-wheel-drive ECU under 8537.10.9060 (programmable controllers) and rejected 9032.89",
+          "value": "8537.10.9060 (rate per HTSUS)",
+          "context": "US CBP ruling, automotive control unit from South Korea, Aug 2015",
+          "publisher": "US Customs and Border Protection (via TariffLens ruling mirror)",
+          "url": "https://www.tarifflens.ai/rulings/N267462",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "medium",
+          "quote": "The tariff classification of an automotive control unit from South Korea"
+        },
+        {
+          "claim": "US HTS listing shows 8537.10.91.60 programmable controllers at 2.7%",
+          "value": "2.7%",
+          "context": "US HTS 2026 Revision 13 (07/28/2026), aggregator view",
+          "publisher": "HTSHub (aggregator of USITC HTS)",
+          "url": "https://www.htshub.com/us-hs/head/85371091",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "8537.10.91.60 | 2.7% | Programmable controllers"
+        },
+        {
+          "claim": "Section 301 List 1 (effective 6 July 2018, heading 9903.88.01) carries an additional 25% duty on listed Chinese-origin goods; whether 8537.10.90 is on List 1 was not confirmed",
+          "value": "+25%",
+          "context": "US Section 301 China tariffs, List 1",
+          "publisher": "Ginger Control (secondary compilation)",
+          "url": "https://gingercontrol.com/blog/section-301-tariff-rates-china",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "List 1 – Effective July 06, 2018 – 9903.88.01"
+        },
+        {
+          "claim": "USTR four-year review final action (13 Sept 2024): 50% on 16 semiconductor tariff categories from 1 January 2025",
+          "value": "50% (semiconductors, from 2025-01-01)",
+          "context": "US Section 301 four-year review; applies to semiconductors (components), not to assembled ECUs",
+          "publisher": "Global Trade and Sanctions Law (Miller & Chevalier blog)",
+          "url": "https://www.globaltradeandsanctionslaw.com/ustr-section-301-tariffs-chinese-imports-focus-strategic-sectors/",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "A 50% rate applies to 16 semiconductor tariff categories and to wafers used to manufacture semiconductors, starting January 1, 2025"
+        },
+        {
+          "claim": "Finished PCBs enter Europe from Asia tariff-free while base materials pay EU import duty",
+          "value": "0% (finished PCBs, as stated by trade press)",
+          "context": "European PCB industry report, Feb 2026",
+          "publisher": "Evertiq",
+          "url": "https://evertiq.com/news/2026-02-25-european-pcb-revenues-rise-24-as-industry-shrinks",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "EU import duties on base materials, combined with tariff-free imports of finished PCBs from Asia"
+        }
+      ],
+      "noEvidence": "No official page text giving the CURRENT UK Global Tariff or EU TARIC rate for 8537 10 91 / 8543 70 90 / 8708 / 9032 was returned by search (official commodity pages were found but their rate fields were not in the snippets; WebFetch is blocked). The US 2.7% comes from CBP rulings (2007-2015 schedules) and an HTS mirror; whether 8537.10.90 sits on Section 301 List 1 was not confirmed from ustr.gov. Rates must be read on trade-tariff.service.gov.uk, TARIC and hts.usitc.gov directly before use.",
+      "toolUsesToday": "importDutyFraction per source country, destination UK only (interface comment 'UK import duty rate on PCBs/PCBA (HS 8534/8537)', server/data/pcb-country-rates.ts:73-74): cn 0.037 (:205), vn/in/th/my 0.055 (:250/:295/:340/:385), tw 0.037 (:430), mx 0.037 (:520), us 0.037 (:745), kr/cz/pl/de/gb/jp 0. Charged on fab + assembly + BOM (:1234-1235) and on the automotive premiums (server/routes/pcb.ts applyAutomotiveGrade). No Section 301, no EU or US destination. F21: rate and destination unsourced."
+    },
+    {
+      "topic": "4. EMS material burden / markup on components",
+      "claims": [
+        {
+          "claim": "EMS providers quote material with its own material margin, separate from labour margin",
+          "value": "no figure",
+          "context": "EMS quote structure, consultancy article",
+          "publisher": "Venture Outsource",
+          "url": "https://ventureoutsource.com/contract-manufacturing/profit-margins-pcb-electronic-assembly-quotes-ems-manufacturing-costs-oem-pricing/",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "material pricing (also with material margin) plus, total cost extended, in addition to total margin"
+        },
+        {
+          "claim": "Materials are 65-85% of EMS manufactured cost of goods",
+          "value": "65-85% of MCOGS",
+          "context": "EMS cost structure, consultancy article",
+          "publisher": "Venture Outsource",
+          "url": "https://ventureoutsource.com/contract-manufacturing/profit-margins-pcb-electronic-assembly-quotes-ems-manufacturing-costs-oem-pricing/",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "materials is proportionally a larger (always estimated at 65% to 85%) of MCOGs"
+        },
+        {
+          "claim": "Materials are about 80% of EMS selling price on an industry-average basis",
+          "value": "80% of selling price",
+          "context": "EMS pricing series (Charlie Barnhart), date not confirmed",
+          "publisher": "EE Times",
+          "url": "https://www.eetimes.com/?p=1240305",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "medium",
+          "quote": "Materials are the largest of the cost elements, accounting for 80 percent of EMS selling price on an industry average basis"
+        },
+        {
+          "claim": "Average inventory on hand of the five largest North American EMS companies is about 10% of annual sales",
+          "value": "~10% of annual sales",
+          "context": "EMS pricing series, date not confirmed",
+          "publisher": "EE Times",
+          "url": "https://www.eetimes.com/?p=1240305",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "medium",
+          "quote": "average inventory on hand for the five largest North American EMS companies exceeds $1 billion, or roughly 10 percent of annual sales"
+        },
+        {
+          "claim": "Jabil realises lower gross margins on materials-based revenue than on manufacturing-based revenue; EMS is a lower-margin, high-volume business",
+          "value": "no figure",
+          "context": "Jabil prospectus 1999 and 10-K FY2017",
+          "publisher": "Jabil Inc. (SEC filings)",
+          "url": "https://www.sec.gov/Archives/edgar/data/0000898293/000095014499002453/0000950144-99-002453.txt",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "high",
+          "quote": "higher gross margins on manufacturing-based revenue than we do on materials-based revenue"
+        },
+        {
+          "claim": "Jabil gross margin FY2022-FY2025 (total, not material-only)",
+          "value": "7.86% (FY22), 8.26% (FY23), 9.26% (FY24), 8.88% (FY25)",
+          "context": "Company total gross margin, aggregator of 10-K data",
+          "publisher": "valueinvesting.io (from Jabil 10-K)",
+          "url": "https://valueinvesting.io/JBL/metric/gross-margin",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "2025-08-31 8.88%; 2024-08-31 9.26%; 2023-08-31 8.26%; 2022-08-31 7.86%"
+        },
+        {
+          "claim": "Flex gross margin 8.5% (June 2025); mid-tier EMS peers 8.9%, large-tier 9.0% (total gross margin, not material margin)",
+          "value": "8.5% (Flex); 8.9% / 9.0% peer averages",
+          "context": "Lincoln International EMS Quarterly Review Q2 2025, Capital IQ data",
+          "publisher": "Lincoln International",
+          "url": "https://cdn.lincolninternational.com/wp-content/uploads/2025_Q2_EMS-Quarterly-Review.pdf",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "medium",
+          "quote": "Flex Ltd. 8.5% 4.8% 6.8%"
+        }
+      ],
+      "noEvidence": "No published EMS material-burden / component-markup percentage was found (Venture Outsource, EE Times, EMSNow, CalcuQuote all describe the mechanism but give no figure; Venture Outsource lists 'typical mark-ups' as a question buyers ask). Company gross margins (Jabil ~8-9%, Flex 8.5%) are whole-business margins, not a material burden.",
+      "toolUsesToday": "materialBurdenFor(qty): 10% at ≤1k boards, 7% at 10k, 5% at ≥100k, log-linear between (server/data/pcb-country-rates.ts:1136-1145), applied to the BOM at :1217-1219; labelled 'an engineering figure' citing Venture Outsource / EMSNow for the practice only."
+    },
+    {
+      "topic": "5. OEM / Tier-1 contract price versus distributor list price for semiconductors at automotive volume",
+      "claims": [
+        {
+          "claim": "Distributor online price usually reflects the manufacturer's suggested price; the distributor pays a 'book' cost and the online price reflects its margin",
+          "value": "no figure",
+          "context": "Altium Resources, how component prices are set",
+          "publisher": "Altium",
+          "url": "https://resources.altium.com/p/how-manufacturers-and-distributors-set-electronic-component-prices",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "medium",
+          "quote": "In almost all cases this price reflects the suggested price published by the manufacturer. In reality the distributor is paying a set cost to the manufacturer (the \"book\" cost)"
+        },
+        {
+          "claim": "Manufacturers may 'break' the distributor's book cost on high-volume sales; illustrative example halves a $2.00 book cost",
+          "value": "$2.00 -> $1.00 (illustrative, 1,000 parts)",
+          "context": "Cadence PCB resources, 2019, illustrative example not market data",
+          "publisher": "Cadence",
+          "url": "https://resources.pcb.cadence.com/blog/2019-the-benefits-of-electronic-component-cost-volume-analysis-in-pcb-design",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "the manufacturer would debit back to the distributer a portion of their cost reducing the book price from $2.00 to $1.00"
+        },
+        {
+          "claim": "Avnet (franchised distributor) consolidated gross margin FY2025 10.7% (FY2024 11.6%) - the distributor's whole-business margin, not a contract-price gap",
+          "value": "10.7% (FY2025); 11.6% (FY2024)",
+          "context": "Avnet Form 10-K FY2025 (year to 28 June 2025)",
+          "publisher": "Avnet Inc. (SEC filing)",
+          "url": "https://www.sec.gov/Archives/edgar/data/8858/000000885825000028/avt-20250628x10k.htm",
+          "dateRead": "2026-10-09",
+          "type": "official",
+          "confidence": "high",
+          "quote": "[paraphrase in search summary, no verbatim fragment] Margin fell to 10.7%, from 11.6% a year earlier."
+        },
+        {
+          "claim": "TechInsights' component price landscape blends contract OEM pricing with algorithmic estimates at target volume, 2x and 0.5x (no discount curve published)",
+          "value": "no figure",
+          "context": "TechInsights subscription description",
+          "publisher": "TechInsights",
+          "url": "https://www.techinsights.com/reverse-engineering-subscriptions/component-pricing-landscape-and-analysis-subscriptions",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "medium",
+          "quote": "determine market pricing for your BOM at projected target volume, twice the projected target volume and half the projected target volume"
+        },
+        {
+          "claim": "Rule of thumb: a BOM cost above 80% of the lowest online price suggests overpaying",
+          "value": "80% of lowest online price",
+          "context": "Pricing-software vendor heuristic, not analyst data",
+          "publisher": "Cofactr",
+          "url": "https://www.cofactr.com/articles/direct-spend-management-are-you-paying-too-much-for-electronic-components",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "if your BOM cost is over 80% of the lowest online price, you're likely overpaying"
+        }
+      ],
+      "noEvidence": "No analyst or industry statement with a figure for how far automotive OEM / Tier-1 contract prices sit below distributor 1k / reel prices was found (TechInsights, S&P/IHS, Yole SystemPlus sell the data but publish no discount; Caresoft / Munro nothing). The only numeric comparisons are illustrative (Cadence) or a vendor heuristic (Cofactr).",
+      "toolUsesToday": "Catalogue lines are priced at distributor breaks along a franchise curve (10k = 1k × 0.85, b = 0.0706), DERIVED above the largest published break and flat above 300k parts (server/utils/pcb-price-catalogue.ts:17-25, :153+); class/named tables are read as ~10k reel prices (TABLE_BASIS_QTY, server/routes/pcb.ts:55-56). No contract-price discount below distributor pricing is applied, except imagers, which take an 'automotive volume' class rule (£3-15) instead of a listing (server/utils/pcb-bom-grounding.ts:22-26)."
+    },
+    {
+      "topic": "6. PCB fabrication price per m² at volume for 4-8 layer FR4 automotive boards (China / Europe)",
+      "claims": [
+        {
+          "claim": "Chinese online cost calculator lists FR-4 price per m² including processing: 2L 420 RMB, 4L 720 RMB, 6L 1,200 RMB, 8L 1,800 RMB, 10L 3,500 RMB; small batches cost much more per unit",
+          "value": "4L 720 RMB/m²; 6L 1,200 RMB/m²; 8L 1,800 RMB/m²",
+          "context": "Undated reference prices, China, no volume stated",
+          "publisher": "Dasenic",
+          "url": "https://jp.dasenic.com/tool/PCBCostCalculation",
+          "dateRead": "2026-10-09",
+          "type": "price list",
+          "confidence": "low",
+          "quote": "4 layers FR-4 per square meter (including processing fee): 720 RMB 6 layers FR-4 per square meter (including processing fee): 1200RMB"
+        },
+        {
+          "claim": "Suggested prices for FR-4 rigid boards in 20 m² batches: four-layer $178.30/m², six-layer $274.31/m²",
+          "value": "4L $178.30/m²; 6L $274.31/m²",
+          "context": "20 m² batches, undated list",
+          "publisher": "Evertiq",
+          "url": "https://evertiq.com/news/4013",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "$178.30/sqm for four-layer, $274.31 for six-layer"
+        },
+        {
+          "claim": "Contract prices for four-layer PCBs fell below US$0.05 per square inch (Chinese capacity expansion)",
+          "value": "< $0.05 per sq in (4L)",
+          "context": "Digitimes news, apparently 2002 (article id a2002083007043), paywalled",
+          "publisher": "Digitimes",
+          "url": "https://www.digitimes.com/news/a2002083007043.html",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "contract prices for four-layer PCBs have now collapsed below US$0.05 per square inch"
+        },
+        {
+          "claim": "iSuppli tracked an 8-layer FR-4 key product price per square inch expected to fall to 15.3 cents in Q2 2009",
+          "value": "15.3 cents per sq in (8L FR-4, Q2 2009)",
+          "context": "iSuppli 2009 price tracking, dated",
+          "publisher": "PCD&F (citing iSuppli)",
+          "url": "https://pcdandf.com/pcdesign/index.php/editorial/menu-news/market-news/4831-pcb-prices-decline-in-2009",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "low",
+          "quote": "price per square inch expected to fall to 15.3 cents"
+        },
+        {
+          "claim": "Prismark: 2025 global PCB market $85.8bn, +16.7% on 2024; multilayer revenue +19.3% (no per-m² price published in the summary)",
+          "value": "$85.8bn (2025)",
+          "context": "Prismark 2025 report as summarised by TechNews, June 2026",
+          "publisher": "TechNews (citing Prismark)",
+          "url": "https://technews.tw/2026/06/12/pcb-prismark-report-2025/",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "medium",
+          "quote": "AI 推升 PCB 市場成長 16.7%"
+        },
+        {
+          "claim": "China customs-based analysis: average export value per board for PCBs above four layers 19-20 yuan in H1 2025 vs 15-17 yuan in H1 2024 (per board, not per m²)",
+          "value": "19-20 CNY per board (H1 2025)",
+          "context": "Chinese export data analysis, Aug 2025",
+          "publisher": "Sina Finance",
+          "url": "https://finance.sina.cn/2025-08-15/detail-infmaiqz4308066.d.html?vt=4",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "[English rendering by the search summary of a Chinese article] average export value per board for PCBs above four layers was 19 to 20 yuan in the first half of 2025"
+        },
+        {
+          "claim": "Olympic Circuit (世运电路, automotive-heavy Chinese fab) made several price rises with a new one in July 2026; H1 gross margin fell from 22.72% to 13.56% on copper, gold, resin and glass-cloth costs",
+          "value": "GM 22.72% -> 13.56% (H1); price rises 2026",
+          "context": "Everbright Securities research note, 2026",
+          "publisher": "Gelonghui (citing Everbright Securities)",
+          "url": "https://m.gelonghui.com/news/5306879",
+          "dateRead": "2026-10-09",
+          "type": "industry report",
+          "confidence": "low",
+          "quote": "公司已进行多轮调价,7月新一轮涨价落地"
+        },
+        {
+          "claim": "Standard FR-4 boards face 5-10% material cost increases; high-layer-count and HDI 10-20% (Q3 2026)",
+          "value": "+5-10% (standard FR-4); +10-20% (high-layer / HDI)",
+          "context": "Fabricator news, CCL price increase Q3 2026",
+          "publisher": "AtlasPCB",
+          "url": "https://atlaspcb.com/news/news-ccl-fr4-price-increase-q3-2026-pcb-cost-impact",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "standard FR-4 boards face 5-10% material cost increases; high-layer-count and HDI boards may see 10-20% impact"
+        },
+        {
+          "claim": "China PCB manufacturing costs 1.8-3.0x less than US / European equivalents; 8-layer 2+N+2 HDI at 1000+ pcs $15-35/board China vs $35-70 US",
+          "value": "1.8-3.0x",
+          "context": "Fabricator blog, 2026, US and Europe lumped together",
+          "publisher": "AtlasPCB",
+          "url": "https://www.atlaspcb.com/blog/china-vs-us-pcb-manufacturing-cost-comparison-2026",
+          "dateRead": "2026-10-09",
+          "type": "article",
+          "confidence": "low",
+          "quote": "China PCB manufacturing costs 1.8-3.0x less than US/European equivalents for standard and HDI boards"
+        }
+      ],
+      "noEvidence": "No current published price index per m² for 4-8 layer automotive FR4 at volume (Prismark's ASP series is paywalled; Chinese listed fabs' annual reports were not found to state a 元/m² unit price in search snippets; no European €/m² figure found). The per-m² figures found are undated or old (Dasenic, Evertiq list, Digitimes 2002, iSuppli 2009).",
+      "toolUsesToday": "China: baseCostPerDm2_2L £0.116 + layerAdderPerDm2 £0.07379 per extra layer (server/data/pcb-country-rates.ts:180-181), × panel waste, finish, vias, HDI, impedance, copper (:1164-1186); e.g. kr 0.7466 (:450), de 1.238 (:630), gb 1.6 (:675) £/dm² for 2L. Header cites 'Prismark PCB Industry Report Q4-2025' and IPC (:5-6) without page or figure; automotive boards add +18% IATF and +14/20% laminate on fab (server/routes/pcb.ts:946-948)."
+    }
+  ]
+}

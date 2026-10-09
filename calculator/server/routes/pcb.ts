@@ -1647,6 +1647,16 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // A board figure the model says it read stands only with evidence (fab data, the user, or OCR board text).
     for (const m of gateBoardEvidence(boardSpec, ocrResult.boardText ?? [])) warnings.push({ code: 'BOARD_FIGURE_NOT_EVIDENCED', severity: 'warn', message: m });
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
+    // What the cost model does NOT price, said on the result (pipeline review F14; cost-basis evidence of 9 Oct 2026 —
+    // scripts/pcb-research/2026-10-09-ev/evidence/cost-basis-evidence.json — found only low-confidence fabricator figures).
+    if (String(boardSpec.technologyType ?? '') === 'RF_MICRO' || /rogers|ptfe|ro4350|ro3003|teflon/i.test(`${boardSpec.laminate ?? ''} ${boardSpec.technologyType ?? ''}`)) {
+      warnings.push({ code: 'LAMINATE_NOT_COSTED', severity: 'warn',
+        message: 'An RF laminate (Rogers / PTFE / hybrid stack) is not costed: the fab price is FR4. Published fabricator figures (low confidence, not used) put a Rogers board 20–50 % above FR4 — get a fab quote.' });
+    }
+    if (Number(assemblyData.reflowSides) >= 2) {
+      warnings.push({ code: 'SECOND_SIDE_NOT_COSTED', severity: 'warn',
+        message: 'Double-sided reflow: the second side (stencil, set-up, reflow pass) is not costed — no sourced volume figure was found. The placements on both sides are costed.' });
+    }
     {
       const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', auto);
       if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
