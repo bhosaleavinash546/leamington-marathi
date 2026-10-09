@@ -9,26 +9,47 @@
 },
 "parts": [
 {
-"mpn": "TJA1044GT",
+"mpn": "TJA1044GT/3Z",
 "family": "TJA1044",
-"mfr": "NXP",
-"desc": "CAN FD transceiver, 5 Mbps",
+"mfr": "NXP Semiconductors",
+"desc": "HS-CAN / CAN FD transceiver, standby, VIO (MPC5748G gateway reference design)",
 "category": "ic_soic",
-"pkg": "SOIC-8",
+"pkg": "SO-8",
 "aecq": true,
 "gbp": {
-"q1k": 0.5374,
-"q10k": 0.4568,
-"q100k": 0.3869,
-"q200k": 0.3684,
-"q300k": 0.358
+"q1k": 0.416,
+"q10k": 0.3536,
+"q100k": 0.3005,
+"q200k": 0.2862,
+"q300k": 0.2781
 },
 "confidence": "distributor",
-"source": "Digi-Key TJA1044GT/3Z $0.689 @1k (LCSC TJA1044GT/3 $0.226 @1k); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
-"asOf": "2026-10-01",
+"source": "Digi-Key $0.55072 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"GW",
+"BCM"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 0.55072,
+"currency": "USD",
+"url": "https://www.digikey.com.mx/en/products/detail/nxp-usa-inc/TJA1044GT-3Z/7648357",
+"date": "2026-10-09",
+"gbp": 0.416
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+},
 "aliases": [
 "TJA1044GTK",
-"TJA1044T"
+"TJA1044T",
+"TJA1044GT"
 ]
 },
 {
@@ -981,23 +1002,46 @@
 }
 },
 {
-"mpn": "BTS7008-2EPA",
+"mpn": "BTS70082EPAXUMA1",
 "family": "BTS7008",
-"mfr": "Infineon",
-"desc": "PROFET+2 dual high-side switch",
-"category": "ic_tqfp",
+"mfr": "Infineon Technologies",
+"desc": "PROFET+2 12 V dual-channel smart high-side switch, 8 mOhm (lamps, heaters)",
+"category": "ic_soic",
 "pkg": "TSDSO-14",
 "aecq": true,
 "gbp": {
-"q1k": 0.702,
-"q10k": 0.5967,
-"q100k": 0.5054,
-"q200k": 0.4813,
-"q300k": 0.4677
+"q1k": 0.9494,
+"q10k": 0.807,
+"q100k": 0.686,
+"q200k": 0.6532,
+"q300k": 0.6348
 },
 "confidence": "distributor",
-"source": "Mouser $1.27 @1k; LCSC $0.707 @1k; mid $0.90; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
-"asOf": "2026-10-01"
+"source": "Farnell $1.257 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BCM",
+"SEAT"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 1.257,
+"currency": "USD",
+"url": "https://il.farnell.com/infineon/bts70082epaxuma1/power-load-switch-auto-28v-tssop14/dp/2803447",
+"date": "2026-10-09",
+"gbp": 0.9494
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+},
+"aliases": [
+"BTS7008-2EPA"
+]
 },
 {
 "mpn": "INA240A2QDRQ1",
@@ -1370,42 +1414,99 @@
 "asOf": "2026-10-01"
 },
 {
-"mpn": "S32K116",
+"mpn": "FS32K116LFT0VLFT",
 "family": "S32K116",
-"mfr": "NXP",
-"desc": "S32K116 automotive MCU/SoC",
+"mfr": "NXP Semiconductors",
+"desc": "S32K116 Cortex-M0+ 48 MHz, 128 KB flash, CAN FD (seat / door / HVAC node MCU)",
 "category": "ic_tqfp",
-"pkg": "LQFP",
+"pkg": "LQFP-48",
 "aecq": true,
 "gbp": {
-"q1k": 2.5882,
-"q10k": 2.2,
-"q100k": 1.87,
-"q200k": 1.7807,
-"q300k": 1.7305
+"q1k": 1.9838,
+"q10k": 1.6862,
+"q100k": 1.4333,
+"q200k": 1.3649,
+"q300k": 1.3264
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"confidence": "distributor",
+"source": "LCSC $2.5437 @1,000; Future Electronics $2.58 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"SEAT",
+"DOOR",
+"HVAC"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 2.5437,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-detail/C1137390.html",
+"date": "2026-10-09",
+"gbp": 1.9213
 },
 {
-"mpn": "S32K118",
+"distributor": "Future Electronics",
+"qty": 2000,
+"price": 2.58,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--microcontrollers--32-bit/fs32k116lft0vlfr-nxp-5139334",
+"date": "2026-10-09",
+"gbp": 1.9487
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2000
+},
+"aliases": [
+"S32K116"
+]
+},
+{
+"mpn": "FS32K118LAT0MLFR",
 "family": "S32K118",
-"mfr": "NXP",
-"desc": "S32K118 automotive MCU/SoC",
+"mfr": "NXP Semiconductors",
+"desc": "S32K118 Cortex-M0+ 48 MHz, 256 KB flash, CAN FD, 125 C",
 "category": "ic_tqfp",
-"pkg": "LQFP",
+"pkg": "LQFP-48",
 "aecq": true,
 "gbp": {
-"q1k": 3.0588,
-"q10k": 2.6,
-"q100k": 2.21,
-"q200k": 2.1045,
-"q300k": 2.0451
+"q1k": 2.5074,
+"q10k": 2.1313,
+"q100k": 1.8116,
+"q200k": 1.7251,
+"q300k": 1.6765
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"confidence": "distributor",
+"source": "element14 TWD 105.71 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"SEAT",
+"DOOR",
+"HVAC"
+],
+"observations": [
+{
+"distributor": "element14",
+"qty": 1000,
+"price": 105.71,
+"currency": "TWD",
+"url": "https://tw.element14.com/en-TW/nxp/fs32k118lat0mlfr/arm-microcontrollers-mcu/dp/4783685",
+"date": "2026-10-09",
+"gbp": 2.5074
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+},
+"aliases": [
+"S32K118"
+]
 },
 {
 "mpn": "FS32K142HAT0MLHT",
@@ -1679,23 +1780,46 @@
 "asOf": "2026-10-01"
 },
 {
-"mpn": "S32K324",
+"mpn": "S32K324NHT1MPBST",
 "family": "S32K324",
 "mfr": "NXP",
-"desc": "S32K324 automotive MCU/SoC",
+"desc": "S32K3 Cortex-M7 lockstep MCU 160 MHz (MCTPTX1AK324 thermal-management reference)",
 "category": "ic_tqfp",
-"pkg": "LQFP",
+"pkg": "HDQFP-172",
 "aecq": true,
 "gbp": {
-"q1k": 10,
-"q10k": 8.5,
-"q100k": 7.225,
-"q200k": 6.88,
-"q300k": 6.6859
+"q1k": 10.8293,
+"q10k": 9.2049,
+"q100k": 7.8241,
+"q200k": 7.4506,
+"q300k": 7.2404
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code S32K324NHT1MPBIT (the listed code was not found at a distributor). element14 KRW 22906 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TMS"
+],
+"observations": [
+{
+"distributor": "element14",
+"qty": 100,
+"price": 22906,
+"currency": "KRW",
+"url": "https://kr.element14.com/nxp/s32k324nht1mpbit/mcu-32bit-160mhz-hdqfp-172/dp/4784028",
+"date": "2026-10-09",
+"gbp": 12.7403
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+},
+"aliases": [
+"S32K324NHT1MPBIT",
+"S32K324"
+]
 },
 {
 "mpn": "S32K342",
@@ -2032,23 +2156,55 @@
 }
 },
 {
-"mpn": "SPC582B",
+"mpn": "SPC582B60E1MH00Y",
 "family": "SPC582B",
-"mfr": "ST",
-"desc": "SPC582B automotive MCU/SoC",
+"mfr": "STMicroelectronics",
+"desc": "SPC58 2B-line e200z2 80 MHz, 1 MB flash, CAN FD, LIN (door / body MCU; ST EVAL-L99DZ200 and AEK-MOT-TK200G1)",
 "category": "ic_tqfp",
-"pkg": "LQFP",
+"pkg": "eTQFP-64",
 "aecq": true,
 "gbp": {
-"q1k": 5.8824,
-"q10k": 5,
-"q100k": 4.25,
-"q200k": 4.0471,
-"q300k": 3.9329
+"q1k": 3.9794,
+"q10k": 3.7193,
+"q100k": 3.4762,
+"q200k": 3.4062,
+"q300k": 3.3659
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"confidence": "distributor",
+"source": "Digi-Key $5.27498 @960; Digi-Key $5.16872 @1,920 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0294, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DOOR",
+"BCM"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 960,
+"price": 5.27498,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC582B60E1MH00Y/8257629",
+"date": "2026-10-09",
+"gbp": 3.9842
+},
+{
+"distributor": "Digi-Key",
+"qty": 1920,
+"price": 5.16872,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC582B60E1MH00Y/8257629",
+"date": "2026-10-09",
+"gbp": 3.9039
+}
+],
+"volumeModel": {
+"b": 0.0294,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1920
+},
+"aliases": [
+"SPC582B"
+]
 },
 {
 "mpn": "SPC584B",
@@ -7169,23 +7325,46 @@
 "asOf": "2026-10-01"
 },
 {
-"mpn": "MLX90372",
+"mpn": "MLX90372GVS-ACE-100-RE",
 "family": "MLX90372",
 "mfr": "Melexis",
-"desc": "Triaxis position sensor",
-"category": "ic_qfn",
-"pkg": "QFN/LGA",
+"desc": "Triaxis rotary/linear position sensor, SENT/PWM, TSSOP (steering angle / torque)",
+"category": "ic_soic",
+"pkg": "TSSOP-16 (GVS)",
 "aecq": true,
 "gbp": {
-"q1k": 2.7059,
-"q10k": 2.3,
-"q100k": 1.955,
-"q200k": 1.8617,
-"q300k": 1.8091
+"q1k": 3.2285,
+"q10k": 2.7442,
+"q100k": 2.3326,
+"q200k": 2.2212,
+"q300k": 2.1585
 },
-"confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code MLX90372GVS-ACE-100-SP (the listed code was not found at a distributor). Future Electronics $4.56 @400 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"EPS"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 400,
+"price": 4.56,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/6100620",
+"date": "2026-10-09",
+"gbp": 3.4442
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 400
+},
+"aliases": [
+"MLX90372GVS-ACE-100-SP",
+"MLX90372"
+]
 },
 {
 "mpn": "AS5048",
@@ -15618,35 +15797,38 @@
 "pkg": "HVQFN-56",
 "aecq": true,
 "gbp": {
-"q1k": 6.7128,
-"q10k": 5.7059,
-"q100k": 4.85,
-"q200k": 4.6185,
-"q300k": 4.4882
+"q1k": 6.2271,
+"q10k": 5.293,
+"q100k": 4.4991,
+"q200k": 4.2843,
+"q300k": 4.1634
 },
 "confidence": "distributor",
-"source": "Digi-Key $9.30746 @520 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-"asOf": "2026-10-06",
+"source": "Avnet $8.634 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
 "ecuRoles": [
 "gateway",
 "domain controller"
 ],
 "observations": [
 {
-"distributor": "Digi-Key",
+"distributor": "Avnet",
 "qty": 520,
-"price": 9.30746,
+"price": 8.634,
 "currency": "USD",
-"url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MVR5510AMBA6ES/13981765",
-"date": "2026-10-06",
-"gbp": 7.0299
+"url": "https://www.avnet.com/americas/product/nxp/mvr5510ambanes/evolve-64144456/",
+"date": "2026-10-09",
+"gbp": 6.5213
 }
 ],
 "volumeModel": {
 "b": 0.0706,
 "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
 "derivedAbove": 520
-}
+},
+"aliases": [
+"MVR5510AMBA6ES"
+]
 },
 {
 "mpn": "MC33PF8200D2ES",
@@ -32550,14 +32732,14 @@
 "pkg": "24-BGA 6x8",
 "aecq": true,
 "gbp": {
-"q1k": 8.2655,
-"q10k": 7.0257,
-"q100k": 5.9718,
-"q200k": 5.6867,
-"q300k": 5.5263
+"q1k": 8.0242,
+"q10k": 6.8205,
+"q100k": 5.7975,
+"q200k": 5.5206,
+"q300k": 5.3649
 },
 "confidence": "distributor",
-"source": "Future Electronics $11.25 @676 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"source": "Future Electronics $11.25 @676; Digi-Key $10.593 @676 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
 "asOf": "2026-10-09",
 "ecuRoles": [
 "ADAS domain controller",
@@ -32573,6 +32755,15 @@
 "url": "https://futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/s28hs512tgabhm010-infineon-4186278",
 "date": "2026-10-09",
 "gbp": 8.4971
+},
+{
+"distributor": "Digi-Key",
+"qty": 676,
+"price": 10.593,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/infineon-technologies/S28HS512TGABHM010/16894691",
+"date": "2026-10-09",
+"gbp": 8.0009
 }
 ],
 "volumeModel": {
@@ -39412,7 +39603,7 @@
 "q300k": 13.4168
 },
 "confidence": "distributor",
-"source": "Priced on the sibling orderable code AD500-8 TO (the listed code was not found at a distributor). Farnell £22.13 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"source": "Priced on the sibling orderable code AD500-8 (the listed code was not found at a distributor). Farnell £22.13 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
 "asOf": "2026-10-09",
 "ecuRoles": [
 "LiDAR"
@@ -42433,6 +42624,4925 @@
 "confidence": "estimate",
 "source": "OEM-direct part: not sold through distributors. Estimate from public cost evidence, NOT a distributor price or a quote. Priced at $20 (Ambarella FQ2 2024 earnings call (CEO Fermi Wang), transcript via The Motley Fool / Nasdaq, 2023) = £15.106 at the engine's FX, flat across volumes: it is a programme-volume average selling price, so no volume curve is applied. Why this figure: Ambarella's CV2-family average across automotive and IoT (Aug 2023); individual parts run from under $10 to over $50, so the automotive CV2AQ may sit above it. Evidence: Ambarella FQ2 2024 earnings call (CEO Fermi Wang), transcript via The Motley Fool / Nasdaq (company disclosure, medium confidence): $20 per chip — CV2 family ASP (auto + IoT), fiscal Q2 2024 call (Aug 2023); range below $10 to above $50 per FQ3 2024 call <https://www.fool.com/earnings/call-transcripts/2023/08/29/ambarella-amba-q2-2024-earnings-call-transcript/>. Read through web search on 2026-10-09.",
 "asOf": "2026-10-09"
+},
+{
+"mpn": "TLE9018DQKXUMA1",
+"family": "TLE9018DQK",
+"mfr": "Infineon",
+"desc": "18-cell Li-ion battery monitoring and balancing IC, iso-UART daisy chain",
+"category": "ic_tqfp",
+"pkg": "PG-LQFP-64",
+"aecq": true,
+"gbp": {
+"q1k": 4.2597,
+"q10k": 3.6208,
+"q100k": 3.0777,
+"q200k": 2.9307,
+"q300k": 2.848
+},
+"confidence": "distributor",
+"source": "Future Electronics $5.39 @1,900 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_CMU"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 1900,
+"price": 5.39,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/semiconductors--analog--regulators-reference--battery-charger/tle9018dqkxuma1-infineon-technologies-2216377",
+"date": "2026-10-09",
+"gbp": 4.0711
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1900
+}
+},
+{
+"mpn": "ISL78714ANZ",
+"family": "ISL78714",
+"mfr": "Renesas",
+"desc": "14-cell automotive Li-ion battery manager (cell monitor/balancer, daisy chain)",
+"category": "ic_tqfp",
+"pkg": "TQFP-64 10x10",
+"aecq": true,
+"gbp": {
+"q1k": 7.2714,
+"q10k": 6.1807,
+"q100k": 5.2536,
+"q200k": 5.0027,
+"q300k": 4.8616
+},
+"confidence": "distributor",
+"source": "Future Electronics $9.7 @250; RS Components £8.99 @160 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_CMU",
+"BMS48"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 250,
+"price": 9.7,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/isl78714anz-renesas-9163483",
+"date": "2026-10-09",
+"gbp": 7.3264
+},
+{
+"distributor": "RS Components",
+"qty": 160,
+"price": 8.99,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/battery-management/2638975",
+"date": "2026-10-09",
+"gbp": 8.99
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 250
+}
+},
+{
+"mpn": "MC33774ATP1AE",
+"family": "MC33774",
+"mfr": "NXP",
+"desc": "18-channel Li-ion battery cell controller (4-18 cells)",
+"category": "ic_tqfp",
+"pkg": "not confirmed in sources read",
+"aecq": true,
+"gbp": {
+"q1k": 3.9886,
+"q10k": 3.3903,
+"q100k": 2.8818,
+"q200k": 2.7442,
+"q300k": 2.6667
+},
+"confidence": "distributor",
+"source": "Avnet $6.01 @160 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_CMU"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 160,
+"price": 6.01,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33774atp1ae/evolve-69281273/",
+"date": "2026-10-09",
+"gbp": 4.5394
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 160
+}
+},
+{
+"mpn": "MC33777ATA1AE",
+"family": "MC33777",
+"mfr": "NXP",
+"desc": "Battery junction box monitor IC: redundant pack current (27-bit + 16-bit ADC), voltage, temperature, pyro-fuse/switch actuation, ASIL-D",
+"category": "ic_tqfp",
+"pkg": "not confirmed in sources read",
+"aecq": true,
+"gbp": {
+"q1k": 6.9671,
+"q10k": 6.6536,
+"q100k": 6.3541,
+"q200k": 6.2666,
+"q300k": 6.216
+},
+"confidence": "distributor",
+"source": "Avnet $9.24 @480; Avnet $8.97 @7,680 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 480,
+"price": 9.24,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33777ata1ae/evolve-119355131",
+"date": "2026-10-09",
+"gbp": 6.979
+},
+{
+"distributor": "Avnet",
+"qty": 7680,
+"price": 8.97,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33777ata1ae/evolve-119355131",
+"date": "2026-10-09",
+"gbp": 6.775
+}
+],
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 7680
+}
+},
+{
+"mpn": "BQ79631PAPRQ1",
+"family": "BQ79631-Q1",
+"mfr": "Texas Instruments",
+"desc": "Battery junction box / pack monitor: HV divided-node voltages, shunt current ADC, insulation-resistance measurement, isolated daisy chain",
+"category": "ic_tqfp",
+"pkg": "HTQFP-64",
+"aecq": true,
+"gbp": {
+"q1k": 15.4541,
+"q10k": 13.136,
+"q100k": 11.1656,
+"q200k": 10.6325,
+"q300k": 10.3325
+},
+"confidence": "distributor",
+"source": "Digi-Key $19.9801 @500; Digi-Key $21.8957 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: the 500-unit break reads lower than the 1k break - read on Findchips, check the live listing.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 500,
+"price": 19.9801,
+"currency": "USD",
+"url": "https://www.findchips.com/search/BQ796",
+"date": "2026-10-09",
+"gbp": 15.091
+},
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 21.8957,
+"currency": "USD",
+"url": "https://www.findchips.com/search/BQ796",
+"date": "2026-10-09",
+"gbp": 16.5378
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "DRV3901QDGQRQ1",
+"family": "DRV3901-Q1",
+"mfr": "Texas Instruments",
+"desc": "Single-channel 40 V 3.4 A pyro-fuse (squib) driver for battery disconnect, SPI + HW trigger",
+"category": "ic_soic",
+"pkg": "HVSSOP-28 (DGQ)",
+"aecq": true,
+"gbp": {
+"q1k": 3.6618,
+"q10k": 2.4193,
+"q100k": 1.5984,
+"q200k": 1.4109,
+"q300k": 1.3116
+},
+"confidence": "distributor",
+"source": "Digi-Key KRW 6895.96 @1,000; Digi-Key KRW 5317.59 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.18, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 6895.96,
+"currency": "KRW",
+"url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/DRV3901QDGQRQ1/22106916",
+"date": "2026-10-09",
+"gbp": 3.8355
+},
+{
+"distributor": "Digi-Key",
+"qty": 2500,
+"price": 5317.59,
+"currency": "KRW",
+"url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/DRV3901QDGQRQ1/22106916",
+"date": "2026-10-09",
+"gbp": 2.9576
+}
+],
+"volumeModel": {
+"b": 0.18,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "L9965P-FN-TR",
+"family": "L9965P",
+"mfr": "STMicroelectronics",
+"desc": "Single-channel pyro-fuse / pyro-switch driver (HS+LS power stage, SPI or pin firing)",
+"category": "ic_qfn",
+"pkg": "VFQFN-32",
+"aecq": false,
+"gbp": {
+"q1k": 2.3167,
+"q10k": 1.9692,
+"q100k": 1.6738,
+"q200k": 1.5939,
+"q300k": 1.5489
+},
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code L9965P-FN (the listed code was not found at a distributor). RS Components £2.6 @100; Newark $2.84 @500; Mouser $3.43 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 100,
+"price": 2.6,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/battery-management/0333585",
+"date": "2026-10-09",
+"gbp": 2.6
+},
+{
+"distributor": "Newark",
+"qty": 500,
+"price": 2.84,
+"currency": "USD",
+"url": "https://www.findchips.com/detail/L9965P-FN/STMicroelectronics",
+"date": "2026-10-09",
+"gbp": 2.1451
+},
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 3.43,
+"currency": "USD",
+"url": "https://www.findchips.com/detail/L9965P-FN/STMicroelectronics",
+"date": "2026-10-09",
+"gbp": 2.5907
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+},
+"aliases": [
+"L9965P-FN"
+]
+},
+{
+"mpn": "TPSI2140QDWQRQ1",
+"family": "TPSI2140-Q1",
+"mfr": "Texas Instruments",
+"desc": "1400 V 50 mA isolated solid-state switch for insulation-resistance monitoring (3.75 kVrms)",
+"category": "ic_soic",
+"pkg": "SOIC-11 (DWQ)",
+"aecq": true,
+"gbp": {
+"q1k": 2.9974,
+"q10k": 2.7919,
+"q100k": 2.6005,
+"q200k": 2.5454,
+"q300k": 2.5138
+},
+"confidence": "distributor",
+"source": "Digi-Key KRW 5389.034 @1,000; Digi-Key KRW 5275.033 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0308, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 5389.034,
+"currency": "KRW",
+"url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPSI2140QDWQRQ1/21298426",
+"date": "2026-10-09",
+"gbp": 2.9974
+},
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 5275.033,
+"currency": "KRW",
+"url": "https://punchouttest.digikey.kr/en/products/detail/texas-instruments/TPSI2140QDWQRQ1/21298426",
+"date": "2026-10-09",
+"gbp": 2.934
+}
+],
+"volumeModel": {
+"b": 0.0308,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2000
+}
+},
+{
+"mpn": "LTC2949HLXE#3ZZTRPBF",
+"family": "LTC2949",
+"mfr": "Analog Devices",
+"desc": "High-voltage battery pack monitor: current, voltage, charge/energy, isoSPI, H grade",
+"category": "ic_tqfp",
+"pkg": "LQFP-48 (LXE)",
+"aecq": true,
+"gbp": {
+"q1k": 10.0175,
+"q10k": 8.5148,
+"q100k": 7.2376,
+"q200k": 6.8921,
+"q300k": 6.6976
+},
+"confidence": "distributor",
+"source": "LCSC $15.6034 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: only LCSC $15.60 @100; Arrow's Richardson RFPD shows about $35 @1k - the LCSC figure may be stale.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 15.6034,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C683729.html",
+"date": "2026-10-09",
+"gbp": 11.7852
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "SAK-TC234L-32F200F AC",
+"family": "TC234L",
+"mfr": "Infineon",
+"desc": "AURIX TC234L single-core TriCore 200 MHz, 2 MB flash, TQFP-144 (BYD Blade BMU MCU)",
+"category": "ic_tqfp",
+"pkg": "TQFP-144",
+"aecq": true,
+"gbp": {
+"q1k": 4.8772,
+"q10k": 4.1457,
+"q100k": 3.5238,
+"q200k": 3.3556,
+"q300k": 3.2609
+},
+"confidence": "distributor",
+"source": "LCSC $7.5969 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 7.5969,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C538781.html",
+"date": "2026-10-09",
+"gbp": 5.7379
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "SPC5775BDK3MME2",
+"family": "MPC5775B",
+"mfr": "NXP",
+"desc": "MPC5775B e200z7 220 MHz, 4 MB flash, BMS/inverter MCU, MAPBGA-416",
+"category": "ic_bga",
+"pkg": "MAPBGA-416 27x27",
+"aecq": true,
+"gbp": {
+"q1k": 27.7105,
+"q10k": 26.4633,
+"q100k": 25.2723,
+"q200k": 24.9244,
+"q300k": 24.7231
+},
+"confidence": "distributor",
+"source": "Mouser €33.76 @100; Mouser €33.38 @200 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 100,
+"price": 33.76,
+"currency": "EUR",
+"url": "https://www.mouser.fi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=21",
+"date": "2026-10-09",
+"gbp": 28.9796
+},
+{
+"distributor": "Mouser",
+"qty": 200,
+"price": 33.38,
+"currency": "EUR",
+"url": "https://www.mouser.fi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=21",
+"date": "2026-10-09",
+"gbp": 28.6534
+}
+],
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 200
+}
+},
+{
+"mpn": "MM9Z1J638TM5EP",
+"family": "MM9Z1_638",
+"mfr": "NXP",
+"desc": "12 V intelligent battery sensor: S12Z MCU + 3-ch AFE (shunt current, voltage, temperature) + LIN/CAN",
+"category": "ic_qfn",
+"pkg": "not confirmed in sources read",
+"aecq": true,
+"gbp": {
+"q1k": 4.9196,
+"q10k": 4.1816,
+"q100k": 3.5544,
+"q200k": 3.3847,
+"q300k": 3.2892
+},
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code MM9Z1J638BM2EP (the listed code was not found at a distributor). Future Electronics $5.99 @260; LCSC $8.9177 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IBS"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 260,
+"price": 5.99,
+"currency": "USD",
+"url": "https://futureelectronics.com/fr/p/semiconductors--analog--system-management--voltage-supervisors/mm9z1j638bm2ep-nxp-7145841",
+"date": "2026-10-09",
+"gbp": 4.5242
+},
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 8.9177,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C513823.html",
+"date": "2026-10-09",
+"gbp": 6.7355
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 260
+},
+"aliases": [
+"MM9Z1J638BM2EP"
+]
+},
+{
+"mpn": "MLX91231KDC-BBA-000-SP",
+"family": "MLX91231",
+"mfr": "Melexis",
+"desc": "Shunt-based smart IVT battery sensor IC: current, voltage, temperature, 32 KB flash, LIN/UART",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 3.0753,
+"q10k": 2.9369,
+"q100k": 2.8047,
+"q200k": 2.7661,
+"q300k": 2.7438
+},
+"confidence": "distributor",
+"source": "Future Electronics $4.25 @100; Future Electronics $4.12 @500; Future Electronics $4.08 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (3 pairs). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IBS",
+"BMS48"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 100,
+"price": 4.25,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--sensors--current/mlx91231kdc-bba-000-sp-melexis-4185620",
+"date": "2026-10-09",
+"gbp": 3.21
+},
+{
+"distributor": "Future Electronics",
+"qty": 500,
+"price": 4.12,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--sensors--current/mlx91231kdc-bba-000-sp-melexis-4185620",
+"date": "2026-10-09",
+"gbp": 3.1118
+},
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 4.08,
+"currency": "USD",
+"url": "https://futureelectronics.com/fr/p/semiconductors--analog--sensors--current/mlx91231kdc-bba-000-sp-melexis-4185620",
+"date": "2026-10-09",
+"gbp": 3.0816
+}
+],
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (3 pairs)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "2ED4820EMXUMA2",
+"family": "2ED4820-EM",
+"mfr": "Infineon",
+"desc": "Dual-channel 48 V smart high-side MOSFET gate driver (battery disconnect switch)",
+"category": "ic_soic",
+"pkg": "TSDSO-24",
+"aecq": true,
+"gbp": {
+"q1k": 2.7044,
+"q10k": 2.2987,
+"q100k": 1.9539,
+"q200k": 1.8606,
+"q300k": 1.8081
+},
+"confidence": "distributor",
+"source": "Farnell £2.84 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS48"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 500,
+"price": 2.84,
+"currency": "GBP",
+"url": "https://export.farnell.com/infineon/2ed4820emxuma2/gate-driver-ic-3v-5-5v-tsdso/dp/3922527",
+"date": "2026-10-09",
+"gbp": 2.84
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "IAUT300N08S5N014ATMA1",
+"family": "IAUT300N08S5",
+"mfr": "Infineon",
+"desc": "OptiMOS 5 80 V N-ch MOSFET 1.4 mOhm, TOLL (HSOF-8), 48 V battery switch class",
+"category": "ic_soic",
+"pkg": "HSOF-8 (TOLL)",
+"aecq": true,
+"gbp": {
+"q1k": 1.639,
+"q10k": 1.1716,
+"q100k": 0.8375,
+"q200k": 0.757,
+"q300k": 0.7135
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.40072 @500; Digi-Key $1.96138 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1458, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS48"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 500,
+"price": 2.40072,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/IAUT300N08S5N014ATMA1/8818760",
+"date": "2026-10-09",
+"gbp": 1.8133
+},
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 1.96138,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/IAUT300N08S5N014ATMA1/8818760",
+"date": "2026-10-09",
+"gbp": 1.4814
+}
+],
+"volumeModel": {
+"b": 0.1458,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2000
+}
+},
+{
+"mpn": "SM91501AL-E",
+"family": "SM91501AL",
+"mfr": "Bourns",
+"desc": "Dual-channel BMS daisy-chain (isoSPI/TPL) signal transformer with CM chokes, 1600 VDC working, AEC-Q200",
+"category": "transformer",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 2.2495,
+"q10k": 1.912,
+"q100k": 1.6252,
+"q200k": 1.5476,
+"q300k": 1.504
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.1772 @400 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_CMU",
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 400,
+"price": 3.1772,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/bourns-inc/SM91501AL-E/9650127",
+"date": "2026-10-09",
+"gbp": 2.3997
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 400
+}
+},
+{
+"mpn": "SM91514AL-E",
+"family": "SM91514AL",
+"mfr": "Bourns",
+"desc": "Single-channel BMS daisy-chain transformer 300 uH 1:1, SMD",
+"category": "transformer",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 1.3522,
+"q10k": 1.1494,
+"q100k": 0.977,
+"q200k": 0.9303,
+"q300k": 0.9041
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.1062 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_CMU",
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 100,
+"price": 2.1062,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/bourns-inc/SM91514AL-E/13985705",
+"date": "2026-10-09",
+"gbp": 1.5908
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "WSBE8518L1000JKA2",
+"family": "WSBE8518",
+"mfr": "Vishay Dale",
+"desc": "Battery shunt 100 uOhm 5% 36 W, Power Metal Strip, 8518, AEC-Q200 (pack current sensing)",
+"category": "mechanical",
+"pkg": "8518 SMD bar",
+"aecq": true,
+"gbp": {
+"q1k": 9.8156,
+"q10k": 8.3433,
+"q100k": 7.0918,
+"q200k": 6.7532,
+"q300k": 6.5626
+},
+"confidence": "distributor",
+"source": "Digi-Key CAD 21.69 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 100,
+"price": 21.69,
+"currency": "CAD",
+"url": "https://punchouttest.digikey.ca/en/products/detail/vishay-dale/WSBE8518L1000JKA2/18587686",
+"date": "2026-10-09",
+"gbp": 11.5478
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "TPS92682QDAPRQ1",
+"family": "TPS92682-Q1",
+"mfr": "Texas Instruments",
+"desc": "Dual-channel constant-voltage / constant-current boost/SEPIC LED controller, SPI (headlight ECU boost stage)",
+"category": "ic_soic",
+"pkg": "HTSSOP-32",
+"aecq": true,
+"gbp": {
+"q1k": 1.7008,
+"q10k": 1.5451,
+"q100k": 1.4037,
+"q200k": 1.3637,
+"q300k": 1.3408
+},
+"confidence": "distributor",
+"source": "LCSC $2.4787 @100; LCSC $2.2518 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0417, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"HEADLAMP"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 2.4787,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C2869850.html",
+"date": "2026-10-09",
+"gbp": 1.8722
+},
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 2.2518,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C2869850.html",
+"date": "2026-10-09",
+"gbp": 1.7008
+}
+],
+"volumeModel": {
+"b": 0.0417,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "L99DZ200GTR",
+"family": "L99DZ200G",
+"mfr": "STMicroelectronics",
+"desc": "Door zone multi-output driver: H-bridges for front and rear window lift, lock / mirror half-bridges, 5 LED + 2 bulb high-side drivers, LIN + HS-CAN wake",
+"category": "ic_tqfp",
+"pkg": "LQFP-64",
+"aecq": true,
+"gbp": {
+"q1k": 3.1733,
+"q10k": 2.6973,
+"q100k": 2.2927,
+"q200k": 2.1833,
+"q300k": 2.1217
+},
+"confidence": "distributor",
+"source": "Digi-Key $4.2028 @1,000; Newark $4.2 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DOOR"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 4.2028,
+"currency": "USD",
+"url": "https://www.findchips.com/search/L99DZ",
+"date": "2026-10-09",
+"gbp": 3.1744
+},
+{
+"distributor": "Newark",
+"qty": 1000,
+"price": 4.2,
+"currency": "USD",
+"url": "https://www.findchips.com/search/L99DZ",
+"date": "2026-10-09",
+"gbp": 3.1723
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "TLE95623QXXUMA1",
+"family": "TLE9562-3QX",
+"mfr": "Infineon Technologies",
+"desc": "MOTIX DC motor system IC: SBC (LDO, CAN FD) with 4 half-bridge gate drivers for window lift / door modules",
+"category": "ic_qfn",
+"pkg": "VQFN-48",
+"aecq": true,
+"gbp": {
+"q1k": 1.4674,
+"q10k": 1.2473,
+"q100k": 1.0602,
+"q200k": 1.0096,
+"q300k": 0.9811
+},
+"confidence": "distributor",
+"source": "RS Components SEK 18.171 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DOOR"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 2500,
+"price": 18.171,
+"currency": "SEK",
+"url": "https://se.rs-online.com/web/p/can-interface-ics/2334410",
+"date": "2026-10-09",
+"gbp": 1.3755
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "TLE92108232QXXUMA1",
+"family": "TLE92108-23QX",
+"mfr": "Infineon Technologies",
+"desc": "MOTIX 8-half-bridge MOSFET gate driver, SPI (seat / steering column / multi-motor)",
+"category": "ic_qfn",
+"pkg": "VQFN-48",
+"aecq": true,
+"gbp": {
+"q1k": 1.6354,
+"q10k": 1.3901,
+"q100k": 1.1816,
+"q200k": 1.1252,
+"q300k": 1.0934
+},
+"confidence": "distributor",
+"source": "Future Electronics $1.87 @2,500; RS Components THB 82.48 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"SEAT"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 2500,
+"price": 1.87,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--drivers--motor-drivers/tle92108232qxxuma1-infineon-3132060",
+"date": "2026-10-09",
+"gbp": 1.4124
+},
+{
+"distributor": "RS Components",
+"qty": 500,
+"price": 82.48,
+"currency": "THB",
+"url": "https://th.rs-online.com/web/p/gate-drivers/2291916",
+"date": "2026-10-09",
+"gbp": 1.8525
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "TLE94112ESXUMA1",
+"family": "TLE94112ES",
+"mfr": "Infineon Technologies",
+"desc": "12-half-bridge DC motor driver, SPI (HVAC flap DC motors, seat / multi-motor)",
+"category": "ic_soic",
+"pkg": "TSDSO-24",
+"aecq": true,
+"gbp": {
+"q1k": 1.3649,
+"q10k": 1.1601,
+"q100k": 0.9861,
+"q200k": 0.939,
+"q300k": 0.9125
+},
+"confidence": "distributor",
+"source": "Farnell €1.59 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"HVAC",
+"SEAT"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 1.59,
+"currency": "EUR",
+"url": "https://ie.farnell.com/infineon/tle94112esxuma1/motor-drivers-40-to-150deg-c/dp/3773489",
+"date": "2026-10-09",
+"gbp": 1.3649
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "TLD60982ESXUMA2",
+"family": "TLD6098-2ES",
+"mfr": "Infineon Technologies",
+"desc": "LITIX Power dual-channel multi-topology DC-DC LED controller (full headlamp without MCU: HB, LB, DRL, turn)",
+"category": "ic_soic",
+"pkg": "TSDSO-24",
+"aecq": true,
+"gbp": {
+"q1k": 1.1978,
+"q10k": 1.0182,
+"q100k": 0.8654,
+"q200k": 0.8241,
+"q300k": 0.8009
+},
+"confidence": "distributor",
+"source": "Future Electronics $1.59 @3,000; RS Components £1.016 @3,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"HEADLAMP"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 3000,
+"price": 1.59,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--drivers--led-drivers-linear-mode/tld60982esxuma2-infineon-3167978",
+"date": "2026-10-09",
+"gbp": 1.2009
+},
+{
+"distributor": "RS Components",
+"qty": 3000,
+"price": 1.016,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/voltage-controllers/2483078?gb=s",
+"date": "2026-10-09",
+"gbp": 1.016
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "TLD5190QVXUMA1",
+"family": "TLD5190QV",
+"mfr": "Infineon Technologies",
+"desc": "LITIX Power synchronous H-bridge buck-boost LED controller, no SPI (front lighting)",
+"category": "ic_qfn",
+"pkg": "VQFN-48",
+"aecq": true,
+"gbp": {
+"q1k": 1.3746,
+"q10k": 1.1684,
+"q100k": 0.9932,
+"q200k": 0.9458,
+"q300k": 0.9191
+},
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code TLD5190QV (the listed code was not found at a distributor). LCSC $1.82 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"HEADLAMP"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 1.82,
+"currency": "USD",
+"url": "https://lcsc.com/product-detail/image/TLD5190QV_C539655.html",
+"date": "2026-10-09",
+"gbp": 1.3746
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+},
+"aliases": [
+"TLD5190QV"
+]
+},
+{
+"mpn": "CYT2B75CADQ0AZEGS",
+"family": "TRAVEO T2G CYT2B7",
+"mfr": "Infineon Technologies",
+"desc": "TRAVEO T2G Body Entry Cortex-M4F 160 MHz, 1088 KB flash, CAN FD, LIN",
+"category": "ic_tqfp",
+"pkg": "LQFP-100",
+"aecq": true,
+"gbp": {
+"q1k": 6.29,
+"q10k": 5.3465,
+"q100k": 4.5445,
+"q200k": 4.3275,
+"q300k": 4.2055
+},
+"confidence": "distributor",
+"source": "RS Components £7.4 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"SEAT",
+"DOOR",
+"BCM"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 100,
+"price": 7.4,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/microcontrollers/2735292",
+"date": "2026-10-09",
+"gbp": 7.4
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "MC33FS6522LAE",
+"family": "FS6522",
+"mfr": "NXP Semiconductors",
+"desc": "FS65 safety SBC (ASIL D), DC-DC VCORE, CAN + LIN (MPC5748G gateway reference design)",
+"category": "ic_tqfp",
+"pkg": "HLQFP-48",
+"aecq": true,
+"gbp": {
+"q1k": 4.4465,
+"q10k": 3.8788,
+"q100k": 3.3836,
+"q200k": 3.2473,
+"q300k": 3.1701
+},
+"confidence": "distributor",
+"source": "Avnet $5.98843 @750; Avnet $5.51566 @3,000; Farnell €6.1 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0593, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"GW"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 750,
+"price": 5.98843,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33fs6522lae/evolve-20661820/",
+"date": "2026-10-09",
+"gbp": 4.5231
+},
+{
+"distributor": "Avnet",
+"qty": 3000,
+"price": 5.51566,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33fs6522lae/evolve-20661820/",
+"date": "2026-10-09",
+"gbp": 4.166
+},
+{
+"distributor": "Farnell",
+"qty": 250,
+"price": 6.1,
+"currency": "EUR",
+"url": "https://ie.farnell.com/nxp/mc33fs6522lae/sbc-can-lin-hlqfp-48/dp/2890576",
+"date": "2026-10-09",
+"gbp": 5.2362
+}
+],
+"volumeModel": {
+"b": 0.0593,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "BTS72002EPAXUMA1",
+"family": "BTS7200-2EPA",
+"mfr": "Infineon Technologies",
+"desc": "PROFET+2 12 V dual-channel smart high-side switch, 200 mOhm (Infineon door control reference board)",
+"category": "ic_soic",
+"pkg": "TSDSO-14",
+"aecq": true,
+"gbp": {
+"q1k": 0.8332,
+"q10k": 0.7082,
+"q100k": 0.602,
+"q200k": 0.5733,
+"q300k": 0.5571
+},
+"confidence": "distributor",
+"source": "RS Components £0.875 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DOOR",
+"BCM"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 500,
+"price": 0.875,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/power-switch-ics/2238501P?gb=s",
+"date": "2026-10-09",
+"gbp": 0.875
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "S9S12VR64AF0MLC",
+"family": "S12VR",
+"mfr": "NXP Semiconductors",
+"desc": "S12VR 16-bit MCU with integrated LIN, high-side / low-side relay drivers (window-lift / door node), 64 KB flash",
+"category": "ic_tqfp",
+"pkg": "LQFP-32",
+"aecq": true,
+"gbp": {
+"q1k": 3.2237,
+"q10k": 2.7401,
+"q100k": 2.3291,
+"q200k": 2.2179,
+"q300k": 2.1553
+},
+"confidence": "distributor",
+"source": "element14 SGD 5.73 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DOOR"
+],
+"observations": [
+{
+"distributor": "element14",
+"qty": 500,
+"price": 5.73,
+"currency": "SGD",
+"url": "https://sg.element14.com/nxp/s9s12vr64af0mlc/mcu-16bit-s12-lqfp-32/dp/2900146",
+"date": "2026-10-09",
+"gbp": 3.3853
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "NVHL080N120SC1",
+"family": "NVHL080N120SC1",
+"mfr": "onsemi",
+"desc": "Automotive SiC MOSFET 1200 V 80 mOhm (11 kW OBC PFC + LLC, onsemi SEC-3PH-11-OBC-EVB)",
+"category": "through_hole",
+"pkg": "TO-247-3",
+"aecq": true,
+"gbp": {
+"q1k": 6.3154,
+"q10k": 5.3681,
+"q100k": 4.5629,
+"q200k": 4.345,
+"q300k": 4.2225
+},
+"confidence": "distributor",
+"source": "Future Electronics $8.97 @450; Farnell €8 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 450,
+"price": 8.97,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvhl080n120sc1-onsemi-1112062",
+"date": "2026-10-09",
+"gbp": 6.775
+},
+{
+"distributor": "Farnell",
+"qty": 250,
+"price": 8,
+"currency": "EUR",
+"url": "https://ie.farnell.com/on-semiconductor/nvhl080n120sc1/mosfet-aec-q101-n-ch-1-2kv-to/dp/3018978",
+"date": "2026-10-09",
+"gbp": 6.8672
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 450
+}
+},
+{
+"mpn": "FFSB3065B-F085",
+"family": "FFSB3065B",
+"mfr": "onsemi",
+"desc": "Automotive SiC Schottky diode 650 V 30 A (onsemi 11 kW OBC kit)",
+"category": "ic_soic",
+"pkg": "D2PAK-3 (TO-263)",
+"aecq": true,
+"gbp": {
+"q1k": 2.6989,
+"q10k": 2.2941,
+"q100k": 1.95,
+"q200k": 1.8569,
+"q300k": 1.8045
+},
+"confidence": "distributor",
+"source": "Master Electronics $3.63 @800 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC"
+],
+"observations": [
+{
+"distributor": "Master Electronics",
+"qty": 800,
+"price": 3.63,
+"currency": "USD",
+"url": "https://masterelectronics.com/en/onsemi/ffsb3065bf085-60422714.html",
+"date": "2026-10-09",
+"gbp": 2.7417
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 800
+}
+},
+{
+"mpn": "SCTH35N65G2V-7AG",
+"family": "SCTH35N65G2V-7AG",
+"mfr": "STMicroelectronics",
+"desc": "Automotive SiC MOSFET 650 V 45 A, 55 mOhm (STDES-7KWOBC totem-pole PFC)",
+"category": "ic_soic",
+"pkg": "H2PAK-7",
+"aecq": true,
+"gbp": {
+"q1k": 7.516,
+"q10k": 6.3886,
+"q100k": 5.4303,
+"q200k": 5.1711,
+"q300k": 5.0252
+},
+"confidence": "distributor",
+"source": "Farnell €7.65 @250; Newark $10.45 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 250,
+"price": 7.65,
+"currency": "EUR",
+"url": "https://ie.farnell.com/stmicroelectronics/scth35n65g2v-7ag/mosfet-sic-650v-45a-h2pak/dp/3764233RL",
+"date": "2026-10-09",
+"gbp": 6.5668
+},
+{
+"distributor": "Newark",
+"qty": 500,
+"price": 10.45,
+"currency": "USD",
+"url": "https://www.findchips.com/search/th35n",
+"date": "2026-10-09",
+"gbp": 7.8929
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "LMG3522R030QRQSRQ1",
+"family": "LMG3522R030-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive 650 V 30 mOhm GaN FET with integrated driver and protection (TIDM-02013 OBC, PMP41078 HV-LV DC-DC)",
+"category": "ic_qfn",
+"pkg": "VQFN-52 (RQS)",
+"aecq": true,
+"gbp": {
+"q1k": 17.6211,
+"q10k": 16.1468,
+"q100k": 14.7959,
+"q200k": 14.4119,
+"q300k": 14.1918
+},
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code LMG3522R030QRQSTQ1 (the listed code was not found at a distributor). Digi-Key $25.46 @100; Digi-Key $24.59 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0379, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 100,
+"price": 25.46,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/LMG3522R030QRQSTQ1/21283875",
+"date": "2026-10-09",
+"gbp": 19.2299
+},
+{
+"distributor": "Digi-Key",
+"qty": 250,
+"price": 24.59,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/LMG3522R030QRQSTQ1/21283875",
+"date": "2026-10-09",
+"gbp": 18.5728
+}
+],
+"volumeModel": {
+"b": 0.0379,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 250
+},
+"aliases": [
+"LMG3522R030QRQSTQ1"
+]
+},
+{
+"mpn": "UCC21222QDRQ1",
+"family": "UCC21222-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive 4 A/6 A dual-channel basic isolated gate driver (TIDM-02013 OBC)",
+"category": "ic_soic",
+"pkg": "SOIC-16 (D)",
+"aecq": true,
+"gbp": {
+"q1k": 1.0629,
+"q10k": 0.9034,
+"q100k": 0.7679,
+"q200k": 0.7313,
+"q300k": 0.7106
+},
+"confidence": "distributor",
+"source": "LCSC $1.4072 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 1.4072,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C1848357.html",
+"date": "2026-10-09",
+"gbp": 1.0629
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "F280039CPZRQ1",
+"family": "TMS320F280039C-Q1",
+"mfr": "Texas Instruments",
+"desc": "C2000 TMS320F280039C-Q1 real-time MCU 120 MHz, 384 KB flash (single controller for PFC + CLLLC in TIDM-02013)",
+"category": "ic_tqfp",
+"pkg": "LQFP-100 (PZ)",
+"aecq": true,
+"gbp": {
+"q1k": 4.8881,
+"q10k": 4.1549,
+"q100k": 3.5317,
+"q200k": 3.3631,
+"q300k": 3.2682
+},
+"confidence": "distributor",
+"source": "Mouser JPY 1019 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 1019,
+"currency": "JPY",
+"url": "https://www.mouser.jp/en/c/semiconductors/embedded-processors-controllers/?core=C28x",
+"date": "2026-10-09",
+"gbp": 4.8881
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "F28P659DK8PTPQ1",
+"family": "F28P659",
+"mfr": "Texas Instruments",
+"desc": "C2000 TMS320F28P659DK-Q1 dual C28x + CLA real-time MCU (alternative controller in TIDM-02013; F28P650DK in PMP41139)",
+"category": "ic_tqfp",
+"pkg": "HLQFP-176 (PTP)",
+"aecq": true,
+"gbp": {
+"q1k": 9.4933,
+"q10k": 8.6866,
+"q100k": 7.9484,
+"q200k": 7.7388,
+"q300k": 7.6187
+},
+"confidence": "distributor",
+"source": "Digi-Key $13.64 @120; Digi-Key $12.89 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0386, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 120,
+"price": 13.64,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/F28P659DK8PTPQ1/22462747",
+"date": "2026-10-09",
+"gbp": 10.3023
+},
+{
+"distributor": "Digi-Key",
+"qty": 520,
+"price": 12.89,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/F28P659DK8PTPQ1/22462747",
+"date": "2026-10-09",
+"gbp": 9.7358
+}
+],
+"volumeModel": {
+"b": 0.0386,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 520
+}
+},
+{
+"mpn": "UCC27712QDRQ1",
+"family": "UCC27712-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive 620 V 1.8 A/2.8 A high-side/low-side gate driver (TIDA-020031)",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.7206,
+"q10k": 0.6125,
+"q100k": 0.5206,
+"q200k": 0.4957,
+"q300k": 0.4818
+},
+"confidence": "distributor",
+"source": "Digi-Key $0.9015 @2,500; Mouser $0.887 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC_HV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 2500,
+"price": 0.9015,
+"currency": "USD",
+"url": "https://findchips.com/search/ucc27712qdrq1",
+"date": "2026-10-09",
+"gbp": 0.6809
+},
+{
+"distributor": "Mouser",
+"qty": 2500,
+"price": 0.887,
+"currency": "USD",
+"url": "https://findchips.com/search/ucc27712qdrq1",
+"date": "2026-10-09",
+"gbp": 0.67
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "INA293B3QDBVRQ1",
+"family": "INA293-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive -4 V to 110 V high-side current-sense amplifier, gain 100 V/V (TIDA-020031 names INA293-Q1)",
+"category": "ic_soic",
+"pkg": "SOT-23-5",
+"aecq": true,
+"gbp": {
+"q1k": 2.3307,
+"q10k": 1.9811,
+"q100k": 1.6839,
+"q200k": 1.6035,
+"q300k": 1.5583
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.03069 @3,000; LCSC $3.0858 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC_HV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 3000,
+"price": 2.03069,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/INA293B3QDBVRQ1/13545360",
+"date": "2026-10-09",
+"gbp": 1.5338
+},
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 3.0858,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-detail/C2864602.html",
+"date": "2026-10-09",
+"gbp": 2.3307
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "UCC25800AQDGNRQ1",
+"family": "UCC25800-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive ultra-low-EMI open-loop LLC transformer driver for isolated bias (Wolfspeed CRD-22DD12N-U2)",
+"category": "ic_soic",
+"pkg": "HVSSOP-8 (DGN)",
+"aecq": true,
+"gbp": {
+"q1k": 1.14,
+"q10k": 0.969,
+"q100k": 0.8236,
+"q200k": 0.7843,
+"q300k": 0.7622
+},
+"confidence": "distributor",
+"source": "Digi-Key $1.3092 @7,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 7500,
+"price": 1.3092,
+"currency": "USD",
+"url": "https://www.findchips.com/search/CC258",
+"date": "2026-10-09",
+"gbp": 0.9888
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 7500
+}
+},
+{
+"mpn": "UCC14131QDWNRQ1",
+"family": "UCC14131-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive 1.5 W isolated DC/DC bias module for SiC/IGBT gate-driver supplies",
+"category": "ic_soic",
+"pkg": "SSOP-36 (DWN)",
+"aecq": true,
+"gbp": {
+"q1k": 4.086,
+"q10k": 3.5396,
+"q100k": 3.0662,
+"q200k": 2.9365,
+"q300k": 2.8632
+},
+"confidence": "distributor",
+"source": "Digi-Key $5.96 @250; Digi-Key $5.45 @750; Digi-Key $5.33 @1,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0624, slope from the part's own breaks (3 pairs). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 250,
+"price": 5.96,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/UCC14131QDWNRQ1/22106940",
+"date": "2026-10-09",
+"gbp": 4.5016
+},
+{
+"distributor": "Digi-Key",
+"qty": 750,
+"price": 5.45,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/UCC14131QDWNRQ1/22106940",
+"date": "2026-10-09",
+"gbp": 4.1164
+},
+{
+"distributor": "Digi-Key",
+"qty": 1500,
+"price": 5.33,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/texas-instruments/UCC14131QDWNRQ1/22106940",
+"date": "2026-10-09",
+"gbp": 4.0257
+}
+],
+"volumeModel": {
+"b": 0.0624,
+"basis": "slope from the part's own breaks (3 pairs)",
+"derivedAbove": 1500
+}
+},
+{
+"mpn": "TMS320F28027FPTQ",
+"family": "TMS320F28027F",
+"mfr": "Texas Instruments",
+"desc": "C2000 Piccolo TMS320F28027F 60 MHz MCU with InstaSPIN (TIDA-01168 48 V/12 V voltage loop)",
+"category": "ic_tqfp",
+"pkg": "LQFP-48 (PT)",
+"aecq": true,
+"gbp": {
+"q1k": 2.9259,
+"q10k": 2.487,
+"q100k": 2.114,
+"q200k": 2.0131,
+"q300k": 1.9563
+},
+"confidence": "distributor",
+"source": "LCSC $4.5575 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC48"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 4.5575,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C504368.html",
+"date": "2026-10-09",
+"gbp": 3.4423
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "XPQR3004PB,LXHQ",
+"family": "XPQR3004PB",
+"mfr": "Toshiba",
+"desc": "Automotive 40 V 400 A N-ch MOSFET, 0.23 mOhm typ. (Toshiba 3 kW 48 V-12 V reference, 12 V side)",
+"category": "ic_soic",
+"pkg": "L-TOGL",
+"aecq": true,
+"gbp": {
+"q1k": 6.3967,
+"q10k": 5.4731,
+"q100k": 4.6828,
+"q200k": 4.4681,
+"q300k": 4.347
+},
+"confidence": "distributor",
+"source": "Farnell €8.31 @200; Farnell €7.81 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0677, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC48"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 200,
+"price": 8.31,
+"currency": "EUR",
+"url": "https://ie.farnell.com/toshiba/xpqr3004pb-lxhq-o/mosfet-n-ch-400v-40a-750w/dp/4132235",
+"date": "2026-10-09",
+"gbp": 7.1333
+},
+{
+"distributor": "Farnell",
+"qty": 500,
+"price": 7.81,
+"currency": "EUR",
+"url": "https://ie.farnell.com/toshiba/xpqr3004pb-lxhq-o/mosfet-n-ch-400v-40a-750w/dp/4132235",
+"date": "2026-10-09",
+"gbp": 6.7041
+}
+],
+"volumeModel": {
+"b": 0.0677,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "IS32CG5317-LQLA2",
+"family": "CG5317",
+"mfr": "Lumissil (ISSI)",
+"desc": "AEC-Q100 Grade 2 HomePlug Green PHY transceiver, SPI/MII/RMII host (ISO 15118 / DIN 70121)",
+"category": "ic_tqfp",
+"pkg": "EP-LQFP-80",
+"aecq": true,
+"gbp": {
+"q1k": 6.2492,
+"q10k": 5.3118,
+"q100k": 4.515,
+"q200k": 4.2994,
+"q300k": 4.1781
+},
+"confidence": "distributor",
+"source": "Mouser €7.28 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"CCU"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 7.28,
+"currency": "EUR",
+"url": "https://www.mouser.bg/c/semiconductors/communication-networking-ics/ethernet-ics/?m=Lumissil",
+"date": "2026-10-09",
+"gbp": 6.2492
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "STM32F103RET6",
+"family": "STM32F103RE",
+"mfr": "STMicroelectronics",
+"desc": "STM32F103RE Cortex-M3 72 MHz, 512 KB flash (host MCU on the Foccci open CCS controller)",
+"category": "ic_tqfp",
+"pkg": "LQFP-64",
+"aecq": false,
+"gbp": {
+"q1k": 4.5498,
+"q10k": 4.1982,
+"q100k": 3.8738,
+"q200k": 3.7812,
+"q300k": 3.728
+},
+"confidence": "distributor",
+"source": "Digi-Key $6.5618 @320; Digi-Key $6.2809 @1,120; Mouser $5.75 @960 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0349, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"CCU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 320,
+"price": 6.5618,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/search/stm32f103ret6",
+"date": "2026-10-09",
+"gbp": 4.9561
+},
+{
+"distributor": "Digi-Key",
+"qty": 1120,
+"price": 6.2809,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/search/stm32f103ret6",
+"date": "2026-10-09",
+"gbp": 4.744
+},
+{
+"distributor": "Mouser",
+"qty": 960,
+"price": 5.75,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/search/stm32f103ret6",
+"date": "2026-10-09",
+"gbp": 4.343
+}
+],
+"volumeModel": {
+"b": 0.0349,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1120
+}
+},
+{
+"mpn": "TLE9189QUWXUMA1",
+"family": "TLE9189",
+"mfr": "Infineon Technologies",
+"desc": "MOTIX 3-phase MOSFET gate driver, ASIL D, AEC-Q100 Grade 0, current-sense amps (EPS, brake-by-wire)",
+"category": "ic_tqfp",
+"pkg": "TQFP-48 EP",
+"aecq": true,
+"gbp": {
+"q1k": 2.3177,
+"q10k": 2.0585,
+"q100k": 1.8282,
+"q200k": 1.7641,
+"q300k": 1.7277
+},
+"confidence": "distributor",
+"source": "Farnell €3.04 @100; Farnell €2.7 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0515, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"EPS",
+"ESC"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 100,
+"price": 3.04,
+"currency": "EUR",
+"url": "https://fi.farnell.com/en-FI/infineon/tle9189quwxuma1/motor-driv-3-phase-bldc-tqfp-ep/dp/4695794RL",
+"date": "2026-10-09",
+"gbp": 2.6095
+},
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 2.7,
+"currency": "EUR",
+"url": "https://fi.farnell.com/en-FI/infineon/tle9189quwxuma1/motor-driv-3-phase-bldc-tqfp-ep/dp/4695794RL",
+"date": "2026-10-09",
+"gbp": 2.3177
+}
+],
+"volumeModel": {
+"b": 0.0515,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MC33GD3000EP",
+"family": "GD3000",
+"mfr": "NXP Semiconductors",
+"desc": "3-phase brushless motor pre-driver, 6-60 V, AEC-Q100 Grade 1 (NXP EPS block diagram)",
+"category": "ic_qfn",
+"pkg": "QFN-56",
+"aecq": true,
+"gbp": {
+"q1k": 2.4822,
+"q10k": 2.1099,
+"q100k": 1.7934,
+"q200k": 1.7078,
+"q300k": 1.6596
+},
+"confidence": "distributor",
+"source": "Mouser $3.02 @2,600; Digi-Key $3.12421 @2,600 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"EPS",
+"ESC"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 2600,
+"price": 3.02,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/detail/mc33gd3000ep/NXP-Semiconductors",
+"date": "2026-10-09",
+"gbp": 2.281
+},
+{
+"distributor": "Digi-Key",
+"qty": 2600,
+"price": 3.12421,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/detail/mc33gd3000ep/NXP-Semiconductors",
+"date": "2026-10-09",
+"gbp": 2.3597
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2600
+}
+},
+{
+"mpn": "TMAG6180EDGKRQ1",
+"family": "TMAG6180-Q1",
+"mfr": "Texas Instruments",
+"desc": "High-precision AMR angle sensor, analog sin/cos (TIDA-020106)",
+"category": "ic_soic",
+"pkg": "VSSOP-8 (DGK)",
+"aecq": true,
+"gbp": {
+"q1k": 1.2697,
+"q10k": 1.1248,
+"q100k": 0.9964,
+"q200k": 0.9607,
+"q300k": 0.9404
+},
+"confidence": "distributor",
+"source": "Digi-Key $1.8977 @100; Digi-Key $1.6811 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0526, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ESC",
+"EPS"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 100,
+"price": 1.8977,
+"currency": "USD",
+"url": "https://www.findchips.com/search/TMAG6",
+"date": "2026-10-09",
+"gbp": 1.4333
+},
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 1.6811,
+"currency": "USD",
+"url": "https://www.findchips.com/search/TMAG6",
+"date": "2026-10-09",
+"gbp": 1.2697
+}
+],
+"volumeModel": {
+"b": 0.0526,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "R7F701382EAFP-C#KA2",
+"family": "RH850/P1M-E",
+"mfr": "Renesas Electronics",
+"desc": "RH850/P1M-E 32-bit MCU 160 MHz, 1 MB flash, 192 kB RAM (EPS)",
+"category": "ic_tqfp",
+"pkg": "LQFP-100",
+"aecq": true,
+"gbp": {
+"q1k": 7.8022,
+"q10k": 6.6319,
+"q100k": 5.6371,
+"q200k": 5.368,
+"q300k": 5.2165
+},
+"confidence": "distributor",
+"source": "Future Electronics $10.33 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"EPS"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 10.33,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--microcontrollers--32-bit/r7f701382eafp-c-ka2-renesas-9186676",
+"date": "2026-10-09",
+"gbp": 7.8022
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MLX90421GGO-ADC-000-RE",
+"family": "MLX90421",
+"mfr": "Melexis",
+"desc": "Triaxis position sensor, analog/PWM output, TSSOP-16",
+"category": "ic_soic",
+"pkg": "TSSOP-16",
+"aecq": true,
+"gbp": {
+"q1k": 3.8887,
+"q10k": 3.3054,
+"q100k": 2.8096,
+"q200k": 2.6754,
+"q300k": 2.6
+},
+"confidence": "distributor",
+"source": "Future Electronics $4.63 @4,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"EPS"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 4500,
+"price": 4.63,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/1158893?utm=API",
+"date": "2026-10-09",
+"gbp": 3.497
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 4500
+}
+},
+{
+"mpn": "L9396",
+"family": "L9396",
+"mfr": "STMicroelectronics",
+"desc": "Power SBC: buck/boost, LDOs, 4-channel wheel-speed-sensor interface (ABS / EPS)",
+"category": "ic_tqfp",
+"pkg": "TQFP-64",
+"aecq": true,
+"gbp": {
+"q1k": 3.1679,
+"q10k": 2.6927,
+"q100k": 2.2888,
+"q200k": 2.1795,
+"q300k": 2.118
+},
+"confidence": "distributor",
+"source": "TME €4.2 @160 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ESC",
+"EPS"
+],
+"observations": [
+{
+"distributor": "TME",
+"qty": 160,
+"price": 4.2,
+"currency": "EUR",
+"url": "https://www.tme.eu/si/en/details/l9396/voltage-regulators-dc-dc-circuits/stmicroelectronics/",
+"date": "2026-10-09",
+"gbp": 3.6053
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 160
+}
+},
+{
+"mpn": "L9301-TR",
+"family": "L9301",
+"mfr": "STMicroelectronics",
+"desc": "Octal low-side driver for on/off ABS valves, SPI, AEC-Q100",
+"category": "ic_soic",
+"pkg": "PowerSSO-36",
+"aecq": true,
+"gbp": {
+"q1k": 4.4619,
+"q10k": 3.9658,
+"q100k": 3.5249,
+"q200k": 3.4021,
+"q300k": 3.3322
+},
+"confidence": "distributor",
+"source": "Farnell £5.02 @100; Farnell £4.79 @250; RS Components £5.23 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0512, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ESC"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 100,
+"price": 5.02,
+"currency": "GBP",
+"url": "https://uk.farnell.com/stmicroelectronics/l9301-tr/power-load-sw-aec-q100-powersso/dp/4069536",
+"date": "2026-10-09",
+"gbp": 5.02
+},
+{
+"distributor": "Farnell",
+"qty": 250,
+"price": 4.79,
+"currency": "GBP",
+"url": "https://uk.farnell.com/stmicroelectronics/l9301-tr/power-load-sw-aec-q100-powersso/dp/4069536",
+"date": "2026-10-09",
+"gbp": 4.79
+},
+{
+"distributor": "RS Components",
+"qty": 250,
+"price": 5.23,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/power-switch-ics/2333006",
+"date": "2026-10-09",
+"gbp": 5.23
+}
+],
+"volumeModel": {
+"b": 0.0512,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 250
+}
+},
+{
+"mpn": "L9680TR",
+"family": "L9680",
+"mfr": "STMicroelectronics",
+"desc": "Advanced airbag system IC: firing loops, PSI5, power, safety (TQFP-100)",
+"category": "ic_tqfp",
+"pkg": "TQFP-100 14x14",
+"aecq": true,
+"gbp": {
+"q1k": 5.8806,
+"q10k": 4.487,
+"q100k": 3.4237,
+"q200k": 3.156,
+"q300k": 3.0092
+},
+"confidence": "distributor",
+"source": "Mouser $9.79 @100; Mouser $7.47 @1,000; Digi-Key $8.1016 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1175, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ACU"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 100,
+"price": 9.79,
+"currency": "USD",
+"url": "https://findchips.com/search/l9680tr",
+"date": "2026-10-09",
+"gbp": 7.3944
+},
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 7.47,
+"currency": "USD",
+"url": "https://findchips.com/search/l9680tr",
+"date": "2026-10-09",
+"gbp": 5.6421
+},
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 8.1016,
+"currency": "USD",
+"url": "https://findchips.com/search/l9680tr",
+"date": "2026-10-09",
+"gbp": 6.1191
+}
+],
+"volumeModel": {
+"b": 0.1175,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "L9679ETR",
+"family": "L9679E",
+"mfr": "STMicroelectronics",
+"desc": "Airbag extension chip: octal squib/pyroswitch driver + 4 PSI5 (companion to L9680)",
+"category": "ic_tqfp",
+"pkg": "TQFP-48",
+"aecq": true,
+"gbp": {
+"q1k": 3.0852,
+"q10k": 2.6224,
+"q100k": 2.2291,
+"q200k": 2.1226,
+"q300k": 2.0628
+},
+"confidence": "distributor",
+"source": "Future Electronics $3.84 @2,400 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ACU"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 2400,
+"price": 3.84,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/l9679etr-C530892934",
+"date": "2026-10-09",
+"gbp": 2.9004
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2400
+}
+},
+{
+"mpn": "MCZ33789BAE",
+"family": "MC33789",
+"mfr": "NXP Semiconductors",
+"desc": "Airbag power supply and 4x PSI5 sensor-interface SBC (RDAIRBAGPSI5)",
+"category": "ic_tqfp",
+"pkg": "LQFP-EP",
+"aecq": true,
+"gbp": {
+"q1k": 6.3734,
+"q10k": 5.4174,
+"q100k": 4.6048,
+"q200k": 4.3849,
+"q300k": 4.2612
+},
+"confidence": "distributor",
+"source": "Farnell €8.45 @160 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ACU"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 160,
+"price": 8.45,
+"currency": "EUR",
+"url": "https://it.farnell.com/en-IT/nxp/mcz33789bae/system-basis-chip-125deg-c-lqfp/dp/4333749",
+"date": "2026-10-09",
+"gbp": 7.2535
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 160
+}
+},
+{
+"mpn": "BUK9M20-60ELX",
+"family": "BUK9M20-60EL",
+"mfr": "Nexperia",
+"desc": "Automotive ASFET for airbag safing switch, 60 V 13 mOhm logic level, enhanced SOA",
+"category": "ic_qfn",
+"pkg": "LFPAK33",
+"aecq": true,
+"gbp": {
+"q1k": 0.5744,
+"q10k": 0.4882,
+"q100k": 0.415,
+"q200k": 0.3952,
+"q300k": 0.384
+},
+"confidence": "distributor",
+"source": "Farnell €0.524 @1,000; RS Components £0.734 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ACU"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 0.524,
+"currency": "EUR",
+"url": "https://es.farnell.com/en-ES/nexperia/buk9m20-60elx/mosfet-n-ch-60v-40a-lfpak33/dp/3958216RL",
+"date": "2026-10-09",
+"gbp": 0.4498
+},
+{
+"distributor": "RS Components",
+"qty": 500,
+"price": 0.734,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/mosfets/2604641",
+"date": "2026-10-09",
+"gbp": 0.734
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MMA6801KW",
+"family": "MMA6801",
+"mfr": "NXP Semiconductors",
+"desc": "Dual-axis airbag central accelerometer, 16-QFN (RDAIRBAGPSI5 local safing sensor)",
+"category": "ic_qfn",
+"pkg": "QFN-16 6x6",
+"aecq": true,
+"gbp": {
+"q1k": 5.3067,
+"q10k": 4.5107,
+"q100k": 3.8341,
+"q200k": 3.651,
+"q300k": 3.548
+},
+"confidence": "distributor",
+"source": "Digi-Key €6.30533 @756 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ACU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 756,
+"price": 6.30533,
+"currency": "EUR",
+"url": "https://www.digikey.be/en/products/detail/nxp-usa-inc/MMA6801KW/2817418",
+"date": "2026-10-09",
+"gbp": 5.4125
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 756
+}
+},
+{
+"mpn": "SPC560P50L5CEFAR",
+"family": "SPC560P50",
+"mfr": "STMicroelectronics",
+"desc": "SPC560P e200z0h 64 MHz MCU, 512 KB flash (SPC560Px named by ST for L9680 / L9678P airbag systems)",
+"category": "ic_tqfp",
+"pkg": "LQFP-144",
+"aecq": true,
+"gbp": {
+"q1k": 3.4908,
+"q10k": 2.6565,
+"q100k": 2.0215,
+"q200k": 1.8619,
+"q300k": 1.7745
+},
+"confidence": "distributor",
+"source": "Digi-Key $6.0734 @100; Digi-Key $5.01784 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1186, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ACU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 100,
+"price": 6.0734,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC560P50L5CEFAR/2746827",
+"date": "2026-10-09",
+"gbp": 4.5872
+},
+{
+"distributor": "Digi-Key",
+"qty": 500,
+"price": 5.01784,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC560P50L5CEFAR/2746827",
+"date": "2026-10-09",
+"gbp": 3.79
+}
+],
+"volumeModel": {
+"b": 0.1186,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "MC33CD1030AER2",
+"family": "CD1030",
+"mfr": "NXP Semiconductors",
+"desc": "33-channel multiple switch detection interface, SPI (RDVCU5775EVM)",
+"category": "ic_qfn",
+"pkg": "QFN-48 EP",
+"aecq": true,
+"gbp": {
+"q1k": 2.3943,
+"q10k": 2.2231,
+"q100k": 2.0642,
+"q200k": 2.0186,
+"q300k": 1.9924
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.17 @1,000; Digi-Key $3.1 @2,000; Future Electronics $2.85 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0322, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"VCU"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 3.17,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33CD1030AER2/7645876",
+"date": "2026-10-09",
+"gbp": 2.3943
+},
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 3.1,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33CD1030AER2/7645876",
+"date": "2026-10-09",
+"gbp": 2.3414
+},
+{
+"distributor": "Future Electronics",
+"qty": 2000,
+"price": 2.85,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/6104538",
+"date": "2026-10-09",
+"gbp": 2.1526
+}
+],
+"volumeModel": {
+"b": 0.0322,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2000
+}
+},
+{
+"mpn": "MC33FS6523CAE",
+"family": "FS6523",
+"mfr": "NXP Semiconductors",
+"desc": "FS65 functional-safety SBC, ASIL D, VCORE SMPS 2.2 A, CAN FD (RDVCU5775EVM)",
+"category": "ic_tqfp",
+"pkg": "LQFP-48 EP",
+"aecq": true,
+"gbp": {
+"q1k": 4.6665,
+"q10k": 4.4222,
+"q100k": 4.1907,
+"q200k": 4.1234,
+"q300k": 4.0845
+},
+"confidence": "distributor",
+"source": "Avnet $6.22 @750; Avnet $5.83 @12,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0234, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"VCU"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 750,
+"price": 6.22,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33fs6523cae/evolve-20661735",
+"date": "2026-10-09",
+"gbp": 4.698
+},
+{
+"distributor": "Avnet",
+"qty": 12000,
+"price": 5.83,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/mc33fs6523cae/evolve-20661735",
+"date": "2026-10-09",
+"gbp": 4.4034
+}
+],
+"volumeModel": {
+"b": 0.0234,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 12000
+}
+},
+{
+"mpn": "MC33FS6523NAE",
+"family": "FS6523",
+"mfr": "NXP Semiconductors",
+"desc": "FS65 functional-safety SBC, ASIL D, CAN FD + LIN (N option)",
+"category": "ic_tqfp",
+"pkg": "LQFP-48 EP",
+"aecq": true,
+"gbp": {
+"q1k": 4.0352,
+"q10k": 3.4299,
+"q100k": 2.9154,
+"q200k": 2.7762,
+"q300k": 2.6979
+},
+"confidence": "distributor",
+"source": "Farnell £4.45 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"VCU"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 250,
+"price": 4.45,
+"currency": "GBP",
+"url": "https://uk.farnell.com/nxp/mc33fs6523nae/system-basis-chip-can-fd-lin-lqfpep/dp/4784786",
+"date": "2026-10-09",
+"gbp": 4.45
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 250
+}
+},
+{
+"mpn": "L9788TR",
+"family": "L9788",
+"mfr": "STMicroelectronics",
+"desc": "Multifunction U-chip for VCU / EMS (with SPC574), AEC-Q100",
+"category": "ic_tqfp",
+"pkg": "LQFP-100 EP 14x14",
+"aecq": true,
+"gbp": {
+"q1k": 7.806,
+"q10k": 6.6351,
+"q100k": 5.6399,
+"q200k": 5.3706,
+"q300k": 5.2191
+},
+"confidence": "distributor",
+"source": "Future Electronics $10.45 @1,000; Future Electronics $10.22 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"VCU"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 10.45,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--wireless-rf--detectors/l9788tr-stmicroelectronics-5177306",
+"date": "2026-10-09",
+"gbp": 7.8929
+},
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 10.22,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/semiconductors--wireless-rf--detectors/l9788tr-stmicroelectronics-7221566",
+"date": "2026-10-09",
+"gbp": 7.7192
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MIMX8QM6AVUFFAB",
+"family": "i.MX 8QM",
+"mfr": "NXP",
+"desc": "i.MX 8QuadMax applications processor, 2x A72 + 4x A53, dual GPU, automotive -40..125 C",
+"category": "ic_bga",
+"pkg": "FCPBGA-1313",
+"aecq": true,
+"gbp": {
+"q1k": 79.4918,
+"q10k": 67.5681,
+"q100k": 57.4329,
+"q200k": 54.6907,
+"q300k": 53.1477
+},
+"confidence": "distributor",
+"source": "Priced on the sibling orderable code MIMX8QM6AVUFFABR (the listed code was not found at a distributor). Future Electronics $113.34 @350 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: only Future $113.34 @350, well below Digi-Key's regional listing - one source, check before quoting.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IVI",
+"CLUSTER"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 350,
+"price": 113.34,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/mimx8qm6avuffabr-C524721019",
+"date": "2026-10-09",
+"gbp": 85.6057
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 350
+},
+"aliases": [
+"MIMX8QM6AVUFFABR"
+]
+},
+{
+"mpn": "AD2428WCCSZ-RL",
+"family": "AD2428W",
+"mfr": "Analog Devices",
+"desc": "A2B automotive audio bus transceiver, main / sub node, I2S/TDM",
+"category": "ic_qfn",
+"pkg": "LFCSP-32",
+"aecq": true,
+"gbp": {
+"q1k": 3.5383,
+"q10k": 3.0076,
+"q100k": 2.5564,
+"q200k": 2.4344,
+"q300k": 2.3657
+},
+"confidence": "distributor",
+"source": "Digi-Key $5.04 @5,000; LCSC $4.38 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IVI"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 5000,
+"price": 5.04,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/analog-devices-inc/AD2428WCCSZ-RL/10816308",
+"date": "2026-10-09",
+"gbp": 3.8067
+},
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 4.38,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C649112.html",
+"date": "2026-10-09",
+"gbp": 3.3082
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 5000
+}
+},
+{
+"mpn": "ADAU1452WBCPZ",
+"family": "ADAU1452",
+"mfr": "Analog Devices",
+"desc": "SigmaDSP automotive audio processor, 294.912 MHz, ASRCs, TDM/I2S",
+"category": "ic_qfn",
+"pkg": "LFCSP-72",
+"aecq": true,
+"gbp": {
+"q1k": 4.2182,
+"q10k": 3.5854,
+"q100k": 3.0476,
+"q200k": 2.9021,
+"q300k": 2.8202
+},
+"confidence": "distributor",
+"source": "LCSC $6.5703 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IVI"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 6.5703,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C403699.html",
+"date": "2026-10-09",
+"gbp": 4.9625
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "TDA75610S-ZST",
+"family": "TDA75610",
+"mfr": "STMicroelectronics",
+"desc": "4 x 45 W quad bridge class-AB car radio power amplifier, I2C diagnostics, AEC-Q100",
+"category": "through_hole",
+"pkg": "Flexiwatt27",
+"aecq": true,
+"gbp": {
+"q1k": 2.7612,
+"q10k": 2.347,
+"q100k": 1.995,
+"q200k": 1.8997,
+"q300k": 1.8461
+},
+"confidence": "distributor",
+"source": "Future Electronics $3.79 @600 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IVI"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 600,
+"price": 3.79,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/analog--amplifiers--audio/tda75610s-zst-stmicroelectronics-C013403902",
+"date": "2026-10-09",
+"gbp": 2.8626
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 600
+}
+},
+{
+"mpn": "FXLS8967AFR3",
+"family": "FXLS8967AF",
+"mfr": "NXP",
+"desc": "3-axis automotive MEMS accelerometer, I2C/SPI (T-Box crash / motion detect)",
+"category": "ic_qfn",
+"pkg": "DFN-10",
+"aecq": true,
+"gbp": {
+"q1k": 1.5537,
+"q10k": 1.3206,
+"q100k": 1.1226,
+"q200k": 1.069,
+"q300k": 1.0388
+},
+"confidence": "distributor",
+"source": "Farnell €1.81 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TEL"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 1.81,
+"currency": "EUR",
+"url": "https://fr.farnell.com/nxp/fxls8967afr3/acc-l-rom-tre-mems-x-y-z-numerique/dp/4062468",
+"date": "2026-10-09",
+"gbp": 1.5537
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "ISL78206AVEZ-T7A",
+"family": "ISL78206",
+"mfr": "Renesas",
+"desc": "40 V 2.5 A automotive synchronous buck regulator (on Renesas AICV2 cluster reference board)",
+"category": "ic_soic",
+"pkg": "HTSSOP-20",
+"aecq": true,
+"gbp": {
+"q1k": 2.3903,
+"q10k": 2.0317,
+"q100k": 1.727,
+"q200k": 1.6445,
+"q300k": 1.5981
+},
+"confidence": "distributor",
+"source": "Future Electronics $3.49 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: two Future snapshots disagreed; the higher ($3.49 @250) is kept.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"CLUSTER"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 250,
+"price": 3.49,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/4071063",
+"date": "2026-10-09",
+"gbp": 2.636
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 250
+}
+},
+{
+"mpn": "LM5180QNGURQ1",
+"family": "LM5180-Q1",
+"mfr": "Texas Instruments",
+"desc": "PSR flyback converter 65 V, isolated gate-driver bias (6 per inverter in TI PMP31236)",
+"category": "ic_qfn",
+"pkg": "WSON-8 (NGU)",
+"aecq": true,
+"gbp": {
+"q1k": 2.4231,
+"q10k": 2.0596,
+"q100k": 1.7507,
+"q200k": 1.6671,
+"q300k": 1.6201
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.88501 @4,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 4500,
+"price": 2.88501,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5180QNGURQ1/10820179",
+"date": "2026-10-09",
+"gbp": 2.179
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 4500
+}
+},
+{
+"mpn": "1EDI3031ASXUMA1",
+"family": "1EDI3031AS",
+"mfr": "Infineon",
+"desc": "EiceDRIVER single-channel isolated SiC gate driver 20 A, DESAT + OCP, traction inverter",
+"category": "ic_soic",
+"pkg": "PG-DSO-20",
+"aecq": true,
+"gbp": {
+"q1k": 4.1092,
+"q10k": 3.4929,
+"q100k": 2.9689,
+"q200k": 2.8272,
+"q300k": 2.7474
+},
+"confidence": "distributor",
+"source": "Farnell €4.2927 @500; RS Components THB 220.2 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 500,
+"price": 4.2927,
+"currency": "EUR",
+"url": "https://ie.farnell.com/infineon/1edi3031asxuma1/driver-sic-mosfet-high-side-pg/dp/3807509",
+"date": "2026-10-09",
+"gbp": 3.6849
+},
+{
+"distributor": "RS Components",
+"qty": 500,
+"price": 220.2,
+"currency": "THB",
+"url": "https://th.rs-online.com/web/p/gate-drivers/2323035",
+"date": "2026-10-09",
+"gbp": 4.9457
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "1EDI3025ASXUMA1",
+"family": "1EDI3025AS",
+"mfr": "Infineon",
+"desc": "EiceDRIVER single-channel isolated IGBT gate driver, traction inverter (1EDI302xAS IGBT series)",
+"category": "ic_soic",
+"pkg": "PG-DSO-20",
+"aecq": true,
+"gbp": {
+"q1k": 1.6033,
+"q10k": 1.5139,
+"q100k": 1.4295,
+"q200k": 1.405,
+"q300k": 1.3909
+},
+"confidence": "distributor",
+"source": "Avnet $2.1227 @1,000; Avnet $2.05065 @4,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0249, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 1000,
+"price": 2.1227,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/manufacturers/m/c/infineon/uncategorized",
+"date": "2026-10-09",
+"gbp": 1.6033
+},
+{
+"distributor": "Avnet",
+"qty": 4000,
+"price": 2.05065,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/manufacturers/m/c/infineon/uncategorized",
+"date": "2026-10-09",
+"gbp": 1.5489
+}
+],
+"volumeModel": {
+"b": 0.0249,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 4000
+}
+},
+{
+"mpn": "1EDI3035ASXUMA1",
+"family": "1EDI3031AS",
+"mfr": "Infineon",
+"desc": "EiceDRIVER single-channel isolated SiC gate driver 20 A, inverters >300 kW (library row 1EDI3026AS/1EDI3035AS)",
+"category": "ic_soic",
+"pkg": "PG-DSO-20",
+"aecq": true,
+"gbp": {
+"q1k": 2.893,
+"q10k": 2.459,
+"q100k": 2.0902,
+"q200k": 1.9904,
+"q300k": 1.9342
+},
+"confidence": "distributor",
+"source": "Farnell €3.3702 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 3.3702,
+"currency": "EUR",
+"url": "https://ie.farnell.com/infineon/1edi3035asxuma1/gate-driver-sic-mosfet-1-ch-soic/dp/4670244",
+"date": "2026-10-09",
+"gbp": 2.893
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MC33GD3000EPR2",
+"family": "GD3000",
+"mfr": "NXP",
+"desc": "3-phase brushless motor pre-driver 6-58 V (S32K324 MCTPTX1AK324 thermal/pump reference)",
+"category": "ic_qfn",
+"pkg": "QFN-56",
+"aecq": true,
+"gbp": {
+"q1k": 2.4181,
+"q10k": 2.0554,
+"q100k": 1.7471,
+"q200k": 1.6637,
+"q300k": 1.6168
+},
+"confidence": "distributor",
+"source": "Mouser $2.95 @2,000; Digi-Key $3.1474 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TMS",
+"EBOOST"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 2000,
+"price": 2.95,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/detail/mc33gd3000epr2/NXP-Semiconductors",
+"date": "2026-10-09",
+"gbp": 2.2281
+},
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 3.1474,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/detail/mc33gd3000epr2/NXP-Semiconductors",
+"date": "2026-10-09",
+"gbp": 2.3772
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2000
+}
+},
+{
+"mpn": "TLE4973AE35D5S0001XUMA1",
+"family": "TLE4973",
+"mfr": "Infineon",
+"desc": "XENSIV coreless Hall current sensor for busbar / inverter phase current",
+"category": "ic_soic",
+"pkg": "PG-TDSO-16",
+"aecq": true,
+"gbp": {
+"q1k": 2.2561,
+"q10k": 1.9177,
+"q100k": 1.6301,
+"q200k": 1.5522,
+"q300k": 1.5084
+},
+"confidence": "distributor",
+"source": "Future Electronics $2.8 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV",
+"BSG_INV"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 2500,
+"price": 2.8,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--sensors--current/tle4973ae35d5s0001xuma1-infineon-6181627",
+"date": "2026-10-09",
+"gbp": 2.1148
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "MLX91216LDC-ACH-000-RE",
+"family": "MLX91216",
+"mfr": "Melexis",
+"desc": "IMC-Hall high-speed programmable current sensor 100 mV/mT, busbar (task list)",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 1.9834,
+"q10k": 1.6859,
+"q100k": 1.433,
+"q200k": 1.3646,
+"q300k": 1.3261
+},
+"confidence": "distributor",
+"source": "Mouser $2.43 @3,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV",
+"BSG_INV"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 3000,
+"price": 2.43,
+"currency": "USD",
+"url": "https://www.mouser.co.il/c/sensors/?m=Melexis",
+"date": "2026-10-09",
+"gbp": 1.8354
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "AMT49502KLPTR-5",
+"family": "AMT49502",
+"mfr": "Allegro",
+"desc": "80 V automotive half-bridge MOSFET driver, ASIL, 12 V and 48 V BSG",
+"category": "ic_soic",
+"pkg": "TSSOP-24-EP",
+"aecq": true,
+"gbp": {
+"q1k": 1.9772,
+"q10k": 1.6806,
+"q100k": 1.4285,
+"q200k": 1.3603,
+"q300k": 1.3219
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.37375 @4,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BSG_INV"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 4000,
+"price": 2.37375,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/allegro-microsystems/AMT49502KLPTR-5/13979028",
+"date": "2026-10-09",
+"gbp": 1.7929
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 4000
+}
+},
+{
+"mpn": "IAUS240N08S5N019ATMA1",
+"family": "IAUS240N08S5N019",
+"mfr": "Infineon",
+"desc": "OptiMOS 5 80 V 1.9 mOhm 240 A automotive MOSFET, TOLG (24 per Infineon 48 V BSG demonstrator)",
+"category": "ic_qfn",
+"pkg": "PG-HSOG-8 (TOLG)",
+"aecq": true,
+"gbp": {
+"q1k": 2.1883,
+"q10k": 2.0774,
+"q100k": 1.9721,
+"q200k": 1.9415,
+"q300k": 1.9238
+},
+"confidence": "distributor",
+"source": "RS Components (Japan) JPY 294.25 @1,800; RS Components (Japan) JPY 275 @36,000; RS Components (Taiwan) TWD 124.5 @900 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0226, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. DISPUTED: priced only on RS regional sites; the Japan price is about half the Taiwan one.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BSG_INV",
+"EBOOST"
+],
+"observations": [
+{
+"distributor": "RS Components (Japan)",
+"qty": 1800,
+"price": 294.25,
+"currency": "JPY",
+"url": "https://jp.rs-online.com/web/p/mosfets/2207363",
+"date": "2026-10-09",
+"gbp": 1.4115
+},
+{
+"distributor": "RS Components (Japan)",
+"qty": 36000,
+"price": 275,
+"currency": "JPY",
+"url": "https://jp.rs-online.com/web/p/mosfets/2207363",
+"date": "2026-10-09",
+"gbp": 1.3192
+},
+{
+"distributor": "RS Components (Taiwan)",
+"qty": 900,
+"price": 124.5,
+"currency": "TWD",
+"url": "https://twcn.rs-online.com/web/p/mosfets/2207364",
+"date": "2026-10-09",
+"gbp": 2.9531
+}
+],
+"volumeModel": {
+"b": 0.0226,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 36000
+}
+},
+{
+"mpn": "TLE9140EQWXUMA1",
+"family": "TLE9140",
+"mfr": "Infineon",
+"desc": "MOTIX 3-phase BLDC gate driver 24-72 V (to 110 V), SPI - 48 V pumps, fans, e-compressors",
+"category": "ic_soic",
+"pkg": "PG-TSDSO-32",
+"aecq": true,
+"gbp": {
+"q1k": 1.603,
+"q10k": 1.4867,
+"q100k": 1.3789,
+"q200k": 1.348,
+"q300k": 1.3302
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.12234 @1,000; Digi-Key $2.04744 @3,000; Avnet $1.797 @3,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0327, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"EBOOST",
+"TMS"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 2.12234,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE9140EQWXUMA1/17399521",
+"date": "2026-10-09",
+"gbp": 1.603
+},
+{
+"distributor": "Digi-Key",
+"qty": 3000,
+"price": 2.04744,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE9140EQWXUMA1/17399521",
+"date": "2026-10-09",
+"gbp": 1.5464
+},
+{
+"distributor": "Avnet",
+"qty": 3000,
+"price": 1.797,
+"currency": "USD",
+"url": "https://www.avnet.com/shop/us/products/infineon/tle9140eqwxuma1-3074457345651150742",
+"date": "2026-10-09",
+"gbp": 1.3573
+}
+],
+"volumeModel": {
+"b": 0.0327,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 3000
+}
+},
+{
+"mpn": "RGS80TSX2DHRC11",
+"family": "RGS80TSX2DHR",
+"mfr": "ROHM",
+"desc": "1200 V 40 A field-stop trench IGBT, AEC-Q101 (ROHM REF66011 7 kW PTC heater)",
+"category": "through_hole",
+"pkg": "TO-247N",
+"aecq": true,
+"gbp": {
+"q1k": 5.1497,
+"q10k": 4.3773,
+"q100k": 3.7207,
+"q200k": 3.543,
+"q300k": 3.4431
+},
+"confidence": "distributor",
+"source": "Digi-Key $7.15 @510 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"PTC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 510,
+"price": 7.15,
+"currency": "USD",
+"url": "https://www.findchips.com/search/RGS80",
+"date": "2026-10-09",
+"gbp": 5.4004
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 510
+}
+},
+{
+"mpn": "AFGHL40T65SPD",
+"family": "AFGHL40T65SPD",
+"mfr": "onsemi",
+"desc": "650 V 40 A field-stop trench IGBT, AEC-Q101 (automotive successor to FGH40T65 in onsemi TND6319 PTC driver)",
+"category": "through_hole",
+"pkg": "TO-247-3",
+"aecq": true,
+"gbp": {
+"q1k": 2.2031,
+"q10k": 1.8727,
+"q100k": 1.5918,
+"q200k": 1.5158,
+"q300k": 1.473
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.05888 @510 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"PTC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 510,
+"price": 3.05888,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/onsemi/AFGHL40T65SPD/9764708",
+"date": "2026-10-09",
+"gbp": 2.3104
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 510
+}
+},
+{
+"mpn": "NCV887103D1R2G",
+"family": "NCV8871",
+"mfr": "onsemi",
+"desc": "Automotive non-synchronous boost/flyback controller 340 kHz (aux isolated supply, onsemi TND6319 PTC driver)",
+"category": "ic_soic",
+"pkg": "SOIC-8",
+"aecq": true,
+"gbp": {
+"q1k": 0.7864,
+"q10k": 0.6684,
+"q100k": 0.5682,
+"q200k": 0.541,
+"q300k": 0.5258
+},
+"confidence": "distributor",
+"source": "Digi-Key $1.09334 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"PTC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 500,
+"price": 1.09334,
+"currency": "USD",
+"url": "https://www.digikey.com.mx/en/products/detail/onsemi/NCV887103D1R2G/2797241",
+"date": "2026-10-09",
+"gbp": 0.8258
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "LM25184QNGURQ1",
+"family": "LM25184-Q1",
+"mfr": "Texas Instruments",
+"desc": "PSR flyback converter 42 V (TIDM-02012 e-compressor aux supply)",
+"category": "ic_qfn",
+"pkg": "WSON-8 (NGU)",
+"aecq": true,
+"gbp": {
+"q1k": 2.6151,
+"q10k": 2.4491,
+"q100k": 2.2937,
+"q200k": 2.2488,
+"q300k": 2.223
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.4623 @1,000; Digi-Key $3.31714 @4,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0285, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECOMP"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 3.4623,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/LM25184QNGURQ1/13169232",
+"date": "2026-10-09",
+"gbp": 2.6151
+},
+{
+"distributor": "Digi-Key",
+"qty": 4500,
+"price": 3.31714,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/LM25184QNGURQ1/13169232",
+"date": "2026-10-09",
+"gbp": 2.5054
+}
+],
+"volumeModel": {
+"b": 0.0285,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 4500
+}
+},
+{
+"mpn": "TLE9879QXA40XUMA2",
+"family": "TLE9879",
+"mfr": "Infineon",
+"desc": "MOTIX 3-phase BLDC motor-control SoC (Cortex-M3 + bridge driver) - pumps, fans (pairs with TLE9140 for 48 V)",
+"category": "ic_qfn",
+"pkg": "VQFN-48",
+"aecq": true,
+"gbp": {
+"q1k": 4.4508,
+"q10k": 3.7832,
+"q100k": 3.2157,
+"q200k": 3.0621,
+"q300k": 2.9758
+},
+"confidence": "distributor",
+"source": "RS Components THB 208.1 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TMS"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 500,
+"price": 208.1,
+"currency": "THB",
+"url": "https://th.rs-online.com/web/p/motor-driver-ics/2449747",
+"date": "2026-10-09",
+"gbp": 4.6739
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "TLE8888QKXUMA1",
+"family": "TLE8888",
+"mfr": "Infineon",
+"desc": "Engine management system IC, 4-cylinder: supplies, CAN + LIN, 29 power outputs (injectors, ignition pre-drivers, relays, stepper)",
+"category": "ic_tqfp",
+"pkg": "LQFP-100 EP",
+"aecq": true,
+"gbp": {
+"q1k": 11.7827,
+"q10k": 10.0153,
+"q100k": 8.513,
+"q200k": 8.1065,
+"q300k": 7.8778
+},
+"confidence": "distributor",
+"source": "Future Electronics $15.6 @1,000; Farnell $11.645 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECM"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 15.6,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/tle8888qkxuma1-infineon-3182676",
+"date": "2026-10-09",
+"gbp": 11.7827
+},
+{
+"distributor": "Farnell",
+"qty": 100,
+"price": 11.645,
+"currency": "USD",
+"url": "https://il.farnell.com/infineon/tle8888qkxuma1/engine-machine-system-ic-40to150deg/dp/3514465",
+"date": "2026-10-09",
+"gbp": 8.7955
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MC33PT2000AFR2",
+"family": "MC33PT2000",
+"mfr": "NXP",
+"desc": "Programmable direct-injection / solenoid pre-driver (PT2000), 3/4/6-cylinder",
+"category": "ic_tqfp",
+"pkg": "LQFP-64 EP",
+"aecq": true,
+"gbp": {
+"q1k": 9.1298,
+"q10k": 7.7603,
+"q100k": 6.5963,
+"q200k": 6.2813,
+"q300k": 6.1041
+},
+"confidence": "distributor",
+"source": "Mouser $11.6 @1,000; Digi-Key $11.9748 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECM"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 11.6,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/detail/mc33pt2000afr2/NXP-Semiconductors",
+"date": "2026-10-09",
+"gbp": 8.7615
+},
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 11.9748,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/detail/mc33pt2000afr2/NXP-Semiconductors",
+"date": "2026-10-09",
+"gbp": 9.0446
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2000
+}
+},
+{
+"mpn": "MCZ33810EKR2",
+"family": "MC33810",
+"mfr": "NXP",
+"desc": "Engine control IC: 4 low-side injector drivers + 4 IGBT / MOSFET gate pre-drivers (ignition), SPI",
+"category": "ic_soic",
+"pkg": "SOIC-32 EP",
+"aecq": true,
+"gbp": {
+"q1k": 3.9427,
+"q10k": 3.3513,
+"q100k": 2.8486,
+"q200k": 2.7126,
+"q300k": 2.636
+},
+"confidence": "distributor",
+"source": "Future Electronics $5.22 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECM",
+"IGN"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 5.22,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--power-management-circuit--specialized-controllers/mcz33810ekr2-nxp-9081189",
+"date": "2026-10-09",
+"gbp": 3.9427
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "TLE82422LXUMA2",
+"family": "TLE8242-2L",
+"mfr": "Infineon",
+"desc": "8-ch low-side constant-current control pre-driver for transmission / variable-force solenoids, SPI",
+"category": "ic_tqfp",
+"pkg": "LQFP-64",
+"aecq": true,
+"gbp": {
+"q1k": 6.5595,
+"q10k": 5.5756,
+"q100k": 4.7393,
+"q200k": 4.513,
+"q300k": 4.3857
+},
+"confidence": "distributor",
+"source": "Future Electronics $8.3 @1,900; Farnell €9.3 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TCM"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 1900,
+"price": 8.3,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--analog--system-management--current-monitors/tle82422lxuma2-infineon-2063326",
+"date": "2026-10-09",
+"gbp": 6.269
+},
+{
+"distributor": "Farnell",
+"qty": 100,
+"price": 9.3,
+"currency": "EUR",
+"url": "https://fr.farnell.com/infineon/tle82422lxuma2/predriver-contr-le-de-courant/dp/3155073",
+"date": "2026-10-09",
+"gbp": 7.9831
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1900
+}
+},
+{
+"mpn": "TLE92466EDXUMA1",
+"family": "TLE92466ED",
+"mfr": "Infineon",
+"desc": "6-ch constant-current solenoid driver, integrated FETs and sense resistors, 0-1.5 A, dither, SPI with CRC (transmission / ESC / suspension)",
+"category": "ic_soic",
+"pkg": "PG-DSO-36",
+"aecq": true,
+"gbp": {
+"q1k": 8.1831,
+"q10k": 7.8148,
+"q100k": 7.4631,
+"q200k": 7.3604,
+"q300k": 7.3009
+},
+"confidence": "distributor",
+"source": "Mouser $9.26 @1,000; RS Components KRW 16850.44 @1,000; RS Components KRW 16514 @5,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TCM"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 9.26,
+"currency": "USD",
+"url": "https://www.mouser.co.za/ProductDetail/726-TLE92466EDXUMA1",
+"date": "2026-10-09",
+"gbp": 6.9941
+},
+{
+"distributor": "RS Components",
+"qty": 1000,
+"price": 16850.44,
+"currency": "KRW",
+"url": "https://kr.rs-online.com/web/p/motor-driver-ics/2334401",
+"date": "2026-10-09",
+"gbp": 9.3722
+},
+{
+"distributor": "RS Components",
+"qty": 5000,
+"price": 16514,
+"currency": "KRW",
+"url": "https://kr.rs-online.com/web/p/motor-driver-ics/2334401",
+"date": "2026-10-09",
+"gbp": 9.1851
+}
+],
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 5000
+}
+},
+{
+"mpn": "ISL9V3040D3ST",
+"family": "ISL9V3040",
+"mfr": "onsemi",
+"desc": "EcoSPARK 400 V N-channel ignition IGBT, 300 mJ SCIS, logic-level gate, coil-on-plug driver",
+"category": "ic_soic",
+"pkg": "DPAK (TO-252)",
+"aecq": true,
+"gbp": {
+"q1k": 0.8082,
+"q10k": 0.6547,
+"q100k": 0.5304,
+"q200k": 0.4978,
+"q300k": 0.4797
+},
+"confidence": "distributor",
+"source": "Mouser $1.07 @1,000; Mouser $0.984 @2,500; Arrow $0.9126 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0914, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"IGN",
+"ECM"
+],
+"observations": [
+{
+"distributor": "Mouser",
+"qty": 1000,
+"price": 1.07,
+"currency": "USD",
+"url": "https://findchips.com/search/isl9v3040d3st",
+"date": "2026-10-09",
+"gbp": 0.8082
+},
+{
+"distributor": "Mouser",
+"qty": 2500,
+"price": 0.984,
+"currency": "USD",
+"url": "https://findchips.com/search/isl9v3040d3st",
+"date": "2026-10-09",
+"gbp": 0.7432
+},
+{
+"distributor": "Arrow",
+"qty": 2500,
+"price": 0.9126,
+"currency": "USD",
+"url": "https://findchips.com/search/isl9v3040d3st",
+"date": "2026-10-09",
+"gbp": 0.6893
+}
+],
+"volumeModel": {
+"b": 0.0914,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "BTS500101TADATMA2",
+"family": "BTS50010-1TAD",
+"mfr": "Infineon",
+"desc": "Power PROFET 12 V single smart high-side switch 1.0 mOhm (heater / high-current loads, glow-plug class)",
+"category": "ic_soic",
+"pkg": "TO-263-7",
+"aecq": true,
+"gbp": {
+"q1k": 3.2022,
+"q10k": 2.7218,
+"q100k": 2.3136,
+"q200k": 2.2031,
+"q300k": 2.1409
+},
+"confidence": "distributor",
+"source": "RS Components MYR 17.309 @1,000; LCSC $4.847 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"GPCU",
+"DCU"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 1000,
+"price": 17.309,
+"currency": "MYR",
+"url": "https://my.rs-online.com/web/p/power-switch-ics/2291772",
+"date": "2026-10-09",
+"gbp": 3.2022
+},
+{
+"distributor": "LCSC",
+"qty": 100,
+"price": 4.847,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C2150443.html",
+"date": "2026-10-09",
+"gbp": 3.6609
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "TLE98932QKW62SXUMA1",
+"family": "TLE9893-2QK",
+"mfr": "Infineon",
+"desc": "MOTIX 32-bit Arm Cortex-M3 BLDC MCU with integrated 3-phase gate driver and LIN, 248 kB flash",
+"category": "ic_tqfp",
+"pkg": "LQFP-64",
+"aecq": true,
+"gbp": {
+"q1k": 3.9458,
+"q10k": 3.6708,
+"q100k": 3.4149,
+"q200k": 3.3414,
+"q300k": 3.2991
+},
+"confidence": "distributor",
+"source": "Digi-Key $5.33906 @500; Digi-Key $5.12 @1,900; RS Components £3.63 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0314, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"FPC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 500,
+"price": 5.33906,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE98932QKW62SXUMA1/20841977",
+"date": "2026-10-09",
+"gbp": 4.0326
+},
+{
+"distributor": "Digi-Key",
+"qty": 1900,
+"price": 5.12,
+"currency": "USD",
+"url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLE98932QKW62SXUMA1/20841977",
+"date": "2026-10-09",
+"gbp": 3.8671
+},
+{
+"distributor": "RS Components",
+"qty": 1000,
+"price": 3.63,
+"currency": "GBP",
+"url": "https://uk.rs-online.com/web/p/microcontrollers/0348984",
+"date": "2026-10-09",
+"gbp": 3.63
+}
+],
+"volumeModel": {
+"b": 0.0314,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1900
+}
+},
+{
+"mpn": "S912ZVML12AMKH",
+"family": "S12ZVML128",
+"mfr": "NXP",
+"desc": "S12 MagniV 16-bit MCU with integrated 3-phase gate driver and LIN PHY, 128 kB flash (S12ZVM-EFP fuel-pump reference design)",
+"category": "ic_tqfp",
+"pkg": "LQFP-64 EP",
+"aecq": true,
+"gbp": {
+"q1k": 3.6914,
+"q10k": 3.2365,
+"q100k": 2.8376,
+"q200k": 2.7274,
+"q300k": 2.665
+},
+"confidence": "distributor",
+"source": "Avnet $4.95 @800; Avnet $4.225 @12,800 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0571, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"FPC"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 800,
+"price": 4.95,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/s912zvml12amkh/evolve-52749808",
+"date": "2026-10-09",
+"gbp": 3.7387
+},
+{
+"distributor": "Avnet",
+"qty": 12800,
+"price": 4.225,
+"currency": "USD",
+"url": "https://www.avnet.com/americas/product/nxp/s912zvml12amkh/evolve-52749808",
+"date": "2026-10-09",
+"gbp": 3.1911
+}
+],
+"volumeModel": {
+"b": 0.0571,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 12800
+}
+},
+{
+"mpn": "BUK7J1R4-40HX",
+"family": "BUK7J1R4-40H",
+"mfr": "Nexperia",
+"desc": "40 V N-channel MOSFET 1.4 mOhm, LFPAK56E, AEC-Q101 (fuel-pump BLDC bridge)",
+"category": "ic_qfn",
+"pkg": "LFPAK56E (SOT1023)",
+"aecq": true,
+"gbp": {
+"q1k": 1.3057,
+"q10k": 1.1099,
+"q100k": 0.9434,
+"q200k": 0.8984,
+"q300k": 0.873
+},
+"confidence": "distributor",
+"source": "Digi-Key $1.68 @1,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"FPC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1500,
+"price": 1.68,
+"currency": "USD",
+"url": "https://punchouttest.digikey.com.mx/en/products/detail/nexperia-usa-inc/BUK7J1R4-40HX/7669958",
+"date": "2026-10-09",
+"gbp": 1.2689
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1500
+}
+},
+{
+"mpn": "TPIC8101DWR",
+"family": "TPIC8101",
+"mfr": "Texas Instruments",
+"desc": "Dual-channel engine knock / vibration sensor interface, SPI",
+"category": "ic_soic",
+"pkg": "SOIC-20",
+"aecq": true,
+"gbp": {
+"q1k": 2.3231,
+"q10k": 1.9746,
+"q100k": 1.6784,
+"q200k": 1.5983,
+"q300k": 1.5532
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.0757 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECM"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 3.0757,
+"currency": "USD",
+"url": "https://www.findchips.com/search/pic810",
+"date": "2026-10-09",
+"gbp": 2.3231
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "L9960TR",
+"family": "L9960",
+"mfr": "STMicroelectronics",
+"desc": "Automotive H-bridge for DC-motor actuators (electronic throttle / valves), PowerSSO-36",
+"category": "ic_soic",
+"pkg": "PowerSSO-36",
+"aecq": true,
+"gbp": {
+"q1k": 2.2401,
+"q10k": 1.9041,
+"q100k": 1.6185,
+"q200k": 1.5412,
+"q300k": 1.4977
+},
+"confidence": "distributor",
+"source": "Digi-Key $2.9659 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECM"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 2.9659,
+"currency": "USD",
+"url": "https://www.findchips.com/search/L9960",
+"date": "2026-10-09",
+"gbp": 2.2401
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "MC33FS6520LAER2",
+"family": "FS6520",
+"mfr": "NXP",
+"desc": "Safety system basis chip FS65 (buck VCORE, CAN FD + LIN), named on the MPC5777C engine-management evaluation system",
+"category": "ic_tqfp",
+"pkg": "LQFP-48 EP",
+"aecq": true,
+"gbp": {
+"q1k": 4.1983,
+"q10k": 3.5685,
+"q100k": 3.0332,
+"q200k": 2.8884,
+"q300k": 2.8069
+},
+"confidence": "distributor",
+"source": "Farnell $5.293 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"ECM"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 2000,
+"price": 5.293,
+"currency": "USD",
+"url": "https://il.farnell.com/nxp/mc33fs6520laer2/power-management-specialized-pmic/dp/4784773",
+"date": "2026-10-09",
+"gbp": 3.9978
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2000
+}
+},
+{
+"mpn": "MY9706",
+"family": "MY9706",
+"mfr": "Mysentech",
+"desc": "NOx-sensor signal-conditioning chip: pump-cell drive, 14-bit ADC, heater control, SPI",
+"category": "ic_soic",
+"pkg": "SSOP-24",
+"aecq": false,
+"gbp": {
+"q1k": 2.709,
+"q10k": 2.3026,
+"q100k": 1.9572,
+"q200k": 1.8638,
+"q300k": 1.8112
+},
+"confidence": "distributor",
+"source": "LCSC $4.1756 @116 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"NOX"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 116,
+"price": 4.1756,
+"currency": "USD",
+"url": "https://lcsc.com/product-detail/Gas-Sensors_Mysentech-MY9706_C3025193.html",
+"date": "2026-10-09",
+"gbp": 3.1538
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 116
+}
+},
+{
+"mpn": "SAK-TC1766-192F80HL BD",
+"family": "TC1766",
+"mfr": "Infineon",
+"desc": "TriCore 32-bit MCU 80 MHz, 1.5 MB flash (Bosch DCU17HD01 dosing control unit)",
+"category": "ic_tqfp",
+"pkg": "LQFP-176",
+"aecq": true,
+"gbp": {
+"q1k": 17.0325,
+"q10k": 16.0349,
+"q100k": 15.0956,
+"q200k": 14.8238,
+"q300k": 14.6671
+},
+"confidence": "distributor",
+"source": "LCSC $22.9642 @500; LCSC $22.5507 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0262, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. DISPUTED: LCSC reference prices with 0 units in stock (legacy AURIX TC1766).",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCU",
+"ECM"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 500,
+"price": 22.9642,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C538735.html",
+"date": "2026-10-09",
+"gbp": 17.3449
+},
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 22.5507,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-image/C538735.html",
+"date": "2026-10-09",
+"gbp": 17.0325
+}
+],
+"volumeModel": {
+"b": 0.0262,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "EZP-V80506MTS",
+"family": "EZPV",
+"mfr": "Panasonic",
+"desc": "DC-link PP film capacitor 50 uF 800 VDC, 105 C, AEC-Q200",
+"category": "through_hole",
+"pkg": "Radial molded 4-lead",
+"aecq": true,
+"gbp": {
+"q1k": 7.9449,
+"q10k": 6.7532,
+"q100k": 5.7402,
+"q200k": 5.4661,
+"q300k": 5.3119
+},
+"confidence": "distributor",
+"source": "Digi-Key $12.3752 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"TINV",
+"ECOMP"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 100,
+"price": 12.3752,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/EZP-V80506MTS/11687429",
+"date": "2026-10-09",
+"gbp": 9.347
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "B32032A4472M000",
+"family": "B32032",
+"mfr": "TDK",
+"desc": "Y2 safety film capacitor 4.7 nF, 1 kVDC / Y2, PP metallized, AEC-Q200",
+"category": "through_hole",
+"pkg": "Radial 15 mm pitch, 18 x 5 mm",
+"aecq": true,
+"gbp": {
+"q1k": 0.1784,
+"q10k": 0.1516,
+"q100k": 0.1289,
+"q200k": 0.1227,
+"q300k": 0.1192
+},
+"confidence": "distributor",
+"source": "Digi-Key €0.20778 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"TINV",
+"ECOMP",
+"PTC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 1000,
+"price": 0.20778,
+"currency": "EUR",
+"url": "https://www.digikey.nl/en/products/detail/tdk/B32032A4472M000/9599216",
+"date": "2026-10-09",
+"gbp": 0.1784
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "C1210X103JDGACAUTO",
+"family": "C1210X103JDGAC",
+"mfr": "KEMET",
+"desc": "MLCC 10 nF 1000 V C0G 5%, 1210, flexible termination, AEC-Q200 (HV snubber)",
+"category": "passive_1206",
+"pkg": "1210",
+"aecq": true,
+"gbp": {
+"q1k": 0.9683,
+"q10k": 0.8033,
+"q100k": 0.6665,
+"q200k": 0.63,
+"q300k": 0.6096
+},
+"confidence": "distributor",
+"source": "Farnell €1.35 @100; Farnell €1.12 @1,000; RS Components JPY 207 @800 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0811, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"TINV"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 100,
+"price": 1.35,
+"currency": "EUR",
+"url": "https://de.farnell.com/en-DE/kemet/c1210x103jdgacauto/cap-aec-q200-0-01uf-1kv-mlcc-1210/dp/3131570RL",
+"date": "2026-10-09",
+"gbp": 1.1588
+},
+{
+"distributor": "Farnell",
+"qty": 1000,
+"price": 1.12,
+"currency": "EUR",
+"url": "https://de.farnell.com/en-DE/kemet/c1210x103jdgacauto/cap-aec-q200-0-01uf-1kv-mlcc-1210/dp/3131570RL",
+"date": "2026-10-09",
+"gbp": 0.9614
+},
+{
+"distributor": "RS Components",
+"qty": 800,
+"price": 207,
+"currency": "JPY",
+"url": "https://jp.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1871468",
+"date": "2026-10-09",
+"gbp": 0.993
+}
+],
+"volumeModel": {
+"b": 0.0811,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "WSBS8518L0500JT",
+"family": "WSBS8518",
+"mfr": "Vishay Dale",
+"desc": "Battery shunt 50 uOhm 5% 36 W, Power Metal Strip, 8518",
+"category": "mechanical",
+"pkg": "8518 bolt/solder shunt",
+"aecq": true,
+"gbp": {
+"q1k": 4.8629,
+"q10k": 4.1335,
+"q100k": 3.5134,
+"q200k": 3.3457,
+"q300k": 3.2513
+},
+"confidence": "distributor",
+"source": "Digi-Key $6.46075 @952 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU",
+"BMS48",
+"IBS"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 952,
+"price": 6.46075,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/vishay-dale/WSBS8518L0500JT/6709526",
+"date": "2026-10-09",
+"gbp": 4.8798
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 952
+}
+},
+{
+"mpn": "CSS2H-3920R-1L00F",
+"family": "CSS2H-3920",
+"mfr": "Bourns",
+"desc": "Metal-element current-sense resistor 1 mOhm 1% 8 W, 3920, AEC-Q200",
+"category": "passive_1206",
+"pkg": "3920 (3921)",
+"aecq": true,
+"gbp": {
+"q1k": 0.4363,
+"q10k": 0.3709,
+"q100k": 0.3152,
+"q200k": 0.3002,
+"q300k": 0.2917
+},
+"confidence": "distributor",
+"source": "Farnell £0.424 @1,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"DCDC48",
+"BSG_INV",
+"BMS48"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 1500,
+"price": 0.424,
+"currency": "GBP",
+"url": "https://uk.farnell.com/bourns/css2h-3920r-1l00f/current-sense-res-0r001-1-8-w/dp/2576344",
+"date": "2026-10-09",
+"gbp": 0.424
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1500
+}
+},
+{
+"mpn": "HCTSM80201AAL-E",
+"family": "HCTSM8",
+"mfr": "Bourns",
+"desc": "AEC-Q200 SMD isolation transformer, HCT series, for push-pull isolated gate-drive / aux bias (SN6501 / SN6505)",
+"category": "transformer",
+"pkg": "SMD",
+"aecq": true,
+"gbp": {
+"q1k": 2.634,
+"q10k": 1.7403,
+"q100k": 1.1498,
+"q200k": 1.0149,
+"q300k": 0.9435
+},
+"confidence": "distributor",
+"source": "Master Electronics $3.8 @1,250; Master Electronics $2.56 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.18, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"TINV",
+"OBC",
+"DCDC_HV",
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "Master Electronics",
+"qty": 1250,
+"price": 3.8,
+"currency": "USD",
+"url": "https://masterelectronics.com/en/bourns/hctsm80201aale-53134481.html",
+"date": "2026-10-09",
+"gbp": 2.8701
+},
+{
+"distributor": "Master Electronics",
+"qty": 2500,
+"price": 2.56,
+"currency": "USD",
+"url": "https://masterelectronics.com/en/bourns/hctsm80201aale-53134481.html",
+"date": "2026-10-09",
+"gbp": 1.9336
+}
+],
+"volumeModel": {
+"b": 0.18,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 2500
+}
+},
+{
+"mpn": "IHLP6767GZER100M5A",
+"family": "IHLP-6767GZ-5A",
+"mfr": "Vishay Dale",
+"desc": "Power inductor 10 uH 20% 16 A, IHLP-6767GZ-5A (automotive grade), SMD 17 x 17 mm",
+"category": "passive_0805",
+"pkg": "SMD 6767",
+"aecq": true,
+"gbp": {
+"q1k": 1.1858,
+"q10k": 1.1325,
+"q100k": 1.0815,
+"q200k": 1.0666,
+"q300k": 1.058
+},
+"confidence": "distributor",
+"source": "Future Electronics $1.62 @200; Future Electronics $1.57 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC48",
+"DCDC_HV",
+"OBC",
+"BSG_INV"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 200,
+"price": 1.62,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/7144630",
+"date": "2026-10-09",
+"gbp": 1.2236
+},
+{
+"distributor": "Future Electronics",
+"qty": 1000,
+"price": 1.57,
+"currency": "USD",
+"url": "https://www.futureelectronics.com/p/7144630",
+"date": "2026-10-09",
+"gbp": 1.1858
+}
+],
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "ACM12V-701-2PL-TL00",
+"family": "ACM12V",
+"mfr": "TDK",
+"desc": "Common-mode choke 700 Ohm @100 MHz, 8 A, 80 VDC, 2-line, AEC-Q200 (DC power line)",
+"category": "transformer",
+"pkg": "SMD 12 x 11 x 6 mm",
+"aecq": true,
+"gbp": {
+"q1k": 0.7035,
+"q10k": 0.5979,
+"q100k": 0.5082,
+"q200k": 0.484,
+"q300k": 0.4703
+},
+"confidence": "distributor",
+"source": "Avnet $0.97806 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC48",
+"OBC",
+"DCDC_HV",
+"ECOMP"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 500,
+"price": 0.97806,
+"currency": "USD",
+"url": "https://www.avnet.com/apac/product/tdk/acm12v-701-2pl-tl00/arise-tdk-tdkacm12v-701-2pl/",
+"date": "2026-10-09",
+"gbp": 0.7387
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
+},
+{
+"mpn": "NVH4L022N120M3S",
+"family": "NVH4L022N120M3S",
+"mfr": "onsemi",
+"desc": "Automotive SiC MOSFET 1200 V 22 mOhm 68 A, M3S EliteSiC, TO-247-4L, AEC-Q101",
+"category": "through_hole",
+"pkg": "TO-247-4L",
+"aecq": true,
+"gbp": {
+"q1k": 11.4725,
+"q10k": 9.7516,
+"q100k": 8.2889,
+"q200k": 7.8931,
+"q300k": 7.6705
+},
+"confidence": "distributor",
+"source": "Future Electronics $16.07 @450 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"ECOMP"
+],
+"observations": [
+{
+"distributor": "Future Electronics",
+"qty": 450,
+"price": 16.07,
+"currency": "USD",
+"url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvh4l022n120m3s-onsemi-9191191",
+"date": "2026-10-09",
+"gbp": 12.1377
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 450
+}
+},
+{
+"mpn": "AIMZA75R016M1HXKSA1",
+"family": "AIMZA75R016M1H",
+"mfr": "Infineon",
+"desc": "Automotive CoolSiC MOSFET 750 V 16 mOhm 89 A, PG-TO247-4, AEC-Q101",
+"category": "through_hole",
+"pkg": "PG-TO247-4",
+"aecq": true,
+"gbp": {
+"q1k": 16.3366,
+"q10k": 13.8861,
+"q100k": 11.8032,
+"q200k": 11.2397,
+"q300k": 10.9226
+},
+"confidence": "distributor",
+"source": "RS Components €22.39 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"TINV",
+"ECOMP"
+],
+"observations": [
+{
+"distributor": "RS Components",
+"qty": 100,
+"price": 22.39,
+"currency": "EUR",
+"url": "https://ie.rs-online.com/web/p/mosfets/0348938",
+"date": "2026-10-09",
+"gbp": 19.2196
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "BUK9Y8R5-80EX",
+"family": "BUK9Y8R5-80E",
+"mfr": "Nexperia",
+"desc": "Automotive N-MOSFET 80 V 8.5 mOhm 100 A logic level, LFPAK56, AEC-Q101",
+"category": "ic_soic",
+"pkg": "LFPAK56 (SOT669)",
+"aecq": true,
+"gbp": {
+"q1k": 0.5373,
+"q10k": 0.5131,
+"q100k": 0.49,
+"q200k": 0.4833,
+"q300k": 0.4794
+},
+"confidence": "distributor",
+"source": "Avnet $0.6389 @1,500; Avnet $0.617 @12,000; Digi-Key $0.7724 @1,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"DCDC48",
+"BMS48",
+"BSG_INV",
+"PTC"
+],
+"observations": [
+{
+"distributor": "Avnet",
+"qty": 1500,
+"price": 0.6389,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/search/buk9y8r5-80ex",
+"date": "2026-10-09",
+"gbp": 0.4826
+},
+{
+"distributor": "Avnet",
+"qty": 12000,
+"price": 0.617,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/search/buk9y8r5-80ex",
+"date": "2026-10-09",
+"gbp": 0.466
+},
+{
+"distributor": "Digi-Key",
+"qty": 1500,
+"price": 0.7724,
+"currency": "USD",
+"url": "https://origin-www.findchips.com/search/buk9y8r5-80ex",
+"date": "2026-10-09",
+"gbp": 0.5834
+}
+],
+"volumeModel": {
+"b": 0.02,
+"basis": "slope from the part's own breaks (1 pair)",
+"derivedAbove": 12000
+}
+},
+{
+"mpn": "2103124-2",
+"family": "HVA 280",
+"mfr": "TE Connectivity",
+"desc": "HVA 280 automotive HV 2-position PCB header, 10.4 mm pitch, shrouded, through-hole",
+"category": "through_hole",
+"pkg": "THT header 2-pos",
+"aecq": false,
+"gbp": {
+"q1k": 4.726,
+"q10k": 4.0171,
+"q100k": 3.4145,
+"q200k": 3.2515,
+"q300k": 3.1598
+},
+"confidence": "distributor",
+"source": "Farnell £5.56 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"ECOMP",
+"PTC"
+],
+"observations": [
+{
+"distributor": "Farnell",
+"qty": 100,
+"price": 5.56,
+"currency": "GBP",
+"url": "https://uk.farnell.com/te-connectivity/2103124-2/automotive-housing-header-2pos/dp/3394011",
+"date": "2026-10-09",
+"gbp": 5.56
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
+},
+{
+"mpn": "AMC1350QDWVRQ1",
+"family": "AMC1350-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive reinforced isolated amplifier, +/-5 V input, differential output (HV voltage sensing)",
+"category": "ic_soic",
+"pkg": "SOIC-8 (DWV)",
+"aecq": true,
+"gbp": {
+"q1k": 3.0526,
+"q10k": 2.5947,
+"q100k": 2.2055,
+"q200k": 2.1002,
+"q300k": 2.041
+},
+"confidence": "distributor",
+"source": "LCSC $4.0416 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"OBC",
+"DCDC_HV",
+"TINV",
+"BMS_BMU"
+],
+"observations": [
+{
+"distributor": "LCSC",
+"qty": 1000,
+"price": 4.0416,
+"currency": "USD",
+"url": "https://www.lcsc.com/product-detail/C5214206.html",
+"date": "2026-10-09",
+"gbp": 3.0526
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
+},
+{
+"mpn": "TPSI2072QDWQRQ1",
+"family": "TPSI2072-Q1",
+"mfr": "Texas Instruments",
+"desc": "Automotive 600 V 50 mA dual-channel isolated solid-state relay (insulation-resistance monitoring)",
+"category": "ic_soic",
+"pkg": "SOIC-11 (DWQ)",
+"aecq": true,
+"gbp": {
+"q1k": 2.4716,
+"q10k": 2.1009,
+"q100k": 1.7857,
+"q200k": 1.7005,
+"q300k": 1.6525
+},
+"confidence": "distributor",
+"source": "Digi-Key $3.11609 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+"asOf": "2026-10-09",
+"ecuRoles": [
+"BMS_BMU",
+"OBC"
+],
+"observations": [
+{
+"distributor": "Digi-Key",
+"qty": 2000,
+"price": 3.11609,
+"currency": "USD",
+"url": "https://www.digikey.com/en/products/detail/texas-instruments/TPSI2072QDWQRQ1/21298724",
+"date": "2026-10-09",
+"gbp": 2.3536
+}
+],
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 2000
+}
 }
 ]
 }

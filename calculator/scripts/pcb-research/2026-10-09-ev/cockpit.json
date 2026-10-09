@@ -431,7 +431,7 @@
   },
   {
    "mpn": "AG550Q",
-   "family": "AG55xQ",
+   "family": "AG550Q",
    "mfr": "Quectel",
    "desc": "5G NR automotive module (Snapdragon SA515M), C-V2X + GNSS",
    "category": "power_module",

@@ -188,7 +188,7 @@
     },
     {
       "mpn": "F28P659DK8PTPQ1",
-      "family": "TMS320F28P65x-Q1",
+      "family": "F28P659",
       "mfr": "Texas Instruments",
       "desc": "C2000 TMS320F28P659DK-Q1 dual C28x + CLA real-time MCU (alternative controller in TIDM-02013; F28P650DK in PMP41139)",
       "category": "ic_tqfp",

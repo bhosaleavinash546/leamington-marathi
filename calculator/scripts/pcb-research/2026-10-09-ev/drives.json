@@ -51,7 +51,7 @@
     },
     {
       "mpn": "F29H859TU-Q1",
-      "family": "F29H85x",
+      "family": "F29H859",
       "mfr": "Texas Instruments",
       "desc": "C2000 F29x C29 real-time MCU, automotive (TIDM-02014 rev A)",
       "category": "ic_bga",
@@ -81,7 +81,7 @@
     },
     {
       "mpn": "TPS653860-Q1",
-      "family": "TPS65386x-Q1",
+      "family": "TPS653860-Q1",
       "mfr": "Texas Instruments",
       "desc": "Functional-safety PMIC with buck/boost pre-regulator, ASIL D (TIDM-02014 rev A, with F29H859TU-Q1)",
       "category": "ic_qfn",
@@ -135,7 +135,7 @@
     },
     {
       "mpn": "1EDI3031ASXUMA1",
-      "family": "1EDI303xAS",
+      "family": "1EDI3031AS",
       "mfr": "Infineon",
       "desc": "EiceDRIVER single-channel isolated SiC gate driver 20 A, DESAT + OCP, traction inverter",
       "category": "ic_soic",
@@ -167,7 +167,7 @@
     },
     {
       "mpn": "1EDI3025ASXUMA1",
-      "family": "1EDI302xAS",
+      "family": "1EDI3025AS",
       "mfr": "Infineon",
       "desc": "EiceDRIVER single-channel isolated IGBT gate driver, traction inverter (1EDI302xAS IGBT series)",
       "category": "ic_soic",
@@ -199,7 +199,7 @@
     },
     {
       "mpn": "1EDI3035ASXUMA1",
-      "family": "1EDI303xAS",
+      "family": "1EDI3031AS",
       "mfr": "Infineon",
       "desc": "EiceDRIVER single-channel isolated SiC gate driver 20 A, inverters >300 kW (library row 1EDI3026AS/1EDI3035AS)",
       "category": "ic_soic",
@@ -646,7 +646,7 @@
     },
     {
       "mpn": "TLE9879QXA40XUMA2",
-      "family": "TLE987x",
+      "family": "TLE9879",
       "mfr": "Infineon",
       "desc": "MOTIX 3-phase BLDC motor-control SoC (Cortex-M3 + bridge driver) - pumps, fans (pairs with TLE9140 for 48 V)",
       "category": "ic_qfn",
