@@ -2,6 +2,7 @@
  * PCB Image → BOM → Cost review (Oct 2026) — docs/pcb/pcb-review-2026-10.md.
  * Each test pins one defect found by the review so it cannot return.
  */
+import { classDefaultPrice, classRange } from '../server/utils/pcb-class-pricing.js';
 import { describe, it, expect } from 'vitest';
 import { groundAndSplit, offlineCataloguePrices } from '../server/utils/pcb-bom-grounding.js';
 
@@ -34,10 +35,11 @@ describe('offline catalogue is not "live"', () => {
 });
 
 describe('arithmetic', () => {
-  it('cheap passives are not rounded away: 200 × £0.002 lines sum to £0.40, not £0', () => {
+  it('cheap passives are not rounded away: 200 single-resistor lines sum to 200 × the table point, not £0', () => {
     const bom = Array.from({ length: 200 }, (_, i) => ({ refDes: `R${i + 1}`, partNumber: '', componentType: 'passive_0402', description: 'resistor', qty: 1, unitPriceGBP: 0.002 }));
     const g = groundAndSplit(bom, []);
-    expect(g.bomTotal).toBeCloseTo(0.4, 2);
+    expect(g.bomTotal).toBeCloseTo(200 * classDefaultPrice(classRange({ componentType: 'passive_0402', description: 'resistor' })), 1);
+    expect(g.bomTotal).toBeGreaterThan(0.1);
   });
   it('the class range follows the order volume (a 100-board order is not clamped to 100K prices)', () => {
     const line = { refDes: 'L1', partNumber: '', componentType: 'inductor_smd', description: 'power inductor', qty: 1, unitPriceGBP: 0 };

@@ -54,7 +54,7 @@ describe('groundAndSplit — end-to-end on the ECU slice', () => {
     expect(u2.unitPriceGBP).toBeCloseTo(cataloguePriceAt('TJA1145', 10000)!, 4);   // the catalogue's 10k price, whatever it is today
   });
   it('caps the two unconfirmed high-value guesses', () => {
-    expect(out.capped).toBe(2);                             // U1 + J1
+    expect(out.capped).toBe(3);                             // U1 + J1 + the passives the model over-priced (table point, F2)
     const u1 = out.bom.find(l => l.refDes === 'U1')!;
     expect(u1.unitPriceGBP).toBe(18.00);
     expect(u1.needsVerification).toBe(true);

@@ -51,3 +51,39 @@ describe('F1 — a part number counts only with evidence', () => {
     expect(withheld).toEqual(['U5 TDA4VH']);
   });
 });
+
+import { capUnconfirmedPrices } from '../server/utils/pcb-bom-grounding.js';
+import { classMedianCap } from '../server/utils/pcb-price-catalogue.js';
+
+describe('F2 / F12 / F15 — the model\'s price estimate never chooses the price', () => {
+  it('random model prices and automotive flags leave the headline unchanged', async () => {
+    const base = await radar();
+    let seed = 7;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < 4; i++) {
+      const r = await radar(a => a.bom.forEach((l: any) => { l.unitPriceGBP = rnd() < 0.5 ? rnd() * 1e6 : rnd() * 1e-3; l.automotive = rnd() < 0.5; }));
+      expect(r.total).toBe(base.total);
+    }
+  });
+
+  it('an unread IC the model calls an "ADAS radar processor" is bounded by the unidentified-BGA median', () => {
+    const { bom } = capUnconfirmedPrices([{ refDes: 'U2', componentType: 'ic_bga', description: 'ADAS radar processor', partNumber: '', qty: 1, unitPriceGBP: 400 }]);
+    expect(bom[0].unitPriceGBP).toBeLessThanOrEqual(classMedianCap('ic_bga', Infinity));   // was the £60–400 row
+  });
+
+  it('an imager takes the imager rule whatever component type the model gave it', () => {
+    const at = (ct: string) => capUnconfirmedPrices([{ refDes: 'U1', componentType: ct, description: 'AR0233AT image sensor', partNumber: '', qty: 1, unitPriceGBP: 20 }], undefined, { automotive: true }).bom[0];
+    const bga = at('ic_bga'), qfn = at('ic_qfn'), soic = at('ic_soic');
+    expect(qfn.unitPriceGBP).toBe(bga.unitPriceGBP);                 // was £3.52 v £13.20
+    expect(soic.unitPriceGBP).toBe(bga.unitPriceGBP);
+    expect(String(bga.priceBasis)).toMatch(/imager/);
+  });
+
+  it('a named imager range (Sony IMX) does not override the imager rule', () => {
+    const named = () => ({ lo: 8, hi: 35, label: 'Sony IMX image sensor' });
+    const { bom } = capUnconfirmedPrices([{ refDes: 'U1', componentType: 'ic_bga', description: 'Sony IMX390', partNumber: 'IMX390', ocrExtracted: true, lineConf: 1, qty: 1, unitPriceGBP: 30 }], named, { automotive: true });
+    expect(bom[0].priceSource).toBe('class-range');
+    expect(String(bom[0].priceBasis)).toMatch(/imager/);
+    expect(bom[0].unitPriceGBP).toBeLessThanOrEqual(15);
+  });
+});

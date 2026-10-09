@@ -29,16 +29,19 @@ describe('class price table — the AI no longer sets a price', () => {
     expect(classRange({ componentType: 'ic_soic', description: 'Automotive op-amp/LDO regulator IC' }).label).toMatch(/LDO/);
     expect(classRange({ componentType: 'ic_qfn', description: '77/79GHz FMCW radar transceiver MMIC' }).label).toMatch(/RF/);
   });
-  it('the AI estimate only chooses a point inside the range', () => {
+  it('the AI estimate never chooses the price: every line takes the table point (pipeline review F2)', () => {
     const { bom } = capUnconfirmedPrices([
       { refDes: 'R1-R70', componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor', qty: 70, unitPriceGBP: 0.0004 },
       { refDes: 'C1-C10', componentType: 'passive_0603', description: 'Automotive AEC-Q200 X7R MLCC', qty: 10, unitPriceGBP: 0.5 },
       { refDes: 'C11-C20', componentType: 'passive_0603', description: 'Automotive AEC-Q200 X7R MLCC', qty: 10, unitPriceGBP: 0.03 },
     ], undefined, { automotive: true });
-    expect(bom[0].unitPriceGBP).toBe(0.003);          // raised to the floor
+    const res = classDefaultPrice(classRange({ componentType: 'passive_0402', description: 'resistor', automotive: true }));
+    const cap = classDefaultPrice(classRange({ componentType: 'passive_0603', description: 'X7R MLCC', automotive: true }));
+    expect(bom[0].unitPriceGBP).toBeCloseTo(res, 5);  // £0.0004 estimate: not used
     expect(bom[0].priceRaised).toBe(true);
-    expect(bom[1].unitPriceGBP).toBe(0.06);           // cut to the ceiling
-    expect(bom[2].unitPriceGBP).toBe(0.03);           // in range: kept
+    expect(bom[1].unitPriceGBP).toBeCloseTo(cap, 5);  // £0.50 estimate: not used
+    expect(bom[2].unitPriceGBP).toBeCloseTo(cap, 5);  // £0.03 estimate: not used either — same part, same price
+    expect(bom.map(l => l.aiEstimatedPriceGBP)).toEqual([0.0004, 0.5, 0.03]);   // kept for audit
     expect(bom.every(l => l.priceSource === 'class-range')).toBe(true);
     expect(bom.every(l => String(l.priceNote).includes('table range'))).toBe(true);
   });
@@ -53,7 +56,7 @@ describe('class price table — the AI no longer sets a price', () => {
       { refDes: 'R1-R70', componentType: 'passive_0402', description: 'resistor', qty: 70, unitPriceGBP: 0.005, lineConf: 0.9 },
       { refDes: 'U9', componentType: 'ic_qfn', description: 'Unidentified automotive QFN IC', qty: 1, unitPriceGBP: 3.2, lineConf: 0.5 },
     ], []);
-    expect(out.confirmedTotal).toBeCloseTo(0.21, 2);   // 70 × £0.003 (consumer ceiling)
+    expect(out.confirmedTotal).toBeCloseTo(70 * classDefaultPrice(classRange({ componentType: 'passive_0402', description: 'resistor' })), 2);
     expect(out.unverifiedTotal).toBeGreaterThan(1);
   });
   it('maps BOM-file component types onto the table', () => {

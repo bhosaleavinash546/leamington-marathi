@@ -233,11 +233,17 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     const identityConfirmed = (line.ocrExtracted === true && num(line.lineConf) >= 0.95)
       || ((line.bomSource === 'file' || line.bomSource === 'image') && pn.length > 0);
     const range0 = knownRange?.(line) ?? null;
-    const range = range0 && (identityConfirmed || range0.generic) ? range0 : null;
+    // An image sensor is priced by the imager volume rule whoever names it (decision of 9 Oct 2026): a named-part range
+    // (Sony IMX, OmniVision OX) or the model's component type ("ic_qfn") used to route it elsewhere — AR0233AT came
+    // out £13.20 as a BGA and £3.52 as a QFN, an OCR-read IMX390 £30 (pipeline review F12).
+    const imager = line.imagerVolumeRule === true || IMAGER_RE.test(`${String(line.description ?? '')} ${String(line.catalogueDesc ?? '')}`)
+      || (range0 != null && IMAGER_RE.test(range0.label));
+    const range = range0 && !imager && (identityConfirmed || range0.generic) ? range0 : null;
     if (range) {
-      // No estimate at all (a BOM-file line): the lower-half midpoint, not the floor.
-      const est = unit > 0 ? unit : range.lo + (range.hi - range.lo) * 0.25;
-      const inRange = Math.min(Math.max(est, range.lo), range.hi);
+      // The point inside the range is the TOOL's — its lower-half midpoint — never the model's estimate, which used
+      // to choose it (pipeline review F2: one unread "ADAS processor" line moved the board from £95 to £384 with the
+      // model's number alone). The estimate is kept for audit only.
+      const inRange = round(range.lo + (range.hi - range.lo) * 0.25, 4);
       if (Math.abs(inRange - unit) > 1e-6) capped++;
       return {
         ...line,
@@ -247,7 +253,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
         priceSource: range.generic ? 'function-range' : 'known-range',
         priceCapped: inRange < unit - 1e-6,
         priceRaised: inRange > unit + 1e-6,
-        priceNote: `${range.generic ? 'Part not read; ' : line.bomSource === 'file' ? 'Named in your BOM: ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume${unit > 0 ? '' : '; no estimate — lower-half midpoint'} — confirm with a quote`
+        priceNote: `${range.generic ? 'Part not read; ' : line.bomSource === 'file' || line.bomSource === 'image' ? 'Named in your BOM: ' : 'OCR-confirmed '}${range.label}; tool range £${range.lo}–${range.hi} at this volume, priced at its lower-half midpoint${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''} — confirm with a quote`
           + (line.priceNote ? ` · ${String(line.priceNote)}` : ''),
         needsVerification: true,
       };
@@ -268,16 +274,23 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     const k = num(line.volumeMultiplier) > 0 ? num(line.volumeMultiplier) : opts.volumeMultiplier && opts.volumeMultiplier > 0 ? opts.volumeMultiplier : 1;
     // A catalogue-identified imager carries the catalogue's description, so the imager class row applies even when the
     // BOM line names only the part number ("AR0233AT").
-    const cls0 = classRange({ ...line, description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}${line.imagerVolumeRule === true ? ` ${String(line.catalogueDesc ?? 'image sensor')}` : ''}` }, opts.automotive === true);
+    const cls0 = classRange({ ...line, ...(imager ? { componentType: 'ic_bga' } : {}),
+      description: `${String(line.description ?? '')} ${String(line.partNumber ?? '')}${imager ? ' image sensor' : ''}${line.imagerVolumeRule === true ? ` ${String(line.catalogueDesc ?? '')}` : ''}` }, opts.automotive === true);
     const cls = k === 1 ? cls0 : { ...cls0, lo: round(cls0.lo * k, 5), hi: round(cls0.hi * k, 5) };
     const dCap = descriptionCap(String(line.description ?? ''));
     // The class median is a guard for an UNIDENTIFIED part ("some BGA"); a line
     // whose description names its kind (inductor, PMIC, electrolytic) is bounded
     // by that kind's own range instead.
-    const unidentified = /\.any(\.|$)/.test(cls.key) || /\b(class|est|unknown|generic)\b/i.test(pn);
-    const ceiling = Math.min(unidentified ? classMedianCap(String(line.componentType ?? ''), Infinity) * k : Infinity, cls.hi, dCap != null ? dCap * k : Infinity);
+    // An IC nobody read (no evidenced part number) is unidentified whatever the model called it: "ADAS radar processor"
+    // on an unread BGA used to select the £60–400 row (pipeline review F2) — the description is a guess, so the class
+    // median bounds it. Passives, connectors and other kinds keep their kind's own row.
+    const unidentified = /\.any(\.|$)/.test(cls.key) || /\b(class|est|unknown|generic)\b/i.test(pn) || (pn.length === 0 && /^ic_/.test(cls.key));
+    // The median of the TABLE class the line was priced in (an imager is a BGA-class part whatever package the model named).
+    const ceiling = Math.min(unidentified ? classMedianCap(cls.key.split('.')[0], Infinity) * k : Infinity, cls.hi, dCap != null ? dCap * k : Infinity);
     const lo = Math.min(cls.lo, ceiling);
-    const priced = unit > 0 ? Math.min(Math.max(unit, lo), ceiling) : Math.min(classDefaultPrice(cls0) * k, ceiling);
+    // The TOOL's point in the range (lower-half midpoint, under the ceiling) — never the model's estimate, which used to
+    // choose it: on the radar fixture the model's numbers alone moved the board £57.54 → £90.40 (pipeline review F2).
+    const priced = Math.max(lo, Math.min(classDefaultPrice(cls0) * k, ceiling));
     const lowered = priced < unit - 1e-6;
     // Counted as a cap only when it moved the price by a margin (a 0402 guessed
     // £0.001 over its ceiling is a rounding, not a caught misread).
@@ -292,7 +305,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
       priceBasis: cls.key,
       priceCapped: lowered,
       priceRaised: priced > unit + 1e-6 && unit > 0,
-      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}${unit > 0 ? `; AI estimate £${round(unit, 4)}` : '; no estimate — lower-half midpoint'}`
+      priceNote: `${cls.label}: table range £${round(cls.lo, 4)}–£${round(cls.hi, 4)} at this volume${ceiling < cls.hi ? `, ceiling £${round(ceiling, 3)} (unidentified part)` : ''}; priced at the lower-half midpoint${unit > 0 ? ` (AI estimate £${round(unit, 4)} not used)` : ''}`
         + (line.imagerVolumeRule === true && line.distributorListingGBP != null
           ? `; distributor listing £${round(num(line.distributorListingGBP), 2)} shown for reference only — imagers are priced at automotive volume`
           : ''),
