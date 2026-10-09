@@ -179,15 +179,15 @@ export function applyFabMeasurement(spec: Record<string, unknown>, m: FabMeasure
   const changed: string[] = [];
   if (m.widthMm && m.heightMm) {
     changed.push(`size ${m.widthMm} × ${m.heightMm} mm (was ${spec.widthMm} × ${spec.heightMm})`);
-    spec.widthMm = m.widthMm; spec.heightMm = m.heightMm; spec.dimensionsSource = 'measured';
+    spec.widthMm = m.widthMm; spec.heightMm = m.heightMm; spec.dimensionsSource = 'measured'; spec.dimensionsEvidence = 'fab-data';
   }
   if (m.layers != null && m.layers >= 2) {
     changed.push(`${m.layers} copper layers (was ${spec.estimatedLayers})`);
-    spec.estimatedLayers = m.layers; spec.layersSource = 'measured';
+    spec.estimatedLayers = m.layers; spec.layersSource = 'measured'; spec.layersEvidence = 'fab-data';
   }
   if (m.throughVias != null) {
     changed.push(`${m.throughVias} through vias ≤ ${VIA_MAX_MM} mm (was ${spec.throughVias}), ${m.throughHoles} larger holes`);
-    spec.throughVias = m.throughVias; spec.viasSource = 'measured';
+    spec.throughVias = m.throughVias; spec.viasSource = 'measured'; spec.viasEvidence = 'fab-data';
     if (m.blindVias > 0) { spec.blindVias = m.blindVias; changed.push(`${m.blindVias} blind/buried vias`); }
   }
   return changed;

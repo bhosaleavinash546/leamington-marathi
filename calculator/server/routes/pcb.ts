@@ -30,7 +30,7 @@ import { measureFabData, applyFabMeasurement, type FabMeasurement } from '../uti
 import { readBomImage, isBomImage } from '../utils/pcb-bom-image.js';
 import { bomFromFile } from '../utils/pcb-bom-truth.js';
 import { pcbAnalysisOutputConfig, isOutputFormatRejection } from '../utils/pcb-analysis-schema.js';
-import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec } from '../utils/pcb-boardspec-stabilise.js';
+import { stabiliseBoardSpec, stableFabMid, copperLayersFromSpec, weightKgFromSpec, gateBoardEvidence } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
@@ -307,7 +307,32 @@ export function derivePlacementsFromBOM(bom: Array<Record<string, unknown>>, ass
     assemblyData.smtPlacements = smt;
   }
   if (bga > 0) assemblyData.bgaCount = Math.max(bga, Number(assemblyData.bgaCount) || 0);
-  if (th > 0 && !(Number(assemblyData.throughHoleJoints) > 0)) assemblyData.throughHoleJoints = th * 2;
+  // Through-hole and hand-soldered joints are counted from the BOM lines — qty × the pin count the package or
+  // description states, else 2 — never taken from the model's own total, which had no upper bound (5,000 joints added
+  // £63 to the radar board, pipeline review F4). The model's figures are kept for the record.
+  const pinsOf = (l: Record<string, unknown>) => {
+    const t = `${l.pkg ?? ''} ${l.description ?? ''} ${l.value ?? ''}`;
+    const m = /(\d{1,3})\s*[- ]?(?:pins?|ways?|pos(?:ition)?s?)\b/i.exec(t) ?? /\b(?:P?DIP|SIP|HDR)[- ]?(\d{1,3})\b/i.exec(t);
+    const p = m ? Number(m[1]) : 2;
+    return p >= 1 && p <= 200 ? p : 2;
+  };
+  let thJ = 0, manJ = 0;
+  for (const l of bom) {
+    if (l.notFitted === true || l.priceSource === 'not-fitted' || isNotFitted(l)) continue;
+    const ct = String(l.componentType ?? '');
+    const q = Math.max(0, Number(l.qty) || 0);
+    if (ct === 'through_hole') thJ += q * pinsOf(l);
+    else if (ct === 'manual_solder') manJ += q * pinsOf(l);
+  }
+  for (const [k, v, label] of [['throughHoleJoints', thJ, 'through-hole'], ['manualJoints', manJ, 'hand-soldered']] as const) {
+    const ai = Number(assemblyData[k]) || 0;
+    if (ai !== v) {
+      if (Math.abs(ai - v) > Math.max(2, 0.1 * Math.max(ai, v))) out.push({ code: 'JOINTS_FROM_BOM', severity: 'warn',
+        message: `${label} joints set to ${v} from the BOM lines (qty × stated pins, else 2; the AI reported ${ai}).` });
+      assemblyData[k === 'throughHoleJoints' ? 'aiThroughHoleJoints' : 'aiManualJoints'] = ai;
+      assemblyData[k] = v;
+    }
+  }
   return out;
 }
 
@@ -1622,6 +1647,8 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // 4. Placements from the list BEFORE the board is sized from them — the fab
     //    stabiliser and the assembly cost used to read two different counts.
     warnings.push(...derivePlacementsFromBOM(prepared.bom, assemblyData));
+    // A board figure the model says it read stands only with evidence (fab data, the user, or OCR board text).
+    for (const m of gateBoardEvidence(boardSpec, ocrResult.boardText ?? [])) warnings.push({ code: 'BOARD_FIGURE_NOT_EVIDENCED', severity: 'warn', message: m });
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     {
       const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', auto);

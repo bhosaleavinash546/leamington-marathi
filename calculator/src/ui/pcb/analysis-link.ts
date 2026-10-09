@@ -69,9 +69,9 @@ export function boardSpecPatch(edited: string[], doc: Document = document): { sp
     if (def.kind === 'num') { const x = Number(v); if (Number.isFinite(x) && x >= 0) spec[def.key] = x; }
     else if (def.kind === 'bool') spec[def.key] = v === 'true';
     else spec[def.key] = v;
-    if (def.key === 'widthMm' || def.key === 'heightMm') spec.dimensionsSource = 'measured';
-    if (def.key === 'estimatedLayers') spec.layersSource = 'measured';
-    if (def.key === 'throughVias') spec.viasSource = 'measured';
+    if (def.key === 'widthMm' || def.key === 'heightMm') { spec.dimensionsSource = 'measured'; spec.dimensionsEvidence = 'user'; }
+    if (def.key === 'estimatedLayers') { spec.layersSource = 'measured'; spec.layersEvidence = 'user'; }
+    if (def.key === 'throughVias') { spec.viasSource = 'measured'; spec.viasEvidence = 'user'; }
     if (def.key === 'qualityGrade') domain = /^auto/i.test(v) ? 'automotive_adas' : 'general';
     if (def.key === 'technologyType') notes.push('PCB technology is derived from the layers, vias and HDI structure — the price follows those fields, so edit them to change it.');
   }

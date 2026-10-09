@@ -75,6 +75,52 @@ export function weightKgFromSpec(spec: Record<string, unknown>): number | undefi
   return g > 0 ? g / 1000 : undefined;
 }
 
+/** Numbers printed in the board text the OCR stage read ("20.0 x 20.0 mm", "70um", "12 g"). */
+function boardTextNumbers(boardText: string[]): number[] {
+  return boardText.flatMap(t => [...String(t).replace(/,(?=\d{3}\b)/g, '').matchAll(/\d+(?:\.\d+)?/g)].map(m => Number(m[0])));
+}
+
+/**
+ * A board figure the MODEL says it read is used only with evidence (pipeline review F3/F4, 9 Oct 2026): the fab files
+ * measured it (`…Evidence: 'fab-data'`), the user typed it (`'user'`), or the numbers appear in the board text the OCR
+ * stage read (`'board-text'`, stamped here so a later re-price keeps it). The model's own "measured" switched the size
+ * clamp off — a "measured" 240 × 240 mm moved the radar board £53 → £96 — and its copper and weight figures went
+ * straight into fab and freight. Without evidence the size is an estimate, copper is the standard 1 oz and the
+ * weight is computed. Returns the warnings.
+ */
+export function gateBoardEvidence(spec: Record<string, unknown>, boardText: string[]): string[] {
+  const out: string[] = [];
+  const nums = boardTextNumbers(boardText);
+  const seen = (v: number, tol = 0.5) => v > 0 && nums.some(x => Math.abs(x - v) <= tol);
+  if (String(spec.dimensionsSource ?? '') === 'measured' && !spec.dimensionsEvidence) {
+    const w = n(spec.widthMm), h = n(spec.heightMm);
+    if (seen(w) && seen(h)) spec.dimensionsEvidence = 'board-text';
+    else {
+      spec.dimensionsSource = 'estimated'; spec.dimensionsClaimed = 'measured';
+      out.push(`The AI said the board size (${w} × ${h} mm) was measured, but no board text the OCR stage read shows it — costed as an estimate (attach the fab files or type the size to fix it).`);
+    }
+  }
+  for (const [src, ev] of [['layersSource', 'layersEvidence'], ['viasSource', 'viasEvidence']] as const) {
+    if (String(spec[src] ?? '') === 'measured' && !spec[ev]) { delete spec[src]; out.push(`A ${src === 'layersSource' ? 'layer count' : 'via count'} marked measured had no fab data or user entry behind it — costed as an estimate.`); }
+  }
+  const copper = Array.isArray(spec.copperOzByLayer) ? (spec.copperOzByLayer as unknown[]).map(v => n(v)).filter(v => v > 0) : [];
+  if ((copper.length || n(spec.copperWeightOz, 1) > 1) && !spec.copperEvidence) {
+    const vals = [...new Set(copper.length ? copper : [n(spec.copperWeightOz, 1)])];
+    const unit = boardText.some(t => /\d\s*(oz|µm|um)\b|micron/i.test(String(t)));
+    if (unit && vals.every(v => seen(v, 0.05) || seen(v * 35, 2))) spec.copperEvidence = 'board-text';
+    else {
+      spec.aiCopperOzByLayer = spec.copperOzByLayer; spec.aiCopperWeightOz = spec.copperWeightOz;
+      spec.copperOzByLayer = []; spec.copperWeightOz = 1;
+      out.push(`Copper weights from the AI (${vals.join(' / ')} oz) are not shown in any board text the OCR stage read — costed at 1 oz.`);
+    }
+  }
+  if (n(spec.boardWeightG) > 0 && !spec.weightEvidence) {
+    if (seen(n(spec.boardWeightG), 0.5)) spec.weightEvidence = 'board-text';
+    else { spec.aiBoardWeightG = spec.boardWeightG; spec.boardWeightG = 0; out.push('A board weight from the AI is not shown in any board text — the weight is computed from the board.'); }
+  }
+  return out;
+}
+
 /**
  * Stabilise the fab-driving fields of a board spec IN PLACE. Returns the same
  * object for convenience. `domain === 'automotive_adas'` nudges laminate to high-Tg.
@@ -130,8 +176,14 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   spec.throughVias = String(spec.viasSource ?? '') === 'measured'
     ? Math.max(0, Math.round(n(spec.throughVias)))
     : Math.round(Math.min(Math.max(n(spec.throughVias), expThrough * 0.3), expThrough * 4));
-  spec.microVias = Math.max(0, Math.round(n(spec.microVias)));
-  spec.blindVias = Math.max(0, Math.round(n(spec.blindVias)));
+  // Blind and micro vias have no density check of their own and no upper bound (5,000 micro vias added £364 to the
+  // radar board, pipeline review F4). Measured (drill file / user) counts stand; otherwise they exist only on an HDI
+  // build and are bounded by the board's through-via norm — a CostVision engineering bound, stated, not a source.
+  const viasMeasured = String(spec.viasSource ?? '') === 'measured';
+  const hdi = String(spec.hdiStructure ?? 'none').toLowerCase() !== 'none' && String(spec.hdiStructure ?? '') !== '';
+  const bound = (v: unknown) => viasMeasured ? Math.max(0, Math.round(n(v))) : hdi ? Math.min(Math.max(0, Math.round(n(v))), Math.round(expThrough)) : 0;
+  spec.microVias = bound(spec.microVias);
+  spec.blindVias = bound(spec.blindVias);
 
   // ── 4. Technology + finish: deterministic from features ──────────────────────
   spec.technologyType = deriveTechnology(

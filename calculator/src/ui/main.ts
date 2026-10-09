@@ -8339,6 +8339,9 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     dimensionsSource:         (gNum('pcb-edit-width', r.boardSpec.widthMm) !== r.boardSpec.widthMm
                                || gNum('pcb-edit-height', r.boardSpec.heightMm) !== r.boardSpec.heightMm)
                                ? 'measured' : r.boardSpec.dimensionsSource,
+    // Who stands behind a "measured" size (pipeline review F3): the user here, else what the server stamped.
+    ...((gNum('pcb-edit-width', r.boardSpec.widthMm) !== r.boardSpec.widthMm || gNum('pcb-edit-height', r.boardSpec.heightMm) !== r.boardSpec.heightMm)
+      ? { dimensionsEvidence: 'user' } : (r.boardSpec as { dimensionsEvidence?: string }).dimensionsEvidence ? { dimensionsEvidence: (r.boardSpec as { dimensionsEvidence?: string }).dimensionsEvidence } : {}),
     conformalCoating:         r.boardSpec.conformalCoating,
     surfaceFinish:            g('pcb-edit-surface')?.value ?? r.boardSpec.surfaceFinish,
     solderMaskColour:         r.boardSpec.solderMaskColour,
@@ -8358,7 +8361,14 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     boardWeightG:             r.boardSpec.boardWeightG,
     qualityGrade:             g('pcb-edit-quality')?.value ?? r.boardSpec.qualityGrade,
     panelUtilisation:         r.boardSpec.panelUtilisation,
-  };
+    // Evidence the server stamped (fab data, board text) travels with the spec; a via count the user typed is theirs.
+    ...Object.fromEntries((['layersSource', 'layersEvidence', 'viasSource', 'viasEvidence', 'copperEvidence', 'weightEvidence'] as const)
+      .map(k => [k, (r.boardSpec as Record<string, unknown>)[k]]).filter(([, v]) => v != null)),
+    ...((Math.round(gNum('pcb-edit-through-vias', r.boardSpec.throughVias)) !== r.boardSpec.throughVias
+      || Math.round(gNum('pcb-edit-blind-vias', r.boardSpec.blindVias)) !== r.boardSpec.blindVias
+      || Math.round(gNum('pcb-edit-micro-vias', r.boardSpec.microVias)) !== r.boardSpec.microVias)
+      ? { viasSource: 'measured', viasEvidence: 'user' } : {}),
+  } as PCBImageAnalysis['boardSpec'];
 
   const correctedAssembly: PCBImageAnalysis['assembly'] = {
     smtPlacements:    Math.round(gNum('pcb-edit-smt', r.assembly.smtPlacements)),

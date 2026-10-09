@@ -87,3 +87,41 @@ describe('F2 / F12 / F15 — the model\'s price estimate never chooses the price
     expect(bom[0].unitPriceGBP).toBeLessThanOrEqual(15);
   });
 });
+
+import { gateBoardEvidence } from '../server/utils/pcb-boardspec-stabilise.js';
+
+describe('F3 / F4 — board figures the model gives stand only with evidence', () => {
+  it('model vias, joints, copper and weight with no evidence leave the headline unchanged', async () => {
+    const base = await radar();
+    for (const mut of [
+      (a: any) => { a.boardSpec.microVias = 5000; },
+      (a: any) => { a.boardSpec.blindVias = 3000; },
+      (a: any) => { a.boardSpec.copperOzByLayer = [6, 6, 6, 6, 6, 6, 6, 6]; },
+      (a: any) => { a.boardSpec.boardWeightG = 3000; },
+      (a: any) => { a.assembly.manualJoints = 3000; },
+      (a: any) => { a.assembly.throughHoleJoints = 5000; },
+    ]) expect((await radar(mut)).total).toBe(base.total);
+  });
+
+  it('a "measured" size the model claims is an estimate unless the OCR board text shows it', () => {
+    const s1: Record<string, unknown> = { widthMm: 240, heightMm: 240, dimensionsSource: 'measured' };
+    expect(gateBoardEvidence(s1, ['PCB REV 2.1']).length).toBe(1);
+    expect(s1.dimensionsSource).toBe('estimated');
+    const s2: Record<string, unknown> = { widthMm: 20, heightMm: 20, dimensionsSource: 'measured' };
+    expect(gateBoardEvidence(s2, ['BOARD 20.0 x 20.0 mm'])).toEqual([]);
+    expect(s2.dimensionsEvidence).toBe('board-text');
+    // a size the fab files or the user gave is kept without asking the board text
+    const s3: Record<string, unknown> = { widthMm: 87.8, heightMm: 48.9, dimensionsSource: 'measured', dimensionsEvidence: 'fab-data' };
+    expect(gateBoardEvidence(s3, [])).toEqual([]);
+    expect(s3.dimensionsSource).toBe('measured');
+  });
+
+  it('copper read from a board-data table stands when the table is in the board text', () => {
+    const s: Record<string, unknown> = { copperOzByLayer: [2, 1, 1, 2] };
+    expect(gateBoardEvidence(s, ['Stack-up: 70um / 35um / 35um / 70um'])).toEqual([]);
+    expect(s.copperEvidence).toBe('board-text');
+    const t: Record<string, unknown> = { copperOzByLayer: [6, 6] };
+    gateBoardEvidence(t, ['PCB REV A']);
+    expect(t.copperOzByLayer).toEqual([]);
+  });
+});
