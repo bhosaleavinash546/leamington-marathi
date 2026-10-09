@@ -184,3 +184,26 @@ describe('F20 — no "Program BOM saving" on top of volume prices', () => {
     expect(r.s4.programPricing).toBeNull();
   });
 });
+
+import { reconcileBomWithCatalogue } from '../server/utils/pcb-bom-grounding.js';
+import { cataloguePriceAt } from '../server/utils/pcb-price-catalogue.js';
+
+describe('F9 / F10 — volume prices say where they come from; a live price is not a volume price', () => {
+  const live = (mpn: string, price: number, brk: number) => ({ mpn, description: '', manufacturer: '', unitPriceGBP: price, priceBreakQty: brk, stockQty: 1,
+    leadTimeWeeks: null, provider: 'rs' as const, automotiveGrade: true, distPartNumber: mpn, rawCurrency: 'GBP', rawUnitPrice: price, sourceNote: 'RS' });
+  it('a one-unit live price at programme volume gives way to the catalogue volume model', () => {
+    const parts = 300_000;
+    const { bom } = reconcileBomWithCatalogue([{ refDes: 'U8', partNumber: 'TJA1044GT', qty: 1, partsBought: parts, unitPriceGBP: 1 }], [live('TJA1044GT', 1.0, 1)] as never);
+    expect(bom[0].unitPriceGBP).toBeCloseTo(cataloguePriceAt('TJA1044GT', parts)!, 4);
+    expect(bom[0].priceNote).toMatch(/shown for reference/);
+  });
+  it('with no distributor-priced entry the live price is derived to the parts bought and labelled', () => {
+    const { bom } = reconcileBomWithCatalogue([{ refDes: 'U9', partNumber: 'NOTINCAT123', qty: 1, partsBought: 100_000, unitPriceGBP: 1 }], [live('NOTINCAT123', 2.0, 1000)] as never);
+    expect(bom[0].unitPriceGBP).toBeCloseTo(2.0 * Math.pow(100, -(-Math.log(0.85) / Math.log(10))), 4);
+    expect(bom[0].priceNote).toMatch(/DERIVED/);
+  });
+  it('a catalogue price above the largest published break is labelled derived', () => {
+    const [p] = offlineCataloguePrices(['TJA1044GT'], 300_000);
+    expect(p.sourceNote).toMatch(/DERIVED above the largest published break/);
+  });
+});

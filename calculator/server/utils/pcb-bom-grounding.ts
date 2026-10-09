@@ -58,7 +58,7 @@ export function reconcileBomWithCatalogue(
   const out = bom.map(line => {
     const pn = String(line.partNumber ?? '').trim().toUpperCase();
     const qty = num(line.qty, 1);
-    const hit = pn.length > 0 ? byMpn.get(pn) : undefined;
+    let hit = pn.length > 0 ? byMpn.get(pn) : undefined;
 
     const hitEntry = hit && hit.provider === 'catalogue' ? catalogueEntry(pn) : null;
     if (hit && IMAGER_RE.test(`${hitEntry?.desc ?? ''} ${hit.description ?? ''}`)) {
@@ -78,6 +78,26 @@ export function reconcileBomWithCatalogue(
       };
     }
 
+    if (hit && hit.provider !== 'catalogue') {
+      // A LIVE distributor price is a small-quantity break (RS: one unit; Nexar: the deepest break ≤ the board count),
+      // not a price at the parts bought (pipeline review F10: "Fetch Live Prices" RAISED the BOM at programme volume).
+      // At volume the catalogue's distributor-priced volume model is used and the live figure kept as a reference; with
+      // no such entry the live price is moved to the parts bought along the catalogue's franchise curve and says so.
+      const parts = num(line.partsBought) || qty;
+      const brk = Math.max(1, num(hit.priceBreakQty, 1));
+      if (parts > brk) {
+        const e = catalogueEntry(pn);
+        const cat = e?.confidence === 'distributor' ? cataloguePriceAt(pn, parts) : null;
+        const b = -Math.log(0.85) / Math.log(10);
+        const derived = hit.unitPriceGBP * Math.pow(Math.min(parts, 300_000) / brk, -b);
+        const unit = cat ?? derived;
+        hit = { ...hit, unitPriceGBP: unit, priceBreakQty: parts,
+          sourceNote: cat != null
+            ? `Catalogue ${e!.mpn} at ${parts.toLocaleString('en-GB')} parts (distributor volume model); live ${hit.provider} £${round(hit.unitPriceGBP, 4)} @${brk} shown for reference`
+            : `Live ${hit.provider} £${round(hit.unitPriceGBP, 4)} @${brk}, DERIVED to ${parts.toLocaleString('en-GB')} parts along the franchise curve (10k = 1k × 0.85) — not a quote`,
+          liveReferenceGBP: round(hit.unitPriceGBP, 5), liveReferenceBreak: brk } as typeof hit & { liveReferenceGBP: number; liveReferenceBreak: number };
+      }
+    }
     if (hit) {
       matched++;
       // The catalogue matched a FAMILY entry or another variant, not this exact code: a family price, listed to verify
@@ -174,7 +194,11 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number): Live
       unitPriceGBP: price, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,
       provider: 'catalogue', automotiveGrade: e.aecq, distPartNumber: e.mpn,
       rawCurrency: 'GBP', rawUnitPrice: price,
-      sourceNote: `Catalogue ${e.mpn} (${e.confidence === 'distributor' ? 'distributor price' : 'engineering estimate'}, ${e.asOf}): ${e.source}; at ${qty.toLocaleString('en-GB')} from the 1k/10k/100k/200k/300k breaks`,
+      sourceNote: `Catalogue ${e.mpn} (${e.confidence === 'distributor' ? 'distributor price' : 'engineering estimate'}, ${e.asOf}): ${e.source}; at ${qty.toLocaleString('en-GB')} from the 1k/10k/100k/200k/300k breaks`
+        // Above the largest published break the catalogue's breaks are DERIVED along a slope (pipeline review F9) — say so.
+        + (e.confidence === 'distributor' && qty > (e.volumeModel?.derivedAbove ?? 1000)
+          ? ` — DERIVED above the largest published break (${(e.volumeModel?.derivedAbove ?? 1000).toLocaleString('en-GB')}) along ${e.volumeModel ? `slope b = ${e.volumeModel.b} (${e.volumeModel.basis})` : 'the franchise curve (10k = 1k × 0.85)'}, not a quote`
+          : ''),
     });
   }
   return out;
