@@ -2051,9 +2051,10 @@ Keep response concise and actionable (under 250 words).`;
     signal: ctrl.signal,
   })
   .then(r => r.ok ? r.json() : Promise.reject(r.statusText))
-  .then((data: { reply?: string; error?: string }) => {
+  .then((data: { reply?: string; error?: string; aiUnavailable?: boolean }) => {
     const text = data.reply ?? data.error ?? 'No response from AI service.';
-    if (data.reply) _aiCache.set(prompt, data.reply);
+    // Only a real model reply is cached: the "no key" notice was cached and kept showing after a key was added (B19).
+    if (data.reply && !data.aiUnavailable) _aiCache.set(prompt, data.reply);
     render(text, false);
   })
   .catch(err => {

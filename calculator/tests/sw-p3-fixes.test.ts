@@ -174,3 +174,26 @@ describe('#16 optional size-based effort (COCOMO II.2000, nominal)', () => {
     expect(rows.find(([k]) => /Nominal effort basis/.test(k))![1]).toMatch(/1 COCOMO II size/);
   });
 });
+
+describe('B19 the AI "no key" notice is not cached as an answer', () => {
+  it('the route flags the notice; the panel caches only real replies', async () => {
+    const saved = { key: process.env.ANTHROPIC_API_KEY, gap: process.env.AIR_GAPPED };
+    delete process.env.ANTHROPIC_API_KEY; delete process.env.AIR_GAPPED;
+    try {
+      const express = (await import('express')).default;
+      const router = (await import('../server/routes/aichat.js')).default;
+      const app = express(); app.use(express.json()); app.use('/api/aichat', router);
+      const srv = app.listen(0);
+      const port = (srv.address() as { port: number }).port;
+      const r = await fetch(`http://127.0.0.1:${port}/api/aichat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'hi' }) });
+      const b = await r.json() as { reply?: string; aiUnavailable?: boolean };
+      srv.close();
+      expect(b.reply).toMatch(/requires an Anthropic API key/);
+      expect(b.aiUnavailable).toBe(true);
+    } finally {
+      if (saved.key !== undefined) process.env.ANTHROPIC_API_KEY = saved.key;
+      if (saved.gap !== undefined) process.env.AIR_GAPPED = saved.gap;
+    }
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/if \(data\.reply && !data\.aiUnavailable\) _aiCache\.set/);
+  }, 30_000);
+});
