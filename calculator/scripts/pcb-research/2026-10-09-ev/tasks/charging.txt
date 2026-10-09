@@ -1,0 +1,23 @@
+## OBC — On-board charger [PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - SiC MOSFETs + driver (11 kW 3-phase PFC + LLC): onsemi NVHL080N120SC1 1200 V 80 mΩ; onsemi NCV51705 SiC driver; onsemi FFSH3065B diode
+  - control MCU: ST SR5E1 (7 kW OBC reference)
+  - control MCU (TI): TI C2000 (6.6 kW SiC totem-pole PFC reference)
+  - 11 kW totem-pole PFC reference: Microchip 11 kW totem-pole PFC demonstration
+
+## DCDC_HV — HV–12 V DC-DC converter (APM/LDC) [HEV,PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - topology and power devices: TI TIDA-020031: 400 V→12 V 3.6 kW phase-shifted full bridge with SiC MOSFETs, 300 A peak
+  - GaN alternative: TI PMP41078: GaN PSFB 3.5 kW, 200–450 V in, 14 V out
+  - control MCU: TI C2000 (TIDM-BIDIR-400-12)
+
+## DCDC48 — 48 V–12 V bidirectional DC-DC converter [MHEV]
+key ICs already in the library:
+  - multiphase bidirectional current controller: TI LM5170-Q1 (2× in 4-phase TIDA-01168)
+  - control MCU: TI TMS320F28027F (TIDA-01168)
+
+## CCU — Charging communication controller (EVCC, CCS PLC) [PHEV,BEV400,BEV800]
+key ICs already in the library:
+  - HomePlug Green PHY modem: Qualcomm QCA7005 (AEC-Q100 Grade 3)
+  - host MCU: STM32 (ccs32clara open design)
+

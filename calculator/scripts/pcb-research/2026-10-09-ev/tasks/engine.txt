@@ -1,0 +1,34 @@
+## ECM — Engine control module / PCM [ICE,MHEV,HEV,PHEV]
+key ICs already in the library:
+  - main MCU: Infineon TriCore TC1797 (Bosch MED17.8.31); Infineon AURIX TC3xx (current gen); Infineon TC1766 + CIC751 companion (DCU17 teardown)
+  - engine management IC (power outputs, supplies, CAN/LIN): Infineon TLE8888-1QK (4-cyl, 29 power outputs)
+  - injector / ignition pre-drivers: supplier ASICs; integrated in TLE8888 for 4-cyl
+
+## TCM — Transmission control unit [ICE,MHEV,HEV,PHEV]
+key ICs already in the library:
+  - function definition: Transmission control unit
+  - main MCU: Infineon AURIX TC2xx/TC3xx; Renesas RH850
+  - solenoid current drivers: Infineon / NXP multi-channel constant-current solenoid drivers
+
+## IGN — Ignition coil drivers (gasoline) [ICE,MHEV,HEV,PHEV]
+key ICs already in the library:
+  - ignition IGBT: smart ignition IGBT (e.g. onsemi/Infineon automotive ignition IGBTs)
+
+## FPC — Fuel-pump controller [ICE,MHEV,HEV,PHEV]
+key ICs already in the library:
+  - MCU + gate driver / BLDC controller: automotive 32-bit MCU + 3-phase gate driver (e.g. Infineon MOTIX)
+
+## GPCU — Glow-plug control unit (diesel) [ICE,MHEV]
+key ICs already in the library:
+  - smart high-side switches / power MOSFETs per plug: Infineon PROFET / OptiMOS 40 V class
+  - small MCU / LIN: 8–32-bit automotive MCU with LIN
+
+## NOX — NOx sensor control unit [ICE,MHEV,PHEV]
+key ICs already in the library:
+  - sensor interface ASIC + MCU: supplier ASIC (Bosch / Continental-Vitesco / NGK)
+
+## DCU — Exhaust aftertreatment / SCR dosing control unit [ICE,MHEV,PHEV]
+key ICs already in the library:
+  - MCU + companion: Infineon TC1766 + CIC751 (Bosch DCU17HD01 teardown)
+  - heater / pump high-side drivers: smart high-side switches
+
