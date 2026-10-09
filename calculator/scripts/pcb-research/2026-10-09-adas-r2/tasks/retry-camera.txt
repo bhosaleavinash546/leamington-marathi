@@ -1,0 +1,22 @@
+AR0138AT3R00XUEA0-DPBR  ||  round-1 note: Digi-Key lists AR0138AT3R00XUEA0-DPBR with no price (0 stock, 'no prices available'). No other franchised listing found in 2 searches. RCCC/RGB filter variants exist.
+AR0234AT  ||  round-1 note: No automotive AR0234AT orderable code found at a franchised distributor in 2 searches (only AR0234CS industrial variants and an eval kit ONS-MARS1-AR0234ATSMS-GEVB). Eval kit price is not a sensor price.
+AR0341ATSC15XUEA0-TPBR  ||  round-1 note: Orderable code seen only on a non-franchised listing (RCS Components, Ukraine, no price). 3 searches: Mouser has product/power-tree pages only, no Digi-Key/Future listing. No price.
+AR0323ATSB17XUEA0-DRBR  ||  round-1 note: No franchised-host price in 3 searches. onlinecomponents.com (Master Electronics storefront, not an accepted price host) $43.09 @1,680, $126.48 @420 MOQ, 39 wk, page dated 2025; Cytech (broker) reference prices disregard
+AP0100AT2L00XUGA0-DR  ||  round-1 note: Arrow lists AP0100AT2L00XUGA0-DR (active) with no price in result. Digi-Key -AM-DR / -AM-TR $9.39 and -AM-DR1 $12.18 seen only as electronicspecifier 'price range' with no break — not recorded. Sierra IC: quote only.
+AP0300AT  ||  round-1 note: 2 searches: no distributor listing or orderable code found for AP0300AT (only AP0200/0201/0202 siblings).
+GW5400  ||  round-1 note: 2 searches: no distributor listing; datasheet (indie) is preliminary; ST partner-programme listing only. Avnet's indie agreement covers other lines.
+DS90UB635TRHBRQ1  ||  round-1 note: 3 searches: only digikey.cn for DS90UB635TRHBTQ1 — CNY 49.90 @250, 39.63 @1,250 INCLUDING 13% VAT; not recorded (VAT-inclusive, sibling code). No RQ1 / Mouser listing found.
+MAX96793  ||  round-1 note: 3 searches: Mouser/Arrow product pages only; Farnell lists only the eval kit MAX96793-ACK-EVK# (GBP 547.60 — kit, not IC). No orderable code with a price found.
+MAX96701GTG/V+T  ||  round-1 note: Orderable is GTG (no GTJ found). Only JLCPCB ($1.96 @1,000 — not an accepted source) and a findchips UK distributor row GBP 3.44 @10 (below floor). 3 searches.
+MAX20019ATBD/V+  ||  round-1 note: 3 searches: Mouser carries 700-MAX20019ATBD/V+ but no price in results; Digipart shows 'Inquiry'. Catalogue ESTIMATE NOT upgraded — and its desc 'Dual 3 A buck' is wrong (part is dual 500 mA).
+MAX20021ATIB/V+  ||  round-1 note: 3 searches: Farnell CH CHF 4.11 @1 / 2.52 @120 (CHF not in FX table); Farnell AT ATIA/V+ EUR 4.37 @1 (below floor). No Digi-Key/Mouser break found.
+MAX20025  ||  round-1 note: 3 searches: no ADI product page, datasheet or distributor listing for MAX20025 — part number may be wrong (MAX20019/20/21/29 exist). Check the source BOM.
+MAX20089ATPA/VY+  ||  round-1 note: Digi-Key lists 505-MAX20089ATPA/VY+-ND (tray, 11 wk) but no price in results; only JLCPCB prices ($5.07 @100). 2 searches.
+TPS65000TRTERQ1  ||  round-1 note: 2 searches: only Flywing (broker, $0.60 @1k) — not used. Non-Q1 TPS65000RTER ~$1.95 at Digi-Key/Mouser (aggregator, not this code).
+TPS65033000RGERQ1  ||  round-1 note: Arrow lists TPS65033000RGERQ1 (active) without price. digikey.cn TPS6503300DRGERQ1 CNY 11.89 @3,000 incl. 13% VAT, prototype — not recorded.
+TPS650332-Q1  ||  round-1 note: 3 searches: Digi-Key/Mouser product-highlight pages only; TI packaging doc names TPS6503320CRGERQ1 / TPS6503320DRGERQ1 — no price found for either.
+LM5050Q1MKX-1/NOPB  ||  round-1 note: 2 searches: no franchised break for the Q1 code (Dasenic broker $1.05 @250; an unlisted distributor $1.99 qty n/a). Non-Q1 LM5050MKX-1/NOPB Mouser $1.04 @1,000 / $0.945 @3,000 — not this code.
+TPS62440-Q1  ||  round-1 note: 3 searches: TPS6244x-Q1 datasheet names TPS62441-Q1 / TPS62442-Q1; no TPS62440-Q1 orderable or listing found. Check the source BOM.
+TPS62420QDRCRQ1  ||  round-1 note: Digi-Key page exists (296-25732, 12 wk) but no price in results; only Flywing/Ersa (brokers). Non-Q1 TPS62420DRCR Digi-Key $1.02 @1k — not this code. 3 searches.
+LMR36506MSC5RPERQ1  ||  round-1 note: 3 searches: Digi-Key DE page shows the part out of stock; its price ladder belongs to the substitute Richtek RTQ2130B — not recorded. No other listing.
+MAX96717FGTJ/VY+T  ||  round-1 note: 3 searches: Digi-Key lists it (10 wk) with no price in results; Mouser IT /VY+ EUR 12.92 @1 (below floor); only JLCPCB volume prices ($2.87 @1k) — not an accepted source.

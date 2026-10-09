@@ -1,0 +1,14 @@
+SMI240  ||  round-1 note: No distributor listing found (1 search); Bosch sells automotive SMI parts through direct/quote channels.
+SMI330  ||  round-1 note: No distributor price found (1 search); results showed only the consumer BMI330 (Mouser ~$2.89 @5k) — different part, not used.
+IAM-20685  ||  round-1 note: No distributor price found (2 searches); Mouser has a product-launch page only. IAM-20680HP prices seen are a different part.
+SCHA634-D03  ||  round-1 note: No listing of this code found in 3 searches (only SCHA600, NRND, and SCHA63T-K03 which Digi-Key shows as last-time-buy). Do not substitute SCHA63T pricing (~€42 @600, Digi-Key EU).
+PGA450TPWRQ1  ||  round-1 note: No break-qualified distributor price found (4 searches). Aggregator electronicsdatasheets.com shows Digi-Key $7.21 and Mouser $8.49 with no quantity (not a price host) — not recorded. Task code 'PGA450QPWRQ1' does not ex
+E524.09  ||  round-1 note: Elmos not distributor-listed: 2 searches (Avnet/Sierra show Elmos parts as quote-only), no price.
+E524.08  ||  round-1 note: Elmos not distributor-listed: 2 searches, no price.
+E521.42  ||  round-1 note: Elmos not distributor-listed: 2 searches, no price.
+TUSS4470TRTJR  ||  round-1 note: No automotive (-Q1) variant known; industrial part. 3 searches found Digi-Key/SnapEDA listings but no price table — no observation.
+MA58MF14-7N  ||  round-1 note: No distributor listing found (2 searches); TI E2E notes Murata prices it on request.
+LMG1020YFFR  ||  round-1 note: No TI-brand distributor price found (2 searches): LCSC lists a 'Tokmas'-branded LMG1020YFFR (not TI) — rejected; RS lists only LMG1020YFFT 2-packs. Industrial part; the automotive counterpart is LMG1025-Q1 (priced in thi
+LMH32401-Q1  ||  round-1 note: TI lists LMH32401-Q1 (AEC-Q100, VQFN-16), but no distributor listing or orderable code found in 3 searches; only the industrial LMH32401IRGTR (LCSC $12.17, qty 1). Orderable code to confirm on ti.com.
+DRV5055A1QDBZRQ1  ||  round-1 note: No franchised price for any DRV5055…RQ1 code in 3 searches (only non-Q1 DRV5055A1QDBZR at Digi-Key/Mouser without prices, and broker Cytech for DRV5055A4EDBZRQ1). Orderable -Q1 sensitivity code not confirmed.
+ADPD2140WBCPZN-R7  ||  round-1 note: Automotive code is ADPD2140WBCPZN-R7. Only Richardson RFPD ($3.72 @1, MOQ 3k, not on the merge's price hosts) and oneic (no qty) found in 2 searches — not recorded.

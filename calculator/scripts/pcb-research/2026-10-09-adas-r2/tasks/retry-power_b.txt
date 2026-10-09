@@ -1,0 +1,8 @@
+LMR51420-Q1  ||  round-1 note: No automotive -Q1 variant found: TI rates LMR51420 Catalog (orderables LMR51420XDDCR/XFDDCR/YDDCR/YFDDCR). Automotive siblings are LMR51425-Q1 / LMR51435-Q1 / LMR51440-Q1 (WSON-12 DRR); LMR51425-Q1 has its own entry (not
+LMR43610-Q1  ||  round-1 note: Orderable LMR43610RS3QRPERQ1 found at Digi-Key Germany but out of stock (backorder, 12 wk) and the snippets gave inconsistent qty-1 EUR prices (EUR 1.92 vs 3.12) with no 1k/reel break - nothing recorded. Non-Q1 LMR43610M
+TPS2HB08-Q1  ||  round-1 note: No orderable TPS2HB08 code found at a franchised distributor (2 searches). Related automotive parts exist: TPS1HB08-Q1 (single-channel 8 mOhm, HTSSOP-16) and TPS2HB16-Q1 (dual 16 mOhm, TPS2HB16AQPWPRQ1). Confirm the MPN.
+LM74930QRGERQ1  ||  round-1 note: Not listed with a readable price at a franchised distributor (3 searches): Findchips shows Digi-Key 296-LM74930QRGERQ1CT-ND with the 3,000 price cut off ('$3.1...'). Manufacturer list price (not an observation): TI $1.80
+TPS3762-Q1  ||  round-1 note: No franchised-distributor price found for an automotive code (3 searches); TI EVM ships TPS3762D02OVDDFRQ1 (many threshold options). Catalog TPS3762D02OVDDFR at Digi-Key China CNY 12.97 incl. VAT @6k - not recorded.
+MAX20034ATIS/VY+T  ||  round-1 note: Not listed with a price at a franchised distributor (3 searches); Mouser stocks the family (no price in snippet).
+LT8653SEV#WPBF  ||  round-1 note: No franchised-distributor price (3 searches). Only Richardson RFPD (not on the approved list) priced LT8653SEV#PBF: $6.11 @5k. LCSC LT8653SIV#PBF had a reference price with no break.
+ADP5134W  ||  round-1 note: No ADP5134W orderable listed at a franchised distributor (2 searches); orderable code not confirmed.

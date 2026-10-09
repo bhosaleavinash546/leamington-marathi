@@ -1,0 +1,21 @@
+MT53E256M32D1KS-046 AUT:L  ||  round-1 note: No break >=100 found: element14 KR qty 1 only (KRW 160,407); Avnet MOQ 1360 with no price, 0 stock. Third-party page reports a Micron LTB (30-Mar-2026) on this family.
+MT62F1G32D2DS-023 AUT:C  ||  round-1 note: Only RS UK qty 1 (GBP 202.73 ex VAT) found for AUT:C; Digi-Key lists only WT/IT siblings. No break >=100.
+K4F6E3S4HM-THCL  ||  round-1 note: LCSC lists qty 1 $12.64 / 10+ $12.21, out of stock, no break >=100; not recorded. Automotive grade of the -THCL code not confirmed.
+MT35XU512ABA1G12-0AAT  ||  round-1 note: Aggregator shows Mouser $9.60 (1151 stock) without its quantity break; not recorded. No break >=100 read.
+MT35XU02GCBA1G12-0AUT  ||  round-1 note: No franchised price found (2 searches); only broker stock without price and siblings (0AAT) at qty 1.
+S25FL256LAGMFA010  ||  round-1 note: Exact code not found (2 searches); sibling S25FL256LAGMFM003 at Digi-Key qty 1 only ($4.21). No break >=100.
+IS25WX512M-JHLA3  ||  round-1 note: No franchised price found (1 search); only broker stock without price.
+IS25LP256D-JLLA3  ||  round-1 note: Mouser listing seen (qty 1 $9.73, tiers down to $7.90) but the quantity of each tier was not stated; not recorded. Follow-up search blocked (budget).
+GD25LB512MEYIGR  ||  round-1 note: no franchised-distributor price found (2 searches): only broker listings (PCX, 'request quote'), which mark it NRND and AEC-Q100. AEC-Q100 not verified at a distributor.
+THGBMJG7C2LBAU8  ||  round-1 note: no franchised-distributor price found (2 searches); only the industrial THGBMJG7C1LBAIL is listed (LCSC).
+SDINEDK4-64G-ZA  ||  round-1 note: no franchised-distributor price found (2 searches). SDINEDK4 is SanDisk's UFS line (Mouser lists SDINEDK4-128G only); the 64GB automotive eMMC is SDINBDG4-64G-ZA, not priced.
+M24512-DRMN3TP/K  ||  round-1 note: no franchised-distributor price found (2 searches): only ST eStore ($1.56/500, manufacturer, not a distributor) and a Digi-Key substitute mention (EUR 1.31, no break).
+SiT9025  ||  round-1 note: no franchised-distributor price found (2 searches): only SiTime's own store ($6.05 at 500-999 for SiT9025AAF21H18DA25.000000), not a distributor.
+SiT1618  ||  round-1 note: no franchised-distributor price found for a 25 MHz code (2 searches): Avnet shows ~$1.65 at 1000+ for other SiT1618BA frequencies, not recorded.
+SiT8021  ||  round-1 note: no franchised-distributor price found (2 searches): Digi-Key $1.15 for SIT8021AI-J4-18S-24.000000E without its break; Mouser $0.714/1000 for the commercial AC grade seen only via an aggregator without a product URL. Not 
+SiT5356  ||  round-1 note: no franchised-distributor price found (1 search); a non-automotive Stratum-3 TCXO, not pursued further.
+DSC6083  ||  round-1 note: no franchised-distributor price found (2 searches); family prefix only (e.g. DSC6083MI2A-032K768), no distributor price in results.
+FCX-07L  ||  round-1 note: no franchised-distributor price found (2 searches). Datasheet (LCSC C515336, 37.4 MHz) gives -40..85 C for mobile/W-LAN, not an automotive part.
+LMK1C1104-Q1  ||  round-1 note: no franchised-distributor price found (2 searches); only non-Q1 LMK1C1104PWR/DQFR listings. Q1 family datasheet dated Mar 2026 - likely not yet stocked.
+PL611s-Q1  ||  round-1 note: no franchised-distributor price found (1 search): no Q1 code exists in results; PL611S-19 variants are 'contact for pricing'.
+THGBMJG8C4LBAU8  ||  round-1 note: Not recorded: sources conflict. LCSC showed ~$10.05/152 and ~$9.55/1064 in one snapshot and $0.0088/1064 in another (corrupt), both 0 stock; Digi-Key China ~CNY 174 incl. VAT at 456 (approximate). No clean break.

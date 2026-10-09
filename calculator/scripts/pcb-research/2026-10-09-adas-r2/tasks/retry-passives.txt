@@ -1,0 +1,12 @@
+GCM155R71E224KE02D  ||  round-1 note: 3 searches: no listing for the exact 25V code or a 0.22uF/25V/0402 GCM sibling; only the 16V GCM155R71C224KE02D is listed (different voltage - not substituted).
+CGA5L1X7R1C226M160AC  ||  round-1 note: 3 searches: no listing for the exact code or a 22uF/16V/1206 CGA sibling; only 10V (CGA5L1X7S1A226M160AC) and 10uF siblings found - different voltage/value, not substituted.
+CL05B104KB5VPNC  ||  round-1 note: 2 searches: no listing for the automotive VPNC code; only commercial KB5NNNC/KB54PNC and the 16V KO5VPNC listed - not substituted.
+CL10B105KP8VPNC  ||  round-1 note: 2 searches: no franchised listing with a price for the VPNC code (LCSC alternative-table $0.0192, 0 stock, no break); only commercial NNNC listed - not substituted.
+GCJ155R71H104KA55D  ||  round-1 note: 3 searches: exact soft-termination code not listed by any distributor; only GCM (non-soft-term) and other-voltage siblings found - not substituted (soft termination is the point of the line).
+TPD1E04U04-Q1  ||  round-1 note: 2 searches: no distributor listing for the -Q1 orderable (TPD1E04U04DPYRQ1); only commercial DPYR/DPLR found - not substituted.
+BUK7M10-40H  ||  round-1 note: 2 searches: no -40H / -40HX listing at any distributor. The older-trench BUK7M10-40EX is $0.26145 @1.5k at Digi-Key - different technology, not substituted.
+E6S10A-40MT5-Z  ||  round-1 note: 2 searches: no franchised-distributor price (Rosenberger: price on request; only eBay/AliExpress listings).
+2337020-1  ||  round-1 note: 3 searches: code not listed at any distributor. Candidate 9-2304372-9 (TE 2-pos right-angle, 1.8 mm, DK $13.33 @510) not adopted - not confirmed as MATEnet.
+2387271-1  ||  round-1 note: 2 searches: code not found at any distributor or TE page; series could not be identified, so no substitute picked.
+MX150 (ref)  ||  round-1 note: Reference line. MX150 right-angle headers seen only at 1-pc catalogue prices (e.g. 0348300801 $6.89) - no break >= 100 found.
+1-2112996-1  ||  round-1 note: 3 searches: code not found at any distributor or TE page; series unknown, no substitute picked.
