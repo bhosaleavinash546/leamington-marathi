@@ -231,7 +231,7 @@ export function capUnconfirmedPrices(bom: BomLine[], knownRange?: KnownRange, op
     // Identity is confirmed by a chip marking read with confidence, or by a part
     // number in the user's BOM file — the file names the part.
     const identityConfirmed = (line.ocrExtracted === true && num(line.lineConf) >= 0.95)
-      || (line.bomSource === 'file' && pn.length > 0);
+      || ((line.bomSource === 'file' || line.bomSource === 'image') && pn.length > 0);
     const range0 = knownRange?.(line) ?? null;
     const range = range0 && (identityConfirmed || range0.generic) ? range0 : null;
     if (range) {

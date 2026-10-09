@@ -22,6 +22,7 @@ import {
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
+import { gateIdentities } from '../utils/pcb-identity.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { ecuLibrary } from '../utils/pcb-ecu-library.js';
 import { isNotFitted } from '../utils/pcb-price-catalogue.js';
@@ -158,8 +159,14 @@ export function prepareBOMFromOCR(
 ): { bom: Array<Record<string, unknown>>; warnings: SanityWarning[] } {
   // The model's own "read off the chip" flag stands only where a real OCR marking agrees.
   const claims = verifyOcrClaims(rawBOM, icMarkings ?? []);
-  const rec = reconcileOcrMarkings(claims.bom, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
+  // A part number counts only with evidence — an agreeing OCR marking, the user's BOM file, or the user's
+  // correction; the model's own suggestion is shown, never priced (pipeline review F1, Oct 2026). Gated BEFORE the
+  // markings are attached, so a line carrying an invented number can still take the marking read on its chip.
+  const gated = gateIdentities(claims.bom);
+  const rec = reconcileOcrMarkings(gated.bom, icMarkings ?? [], markingLabel, l => icKnownRange(l, { specificOnly: true }) != null);
   const warnings: SanityWarning[] = [];
+  if (gated.withheld.length) warnings.push({ code: 'PART_NUMBER_NOT_EVIDENCED', severity: 'warn',
+    message: `${gated.withheld.length} part number(s) were suggested by the AI but not read on a chip, in a BOM file or by you, so they are not priced from the catalogue (class range instead, to verify): ${gated.withheld.slice(0, 8).join(', ')}${gated.withheld.length > 8 ? ', …' : ''}.` });
   if (claims.revoked.length) warnings.push({ code: 'OCR_CLAIM_NOT_CONFIRMED', severity: 'warn',
     message: `${claims.revoked.length} line(s) were marked as read off the chip, but no marking the OCR stage read agrees: ${claims.revoked.slice(0, 10).join(', ')}${claims.revoked.length > 10 ? ', …' : ''}. Their part numbers are kept as readings to confirm.` });
   if (rec.attached.length) warnings.push({ code: 'OCR_MATCHED_BY_FUNCTION', severity: 'warn',
@@ -1600,18 +1607,18 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // and never applies the volume factor or the grading twice.
     if (Array.isArray(a.rawBom)) a.bom = JSON.parse(JSON.stringify(a.rawBom));
     else a.rawBom = JSON.parse(JSON.stringify(Array.isArray(a.bom) ? a.bom : []));
-    // The classifier's ASIL against the parts list (pcb-asil-guard.ts): ASIL-C/D is costed only
-    // with the safety hardware it needs, and a rationale the BOM contradicts is withheld.
-    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions,
-      bom: Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [] });
-    asilLevel = out.asil.costed as ASILLevel;
-    for (const n of out.asil.notes) warnings.push({ code: 'ASIL_CHECKED_AGAINST_BOM', severity: 'warn', message: n });
     // 2. One part, one line, whole-number quantities — across all the photos.
     const cons = consolidateBom(Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : []);
     warnings.push(...cons.warnings);
     // 3. OCR markings into the BOM; the model's "read off the chip" claims checked.
     const prepared = prepareBOMFromOCR(cons.bom, ocrResult.icMarkings, assemblyData);
     warnings.push(...prepared.warnings);
+    // The classifier's ASIL against the parts list (pcb-asil-guard.ts): ASIL-C/D is costed only
+    // with the safety hardware it needs — on EVIDENCED part numbers (gateIdentities, in prepareBOMFromOCR) — and a
+    // rationale the BOM contradicts is withheld.
+    out.asil = guardAsil({ asil: asilLevel as AsilLevel, rationale: inp.asilRationale, safetyFunctions: inp.asilSafetyFunctions, bom: prepared.bom });
+    asilLevel = out.asil.costed as ASILLevel;
+    for (const n of out.asil.notes) warnings.push({ code: 'ASIL_CHECKED_AGAINST_BOM', severity: 'warn', message: n });
     // 4. Placements from the list BEFORE the board is sized from them — the fab
     //    stabiliser and the assembly cost used to read two different counts.
     warnings.push(...derivePlacementsFromBOM(prepared.bom, assemblyData));
