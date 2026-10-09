@@ -7,12 +7,19 @@ import { escHtml } from '../toast.js';
 
 interface Part { mpn: string; mfr: string; desc: string; confidence: string; asOf: string; unitGBP: number | null }
 interface KeyIc { role: string; examples: string[]; source?: string; parts: Part[] }
-interface Ecu { ecu: string; name: string; function: string; powertrains: string[]; pcb?: Record<string, string>; placements?: Record<string, string>; keyIcs: KeyIc[] }
+interface Ecu { ecu: string; name: string; function: string; powertrains: string[]; pcb?: Record<string, string>; placements?: Record<string, string>; keyIcs: KeyIc[];
+  teardowns?: Array<{ title: string; url: string; finding: string }> }
 interface Lib { researched: string; volume: number; powertrains: Array<{ id: string; name?: string; ecuCountTypical?: string; semiContentUSD?: { value: string; source: string }; ecus?: string[] }>; ecus: Ecu[] }
 
-const src = (s?: string) => !s ? '' : /^https?:/.test(s)
-  ? `<a href="${escHtml(s)}" target="_blank" rel="noopener" style="font-size:0.66rem">source</a>`
-  : `<span style="font-size:0.66rem;color:var(--text-muted)">${escHtml(s)}</span>`;
+/** A basis is a URL, "engineering judgement", or labelled parts with several URLs ("boards: https://… ; layers:
+ *  engineering judgement") — every URL in it becomes its own "source" link, the words around them stay as text. */
+const src = (s?: string) => {
+  if (!s) return '';
+  const parts = String(s).split(/(https?:\/\/[^\s,;]+)/g).filter(x => x.trim() && !/^\s*[,;]\s*$/.test(x));
+  return `<span style="font-size:0.66rem;color:var(--text-muted)">${parts.map(x => /^https?:\/\//.test(x)
+    ? `<a href="${escHtml(x)}" target="_blank" rel="noopener">source</a>`
+    : escHtml(x.trim().replace(/^[,;]\s*|\s*[,;]$/g, ''))).join(' ')}</span>`;
+};
 
 export function ecuLibraryShell(): string {
   return `<details id="pcb-ecu-lib" class="pcb-ecu-lib" style="margin:10px 0;border:1px solid var(--border);border-radius:8px;padding:8px 12px">
@@ -31,7 +38,10 @@ function render(lib: Lib, pt: string): string {
     return `<details style="border-top:1px solid var(--border);padding:6px 0"><summary style="cursor:pointer"><strong>${escHtml(e.ecu)}</strong> — ${escHtml(e.name)}${e.pcb?.layers ? ` <span style="color:var(--text-muted)">· ${escHtml(e.pcb.layers)} layers</span>` : ''}</summary>
       <div style="padding:4px 0 2px 12px"><div style="color:var(--text-secondary)">${escHtml(e.function)}</div>
       ${e.pcb ? `<div style="color:var(--text-muted);margin-top:2px">Board: ${escHtml([e.pcb.layers && `${e.pcb.layers} layers`, e.pcb.size, e.pcb.technology].filter(Boolean).join(' · '))} ${src(e.pcb.basis)}</div>` : ''}
+      ${e.pcb?.laminate ? `<div style="color:var(--text-muted)">Laminate: ${escHtml(e.pcb.laminate)}</div>` : ''}
+      ${e.pcb?.boards ? `<div style="color:var(--text-muted)">Boards: ${escHtml(e.pcb.boards)}</div>` : ''}
       ${e.placements?.range ? `<div style="color:var(--text-muted)">Placements: ${escHtml(e.placements.range)} ${src(e.placements.basis)}</div>` : ''}
+      ${e.teardowns?.length ? `<details style="margin-top:2px"><summary style="cursor:pointer;color:var(--text-muted)">Teardowns (${e.teardowns.length})</summary><ul style="margin:2px 0 0;padding-left:18px">${e.teardowns.map(t => `<li>${escHtml(t.finding)} <a href="${escHtml(t.url)}" target="_blank" rel="noopener" style="font-size:0.66rem">${escHtml(t.title)}</a></li>`).join('')}</ul></details>` : ''}
       <ul style="margin:4px 0 0;padding-left:18px">${ics}</ul></div></details>`;
   }).join('');
   return `<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px">${tabs}<label style="margin-left:auto;font-size:0.72rem">Volume <select id="pcb-ecu-vol" aria-label="Annual volume for prices">${vols}</select></label></div>

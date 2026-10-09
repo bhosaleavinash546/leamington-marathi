@@ -2034,15 +2034,20 @@
 "pkg": "LFBGA",
 "aecq": true,
 "gbp": {
-"q1k": 70.5882,
-"q10k": 60,
-"q100k": 51,
-"q200k": 48.565,
-"q300k": 47.1948
+"q1k": 42.9756,
+"q10k": 36.5293,
+"q100k": 31.0499,
+"q200k": 29.5674,
+"q300k": 28.7332
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TC499PP20MF400MSABKXUMA1 (distributor-priced, 2026-10-09; automotive orderable priced in the ADAS round). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £70.5882 @1k.",
+"asOf": "2026-10-09",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
 },
 {
 "mpn": "SPC582B",
@@ -2254,15 +2259,20 @@
 "pkg": "FCBGA",
 "aecq": true,
 "gbp": {
-"q1k": 56.4706,
-"q10k": 48,
-"q100k": 40.8,
-"q200k": 38.8515,
-"q300k": 37.7551
+"q1k": 53.73,
+"q10k": 45.6705,
+"q100k": 38.8199,
+"q200k": 36.9665,
+"q300k": 35.9235
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member S32G274AABK1VUCT (distributor-priced, 2026-10-09; distributor-listed automotive orderable (ADAS round); replaces the broker-only member dropped in round 4). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £56.4706 @1k.",
+"asOf": "2026-10-09",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 100
+}
 },
 {
 "mpn": "S32G399",
@@ -2273,15 +2283,20 @@
 "pkg": "FCBGA",
 "aecq": true,
 "gbp": {
-"q1k": 105.8824,
-"q10k": 90,
-"q100k": 76.5,
-"q200k": 72.8475,
-"q300k": 70.7922
+"q1k": 67.7864,
+"q10k": 57.6185,
+"q100k": 48.9757,
+"q200k": 46.6373,
+"q300k": 45.3216
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member S32G399AAAK1VUCR (distributor-priced, 2026-10-09; the one distributor-listed S32G399A code (ADAS round): a 500-unit reel price with no stock behind it). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £105.8824 @1k.",
+"asOf": "2026-10-09",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 500
+}
 },
 {
 "mpn": "S32R274",
@@ -4817,15 +4832,20 @@
 "pkg": "SOIC/VQFN/TSDSO",
 "aecq": true,
 "gbp": {
-"q1k": 4.4706,
-"q10k": 3.8,
-"q100k": 3.23,
-"q200k": 3.0758,
-"q300k": 2.989
+"q1k": 2.1183,
+"q10k": 1.8006,
+"q100k": 1.5305,
+"q200k": 1.4574,
+"q300k": 1.4163
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member LM5145QRGYRQ1 (distributor-priced, 2026-10-09; the -Q1 automotive orderable (ADAS round)). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £4.4706 @1k.",
+"asOf": "2026-10-09",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "LM5116",
@@ -7594,15 +7614,20 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.23529,
-"q10k": 0.2,
-"q100k": 0.17,
-"q200k": 0.1619,
-"q300k": 0.1573
+"q1k": 0.3216,
+"q10k": 0.2734,
+"q100k": 0.2323,
+"q200k": 0.2213,
+"q300k": 0.215
 },
 "confidence": "estimate",
-"source": "engineering estimate re-based on as ABM8/TXC (2026-10-01)",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member CX3225SB25000D0KPSC1 (distributor-priced, 2026-10-09; 25 MHz AEC-Q200 - the common ADAS Ethernet / SerDes reference (ADAS round, 9 Oct 2026)). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.23529 @1k.",
+"asOf": "2026-10-09",
+"volumeModel": {
+"b": 0.0706,
+"basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+"derivedAbove": 1000
+}
 },
 {
 "mpn": "ABM8",
@@ -7941,15 +7966,20 @@
 "pkg": "SMD",
 "aecq": true,
 "gbp": {
-"q1k": 0.1647,
-"q10k": 0.14,
-"q100k": 0.119,
-"q200k": 0.1133,
-"q300k": 0.1101
+"q1k": 0.2769,
+"q10k": 0.2152,
+"q100k": 0.1673,
+"q200k": 0.1551,
+"q300k": 0.1483
 },
 "confidence": "estimate",
-"source": "engineering estimate, 2025/26 distributor levels",
-"asOf": "2026-10-01"
+"source": "Family key priced as its catalogued member TPD4E05U06QDQARQ1 (distributor-priced, 2026-10-09; the -Q1 automotive orderable (ADAS round)). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.1647 @1k.",
+"asOf": "2026-10-09",
+"volumeModel": {
+"b": 0.1095,
+"basis": "slope from the part's own breaks (3 pairs)",
+"derivedAbove": 30000
+}
 },
 {
 "mpn": "TPD2E001",

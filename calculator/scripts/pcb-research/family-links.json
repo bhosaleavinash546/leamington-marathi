@@ -1,5 +1,5 @@
 {
- "note": "Reviewed family links (rule 9 of scripts/pcb-catalogue-research-merge.ts): an estimate named by a family key is priced as this catalogued, distributor-priced member and stays an estimate. Left out on purpose: CAT24C (only member is 512 Kb, not representative), MT53E (density unknown), STM32H7 (two different members), L9963 links to L9963E (the monitor) not L9963T (a transceiver). S32G274 unlinked in round 4: its member S32G274AABK0VUCT was priced only through a broker storefront and left the catalogue. IND POWER 4x4 is not linked: the only 4x4 member priced is the premium Coilcraft XAL4020 (~3.5x a typical 4x4 automotive inductor).",
+ "note": "Reviewed family links (rule 9 of scripts/pcb-catalogue-research-merge.ts): an estimate named by a family key is priced as this catalogued, distributor-priced member and stays an estimate. Left out on purpose: CAT24C (only member is 512 Kb, not representative), MT53E (density unknown), STM32H7 (two different members), L9963 links to L9963E (the monitor) not L9963T (a transceiver). S32G274 unlinked in round 4: its member S32G274AABK0VUCT was priced only through a broker storefront and left the catalogue. IND POWER 4x4 is not linked: the only 4x4 member priced is the premium Coilcraft XAL4020 (~3.5x a typical 4x4 automotive inductor). ADAS round (9 Oct 2026) added CX3225, LM5145, TPD4E05U06, TC499, S32G274 and S32G399, each to the automotive orderable researched that day.",
  "links": {
   "TC264": {
    "member": "SAK-TC264DA-40F200W BC"
@@ -190,6 +190,30 @@
   "RELAY SIGNAL": {
    "member": "G6K-2F-Y DC12",
    "why": "representative: Omron G6K signal relay"
+  },
+  "CX3225": {
+   "member": "CX3225SB25000D0KPSC1",
+   "why": "25 MHz AEC-Q200 - the common ADAS Ethernet / SerDes reference (ADAS round, 9 Oct 2026)"
+  },
+  "LM5145": {
+   "member": "LM5145QRGYRQ1",
+   "why": "the -Q1 automotive orderable (ADAS round)"
+  },
+  "TPD4E05U06": {
+   "member": "TPD4E05U06QDQARQ1",
+   "why": "the -Q1 automotive orderable (ADAS round)"
+  },
+  "TC499": {
+   "member": "TC499PP20MF400MSABKXUMA1",
+   "why": "automotive orderable priced in the ADAS round"
+  },
+  "S32G274": {
+   "member": "S32G274AABK1VUCT",
+   "why": "distributor-listed automotive orderable (ADAS round); replaces the broker-only member dropped in round 4"
+  },
+  "S32G399": {
+   "member": "S32G399AAAK1VUCR",
+   "why": "the one distributor-listed S32G399A code (ADAS round): a 500-unit reel price with no stock behind it"
   }
  }
 }
