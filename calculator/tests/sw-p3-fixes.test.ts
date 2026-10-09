@@ -204,3 +204,21 @@ describe('B19 the AI "no key" notice is not cached as an answer', () => {
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/if \(data\.reply && !data\.aiUnavailable\) _aiCache\.set/);
   }, 30_000);
 });
+
+describe('accessibility — the software panel\'s axe findings (57 label, 2 select-name, 12 contrast)', () => {
+  const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+  it('every field label is linked to its control, and module-row controls are named', () => {
+    expect(ui).not.toMatch(/<label class="sw-label">/);
+    expect(ui).toMatch(/class="sw-mod-enable"[^>]*aria-label="Include \$\{esc\(def\.shortName\)\}"/);
+    for (const c of ['sw-asil-sel', 'sw-comp-sel', 'sw-reuse-sel', 'sw-cal-sel']) expect(ui).toMatch(new RegExp(`class="sw-sel ${c}"[^>]*aria-label=`));
+    expect(ui).toMatch(/class="sw-pm-input"[^>]*aria-label=/);
+    expect(ui).toMatch(/class="sw-ksloc-input"[^>]*aria-label=/);
+  });
+  it('the colours axe failed are gone: light result colours, light phase fills under white text, gold button text', () => {
+    expect(ui).not.toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: '#059669'|mc\.p90PerVehicle,0\)\}\/veh`, color: '#ef4444'/);
+    expect(ui).toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: 'var\(--sw-good\)'/);
+    expect(ui).not.toMatch(/'#3b82f6','#0891b2','#059669'/);
+    expect(ui).not.toMatch(/color:#9C7328|var\(--gold,#B67D1E\)/);
+    expect(ui).toMatch(/--sw-good:\s+#047857/);
+  });
+});

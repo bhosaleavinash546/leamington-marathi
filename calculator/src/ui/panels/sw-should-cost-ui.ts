@@ -430,15 +430,15 @@ function renderWizStepBody(step: number): string {
       <div class="sw-wiz-h">Step 1 — Vehicle &amp; Programme Context</div>
       <p class="sw-wiz-help">Tell us about the programme. These set the baseline rates and how the one-time engineering cost is spread across vehicles.</p>
       <div class="sw-grid sw-grid-2" style="gap:16px">
-        <div class="sw-field-group"><label class="sw-label">Development region ${tip('Where your engineers are based — sets the labour rate. Silicon Valley is ~9× India.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-region">Development region ${tip('Where your engineers are based — sets the labour rate. Silicon Valley is ~9× India.')}</label>
           <select id="wiz-region" class="sw-config-sel">${regionOpts}</select></div>
-        <div class="sw-field-group"><label class="sw-label">Programme phase ${tip('Concept/Development/SOP/Facelift — informational; facelift programmes usually reuse more software.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-phase">Programme phase ${tip('Concept/Development/SOP/Facelift — informational; facelift programmes usually reuse more software.')}</label>
           <select id="wiz-phase" class="sw-config-sel">${phaseOpts}</select></div>
-        <div class="sw-field-group"><label class="sw-label">Powertrain ${tip('Sets which powertrain software is in scope: engine / transmission for ICE, 48 V and hybrid control for MHEV, both stacks for PHEV, the EV stack for BEV.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-powertrain">Powertrain ${tip('Sets which powertrain software is in scope: engine / transmission for ICE, 48 V and hybrid control for MHEV, both stacks for PHEV, the EV stack for BEV.')}</label>
           <select id="wiz-powertrain" class="sw-config-sel">${ptOpts}</select></div>
-        <div class="sw-field-group"><label class="sw-label">Annual production volume ${tip('Vehicles per year. Higher volume spreads the software investment over more cars.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-vol">Annual production volume ${tip('Vehicles per year. Higher volume spreads the software investment over more cars.')}</label>
           <input id="wiz-vol" type="number" class="sw-config-inp" min="1000" max="500000" step="1000" value="${inp.annualProductionVolume}"></div>
-        <div class="sw-field-group"><label class="sw-label">Programme life (years) ${tip('How long the software is developed and maintained — typically 5–10 years.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-life">Programme life (years) ${tip('How long the software is developed and maintained — typically 5–10 years.')}</label>
           <input id="wiz-life" type="number" class="sw-config-inp" min="3" max="20" step="1" value="${inp.programLifeYears}"></div>
       </div>`;
   }
@@ -503,11 +503,11 @@ function renderWizStepBody(step: number): string {
       <div class="sw-wiz-h">Step 5 — Review &amp; Fine-Tune</div>
       <p class="sw-wiz-help">Adjust the commercial assumptions, then recalculate. Most users can leave these at defaults.</p>
       <div class="sw-grid sw-grid-3" style="gap:16px">
-        <div class="sw-field-group"><label class="sw-label">Overhead multiplier ${tip('Facilities, IT and programme management on top of the base rate, which already includes benefits. 1.15 is the default; going much higher counts benefits twice.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-overhead">Overhead multiplier ${tip('Facilities, IT and programme management on top of the base rate, which already includes benefits. 1.15 is the default; going much higher counts benefits twice.')}</label>
           <input id="wiz-overhead" type="number" class="sw-config-inp" min="1" max="3" step="0.05" value="${inp.overheadMultiplier}"></div>
-        <div class="sw-field-group"><label class="sw-label">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-senior">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
           <input id="wiz-senior" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inp.teamSeniorFraction}"></div>
-        <div class="sw-field-group"><label class="sw-label">UK base rate £/PM ${tip('UK senior-blended rate per person-month before overhead. All regions scale from this.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-baserate">UK base rate £/PM ${tip('UK senior-blended rate per person-month before overhead. All regions scale from this.')}</label>
           <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? swLibraryBaseRate(inp)}"${inp.baseRateGBP ? ' data-typed="1"' : ''}></div>
       </div>
       <div style="text-align:center;margin-top:16px"><button id="wiz-recalc" class="sw-wiz-btn-primary">↻ Recalculate</button></div>
@@ -655,18 +655,18 @@ function renderSWPanelHTML(): string {
       const asilWarn = `<span class="sw-asil-warn" style="${isDowngrade ? '' : 'display:none'}" title="⚠ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠</span>`;
       return `
       <tr class="sw-module-row" data-module-id="${def.id}">
-        <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
+        <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''} aria-label="Include ${esc(def.shortName)}"></td>
         <td class="sw-mod-name">
           <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}${def.estimateBasis ? ` <span title="${esc('Estimate: ' + def.estimateBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--amber,#b45309);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">estimate</span>` : ''}${def.royaltyBasis ? ` <span title="${esc('Royalty: ' + def.royaltyBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--sw-text-secondary);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">per-vehicle royalty</span>` : ''}</div>
           <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
         </td>
         <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:var(--sw-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>
-        <td><select class="sw-sel sw-asil-sel" data-id="${def.id}">${asilOpts}</select>${asilWarn}</td>
-        <td><select class="sw-sel sw-comp-sel" data-id="${def.id}">${compOpts}</select></td>
-        <td><select class="sw-sel sw-reuse-sel" data-id="${def.id}">${reuseOpts}</select></td>
+        <td><select class="sw-sel sw-asil-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} ASIL">${asilOpts}</select>${asilWarn}</td>
+        <td><select class="sw-sel sw-comp-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} complexity">${compOpts}</select></td>
+        <td><select class="sw-sel sw-reuse-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} reuse">${reuseOpts}</select></td>
         <td><select class="sw-sel sw-cal-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} cybersecurity assurance level" title="ISO/SAE 21434 CAL — drives the cybersecurity uplift (default from the Annex E example table; your TARA decides)">${calOpts}</select></td>
         <td><input type="number" class="sw-ksloc-input" data-id="${def.id}" placeholder="—" value="${inp.sizeKSLOC ?? ''}" min="0.1" step="0.1" style="width:64px" aria-label="${esc(def.shortName)} size, KSLOC" title="Optional: the module's size in thousand source lines. Its nominal effort then comes from COCOMO II (${esc(SW_COCOMO.A)} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) instead of the catalogue's ${esc(def.basePersonMonths)} PM."></td>
-        <td><input type="number" class="sw-pm-input" data-id="${def.id}" placeholder="auto" value="${inp.customPersonMonths ?? ''}" min="0" step="1" style="width:60px"></td>
+        <td><input type="number" class="sw-pm-input" data-id="${def.id}" aria-label="${esc(def.shortName)} custom person-months" placeholder="auto" value="${inp.customPersonMonths ?? ''}" min="0" step="1" style="width:60px"></td>
       </tr>`;
     }).join('');
 
@@ -759,34 +759,34 @@ function renderSWPanelHTML(): string {
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
       <div class="sw-field-group">
-        <label class="sw-label">Development Region</label>
+        <label class="sw-label" for="sw-region">Development Region</label>
         <select id="sw-region" class="sw-config-sel">${regionOpts}</select><div id="sw-hub-basis" style="font-size:0.66rem;color:var(--text-muted);margin-top:3px">${esc(_swHubBasis)}</div>
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Development Source</label>
+        <label class="sw-label" for="sw-dev-source">Development Source</label>
         <select id="sw-dev-source" class="sw-config-sel">${sourceOpts}</select>
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Powertrain</label>
+        <label class="sw-label" for="sw-powertrain">Powertrain</label>
         <select id="sw-powertrain" class="sw-config-sel" title="Switches the powertrain modules in scope (engine SW_POWERTRAIN_SCOPE); you can still tick modules by hand afterwards.">
           <option value="" ${inputs.powertrain ? '' : 'selected'}>— as configured —</option>
           ${(['ICE', 'MHEV', 'PHEV', 'BEV'] as const).map(p => `<option value="${p}" ${inputs.powertrain === p ? 'selected' : ''}>${PT_LABEL[p]}</option>`).join('')}
         </select>
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Platform volume, all powertrains (veh/yr)</label>
+        <label class="sw-label" for="sw-platform-vol">Platform volume, all powertrains (veh/yr)</label>
         <input id="sw-platform-vol" type="number" class="sw-config-inp" min="0" step="1000" placeholder="blank = this variant only" value="${inputs.platformAnnualVolume ?? ''}" title="Vehicles per year across every powertrain variant sharing the non-powertrain software. Shared modules are attributed to this variant by its share of that volume.">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Programme Life (years)</label>
+        <label class="sw-label" for="sw-prog-life">Programme Life (years)</label>
         <input id="sw-prog-life" type="number" class="sw-config-inp" min="5" max="20" step="1" value="${inputs.programLifeYears}">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Annual Production Volume</label>
+        <label class="sw-label" for="sw-vol">Annual Production Volume</label>
         <input id="sw-vol" type="number" class="sw-config-inp" min="1000" max="500000" step="1000" value="${inputs.annualProductionVolume}">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Overhead Multiplier</label>
+        <label class="sw-label" for="sw-overhead">Overhead Multiplier</label>
         <input id="sw-overhead" type="number" class="sw-config-inp" min="1.0" max="3.0" step="0.05" value="${inputs.overheadMultiplier}">
       </div>
       <div class="sw-field-group">
@@ -802,11 +802,11 @@ function renderSWPanelHTML(): string {
         <input id="sw-connected" type="number" class="sw-config-inp" min="0" max="100" step="1" placeholder="100" value="${inputs.connectedVehicleShare != null ? Math.round(inputs.connectedVehicleShare * 100) : ''}" title="Share of vehicles that use the cloud back-end. Cloud is charged per connected vehicle in service. Blank = 100 %.">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">Senior Engineer Fraction</label>
+        <label class="sw-label" for="sw-senior-frac">Senior Engineer Fraction</label>
         <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0).">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label">UK Base Rate (£/PM)</label>
+        <label class="sw-label" for="sw-base-rate">UK Base Rate (£/PM)</label>
         <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? swLibraryBaseRate(inputs)}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
@@ -842,9 +842,9 @@ function renderSWPanelHTML(): string {
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
-    <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">Powertrain Cost Study</button>
+    <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.6);color:var(--sw-text-primary);font-weight:700">Powertrain Cost Study</button>
     <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">L460 Competitive Benchmark</button>
-    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for every module" style="border-color:rgba(156,115,40,0.5);color:#9C7328;font-weight:700">L460 Deep-Dive</button>
+    <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for every module" style="border-color:rgba(156,115,40,0.6);color:var(--sw-text-primary);font-weight:700">L460 Deep-Dive</button>
     <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
   </div>
   <p id="sw-reports-stale" style="font-size:0.72rem;color:var(--sw-text-muted);margin:-8px 0 14px">
@@ -957,6 +957,9 @@ function renderSWPanelHTML(): string {
   --sw-accent:       #2563eb;
   --sw-accent-bg:    #eff6ff;
   --sw-accent-border:#bfdbfe;
+  /* Result colours that pass WCAG AA (4.5:1) on the panel surfaces in each theme (axe, P3 a11y). */
+  --sw-good:         #047857;
+  --sw-bad:          #b91c1c;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -967,8 +970,10 @@ function renderSWPanelHTML(): string {
     --sw-text-primary: #f1f5f9;
     --sw-text-body:    #cbd5e1;
     --sw-text-secondary: #94a3b8;
-    --sw-text-muted:   #64748b;
+    --sw-text-muted:   #94a3b8;   /* #64748b was 3.9:1 on #0f172a */
     --sw-accent:       #3b82f6;
+    --sw-good:         #34d399;
+    --sw-bad:          #f87171;
     --sw-accent-bg:    #1e3a5f;
     --sw-accent-border:#1d4ed8;
   }
@@ -1613,9 +1618,9 @@ function renderResults(result: SWProgramResult): void {
       <div class="sw-section-title"><span></span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
       <div class="sw-grid sw-grid-4" style="margin-bottom:16px">
         ${[
-          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: '#059669' },
-          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: '#2563eb' },
-          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: '#ef4444' },
+          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: 'var(--sw-good)' },
+          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: 'var(--sw-accent)' },
+          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: 'var(--sw-bad)' },
           { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: '#7c3aed' },
         ].map(c => `
         <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:12px 14px">
@@ -1639,7 +1644,8 @@ function renderResults(result: SWProgramResult): void {
   }
 
   // Rec 3: Programme Phases
-  const phaseColors = ['#6366f1','#3b82f6','#0891b2','#059669','#d97706'];
+  // Fills dark enough for the white segment labels (≥ 4.5:1); the budget column uses body text, the swatch carries the colour.
+  const phaseColors = ['#4f46e5','#2563eb','#0e7490','#047857','#b45309'];
   const phaseEl = document.getElementById('sw-phases');
   if (phaseEl) {
     const barSegs = result.phases.map((p, i) => `
@@ -1651,7 +1657,7 @@ function renderResults(result: SWProgramResult): void {
       <td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${phaseColors[i]};margin-right:6px"></span>${esc(p.name)}</td>
       <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(p.months)}</td>
       <td class="sw-num">${fmt(p.fraction*100,0)}%</td>
-      <td class="sw-num" style="font-weight:700;color:${phaseColors[i]}">${fmtM(p.nreCost)}</td>
+      <td class="sw-num" style="font-weight:700;color:var(--sw-text-primary)">${fmtM(p.nreCost)}</td>
     </tr>`).join('');
 
     phaseEl.innerHTML = `
