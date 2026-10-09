@@ -261,6 +261,10 @@ export default function Part360Page() {
   const [building, setBuilding] = useState(false);
   const [dossier, setDossier] = useState<DossierResponse | null>(null);
   const [selectedLenses, setSelectedLenses] = useState<Set<string>>(new Set(DEFAULT_LENSES));
+  // A stated mass the measured volume cannot carry (or one far from the CAD
+  // mass) scales every downstream figure; ideas built on it are built on a
+  // wrong part. Generation waits for an explicit acknowledgement.
+  const [massAck, setMassAck] = useState(false);
   // Deliberation level. 'critique' (panel + small-model repair on every
   // batch) is the default: measured on four live runs the panel had never
   // once been used because it sat behind an off-by-default toggle.
@@ -337,6 +341,7 @@ export default function Part360Page() {
   const inputsValid = Boolean(material && processName && Number(weightKg) > 0 && Number(annualVolume) > 0);
 
   // CAD-measured mass for the chosen material — the wizard's offer, not its decision.
+  const massConflict = !!dossier?.anomalies?.some(a => a.id === 'mass-impossible-high' || a.id === 'mass-vs-cad' || a.id === 'cad-units');
   const cadMassInfo = dfmResult ? measuredMass(dfmResult.geometry, material, catalogue?.materialDensities) : null;
   const cadMassKg = cadMassInfo?.kg ?? null;
   const typedMass = Number(weightKg);
@@ -524,6 +529,7 @@ export default function Part360Page() {
         // The geometry WITH its DFM measurement block. Sending geometry alone
         // left the waterfall's route comparison judging every process on 5 of
         // 17 rules instead of 13 (Prism review, 3 Oct 2026).
+        cadUnreadable: cadFile && dfmFailed ? true : undefined,
         geo: dfmResult?.geometry ? { ...(dfmResult.geometry as Record<string, unknown>), dfm: (dfmResult as unknown as { dfm?: unknown }).dfm } : undefined,
         visionObservations: visionObs.length ? visionObs : undefined,
         functionDraft: functionDraft ?? undefined,
@@ -568,6 +574,7 @@ export default function Part360Page() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'The dossier could not be computed');
       setDossier(d);
+      setMassAck(false);
       setStep(3);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Dossier failed');
@@ -1617,6 +1624,12 @@ export default function Part360Page() {
                     ))}
                   </div>
                   <p className="text-2xs text-slate-500 mt-2">These cautions also ride into the evidence dossier — ideas see the suspicion in the same breath as the input.</p>
+                  {massConflict && (
+                    <label className="flex items-start gap-2 mt-3 text-xs text-amber-100 cursor-pointer">
+                      <input type="checkbox" className="mt-0.5" checked={massAck} onChange={e => setMassAck(e.target.checked)} />
+                      <span>I have checked the mass and the model's units. Every cost figure on this page scales with them, so generation waits for this confirmation, or go back and correct them.</span>
+                    </label>
+                  )}
                 </motion.div>
               )}
 
@@ -1969,7 +1982,8 @@ export default function Part360Page() {
                   <motion.button
                     {...m.press}
                     onClick={generate}
-                    disabled={generating || selectedLenses.size === 0}
+                    disabled={generating || selectedLenses.size === 0 || (massConflict && !massAck)}
+                    title={massConflict && !massAck ? 'Confirm the mass caution above first' : undefined}
                     className="dfm-cta text-navy-950 disabled:text-slate-400 font-semibold rounded-xl px-6 py-2.5 text-sm flex items-center gap-2"
                   >
                     {generating ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}

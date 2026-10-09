@@ -31,6 +31,11 @@ export function resolveMaterial(typed, materials = MATERIALS) {
   if (!t) return null;
   const ex = exact(typed, keys);
   if (ex) return { key: ex, approx: false };
+  // Technical ceramics are NOT metals. "alumina" contains "alumin" and resolved
+  // to Aluminium 6061, so an alumina-substrate idea was priced — and stamped
+  // "confirmed" — as an aluminium alloy (Prism review, 9 Oct 2026). The
+  // catalogue carries no technical ceramic, so the honest answer is null.
+  if (/\balumina\b|alumin(?:i)?um oxide|\bal2o3\b|\b(?:silicon|aluminium|aluminum|boron) (?:nitride|carbide)\b|\bsi3n4\b|\bsic\b(?! ?mosfet)|\baln\b|zirconia|\bzro2\b|technical ceramic|\bceramic\b/.test(t)) return null;
   // The COVERING map first (material-aliases.mjs). The ordered ladder below is
   // complete for nothing: whichever branch fires first wins, so ADC12 came back
   // as A356 and GFRP as carbon fibre. The alias table is keyed on catalogue

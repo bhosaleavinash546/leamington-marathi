@@ -131,7 +131,7 @@ describe('quote forensics', () => {
     });
     const by = Object.fromEntries(enriched.rows.map(r => [r.kind, r]));
     assert.match(by.material.basis, /Al 6061 index as of 2026-07-03/);
-    assert.match(by.tooling.basis, /amortises .* over [\d,]+ parts/);
+    assert.match(by.tooling.basis, /amortises .* over [\d,]+ good parts/);
   });
 
   it('refuses gracefully with no usable lines', () => {

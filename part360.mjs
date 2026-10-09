@@ -175,7 +175,7 @@ export function quoteForensics(lines, calc, { annualVolume = null, materialPrice
     const ratio = quoteEur / engineEur;
     const verdict = ratio > 1 + band ? 'above-model' : ratio < 1 - band ? 'below-model' : 'in-band';
     const extra = kind === 'tooling' && Number.isFinite(calc?.drivers?.amortVolume)
-      ? ` Engine amortises €${round2(calc.drivers.toolingTotal)} tooling over ${calc.drivers.amortVolume.toLocaleString()} parts${annualVolume ? ` (your stated volume ${Number(annualVolume).toLocaleString()}/yr)` : ''}.`
+      ? ` Engine amortises €${Math.round(calc.drivers.toolingTotal).toLocaleString('en-GB')} tooling over ${Math.round(calc.drivers.amortVolume).toLocaleString('en-GB')} good parts — one tool life or the programme volume, whichever is smaller${annualVolume ? ` (your stated volume ${Number(annualVolume).toLocaleString('en-GB')}/yr)` : ''}. Once tool life binds, unit tooling stops falling with volume.`
       : kind === 'material' && matPrice?.pricedAt
         ? ` Engine material uses ${matPrice.commodityLabel ?? 'the commodity index'} as of ${String(matPrice.pricedAt).slice(0, 10)}.`
         : '';
@@ -245,6 +245,18 @@ export function inputAnomalies({ weightKg, annualVolume, processKey, quote, geo,
   if (band && Number.isFinite(vol)) {
     if (vol < band[0]) out.push({ id: 'volume-low-for-process', message: `${vol.toLocaleString()}/yr is unusually LOW for ${processKey} (heuristic band ${band[0].toLocaleString()}–${band[1].toLocaleString()}/yr) — tooling amortisation will dominate; check the volume, or whether this process is the right anchor.` });
     else if (vol > band[1]) out.push({ id: 'volume-high-for-process', message: `${vol.toLocaleString()}/yr is unusually HIGH for ${processKey} (heuristic band ${band[0].toLocaleString()}–${band[1].toLocaleString()}/yr) — check the volume, or whether a higher-rate process is the real production route.` });
+  }
+
+  // The CAD engine suspects the file's units (a metre-scaled export): every
+  // mass, volume and wall check below would be computed at the wrong scale.
+  if (typeof geo?.unitWarning === 'string' && geo.unitWarning) {
+    out.push({ id: 'cad-units', message: 'The CAD engine reports that the 3D model’s units look wrong (a dimension is implausible in millimetres — often a file exported in metres). Re-export in millimetres; until then the measured geometry cannot be trusted for mass or dimensional rules.' });
+  }
+
+  // An assembly fed to the single-part flow: the CAD engine merges every body,
+  // so wall, mass and feature figures describe the merged solid, not a part.
+  if (typeof geo?.assemblyWarning === 'string' && geo.assemblyWarning) {
+    out.push({ id: 'cad-assembly', message: 'The 3D model is an assembly: the CAD engine merged every body, so the measured wall, volume and features describe the merged solid, not one part. Use Prism’s assembly mode for a per-part BOM, DFA and consolidation evidence.' });
   }
 
   // Physically impossible mass against the measured volume: denser than any
@@ -443,13 +455,37 @@ export function entitlementWaterfall(input, { geo = null, library = null, calibr
             { material, process: r.process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
             library, calibration,
           );
-          if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: Math.round(ruleDepthPct(r)), kgCo2e: r.kgCo2e ?? null, shapeBasis: r.shapeBasis ?? null };
+          if (!bestAlt || c.totalEur < bestAlt.totalEur) bestAlt = { process: r.process, totalEur: c.totalEur, calc: c.calc, toolingEur: r.toolingEur, dfmScore: r.score, coveragePct: Math.round(ruleDepthPct(r)), kgCo2e: r.kgCo2e ?? null, shapeBasis: r.shapeBasis ?? null };
         } catch { /* a route the engine refuses at this spec is not an option */ }
       }
       if (bestAlt && bestAlt.totalEur < cursor) {
         const co2Known = Number.isFinite(chosenCo2) && Number.isFinite(bestAlt.kgCo2e);
+        // WHERE the step comes from, bucket by bucket, against the current
+        // process at the same relaxed spec. A large process step usually rests
+        // on one bucket — on the first live gear blank, 51% of a hot→cold
+        // forging step was tooling amortisation, i.e. the process library's
+        // die-life assumptions, not the part (Prism review, 9 Oct 2026).
+        let bridge = '';
+        try {
+          const cur = engineCost(
+            { material, process, weightKg, annualVolume, region, toleranceClass: 'standard', surfaceFinish: 'standard', criticalCharacteristics: 0 },
+            library, calibration,
+          );
+          const step = cur.totalEur - bestAlt.totalEur;
+          const rows = Object.keys(cur.calc?.breakdown ?? {})
+            .map(k => ({ k, d: (cur.calc.breakdown[k]?.value ?? 0) - (bestAlt.calc?.breakdown?.[k]?.value ?? 0) }))
+            .filter(x => Math.abs(x.d) >= 0.005)
+            .sort((a, z) => Math.abs(z.d) - Math.abs(a.d));
+          if (step > 0 && rows.length) {
+            const top = rows[0];
+            const share = Math.round((top.d / step) * 100);
+            bridge = ` Where the €${round2(step)} comes from (engine buckets, current → alternative): ${rows.slice(0, 4).map(x => `${x.k} ${x.d >= 0 ? '−' : '+'}€${round2(Math.abs(x.d))}`).join(', ')}.`
+              + (share >= 50 ? ` ${share}% of the step is ${top.k}${top.k === 'tooling' ? ', which rests on the process library’s tool-cost and tool-life assumptions for the two routes; check them with the toolmaker before this step is quoted' : ''}.` : '')
+              + (cur.totalEur > 0 && step / cur.totalEur > 0.4 ? ` A step of ${Math.round((step / cur.totalEur) * 100)}% is large enough to challenge before it is used in a negotiation.` : '');
+          }
+        } catch { /* the bridge is explanatory; the step stands without it */ }
         push('Process premium', cursor, bestAlt.totalEur,
-          `Best DFM-viable net-shape alternative: ${bestAlt.process} (DFM score ${bestAlt.dfmScore ?? '—'} with ${bestAlt.coveragePct ?? '—'}% of its family's rules evaluated; tooling €${round2(bestAlt.toolingEur) ?? '—'} up-front).${bestAlt.shapeBasis ? ` ${bestAlt.shapeBasis}` : ''} A process change is a programme decision — the routes section carries the full comparison including tooling cheques.`,
+          `Best DFM-viable net-shape alternative: ${bestAlt.process} (DFM score ${bestAlt.dfmScore ?? '—'} with ${bestAlt.coveragePct ?? '—'}% of its family's rules evaluated; tooling €${round2(bestAlt.toolingEur) ?? '—'} up-front).${bestAlt.shapeBasis ? ` ${bestAlt.shapeBasis}` : ''}${bridge} A process change is a programme decision — the routes section carries the full comparison including tooling cheques.`,
           co2Known ? {
             co2DeltaKg: Number((bestAlt.kgCo2e - chosenCo2).toFixed(3)),
             co2Basis: `computeCarbon on both routes' engine input mass: ${bestAlt.process} ${bestAlt.kgCo2e} vs current ${chosenCo2} kg CO2e/part (cradle-to-gate material + process energy; not a full LCA).`,
@@ -530,6 +566,7 @@ export function buildDossier({
   geometryLines = null, dfmLines = null, routeLines = null, drawingLines = null,
   visionLines = null, functionModelError = null,
   photoLines = null, teardownDeltaLines = null, joiningLines = null,
+  cadUnreadable = false,
 } = {}) {
   let e = 0;
   const ref = () => `E${++e}`;
@@ -582,7 +619,9 @@ export function buildDossier({
     Number.isFinite(geometry.solidity) ? `Solidity ${(geometry.solidity * 100).toFixed(0)}% — ${geometry.solidity > 0.75 ? 'largely solid; ribbed/shelled redesign is a mass lever' : 'already shell-like'}` : null,
     Number.isFinite(geometry.charThicknessMm) ? `Characteristic wall ${geometry.charThicknessMm} mm` : null,
     geometry.featureNote ?? null,
-  ] : 'No 3D model supplied — geometry-driven evidence (mass levers, process alternatives) unavailable.');
+  ] : cadUnreadable
+    ? 'A 3D model WAS supplied but could not be measured (unreadable or unsupported STEP) — geometry-driven evidence is unavailable, and nothing here is inferred from the file.'
+    : 'No 3D model supplied — geometry-driven evidence (mass levers, process alternatives) unavailable.');
 
   add('dfm', 'Manufacturability findings (deterministic rules)', Array.isArray(dfmLines) && dfmLines.length ? [
     ...(dfm ? [`${dfm.pricedCount ?? 0} findings priced by the engine (${fmtEur(dfm.perPartEur)}/part, ${fmtEur(dfm.annualEur)}/yr), ${dfm.unpricedCount ?? 0} not priceable — each line says which.`] : []),
@@ -592,10 +631,10 @@ export function buildDossier({
     `${dfm.pricedCount ?? 0} findings priced by the engine (${fmtEur(dfm.perPartEur)}/part, ${fmtEur(dfm.annualEur)}/yr), ${dfm.unpricedCount ?? 0} findings honestly unpriced.`,
     ...(dfm.topFindings ?? []).slice(0, 5).map(f => `[${f.severity}] ${f.title}${Number.isFinite(f.deltaEur) && f.deltaEur !== 0 ? ` — engine-priced ${fmtEur(f.deltaEur)}/part` : ' — not engine-priceable'}`),
     dfm.caveat ?? null,
-  ] : 'DFM analysis not run — no 3D model.');
+  ] : cadUnreadable ? 'DFM analysis not run — the supplied 3D model could not be measured.' : 'DFM analysis not run — no 3D model.');
 
   add('cost', 'Should-cost (deterministic engine)', shouldCost ? [
-    `Engine total ${fmtEur(shouldCost.totalEur)} (P10–P90 ${fmtEur(shouldCost.p10)}–${fmtEur(shouldCost.p90)}).`,
+    `Engine total ${fmtEur(shouldCost.totalEur)}${Number.isFinite(shouldCost.p10) && Number.isFinite(shouldCost.p90) ? ` (Monte-Carlo P10–P90 ${fmtEur(shouldCost.p10)} to ${fmtEur(shouldCost.p90)})` : ' (uncertainty band not computed)'}.`,
     shouldCost.breakdownLine ?? null,
     Number.isFinite(shouldCost.inputMassKg) && Number.isFinite(part.weightKg)
       ? `Buy-to-fly: ${shouldCost.inputMassKg} kg bought per ${part.weightKg} kg shipped (${((shouldCost.inputMassKg / part.weightKg - 1) * 100).toFixed(0)}% material overbuy).`

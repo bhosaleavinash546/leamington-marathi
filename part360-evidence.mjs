@@ -25,6 +25,12 @@ export function geometryEvidenceLines(geo) {
   if (!geo || typeof geo !== 'object') return [];
   const d = geo.dfm && typeof geo.dfm === 'object' ? geo.dfm : {};
   const out = [];
+  // A metre-scaled export: the DFM engine withholds its dimensional rules, so
+  // the evidence must not present the raw millimetre figures as measurements
+  // (Prism review, 9 Oct 2026 — the AI saw a "0.06 × 0.04 × 0.01 mm" part with
+  // no caution while the DFM report itself said the file was in metres).
+  if (typeof geo.unitWarning === 'string' && geo.unitWarning) out.push('UNIT CAUTION: the CAD engine reports this file’s units look wrong (a dimension is implausible in millimetres — often a metre-scaled export). Every absolute dimension below is suspect; ratios and percentages are scale-free.');
+  if (typeof geo.assemblyWarning === 'string' && geo.assemblyWarning) out.push('ASSEMBLY CAUTION: the model holds several bodies merged into one solid — the figures below describe the merged solid, not one part; fastener-like bosses may be separate parts.');
   const bb = geo.boundingBox;
   if (bb && n(bb.xMm)) out.push(`Bounding box ${bb.xMm} × ${bb.yMm} × ${bb.zMm} mm.`);
   const vol = n(geo.volume?.cm3), area = n(geo.surfaceArea?.cm2);

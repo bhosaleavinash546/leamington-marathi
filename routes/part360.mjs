@@ -26,7 +26,7 @@
 import { messagesJson } from '../llm-json.mjs';
 import { describeLlmError } from '../llm-error.mjs';
 import { getFxRates, FX_FALLBACK, FX_CURRENCIES } from '../fx-rates.mjs';
-import { volumeSensitivity, REGIONS } from '../costing-engine.mjs';
+import { volumeSensitivity, simulateShouldCost, REGIONS } from '../costing-engine.mjs';
 import { resolveMaterial, resolveRoute } from '../material-process-resolve.mjs';
 import { specRelaxationDeltas } from '../innovation.mjs';
 import crypto from 'crypto';
@@ -136,24 +136,39 @@ export function registerPart360Routes(app, deps) {
   } catch { /* memory is additive — a failed migration must not break the dossier */ }
 
   /** Fleet lines: outcomes from THIS user's prior runs on similar geometry. */
-  function fleetLinesFor(userId, currentSig) {
+  function fleetLinesFor(userId, currentSig, ctx = null, library = null) {
     if (!db || !currentSig) return null;
     try {
       const rows = db.prepare(
         'SELECT * FROM prism_runs WHERE userId = ? AND signature IS NOT NULL ORDER BY createdAt DESC LIMIT 200',
       ).all(userId).map(r => ({ ...r, signature: JSON.parse(r.signature) }));
-      const ranked = rankSimilarRuns(currentSig, rows);
+      // Geometry alone is not similarity: a steel stamped assembly matched an
+      // aluminium extrusion at 83% and was offered its cost and ideas as
+      // memory (Prism review, 9 Oct 2026). A prior run counts only when it
+      // shares this part's material family OR process family, and the line
+      // says which; a look-alike in a different material AND process is left out.
+      const famOf = (run) => {
+        const mk = resolveMaterial(String(run.material || ''), library?.MATERIALS)?.key ?? null;
+        const pk = resolveRoute(String(run.process || ''), library?.PROCESSES)?.keys?.[0] ?? null;
+        return { mat: mk ? familyOfMaterial(mk) ?? null : null, proc: pk ? familyForSelection({ process: pk })?.family ?? null : null };
+      };
+      const ranked = rankSimilarRuns(currentSig, rows, { limit: 20 })
+        .map(x => ({ ...x, fam: famOf(x.run) }))
+        .map(x => ({ ...x, sameMat: !!(ctx?.materialFamily && x.fam.mat === ctx.materialFamily), sameProc: !!(ctx?.processFamily && x.fam.proc === ctx.processFamily) }))
+        .filter(x => !ctx || x.sameMat || x.sameProc)
+        .slice(0, 3);
       if (!ranked.length) return null;
       const lines = ["Outcomes from YOUR OWN prior Prism runs on similar geometry — this organisation's memory, not an external benchmark."];
-      for (const { run, similarity } of ranked) {
-        let line = `Similar part (${Math.round(similarity.score * 100)}% geometric match: ${similarity.basis}): "${run.partName}" — ${run.material} via ${run.process}, engine €${run.engineTotalEur}, entitlement €${run.entitlementEur} (run ${String(run.createdAt).slice(0, 10)}).`;
+      for (const { run, similarity, sameMat, sameProc } of ranked) {
+        const fam = sameMat && sameProc ? 'same material and process family' : sameMat ? 'same material family, different process' : sameProc ? 'same process family, different material' : 'family not compared';
+        let line = `Similar part (${Math.round(similarity.score * 100)}% geometric match: ${similarity.basis}; ${fam}): "${run.partName}" — ${run.material} via ${run.process}, engine €${run.engineTotalEur}, entitlement €${run.entitlementEur} (run ${String(run.createdAt).slice(0, 10)}).`;
         if (run.projectId) {
           try {
             const proj = db.prepare('SELECT ideas FROM projects WHERE id = ? AND userId = ?').get(run.projectId, userId);
             if (proj) {
               const ideas = JSON.parse(proj.ideas || '[]');
               const confirmed = ideas.filter(i => i?.engineCheck?.direction === 'confirmed');
-              line += ` ${ideas.length} ideas generated${confirmed.length ? `; engine-confirmed best: "${confirmed[0].title}" (${confirmed[0].engineCheck.savingPct}%)` : ''}.`;
+              line += ` ${ideas.length} ideas generated${confirmed.length ? `; engine-confirmed best: "${confirmed[0].title}" (${confirmed[0].engineCheck.savingPct}% on its engine reference case, not on this part)` : ''}.`;
             }
             const actions = db.prepare(
               'SELECT ideaTitle, stage, targetSaving, confirmedSaving FROM vave_actions WHERE projectId = ? AND userId = ? LIMIT 3',
@@ -300,6 +315,12 @@ Rules:
     const processName = String(b.process || '').slice(0, 160);
     const weightKg = Number(b.weightKg);
     const annualVolume = Number(b.annualVolume) > 0 ? Math.min(Number(b.annualVolume), 100_000_000) : 80_000;
+    // An unknown region used to fall back to Germany silently, so a dossier
+    // could quote German rates for a part the user said was made elsewhere
+    // (Prism review, 9 Oct 2026). Absent means the default; wrong means 400.
+    if (b.region != null && b.region !== '' && !Object.hasOwn(REGIONS, b.region)) {
+      return res.status(400).json({ error: `Region "${String(b.region).slice(0, 40)}" is not in the engine's rate library.` });
+    }
     const region = Object.hasOwn(REGIONS, b.region) ? b.region : 'Germany';
     if (!material || !processName || !(weightKg > 0)) {
       return res.status(400).json({ error: 'material, process and weightKg > 0 are required.' });
@@ -323,7 +344,11 @@ Rules:
     // Quote → EUR (rates are EUR-based: units per 1 EUR), confirmed lines only.
     let quote = null;
     if (b.quote && typeof b.quote === 'object' && Number(b.quote.totalEur ?? b.quote.total) > 0) {
-      const currency = FX_CURRENCIES.includes(String(b.quote.currency ?? 'EUR').toUpperCase()) ? String(b.quote.currency ?? 'EUR').toUpperCase() : 'EUR';
+      const typedCur = String(b.quote.currency ?? 'EUR').toUpperCase();
+      // An unsupported currency used to be read as EUR — a ₹ quote would have
+      // been compared with the engine at face value. Refuse it instead.
+      if (!FX_CURRENCIES.includes(typedCur)) return res.status(400).json({ error: `Quote currency "${typedCur.slice(0, 8)}" is not supported.` });
+      const currency = typedCur;
       const fx = currency === 'EUR' ? { rates: FX_FALLBACK } : await getFxRates().catch(() => ({ rates: FX_FALLBACK }));
       const rate = fx.rates[currency] ?? 1;
       const toEur = (n) => Number((Number(n) / rate).toFixed(4));
@@ -432,7 +457,6 @@ Rules:
 
       // Memory: signature of THIS part, fleet outcomes, teardown observations.
       const sig = geoSignature(b.geo && typeof b.geo === 'object' ? b.geo : null);
-      const fleet = fleetLinesFor(req.user.id, sig);
       const tdCtx = {
         materialKey: resolveMaterial(material, library.MATERIALS)?.key ?? null,
         materialFamily: familyOfMaterial(resolveMaterial(material, library.MATERIALS)?.key) ?? null,
@@ -440,6 +464,7 @@ Rules:
         processFamily: familyForSelection({ process: resolveRoute(processName, library.PROCESSES)?.keys?.[0] })?.family ?? null,
         partName,
       };
+      const fleet = fleetLinesFor(req.user.id, sig, tdCtx, library);
       const teardowns = teardownLinesFor(req.user.id, tdCtx, library);
 
       // Pre-flight: deterministic input cautions — flagged, never silently fixed.
@@ -512,6 +537,7 @@ Rules:
 
       const dossier = buildDossier({
         geometryLines, dfmLines, routeLines, drawingLines,
+        cadUnreadable: b.cadUnreadable === true && !(b.geo && typeof b.geo === 'object'),
         part: { partName, material, process: processName, weightKg, annualVolume, region },
         // The user's own statement of what the part is and does — the
         // requirement every alternative is judged against. User text entering
@@ -526,7 +552,20 @@ Rules:
         dfm,
         shouldCost: {
           totalEur: asSpec.totalShouldCost,
-          p10: null, p90: null,   // the band is added by the caller from /api/should-cost when shown
+          // The same Monte-Carlo band /api/should-cost shows (same seed, same
+          // calibration and library). It used to be hard-coded null, so the
+          // dossier told the model "P10–P90 —–—" while the page showed a band.
+          ...(() => {
+            try {
+              const sim = simulateShouldCost(
+                { ...base, toleranceClass, surfaceFinish, criticalCharacteristics,
+                  material: resolveMaterial(material, library.MATERIALS).key,
+                  process: resolveRoute(processName, library.PROCESSES).keys[0] },
+                2000, 12345, calibration, library,
+              );
+              return { p10: Number.isFinite(sim?.p10) ? sim.p10 : null, p90: Number.isFinite(sim?.p90) ? sim.p90 : null };
+            } catch { return { p10: null, p90: null }; }
+          })(),
           inputMassKg: asSpec.drivers?.inputMassKg ?? null,
           breakdownLine: `Breakdown: ${Object.entries(asSpec.breakdown).map(([k, v]) => `${k} €${v.value.toFixed(2)}`).join(', ')}.`,
           calibrationNote: calibration?.n > 0
@@ -605,6 +644,12 @@ Rules:
     const material = String(req.body.material || '').slice(0, 120);
     const processName = String(req.body.process || '').slice(0, 160);
     const annualVolume = Number(req.body.annualVolume) > 0 ? Math.min(Number(req.body.annualVolume), 100_000_000) : 80_000;
+    // An unknown region used to fall back to Germany silently, so a dossier
+    // could quote German rates for a part the user said was made elsewhere
+    // (Prism review, 9 Oct 2026). Absent means the default; wrong means 400.
+    if (req.body.region != null && req.body.region !== '' && !Object.hasOwn(REGIONS, req.body.region)) {
+      return res.status(400).json({ error: `Region "${String(req.body.region).slice(0, 40)}" is not in the engine's rate library.` });
+    }
     const region = Object.hasOwn(REGIONS, req.body.region) ? req.body.region : 'Germany';
     const { library } = shouldCostApi.liveLibrary();
     if (!resolveMaterial(material, library?.MATERIALS) || !resolveRoute(processName, library?.PROCESSES)?.keys?.length) {
@@ -774,6 +819,12 @@ Rules:
     const b = req.body || {};
     const assemblyName = sanitize(String(b.assemblyName || 'Assembly'), 120);
     const annualVolume = Number(b.annualVolume) > 0 ? Math.min(Number(b.annualVolume), 100_000_000) : 80_000;
+    // An unknown region used to fall back to Germany silently, so a dossier
+    // could quote German rates for a part the user said was made elsewhere
+    // (Prism review, 9 Oct 2026). Absent means the default; wrong means 400.
+    if (b.region != null && b.region !== '' && !Object.hasOwn(REGIONS, b.region)) {
+      return res.status(400).json({ error: `Region "${String(b.region).slice(0, 40)}" is not in the engine's rate library.` });
+    }
     const region = Object.hasOwn(REGIONS, b.region) ? b.region : 'Germany';
     const inRows = Array.isArray(b.rows) ? b.rows.slice(0, 120) : [];
     if (!inRows.length) return res.status(400).json({ error: 'rows is required — confirm the BOM before it can be costed.' });
