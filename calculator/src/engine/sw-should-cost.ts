@@ -1229,6 +1229,13 @@ function computeModuleCost(
   };
 }
 
+/** A copy of the inputs a result was costed on. `result.inputs` was the caller's live object, so editing the form
+ *  after Calculate changed a costed result's recorded inputs — a redraw (currency change, P3 #15) then re-costed the
+ *  dev-source table from half-typed inputs and threw. The rate book is shared (read-only). */
+function snapshotInputs(prog: SWProgramInputs): SWProgramInputs {
+  return { ...prog, modules: prog.modules.map(m => ({ ...m })) };
+}
+
 /** The tool's own development timeline (M1–M90, the phase table) — the default development duration. */
 export const SW_DEFAULT_DEVELOPMENT_MONTHS = 90;
 
@@ -1609,7 +1616,7 @@ export function computeSWProgram(
   // Skip the (expensive, and otherwise infinitely-recursive) sensitivity /
   // Monte Carlo / phase / benchmark build-out.
   if (opts.summaryOnly) {
-    return { modules, summary, sensitivity: [], benchmarks: [], phases: [], monteCarlo: EMPTY_MC, inputs: prog };
+    return { modules, summary, sensitivity: [], benchmarks: [], phases: [], monteCarlo: EMPTY_MC, inputs: snapshotInputs(prog) };
   }
 
   // Sensitivity analysis
@@ -1675,7 +1682,7 @@ export function computeSWProgram(
   // Monte Carlo cost distribution
   const monteCarlo = runMonteCarlo(prog, summary);
 
-  return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: prog };
+  return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: snapshotInputs(prog) };
 }
 
 type SWRecomputeOverrides = {

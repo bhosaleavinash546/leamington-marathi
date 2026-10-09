@@ -126,6 +126,13 @@ describe('#15 the software results follow the page\'s display currency', () => {
       && !/desc: '/.test(l));                                            // demo prose
     expect(offenders.map(([i, l]) => `${i}: ${l.trim().slice(0, 80)}`)).toEqual([]);
   });
+  it('a costed result keeps its own inputs (a currency redraw re-costed half-typed form inputs and threw)', () => {
+    const p = prog();
+    const r = computeSWProgram(p);
+    p.annualProductionVolume = 0; p.modules[0].enabled = !p.modules[0].enabled;
+    expect(r.inputs.annualProductionVolume).toBe(80_000);
+    expect(r.inputs.modules[0].enabled).not.toBe(p.modules[0].enabled);
+  });
   it('the page currency picker drives it', () => {
     expect(src('src/ui/main.ts')).toMatch(/applySWCurrency\(cur, sym, _displayFxRate\)/);
   });
