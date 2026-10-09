@@ -1,0 +1,675 @@
+{
+  "domain": "ev-body",
+  "researched": "2026-10-09",
+  "parts": [
+    {
+      "mpn": "TPS92682QDAPRQ1",
+      "family": "TPS92682-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual-channel constant-voltage / constant-current boost/SEPIC LED controller, SPI (headlight ECU boost stage)",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-32",
+      "aecq": true,
+      "ecuRoles": [
+        "HEADLAMP"
+      ],
+      "observedMpn": "TPS92682QDAPRQ1",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 2.4787,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C2869850.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 2.2518,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C2869850.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "LCSC C2869850, full reel 2,000. Named in TI TIDA-050030 / TIDA-050040 headlight reference designs. No Digi-Key / Mouser row found for this code."
+    },
+    {
+      "mpn": "L99DZ200GTR",
+      "family": "L99DZ200G",
+      "mfr": "STMicroelectronics",
+      "desc": "Door zone multi-output driver: H-bridges for front and rear window lift, lock / mirror half-bridges, 5 LED + 2 bulb high-side drivers, LIN + HS-CAN wake",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-64",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR"
+      ],
+      "observedMpn": "L99DZ200GTR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 4.2028,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/L99DZ",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 1000,
+          "price": 4.2,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/L99DZ",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Findchips snapshot (date not shown on the page) naming Digi-Key and Newark at 1,000. RS sells a 1,000-unit reel (KR/PH/TH sites, currency not usable)."
+    },
+    {
+      "mpn": "TLE95623QXXUMA1",
+      "family": "TLE9562-3QX",
+      "mfr": "Infineon Technologies",
+      "desc": "MOTIX DC motor system IC: SBC (LDO, CAN FD) with 4 half-bridge gate drivers for window lift / door modules",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR"
+      ],
+      "observedMpn": "TLE95623QXXUMA1",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 2500,
+          "price": 18.171,
+          "currency": "SEK",
+          "url": "https://se.rs-online.com/web/p/can-interface-ics/2334410",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS Sweden reel of 2,500 at SEK 45,427.50 excl. VAT. element14 CN (CNY 17.37 @1,000) includes GST - not recorded; Cytech is a broker - not recorded. Named on Infineon door control reference board."
+    },
+    {
+      "mpn": "TLE92108232QXXUMA1",
+      "family": "TLE92108-23QX",
+      "mfr": "Infineon Technologies",
+      "desc": "MOTIX 8-half-bridge MOSFET gate driver, SPI (seat / steering column / multi-motor)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "SEAT"
+      ],
+      "observedMpn": "TLE92108232QXXUMA1",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 2500,
+          "price": 1.87,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--analog--drivers--motor-drivers/tle92108232qxxuma1-infineon-3132060",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 500,
+          "price": 82.48,
+          "currency": "THB",
+          "url": "https://th.rs-online.com/web/p/gate-drivers/2291916",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Future web price at 2,500+ (zero stock, 20-week lead time at the snapshot). RS Thailand 500+ tier."
+    },
+    {
+      "mpn": "TLE94112ESXUMA1",
+      "family": "TLE94112ES",
+      "mfr": "Infineon Technologies",
+      "desc": "12-half-bridge DC motor driver, SPI (HVAC flap DC motors, seat / multi-motor)",
+      "category": "ic_soic",
+      "pkg": "TSDSO-24",
+      "aecq": true,
+      "ecuRoles": [
+        "HVAC",
+        "SEAT"
+      ],
+      "observedMpn": "TLE94112ESXUMA1",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 1.59,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/infineon/tle94112esxuma1/motor-drivers-40-to-150deg-c/dp/3773489",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Farnell IE ex-VAT, cut tape, 9,716 in stock. The SSOP sibling TLE94112ELXUMA1 is not for new designs (Cytech page) - not priced."
+    },
+    {
+      "mpn": "TLD60982ESXUMA2",
+      "family": "TLD6098-2ES",
+      "mfr": "Infineon Technologies",
+      "desc": "LITIX Power dual-channel multi-topology DC-DC LED controller (full headlamp without MCU: HB, LB, DRL, turn)",
+      "category": "ic_soic",
+      "pkg": "TSDSO-24",
+      "aecq": true,
+      "ecuRoles": [
+        "HEADLAMP"
+      ],
+      "observedMpn": "TLD60982ESXUMA2",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 1.59,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--analog--drivers--led-drivers-linear-mode/tld60982esxuma2-infineon-3167978",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 3000,
+          "price": 1.016,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/voltage-controllers/2483078?gb=s",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "The XUMA1 code was not found at any distributor; XUMA2 is the listed orderable. RS IE EUR 1.915 @200 (pack of 2) and RS TW TWD 54.10 @3,000 also seen, not recorded."
+    },
+    {
+      "mpn": "TLD5190QVXUMA1",
+      "family": "TLD5190QV",
+      "mfr": "Infineon Technologies",
+      "desc": "LITIX Power synchronous H-bridge buck-boost LED controller, no SPI (front lighting)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "HEADLAMP"
+      ],
+      "observedMpn": "TLD5190QV",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.82,
+          "currency": "USD",
+          "url": "https://lcsc.com/product-detail/image/TLD5190QV_C539655.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "LCSC lists it as TLD5190QV (reel 2,500). Farnell IL lists the sibling TLD5190QUXUMA1 at USD 1.447 @1,000 (other package option, not recorded). RS NZ NZD and IBS (not franchised) not recorded."
+    },
+    {
+      "mpn": "FS32K116LFT0VLFT",
+      "family": "S32K116",
+      "mfr": "NXP Semiconductors",
+      "desc": "S32K116 Cortex-M0+ 48 MHz, 128 KB flash, CAN FD (seat / door / HVAC node MCU)",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "SEAT",
+        "DOOR",
+        "HVAC"
+      ],
+      "observedMpn": "FS32K116LFT0VLFT",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 2.5437,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C1137390.html",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 2000,
+          "price": 2.58,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/p/semiconductors--microcontrollers--32-bit/fs32k116lft0vlfr-nxp-5139334",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative orderable for the library's S32K116 estimate. The Future price is on the reel code FS32K116LFT0VLFR (same device, tape and reel). Rochester row ignored (aftermarket)."
+    },
+    {
+      "mpn": "FS32K118LAT0MLFR",
+      "family": "S32K118",
+      "mfr": "NXP Semiconductors",
+      "desc": "S32K118 Cortex-M0+ 48 MHz, 256 KB flash, CAN FD, 125 C",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "SEAT",
+        "DOOR",
+        "HVAC"
+      ],
+      "observedMpn": "FS32K118LAT0MLFR",
+      "observations": [
+        {
+          "distributor": "element14",
+          "qty": 1000,
+          "price": 105.71,
+          "currency": "TWD",
+          "url": "https://tw.element14.com/en-TW/nxp/fs32k118lat0mlfr/arm-microcontrollers-mcu/dp/4783685",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative orderable for the library's S32K118 estimate (cut tape). FS32K118LAT0MLHT (LQFP-64) seen only on a Digi-Key punchouttest page - not used."
+    },
+    {
+      "mpn": "SPC582B60E1MH00Y",
+      "family": "SPC582B",
+      "mfr": "STMicroelectronics",
+      "desc": "SPC58 2B-line e200z2 80 MHz, 1 MB flash, CAN FD, LIN (door / body MCU; ST EVAL-L99DZ200 and AEK-MOT-TK200G1)",
+      "category": "ic_tqfp",
+      "pkg": "eTQFP-64",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR",
+        "BCM"
+      ],
+      "observedMpn": "SPC582B60E1MH00Y",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 960,
+          "price": 5.27498,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC582B60E1MH00Y/8257629",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1920,
+          "price": 5.16872,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SPC582B60E1MH00Y/8257629",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative orderable for the library's SPC582B estimate. ST budgetary price USD 5.8 @1k (manufacturer list price, not an observation)."
+    },
+    {
+      "mpn": "CYT2B75CADQ0AZEGS",
+      "family": "TRAVEO T2G CYT2B7",
+      "mfr": "Infineon Technologies",
+      "desc": "TRAVEO T2G Body Entry Cortex-M4F 160 MHz, 1088 KB flash, CAN FD, LIN",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-100",
+      "aecq": true,
+      "ecuRoles": [
+        "SEAT",
+        "DOOR",
+        "BCM"
+      ],
+      "observedMpn": "CYT2B75CADQ0AZEGS",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 100,
+          "price": 7.4,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/microcontrollers/2735292",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS UK 100+ ex-VAT. Mouser CH lists ~CHF 5.96 @900 (CHF not in the FX table - not recorded). Representative TRAVEO T2G Body Entry part; the board sources name the family only."
+    },
+    {
+      "mpn": "MC33FS6522LAE",
+      "family": "FS6522",
+      "mfr": "NXP Semiconductors",
+      "desc": "FS65 safety SBC (ASIL D), DC-DC VCORE, CAN + LIN (MPC5748G gateway reference design)",
+      "category": "ic_tqfp",
+      "pkg": "HLQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "GW"
+      ],
+      "observedMpn": "MC33FS6522LAE",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 750,
+          "price": 5.98843,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nxp/mc33fs6522lae/evolve-20661820/",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 3000,
+          "price": 5.51566,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nxp/mc33fs6522lae/evolve-20661820/",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 250,
+          "price": 6.1,
+          "currency": "EUR",
+          "url": "https://ie.farnell.com/nxp/mc33fs6522lae/sbc-can-lin-hlqfp-48/dp/2890576",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Avnet Americas (zero stock, long lead time at the snapshot); Farnell IE ex-VAT. Newark USD 6.79 @500 seen via findchips, not recorded. The MPC5748G-GW-RDB fact sheet names FS6500, the quick-start guide FS6522 (FS6500 already priced)."
+    },
+    {
+      "mpn": "MVR5510AMBANES",
+      "family": "VR5510",
+      "mfr": "NXP Semiconductors",
+      "desc": "VR5510 multi-output safety PMIC for S32G (ASIL D, 60 V, buck + boost + LDOs)",
+      "category": "ic_qfn",
+      "pkg": "HVQFN-56",
+      "aecq": true,
+      "ecuRoles": [
+        "GW"
+      ],
+      "observedMpn": "MVR5510AMBANES",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 520,
+          "price": 8.634,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nxp/mvr5510ambanes/evolve-64144456/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Representative VR5510 OTP code (the S32G-VNP-RDB2 sources name VR5510 without an OTP code). MVR5510AMDA0ES seen only on Digi-Key punchouttest pages (forbidden). element14 NZ figures (NZD thousands) implausible - not recorded."
+    },
+    {
+      "mpn": "TJA1044GT/3Z",
+      "family": "TJA1044",
+      "mfr": "NXP Semiconductors",
+      "desc": "HS-CAN / CAN FD transceiver, standby, VIO (MPC5748G gateway reference design)",
+      "category": "ic_soic",
+      "pkg": "SO-8",
+      "aecq": true,
+      "ecuRoles": [
+        "GW",
+        "BCM"
+      ],
+      "observedMpn": "TJA1044GT/3Z",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.55072,
+          "currency": "USD",
+          "url": "https://www.digikey.com.mx/en/products/detail/nxp-usa-inc/TJA1044GT-3Z/7648357",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key cut tape USD 550.72 extended for 1,000. Reel price at 2,500 (about USD 0.53) given only approximately - not recorded."
+    },
+    {
+      "mpn": "BTS70082EPAXUMA1",
+      "family": "BTS7008-2EPA",
+      "mfr": "Infineon Technologies",
+      "desc": "PROFET+2 12 V dual-channel smart high-side switch, 8 mOhm (lamps, heaters)",
+      "category": "ic_soic",
+      "pkg": "TSDSO-14",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "SEAT"
+      ],
+      "observedMpn": "BTS70082EPAXUMA1",
+      "observations": [
+        {
+          "distributor": "Farnell",
+          "qty": 1000,
+          "price": 1.257,
+          "currency": "USD",
+          "url": "https://il.farnell.com/infineon/bts70082epaxuma1/power-load-switch-auto-28v-tssop14/dp/2803447",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Farnell order code 2803447 (USD storefront). Farnell NO / DK reel prices in NOK / DKK (not in FX table). Catalogue entry BTS7008-2EPA had no observations."
+    },
+    {
+      "mpn": "BTS72002EPAXUMA1",
+      "family": "BTS7200-2EPA",
+      "mfr": "Infineon Technologies",
+      "desc": "PROFET+2 12 V dual-channel smart high-side switch, 200 mOhm (Infineon door control reference board)",
+      "category": "ic_soic",
+      "pkg": "TSDSO-14",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR",
+        "BCM"
+      ],
+      "observedMpn": "BTS72002EPAXUMA1",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 500,
+          "price": 0.875,
+          "currency": "GBP",
+          "url": "https://uk.rs-online.com/web/p/power-switch-ics/2238501P?gb=s",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "RS UK 500+ ex-VAT. Digi-Key price seen only on a punchouttest storefront - not used."
+    },
+    {
+      "mpn": "S9S12VR64AF0MLC",
+      "family": "S12VR",
+      "mfr": "NXP Semiconductors",
+      "desc": "S12VR 16-bit MCU with integrated LIN, high-side / low-side relay drivers (window-lift / door node), 64 KB flash",
+      "category": "ic_tqfp",
+      "pkg": "LQFP-32",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR"
+      ],
+      "observedMpn": "S9S12VR64AF0MLC",
+      "observations": [
+        {
+          "distributor": "element14",
+          "qty": 500,
+          "price": 5.73,
+          "currency": "SGD",
+          "url": "https://sg.element14.com/nxp/s9s12vr64af0mlc/mcu-16bit-s12-lqfp-32/dp/2900146",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "element14 SG 500+ ex-GST. NXP TRK-S12VR-WLFT window-lift reference board names the S12VR family; this 64 KB LQFP-32 code is a representative orderable."
+    },
+    {
+      "mpn": "DRV8912QPWPRQ1",
+      "family": "DRV8912-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "12-half-bridge brushed DC motor driver, SPI (HVAC flaps, TIDA-020010)",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-24",
+      "aecq": true,
+      "ecuRoles": [
+        "HVAC"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (4 searches): Digi-Key price only on punchouttest storefronts (forbidden), Cytech is a broker; no Mouser / LCSC listing found."
+    },
+    {
+      "mpn": "DRV8000QWRGZRQ1",
+      "family": "DRV8000-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Integrated door driver: 6 half-bridges, 6 high-side drivers, H-bridge gate driver, electrochromic and heater drivers",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (3 searches): no distributor listing for this orderable found."
+    },
+    {
+      "mpn": "TLE9166EQXUMA1",
+      "family": "TLE9166EQ",
+      "mfr": "Infineon Technologies",
+      "desc": "MOTIX 6-half-bridge driver for door lock, safe lock, mirror fold / adjust (Infineon door control reference board)",
+      "category": "ic_qfn",
+      "pkg": "not confirmed in any source found",
+      "aecq": true,
+      "ecuRoles": [
+        "DOOR"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (2 searches): new product, only a Digi-Key punchouttest page without price; no Mouser / Farnell listing."
+    },
+    {
+      "mpn": "DRV8718SQRVJRQ1",
+      "family": "DRV8718-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "8-half-bridge smart gate driver with current-sense amps (seat modules: 4 motors + fan + heater)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-56",
+      "aecq": true,
+      "ecuRoles": [
+        "SEAT"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (2 searches): only digikey.cn (CNY 28.65 @1,000, 27.21 @2,000, incl. 13% VAT) - VAT-inclusive, not recorded."
+    },
+    {
+      "mpn": "TPS92664QPHPRQ1",
+      "family": "TPS92664-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "16-channel LED matrix manager (adaptive headlight pixels)",
+      "category": "ic_tqfp",
+      "pkg": "HTQFP-48",
+      "aecq": true,
+      "ecuRoles": [
+        "HEADLAMP"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (2 searches): only digikey.cn (CNY 49.67 @100, 36.28 @2,000, incl. 13% VAT) - not recorded."
+    },
+    {
+      "mpn": "MLX81315",
+      "family": "MLX81315",
+      "mfr": "Melexis",
+      "desc": "Smart LIN motor driver (MCU + 4 half-bridges, 0.8 A) for HVAC flap actuators",
+      "category": "ic_qfn",
+      "pkg": "QFN-32 5x5",
+      "aecq": false,
+      "ecuRoles": [
+        "HVAC"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (2 searches): no distributor listing found; orderable code not found. This IC sits in the flap actuator, not on the HVAC ECU. AEC-Q status not stated in the sources read."
+    },
+    {
+      "mpn": "HDC3020QDEFRQ1",
+      "family": "HDC3020-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Digital relative humidity + temperature sensor with heater, AEC-Q100 (HVAC control modules)",
+      "category": "ic_qfn",
+      "pkg": "WSON-8 2.5x2.5",
+      "aecq": true,
+      "ecuRoles": [
+        "HVAC"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (3 searches): Digi-Key price only on a punchouttest storefront without a break; no Mouser / LCSC price found."
+    },
+    {
+      "mpn": "TPS2HCS08AQPWPRQ1",
+      "family": "TPS2HCS08-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Dual-channel 8.9 mOhm smart high-side switch with I2T wire protection, SPI (zone / BCM)",
+      "category": "ic_soic",
+      "pkg": "HTSSOP",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (1 search): only a Digi-Key punchouttest page without price. Sibling TPS2HCS10-Q1 already priced."
+    },
+    {
+      "mpn": "SPC5748GSK1MMJ6",
+      "family": "MPC5748G",
+      "mfr": "NXP Semiconductors",
+      "desc": "MPC5748G gateway MCU: 2x e200z4 + e200z2, 6 MB flash, Ethernet, 8x CAN FD",
+      "category": "ic_bga",
+      "pkg": "MAPBGA-256",
+      "aecq": true,
+      "ecuRoles": [
+        "GW",
+        "BCM"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (3 searches): Future lists only breaks to 20+ (USD 31.95), Newark price without break, Cytech is a broker. Orderables use the SPC prefix."
+    },
+    {
+      "mpn": "88Q5050",
+      "family": "88Q5050",
+      "mfr": "Marvell",
+      "desc": "Secure 8-port automotive Gigabit Ethernet switch (4x 100BASE-T1 + 4 configurable), AEC-Q100 Grade 2",
+      "category": "ic_bga",
+      "pkg": "not published",
+      "aecq": true,
+      "ecuRoles": [
+        "GW"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (2 searches): no franchised listing; Marvell sells under NDA via sales; Fusion Worldwide is a broker."
+    },
+    {
+      "mpn": "TLC6C5716QDAPRQ1",
+      "family": "TLC6C5716-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "16-channel constant-current LED driver for HMI backlight (TIDA-020010 HVAC panel)",
+      "category": "ic_soic",
+      "pkg": "HTSSOP-38",
+      "aecq": true,
+      "ecuRoles": [
+        "HVAC"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (1 search): Mouser USD 2.87 and Digi-Key USD 3.03 seen only on electronicsdatasheets.com without a quantity break (not a price host)."
+    },
+    {
+      "mpn": "TLD55411QVXUMA1",
+      "family": "TLD5541-1QV",
+      "mfr": "Infineon Technologies",
+      "desc": "LITIX Power Flex H-bridge buck-boost LED controller, SPI (front lighting)",
+      "category": "ic_qfn",
+      "pkg": "VQFN-48",
+      "aecq": true,
+      "ecuRoles": [
+        "HEADLAMP"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No valid observation (2 searches): no distributor listing found for this code."
+    }
+  ],
+  "notes": [
+    "Already priced in the catalogue (distributor, with observations) - not re-researched: S32K344EHT1VMMST, FS32K144HAT0MLLR, FS32K142/146/148, S32K311/312/314, S32G274AABK1VUCT, S32G399AAAK1VUCR, SJA1105QEL, SJA1110AEL/0Y, TJA1043T,118, TJA1042T/3,118, TJA1021T/20/C,118, TJA1145AT/FD/0Z, TJA1102HN, TJA1100HNZ, TJA1463AT/0Z, TJA1153ATK/0Z, MC33FS6500NAER2, MFS2633 (FS26), TLE92633QXXUMA1, TLE94713ESXUMA1, TLE9461ESXUMA1, R7F7016904AFP (RH850/F1KM), SPC584B70E3EHC0X, SAK-TC2xx / TC3xx, TPS1H100BQPWPRQ1, TPS2HCS10AQPWPRQ1, BTS7002/7004/7006-1EPP, BTS70402EPAXUMA1, VN7016AJTR, VND7020AJTR, VNQ7040AYTR-E, TPS4H160BQPWPRQ1, NCV84160DR2G, DRV8714SQPHPRQ1, DRV8873HQPWPRQ1, DRV8705SQRHBRQ1, TLE9201SGAUMA1, L99H92Q5-TR, TPS92662AQPHPRQ1, TPS92520QDAPRQ1, TPS92830QPWRQ1, TPS92633QPWPRQ1, TLD55421QUXUMA1, TLD23313EPXUMA1, NCV7685DQR2G, LP8864SQDCPRQ1, TPS7B4250QDBVRQ1, DP83TG721SRHARQ1, IAUC60N04S6L039ATMA1.",
+    "Forbidden hosts (punchouttest.*, fat.lcsc.com) and VAT-inclusive digikey.cn / element14.cn prices were seen for several parts and not recorded.",
+    "Generic support parts named in the reference designs (TCA9539-Q1, TXB0104-Q1, LMV341-Q1, SN74LV4051-Q1, LMR36006-Q1, DRV5055-Q1, OPT3001-Q1, TPL7407L, LM74900-Q1) were not researched this round."
+  ]
+}
