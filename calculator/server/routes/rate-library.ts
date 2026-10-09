@@ -22,7 +22,7 @@ import { resolveActiveLibrary, type RateSource, type RateTable } from '../../src
 import { fingerprintRateLibrary } from '../utils/rate-library-fingerprint.js';
 import { buildRateLibraryWorkbook, parseRateLibraryWorkbook } from '../utils/rate-library-xlsx.js';
 import { buildSWRateWorkbook, parseSWRateWorkbook } from '../utils/sw-rate-library-xlsx.js';
-import { DEFAULT_SW_RATE_LIBRARY } from '../../src/engine/sw-rate-library.js';
+import { DEFAULT_SW_RATE_LIBRARY, resolveRateLibrary as resolveSWRateLibrary } from '../../src/engine/sw-rate-library.js';
 import {
   getCompanyLibrary, setCompanyLibrary, clearCompanyLibrary,
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
@@ -103,6 +103,27 @@ router.get('/versions/:id', (req, res: Response) => {
   res.json({ library, id: req.params.id });
 });
 
+/**
+ * Keep every SW rate book the software costing has run on (P3 #18 — SW uploads were overwritten in place). Stored
+ * under 'sw-active' as the RESOLVED book (company over built-in), like the main library; identical content collapses.
+ */
+const SW_VERSIONS_ID = 'sw-active';
+function snapshotSWActive(by: string, note: string): void {
+  const company = getSWCompanyLibrary(db);
+  const active = getSWRateSource(db) === 'company' && company ? company : undefined;
+  recordRateLibraryVersion(db, SW_VERSIONS_ID, resolveSWRateLibrary(active) as unknown as RateLibrary, new Date().toISOString(), by, note);
+}
+
+router.get('/sw/versions', (_req, res: Response) => {
+  res.json({ versions: listRateLibraryVersions(db, SW_VERSIONS_ID) });
+});
+
+router.get('/sw/versions/:id', (req, res: Response) => {
+  const library = getRateLibraryVersion(db, req.params.id);
+  if (!library) { res.status(404).json({ error: 'No SW rate book with that fingerprint' }); return; }
+  res.json({ library, id: req.params.id });
+});
+
 // Any signed-in user (the calculators call this)
 router.get('/active', (_req, res: Response) => {
   const { library, effectiveSource } = resolve();
@@ -148,6 +169,7 @@ router.post('/sw/upload', upload.single('file'), (req: AuthenticatedRequest, res
   if (!library) { res.status(400).json({ error: 'Validation failed', errors, counts }); return; }
   setSWCompanyLibrary(db, library, new Date().toISOString(), req.user!.email);
   setSWRateSource(db, 'company');
+  snapshotSWActive(req.user!.email, `uploaded ${req.file.originalname ?? 'workbook'}`);
   res.json({ ok: true, counts, activated: true });
 });
 
@@ -156,12 +178,14 @@ router.put('/sw/source', (req: AuthenticatedRequest, res: Response): void => {
   if (source !== 'builtin' && source !== 'company') { res.status(400).json({ error: 'source must be builtin or company' }); return; }
   if (source === 'company' && getSWCompanyLibrary(db) == null) { res.status(400).json({ error: 'No company SW library uploaded yet' }); return; }
   setSWRateSource(db, source);
+  snapshotSWActive(req.user!.email, `switched to ${source} SW rates`);
   res.json({ ok: true, source });
 });
 
-router.post('/sw/reset', (_req, res: Response): void => {
+router.post('/sw/reset', (req: AuthenticatedRequest, res: Response): void => {
   clearSWCompanyLibrary(db);
   setSWRateSource(db, 'builtin');
+  snapshotSWActive(req.user!.email, 'reset to built-in SW rates');
   res.json({ ok: true, source: 'builtin' });
 });
 

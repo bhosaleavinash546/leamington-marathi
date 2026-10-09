@@ -1288,6 +1288,9 @@ export function devSourceComparison(prog: SWProgramInputs): SWDevSourceRow[] {
   });
 }
 
+/** Accepted UK base rate, £ / person-month — the engine's validation and the company workbook share it. */
+export const SW_BASE_RATE_RANGE = [1_000, 500_000] as const;
+
 /** Cybersecurity engineering (TARA, cyber concept, verification) as a share of development, by ISO/SAE 21434 CAL.
  *  CostVision engineering estimate: the review found no published effort ratio per CAL (software review §5), so these
  *  are the previous ASIL-keyed tiers (8 / 10 / 14 %) re-keyed — CAL1 and CAL2 share the lowest. */
@@ -1481,7 +1484,8 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (!fin(prog.annualProductionVolume) || prog.annualProductionVolume < 1 || prog.annualProductionVolume > 20_000_000) p.push('annual volume must be 1–20,000,000 vehicles');
   if (!fin(prog.teamSeniorFraction) || prog.teamSeniorFraction < 0 || prog.teamSeniorFraction > 1) p.push('senior share must be between 0 and 1');
   if (!fin(prog.overheadMultiplier) || prog.overheadMultiplier < 1 || prog.overheadMultiplier > 5) p.push('overhead multiplier must be 1–5 (1 = no overhead)');
-  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP <= 0 || prog.baseRateGBP > 500_000)) p.push('base rate must be £1–£500,000 per person-month');
+  // £1,000 floor: a UK-base rate below it is a £k slip ("28" for £28,000), which costed a programme at 1/1000 (B8, P3 #18).
+  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP < SW_BASE_RATE_RANGE[0] || prog.baseRateGBP > SW_BASE_RATE_RANGE[1])) p.push(`base rate must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month (the UK base, before overhead)`);
   if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
   if (prog.effortCalibration !== undefined && (!fin(prog.effortCalibration) || prog.effortCalibration < 0.2 || prog.effortCalibration > 5)) p.push('effort calibration must be between 0.2 and 5 (a fitted factor outside that says the logged actuals and the model describe different work)');
   if (prog.developmentMonths !== undefined && (!fin(prog.developmentMonths) || prog.developmentMonths < 6 || prog.developmentMonths > 180)) p.push('development duration must be 6–180 months');

@@ -47,7 +47,7 @@ describe('SW rate library Excel round-trip', () => {
     ]), 'Regions');
     const { library, errors } = parseSWRateWorkbook(XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer);
     expect(library).toBeNull();
-    expect(errors.some(e => e.includes('China') && e.includes('negative'))).toBe(true);
+    expect(errors.some(e => e.includes('China') && e.includes('greater than 0'))).toBe(true);
   });
 
   it('rejects a non-template workbook', () => {

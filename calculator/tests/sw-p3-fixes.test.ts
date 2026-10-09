@@ -6,6 +6,9 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, unitCloudGBP, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, validateSWInputs } from '../src/engine/sw-should-cost.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
+import * as XLSX from 'xlsx';
+import { parseSWRateWorkbook, buildSWRateWorkbook } from '../server/utils/sw-rate-library-xlsx.js';
+import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
 
 const src = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const prog = (mut: (p: SWProgramInputs) => void = () => {}) => { const p = defaultSWProgramInputs(); mut(p); return p; };
@@ -66,5 +69,35 @@ describe('#17 cloud per connected vehicle; tool licences over the development ye
     expect(computeSWProgram(prog(p => { p.developmentMonths = 45; })).phases.at(-1)!.months).toBe('M40–M45');
     expect(validateSWInputs(prog(p => { p.developmentMonths = 2; })).join(' ')).toMatch(/development duration/);
     expect(validateSWInputs(prog(p => { p.connectedVehicleShare = 1.5; })).join(' ')).toMatch(/connected/);
+  });
+});
+
+describe('#18 company SW rate workbook: keys checked, 0 refused, every book versioned', () => {
+  const sheet = (rows: unknown[][], name = 'Regions') => {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['key', 'value', 'source', 'asOf', 'confidence', 'note'], ...rows]), name);
+    return parseSWRateWorkbook(XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer);
+  };
+  it('a misspelt key is refused and the known keys are named', () => {
+    const r = sheet([['Indai', 0.3, 's', '2026-10', 'Low', '']]);
+    expect(r.library).toBeNull();
+    expect(r.errors.join(' ')).toMatch(/"Indai" is not a known key.*India/);
+  });
+  it('a 0 multiplier, a £ figure in a multiplier cell and a duplicate are refused', () => {
+    expect(sheet([['India', 0, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/greater than 0/);
+    expect(sheet([['India', 28000, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/not a £ figure/);
+    expect(sheet([['India', 0.3, 's', '', 'Low', ''], ['India', 0.4, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/listed twice/);
+  });
+  it('a base rate outside the engine\'s range is refused; the built-in book round-trips', () => {
+    expect(sheet([['ukBaseRatePerPM', 28, 's', '', 'Low', '']], 'Base').errors.join(' ')).toMatch(/ukBaseRatePerPM must be/);
+    expect(validateSWInputs(prog(p => { p.baseRateGBP = 28; })).join(' ')).toMatch(/base rate must be £1,000/);   // engine, same range
+    const rt = parseSWRateWorkbook(buildSWRateWorkbook(DEFAULT_SW_RATE_LIBRARY));
+    expect(rt.errors).toEqual([]);
+  });
+  it('upload, source switch and reset record the resolved SW book; versions can be listed and read back', () => {
+    const r = src('server/routes/rate-library.ts');
+    expect(r.match(/snapshotSWActive\(/g)!.length).toBe(4);            // definition + upload + source + reset
+    expect(r).toMatch(/router\.get\('\/sw\/versions'/);
+    expect(r).toMatch(/router\.get\('\/sw\/versions\/:id'/);
   });
 });
