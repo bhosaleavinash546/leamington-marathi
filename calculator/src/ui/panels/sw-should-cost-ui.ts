@@ -1606,7 +1606,11 @@ function renderResults(result: SWProgramResult): void {
         <strong>55% programme-wide correlation</strong> — schedule slips inflate dev, test and
         integration together, so the tail reflects real correlated overrun rather than a
         cancelling independent sum. Range P10→P90: <strong>${fmtM(span)}</strong>.
-      </div>`;
+      </div>
+      <p id="sw-headline-pct" style="font-size:0.78rem;color:var(--sw-text-body);margin:8px 0 0">
+        The headline total (${fmtM(result.summary.grandTotal)}) sits at about <strong>P${mc.headlinePercentile}</strong> of this band, not at
+        the median: the cost ranges are skewed upwards (overruns are larger than savings). P50 = <strong>${fmtM(mc.p50)}</strong>.
+      </p>`;
   }
 
   // Rec 3: Programme Phases
@@ -2115,6 +2119,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['P90 (Pessimistic)',fM(mc.p90), f2(mc.p90PerVehicle)],
     ['Mean',             fM(mc.mean), ''],
     ['P90-P10 Spread',   fM(mc.p90 - mc.p10), ''],
+    [`Headline (≈ P${mc.headlinePercentile} of this band)`, fM(s.grandTotal), f2(s.perVehicle)],
     [],
     ['PROGRAMME PHASES (NRE)'],
     ['Phase', 'Timeline', 'NRE Share (%)', 'NRE Budget (£M)'],
@@ -2256,6 +2261,7 @@ function exportSWPDF(result: SWProgramResult): void {
           ['P50 (Median)',     fmtM(mc.p50), `£${fmt(mc.p50PerVehicle,0)}`],
           ['P90 (Pessimistic)',fmtM(mc.p90), `£${fmt(mc.p90PerVehicle,0)}`],
           ['Mean',             fmtM(mc.mean), ''],
+          [`Headline (≈ P${mc.headlinePercentile})`, fmtM(s.grandTotal), `£${fmt(s.perVehicle,0)}`],
         ],
         headStyles: th,
         columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 62, halign: 'right' }, 2: { cellWidth: 60, halign: 'right' } },

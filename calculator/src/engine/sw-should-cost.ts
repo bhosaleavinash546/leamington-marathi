@@ -309,6 +309,9 @@ export interface SWMonteCarlo {
   p50PerVehicle:  number;
   p90PerVehicle:  number;
   iterations:     number;
+  /** Where the deterministic headline sits in its own band: the share of trials at or below it, 0–100. The bucket
+   *  ranges are skewed upwards, so the headline is NOT the median — the screen states this (software review P3 #19). */
+  headlinePercentile: number;
 }
 
 export interface SWBenchmark {
@@ -1386,6 +1389,7 @@ function runMonteCarlo(
     p50PerVehicle: q(perVeh, 0.50),
     p90PerVehicle: q(perVeh, 0.90),
     iterations:    n,
+    headlinePercentile: Math.round(100 * countAtOrBelow(totals, s.grandTotal) / n),
   };
 }
 
@@ -1405,8 +1409,15 @@ function buildPhases(nreTotal: number): SWPhase[] {
 
 const EMPTY_MC: SWMonteCarlo = {
   p10: 0, p50: 0, p90: 0, mean: 0,
-  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0,
+  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0, headlinePercentile: 0,
 };
+
+/** Trials ≤ x in an ascending array (binary search). */
+function countAtOrBelow(sorted: number[], x: number): number {
+  let lo = 0, hi = sorted.length;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted[mid] <= x) lo = mid + 1; else hi = mid; }
+  return lo;
+}
 
 // ─── Input validation (software review P2 #8, Oct 2026) ─────────────────────────────────────────────────────────
 // The engine took any number: a negative overhead gave a negative programme, a negative custom effort subtracted cost,
