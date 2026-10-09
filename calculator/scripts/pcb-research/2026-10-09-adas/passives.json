@@ -97,7 +97,7 @@
         "decoupling"
       ],
       "observations": [],
-      "notes": "No distributor listing found for the exact 25V code; only the 16V GCM155R71C224KE02D is listed (different voltage - not substituted)."
+      "notes": "3 searches: no listing for the exact 25V code or a 0.22uF/25V/0402 GCM sibling; only the 16V GCM155R71C224KE02D is listed (different voltage - not substituted)."
     },
     {
       "mpn": "CGA2B3X7R1H104K050BB",
@@ -134,9 +134,9 @@
     },
     {
       "mpn": "CGA3E3X7R1H474K080AB",
-      "family": "CGA3E3X7R1H474",
+      "family": "CGA3E3_1H474",
       "mfr": "TDK",
-      "desc": "MLCC 0.47uF 50V X7R 0603, AEC-Q200",
+      "desc": "MLCC 0.47uF 50V 0603, AEC-Q200",
       "category": "passive_0603",
       "pkg": "0603",
       "aecq": true,
@@ -144,14 +144,32 @@
         "ADAS",
         "decoupling"
       ],
-      "observations": [],
-      "notes": "No price for the exact code (SnapEDA shows out of stock); only 25V (1E) and X5R siblings listed - different rating, not substituted."
+      "observedMpn": "CGA3E3X5R1H474K080AB",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 4000,
+          "price": 0.182,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga3e3x5r1h474k080ab-tdk-1096579",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 8000,
+          "price": 0.178,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga3e3x5r1h474k080ab-tdk-1096579",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Exact X7R code not listed (SnapEDA: out of stock); priced the same-value/size/voltage X5R sibling (dielectric sibling, alias). Factory-order price, 24-week lead time - may read high."
     },
     {
       "mpn": "CGA4J1X7R1C106K125AC",
       "family": "CGA4J1_1C106",
       "mfr": "TDK",
-      "desc": "MLCC 10uF 16V X7R 0805, AEC-Q200",
+      "desc": "MLCC 10uF 16V 0805, AEC-Q200",
       "category": "passive_0805",
       "pkg": "0805",
       "aecq": true,
@@ -159,8 +177,34 @@
         "ADAS",
         "decoupling"
       ],
-      "observations": [],
-      "notes": "Exact X7R code not found. Sibling CGA4J1X7S1C106K125AC (X7S) prices seen only via OEMsTrade (Newark $0.12 @2k, Avnet $0.0951 @2k - not an allowed host) and LCSC $0.4609 @1k with 0 stock (above Mouser's 1-pc price; discarded)."
+      "observedMpn": "CGA4J1X7S1C106K125AC",
+      "observations": [
+        {
+          "distributor": "Newark",
+          "qty": 1000,
+          "price": 0.152,
+          "currency": "USD",
+          "url": "https://www.newark.com/tdk/cga4j1x7s1c106k125ac/cap-mlcc-10uf-16vdc-x7s-0805/dp/45AC4430",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 2500,
+          "price": 0.14,
+          "currency": "USD",
+          "url": "https://www.newark.com/tdk/cga4j1x7s1c106k125ac/cap-mlcc-10uf-16vdc-x7s-0805/dp/45AC4430",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 2000,
+          "price": 0.12091,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/tdk/cga4j1x7s1c106k125ac/evolve-5471897/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Exact X7R code not listed; priced the same-value/size/voltage X7S sibling (alias). LCSC $0.4609 @1k with 0 stock discarded."
     },
     {
       "mpn": "CGA5L1X7R1C226M160AC",
@@ -175,7 +219,7 @@
         "decoupling"
       ],
       "observations": [],
-      "notes": "No distributor listing found for the exact code in two searches; only 10uF/6.8uF siblings listed (not substituted)."
+      "notes": "3 searches: no listing for the exact code or a 22uF/16V/1206 CGA sibling; only 10V (CGA5L1X7S1A226M160AC) and 10uF siblings found - different voltage/value, not substituted."
     },
     {
       "mpn": "CL05B104KB5VPNC",
@@ -190,7 +234,7 @@
         "decoupling"
       ],
       "observations": [],
-      "notes": "No price for the automotive VPNC code; only the commercial CL05B104KB54PNC listed (not substituted - different grade)."
+      "notes": "2 searches: no listing for the automotive VPNC code; only commercial KB5NNNC/KB54PNC and the 16V KO5VPNC listed - not substituted."
     },
     {
       "mpn": "CL10B105KP8VPNC",
@@ -205,7 +249,7 @@
         "decoupling"
       ],
       "observations": [],
-      "notes": "No price for the automotive VPNC code; only commercial CL10B105KP8NNNC (no price shown) and other-voltage siblings listed."
+      "notes": "2 searches: no franchised listing with a price for the VPNC code (LCSC alternative-table $0.0192, 0 stock, no break); only commercial NNNC listed - not substituted."
     },
     {
       "mpn": "GRT155R61A105KE13D",
@@ -219,8 +263,26 @@
         "ADAS",
         "decoupling"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "GRT155R61A105KE01D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00972,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/GRT155R61A105KE01D/10701138",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 50000,
+          "price": 0.0048,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C430716.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Exact KE13 code not listed; priced the same-value/size/voltage/dielectric GRT sibling GRT155R61A105KE01D (alias). No 1k break found."
     },
     {
       "mpn": "GCJ155R71H104KA55D",
@@ -235,13 +297,13 @@
         "decoupling"
       ],
       "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "notes": "3 searches: exact soft-termination code not listed by any distributor; only GCM (non-soft-term) and other-voltage siblings found - not substituted (soft termination is the point of the line)."
     },
     {
-      "mpn": "LQW18AN",
+      "mpn": "LQW18AN18NJ80D",
       "family": "LQW18AN",
       "mfr": "Murata",
-      "desc": "Wirewound RF inductor series, 0603, AEC-Q200",
+      "desc": "Wirewound inductor 18nH 1.4A, 0603, automotive (80 series)",
       "category": "passive_0603",
       "pkg": "0603",
       "aecq": true,
@@ -249,81 +311,200 @@
         "ADAS",
         "radar"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "LQW18AN18NJ80D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 0.06725,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/LQW18AN18NJ80D/4422150",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Series line: picked one automotive (80D) value, 18nH. Other 80D values at Digi-Key 4k: R25G80D $0.07027, 5N6G80D $0.07449."
     },
     {
-      "mpn": "BLM15PX121SN1",
+      "mpn": "BLM15PX121SN1D",
       "family": "BLM15PX121SN1",
       "mfr": "Murata",
-      "desc": "Ferrite bead 120 ohm @100MHz, high current, 0402",
+      "desc": "Ferrite bead 120 ohm @100MHz, high current, 0402, AEC-Q200",
       "category": "passive_0402",
       "pkg": "0402",
       "aecq": true,
       "ecuRoles": [
-        "ADAS"
+        "ADAS",
+        "decoupling"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "BLM15PX121SN1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.02032,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM15PX121SN1D/4421095",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 20000,
+          "price": 0.02,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM15PX121SN1D/4421095",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 10000,
+          "price": 0.021,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/blm15px121sn1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BOM line BLM15PX121SN1; D = 180 mm reel packing. Mouser break read on Findchips. No 1k reel break."
     },
     {
-      "mpn": "BLM18KG601SH1",
+      "mpn": "BLM18KG601SH1D",
       "family": "BLM18KG601SH1",
       "mfr": "Murata",
-      "desc": "Ferrite bead 600 ohm @100MHz, 0603",
+      "desc": "Ferrite bead 600 ohm @100MHz, 1.3A, 0603, automotive",
       "category": "passive_0603",
       "pkg": "0603",
       "aecq": true,
       "ecuRoles": [
-        "ADAS"
+        "ADAS",
+        "decoupling"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "BLM18KG601SH1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 0.02409,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM18KG601SH1D/5881248",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 8000,
+          "price": 0.02082,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM18KG601SH1D/5881248",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key T&R breaks; no second distributor read."
     },
     {
-      "mpn": "BLM18PG221SH1",
+      "mpn": "BLM18PG221SH1D",
       "family": "BLM18PG221SH1",
       "mfr": "Murata",
-      "desc": "Ferrite bead 220 ohm @100MHz, 0603",
+      "desc": "Ferrite bead 220 ohm @100MHz, 1.4A, 0603, automotive",
       "category": "passive_0603",
       "pkg": "0603",
       "aecq": true,
       "ecuRoles": [
-        "ADAS"
+        "ADAS",
+        "decoupling"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "BLM18PG221SH1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 0.02596,
+          "currency": "USD",
+          "url": "https://digikey.com/en/products/detail/murata-electronics/BLM18PG221SH1D/2588045",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 12000,
+          "price": 0.02125,
+          "currency": "USD",
+          "url": "https://digikey.com/en/products/detail/murata-electronics/BLM18PG221SH1D/2588045",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key T&R breaks (8k $0.02241 also listed)."
     },
     {
       "mpn": "BLM15GG471SH1",
-      "family": "BLM15GG471SH1",
+      "family": "BLM15GG471",
       "mfr": "Murata",
-      "desc": "Ferrite bead 470 ohm @100MHz, 0402",
+      "desc": "Ferrite bead 470 ohm @100MHz (GHz-band), 0402",
       "category": "passive_0402",
       "pkg": "0402",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "BLM15GG471SN1D",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.13875,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/BLM15GG471SN1D/1948304",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 10000,
+          "price": 0.139,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Murata-Electronics/BLM15GG471SN1D?qs=%2F%2BYoplLUB5ib%2Bn0yTi8nAA%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "SH1 (powertrain/safety grade) code not listed; priced the SN1 (infotainment AEC-Q200 grade) sibling of the same value/size - grade sibling, alias."
     },
     {
-      "mpn": "DLW21SN900HQ2",
+      "mpn": "DLW21SN900HQ2L",
       "family": "DLW21SN900HQ2",
       "mfr": "Murata",
-      "desc": "Common-mode choke 90 ohm, 0805, CAN/Ethernet lines",
+      "desc": "Common-mode choke 90 ohm, 330mA, 0805, AEC-Q200",
       "category": "passive_0805",
       "pkg": "0805",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "DLW21SN900HQ2L",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.28258,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/DLW21SN900HQ2L/1922868",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 20000,
+          "price": 0.2172,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/DLW21SN900HQ2L/1922868",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 4000,
+          "price": 0.0944,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/Common-Mode-Filters_Murata-Electronics-DLW21SN900HQ2L_C97855.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "LCSC is ~1/3 of Digi-Key; the merge's outlier rule will judge it."
     },
     {
-      "mpn": "DLP11TB800UL2",
+      "mpn": "DLP11TB800UL2L",
       "family": "DLP11TB800UL2",
       "mfr": "Murata",
       "desc": "Common-mode choke 80 ohm, 0504, high-speed differential",
@@ -335,40 +516,102 @@
         "front camera",
         "surround camera"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "DLP11TB800UL2L",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.21452,
+          "currency": "USD",
+          "url": "https://www.trustedparts.com/en/part/murata/DLP11TB800UL2L",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key US marks it OBSOLETE (replacement DLM0NSN500HY2D); price read via TrustedParts naming Digi-Key."
     },
     {
       "mpn": "ADL3225VM-100MT",
-      "family": "ADL3225VM",
+      "family": "ADL3225",
       "mfr": "TDK",
-      "desc": "Power-over-coax inductor 10uH, 3225",
+      "desc": "Power-over-coax / decoupling inductor 10uH, 3225, AEC-Q200",
       "category": "passive_1206",
-      "pkg": "3225",
+      "pkg": "3225 (1210)",
       "aecq": true,
       "ecuRoles": [
         "power-over-coax",
         "front camera",
         "surround camera"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "ADL3225VT-100M-TL000",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.7038,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/ADL3225VT-100M-TL000/6805260",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 6000,
+          "price": 0.58587,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/ADL3225VT-100M-TL000/6805260",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.5353,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C2045459.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "No 10uH VM code (ADL3225VM-100M-TL000) listed anywhere; priced the same-value same-size ADL3225 automotive decoupling sibling ADL3225VT-100M-TL000 (VT = different current rating). ADL3225VM-150M-TL000 is also $0.7038 @1k at Digi-Key."
     },
     {
-      "mpn": "ADL2012VM",
-      "family": "ADL2012VM",
+      "mpn": "ADL2012-1R5M-T01",
+      "family": "ADL2012",
       "mfr": "TDK",
-      "desc": "Power-over-coax inductor series, 2012",
+      "desc": "Automotive decoupling / PoC inductor 1.5uH, 2012",
       "category": "passive_0805",
-      "pkg": "2012",
+      "pkg": "2012 (0805)",
       "aecq": true,
       "ecuRoles": [
         "power-over-coax",
         "front camera",
         "surround camera"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "ADL2012-1R5M-T01",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.25164,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk/ADL2012-1R5M-T01/15858528",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 0.237,
+          "currency": "USD",
+          "url": "https://mouser.com/ProductDetail/TDK/ADL2012-1R5M-T01?qs=TCDPyi3sCW0aAa9dk2tJJQ%3D%3D",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 1000,
+          "price": 0.306,
+          "currency": "USD",
+          "url": "https://www.newark.com/tdk/adl2012-1r5m-t01/power-inductor-1-5uh-semishielded/dp/62AK3680",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Series line 'ADL2012VM': no VM code exists in distributor listings; picked one orderable ADL2012 value (1.5uH)."
     },
     {
       "mpn": "XFL3012-472MEB",
@@ -381,8 +624,18 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "XFL3012-472MEC",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 250,
+          "price": 1.03,
+          "currency": "USD",
+          "url": "https://www.trustedparts.com/en/part/coilcraft/XFL3012-472MEC",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "MEB (cut-tape packing) not listed by a franchised distributor; MEC (reel packing) at Mouser, read via TrustedParts. No 1k break found (Coilcraft-direct prices not used)."
     },
     {
       "mpn": "XGL4020-222MEB",
@@ -395,40 +648,78 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "XGL4020-222MEC",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.1747,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C6012410.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Packing sibling MEC. Digi-Key only via Marketplace drop-ship (not used)."
     },
     {
-      "mpn": "LQH3NPZ",
+      "mpn": "LQH3NPZ3R3MMEL",
       "family": "LQH3NPZ",
       "mfr": "Murata",
-      "desc": "Power inductor series, 3x3 mm, AEC-Q200",
+      "desc": "Power inductor 3.3uH 1.9A, 3x3 mm, automotive",
       "category": "passive_1206",
       "pkg": "3.0x3.0 mm",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "LQH3NPZ3R3MMEL",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.18946,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/LQH3NPZ3R3MMEL/6799400",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 0.18221,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/LQH3NPZ3R3MMEL/6799400",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Series line: picked one orderable LQH3NPZ value (3.3uH)."
     },
     {
       "mpn": "CLF7045NIT-101M-D",
-      "family": "CLF7045",
+      "family": "CLF7045NI",
       "mfr": "TDK",
       "desc": "Power inductor 100uH, 7x7 mm, automotive",
       "category": "passive_1206",
-      "pkg": "7.0x7.0 mm",
+      "pkg": "7.4x7.0 mm",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "CLF7045NIT-101M-D",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.2639,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C138632.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Only LCSC break found; Digi-Key shows $1.02 at 1 pc only."
     },
     {
       "mpn": "SPM6530T-1R0M-HZ",
-      "family": "SPM6530",
+      "family": "SPM6530-HZ",
       "mfr": "TDK",
       "desc": "Power inductor 1uH, 7.1x6.5 mm, automotive",
       "category": "passive_1206",
@@ -437,22 +728,42 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "SPM6530T-1R0M-HZ",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 0.96,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/SPM6530T-1R0M-HZ/8571626",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser $0.868 @1k seen only on Partstack (not an allowed host)."
     },
     {
       "mpn": "VLS252012HBX-1R0M-1",
       "family": "VLS252012HBX",
       "mfr": "TDK",
-      "desc": "Power inductor 1uH, 2.5x2.0 mm, automotive",
+      "desc": "Power inductor 1uH 3.4A, 2520, automotive",
       "category": "passive_1206",
-      "pkg": "2520",
+      "pkg": "2520 (1008)",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "VLS252012HBX-1R0M-1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 14000,
+          "price": 0.10906,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/tdk-corporation/VLS252012HBX-1R0M-1/5147063",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key shows the same break table on other VLS252012HBX values (same construction priced alike) - treat with care."
     },
     {
       "mpn": "XEL4030-102MEB",
@@ -465,36 +776,82 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "XEL4030-102MEC",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.09,
+          "currency": "USD",
+          "url": "https://www.trustedparts.com/en/part/coilcraft/XEL4030-102MEC",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Packing sibling MEC; Mouser break read via TrustedParts (Octopart shows $1.22 for the same break - conflicting)."
     },
     {
       "mpn": "DFE252012PD-1R0M=P2",
       "family": "DFE252012PD",
       "mfr": "Murata",
-      "desc": "Power inductor 1uH, 2.5x2.0 mm, automotive",
+      "desc": "Power inductor 1uH 3.2A, 2520, AEC-Q200",
       "category": "passive_1206",
-      "pkg": "2520",
+      "pkg": "2520 (1008)",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "DFE252012PD-1R0M=P2",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 30000,
+          "price": 0.16876,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/murata-electronics/DFE252012PD-1R0M-P2/7595455",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 500,
+          "price": 0.306,
+          "currency": "USD",
+          "url": "https://www.newark.com/murata/dfe252012pd-1r0m-p2/inductor-wirewound-1uh-3-2a-aec/dp/57AC6657",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ""
     },
     {
       "mpn": "WSL0603R0500FEA",
       "family": "WSL0603",
       "mfr": "Vishay Dale",
-      "desc": "Current-sense resistor 50 mohm 1%, 0603, AEC-Q200",
+      "desc": "Current-sense resistor 50 mohm 1% 0.1W, 0603, AEC-Q200",
       "category": "passive_0603",
       "pkg": "0603",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "WSL0603R0500FEA",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 5000,
+          "price": 0.315,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/6030834",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.46,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/product-highlight/v/vishay-dale/wsl0603-low-value-0-10-w-surface-mount-power-metal-strip-resistor",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key figure is from a product-highlight table that may be old."
     },
     {
       "mpn": "CRCW04021K00FKED",
@@ -507,8 +864,26 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "CRCW04021K00FKED",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.00882,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04021K00FKED/1178007",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00551,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04021K00FKED/1178007",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ""
     },
     {
       "mpn": "CRCW060310K0FKEA",
@@ -521,8 +896,26 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "CRCW060310K0FKEA",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.00893,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW060310K0FKEA/1174782",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.00614,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW060310K0FKEA/1174782",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ""
     },
     {
       "mpn": "ERJ-2RKF1001X",
@@ -535,8 +928,26 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "ERJ-2RKF1001X",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.00868,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-2RKF1001X/79729",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.00574,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/ERJ-2RKF1001X/79729",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ""
     },
     {
       "mpn": "ERJ-PB3D1002V",
@@ -549,36 +960,90 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "ERJ-PB3D1002V",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.0221,
+          "currency": "EUR",
+          "url": "https://www.digikey.fr/product-detail/fr/panasonic-electronic-components/ERJ-PB3D1002V/P20397CT-ND/6214652",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.01675,
+          "currency": "EUR",
+          "url": "https://www.digikey.fr/product-detail/fr/panasonic-electronic-components/ERJ-PB3D1002V/P20397CT-ND/6214652",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key France (EUR)."
     },
     {
-      "mpn": "PESD1CAN",
+      "mpn": "PESD1CAN,215",
       "family": "PESD1CAN",
       "mfr": "Nexperia",
-      "desc": "CAN bus ESD protection diode, SOT23",
+      "desc": "CAN bus ESD protection diode, SOT23, AEC-Q101",
       "category": "fuse_tvs",
       "pkg": "SOT23",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue. [upgrade estimate PESD1CAN]"
+      "observedMpn": "PESD1CAN,215",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.12113,
+          "currency": "USD",
+          "url": "https://www.digikey.com/product-detail/en/nexperia-usa-inc/PESD1CAN,215/1727-3817-1-ND",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.10315,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD1CAN-215/1157428",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 3000,
+          "price": 0.0428,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/ESD-Protection-Devices_Nexperia-PESD1CAN-215_C15771.html",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Replaces estimate PESD1CAN. Digi-Key pages disagree on status (Active / Not For New Designs)."
     },
     {
-      "mpn": "PESD2CANFD24V",
+      "mpn": "PESD2CANFD24V-TR",
       "family": "PESD2CANFD24V",
       "mfr": "Nexperia",
-      "desc": "CAN FD ESD protection diode 24V, SOT23",
+      "desc": "CAN FD ESD protection diode 24V, SOT23 (TO-236AB)",
       "category": "fuse_tvs",
       "pkg": "SOT23",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "PESD2CANFD24V-TR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.09607,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD2CANFD24V-TR/11487035",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Picked the SOT23 orderable. Digi-Key out of stock (3,000 due 28-Dec-2026). DFN variant -QBZ ~$0.069 @10k at Digi-Key."
     },
     {
       "mpn": "PESD5V0F1BL",
@@ -587,12 +1052,30 @@
       "desc": "Ultra-low-capacitance bidirectional ESD diode 5V, SOD882",
       "category": "fuse_tvs",
       "pkg": "SOD882",
-      "aecq": true,
+      "aecq": false,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "PESD5V0F1BL,315",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.08436,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD5V0F1BL315/2698021",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Avnet",
+          "qty": 10000,
+          "price": 0.05582,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/nexperia/pesd5v0f1bl,315/evolve-3612864/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Priced the standard ,315 code. The AEC-Q101 orderable is PESD5V0F1BL-QYL (Digi-Key EUR 0.06719 @10k, not normally stocked)."
     },
     {
       "mpn": "ESD9B5.0ST5G",
@@ -601,12 +1084,30 @@
       "desc": "Bidirectional ESD diode 5V, SOD-923",
       "category": "fuse_tvs",
       "pkg": "SOD-923",
-      "aecq": true,
+      "aecq": false,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "ESD9B5.0ST5G",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 8000,
+          "price": 0.018,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/on-semiconductor/ESD9B5-0ST5G/1646449",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 16000,
+          "price": 0.01689,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/on-semiconductor/ESD9B5-0ST5G/1646449",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Non-automotive code as listed. The AEC-Q101 version SZESD9B5.0ST5G is $0.041 @8k at Digi-Key (https://www.digikey.com/en/products/detail/onsemi/SZESD9B5-0ST5G/5845537)."
     },
     {
       "mpn": "TPD1E04U04-Q1",
@@ -622,10 +1123,10 @@
         "surround camera"
       ],
       "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "notes": "2 searches: no distributor listing for the -Q1 orderable (TPD1E04U04DPYRQ1); only commercial DPYR/DPLR found - not substituted."
     },
     {
-      "mpn": "TPD4E05U06-Q1",
+      "mpn": "TPD4E05U06QDQARQ1",
       "family": "TPD4E05U06-Q1",
       "mfr": "Texas Instruments",
       "desc": "4-ch ESD array 0.5pF for high-speed lines, automotive",
@@ -637,11 +1138,37 @@
         "front camera",
         "surround camera"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue. [upgrade estimate TPD4E05U06]"
+      "observedMpn": "TPD4E05U06QDQARQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.36666,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD4E05U06QDQARQ1/4972148",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.31886,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD4E05U06QDQARQ1/4972148",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 30000,
+          "price": 0.25268,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD4E05U06QDQARQ1/4972148",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Replaces estimate TPD4E05U06."
     },
     {
-      "mpn": "TPD2E2U06-Q1",
+      "mpn": "TPD2E2U06QDCKRQ1",
       "family": "TPD2E2U06-Q1",
       "mfr": "Texas Instruments",
       "desc": "2-ch ESD diode array, automotive",
@@ -651,12 +1178,30 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "TPD2E2U06QDCKRQ1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.20091,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD2E2U06QDCKRQ1/6026260",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 9000,
+          "price": 0.17549,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD2E2U06QDCKRQ1/6026260",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ""
     },
     {
       "mpn": "SMBJ33CA-Q",
-      "family": "SMBJ33CA",
+      "family": "SMBJ33CA-Q",
       "mfr": "Bourns",
       "desc": "TVS diode 33V bidirectional 600W, SMB, AEC-Q101",
       "category": "fuse_tvs",
@@ -665,8 +1210,18 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "SMBJ33CA-Q",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 11.26,
+          "currency": "INR",
+          "url": "https://www.digikey.in/en/products/detail/bourns-inc/SMBJ33CA-Q/8275800",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key India (INR); US page showed a substitute's table instead."
     },
     {
       "mpn": "SMF5.0A",
@@ -679,12 +1234,30 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "SMF5.0A",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.089,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SMF5-0A/F5748CT-ND/3543180",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.075,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/littelfuse-inc/SMF5-0A/F5748CT-ND/3543180",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "1k is cut tape, 3k tape & reel. AEC-Q101 status not confirmed in the listing."
     },
     {
-      "mpn": "BAT54-Q",
-      "family": "BAT54",
+      "mpn": "BAT54-QR",
+      "family": "BAT54-Q",
       "mfr": "Nexperia",
       "desc": "Schottky diode 30V 200mA, SOT23, AEC-Q101",
       "category": "ic_soic",
@@ -693,8 +1266,34 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "BAT54-QR",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 0.0128,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/semiconductors--discretes--diodes--schottky-diodes/bat54-qr-nexperia-4158680",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 30000,
+          "price": 0.0119,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/semiconductors--discretes--diodes--schottky-diodes/bat54-qr-nexperia-4158680",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.02683,
+          "currency": "EUR",
+          "url": "https://www.digikey.at/en/products/detail/nexperia-usa-inc/BAT54-QR/15196160",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BAT54-Q orderable is BAT54-QR (3k reel). Digi-Key AT out of stock."
     },
     {
       "mpn": "NSR20F30NXT5G",
@@ -703,12 +1302,30 @@
       "desc": "Schottky diode 30V 2A, DSN2",
       "category": "ic_soic",
       "pkg": "DSN2",
-      "aecq": true,
+      "aecq": false,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "NSR20F30NXT5G",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.17537,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/NSR20F30NXT5G/2305673",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 0.1185,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/onsemi/NSR20F30NXT5G/2305673",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Commercial code as listed (no NSV automotive variant looked up)."
     },
     {
       "mpn": "PMEG4010CEJ",
@@ -721,11 +1338,29 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue. [upgrade estimate PMEG4010]"
+      "observedMpn": "PMEG4010CEJ,115",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.077,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG4010CEJ115/1589950",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.05757,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG4010CEJ115/1589950",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Replaces estimate PMEG4010. Another Digi-Key snapshot: $0.0873 @1k / $0.07312 @3k. The -Q orderable PMEG4010CEJ-QX is $0.0928 @3k (out of stock)."
     },
     {
-      "mpn": "PMV50EPEA",
+      "mpn": "PMV50EPEAR",
       "family": "PMV50EPEA",
       "mfr": "Nexperia",
       "desc": "P-channel MOSFET -30V, SOT23, AEC-Q101",
@@ -735,8 +1370,34 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "PMV50EPEAR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.14297,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMV50EPEAR/6575982",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.12135,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMV50EPEAR/6575982",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 9000,
+          "price": 0.11225,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMV50EPEAR/6576189",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Active orderable is PMV50EPEAR (,215 no longer at Digi-Key). Snapshots differ (3k $0.12135 vs $0.12985)."
     },
     {
       "mpn": "RQ3E130BNTB",
@@ -749,8 +1410,34 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "RQ3E130BNTB",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.24973,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/RQ3E130BNTB/5042794",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.2149,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/rohm-semiconductor/RQ3E130BNTB/5042794",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 0.18,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/ROHM-Semiconductor/RQ3E130BNTB/?qs=npTsUczJOtOh9WUZ5VjleQ%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Commercial grade (no AEC-Q101 claim seen)."
     },
     {
       "mpn": "BUK7M10-40H",
@@ -764,10 +1451,10 @@
         "ADAS"
       ],
       "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "notes": "2 searches: no -40H / -40HX listing at any distributor. The older-trench BUK7M10-40EX is $0.26145 @1.5k at Digi-Key - different technology, not substituted."
     },
     {
-      "mpn": "IAUC100N04S6L025",
+      "mpn": "IAUC100N04S6L025ATMA1",
       "family": "IAUC100N04S6L025",
       "mfr": "Infineon",
       "desc": "OptiMOS-6 N-channel MOSFET 40V 100A 2.5 mohm, TDSON-8, AEC-Q101",
@@ -777,11 +1464,37 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "IAUC100N04S6L025ATMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.47818,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IAUC100N04S6L025ATMA1/13677604",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 0.39662,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IAUC100N04S6L025ATMA1/13677604",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "TME",
+          "qty": 5000,
+          "price": 0.43,
+          "currency": "USD",
+          "url": "https://www.tme.com/au/en/details/iauc100n04s6l025/smd-n-channel-transistors/infineon-technologies/iauc100n04s6l025atma1/",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": ""
     },
     {
-      "mpn": "NVMFS5C410NL",
+      "mpn": "NVMFS5C410NLAFT1G",
       "family": "NVMFS5C410NL",
       "mfr": "onsemi",
       "desc": "N-channel power MOSFET 40V, SO-8FL, AEC-Q101",
@@ -791,14 +1504,24 @@
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "NVMFS5C410NLAFT1G",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1500,
+          "price": 183.4439,
+          "currency": "INR",
+          "url": "https://www.digikey.in/en/products/detail/onsemi/NVMFS5C410NLAFT1G/7220958",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Digi-Key India (INR) T&R; 52-week lead time."
     },
     {
       "mpn": "59S2AQ-40MT5-Z_1",
-      "family": "59S2AQ-40MT5",
+      "family": "FAKRA",
       "mfr": "Rosenberger",
-      "desc": "FAKRA PCB jack, coding Z",
+      "desc": "FAKRA right-angle plug, PCB, with housing, coding Z",
       "category": "through_hole",
       "pkg": "PCB THT",
       "aecq": true,
@@ -807,14 +1530,24 @@
         "surround camera",
         "power-over-coax"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "59S2AQ-40MT5-Z_1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 100,
+          "price": 2.34,
+          "currency": "USD",
+          "url": "https://www.trustedparts.com/en/part/rosenberger-north-america/59S2AQ-40MT5-Z_1",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "Mouser break read via TrustedParts. 1k+ prices seen only at RFMW / X-On (not allowed)."
     },
     {
       "mpn": "D4S20D-40MA5-Z",
-      "family": "D4S20D",
+      "family": "HSD",
       "mfr": "Rosenberger",
-      "desc": "Automotive PCB connector (listed as FAKRA; D4S20 is Rosenberger's HSD PCB range)",
+      "desc": "HSD right-angle plug, PCB, with housing, coding Z",
       "category": "through_hole",
       "pkg": "PCB THT",
       "aecq": true,
@@ -822,16 +1555,34 @@
         "surround camera",
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "D4S20D-40MA5-Z",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 100,
+          "price": 10.5999,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/rosenberger-north-america/D4S20D-40MA5-Z/1868-1513-1-ND/7927321",
+          "date": "2026-10-09"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 600,
+          "price": 6.32385,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/rosenberger/D4S20D-40MA5-Z/7927214",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BOM called it FAKRA; Rosenberger/Digi-Key list it as HSD. 100 is cut tape, 600 tape & reel."
     },
     {
       "mpn": "E6S10A-40MT5-Z",
-      "family": "E6S10A",
+      "family": "H-MTD",
       "mfr": "Rosenberger",
-      "desc": "Automotive coax PCB jack (H-MTD/FAKRA family), coding Z",
+      "desc": "H-MTD straight plug, PCB, with housing, coding Z (T&R 1,280)",
       "category": "through_hole",
-      "pkg": "PCB THT",
+      "pkg": "PCB",
       "aecq": true,
       "ecuRoles": [
         "front camera",
@@ -839,27 +1590,13 @@
         "radar"
       ],
       "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "notes": "2 searches: no franchised-distributor price (Rosenberger: price on request; only eBay/AliExpress listings)."
     },
     {
       "mpn": "2337020-1",
       "family": "MATEnet",
       "mfr": "TE Connectivity",
-      "desc": "MATEnet automotive Ethernet PCB header",
-      "category": "through_hole",
-      "pkg": "PCB THT",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS domain controller"
-      ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
-    },
-    {
-      "mpn": "2387271-1",
-      "family": "2387271",
-      "mfr": "TE Connectivity",
-      "desc": "Automotive PCB connector (BOM line next to MATEnet; series not confirmed)",
+      "desc": "MATEnet automotive Ethernet PCB header (per BOM)",
       "category": "through_hole",
       "pkg": "PCB",
       "aecq": true,
@@ -867,29 +1604,53 @@
         "ADAS domain controller"
       ],
       "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "notes": "3 searches: code not listed at any distributor. Candidate 9-2304372-9 (TE 2-pos right-angle, 1.8 mm, DK $13.33 @510) not adopted - not confirmed as MATEnet."
     },
     {
-      "mpn": "9-2304350-1",
-      "family": "HFM",
+      "mpn": "2387271-1",
+      "family": "2387271",
       "mfr": "TE Connectivity",
-      "desc": "HFM automotive coax PCB header",
+      "desc": "TE automotive PCB connector (series not identified)",
       "category": "through_hole",
-      "pkg": "PCB THT",
+      "pkg": "PCB",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS domain controller"
+      ],
+      "observations": [],
+      "notes": "2 searches: code not found at any distributor or TE page; series could not be identified, so no substitute picked."
+    },
+    {
+      "mpn": "2082410210",
+      "family": "HFM",
+      "mfr": "Molex",
+      "desc": "HFM single PCB plug, key Z, 2.2 mm (stands in for TE 9-2304350-1)",
+      "category": "through_hole",
+      "pkg": "PCB",
       "aecq": true,
       "ecuRoles": [
         "ADAS domain controller",
         "front camera",
         "surround camera"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "2082410210",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 264,
+          "price": 1.59,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/filter/coaxial-connectors-rf/coaxial-connector-rf-assemblies/hfm-fakra/437",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "BOM line 9-2304350-1 (HFM) not found at any distributor; picked one listed HFM PCB plug (Molex). Price read from a Digi-Key filter page."
     },
     {
-      "mpn": "HSD D4S20H",
+      "mpn": "D4S20Y-40MA5-A",
       "family": "HSD D4S20H",
       "mfr": "Rosenberger",
-      "desc": "HSD PCB connector series",
+      "desc": "HSD right-angle plug, PCB, with housing (series line HSD D4S20H)",
       "category": "through_hole",
       "pkg": "PCB THT",
       "aecq": true,
@@ -897,8 +1658,18 @@
         "ADAS domain controller",
         "surround camera"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "D4S20Y-40MA5-A",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 950,
+          "price": 6.59,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Rosenberger/D4S20Y-40MA5-A?qs=1mbolxNpo8e6SOza09yvew%3D%3D",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "No D4S20H code listed; picked one listed HSD D4S20 PCB plug (full reel of 950)."
     },
     {
       "mpn": "MX150 (ref)",
@@ -912,27 +1683,37 @@
         "ADAS"
       ],
       "observations": [],
-      "notes": "Reference line, no automotive orderable variant priced: web-search budget ran out before it was reached."
+      "notes": "Reference line. MX150 right-angle headers seen only at 1-pc catalogue prices (e.g. 0348300801 $6.89) - no break >= 100 found."
     },
     {
       "mpn": "0347910042",
-      "family": "34791",
+      "family": "Mini50",
       "mfr": "Molex",
-      "desc": "Molex automotive PCB connector (series not confirmed)",
-      "category": "through_hole",
-      "pkg": "PCB",
+      "desc": "Mini50 unsealed receptacle housing, 4 circuits, single row, polarization C (wire-side)",
+      "category": "mechanical",
+      "pkg": "wire housing",
       "aecq": true,
       "ecuRoles": [
         "ADAS"
       ],
-      "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "observedMpn": "0347910042",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 0.62772,
+          "currency": "SGD",
+          "url": "https://www.digikey.sg/en/products/detail/molex/0347910042/3202546",
+          "date": "2026-10-09"
+        }
+      ],
+      "notes": "This is the WIRE-SIDE receptacle housing, not a PCB header (the board-side mate is a Mini50 header). Digi-Key Singapore (SGD). Mouser $0.454 seen on a sibling page - not used."
     },
     {
       "mpn": "1-2112996-1",
       "family": "1-2112996-1",
       "mfr": "TE Connectivity",
-      "desc": "TE automotive PCB connector (series not confirmed)",
+      "desc": "TE automotive connector (series not identified)",
       "category": "through_hole",
       "pkg": "PCB",
       "aecq": true,
@@ -940,7 +1721,7 @@
         "ADAS"
       ],
       "observations": [],
-      "notes": "Not researched: the shared web-search budget for this turn ran out after the first MLCC lines; no distributor price was read. Re-queue."
+      "notes": "3 searches: code not found at any distributor or TE page; series unknown, no substitute picked."
     }
   ]
 }
