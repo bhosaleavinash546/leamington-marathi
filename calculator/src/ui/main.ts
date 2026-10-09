@@ -222,7 +222,7 @@ import { Chart, ArcElement, BarElement, LineElement, PointElement, CategoryScale
 Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController, LineController);
 
 import { showNews, refreshNews } from './panels/news.js';
-import { initSWPanel, applySWCountry } from './panels/sw-should-cost-ui.js';
+import { initSWPanel, applySWCountry, applySWCurrency } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml, showToast as sharedShowToast } from './toast.js';
 import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measuredText, thresholdText, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
@@ -19666,6 +19666,7 @@ async function init(): Promise<void> {
     _displayCurrency = cur;
     _displayFxRate = FX_TO_GBP[cur] !== undefined ? 1 / FX_TO_GBP[cur] : 1;
     const sym = CURRENCY_SYMBOL[cur] ?? cur;
+    applySWCurrency(cur, sym, _displayFxRate);   // software should-cost results follow the page currency (P3 #15)
     // Form inputs hold £ (the engine's currency); only results are converted. The
     // packaging / logistics labels used to switch to the display symbol over a £
     // value — "Packaging (¥/part)" over £0.105.

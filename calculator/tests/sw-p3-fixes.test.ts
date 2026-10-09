@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, unitCloudGBP, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, validateSWInputs } from '../src/engine/sw-should-cost.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 import * as XLSX from 'xlsx';
+import { setSWCurrency, swMoney, swMoneyM, swUnitM } from '../src/ui/panels/sw-currency.js';
 import { parseSWRateWorkbook, buildSWRateWorkbook } from '../server/utils/sw-rate-library-xlsx.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
 
@@ -99,5 +100,32 @@ describe('#18 company SW rate workbook: keys checked, 0 refused, every book vers
     expect(r.match(/snapshotSWActive\(/g)!.length).toBe(4);            // definition + upload + source + reset
     expect(r).toMatch(/router\.get\('\/sw\/versions'/);
     expect(r).toMatch(/router\.get\('\/sw\/versions\/:id'/);
+  });
+});
+
+describe('#15 the software results follow the page\'s display currency', () => {
+  it('converts £ at the page\'s rate and symbol', () => {
+    setSWCurrency('EUR', '€', 1.17);
+    expect(swMoney(1000, 0)).toBe('€1,170');
+    expect(swMoneyM(393_300_000)).toBe('€460.2M');
+    expect(swUnitM()).toBe('€M');
+    setSWCurrency('GBP', '£', 1);
+    expect(swMoneyM(393_300_000)).toBe('£393.3M');
+  });
+  it('no result or export in the panel prints a literal £; only inputs and the AI brief (engine £) do', () => {
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+    const lines = ui.split('\n');
+    const aiStart = lines.findIndex(l => /Per Vehicle: £\$\{Math\.round/.test(l)) - 15;
+    const offenders = lines.map((l, i) => [i + 1, l] as const).filter(([i, l]) =>
+      /£/.test(l) && !/^\s*(\/\/|\*|\/\*\*)/.test(l)                // comments
+      && !/UK base rate £\/PM|UK Base Rate \(£\/PM\)/.test(l)          // inputs hold £ (money rule)
+      && !/unit === '£M'|unit\.replace\('£'/.test(l)                  // engine unit key / its conversion
+      && !/per £ \(the engine prices in £/.test(l)                       // the Excel's own currency note
+      && !(i > aiStart && i < aiStart + 40)                              // AI brief: engine figures in £
+      && !/desc: '/.test(l));                                            // demo prose
+    expect(offenders.map(([i, l]) => `${i}: ${l.trim().slice(0, 80)}`)).toEqual([]);
+  });
+  it('the page currency picker drives it', () => {
+    expect(src('src/ui/main.ts')).toMatch(/applySWCurrency\(cur, sym, _displayFxRate\)/);
   });
 });

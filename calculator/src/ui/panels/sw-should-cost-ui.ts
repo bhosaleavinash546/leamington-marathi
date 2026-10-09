@@ -25,6 +25,7 @@ import {
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
 import { renderActualsHTML, wireActuals } from './sw-actuals.js';
+import { swMoney, swMoneyM, swConv, swCur, swUnitM, setSWCurrency } from './sw-currency.js';
 import type { SWRateEntry, RateConfidence, SWRateLibrary } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
@@ -182,8 +183,9 @@ function fmt(n: number, dp = 2): string {
   return n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
 }
 
+/** £ → "€392.3M" in the page's display currency (P3 #15). */
 function fmtM(n: number): string {
-  return `£${fmt(n / 1_000_000, 1)}M`;
+  return swMoneyM(n);
 }
 
 // ─── ASIL helpers ─────────────────────────────────────────────────────────────
@@ -234,7 +236,9 @@ function rateLibraryRowsHTML(lib: SWRateLibrary): string {
       <td style="font-size:0.7rem;color:var(--sw-text-secondary)">${esc(e.source)}${e.note ? ` <em>(${esc(e.note)})</em>` : ''}</td>
     </tr>`).join('');
   const ent = <T extends string>(rec: Record<T, SWRateEntry>) => Object.entries(rec) as [string, SWRateEntry][];
-  return rows('Labour base (£/person-month, pre-overhead)', [['UK senior-blended base', lib.ukBaseRatePerPM]])
+  // A rate table shows the display currency (the app's money rule); multipliers are unitless.
+  const base = { ...lib.ukBaseRatePerPM, value: Math.round(swConv(lib.ukBaseRatePerPM.value)) };
+  return rows(`Labour base (${swCur().sym}/person-month, pre-overhead)`, [['UK senior-blended base', base]])
     + rows('Regional multipliers', ent(lib.regionMultipliers))
     + rows('Development source multipliers', ent(lib.devSourceMultipliers))
     + rows('ASIL development multipliers (ISO 26262)', ent(lib.asilDevMultipliers))
@@ -311,7 +315,7 @@ function renderValidationHTML(): string {
         Back-test of total SW investment against 7 premium-EV programmes (each run with that programme's region, dev source, volume and life).
         <strong>None of the ${rep.caseCount} published figures has a source link</strong>, and two could not be traced at all — so a
         small variance here proves nothing; replace a figure with a sourced one (sw-benchmarks.ts) before relying on this panel.
-        ${rep.perVehicleInconsistent} of ${rep.caseCount} published £/vehicle figures do not reconcile with their own published total over
+        ${rep.perVehicleInconsistent} of ${rep.caseCount} published per-vehicle figures do not reconcile with their own published total over
         the volume and life used here, so per-vehicle is not compared.
       </p>
     </div>
@@ -556,7 +560,7 @@ function renderWizCost(): void {
   const sumEl = document.getElementById('wiz-cost-summary');
   if (sumEl) sumEl.innerHTML = [
     { l: 'Total Programme', v: fmtM(s.grandTotal), c: '#2563eb' },
-    { l: 'Per Vehicle',     v: `£${fmt(s.perVehicle, 0)}`, c: '#059669' },
+    { l: 'Per Vehicle',     v: `${swMoney(s.perVehicle, 0)}`, c: '#059669' },
     { l: 'Total NRE',       v: fmtM(s.nreTotal), c: '#7c3aed' },
   ].map(x => `<div class="sw-summary-card"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:${x.c}"></div><div class="sw-card-label">${x.l}</div><div class="sw-card-value" style="color:${x.c}">${x.v}</div></div>`).join('');
   const tEl = document.getElementById('wiz-cost-table');
@@ -1573,7 +1577,7 @@ function renderResults(result: SWProgramResult): void {
   const lifecyclePerVeh = vehicles > 0 ? (s.grandTotal - nreTotal) / vehicles : 0;   // recurring over life
   const cards: { label: string; value: string; sub: string; color: string }[] = [
     { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
-    { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `NRE £${fmt(nrePerVeh,0)} + Lifecycle £${fmt(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
+    { label: 'Per Vehicle (SW Cost)',   value: `${swMoney(s.perVehicle, 0)}`,     sub: `NRE ${swMoney(nrePerVeh,0)} + Lifecycle ${swMoney(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
     { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
     { label: 'Engineering Effort',     value: `${fmt(s.totalEffortPersonMonths, 0)} PM`, sub: `development ${fmt(s.totalPersonMonths, 0)} PM · avg ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears} yr`, color: '#d97706' },
     { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
@@ -1601,9 +1605,9 @@ function renderResults(result: SWProgramResult): void {
       <div class="sw-section-title"><span></span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
       <div class="sw-grid sw-grid-4" style="margin-bottom:16px">
         ${[
-          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `£${fmt(mc.p10PerVehicle,0)}/veh`, color: '#059669' },
-          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `£${fmt(mc.p50PerVehicle,0)}/veh`, color: '#2563eb' },
-          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `£${fmt(mc.p90PerVehicle,0)}/veh`, color: '#ef4444' },
+          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: '#059669' },
+          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: '#2563eb' },
+          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: '#ef4444' },
           { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: '#7c3aed' },
         ].map(c => `
         <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:12px 14px">
@@ -1737,7 +1741,7 @@ function renderResults(result: SWProgramResult): void {
       <td class="sw-num">${fmtM(m.calibrationCost)}</td>
       <td class="sw-num">${fmtM(m.testing.total)}</td>
       <td class="sw-num">${fmtM(m.grandTotal)}</td>
-      <td class="sw-num" style="color:#059669;font-weight:600">£${fmt(m.perVehicle, 0)}</td>
+      <td class="sw-num" style="color:#059669;font-weight:600">${swMoney(m.perVehicle, 0)}</td>
     </tr>`;
   }).join('');
 
@@ -1761,7 +1765,7 @@ function renderResults(result: SWProgramResult): void {
         <th>Complexity</th><th>Reuse</th><th class="sw-num">PM</th>
         <th class="sw-num">Dev Cost</th><th class="sw-num">Calibration</th>
         <th class="sw-num">Test Cost</th>
-        <th class="sw-num">Grand Total</th><th class="sw-num">£/Vehicle</th>
+        <th class="sw-num">Grand Total</th><th class="sw-num">${swCur().sym}/Vehicle</th>
       </tr></thead>
       <tbody>${modRows}</tbody>
     </table>
@@ -1769,11 +1773,11 @@ function renderResults(result: SWProgramResult): void {
 
   // Sensitivity analysis
   const sensRows = result.sensitivity.map(row => {
-    const low  = row.unit === '£M' ? fmtM(row.low) : `£${fmt(row.low, 0)}`;
-    const base = row.unit === '£M' ? fmtM(row.base) : `£${fmt(row.base, 0)}`;
-    const high = row.unit === '£M' ? fmtM(row.high) : `£${fmt(row.high, 0)}`;
+    const low  = row.unit === '£M' ? fmtM(row.low) : `${swMoney(row.low, 0)}`;
+    const base = row.unit === '£M' ? fmtM(row.base) : `${swMoney(row.base, 0)}`;
+    const high = row.unit === '£M' ? fmtM(row.high) : `${swMoney(row.high, 0)}`;
     const span = row.high - row.low;
-    const spanFmt = row.unit === '£M' ? fmtM(span) : `£${fmt(span, 0)}`;
+    const spanFmt = row.unit === '£M' ? fmtM(span) : `${swMoney(span, 0)}`;
     return `<tr>
       <td style="font-weight:600">${esc(row.parameter)}</td>
       <td class="sw-num" style="color:#059669">${low}</td>
@@ -1803,7 +1807,7 @@ function renderResults(result: SWProgramResult): void {
     return `<tr ${isThis ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
       <td>${isThis ? '⭐ ' : ''}${esc(b.vehicle)}${cite}</td>
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
-      <td class="sw-num">£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}</td>
+      <td class="sw-num">${swMoney(b.perVehicle > 0 ? b.perVehicle : s.perVehicle, 0)}</td>
       <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
       <td style="font-size:0.72rem;color:var(--sw-text-muted)">${isThis ? '' : b.verified ? '' : '<strong style="color:var(--amber,#b45309)">Unverified</strong> · '}${esc(b.source)}</td>
     </tr>`;
@@ -1813,10 +1817,10 @@ function renderResults(result: SWProgramResult): void {
   if (bmEl) bmEl.innerHTML = `
     <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment (unverified)</div>
     <table class="sw-data-table">
-      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
+      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">${swCur().sym}/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
       <tbody>${bmRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. <strong>None of these published figures has a source link</strong> and two could not be traced at all — they are shown for context only; do not quote them. The published £/vehicle figures do not reconcile with the published totals.</p>`;
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. <strong>None of these published figures has a source link</strong> and two could not be traced at all — they are shown for context only; do not quote them. The published per-vehicle figures do not reconcile with the published totals.</p>`;
 
   // Rec 4: OEM / Tier-1 / Startup decomposition
   const sourceDecomp: { src: string; label: string; riskNote: string; ipNote: string; warrantyNote: string }[] = [
@@ -2059,8 +2063,10 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   const s  = result.summary;
   const inp = result.inputs;
 
-  const fM = (n: number) => parseFloat((n/1_000_000).toFixed(3));
+  // Money in the page's display currency (P3 #15): fM for millions, fV for £ / vehicle; f2 stays for %, PM, counts.
+  const fM = (n: number) => parseFloat((swConv(n)/1_000_000).toFixed(3));
   const f2 = (n: number) => parseFloat(n.toFixed(2));
+  const fV = (n: number) => parseFloat(swConv(n).toFixed(2));
 
   // Sheet 1: Summary
   const summaryData = [
@@ -2068,7 +2074,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['Programme', 'Premium Luxury SUV Full SW Stack 2024–2026'],
     ['Generated', new Date().toLocaleDateString('en-GB')],
     [],
-    ['Cost Bucket', 'Value (£M)', 'Share (%)'],
+    ['Cost Bucket', `Value (${swUnitM()})`, 'Share (%)'],
     ['Development Engineering', fM(s.totalDevelopment), f2(s.totalDevelopment/s.grandTotal*100)],
     ['Testing & Validation',    fM(s.totalTesting),     f2(s.totalTesting/s.grandTotal*100)],
     ['Integration & V&V',       fM(s.totalIntegration), f2(s.totalIntegration/s.grandTotal*100)],
@@ -2080,7 +2086,8 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['IP Licensing (lifecycle)', fM(s.totalLicensing),  f2(s.totalLicensing/s.grandTotal*100)],
     ['TOTAL PROGRAMME COST',    fM(s.grandTotal),        100],
     [],
-    ['Per Vehicle (SW)', f2(s.perVehicle), '£'],
+    ['Per Vehicle (SW)', fV(s.perVehicle), `${swCur().sym}`],
+    ['Currency', `${swCur().code} at ${swCur().perGbp} per £ (the engine prices in £; inputs below are £)`],
     ['Engineering Effort (all costed effort)', f2(s.totalEffortPersonMonths), 'PM'],
     ['Development Person-Months (costed)', f2(s.totalPersonMonths), 'PM'],
     ['Active Modules', result.modules.length, ''],
@@ -2091,7 +2098,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
 
   // Sheet 2: Category Breakdown
   const catData = [
-    ['Category', 'Category Label', 'Modules', 'Total Cost (£M)', 'Share (%)'],
+    ['Category', 'Category Label', 'Modules', `Total Cost (${swUnitM()})`, 'Share (%)'],
     ...Object.entries(CAT_META).map(([cat, meta]) => {
       const t = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
       const mods = result.modules.filter(m => m.category === cat);
@@ -2102,15 +2109,15 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   // Sheet 3: Module Detail
   const modData = [
     ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'CAL (ISO/SAE 21434)', 'Person-Months',
-     'Dev Cost (£M)', 'Test Cost (£M)', 'Calibration (£M)', 'Integration (£M)',
-     'Toolchain (£M)', 'IP Licence (£M)', 'Cybersec (£M)', 'Cloud (£M)', 'Maintenance (£M)',
-     'Grand Total (£M)', '£/Vehicle'],
+     `Dev Cost (${swUnitM()})`, `Test Cost (${swUnitM()})`, `Calibration (${swUnitM()})`, `Integration (${swUnitM()})`,
+     `Toolchain (${swUnitM()})`, `IP Licence (${swUnitM()})`, `Cybersec (${swUnitM()})`, `Cloud (${swUnitM()})`, `Maintenance (${swUnitM()})`,
+     `Grand Total (${swUnitM()})`, `${swCur().sym}/Vehicle`],
     ...[...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).map((m, i) => [
       i+1, m.moduleName, m.category, m.asilUsed, m.complexityUsed, m.reuseUsed, m.calUsed,
       f2(m.personMonths), fM(m.development.total), fM(m.testing.total),
       fM(m.calibrationCost), fM(m.integrationCost), fM(m.toolchainCost),
       fM(m.licensingCost), fM(m.cybersecCost), fM(m.cloudCost), fM(m.maintenanceCost),
-      fM(m.grandTotal), f2(m.perVehicle),
+      fM(m.grandTotal), fV(m.perVehicle),
     ]),
   ];
 
@@ -2121,32 +2128,32 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['Parameter', 'Unit', 'Low Scenario', 'Base Case', 'High Scenario', 'Range'],
     ...result.sensitivity.map(r => {
       // £M rows store absolute pounds; convert to £M. Per-vehicle rows stay raw.
-      const v = (n: number) => r.unit === '£M' ? fM(n) : f2(n);
-      return [r.parameter, r.unit, v(r.low), v(r.base), v(r.high), v(r.high - r.low)];
+      const v = (n: number) => r.unit === '£M' ? fM(n) : fV(n);
+      return [r.parameter, r.unit.replace('£', swCur().sym), v(r.low), v(r.base), v(r.high), v(r.high - r.low)];
     }),
     [],
     ['MONTE CARLO DISTRIBUTION', `${mc.iterations} iterations`],
-    ['Percentile', 'Total Cost (£M)', '£/Vehicle'],
-    ['P10 (Optimistic)', fM(mc.p10), f2(mc.p10PerVehicle)],
-    ['P50 (Median)',     fM(mc.p50), f2(mc.p50PerVehicle)],
-    ['P90 (Pessimistic)',fM(mc.p90), f2(mc.p90PerVehicle)],
+    ['Percentile', `Total Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`],
+    ['P10 (Optimistic)', fM(mc.p10), fV(mc.p10PerVehicle)],
+    ['P50 (Median)',     fM(mc.p50), fV(mc.p50PerVehicle)],
+    ['P90 (Pessimistic)',fM(mc.p90), fV(mc.p90PerVehicle)],
     ['Mean',             fM(mc.mean), ''],
     ['P90-P10 Spread',   fM(mc.p90 - mc.p10), ''],
-    [`Headline (≈ P${mc.headlinePercentile} of this band)`, fM(s.grandTotal), f2(s.perVehicle)],
+    [`Headline (≈ P${mc.headlinePercentile} of this band)`, fM(s.grandTotal), fV(s.perVehicle)],
     [],
     ['PROGRAMME PHASES (NRE)'],
-    ['Phase', 'Timeline', 'NRE Share (%)', 'NRE Budget (£M)'],
+    ['Phase', 'Timeline', 'NRE Share (%)', `NRE Budget (${swUnitM()})`],
     ...result.phases.map(p => [p.name, p.months, f2(p.fraction*100), fM(p.nreCost)]),
   ];
 
   // Sheet 5: Benchmarks
   const bmData = [
-    ['Vehicle / Programme', 'Total SW Cost (£M)', '£/Vehicle', 'vs This Model (%)', 'Source'],
+    ['Vehicle / Programme', `Total SW Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`, 'vs This Model (%)', 'Source'],
     ...result.benchmarks.map(b => {
       const isThis = b.vehicle === 'This programme';
       const thisM = s.grandTotal / 1_000_000;
       const diff = (!isThis && b.totalM > 0) ? f2((thisM - b.totalM) / b.totalM * 100) : 'Base';
-      return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, (isThis || b.verified ? '' : 'UNVERIFIED — ') + b.source];
+      return [b.vehicle, b.totalM > 0 ? fM(b.totalM * 1_000_000) : fM(s.grandTotal), fV(b.perVehicle > 0 ? b.perVehicle : s.perVehicle), diff, (isThis || b.verified ? '' : 'UNVERIFIED — ') + b.source];
     }),
   ];
 
@@ -2215,7 +2222,7 @@ function exportSWPDF(result: SWProgramResult): void {
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(148, 163, 184);
       doc.text('Total Programme Cost', W - MG, 38, { align: 'right' });
-      doc.text(`£${fmt(s.perVehicle, 0)} / vehicle`, W - MG, 45, { align: 'right' });
+      doc.text(`${swMoney(s.perVehicle, 0)} / vehicle`, W - MG, 45, { align: 'right' });
 
       let y = 76;
       const chk = (need: number) => { if (y + need > 270) { doc.addPage(); y = 18; } };
@@ -2227,7 +2234,7 @@ function exportSWPDF(result: SWProgramResult): void {
       doc.text('1. Programme Cost Summary', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
-        head: [['Cost Bucket', 'Value (£M)', 'Share (%)']],
+        head: [['Cost Bucket', `Value (${swUnitM()})`, 'Share (%)']],
         body: [
           ['Development Engineering', fmtM(s.totalDevelopment), fmt(s.totalDevelopment/s.grandTotal*100,1)+'%'],
           ['Testing & Validation',    fmtM(s.totalTesting),     fmt(s.totalTesting/s.grandTotal*100,1)+'%'],
@@ -2268,13 +2275,13 @@ function exportSWPDF(result: SWProgramResult): void {
       const mc = result.monteCarlo;
       autoTable(doc, {
         startY: y,
-        head: [['Percentile', 'Total Cost (£M)', '£/Vehicle']],
+        head: [['Percentile', `Total Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`]],
         body: [
-          ['P10 (Optimistic)', fmtM(mc.p10), `£${fmt(mc.p10PerVehicle,0)}`],
-          ['P50 (Median)',     fmtM(mc.p50), `£${fmt(mc.p50PerVehicle,0)}`],
-          ['P90 (Pessimistic)',fmtM(mc.p90), `£${fmt(mc.p90PerVehicle,0)}`],
+          ['P10 (Optimistic)', fmtM(mc.p10), `${swMoney(mc.p10PerVehicle,0)}`],
+          ['P50 (Median)',     fmtM(mc.p50), `${swMoney(mc.p50PerVehicle,0)}`],
+          ['P90 (Pessimistic)',fmtM(mc.p90), `${swMoney(mc.p90PerVehicle,0)}`],
           ['Mean',             fmtM(mc.mean), ''],
-          [`Headline (≈ P${mc.headlinePercentile})`, fmtM(s.grandTotal), `£${fmt(s.perVehicle,0)}`],
+          [`Headline (≈ P${mc.headlinePercentile})`, fmtM(s.grandTotal), `${swMoney(s.perVehicle,0)}`],
         ],
         headStyles: th,
         columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 62, halign: 'right' }, 2: { cellWidth: 60, halign: 'right' } },
@@ -2290,7 +2297,7 @@ function exportSWPDF(result: SWProgramResult): void {
       doc.text('3. Cost by Software Category', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
-        head: [['Category', 'Modules', 'Grand Total (£M)', 'Share (%)']],
+        head: [['Category', 'Modules', `Grand Total (${swUnitM()})`, 'Share (%)']],
         body: Object.entries(CAT_META).map(([cat, m]) => {
           const t = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
           return [m.label, String(result.modules.filter(x => x.category === cat).length), fmtM(t), fmt(t/s.grandTotal*100,1)+'%'];
@@ -2310,12 +2317,12 @@ function exportSWPDF(result: SWProgramResult): void {
       const topMods = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).slice(0, 20);
       autoTable(doc, {
         startY: y,
-        head: [['Module', 'Cat', 'ASIL', 'PM', 'Dev (£M)', 'Calib (£M)', 'Test (£M)', 'Total (£M)', '£/Veh']],
+        head: [['Module', 'Cat', 'ASIL', 'PM', `Dev (${swUnitM()})`, `Calib (${swUnitM()})`, `Test (${swUnitM()})`, `Total (${swUnitM()})`, `${swCur().sym}/Veh`]],
         body: topMods.map(m => [
           m.moduleName.length > 26 ? m.moduleName.slice(0, 24)+'…' : m.moduleName,
           m.category, m.asilUsed, fmt(m.personMonths, 0),
           fmtM(m.development.total), fmtM(m.calibrationCost),
-          fmtM(m.testing.total), fmtM(m.grandTotal), `£${fmt(m.perVehicle, 0)}`,
+          fmtM(m.testing.total), fmtM(m.grandTotal), `${swMoney(m.perVehicle, 0)}`,
         ]),
         headStyles: th,
         columnStyles: {
@@ -2338,7 +2345,7 @@ function exportSWPDF(result: SWProgramResult): void {
         startY: y,
         head: [['Parameter', 'Low', 'Base', 'High', 'Range']],
         body: result.sensitivity.map(r => {
-          const f = (n: number) => r.unit === '£M' ? fmtM(n) : `£${fmt(n, 0)}`;
+          const f = (n: number) => r.unit === '£M' ? fmtM(n) : `${swMoney(n, 0)}`;
           return [r.parameter, f(r.low), f(r.base), f(r.high), f(r.high - r.low)];
         }),
         headStyles: th,
@@ -2358,10 +2365,10 @@ function exportSWPDF(result: SWProgramResult): void {
       doc.text('6. Benchmark Comparison', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
-        head: [['Vehicle / Programme', 'Total SW Cost', '£/Vehicle', 'Source']],
+        head: [['Vehicle / Programme', 'Total SW Cost', `${swCur().sym}/Vehicle`, 'Source']],
         body: result.benchmarks.map(b => [
           b.vehicle, b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal),
-          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`, (b.vehicle === 'This programme' || b.verified ? '' : 'UNVERIFIED — ') + b.source,
+          `${swMoney(b.perVehicle > 0 ? b.perVehicle : s.perVehicle, 0)}`, (b.vehicle === 'This programme' || b.verified ? '' : 'UNVERIFIED — ') + b.source,
         ]),
         headStyles: th,
         columnStyles: { 0: { cellWidth: 56 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { cellWidth: 74 } },
@@ -2450,7 +2457,7 @@ function compareConfigs(): void {
 
   const rows: Array<[string, (c: { r: SWProgramResult }) => string, ((c: { r: SWProgramResult }) => boolean)?]> = [
     ['Total Programme', c => fmtM(c.r.summary.grandTotal), c => c.r.summary.grandTotal === minTotal],
-    ['Per Vehicle',     c => `£${fmt(c.r.summary.perVehicle, 0)}`],
+    ['Per Vehicle',     c => `${swMoney(c.r.summary.perVehicle, 0)}`],
     ['Total NRE',       c => fmtM(c.r.summary.nreTotal)],
     ['Lifecycle',       c => fmtM(c.r.summary.totalMaintenance + c.r.summary.totalCloud + c.r.summary.totalLicensing)],
     ['MC P50',          c => fmtM(c.r.monteCarlo.p50)],
@@ -2709,6 +2716,17 @@ function updateCatCounts(): void {
  * Call this from switchCommodity('automotive_software').
  */
 let _swHubBasis = '';
+
+/**
+ * The page's display currency changed (main.ts `_applyCurrency`): results, the rate table and the next export follow it
+ * (P3 #15). Inputs stay £.
+ */
+export function applySWCurrency(code: string, sym: string, unitsPerGbp: number): void {
+  setSWCurrency(code, sym, unitsPerGbp);
+  if (!document.getElementById('sw-panel')) return;
+  refreshSWBookViews();
+  if (_swResult) renderResults(_swResult);
+}
 
 function setSWCountry(mfg: string): void {
   const hub = swRegionFor(mfg);
