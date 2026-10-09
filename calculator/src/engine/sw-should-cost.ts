@@ -165,6 +165,10 @@ export interface SWModuleInput {
   customPersonMonths: number | null;   // null = auto
   /** ISO/SAE 21434 CAL; absent = the module's default (calFor). */
   cal?:               SWCal;
+  /** Size of the module's software, thousand source lines (KSLOC). When set, the nominal effort comes from the
+   *  COCOMO II.2000 equation (cocomoNominalPM) instead of the module catalogue; ASIL, complexity, reuse and the effort
+   *  calibration apply on top as usual. A typed custom PM still wins (software review P3 #16). */
+  sizeKSLOC?:         number;
 }
 
 export interface SWProgramInputs {
@@ -244,6 +248,8 @@ export interface SWModuleCostResult {
   complexityUsed:     SWComplexity;
   reuseUsed:          SWReuse;
   calUsed:            SWCal;
+  /** Where the nominal effort came from: the module catalogue, the COCOMO II size equation, or the user's own PM. */
+  effortBasis:        'catalogue' | 'size' | 'custom';
   /** Development person-months as COSTED: every development bucket after complexity, the safety-reuse floor and any
    *  schedule penalty — development £ = personMonths × the loaded rate. It used to report the effort before those
    *  scalings (BMS showed 172.8 PM while 258.5 PM were paid for — software review P2 #9). */
@@ -1087,7 +1093,9 @@ function computeModuleCost(
   const schedPenalty  = sched >= 1 ? 1 : 1 + (1 - sched) * SCHEDULE_COMPRESSION_K;
 
   const effortCal   = input.customPersonMonths != null ? 1 : (prog.effortCalibration ?? 1);
-  const effectivePM = (input.customPersonMonths ?? def.basePersonMonths * effortCal) * reuse;
+  // Nominal effort: the user's own PM, else the COCOMO II size equation when a size is given, else the catalogue.
+  const nominalPM   = input.sizeKSLOC ? cocomoNominalPM(input.sizeKSLOC) : def.basePersonMonths;
+  const effectivePM = (input.customPersonMonths ?? nominalPM * effortCal) * reuse;
 
   // Development sub-buckets. Complexity on the algorithm bucket in full, and a
   // weighted share on implementation (SW2). Safety bucket carries the reuse floor.
@@ -1182,6 +1190,7 @@ function computeModuleCost(
     asilUsed:       input.asil,
     complexityUsed: input.complexity,
     calUsed:        calFor(def, input),
+    effortBasis:    input.customPersonMonths != null ? 'custom' : input.sizeKSLOC ? 'size' : 'catalogue',
     reuseUsed:      input.reuse,
     personMonths:   Math.round((reqsPM + archPM + algoPM + implPM + safetyPM) * schedPenalty * 10) / 10,
     effortPersonMonths: Math.round((devTotal + testTotal + integration + cybersec + calibration + mlDataCost) / regionRate * 10) / 10,
@@ -1271,6 +1280,12 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
     ['Development duration (tool licences)', `${prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS} months`],
     ['Cloud', `per connected vehicle-year (module £/yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected`],
+    ['Nominal effort basis', (() => {
+      const on = prog.modules.filter(m => m.enabled);
+      const sized = on.filter(m => m.customPersonMonths == null && m.sizeKSLOC).length;
+      const custom = on.filter(m => m.customPersonMonths != null).length;
+      return `${on.length - sized - custom} catalogue · ${sized} COCOMO II size (${SW_COCOMO.A} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) · ${custom} custom PM`;
+    })()],
     ['Effort calibration', prog.effortCalibration && prog.effortCalibration !== 1
       ? `× ${prog.effortCalibration} (fitted to your logged actuals)` : 'none (model as published)'],
   ];
@@ -1286,6 +1301,26 @@ export function devSourceComparison(prog: SWProgramInputs): SWDevSourceRow[] {
     const s = computeSWProgram({ ...prog, devSource }, { summaryOnly: true }).summary;
     return { devSource, multiplier: mult[devSource], grandTotal: s.grandTotal, perVehicle: s.perVehicle };
   });
+}
+
+/**
+ * COCOMO II.2000 Post-Architecture effort equation at NOMINAL ratings: PM = A × KSLOC^E, E = B + 0.01 × ΣSF.
+ * A = 2.94, B = 0.91; the five scale factors at Nominal (PREC 3.72, FLEX 3.04, RESL 4.24, TEAM 3.29, PMAT 4.68) sum to
+ * 18.97, so E = 1.0997. Source: Boehm et al., COCOMO II Model Definition Manual, v2000.0 (USC Center for Software
+ * Engineering) — calibrated on 161 projects, mostly not automotive. All effort multipliers are taken as Nominal here:
+ * CostVision's ASIL, complexity and reuse factors play their part on top. A COCOMO person-month is 152 hours and covers
+ * elaboration + construction; read it as this tool's nominal development PM — Likely overlaps part of what the tool
+ * adds as integration test, which is one reason to calibrate to your own projects (sw-calibration.ts).
+ */
+export const SW_COCOMO = {
+  A: 2.94, B: 0.91, scaleFactorSumNominal: 18.97,
+  source: 'Boehm et al., COCOMO II Model Definition Manual v2000.0, USC CSE — Post-Architecture, nominal scale factors',
+} as const;
+export const SW_COCOMO_EXPONENT = SW_COCOMO.B + 0.01 * SW_COCOMO.scaleFactorSumNominal;
+
+/** Nominal development person-months for a module of `ksloc` thousand source lines (COCOMO II.2000, nominal). */
+export function cocomoNominalPM(ksloc: number): number {
+  return SW_COCOMO.A * Math.pow(ksloc, SW_COCOMO_EXPONENT);
 }
 
 /** Accepted UK base rate, £ / person-month — the engine's validation and the company workbook share it. */
@@ -1502,6 +1537,7 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
     if (!(m.asil in lib.asilDevMultipliers)) p.push(`${m.moduleId}: ASIL "${String(m.asil)}" is not known`);
     if (!(m.complexity in lib.complexityMultipliers)) p.push(`${m.moduleId}: complexity "${String(m.complexity)}" is not known`);
     if (!(m.reuse in lib.reuseFactors)) p.push(`${m.moduleId}: reuse "${String(m.reuse)}" is not known`);
+    if (m.sizeKSLOC !== undefined && m.sizeKSLOC !== null && (!fin(m.sizeKSLOC) || m.sizeKSLOC < 0.1 || m.sizeKSLOC > 10_000)) p.push(`${m.moduleId}: size must be 0.1–10,000 KSLOC`);
     if (m.cal !== undefined && !SW_CALS.includes(m.cal)) p.push(`${m.moduleId}: CAL "${String(m.cal)}" is not known (none, CAL1–CAL4)`);
     if (m.customPersonMonths !== null && m.customPersonMonths !== undefined
         && (!fin(m.customPersonMonths) || m.customPersonMonths < 0 || m.customPersonMonths > 50_000)) {

@@ -20,7 +20,7 @@ import type {
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
-  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS,
+  applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
@@ -665,6 +665,7 @@ function renderSWPanelHTML(): string {
         <td><select class="sw-sel sw-comp-sel" data-id="${def.id}">${compOpts}</select></td>
         <td><select class="sw-sel sw-reuse-sel" data-id="${def.id}">${reuseOpts}</select></td>
         <td><select class="sw-sel sw-cal-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} cybersecurity assurance level" title="ISO/SAE 21434 CAL — drives the cybersecurity uplift (default from the Annex E example table; your TARA decides)">${calOpts}</select></td>
+        <td><input type="number" class="sw-ksloc-input" data-id="${def.id}" placeholder="—" value="${inp.sizeKSLOC ?? ''}" min="0.1" step="0.1" style="width:64px" aria-label="${esc(def.shortName)} size, KSLOC" title="Optional: the module's size in thousand source lines. Its nominal effort then comes from COCOMO II (${esc(SW_COCOMO.A)} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) instead of the catalogue's ${esc(def.basePersonMonths)} PM."></td>
         <td><input type="number" class="sw-pm-input" data-id="${def.id}" placeholder="auto" value="${inp.customPersonMonths ?? ''}" min="0" step="1" style="width:60px"></td>
       </tr>`;
     }).join('');
@@ -688,6 +689,7 @@ function renderSWPanelHTML(): string {
               <th style="width:100px">Complexity</th>
               <th style="width:90px">Reuse</th>
               <th style="width:76px" title="ISO/SAE 21434 cybersecurity assurance level">CAL</th>
+              <th style="width:72px" title="Optional size, thousand source lines — COCOMO II size path (P3 #16)">Size KSLOC</th>
               <th style="width:70px">Custom PM</th>
             </tr>
           </thead>
@@ -1331,6 +1333,12 @@ function readConfig(): void {
   document.querySelectorAll<HTMLSelectElement>('.sw-cal-sel').forEach(sel => {
     const m = _swInputs.modules.find(x => x.moduleId === sel.dataset.id);
     if (m) m.cal = sel.value as SWCal;
+  });
+  document.querySelectorAll<HTMLInputElement>('.sw-ksloc-input').forEach(inp => {
+    const m = _swInputs.modules.find(x => x.moduleId === inp.dataset.id);
+    if (!m) return;
+    const v = parseFloat(inp.value);
+    m.sizeKSLOC = inp.value.trim() === '' || isNaN(v) ? undefined : v;   // engine validation reports a bad size
   });
   document.querySelectorAll<HTMLInputElement>('.sw-pm-input').forEach(inp => {
     const m = _swInputs.modules.find(x => x.moduleId === inp.dataset.id);
@@ -2108,12 +2116,13 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
 
   // Sheet 3: Module Detail
   const modData = [
-    ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'CAL (ISO/SAE 21434)', 'Person-Months',
+    ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'CAL (ISO/SAE 21434)', 'Effort basis', 'Person-Months',
      `Dev Cost (${swUnitM()})`, `Test Cost (${swUnitM()})`, `Calibration (${swUnitM()})`, `Integration (${swUnitM()})`,
      `Toolchain (${swUnitM()})`, `IP Licence (${swUnitM()})`, `Cybersec (${swUnitM()})`, `Cloud (${swUnitM()})`, `Maintenance (${swUnitM()})`,
      `Grand Total (${swUnitM()})`, `${swCur().sym}/Vehicle`],
     ...[...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).map((m, i) => [
       i+1, m.moduleName, m.category, m.asilUsed, m.complexityUsed, m.reuseUsed, m.calUsed,
+      m.effortBasis === 'size' ? `COCOMO II size (${inp.modules.find(x => x.moduleId === m.moduleId)?.sizeKSLOC} KSLOC)` : m.effortBasis,
       f2(m.personMonths), fM(m.development.total), fM(m.testing.total),
       fM(m.calibrationCost), fM(m.integrationCost), fM(m.toolchainCost),
       fM(m.licensingCost), fM(m.cybersecCost), fM(m.cloudCost), fM(m.maintenanceCost),

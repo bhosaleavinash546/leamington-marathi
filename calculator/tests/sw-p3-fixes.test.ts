@@ -4,12 +4,13 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, unitCloudGBP, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, validateSWInputs } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, unitCloudGBP, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, validateSWInputs, cocomoNominalPM, SW_COCOMO_EXPONENT, swRateBasis } from '../src/engine/sw-should-cost.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 import * as XLSX from 'xlsx';
 import { setSWCurrency, swMoney, swMoneyM, swUnitM } from '../src/ui/panels/sw-currency.js';
 import { parseSWRateWorkbook, buildSWRateWorkbook } from '../server/utils/sw-rate-library-xlsx.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
+import { calibrateSWEffort, modelledEffortPM } from '../src/engine/sw-calibration.js';
 
 const src = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const prog = (mut: (p: SWProgramInputs) => void = () => {}) => { const p = defaultSWProgramInputs(); mut(p); return p; };
@@ -127,5 +128,49 @@ describe('#15 the software results follow the page\'s display currency', () => {
   });
   it('the page currency picker drives it', () => {
     expect(src('src/ui/main.ts')).toMatch(/applySWCurrency\(cur, sym, _displayFxRate\)/);
+  });
+});
+
+describe('#16 optional size-based effort (COCOMO II.2000, nominal)', () => {
+  const one = (id: string, mut: (m: SWProgramInputs['modules'][number]) => void = () => {}, pm: (p: SWProgramInputs) => void = () => {}) => {
+    const p = prog(q => { q.modules = q.modules.map(m => ({ ...m, enabled: m.moduleId === id })); pm(q); });
+    mut(p.modules.find(m => m.moduleId === id)!);
+    return computeSWProgram(p).modules.find(m => m.moduleId === id)!;
+  };
+  it('the published nominal equation: PM = 2.94 × KSLOC^1.0997', () => {
+    expect(SW_COCOMO_EXPONENT).toBeCloseTo(1.0997, 10);
+    expect(cocomoNominalPM(1)).toBeCloseTo(2.94, 10);
+    expect(cocomoNominalPM(100)).toBeCloseTo(2.94 * Math.pow(100, 1.0997), 8);   // ≈ 465.3 PM
+  });
+  it('a size replaces the catalogue\'s nominal PM, and ASIL / complexity / reuse act on it exactly as before', () => {
+    // At QM, Medium, Fresh the costed development PM is the nominal PM × the dev-bucket mix, the same for both paths.
+    const nominal = (m: ReturnType<typeof one>) => m.personMonths;
+    const cat = one('gateway_ecu', m => { m.asil = 'QM'; m.complexity = 'Medium'; m.reuse = 'Fresh'; });
+    const sized = one('gateway_ecu', m => { m.asil = 'QM'; m.complexity = 'Medium'; m.reuse = 'Fresh'; m.sizeKSLOC = 40; });
+    const def = SW_MODULES.find(d => d.id === 'gateway_ecu')!;
+    expect(nominal(sized) / nominal(cat)).toBeCloseTo(cocomoNominalPM(40) / def.basePersonMonths, 1);
+    expect(sized.effortBasis).toBe('size');
+    expect(cat.effortBasis).toBe('catalogue');
+    const sizedD = one('gateway_ecu', m => { m.asil = 'D'; m.complexity = 'Medium'; m.reuse = 'Fresh'; m.sizeKSLOC = 40; });
+    const catD = one('gateway_ecu', m => { m.asil = 'D'; m.complexity = 'Medium'; m.reuse = 'Fresh'; });
+    expect(sizedD.development.total / sized.development.total).toBeCloseTo(catD.development.total / cat.development.total, 6);
+  });
+  it('a custom PM still wins; the calibration factor scales the size path too', () => {
+    expect(one('gateway_ecu', m => { m.sizeKSLOC = 40; m.customPersonMonths = 10; }).effortBasis).toBe('custom');
+    const a = one('gateway_ecu', m => { m.sizeKSLOC = 40; });
+    const b = one('gateway_ecu', m => { m.sizeKSLOC = 40; }, p => { p.effortCalibration = 1.25; });
+    expect(b.development.total / a.development.total).toBeCloseTo(1.25, 10);
+  });
+  it('calibration compares sized actuals against the size path', () => {
+    const m = modelledEffortPM({ moduleId: 'rtos', asil: 'B', complexity: 'Medium', reuse: 'Fresh', sizeKSLOC: 20 });
+    const fit = calibrateSWEffort([{ moduleId: 'rtos', asil: 'B', complexity: 'Medium', reuse: 'Fresh', sizeKSLOC: 20, actualPersonMonths: m * 1.3 }]);
+    expect(fit.factor).toBeCloseTo(1.3, 10);
+    expect(m).not.toBeCloseTo(modelledEffortPM({ moduleId: 'rtos', asil: 'B', complexity: 'Medium', reuse: 'Fresh' }), 0);
+  });
+  it('a bad size is refused; the screen and the rate basis show the path', () => {
+    expect(validateSWInputs(prog(p => { p.modules[0].sizeKSLOC = -5; })).join(' ')).toMatch(/size must be/);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/class="sw-ksloc-input"/);
+    const rows = swRateBasis(prog(p => { p.modules[0].sizeKSLOC = 30; }));
+    expect(rows.find(([k]) => /Nominal effort basis/.test(k))![1]).toMatch(/1 COCOMO II size/);
   });
 });
