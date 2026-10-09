@@ -1,0 +1,13 @@
+{
+ "parts": {
+  "1-1534229-1": "the researcher could not confirm what kind of connector this TE code is, or that it is automotive - a price for an unidentified part is not used"
+ },
+ "observations": [],
+ "disputed": {
+  "PGA450TPWRQ1": "TI's own list price is about $2.60 @1k (ti.com); Digi-Key's $5.49 @2,000 is about 2x that - check with a quote before relying on it",
+  "MFS2633AMDAKADR2": "the stored Digi-Key price ($6.0376 @2,000) is exactly Digi-Key's price for the sibling MFS2633HMDA0ADR2 (round 2, 9 Oct 2026) - it may have been read on the wrong code",
+  "TXB0104QPWRQ1": "two Digi-Key listings disagree ($0.52 v $0.82 @2,000); the in-stock listing is used",
+  "BLM15PX121SH1D": "priced on the SN1 sibling, which round 2 found to be Murata's STANDARD grade (SH1 / SZ1 are the automotive grades) - the automotive part may cost more",
+  "BLM15GG471SH1": "priced on the SN1 sibling, which round 2 found to be Murata's STANDARD grade (SH1 / SZ1 are the automotive grades) - the automotive part may cost more"
+ }
+}

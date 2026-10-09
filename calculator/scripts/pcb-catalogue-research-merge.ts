@@ -35,6 +35,9 @@
  *     cross-check never discards the earlier listing; a repeated distributor + break is kept
  *     once) and the part is re-priced from the union. A distributor entry without stored
  *     observations (the 1 Oct pass kept no URL) is replaced by research that has them.
+ *  1a. A staging copy of a distributor's site (fat.lcsc.com) holds test data, not prices: dropped.
+ *     A Digi-Key 'punchouttest' storefront (a test build of a regional store) is used only when no
+ *     other listing passes, and the entry then says so (ADAS round 2, 9 Oct 2026).
  *  9. Family keys (an estimate named by a family, "TC387", "LM74700") take the price of the
  *     catalogued member named in scripts/pcb-research/family-links.json — a reviewed list, never
  *     a guess. They stay labelled estimates (the BOM line does not say which variant) and say so.
@@ -55,6 +58,11 @@ export const FRANCHISED = /^(digi-?key|mouser|arrow|avnet|farnell|newark|element
 /** Where a price may be read: the distributor's own site, or an aggregator that names the distributor and break.
  *  Broker storefronts that relist distributor rows (OEMsTrade, omo-ic), datasheet sites and maker pages are not. */
 export const PRICE_HOSTS = /(^|\.)(digikey\.[a-z.]+|mouser\.[a-z.]+|arrow\.com|avnet\.com|farnell\.com|newark\.com|element14\.com|rs-online\.com|rsdelivers\.com|tme\.(eu|com)|rutronik(24)?\.com|futureelectronics\.com|tti(inc)?\.com|lcsc\.com|verical\.com|heilind\.com|alliedelec\.com|sager\.com|masterelectronics\.com|findchips\.com|octopart\.com|digipart\.com|trustedparts\.com)$/i;
+/** Staging copies of a distributor's site: their prices are test data. */
+export const STAGING_HOSTS = /^fat\.lcsc\.com$/i;
+/** Digi-Key test storefronts: a last resort, labelled on the entry. */
+export const TEST_STOREFRONT = /^punchouttest\./i;
+export const TEST_STOREFRONT_NOTE = " Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.";
 const hostOf = (u: string) => String(u).replace(/^https?:\/\//i, '').split('/')[0].toLowerCase();
 export const DEFAULT_B = -Math.log(0.85) / Math.log(10);   // the catalogue's franchise curve, 0.0706
 const CATEGORIES = new Set(['ic_bga', 'ic_qfn', 'ic_soic', 'ic_tqfp', 'passive_0402', 'passive_0603', 'passive_0805', 'passive_1206',
@@ -71,11 +79,19 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   let obs = (raw ?? []).filter(o => {
     // A one-off price (1, 25, 30 units) says little about volume and runs 2–3× the 1k
     // price; only breaks of 100 units or more are used.
-    const ok = FRANCHISED.test(String(o.distributor).trim()) && PRICE_HOSTS.test(hostOf(o.url)) && Number(o.price) > 0 && Number(o.qty) >= 100 && FX_TO_GBP[String(o.currency).toUpperCase()] != null;
+    const ok = FRANCHISED.test(String(o.distributor).trim()) && PRICE_HOSTS.test(hostOf(o.url)) && !STAGING_HOSTS.test(hostOf(o.url)) && Number(o.price) > 0 && Number(o.qty) >= 100 && FX_TO_GBP[String(o.currency).toUpperCase()] != null;
     if (!ok) dropped.push(`${o.distributor} ${o.price} ${o.currency} @${o.qty}`);
     return ok;
   }).map(o => ({ ...o, qty: Number(o.qty), price: Number(o.price), gbp: Number(o.price) * FX_TO_GBP[String(o.currency).toUpperCase()] }));
   if (!obs.length) return null;
+  // Rule 1a — a test storefront only when nothing else is listed.
+  if (obs.some(o => !TEST_STOREFRONT.test(hostOf(o.url)))) {
+    obs = obs.filter(o => {
+      const test = TEST_STOREFRONT.test(hostOf(o.url));
+      if (test) dropped.push(`${o.distributor} ${o.price} ${o.currency} @${o.qty} (test storefront; another listing found)`);
+      return !test;
+    });
+  }
   // Rule 3 — outliers, judged at a common quantity (1k) so a reel break is not an "outlier".
   const at1k = (o: { qty: number; gbp: number }, b = DEFAULT_B) => o.gbp * Math.pow(o.qty / 1000, b);
   if (obs.length >= 3) {
@@ -116,7 +132,8 @@ function sourceText(p: Priced, sibling?: string): string {
   const sym = (c: string) => ({ USD: '$', GBP: '£', EUR: '€' }[c.toUpperCase()] ?? `${c} `);
   const list = p.obs.map(o => `${o.distributor} ${sym(o.currency)}${o.price} @${o.qty.toLocaleString('en-GB')}`).join('; ');
   const sib = sibling ? `Priced on the sibling orderable code ${sibling} (the listed code was not found at a distributor). ` : '';
-  return `${sib}${list} (search of distributor listings, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.`;
+  const test = p.obs.length && p.obs.every(o => TEST_STOREFRONT.test(hostOf(o.url))) ? TEST_STOREFRONT_NOTE : '';
+  return `${sib}${list} (search of distributor listings, ${p.obs[0]?.date ?? ''}). 10k/100k/200k/300k derived: P1k × (Q/1000)^−${p.b}, ${p.basis}. Above the largest published break these are modelled, not quoted.${test}`;
 }
 
 /** Merge research into the catalogue file (rules 7–8). Returns the report. */
@@ -127,10 +144,14 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
   for (const r of research) {
     const pre = index.get(norm(r.mpn.trim()));
     const prior = pre != null ? (catalogue.parts[pre].observations ?? []) : [];
-    const seen = new Set<string>();
-    const union = [...prior, ...(r.observations ?? [])].filter(o => {
-      const k = `${String(o.distributor).toLowerCase()}|${o.qty}|${o.price}`; if (seen.has(k)) return false; seen.add(k); return true;
-    });
+    // One row per distributor + break + price; the same row read on a normal listing replaces a test-storefront read.
+    const seen = new Map<string, Obs>();
+    for (const o of [...prior, ...(r.observations ?? [])]) {
+      const k = `${String(o.distributor).toLowerCase()}|${o.qty}|${o.price}`;
+      const was = seen.get(k);
+      if (!was || (TEST_STOREFRONT.test(hostOf(was.url)) && !TEST_STOREFRONT.test(hostOf(o.url)))) seen.set(k, o);
+    }
+    const union = [...seen.values()];
     const priced = priceFromObservations(union);
     if (!priced) { report.notFound.push(`${r.mpn}${r.notes ? ` — ${r.notes}` : ''}`); continue; }
     const category = CATEGORIES.has(r.category) ? r.category : 'ic_soic';
@@ -156,7 +177,11 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
       catalogue.parts[hit] = { ...entry, family: old.family || entry.family, aliases: aliases.length ? aliases : undefined };
       report.replacedEstimate.push(`${old.mpn} → ${entry.mpn}`);
     } else if (old.observations?.length) {
-      if (priced.obs.length > old.observations.length) {
+      // New observations, or the rules now read the stored ones differently (a test-storefront
+      // price set aside once a normal listing is found): re-priced either way.
+      const key = (o: Obs) => `${String(o.distributor).toLowerCase()}|${o.qty}|${o.price}`;
+      const had = new Set(old.observations.map(key));
+      if (priced.obs.some(o => !had.has(key(o))) || JSON.stringify(priced.gbp) !== JSON.stringify(old.gbp)) {
         const sib = /^Priced on the sibling orderable code (\S+) /.exec(old.source)?.[1];
         catalogue.parts[hit] = { ...old, gbp: priced.gbp, source: sourceText(priced, sib), asOf: date,
           observations: entry.observations, volumeModel: entry.volumeModel, aliases: aliases.length ? aliases : undefined };

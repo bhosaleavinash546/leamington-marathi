@@ -214,6 +214,18 @@
   "S32G399": {
    "member": "S32G399AAAK1VUCR",
    "why": "the one distributor-listed S32G399A code (ADAS round): a 500-unit reel price with no stock behind it"
+  },
+  "INA226": {
+   "member": "INA226AQDGSRQ1",
+   "why": "the AEC-Q100 orderable of INA226 (ADAS round 2)"
+  },
+  "TMP102": {
+   "member": "TMP102AQDRLRQ1",
+   "why": "the AEC-Q100 orderable of TMP102 (ADAS round 2)"
+  },
+  "TXS0108E": {
+   "member": "TXS0108EQPWRQ1",
+   "why": "the AEC-Q100 orderable of TXS0108E (ADAS round 2)"
   }
  }
 }
