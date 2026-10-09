@@ -2102,7 +2102,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['TOTAL PROGRAMME COST',    fM(s.grandTotal),        100],
     [],
     ['Per Vehicle (SW)', fV(s.perVehicle), `${swCur().sym}`],
-    ['Currency', `${swCur().code} at ${swCur().perGbp} per £ (the engine prices in £; inputs below are £)`],
+    ['Currency', `${swCur().code} at ${swCur().perGbp.toFixed(4)} per £ (the engine prices in £; inputs below are £)`],
     ['Engineering Effort (all costed effort)', f2(s.totalEffortPersonMonths), 'PM'],
     ['Development Person-Months (costed)', f2(s.totalPersonMonths), 'PM'],
     ['Active Modules', result.modules.length, ''],
