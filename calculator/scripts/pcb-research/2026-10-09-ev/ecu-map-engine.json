@@ -1,0 +1,627 @@
+{
+ "domain": "ev-engine",
+ "researched": "2026-10-09",
+ "ecus": [
+  {
+   "ecu": "ECM",
+   "name": "Engine control module / PCM",
+   "function": "Runs fuel injection, ignition timing, throttle, lambda / knock control and emissions diagnostics of the combustion engine; on MHEV / HEV / PHEV it also exchanges torque requests with the hybrid / e-machine controller over CAN. Carries a powertrain MCU (Infineon TriCore / AURIX, NXP MPC55xx/57xx, ST SPC5 / ST10 in older units, Renesas RH850/E2x), an engine-management system IC or SBC (supplies, CAN / LIN, low- and medium-power stages), injector and ignition pre-drivers, an electronic-throttle H-bridge, lambda-sensor and knock-sensor interfaces and discrete power MOSFETs for the high-current loads.",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "Architecture only (Bosch patent): low- and medium-power stages are usually integrated in the system IC built in BCD technology, while high-power stages are kept as separate devices to ease heat dissipation. PCB build-up (HDI, copper weight): not published in any source found.",
+    "laminate": "not published in any source found",
+    "boards": "not published in any source found for a production gasoline ECM. IHS Benchmarking teardowns of a Magneti Marelli IAW 4AC.A3 ECU and two Continental-built Cummins ECMs (CM2250, CM2150E) do not state layer count or board count in their public summaries.",
+    "basis": "technology: https://patents.google.com/patent/US8583345 (Bosch, 'Control chip for providing the basic functionality of a control unit'); teardown summaries: https://electronics360.globalspec.com/article/3318/magneti-marelli-iaw-4ac-a3-engine-control-unit-teardown , https://electronics360.globalspec.com/article/3490/cummins-cm2250-engine-control-module-teardown ; layers / size / laminate: no source found (PCB-maker blogs on 'ECU stack-ups' were found but are generic marketing, not data on a production ECM)"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No public ECM component count found; the IHS / Electronics360 teardown summaries list main ICs only."
+   },
+   "keyIcs": [
+    {
+     "role": "main MCU (production, Bosch MED17 gasoline ECUs)",
+     "examples": [
+      "Infineon TriCore TC1797 among the TriCore MCUs of the MED17 / EDC17 ECUs an ECU tool vendor (Abrites) supports - tool-vendor support list, not a teardown"
+     ],
+     "source": "https://abrites.com/blog/edc17-med17-in-vag-all-there-for-you"
+    },
+    {
+     "role": "main MCU (production, Bosch MG1 gasoline ECU)",
+     "examples": [
+      "Infineon AURIX TC298 in Bosch MG1CS024 (tuning-tool vendor's ECU note; vendor claim, not a teardown)"
+     ],
+     "source": "https://www.autotuner.com/blogs/news/bosch-mg1cs024"
+    },
+    {
+     "role": "main MCU (production, Denso VEA ECUs)",
+     "examples": [
+      "Renesas or Freescale MCU depending on the unit; the vendor says only opening the ECU tells which (tuning-tool vendor help page)"
+     ],
+     "source": "https://help.autotuner.com/en/articles/4626012-denso-vea-ecus"
+    },
+    {
+     "role": "main MCU + companion + power management (production diesel ECM, Continental-built Cummins CM2250, 2009 design)",
+     "examples": [
+      "Freescale MPC5566-family MCU (marking given in the summary as 'MPF5566MPZ132'), Atmel AT56712-2 marked 'Diesel' (probably custom), Infineon power-management IC (IHS Benchmarking teardown summary)"
+     ],
+     "source": "https://electronics360.globalspec.com/article/3490/cummins-cm2250-engine-control-module-teardown"
+    },
+    {
+     "role": "main MCU (production, Magneti Marelli IAW 4AC.A3 for Chery QQ)",
+     "examples": [
+      "ST Micro ST10F269-Q3 MCU commands injection, ignition, engine speed and cooling fan; several privately labelled ICs not positively identified (IHS Benchmarking teardown, 2012)"
+     ],
+     "source": "https://electronics360.globalspec.com/article/3318/magneti-marelli-iaw-4ac-a3-engine-control-unit-teardown"
+    },
+    {
+     "role": "MCU, injector driver, throttle driver, supply, low-side drivers (production ECU, Wuling Hongguang - media / hobby teardown)",
+     "examples": [
+      "ST ST10F275-CFG 16-bit MCU; Bosch '6A930' injector driver (QFP64); ST L9929 throttle driver; Bosch 'L05173' power supply; 4 Fairchild power MOSFETs; ST L9826 octal low-side driver (Toutiao teardown article, part markings as read by the author)"
+     ],
+     "source": "https://www.toutiao.com/zixun/7549028879177025588/"
+    },
+    {
+     "role": "engine-management system IC (4-cylinder all-in-one: supplies, CAN / LIN, 29 power outputs incl. injectors, ignition pre-drivers, relays, stepper)",
+     "examples": [
+      "Infineon TLE8888 (TLE8888QK / -2QK; LQFP-100 EP) - maker product page"
+     ],
+     "source": "https://www.infineon.com/cms/en/product/automotive-system-ic/engine-management-ic/tle8888-2qk/"
+    },
+    {
+     "role": "engine-management system IC (ST, 4-cylinder) + MCU (reference design)",
+     "examples": [
+      "ST L9788 on EVAL-L9788, connectable to the SPC563M-DISP board (SPC563M64L MCU) - evaluation board, not a production ECM"
+     ],
+     "source": "https://www.st.com/en/evaluation-tools/eval-l9788.html"
+    },
+    {
+     "role": "direct-injection injector pre-driver (reference design)",
+     "examples": [
+      "NXP MC33PT2000 on FRDMPKPT2000EVM (3/4/6-cylinder engine evaluation board, S32K14x Cortex-M4F MCU, HS/LS pre-drive PWM up to 100 kHz) - evaluation board"
+     ],
+     "source": "https://nxp.com/design/design-center/development-boards-and-designs/FRDMPKPT2000EVM"
+    },
+    {
+     "role": "powertrain MCU + safety SBC + CAN FD / Ethernet PHYs (reference design)",
+     "examples": [
+      "NXP MPC5777C with MC33FS6520LAE system basis chip, TJA1100 100BASE-T1 PHY and TJA1145T/FD CAN FD transceiver (MPC5777C engine management evaluation system) - evaluation board"
+     ],
+     "source": "https://circuitdigest.com/news/nxp-mpc5777c-power-architecture-mcu-for-industrial-and-automotive-engine-management"
+    },
+    {
+     "role": "injector / ignition driver IC (8 outputs: 4 low-side injector drivers + 4 IGBT / MOSFET gate pre-drivers)",
+     "examples": [
+      "NXP MC33810 (maker block diagram); NXP MC33800 engine control IC (maker product page)"
+     ],
+     "source": "https://Community.freescale.com/assets/block-diagram/en/MC33810.pdf"
+    },
+    {
+     "role": "Bosch in-house system ICs for engine / transmission control units (sold by Bosch, not through distributors)",
+     "examples": [
+      "Bosch CY327 system basis IC (supply, CAN + LIN, pre-regulator to 3 V); CY329 SBC with power stages (7 LS + 1 HS); CJ960 8-ch low-side switch (55 V); CJ970 multi-channel power switch (maker product pages)"
+     ],
+     "source": "https://www.bosch-semiconductors.com/products/automotive-ics/ice-powertrain/cy327/"
+    },
+    {
+     "role": "wide-band lambda-sensor interface",
+     "examples": [
+      "Bosch CJ125 (companion to LSU4.x, LQFP32, SPI); CJ135 (Bosch / NTK / Denso wide-band sensors, TQFP32-EP); CJ136 (UART read-out); CJ138 (LSU5.2 / ZFAS-U3 / Denso Plus 6.1, inside the ECU) - maker product pages"
+     ],
+     "source": "https://www.bosch-semiconductors.com/products/automotive-ics/ice-powertrain/cj135/"
+    },
+    {
+     "role": "knock-sensor interface",
+     "examples": [
+      "TI TPIC8101 dual-channel engine-knock / vibration sensor interface, SOIC-20, listed by TI as automotive (maker product page; not seen on a named production board)"
+     ],
+     "source": "https://ti.com/product/TPIC8101/part-details/TPIC8101DWR"
+    },
+    {
+     "role": "open-source / hobby ECU (not automotive production)",
+     "examples": [
+      "rusEFI microRusEFI: STM32F4 + Infineon TLE8888 (four ignition outputs driven over SPI); rusEFI developers state the STM32 is not automotive grade (forum)"
+     ],
+     "source": "https://www.rusefi.com/forum/viewtopic.php?p=35621"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "Infineon TriCore TC1797 (Bosch MED17.8.31); Infineon AURIX TC3xx; Infineon TC1766 + CIC751 (DCU17 teardown); Infineon TLE8888-1QK"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "IHS Benchmarking via Electronics360: Cummins CM2250 engine control module teardown (Feb 2013)",
+     "url": "https://electronics360.globalspec.com/article/3490/cummins-cm2250-engine-control-module-teardown",
+     "finding": "Continental-built diesel ECM, board marked 2009; Freescale MPC5566-family and Atmel MCUs (Atmel AT56712-2 marked 'Diesel'), Infineon power-management IC. Pricing not collected."
+    },
+    {
+     "title": "IHS Benchmarking via Electronics360: Cummins CM2150E engine control module teardown",
+     "url": "https://electronics360.globalspec.com/article/3654/cummins-cm2150e-engine-control-module-teardown",
+     "finding": "Continental-built ECM, PCB markings suggest a 2004 design; cost model assumed 100,000 units / year over 5 years. Component names not in the public summary."
+    },
+    {
+     "title": "IHS Benchmarking via Electronics360: Magneti Marelli IAW 4AC.A3 engine control unit teardown (May 2012)",
+     "url": "https://electronics360.globalspec.com/article/3318/magneti-marelli-iaw-4ac-a3-engine-control-unit-teardown",
+     "finding": "Chery QQ ECU; ST10F269-Q3 MCU commands injection, ignition, engine speed and fan; some private-label ICs unidentified. Cost section not in the public excerpt."
+    },
+    {
+     "title": "Toutiao: Wuling Hongguang ECU teardown (media / hobby article)",
+     "url": "https://www.toutiao.com/zixun/7549028879177025588/",
+     "finding": "Basic gasoline ECU: ST10F275-CFG MCU, Bosch 6A930 injector driver (QFP64), ST L9929 throttle driver, Bosch L05173 supply, Fairchild power MOSFETs, ST L9826 octal low-side driver. Markings read by the author; not confirmed by maker documents."
+    },
+    {
+     "title": "EEVblog forum: Lotus Elise T4E ECU (hobby dissection)",
+     "url": "https://eevblog.com/forum/reviews/lotus-elise-t4e-ecu-secret-datasheet-(as-it-seems)",
+     "finding": "Owner opened the potted ECU and mapped its parts; an ST L9119D (SOP-20) appeared to handle SPI and the ignition MOSFETs; ST would not release its data."
+    },
+    {
+     "title": "ST EVAL-L9788 evaluation board (reference design)",
+     "url": "https://www.st.com/en/evaluation-tools/eval-l9788.html",
+     "finding": "L9788 provides the supplies and signal pre-processing for a 4-cylinder engine; pairs with the SPC563M-DISP (SPC563M64L) board. Not a production ECM."
+    },
+    {
+     "title": "NXP FRDMPKPT2000EVM PT2000 3/4/6-cylinder engine evaluation board (reference design)",
+     "url": "https://nxp.com/design/design-center/development-boards-and-designs/FRDMPKPT2000EVM",
+     "finding": "MC33PT2000 direct-injection pre-driver driven by an S32K14x MCU. Not a production ECM."
+    },
+    {
+     "title": "NXP MPC5777C engine management evaluation system (reference design)",
+     "url": "https://nxp.com/design/design-center/development-boards-and-designs/MPC5777CEVB",
+     "finding": "MPC5777C daughter cards (416 / 516 MAPBGA) with a power SBC (MC33FS6520LAE per circuitdigest), CAN, LIN, FlexRay, Ethernet PHY on the motherboard. No injector / ignition stage."
+    }
+   ]
+  },
+  {
+   "ecu": "TCM",
+   "name": "Transmission control unit",
+   "function": "Controls shifting and clutch pressure of AT / DCT / CVT / hybrid dedicated transmissions: reads speed, position, pressure and temperature sensors and drives the hydraulic valve solenoids - pressure-control (variable force) solenoids by closed-loop constant-current drivers with dither, on/off shift solenoids by low/high-side switches. Often mounted on or in the gearbox (mechatronic module in transmission oil).",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "Vitesco overmolded TCU: 7 mm thick (previous generation 15 mm); other dimensions not published in any source found.",
+    "technology": "Oil-immersed mechatronic TCUs historically use LTCC ceramic circuit carriers (patents call the ceramic substrate + PCBs + hermetic housing a significant cost driver); Continental's Bare-Die HDI PCB substrate for transmission electronics (Automotive News PACE Award 2015) replaces the ceramic with high-temperature PCB material; patents describe potted bare dies on an HDI PCB or LTCC; Vitesco's overmolded TCU embeds the populated PCB completely in plastic instead of a housing (~45% less weight, vendor claim). Bosch TCU: MCU in 55 / 65 nm (multicore optional), CAN-FD / FlexRay / Ethernet, power control ASIC, ISO 26262 up to ASIL D.",
+    "laminate": "Continental BD-HDI: 'high-temperature resistant materials' (grade not published in any source found); LTCC ceramic in older mechatronic modules (patents).",
+    "boards": "not published in any source found",
+    "basis": "https://continental.com/en/press/press-releases/2015-04-21-pace-award ; https://patents.google.com/patent/US8339789 ; https://automotivepowertraintechnologyinternational.com/news/transmissions-technologies/vitesco-develops-production-process-for-compact-tcus.html ; https://www.bosch-mobility.com/media/global/solutions/passenger-cars-and-light-commercial-vehicles/powertrain-solutions/transmission-technology/transmission-control-unit/productdatasheet_transmission-control-unit.pdf"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No public TCU component count or teardown BOM found."
+   },
+   "keyIcs": [
+    {
+     "role": "TCU content (production, Bosch transmission control unit datasheet)",
+     "examples": [
+      "Microcontroller in 55 nm / 65 nm technology (multicore optional), power control ASIC, CAN-FD / FlexRay / Ethernet, functional safety up to ASIL D - part numbers not given"
+     ],
+     "source": "https://www.bosch-mobility.com/media/global/solutions/passenger-cars-and-light-commercial-vehicles/powertrain-solutions/transmission-technology/transmission-control-unit/productdatasheet_transmission-control-unit.pdf"
+    },
+    {
+     "role": "constant-current solenoid pre-driver (variable-force / pressure-control solenoids)",
+     "examples": [
+      "Infineon TLE8242-2L: 8-ch low-side constant-current pre-driver with external MOSFETs, SPI, listed for automatic-transmission solenoids; Infineon TLE7242-2G: 4-ch version (maker pages)"
+     ],
+     "source": "https://www.infineon.com/cms/jp/product/automotive-system-ic/constant-current-control-ic-for-transmission/tle8242-2l/"
+    },
+    {
+     "role": "integrated constant-current solenoid driver",
+     "examples": [
+      "Infineon TLE92466ED: 6-ch, on-chip drive transistors and sense resistors, 0-1.5 A with 15-bit setpoint, dither to 1.8 A, 32-bit SPI with CRC, ASIL C per Mouser, for automatic transmission / ESC / active suspension; TLE92464ED family member and TLE6288R (6-ch with peak-and-hold) listed in the same Infineon transmission category"
+     ],
+     "source": "https://www.mouser.hk/new/infineon/infineon-tle92466ed-eval-board"
+    },
+    {
+     "role": "on/off solenoid and valve switches",
+     "examples": [
+      "ST L9301: SPI octal low-side or quad low-side + quad high-side driver with per-channel diagnostics (maker datasheet; its use on shift / clutch-enable solenoids is engineering judgement)"
+     ],
+     "source": "https://www.st.com.cn/resource/en/datasheet/l9301.pdf"
+    },
+    {
+     "role": "system basis IC for engine or transmission control units (Bosch, sold by Bosch)",
+     "examples": [
+      "Bosch CY327: system supply, CAN + LIN, configurable pre-regulator down to 3 V (maker page)"
+     ],
+     "source": "https://www.bosch-semiconductors.com/products/automotive-ics/ice-powertrain/cy327/"
+    },
+    {
+     "role": "main MCU (maker positioning, not a named TCU)",
+     "examples": [
+      "Infineon AURIX TC3xx positioned for engine management, transmission control and hybrid domain control (launch coverage)"
+     ],
+     "source": "https://siliconsemiconductor.net/article/100403/Infineon_fuels_automated_driving_and_electromobility"
+    },
+    {
+     "role": "main MCU (maker positioning, not a named TCU)",
+     "examples": [
+      "Renesas RH850/E2x: up to six 400 MHz cores, up to 16 MB flash, lock-step for ASIL D, up to ten CAN FD; press release targets next-generation engines and EV / PHEV motors and inverters"
+     ],
+     "source": "https://www.renesas.com/en-eu/about/press-center/news/2018/news20180327.html"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "Infineon AURIX TC2xx / TC3xx; Renesas RH850; Infineon / NXP multi-channel constant-current solenoid drivers"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "Continental: 2015 Automotive News PACE Awards (BD-HDI PCB substrate for transmission electronics)",
+     "url": "https://continental.com/en/press/press-releases/2015-04-21-pace-award",
+     "finding": "Bare-Die HDI PCB substrate platform for TCUs replaces traditional ceramic solutions with high-temperature resistant materials. OEM / Tier-1 press, not a teardown."
+    },
+    {
+     "title": "Vitesco Technologies: overmolded transmission control unit (2020)",
+     "url": "https://automotivepowertraintechnologyinternational.com/news/transmissions-technologies/vitesco-develops-production-process-for-compact-tcus.html",
+     "finding": "Populated PCB fully embedded in plastic; 7 mm thick vs 15 mm; ~45% lighter and fewer production steps (vendor claims); in series production."
+    },
+    {
+     "title": "Bosch transmission control unit product datasheet",
+     "url": "https://www.bosch-mobility.com/media/global/solutions/passenger-cars-and-light-commercial-vehicles/powertrain-solutions/transmission-technology/transmission-control-unit/productdatasheet_transmission-control-unit.pdf",
+     "finding": "55 / 65 nm MCU (multicore optional), power control ASIC, CAN-FD / FlexRay / Ethernet, ASIL D capable. Tier-1 document, no part numbers."
+    },
+    {
+     "title": "Infineon TLE92466ED evaluation board (reference design)",
+     "url": "https://www.mouser.hk/new/infineon/infineon-tle92466ed-eval-board",
+     "finding": "Arduino form-factor board for the 6-channel transmission solenoid driver. Not a production TCU."
+    }
+   ]
+  },
+  {
+   "ecu": "IGN",
+   "name": "Ignition coil drivers (gasoline)",
+   "function": "Switches the primary current of each ignition coil: a 360-430 V self-clamped ignition IGBT (logic-level gate, SCIS-rated, often with current limit and diagnosis) either inside a coil-on-plug / pencil coil (integrated igniter) or on the ECM board, triggered by the ECM's ignition pre-drivers (e.g. the TLE8888 ignition outputs or MC33810 IGBT pre-drivers).",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "Integrated igniter inside the coil: an IGBT placed close to a heat sink carrying the emitter / ground connection (patent); single-chip IGBT + protection circuit variants (patent). Substrate type: not published in any source found.",
+    "laminate": "not published in any source found",
+    "boards": "not published in any source found",
+    "basis": "US patents returned by one search (https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/10056185 , .../6333604 , .../11183494 , .../5775310); which patent carries which statement was not pinned. No teardown of a coil found."
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No coil or igniter teardown with a component count found."
+   },
+   "keyIcs": [
+    {
+     "role": "ignition IGBT (coil-on-plug driver)",
+     "examples": [
+      "onsemi ISL9V3040 EcoSPARK 400 V N-channel ignition IGBT, 300 mJ SCIS, logic-level gate, TO-252 / TO-263 / TO-220, for coil driver and coil-on-plug applications (distributor product page)"
+     ],
+     "source": "https://www.mouser.in/en/new/onsemi/fairchild-isl9v3040/"
+    },
+    {
+     "role": "ignition IGBT (AEC-Q101)",
+     "examples": [
+      "onsemi FGD3040G2-F085: 41 A 400 V ignition IGBT, TO-252, AEC-Q101 (RS listing)"
+     ],
+     "source": "https://ph.rs-online.com/web/p/igbts/8070767"
+    },
+    {
+     "role": "ignition IGBT (pencil coil, AEC-Q101)",
+     "examples": [
+      "ST STGD18N40LZ (DPAK STGD18N40LZT4): internally clamped ~390 V, 180 mJ SCIS at 150 C, gate ESD protection, for pencil-coil electronic ignition (maker page)"
+     ],
+     "source": "https://st.com/en/power-transistors/stgd18n40lzt4.html"
+    },
+    {
+     "role": "smart ignition driver (VIPower, Darlington output, coil current limit + collector clamp)",
+     "examples": [
+      "ST VB525SP (PowerSO-10); ST's SAE paper describes smart IGBTs for distributed ignition (IGBT for switching, protection / supply / diagnosis integrated)"
+     ],
+     "source": "https://saemobilus.sae.org/papers/smart-igbts-advanced-distributed-ignition-systems-2004-01-0518"
+    },
+    {
+     "role": "ignition IGBT ratings (maker family overview)",
+     "examples": [
+      "Littelfuse ignition IGBTs: 365-410 V blocking, 12-20 A, for coil-on-plug, mounting directly on the coil"
+     ],
+     "source": "https://littelfuse.com/products/power-semiconductors/ignition-igbts.aspx"
+    },
+    {
+     "role": "ECM-side ignition pre-driver",
+     "examples": [
+      "NXP MC33810: four gate pre-drivers usable as ignition-IGBT drivers (maker block diagram); Infineon TLE8888: four ignition outputs, driven by dedicated inputs or SPI (rusEFI forum)"
+     ],
+     "source": "https://Community.freescale.com/assets/block-diagram/en/MC33810.pdf"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "smart ignition IGBT (e.g. onsemi / Infineon automotive ignition IGBTs)"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": []
+  },
+  {
+   "ecu": "FPC",
+   "name": "Fuel-pump controller",
+   "function": "Runs the in-tank electric fuel pump at the pressure / flow the ECM requests (PWM or LIN command): brushed pumps by a PWM low/high-side or H-bridge stage, brushless pumps by an MCU + 3-phase gate driver (sensorless FOC) + six MOSFETs, with over/under-voltage, over-current, over-temperature and stall protection.",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "Patent: a circuit board carrying power semiconductors and a pump controller, with a heat sink. Production PCB build-up: not published in any source found.",
+    "laminate": "not published in any source found",
+    "boards": "not published in any source found",
+    "basis": "https://patents.justia.com/patent/9745931 (fuel pump control module with heat sink); no production FPCM teardown found"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No FPCM teardown found."
+   },
+   "keyIcs": [
+    {
+     "role": "MCU with integrated gate driver + power MOSFETs (BLDC fuel-pump reference design)",
+     "examples": [
+      "NXP S12ZVML128 (S12Z MagniV MCU with 3-phase gate driver and LIN PHY) + Nexperia BUK7J1R4-40H MOSFETs; sensorless FOC, Hall / encoder option, up to 250 W at 12 V (S12ZVM-EFP reference design fact sheet) - reference design, not a production FPCM"
+     ],
+     "source": "https://NXP.com/docs/en/fact-sheet/S12ZVM-EFP_FS.pdf"
+    },
+    {
+     "role": "BLDC pump MCU + driver (reference design for a coolant pump, same architecture)",
+     "examples": [
+      "Infineon MOTIX TLE9893-2QKW62S (Cortex-M3 + 3-phase BLDC driver) on REF_COOLANTPUMP150W - a coolant-pump, not fuel-pump, reference design"
+     ],
+     "source": "https://www.electronicsforu.com/electronics-projects/reference-design-for-150w-coolant-pump"
+    },
+    {
+     "role": "legacy BLDC kit listing fuel pumps among its targets",
+     "examples": [
+      "Infineon 12 V BLDC motor drive kit with XC886 / XC2236N MCUs (element14 community document)"
+     ],
+     "source": "https://community.element14.com/products/manufacturers/infineon/w/documents/7777/automotive-bldc-motor-control-made-easy---new-automotive-12v-bldc-motor-drive-kit"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "automotive 32-bit MCU + 3-phase gate driver (e.g. Infineon MOTIX)"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "NXP S12ZVM-EFP electrical fuel pump reference design",
+     "url": "https://NXP.com/docs/en/fact-sheet/S12ZVM-EFP_FS.pdf",
+     "finding": "Reference design (not production): S12ZVML128 + BUK7J1R4-40H, sensorless FOC, start to rated speed in 150 ms, OV / UV / OC / OT / stall protection, PWM / LIN / FreeMASTER speed command."
+    }
+   ]
+  },
+  {
+   "ecu": "GPCU",
+   "name": "Glow-plug control unit (diesel)",
+   "function": "Pre-heats and post-heats the diesel glow plugs: an MCU (or the engine ECU over LIN / a command line) sets a PWM duty per plug, one power MOSFET or smart high-side switch per plug switches 12 V at tens of amperes, with per-plug current sensing (shunt or switch current-sense) for diagnosis and temperature control.",
+   "powertrains": [
+    "ICE",
+    "MHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "Beru patent: power semiconductors on the control device replace the former electromechanical relays. Owner forum report: bond wires run from the circuit board to the connector pins of each plug and fail on a shorted plug. PCB build-up: not published in any source found.",
+    "laminate": "not published in any source found",
+    "boards": "not published in any source found",
+    "basis": "https://patents.google.com/patent/US8280609 (Beru); https://forums.mbclub.co.uk/threads/8-cylinder-glow-plug-control-unit.295202 (forum, anecdotal)"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No GPCU teardown found."
+   },
+   "keyIcs": [
+    {
+     "role": "per-plug power switch (smart high-side, maker application list)",
+     "examples": [
+      "Infineon PROFET+2 12 V and High Current PROFET families: glow plug controller named among target 12 V high-current loads (2 to 200 mOhm range) - maker press"
+     ],
+     "source": "https://infineon.com/cms/en/about-infineon/press/market-news/2017/INFATV201706-060.html"
+    },
+    {
+     "role": "per-plug power switch (24 / 48 V, datasheet names glow plugs)",
+     "examples": [
+      "Infineon BTH50030-1LUA Power PROFET+ 3.0 mOhm single-channel smart high-side switch, AEC-Q100 grade 1, 'heaters, glow plugs, fans and pumps'"
+     ],
+     "source": "https://www.infineon.com/assets/row/public/documents/10/49/infineon-bth50030-1lua-datasheet-en.pdf"
+    },
+    {
+     "role": "high-current smart high-side switch (heating loads; glow plugs not named by the source)",
+     "examples": [
+      "Infineon Power PROFET BTS50010-1TAD (EAS 3000 mJ @ 40 A) and BTS50015-1TAD (Rutronik family page: PTC heaters, rear defoggers, main switches)"
+     ],
+     "source": "https://www.rutronik.com/electronic-components/infineon/power-profet"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "Infineon PROFET / OptiMOS 40 V class per plug; 8-32-bit automotive MCU with LIN"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "MB Club UK forum: 8-cylinder glow plug control unit (owner report)",
+     "url": "https://forums.mbclub.co.uk/threads/8-cylinder-glow-plug-control-unit.295202",
+     "finding": "Owner report, not a teardown: units fail at the output side, where bond wires from the circuit board to each glow-plug connector pin burn out on a shorted plug."
+    }
+   ]
+  },
+  {
+   "ecu": "NOX",
+   "name": "NOx sensor control unit",
+   "function": "Drives and reads a ZrO2 multi-layer NOx sensor: closed-loop control of the first (oxygen) pump cell and constant-voltage second (NOx) pump cell, pump-current measurement through sense resistors and A/D, heater PWM with probe-temperature control, diagnosis, and NOx / O2 values sent to the ECM / DCU over CAN. The electronics sit in a small box on the sensor harness or inside the sensor connector.",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "PHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "Continental UniNOx: all electronics and drivers integrated in the sensor. NGK / Siemens (SAE 1999-01-0202): control electronics integrated in the sensor connector. PCB build-up: not published in any source found.",
+    "laminate": "not published in any source found",
+    "boards": "not published in any source found",
+    "basis": "https://continental-aftermarket.com/en-en/products/small-production-runs-for-special-purpose-vehicles/sensors-switches/uninox-sensor ; https://papers.sae.org/publications/technical-papers/content/1999-01-0202/?src=970858"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No NOx control unit teardown found (English or Chinese search)."
+   },
+   "keyIcs": [
+    {
+     "role": "NOx-sensor signal-conditioning ASIC (merchant part)",
+     "examples": [
+      "Mysentech MY9706: NOx conditioning chip - pump-electrode (IP0 / IP1 / IP2) drive, electrode voltage / current and temperature amplification, 14-bit ADC, digital compensation, heater control, SPI to the vehicle MCU, SSOP-24, -40..125 C (LCSC-hosted datasheet)"
+     ],
+     "source": "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2205271416_Mysentech-MY9706_C3025193.pdf"
+    },
+    {
+     "role": "pump-cell control circuits + A/D (NGK patent)",
+     "examples": [
+      "First pump element control circuit, second pump element constant-voltage circuit, pump current read through a current-detection resistor and an A/D converter"
+     ],
+     "source": "https://patents.google.com/patent/US6635161"
+    },
+    {
+     "role": "heater control MCU (Chinese utility model)",
+     "examples": [
+      "STM controller controls the heater and monitors sensor temperature (CN210742763U)"
+     ],
+     "source": "https://patents.google.com/patent/CN210742763U/zh"
+    },
+    {
+     "role": "ASIC evaluation / control unit applicable to NOx sensors (Bosch / Melexis patent)",
+     "examples": [
+      "ASIC control and evaluation unit for a broadband lambda probe, stated to be applicable to NOx sensors"
+     ],
+     "source": "https://patents.google.com/patent/US12429453"
+    },
+    {
+     "role": "related lambda-sensor ASIC (not NOx)",
+     "examples": [
+      "Bosch CJ138 oxygen-sensor ASIC inside the ECU (LSU5.2, ZFAS-U3, Denso Plus 6.1)"
+     ],
+     "source": "https://www.bosch-semiconductors.com/products/automotive-ics/ice-powertrain/cj138/"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "sensor interface ASIC + MCU: supplier ASIC (Bosch / Continental-Vitesco / NGK)"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": []
+  },
+  {
+   "ecu": "DCU",
+   "name": "Exhaust aftertreatment / SCR dosing control unit",
+   "function": "Meters AdBlue / DEF into the exhaust for SCR: drives the supply-module pump and the dosing valve, heats tank, lines and pump against freezing, reads NOx / temperature / pressure / level sensors and talks to the engine ECU over CAN (on many current engines this function is integrated into the engine ECU).",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "PHEV"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "not published in any source found",
+    "laminate": "not published in any source found",
+    "boards": "not published in any source found (the Bosch DCU17HD01-4.41 teardown summary says the board is marked made in Germany; no board count).",
+    "basis": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "The DCU17 teardown summary lists main ICs only."
+   },
+   "keyIcs": [
+    {
+     "role": "MCU + companion (production, Bosch DCU17HD01-4.41)",
+     "examples": [
+      "Infineon SAK-TC1766-192F80HL (80 MHz TriCore) + SAK-CIC751-EOM16T companion IC (IHS Benchmarking teardown)"
+     ],
+     "source": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+    },
+    {
+     "role": "power stages and supplies (production, Bosch DCU17HD01-4.41)",
+     "examples": [
+      "Four Bosch-designed ICs: a power switch IC, a MOSFET driver IC and two power-supply ICs (part numbers not given); design dates ~2003-2007, label suggests 2009 production"
+     ],
+     "source": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+    },
+    {
+     "role": "DCU functions (OEM service document)",
+     "examples": [
+      "Dosing control unit controls the urea tank and hose heaters to keep AdBlue warm / defrost it, and acts on each output from its inputs (Mazda SCR document, posted as a forum attachment)"
+     ],
+     "source": "https://mazdas247.com/forum/attachments/urea-dosing-control-unit-pdf.220775/"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "Infineon TC1766 + CIC751 (Bosch DCU17HD01 teardown); heater / pump smart high-side switches"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "IHS Benchmarking via Electronics360: Bosch DCU17HD01-4.41 engine control module teardown (Aug 2012)",
+     "url": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown",
+     "finding": "Infineon SAK-TC1766-192F80HL + SAK-CIC751-EOM16T; four Bosch in-house ICs (power switch, MOSFET driver, two supplies); parts from 2003-2007, label 2009; made in Germany. Function not confirmed by IHS; retailer listings identify DCU 17HD01 as a urea-injection control unit."
+    }
+   ]
+  }
+ ],
+ "boardCostEvidence": [
+  {
+   "claim": "Bosch DCU17HD01-4.41 (IHS Benchmarking teardown, 2012): pricing not collected because the unit is not a retail product; the article cites Bosch's own retail prices for ECUs of roughly EUR 300 to 3,000 and says this unit might fall in the EUR 300 range (not an exact match). Retail / aftermarket context, not a manufacturing cost.",
+   "url": "https://electronics360.globalspec.com/article/3330/bosch-dcu17hd01-4-41-engine-control-module-teardown"
+  },
+  {
+   "claim": "Cummins CM2150E ECM (IHS Benchmarking teardown): cost model built on an assumed 100,000 units a year over a 5-year life; the resulting cost is not in the public summary.",
+   "url": "https://electronics360.globalspec.com/article/3654/cummins-cm2150e-engine-control-module-teardown"
+  },
+  {
+   "claim": "Aftermarket replacement price of a new Ford Focus engine control unit: EUR 649-2,851 (used EUR 91-892) - retailer listing including distribution margins, not an OEM piece price.",
+   "url": "https://www.autoparts-24.com/ford-focus/engine-control-unit-ecu/price/"
+  }
+ ],
+ "notes": [
+  "No public layer count, board size, laminate or placement count was found for any production ECM, TCM, igniter, FPC, GPCU, NOx control unit or DCU; the board facts given are architecture / substrate statements from Tier-1 press, datasheets and patents.",
+  "Bosch in-house ASICs (CY327, CY329, CJ125/135/136/138, CJ960, CJ970, CIC751, the DCU17 power ICs) are sold by Bosch directly or are captive; no franchised-distributor price exists for them.",
+  "Hobby / media sources (Toutiao Wuling ECU teardown, EEVblog Lotus T4E, rusEFI forum, MB Club forum) are labelled as such; their part markings were read by the authors and are not confirmed by maker documents.",
+  "HEV e-CVT (power-split) transmissions are controlled by the hybrid / power-control ECU rather than a separate solenoid-driving TCM; no source naming the ICs of a hybrid dedicated-transmission TCU was found."
+ ]
+}
