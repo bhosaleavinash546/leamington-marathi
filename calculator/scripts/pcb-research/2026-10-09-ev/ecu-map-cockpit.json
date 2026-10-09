@@ -1,0 +1,446 @@
+{
+ "domain": "ev-cockpit",
+ "researched": "2026-10-09",
+ "ecus": [
+  {
+   "ecu": "CLUSTER",
+   "name": "Digital instrument cluster",
+   "function": "Renders speed, tachometer / power meter, tell-tales and driver information on a TFT (or drives gauges and a segment display on entry clusters). Graphics MCU with on-chip VRAM on entry / mid clusters (RH850/D1x, TRAVEO T2G cluster), an application SoC with external DRAM on 3D / full-graphic clusters (R-Car D3, i.MX 8, AM62x-Q1, Tegra in early premium units); FPD-Link / LVDS display output, LED backlight driver, CAN / Ethernet, RTC and ambient-light sensing.",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV",
+    "BEV400",
+    "BEV800"
+   ],
+   "pcb": {
+    "layers": "Renesas states that RH850/D1x clusters, which need no external high-speed DRAM, can be designed on lower-cost four-layer PCBs (vendor claim); the Renesas R-Car D3 'Draak' cluster reference board uses a 4-layer through-hole PCB (vendor reference board, not a production cluster). Production cluster layer counts: not published in any source found.",
+    "size": "Audi first-generation 12.3-inch LCD cluster (Bosch): main control board 185.0 x 121.3 x 1.70 mm; NVIDIA T30 graphics board 85.12 x 85.01 x 1.24 mm; whole cluster 323 x 190 x 87 mm, 1.6 kg (42how disassembly). Other clusters: not published in any source found.",
+    "technology": "Entry / mid clusters: MCU with on-chip VRAM and no external DRAM (Renesas RH850/D1x, 3.5 MB RAM class); premium: SoC + DRAM (Tegra 3 in the Audi unit). HDI / via technology: not published in any source found.",
+    "laminate": "not published in any source found",
+    "boards": "Audi first-gen LCD cluster: five PCBs - main control board, NVIDIA T30 graphics board, LED driver board for warning lights, two barcode display modules (42how). Visteon 2013 Lincoln MKZ reconfigurable cluster: all circuitry on a single printed wiring board (Visteon statement reported by S&P AutoTechInsight).",
+    "basis": "layers: https://www.renesas.com/en/about/press-room/renesas-electronics-introduces-32-bit-automotive-microcontrollers-specialized-instrument-clusters and https://renesas.com/en/products/automotive-products/automotive-system-chips-socs/rtp0rc77995seb0010s-3d-graphics-cluster-r-car-d3-reference-board-draak ; size / boards: https://en.42how.com/2020/07/04/disassembly-of-audis-first-generation-lcd-instrument-cluster/ and https://autotechinsight.spglobal.com/news/19089/visteon-introduces-reconfigurable-instrument-cluster-on-2013-lincoln-mkz ; laminate: no source found"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "The 42how Audi disassembly and the Yole SystemPlus LG DC12ASG-DP3 report summary give no component count; no public cluster placement count found."
+   },
+   "keyIcs": [
+    {
+     "role": "cluster MCU + support ICs (Renesas Advanced Instrument Cluster V2 reference board)",
+     "examples": [
+      "Renesas RH850/D1M1A (R7F701461, 240 MHz G3M, 4 MB flash, 512 KB RAM + VRAM), ISL78206AVEZ, ISL78310ARAJZ, IDT QS3VH16233PAG8, ISL12022MAIBZ, ISL76683, RAA279972 (AICV2 user manual target-device list; reference board, not a production cluster)"
+     ],
+     "source": "https://www.renesas.cn/zh/document/mah/advanced-instrument-cluster-v2-user-manual"
+    },
+    {
+     "role": "external flash for OTA on the cluster MCU",
+     "examples": [
+      "Macronix MX25LW51245G read-while-write octal flash selected by Renesas for RH850/D1M1A clusters (press)"
+     ],
+     "source": "https://www.eenewseurope.com/en/macronix-read-while-write-flash-adopted-by-renesas/"
+    },
+    {
+     "role": "cluster MCU + external memory + display link (Infineon TRAVEO T2G cluster kit)",
+     "examples": [
+      "Infineon TRAVEO T2G CYT4DN (CYT4DNJBZS, 2x Cortex-M7 320 MHz) with S27KS0642 8 MB HyperRAM and S28HS512T 64 MB SEMPER octal NOR; single FPD-Link / LVDS output up to 1920x720, MIPI CSI-2 camera input (KIT_T2G_C-2D-6M_LITE evaluation kit, not a production cluster)"
+     ],
+     "source": "https://doc-snapshots.qt.io/qtformcus-2.11/qtul-instructions-traveo-t2g.html"
+    },
+    {
+     "role": "cluster SoC + PMIC (TI power design for AM62x-Q1 digital clusters)",
+     "examples": [
+      "TI AM625-Q1 display SoC for digital clusters powered by TPS65219-Q1 PMIC (TIPA-050038 power reference design)"
+     ],
+     "source": "https://www.ti.com/tool/TIPA-050038"
+    },
+    {
+     "role": "3D graphics cluster SoC (Renesas reference board)",
+     "examples": [
+      "Renesas R-Car D3 (R8A77995) 'Draak' reference board: 1920x720 full-graphic cluster + WVGA HUD output, 4-layer through-hole PCB"
+     ],
+     "source": "https://renesas.com/en/products/automotive-products/automotive-system-chips-socs/rtp0rc77995seb0010s-3d-graphics-cluster-r-car-d3-reference-board-draak"
+    },
+    {
+     "role": "cluster / infotainment application processor + PMIC + memory (NXP evaluation kit)",
+     "examples": [
+      "NXP i.MX 8QuadMax with MMPF8100 / MMPF8200 PMIC, LPDDR4 x64, 32 GB eMMC 5.1, 64 MB octal SPI flash, LVDS and MIPI-DSI display outputs (i.MX 8QM MEK, targets instrument cluster and infotainment; evaluation kit)"
+     ],
+     "source": "https://www.nxp.com/design/design-center/development-boards-and-designs/i-mx-evaluation-and-development-boards/i-mx-8quadmax-multisensory-enablement-kit-mek:MCIMX8QM-CPU"
+    },
+    {
+     "role": "production cluster graphics processor (Audi first-gen virtual cockpit, Bosch)",
+     "examples": [
+      "NVIDIA Tegra 3 (T30) on its own graphics board, 4 GB + 64 MB flash, 8 MB RAM, QNX; main board parts from Rohm, Infineon, TI (incl. an audio DAC), ON Semiconductor, EM Microelectronic (42how disassembly; part numbers not given)"
+     ],
+     "source": "https://en.42how.com/2020/07/04/disassembly-of-audis-first-generation-lcd-instrument-cluster/"
+    },
+    {
+     "role": "MCU tiers for gauge vs full-graphic clusters (industry overview)",
+     "examples": [
+      "Gauge cluster with segment display on a Spansion / Fujitsu ATLAS MCU; full 2D/3D cluster on Fujitsu Emerald SoC with APIX link; Freescale fragmented frame buffer to cut DRAM (Electronics360 overview)"
+     ],
+     "source": "https://electronics360.globalspec.com/article/3902/instrument-clusters-time-for-a-change"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "NXP i.MX 8; Renesas R-Car; Infineon TRAVEO T2G cluster; LPDDR4; eMMC / NOR"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "42how: Disassembly of Audi's first-generation LCD instrument cluster",
+     "url": "https://en.42how.com/2020/07/04/disassembly-of-audis-first-generation-lcd-instrument-cluster/",
+     "finding": "Bosch 12.3-inch cluster on NVIDIA Tegra 3 (T30); five PCBs with dimensions (main board 185.0 x 121.3 mm, graphics board 85.12 x 85.01 mm); main-board makers Rohm, Infineon, TI, ON Semi, EM Microelectronic."
+    },
+    {
+     "title": "Yole SystemPlus: LG Electronics DC12ASG-DP3 instrument cluster display for Mercedes S-Class",
+     "url": "https://www.yolegroup.com/product/teardown-track/lg electronics-dc12asgdp3-instrument-cluster-display-for-mercedes-sclass",
+     "finding": "Paid report with full BOM, main ICs, substrates and costing; country of origin Vietnam. Component names and cost are not public in the summary."
+    },
+    {
+     "title": "Renesas R-Car D3 3D graphics cluster reference board (Draak)",
+     "url": "https://renesas.com/en/products/automotive-products/automotive-system-chips-socs/rtp0rc77995seb0010s-3d-graphics-cluster-r-car-d3-reference-board-draak",
+     "finding": "Reference design (not production): 1920x720 cluster + WVGA HUD from one R-Car D3; 4-layer through-hole PCB stated as the cost lever."
+    },
+    {
+     "title": "Renesas Advanced Instrument Cluster V2 (AICV2) user manual",
+     "url": "https://www.renesas.cn/zh/document/mah/advanced-instrument-cluster-v2-user-manual",
+     "finding": "Reference design (not production): RH850/D1M1A (R7F701461) with ISL78206, ISL78310, QS3VH16233, ISL12022M, ISL76683, RAA279972."
+    }
+   ]
+  },
+  {
+   "ecu": "IVI",
+   "name": "Infotainment head unit / cockpit domain controller",
+   "function": "Runs navigation, media, smartphone projection, voice and the centre display(s); in a cockpit domain controller one SoC (Snapdragon SA8155P / SA8295P class) also drives the cluster under a hypervisor. Carries the application SoC + PMICs, LPDDR4X, UFS / eMMC, a vehicle MCU (RH850 class) for CAN / power moding, display and camera SerDes (FPD-Link / GMSL), Ethernet, Wi-Fi / BT, AM/FM / DAB tuner, audio DSP / codec / A2B and often class-D amplifiers.",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV",
+    "BEV400",
+    "BEV800"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "HDI / layer count of SA8155P / SA8295P boards: not published in any source found (a search of Chinese and English teardown sources found none).",
+    "laminate": "not published in any source found",
+    "boards": "Tesla Model 3 (2017-2021): Autopilot ECU and infotainment MCU on two boards in one liquid-cooled module, LTE on a cellular daughter card (Steve Jurvetson teardown photos). Audi MIB High (Harman, 2013): modular - NVIDIA Visual Computing Module plug-in (MMX) card, Telit 3G cellular interface module, digital radio, BT / WLAN modules (IHS teardown). Mercedes MBUX NTG6: Multi Media Board (MMB), Base Board (network chips), Country Specific Board (internal Ethernet) and an RH850 bus module (Kaspersky research). Production board counts for other units: not published in any source found.",
+    "basis": "https://steve.blog/2021/02/13/tesla-autopilot-hw2-5-and-infotainment-boards/ ; https://electronics360.globalspec.com/article/3337/audi-mib-high-8v0035021-mib-processing-unit-infotainment-teardown ; https://securelist.com/mercedes-benz-head-unit-security-research/115218/"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No public infotainment component count found. The 4,681-component figure in the Tesla HW2.5 teardown is the Autopilot ECU board, not the infotainment board (https://steve.blog/2021/02/13/tesla-autopilot-hw2-5-and-infotainment-boards/)."
+   },
+   "keyIcs": [
+    {
+     "role": "cockpit domain controller SoC + MCU + memory + SerDes + wireless (production, Jidu Robo-01)",
+     "examples": [
+      "Qualcomm SA8295P; Renesas RH850 32-bit MCU; Micron 2 x 8 GB LPDDR4X + 128 GB 3D TLC NAND; Analog Devices and TI CSI-2 / DSI video chips; Qualcomm + Infineon Wi-Fi 6 / BT 5.2; NXP AM/FM radio (TechInsights Apollo Zhilian CDC teardown summary)"
+     ],
+     "source": "https://www.techinsights.com/blog/deep-dive-teardown-apollo-zhilian-cockpit-domain-controller-cdc-automotive"
+    },
+    {
+     "role": "cockpit SoC + PMICs + storage (Qualcomm development platform)",
+     "examples": [
+      "Qualcomm SA8155P with two PMM8155AU PMICs (PMM8155AU_1 / _2) and an always-on PM8150-family rail, UFS storage, Gigabit Ethernet over RGMII (SA8155P-ADP Linux device-tree patches; development board)"
+     ],
+     "source": "https://lkml.iu.edu/hypermail/linux/kernel/2106.1/06992.html"
+    },
+    {
+     "role": "application processor + PMIC + memory (NXP evaluation kit)",
+     "examples": [
+      "NXP i.MX 8QuadMax, MMPF8100 / MMPF8200 PMIC, LPDDR4 x64, 32 GB eMMC 5.1, 64 MB octal SPI flash (i.MX 8QM MEK; evaluation kit)"
+     ],
+     "source": "https://www.nxp.com/design/design-center/development-boards-and-designs/i-mx-evaluation-and-development-boards/i-mx-8quadmax-multisensory-enablement-kit-mek:MCIMX8QM-CPU"
+    },
+    {
+     "role": "application SoC + memory + CAN + audio codec (Renesas development board)",
+     "examples": [
+      "Renesas R-Car H3 on Salvator-X: LPDDR4 4 GB in 2 x 64-bit channels, 64 MB HyperFlash, TCAN332G CAN transceiver (Zephyr board doc); AKM AK4613 audio codec (Linux salvator-common.dtsi); development board"
+     ],
+     "source": "https://docs.zephyrproject.org/latest/boards/renesas/rcar_salvator_x/doc/index.html"
+    },
+    {
+     "role": "audio codec on R-Car Gen3 development boards",
+     "examples": [
+      "AKM AK4613 codec node in Renesas salvator-common.dtsi (Linux device tree)"
+     ],
+     "source": "https://codex.ac6.fr/Linux/raw/Linux-v5.4/arch/arm64/boot/dts/renesas/salvator-common.dtsi"
+    },
+    {
+     "role": "production infotainment SoC + memory (VW ID.3 ICAS3, LG Electronics)",
+     "examples": [
+      "Early hardware: Qualcomm Snapdragon 820A + 2 x LPDDR4 32 Gb; later hardware: Samsung Exynos Auto V7, 12 GB LPDDR4X, 128 GB UFS (owners' community wiki citing FCC filings and Digi-Key listings; not confirmed by VW)"
+     ],
+     "source": "https://www.meinid.com/wiki/entry/19-icas3/"
+    },
+    {
+     "role": "production infotainment processor + LTE (Tesla Model 3, Intel-era)",
+     "examples": [
+      "Intel Atom processor (Electrek, Bloomberg-sourced); Telit LE940B6-NA LTE Cat 6 module on the cellular daughter card; audio amplifier on the infotainment board (teardown photos)"
+     ],
+     "source": "https://steve.blog/2021/02/13/tesla-autopilot-hw2-5-and-infotainment-boards/"
+    },
+    {
+     "role": "production infotainment APU + GPU (Tesla MCU3)",
+     "examples": [
+      "AMD Ryzen YE180FC3T4MFG (quad-core Zen+, reported, not confirmed) plus a dedicated AMD GPU (Tom's Hardware, citing GreenTheOnly)"
+     ],
+     "source": "https://www.tomshardware.com/news/amd-ryzen-tesla-model-3-model-y"
+    },
+    {
+     "role": "production head unit SoC (Mercedes MBUX NTG6)",
+     "examples": [
+      "NVIDIA Parker SoC in the high version, Reilly PX in entry / mid (press at launch); an RH850 bus module sits on its own board (Kaspersky, https://securelist.com/mercedes-benz-head-unit-security-research/115218/)"
+     ],
+     "source": "https://www.eenewseurope.com/en/mercedes-hmi-makes-massive-use-of-nvidia-architecture/"
+    },
+    {
+     "role": "production head unit modules (Audi MIB High, Harman 2013)",
+     "examples": [
+      "NVIDIA Tegra 2 on the Visual Computing Module (MMX), Telit 3G cellular module, digital radio and Bluetooth / WLAN modules (IHS teardown via Electronics360)"
+     ],
+     "source": "https://electronics360.globalspec.com/article/3337/audi-mib-high-8v0035021-mib-processing-unit-infotainment-teardown"
+    },
+    {
+     "role": "A2B audio bus + audio DSP + codec (ADI evaluation board)",
+     "examples": [
+      "ADI AD2428W A2B transceiver, ADAU1452 SigmaDSP, ADAU1761 SigmaDSP codec (EVAL-AD2428WD1BZ; evaluation board, not a production head unit)"
+     ],
+     "source": "https://www.analog.com/en/resources/evaluation-hardware-and-software/evaluation-boards-kits/EVAL-AD2428WD1BZ.html"
+    },
+    {
+     "role": "Wi-Fi / Bluetooth combo for head units",
+     "examples": [
+      "Infineon AIROC CYW89570 (2x2 Wi-Fi 6/6E + BT 5.3) and CYW89570XR (2x2 + 2x2 RSDB) automotive combos; Qualcomm QCA6574AU 2x2 802.11ac + BT 5.0 used in Snapdragon cockpit platforms"
+     ],
+     "source": "https://infineon.com/cms/en/product/wireless-connectivity/airoc-automotive-wireless/cyw89570"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "Qualcomm SA8155P / SA8295P; Renesas R-Car H3/M3; NXP i.MX 8QM; TI TAS6424-Q1 class-D amplifier"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "TechInsights: Deep Dive Teardown of the Apollo Zhilian Cockpit Domain Controller (Jidu Robo-01), 30 Apr 2024",
+     "url": "https://www.techinsights.com/blog/deep-dive-teardown-apollo-zhilian-cockpit-domain-controller-cdc-automotive",
+     "finding": "SA8295P, Renesas RH850 MCU, Micron 16 GB LPDDR4X + 128 GB NAND, ADI and TI video SerDes, Qualcomm + Infineon Wi-Fi 6 / BT 5.2, NXP AM/FM radio."
+    },
+    {
+     "title": "TechInsights: 2025 Lynk & Co 900 cockpit controller with dual Qualcomm SA8295P SoCs",
+     "url": "https://techinsights.com/ja/node/60234",
+     "finding": "Dual-SA8295P cockpit controller teardown exists (paid); component detail not public."
+    },
+    {
+     "title": "Steve Jurvetson: Tesla Autopilot HW2.5 and infotainment boards",
+     "url": "https://steve.blog/2021/02/13/tesla-autopilot-hw2-5-and-infotainment-boards/",
+     "finding": "Infotainment board with Telit LE940B6-NA LTE on a cellular daughter card and the audio amplifier section; Autopilot board (4,681 components) in the same liquid-cooled module."
+    },
+    {
+     "title": "Electronics360 / IHS: Audi MIB High 8V0035021 processing unit teardown",
+     "url": "https://electronics360.globalspec.com/article/3337/audi-mib-high-8v0035021-mib-processing-unit-infotainment-teardown",
+     "finding": "Harman-built modular unit: NVIDIA Tegra 2 VCM (MMX), Telit 3G module, digital radio, BT / WLAN modules."
+    },
+    {
+     "title": "Kaspersky (Securelist): Mercedes-Benz head unit security research (MBUX NTG6)",
+     "url": "https://securelist.com/mercedes-benz-head-unit-security-research/115218/",
+     "finding": "Board architecture: MMB, Base Board (network chips), Country Specific Board over internal Ethernet, RH850 bus module."
+    },
+    {
+     "title": "42how: The iteration of Mercedes-Benz's infotainment system",
+     "url": "https://en.42how.com/2021/06/27/the-iteration-of-mercedes-benzs-infotainment-system/",
+     "finding": "NTG6 exploded view: several PCBs and a 320 GB hard drive, Entry / MID / High variants; NTG5 Tegra K1, NTG6 Parker, NTG7 Xavier NX."
+    }
+   ]
+  },
+  {
+   "ecu": "TEL",
+   "name": "Telematics control unit (TCU / T-Box)",
+   "function": "Cellular connectivity (LTE / 5G network access device, usually a module), GNSS (inside the NAD module or a separate receiver, sometimes with dead reckoning), eCall with a backup battery, charger and boost stage plus an audio codec / amplifier, a vehicle MCU with CAN FD / Ethernet, a secure element / TPM, an accelerometer, and on V2X units a DSRC / C-V2X radio and security element.",
+   "powertrains": [
+    "ICE",
+    "MHEV",
+    "HEV",
+    "PHEV",
+    "BEV400",
+    "BEV800"
+   ],
+   "pcb": {
+    "layers": "not published in any source found",
+    "size": "not published in any source found",
+    "technology": "not published in any source found",
+    "laminate": "not published in any source found",
+    "boards": "Harman TCU: two similar NAD modules on the board (one customer device, one Harman standard product for data updates) (Yole). Ford TCU: NAD built in by Ford, radio spread over several chips on the main board; Desay SV and Harman use a NAD module (Yole). Tesla: the LTE modem is a module inside the media computer unit (Hackaday, Kutkov) - on Model 3 a cellular daughter card. Board size / layers: not published in any source found.",
+    "basis": "https://www.yolegroup.com/technology-outlook/whats-in-the-box-vehicle-telematics-at-a-glance/ ; https://hackaday.com/2022/01/03/ ; https://steve.blog/2021/02/13/tesla-autopilot-hw2-5-and-infotainment-boards/"
+   },
+   "placements": {
+    "range": "not published in any source found",
+    "basis": "No public TCU component count found (Yole and Counterpoint reports are paid)."
+   },
+   "keyIcs": [
+    {
+     "role": "MCU + SBC + Ethernet switch + PMICs + eCall charger + 5G module (NXP 5G T-Box reference design)",
+     "examples": [
+      "NXP S32K344 (172 MaxQFP), FS26 safety SBC, SJA1110B TSN switch, FS56 and PF5020 PMICs for the 5G module and switch, Maxim MAX20095 eCall backup battery charge / boost, Quectel AG55xQ 5G module (Qualcomm SA515M, C-V2X, GNSS), FXLS8967AF accelerometer, SGTL5000 audio codec, CS2100 and CDCE6214 clocks, Wi-Fi 6 on miniPCIe (S32K3-T-BOX reference board listing)"
+     ],
+     "source": "https://cn.element14.com/nxp/s32k3-t-box/reference-design-board-safety/dp/4062210"
+    },
+    {
+     "role": "T-Box architecture (NXP block diagram)",
+     "examples": [
+      "NXP LPC5516 / LPC54S016 MCU, 88MW320 Wi-Fi, Quectel EC20 / AG35 4G module, GPS, RTC, CAN transceivers, DRAM / eMMC (NXP T-BOX block diagram)"
+     ],
+     "source": "https://nxp.com/assets/block-diagram/en/T-BOX.pdf"
+    },
+    {
+     "role": "eCall backup power (TI reference designs)",
+     "examples": [
+      "TI TPS61088-Q1 boost from one LiFePO4 cell (down to 2 V in, 8 V / 1.6 A out) with a 100 mA linear charger (TIDA-050031); TPS63020 buck-boost rails for the GSM module and GPS with a BQ25071 charger (PMP9769); TPS43330-Q1 older integrated eCall supply"
+     ],
+     "source": "https://ti.com/tool/TIDA-050031"
+    },
+    {
+     "role": "eCall backup battery requirements (TI)",
+     "examples": [
+      "Backup battery must supply 6-20 W audio and ~2 A GSM peaks (350 mA nominal); callback for 60 min without the car battery (TI SSZT633)"
+     ],
+     "source": "https://ti.com/lit/pdf/sszt633"
+    },
+    {
+     "role": "V2X SOM (NXP-based, SolidRun)",
+     "examples": [
+      "NXP i.MX 8DXL (8XLite) host, SAF5400 DSRC V2X transceiver with two analog front ends, SXF1800 V2X security element, u-blox MIA-M10Q GNSS, TJA1100 100BASE-T1, 1 GB LPDDR4 with inline ECC, 8 GB eMMC (SolidRun i.MX8 DXL SOM manual / press)"
+     ],
+     "source": "https://solidrun.atlassian.net/wiki/spaces/developer/pages/613416973/i.MX8+DXL+SOM+Hardware+User+Manual"
+    },
+    {
+     "role": "modem SoC + memory in a TCU (security training material)",
+     "examples": [
+      "Qualcomm MDM9628 automotive chipset (Cortex-A7 application core + Cortex-M3) with a Micron MCP (NAND + RAM) (Quarkslab TCU hacking course)"
+     ],
+     "source": "https://training-car-hacking.quarkslab.com/files/b8a491463fcd35ca7268f66e64bdb670/Connected_Car_Hacking_04_TCU_hacking.pdf"
+    },
+    {
+     "role": "5G NAD modules in production TCUs (Yole SystemPlus)",
+     "examples": [
+      "Jabil and Joynext 5G TCUs: Qualcomm Snapdragon X55 in a Quectel NAD module; Jabil adds a GPS/BDS module; Joynext's module adds a V2X RF front end and the board a Quectel Wi-Fi / BT subassembly"
+     ],
+     "source": "https://www.yolegroup.com/technology-outlook/whats-in-the-box-5g-tcus-by-leading-companies-joynext-and-jabil/"
+    },
+    {
+     "role": "production cellular module (Tesla)",
+     "examples": [
+      "Quectel AG555QGL 5G in Tesla's 'TCU Gen II' replacement part (Tesla parts catalogue, reported by Notebookcheck); Telit LE940B6-NA LTE on the Model 3 cellular daughter card (teardown photo)"
+     ],
+     "source": "https://www.notebookcheck.net/Tesla-5G-modem-connectivity-upgrade-for-Model-Y-offers-up-to-2-4-Gbps-download-speeds.1102044.0.html"
+    },
+    {
+     "role": "automotive LTE / 5G modules (maker)",
+     "examples": [
+      "Quectel AG35 LTE Cat 4 with built-in multi-constellation GNSS and eCall, -40 to +85 C, IATF 16949 (AG35 page); AG550Q 5G on AEC-Q100 Snapdragon Automotive 5G platform; AG59xH (SA525M) / AG59xE (SA522M) Rel-16, pin-compatible with AG55xQ / AG57xQ"
+     ],
+     "source": "https://www.quectel.com/product/lte-ag35-automotive-module/"
+    },
+    {
+     "role": "C-V2X module",
+     "examples": [
+      "Quectel AG15 C-V2X module on Qualcomm 9150 C-V2X chipset"
+     ],
+     "source": "https://autotechinsight.spglobal.com/news/5247462/quectels-new-c-v2x-module-ag15-supports-qualcomms-9150-c-v2x-chipset-solution"
+    },
+    {
+     "role": "automotive TPM / HSM",
+     "examples": [
+      "Infineon OPTIGA TPM SLI 9670 (TPM 2.0, AEC-Q100 grade 2) for telematics, gateway and head-unit ECUs (Infineon datasheet)"
+     ],
+     "source": "https://www.infineon.com/assets/row/public/documents/30/49/infineon-sli-9670-datasheet-en.pdf"
+    },
+    {
+     "role": "GNSS with dead reckoning",
+     "examples": [
+      "u-blox NEO-M9L-20A automotive dead-reckoning module (AEC-Q104); ZED-F9K high-precision DR used in a Siemens V2X test fleet; NEO-M9V targets fleet / micromobility"
+     ],
+     "source": "https://www.u-blox.com/en/product/neo-m9l-module"
+    },
+    {
+     "role": "key ICs already in the library (task file)",
+     "examples": [
+      "Qualcomm MDM9250 / Snapdragon X16 LTE (CCARD reference TCU); MCU + GNSS + LTE + Wi-Fi/BLE + Ethernet PHY; Infineon OPTIGA TPM class secure element"
+     ],
+     "source": "engineering judgement"
+    }
+   ],
+   "teardowns": [
+    {
+     "title": "Yole SystemPlus: What's in the box? Vehicle telematics at a glance",
+     "url": "https://www.yolegroup.com/technology-outlook/whats-in-the-box-vehicle-telematics-at-a-glance/",
+     "finding": "Of 15 systems: Ford builds the NAD on the main board; Desay SV (Quectel module) and Harman (own module) use NAD modules; Harman's TCU carries two NAD modules."
+    },
+    {
+     "title": "Yole SystemPlus: What's in the box? 5G TCUs by Joynext and Jabil",
+     "url": "https://www.yolegroup.com/technology-outlook/whats-in-the-box-5g-tcus-by-leading-companies-joynext-and-jabil/",
+     "finding": "Both on Snapdragon X55 in Quectel NAD modules; Jabil adds GPS/BDS module, Joynext integrates a V2X RF front end and a Quectel Wi-Fi/BT subassembly."
+    },
+    {
+     "title": "Hackaday (Oleg Kutkov): swapping the LTE modem in a Tesla",
+     "url": "https://hackaday.com/2022/01/03/",
+     "finding": "Modem is a module inside the media computer unit; shield removed to show the ICs; SIM is a SIM-on-chip die in a DFN package."
+    },
+    {
+     "title": "NXP S32K3-T-BOX reference design",
+     "url": "https://NXP.com/design/design-center/development-boards-and-designs/s32k3-automotive-telematics-box-t-box-reference-design-board:S32K3-T-BOX",
+     "finding": "Reference design (not production): S32K344 + FS26 + SJA1110B + FS56 / PF5020 + MAX20095 eCall charger + Quectel AG55xQ 5G."
+    },
+    {
+     "title": "TI TIDA-050031 eCall / T-Box backup power reference design",
+     "url": "https://ti.com/tool/TIDA-050031",
+     "finding": "Reference design: one LiFePO4 backup cell, TPS61088-Q1 boost, 100 mA linear charger, 3.8-36 V input."
+    }
+   ]
+  }
+ ],
+ "boardCostEvidence": [
+  {
+   "claim": "IHS teardown (2012): Chrysler UConnect Touch 8.4 head unit BOM $243.94 (top 10 parts ~60%), display unit BOM $129.13; online retail ~$1,700 (list $2,050) for the head unit, ~$1,000 (list $1,270) for the display.",
+   "url": "https://electronics360.globalspec.com/article/2146/teardown-the-chrysler-uconnect-touch-infotainment-platform"
+  },
+  {
+   "claim": "IHS teardown (2012): Honda 39100-SZA-A31 head-end unit total BOM $122.75 (top cost drivers $62.63, 51%).",
+   "url": "https://electronics360.globalspec.com/article/3607/honda-39100-sza-a31-head-end-unit-teardown"
+  },
+  {
+   "claim": "IHS teardown (2012): Chevrolet Captiva C140 head unit total BOM $103.64 (top cost drivers $68.67, 66%).",
+   "url": "https://electronics360.globalspec.com/article/3640/chevrolet-captiva-c140-head-unit-teardown"
+  },
+  {
+   "claim": "IHS teardown (2013): Audi MIB High motorized display unit 8V0857273H6PS total BOM $64.88 (display only, no main processing).",
+   "url": "https://electronics360.globalspec.com/article/3406/teardown-audi-mib-high-8v0857273h6ps"
+  },
+  {
+   "claim": "ResearchInChina T-Box report (via ResearchAndMarkets): 5G module prices fell from RMB 1,500 (2019) to RMB 450 (2022); 4G modules cost under RMB 100. These are NAD module prices, not whole-TCU prices.",
+   "url": "https://www.collisionrepairmag.com/global-and-china-passenger-car-t-box-market-report-2024-chinas-passenger-car-t-box-installations-jumped-by-25-8-yoy-and-lg-neusoft-and-denso-still-led-researchandmarkets-com/"
+  },
+  {
+   "claim": "Retail retrofit price, not a hardware cost: Voyah charged FREE owners RMB 12,999 to upgrade to a Qualcomm 8155 cockpit (includes labour, software, margin).",
+   "url": "https://cnevpost.com/2022/10/10/neta-launches-u-ii-qualcomm-8155/"
+  }
+ ],
+ "notes": [
+  "No public PCB layer count, laminate or placement count was found for any production cockpit SoC board, cluster or TCU; the layer figures above are vendor reference boards (Renesas).",
+  "Many cockpit / connectivity chips are sold direct or under NDA (Qualcomm SA8155P / SA8295P / PMM8155AU, Renesas R-Car, Samsung Exynos Auto, MediaTek Dimensity Auto, Autotalks, TI DS90UB98x FPD-Link IV); prices for those are quote only.",
+  "The Tesla 4,681-component count is the HW2.5 Autopilot board, not infotainment; it is quoted only to stop it being reused for IVI.",
+  "The VW ID.3 ICAS3 processor details come from an owners' community wiki citing FCC filings, not from VW or a teardown house.",
+  "BOM figures in boardCostEvidence are 2012-2013 IHS estimates on IHS's own volume assumptions (e.g. 30k/yr for the Desay study); use them as historical benchmarks, not current costs."
+ ]
+}

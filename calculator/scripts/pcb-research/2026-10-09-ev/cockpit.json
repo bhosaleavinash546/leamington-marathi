@@ -1,0 +1,681 @@
+{
+ "domain": "ev-cockpit",
+ "researched": "2026-10-09",
+ "parts": [
+  {
+   "mpn": "MIMX8QM6AVUFFAB",
+   "family": "i.MX 8QM",
+   "mfr": "NXP",
+   "desc": "i.MX 8QuadMax applications processor, 2x A72 + 4x A53, dual GPU, automotive -40..125 C",
+   "category": "ic_bga",
+   "pkg": "FCPBGA-1313",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "MIMX8QM6AVUFFABR",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 350,
+     "price": 113.34,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/mimx8qm6avuffabr-C524721019",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Priced on the tape-and-reel code MIMX8QM6AVUFFABR (Future 350+). Other listings seen: Farnell UK GBP 176.85 @1 / 173.31 @5 (tray); Digi-Key CN CNY 1,479.88 @350 incl. 13% VAT (reel) - not recorded (VAT-inclusive). Future's figure is well below Digi-Key CN's; check before quoting."
+  },
+  {
+   "mpn": "S28HS512TGABHM010",
+   "family": "S28HS512T",
+   "mfr": "Infineon",
+   "desc": "SEMPER octal xSPI NOR 512Mb, 200 MHz, 1.8 V, -40..125 C (TRAVEO T2G cluster kit flash)",
+   "category": "ic_bga",
+   "pkg": "FBGA-24",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "S28HS512TGABHM010",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 676,
+     "price": 10.593,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/S28HS512TGABHM010/16894691",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Cross-check of a part already in the catalogue (Future $11.25 @676 stored); Digi-Key listing $13.26 @1, $10.593 @676. Named on the Infineon KIT_T2G_C-2D-6M_LITE cluster kit (Qt for MCUs docs)."
+  },
+  {
+   "mpn": "AD2428WCCSZ-RL",
+   "family": "AD2428W",
+   "mfr": "Analog Devices",
+   "desc": "A2B automotive audio bus transceiver, main / sub node, I2S/TDM",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-32",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "AD2428WCCSZ-RL",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 5.04,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/analog-devices-inc/AD2428WCCSZ-RL/10816308",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 4.38,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C649112.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Digi-Key reel $5.04 @5,000 (cut tape also $5.04 @250); LCSC @100 $4.38 and LCSC marks it 'not recommended for new designs'. Tray AD2428WCCSZ01: Digi-Key $5.42 @345. Named on ADI EVAL-AD2428WD1BZ."
+  },
+  {
+   "mpn": "ADAU1452WBCPZ",
+   "family": "ADAU1452",
+   "mfr": "Analog Devices",
+   "desc": "SigmaDSP automotive audio processor, 294.912 MHz, ASRCs, TDM/I2S",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-72",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "ADAU1452WBCPZ",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 6.5703,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C403699.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "LCSC C403699 @100 $6.5703 (another LCSC snapshot showed 0 stock). Slower ADAU1452WBCPZ150 (different speed grade, not recorded): Digi-Key $9.2167 @1,035, Mouser $10.49 @504 (findchips). Named on ADI EVAL-AD2428WD1BZ."
+  },
+  {
+   "mpn": "TDA75610S-ZST",
+   "family": "TDA75610",
+   "mfr": "STMicroelectronics",
+   "desc": "4 x 45 W quad bridge class-AB car radio power amplifier, I2C diagnostics, AEC-Q100",
+   "category": "through_hole",
+   "pkg": "Flexiwatt27",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "TDA75610S-ZST",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 600,
+     "price": 3.79,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/analog--amplifiers--audio/tda75610s-zst-stmicroelectronics-C013403902",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Future MOQ 600 @ $3.79, zero stock, 17-week lead time. ST eStore (maker list, not an observation): $4.85 @500. The task's 'TDA75610SEP' code was not found at a distributor; this is the listed S-ZST orderable. Package (Flexiwatt27) from engineering knowledge of the ZST suffix, not read in a source this round."
+  },
+  {
+   "mpn": "FXLS8967AFR3",
+   "family": "FXLS8967AF",
+   "mfr": "NXP",
+   "desc": "3-axis automotive MEMS accelerometer, I2C/SPI (T-Box crash / motion detect)",
+   "category": "ic_qfn",
+   "pkg": "DFN-10",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "FXLS8967AFR3",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 1.81,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/nxp/fxls8967afr3/acc-l-rom-tre-mems-x-y-z-numerique/dp/4062468",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Farnell FR 1000+ EUR 1.81 ex VAT (1+ EUR 2.53), out of stock; Digi-Key lists it with a 52-week lead time. Named on the NXP S32K3-T-BOX reference board."
+  },
+  {
+   "mpn": "ISL78206AVEZ-T7A",
+   "family": "ISL78206",
+   "mfr": "Renesas",
+   "desc": "40 V 2.5 A automotive synchronous buck regulator (on Renesas AICV2 cluster reference board)",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-20",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "ISL78206AVEZ-T7A",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 250,
+     "price": 3.49,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/4071063",
+     "date": "2026-10-09"
+    }
+   ],
+   "notes": "Two Future Electronics snapshots of this code disagree: $3.49 @250 (26-week lead time) and $3.09 @250 (18 weeks); the higher one is recorded. element14 AU 1+ ~$9.40 incl. GST. Part number from the AICV2 user manual target-device list."
+  },
+  {
+   "mpn": "SA8155P",
+   "family": "SA8155P",
+   "mfr": "Qualcomm",
+   "desc": "Snapdragon automotive cockpit SoC (3rd gen), 7 nm",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "SA8155P",
+   "observations": [],
+   "notes": "Quote only: Qualcomm sells direct / under NDA; no distributor listing (queue: ndaOrDirect). Companion PMICs PMM8155AU likewise."
+  },
+  {
+   "mpn": "SA8295P",
+   "family": "SA8295P",
+   "mfr": "Qualcomm",
+   "desc": "Snapdragon cockpit SoC (4th gen), 5 nm",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "SA8295P",
+   "observations": [],
+   "notes": "Quote only: Qualcomm direct / NDA; no distributor listing."
+  },
+  {
+   "mpn": "MIMX8QX6AVLFZAC",
+   "family": "i.MX 8QXP",
+   "mfr": "NXP",
+   "desc": "i.MX 8QuadXPlus applications processor, 4x A35 1.2 GHz, automotive -40..125 C",
+   "category": "ic_bga",
+   "pkg": "FCPBGA-609",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER",
+    "IVI",
+    "TEL"
+   ],
+   "observedMpn": "MIMX8QX6AVLFZAC",
+   "observations": [],
+   "notes": "No usable break: Digi-Key breaks stop at 120 and were read only on a punchouttest storefront (forbidden host); element14 / Farnell list 1-25 only; Digi-Key CN prices include VAT."
+  },
+  {
+   "mpn": "i.MX 95 automotive",
+   "family": "i.MX 95",
+   "mfr": "NXP",
+   "desc": "i.MX 95 applications processor (automotive grade)",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "i.MX 95 automotive",
+   "observations": [],
+   "notes": "Only industrial codes found at Mouser (MIMX9596CVTXNAC / CVZXNAC, -40..105 C); no automotive orderable code found at a distributor, so none is given."
+  },
+  {
+   "mpn": "R8A77990",
+   "family": "R-Car E3",
+   "mfr": "Renesas",
+   "desc": "R-Car E3 automotive SoC (entry infotainment / cluster)",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "R8A77990",
+   "observations": [],
+   "notes": "Not listed at any distributor searched; Renesas direct (queue: R-Car H3 / M3 ndaOrDirect)."
+  },
+  {
+   "mpn": "R7F701461EABG",
+   "family": "RH850/D1M1A",
+   "mfr": "Renesas",
+   "desc": "RH850/D1M1A cluster MCU, 240 MHz G3M, 4 MB flash, VRAM",
+   "category": "ic_tqfp",
+   "pkg": "QFP",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "R7F701461EABG",
+   "observations": [],
+   "notes": "No Mouser / Digi-Key listing found (Segger lists the device). Renesas channel only."
+  },
+  {
+   "mpn": "CYT4DNJBRCQ1BZSGS",
+   "family": "TRAVEO T2G CYT4DN",
+   "mfr": "Infineon",
+   "desc": "TRAVEO T2G cluster MCU, 2x Cortex-M7 320 MHz, 2D graphics, BGA-327",
+   "category": "ic_bga",
+   "pkg": "BGA-327",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "CYT4DNJBRCQ1BZSGS",
+   "observations": [],
+   "notes": "element14 / Farnell list 1-25 only (Farnell DE EUR 41.31 @1); a Digi-Key $36.47 @270 figure was seen only on zenode.ai (not a price host); RS no longer stocks it."
+  },
+  {
+   "mpn": "CYT3DLBBHBQ1BZSGS",
+   "family": "TRAVEO T2G CYT3DL",
+   "mfr": "Infineon",
+   "desc": "TRAVEO T2G 2D cluster MCU, 240 MHz, BGA-272",
+   "category": "ic_bga",
+   "pkg": "LFBGA-272",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "CYT3DLBBHBQ1BZSGS",
+   "observations": [],
+   "notes": "Farnell PT EUR 25.97 @50 is the largest break found (< 100). Mouser lists the TEQFP sibling CYT3DLABABQ1AESGS at EUR 26.34 @1 only."
+  },
+  {
+   "mpn": "DS90UB947TRGCRQ1",
+   "family": "DS90UB947-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III OpenLDI-to-FPD-Link serializer, 1080p",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "DS90UB947TRGCRQ1",
+   "observations": [],
+   "notes": "Only Digi-Key CN found (CNY 165.53 @2,000 incl. 13% VAT, not recorded); other figures are broker reference prices."
+  },
+  {
+   "mpn": "DS90UH947TRGCRQ1",
+   "family": "DS90UH947-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III OpenLDI serializer with HDCP",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "DS90UH947TRGCRQ1",
+   "observations": [],
+   "notes": "Discarded as implausible: findchips shows Mouser $9.38 @2,000 with zero stock, against LCSC $27.40 @30 and Digi-Key CN ~US$20 ex VAT for the non-HDCP DS90UB947 at 2,000."
+  },
+  {
+   "mpn": "DS90UB984-Q1",
+   "family": "DS90UB984-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV deserializer (DP/eDP displays)",
+   "category": "ic_qfn",
+   "pkg": "VQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "DS90UB984-Q1",
+   "observations": [],
+   "notes": "Not listed at Digi-Key / Mouser; TI forum states the 98x datasheets and tools are NDA."
+  },
+  {
+   "mpn": "DS90UB988-Q1",
+   "family": "DS90UB988-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV to OpenLDI bridge deserializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "DS90UB988-Q1",
+   "observations": [],
+   "notes": "Not listed at Digi-Key / Mouser; 98x family is NDA (TI E2E)."
+  },
+  {
+   "mpn": "MAX96755FGTN/V+",
+   "family": "MAX96755F",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 serializer, DP/eDP input (display link)",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "CLUSTER"
+   ],
+   "observedMpn": "MAX96755FGTN/V+",
+   "observations": [],
+   "notes": "LCSC $7.7536 @1,000 seen only on fat.lcsc.com (staging, forbidden); normal LCSC page not found."
+  },
+  {
+   "mpn": "MAX96789",
+   "family": "MAX96789",
+   "mfr": "Analog Devices",
+   "desc": "GMSL dual-link serializer (display)",
+   "category": "ic_qfn",
+   "pkg": "TQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "MAX96789",
+   "observations": [],
+   "notes": "No franchised listing found (broker only)."
+  },
+  {
+   "mpn": "PCM3168ATPAPRQ1",
+   "family": "PCM3168A-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "6-ADC / 8-DAC 24-bit audio codec, automotive",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "PCM3168ATPAPRQ1",
+   "observations": [],
+   "notes": "LCSC $8.2563 @1,000 only on fat.lcsc.com (forbidden); Mouser / Digi-Key snapshots ($6.41-11.31) give no quantity break."
+  },
+  {
+   "mpn": "AG35",
+   "family": "AG35",
+   "mfr": "Quectel",
+   "desc": "LTE Cat 4 automotive module with GNSS and eCall, LGA",
+   "category": "power_module",
+   "pkg": "LGA",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "AG35",
+   "observations": [],
+   "notes": "Not sold by a franchised distributor found (Quectel quote)."
+  },
+  {
+   "mpn": "AG550Q",
+   "family": "AG55xQ",
+   "mfr": "Quectel",
+   "desc": "5G NR automotive module (Snapdragon SA515M), C-V2X + GNSS",
+   "category": "power_module",
+   "pkg": "LGA",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "AG550Q",
+   "observations": [],
+   "notes": "Not sold by a franchised distributor found (quote only)."
+  },
+  {
+   "mpn": "LE940B6-NA",
+   "family": "LE940B6",
+   "mfr": "Telit",
+   "desc": "LTE Cat 6 automotive module (Tesla Model 3 cellular card)",
+   "category": "power_module",
+   "pkg": "LGA",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL",
+    "IVI"
+   ],
+   "observedMpn": "LE940B6-NA",
+   "observations": [],
+   "notes": "Only a reseller (4GLTEmall, GBP 159.20 @10) - not a franchised distributor."
+  },
+  {
+   "mpn": "NEO-M9L-20A",
+   "family": "NEO-M9L",
+   "mfr": "u-blox",
+   "desc": "Automotive dead-reckoning GNSS module with IMU, AEC-Q104",
+   "category": "power_module",
+   "pkg": "LCC 12.2x16",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "NEO-M9L-20A",
+   "observations": [],
+   "notes": "No distributor price found; datasheet rev R06 still marked functional sample."
+  },
+  {
+   "mpn": "ZED-F9K",
+   "family": "ZED-F9K",
+   "mfr": "u-blox",
+   "desc": "High-precision dead-reckoning GNSS module",
+   "category": "power_module",
+   "pkg": "LGA",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "ZED-F9K",
+   "observations": [],
+   "notes": "Avnet Asia lists ZED-F9K-30A-55 with MOQ 250, price on request only."
+  },
+  {
+   "mpn": "STA8135GA",
+   "family": "TESEO V STA8135",
+   "mfr": "STMicroelectronics",
+   "desc": "TESEO V multi-band GNSS receiver, AEC-Q100",
+   "category": "ic_bga",
+   "pkg": "TFBGA-160",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "STA8135GA",
+   "observations": [],
+   "notes": "Only ST eStore (maker list, not an observation): $7.17 @500 (STA8135GATR $11.62 @500); findchips names Digi-Key / Mouser without prices. STA8100GA eStore $7.21-8.40 @500."
+  },
+  {
+   "mpn": "SAF5400",
+   "family": "SAF5400",
+   "mfr": "NXP",
+   "desc": "RoadLINK DSRC V2X single-chip modem, AEC-Q100 grade 2",
+   "category": "ic_bga",
+   "pkg": "LFBGA-249",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "SAF5400",
+   "observations": [],
+   "notes": "No distributor listing found (quote only)."
+  },
+  {
+   "mpn": "CYW89570",
+   "family": "CYW89570",
+   "mfr": "Infineon",
+   "desc": "AIROC automotive 2x2 Wi-Fi 6/6E + Bluetooth 5.3 combo",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "TEL"
+   ],
+   "observedMpn": "CYW89570",
+   "observations": [],
+   "notes": "No distributor listing found; Mouser shows CYW89510 siblings as non-stocked, 53-week lead time."
+  },
+  {
+   "mpn": "SLI9670AQ20FW1311XTMA1",
+   "family": "SLI9670",
+   "mfr": "Infineon",
+   "desc": "OPTIGA TPM 2.0 automotive (AEC-Q100 grade 2), SPI",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL",
+    "IVI"
+   ],
+   "observedMpn": "SLI9670AQ20FW1311XTMA1",
+   "observations": [],
+   "notes": "Only the industrial SLM9670AQ20FW1311XTMA1 found (LCSC $3.70 @100) - a different grade, not recorded."
+  },
+  {
+   "mpn": "MAX20095ATIA/VY+T",
+   "family": "MAX20095",
+   "mfr": "Analog Devices",
+   "desc": "Automotive multi-chemistry backup-battery charger / boost for eCall",
+   "category": "ic_qfn",
+   "pkg": "WFQFN-28",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "MAX20095ATIA/VY+T",
+   "observations": [],
+   "notes": "Only a broker reference price (Cytech); no franchised listing found. Named on the NXP S32K3-T-BOX."
+  },
+  {
+   "mpn": "TPS61088QRHLRQ1",
+   "family": "TPS61088-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "10 A fully integrated synchronous boost, 2.7-12 V (eCall backup boost, TIDA-050031)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-20",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "TPS61088QRHLRQ1",
+   "observations": [],
+   "notes": "LCSC C1850341 page found but no price read; only a broker (Lisle Apex $4.58 @100)."
+  },
+  {
+   "mpn": "BQ25071QWDQCRQ1",
+   "family": "BQ25071-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "1-cell 1 A LiFePO4 linear charger, automotive (eCall backup, PMP9769)",
+   "category": "ic_qfn",
+   "pkg": "WSON-10",
+   "aecq": true,
+   "ecuRoles": [
+    "TEL"
+   ],
+   "observedMpn": "BQ25071QWDQCRQ1",
+   "observations": [],
+   "notes": "Only Chip Dip (RUB) and IBS quote pages found - not franchised."
+  },
+  {
+   "mpn": "TPS6521905WRHBRQ1",
+   "family": "TPS65219-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC for AM62x-Q1 (3 buck + 4 LDO)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "TPS6521905WRHBRQ1",
+   "observations": [],
+   "notes": "Code as named in a TI E2E thread (TPS6521905-Q1 = user-programmable TPS65219-Q1); no -Q1 distributor listing found. The commercial TPS6521905RHBR is Digi-Key $1.598 @1,000 (not recorded, different grade)."
+  },
+  {
+   "mpn": "LP876411B5RQKRQ1",
+   "family": "LP8764-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "4-phase buck PMIC companion to TPS6594-Q1 (Jacinto 7)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI"
+   ],
+   "observedMpn": "LP876411B5RQKRQ1",
+   "observations": [],
+   "notes": "Orderable shown active on ti.com (LP8764-Q1 part details); no distributor price found."
+  },
+  {
+   "mpn": "AM625-Q1",
+   "family": "AM625-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM625-Q1 display SoC for digital clusters",
+   "category": "ic_bga",
+   "pkg": "FCCSP-425",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "AM625-Q1",
+   "observations": [],
+   "notes": "No -Q1 distributor listing found (JLCPCB shows the commercial AM6254ATCGGAALW only)."
+  },
+  {
+   "mpn": "S27KS0642GABHV020",
+   "family": "S27KS0642",
+   "mfr": "Infineon",
+   "desc": "HyperRAM 64 Mb, 1.8 V, -40..105 C (TRAVEO T2G cluster kit)",
+   "category": "ic_bga",
+   "pkg": "FBGA-24",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "S27KS0642GABHV020",
+   "observations": [],
+   "notes": "Newark (via findchips) $4.25 @1, lowest break $3.23 at an unstated quantity - not recorded."
+  },
+  {
+   "mpn": "MX25LW51245GXDI00",
+   "family": "MX25LW51245G",
+   "mfr": "Macronix",
+   "desc": "512 Mb read-while-write octal NOR (RH850/D1M1A OTA)",
+   "category": "ic_bga",
+   "pkg": "CSPBGA-24",
+   "aecq": true,
+   "ecuRoles": [
+    "CLUSTER"
+   ],
+   "observedMpn": "MX25LW51245GXDI00",
+   "observations": [],
+   "notes": "No franchised price found (Microchip USA shows no price); Mouser lists the 1.8 V MX25UW51245GXDQ00-T RWW automotive at $14.76 @1 only."
+  }
+ ],
+ "notes": [
+  "Already priced in the catalogue (distributor, with observations) - not re-researched: TAS6424QDKQRQ1, FDA803D-EHT, TDA7802, TPS61194PWPRQ1, LP8864SQDCPRQ1, DS90UB941ASRTDRQ1, DS90UB948TNKDRQ1, DS90UB949ATRGCRQ1, DS90UB983RTDRQ1, DS90UB927QSQX/NOPB, MAX96752GTN/VY+T, SN65DSI83TPAPRQ1, MC33PF8100EQES, MC33PF8200D2ES, MPF5020CMMACESR2, TPS6594-Q1, MIMX8ML8DVNLZAB, LPDDR4X (MT53E256M32D1KS / MT53E512M32D1ZW / MT53E1G32D2FW), eMMC (MTFC16GAPALBH, MTFC64GBCAQTC, THGBMJG8), UFS MTFC128GBCAUTC, SJA1110AEL / SJA1110BEL, S32K344, TJA1100 / TJA1101B / TJA1103, BQ24025.",
+  "Quote only / OEM-direct, not searched beyond a check: Renesas R-Car H3 / M3 (R8A77951 / R8A77960), Samsung Exynos Auto V7, MediaTek Dimensity Auto, Autotalks CRATON2 / SECTON, NXP 88Q9098, Qualcomm PMM8155AU, TI DRA821U (automotive -Q1 TI direct only, queue).",
+  "Manufacturer list prices (notes only): ST eStore STA8135GA $7.17 @500, STA8100GA $7.21-8.40 @500, TDA75610S $4.85 @500."
+ ]
+}
