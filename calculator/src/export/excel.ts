@@ -1,4 +1,4 @@
-import { decisionAnswerText } from './decision-text.js';
+import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
@@ -78,7 +78,9 @@ export async function exportToExcelBlob(
   sum.push(['Logistics per Part', m(input.logisticsPerPart)]);
   if (input.tooling.mode === 'amortized') {
     sum.push(['Total Tooling Cost', m(input.tooling.totalToolingCost)]);
+    for (const t of input.tooling.items ?? []) sum.push([`  ${t.label}`, m(t.gbp)]);
     sum.push(['Amortisation Volume', input.tooling.amortizationVolume, 'parts']);
+    sum.push(['Amortisation basis', toolingAmortisationBasis(input)]);
     if (input.annualVolume) sum.push(['Annual Volume', input.annualVolume, 'parts / year']);
     if (input.programmeYears) {
       const life = (input.annualVolume ?? 0) * input.programmeYears;

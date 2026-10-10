@@ -280,3 +280,33 @@ describe('X12 — the reports print every value the rules set, with its basis', 
     expect(ck).toMatch(/none — no model value was used/);
   });
 });
+
+import { computeCastAndMachineDrivers } from '../src/engine/modules/cast-and-machine.js';
+
+describe('X13 — the tooling says what it is, and why it is spread over this many parts', () => {
+  // The knuckle's own module inputs, as the review trace recorded them (India, 100k).
+  const trace = JSON.parse(readFileSync(new URL('../scripts/casting-review-2026-10-10/before/knuckle-trace.json', import.meta.url), 'utf8'));
+  const drivers = computeCastAndMachineDrivers(trace.mapped.params);
+  it('the items add up to the total', () => {
+    const items = drivers.tooling.items ?? [];
+    expect(items.map(i => i.label).join(' | ')).toMatch(/Pattern equipment: \d+ set\(s\) \(life 8,000 moulds each\) \| Machining fixtures \| CNC programming/);
+    expect(items.reduce((a, i) => a + i.gbp, 0)).toBeCloseTo(drivers.tooling.totalToolingCost, 6);
+    expect(items.some(i => /£/.test(i.label))).toBe(false);   // the report prints the money, in its currency
+  });
+  it('a blank programme life is stated as one year’s volume, in the PDF and the Excel', async () => {
+    const { input, result } = sandCastingResult();
+    const inp = { ...input, annualVolume: 100_000, tooling: { ...input.tooling, items: drivers.tooling.items } };
+    const res = computeUniversalStack(inp, lib);
+    const text = pdfText(() => printPDF(res, inp, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    expect(text).toMatch(/Pattern equipment/);
+    expect(text).toMatch(/ONE year.s volume: no programme life was entered/);
+    const blob = await exportToExcelBlob(res, inp, lib, 'INR', 127.1941, null);
+    const wb = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
+    const sum = XLSX.utils.sheet_to_csv(wb.Sheets['1-Summary']);
+    expect(sum).toMatch(/CNC programming/);
+    expect(sum).toMatch(/no programme life was entered/);
+    const withLife = { ...inp, programmeYears: 5, tooling: { ...inp.tooling, amortizationVolume: 500_000 } };
+    const t2 = pdfText(() => printPDF(computeUniversalStack(withLife, lib), withLife, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    expect(t2).toMatch(/the programme: 5 years × 100,000 a year/);
+  });
+});

@@ -239,6 +239,11 @@ export interface ToolingInput {
   totalToolingCost: number;
   amortizationVolume: number;
   mode: ToolingMode;
+  /**
+   * What `totalToolingCost` is made of, £ (descriptive: the core reads only the total). The knuckle's ₹38.5 lakh was
+   * one number in both reports (casting 360 review X13).
+   */
+  items?: Array<{ label: string; gbp: number }>;
 }
 
 export interface LearningCurveConfig {

@@ -18,7 +18,7 @@ import { exportFilename } from './filename.js';
 import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-report-data.js';
 import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
-import { decisionAnswerText } from './decision-text.js';
+import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -910,7 +910,11 @@ export function renderShouldCostSections(
       ...(input.tooling.mode === 'amortized' ? [[
         'Total Tooling Cost', c(input.tooling.totalToolingCost),
         'Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`,
-      ]] : []),
+      ],
+      // what the tooling is (casting 360 X13: ₹38.5 lakh was one number) and what the volume is
+      ...(input.tooling.items ?? []).map(t => [`  ${t.label}`, c(t.gbp), '', '']),
+      ['Amortisation basis', { content: toolingAmortisationBasis(input), colSpan: 3 }],
+      ] : []),
     ],
     theme: 'plain',
     bodyStyles: { fontSize: 8, cellPadding: { top: 3.5, bottom: 3.5, left: 4, right: 4 } },
