@@ -189,8 +189,8 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
       oversize: primary.oversize,
       envelopeMm: MACHINE_CATALOGUE.find(m => m.id === primary.id)?.envelopeMm ?? null,
       costPerPart: Math.round(cost * 10_000) / 10_000,
-      detail: `${detailPrefix}: ${primary.id} £${primary.ratePerHr.toFixed(0)}/hr`
-        + (drill && drill.id !== primary.id ? ` + ${drill.id} £${drill.ratePerHr.toFixed(0)}/hr` : '')
+      detail: `${detailPrefix}: ${primary.id} £${primary.ratePerHr.toFixed(2)}/hr`
+        + (drill && drill.id !== primary.id ? ` + ${drill.id} £${drill.ratePerHr.toFixed(2)}/hr` : '')
         + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
         + ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`
         + (primary.oversize ? ' (part exceeds catalogue envelopes — largest machine of class)' : ''),
@@ -216,8 +216,8 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
         setups, oversize: lathe.oversize,
         envelopeMm: MACHINE_CATALOGUE.find(m => m.id === lathe.id)?.envelopeMm ?? null,
         costPerPart: Math.round(cost * 10_000) / 10_000,
-        detail: `turned from bar: ${lathe.id} £${lathe.ratePerHr.toFixed(0)}/hr for ${(p.turned.latheHr * 60).toFixed(1)} min`
-          + (secHr > 0 ? ` + ${second?.id} £${(second?.ratePerHr ?? 0).toFixed(0)}/hr for ${(secHr * 60).toFixed(1)} min` : '')
+        detail: `turned from bar: ${lathe.id} £${lathe.ratePerHr.toFixed(2)}/hr for ${(p.turned.latheHr * 60).toFixed(1)} min`
+          + (secHr > 0 ? ` + ${second?.id} £${(second?.ratePerHr ?? 0).toFixed(2)}/hr for ${(secHr * 60).toFixed(1)} min` : '')
           + `, ${setups} setup(s) × ${(setupHrEach * 60).toFixed(0)} min / batch ${batch}`
           + ` + ${(handlingHrEach * 60).toFixed(1)} min handling per part per setup`,
       });

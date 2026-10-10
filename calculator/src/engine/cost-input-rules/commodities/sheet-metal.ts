@@ -1149,7 +1149,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       fieldId: 'sm-reject',
       label: 'rejectRate',
       evaluate: () => decided('sheetMetal.rejectRate', PRESS_REJECT, 'rule',
-        'press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — screen had 0, headless 3%', 0.5),
+        'press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2%', 0.5),
     },
     {
       id: 'sheetMetal.fabBlankingCycleSec',

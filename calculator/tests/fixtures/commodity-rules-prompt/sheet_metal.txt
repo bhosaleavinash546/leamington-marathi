@@ -28,7 +28,7 @@ SHEET METAL COST INPUT RULES:
   shearStrengthMPa=170  [reference shear strength for aluminium sheet — deterministic, use verbatim]
   route=stamping  [stamping — laser + brake is not an option: 12.25 mm is beyond a fibre laser's economic range — deterministic, use verbatim]
   manning=0.5  [coil-fed press-400t: one operator tends two automatic presses (engineering-typical) — deterministic, use verbatim]
-  rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — screen had 0, headless 3% — deterministic, use verbatim]
+  rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — deterministic, use verbatim]
   setupHoursPerChange=1  [1 h to change a coil-fed die on a press-400t (engineering-typical) — deterministic, use verbatim]
   batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
   dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10% — deterministic, use verbatim]
@@ -57,7 +57,7 @@ SHEET METAL COST INPUT RULES:
   shearStrengthMPa: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   route: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
   manning: UNDECIDED — needs "What is this part made of?" (Steel | Aluminium)
-  rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — screen had 0, headless 3% — deterministic, use verbatim]
+  rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — deterministic, use verbatim]
   setupHoursPerChange=1  [no press plan — 1 h a die change — deterministic, use verbatim]
   batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
   dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10% — deterministic, use verbatim]

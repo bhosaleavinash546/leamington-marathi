@@ -644,7 +644,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       fieldId: 'imm-reject',
       label: 'rejectRate',
       evaluate: () => decided('injectionMoulding.rejectRate', MOULDING_REJECT, 'rule',
-        'moulding scrap (start-up, short shots, cosmetic rejects), engineering-typical 1–3% — the screen had none, headless 3%', 0.5),
+        'moulding scrap (start-up, short shots, cosmetic rejects), engineering-typical 1–3%', 0.5),
     },
     {
       id: 'injectionMoulding.setupHoursPerChange',

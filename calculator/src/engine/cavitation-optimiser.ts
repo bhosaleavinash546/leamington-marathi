@@ -160,7 +160,7 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
       machineLabourPerPart: Math.round(machineLabourPerPart * 10_000) / 10_000,
       toolingPerPart: Math.round(toolingPerPart * 10_000) / 10_000,
       costPerPart,
-      detail: `${pressId} £${rate.toFixed(0)}/hr, ${shotSec.toFixed(1)} s shot, ${steel.cls} tool `
+      detail: `${pressId} £${rate.toFixed(2)}/hr, ${shotSec.toFixed(1)} s shot, ${steel.cls} tool `
         + `£${mouldCostGBP.toLocaleString()} → ${fmtGBP(toolingPerPart, 4)}/part NRE`
         + (clampTonnes > maxClamp ? ` (${clampTonnes} t exceeds the largest press — costed on it regardless)` : ''),
     });
