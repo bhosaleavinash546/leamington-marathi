@@ -648,9 +648,12 @@ function renderGeometricDFM(
     // Two counts of setups in one report (knuckle 3 v 4, bracket 9 v 4): say which one is in the price and why they differ.
     if (gr.ruleId === 'machining.setup.access-directions' && costedFixturings) {
       const n = (gr as { worst?: { measured?: { value?: number } } }).worst?.measured?.value;
+      const why = n === costedFixturings
+        ? `This finding counts the same ${n} from the directions the measured holes face: the two agree.`
+        : `This finding counts ${n ?? 'the'} direction(s) the measured holes face. They are different counts; the costing's `
+          + `${costedFixturings} is the one in the price.${n && n > costedFixturings ? ' Check the routing against the holes before quoting.' : ''}`;
       for (const ln of doc.splitTextToSize(`In this costing: ${costedFixturings} fixturing(s) are charged, from the routing of the machined `
-        + `faces. This finding counts ${n ?? 'the'} direction(s) the measured holes face. They are different counts; the costing's `
-        + `${costedFixturings} is the one in the price.${n && n > costedFixturings ? ' Check the routing against the holes before quoting.' : ''}`, CW - 4) as string[]) {
+        + `faces. ${why}`, CW - 4) as string[]) {
         doc.text(ln, MG + 2, y); y += 3.1;
       }
     }
@@ -2109,7 +2112,8 @@ export function printPDF(
 
   const sym  = currencySymbol(currency);
   const pct  = (n: number) => `${n.toFixed(1)}%`;
-  const money = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
+  // grouped like every other money figure in the report (casting 360 X31: the cover read "INR 2519.13")
+  const money = (n: number) => { const v = n * fxRate; return `${sym}${(Math.abs(v) < 0.005 ? 0 : v).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; };
   const pcts = breakdownPercentages(result);
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });

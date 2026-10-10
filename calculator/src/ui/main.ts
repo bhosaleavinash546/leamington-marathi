@@ -17362,7 +17362,7 @@ async function pollGeometricDFM(jobId: string, maxMs = 15 * 60_000): Promise<voi
  * difference between "tooling is 18% of cost" and being shown the six faces
  * that cannot come out of the die.
  */
-function dfmMoneyUi(n: number): string { return `${currencySymbol(_displayCurrency)}${(n * _displayFxRate).toFixed(2)}`; }
+function dfmMoneyUi(n: number): string { return `${currencySymbol(_displayCurrency)}${(n * _displayFxRate).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; }
 function renderGeometricDFMPanel(): void {
   const host = el<HTMLElement>('geometric-dfm-panel');
   if (!host) return;

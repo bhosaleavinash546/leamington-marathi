@@ -375,3 +375,24 @@ describe('the kept upload is the upload, not the mesh cache that shares its name
     expect(got.buffer.toString()).toBe('ISO-10303-21;');
   });
 });
+
+describe('the setups finding says when the two counts agree (knuckle: 4 and 4)', () => {
+  it('no "different counts" when they are the same', () => {
+    const { input } = sandCastingResult();
+    const withFix = { ...input, operations: [...input.operations,
+      { operationName: 'Load / clamp / unload — 4 fixturing(s)', machineId: 'mach-haas-vf2', labourId: 'lab-uk-skilled', cycleTimeHr: 0.02,
+        partsPerCycle: 1, oee: 0.8, manning: 0.5, labourTimeHr: 0.02, labourEfficiency: 0.92 }] };
+    const setups = { ruleId: 'machining.setup.access-directions', title: 'Features need several setups', severity: 'major', count: 1, faceIds: [1],
+      recommendation: 'x', source: { standard: 'x' }, costNotModelled: 'y', range: { min: 4, max: 4 }, threshold: { value: 2, comparator: '>', unit: 'setups' },
+      worst: { detail: 'd', measured: { field: 'setups', value: 4, unit: 'setups' } } };
+    const text = pdfText(() => printPDF(computeUniversalStack(withFix as never, lib), withFix as never, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+      { geometrySource: 'occt', geometricDFM: { grouped: [setups], findings: [setups], featuresExamined: 1, rulesEvaluated: 1, packAvailable: true, limitations: [] } } as never)).replace(/\n/g, ' ');
+    expect(text).toMatch(/the two agree/);
+    expect(text).not.toMatch(/different counts/);
+  });
+  it('the cover money is grouped', () => {
+    const { input, result } = sandCastingResult();
+    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    expect(text).not.toMatch(/INR \d{4,}\.\d\d/);
+  });
+});
