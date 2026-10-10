@@ -48,7 +48,7 @@ export const BILLET_PREMIUM_USD_PER_T: Record<ManufacturingRegion, BilletPremium
   NL: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026' },
   ES: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026 (DDP Spain assessed fortnightly)' },
   SE: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026' },
-  PL: { usdPerT: 1_080, sourced: false, basis: 'EU duty-paid billet less ~$20/t for Central European casthouse supply — estimate' },
+  PL: { usdPerT: 1112, sourced: true, basis: 'LME $3,248 (28 Sep 2026) + 6063 billet DDP North Germany premium $1,070–1,135 (Fastmarkets, 28 Aug 2026; being discontinued) = zł16.75/kg = $4352/t at zł3.849/$ — over the library LME $3240 (Poland rate book 2026-10-10)' },
   CZ: { usdPerT: 1_080, sourced: false, basis: 'EU duty-paid billet less ~$20/t — estimate' },
   HU: { usdPerT: 1_080, sourced: false, basis: 'EU duty-paid billet less ~$20/t — estimate' },
   RO: { usdPerT: 1_060, sourced: false, basis: 'EU duty-paid billet less ~$40/t (Alro domestic casthouse) — estimate' },

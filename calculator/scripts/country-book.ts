@@ -260,7 +260,7 @@ if (!labFound) throw new Error(`no lab-${cc}-* entry in rate-library.ts`);
 if (newElec !== undefined || newGas !== undefined) {
   const re = new RegExp(`(id: 'energy-${cc}',[\\s\\S]*?electricityPerKwh: )[0-9.]+(,[\\s\\S]*?gasPerKwh: )[0-9.]+(,[\\s\\S]*?effectiveDate: ')[^']*(',[\\s\\S]*?sourceNote: )(?:'(?:[^'\\\\]|\\\\.)*'(?:\\s*\\+\\s*'(?:[^'\\\\]|\\\\.)*')*)(,[\\s\\S]*?confidence: ')[A-Za-z]+(')`);
   if (!re.test(lib)) throw new Error(`energy-${cc} not found`);
-  lib = lib.replace(re, `$1${elecGbp}$2${gasGbp}$3${cfg.asOf}$4'${NAME} rate book ${cfg.asOf}: ${SYM}${newElec}/kWh electricity, ${SYM}${newGas}/kWh gas — ${String(E.basis).replace(/'/g, '’')}'$5Medium$6`);
+  lib = lib.replace(re, `$1${elecGbp}$2${gasGbp}$3${cfg.asOf}$4'${NAME} rate book ${cfg.asOf}: ${SYM}${newElec}/kWh electricity, ${SYM}${newGas}/kWh gas — ${String(E.basis).replace(/'/g, '’').replace(/\$/g, '$$$$')}'$5Medium$6`);   // '$' in the basis escaped for the replacement string
 }
 writeFileSync(LIB, lib);
 
@@ -268,9 +268,10 @@ writeFileSync(LIB, lib);
 if (billet) {
   const ALD = resolve(ROOT, 'src/engine/al-extrusion-data.ts');
   let ald = readFileSync(ALD, 'utf8');
-  const billetRe = new RegExp(`  ${REGION}: \\{ usdPerT: -?[0-9]+, sourced: (true|false), basis: '[^']*' \\},`);
+  const billetRe = new RegExp(`  ${REGION}: \\{ usdPerT: -?[0-9_]+, sourced: (true|false), basis: '[^']*' \\},`);
   if (!billetRe.test(ald)) throw new Error(`BILLET_PREMIUM_USD_PER_T.${REGION} not found`);
-  ald = ald.replace(billetRe, `  ${REGION}: { usdPerT: ${billet.value}, sourced: true, basis: '${String(billet.basis).replace(/'/g, '’')} (${NAME} rate book ${cfg.asOf})' },`);
+  // a function replacer: the basis carries '$1,070', which a replacement string reads as capture group 1
+  ald = ald.replace(billetRe, () => `  ${REGION}: { usdPerT: ${billet.value}, sourced: true, basis: '${String(billet.basis).replace(/'/g, '’')} (${NAME} rate book ${cfg.asOf})' },`);
   writeFileSync(ALD, ald);
 }
 console.log(`written: ${BOOK_FILE}, regional-rates.ts (${REGION}), rate-library.ts (lab-${cc}-*${newElec !== undefined ? `, energy-${cc}` : ''})${billet ? `, al-extrusion-data.ts (${REGION} billet)` : ''}, register.csv`);

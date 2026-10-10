@@ -1,0 +1,1284 @@
+{
+ "asOf": "2026-10-10",
+ "label": "Poland rate book — 4-cluster average (Silesia, Lower Silesia, Wielkopolska, Podkarpacie), 3 × 8 h",
+ "region": "PL",
+ "currency": "PLN",
+ "currencySymbol": "zł",
+ "dir": "scripts/rate-refresh/poland-2026-10",
+ "snapshot": "scripts/rate-refresh/poland-2026-10/current-poland-book.json",
+ "bookFile": "src/engine/country-books/pl.ts",
+ "bookConst": "POLAND_BOOK",
+ "fxPerGbp": 5.096,
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 66.34,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,625 = 91,500 − sick-pay saving 20% × 10 days × (7,625 ÷ 20.92 days) 729 = 90,771; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (91,500 − sick days 3,645 + night 3,293 = 91,148) = 20,034; annual cost 114,099 ÷ 1,720 productive h = 66.34",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+    "research": "labour.skilled.fullyLoadedPlnPerHr"
+   },
+   "semiskilled": {
+    "localPerHr": 61.46,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,044 = 84,528 − sick-pay saving 20% × 10 days × (7,044 ÷ 20.92 days) 674 = 83,854; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (84,528 − sick days 3,368 + night 3,293 = 84,454) = 18,563; annual cost 105,711 ÷ 1,720 productive h = 61.46",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-maszyn-i-urzadzen-produkcyjnych",
+    "research": "labour.semiskilled.fullyLoadedPlnPerHr"
+   },
+   "foundry": {
+    "localPerHr": 56.57,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,462 = 77,544 − sick-pay saving 20% × 10 days × (6,462 ÷ 20.92 days) 618 = 76,926; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (77,544 − sick days 3,089 + night 3,293 = 77,748) = 17,089; annual cost 97,308 ÷ 1,720 productive h = 56.57",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+    "research": "labour.foundry.fullyLoadedPlnPerHr"
+   },
+   "electronics": {
+    "localPerHr": 54.8,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,250 = 75,000 − sick-pay saving 20% × 10 days × (6,250 ÷ 20.92 days) 598 = 74,402; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,000 − sick days 2,988 + night 3,293 = 75,305) = 16,552; annual cost 94,248 ÷ 1,720 productive h = 54.80",
+    "source": "https://www.pracuj.pl/praca/operator-ka-maszyn-smt-krakow-christo-botewa-6,oferta,1004966189",
+    "research": "labour.electronics.fullyLoadedPlnPerHr"
+   },
+   "inspector": {
+    "localPerHr": 61.63,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,064 = 84,768 − sick-pay saving 20% × 10 days × (7,064 ÷ 20.92 days) 675 = 84,093; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (84,768 − sick days 3,377 + night 3,293 = 84,684) = 18,614; annual cost 105,999 ÷ 1,720 productive h = 61.63",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-kontroler-jakosci",
+    "research": "labour.inspector.fullyLoadedPlnPerHr"
+   },
+   "technician": {
+    "localPerHr": 72.71,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 8,384 = 100,608 − sick-pay saving 20% × 10 days × (8,384 ÷ 20.92 days) 802 = 99,806; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (100,608 − sick days 4,008 + night 3,293 = 99,893) = 21,956; annual cost 125,056 ÷ 1,720 productive h = 72.71",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu",
+    "research": "labour.technician.fullyLoadedPlnPerHr"
+   },
+   "supervisor": {
+    "localPerHr": 77.06,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 8,903 = 106,836 − sick-pay saving 20% × 10 days × (8,903 ÷ 20.92 days) 851 = 105,985; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (106,836 − sick days 4,256 + night 3,293 = 105,873) = 23,271; annual cost 132,549 ÷ 1,720 productive h = 77.06",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-mistrz-zmiany",
+    "research": "labour.supervisor.fullyLoadedPlnPerHr"
+   },
+   "engineer": {
+    "localPerHr": 85.02,
+    "basis": "Day shift, salaried. Pay 12 × 10,129 − sick-pay saving 969 = 120,579; + 21.98% × (121,548 − 4,843 = 116,705) = 25,652; annual 146,231 ÷ 1,720 h = 85.02",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-inzynier-procesu",
+    "research": "labour.engineer.fullyLoadedPlnPerHrStd"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 59.97,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,867 = 82,404 − sick-pay saving 20% × 10 days × (6,867 ÷ 20.92 days) 657 = 81,747; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (82,404 − sick days 3,283 + night 3,293 = 82,414) = 18,115; annual cost 103,155 ÷ 1,720 productive h = 59.97",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-pras",
+    "research": "labour.forge.fullyLoadedPlnPerHr"
+   },
+   "furnace": {
+    "localPerHr": 56.57,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,462 = 77,544 − sick-pay saving 20% × 10 days × (6,462 ÷ 20.92 days) 618 = 76,926; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (77,544 − sick days 3,089 + night 3,293 = 77,748) = 17,089; annual cost 97,308 ÷ 1,720 productive h = 56.57",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+    "research": "labour.furnace.fullyLoadedPlnPerHr"
+   },
+   "blow": {
+    "localPerHr": 55.09,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,285 = 75,420 − sick-pay saving 20% × 10 days × (6,285 ÷ 20.92 days) 601 = 74,819; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,420 − sick days 3,005 + night 3,293 = 75,709) = 16,641; annual cost 94,753 ÷ 1,720 productive h = 55.09",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+    "research": "labour.blow.fullyLoadedPlnPerHr"
+   },
+   "roto": {
+    "localPerHr": 55.09,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,285 = 75,420 − sick-pay saving 20% × 10 days × (6,285 ÷ 20.92 days) 601 = 74,819; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,420 − sick days 3,005 + night 3,293 = 75,709) = 16,641; annual cost 94,753 ÷ 1,720 productive h = 55.09",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+    "research": "labour.roto.fullyLoadedPlnPerHr"
+   },
+   "thermoform": {
+    "localPerHr": 55.09,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,285 = 75,420 − sick-pay saving 20% × 10 days × (6,285 ÷ 20.92 days) 601 = 74,819; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,420 − sick days 3,005 + night 3,293 = 75,709) = 16,641; annual cost 94,753 ÷ 1,720 productive h = 55.09",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+    "research": "labour.thermoform.fullyLoadedPlnPerHr"
+   },
+   "trim-router": {
+    "localPerHr": 66.34,
+    "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,625 = 91,500 − sick-pay saving 20% × 10 days × (7,625 ÷ 20.92 days) 729 = 90,771; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (91,500 − sick days 3,645 + night 3,293 = 91,148) = 20,034; annual cost 114,099 ÷ 1,720 productive h = 66.34",
+    "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+    "research": "labour.trimRouter.fullyLoadedPlnPerHr"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross total pay (Sedlak OBW \"wynagrodzenie całkowite\" = base + bonuses / variable pay, indexed to 2026 and adjusted to the four clusters), paid annual leave and public holidays (inside the 12 monthly salaries), sick pay at 80% for 10 days, the statutory night allowance on one third of hours worked (3 × 8 h, shop-floor roles), and employer ZUS + FP + FGŚP + PPK (21.98%); divided by 1,720 productive hours.",
+  "loadingNotIncluded": "NOT included (not sourced): 13th-month salary (no statutory 13th month in Polish private industry — any annual bonus is already inside OBW total pay), shift allowances above the statutory night allowance, ZFŚS social fund write-off (mandatory at ≥50 FTE), bridging-pension FEP 1.5%, PFRON, meal / transport / work-clothing / medical exams, training time, overtime and weekend premiums, agency-worker margins, severance and jubilee-award accruals.",
+  "short": "4-cluster, 3 × 8 h, ZUS-loaded, 1,720 productive h"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 0.702,
+  "gasLocalPerKwh": 0.249,
+  "basis": "Electricity zł0.702/kWh ex-VAT: TGE 2026 baseload year zł0.4305 + 2026 capacity fee zł0.2194 in weekday 07–21 h (zł0.128 on a flat 3-shift load) + network zł0.129 (Forum Energii 2024, energy-intensive industry — a proxy) + OZE zł0.0073 + cogeneration zł0.003 + excise zł0.005; the book's zł0.698 agrees (Eurostat band IC, H2 2025, zł0.536 before the capacity-fee rise). Gas zł0.249/kWh ex-VAT (GCV): TGE day-ahead Mar–Apr 2026 zł0.224 + PSG variable distribution zł0.025 (2024) — a FLOOR (fixed / capacity charges and supplier margin not found); the EU-average non-household band I3, H2 2025, is zł0.265 and agrees; the book had zł0.408",
+  "sources": [
+   {
+    "research": "energy.electricity.allIn",
+    "source": "derived",
+    "date": "2026"
+   },
+   {
+    "research": "energy.electricity.energyComponent",
+    "source": "https://tge.pl/pub/TGE/komunikaty/2026/01/2026.01.07_podsumowanie dzialalnosci tge w 2025 roku.pdf",
+    "date": "2026 delivery (traded 2025)"
+   },
+   {
+    "research": "energy.electricity.capacityFee",
+    "source": "https://www.gramwzielone.pl/?p=20339842",
+    "date": "2026"
+   },
+   {
+    "research": "energy.electricity.networkCharges",
+    "source": "https://www.forum-energii.eu/download/pobierz/rachunek-za-konkurencyjnosc",
+    "date": "2024"
+   },
+   {
+    "research": "energy.gas.commodity",
+    "source": "https://tge.pl/pub/TGE/komunikaty/2026/05/2026.05.06_podsumowanie dzialalnosci tge w kwietniu 2026.pdf",
+    "date": "2026-03/04"
+   },
+   {
+    "research": "energy.gas.distribution",
+    "source": "https://pgnig.pl/documents/10184/45904/Informacja+w+zakresie+stawek+op%C5%82at+obowi%C4%85zuj%C4%85cych+w+okresie+I-VI+2024+r.+w+rozliczeniach+z+odbiorcami+uprawnionymi+do+ochrony+taryfowej+przy%C5%82%C4%85czonych+do+sieci+PSG/6eb476a2-88d4-4672-a10f-3e7cac239245",
+    "date": "2024-H1"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6024,
+  "hoursBasis": "3 × 8 h, Monday–Friday, 251 working days in 2026 = 6,024 h (the labour model's pattern)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "Polish straight-line tax depreciation — no shift uplift on held capital",
+  "lifeYears": 7.14,
+  "financeRate": 0.0822,
+  "financeBasis": "SME machinery / investment loan WIBOR 3M 3.82% + 3.9–4.9 pp = 7.72–8.72%, midpoint 8.22% (cooperative bank tariff, Mar 2026); NBP reference rate 3.75% (7 Oct 2026) — a large Tier-1 borrows below this; the book's line build-ups use 4% on half the capex",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Polish norm found",
+  "rentLocalPerM2Month": 20.05,
+  "rentBasis": "warehouse / light-industrial headline rent midpoints: Upper Silesia zł20.12, Wrocław zł18.92, Poznań zł21.10 per m²/month (€3.15–6.00 at zł4.374/€; ceo.com.pl, ~Apr 2026) — mean; CBRE Q2 2026 national €4.7 = zł20.56 agrees; Rzeszów listings only",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 0.72,
+  "groups": [
+   {
+    "id": "cnc-vmc-eu",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-vmc3",
+    "refCapexLocal": 284288,
+    "basis": "Haas VF-2SSYT-EU list €64,995 on Haas's Polish site = zł284,288 (machine only; delivery, installation and tooling not included); US list $70,995 = zł273,260 agrees — an imported machine costs Poland what it costs the EU",
+    "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+    "confidence": "Medium"
+   },
+   {
+    "id": "cnc-5axis-eu",
+    "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
+    "refId": "mach-vmc5",
+    "refCapexLocal": 461861,
+    "basis": "Haas UMC-500 \"from $119,995\" (US list, older article) = zł461,861 — no EU price found",
+    "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+    "confidence": "Low"
+   }
+  ],
+  "notRebuiltBasis": "capex not sourced for Poland: the book's capital (UK × 0.72) is HELD — note most Polish plant is imported and priced in EUR, so this likely UNDERSTATES it; the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 3.784,
+   "anchorBasis": "NW Europe CRC €850–880/t ex-works (13 Sep 2026, as relayed by Tacto) = zł3.78/kg at zł4.374/€; freight to a Polish plant not added",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 3.784,
+   "anchorBasis": "CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 3.259,
+   "anchorBasis": "NW Europe HRC €745/t ex-works (Fastmarkets via Eurometal, 6 Oct 2026) = zł3.26/kg (Polish distributor index PUDS St3S sheet zł3.43, w/e 28 Sep, agrees) × the book's premium over HRPO; S355MC / S420MC extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrc",
+     "source": "https://eurometal.net/european-hrc-prices-edge-higher-despite-sluggish-demand/",
+     "date": "2026-10-06"
+    },
+    {
+     "research": "ferrous.anchor.hrc.poland_distributor_St3S",
+     "source": "https://www.wnp.pl/rynki/gielda-i-notowania/indeks-cen-stali-puds/",
+     "date": "2026-09-28"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 3.762,
+   "anchorBasis": "NW Europe HDG €850–870/t ex-works (13 Sep 2026, as relayed by Tacto) = zł3.76/kg × the book's premium over DC01 GI",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hdg",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "C45 medium-carbon bar",
+   "anchorLocalPerKg": 3.173,
+   "anchorBasis": "C45 round bar zł3.17/kg net (24metal.com Polish stockholder list, read 10 Oct 2026; the page is undated)",
+   "sources": [
+    {
+     "research": "ferrous.bar.C45",
+     "source": "https://24metal.com/pl/prety-okragle-gladkie/419-pret-gladki-c45-fi-24-dlugosc-6000-paczka-2-tony.html",
+     "date": "undated (read 2026-10-10)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel1045",
+    "mat-steel-c45",
+    "mat-en8"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon / micro-alloyed bar",
+   "anchorLocalPerKg": 3.173,
+   "anchorBasis": "C45 bar zł3.17 × the book's premium over C45; 38MnVS / 11SMnPb30 / A105 extras not found",
+   "sources": [
+    {
+     "research": "ferrous.bar.C45",
+     "source": "https://24metal.com/pl/prety-okragle-gladkie/419-pret-gladki-c45-fi-24-dlugosc-6000-paczka-2-tony.html",
+     "date": "undated (read 2026-10-10)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel-c35",
+    "mat-steel1020",
+    "mat-steel-a105",
+    "mat-steel-c70s6",
+    "mat-steel1141",
+    "mat-steel-en3-bar",
+    "mat-steel-11smnpb30",
+    "mat-steel-30mnvs6",
+    "mat-steel-38mnvs6"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 12.116,
+   "anchorBasis": "304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Eurometal, 7 Sep 2026) = zł12.12/kg; the October 1.4301 surcharge is €2,188/t (legierungszuschlag.info)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    },
+    {
+     "research": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 12.116,
+   "anchorBasis": "304 sheet zł12.12 × the book's premium of 301 over 304L sheet",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 18.48,
+   "anchorBasis": "316 CR €4,225/t delivered N. Europe (Eurometal, 7 Sep 2026) = zł18.48/kg; 316L bar not found (held)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 6.773,
+   "anchorBasis": "430 CR zł6.77/kg — DERIVED: the October 1.4016 alloy surcharge €985/t + a base assumed equal to 304's (no 430 transaction price found)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 1.73,
+   "anchorBasis": "Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 1.52,
+   "anchorBasis": "Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 1.28,
+   "anchorBasis": "Steel-foundry charge zł1.28/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 5.64,
+   "anchorBasis": "CF8 charged as 304 scrap zł5.64/kg (304 scrap $1,420/t CIF Rotterdam, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr)",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 14.45,
+   "anchorBasis": "0.20 × Ni zł64.18 (LME, 8 Sep) + 0.02 × Cr zł13.24 (HC FeCr) + 0.78 × ductile charge zł1.73",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-09-08"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 23.969,
+   "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 zł5.511 + 0.59 × ductile charge",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-09-08"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 4.215,
+   "anchorBasis": "0.23 × Cr zł13.24 + 0.77 × grey charge zł1.52",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 10.85,
+   "anchorBasis": "Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = zł10.85/kg — the latest public print is 23 Jan 2026 (STALE; the Rotterdam premium has risen since) × the book's premium over ADC12",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 10.85,
+   "anchorBasis": "DIN226 zł10.85 (Jan 2026, stale)",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium (floor)",
+   "anchorLocalPerKg": 14.5,
+   "anchorBasis": "P1020 = LME $3,248 (28 Sep) + Rotterdam duty-paid premium $510–530 (15 Sep) = zł14.5/kg; a primary foundry alloy is never below the primary metal (A356 premium not found)",
+   "sources": [
+    {
+     "research": "nonferrous.al.p1020",
+     "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+     "date": "2026-09-15 / 2026-09-28"
+    },
+    {
+     "research": "nonferrous.al.dutyPaidPremium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+     "date": "2026-09-15"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 57.95,
+   "anchorBasis": "LME copper $14,740 (25 Sep 2026) + Aurubis 2026 cathode premium $315 = zł57.95/kg delivered — the book's bar and sheet zł56.86 were below the copper they contain",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-09-25"
+    },
+    {
+     "research": "nonferrous.cu.cathode_premium",
+     "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026 contract year (announced 2025-10-07)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 48.07,
+   "anchorBasis": "Westmetall MS 58 metal basis €10.99/kg (9 Sep 2026) = zł48.07/kg — metal value before fabrication",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-09-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 49.95,
+   "anchorBasis": "Westmetall MS 63/37 metal basis (9 Sep 2026) = zł49.95/kg — metal value before rolling",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-09-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 73.763,
+   "anchorBasis": "Metal content 0.89 × Cu zł57.95 + 0.105 × Sn zł211.31 (LME, 8 Sep)",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-09-25"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-09-08"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 16.612,
+   "anchorBasis": "Metal content 0.96 × SHG zinc zł16.7 (LME $4,110, 8 Sep, + Argus Rotterdam premium) + 0.04 × Al zł14.5; a Zamak premium was not found",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-09-08"
+    },
+    {
+     "research": "nonferrous.al.p1020",
+     "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+     "date": "2026-09-15 / 2026-09-28"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 17.024,
+   "anchorBasis": "Metal content 0.95 × zinc zł16.7 + 0.04 × Al + 0.01 × Cu zł57.95",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-09-08"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 5.11,
+   "anchorBasis": "PP homo zł5.11/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026); PP copolymer zł5.68) × the book's premium over PP homopolymer",
+   "sources": [
+    {
+     "research": "polymer.pp_homo",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 5.47,
+   "anchorBasis": "HDPE film zł5.47/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) × the book's premium over HDPE",
+   "sources": [
+    {
+     "research": "polymer.hdpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 5.58,
+   "anchorBasis": "LDPE zł5.58/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) × the book's premium over LDPE",
+   "sources": [
+    {
+     "research": "polymer.ldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 5.45,
+   "anchorBasis": "LLDPE C6 zł5.45/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) × the book's premium over LLDPE",
+   "sources": [
+    {
+     "research": "polymer.lldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 4.34,
+   "anchorBasis": "S-PVC resin zł4.34/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) × the book's premium of each compound over uPVC, never below the resin (the book's pipe compound zł3.97 sat below it)",
+   "sources": [
+    {
+     "research": "polymer.pvc",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 8.03,
+   "anchorBasis": "ABS zł8.03/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) × the book's premium over ABS",
+   "sources": [
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 6.71,
+   "anchorBasis": "GPPS zł6.71/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) × the book's premium over GPPS",
+   "sources": [
+    {
+     "research": "polymer.ps",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 7.33,
+   "anchorBasis": "HIPS zł7.33/kg ex-VAT (myCEPPI Central & Eastern Europe market price (plasticportal.eu / plasticker, wk 36–37 2026)) — the book had HIPS at the GPPS price",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 11.55,
+   "anchorBasis": "PC zł11.55/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 10.28,
+   "anchorBasis": "PA6 zł10.28/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
+   "sources": [
+    {
+     "research": "polymer.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 16.28,
+   "anchorBasis": "PA66 zł16.28/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026)",
+   "sources": [
+    {
+     "research": "polymer.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 14.24,
+   "anchorBasis": "PBT zł14.24/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 4.97,
+   "anchorBasis": "PET bottle grade zł4.97/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PET bottle grade",
+   "sources": [
+    {
+     "research": "polymer.pet_bottle",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 14.2,
+   "anchorBasis": "PMMA zł14.20/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA",
+   "sources": [
+    {
+     "research": "polymer.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 346.5,
+   "anchorBasis": "PEEK ≈ zł346.5/kg — Victrex FY2026 Q3 average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin)",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.investegate.co.uk/announcement/rns/victrex-plc--vct/trading-statement/9654844",
+     "date": "2026-06-30 (Q3 FY2026)"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 9.97,
+   "anchorBasis": "TSR20 benchmark zł9.97/kg (Trading Economics, 9 Oct 2026) — FOB Asia, freight to Poland NOT added; for the book's raw NR SMR20 line; compounds held",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://tradingeconomics.com/commodity/rubber",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "HRPO, alloy engineering bar (41Cr4, 42CrMo4, 20MnCr5, 100Cr6, Ni-Cr-Mo), bearing steel": "No dated Polish / European price found — held",
+  "stainless bar (304, 316L, 303, martensitic, PH, duplex), 409L / 441": "Not found (alloy surcharges only) — held",
+  "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "Only a generic German index (grade not stated) — held",
+  "wrought aluminium sheet / plate / forging stock": "Not found — held (extrusion billets move by the billet premium)",
+  "magnesium alloys (AZ91D, AM60 …)": "Only an aggregator ingot figure (IMARC, Q2 2026) — held",
+  "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
+  "POM": "Only a Polish OFFER price (Plastech, which runs 20–35% above the CEE market on PP / ABS) — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30 …), TPU, TPE / TPV, PPS, PEI, LCP, PA12": "No compound price found — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM zł12.39, NBR zł8.43, SBR zł7.74) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores, engineering-plastic stock shapes": "Epoxy (IMARC, May 2026) only — held"
+ },
+ "alBilletPremiumUsdPerT": {
+  "value": 1112,
+  "current": 1080,
+  "basis": "LME $3,248 (28 Sep 2026) + 6063 billet DDP North Germany premium $1,070–1,135 (Fastmarkets, 28 Aug 2026; being discontinued) = zł16.75/kg = $4352/t at zł3.849/$ — over the library LME $3240",
+  "research": "nonferrous.al.billet6063_premium",
+  "source": "https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+  "date": "2026-08-28"
+ }
+}

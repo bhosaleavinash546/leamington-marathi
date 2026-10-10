@@ -169,15 +169,17 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 1.02,
     logisticsMultiplier: 1.15,
   },
+  // Poland: labour from the Poland rate book 2026-10-10 (scripts/country-book.ts; 4-cluster, 3 × 8 h, ZUS-loaded, 1,720 productive h);
+  // machineRateMultiplier = median Poland ÷ UK machine rate in that book (the service factors read it).
   PL: {
     name: 'Poland',
     currency: 'PLN',
     fxToGBP: 5.096,
-    labour: { skilled: 11.90, semiskilled: 8.92, engineer: 19.83, foundry: 7.93, electronics: 10.41, inspector: 11.90, technician: 13.09, supervisor: 16.06 },
-    energy: { electricityPerKwh: 0.137, gasPerKwh: 0.08 },
+    labour: { skilled: 13.0181, semiskilled: 12.0604, engineer: 16.6837, foundry: 11.1009, electronics: 10.7535, inspector: 12.0938, technician: 14.2681, supervisor: 15.1217 },
+    energy: { electricityPerKwh: 0.1378, gasPerKwh: 0.0489 },
     materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
-    machineRateMultiplier: 0.72,
+    machineRateMultiplier: 0.56,
     overheadMultiplier: 0.85,
     packagingMultiplier: 0.90,
     logisticsMultiplier: 1.20,
