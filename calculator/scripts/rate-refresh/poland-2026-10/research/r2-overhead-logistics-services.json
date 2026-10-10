@@ -1,0 +1,192 @@
+{
+  "domain": "Poland round 2 — overhead, packaging, logistics multipliers and bought-in service prices",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "logistics.ftlPerKm.PL",
+      "value": 6.34,
+      "unit": "PLN/km (FTL, 13.6 m, contract)",
+      "basis": "IRU / Upply / Ti European Road Freight Rate Benchmark, Warsaw–Duisburg contract rate €1.45/km (spot €1.51/km), reported mid-2026 (context points to Q2 2026; snippet does not name the quarter). €1.45 × 4.374 = 6.342 PLN/km; spot €1.51 × 4.374 = 6.605 PLN/km. Earlier baseline Q4 2025: contract €1.37/km (5.99 PLN/km), spot €1.30/km. Lane is Polish-origin cross-border into Germany — the closest published proxy for a Poland-registered carrier rate.",
+      "source": "https://trans.info/en/june-freight-paradox-495918",
+      "date": "2026-06/07 (Q2 2026 benchmark, as reported); Q4 2025 baseline from https://trans.info/en/spot-market-rates-452683",
+      "notes": "Benchmark (market rate survey: IRU/Upply/Ti), read from search-result snippets — trans.info and ti-insight.com could not be fetched from this environment (egress blocked), so the figure was not read on the page itself. Ex-VAT (B2B international transport). Q2 2026 rise is fuel-driven (EU diesel €1.94/l avg Q2, +27% y/y) and the Polish e-toll rose ~33–42% from 1 Feb 2026."
+    },
+    {
+      "key": "logistics.ftlPerKm.UK",
+      "value": null,
+      "unit": "PLN/km",
+      "basis": "Not found. No 2026 UK domestic FTL €/km or £/mile rate and no RHA / Logistics UK 2026 cost-per-mile figure was reachable (RHA cost tables and the Logistics UK Manager's Guide to Distribution Costs 2026 are paywalled; Transport Engineer's annual operator-cost tables only surfaced garbled). The only UK-touching benchmark lane found is Paris–Birmingham Q1 2026 contract €3.00/km (13.12 PLN/km), spot €3.18/km — a cross-Channel lane that includes ferry/tunnel cost, NOT a UK domestic rate; recorded here as a reference only.",
+      "source": "https://ti-insight.com/briefs/q1-2026-european-road-freight-rates-contract-rates-climb-as-fuel-prices-surge/",
+      "date": "Q1 2026 (Paris–Birmingham reference)",
+      "notes": "Benchmark snippet only (site not fetchable). Do not use the Paris–Birmingham figure as a UK domestic rate."
+    },
+    {
+      "key": "logistics.ftlPerKm.WesternReference",
+      "value": 11.29,
+      "unit": "PLN/km",
+      "basis": "Same IRU/Upply/Ti Q2 2026 benchmark: Duisburg–Lille €2.58/km × 4.374 = 11.285 PLN/km; Duisburg–Prague €1.73/km × 4.374 = 7.567 PLN/km.",
+      "source": "https://transport-online.de/en/news/iru-analysis-europe-s-freight-rates-are-likely-rise-significantly-again-188397.html",
+      "date": "Q2 2026",
+      "notes": "Benchmark, from search snippets. Shows a Polish-origin lane (€1.45) at ~0.56× a West-European lane (€2.58)."
+    },
+    {
+      "key": "logistics.lane.PL_DE",
+      "value": 4265,
+      "unit": "PLN per FTL load (~750 km PL→DE)",
+      "basis": "Transporeon spot data cited in a newsletter: Poland→Germany ~€975 per load for a ~750 km run (Germany→Poland ~€744). €975 × 4.374 = 4,264.7 PLN; €975 ÷ 750 km = €1.30/km, consistent with the benchmark's €1.30–1.51/km Polish-lane range. Cross-check with the benchmark: a ~750 km Wrocław→Stuttgart-type run × €1.45/km ≈ €1,088 (4,758 PLN) — the 750 km is the newsletter's distance, not a measured Wrocław–Stuttgart distance.",
+      "source": "https://freightperspectives.substack.com/p/market-monday",
+      "date": "undated (2026 context)",
+      "notes": "Spot snapshot (transaction-platform data) via a newsletter, undated — indicative only. No Wrocław→Stuttgart / Wolfsburg lane price was found."
+    },
+    {
+      "key": "logistics.ratio",
+      "value": null,
+      "unit": "PL ÷ UK logistics £/part",
+      "basis": "NOT SUPPORTED for the multiplier as defined. Per km, the evidence points the other way: Polish-origin lane €1.45/km v Duisburg–Lille €2.58/km = 0.56; v Paris–Birmingham €3.00/km = 0.48 (cross-Channel, so overstates UK). A per-part multiplier of 1.20 can only hold if the Polish supplier's lane to its OEM is ≥ 1.20 ÷ 0.48–0.56 ≈ 2.1–2.5× the UK supplier's lane length — plausible for PL→German OEM (500–800 km) v UK domestic supply (no sourced UK lane length found), but that is a distance assumption, not a researched figure.",
+      "source": "https://trans.info/en/june-freight-paradox-495918",
+      "date": "2026-10-10 (derived)",
+      "notes": "Keep 1.20 labelled as an unresearched assumption; if the tool's logistics £/part is per km, Poland should be < 1.0."
+    },
+    {
+      "key": "packaging.epalPallet.PL",
+      "value": null,
+      "unit": "PLN/pallet, new EPAL 1200×800, ex-VAT",
+      "basis": "Not found. No Polish producer price list or price index for new wooden EPAL pallets in 2026 was found (only marketplace listings — OLX, used pallets — which RULES.md excludes, and recycled-plastic EPAL-format pallets at ~259–282 PLN net, a different product). A May 2026 tender by a Polish foundry for new EUR/EPAL pallets did not publish a unit price.",
+      "source": "https://bidsfactory.com/br/tenders/palety-1200x800-eur-epal-igat-pl_eb2b-c8bc7fa6e70b28e1",
+      "date": "2026-05 (tender, no price)",
+      "notes": ""
+    },
+    {
+      "key": "packaging.epalPallet.DACH_reference",
+      "value": 53.41,
+      "unit": "PLN/pallet (new EUR-1 exchange pallet, DACH)",
+      "basis": "Tacto material-price page: new EPAL EUR-1 exchange pallet in DACH ≈ €12.21/piece (Aug 2026; €11.80 in May 2026), citing the PalettenReport monthly price band. €12.21 × 4.374 = 53.41 PLN. Used pallets trade €3–5 below new.",
+      "source": "https://www.tacto.ai/en/material-prices/pallet-price",
+      "date": "2026-08",
+      "notes": "Price-index summary by a procurement-software vendor (secondary to PalettenReport); Germany/Austria/Switzerland, not Poland or UK. Page dates inconsistent per the snippet. Reference only."
+    },
+    {
+      "key": "packaging.epalPallet.UK",
+      "value": null,
+      "unit": "PLN/pallet",
+      "basis": "Not found — no 2026 UK new EPAL pallet price list or index found.",
+      "source": "https://www.tacto.ai/en/material-prices/pallet-price",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "packaging.containerboard.PL",
+      "value": 3784,
+      "unit": "PLN/tonne (kraftliner 170 g, delivered Poland, low end)",
+      "basis": "Fastmarkets: unbleached kraftliner 170 g dap Poland €850–880/t in June (year not stated in the snippet; launch context suggests 2025). €850 × 4.374 = 3,718 PLN; €880 × 4.374 = 3,849 PLN; midpoint €865 × 4.374 = 3,784 PLN/t.",
+      "source": "https://www.fastmarkets.com/insights/https-www-fastmarkets-com-insights-poland-containerboard-kraftliner-prices-stable/",
+      "date": "June (2025 probable)",
+      "notes": "Price-agency assessment, headline only. No matching UK containerboard or corrugated-box price was found, so no PL/UK paper ratio."
+    },
+    {
+      "key": "packaging.ratio",
+      "value": null,
+      "unit": "PL ÷ UK packaging £/part",
+      "basis": "NOT SUPPORTED — neither a Polish nor a UK new-EPAL pallet price, nor a UK corrugated price/index level, was found. Keep 0.90 labelled as an unresearched assumption.",
+      "source": "https://www.tacto.ai/en/material-prices/pallet-price",
+      "date": "2026-10-10",
+      "notes": "Pallets and containerboard are traded across the EU at €-denominated prices; a ratio far from 1.0 would need a labour-heavy packaging component to justify it."
+    },
+    {
+      "key": "overhead.PL.share",
+      "value": null,
+      "unit": "% of costs",
+      "basis": "Not found. The GUS cost-by-type tables (koszty według rodzajów, 'Wyniki finansowe przedsiębiorstw niefinansowych') for section C / division 29 did not surface in search, and the stat.gov.pl portal is not reachable from this environment. No Polish automotive-supplier cost-structure benchmark was found.",
+      "source": "https://publikacje.new.stat.gov.pl/en/publications-portal/production-industrial-products-2025",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "overhead.UK.share",
+      "value": null,
+      "unit": "% of costs",
+      "basis": "Not searched to a result (ONS ABS cost split not reached within the search budget; ons.gov.uk not fetchable here).",
+      "source": "https://www.ons.gov.uk",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "overhead.ratio",
+      "value": null,
+      "unit": "PL ÷ UK overhead %",
+      "basis": "NOT SUPPORTED — no published overhead share for either country found. Keep 0.85 labelled as an unresearched assumption.",
+      "source": "https://publikacje.new.stat.gov.pl/en/publications-portal/production-industrial-products-2025",
+      "date": "2026-10-10",
+      "notes": ""
+    },
+    {
+      "key": "services.powderCoatPerM2",
+      "value": 50.0,
+      "unit": "PLN/m² ex-VAT (raw steel, single coat, job shop)",
+      "basis": "kb.pl 2026 town price lists (estimates compiled from online offers, column marked brutto): raw steel (stal surowa) Ruda Śląska 58.50–63.20, Piekary Śląskie 56.70–61.30, Wodzisław Śląski 61.80–66.70 (Silesia); Ząbkowice Śląskie 61.20–66.10, Środa Śląska 57.20–61.70 (Lower Silesia) zł/m² gross. Mean low 295.4/5 = 59.08, mean high 319.0/5 = 63.80 gross; ÷ 1.23 = 48.03–51.87 ex-VAT, midpoint ≈ 50.0 PLN/m². Primer + colour, Śląskie voivodeship: 96.80–105 gross ÷ 1.23 = 78.70–85.37 ex-VAT.",
+      "source": "https://kb.pl/cenniki/miejskie/malowanie-proszkowe-_mot/slaskie",
+      "date": "2026",
+      "notes": "Aggregator estimates of job-shop / small-order prices (site states they are not a commercial offer) — NOT an automotive volume line price; read from search snippets. Gross/net basis taken from the snippet's 'brutto w zł/m2' header. Use as an upper cross-check. No UK £/m² price found → no ratio. Other towns (primer+colour): Warszawa 113–122, Gdańsk 99.70–108, Police 93.80–101 zł/m² gross (https://kb.pl/cenniki/miejskie/malowanie-proszkowe-_mot/warszawa/)."
+    },
+    {
+      "key": "services.blast",
+      "value": 51.2,
+      "unit": "PLN/m² ex-VAT (sandblasting of metal parts, job shop)",
+      "basis": "kb.pl 2026 Lower Silesia table: piaskowanie elementów metalowych ~59–67 zł/m² gross (e.g. Bolesławiec 62.90, Dzierżoniów 66.50). ÷ 1.23 = 47.97–54.47 ex-VAT, midpoint 51.2 PLN/m².",
+      "source": "https://kb.pl/ceny/uslugi-specjalistyczne/cennik-malowania-proszkowego-i-piaskowania-w-roznych-regionach-polski/",
+      "date": "2026",
+      "notes": "Aggregator estimate, sandblasting (not shot blasting / śrutowanie, which is usually priced per kg for castings and forgings) — cross-check only. No śrutowanie zł/kg price list found. No UK price found."
+    },
+    {
+      "key": "services.heatTreat.quenchTemperPerKg",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "Not found — Polish heat-treat job shops (e.g. Sijka-Hart, Bielsko-Biała) list services but publish no zł/kg prices; no UK £/kg price found either (only a US IBISWorld benchmark of $8.08/lb, not applicable).",
+      "source": "https://www.aplikuj.pl/pracodawca/365084/sijka-hart-s-c-t-sijka-d-jeziorek-p-medrala",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "services.heatTreat.carburisePerKg",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "Not found (as above).",
+      "source": "https://pl.airliquide.com/statics/2025-03/obrobka_cieplno-chemiczna_pl_2025.pdf",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "services.ndt.mpiPerPart",
+      "value": null,
+      "unit": "PLN/part or PLN/h",
+      "basis": "Not found. Only NDT TRAINING prices surfaced (e.g. Łukasiewicz GIT Gliwice MT2 course 3,500 PLN net / 20 h, March 2026, BUR/PARP register) — a course fee, not an inspection service rate; excluded.",
+      "source": "https://uslugirozwojowe.parp.gov.pl/wyszukiwarka/uslugi/drukuj-pdf?id=3490861",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "services.galvanisePerKg",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "Not found — no 2026 Polish hot-dip galvaniser price list in zł/kg surfaced (kb.pl galvanising guide is 2023 and gives no zł/kg in the snippet; cenauslug.pl figures are per order for electro-plated fittings). No UK price found.",
+      "source": "https://kb.pl/ceny/uslugi-specjalistyczne/cennik-cynkowania-sprawdz-jakie-sa-ceny-cynkowania-w-twojej-okolicy/",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "services.anodisePerM2",
+      "value": null,
+      "unit": "PLN/m²",
+      "basis": "Not found — no Polish anodising price list; only US-centric SEO/Alibaba blog ranges, excluded.",
+      "source": "https://www.elbit.krakow.pl/?p=15317",
+      "date": "",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "Environment: WebFetch / curl to trans.info, ti-insight.com, stat.gov.pl, ons.gov.uk, upply.com, rha.uk.net were all denied by the egress proxy, so every figure here was read from search-result snippets, not from the page. Treat as 'reported by', and re-read on the page before it sets a rate.",
+      "FX per RULES.md: €1 = 4.374 PLN, £1 = 5.096 PLN. All PLN service prices converted from gross at 23% VAT.",
+      "None of the three multipliers (overhead 0.85, packaging 0.90, logistics 1.20) can be confirmed from sources found; the only quantified evidence (per-km freight) suggests a Polish carrier is ~0.5–0.56× a Western lane per km, so a logistics multiplier > 1 rests entirely on longer supplier→OEM distances.",
+      "Service prices found (powder coat ~50 PLN/m², sandblast ~51 PLN/m² ex-VAT) are aggregator job-shop estimates, not automotive volume prices; heat treatment, NDT, galvanising and anodising were not found. 29 web searches used."
+    ]
+}
