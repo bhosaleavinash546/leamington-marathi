@@ -655,8 +655,17 @@ what is true** — nothing here has been compared with a price JLR paid.
   `scripts/rate-refresh/2026-10-india.json`, which `scripts/rate-refresh/india-2026-10/build-config.py` builds from sourced
   research — never edit the book by hand). India labour is statutory-loaded (4-cluster, 3-shift); CNC machining on Indian
   capex, every other machine on the India operating model with its capital HELD (labelled); a casting grade in India is the
-  metal CHARGE (the UK casting £/kg still carries a foundry margin the engine adds again — UK decision pending).
+  metal CHARGE. India ladders read the FROZEN UK snapshot (`uk-2026-10/current-uk-book.json`), not the live UK price.
   `register.csv` lists every India rate (current → new, decision, basis). `tests/india-rate-book.test.ts`.
+- UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
+  `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
+  `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds
+  operator, overhead, margin): CNC 3/5-axis, fibre lasers and the robot MIG cell rebuilt on sourced capex; every other
+  machine has its capital HELD (labelled; 30 still say "Target £/hr" — next research round). A UK casting £/kg is the metal
+  CHARGE (alloy premiums added in £/kg; primary-based Al floored at P1020, secondary Al from DIN226). The UK tariff is ONE
+  constant, `src/engine/uk-energy.ts` (DESNZ manufacturing + CCL, £0.182 / £0.046) — the generator also writes
+  REGIONAL_DATA.UK.energy, `energy-uk` and the PCB `gb` row. Re-priced grades carry `UK_BOOK_BASIS` (2026-10), the rest
+  `RATE_BASIS`. After a UK change re-run the India generator. `tests/uk-rate-book.test.ts`.
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).
