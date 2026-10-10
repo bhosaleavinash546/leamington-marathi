@@ -57,6 +57,8 @@ export interface CountryBook {
   region: string;
   asOf: string;
   fxToGBP: number;
+  /** Local currency symbol for the notes (India's book predates the field: ₹). */
+  currencySymbol?: string;
   /** Labour grades by suffix (lab-uk-<suffix>) the regional categories do not hold, £/h fully loaded. */
   labourGrades: Record<string, { gbpPerHr: number; basis: string; source: string; confidence: Confidence }>;
   machines: CountryMachineModel;
@@ -142,7 +144,7 @@ export function countryMaterial(book: CountryBook, m: MaterialRate, regionName: 
     scrapRecoveryPricePerKg: Math.min(scrap, p.gbpPerKg),
     region: regionName,
     effectiveDate: book.asOf,
-    sourceNote: `${regionName} book ${book.asOf}: ₹${(p.gbpPerKg * book.fxToGBP).toFixed(2)}/kg — ${p.basis} (${p.source})`,
+    sourceNote: `${regionName} book ${book.asOf}: ${book.currencySymbol ?? '₹'}${(p.gbpPerKg * book.fxToGBP).toFixed(2)}/kg — ${p.basis} (${p.source})`,
     confidence: p.confidence,
   };
 }
