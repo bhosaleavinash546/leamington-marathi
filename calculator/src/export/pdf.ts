@@ -2255,6 +2255,8 @@ export function printPDF(
   // ONE grade for the cover and §7 (uncertainty.ts overallConfidence) — the cover used its own High-share test and could
   // disagree with §7 on the same report.
   const overallConf = pcba?.confidence ? pcba.confidence.label : overallConfidence(result);
+  // The screen's band on the cover too (casting 360 X30: the screen read "₹2,445.66 ±9.8%"; the band was only on p13).
+  const coverBand = !pcba && cadMeta.geometrySource !== 'text_parsing' ? (cadMeta.uncertainty ?? null) : null;
   const confColor: RGB = overallConf === 'High' ? GN : overallConf === 'Medium' ? AM : RD;
 
   doc.setFillColor(...HDR);
@@ -2266,7 +2268,8 @@ export function printPDF(
   doc.setTextColor(...GREY); doc.setFont('helvetica', 'normal');
   doc.text(pcba?.confidence
     ? `·  likely ${money(pcba.confidence.low)} – ${money(pcba.confidence.high)}  ·  ${pcba.bom.length} BOM lines, ${pcba.confidence.verifyCount} to verify with a quote`
-    : `·  ${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
+    : `·  ${coverBand ? `± ${coverBand.plusMinusPct}% (P10 ${money(coverBand.p10)} – P90 ${money(coverBand.p90)})  ·  ` : ''}`
+      + `${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
   y += 17;
 
   // ── Engine warnings ───────────────────────────────────────────────────────

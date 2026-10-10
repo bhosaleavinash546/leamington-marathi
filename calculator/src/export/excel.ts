@@ -1,3 +1,4 @@
+import { overallConfidence } from '../engine/uncertainty.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import type { ChecksAppliedMeta } from './pdf.js';
@@ -24,6 +25,8 @@ export async function exportToExcelBlob(
   fxRate = 1,
   /** The guardrails, decisions and rule overrides behind a CAD costing (same block the PDF prints). */
   checks: ChecksAppliedMeta | null = null,
+  /** The band the screen shows (casting 360 X30: the workbook had no band and no confidence grade). */
+  band: { plusMinusPct: number; p10: number; p90: number; overallConfidence?: string } | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -66,6 +69,11 @@ export async function exportToExcelBlob(
       : `8. Supplier Margin — ${(input.marginPct * 100).toFixed(1)}% of the subtotal`, m(b.margin), pc(pcts.margin)],
     ['TOTAL SHOULD COST', m(result.total), pc(100)],
   ];
+  sum.push(['Model confidence', band?.overallConfidence ?? overallConfidence(result)]);
+  if (band) {
+    sum.push(['Uncertainty band', `± ${band.plusMinusPct}%`, 'as shown on screen']);
+    sum.push(['  P10 (optimistic)', m(band.p10)], ['  P90 (conservative)', m(band.p90)]);
+  }
   if (result.toolingNRE !== undefined) {
     sum.push(['NRE / Tooling (one-time, not in unit cost)', m(result.toolingNRE), '']);
   }

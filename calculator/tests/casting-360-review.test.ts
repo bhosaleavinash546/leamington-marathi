@@ -330,3 +330,23 @@ describe('X22 — a measured value never prints equal to the limit it is flagged
     expect(measureAgainstLimit({ min: 5.46, max: 8.75, unit: ':1' }, 2, { comparator: '>', value: 4, unit: ':1' })).toBe('5.5–8.8 : 1, flagged above 4 : 1');
   });
 });
+
+import { computeCostUncertainty } from '../src/engine/uncertainty.js';
+
+describe('X30 — the band the screen shows is on the cover and in the workbook', () => {
+  const { input, result } = sandCastingResult();
+  const u = computeCostUncertainty(result, input);
+  it('PDF cover', () => {
+    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+      { geometrySource: 'occt', uncertainty: u } as never)).replace(/\n/g, ' ');
+    expect(text).toContain(`± ${u.plusMinusPct}% (P10 INR`);
+  });
+  it('Excel summary: confidence grade and band', async () => {
+    const blob = await exportToExcelBlob(result, input, lib, 'INR', 127.1941, null, u);
+    const wb = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
+    const sum = XLSX.utils.sheet_to_csv(wb.Sheets['1-Summary']);
+    expect(sum).toMatch(new RegExp(`Model confidence,${u.overallConfidence}`));
+    expect(sum).toContain(`Uncertainty band,± ${u.plusMinusPct}%`);
+    expect(sum).toMatch(/P90 \(conservative\)/);
+  });
+});

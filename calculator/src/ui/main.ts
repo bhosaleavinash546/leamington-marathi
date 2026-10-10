@@ -16742,7 +16742,8 @@ function renderCompareResult(comp: { baseline: { name: string; result: PartCostR
 async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied());
+  const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
