@@ -168,6 +168,31 @@ async function queueGeometricDFM(
 }
 
 
+/**
+ * The DFM job is queued on upload, before the engineer answers the material question; /reanalyze kept that job, so a
+ * report on a part answered "cast iron" said "No material family was confirmed" and its alloy checks had not run
+ * (casting 360 review, Oct 2026). With the answers in hand, queue the job again with them — once per part, family,
+ * route, volume and region (a second re-analysis with the same answers returns the same job).
+ */
+const _answeredDfmJobs = new Map<string, string>();
+async function requeueGeometricDFMWithAnswers(
+  geometryHash: string, filename: string, commodity: string, partName: string,
+  materialFamily: string, process: string, annualVolume?: number, region?: string,
+): Promise<string | null> {
+  if (!materialFamily || !geometryHash) return null;
+  const key = [geometryHash, commodity, materialFamily, process, annualVolume ?? '', region ?? ''].join('|');
+  const known = _answeredDfmJobs.get(key);
+  if (known) return known;
+  const kept = getUploadFile(geometryHash);
+  if (!kept) return null;
+  const name = /\.[a-z0-9]+$/i.test(filename) ? filename : `${filename}.${kept.ext}`;
+  const id = await queueGeometricDFM(kept.buffer, name, commodity, partName, materialFamily, process, annualVolume, region);
+  if (id) {
+    if (_answeredDfmJobs.size > 500) _answeredDfmJobs.clear();
+    _answeredDfmJobs.set(key, id);
+  }
+  return id;
+}
 
 // Per-IP rate limits for the anonymous CAD endpoints (audit RK3). Defined here,
 // before the routes that use them, so there is no temporal-dead-zone at load.
@@ -2959,6 +2984,10 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       annualVolume,
       occtGeometry: geo,
       preprocessed: null,
+      // The DFM job re-run with the answered material and route (null: the upload's job stands).
+      dfmJobId: await requeueGeometricDFMWithAnswers(geometryHash, filename, selectedCommodity, geo.partName || filename,
+        forcedMaterial || String(decisionAnswers['material.family'] ?? ''),
+        forcedProcess || decidedRoute(det.result.suggestions), annualVolume, requestRegion(req)),
     };
     cadCache.set(cacheKey, detPayload);
     res.json(detPayload);

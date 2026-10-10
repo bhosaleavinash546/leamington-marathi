@@ -7064,6 +7064,9 @@ async function reanalyzeCAD(): Promise<void> {
     // What the rules could still not settle after the answers were applied.
     _cadDecisions = rememberDecisions(data.decisions ?? []);
     _cadRuleFields = data.ruleFields ?? {};
+    // The server re-queues the DFM with the answered material / route: follow the new job (casting 360 review X4).
+    const reJob = (data as { dfmJobId?: string | null }).dfmJobId;
+    if (reJob && reJob !== cadDfmJobId) { cadDfmJobId = reJob; cadGeometricDFM = null; void pollGeometricDFM(reJob); }
     _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
