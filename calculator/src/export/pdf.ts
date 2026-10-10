@@ -288,8 +288,13 @@ function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
  * pass through untouched.
  */
 const STROKED: Record<string, string> = { 'ł': 'l', 'Ł': 'L', 'đ': 'd', 'Đ': 'D', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H' };
+/** Currency signs the PDF font (WinAnsi) cannot draw, printed as their ISO code — the whitelist below used to DELETE
+ *  them, so an India report printed "Total Should-Cost 2445.66" with no currency at all (casting 360 review, Oct 2026). */
+const CURRENCY_CODES: Record<string, string> = { '₹': 'INR', '฿': 'THB', '₫': 'VND', '₩': 'KRW', '₺': 'TRY', '₱': 'PHP' };
 export function winAnsiSafe(s: string): string {
   return s
+    .replace(/[₹฿₫₩₺₱]\s?(?=[\d(+-])/g, ch => `${CURRENCY_CODES[ch.trim()]} `)   // "₹2,445" → "INR 2,445"
+    .replace(/[₹฿₫₩₺₱]/g, ch => CURRENCY_CODES[ch])                          // "₹/kg" → "INR/kg"
     .replace(/[\u2192\u2794\u27A1]/g, '->')      // arrows
     .replace(/[\u2190]/g, '<-')
     .replace(/[\u2713\u2714]/g, 'OK')             // ticks

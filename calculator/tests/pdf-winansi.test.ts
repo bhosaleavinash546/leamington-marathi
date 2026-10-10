@@ -105,3 +105,12 @@ describe('AUDIT: every string reaching jsPDF is sanitised, not just two of them'
     expect(winAnsiSafe('€')).toBe('€');
   });
 });
+
+describe('winAnsiSafe keeps the currency (casting 360 review, Oct 2026)', () => {
+  it('prints currencies the PDF font cannot draw as their ISO code, never as nothing', () => {
+    expect(winAnsiSafe('Total Should-Cost ₹2,445.66')).toBe('Total Should-Cost INR 2,445.66');
+    expect(winAnsiSafe('₹97.35/kg · ₹/hr')).toBe('INR 97.35/kg · INR/hr');
+    expect(winAnsiSafe('฿100 ₫200 ₩300 ₺400 ₱500')).toBe('THB 100 VND 200 KRW 300 TRY 400 PHP 500');
+    expect(winAnsiSafe('£12 €3 $4')).toBe('£12 €3 $4');
+  });
+});
