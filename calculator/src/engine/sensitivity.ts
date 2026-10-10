@@ -261,7 +261,7 @@ export function runSensitivity(
   // off the measured solid, utilisation off the stock allowance, parts per
   // cycle off cavitation — every one of them a driver worth a bar.
   if (input.rawMaterial.directCost === undefined && input.rawMaterial.netWeightKg > 0) {
-    tryDriver('Net weight (measured geometry)', 'rawMaterial.netWeightKg', input.rawMaterial.netWeightKg, 'kg',
+    tryDriver('Costed weight (measured volume + stated stock)', 'rawMaterial.netWeightKg', input.rawMaterial.netWeightKg, 'kg',
       factor => ({ ...input, rawMaterial: { ...input.rawMaterial, netWeightKg: input.rawMaterial.netWeightKg * factor } }));
     // Utilisation is already a lever above ("Material utilisation"); a second copy clamped at 0.99 made
     // the +10% case of a fully-utilised part RAISE its cost (360 review).

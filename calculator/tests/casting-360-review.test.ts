@@ -25,7 +25,7 @@ export function pdfText(render: () => void): string {
 export function sandCastingResult() {
   const input: UniversalStackInput = {
     partName: 'Steering knuckle',
-    rawMaterial: { materialId: 'mat-gjs500', netWeightKg: 3.238, materialUtilization: 0.98, consumablesCostPerPart: 4.16,
+    rawMaterial: { materialId: 'mat-gjs500', netWeightKg: 3.238, materialUtilization: 0.98, lossIsNotScrap: true, consumablesCostPerPart: 4.16,
       consumablesItems: [{ label: 'NDT', gbp: 1.8 }, { label: 'cores', gbp: 0.42 }] } as never,
     operations: [
       { operationName: 'Sand Casting — Moulding', machineId: 'sand-cast-line', labourId: 'lab-uk-foundry', cycleTimeHr: 0.0343, partsPerCycle: 1, oee: 0.8, manning: 4, labourTimeHr: 0.0343, labourEfficiency: 0.92 },
@@ -45,5 +45,20 @@ describe('X1 / X6 — the PDF names its currency and shows bench work as bench w
   });
   it('a bench operation has no machine, rate or OEE in §4A', () => {
     expect(text.replace(/\n/g, ' ')).toMatch(/bench \(no machine\s+time\)/);
+  });
+});
+
+describe('X10 / X11 / X21 / X27 — the report says what the costing holds', () => {
+  const { input, result } = sandCastingResult();
+  const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    { geometrySource: 'occt', measuredVolumeCm3: 356.1, measuredWeightKg: 2.528, annualVolume: 100000 } as never)).replace(/\n/g, ' ');
+  it('gross − net is melt loss, not runner weight, when the melt shop remelts the gating', () => {
+    expect(text).toMatch(/Melt Loss \(metal lost\)/);
+    expect(text).not.toMatch(/Scrap \/ Runner Weight/);
+  });
+  it('no negative zero', () => { expect(text).not.toMatch(/-INR 0\.00|-0\.00/); });
+  it('the provenance box does not call prices and stock "not an estimate"', () => {
+    expect(text).not.toMatch(/not an estimate/);
+    expect(text).toMatch(/machining stock/);
   });
 });

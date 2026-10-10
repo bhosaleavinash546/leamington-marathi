@@ -916,12 +916,15 @@ export function renderShouldCostSections(
     metalLine = grossWt * price - credit;
     matRows.push(
       ['Gross Weight (stock)',        `${grossWt.toFixed(4)} kg`,                              'kg',           'Net ÷ utilisation ratio'],
-      ['Scrap / Runner Weight',       `${scrapWt.toFixed(4)} kg`,                             'kg',           'Gross - Net'],
+      // With the melt shop on, gross − net is the metal LOST in melting (runners and risers are remelted) — it was
+      // labelled "Scrap / Runner Weight", 0.06 kg on a knuckle whose gating weighs ~2 kg (casting 360 review, Oct 2026).
+      [lossIsNotScrap ? 'Melt Loss (metal lost)' : 'Scrap / Runner Weight', `${scrapWt.toFixed(4)} kg`, 'kg',
+        lossIsNotScrap ? 'Gross - Net: metal lost in melting; runners, risers and rejects are remelted' : 'Gross - Net'],
       ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            utilisationBenchmarkNote(commodityType, lossIsNotScrap)],
       ['Material Price',              c(price),                                               `${currency}/kg`, mat?.sourceNote ?? ''],
       ['Scrap Recovery Price',        c(scrapPrice),                                          `${currency}/kg`, ''],
       ['Gross Material Cost',         c(grossWt * price),                                     currency,       'Gross × price/kg'],
-      ['Scrap Credit',                `-${c(credit)}`,                                        currency,       lossIsNotScrap ? 'None — melt loss is metal lost, not scrap sold' : 'Scrap × recovery price'],
+      ['Scrap Credit',                credit > 0 ? `-${c(credit)}` : c(0),                    currency,       lossIsNotScrap ? 'None — melt loss is metal lost, not scrap sold' : 'Scrap × recovery price'],
     );
   }
   {
@@ -2244,7 +2247,9 @@ export function printPDF(
     if (src === 'occt') {
       y = calloutBox(doc, y, 'Geometry Provenance — MEASURED (OCCT B-rep kernel)', [
         `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; finished-part mass at the costed material's density ${wt}.`,
-        'Material cost and geometry-derived machining are grounded in the actual solid — not an estimate.',
+        // The VOLUME is measured; the costed weight adds rule machining stock, and prices / rates carry their own
+        // confidence — "not an estimate" overstated it (casting 360 review, Oct 2026).
+        'The volume, faces and holes are measured. The costed weight adds the stated machining stock, and the prices and rates carry their own confidence (§6) — those are estimates, not measurements.',
       ], GN, [237, 247, 237]);
     } else if (src === 'stl_parser') {
       y = calloutBox(doc, y, 'Geometry Provenance — MEASURED FROM MESH (STL)', [
