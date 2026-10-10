@@ -19,6 +19,7 @@ import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-
 import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
+import { localiseGbpText, localiseRuleValue } from './money-text.js';
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -159,7 +160,7 @@ export interface ChecksAppliedMeta {
   /**
    * Every value the rules set on the costing form, with its basis (casting 360 review X12: NDT, heat treatment, stock,
    * crew and fettling were in the cost with no basis in either report). `value` is what the form held when costed;
-   * `edited` when that differs from the rule's. Money in a basis is as recorded, in GBP.
+   * `edited` when that differs from the rule's. Money in a basis is held in GBP and converted to the report currency when printed (money-text.ts).
    */
   ruleValues?: Array<{ label: string; value: string; ruleValue: string; basis: string; source: string; edited: boolean }>;
 }
@@ -237,14 +238,20 @@ const AM:    RGB = brandRgb('amber');
  * Patching the instance covers `doc.text` and, because jspdf-autotable renders
  * cells through the same instance method, the tables as well.
  */
-function hardenPdfText(doc: jsPDF): jsPDF {
-  const d = doc as unknown as { text: (...a: unknown[]) => unknown };
-  const orig = d.text.bind(doc);
+function hardenPdfText(doc: jsPDF, money?: { fx: number; sym: string }): jsPDF {
+  const d = doc as unknown as { text: (...a: unknown[]) => unknown; splitTextToSize: (...a: unknown[]) => unknown; getTextWidth: (...a: unknown[]) => unknown };
+  const orig = d.text.bind(doc), split = d.splitTextToSize.bind(doc), width = d.getTextWidth.bind(doc);
+  // In a non-£ report every £ amount in the text (rule bases, rate sources, notes) is printed in the report currency
+  // (demo review 2026-10-10). The same transform runs where autoTable measures and wraps, so a cell is sized for
+  // the text it draws; it is idempotent, so text that is measured and then drawn is converted once.
+  const one = (t: string) => winAnsiSafe(money ? localiseGbpText(t, money.fx, money.sym) : t);
   const clean = (t: unknown): unknown =>
-    typeof t === 'string' ? winAnsiSafe(t)
-      : Array.isArray(t) ? t.map(x => (typeof x === 'string' ? winAnsiSafe(x) : x))
+    typeof t === 'string' ? one(t)
+      : Array.isArray(t) ? t.map(x => (typeof x === 'string' ? one(x) : x))
       : t;
   d.text = (...args: unknown[]) => orig(clean(args[0]), ...args.slice(1));
+  d.splitTextToSize = (...args: unknown[]) => split(clean(args[0]), ...args.slice(1));
+  d.getTextWidth = (...args: unknown[]) => width(clean(args[0]), ...args.slice(1));
   return doc;
 }
 
@@ -314,6 +321,8 @@ export function winAnsiSafe(s: string): string {
     .replace(/[\u2265]/g, '>=').replace(/[\u2264]/g, '<=')
     .replace(/[\u2248]/g, '~').replace(/[\u2260]/g, '!=')
     .replace(/[\u25CF\u25AA]/g, '-')              // block bullets
+    .replace(/\u2212/g, '-')                       // maths minus (a note read "book £0.86  base £0.86")
+    .replace(/\s?[\u3000-\u9FFF\uFF00-\uFFEF]+/g, '') // CJK names (海天精工): not in the font — dropped with their space
     // A WHITELIST, not a Latin-1 cut-off. WinAnsi's upper range carries the
     // typographic characters this codebase's prose is full of - em/en dash,
     // curly quotes, bullet, ellipsis, euro, trademark. Cutting at Latin-1
@@ -488,7 +497,7 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[], i
  * finding list being read as a clean part.
  */
 /** "Checks applied" — every guardrail, decision and rule override on one page. */
-function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null | undefined): number {
+function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null | undefined, money: { fx: number; sym: string } = { fx: 1, sym: '£' }): number {
   if (!ch) return y;
   y = chk(doc, y, 30);
   doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
@@ -533,11 +542,15 @@ function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null
   if (ch.ruleValues?.length) {
     y = chk(doc, y, 20);
     doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-    doc.text('Values the rules set on the costing form, and why (money in a basis is as recorded, GBP):', MG, y); y += 4;
+    doc.text('Values the rules set on the costing form, and why:', MG, y); y += 4;
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
       head: [['Field', 'Costed', 'Source', 'Basis']],
-      body: ch.ruleValues.map(r => [r.label, r.edited ? `${r.value} (edited; rule ${r.ruleValue})` : r.value, r.source, r.basis]),
+      body: ch.ruleValues.map(r => {
+        const lv = localiseRuleValue(r.label, String(r.value), money.fx, money.sym);
+        const rv = localiseRuleValue(r.label, String(r.ruleValue), money.fx, money.sym);
+        return [lv.label, r.edited ? `${lv.value} (edited; rule ${rv.value})` : lv.value, r.source, r.basis];
+      }),
       styles: { fontSize: 6, cellPadding: 1 }, headStyles: { fillColor: NAVY, fontSize: 6 },
       columnStyles: { 0: { cellWidth: 36 }, 1: { cellWidth: 24 }, 2: { cellWidth: 16 } },
     });
@@ -936,7 +949,7 @@ export function renderShouldCostSections(
   // Functional safety sits between the commercial parameters and the cost
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
-  y = renderChecksApplied(doc, y, cadMeta.checks);
+  y = renderChecksApplied(doc, y, cadMeta.checks, { fx: fxRate, sym });
   const fixturings = (() => {
     const m = input.operations.map(o => /Load \/ clamp \/ unload\s*[—-]\s*(\d+) fixturing/i.exec(o.operationName)).find(Boolean);
     return m ? Number(m[1]) : null;
@@ -957,7 +970,8 @@ export function renderShouldCostSections(
 
   const matRows: string[][] = [
     ['Material ID',                input.rawMaterial.materialId,                             'ID',           ''],
-    ['Grade / Specification',      mat?.grade ?? 'Direct Cost Entry',                        '',             mat?.sourceNote ?? ''],
+    // the source note is printed once, on the price row (it was printed in full on both rows — demo review 2026-10-10)
+    ['Grade / Specification',      mat?.grade ?? 'Direct Cost Entry',                        '',             mat ? 'Price source: see Material Price below' : ''],
     ['Region',                     mat?.region ?? '—',                                       '',             ''],
     ['Costed Net Weight',          `${input.rawMaterial.netWeightKg.toFixed(4)} kg`,         'kg',           'The weight the material line is costed on — the finished part, plus the machining stock or reject allowance the module carries (see Key Assumptions)'],
   ];
@@ -1422,7 +1436,7 @@ export function renderShouldCostSections(
     y = lastFinalY(doc) + 6;
     y = calloutBox(doc, y, 'How to read the machine rate', [
       'Rate/hr = (annual depreciation + maintenance + energy + floor + indirect + finance) ÷ effective hours, where effective hours = available hours × utilisation.',
-      'Effective hours encode the shift pattern: a lower hours-base raises £/hr and a higher one lowers it. A challenge from a supplier will target this divisor and whether depreciation is machine-only or the full cell (the machine plus its ancillaries) — state your basis when defending the number.',
+      'Effective hours encode the shift pattern: a lower hours-base raises the hourly rate and a higher one lowers it. A challenge from a supplier will target this divisor and whether depreciation is machine-only or the full cell (the machine plus its ancillaries) — state your basis when defending the number.',
     ], NAVY, HDR);
   }
 
@@ -1435,22 +1449,29 @@ export function renderShouldCostSections(
   // col widths: 48 + 20 + 12 + 64 + 24 + 14 = 182 ✓
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
-    head: [['Field', 'Value', 'Unit', 'Source / Reference (as recorded, GBP)', 'Rate / role', 'Conf.']],
+    head: [['Field', 'Value', 'Unit', 'Source / Reference', 'Rate / role', 'Conf.']],
     // £-denominated values in the report's currency, like every other table (they printed GBP under a £/hr unit).
-    body: result.traceability.map(t => t.unit.includes('£')
-      ? [t.field, (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), t.rateSource, /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]
-      : [t.field, t.value.toFixed(4), t.unit, t.rateSource, /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]),
+    // Each distinct source is printed in full once: the same 30-line machine note repeated for every operation turned
+    // §6 into ten pages of identical text (demo review 2026-10-10). A later row with the same source says so.
+    body: (() => { const seen = new Set<string>(); return result.traceability.map(t => {
+      const role = /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId;
+      const key = `${t.rateId ?? ''}|${t.rateSource}`;
+      const src = seen.has(key) ? `as above (${role ?? 'same source'})` : (seen.add(key), t.rateSource);
+      return t.unit.includes('£')
+        ? [t.field, (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), src, role, t.confidence]
+        : [t.field, t.value.toFixed(4), t.unit, src, role, t.confidence];
+    }); })(),
     theme: 'plain',
     headStyles: { ...TH.headStyles, fontSize: 7.5 },
     bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 4 } },
     alternateRowStyles: { fillColor: LIGHT },
     columnStyles: {
-      0: { cellWidth: 48 },
-      1: { cellWidth: 20, halign: 'right' },
-      2: { cellWidth: 12 },
+      0: { cellWidth: 44 },
+      1: { cellWidth: 18, halign: 'right' },
+      2: { cellWidth: 14 },
       3: { cellWidth: 64, textColor: GREY, fontSize: 7 },
       4: { cellWidth: 24, fontSize: 7 },
-      5: { cellWidth: 14 },
+      5: { cellWidth: 18 },
     },
     didParseCell: (d) => {
       if (d.section === 'body' && d.column.index === 5) {
@@ -1715,11 +1736,11 @@ export function renderShouldCostSections(
     y = secBar(doc, y, '§12 — Cost-Reduction Opportunities',
       ranked.pricedCount
         ? `${ranked.pricedCount} of ${ranked.all.length} re-costed  ·  largest ${c(ranked.headlineSavingPerPart)}/part`
-        : `${ranked.all.length} checks  ·  none re-costed, no £ claimed`);
+        : `${ranked.all.length} checks  ·  none re-costed, no saving claimed`);
 
     doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
     {
-      const note = 'Only a lever re-costed through the rate library carries a £; the rest are rules of thumb from the cost shares, listed as checks with no figure. Levers overlap, so the column is not summed.';
+      const note = 'Only a lever re-costed through the rate library carries a figure; the rest are rules of thumb from the cost shares, listed as checks with no figure. Levers overlap, so the column is not summed.';
       const ls = doc.splitTextToSize(note, CW) as string[];
       doc.text(ls, MG, y); y += ls.length * 4.2 + 5;
     }
@@ -2118,7 +2139,7 @@ export function printPDF(
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }));
+  const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }), { fx: fxRate, sym });
   // A populated board costed from the PCB photo analysis gets its own body (pcba-report-data.ts).
   let pcba: PcbaReport | null = null;
   if (cadMeta.pcbAnalysis) {
@@ -2207,7 +2228,7 @@ export function printPDF(
   ].join('   ·   ') : [
     `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
     `Currency: ${currency}`,
-    `FX: £1 = ${fxRate.toFixed(4)} ${currency}`,
+    ...(currency === 'GBP' ? [] : [`FX: 1 GBP = ${fxRate.toFixed(4)} ${currency}`]),
     `Operations: ${result.operationDetails.length}`,
     `Region: ${(input as { region?: string }).region ?? region}`,
   ].join('   ·   ');

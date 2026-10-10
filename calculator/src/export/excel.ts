@@ -6,6 +6,7 @@ import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
+import { localiseGbpText, localiseRuleValue } from './money-text.js';
 
 const num4 = (n: number) => +n.toFixed(4);
 /** Hours to 6 dp — at 4 dp a reader recomputing an operation from the sheet was out by up to £0.003. */
@@ -46,7 +47,7 @@ export async function exportToExcelBlob(
     ['Part Name', result.partName],
     ['Manufacturing Country', library.regional ? `${library.regional.name} (${library.regional.code}) — rates rebuilt for this country` : 'United Kingdom — base rate book'],
     ['Report Date', new Date().toLocaleDateString('en-GB')],
-    ['Currency', currency === 'GBP' ? 'GBP' : `${currency} — £1 = ${fxRate.toFixed(4)} ${currency} (the costing is in GBP)`],
+    ['Currency', currency === 'GBP' ? 'GBP' : `${currency} — 1 GBP = ${fxRate.toFixed(4)} ${currency} (the costing is held in GBP; every figure and note here is converted)`],
     [],
     ['── COST SUMMARY ──'],
     ['Cost Bucket', `Amount (${currency})`, '% of Total'],
@@ -260,7 +261,7 @@ export async function exportToExcelBlob(
   sheets.push({ name: '5-LabourRates', rows: labRows, cols: [22, 14, 20, 20, 14, 50, 12] });
 
   // ── Sheet 6: Rate Traceability (money in the report's currency, like every other sheet) ──
-  const trHdr: string[] = ['Field', 'Value', 'Unit', 'Rate Source / Reference (as recorded, GBP)', 'Rate ID', 'Confidence'];
+  const trHdr: string[] = ['Field', 'Value', 'Unit', 'Rate Source / Reference', 'Rate ID', 'Confidence'];
   const trRows: unknown[][] = [trHdr];
   for (const t of trace) {
     const isMoney = t.unit.includes('£');
@@ -302,9 +303,12 @@ export async function exportToExcelBlob(
       ['DECISIONS'], ['Question', 'Severity', 'Answer'],
       ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]) : [['none recorded']]),
       [],
-      ['VALUES THE RULES SET (money in a basis is as recorded, GBP)'], ['Field', 'Costed', 'Rule value', 'Source', 'Basis'],
+      ['VALUES THE RULES SET'], ['Field', 'Costed', 'Rule value', 'Source', 'Basis'],
       ...(checks.ruleValues?.length
-        ? checks.ruleValues.map(r => [r.label, r.edited ? `${r.value} (edited)` : r.value, r.ruleValue, r.source, r.basis])
+        ? checks.ruleValues.map(r => {
+          const lv = localiseRuleValue(r.label, String(r.value), fxRate, sym), rv = localiseRuleValue(r.label, String(r.ruleValue), fxRate, sym);
+          return [lv.label, r.edited ? `${lv.value} (edited)` : lv.value, rv.value, r.source, r.basis];
+        })
         : [['none recorded']]),
       [],
       ['MODEL VALUES OVERWRITTEN BY A RULE'], ['Field', 'Rule', 'Model said', 'Used', 'Basis'],
@@ -314,6 +318,11 @@ export async function exportToExcelBlob(
   }
   sheets.push({ name: '7-Checks', rows: ck, cols: [56, 18, 18, 14, 60] });
 
+  // Every £ amount in the text of a non-£ workbook (rule bases, rate sources, notes) in the workbook's currency
+  // (demo review 2026-10-10: a China workbook read "die £3,056" and "capex £22,394" beside ¥ totals).
+  if (currency !== 'GBP') {
+    for (const sh of sheets) sh.rows = sh.rows.map(row => row.map(c => (typeof c === 'string' ? localiseGbpText(c, fxRate, sym) : c))) as typeof sh.rows;
+  }
   return workbookBlob(await buildWorkbook(sheets));
 }
 

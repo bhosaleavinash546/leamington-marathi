@@ -85,13 +85,16 @@ describe('X7 / X8 / X9 — cost-reduction texts quote the lines the costing hold
 import * as XLSX from 'xlsx';
 import { exportToExcelBlob } from '../src/export/excel.js';
 
-describe('X14 / X15 — labour is printed by role, and the trace says its source column is in GBP', () => {
+describe('X14 / X15 — labour is printed by role, and the trace source column is in the report currency', () => {
   const { input, result } = sandCastingResult();
-  it('the PDF prints no UK labour key on a costing in India, and labels the recorded £ column', () => {
+  // X15 restated 10 Oct 2026: the source text used to be printed "as recorded, GBP"; it is now converted to the report's
+  // currency (src/export/money-text.ts), so an India report carries no £ amount in its notes.
+  it('the PDF prints no UK labour key on a costing in India, and no £ amount in its source notes', () => {
     const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
     expect(text).not.toMatch(/lab-uk-/);
     expect(text).toMatch(/foundry \(role\)/);
-    expect(text).toMatch(/as recorded, GBP/);
+    expect(text).toMatch(/Source \/ Reference/);
+    expect(text).not.toMatch(/£\d/);
   });
   it('the Excel prints no UK labour key, and lists only the roles the costing used', async () => {
     const blob = await exportToExcelBlob(result, input, lib, 'INR', 127.1941, null);
