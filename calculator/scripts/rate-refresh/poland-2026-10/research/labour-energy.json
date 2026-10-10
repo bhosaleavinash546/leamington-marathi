@@ -556,9 +556,9 @@
    "value": 0.0073,
    "unit": "PLN/kWh",
    "basis": "Opłata OZE 2026 = 7.30 PLN/MWh",
-   "source": "https://www.forum-energii.eu/download/pobierz/rachunek-za-konkurencyjnosc",
+   "source": "https://globenergia.pl/tyle-zaplacimy-za-prad-w-2026-roku-energia-tansza-rachunki-niekoniecznie/",
    "date": "2026",
-   "notes": "As quoted in the search extract; regulator notice not opened."
+   "notes": "The search extract gave 7.30 PLN/MWh without tying it to one of its result pages (globenergia / forsal / infor 2026 price articles); the URE notice was not opened — verify."
   },
   {
    "key": "energy.electricity.cogenerationFee",
@@ -628,7 +628,7 @@
   "Web fetch was blocked for every host in this session (stat.gov.pl, Eurostat, TGE, Tauron, wynagrodzenia.pl); all figures come from search-result extracts of the cited pages. 35 searches used.",
   "Occupation wages are Sedlak & Sedlak OBW medians (\"wynagrodzenie całkowite\": total gross incl. variable pay); the pages print no survey year and are taken as OBW 2025, indexed to 2026 by the GUS enterprise-sector growth +5.6% y/y and moved to the four clusters by the GUS March 2026 voivodeship-median ratio 0.9838. GUS occupation tables (Oct 2024) were not reachable per occupation — only the ISCO major-group 8 mean/median (used as a cross-check).",
   "Loaded rates (PLN/h): skilled 66.34, semiskilled 61.46, foundry 56.57, electronics 54.80, inspector 61.63, technician 72.71, supervisor 77.06, forge 59.97, furnace 56.57, blow/roto/thermoform 55.09, trimRouter 66.34, engineer (day) 85.02.",
-  "Current book v evidence (PLN/h): semiskilled 45.46 v 61.46 (book LOW ~26%); foundry 40.41 v 56.57 (LOW ~29%); forge 41.33 v 59.98 (LOW, proxy); furnace 40.41 v 56.57 (LOW, proxy); blow/roto/thermoform 42.55 v 55.09 (LOW, proxy); trim-router 45.46 v 66.34 (LOW, proxy = skilled); skilled 60.64 v 66.34 (+9%); technician 66.71 v 72.71 (+9%); inspector 60.64 v 61.63 and electronics 53.05 v 54.80 (agree); supervisor 81.84 v 77.07 (−6%); engineer 101.05 v 85.02 (book HIGH ~16%). The book's shop-floor grades derived from the UK × foundry/semiskilled ratios understate Polish operator pay: Polish operator pay is ~85–95% of skilled pay, not ~67–75%.",
+  "Current book v evidence (PLN/h): semiskilled 45.46 v 61.46 (book LOW ~26%); foundry 40.41 v 56.57 (LOW ~29%); forge 41.33 v 59.97 (LOW, proxy); furnace 40.41 v 56.57 (LOW, proxy); blow/roto/thermoform 42.55 v 55.09 (LOW, proxy); trim-router 45.46 v 66.34 (LOW, proxy = skilled); skilled 60.64 v 66.34 (+9%); technician 66.71 v 72.71 (+9%); inspector 60.64 v 61.63 and electronics 53.05 v 54.80 (agree); supervisor 81.84 v 77.06 (−6%); engineer 101.05 v 85.02 (book HIGH ~16%). The book's shop-floor grades derived from the UK × foundry/semiskilled ratios understate Polish operator pay: Polish operator pay is ~85–95% of skilled pay, not ~67–75%.",
   "Electricity: book £0.137/kWh = 0.698 PLN/kWh v build-up 0.702 PLN/kWh (full 2026 capacity fee, network proxy) — NOT shown wrong; it is the upper end of a 0.60–0.70 range (a flat-profile plant may get a reduced capacity-fee coefficient, not verified). The 2026 capacity fee (0.2194 PLN/kWh in weekday 07–21 h) is the largest non-energy item.",
   "Gas: book £0.08/kWh = 0.408 PLN/kWh v sourced floor 0.249 PLN/kWh (likely all-in 0.26–0.30) and EU I3 average 0.265 PLN/kWh — the book gas price is too HIGH by roughly 35–60%; recommend ~0.27–0.30 PLN/kWh (£0.053–0.059).",
   "Not found: 2026 accident-insurance rate for the automotive / metal-products PKD groups (1.67% assumed); 2026 sickness-absence rate (10 days assumed); bridging-pension (FEP) applicability to foundry / furnace / forge roles; survey shift-allowance levels; role-specific pay for SMT, melter / furnace, forge, blow / roto / thermoform and router operators (proxies used); per-voivodeship pay by occupation; Eurostat nrg_pc_205 band ID and nrg_pc_203 I3/I4 for Poland; Tauron / Enea 2026 B21/B23 network rates; 2026 quality-fee rate; 2026 PSG W-5/W-6 rates and fixed charges."
