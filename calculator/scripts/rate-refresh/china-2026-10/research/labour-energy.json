@@ -1,0 +1,1130 @@
+{
+ "domain": "labour-energy",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "labour.anchor.nbs.mfgNonPrivateAnnual",
+   "value": 113594,
+   "unit": "CNY/yr",
+   "basis": "NBS survey: 2025 urban non-private units, manufacturing, average annual wage (total wage bill incl. bonus and overtime pay)",
+   "source": "https://www.stats.gov.cn/sj/zxfb/202605/t20260515_1963707.html",
+   "date": "2025 (published 2026-05-15)",
+   "notes": "+5.2% on 2024 (107,987). = 9,466/month."
+  },
+  {
+   "key": "labour.anchor.nbs.mfgPrivateAnnual",
+   "value": 76055,
+   "unit": "CNY/yr",
+   "basis": "NBS survey: 2025 urban private units, manufacturing, average annual wage",
+   "source": "https://www.stats.gov.cn/sj/zxfb/202605/t20260515_1963707.html",
+   "date": "2025 (published 2026-05-15)",
+   "notes": "+6.4% on 2024 (71,467). = 6,338/month."
+  },
+  {
+   "key": "labour.anchor.nbs.productionStaffAnnual.national",
+   "value": 80739,
+   "unit": "CNY/yr",
+   "basis": "NBS survey: 2025 enterprises above designated size, by position: 生产制造及有关人员 (production and related workers)",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025 (published 2026-05-15)",
+   "notes": "2024: 78,561 (+2.8%). NBS wage = gross incl. overtime pay, bonuses, allowances."
+  },
+  {
+   "key": "labour.anchor.nbs.productionStaffAnnual.east",
+   "value": 82365,
+   "unit": "CNY/yr",
+   "basis": "NBS table 6 (2025, above-size enterprises, by region and position): production workers, EAST region (Shanghai, Jiangsu, Zhejiang, Guangdong)",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Used for the Yangtze River Delta and Pearl River Delta clusters (no city split published in the sources reached). = 6,864/month."
+  },
+  {
+   "key": "labour.anchor.nbs.productionStaffAnnual.central",
+   "value": 72893,
+   "unit": "CNY/yr",
+   "basis": "NBS table 6: production workers, CENTRAL region (incl. Hubei)",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Used for Wuhan. = 6,074/month."
+  },
+  {
+   "key": "labour.anchor.nbs.productionStaffAnnual.west",
+   "value": 85044,
+   "unit": "CNY/yr",
+   "basis": "NBS table 6: production workers, WEST region (incl. Chongqing)",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Used for Chongqing. = 7,087/month. West > East for production workers in NBS data."
+  },
+  {
+   "key": "labour.anchor.nbs.professionalTechAnnual.east",
+   "value": 178144,
+   "unit": "CNY/yr",
+   "basis": "NBS table 6: 专业技术人员 (professional & technical staff), EAST region, above-size enterprises",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "National 155,491 (+5.0%). = 14,845/month."
+  },
+  {
+   "key": "labour.anchor.nbs.professionalTechAnnual.central",
+   "value": 109327,
+   "unit": "CNY/yr",
+   "basis": "NBS table 6: professional & technical staff, CENTRAL region",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "= 9,111/month."
+  },
+  {
+   "key": "labour.anchor.nbs.professionalTechAnnual.west",
+   "value": 127950,
+   "unit": "CNY/yr",
+   "basis": "NBS table 6: professional & technical staff, WEST region",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "= 10,663/month."
+  },
+  {
+   "key": "labour.anchor.guangdong.mfgNonPrivateAnnual",
+   "value": 120883,
+   "unit": "CNY/yr",
+   "basis": "Guangdong provincial statistics as reported by media: 2025 manufacturing non-private average wage",
+   "source": "https://news.ycwb.com/ikimvkltkj/content_54206153.htm",
+   "date": "2025",
+   "notes": "2024: 110,484 (+9.4%). Secondary (press) report of the provincial release."
+  },
+  {
+   "key": "labour.anchor.shanghai.allEmploymentMonthly",
+   "value": 12577,
+   "unit": "CNY/month",
+   "basis": "Shanghai HRSS notice: 2025 Shanghai average monthly wage of employed persons (all units, 全口径) — basis of the 2026 social-insurance base",
+   "source": "https://m.thepaper.cn/newsDetail_forward_33839702",
+   "date": "2025 (notice 2026-08-18)",
+   "notes": "All sectors, not manufacturing only."
+  },
+  {
+   "key": "labour.semiskilled.monthlyGross.YRD",
+   "value": 6864,
+   "unit": "CNY/month",
+   "basis": "NBS east-region production-worker annual 82,365 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Includes overtime and bonus (NBS total-wage definition). Production workers = semiskilled + skilled mix; semiskilled may be slightly below."
+  },
+  {
+   "key": "labour.semiskilled.monthlyGross.PRD",
+   "value": 6864,
+   "unit": "CNY/month",
+   "basis": "NBS east-region production-worker annual 82,365 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Cross-check: jobui Dongguan 一线普工 2026 average ¥7.1K (8 samples only, posted pay) https://www.jobui.com/salary/Dongguan-yixianpugong/"
+  },
+  {
+   "key": "labour.semiskilled.monthlyGross.Chongqing",
+   "value": 7087,
+   "unit": "CNY/month",
+   "basis": "NBS west-region production-worker annual 85,044 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": ""
+  },
+  {
+   "key": "labour.semiskilled.monthlyGross.Wuhan",
+   "value": 6074,
+   "unit": "CNY/month",
+   "basis": "NBS central-region production-worker annual 72,893 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": ""
+  },
+  {
+   "key": "labour.semiskilled.monthlyGross.clusterAvg",
+   "value": 6722,
+   "unit": "CNY/month",
+   "basis": "(6,864 + 6,864 + 7,087 + 6,074) ÷ 4 = 6,722; annual 80,667 incl. bonus",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Suzhou postings 6–9K '·13薪' (liepin, https://www.liepin.com/city-suzhou/zpyixiancaozuogong/) consistent."
+  },
+  {
+   "key": "labour.skilled.monthlyGross.PRD",
+   "value": 7171,
+   "unit": "CNY/month",
+   "basis": "Recruiter statistics: job5156 (智通直聘) Dongguan CNC操作工 average monthly pay, Aug 2026 (55% of posts 5–8K)",
+   "source": "https://www.job5156.com/salary/14010000_10050010/",
+   "date": "2026-08",
+   "notes": "Posted pay, usually includes overtime ('综合工资'); excludes year-end bonus. jobui Dongguan CNC操机师傅: 88% of 581 posts 8–15K, 1–3 yrs ≈ 9.4K (https://www.jobui.com/salary/Dongguan-cnccaojishifu/) — that is the setter/'master' level, above an operator."
+  },
+  {
+   "key": "labour.skilled.monthlyGross.YRD",
+   "value": 7000,
+   "unit": "CNY/month",
+   "basis": "Midpoint of 5,500–8,500 for CNC 操机员 in 'first-tier / coastal manufacturing cities (Shenzhen, Suzhou, Dongguan)', a jobui-sourced (~60k samples) summary quoted on Zhihu",
+   "source": "https://zhuanlan.zhihu.com/p/2029979213340610956",
+   "date": "2026",
+   "notes": "Secondary quote of jobui; range midpoint, not a mean."
+  },
+  {
+   "key": "labour.skilled.monthlyGross.Chongqing",
+   "value": 6000,
+   "unit": "CNY/month",
+   "basis": "Midpoint of 4,500–7,500 for CNC 操机员 in 'second/third-tier manufacturing cities', same jobui-sourced summary",
+   "source": "https://zhuanlan.zhihu.com/p/2029979213340610956",
+   "date": "2026",
+   "notes": "No Chongqing-specific CNC figure found."
+  },
+  {
+   "key": "labour.skilled.monthlyGross.Wuhan",
+   "value": 6000,
+   "unit": "CNY/month",
+   "basis": "As Chongqing (second-tier range midpoint)",
+   "source": "https://zhuanlan.zhihu.com/p/2029979213340610956",
+   "date": "2026",
+   "notes": "No Wuhan-specific figure found."
+  },
+  {
+   "key": "labour.skilled.monthlyGross.clusterAvg",
+   "value": 6543,
+   "unit": "CNY/month",
+   "basis": "(7,000 + 7,171 + 6,000 + 6,000) ÷ 4 = 6,543; annual = 6,543 × 13 = 85,059 (13th month assumed, see labour.bonus)",
+   "source": "see cluster items",
+   "date": "2026",
+   "notes": "Excludes bonus; ×13 puts it ~5% above NBS production-worker average, as expected for a skilled grade."
+  },
+  {
+   "key": "labour.engineer.monthlyGross.YRD",
+   "value": 14845,
+   "unit": "CNY/month",
+   "basis": "NBS east professional & technical staff 178,144 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "All professional/technical staff, not only 3–5 yr process engineers. Postings: Suzhou 高级工艺工程师 78% at 15–30K (jobui, 50 samples, mostly 5–10 yrs) https://www.jobui.com/salary/suzhou-gaojigongyigongchengshi/"
+  },
+  {
+   "key": "labour.engineer.monthlyGross.PRD",
+   "value": 14845,
+   "unit": "CNY/month",
+   "basis": "NBS east professional & technical staff 178,144 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": ""
+  },
+  {
+   "key": "labour.engineer.monthlyGross.Chongqing",
+   "value": 10663,
+   "unit": "CNY/month",
+   "basis": "NBS west professional & technical staff 127,950 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Postings (liepin): Chongqing auto parts process engineer 3–5 yrs 7–10K; Nexteer Jiangjin 10–15K·15薪 https://www.liepin.com/zpgongyigcs/"
+  },
+  {
+   "key": "labour.engineer.monthlyGross.Wuhan",
+   "value": 9111,
+   "unit": "CNY/month",
+   "basis": "NBS central professional & technical staff 109,327 ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Posting: Wuhan auto paint process engineer 3–5 yrs 15–20K (liepin) — above the NBS central average."
+  },
+  {
+   "key": "labour.engineer.monthlyGross.clusterAvg",
+   "value": 12366,
+   "unit": "CNY/month",
+   "basis": "(178,144×2 + 127,950 + 109,327) ÷ 4 = 148,391/yr ÷ 12",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025",
+   "notes": "Includes bonus (NBS definition)."
+  },
+  {
+   "key": "labour.supervisor.monthlyGross.PRD",
+   "value": 7700,
+   "unit": "CNY/month",
+   "basis": "jobui 生产组长 (production team leader) national page: Dongguan average ≈ 7.7K; 72.8% of 11,032 posts at 6–10K",
+   "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+   "date": "2026-09-10",
+   "notes": "Team leader, not 生产主管 (production manager)."
+  },
+  {
+   "key": "labour.supervisor.monthlyGross.YRD",
+   "value": 9400,
+   "unit": "CNY/month",
+   "basis": "jobui 生产组长: Suzhou average ≈ 9.4K",
+   "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+   "date": "2026-09-10",
+   "notes": ""
+  },
+  {
+   "key": "labour.supervisor.monthlyGross.clusterAvg",
+   "value": 8550,
+   "unit": "CNY/month",
+   "basis": "(7,700 + 9,400) ÷ 2 — Chongqing and Wuhan NOT found; average of the two clusters found",
+   "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+   "date": "2026-09",
+   "notes": "Coastal-only average; likely overstates the four-cluster figure."
+  },
+  {
+   "key": "labour.technician.monthlyGross.national",
+   "value": 8100,
+   "unit": "CNY/month",
+   "basis": "jobui 设备维修工 (maintenance technician) national: 中专 (technical-school) level ≈ 8.1K; 61% of ~9,956 posts at 6–10K; demand concentrated in Chongqing and Suzhou",
+   "source": "https://www.jobui.com/salary/quanguo-shebeiweixiugong/",
+   "date": "2026-09-19",
+   "notes": "No cluster split found; used as cluster average. Mould technician not found separately."
+  },
+  {
+   "key": "labour.electronics.monthlyGross.national",
+   "value": 6600,
+   "unit": "CNY/month",
+   "basis": "jobui SMT 贴片机操作员 national: 1–3 yrs ≈ 6.6K; 88.1% of posts 4.5–8K (76 samples, to 2026-05-29); 2025 −3% on 2024",
+   "source": "https://www.jobui.com/salary/quanguo-smttiepianjicaozuoyuan/",
+   "date": "2026-05-29",
+   "notes": "Dongguan postings 6,000–8,000 (zhaopin) https://www.zhaopin.com/zhaopin/bf7f9697145b49488cdffd2440529d0b/"
+  },
+  {
+   "key": "labour.inspector.monthlyGross.PRD",
+   "value": 6000,
+   "unit": "CNY/month",
+   "basis": "Midpoint of 5,000–7,000 'common' range for QC/inspection postings in Dongguan (zhaopin listings)",
+   "source": "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/",
+   "date": "2026",
+   "notes": "WEAK: job-ad range, one cluster. CMM inspector would be higher — not found."
+  },
+  {
+   "key": "labour.foundry.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND in any source reached (search budget). The derived rate below uses the NBS production-worker cluster average (6,722) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": "Foundry / forge / furnace work usually carries a heat/hardship allowance — not sourced, so not added."
+  },
+  {
+   "key": "labour.forge.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND in any source reached (search budget). The derived rate below uses the NBS production-worker cluster average (6,722) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": "Foundry / forge / furnace work usually carries a heat/hardship allowance — not sourced, so not added."
+  },
+  {
+   "key": "labour.furnace.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND in any source reached (search budget). The derived rate below uses the NBS production-worker cluster average (6,722) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": "Foundry / forge / furnace work usually carries a heat/hardship allowance — not sourced, so not added."
+  },
+  {
+   "key": "labour.blow.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND in any source reached (search budget). The derived rate below uses the NBS production-worker cluster average (6,722) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": "Foundry / forge / furnace work usually carries a heat/hardship allowance — not sourced, so not added."
+  },
+  {
+   "key": "labour.roto.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND in any source reached (search budget). The derived rate below uses the NBS production-worker cluster average (6,722) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": "Foundry / forge / furnace work usually carries a heat/hardship allowance — not sourced, so not added."
+  },
+  {
+   "key": "labour.thermoform.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND in any source reached (search budget). The derived rate below uses the NBS production-worker cluster average (6,722) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": "Foundry / forge / furnace work usually carries a heat/hardship allowance — not sourced, so not added."
+  },
+  {
+   "key": "labour.trimRouter.monthlyGross.clusterAvg",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND. Derived rate uses the skilled CNC operator average (6,543 ×13) as a stated PROXY.",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.Shanghai.monthly",
+   "value": 2740,
+   "unit": "CNY/month",
+   "basis": "Shanghai HRSS 沪人社规〔2025〕10号; hourly 25",
+   "source": "https://rsj.sh.gov.cn/cmsres/2c/2c52da60c7ed423c949a1a8524195c92/4221087aea40a7da06e928da75ab2369.pdf",
+   "date": "from 2025-07-01 (no 2026 change found)",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.Shanghai.hourly",
+   "value": 25,
+   "unit": "CNY/hr (part-time)",
+   "basis": "as above",
+   "source": "https://rsj.sh.gov.cn/cmsres/2c/2c52da60c7ed423c949a1a8524195c92/4221087aea40a7da06e928da75ab2369.pdf",
+   "date": "2025-07-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.Guangzhou.monthly",
+   "value": 2680,
+   "unit": "CNY/month",
+   "basis": "Guangdong adjustment from 2026-09-01: Guangzhou 2,680, Shenzhen 2,700 (hourly 25.4); class-2 (Zhuhai, Foshan, Dongguan, Zhongshan) 2,300 (hourly 21.9)",
+   "source": "https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12936470.html",
+   "date": "2026-09-01",
+   "notes": "Shenzhen 2,700; Dongguan/Foshan 2,300."
+  },
+  {
+   "key": "labour.minWage.Shenzhen.monthly",
+   "value": 2700,
+   "unit": "CNY/month",
+   "basis": "as above",
+   "source": "https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12936470.html",
+   "date": "2026-09-01",
+   "notes": "hourly 25.4"
+  },
+  {
+   "key": "labour.minWage.DongguanFoshan.monthly",
+   "value": 2300,
+   "unit": "CNY/month",
+   "basis": "as above (class-2 area)",
+   "source": "https://www.sz.gov.cn/cn/xxgk/zfxxgj/zwdt/content/post_12936470.html",
+   "date": "2026-09-01",
+   "notes": "hourly 21.9"
+  },
+  {
+   "key": "labour.minWage.JiangsuZhejiang.tier1.monthly",
+   "value": 2660,
+   "unit": "CNY/month",
+   "basis": "MOHRSS national table as of 2026-01-01: Jiangsu and Zhejiang tier 1 = 2,660 (hourly 25), tier 2 2,430, tier 3 2,180",
+   "source": "https://m.bendibao.com/bsy643977.html",
+   "date": "2026-01-01",
+   "notes": "Suzhou / Ningbo assumed tier 1 — the tier was not confirmed in the source."
+  },
+  {
+   "key": "labour.minWage.Chongqing.monthly",
+   "value": 2330,
+   "unit": "CNY/month",
+   "basis": "Chongqing HRSS: tier 1 2,330 (hourly 23), tier 2 2,200 (22)",
+   "source": "https://www.thepaper.cn/newsDetail_forward_31534096",
+   "date": "from 2025-01-01 (no 2026 change found)",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.Wuhan.monthly",
+   "value": 2400,
+   "unit": "CNY/month",
+   "basis": "Hubei adjustment from 2025-12-01: class 1 (Wuhan urban) 2,400, hourly 24; class 2 2,130; class 3 1,970",
+   "source": "https://wageindicator.org/zh-cn/ai/work-in-china/minimum-wage/6872-/",
+   "date": "2025-12-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.floorCheck",
+   "value": "pass",
+   "unit": "—",
+   "basis": "Semiskilled base pay implied by the overtime model = 6,722 ÷ 1.956 = 3,437/month > highest cluster minimum (Shanghai 2,740)",
+   "source": "derived",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "labour.statutory.hoursPerWeek",
+   "value": 40,
+   "unit": "h/week",
+   "basis": "State Council regulation on working hours (8 h/day, 40 h/week); overtime normally ≤1 h/day, ≤3 h/day special, ≤36 h/month (Labour Law art. 41)",
+   "source": "https://rsj.sh.gov.cn/dzb/rsj/2025-11-06/aid/02-02.html",
+   "date": "in force",
+   "notes": "A 2×12 h pattern (≈70–100 h OT/month) exceeds the 36 h legal cap unless a 综合计算工时 (comprehensive hours) approval applies; it is common practice but legally exposed."
+  },
+  {
+   "key": "labour.statutory.overtimePremium",
+   "value": "150% weekday / 200% rest day (if no time off in lieu) / 300% statutory holiday",
+   "unit": "—",
+   "basis": "Labour Law art. 44",
+   "source": "https://rsj.sh.gov.cn/dzb/rsj/2025-11-06/aid/02-02.html",
+   "date": "in force",
+   "notes": ""
+  },
+  {
+   "key": "labour.statutory.overtimeCapHoursPerMonth",
+   "value": 36,
+   "unit": "h/month",
+   "basis": "Labour Law art. 41",
+   "source": "https://www.whdonghu.gov.cn/zwgk_6255/zc/zcwd/202210/t20221013_2057455.shtml",
+   "date": "in force",
+   "notes": ""
+  },
+  {
+   "key": "labour.statutory.publicHolidays",
+   "value": 13,
+   "unit": "days/yr",
+   "basis": "State Council revision of 全国年节及纪念日放假办法: +2 days (Lunar New Year's Eve, 2 May), 11 → 13 days, from 2025-01-01",
+   "source": "https://paper.people.com.cn/rmrb/html/2024-11/14/nw.D110000renmrb_20241114_3-02.htm",
+   "date": "2025-01-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.statutory.annualLeave",
+   "value": 5,
+   "unit": "days/yr",
+   "basis": "职工带薪年休假条例 art. 3: 1–10 yrs service 5 days, 10–20 yrs 10, 20+ yrs 15; untaken leave paid at 300%",
+   "source": "https://xzfg.moj.gov.cn/front/law/detail?LawID=208",
+   "date": "in force",
+   "notes": "5 days used in the derivation."
+  },
+  {
+   "key": "labour.statutory.monthlyPayDays",
+   "value": 21.75,
+   "unit": "days/month",
+   "basis": "Standard 月计薪天数 = (365 − 104 rest days) ÷ 12 = 21.75; working days with 13 holidays = (261 − 13) ÷ 12 = 20.67",
+   "source": "derived from the holiday rule above",
+   "date": "2025",
+   "notes": ""
+  },
+  {
+   "key": "labour.bonus.monthsPerYear",
+   "value": 1,
+   "unit": "month",
+   "basis": "ASSUMPTION backed only by job postings: Suzhou 普工 '6–9K·13薪' (liepin), Nexteer Chongqing engineer '·15薪'. No survey of manufacturing year-end bonus found.",
+   "source": "https://www.liepin.com/city-suzhou/zpyixiancaozuogong/",
+   "date": "2026",
+   "notes": "Added (×13) to recruiter-based monthly pay only; NBS-based figures already include bonus."
+  },
+  {
+   "key": "labour.allowances.mealDorm",
+   "value": null,
+   "unit": "CNY/month",
+   "basis": "NOT FOUND as a sourced figure; job ads say '包吃包住' (meals and dorm provided) without a value",
+   "source": "https://m.58.com/dg/zpwuliucangchu/64540817563837x.shtml",
+   "date": "",
+   "notes": "Not included in the loaded rate."
+  },
+  {
+   "key": "labour.oncost.Shanghai.pension",
+   "value": 0.16,
+   "unit": "fraction of base",
+   "basis": "Employer rate summary (SMBC China report): pension 16%, medical 9%, unemployment 0.5%, work injury 0.2–1.9% by industry; employee 10.5%",
+   "source": "https://www.smbc.co.jp/hojin/international/global_information/resources/pdf/smbccnrep_sum336.pdf",
+   "date": "2026",
+   "notes": "Secondary (bank) summary, not the HRSS notice."
+  },
+  {
+   "key": "labour.oncost.Shanghai.medicalInclMaternity",
+   "value": 0.09,
+   "unit": "fraction of base",
+   "basis": "as above",
+   "source": "https://www.smbc.co.jp/hojin/international/global_information/resources/pdf/smbccnrep_sum336.pdf",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Shanghai.unemployment",
+   "value": 0.005,
+   "unit": "fraction of base",
+   "basis": "as above",
+   "source": "https://www.smbc.co.jp/hojin/international/global_information/resources/pdf/smbccnrep_sum336.pdf",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Shanghai.workInjury",
+   "value": "0.002–0.019",
+   "unit": "fraction of base",
+   "basis": "as above (industry-class range)",
+   "source": "https://www.smbc.co.jp/hojin/international/global_information/resources/pdf/smbccnrep_sum336.pdf",
+   "date": "2026",
+   "notes": "0.8% used in derivation = ASSUMED machinery-manufacturing class within the range (Shenzhen class 4 = 0.8%)."
+  },
+  {
+   "key": "labour.oncost.Shanghai.baseFloor",
+   "value": 7546,
+   "unit": "CNY/month",
+   "basis": "Shanghai 2026 social-insurance base: floor 7,546 (60% of 12,577), cap 37,731 (300%)",
+   "source": "https://m.thepaper.cn/newsDetail_forward_33839702",
+   "date": "2026-07-01 to 2027-06-30",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Shanghai.baseCap",
+   "value": 37731,
+   "unit": "CNY/month",
+   "basis": "as above",
+   "source": "https://m.thepaper.cn/newsDetail_forward_33839702",
+   "date": "2026-07-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Shanghai.housingFund",
+   "value": "0.05–0.07",
+   "unit": "fraction of base",
+   "basis": "Shanghai HPF 2026: employer and employee 5–7% each; base floor 2,740, cap 37,731",
+   "source": "https://news.qq.com/rain/a/20260819A063BU00",
+   "date": "2026-07-01 to 2027-06-30",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Guangdong.pension",
+   "value": 0.16,
+   "unit": "fraction of base",
+   "basis": "Guangzhou employer pension 16%; Shenzhen 16% + 1% local supplementary for Shenzhen-hukou staff",
+   "source": "https://www.huichenglawyer.com/pufaku/6588.html",
+   "date": "2025-26",
+   "notes": "Law-firm summary (secondary)."
+  },
+  {
+   "key": "labour.oncost.Guangdong.pensionBaseFloor",
+   "value": 5521,
+   "unit": "CNY/month",
+   "basis": "Guangdong province-wide enterprise pension base from 2026-07-01: floor 5,521, cap 27,603 (local-portal reprint of the joint HRSS/Finance/Tax notice)",
+   "source": "https://m.bendibao.com/bsy647451.html",
+   "date": "2026-07-01",
+   "notes": "Same page also states 5,510 for 2026-01 — conflicting; 2025-07–2026-06 was 5,510 / 27,549."
+  },
+  {
+   "key": "labour.oncost.Guangdong.pensionBaseCap",
+   "value": 27603,
+   "unit": "CNY/month",
+   "basis": "as above",
+   "source": "https://m.bendibao.com/bsy647451.html",
+   "date": "2026-07-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Shenzhen.baseRange",
+   "value": "4,775–27,549",
+   "unit": "CNY/month",
+   "basis": "Shenzhen employer contribution base range from 2025-07 (2026 figure not found)",
+   "source": "https://www.huichenglawyer.com/pufaku/4754.html",
+   "date": "2025-07",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Guangzhou.medical",
+   "value": 0.06,
+   "unit": "fraction of base",
+   "basis": "Guangzhou employer medical rate restored from 4.5% to 6% from 2026-01-01",
+   "source": "https://www.huichenglawyer.com/pufaku/6588.html",
+   "date": "2026-01-01",
+   "notes": "Shenzhen and Dongguan medical rates NOT found."
+  },
+  {
+   "key": "labour.oncost.Guangdong.unemployment",
+   "value": null,
+   "unit": "fraction of base",
+   "basis": "NOT FOUND; derivation uses 0.5% (Shanghai rate) as a stated proxy",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Shenzhen.workInjury",
+   "value": "0.002–0.014",
+   "unit": "fraction of base",
+   "basis": "Shenzhen work-injury base rates, industry classes 1–8: 0.2/0.4/0.6/0.8/0.9/1.0/1.2/1.4%",
+   "source": "https://www.huichenglawyer.com/pufaku/6588.html",
+   "date": "2025-26",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Guangdong.housingFund",
+   "value": "0.05–0.12",
+   "unit": "fraction of base",
+   "basis": "Guangzhou HPF 2026: floor 2,500, cap 41,697, 5–12%; Shenzhen floor 2,520, cap 48,471, 5–12%",
+   "source": "https://gz.bendibao.com/life/202573/360278.shtml",
+   "date": "2026-07 to 2027-06",
+   "notes": "Shenzhen: http://bsy.sz.bendibao.com/bsyDetail/646827.html . Dongguan not found."
+  },
+  {
+   "key": "labour.oncost.Chongqing.baseFloor",
+   "value": 4404,
+   "unit": "CNY/month",
+   "basis": "Chongqing HRSS 2025 contribution base for enterprise staff (pension, unemployment, injury, medical incl. maternity): floor 4,404, cap 22,017 (on average wage 88,065)",
+   "source": "https://rlsbj.cq.gov.cn/zwgk_182/zfxxgkml/zcwj_145360/jfxzgfxwj/202509/W020250919570307477950.pdf",
+   "date": "2025 year (notice 2025-09); 2026 not found",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Chongqing.baseCap",
+   "value": 22017,
+   "unit": "CNY/month",
+   "basis": "as above",
+   "source": "https://rlsbj.cq.gov.cn/zwgk_182/zfxxgkml/zcwj_145360/jfxzgfxwj/202509/W020250919570307477950.pdf",
+   "date": "2025",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Chongqing.rates",
+   "value": null,
+   "unit": "fraction of base",
+   "basis": "NOT FOUND (medical, unemployment, injury, HPF). Derivation: pension 16% (national rate) + medical 7.5% (mean of Shanghai 9% and Guangzhou 6%, PROXY) + unemployment 0.5% (proxy) + injury 0.8% (assumed) = 24.8%; HPF 5% on a floor taken equal to the minimum wage 2,330 (Shanghai, Guangzhou and Shenzhen HPF floors equal their minimum wages)",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Wuhan.baseFloor",
+   "value": 4498,
+   "unit": "CNY/month",
+   "basis": "Hubei 2025 social-insurance base, tier 1 (Wuhan and province): standard 7,496, floor 4,498, cap 22,488 (鄂人社发〔2025〕28号, local-portal reprint)",
+   "source": "http://wh.bendibao.com/live/2025926/191201.shtm",
+   "date": "2025 year (published 2025-09); 2026 not found",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Wuhan.baseCap",
+   "value": 22488,
+   "unit": "CNY/month",
+   "basis": "as above",
+   "source": "http://wh.bendibao.com/live/2025926/191201.shtm",
+   "date": "2025",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.Wuhan.rates",
+   "value": null,
+   "unit": "fraction of base",
+   "basis": "NOT FOUND; derivation uses the same 24.8% proxy as Chongqing, HPF 5% on the minimum wage 2,400",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.employerRate.byCluster",
+   "value": "Shanghai 26.3% | PRD 23.3% | Chongqing 24.8% | Wuhan 24.8%",
+   "unit": "fraction of SI base",
+   "basis": "Shanghai 16+9+0.5+0.8; PRD (Guangzhou) 16+6+0.5(proxy)+0.8; Chongqing/Wuhan proxy 24.8% (see above)",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.employerSiPerMonthAtFloor.clusterAvg",
+   "value": 1369.67,
+   "unit": "CNY/month",
+   "basis": "Shanghai 7,546×26.3%=1,984.6; PRD 5,521×23.3%=1,286.4; Chongqing 4,404×24.8%=1,092.2; Wuhan 4,498×24.8%=1,115.5; mean = 1,369.7",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Contribution AT THE FLOOR (common practice for hourly staff; legally the base is the prior-year actual wage incl. overtime — full compliance would raise this). YRD uses Shanghai's floor; Suzhou/Ningbo floors (lower) NOT found, so YRD is overstated."
+  },
+  {
+   "key": "labour.oncost.housingFundPerMonthAtFloor.clusterAvg",
+   "value": 124.63,
+   "unit": "CNY/month",
+   "basis": "5% × mean HPF floor (2,740 + 2,500 + 2,330 + 2,400) ÷ 4 = 2,492.5 → 124.6",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.perYear.shopFloor",
+   "value": 17931.56,
+   "unit": "CNY/yr",
+   "basis": "12 × (1,369.67 + 124.63)",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.hours.twoShift12h.productivePerYear",
+   "value": 3113,
+   "unit": "h/yr",
+   "basis": "ASSUMED pattern: 24 days/month worked (mid of 22–26), 12-h shift = 11 h worked + 1 h meal; = 20.67 regular days (8 h + 3 h OT at 150%) + 3.33 rest days (11 h at 200%) per month. Year: (20.67×12 − 5 leave) × 11 + 3.33×12 × 11 = 243×11 + 40×11 = 3,113 h. No absenteeism / training deduction (not sourced).",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Pay factor: paid hour-units per month = 174 (21.75×8 base) + 20.67×3×1.5 (93.0) + 3.33×11×2 (73.3) = 340.3 → gross = 1.956 × base pay."
+  },
+  {
+   "key": "labour.hours.standard.productivePerYear",
+   "value": 1944,
+   "unit": "h/yr",
+   "basis": "(261 − 13 holidays − 5 leave) days × 8 h = 243 × 8",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.semiskilled.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Per cluster (same method): YRD/PRD 32.22, Chongqing 33.08, Wuhan 29.18 — using the cluster-average on-cost."
+  },
+  {
+   "key": "labour.semiskilled.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.skilled.fullyLoadedCnyPerHr",
+   "value": 33.08,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 85,059 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "labour.skilled.monthlyGross.clusterAvg",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.skilled.fullyLoadedCnyPerHrStd",
+   "value": 31.59,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 85,059 ÷ 1.956 = 43,488 + 17,932) ÷ 1,944 h",
+   "source": "labour.skilled.monthlyGross.clusterAvg",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.supervisor.fullyLoadedCnyPerHr",
+   "value": 41.47,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 111,150 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+   "date": "2026",
+   "notes": "Coastal clusters only."
+  },
+  {
+   "key": "labour.supervisor.fullyLoadedCnyPerHrStd",
+   "value": 38.46,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 111,150 ÷ 1.956 = 56,828 + 17,932) ÷ 1,944 h",
+   "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.technician.fullyLoadedCnyPerHr",
+   "value": 39.59,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 105,300 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.jobui.com/salary/quanguo-shebeiweixiugong/",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.technician.fullyLoadedCnyPerHrStd",
+   "value": 36.92,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 105,300 ÷ 1.956 = 53,837 + 17,932) ÷ 1,944 h",
+   "source": "https://www.jobui.com/salary/quanguo-shebeiweixiugong/",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.electronics.fullyLoadedCnyPerHr",
+   "value": 33.32,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 85,800 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.jobui.com/salary/quanguo-smttiepianjicaozuoyuan/",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.electronics.fullyLoadedCnyPerHrStd",
+   "value": 31.79,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 85,800 ÷ 1.956 = 43,867 + 17,932) ÷ 1,944 h",
+   "source": "https://www.jobui.com/salary/quanguo-smttiepianjicaozuoyuan/",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.inspector.fullyLoadedCnyPerHr",
+   "value": 30.82,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 78,000 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/",
+   "date": "2026",
+   "notes": "WEAK (one-cluster job-ad range)."
+  },
+  {
+   "key": "labour.inspector.fullyLoadedCnyPerHrStd",
+   "value": 29.74,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 78,000 ÷ 1.956 = 39,879 + 17,932) ÷ 1,944 h",
+   "source": "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.foundry.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "PROXY = semiskilled (no role-specific source found)."
+  },
+  {
+   "key": "labour.foundry.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.forge.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "PROXY = semiskilled (no role-specific source found)."
+  },
+  {
+   "key": "labour.forge.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.furnace.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "PROXY = semiskilled (no role-specific source found)."
+  },
+  {
+   "key": "labour.furnace.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.blow.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "PROXY = semiskilled (no role-specific source found)."
+  },
+  {
+   "key": "labour.blow.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.roto.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "PROXY = semiskilled (no role-specific source found)."
+  },
+  {
+   "key": "labour.roto.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.thermoform.fullyLoadedCnyPerHr",
+   "value": 31.67,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "PROXY = semiskilled (no role-specific source found)."
+  },
+  {
+   "key": "labour.thermoform.fullyLoadedCnyPerHrStd",
+   "value": 30.44,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 80,667 ÷ 1.956 = 41,243 + 17,932) ÷ 1,944 h",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.trimRouter.fullyLoadedCnyPerHr",
+   "value": 33.08,
+   "unit": "CNY/hr",
+   "basis": "2×12 h model: (annual pay incl. OT & bonus 85,059 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+   "source": "labour.skilled.monthlyGross.clusterAvg",
+   "date": "2026",
+   "notes": "PROXY = skilled CNC operator."
+  },
+  {
+   "key": "labour.trimRouter.fullyLoadedCnyPerHrStd",
+   "value": 31.59,
+   "unit": "CNY/hr",
+   "basis": "Standard hours: (base pay 85,059 ÷ 1.956 = 43,488 + 17,932) ÷ 1,944 h",
+   "source": "labour.skilled.monthlyGross.clusterAvg",
+   "date": "2026",
+   "notes": "Base pay = observed pay with the overtime premium hours removed."
+  },
+  {
+   "key": "labour.engineer.fullyLoadedCnyPerHrStd",
+   "value": 99.08,
+   "unit": "CNY/hr",
+   "basis": "Salaried, standard hours: (148,391 + 12 × (24.8% avg employer SI × 12,366 = 3,066.8 + 5% HPF 618.3)) ÷ 1,944 h = (148,391 + 44,221) ÷ 1,944. SI on actual pay (below every cluster cap).",
+   "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+   "date": "2025-26",
+   "notes": "No 2×12 h version — engineers are salaried, overtime typically unpaid."
+  },
+  {
+   "key": "energy.electricity.nationalTOU.sep2026",
+   "value": "sharp 1.275 | peak 0.934 | flat 0.669 | valley 0.412",
+   "unit": "CNY/kWh incl. 13% VAT",
+   "basis": "Mean of all provinces' grid-agency (代理购电) single-part 1–10(20) kV general industrial & commercial TOU prices, Sep 2026 (energy-storage industry tabulation of the official tables)",
+   "source": "https://www.sohu.com/a/1074364039_122014422",
+   "date": "2026-09",
+   "notes": "Trade-press aggregation of the official tables; all-in (energy + T&D + system operation + funds)."
+  },
+  {
+   "key": "energy.electricity.Chongqing",
+   "value": 0.724,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "Chongqing flat-period price 0.8146 (Jul 2026, highest flat price nationally; national flat mean 0.6691) × (national TOU 24-h average 0.6717 ÷ national flat 0.669) = 0.818 incl. VAT ÷ 1.13 = 0.724",
+   "source": "https://finance.sina.com.cn/wm/2026-07-06/doc-inifwscq1812919.shtml",
+   "date": "2026-07",
+   "notes": "Trade-press summary of the July agency tables; tariff category of the 0.8146 (assumed 1–10 kV single-part general I&C) not confirmed."
+  },
+  {
+   "key": "energy.electricity.Jiangsu",
+   "value": null,
+   "unit": "CNY/kWh",
+   "basis": "NOT FOUND all-in. Only the agency PURCHASE (energy) component: Jan 0.3937, Feb 0.3102, Mar 0.3458, Apr 0.3715 CNY/kWh (+ upstream line-loss 0.010–0.013), excluding T&D, system operation and funds",
+   "source": "http://www.js.sgcc.com.cn/xxgk/gwszgdgs/djhsfbz/2026/12677.shtml",
+   "date": "2026-01 to 2026-04",
+   "notes": "State Grid Jiangsu monthly notices (Jan: https://www.95598.cn/omg-static//omg-static/99312281947160926130201807866391.pdf)."
+  },
+  {
+   "key": "energy.electricity.Guangdong",
+   "value": null,
+   "unit": "CNY/kWh",
+   "basis": "NOT FOUND as an average. Pearl River Delta (6 cities) 10(20) kV single-part peak–valley spread 1.3056 CNY/kWh in Oct 2026 (largest nationally); Guangdong had the highest agency purchase price nationally (0.4896) in Oct 2026",
+   "source": "https://chuneng.in-en.com/html/chunengy-58931.shtml",
+   "date": "2026-10",
+   "notes": "Suggests Guangdong is above the national average."
+  },
+  {
+   "key": "energy.electricity.Shanghai",
+   "value": null,
+   "unit": "CNY/kWh",
+   "basis": "NOT FOUND (Shanghai applies deep-valley prices on Oct 2026 rest days; two-part large-industry peak–valley spread up to 1.2101 in Jul 2026)",
+   "source": "https://finance.sina.com.cn/wm/2026-07-06/doc-inifwscq1812919.shtml",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "energy.electricity.Hubei",
+   "value": null,
+   "unit": "CNY/kWh",
+   "basis": "NOT FOUND (Hubei still applied sharp-peak prices in Oct 2026)",
+   "source": "https://chuneng.in-en.com/html/chunengy-58931.shtml",
+   "date": "2026-10",
+   "notes": ""
+  },
+  {
+   "key": "energy.electricity.clusterAvg",
+   "value": 0.594,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "PROXY = national Sep 2026 single-part 1–10 kV TOU prices weighted for a flat 24-h two-shift load, assuming ~8 h each in peak / flat / valley and no sharp-peak hours: (0.934 + 0.669 + 0.412) ÷ 3 = 0.672 incl. VAT ÷ 1.13 = 0.594",
+   "source": "https://www.sohu.com/a/1074364039_122014422",
+   "date": "2026-09",
+   "notes": "Cluster-specific values not found except Chongqing (0.724). Guangdong is likely higher. Two-part (large-industry) demand charges not converted — no cluster capacity rates found (Henan example: 40 CNY/kW-month demand, 25 CNY/kVA-month capacity, https://pds.gov.cn/upload/files/2026/4/30/2026年5月代理购电价格公示表-水印版.pdf)."
+  },
+  {
+   "key": "energy.gas.Shanghai",
+   "value": 0.378,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "Shanghai DRC non-residential base price from 2026-03-01: 1.2–5 million m³/yr users 4.12 (above 5 m: 3.69; below 1.2 m: 4.16; ±5% float). 4.12 ÷ 1.09 = 3.780 CNY/m³ ÷ 10 = 0.378. GCV 36 MJ/m³ → 10.0 kWh/m³ (GB 17820 class-1 pipeline gas ≥ 34 MJ/m³; typical delivered 36–38 MJ/m³ — standard value, not re-verified this session). Gas VAT 9%.",
+   "source": "https://www.shanghai.gov.cn/gwk/search/content/e57a04a91ec64dd7b153e4ea4304dbdc",
+   "date": "2026-03-01",
+   "notes": "Medium manufacturer assumed in the 1.2–5 million m³ band."
+  },
+  {
+   "key": "energy.gas.Jiangsu",
+   "value": 0.354,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "Wuxi urban non-residential pipeline gas maximum 3.86 CNY/m³ (2026-04-01 to 06-30) ÷ 1.09 = 3.541 ÷ 10. Suzhou gas utility 4.11 (2025-11-01 to 2026-03-31, winter). GCV 36 MJ/m³ → 10.0 kWh/m³ (GB 17820 class-1 pipeline gas ≥ 34 MJ/m³; typical delivered 36–38 MJ/m³ — standard value, not re-verified this session). Gas VAT 9%.",
+   "source": "https://www.wuxi.gov.cn/doc/2026/04/09/4757053.shtml",
+   "date": "2026-Q2",
+   "notes": "Suzhou: https://suzgas.com/003/003002/residentPayDetail.html . Taizhou Q3 2026 draft 4.09."
+  },
+  {
+   "key": "energy.gas.Guangdong",
+   "value": 0.41,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "Guangzhou non-residential pipeline gas maximum 4.47 CNY/m³ (2025-07-20 to 2026-01-19) ÷ 1.09 = 4.101 ÷ 10. GCV 36 MJ/m³ → 10.0 kWh/m³ (GB 17820 class-1 pipeline gas ≥ 34 MJ/m³; typical delivered 36–38 MJ/m³ — standard value, not re-verified this session). Gas VAT 9%.",
+   "source": "https://news.dayoo.com/guangzhou/202507/14/139995_54847396.htm",
+   "date": "2025-07-20",
+   "notes": "OLDER than 2026 — no 2026 Guangdong price found. Shenzhen / Dongguan / Foshan not found."
+  },
+  {
+   "key": "energy.gas.Chongqing",
+   "value": 0.309,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "Chongqing central-urban industrial gas maximum: 3.606 (heating season from 2025-11-01) and 3.192 (2025 non-heating season); weighted 5 heating + 7 non-heating months = 3.365 ÷ 1.09 = 3.087 ÷ 10. GCV 36 MJ/m³ → 10.0 kWh/m³ (GB 17820 class-1 pipeline gas ≥ 34 MJ/m³; typical delivered 36–38 MJ/m³ — standard value, not re-verified this session). Gas VAT 9%.",
+   "source": "https://fzggw.cq.gov.cn/zwgk/zfxxgkml/zcjd/202511/t20251127_15193550.html",
+   "date": "2025-11-01",
+   "notes": "2026 non-heating notice (渝发改价格〔2026〕792号) exists but its price was not seen; 2025 non-heating: https://fzggw.cq.gov.cn/zwgk/zfxxgkml/zcjd/202505/t20250513_14604573.html"
+  },
+  {
+   "key": "energy.gas.Hubei",
+   "value": 0.34,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "Wuhan 3.71 CNY/m³ in a China Price Information Network table (category industrial vs public-service not clear) ÷ 1.09 = 3.404 ÷ 10. GCV 36 MJ/m³ → 10.0 kWh/m³ (GB 17820 class-1 pipeline gas ≥ 34 MJ/m³; typical delivered 36–38 MJ/m³ — standard value, not re-verified this session). Gas VAT 9%.",
+   "source": "https://www.chinaprice.cn/syny/59257.jhtml",
+   "date": "2026 (date not confirmed)",
+   "notes": "LOW CONFIDENCE."
+  },
+  {
+   "key": "energy.gas.national36CityIndustrial",
+   "value": 0.328,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "NDRC Price Monitoring Centre 36-city monthly average industrial natural gas price Apr 2026: 3.570 CNY/m³ ÷ 1.09 ÷ 10 (Feb 2026: 3.62)",
+   "source": "https://www.ceicdata.com/zh-hans/china/price-monitoring-center-ndrc-36-city-monthly-avg-transaction-price-production-material/cn-usage-price-36-city-avg-natural-gas-natural-gas-for-industry",
+   "date": "2026-04",
+   "notes": "Cross-check."
+  },
+  {
+   "key": "energy.gas.clusterAvg",
+   "value": 0.356,
+   "unit": "CNY/kWh ex-VAT",
+   "basis": "YRD = (Shanghai 4.12 + Wuxi 3.86) ÷ 2 = 3.99; PRD 4.47; Chongqing 3.365; Wuhan 3.71 → mean 3.884 CNY/m³ incl. VAT ÷ 1.09 = 3.563 ÷ 10 kWh/m³",
+   "source": "derived",
+   "date": "2026",
+   "notes": "= 3.56 CNY/m³ ex-VAT."
+  }
+ ],
+ "notes": [
+  "Web fetch was blocked for every host in this session; all figures come from search-result extracts of the cited pages. Each URL is the page the figure was quoted from.",
+  "NBS 'average wage' is the total wage bill per employee: it already contains overtime pay, bonuses and allowances. Recruiter (jobui / job5156) monthly figures are posted 'comprehensive' pay, usually including overtime but not the year-end bonus — they are ×13.",
+  "Fully-loaded rates exclude meal/dorm allowances, training, absenteeism and severance accruals (none sourced). Social insurance is charged at the contribution floor (common practice for hourly staff); full legal compliance (base = actual pay incl. overtime) would add roughly 24.8% × (actual − floor) for Guangdong/Chongqing/Wuhan staff, e.g. semiskilled: four-cluster mean (actual − floor) ≈ 1,400 CNY/month → +4,166 CNY/yr ≈ +¥1.3/h in the 2×12 h model.",
+  "Current book vs evidence: semiskilled ¥49.91/h vs derived ¥30–32; skilled ¥71.75 vs ¥32–33; engineer ¥163.39 vs ¥99; foundry ¥45.38 vs proxy ¥30–32; electronics ¥58.96 vs ¥32–33; supervisor ¥96.88 vs ¥38–41; technician ¥78.85 vs ¥37–40; inspector ¥72.64 vs ¥30–31 (weak).",
+  "Gas: current book ¥0.27/kWh is below every 2026 cluster price found (¥0.31–0.41 ex-VAT) and below the national 36-city industrial average (¥0.328). Electricity: current ¥0.63 sits between the national proxy ex-VAT (0.594) and incl.-VAT (0.672) values; not shown wrong.",
+  "Not found: per-city wages for Chongqing and Wuhan by role, foundry / forge / furnace / plastics / router operator wages, 2026 social-insurance bases for Chongqing, Wuhan, Suzhou, Ningbo and Dongguan, Shenzhen/Dongguan medical rates, Guangdong unemployment rate, provincial all-in electricity averages for Shanghai, Jiangsu, Guangdong and Hubei, 2026 Guangdong gas prices."
+ ]
+}
