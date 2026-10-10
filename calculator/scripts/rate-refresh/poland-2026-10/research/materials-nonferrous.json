@@ -1,0 +1,248 @@
+{
+  "domain": "materials-nonferrous",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "nonferrous.al.lme",
+      "value": 12.5,
+      "unit": "PLN/kg",
+      "basis": "LME aluminium cash bid 28 Sep 2026: 3,248 USD/t (exchange settlement, as reported by AlCircle). 3,248/1000 x 3.849 = 12.50 PLN/kg. Exchange price; duty, premium and VAT not included.",
+      "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346",
+      "date": "2026-09-28",
+      "notes": "Early October fell: cash bid 3,119.5 (1 Oct), 3,109 (2 Oct), 3,134 (6 Oct), 3,102 USD/t (7 Oct) = 11.94 PLN/kg (https://www.alcircle.com/news/lme-aluminium-cash-offer-price-falls-around-1-to-3-102-t-while-stocks-drop-to-238-875t-121473). Westmetall official LME cash 8 Sep 2026: 3,325 USD/t (https://www.westmetall.com/de/markdaten.php). Range for the book month: 3,100-3,325 USD/t = 11.9-12.8 PLN/kg. Read from search-tool page extracts; direct page fetch was blocked in this environment."
+    },
+    {
+      "key": "nonferrous.al.dutyPaidPremium",
+      "value": 2.0,
+      "unit": "PLN/kg",
+      "basis": "Fastmarkets aluminium P1020A premium, in-warehouse duty-paid Rotterdam: 510-530 USD/t on Tue 15 Sep 2026 (price-agency assessment, quoted in a Fastmarkets correction notice). Mid 520/1000 x 3.849 = 2.00 PLN/kg.",
+      "source": "https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+      "date": "2026-09-15",
+      "notes": "Platts duty-paid IW Rotterdam P1020: 525-560 USD/t on 6 Jul 2026 (+64% YTD) (https://www.spglobal.com/energy/en/news-research/latest-news/metals/070726-trade-review-european-aluminum-market-seeks-floor-as-middle-east-war-premium-fades); Fastmarkets 360-390 on 27 Feb 2026. Premiums include CBAM costs from 1 Jan 2026. In-warehouse Rotterdam, NOT delivered to a Polish plant: road freight Rotterdam -> Silesia not researched and not included."
+    },
+    {
+      "key": "nonferrous.al.p1020",
+      "value": 14.5,
+      "unit": "PLN/kg",
+      "basis": "DERIVED: LME cash 3,248 + duty-paid Rotterdam premium 520 = 3,768 USD/t; 3,768/1000 x 3.849 = 14.50 PLN/kg ex-VAT, in-warehouse Rotterdam (freight to plant extra).",
+      "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+      "date": "2026-09-15 / 2026-09-28",
+      "notes": "At the 7 Oct LME (3,102) the same arithmetic gives 3,622 USD/t = 13.94 PLN/kg."
+    },
+    {
+      "key": "nonferrous.al.adc12",
+      "value": 10.85,
+      "unit": "PLN/kg",
+      "basis": "Fastmarkets aluminium pressure diecasting ingot DIN226/A380, delivered Europe (MB-AL-0005): 2,430-2,530 EUR/t on 23 Jan 2026 (price-agency assessment, +10 EUR). Mid 2,480/1000 x 4.374 = 10.85 PLN/kg, delivered, ex-VAT. STALE (January 2026): no later public DIN226 print found.",
+      "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+      "date": "2026-01-23",
+      "notes": "Same figures restated by Tradingpedia 26 Jan 2026 (https://www.tradingpedia.com/2026/01/26/scrap-squeeze-keeps-eu-secondary-aluminum-prices-elevated/). Since January the Rotterdam P1020 premium rose from ~360 to ~520 USD/t (Middle East supply loss) and scrap stayed tight, so the October DIN226 price is probably HIGHER than this - an inference, not a quote. Alumetal (Polish secondary alloy producer) was taken over by Norsk Hydro and delisted, so no 2026 Alumetal report with revenue/tonnes was found to derive an ASP. Argus DIN 226 page is paywalled."
+    },
+    {
+      "key": "nonferrous.al.en-ac-46000",
+      "value": 10.85,
+      "unit": "PLN/kg",
+      "basis": "Same assessment as nonferrous.al.adc12: DIN226 = EN AC-46000 / AlSi9Cu3(Fe) / A380 class. Fastmarkets 2,430-2,530 EUR/t delivered Europe, 23 Jan 2026; mid 2,480 x 4.374/1000 = 10.85 PLN/kg.",
+      "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+      "date": "2026-01-23",
+      "notes": "Fastmarkets: DIN226 is ~60% of European secondary-alloy trading; DIN231 typically +100 EUR/t over DIN226 (https://fastmarkets.com/insights/launch-of-additional-european-aluminium-diecasting-ingot-price-assessments)."
+    },
+    {
+      "key": "nonferrous.al.a356",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "Not found in any public source. Fastmarkets' European foundry-alloy (AlSi7Mg) premium report is subscriber-only.",
+      "source": "",
+      "date": "",
+      "notes": "Primary AlSi7Mg is at least P1020 (14.50 PLN/kg) + an alloying/casting premium not found."
+    },
+    {
+      "key": "nonferrous.al.billet6063_premium",
+      "value": 4.24,
+      "unit": "PLN/kg (premium over LME cash)",
+      "basis": "Fastmarkets aluminium 6063 extrusion billet premium, DDP North Germany (Ruhr): 1,070-1,135 USD/t on Fri 28 Aug 2026 (prev. week 1,080-1,150). Mid 1,102.5/1000 x 3.849 = 4.24 PLN/kg. Premium over LME cash, duty-paid and delivered, CBAM included from Jan 2026.",
+      "source": "https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+      "date": "2026-08-28",
+      "notes": "Figure read from a search extract of Fastmarkets notices; the exact article URL carrying the 28 Aug print was not isolated. 29 May 2026 print: 1,175-1,250 USD/t (cited by https://www.tacto.ai/de/rohstoffpreise/aluminiumpreis). A Fastmarkets notice of 2 Sep 2026 says the DDP North Germany billet premium is to be DISCONTINUED for lack of spot activity; a calculated CIF Rotterdam billet premium (MB-AL-0440) launched 31 Jul 2026 (value not public). Platts Dec 2025: DDP Germany LME + 500 USD/t."
+    },
+    {
+      "key": "nonferrous.al.billet6063",
+      "value": 16.75,
+      "unit": "PLN/kg",
+      "basis": "DERIVED: LME cash 3,248 (28 Sep) + DDP North Germany 6063 billet premium 1,102.5 (28 Aug) = 4,350.5 USD/t; x 3.849/1000 = 16.75 PLN/kg ex-VAT, delivered Germany.",
+      "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+      "date": "2026-08-28 / 2026-09-28",
+      "notes": "Agrees with the current book's mat-al-billet-6063 (16.57) within ~1%. At the 7 Oct LME: 4,204.5 USD/t = 16.18 PLN/kg."
+    },
+    {
+      "key": "nonferrous.al.scrap",
+      "value": 8.53,
+      "unit": "PLN/kg",
+      "basis": "Fastmarkets aluminium scrap floated frag, delivered consumer Europe: 1,900-2,000 EUR/t on 23 Jan 2026 (price-agency assessment). Mid 1,950/1000 x 4.374 = 8.53 PLN/kg. STALE (January 2026).",
+      "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+      "date": "2026-01-23",
+      "notes": "Polish scrapyard BUYING prices (retail boards, kb.pl, 2026 article, undated within year): aluminium cable (linka) ~12-13 PLN/kg, wheels/profiles ~10-12 PLN/kg; local city boards lower (linka 7.36-7.92, wheels 5.70-6.14) (https://kb.pl/aktualnosci/ciekawostki/najdrozszy-zlom-w-2026/). These are scrapyard purchase prices from the public, not an industrial scrap credit; cross-check only."
+    },
+    {
+      "key": "nonferrous.cu.spot",
+      "value": 56.73,
+      "unit": "PLN/kg",
+      "basis": "LME copper cash 25 Sep 2026: 14,740 USD/t (exchange price, as reported by a market-data page). 14,740/1000 x 3.849 = 56.73 PLN/kg.",
+      "source": "https://www.tacto.ai/en/commodities/copper-price",
+      "date": "2026-09-25",
+      "notes": "Cross-checks: Westmetall official LME cash 8 Sep 2026 14,737 USD/t (https://www.westmetall.com/de/markdaten.php); Wieland 9 Sep 2026 14,672 (https://www.wieland.com/en/metal-information); 22 Sep close 14,797; Cochilco 4 Sep 14,371 (https://www.cochilco.cl/web/download/1035/septiembre-2026/16822/rueda-04-09-2026.pdf). Copper ~14,400-14,800 USD/t through September 2026 = 55.4-57.0 PLN/kg."
+    },
+    {
+      "key": "nonferrous.cu.cathode_premium",
+      "value": 1.21,
+      "unit": "PLN/kg (premium over LME)",
+      "basis": "Aurubis 2026 annual European copper cathode premium offer: 315 USD/t (producer list premium, announced 7 Oct 2025, +38% vs 228 in 2025). 315/1000 x 3.849 = 1.21 PLN/kg. Codelco 2026 Europe offer 325 USD/t.",
+      "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+      "date": "2026 contract year (announced 2025-10-07)",
+      "notes": "KGHM's own 2026 cathode / wire-rod premium: NOT FOUND in any public source. Codelco: https://source.benchmarkminerals.com/article/codelco-raise-european-copper-cathode-premium-offers-to-record-levels"
+    },
+    {
+      "key": "nonferrous.cu.cathode_delivered",
+      "value": 57.95,
+      "unit": "PLN/kg",
+      "basis": "DERIVED: LME cash 14,740 + Aurubis 2026 premium 315 = 15,055 USD/t; x 3.849/1000 = 57.95 PLN/kg ex-VAT (metal value of a cathode before any rolling/drawing).",
+      "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+      "date": "2026-09-25",
+      "notes": "Wire rod / sheet / bar conversion premiums not found."
+    },
+    {
+      "key": "nonferrous.cu.scrap",
+      "value": 41.0,
+      "unit": "PLN/kg",
+      "basis": "Polish scrapyard buying price (ceny złomu board, kb.pl), clean copper 39-43 PLN/kg in January 2026; mid 41. Retail scrapyard purchase price, VAT treatment not stated. LOW CONFIDENCE, January 2026.",
+      "source": "https://kb.pl/aktualnosci/ciekawostki/ceny-zlomu-w-styczniu-2026/",
+      "date": "2026-01",
+      "notes": "Local city boards: millberry 29.40-31.60, copper pieces 28.30-30.50, copper turnings 25.50-27.40 PLN/kg (undated 2026, https://kb.pl/cenniki/miejskie/skup-zlomu/bydgoszcz/). No European price-agency copper scrap figure found."
+    },
+    {
+      "key": "nonferrous.brass.CW614N_rod",
+      "value": 48.07,
+      "unit": "PLN/kg (metal basis only)",
+      "basis": "German metal notation (Deutsche Metallnotierungen, Westmetall) 'Metallbasis MS 58 1. Verarbeitungsstufe' 1,088-1,110 EUR/100 kg on 9 Sep 2026 (1,091-1,114 on 8 Sep). Mid 10.99 EUR/kg x 4.374 = 48.07 PLN/kg. This is the brass METAL BASIS used for semi-finished surcharges, NOT a rod price; the rod fabrication charge is extra and was not found.",
+      "source": "https://www.westmetall.com/de/markdaten.php",
+      "date": "2026-09-09",
+      "notes": "DERIVED metal-content arithmetic (task's method) for comparison: 0.58 x Cu 14,737 + 0.39 x Zn 4,110 (Westmetall LME cash 8 Sep 2026) = 10,150 USD/t + 3% Pb (lead price not found) = 39.07 PLN/kg before Pb and fabrication. The MS 58 metal basis is ~22% above this raw metal content; why is not explained in the source. Use the notation as the market's metal value; the rod price = metal basis + fabrication. 'Metallbasis MS 58 2. V. Stufe' 1,213-1,216 EUR/100 kg (= 53.1 PLN/kg) same days."
+    },
+    {
+      "key": "nonferrous.brass.CW508L_sheet",
+      "value": 49.95,
+      "unit": "PLN/kg (metal basis only)",
+      "basis": "Westmetall German metal notation 'Metallbasis MS 63/37' 1,142 EUR/100 kg on 9 Sep 2026; 11.42 x 4.374 = 49.95 PLN/kg. Metal basis for CuZn37 (CW508L) semis, NOT a sheet price; rolling charge extra, not found.",
+      "source": "https://www.westmetall.com/de/markdaten.php",
+      "date": "2026-09-09",
+      "notes": "'Metallbasis MS 63 Draht' 1,122 EUR/100 kg (= 49.08 PLN/kg) same day."
+    },
+    {
+      "key": "nonferrous.zn.spot",
+      "value": 15.82,
+      "unit": "PLN/kg",
+      "basis": "Westmetall official LME zinc cash 8 Sep 2026: 4,110 USD/t (exchange settlement). 4,110/1000 x 3.849 = 15.82 PLN/kg. No late-Sep LME zinc print found.",
+      "source": "https://www.westmetall.com/de/markdaten.php",
+      "date": "2026-09-08",
+      "notes": "Wieland 9 Sep 2026 4,186 (https://www.wieland.com/en/metal-information); LME cash 27 Aug 2026 4,107 (four-year high); Cochilco 2 Sep 2026 4,000 (https://www.cochilco.cl/web/download/1035/septiembre-2026/16813/rueda-02-09-2026.pdf)."
+    },
+    {
+      "key": "nonferrous.zn.shg_premium",
+      "value": 0.88,
+      "unit": "PLN/kg (premium over LME)",
+      "basis": "Argus zinc SHG in-warehouse Rotterdam premium 215-240 USD/t, last 227.5, on 2 Feb 2026 (price-agency assessment). 227.5/1000 x 3.849 = 0.88 PLN/kg. STALE (Feb 2026); in-warehouse, not delivered.",
+      "source": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+      "date": "2026-02-02",
+      "notes": "Fastmarkets SHG dp FCA Rotterdam (MB-ZN-0001) value not public."
+    },
+    {
+      "key": "nonferrous.zn.shg_delivered",
+      "value": 16.7,
+      "unit": "PLN/kg",
+      "basis": "DERIVED: LME zinc 4,110 (8 Sep 2026) + Rotterdam SHG premium 227.5 (2 Feb 2026) = 4,337.5 USD/t; x 3.849/1000 = 16.70 PLN/kg ex-VAT, in-warehouse Rotterdam.",
+      "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+      "date": "2026-09-08",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.zn.zamak3",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "European Zamak 3 price or premium over LME zinc: NOT FOUND (Fastmarkets/Argus paywalled; ZGH Bolesław publishes none found). DERIVED METAL-CONTENT FLOOR ONLY: 0.96 x SHG zinc 4,337.5 + 0.04 x P1020 3,768 = 4,315 USD/t = 16.61 PLN/kg, before the alloying/ingot premium.",
+      "source": "",
+      "date": "2026-09 (inputs)",
+      "notes": "China (Mysteel) charges 650-750 CNY/t over 0# zinc for 3# alloy — not transferable to Europe, mentioned only for scale."
+    },
+    {
+      "key": "nonferrous.zn.zamak5",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND. DERIVED METAL-CONTENT FLOOR ONLY: 0.95 x zinc 4,337.5 + 0.04 x P1020 3,768 + 0.01 x copper 14,740 = 4,419 USD/t = 17.01 PLN/kg, before the alloying premium.",
+      "source": "",
+      "date": "2026-09 (inputs)",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.mg.ingot",
+      "value": 10.98,
+      "unit": "PLN/kg",
+      "basis": "LOW CONFIDENCE (market-research aggregator, not a price agency): IMARC magnesium price, Netherlands, Q2 2026: 2,853 USD/t. 2,853/1000 x 3.849 = 10.98 PLN/kg.",
+      "source": "https://www.imarcgroup.com/magnesium-pricing-report",
+      "date": "2026-Q2",
+      "notes": "Procurement Resource: Germany CIF ~2,531 USD/t, May 2026 (= 9.74 PLN/kg) (https://www.procurementresource.com/resource-center/magnesium-price-trends). Fastmarkets Mg 99.9% in-whs Rotterdam (MB-MG-0001) and Argus du Rotterdam values are paywalled; no 2026 print found. China 99.90% ingot 15,500 CNY/t incl. VAT ex-works Fugu, 9 Oct 2026 (China research file)."
+    },
+    {
+      "key": "nonferrous.mg.az91d",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "Not found in any public European source for 2026.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.sn.spot",
+      "value": 211.31,
+      "unit": "PLN/kg",
+      "basis": "Westmetall official LME tin cash 8 Sep 2026: 54,900 USD/t; x 3.849/1000 = 211.31 PLN/kg.",
+      "source": "https://www.westmetall.com/de/markdaten.php",
+      "date": "2026-09-08",
+      "notes": "LME tin page showed 51,447 USD/t (-5.22%), date not shown, probably early October after the 9 Oct sell-off seen on SHFE (= 198.02 PLN/kg) (https://www.lme.com/metals/non-ferrous/lme-tin). Volatile: use 198-211."
+    },
+    {
+      "key": "nonferrous.ni.spot",
+      "value": 64.18,
+      "unit": "PLN/kg",
+      "basis": "Westmetall official LME nickel cash 8 Sep 2026: 16,675 USD/t; x 3.849/1000 = 64.18 PLN/kg.",
+      "source": "https://www.westmetall.com/de/markdaten.php",
+      "date": "2026-09-08",
+      "notes": "cbonds LME nickel spot 16,720 USD/t on 12 Aug 2026 (https://cbonds.com/indexes/181085/)."
+    },
+    {
+      "key": "nonferrous.ti.ti6al4v_bar",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "No dated public 2026 price (Fastmarkets titanium assessments paywalled). Only marketplace listings (Accio, eBay) found, which RULES excludes as prices.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.ni.superalloy_bar",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "Inconel 718 / 625 / Waspaloy bar: no dated public European 2026 price found.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "FX per RULES: 1 USD = 3.849 PLN, 1 EUR = 4.374 PLN. Every value is ex-VAT (exchange / agency prices carry no VAT).",
+    "Rotterdam in-warehouse and LME figures are NOT delivered to a Polish cluster; freight Rotterdam -> Silesia/Wielkopolska was not researched. DIN226, billet DDP North Germany and floated frag are delivered-consumer (Germany/Europe) prices.",
+    "Direct page fetch (WebFetch, curl) was blocked in this environment for every host tried; all figures come from the web-search tool's page extracts. URLs are the pages those extracts came from; re-verify before publishing the book.",
+    "Current book figures that look wrong: (1) mat-c110-copper and mat-c101-bar at 56.86 PLN/kg are BELOW the delivered cathode metal value (LME 14,740 + Aurubis 315 = 57.95 PLN/kg) before any rolling/drawing charge - too low. (2) mat-brass-cz121 / mat-brass-cz122-forge 42.89 and mat-cz108-brass 42.61 are below the German brass metal bases (MS 58 48.07, MS 63/37 49.95 PLN/kg, 9 Sep 2026) before fabrication - likely too low (raw metal-content arithmetic gives 39.1 PLN/kg for CW614N, so the gap depends on which basis the trade uses). (3) mat-zamak3 16.14 and mat-zamak5 16.40 are below their own metal-content floors (16.61 / 17.01 PLN/kg) at Sep 2026 LME + Rotterdam premiums - too low. (4) mat-adc12 / mat-a380 10.65-10.84 match the January 2026 DIN226 print (10.85) but the primary premium and LME have risen since, so they are probably low for October; no later print found. (5) Magnesium alloys (AZ91D 19.28, AM60B 18.52) look high against a low-confidence ~11 PLN/kg European Mg ingot, but no alloy price was found, so not asserted. (6) mat-al-billet-6063 16.57 agrees with LME + DDP billet premium (16.75). (7) Aluminium sheet at 16.14 (5182) is only ~1.6 PLN/kg over P1020 (14.50) - looks thin for rolled sheet, but no rolling premium was found.",
+    "Not found: A356 / AlSi7Mg European premium, any 2026 Alumetal or KGHM price data, European Zamak premiums, AZ91D, 2026 Rotterdam magnesium agency print, titanium / nickel-superalloy bar prices, brass rod / sheet fabrication charges, late-September LME prints for Zn / Ni / Sn (8 Sep used).",
+    "29 web searches used."
+  ]
+}
