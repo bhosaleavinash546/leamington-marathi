@@ -256,3 +256,27 @@ describe('X29 — an unanswered advisory question prints what the costing used',
     expect(all).not.toMatch(/engine default/);
   });
 });
+
+describe('X12 — the reports print every value the rules set, with its basis', () => {
+  const { input, result } = sandCastingResult();
+  const checks = { costable: true, geometryQuality: 'occt', sanity: [], overrides: [], decisions: [],
+    ruleValues: [
+      { label: 'NDT (£/part)', value: '1.8', ruleValue: '1.8', source: 'rule', edited: false,
+        basis: 'safety-critical ductile iron: 2D X-ray, £5.00 UK × India NDT factor' },
+      { label: 'Moulding crew', value: '4', ruleValue: '4', source: 'rule', edited: false, basis: 'semi-automatic sand line, 4 operators' },
+    ] };
+  it('PDF', () => {
+    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+      { geometrySource: 'occt', checks } as never)).replace(/\n/g, ' ');
+    expect(text).toMatch(/Values the rules set on the costing form/);
+    expect(text).toMatch(/2D X-ray/);
+  });
+  it('Excel: the table has rows, and an empty override table says so', async () => {
+    const blob = await exportToExcelBlob(result, input, lib, 'INR', 127.1941, checks as never);
+    const wb = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
+    const ck = XLSX.utils.sheet_to_csv(wb.Sheets['7-Checks']);
+    expect(ck).toMatch(/VALUES THE RULES SET/);
+    expect(ck).toMatch(/Moulding crew,4,4,rule,"semi-automatic sand line/);
+    expect(ck).toMatch(/none — no model value was used/);
+  });
+});

@@ -17594,7 +17594,27 @@ function buildChecksApplied(): CADReportMeta['checks'] {
       // an unanswered grade question: the grade the costing used (casting 360 X29)
       used: id === 'material.grade' && lastInput ? (library.materials.find(m => m.id === lastInput!.rawMaterial.materialId)?.grade ?? null) : null })),
     overrides: _cadRuleOverrides,
+    ruleValues: reportRuleValues(),
   };
+}
+
+/** The rules' values on the costing form with their bases — what the reports print as "values the rules set". */
+function reportRuleValues(): NonNullable<NonNullable<CADReportMeta['checks']>['ruleValues']> {
+  const out: NonNullable<NonNullable<CADReportMeta['checks']>['ruleValues']> = [];
+  for (const f of Object.values(_cadRuleFields)) {
+    const field = document.getElementById(f.fieldId) as HTMLInputElement | HTMLSelectElement | null;
+    if (!field || f.value === null || f.value === undefined || typeof f.value === 'object') continue;   // not on this form
+    const label = field.closest('.field-group')?.querySelector('label')?.textContent?.trim() || f.fieldId;
+    const shown = field instanceof HTMLSelectElement ? (field.selectedOptions[0]?.textContent?.trim() ?? field.value) : field.value;
+    const ruleShown = field instanceof HTMLSelectElement
+      ? (Array.from(field.options).find(o => o.value === String(f.value))?.textContent?.trim() ?? String(f.value)) : String(f.value);
+    // a number is compared at the precision the form shows it (setNumericField rounds)
+    const dp = (field.value.split('.')[1] ?? '').length;
+    const edited = field.value !== String(f.value)
+      && !(typeof f.value === 'number' && field.value !== '' && Number(f.value).toFixed(dp) === Number(field.value).toFixed(dp));
+    out.push({ label, value: shown, ruleValue: ruleShown, basis: f.basis, source: f.source, edited });
+  }
+  return out;
 }
 
 /** Exports refuse a number the costing gate would have blocked. */

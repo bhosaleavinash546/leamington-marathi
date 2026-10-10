@@ -292,8 +292,14 @@ export async function exportToExcelBlob(
       ['DECISIONS'], ['Question', 'Severity', 'Answer'],
       ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]) : [['none recorded']]),
       [],
-      ['RULE-OWNED VALUES'], ['Field', 'Rule', 'Model said', 'Used', 'Basis'],
-      ...checks.overrides.map(o => [o.field, o.ruleId, fmtVal(o.from), fmtVal(o.to), o.basis]),
+      ['VALUES THE RULES SET (money in a basis is as recorded, GBP)'], ['Field', 'Costed', 'Rule value', 'Source', 'Basis'],
+      ...(checks.ruleValues?.length
+        ? checks.ruleValues.map(r => [r.label, r.edited ? `${r.value} (edited)` : r.value, r.ruleValue, r.source, r.basis])
+        : [['none recorded']]),
+      [],
+      ['MODEL VALUES OVERWRITTEN BY A RULE'], ['Field', 'Rule', 'Model said', 'Used', 'Basis'],
+      ...(checks.overrides.length ? checks.overrides.map(o => [o.field, o.ruleId, fmtVal(o.from), fmtVal(o.to), o.basis])
+        : [['none — no model value was used (deterministic rules)']]),
     );
   }
   sheets.push({ name: '7-Checks', rows: ck, cols: [56, 18, 18, 14, 60] });

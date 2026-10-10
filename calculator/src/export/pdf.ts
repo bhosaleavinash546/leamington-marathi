@@ -156,6 +156,12 @@ export interface ChecksAppliedMeta {
     used?: string | null }>;
   /** Rule-owned fields written over the model's value (or set where it said nothing). */
   overrides: Array<{ field: string; ruleId: string; from: unknown; to: unknown; basis: string; contradicted: boolean }>;
+  /**
+   * Every value the rules set on the costing form, with its basis (casting 360 review X12: NDT, heat treatment, stock,
+   * crew and fettling were in the cost with no basis in either report). `value` is what the form held when costed;
+   * `edited` when that differs from the rule's. Money in a basis is as recorded, in GBP.
+   */
+  ruleValues?: Array<{ label: string; value: string; ruleValue: string; basis: string; source: string; edited: boolean }>;
 }
 
 /** One labelled source photo carried into the report. */
@@ -520,6 +526,20 @@ function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null
       body: ch.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]),
       styles: { fontSize: 6.5, cellPadding: 1.2 }, headStyles: { fillColor: NAVY, fontSize: 6.5 },
       columnStyles: { 1: { cellWidth: 18 }, 2: { cellWidth: 40 } },
+    });
+    y = lastFinalY(doc) + 4;
+  }
+
+  if (ch.ruleValues?.length) {
+    y = chk(doc, y, 20);
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    doc.text('Values the rules set on the costing form, and why (money in a basis is as recorded, GBP):', MG, y); y += 4;
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Field', 'Costed', 'Source', 'Basis']],
+      body: ch.ruleValues.map(r => [r.label, r.edited ? `${r.value} (edited; rule ${r.ruleValue})` : r.value, r.source, r.basis]),
+      styles: { fontSize: 6, cellPadding: 1 }, headStyles: { fillColor: NAVY, fontSize: 6 },
+      columnStyles: { 0: { cellWidth: 36 }, 1: { cellWidth: 24 }, 2: { cellWidth: 16 } },
     });
     y = lastFinalY(doc) + 4;
   }
