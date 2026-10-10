@@ -1,0 +1,153 @@
+id	grade	category	current_PLN_per_kg
+mat-steel1045	1045 / C45 / 080M46 (Medium-Carbon Steel)	Carbon Steel	4.7
+mat-ss316l	316L	Stainless Steel	19.53
+mat-steel4140	4140 / 42CrMo4 / EN19 (Chromoly Alloy Steel)	Alloy Steel	5.98
+mat-en8	EN8 / 080M40 (Medium Carbon)	Carbon Steel	4.84
+mat-ss304-bar	304 Stainless Bar	Stainless Steel	17.45
+mat-ss303	303 Free-Machining Stainless Bar	Stainless Steel	18.93
+mat-dc01	DC01	Mild Steel Sheet	3.74
+mat-dc01-gi	DC01 GI (Hot-dip Galvanised)	Galvanised Steel Sheet	3.74
+mat-dc03-ga	DC03 GA (Galvannealed)	Galvanised Steel Sheet	3.87
+mat-dp600	DP600	AHSS Sheet	5.78
+mat-hsla340	HSLA 340	High Strength Steel Sheet	5.29
+mat-22mnb5	22MnB5 (Hot Press Forming / Boron Steel)	Ultra-High Strength Steel	7.96
+mat-ss304-sheet	304L Stainless Sheet	Stainless Steel Sheet	11.55
+mat-aisi430	AISI 430 Ferritic SS Sheet	Stainless Steel Sheet	6.65
+mat-ss316-sheet	AISI 316L Stainless Sheet	Stainless Steel Sheet	18.22
+mat-dc01-ze	DC01+ZE (Electrogalvanised)	Electrogalvanised Steel Sheet	3.74
+mat-hsla420	HSLA 420 Sheet	High Strength Steel Sheet	5.74
+mat-hrpo	HRPO (Hot Rolled Pickled & Oiled)	Mild Steel Sheet	3.81
+mat-dp780	DP780	AHSS Sheet	6.09
+mat-dp980	DP980	AHSS Sheet	6.67
+mat-dp1000	DP1000	AHSS Sheet	6.98
+mat-trip780	TRIP780	AHSS Sheet	6.45
+mat-cp800	CP800 (Complex Phase)	AHSS Sheet	6.36
+mat-ms1200	MS1200 (Martensitic)	Ultra-High Strength Steel	7.12
+mat-ms1500	MS1500 (Martensitic)	Ultra-High Strength Steel	7.87
+mat-usibor1500	Usibor 1500 (AlSi-coated 22MnB5)	Press-Hardening Steel	8.9
+mat-usibor2000	Usibor 2000	Press-Hardening Steel	10.68
+mat-ms1300	MS1300 (Martensitic)	Ultra-High Strength Steel	7.43
+mat-qp980	QP980 (Quench & Partition)	AHSS Sheet (3rd Gen)	7.7
+mat-medmn1180	Medium-Mn 1180	AHSS Sheet (3rd Gen)	8.01
+mat-hsla550	HSLA 550	High Strength Steel Sheet	6.18
+mat-bh260	BH260 (Bake-Hardening)	Bake-Hardening Steel Sheet	4.89
+mat-if-dx56	DX56D IF (Interstitial-Free)	IF Steel Sheet	4.45
+mat-if-hs260	IF-HS 260 (High-Strength IF)	IF Steel Sheet	5.03
+mat-dc04	DC04 (CR4 Deep-Drawing)	Mild Steel Sheet	3.74
+mat-dc05	DC05 (Extra-Deep-Drawing)	Mild Steel Sheet	3.74
+mat-dc06	DC06 (Super-Deep-Drawing IF)	Mild Steel Sheet	3.78
+mat-nogo-m270-35a	M270-35A Non-Oriented Electrical (0.35mm)	Electrical Steel Sheet	7.86
+mat-nogo-m400-50a	M400-50A Non-Oriented Electrical (0.50mm)	Electrical Steel Sheet	6.38
+mat-go-m105-30p	M105-30P Grain-Oriented Electrical (0.30mm)	Electrical Steel Sheet	14.34
+mat-m235-35a	M235-35A NO Electrical (0.35mm, premium low-loss)	Electrical Steel Sheet	9.84
+mat-m330-35a	M330-35A NO Electrical (0.35mm)	Electrical Steel Sheet	8.6
+mat-m250-50a	M250-50A NO Electrical (0.50mm, low-loss)	Electrical Steel Sheet	7.22
+mat-m470-50a	M470-50A NO Electrical (0.50mm)	Electrical Steel Sheet	6.13
+mat-m600-50a	M600-50A NO Electrical (0.50mm, economy)	Electrical Steel Sheet	5.88
+mat-m700-65a	M700-65A NO Electrical (0.65mm, mains)	Electrical Steel Sheet	5.64
+mat-no27-27a	NO27 (0.27mm EV Traction)	Electrical Steel Sheet	12.06
+mat-no25-25a	NO25 (0.25mm EV Traction)	Electrical Steel Sheet	13.54
+mat-no20-20a	NO20 (0.20mm High-Speed EV/aero)	Electrical Steel Sheet	17
+mat-cgo-m120-27	M120-27S CGO (0.27mm Grain-Oriented)	Electrical Steel Sheet	12.6
+mat-hgo-m090-23	M090-23P HGO Domain-Refined (0.23mm)	Electrical Steel Sheet	16.81
+mat-cofe-hiperco50	Cobalt-Iron (Hiperco 50 / Vacodur 49)	Electrical Steel Sheet	286.7
+mat-nife-permalloy80	Nickel-Iron Permalloy (80% Ni)	Electrical Steel Sheet	118.93
+mat-amorphous-2605sa1	Amorphous Ribbon (Metglas 2605SA1)	Electrical Steel Sheet	42.02
+mat-no-semiproc-50	Semi-Processed NO Electrical (0.50mm)	Electrical Steel Sheet	5.39
+mat-hsno-rotor-700	High-Strength NO Electrical (~700 MPa, 0.30mm rotor)	Electrical Steel Sheet	13.05
+mat-hsno-rotor-960	Ultra-High-Strength NO Electrical (~960 MPa, 0.20–0.27mm rotor)	Electrical Steel Sheet	16.02
+mat-no15-15a	NO15 Ultra-Thin NO Electrical (0.15mm)	Electrical Steel Sheet	19.48
+mat-no10-10a	NO10 Ultra-Thin NO Electrical (0.10mm)	Electrical Steel Sheet	27.38
+mat-si65-jnex-10	6.5% Si High-Frequency Electrical (JNEX/Super-Core class, 0.10mm)	Electrical Steel Sheet	33.81
+mat-uhsno-1100	Ultra-High-Strength NO Electrical (~1100 MPa, 30k-rpm rotor)	Electrical Steel Sheet	17.99
+mat-cofe-thin-010	Cobalt-Iron Thin-Gauge (0.10mm, Vacoflux/Hiperco)	Electrical Steel Sheet	355.9
+mat-c67s-spring	C67S / 1.1231 (CR Spring Strip)	Spring Steel Strip	7.12
+mat-ss301-spring	301 Spring-Temper Stainless Strip	Spring Steel Strip	22.39
+mat-znni-eg	Zn-Ni Electrogalvanised	Coated Steel Sheet	4.14
+mat-zm-coated	ZM (Zn-Mg-Al) Coated	Coated Steel Sheet	4.04
+mat-tinplate-etp	Tinplate (ETP)	Coated Steel Sheet	4.54
+mat-greensteel-dc01	Low-CO₂ "Green" Steel (H₂-DRI, DC01 equiv.)	Low-Carbon Steel Sheet	4.89
+mat-gjl250	EN-GJL-250	Grey Cast Iron	0.84
+mat-gjl350	EN-GJL-350	Grey Cast Iron	0.96
+mat-ss304-cast	CF8 / 304 Cast Stainless	Cast Stainless Steel	8.92
+mat-gjs400	EN-GJS-400-15 (Ductile Iron)	Ductile Cast Iron	1.22
+mat-gjs600	EN-GJS-600-3 (Ductile Iron Hi-Strength)	Ductile Cast Iron	1.62
+mat-gjl200	EN-GJL-200 (Grey Iron)	Grey Cast Iron	0.78
+mat-gjl300	EN-GJL-300 (Grey Iron Hi-Strength)	Grey Cast Iron	0.91
+mat-gjs500	EN-GJS-500-7 (Ductile Iron)	Ductile Cast Iron	1.42
+mat-gjs700	EN-GJS-700-2 (Ductile Iron Hi-Strength)	Ductile Cast Iron	1.86
+mat-gjv450	EN-GJV-450 (Compacted Graphite Iron)	Compacted Graphite Iron	2.7
+mat-simo	EN-GJS-SiMo (Heat-Resistant Ductile)	Ductile Cast Iron	3.84
+mat-adi	EN-GJS-800 ADI (Austempered Ductile Iron)	Ductile Cast Iron	4.98
+mat-gs-c25	GS-C25 (Cast Carbon Steel)	Cast Carbon Steel	0.7
+mat-17-4ph-cast	17-4PH (Investment Cast Stainless)	Cast Stainless Steel	30.82
+mat-steel1020	1020 / S20C	Carbon Steel Billet	4.05
+mat-steel4340	4340 / EN24 / 817M40 (Ni-Cr-Mo Alloy Steel)	Alloy Steel Billet	7.17
+mat-steel1141	1141 / 1144 (Free-Machining)	Carbon Steel Billet	5.19
+mat-steel-38mnvs6	38MnVS6 (Microalloyed)	Microalloyed Steel Billet	5.68
+mat-steel4130	4130 / 25CrMo4	Alloy Steel Billet	7.91
+mat-steel8620	8620 (Case-Hardening)	Alloy Steel Billet	7.41
+mat-steel-20mncr5	20MnCr5 (Gear Steel)	Alloy Steel Billet	7.32
+mat-steel-52100	52100 / 100Cr6 (Bearing Steel)	Alloy Steel Billet	8.4
+mat-steel-300m	300M (UHS Aerospace)	Alloy Steel Billet	18.78
+mat-ss410-bar	410 (Martensitic Stainless Bar)	Stainless Steel Billet	17.94
+mat-ss304l-bar	304L (Austenitic Stainless Bar)	Stainless Steel Billet	23.38
+mat-ss316l-bar	316L (Austenitic Stainless Bar)	Stainless Steel Billet	31.29
+mat-ss17-4ph-bar	17-4PH (PH Stainless Bar)	Stainless Steel Billet	45.97
+mat-ss15-5ph-bar	15-5PH (PH Stainless Bar)	Stainless Steel Billet	48.94
+mat-gjs450-ssf	EN-GJS-450-10 (solution-strengthened ferritic ductile, EN 1563:2018)	Ductile Cast Iron	1.27
+mat-ni-resist-d2	EN-GJSA-XNiCr20-2 (Ni-Resist D-2, austenitic ductile)	Ductile Cast Iron	13.93
+mat-gjmb350	EN-GJMB-350-10 (blackheart malleable iron)	Malleable Cast Iron	0.86
+mat-hicr-white	EN-GJN-HV600(XCr23) / ASTM A532 IIIA (high-Cr white iron, wear)	White Cast Iron	3.55
+mat-g20mn5	G20Mn5 / 1.6220 (QT cast steel, automotive and structural nodes)	Cast Carbon Steel	0.7
+mat-g42crmo4	G42CrMo4 / 1.7231 (low-alloy QT cast steel)	Cast Low-Alloy Steel	1.39
+mat-hadfield	G-X120Mn12 / 1.3401 (Hadfield austenitic manganese wear steel)	Cast Wear Steel	10.87
+mat-cf8m-cast	CF8M / 1.4408 (316 cast stainless)	Cast Stainless Steel	14.31
+mat-ca6nm-cast	CA6NM / 1.4317 (13Cr-4Ni martensitic cast stainless — pumps, turbines)	Cast Stainless Steel	8.03
+mat-cd4mcun-cast	CD4MCuN / 1.4517 (duplex cast stainless)	Cast Stainless Steel	15.55
+mat-steel-c35	C35 / 1035 (medium-carbon forging steel)	Carbon Steel Billet	4.2
+mat-steel-c45	C45 / 1045 / CK45 (medium-carbon forging steel)	Carbon Steel Billet	4.25
+mat-steel-c70s6	C70S6 (fracture-split con-rod steel)	Carbon Steel Billet	4.55
+mat-steel-a105	ASTM A105 (carbon steel for flanges and valve bodies)	Carbon Steel Billet	4.15
+mat-steel-30mnvs6	30MnVS6 / 46MnVS3 (microalloyed, controlled-cooled)	Microalloyed Steel Billet	5.68
+mat-steel-42crmo4	42CrMo4 / 4140 / 1.7225 (Cr-Mo QT steel)	Alloy Steel Billet	7.96
+mat-steel-34crnimo6	34CrNiMo6 / 1.6582 (Ni-Cr-Mo QT steel)	Alloy Steel Billet	8.95
+mat-steel-18crnimo7-6	18CrNiMo7-6 / 1.6587 (case-hardening, heavy gears)	Alloy Steel Billet	9.24
+mat-steel-16mncr5	16MnCr5 / 1.7131 (case-hardening)	Alloy Steel Billet	7.32
+mat-steel-41cr4	41Cr4 / 5140 / 1.7035 (Cr QT steel)	Alloy Steel Billet	7.32
+mat-steel-f22	ASTM A182 F22 (2.25Cr-1Mo, pressure forgings)	Alloy Steel Billet	10.38
+mat-ss420-bar	420 / 1.4021 (martensitic stainless forging bar)	Stainless Steel Billet	17.99
+mat-ss431-bar	431 / 1.4057 (martensitic Ni stainless forging bar)	Stainless Steel Billet	19.53
+mat-ss2205-bar	2205 / 1.4462 / F51 (duplex stainless forging bar)	Stainless Steel Billet	31.69
+mat-gjl150	EN-GJL-150 (Grey Iron, low grade — covers, counterweights, bases)	Grey Cast Iron	0.73
+mat-gjs350-lt	EN-GJS-350-22-LT (low-temperature ferritic ductile — wind hubs, impact-tested parts)	Ductile Cast Iron	1.47
+mat-gjs500-14	EN-GJS-500-14 (solution-strengthened ferritic ductile, EN 1563:2018 — knuckles, carriers)	Ductile Cast Iron	1.32
+mat-gjv500	EN-GJV-500 (Compacted Graphite Iron, high strength — diesel blocks, heads)	Compacted Graphite Iron	2.85
+mat-ni-resist-d5s	EN-GJSA-XNiSiCr35-5-2 (Ni-Resist D-5S — turbo housings, exhaust manifolds)	Ductile Cast Iron	23.31
+mat-astm-a216-wcb	ASTM A216 WCB (cast carbon steel — valve bodies, pump casings)	Cast Carbon Steel	0.7
+mat-gx40crnisi25-20	GX40CrNiSi25-20 / 1.4848 (heat-resistant cast steel, EN 10295 — turbo housings, manifolds)	Cast Stainless Steel	16.24
+mat-s355mc	S355MC Hot-Rolled Structural (EN 10149-2) — chassis, frames	High Strength Steel Sheet	3.95
+mat-s420mc	S420MC Hot-Rolled Structural (EN 10149-2)	High Strength Steel Sheet	4.05
+mat-ss409l-sheet	409L / 1.4512 Ferritic Stainless Sheet (exhaust)	Stainless Steel Sheet	6.39
+mat-ss441-sheet	441 / 1.4509 Ferritic Stainless Sheet (hot exhaust)	Stainless Steel Sheet	7.08
+mat-steel-en3-bar	EN3B / 1020 / S235 Bright Mild Steel Bar	Carbon Steel	4.65
+mat-steel-11smnpb30	11SMnPb30 / 12L14 Free-Cutting Steel Bar	Carbon Steel	5.78
+mat-ss416-bar	416 / 1.4005 Free-Machining Martensitic Stainless Bar	Stainless Steel	19.43
+mat-hips-tf	HIPS Thermoforming Sheet	Thermoforming Sheet	7.24
+mat-abs-tf	ABS Thermoforming Sheet	Thermoforming Sheet	9.68
+mat-petg-tf	PETG Thermoforming Sheet (clear)	Thermoforming Sheet	9.07
+mat-apet-tf	APET Sheet (amorphous, food pack)	Thermoforming Sheet	7.59
+mat-cpet-tf	CPET Sheet (crystalline, dual-ovenable)	Thermoforming Sheet	8.56
+mat-rpvc-tf	Rigid PVC Thermoforming Sheet	Thermoforming Sheet	6.27
+mat-pp-tf	PP Thermoforming Sheet (HMS)	Thermoforming Sheet	6.47
+mat-hdpe-tf	HDPE Thermoforming Sheet	Thermoforming Sheet	5.96
+mat-ldpe-tf	LDPE Thermoforming Sheet	Thermoforming Sheet	7.34
+mat-ps-foam-tf	PS Foam Sheet (foamed tray stock)	Thermoforming Sheet	9.78
+mat-pmma-tf	PMMA / Acrylic Sheet (cast/extruded)	Thermoforming Sheet	14.52
+mat-pc-tf	PC Thermoforming Sheet	Thermoforming Sheet	17.02
+mat-pei-tf	PEI (Ultem) Sheet (aerospace)	Thermoforming Sheet	142.69
+mat-pps-tf	PPS Sheet (high-temp)	Thermoforming Sheet	71.34
+mat-abs-pmma-tf	ABS/PMMA Co-ex Sheet (capped)	Thermoforming Sheet	12.84
+mat-abs-pc-tf	ABS/PC Co-ex Sheet	Thermoforming Sheet	15.44
+mat-pp-tpo-tf	PP/TPO Automotive Sheet	Thermoforming Sheet	9.48
+mat-petg-barrier-tf	PETG/EVOH Barrier Sheet	Thermoforming Sheet	12.03

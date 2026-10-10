@@ -246,12 +246,16 @@ writeFileSync(REG, reg);
 // lab-in-* entries
 const LIB = resolve(ROOT, 'src/engine/rate-library.ts');
 let lib = readFileSync(LIB, 'utf8');
-for (const [suffix, cat] of [['skilled', 'skilled'], ['semiskilled', 'semiskilled'], ['electronics', 'electronics'], ['engineer', 'engineer']] as const) {
+// each country's library carries a different set (Poland has foundry and no engineer): update those it has
+let labFound = 0;
+for (const [suffix, cat] of [['skilled', 'skilled'], ['semiskilled', 'semiskilled'], ['electronics', 'electronics'], ['engineer', 'engineer'], ['foundry', 'foundry']] as const) {
   const re = new RegExp(`(id: 'lab-${cc}-${suffix}',[\\s\\S]*?fullyLoadedRatePerHr: )[0-9.]+(,[\\s\\S]*?effectiveDate: ')[^']*(',[\\s\\S]*?sourceNote: ')[^']*(',[\\s\\S]*?confidence: ')[A-Za-z]+(')`);
-  if (!re.test(lib)) throw new Error(`lab-${cc}-${suffix} not found`);
+  if (!new RegExp(`id: 'lab-${cc}-${suffix}',`).test(lib)) continue;
+  labFound++;
   const v = cats[cat];
   lib = lib.replace(re, `$1${labourGbp[cat]}$2${cfg.asOf}$3${NAME} rate book ${cfg.asOf}: ${SYM}${localHr(v)}/h fully loaded (${cfg.labour.short ?? '4-cluster, statutory loading'})$4Medium$5`);
 }
+if (!labFound) throw new Error(`no lab-${cc}-* entry in rate-library.ts`);
 // the book's own energy-<cc> entry wins over the regional table, so it must agree
 if (newElec !== undefined || newGas !== undefined) {
   const re = new RegExp(`(id: 'energy-${cc}',[\\s\\S]*?electricityPerKwh: )[0-9.]+(,[\\s\\S]*?gasPerKwh: )[0-9.]+(,[\\s\\S]*?effectiveDate: ')[^']*(',[\\s\\S]*?sourceNote: )(?:'(?:[^'\\\\]|\\\\.)*'(?:\\s*\\+\\s*'(?:[^'\\\\]|\\\\.)*')*)(,[\\s\\S]*?confidence: ')[A-Za-z]+(')`);

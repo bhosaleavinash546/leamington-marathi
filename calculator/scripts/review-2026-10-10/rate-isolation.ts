@@ -2,7 +2,7 @@
  * Rate isolation check (demo review, 10 Oct 2026): cost the six review parts headless in CN / IN / UK and test every
  * rate the costing used against THAT country's book — material £/kg and scrap, each operation's machine and labour
  * £/h — and flag any figure that equals the UK book where the country book differs (a leak).
- *   npx tsx scripts/review-2026-10-10/rate-isolation.ts > out.json
+ *   npx tsx scripts/review-2026-10-10/rate-isolation.ts > out.json          (REGIONS=PL,CN … to choose the countries)
  */
 import { readFileSync } from 'node:fs';
 import { costMeasuredPart } from '../../server/services/bulk-run.js';
@@ -14,7 +14,8 @@ const fixture = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json
 const UK = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const log = console.log; console.log = () => {}; console.warn = () => {};
 const out: unknown[] = [];
-for (const region of ['CN', 'IN', 'UK'] as const) {
+const REGIONS = (process.env.REGIONS ?? 'CN,IN,UK').split(',') as Array<'CN' | 'IN' | 'UK'>;   // REGIONS=PL for one country
+for (const region of REGIONS) {
   const book = buildRegionalLibrary(UK, region);
   const close = (a: number, b: number) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(b));
   for (const name of PARTS) {

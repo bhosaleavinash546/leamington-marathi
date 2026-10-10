@@ -1,0 +1,214 @@
+mach-lathe-cnc | CNC Lathe (2-axis) | zł28.93/h | 4000 h × 0.8
+mach-vmc3 | CNC VMC 3-axis | zł41.15/h | 4000 h × 0.8
+mach-vmc5 | CNC VMC 5-axis | zł72.5/h | 4000 h × 0.78
+mach-drill | CNC Drilling Centre | zł24.69/h | 4000 h × 0.8
+mach-grind | CNC Cylindrical Grinder | zł197.58/h | 4000 h × 0.78
+gear-hob-small | CNC Gear Hobber — small (≤m4, ≤Ø200) | zł205.11/h | 4000 h × 0.8
+gear-hob-medium | CNC Gear Hobber — medium (≤m8, ≤Ø500) | zł281.68/h | 4000 h × 0.78
+gear-hob-large | CNC Gear Hobber — large (≤m25, ≤Ø1600) | zł521.56/h | 3800 h × 0.7
+gear-shaper-small | CNC Gear Shaper — small (≤m6, ≤Ø300) | zł205.44/h | 4000 h × 0.78
+gear-shaper-large | CNC Gear Shaper — large (≤m12, ≤Ø800) | zł341.7/h | 3800 h × 0.74
+gear-skive-small | Power Skiving Machine — small (≤m4, ≤Ø250) | zł306.91/h | 4000 h × 0.8
+gear-skive-medium | Power Skiving Machine — medium (≤m8, ≤Ø600) | zł427.4/h | 4000 h × 0.78
+gear-broach | Vertical Internal Gear Broach | zł227.12/h | 4000 h × 0.85
+gear-grind-generating | Generating Gear Grinder (threaded wheel, ≤m6) | zł466.59/h | 4000 h × 0.78
+gear-grind-profile | Profile Gear Grinder (form wheel, ≤m12) | zł612.94/h | 3800 h × 0.72
+gear-shave | Gear Shaving Machine | zł167.01/h | 4000 h × 0.8
+gear-hone | Gear Honing Machine | zł286.71/h | 4000 h × 0.78
+gear-deburr | Gear Chamfer / Deburr Cell | zł95.73/h | 4000 h × 0.82
+gear-induction | Gear Induction Hardening Cell (RF + quench + temper) | zł192.59/h | 4000 h × 0.8
+gear-checker | CNC Gear Checker (profile / lead / pitch) | zł206.75/h | 4000 h × 0.65
+bench-assembly | Assembly Workbench | zł2.5/h | 4000 h × 0.85
+mach-haas-vf2 | HAAS VF-2 (3-axis Mill) | zł33.51/h | 4000 h × 0.5
+mach-dmg-dmu50 | DMG Mori DMU 50 (5-axis Mill) | zł79.76/h | 4000 h × 0.5
+mach-haas-umc500 | HAAS UMC-500 (5-axis Mill) | zł63.03/h | 4000 h × 0.5
+mach-mazak-qt200 | Mazak Quick Turn 200 (Turning) | zł35.66/h | 4000 h × 0.5
+grav-die-cast-std | Gravity Die Casting Machine | zł137.38/h | 4000 h × 0.5
+invest-cast-furnace | Investment Casting Furnace | zł149.32/h | 4000 h × 0.6
+heat-treat-furnace | Heat Treatment / Ageing Furnace | zł59.64/h | 6000 h × 0.75
+press-100t | 100T Mechanical Press (general press shop) | zł56.04/h | 3500 h × 0.8
+press-200t | 200T Mechanical Press (general press shop) | zł86.21/h | 3500 h × 0.8
+press-400t | 400T Mechanical Press (general press shop) | zł140.63/h | 3500 h × 0.8
+press-630t | 630T Mechanical Press (general press shop) | zł218.08/h | 3500 h × 0.78
+press-800t | 800T Mechanical Press (general press shop) | zł260.62/h | 3500 h × 0.78
+press-1000t | 1000T Mechanical Press (general press shop) | zł327.68/h | 3500 h × 0.78
+press-1250t | 1250T Mechanical Press (general press shop) | zł407.56/h | 3500 h × 0.78
+press-fineblank-250t | 250T Fine-Blanking Press (triple-action) | zł169.84/h | 3500 h × 0.8
+press-hotstamp-1000t | 1000T Hot-Stamping Press (water-cooled dies) | zł502.72/h | 3500 h × 0.75
+furnace-roller-hearth | Roller-Hearth Austenitising Furnace (hot stamping) | zł186.98/h | 6000 h × 0.8
+notching-machine | CNC Notching Machine (laminations) | zł111.4/h | 4000 h × 0.75
+lamination-anneal-furnace | Stress-Relief Annealing Furnace (laminations) | zł136.27/h | 6000 h × 0.8
+backlack-bonding-oven | Backlack Bonding Oven/Press (self-bonded stacks) | zł134.33/h | 4000 h × 0.78
+laser-stack-welder | Laser Stack Welder (stator OD welds) | zł199.82/h | 4000 h × 0.8
+imm-50t | 50T Injection Moulding Machine | zł32.58/h | 4000 h × 0.8
+imm-100t | 100T Injection Moulding Machine | zł52.84/h | 4000 h × 0.8
+imm-200t | 200T Injection Moulding Machine | zł85.6/h | 4000 h × 0.8
+imm-350t | 350T Injection Moulding Machine | zł127.55/h | 4000 h × 0.8
+imm-400t | 400T Injection Moulding Machine | zł148.4/h | 4000 h × 0.8
+imm-500t | 500T Injection Moulding Machine | zł181.49/h | 4000 h × 0.8
+imm-800t | 800T Injection Moulding Machine | zł266.95/h | 4000 h × 0.78
+imm-1200t | 1200T Injection Moulding Machine | zł381.69/h | 4000 h × 0.78
+imm-2000t | 2000T Injection Moulding Machine | zł610.45/h | 4000 h × 0.76
+imm-3500t | 3500T Injection Moulding Machine | zł1046.1/h | 4000 h × 0.74
+hpdc-500t | HPDC 500T | zł184.62/h | 3500 h × 0.78
+hpdc-800t | HPDC 800T | zł279.7/h | 3500 h × 0.78
+hpdc-1600t | HPDC 1600T | zł485.16/h | 3500 h × 0.78
+hpdc-giga-6100t | Giga-Casting Press 6100T (megacasting) | zł1502.13/h | 4000 h × 0.8
+hpdc-giga-9000t | Giga-Casting Press 9000T (Xiaomi/Tesla-class) | zł2258.97/h | 4000 h × 0.8
+sand-cast-line | Sand Casting Moulding Line | zł110.95/h | 3500 h × 0.75
+hpdc-160t | HPDC 160T (Zinc/Small Al) | zł65.8/h | 3500 h × 0.8
+forge-press-500t | 500T Mechanical Forge Press | zł189.59/h | 3500 h × 0.78
+forge-press-1600t | 1600T Mechanical Forge Press | zł340.53/h | 3500 h × 0.78
+forge-press-2500t | 2500T Mechanical Forge Press | zł486.68/h | 3500 h × 0.78
+forge-press-4000t | 4000T Hydraulic Forge Press | zł730.75/h | 3500 h × 0.78
+forge-press-8000t | 8000T Hydraulic Forge Press | zł1418.22/h | 3500 h × 0.75
+forge-screw-1000t | 1000T Screw Press | zł257.76/h | 3500 h × 0.78
+forge-upsetter-1000t | 1000T Horizontal Upsetter | zł209.4/h | 3500 h × 0.78
+forge-hammer-2t | 2T Pneumatic Forge Hammer | zł96.95/h | 3500 h × 0.78
+forge-hammer-5t | 5T Pneumatic Forge Hammer | zł160.48/h | 3500 h × 0.78
+forge-hammer-10t | 10T Counterblow Forge Hammer | zł260.38/h | 3500 h × 0.78
+forge-ring-mill | CNC Seamless Ring Rolling Mill | zł432.62/h | 3500 h × 0.78
+paint-line-std | Standard Paint Line (E-coat + Topcoat) | zł362.1/h | 4000 h × 0.82
+plating-line-barrel | Barrel Plating Line (zinc, high volume) | zł163.99/h | 4000 h × 0.8
+plating-line-rack | Rack Plating / Anodising Line | zł239.67/h | 4000 h × 0.78
+blast-machine | Shot Blast Machine (tumble / hanger) | zł92.57/h | 4000 h × 0.8
+mass-finish-bowl | Vibratory / Mass Finishing Bowl | zł56.96/h | 4000 h × 0.75
+galvanising-kettle | Hot Dip Galvanising Kettle (batch, EN ISO 1461) | zł602.59/h | 5000 h × 0.8
+impregnation-plant | Vacuum Resin Impregnation Plant (casting porosity) | zł91.67/h | 4000 h × 0.78
+robot-weld-station | Robot Welding Station | zł82.8/h | 4000 h × 0.82
+smt-line | SMT Pick & Place + Reflow Line | zł194.63/h | 4000 h × 0.82
+smt-high-speed-line | High-Speed SMT Line (Fuji/Juki/ASM) | zł544.14/h | 4000 h × 0.82
+laser-drill-75um | Laser Drill — 75 µm Microvia (CO₂/UV) | zł436.13/h | 4000 h × 0.82
+xray-bga-inspection | X-Ray BGA Inspection Cell (2D/3D AXI) | zł328.22/h | 4000 h × 0.82
+ict-automotive | ICT Bed-of-Nails Test System (Automotive) | zł401.99/h | 4000 h × 0.82
+blow-ebm-100l | EBM Blow Moulder (up to 5L) | zł76.28/h | 4000 h × 0.8
+blow-ebm-500l | EBM Blow Moulder (5–100L tanks/drums) | zł134.56/h | 4000 h × 0.8
+blow-ebm-2head | EBM 2-Head (Bottles 1–5L) | zł88.99/h | 4000 h × 0.82
+blow-ebm-coex3 | 3-Layer Co-Ex EBM | zł172.42/h | 4000 h × 0.78
+blow-ebm-coex5 | 5-Layer Co-Ex EBM (High-Barrier) | zł285.9/h | 4000 h × 0.75
+blow-ebm-large | Large EBM Accumulator Head (20–200L) | zł218.5/h | 4000 h × 0.77
+blow-ibm-rotary | IBM Rotary Machine (Pharma/Cosmetics) | zł142.74/h | 5000 h × 0.88
+blow-ibm-linear | IBM Linear Machine (Medium Volume) | zł117.48/h | 4500 h × 0.85
+blow-sbm-1stage | SBM Single-Stage (Preform + Blow) | zł157.28/h | 4500 h × 0.8
+blow-sbm-2stage | SBM Two-Stage Reheat (High-Speed PET) | zł139.32/h | 6000 h × 0.9
+blow-deflash-trimmer | Deflash Trim Robot / Station | zł41.88/h | 4000 h × 0.85
+extruder-75mm | Single Screw Extruder 75mm | zł61.61/h | 5000 h × 0.82
+extruder-150mm | Twin Screw Compounding/Extrusion Line 150mm | zł192.09/h | 5000 h × 0.8
+extruder-pipe-line | Pipe Extrusion Line 90mm (SSE + vacuum tank + haul-off + saw) | zł95.95/h | 6000 h × 0.85
+extruder-profile-line | Profile Extrusion Line 75mm (SSE + calibration table + haul-off) | zł78.96/h | 5500 h × 0.8
+extruder-sheet-line | Sheet Extrusion Line (die + 3-roll stack + winder) | zł179.74/h | 6000 h × 0.82
+extruder-cable-line | Cable/Wire Line (crosshead + CV/cooling + capstan) | zł76.37/h | 6500 h × 0.85
+extruder-coex-3 | 3-Layer Co-Extrusion Line (3 extruders + feed block/manifold die) | zł226.85/h | 6000 h × 0.8
+extruder-micro-tube | Medical Micro-Tubing Line (precision + laser gauge + cleanroom-ready) | zł128.05/h | 5000 h × 0.75
+extrusion-finish-qa | Cut-off, Coil & Inspection Station | zł15/h | 4000 h × 0.8
+extrusion-leak-test | Pipe/Tube Pressure & Leak Test Rig | zł20.43/h | 4000 h × 0.7
+thermoform-small | Thermoformer (Small/Single Station) | zł45.98/h | 4000 h × 0.8
+thermoform-large | Thermoformer (Inline/Rotary, Large) | zł124.91/h | 4000 h × 0.82
+thermoform-pressure | Pressure Former (3–6 bar, cut-sheet) | zł93.82/h | 4000 h × 0.8
+thermoform-twinsheet | Twin-Sheet Thermoformer | zł178.47/h | 4000 h × 0.78
+thermoform-rollfed | Roll-Fed Inline Thermoformer (packaging) | zł183.38/h | 5000 h × 0.85
+thermoform-oven | Standalone Sheet Pre-Heat Oven | zł37.32/h | 4000 h × 0.8
+thermoform-trim-router | CNC Trim Router / Trim Robot (5-axis) | zł58.25/h | 4000 h × 0.8
+rotomould-biaxial | Biaxial Rotational Moulder (3-arm carousel) | zł153.17/h | 3500 h × 0.75
+rotomould-lab-1arm | Single-Arm Rotational Moulder (small/lab) | zł68.06/h | 3500 h × 0.65
+rotomould-shuttle | Shuttle Rotational Moulder (1–2 station) | zł139.57/h | 3500 h × 0.72
+rotomould-rocknroll | Rock-and-Roll Rotational Moulder | zł118.1/h | 3500 h × 0.72
+rotomould-carousel-4arm | 4-Arm Fixed Carousel Rotational Moulder | zł216.85/h | 3500 h × 0.78
+ultrasonic-welder | Ultrasonic Welder | zł19.84/h | 4000 h × 0.8
+hot-plate-welder | Hot Plate Welder | zł29.48/h | 4000 h × 0.8
+vibration-welder | Vibration Welder | zł44.61/h | 4000 h × 0.8
+laser-trumpf-3030 | Trumpf TruLaser 3030 (6kW Fiber) | zł108.79/h | 4000 h × 0.75
+laser-bystronic-3015 | Bystronic BySmart 3015 (4kW Fiber) | zł83.89/h | 4000 h × 0.75
+punch-amada-emz3610 | Amada EMZ 3610 Turret Punch (30T) | zł236.97/h | 3500 h × 0.78
+punch-trumpf-5000 | Trumpf TruPunch 5000 (30T) | zł279.39/h | 3500 h × 0.78
+brake-amada-hfe100 | Amada HFE 100T Press Brake (3m) | zł200.95/h | 3500 h × 0.75
+brake-trumpf-5230 | Trumpf TruBend 5230 (230T) | zł254.94/h | 3500 h × 0.75
+press-schuler-400t | Schuler 400T Stamping Press | zł541.91/h | 3500 h × 0.78
+press-aida-200t | AIDA 200T Stamping Press | zł434.99/h | 3500 h × 0.78
+rollform-dimeco-20st | Dimeco Roll Forming Line (20 stations) | zł402.73/h | 5000 h × 0.8
+robot-spotweld-kuka | KUKA Spot Welding Robot Cell | zł327.81/h | 4000 h × 0.8
+mig-welder-manual | Manual MIG/MAG Welder Station | zł17.01/h | 4000 h × 0.75
+tig-welder-manual | Manual TIG Welder Station | zł18.6/h | 4000 h × 0.75
+laser-trumpf-5030 | Trumpf TruLaser 5030 (10kW Fiber) | zł156.64/h | 4000 h × 0.78
+laser-amada-ensis-3015 | Amada ENSIS 3015 AJ (3kW Fiber) | zł85.4/h | 4000 h × 0.76
+plasma-hypertherm-xpr300 | Hypertherm XPR300 Plasma Table | zł142.97/h | 4000 h × 0.8
+plasma-kjellberg-hifocus280 | Kjellberg HiFocus 280i Plasma Table | zł126.02/h | 4000 h × 0.8
+waterjet-flow-mach500 | Flow Mach 500 Waterjet (60K psi) | zł178.94/h | 4000 h × 0.75
+waterjet-omax-80x | Omax 80X Waterjet (60K psi) | zł154.52/h | 4000 h × 0.75
+shear-hydraulic-3m | Hydraulic Guillotine Shear (3m × 6mm) | zł52.38/h | 3500 h × 0.8
+shear-guillotine-6mm | Hydraulic Shear Heavy Duty (4m × 6mm) | zł71.75/h | 3500 h × 0.8
+brake-amada-hfe170 | Amada HFE3i 170T Press Brake (4m) | zł249.3/h | 3500 h × 0.75
+brake-trumpf-trubend3100 | Trumpf TruBend 3100 (100T) | zł187.1/h | 3500 h × 0.75
+brake-lvd-ppeb135 | LVD PPEB 135T/30 Press Brake | zł216.21/h | 3500 h × 0.75
+spotweld-gun-manual | Pedestal Spot Welding Machine | zł24.42/h | 4000 h × 0.8
+robot-mig-cell | Robotic MIG/MAG Welding Cell | zł64.72/h | 4000 h × 0.82
+compression-mould-std | Compression Moulding Press 250T | zł60.14/h | 3500 h × 0.8
+transfer-mould-std | Transfer Moulding Press 200T | zł75.44/h | 3500 h × 0.78
+lsr-injection-machine | LSR Injection Moulding Machine | zł96.99/h | 4000 h × 0.8
+cure-oven-rubber | Rubber Cure / Vulcanisation Oven | zł40.42/h | 5000 h × 0.82
+extruder-rubber-60mm | Rubber Extruder 60mm (Cold-feed) | zł41.8/h | 5000 h × 0.8
+die-cut-press-rubber | Hydraulic Die-Cutting Press 20T | zł23.54/h | 4000 h × 0.85
+autoclave-1200mm | Production Autoclave 1200mm dia | zł222.93/h | 4000 h × 0.7
+oven-composite-cure | Composite Cure Oven (Fan-Assisted) | zł67.02/h | 5000 h × 0.75
+al-ext-press-800t | Aluminium extrusion line — 800 t direct press, 4" container | zł447.28/h | 6000 h × 0.8
+al-ext-press-1450t | Aluminium extrusion line — 1,450 t direct press, 6" container | zł719.63/h | 6000 h × 0.8
+al-ext-press-1800t | Aluminium extrusion line — 1,800 t direct press, 7" container | zł884.16/h | 6000 h × 0.8
+al-ext-press-2500t | Aluminium extrusion line — 2,500 t direct press, 9" container | zł1251.73/h | 6000 h × 0.8
+al-ext-press-3600t | Aluminium extrusion line — 3,600 t direct press, 10" container | zł1784.67/h | 6000 h × 0.8
+al-ext-press-5500t | Aluminium extrusion line — 5,500 t direct press, 12" container | zł2765.6/h | 6000 h × 0.8
+al-ext-press-8000t | Aluminium extrusion line — 8,000 t direct press, 14" round / flat container (wide panels) | zł4474.8/h | 6000 h × 0.8
+al-ext-indirect-2800t | Aluminium extrusion line — 2,800 t indirect press, 9" container (2xxx / 7xxx, seamless tube) | zł1525.11/h | 6000 h × 0.8
+al-ext-hydrostatic-1600t | Aluminium extrusion line — 1,600 t hydrostatic press (high ratio, clad wire / fine sections) | zł1512.01/h | 6000 h × 0.8
+al-conform-c400 | Conform C400 continuous extrusion line (9.5–25 mm rod feed) | zł627.57/h | 6000 h × 0.8
+al-impact-press-800t | 800 t mechanical impact-extrusion press | zł579.21/h | 6000 h × 0.8
+al-age-oven-batch | Batch ageing oven (T5 / T6) | zł116.79/h | 6000 h × 0.8
+al-sht-drop-furnace | Vertical drop-quench solution heat-treatment furnace | zł382.05/h | 6000 h × 0.8
+al-cnc-profile-centre | 5-axis long-bed profile machining centre (7 m) | zł164.02/h | 4000 h × 0.8
+al-ctl-saw | Automatic precision cut-to-length saw (bundle cutting, deburr) | zł65.13/h | 4000 h × 0.8
+al-stretch-bender | CNC stretch-bending machine (3D, sweep) | zł269.67/h | 4000 h × 0.8
+al-anodise-line | Anodising line (sulphuric, 10–25 µm, seal) | zł956.52/h | 6000 h × 0.8
+al-powder-line | Vertical powder-coating line (pretreat + cure) | zł677.77/h | 6000 h × 0.8
+al-ecoat-line | E-coat / conversion-coat line (chrome-free, for bonding) | zł804.53/h | 6000 h × 0.8
+bat-cell-ocv-tester | Cell incoming OCV / IR test station | zł49.08/h | 6000 h × 0.8
+bat-module-stacking | Cell stacking + compression line | zł679.25/h | 6000 h × 0.8
+bat-laser-weld | Busbar laser welding cell (scanner) | zł241.24/h | 6000 h × 0.8
+bat-module-eol | Module end-of-line tester | zł78.05/h | 6000 h × 0.8
+bat-dispense | Gap-filler / adhesive dispensing cell | zł82.38/h | 6000 h × 0.8
+bat-pack-assembly | Pack assembly station (semi-automatic) | zł129.87/h | 6000 h × 0.8
+bat-leak-test | Pack / coolant-circuit leak tester (helium) | zł58.5/h | 6000 h × 0.8
+bat-pack-eol | Pack end-of-line tester (HiPot, isolation, BMS, charge / discharge) | zł207.05/h | 6000 h × 0.8
+emot-lamination-press | High-speed lamination press (progressive die, 300 spm) | zł527.05/h | 6000 h × 0.8
+emot-hairpin-line | Hairpin forming + insertion line | zł730.15/h | 6000 h × 0.8
+emot-winding-machine | Round-wire winding + insertion machine | zł172.14/h | 6000 h × 0.8
+emot-hairpin-weld | Hairpin twist + laser weld cell | zł291.08/h | 6000 h × 0.8
+emot-impregnation | Trickle / VPI impregnation + cure line | zł335.11/h | 6000 h × 0.8
+emot-rotor-line | Rotor magnet insertion + bonding + shaft press | zł288.31/h | 6000 h × 0.8
+emot-balancing | Rotor balancing machine | zł69.18/h | 6000 h × 0.8
+emot-assembly-line | Motor final assembly line (shrink-fit, bearings, resolver) | zł365.82/h | 6000 h × 0.8
+emot-eol | Motor end-of-line tester (back-EMF, HiPot, partial discharge, NVH) | zł234.98/h | 6000 h × 0.8
+rtm-press-std | RTM / VARTM Injection Press | zł78.15/h | 3500 h × 0.78
+waterjet-5ax-composite | 5-Axis Waterjet Trim System | zł113.33/h | 4000 h × 0.75
+mach-afp-atl | AFP/ATL Composite Cell | zł1018.93/h | 4000 h × 0.7
+harness-test-sys | Electrical Harness Test System (Continuity + HiPot) | zł42.5/h | 4000 h × 0.8
+mach-vmc3-cn | VMC 3-axis CNC (China) | zł37.13/h | 4000 h × 0.85
+mach-vmc3-in | VMC 3-axis CNC (India) | zł36.09/h | 4000 h × 0.85
+mach-vmc3-de | VMC 3-axis CNC (Germany) | zł59.49/h | 4000 h × 0.87
+mach-vmc3-pl | VMC 3-axis CNC (Poland) | zł41.59/h | 4000 h × 0.85
+mach-vmc3-mx | VMC 3-axis CNC (Mexico) | zł37.9/h | 4000 h × 0.85
+imm-200t-cn | Injection Moulding 200T (China) | zł39.78/h | 5000 h × 0.85
+imm-200t-in | Injection Moulding 200T (India) | zł40.24/h | 5000 h × 0.83
+imm-200t-de | Injection Moulding 200T (Germany) | zł75.92/h | 5000 h × 0.87
+imm-200t-pl | Injection Moulding 200T (Poland) | zł49.07/h | 5000 h × 0.85
+imm-200t-mx | Injection Moulding 200T (Mexico) | zł42.08/h | 5000 h × 0.84
+hpdc-500t-cn | HPDC 500T (China) | zł105.2/h | 4000 h × 0.8
+hpdc-500t-in | HPDC 500T (India) | zł106.07/h | 4000 h × 0.78
+hpdc-500t-mx | HPDC 500T (Mexico) | zł109.76/h | 4000 h × 0.8
+press-400t-cn | Stamping Press 400T (China) | zł70.98/h | 4000 h × 0.82
+press-400t-in | Stamping Press 400T (India) | zł71.23/h | 4000 h × 0.8
+press-400t-pl | Stamping Press 400T (Poland) | zł82.9/h | 4000 h × 0.82
+press-400t-mx | Stamping Press 400T (Mexico) | zł74.52/h | 4000 h × 0.82
+bench-assembly-cn | Manual Assembly Bench (China) | zł5.36/h | 4500 h × 0.9
+bench-assembly-in | Manual Assembly Bench (India) | zł4.97/h | 4500 h × 0.9
+bench-assembly-mx | Manual Assembly Bench (Mexico) | zł5.64/h | 4500 h × 0.9
+bench-assembly-vn | Manual Assembly Bench (Vietnam) | zł4.28/h | 4800 h × 0.92
+bench-assembly-pl | Manual Assembly Bench (Poland) | zł6.5/h | 4500 h × 0.9
