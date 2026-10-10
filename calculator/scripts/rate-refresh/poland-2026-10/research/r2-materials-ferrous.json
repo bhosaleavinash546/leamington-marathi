@@ -1,0 +1,221 @@
+{
+ "domain": "materials-ferrous round 2 (Poland, PLN/kg ex-VAT): alloy & stainless bar, ferritic sheet, electrical steel, HRPO, auto extras",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "ferrous.bar.surcharge_basis.scrap_surcharge_rolled",
+   "value": 1.107,
+   "unit": "PLN/kg",
+   "basis": "THE STEEL / Frankstahl surcharge sheet 'Legierungszuschlaege gueltig ab 01.02.2026': scrap surcharge (Schrottzuschlag) EUR 253/t rolled engineering steel (EUR 291/t bright); 253/1000 x 4.374 = 1.107. Surcharge only, not a price.",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-02-01",
+   "notes": "Distributor (Austria/Germany) surcharge list. Cross-check: Ovako Imatra list valid 1 Jan 2026, hot-rolled scrap surcharge EUR 268.46/t (= 1.174 PLN/kg) - https://www.ovako.com/globalassets/surcharges/2026/01_january/deliveries-from-imatra-to-finland-202601.pdf. European engineering-bar price = base + scrap surcharge + alloy surcharge; no base found. Read from search-engine extracts (PDF text jumbled) - medium confidence."
+  },
+  {
+   "key": "ferrous.bar.41Cr4",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (full price). Alloy surcharge only: 41Cr4 / 1.7035 EUR 38/t rolled (Frankstahl, valid from 1 Feb 2026) = 0.166 PLN/kg.",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-02-01",
+   "notes": "No published European engineering-bar BASE price (Grundpreis) or Polish stockholder tonne price for this grade was found: Polish stockholders (moris.eu, stal.gda.pl) show prices only on enquiry; Kallanish/Fastmarkets SBQ assessments are paywalled or US-only. FLOOR (engineering arithmetic, not a price): undated 24metal C45 bundle 3.173 + 41Cr4 alloy surcharge 0.166 = 3.339 PLN/kg - excludes any alloy-quality base extra."
+  },
+  {
+   "key": "ferrous.bar.42CrMo4",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (full price). Alloy surcharge only: 42CrMo4 / 1.7225 EUR 140/t rolled (Frankstahl, valid from 1 Feb 2026) = 0.612 PLN/kg.",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-02-01",
+   "notes": "No published European engineering-bar BASE price (Grundpreis) or Polish stockholder tonne price for this grade was found: Polish stockholders (moris.eu, stal.gda.pl) show prices only on enquiry; Kallanish/Fastmarkets SBQ assessments are paywalled or US-only. FLOOR: 24metal C45 3.173 + 0.612 = 3.785 PLN/kg (no alloy-quality base extra). Retail cut piece metserwis.pl 40HM+T ~15 PLN/kg (round 1) is not a basis. An eshop.ameco.cz (CZ) extract read 41,648.93 CZK for 74.2 kg of cold-drawn 42CrMo4 - implausible (~560 CZK/kg), discarded."
+  },
+  {
+   "key": "ferrous.bar.20MnCr5",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source; 20MnCr5 / 18HGT is not on the Frankstahl Feb 2026 or Ovako Jan 2026 surcharge extracts.",
+   "source": "https://www.ovako.com/globalassets/surcharges/2026/01_january/deliveries-from-imatra-to-finland-202601.pdf",
+   "date": "2026-01-01",
+   "notes": "Ovako Jan 2026 per-1%-element rates (hot-rolled): Cr EUR 28.74/t, Mo 440.83, Ni 45.65 (as extracted - the Ni rate looks low v the nickel price; verify). Cr part alone for 20MnCr5 (Cr 1.0-1.3, mid 1.15): 1.15 x 28.74 = EUR 33.1/t = 0.145 PLN/kg; Mn rate not read. Surcharge only."
+  },
+  {
+   "key": "ferrous.bar.16MnCr5",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (full price). Alloy surcharge only: 16MnCr5 / 1.7131 EUR 39/t rolled (Frankstahl, from 1 Feb 2026) = 0.171 PLN/kg; Ovako Imatra 1 Jan 2026 EUR 39.57/t hot-rolled (= 0.173).",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-02-01",
+   "notes": "No published European engineering-bar BASE price (Grundpreis) or Polish stockholder tonne price for this grade was found: Polish stockholders (moris.eu, stal.gda.pl) show prices only on enquiry; Kallanish/Fastmarkets SBQ assessments are paywalled or US-only. FLOOR: 3.173 + 0.171 = 3.344 PLN/kg. Bright 16MnCr(S)5 surcharge EUR 51/t (Frankstahl)."
+  },
+  {
+   "key": "ferrous.bar.100Cr6",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (full price or grade surcharge). DERIVED surcharge (Cr only): Ovako Jan 2026 Cr rate EUR 28.74/t per 1% x 100Cr6 Cr 1.35-1.60 (mid 1.475) = EUR 42.4/t = 0.185 PLN/kg.",
+   "source": "https://www.ovako.com/globalassets/surcharges/2026/01_january/deliveries-from-imatra-to-finland-202601.pdf",
+   "date": "2026-01-01",
+   "notes": "Ovako 803F = its 100Cr6 grade (Righton Blackburns datasheet); the 803F line was not visible in the extract. Mn not included. Bearing-steel base extra (cleanness) not sourced."
+  },
+  {
+   "key": "ferrous.bar.34CrNiMo6",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (full price). Alloy surcharge only: 34CrNiMo6 / 1.6582 EUR 314/t rolled, EUR 407/t bright (Frankstahl, from 1 Feb 2026) = 1.373 / 1.78 PLN/kg.",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-02-01",
+   "notes": "No published European engineering-bar BASE price (Grundpreis) or Polish stockholder tonne price for this grade was found: Polish stockholders (moris.eu, stal.gda.pl) show prices only on enquiry; Kallanish/Fastmarkets SBQ assessments are paywalled or US-only. FLOOR: 3.173 + 1.373 = 4.546 PLN/kg. Related: 18CrNiMo7-6 / 1.6587 EUR 358/t rolled, 464 bright (Frankstahl Feb 2026); Ovako Jan 2026 EUR 263.18/t hot-rolled."
+  },
+  {
+   "key": "ferrous.bar.18CrNiMo7-6_surcharge",
+   "value": 1.566,
+   "unit": "PLN/kg",
+   "basis": "Alloy surcharge only: 18CrNiMo7-6 EUR 358/t rolled (Frankstahl, from 1 Feb 2026); 358/1000 x 4.374 = 1.566. Ovako 1 Jan 2026 EUR 263.18/t (= 1.151).",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-02-01",
+   "notes": "Surcharge, not a price. Two mills/dates differ by EUR 95/t."
+  },
+  {
+   "key": "ferrous.bar.C45_dated",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source: no dated 2026 Polish C45 tonne price (PUDS index lists rebar, sections, sheet - not C45; ongeo/kb.pl give rebar only).",
+   "source": "https://24metal.com/pl/prety-okragle-gladkie/419-pret-gladki-c45-fi-24-dlugosc-6000-paczka-2-tony.html",
+   "date": "2026-10-10",
+   "notes": "Round 1's 24metal C45 fi 24 list (3,173.44 PLN/t net) shows the EU 'lowest price in the last 30 days' line equal to the current price, so it is a live list price within 30 days of reading - still undated. Same page family: C45 25x25 square 3,163.24; S355J2 fi 20 3,173.44; S235JR fi 18 3,051.00 PLN/t net - C45 priced like S355J2, i.e. as a commodity grade, not SBQ."
+  },
+  {
+   "key": "ferrous.stainless.304_bar",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source. Fastmarkets publishes 'stainless bright bar 304 base price domestic delivered Europe' (MB-STS-0005) and alloy surcharge (MB-STS-0004), monthly, first Monday from 7 Sep 2026 - levels paywalled. Polish stockholders (Voss Edelstahl PL shop) show kg/m but no prices in extracts.",
+   "source": "https://www.fastmarkets.com/commodity-prices/stainless-steel-bright-bar-grade-304-alloy-surcharge-domestic-europe-euro-tonne-mb-sts-0004/",
+   "date": "2026-10-10",
+   "notes": "Oct 2026 1.4301 flat surcharge EUR 2,188/t (round 1) is the alloy part. SMM 7 Oct 2026: Indian bright-bar export offers to EU flat (304) / slightly up (316); India's EU stainless-bar quota (category 14, 92,557 t/yr) used up early Q4 - out-of-quota imports pay 50% - supports EU bar prices. No level given."
+  },
+  {
+   "key": "ferrous.stainless.316L_bar",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no 2026 European or Polish 1.4404 bar price or long-product surcharge).",
+   "source": "https://www.bigmint.co/intel/detail/europe-aperam-announces-stainless-steel-surcharges-for-jun26-36619",
+   "date": "2026-10-10",
+   "notes": "Only flat-product surcharges found: Aperam Jul 2026 1.4404 EUR 4,089/t; Acerinox Jun 2026 1.4404 EUR 3,955/t."
+  },
+  {
+   "key": "ferrous.stainless.303_bar",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no 2026 European or Polish 1.4305 bar price or long-product surcharge).",
+   "source": "https://www.bigmint.co/intel/detail/europe-aperam-announces-stainless-steel-surcharges-for-jun26-36619",
+   "date": "2026-10-10",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.stainless.420_bar",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no 2026 European or Polish 1.4021 bar price or long-product surcharge).",
+   "source": "https://www.bigmint.co/intel/detail/europe-aperam-announces-stainless-steel-surcharges-for-jun26-36619",
+   "date": "2026-10-10",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.stainless.409L_CR",
+   "value": 6.484,
+   "unit": "PLN/kg",
+   "basis": "DERIVED: Aperam July 2026 flat surcharge 409 / 1.4512 EUR 919/t (Jun 917, Mar 865) + effective base taken equal to the 304 CR effective base EUR 563.5/t (round 1: Fastmarkets 304 CR 2,770 - Sep surcharge 2,206.5) = EUR 1,482.5/t; x 4.374/1000 = 6.484.",
+   "source": "https://news.metal.com/en/newscontent/104001715-smm-stainless-steel-flash-aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026",
+   "date": "2026-07-01",
+   "notes": "ENGINEERING ASSUMPTION: ferritic base = austenitic effective base (same as round 1's 430). Surcharge is Jul 2026 (Aug-Oct 1.4512 not found); 1.4512 tracks Cr and moved <EUR 60/t across Mar-Jul. Aperam Mar 2026 865 / Jun 917: yieh.com."
+  },
+  {
+   "key": "ferrous.stainless.441_CR",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source: no 2026 1.4509 surcharge or price.",
+   "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+   "date": "2026-10-10",
+   "notes": "Bounds for judgement only: 441 (18Cr-Nb-Ti) carries more Cr than 430 (Oct 2026 1.4016 surcharge EUR 985/t, round 1) plus Nb, so it sits above round 1's 430 derived 6.773 PLN/kg."
+  },
+  {
+   "key": "ferrous.electrical.GO_EU_min_import_price",
+   "value": 13.559,
+   "unit": "PLN/kg",
+   "basis": "EU provisional safeguard on grain-oriented electrical steel, effective 25 Sep 2026 to 26 Feb 2027: minimum import price within quota EUR 2,800-3,400/t, out of quota EUR 3,500/t (Reuters via GMK Center / tradersunion). Mid 3,100/1000 x 4.374 = 13.559; range 12.247-14.872; out-of-quota 15.309.",
+   "source": "https://gmk.center/en/news/the-eu-is-introducing-temporary-safeguard-measures-on-imports-of-electrical-steel/",
+   "date": "2026-09-21",
+   "notes": "Regulator measure (price threshold on imports, not a transaction price). Eurofer/Kallanish via Eurometal give thresholds EUR 2,800-5,000/t; laminations EUR 4,000/4,550, cores 5,000/5,600 (SteelOrbis). Grade-by-core-loss split not read - check the OJ annex. Stalprodukt (Polish GO maker) blames imports below EU cost: Q1 2026 sheet-segment revenue PLN 142.157 m with an operating loss (biznesradar) - tonnes not found, so no ASP."
+  },
+  {
+   "key": "ferrous.electrical.M330-35A",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no grade-specific 2026 European non-oriented price; no thyssenkrupp Electrical Steel / voestalpine / Cogent price notice in public results).",
+   "source": "https://www.imarcgroup.com/news/electrical-steel-price-index-q2-2026",
+   "date": "2026-10-10",
+   "notes": "The Sep 2026 EU safeguard covers GOES only, not NO. Only generic indices (IMARC Germany USD 1,690/t Q2 2026, grade unstated) - already in round 1."
+  },
+  {
+   "key": "ferrous.electrical.M270-35A",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no grade-specific 2026 European non-oriented price; no thyssenkrupp Electrical Steel / voestalpine / Cogent price notice in public results).",
+   "source": "https://www.imarcgroup.com/news/electrical-steel-price-index-q2-2026",
+   "date": "2026-10-10",
+   "notes": "The Sep 2026 EU safeguard covers GOES only, not NO. Only generic indices (IMARC Germany USD 1,690/t Q2 2026, grade unstated) - already in round 1."
+  },
+  {
+   "key": "ferrous.electrical.M400-50A",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no grade-specific 2026 European non-oriented price; no thyssenkrupp Electrical Steel / voestalpine / Cogent price notice in public results).",
+   "source": "https://www.imarcgroup.com/news/electrical-steel-price-index-q2-2026",
+   "date": "2026-10-10",
+   "notes": "The Sep 2026 EU safeguard covers GOES only, not NO. Only generic indices (IMARC Germany USD 1,690/t Q2 2026, grade unstated) - already in round 1."
+  },
+  {
+   "key": "ferrous.electrical.M800-50A",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source (no grade-specific 2026 European non-oriented price; no thyssenkrupp Electrical Steel / voestalpine / Cogent price notice in public results).",
+   "source": "https://www.imarcgroup.com/news/electrical-steel-price-index-q2-2026",
+   "date": "2026-10-10",
+   "notes": "The Sep 2026 EU safeguard covers GOES only, not NO. Only generic indices (IMARC Germany USD 1,690/t Q2 2026, grade unstated) - already in round 1."
+  },
+  {
+   "key": "ferrous.anchor.hrpo",
+   "value": 3.652,
+   "unit": "PLN/kg",
+   "basis": "DERIVED: round 1 HRC anchor EUR 745/t (Fastmarkets N. Europe exw, 6 Oct 2026) + pickling extra EUR 90/t = EUR 835/t; x 4.374/1000 = 3.652. Extra from a German service centre quote (Kallanish via Eurometal, UNDATED): pickled EUR 930-980/t v unpickled 860-870 -> mid 955 - 865 = 90.",
+   "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+   "date": "undated extra; HRC 2026-10-06",
+   "notes": "LOW confidence: the extra is undated. Lower bound: Argus Jan 2019 import P&O offers +EUR 26/t over dry coil -> 771 = 3.372 PLN/kg (https://www.argusmedia.com/en/news/1829928-eu-hrc-some-signs-the-market-is-close-to-a-floor). Ex-works, freight not added."
+  },
+  {
+   "key": "ferrous.anchor.auto_grade_extras",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source: no public 2026 ArcelorMittal / thyssenkrupp / Salzgitter grade-extra (Aufpreis) figures for DP600, DP980, 22MnB5 or ZM coating.",
+   "source": "https://www.dibt.de/en/service/approval-download/detail/z-3011-54",
+   "date": "2026-10-10",
+   "notes": "Only product approvals found (tk ZM Ecoprotect Z-30.11-54 valid to 30 Dec 2026). Round 1 context stands (H2-2026 contract offers +EUR 50-120/t)."
+  },
+  {
+   "key": "ferrous.billet.forging",
+   "value": null,
+   "unit": "PLN/kg",
+   "basis": "Not found in any source: no European alloy forging-billet price. Use the bar surcharges above (same scrap + alloy surcharge schemes apply to blooms/billets).",
+   "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+   "date": "2026-10-10",
+   "notes": ""
+  }
+ ],
+ "notes": [
+  "FX per RULES.md: EUR 1 = 4.374 PLN, USD 1 = 3.849 PLN. All EU B2B figures ex-VAT.",
+  "No source host is reachable from this environment (proxy CONNECT refused for legierungszuschlag.info, 24metal, gmk.center, kallanish, bigmint, ovako etc.); every figure is from search-engine extracts of the cited pages.",
+  "Searches used: 30 of 30.",
+  "European engineering bar is sold as base + scrap surcharge + alloy surcharge. Surcharges were found (Frankstahl Feb 2026, Ovako Jan 2026); the base was not. FLOORS in notes = undated 24metal C45 (3.173) + alloy surcharge; they exclude the alloy-quality base extra and are NOT prices.",
+  "Book checks (current PLN/kg). CONFIDENT INCONSISTENT: mat-steel4140 5.98 v mat-steel-42crmo4 7.96 - same grade (4140 = 42CrMo4), 33% apart; mat-steel4340 7.17 is BELOW 42CrMo4 7.96 although Ni-Cr-Mo surcharges run ~EUR 174/t (0.76 PLN/kg) above 42CrMo4 (34CrNiMo6 314 v 42CrMo4 140) - 4340 should sit at about the 34CrNiMo6 figure 8.95; mat-steel4130 / 25CrMo4 7.91 above 4140 5.98 is inverted (less Cr/C). mat-steel-20mncr5 / 16mncr5 / 41cr4 all 7.32 - copies, though 41Cr4 and 16MnCr5 surcharges are only ~EUR 40/t. Level of the alloy-bar group (7.3-9.0) v floor 3.3-4.5: likely high but NOT confident (base unknown).",
+  "409L sheet 6.39 v derived 6.484: OK. 441 sheet 7.08: plausible (above 430), no evidence. 304 bar 17.45, 316L bar 31.29, 304L bar 23.38: no bar price found; round 1 inconsistency (304L 34% above 304) stands. GO electrical: M120-27S 12.60 / M105-30P 14.34 / M090-23P 16.81 sit inside or near the EU minimum import price band 12.25-14.87 (out-of-quota 15.31) - consistent. NO grades: no evidence. HRPO 3.81 v derived 3.652 (3.372 at the 2019 extra): book ~4% high, not confident."
+ ]
+}
