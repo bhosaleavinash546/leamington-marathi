@@ -1,0 +1,1782 @@
+{
+ "geo": {
+  "volume": {
+   "mm3": 356101.1,
+   "cm3": 356.101
+  },
+  "surfaceArea": {
+   "mm2": 78925.3,
+   "cm2": 789.253
+  },
+  "boundingBox": {
+   "xMm": 114.4,
+   "yMm": 236.4,
+   "zMm": 210
+  },
+  "wall": {
+   "minMm": 1.36,
+   "maxMm": 46.75,
+   "p95Mm": 42.73,
+   "meanMm": 23.03,
+   "stdDevMm": 13.04,
+   "sampleCount": 26,
+   "method": "ray_cast",
+   "uniformity": "non-uniform"
+  },
+  "faces": {
+   "total": 310,
+   "byType": {
+    "PLANE": 99,
+    "CYLINDER": 124,
+    "TORUS": 40,
+    "CONE": 17,
+    "BSPLINE": 24,
+    "OTHER": 6
+   },
+   "areaByTypeMm2": {
+    "PLANE": 29842,
+    "CYLINDER": 40187,
+    "TORUS": 3285,
+    "CONE": 2015,
+    "BSPLINE": 3596,
+    "OTHER": 1
+   }
+  },
+  "cadMetadata": {
+   "productNames": [
+    "STEERING_KNUCKLE_PATTERN"
+   ],
+   "materialDesignations": [],
+   "headerFileName": "STEERING_KNUCKLE_PATTERN",
+   "authoringSystem": "CREO PARAMETRIC BY PTC INC, 2015380"
+  },
+  "turning": {
+   "fraction": 0.381,
+   "revolvedFraction": 0.246,
+   "maxDiaMm": 120,
+   "externalAreaMm2": 7072.1,
+   "externalMaxDiaMm": 90,
+   "axis": [
+    1,
+    0,
+    0
+   ]
+  },
+  "projectedArea": {
+   "zMm2": 11201,
+   "yMm2": 10153,
+   "xMm2": 12955,
+   "alongDrawMm2": 12955,
+   "method": "silhouette_raster"
+  },
+  "draft": {
+   "drawDirectionXYZ": [
+    1,
+    0,
+    0
+   ],
+   "undercutFaceCount": 1,
+   "cavityFaceCount": 0,
+   "zeroDraftFaceCount": 97,
+   "adequateDraftFaceCount": 77,
+   "minPositiveDraftDeg": 5.83,
+   "maxPositiveDraftDeg": 70.75,
+   "analyzedFaceCount": 175,
+   "pullDirectionSearch": {
+    "candidates": [
+     {
+      "drawDirectionXYZ": [
+       1,
+       0,
+       0
+      ],
+      "undercutFaceCount": 1
+     },
+     {
+      "drawDirectionXYZ": [
+       0,
+       1,
+       0
+      ],
+      "undercutFaceCount": 32
+     },
+     {
+      "drawDirectionXYZ": [
+       0,
+       0,
+       1
+      ],
+      "undercutFaceCount": 44
+     }
+    ],
+    "runnerUp": {
+     "drawDirectionXYZ": [
+      0,
+      1,
+      0
+     ],
+     "undercutFaceCount": 32
+    },
+    "ambiguous": false
+   }
+  },
+  "keys": [
+   "status",
+   "partName",
+   "boundingBox",
+   "orientationCheck",
+   "volume",
+   "surfaceArea",
+   "fillRatio",
+   "projectedArea",
+   "topology",
+   "enclosure",
+   "profileSection",
+   "weights",
+   "faces",
+   "turning",
+   "edges",
+   "features",
+   "featureTable",
+   "sheetMetal",
+   "gear",
+   "wallThickness",
+   "draftAnalysis",
+   "manufacturingFeatures",
+   "setupAnalysis",
+   "cncCycleTimeEstimate",
+   "toolingCostEstimates",
+   "manufacturabilityScore",
+   "processSpecificEstimates",
+   "assemblyWarning",
+   "unitWarning",
+   "unitCheck",
+   "load",
+   "detectedHardware",
+   "cadMetadata"
+  ]
+ },
+ "decisions": [],
+ "provenance": {
+  "cam-mat": {
+   "value": "mat-gjs500",
+   "confidence": 1,
+   "source": "engineer",
+   "ruleId": "casting.materialId",
+   "basis": "mat-gjs500: 356 cm³ × 7100 kg/m³ (EN-GJS-500-7 (Ductile Iron), chosen by the engineer)"
+  },
+  "cam-cast-subtype": {
+   "value": "sand",
+   "confidence": 0.85,
+   "source": "advisor",
+   "ruleId": "casting.subtype",
+   "basis": "sand: ductile iron — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining",
+   "dependsOn": [
+    "service.pressureTight",
+    "service.toleranceClass",
+    "service.safetyCritical"
+   ]
+  },
+  "cam-cast-yield": {
+   "value": 0.63,
+   "confidence": 0.8,
+   "source": "library",
+   "ruleId": "casting.yieldFraction",
+   "basis": "sand ductile-iron yield band 0.55–0.7, midpoint (feeding scales with the alloy's shrinkage)"
+  },
+  "cam-sand-core": {
+   "value": 0.4078,
+   "confidence": 0.55,
+   "source": "geometry",
+   "ruleId": "casting.coreCostPerPart",
+   "basis": "1 undercut face(s) — a small core or loose piece (£0.50–2); per-part core (sand, binder, labour), material consumable — a default band (UK) × India 30% traded + process factor 0.5438, not a core-shop quote"
+  },
+  "cam-finish-wt": {
+   "value": 2.528,
+   "confidence": 1,
+   "source": "geometry",
+   "ruleId": "casting.netWeightKg",
+   "basis": "356 cm³ × 7100 kg/m³ (EN-GJS-500-7 (Ductile Iron), chosen by the engineer)"
+  },
+  "cam-hpdc-die-cost": {
+   "value": 1973,
+   "confidence": 0.6,
+   "source": "advisor",
+   "ruleId": "casting.dieMouldCostGBP",
+   "basis": "sand toolmaker shop model: 74 toolroom hours + steel + bought-outs from a 130 cm² parting footprint, moderate (1 undercut face(s) ≈ 1 slide(s), 1 core box(es)); kernel face-count parametric said £17,000 (not used) — a quotation overrides this"
+  },
+  "cam-hpdc-die-life": {
+   "value": 8000,
+   "confidence": 0.55,
+   "source": "library",
+   "ruleId": "casting.dieMouldLife",
+   "basis": "sand pattern life band 8,000 moulds × 1 impression(s) a mould"
+  },
+  "cam-sand-ct": {
+   "value": 0.0333,
+   "confidence": 0.55,
+   "source": "geometry",
+   "ruleId": "casting.cycleTimeSandGravHr",
+   "basis": "1 impression(s) of 236 × 210 mm (+50 mm gating) in a 500 × 400 mm flask, 30 moulds/h semi-automatic line — the line's time per casting, not the cooling time"
+  },
+  "cam-cast-lab": {
+   "value": "lab-uk-foundry",
+   "confidence": 0.8,
+   "source": "library",
+   "ruleId": "casting.labourId",
+   "basis": "foundry operative on the moulding / die-casting line and at the fettling bench"
+  },
+  "cam-fettle-min": {
+   "value": 6,
+   "confidence": 0.5,
+   "source": "rule",
+   "ruleId": "casting.fettlingMinutes",
+   "basis": "medium fettling — sand ductile-iron, 2.5 kg: gate / riser removal and grind at the foundry rate (engineering-typical minutes)"
+  },
+  "cam-ht-cost": {
+   "value": 0.1477,
+   "confidence": 0.6,
+   "source": "library",
+   "ruleId": "casting.heatTreatCostPerKg",
+   "basis": "safety-critical iron is stress-relieved — £0.35/kg (advisor rate, UK) × country heat-treat factor 0.4219"
+  },
+  "cam-shot-blast": {
+   "value": 0.07,
+   "confidence": 0.5,
+   "source": "library",
+   "ruleId": "casting.shotBlastCostPerPart",
+   "basis": "sand castings are blasted to remove sand / scale / flash — 2.53 kg ÷ 600 kg/h × (blast machine £12.55/h + operator £3.02/h), min £0.0348 (UK £0.10 × India process-service factor 0.3483)"
+  },
+  "cam-impreg": {
+   "value": 0,
+   "confidence": 0.6,
+   "source": "rule",
+   "ruleId": "casting.impregnationCostPerPart",
+   "basis": "not pressure-tight (or ferrous) — no impregnation",
+   "dependsOn": [
+    "service.pressureTight"
+   ]
+  },
+  "cam-ndt": {
+   "value": 1.8,
+   "confidence": 0.55,
+   "source": "library",
+   "ruleId": "casting.ndtCostPerPart",
+   "basis": "safety-critical — 2D X-ray at £5 a part (advisor rate, UK) × country service factor 0.36",
+   "dependsOn": [
+    "service.safetyCritical"
+   ]
+  },
+  "cam-cast-manning": {
+   "value": 4,
+   "confidence": 0.5,
+   "source": "rule",
+   "ruleId": "casting.manning",
+   "basis": "semi-automatic sand line crew: moulder, core setter, pourer, knockout (engineering-typical — enter the line's own)"
+  },
+  "cam-leak-sec": {
+   "value": 0,
+   "confidence": 0.6,
+   "source": "rule",
+   "ruleId": "casting.leakTestSec",
+   "basis": "not pressure-tight — no leak test",
+   "dependsOn": [
+    "service.pressureTight"
+   ]
+  },
+  "cam-cast-wt": {
+   "value": 3.238,
+   "confidence": 0.7,
+   "source": "geometry",
+   "ruleId": "castAndMachine.castPartWeightKg",
+   "basis": "2.528 kg finished + 17.9 cm³ of 8 hole(s) ≤ 20 mm drilled from solid + 61.0 cm³ machining stock (3 mm a side on the machined faces and cored bores, sand — ISO 8062-3 RMA typical, an assumption: no drawing is read for it; type the as-cast weight from the drawing or the foundry to override) + 21.2 cm³ turning stock on the 71 cm² spindle (3 mm a side)"
+  },
+  "cam-mach-setup-time": {
+   "value": 3.75,
+   "confidence": 0.7,
+   "source": "rule",
+   "ruleId": "machining.setupTimeHr",
+   "basis": "5 fixturing(s) of the split-3axis routing × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch — not the kernel's 15 min, which is a per-part allowance"
+  },
+  "cam-mach-batch-size": {
+   "value": 5000,
+   "confidence": 0.6,
+   "source": "rule",
+   "ruleId": "machining.batchSize",
+   "basis": "100,000/yr ÷ 20 runs a year, held between 50 and 5,000"
+  },
+  "cam-mach-setup-mach": {
+   "value": "mach-haas-vf2",
+   "confidence": 0.75,
+   "source": "advisor",
+   "ruleId": "machining.machineId",
+   "basis": "cost-ranked 2 routing(s): split-3axis £4.72 (3-fixturing split routing: mach-haas-vf2 £22/hr + mach-drill £14/hr, 4 setup(s) × 45 min / batch 5000 + 0.6 min handling per part per setup) vs consolidated-5axis £7.31 (single-setup 5-axis consolidation: mach-haas-umc500 £38/hr, 1 setup(s) × 45 min / batch 5000 + 0.6 min handling per part per setup) → split-3axis, £2.59/part cheaper than consolidated-5axis"
+  },
+  "cam-mach-tooling": {
+   "value": 4476,
+   "confidence": 0.5,
+   "source": "rule",
+   "ruleId": "machining.toolingCost",
+   "basis": "5 dedicated fixture(s) × £2,500 (dedicated above 10,000 parts over 5 years) × toolroom factor 0.3581"
+  },
+  "cam-mach-prog-nre": {
+   "value": 172,
+   "confidence": 0.5,
+   "source": "rule",
+   "ruleId": "machining.programmingNRE",
+   "basis": "CAM programming and prove-out 14.25 h (1.5 h × 5 fixturing(s) incl. the lathe + 0.25 h × 27 feature group(s)) × £12.08/h manufacturing engineer"
+  },
+  "cam-tool-wear": {
+   "value": 1.3128,
+   "confidence": 0.5,
+   "source": "rule",
+   "ruleId": "machining.toolWearCostPerPart",
+   "basis": "13.1 min of cutting × £0.10/min inserts, end mills and drills (cast iron) — not in the machine rate"
+  }
+ },
+ "costInputSuggestions": {
+  "recommendedCommodity": "cast_and_machine",
+  "netWeightKg": 2.528,
+  "materialId": "mat-gjs500",
+  "estimatedCycleTimeHr": 0.2588,
+  "estimatedSetupTimeHr": 3.75,
+  "estimatedOperations": [
+   {
+    "name": "Finish machining — +X side",
+    "machineId": "mach-haas-vf2",
+    "cycleTimeHr": 0.0489,
+    "labourId": "lab-uk-skilled",
+    "manning": 0.5,
+    "oee": 0.8,
+    "measured": true,
+    "faceIds": [
+     1,
+     4,
+     9,
+     12,
+     16,
+     18,
+     19,
+     24,
+     28,
+     30,
+     32,
+     33,
+     34,
+     46,
+     47,
+     48,
+     55,
+     56,
+     70,
+     71,
+     90,
+     123,
+     124,
+     131,
+     132,
+     146,
+     149,
+     150,
+     151,
+     152,
+     170,
+     178,
+     179,
+     182,
+     194,
+     196,
+     200,
+     201,
+     212,
+     217,
+     218,
+     219,
+     232,
+     233,
+     236,
+     237,
+     260,
+     261,
+     285,
+     288,
+     309,
+     31,
+     53,
+     60,
+     75,
+     79,
+     87,
+     89,
+     98,
+     106,
+     140,
+     141,
+     157,
+     158,
+     165,
+     166,
+     169,
+     198,
+     229,
+     239,
+     277,
+     278,
+     281,
+     284,
+     308,
+     8,
+     45,
+     51,
+     61,
+     77,
+     81,
+     102,
+     110,
+     121,
+     136,
+     147,
+     174,
+     176,
+     222,
+     235,
+     252,
+     256,
+     266,
+     289,
+     292,
+     303,
+     5,
+     41,
+     67,
+     69,
+     73,
+     85,
+     94,
+     118,
+     130,
+     145,
+     171,
+     173,
+     192,
+     250,
+     253,
+     262,
+     301,
+     20,
+     21,
+     25,
+     26,
+     42,
+     52,
+     83,
+     114,
+     125,
+     187,
+     214,
+     215,
+     225,
+     243,
+     76,
+     78,
+     80,
+     99,
+     103,
+     107,
+     167,
+     168,
+     221,
+     283,
+     286,
+     287,
+     290,
+     299,
+     72,
+     74,
+     86,
+     91,
+     95,
+     119,
+     143,
+     144,
+     224,
+     247,
+     248,
+     268,
+     302,
+     82,
+     111,
+     294,
+     297,
+     298,
+     84,
+     115,
+     188,
+     191,
+     17,
+     27,
+     59
+    ]
+   },
+   {
+    "name": "Finish machining — +Z side",
+    "machineId": "mach-haas-vf2",
+    "cycleTimeHr": 0.0253,
+    "labourId": "lab-uk-skilled",
+    "manning": 0.5,
+    "oee": 0.8,
+    "measured": true,
+    "faceIds": [
+     2,
+     3,
+     6,
+     7,
+     10,
+     11,
+     13,
+     14,
+     15,
+     35,
+     38,
+     39,
+     40,
+     44,
+     50,
+     63,
+     64,
+     65,
+     68,
+     93,
+     101,
+     109,
+     117,
+     122,
+     128,
+     129,
+     137,
+     142,
+     148,
+     154,
+     156,
+     160,
+     172,
+     175,
+     184,
+     195,
+     199,
+     202,
+     210,
+     213,
+     220,
+     223,
+     226,
+     228,
+     231,
+     234,
+     238,
+     244,
+     245,
+     246,
+     251,
+     254,
+     255,
+     258,
+     270,
+     271,
+     272,
+     273,
+     276,
+     310,
+     37,
+     62,
+     100,
+     104,
+     108,
+     116,
+     155,
+     159,
+     185,
+     193,
+     208,
+     240,
+     241,
+     242,
+     274,
+     135,
+     138,
+     181,
+     207,
+     216,
+     279,
+     126,
+     230,
+     249,
+     293,
+     291
+    ]
+   },
+   {
+    "name": "Finish machining — +Y side",
+    "machineId": "mach-haas-vf2",
+    "cycleTimeHr": 0.0171,
+    "labourId": "lab-uk-skilled",
+    "manning": 0.5,
+    "oee": 0.8,
+    "measured": true,
+    "faceIds": [
+     22,
+     23,
+     29,
+     36,
+     57,
+     66,
+     88,
+     97,
+     105,
+     113,
+     134,
+     163,
+     164,
+     197,
+     203,
+     204,
+     205,
+     206,
+     209,
+     211,
+     257,
+     259,
+     263,
+     265,
+     267,
+     269,
+     295,
+     300,
+     304,
+     305,
+     58,
+     92,
+     96,
+     112,
+     120,
+     127,
+     139,
+     153,
+     161,
+     177,
+     180,
+     183,
+     186,
+     227,
+     280,
+     296,
+     306,
+     43,
+     54,
+     133,
+     162,
+     189,
+     190,
+     275,
+     282,
+     307,
+     49,
+     264
+    ]
+   },
+   {
+    "name": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured]",
+    "machineId": "mach-drill",
+    "cycleTimeHr": 0.041,
+    "labourId": "lab-uk-skilled",
+    "manning": 0.5,
+    "oee": 0.8,
+    "measured": true,
+    "faceIds": [
+     209,
+     211,
+     203,
+     204,
+     205,
+     206,
+     272,
+     273,
+     234,
+     251,
+     254,
+     255,
+     304,
+     305,
+     24,
+     163,
+     164
+    ]
+   },
+   {
+    "name": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured]",
+    "machineId": "mach-haas-vf2",
+    "cycleTimeHr": 0.0522,
+    "labourId": "lab-uk-skilled",
+    "manning": 0.5,
+    "oee": 0.8,
+    "measured": true,
+    "faceIds": [
+     2,
+     3,
+     6,
+     7,
+     13,
+     14,
+     10,
+     11,
+     29
+    ]
+   },
+   {
+    "name": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+    "machineId": "mach-lathe-cnc",
+    "cycleTimeHr": 0.0343,
+    "labourId": "lab-uk-skilled",
+    "manning": 0.5,
+    "oee": 0.8,
+    "measured": true
+   },
+   {
+    "name": "Load / clamp / unload — 4 fixturing(s)",
+    "machineId": "mach-haas-vf2",
+    "cycleTimeHr": 0.04,
+    "labourId": "lab-uk-skilled",
+    "manning": 1,
+    "oee": 0.8,
+    "measured": true
+   },
+   {
+    "name": "Deburr and gauge check (bench)",
+    "machineId": "mach-haas-vf2",
+    "cycleTimeHr": 0.0373,
+    "labourId": "lab-uk-semiskilled",
+    "manning": 1,
+    "oee": 1,
+    "benchOperation": true,
+    "measured": true
+   }
+  ],
+  "dfmIssues": [
+   {
+    "severity": "Critical",
+    "area": "geometry",
+    "description": "Wall 1.36 mm below sand minimum 3.5 mm — Thin sections freeze before the cavity fills — cold shuts, misruns and non-fill scrap.",
+    "impact": "Wall 1.36 mm below sand minimum 3.5 mm",
+    "fix": "Thicken to ≥ 3.5 mm, add flow ribs, raise metal/die temperature, or move to a process with lower min wall (investment 0.7 mm)."
+   },
+   {
+    "severity": "High",
+    "area": "geometry",
+    "description": "Non-uniform sections (heavy:thin ≈ 34.4:1) — Heavy sections solidify last and shrink, drawing porosity/sink at the hot spot.",
+    "impact": "Non-uniform sections (heavy:thin ≈ 34.4:1)",
+    "fix": "Even out wall thickness, core out heavy bosses, add fillets to taper transitions, or feed the hot spot with a riser/chill."
+   },
+   {
+    "severity": "High",
+    "area": "tooling",
+    "description": "Draft -1° below recommended 1° — Insufficient draft galls the die/pattern, raises ejection force and accelerates tool wear (or breaks the sand mould).",
+    "impact": "Draft -1° below recommended 1°",
+    "fix": "Add ≥ 1° draft on all as-cast vertical walls; deep pockets need more. Investment casting can run near-zero draft if this is fixed."
+   }
+  ],
+  "casting": {
+   "subtype": "sand",
+   "yieldFraction": 0.63,
+   "coreCostPerPart": 0.4078,
+   "dieMouldCostGBP": 1973,
+   "dieMouldLife": 8000,
+   "cycleTimeSandGravHr": 0.0333,
+   "fettlingMinutes": 6,
+   "heatTreatCostPerKg": 0.1477,
+   "shotBlastCostPerPart": 0.07,
+   "impregnationCostPerPart": 0,
+   "ndtCostPerPart": 1.8,
+   "manning": 4,
+   "leakTestSec": 0,
+   "castPartWeightKg": 3.238
+  },
+  "machining": {
+   "setupCount": 5,
+   "batchSize": 5000,
+   "machineId": "mach-haas-vf2",
+   "toolingCost": 4476,
+   "programmingNRE": 172,
+   "toolWearCostPerPart": 1.3128
+  },
+  "fieldConfidences": {
+   "cam-mat": 1,
+   "cam-cast-subtype": 0.85,
+   "cam-cast-yield": 0.8,
+   "cam-sand-core": 0.55,
+   "cam-finish-wt": 1,
+   "cam-hpdc-die-cost": 0.6,
+   "cam-hpdc-die-life": 0.55,
+   "cam-sand-ct": 0.55,
+   "cam-fettle-min": 0.5,
+   "cam-ht-cost": 0.6,
+   "cam-shot-blast": 0.5,
+   "cam-impreg": 0.6,
+   "cam-ndt": 0.55,
+   "cam-cast-manning": 0.5,
+   "cam-leak-sec": 0.6,
+   "cam-mach-setup-time": 0.7,
+   "cam-mach-batch-size": 0.6,
+   "cam-mach-setup-mach": 0.75,
+   "cam-mach-tooling": 0.5,
+   "cam-mach-prog-nre": 0.5,
+   "cam-tool-wear": 0.5
+  }
+ },
+ "warnings": [],
+ "mapped": {
+  "commodity": "cast_and_machine",
+  "params": {
+   "castingSubtype": "sand",
+   "materialId": "mat-gjs500",
+   "castPartWeightKg": 3.238,
+   "finishedWeightKg": 2.528,
+   "castingYield": 0.63,
+   "rejectRate": 0.03,
+   "castingLabourId": "lab-uk-foundry",
+   "castingOee": 0.8,
+   "castingManning": 4,
+   "castingLabourEfficiency": 0.92,
+   "sand": {
+    "mouldLineId": "sand-cast-line",
+    "cycleTimeHr": 0.0333,
+    "patternCost": 1973,
+    "patternLife": 8000,
+    "coreCostPerPart": 0.4078
+   },
+   "fettlingMinutes": 6,
+   "heatTreatmentCostPerKg": 0.1477,
+   "shotBlastCostPerPart": 0.07,
+   "ndtCostPerPart": 1.8,
+   "machiningOps": [
+    {
+     "name": "Finish machining — +X side",
+     "machineId": "mach-haas-vf2",
+     "cycleTimeHr": 0.0489,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.0489
+    },
+    {
+     "name": "Finish machining — +Z side",
+     "machineId": "mach-haas-vf2",
+     "cycleTimeHr": 0.0253,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.0253
+    },
+    {
+     "name": "Finish machining — +Y side",
+     "machineId": "mach-haas-vf2",
+     "cycleTimeHr": 0.0171,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.0171
+    },
+    {
+     "name": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured]",
+     "machineId": "mach-drill",
+     "cycleTimeHr": 0.041,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.041
+    },
+    {
+     "name": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "cycleTimeHr": 0.0522,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.0522
+    },
+    {
+     "name": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+     "machineId": "mach-lathe-cnc",
+     "cycleTimeHr": 0.0343,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.0343
+    },
+    {
+     "name": "Load / clamp / unload — 4 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "cycleTimeHr": 0.04,
+     "labourId": "lab-uk-skilled",
+     "oee": 0.8,
+     "manning": 1,
+     "labourEfficiency": 0.92,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.04
+    },
+    {
+     "name": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "cycleTimeHr": 0.0373,
+     "labourId": "lab-uk-semiskilled",
+     "oee": 1,
+     "manning": 1,
+     "labourEfficiency": 0.92,
+     "benchOperation": true,
+     "type": "milling",
+     "partsPerCycle": 1,
+     "labourTimeHr": 0.0373
+    }
+   ],
+   "machiningSetup": {
+    "setupTimeHr": 3.75,
+    "batchSize": 5000,
+    "machineId": "mach-haas-vf2",
+    "labourId": "lab-uk-skilled"
+   },
+   "machiningToolingCost": 4476,
+   "machiningProgrammingNRE": 172,
+   "machiningToolWearCostPerPart": 1.3128,
+   "amortizationVolume": 100000
+  },
+  "assumed": [
+   "oee",
+   "manning",
+   "labourEfficiency",
+   "rejectRate",
+   "labourId",
+   "partsPerCycle=1",
+   "labourTimeHr=cycleTimeHr",
+   "castPartWeightKg = finished + drilled-hole stock + face machining stock",
+   "sand.mouldLineId"
+  ],
+  "packagingPerPart": 0.16,
+  "logisticsPerPart": 0.27
+ },
+ "shop": {
+  "overheadPct": 0.09,
+  "packagingPerPart": 0.104,
+  "logisticsPerPart": 0.405
+ },
+ "cost": {
+  "total": 19.8054,
+  "breakdown": {
+   "rawMaterial": 6.8868,
+   "process": 7.366,
+   "labour": 1.8015,
+   "tooling": 0.303,
+   "packaging": 0.104,
+   "logistics": 0.405,
+   "overhead": 1.4721,
+   "margin": 1.4671
+  },
+  "trace": {
+   "operations": [
+    {
+     "operationName": "Sand Casting — Moulding",
+     "machineId": "sand-cast-line",
+     "labourId": "lab-uk-foundry",
+     "processCost": 0.621539,
+     "labourCost": 0.450766,
+     "machineRateUsed": 14.483904,
+     "labourRateUsed": 3.02,
+     "cycleTimeHr": 0.03433,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 4,
+     "labourTimeHr": 0.03433,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Fettling (gate / riser removal, grind)",
+     "machineId": "sand-cast-line",
+     "labourId": "lab-uk-foundry",
+     "processCost": 0,
+     "labourCost": 0.338413,
+     "machineRateUsed": 14.483904,
+     "labourRateUsed": 3.02,
+     "cycleTimeHr": 0,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.103093,
+     "labourEfficiency": 0.92,
+     "benchOperation": true
+    },
+    {
+     "operationName": "Melt shop (charge, melt, treat, ladle)",
+     "machineId": "sand-cast-line",
+     "labourId": "lab-uk-furnace",
+     "processCost": 0,
+     "labourCost": 0.031014,
+     "machineRateUsed": 14.483904,
+     "labourRateUsed": 3.59,
+     "cycleTimeHr": 0,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.007948,
+     "labourEfficiency": 0.92,
+     "benchOperation": true
+    },
+    {
+     "operationName": "Machining Setup (amortised)",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "processCost": 0.016829,
+     "labourCost": 0.003855,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.00075,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.00075,
+     "labourEfficiency": 1
+    },
+    {
+     "operationName": "Finish machining — +X side",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "processCost": 1.371567,
+     "labourCost": 0.136601,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.0489,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0489,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Finish machining — +Z side",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "processCost": 0.709625,
+     "labourCost": 0.070675,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.0253,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0253,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Finish machining — +Y side",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "processCost": 0.479628,
+     "labourCost": 0.047768,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.0171,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0171,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured]",
+     "machineId": "mach-drill",
+     "labourId": "lab-uk-skilled",
+     "processCost": 0.741433,
+     "labourCost": 0.114533,
+     "machineRateUsed": 14.466994,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.041,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.041,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "processCost": 1.464127,
+     "labourCost": 0.14582,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.0522,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0522,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+     "machineId": "mach-lathe-cnc",
+     "labourId": "lab-uk-skilled",
+     "processCost": 0.839297,
+     "labourCost": 0.095816,
+     "machineRateUsed": 19.575447,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.0343,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0343,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Load / clamp / unload — 4 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "processCost": 1.121936,
+     "labourCost": 0.223478,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 5.14,
+     "cycleTimeHr": 0.04,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 1,
+     "labourTimeHr": 0.04,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-semiskilled",
+     "processCost": 0,
+     "labourCost": 0.142713,
+     "machineRateUsed": 22.438728,
+     "labourRateUsed": 3.52,
+     "cycleTimeHr": 0,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.0373,
+     "labourEfficiency": 0.92,
+     "benchOperation": true
+    }
+   ],
+   "traceability": [
+    {
+     "field": "material.pricePerKg",
+     "value": 0.7654,
+     "unit": "£/kg",
+     "rateSource": "Index-anchored 2026-07 (see CASTING PRICING BASIS). Mid-grade ductile iron — steering knuckles, hubs, brackets; balance of strength and ductility. | Refresh 2026-09: NOT SOURCED — pigiron, scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel)",
+     "rateId": "mat-gjs500",
+     "confidence": "Low"
+    },
+    {
+     "field": "material.scrapRecoveryPricePerKg",
+     "value": 0.1335,
+     "unit": "£/kg",
+     "rateSource": "Index-anchored 2026-07 (see CASTING PRICING BASIS). Mid-grade ductile iron — steering knuckles, hubs, brackets; balance of strength and ductility. | Refresh 2026-09: NOT SOURCED — pigiron, scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel)",
+     "rateId": "mat-gjs500",
+     "confidence": "Low"
+    },
+    {
+     "field": "rawMaterial.consumablesCostPerPart",
+     "value": 4.134451,
+     "unit": "£",
+     "rateSource": "Per-part consumables & services: cores £0.42 · green-sand additions £0.05 · heat treatment £0.48 · shot blast £0.07 · NDT £1.80 · cutting-tool wear £1.31",
+     "rateId": "rules (per-part services)",
+     "confidence": "Medium"
+    },
+    {
+     "field": "rawMaterial.energyKwh.electricity",
+     "value": 0.226676,
+     "unit": "£",
+     "rateSource": "3.2852 kWh × £0.069/kWh electricity (India tariff) — melt energy on every kg poured",
+     "rateId": "energy-in",
+     "confidence": "Low"
+    },
+    {
+     "field": "Sand Casting — Moulding.machineRatePerHr",
+     "value": 14.483904,
+     "unit": "£/hr",
+     "rateSource": "UK foundry benchmark, Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "sand-cast-line",
+     "confidence": "Low"
+    },
+    {
+     "field": "Sand Casting — Moulding.labourRatePerHr",
+     "value": 3.02,
+     "unit": "£/hr",
+     "rateSource": "India foundry rate (regional-rates.ts, 2026-09)",
+     "rateId": "lab-uk-foundry",
+     "confidence": "Low"
+    },
+    {
+     "field": "Fettling (gate / riser removal, grind).labourRatePerHr",
+     "value": 3.02,
+     "unit": "£/hr",
+     "rateSource": "India foundry rate (regional-rates.ts, 2026-09)",
+     "rateId": "lab-uk-foundry",
+     "confidence": "Low"
+    },
+    {
+     "field": "Melt shop (charge, melt, treat, ladle).labourRatePerHr",
+     "value": 3.59,
+     "unit": "£/hr",
+     "rateSource": "UK furnace grade × India/UK foundry ratio 0.1621",
+     "rateId": "lab-uk-furnace",
+     "confidence": "Low"
+    },
+    {
+     "field": "Machining Setup (amortised).machineRatePerHr",
+     "value": 22.438728,
+     "unit": "£/hr",
+     "rateSource": "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-haas-vf2",
+     "confidence": "Low"
+    },
+    {
+     "field": "Machining Setup (amortised).labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish machining — +X side.machineRatePerHr",
+     "value": 22.438728,
+     "unit": "£/hr",
+     "rateSource": "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-haas-vf2",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish machining — +X side.labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish machining — +Z side.machineRatePerHr",
+     "value": 22.438728,
+     "unit": "£/hr",
+     "rateSource": "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-haas-vf2",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish machining — +Z side.labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish machining — +Y side.machineRatePerHr",
+     "value": 22.438728,
+     "unit": "£/hr",
+     "rateSource": "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-haas-vf2",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish machining — +Y side.labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured].machineRatePerHr",
+     "value": 14.466994,
+     "unit": "£/hr",
+     "rateSource": "UK Tier-2 CNC drilling/tapping centre. Target £30/hr. Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-drill",
+     "confidence": "Low"
+    },
+    {
+     "field": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured].labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured].machineRatePerHr",
+     "value": 22.438728,
+     "unit": "£/hr",
+     "rateSource": "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-haas-vf2",
+     "confidence": "Low"
+    },
+    {
+     "field": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured].labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Turning — spindle on the CNC lathe (journals, taper, shoulders).machineRatePerHr",
+     "value": 19.575447,
+     "unit": "£/hr",
+     "rateSource": "UK Tier-2 CNC turning centre (Doosan/Hyundai class). Target £40/hr. Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-lathe-cnc",
+     "confidence": "Low"
+    },
+    {
+     "field": "Turning — spindle on the CNC lathe (journals, taper, shoulders).labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Load / clamp / unload — 4 fixturing(s).machineRatePerHr",
+     "value": 22.438728,
+     "unit": "£/hr",
+     "rateSource": "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "rateId": "mach-haas-vf2",
+     "confidence": "Low"
+    },
+    {
+     "field": "Load / clamp / unload — 4 fixturing(s).labourRatePerHr",
+     "value": 5.14,
+     "unit": "£/hr",
+     "rateSource": "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-skilled",
+     "confidence": "Low"
+    },
+    {
+     "field": "Deburr and gauge check (bench).labourRatePerHr",
+     "value": 3.52,
+     "unit": "£/hr",
+     "rateSource": "lab-in-semiskilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 (Pune/Chennai) | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "rateId": "lab-uk-semiskilled",
+     "confidence": "Low"
+    }
+   ],
+   "rateBook": "2.2.0-IN",
+   "drivers": {
+    "rawMaterial": {
+     "materialId": "mat-gjs500",
+     "netWeightKg": 3.238,
+     "materialUtilization": 0.981266,
+     "lossIsNotScrap": true,
+     "consumablesCostPerPart": 4.134451,
+     "consumablesItems": [
+      {
+       "label": "cores",
+       "gbp": 0.420412
+      },
+      {
+       "label": "green-sand additions",
+       "gbp": 0.052986
+      },
+      {
+       "label": "heat treatment",
+       "gbp": 0.478253
+      },
+      {
+       "label": "shot blast",
+       "gbp": 0.07
+      },
+      {
+       "label": "NDT",
+       "gbp": 1.8
+      },
+      {
+       "label": "cutting-tool wear",
+       "gbp": 1.3128
+      }
+     ],
+     "energyKwh": {
+      "electricity": 3.285158,
+      "basis": "melt energy on every kg poured"
+     }
+    },
+    "operations": [
+     {
+      "operationName": "Sand Casting — Moulding",
+      "machineId": "sand-cast-line",
+      "labourId": "lab-uk-foundry",
+      "cycleTimeHr": 0.03433,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 4,
+      "labourTimeHr": 0.03433,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Fettling (gate / riser removal, grind)",
+      "machineId": "sand-cast-line",
+      "labourId": "lab-uk-foundry",
+      "cycleTimeHr": 0,
+      "partsPerCycle": 1,
+      "oee": 1,
+      "manning": 1,
+      "labourTimeHr": 0.103093,
+      "labourEfficiency": 0.92,
+      "benchOperation": true
+     },
+     {
+      "operationName": "Melt shop (charge, melt, treat, ladle)",
+      "machineId": "sand-cast-line",
+      "labourId": "lab-uk-furnace",
+      "cycleTimeHr": 0,
+      "partsPerCycle": 1,
+      "oee": 1,
+      "manning": 1,
+      "labourTimeHr": 0.007948,
+      "labourEfficiency": 0.92,
+      "benchOperation": true
+     },
+     {
+      "operationName": "Machining Setup (amortised)",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.00075,
+      "partsPerCycle": 1,
+      "oee": 1,
+      "manning": 1,
+      "labourTimeHr": 0.00075,
+      "labourEfficiency": 1
+     },
+     {
+      "operationName": "Finish machining — +X side",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.0489,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 0.5,
+      "labourTimeHr": 0.0489,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Finish machining — +Z side",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.0253,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 0.5,
+      "labourTimeHr": 0.0253,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Finish machining — +Y side",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.0171,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 0.5,
+      "labourTimeHr": 0.0171,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured]",
+      "machineId": "mach-drill",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.041,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 0.5,
+      "labourTimeHr": 0.041,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured]",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.0522,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 0.5,
+      "labourTimeHr": 0.0522,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+      "machineId": "mach-lathe-cnc",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.0343,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 0.5,
+      "labourTimeHr": 0.0343,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Load / clamp / unload — 4 fixturing(s)",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-skilled",
+      "cycleTimeHr": 0.04,
+      "partsPerCycle": 1,
+      "oee": 0.8,
+      "manning": 1,
+      "labourTimeHr": 0.04,
+      "labourEfficiency": 0.92
+     },
+     {
+      "operationName": "Deburr and gauge check (bench)",
+      "machineId": "mach-haas-vf2",
+      "labourId": "lab-uk-semiskilled",
+      "cycleTimeHr": 0,
+      "partsPerCycle": 1,
+      "oee": 1,
+      "manning": 1,
+      "labourTimeHr": 0.0373,
+      "labourEfficiency": 0.92,
+      "benchOperation": true
+     }
+    ],
+    "tooling": {
+     "items": [
+      {
+       "label": "Pattern equipment: 13 set(s) (life 8,000 moulds each)",
+       "gbp": 25649
+      },
+      {
+       "label": "Machining fixtures",
+       "gbp": 4476
+      },
+      {
+       "label": "CNC programming (NRE)",
+       "gbp": 172
+      }
+     ],
+     "totalToolingCost": 30297,
+     "amortizationVolume": 100000,
+     "mode": "amortized"
+    }
+   }
+  },
+  "drivers": {
+   "rawMaterial": {
+    "materialId": "mat-gjs500",
+    "netWeightKg": 3.238,
+    "materialUtilization": 0.981266,
+    "lossIsNotScrap": true,
+    "consumablesCostPerPart": 4.134451,
+    "consumablesItems": [
+     {
+      "label": "cores",
+      "gbp": 0.420412
+     },
+     {
+      "label": "green-sand additions",
+      "gbp": 0.052986
+     },
+     {
+      "label": "heat treatment",
+      "gbp": 0.478253
+     },
+     {
+      "label": "shot blast",
+      "gbp": 0.07
+     },
+     {
+      "label": "NDT",
+      "gbp": 1.8
+     },
+     {
+      "label": "cutting-tool wear",
+      "gbp": 1.3128
+     }
+    ],
+    "energyKwh": {
+     "electricity": 3.285158,
+     "basis": "melt energy on every kg poured"
+    }
+   },
+   "operations": [
+    {
+     "operationName": "Sand Casting — Moulding",
+     "machineId": "sand-cast-line",
+     "labourId": "lab-uk-foundry",
+     "cycleTimeHr": 0.03433,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 4,
+     "labourTimeHr": 0.03433,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Fettling (gate / riser removal, grind)",
+     "machineId": "sand-cast-line",
+     "labourId": "lab-uk-foundry",
+     "cycleTimeHr": 0,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.103093,
+     "labourEfficiency": 0.92,
+     "benchOperation": true
+    },
+    {
+     "operationName": "Melt shop (charge, melt, treat, ladle)",
+     "machineId": "sand-cast-line",
+     "labourId": "lab-uk-furnace",
+     "cycleTimeHr": 0,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.007948,
+     "labourEfficiency": 0.92,
+     "benchOperation": true
+    },
+    {
+     "operationName": "Machining Setup (amortised)",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.00075,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.00075,
+     "labourEfficiency": 1
+    },
+    {
+     "operationName": "Finish machining — +X side",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.0489,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0489,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Finish machining — +Z side",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.0253,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0253,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Finish machining — +Y side",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.0171,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0171,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Drilling — 8 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1×Ø12.5×25, 1×Ø15.0×19, 1×Ø15.0×25) [geometry-measured]",
+     "machineId": "mach-drill",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.041,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.041,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40, 1×Ø71.0×3, 1×Ø75.0×6) [geometry-measured]",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.0522,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0522,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Turning — spindle on the CNC lathe (journals, taper, shoulders)",
+     "machineId": "mach-lathe-cnc",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.0343,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 0.5,
+     "labourTimeHr": 0.0343,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Load / clamp / unload — 4 fixturing(s)",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-skilled",
+     "cycleTimeHr": 0.04,
+     "partsPerCycle": 1,
+     "oee": 0.8,
+     "manning": 1,
+     "labourTimeHr": 0.04,
+     "labourEfficiency": 0.92
+    },
+    {
+     "operationName": "Deburr and gauge check (bench)",
+     "machineId": "mach-haas-vf2",
+     "labourId": "lab-uk-semiskilled",
+     "cycleTimeHr": 0,
+     "partsPerCycle": 1,
+     "oee": 1,
+     "manning": 1,
+     "labourTimeHr": 0.0373,
+     "labourEfficiency": 0.92,
+     "benchOperation": true
+    }
+   ],
+   "tooling": {
+    "items": [
+     {
+      "label": "Pattern equipment: 13 set(s) (life 8,000 moulds each)",
+      "gbp": 25649
+     },
+     {
+      "label": "Machining fixtures",
+      "gbp": 4476
+     },
+     {
+      "label": "CNC programming (NRE)",
+      "gbp": 172
+     }
+    ],
+    "totalToolingCost": 30297,
+    "amortizationVolume": 100000,
+    "mode": "amortized"
+   }
+  }
+ }
+}

@@ -108,6 +108,14 @@ async function costOne(page: Page, base: string, p: PartSpec): Promise<Record<st
   await page.click('#calc-btn');
   await page.waitForFunction(() => /\d/.test(document.querySelector('#cv-result-hero .crh-total')?.textContent ?? ''), null, { timeout: 120_000 });
   await page.waitForTimeout(4000);
+  // CV_DFM_WAIT_MS: wait for the background geometric DFM to land before exporting (default: do not wait — then the PDF
+  // says "not included"). The casting 360 review exported mid-job and the stub axle's report had no DFM.
+  const dfmWait = Number(process.env.CV_DFM_WAIT_MS ?? 0);
+  if (dfmWait > 0) {
+    out.dfmLanded = await page.waitForFunction(() => (document.getElementById('geometric-dfm-panel')?.innerHTML.length ?? 0) > 0, null, { timeout: dfmWait })
+      .then(() => true, () => false);
+    await page.waitForTimeout(1000);
+  }
   out.screen = await page.evaluate(() => {
     const t = (s: string) => (document.querySelector(s)?.textContent ?? '').replace(/\s+/g, ' ').trim();
     return {
