@@ -174,7 +174,8 @@ export const NOT_MODELLED: Record<string, string> = {
     + 'sheet. It carried a separate £ at reference rates that disagreed with the costing\u2019s count.',
   'machining.hole.non-preferred-diameter':
     'Moving to the nearest stock size still leaves a distinct size, so the costing\u2019s tool count does not change '
-    + 'unless the new size is one the part already uses — that saving is the hole-size consolidation finding.',
+    + 'unless the new size is one the part already uses — that is a hole-size consolidation, a finding of its own when '
+    + 'the part has 6 or more hole sizes.',
   'casting.hole.beyond-cored-depth':
     'A routing correction, not a design saving: the cost sheet prices holes above the cored size as cored and '
     + 'finish-bored; this one is too deep to core and will be drilled from solid. The finding states both times.',

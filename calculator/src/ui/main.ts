@@ -225,7 +225,7 @@ import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel, applySWCountry, applySWCurrency } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml, showToast as sharedShowToast } from './toast.js';
-import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measuredText, thresholdText, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
+import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measureAgainstLimit, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
 import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { renderAlExtrusionForm, collectAlExtrusionDrivers, wireAlExtrusionForm } from './al-extrusion-form.js';
@@ -17535,7 +17535,7 @@ function viewerIssuesFromDFM(): import('./cad-viewer.js').ViewerIssue[] | null {
     title: g.count > 1 ? `${g.title} ×${g.count}` : g.title,
     severity: sev[g.severity as keyof typeof sev] ?? 'info',
     // The measurement against its limit; the fix and the calculation are in the findings panel beside it.
-    detail: `${measureLabel(g.worst?.measured?.field ?? '')} ${measuredText(g.range, g.count)}, ${thresholdText(g.threshold)}.`.trim(),
+    detail: `${measureLabel(g.worst?.measured?.field ?? '')} ${measureAgainstLimit(g.range, g.count, g.threshold)}.`.trim(),
     faceIds: g.faceIds ?? [],
     amount: amounts.get(g.ruleId)?.text,
     source: [g.source.standard, g.source.clause, g.source.note].filter(Boolean).join(' · '),

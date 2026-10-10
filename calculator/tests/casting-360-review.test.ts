@@ -319,3 +319,14 @@ describe('P3 report text (X24 / X26 / X31 / X32 / X33 / X38)', () => {
   it('no unrounded float anywhere', () => { expect(text).not.toMatch(/\d\.\d{9,}/); });
   void result;
 });
+
+import { measureAgainstLimit } from '../src/engine/dfm-geometry/measure-format.js';
+
+describe('X22 — a measured value never prints equal to the limit it is flagged against', () => {
+  it('⌀4.92 against a 4.9 stock drill', () => {
+    expect(measureAgainstLimit({ min: 4.92, max: 4.92, unit: 'mm' }, 1, { comparator: '>', value: 4.9, unit: 'mm' })).toBe('4.92 mm, flagged above 4.9 mm');
+  });
+  it('the usual precision is kept when the two already differ', () => {
+    expect(measureAgainstLimit({ min: 5.46, max: 8.75, unit: ':1' }, 2, { comparator: '>', value: 4, unit: ':1' })).toBe('5.5–8.8 : 1, flagged above 4 : 1');
+  });
+});

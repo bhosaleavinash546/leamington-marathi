@@ -49,10 +49,10 @@ export function severityBadge(s: string): string {
   return `<span class="dfm-sev dfm-sev--${k}">${k.charAt(0).toUpperCase()}${k.slice(1)}</span>`;
 }
 
-export { MEASURE_LABELS, measureLabel, fmtMeasureNum, withUnit, measuredText, thresholdText } from '../engine/dfm-geometry/measure-format.js';
-import { measureLabel, measuredText, thresholdText } from '../engine/dfm-geometry/measure-format.js';
+export { MEASURE_LABELS, measureLabel, fmtMeasureNum, withUnit, measuredText, thresholdText, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
+import { measureLabel, measurePairTexts } from '../engine/dfm-geometry/measure-format.js';
 
-function measuredRange(x: Grouped): string { return measuredText(x.range, x.count); }
+function measuredRange(x: Grouped): string { return measurePairTexts(x.range, x.count, x.threshold).measured; }
 
 /**
  * The money line, or the reason there is none.
@@ -128,7 +128,7 @@ function issueItem(x: Grouped, i: number, amounts?: ReadonlyMap<string, DfmAmoun
       <div class="small">${escHtml(x.worst.detail)}</div>
       <div class="small dfm-geo-measure">
         <span>${escHtml(measureLabel(x.worst.measured.field))} <strong>${escHtml(measuredRange(x))}</strong></span>
-        <span class="muted">${escHtml(thresholdText(x.threshold))}</span>
+        <span class="muted">${escHtml(measurePairTexts(x.range, x.count, x.threshold).threshold)}</span>
         <span class="muted">${faces} face${faces === 1 ? '' : 's'}</span>
       </div>
       <div class="small"><strong>Fix:</strong> ${escHtml(x.recommendation)}</div>

@@ -7,7 +7,7 @@ import { generateInsights, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty, overallConfidence } from '../engine/uncertainty.js';
-import { measureLabel, measuredText, thresholdText } from '../engine/dfm-geometry/measure-format.js';
+import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
@@ -630,7 +630,7 @@ function renderGeometricDFM(
     }
     doc.setTextColor(...GREY);
     doc.text(
-      `${measureLabel(gr.worst.measured.field)} ${measuredText(gr.range, gr.count)}, ${thresholdText(gr.threshold)}`, MG + 2, y);
+      `${measureLabel(gr.worst.measured.field)} ${measureAgainstLimit(gr.range, gr.count, gr.threshold)}`, MG + 2, y);
     y += 3.3;
     const basisAmt = amounts?.[gr.ruleId]?.basis;
     if (basisAmt) for (const ln of doc.splitTextToSize(`In this costing: ${basisAmt}.`, CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.1; }

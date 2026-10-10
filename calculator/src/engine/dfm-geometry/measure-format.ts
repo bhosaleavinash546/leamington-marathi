@@ -58,3 +58,27 @@ export function thresholdText(t: { comparator: string; value: number; unit: stri
   const cmp = t.comparator === '>' ? 'above' : t.comparator === '<' ? 'below' : t.comparator === '>=' ? 'at or above' : t.comparator === '<=' ? 'at or below' : t.comparator;
   return `flagged ${cmp} ${withUnit(fmtMeasureNum(t.value), t.unit)}`;
 }
+
+/**
+ * The measured value and its limit, as printed side by side. When the usual precision would print the two as the same
+ * number ("4.9 mm, flagged above 4.9 mm" for ⌀4.92 against a 4.9 stock drill, casting 360 review X22) both get two
+ * decimals.
+ */
+export function measurePairTexts(
+  range: { min: number; max: number; unit: string }, count: number, t: { comparator: string; value: number; unit: string },
+): { measured: string; threshold: string } {
+  const usual = { measured: measuredText(range, count), threshold: thresholdText(t) };
+  if (fmtMeasureNum(range.max) !== fmtMeasureNum(t.value) || range.max === t.value) return usual;
+  const two = (v: number) => v.toFixed(2).replace(/\.?0+$/, '');
+  const a = two(range.min), b = two(range.max);
+  const cmp = usual.threshold.slice(0, usual.threshold.length - withUnit(fmtMeasureNum(t.value), t.unit).length).trimEnd();
+  return { measured: withUnit(count > 1 && a !== b ? `${a}–${b}` : b, range.unit), threshold: `${cmp} ${withUnit(two(t.value), t.unit)}` };
+}
+
+/** "4.92 mm, flagged above 4.9 mm" — the measured value against its limit (`measurePairTexts`). */
+export function measureAgainstLimit(
+  range: { min: number; max: number; unit: string }, count: number, t: { comparator: string; value: number; unit: string },
+): string {
+  const p = measurePairTexts(range, count, t);
+  return `${p.measured}, ${p.threshold}`;
+}
