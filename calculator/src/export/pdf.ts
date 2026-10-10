@@ -109,6 +109,8 @@ export interface CADReportMeta {
    */
   geometricDFMAmounts?: Record<string, { text: string; basis?: string }> | null;
   geometricDFMRecosted?: boolean;
+  /** A DFM job was queued for this part but had not finished when the report was made (casting 360 review X17). */
+  geometricDFMPending?: boolean;
   featureStock?: 'near_net' | 'solid_billet' | null;
   /** True when the engineer pinned the grade / process (locks out AI + sanity). */
   userSpecifiedMaterial?: boolean;
@@ -538,8 +540,20 @@ function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null
 function renderGeometricDFM(
   doc: jsPDF, y: number, g: GeometricDFMMeta | null | undefined,
   money: (n: number) => string,
-  amounts?: Record<string, { text: string; basis?: string }> | null, recosted?: boolean,
+  amounts?: Record<string, { text: string; basis?: string }> | null, recosted?: boolean, pending?: boolean,
 ): number {
+  if (!g && pending) {
+    // The stub axle's report left the section out while its job was still running: a reader took that as "no issues".
+    y = chk(doc, y, 14);
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+    doc.text('Geometric DFM / DFA - not included', MG, y);
+    y += 5;
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    const msg = doc.splitTextToSize('The geometric DFM check of this part had not finished when this report was exported, so its findings '
+      + 'are not in this report. This is not a clean result: export again once the DFM panel shows its findings.', 180);
+    doc.text(msg, MG, y);
+    return y + msg.length * 3.4 + 4;
+  }
   if (!g) return y;
 
   y = chk(doc, y, 26);
@@ -881,7 +895,7 @@ export function renderShouldCostSections(
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
   y = renderChecksApplied(doc, y, cadMeta.checks);
-  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c, cadMeta.geometricDFMAmounts, cadMeta.geometricDFMRecosted);
+  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c, cadMeta.geometricDFMAmounts, cadMeta.geometricDFMRecosted, cadMeta.geometricDFMPending);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 
   // §3 — Material Detail  (new page)

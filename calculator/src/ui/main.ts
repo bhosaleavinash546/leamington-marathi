@@ -17629,6 +17629,8 @@ function buildCadReportMeta(): CADReportMeta {
     geometricDFM: dfmBelongsToCosting() ? cadGeometricDFM : null,
     geometricDFMAmounts: cadGeometricDFM && dfmBelongsToCosting() ? Object.fromEntries([...dfmFindingAmounts()].map(([k, v]) => [k, { text: v.text, basis: v.basis }])) : null,
     geometricDFMRecosted: !!lastInput && dfmBelongsToCosting(),
+    // A job queued for this part but not landed: the report says so instead of omitting the section silently.
+    geometricDFMPending: !!cadDfmJobId && !cadGeometricDFM && dfmBelongsToCosting(),
     // The costing on screen IS the photo analysis (and it is still the loaded one): print it as a PCBA.
     pcbAnalysis: _costedFromPcbAnalysis && _costedFromPcbAnalysis === pcbImageResult && activeCommodity === 'pcb_fab'
       ? (_costedFromPcbAnalysis as unknown as NonNullable<CADReportMeta['pcbAnalysis']>) : null,

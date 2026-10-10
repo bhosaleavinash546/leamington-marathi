@@ -155,3 +155,13 @@ describe('X2 / X3 — a DFM finding is re-costed in the report currency and keep
     expect(v.basis).toMatch(/upper bound: every size merged onto one tool/);
   });
 });
+
+describe('X17 — a DFM still running is stated, not silently left out', () => {
+  const { input, result } = sandCastingResult();
+  it('prints "not included" with the reason', () => {
+    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+      { geometrySource: 'occt', geometricDFM: null, geometricDFMPending: true } as never)).replace(/\n/g, ' ');
+    expect(text).toMatch(/Geometric DFM \/ DFA - not included/);
+    expect(text).toMatch(/This is not a clean result/);
+  });
+});
