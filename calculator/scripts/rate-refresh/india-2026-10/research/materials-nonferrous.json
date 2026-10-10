@@ -1,0 +1,265 @@
+{
+ "domain": "india-materials-nonferrous",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "nonferrous.anchor.fx.usdInr",
+   "value": 96.79,
+   "unit": "INR/USD",
+   "basis": "DERIVED: SMM quotes ADC12 Mumbai INR 305,000/t ≈ USD 3,151/t and Delhi INR 304,750/t ≈ USD 3,149/t on 7 Oct 2026 → 305000/3151 = 96.80, 304750/3149 = 96.78; mean 96.79",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+   "date": "2026-10-07",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Cross-check: rupee settled at 95.92/USD on 27 Jul 2026 (https://deccanherald.com/business/markets/rupee-surges-61-paise-to-settle-at-9592-against-us-dollar-4088866); 95.79 reported for 11 Sep 2026 in a search extract (Deccan Chronicle, URL not captured)."
+  },
+  {
+   "key": "nonferrous.anchor.lme.aluminium.cash",
+   "value": 3102,
+   "unit": "USD/t",
+   "basis": "LME aluminium cash bid (exchange settlement as reported by AL Circle)",
+   "source": "https://www.alcircle.com/news/lme-aluminium-cash-offer-price-falls-around-1-to-3-102-t-while-stocks-drop-to-238-875t-121473",
+   "date": "2026-10-07",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Cash offer 3,102.5; 3-month bid 3,112; 6 Oct cash 3,134."
+  },
+  {
+   "key": "nonferrous.anchor.lme.aluminium.3m",
+   "value": 3114,
+   "unit": "USD/t",
+   "basis": "LME 3-month aluminium as quoted by SMM (down 3.0% from 3,210 on 30 Sep 2026)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+   "date": "2026-10-07",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.p1020.hindalco",
+   "value": 362500,
+   "unit": "INR/t",
+   "basis": "Producer list price: Hindalco Primary Ready Reckoner, basic price 'P0610 (99.85% min) / P1020 / EC Grade Ingot & Sow 99.7% (min) / Cast Bar'. Ex-works; taxes (GST) extra; freight / godown extra.",
+   "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-20-august-2026.pdf",
+   "date": "2026-08-20",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Latest reckoner the search index held. Series: 7 Mar 368,000; 26 Mar 383,250; 11 Apr 396,000; 17 Apr 417,250; 29 Apr 408,500; 16 May 412,500; 27 May 424,250; 14 Aug 373,250; 20 Aug 362,500. P0406 (99.85%) 374,750 on 14 Aug. LME has fallen since (3M 3,114 on 7 Oct), so October list is likely lower — see derived item."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.p1020.nalco",
+   "value": 404900,
+   "unit": "INR/t",
+   "basis": "Producer list price: NALCO P1020 (99.7%) ingot, ex-works, excl. GST (as reported by BigMint)",
+   "source": "https://www.bigmint.co/intel/detail/india-nalco-cuts-aluminium-ingot-prices-by-inr-3900t-40t-36597",
+   "date": "2026-05-20",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. = USD 4,179/t; prior 14 May 2026 INR 408,800/t (USD 4,272/t) when LME 3M was USD 3,653/t (BigMint). No NALCO revision after May 2026 was found."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.p1020.oct2026Derived",
+   "value": 352477,
+   "unit": "INR/t",
+   "basis": "DERIVED: NALCO 14 May 2026 USD 4,272/t over LME 3M USD 3,653/t → producer mark-up ratio 1.1694 (premium + duty + delivery). Applied to LME 3M USD 3,114 (7 Oct 2026) × FX 96.79: 3114 × 1.1694 × 96.79 = 352477. Ex-works, ex-GST.",
+   "source": "https://www.bigmint.co/intel/detail/india-nalco-raises-aluminium-ingot-prices-by-inr-18800t-197t-36580",
+   "date": "2026-10-07",
+   "notes": "Estimate, not a list price. Assumes the May premium/duty ratio holds; cross-check: Hindalco 20 Aug list 362,500 when LME was higher. BigMint also reported the India domestic P1020 premium steady at USD 280–300/t over LME cash in Feb–Apr 2026 (search extract over BigMint/AL Circle results, exact page not identifiable). Use 352–363 INR/kg as the Oct-2026 P1020 band."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.p1020.marketDelhi",
+   "value": 375000,
+   "unit": "INR/t",
+   "basis": "Market assessment: primary ingot Delhi NCR (Mumbai 374,000) — BigMint, as relayed by search extract; MCX same week 369,080",
+   "source": "https://www.bigmint.co/intel/detail/india-nalco-cuts-aluminium-ingot-prices-by-inr-3900t-40t-36597",
+   "date": "2026-05-07",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Shows spot traded ~INR 30,000/t below NALCO list at that time (list 386,000–408,800 in early May)."
+  },
+  {
+   "key": "nonferrous.extra.billet.AA6063_7to9in",
+   "value": 17600,
+   "unit": "INR/t over P1020",
+   "basis": "Producer list prices, same reckoner: 14 Aug 2026 AA6063 billet 7/8/9in 390,850 − P1020 373,250 = 17,600; 16 May 2026 430,100 − 412,500 = 17,600 (identical spread). 28 Aug 2026 billet 7–9in 381,350.",
+   "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+   "date": "2026-08-14",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened."
+  },
+  {
+   "key": "nonferrous.extra.billet.AA6063_5to6in",
+   "value": 19100,
+   "unit": "INR/t over P1020",
+   "basis": "Producer list prices: 14 Aug 2026 AA6063 billet 5/6in 392,350 − P1020 373,250 = 19,100 (16 May: 431,600 − 412,500 = 19,100)",
+   "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+   "date": "2026-08-14",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened."
+  },
+  {
+   "key": "nonferrous.extra.wireRod.EC_9.5mm",
+   "value": 8750,
+   "unit": "INR/t over P1020",
+   "basis": "Producer list prices: 14 Aug 2026 EC grade wire rod 9.5 mm 382,000 − P1020 373,250 = 8,750",
+   "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+   "date": "2026-08-14",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. 16 May reckoner: EC rod 421,250 − 412,500 = 8,750 (same)."
+  },
+  {
+   "key": "nonferrous.extra.wireRod.6201_HAC1",
+   "value": 16500,
+   "unit": "INR/t over P1020",
+   "basis": "Producer list prices: 14 Aug 2026 6201 alloy wire rod 9.5 mm (HAC-1) 389,750 − P1020 373,250 = 16,500",
+   "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+   "date": "2026-08-14",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.billet6063.premiumOverLme3m",
+   "value": 710,
+   "unit": "USD/t",
+   "basis": "DERIVED all-in India 6063 billet premium over LME 3M (ex-works, ex-GST, duty-inclusive): Oct 2026 = (derived P1020 352477 + 17,600) / 96.79 − 3,114 = 710. May 2026 cross-check with FX 408,800/4,272 = 95.69: Hindalco (412,500+17,600)/FX − 3,653 = 842; NALCO (408,800+17,600)/FX − 3,653 = 803.",
+   "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+   "date": "2026-10-07",
+   "notes": "Cross-check for the tool's BILLET_PREMIUM_USD_PER_T.IN = 550 (unsourced estimate): the evidence gives ≈ 710–842 USD/t, i.e. the tool is ~150–300 USD/t low. Ratio-based Oct figure is an estimate."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.ADC12.mumbai",
+   "value": 305000,
+   "unit": "INR/t",
+   "basis": "Market assessment (SMM weekly Indian ADC12, ex-works spot, Mumbai), launched 13 Aug 2026",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+   "date": "2026-10-07",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Down 4,000 w-o-w. GST treatment not stated in the extract (Indian spot ingot quotes are normally ex-GST)."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.ADC12.delhi",
+   "value": 304750,
+   "unit": "INR/t",
+   "basis": "Market assessment (SMM weekly, ex-works spot, Delhi). A major domestic automaker cut its purchase price to 304,500; some secondary producers offered 305,000. Indian ADC12 CIF Japan USD 3,080/t.",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+   "date": "2026-10-07",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Mid-Sep 2026 Delhi 308,500 (https://news.metal.com/newscontent/104120762-indian-adc-12-prices-mixed-delhi-down-mumbai-steady-amid-weaker-lme-aluminium)."
+  },
+  {
+   "key": "nonferrous.anchor.aluminium.ADC12.chennai",
+   "value": 369000,
+   "unit": "INR/t",
+   "basis": "Market assessment (SteelMint/BigMint) May 2026: Chennai 368–370 INR/kg, Delhi 367 INR/kg — shows Chennai ≈ Delhi; no Sep/Oct Chennai figure found",
+   "source": "https://www.steelmint.in/india-adc12-prices-firm-m-o-m-in-may26-automotive-demand-outlook-under-watch-749161",
+   "date": "2026-05",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Historical only — use the Oct Delhi/Mumbai level for the cluster average (Chennai tracked Delhi within ~INR 2/kg in May). Apr 2026 pan-India offers 370,000–380,000 (https://www.bigmint.co/events/global-commodity-conclave/blog/india-aluminium-adc12-prices-surge-m-o-m-in-apr26-as-input-costs-rise-supply-tightens)."
+  },
+  {
+   "key": "nonferrous.extra.dieCast.ADC12",
+   "value": -47477,
+   "unit": "INR/t over P1020",
+   "basis": "DERIVED: SMM ADC12 Mumbai 305,000 (7 Oct 2026) − derived Oct P1020 352477 = -47477 (secondary alloy trades BELOW primary)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+   "date": "2026-10-07",
+   "notes": "Against Hindalco 20 Aug list 362,500 the discount is −57,500. India's OEM-grade ADC12 is itself scrap-based, so 'ADC12 secondary' is the same market."
+  },
+  {
+   "key": "nonferrous.anchor.copper.mcx",
+   "value": 1384.75,
+   "unit": "INR/kg",
+   "basis": "Exchange price: MCX copper futures (ex-GST exchange quote), intraday high ~1,390 after falling below 1,400 the prior session",
+   "source": "https://www.jmfinancialservices.in/market-news-and-insights/1732126",
+   "date": "2026-09-11",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. URL is one of the MCX-commentary pages returned for the query; the extract did not tie the figure to a specific page with certainty. 17 Jul 2026 MCX 1,296.95; 24 Jul 1,334.5 (cbonds)."
+  },
+  {
+   "key": "nonferrous.anchor.copper.cathodeMumbai",
+   "value": 1274000,
+   "unit": "INR/t",
+   "basis": "Market assessment (BigMint): copper cathode ex-Mumbai ~1,274,000 (Ahmedabad ~1,277,000) when MCX ~1,270 INR/kg and LME ~13,240 USD/t → cathode ≈ MCX + ~INR 4/kg",
+   "source": "https://www.bigmint.co/insights/detail/india-copper-cathode-prices-inch-higher-w-o-w-cautious-buying-limits-market-activity-765628",
+   "date": "2026-07-02",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. June 2026 range 1,377,000 (4 Jun) – 1,240,000 (25 Jun). Hindalco/Vedanta list prices not found."
+  },
+  {
+   "key": "nonferrous.anchor.copper.oct2026Derived",
+   "value": 1385,
+   "unit": "INR/kg",
+   "basis": "DERIVED: copper USD 6.49/lb on 2 Oct 2026 (Comex-quoted) × 2,204.62 lb/t × FX 96.79 / 1000 = 1385. Consistent with MCX 1,384.75 on 11 Sep. Cathode ≈ MCX (+0.3%).",
+   "source": "https://www.alpha-maven.com/story/venture-capital/commodity-update-copper-sourcebenchmarkmineralscom",
+   "date": "2026-10-02",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. LME cash set a record ~USD 14,850–14,912/t on 17–19 Aug 2026 (https://www.miningreporters.com/noticia/news/2026/08/copper-price-new-all-time-high-673-lb-london-cochilco). Use ~1,385–1,390 INR/kg ex-GST as the Oct-2026 cathode anchor."
+  },
+  {
+   "key": "nonferrous.anchor.brass.honeyScrapJamnagar",
+   "value": 810000,
+   "unit": "INR/t",
+   "basis": "Market assessment (BigMint): brass honey scrap, exw Jamnagar ~808,000–810,000 (19 Jun 2026; LME Cu ~13,650); 22 May 816,000; 15 May 805,000; 9 Jan 671,000",
+   "source": "https://www.bigmint.co/insights/detail/india-brass-honey-scrap-prices-remain-rangebound-w-o-w-in-jamnagar-gujarat-752993",
+   "date": "2026-06-19",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. No Jul–Oct 2026 assessment found; copper is ~5% higher in Oct (USD ~14,300 vs 13,650). No brass ROD (CZ121/CW614N, CZ122) price from a market reporter found — only IndiaMART listings (₹560–760/kg, undated, cross-check only, not used)."
+  },
+  {
+   "key": "nonferrous.anchor.zinc.hzlSHG",
+   "value": 376200,
+   "unit": "INR/t",
+   "basis": "Producer list price: Hindustan Zinc SHG zinc ingot (other grades 374,200 PW – 377,700 SHG-CGG), as reported by BigMint",
+   "source": "https://www.bigmint.co/insights/detail/hzl-cuts-zinc-prices-lead-prices-june-2026-india-755876",
+   "date": "2026-06-01",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Latest HZL revision found. LME zinc then ~3,540 (June avg 3,539.8); LME rose to 3,634 on 4 Aug 2026 (SMM extract) — Oct HZL list not found. GST basis not stated in extract (HZL list is ex-GST basic)."
+  },
+  {
+   "key": "nonferrous.anchor.lme.zinc",
+   "value": 3634,
+   "unit": "USD/t",
+   "basis": "LME zinc close (4-year intraday high 3,703.5) as reported by SMM",
+   "source": "https://news.metal.com/pt/newscontent/104039814-touros-no-aperto-dos-contratos-de-curto-prazo-continuam-a-impulsionar-os-pre%C3%A7os-do-zinco-zinco-na-lme-atinge-m%C3%A1xima-de-q",
+   "date": "2026-08-04",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. No Sep/Oct 2026 LME zinc found."
+  },
+  {
+   "key": "nonferrous.anchor.magnesium.fobChina",
+   "value": 2250,
+   "unit": "USD/t",
+   "basis": "Market assessment (SMM): 99.9% Mg ingot FOB China USD 2,200–2,300/t (mid-point); Fugu domestic 15,500–15,600 CNY/t; market weak",
+   "source": "https://news.metal.com/newscontent/104146627-supply-continues-to-be-released-but-demand-is-weak-magnesium-ingot-runs-weak-under-pressure-smm-magnesium-ingot-spot-flash",
+   "date": "2026-10-08",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Apr 2026 FOB Tianjin 2,500–2,600."
+  },
+  {
+   "key": "nonferrous.anchor.customs.bcd.magnesium_810411",
+   "value": 5,
+   "unit": "% BCD",
+   "basis": "Customs tariff: HS 8104 11 (unwrought Mg ≥99.8%) BCD 5% + SWS 10% of BCD; IGST 18% (creditable, excluded)",
+   "source": "https://treayo.com/en/hs/india/81041100",
+   "date": "undated (third-party tariff site)",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Not verified against a CBIC notification. Ti: 8108 90 10 (wrought) BCD 5%, 8108 90 90 BCD 10% (https://treayo.com/en/hs/india/81089010)."
+  },
+  {
+   "key": "nonferrous.anchor.magnesium.landedIndiaDerived",
+   "value": 229.8,
+   "unit": "INR/kg",
+   "basis": "DERIVED: FOB 2,250 USD/t × FX 96.79 × (1 + 5% BCD + 0.5% SWS) / 1000 = 229.8 INR/kg, ex-IGST, BEFORE ocean freight/insurance/port and BEFORE any AZ91D/AM60B alloy premium (neither found)",
+   "source": "https://news.metal.com/newscontent/104146627-supply-continues-to-be-released-but-demand-is-weak-magnesium-ingot-runs-weak-under-pressure-smm-magnesium-ingot-spot-flash",
+   "date": "2026-10-08",
+   "notes": "AZ91D FOB/ex-works China prices exist on SMM (SMM-MG-AM-001/004) but are behind sign-in — not read."
+  },
+  {
+   "key": "nonferrous.anchor.titanium.sponge",
+   "value": 9379,
+   "unit": "USD/t",
+   "basis": "Market index (Procurement Resource): titanium sponge India 9,378.76 USD/t; China 6,445.94 USD/t",
+   "source": "https://www.procurementresource.com/es/resource-center/titanium-sponge-price-trends",
+   "date": "2026-05",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. Sponge only — no Ti-6Al-4V or CP Gr2 BAR price from a producer (MIDHANI) or reporter found. IndiaMART/TradeIndia Gr5 bar listings ₹1,400–2,000/kg (undated; cross-check only, NOT a price)."
+  },
+  {
+   "key": "nonferrous.anchor.lme.nickel",
+   "value": 16790,
+   "unit": "USD/t",
+   "basis": "LME nickel spot (IMF series via Cbonds); LME futures 17,193 / spot 16,995 on 5 Aug 2026 (Yieh)",
+   "source": "https://cbonds.com/indexes/181085/",
+   "date": "2026-08-12",
+   "notes": "Read from a web-search result extract (WebFetch and curl to the source host are blocked from this environment); the page itself was not opened. No Sep/Oct figure found. No Inconel 718/625, Monel 400, Hastelloy C-276 or Waspaloy bar price found from MIDHANI or any reporter."
+  },
+  {
+   "key": "nonferrous.check.AB2_CuAl10Ni5Fe5.metalContent",
+   "value": 1225.0,
+   "unit": "INR/kg",
+   "basis": "DERIVED metal-content floor (no scrap credit, no melt or conversion): 0.80 × Cu 1385 + 0.05 × Ni 1625 (16,790 USD/t × 96.79) + 0.10 × Al 352.5 + Fe 5% ≈ 0 = 1225.0",
+   "source": "https://cbonds.com/indexes/181085/",
+   "date": "2026-10",
+   "notes": "Shows the book's AB2 cast 1,183 and CW307G bar 1,240 sit at or below their contained metal value at Oct-2026 copper."
+  }
+ ],
+ "notes": [
+  "WebFetch and curl to hindalco.com, news.metal.com and other hosts failed (DNS / proxy 403); every figure was read from web-search result extracts, so each one should be spot-checked on the page before it is merged.",
+  "Grade pricing as anchor + extra: aluminium wrought/cast primary-based grades = P1020 (Oct 2026: 352,500 derived; 362,500 Hindalco list 20 Aug) + form extra; India secondary die-cast (ADC12 family) = SMM ADC12 ≈ 305,000 (P1020 − ~47,500); copper products = cathode ≈ 1,385–1,390 INR/kg + form extra; zinc alloys = HZL SHG (376,200 on 1 Jun) + alloy extra; Mg alloys = landed pure Mg ≈ 230 INR/kg + freight + alloy extra.",
+  "NOT FOUND (no figure from an allowed source): 2026 India prices or extras for LM6, LM25/A356, A380/LM24, AlSi10Mg, LM4 ingot; Hindalco/Jindal sheet & coil conversion premiums (1xxx/3xxx/5xxx/6xxx); extruded/drawn bar premiums (6061/6082/2011/7075) and 7075 import parity; Hindalco/Vedanta copper cathode list and CC-rod/ETP-bar/sheet premiums; brass rod CZ121/CZ122, phosphor bronze, LG2 gunmetal, aluminium bronze, tin bronze market prices (only brass honey scrap); Zamak 3/5 alloy premium; AZ91D/AM60B alloy premium (SMM behind sign-in); Ti-6Al-4V / CP Gr2 bar, Inconel 718/625, Monel 400, Hastelloy C-276 (MIDHANI or import); enamelled rectangular copper/aluminium winding-wire premium (IndiaMART only).",
+  "Current-book checks (current vs evidence): mat-adc12 341.06 vs SMM 305 (Oct 2026) → ~12% high; mat-adc12-secondary 248.04 vs 305 → ~19% low (India OEM ADC12 is already scrap-based); mat-c101-bar 1,370.42 and mat-c110-copper 1,335.70 are BELOW Oct-2026 cathode ≈1,385 before any rolling/drawing conversion → too low; mat-ab2-cast 1,183.15 and mat-ab2-forge 1,240.20 at/below contained metal ≈1,225 → too low; mat-mag-az91 472.52 / mat-mag-am60 453.91 / mat-mag-am50 460.11 vs landed 99.9% Mg ≈230 INR/kg (+ freight + alloy premium, not found) → very likely ~1.6–2× high. Tool BILLET_PREMIUM_USD_PER_T.IN = 550 vs derived ≈700–840 USD/t all-in → low.",
+  "Not judged wrong (insufficient evidence): wrought Al sheet/bar (e.g. 6061-T6 bar 441.51 = P1020 + ~80–90 INR/kg; AA5052 395.62 = P1020 + ~33–43), LM25 369.58 (P1020 + ~7–17), brass CZ121 954.95 (honey scrap ~810–816 + ~140), Zamak 3 395.62 (SHG 376 + ~20), Ti-6Al-4V 4,667–5,845 (only reseller listings ₹1,400–2,000 seen, not usable), nickel alloys, hairpin winding copper 1,723.88 (= cathode + ~335)."
+ ]
+}

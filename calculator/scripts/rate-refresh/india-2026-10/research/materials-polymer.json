@@ -1,0 +1,223 @@
+{
+  "domain": "india-materials-polymer",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "fx.usd_inr",
+      "value": 96.72,
+      "unit": "INR per USD",
+      "basis": "Rupee close (provisional) on 9 Oct 2026, PTI report. Used for every USD→INR conversion in this file.",
+      "source": "https://www.deccanherald.com/amp/story/business/rupee-rises-16-paise-to-close-at-9672-against-us-dollar-4176436",
+      "date": "2026-10-09",
+      "notes": "Previous day 96.88; 31 Jul 2026 close 95.35 (same outlet). Rupee has weakened ~1.4% since July. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pp_raffia.iocl_basic.2026-04-16",
+      "value": 144021,
+      "unit": "INR/t basic (ex-GST)",
+      "basis": "IOCL price list 16-04-2026, row 1030RG/P1030RG (PP raffia), first ex-works/depot column. List is labelled 'basic and cash prices, GST additional'.",
+      "source": "https://www.plastemart.com/Upload/pricelist/16-04-2026-IOCL-Price-List.pdf",
+      "date": "2026-04-16",
+      "notes": "Same row: 24-01-2026 list 94,521; 01-04-2026 list 153,021 (spike during the 2026 oil shock). After 16 Apr: RIL PP -5,000/t (21 Apr), then +3,000/t (11 Sep, RCP +5,000, IM & F&F +4,000), +2,500/t (21 Sep); IOC PP +3,000 (11 Sep raffia/TQPP/BOPP/ICP), +1,000 (1 Oct), rollover 8 Oct. May–Aug PP revisions NOT found, so the Oct level cannot be chained from this list; used as a dated level only. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pp_raffia.delhi_exgodown.2026-09-25",
+      "value": 131.0,
+      "unit": "INR/kg",
+      "basis": "Credco 'indicative prices, ex-godown', Delhi NCR market snapshot dated Fri 25 Sep 2026: IOCL PP RAFFIA 131.00. Same snapshot: OPaL PP raffia 157.00 (outlier, likely a different grade/basis), PP film grades 156–165, PP non-woven 179.50.",
+      "source": "https://credcosourcing.com/prices",
+      "date": "2026-09-25",
+      "notes": "GST treatment not stated on the extract; Delhi open-market prices are normally quoted basic (GST extra) — treat as ex-GST but unverified. A sourcing platform's market snapshot, not a producer list. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pp.india_index.2026-09",
+      "value": 127.7,
+      "unit": "INR/kg",
+      "basis": "IMARC India polypropylene USD 1.32/kg, Sep 2026 × 96.72 INR/USD = 127.7. Cross-check: Business Analytiq India USD 1.28/kg (+2.4%) Sep 2026 = 123.8 INR/kg; Procurement Resource CIF India USD 1,452/t Aug 2026 = 140.4 INR/kg before duty.",
+      "source": "https://www.imarcgroup.com/polypropylene-pricing-report",
+      "date": "2026-09",
+      "notes": "Market-reporter index, basis (domestic vs import) not stated. Agrees with Credco 131 within ~3%. Other refs: https://businessanalytiq.com/procurementanalytics/index/polypropylene-price-index/ ; https://www.procurementresource.com/resource-center/polypropylene-pp-price-trends Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.reliance_list.2026-09-30",
+      "value": "PP H110MA 159.79; HDPE raffia E52009 144.81; HDPE IM HD50MA180 137.47; LLDPE IM M26500 156.51; LDPE ext 1070LA17 232.61",
+      "unit": "INR/kg",
+      "basis": "plastic4trade 'polymer price today' list, Reliance (Gujarat) grades dated 30-09-2026.",
+      "source": "https://plastic4trade.com/polymer-price-today-update-list-graph",
+      "date": "2026-09-30",
+      "notes": "Basis NOT stated (GST inclusion, ex-works vs distributor unknown). PP H110MA at 159.79 vs Credco IOCL raffia 131 is ~22% higher (≈ 1.18 GST + grade premium?) so this is used only as a cross-check, NOT as an ex-GST anchor. LDPE 232.61 looks anomalous and is not relied on. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.hdpe_raffia.delhi_exgodown.2026-09-25",
+      "value": "GAIL 135.50; Haldia 136.50",
+      "unit": "INR/kg",
+      "basis": "Credco Delhi NCR indicative ex-godown, 25 Sep 2026: GAIL HD RAFFIA 135.50, HALDIA HD RAFFIA 136.50.",
+      "source": "https://credcosourcing.com/prices",
+      "date": "2026-09-25",
+      "notes": "GST treatment not stated (assumed basic). After this: RIL HDPE pipe & film +1,000/t (30 Sep); IOC HD pipe +2,000/t (1 Oct, 8 Oct); PE revised 10 Oct: HDPE pipe +3,000/t, LDPE EC & IM +3,000/t, LLDPE rollover (Plastemart revision notices, https://www.plastemart.com/polymer-price-list-pe-pp-pvc). Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pvc_k67.delhi_exgodown.2026-09-25",
+      "value": "PVC K67 108.00; Hygain PVC K67 96.50",
+      "unit": "INR/kg",
+      "basis": "Credco Delhi NCR indicative ex-godown, 25 Sep 2026.",
+      "source": "https://credcosourcing.com/prices",
+      "date": "2026-09-25",
+      "notes": "Cross-check (marketplace, not a price per RULES): imported K67 Xinfa SG5 ex-Mundra 97,500 INR/t (30 Sep 2026) and offers 99,500–102,750 INR/t (1 Oct 2026) on https://nexizo.ai/polymers-category/pvc . RIL PVC +1,500/t (22 Aug), +2,000/t (early Sep). Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pet_bottle.india_index.2026-09",
+      "value": 104.5,
+      "unit": "INR/kg",
+      "basis": "Polyester Time PET bottle-grade chip trend, India USD 1.08/kg 'steady (-0.9%)', article dated 10-09-2026 × 96.72 = 104.5.",
+      "source": "https://www.polyestertime.com/pet-bottle-grade-chip-price-trends/",
+      "date": "2026-09-10",
+      "notes": "Cross-check: OFBusiness bottle grade INR 90–100/kg (https://www.ofbusiness.com/prices/polymers-packaging/pet, aggregator). RIL raised PET +2,000/t from 1 May 2026. Reliance's own list price not found. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.abs.india_index.2026-09",
+      "value": 165.4,
+      "unit": "INR/kg",
+      "basis": "Business Analytiq ABS price index, India USD 1.71/kg Sep 2026 (Aug 1.87) × 96.72 = 165.4.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/",
+      "date": "2026-09",
+      "notes": "Cross-check: OFBusiness ABS INR 145–165/kg natural (aggregator, https://www.ofbusiness.com/prices/polymers-packaging/abs). No Bhansali / INEOS Styrolution India list found. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pc.cif_india.2026-07",
+      "value": 200.2,
+      "unit": "INR/kg CIF (before duty)",
+      "basis": "Procurement Resource polycarbonate CIF India USD 2,070/t Jul 2026 (Jun 2,209.61) × 96.72/1000 = 200.2. Same source: India domestic monthly average ~INR 210.87/kg in May 2026.",
+      "source": "https://www.procurementresource.com/resource-center/polycarbonate-price-trends",
+      "date": "2026-07",
+      "notes": "Import parity = CIF × (1 + BCD 7.5–10%) ≈ 215–220 INR/kg + port/handling/distributor margin (not sourced). Domestic 210.87 (May) agrees. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pa6.cif_india.2026-06",
+      "value": 193.4,
+      "unit": "INR/kg CIF (before duty)",
+      "basis": "Plastemart Nylon 6 series, US$/kg CIF Nhava Sheva, ~2.00 in Jun 2026 (peak ~2.25 Apr 2026) × 96.72 = 193.4.",
+      "source": "https://www.plastemart.com/nylon-6-PA-6-cif-india-prices",
+      "date": "2026-06",
+      "notes": "Other reporters higher: Expert Market Research India avg USD 2,680/t Q2 2026 (= 259.2 INR/kg); Procurement Resource CIF India USD 2,450–2,460/t Jun–Jul 2026 (= 237.0–237.9). Range 193–259 INR/kg before duty. Domestic listing cross-check: Gujarat Polyfilms engineering PA6 INR 210–213/kg (seller page). Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pa66.cif_india.2026-06",
+      "value": 266.0,
+      "unit": "INR/kg CIF (before duty)",
+      "basis": "Plastemart Nylon 66 series, US$/kg CIF Nhava Sheva: China 2.750, Taiwan 2.800 in Jun 2026 (Apr 2026 peak China 3.350; Dec 2025 China 2.020) × 96.72 = 266.0.",
+      "source": "https://www.plastemart.com/nylon-66-PA-66-polymer-prices-cif-india-pricelist",
+      "date": "2026-06",
+      "notes": "Landed with BCD 7.5% ≈ 285.9 INR/kg before handling/margin. Unfilled resin. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.anchor.pbt.india_index.2026-09",
+      "value": 248.6,
+      "unit": "INR/kg",
+      "basis": "Business Analytiq PBT index, India USD 2.57/kg (+1.2%) Sep 2026 × 96.72 = 248.6.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+      "date": "2026-09",
+      "notes": "Conflicts with Plastemart PBT CIF India China USD 1.55/kg Mar 2026 (= 149.9) https://www.plastemart.com/pbt-pricelist-cif-india-prices — basis of BA index unclear (may be compound/domestic). Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "polymer.import_duty.chapter39",
+      "value": "7.5–10% BCD (standard); nil 2 Apr–30 Jun 2026 for listed items",
+      "unit": "percent of assessable value",
+      "basis": "Notification 12/2026-Customs cut BCD to nil on 40+ items incl. PP, PE, PS, PVC, PET chips, ABS, styrene etc., valid 2 Apr–30 Jun 2026; no extension found, so standard rates apply in Oct 2026. Standard Chapter 39 BCD 7.5–10% per aggregator pages.",
+      "source": "https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480",
+      "date": "2026-04-02",
+      "notes": "Standard rate from https://deepbeez.com/import-duty/import-duty-on-plastic-granules-in-india (secondary); Social Welfare Surcharge not confirmed in this round. Verify per HSN on CBIC tariff before use. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "rubber.nr_rss4.kottayam.2026-09-26",
+      "value": 278.0,
+      "unit": "INR/kg",
+      "basis": "Rubber Board Kottayam RSS-4 27,800 INR/100 kg on 26 Sep 2026 (+100), as republished by The Canara Post ('Source: Rubber Board'); 25 Sep 27,700 confirmed by commoditymarketlive. Sep 2026 range 27,200–27,800.",
+      "source": "https://thecanarapost.com/todays-rubber-prices-kottayam-and-international-market/",
+      "date": "2026-09-26",
+      "notes": "Rubber Board daily market price (dealer buying, ex-GST; NR attracts GST separately). Not read on rubberboard.org.in (blocked). ISNR-20 for the same day not captured. Cross-check: https://www.commoditymarketlive.com/rubber-price/rss4-variety . Raw polymer, NOT a compound. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "rubber.nbr.india_index.2026-07",
+      "value": 208.9,
+      "unit": "INR/kg",
+      "basis": "Business Analytiq NBR index India USD 2.16/kg (-14.6%) Jul 2026 × 96.72 = 208.9. IMARC India Q2 2026 USD 2,002/t = 193.6; Expert Market Research India avg USD 2.08/kg Q1 2026.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/acrylonitrile-butadiene-rubber-nbr-price-index/",
+      "date": "2026-07",
+      "notes": "Raw NBR polymer (medium ACN), not a 70 Shore A compound. Other: https://www.imarcgroup.com/nitrile-butadiene-rubber-pricing-report Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "rubber.sbr1502.listing_crosscheck",
+      "value": "165",
+      "unit": "INR/kg (asking)",
+      "basis": "TradeIndia listing data stamped 26 May 2026: SBR 1502 165 INR/kg; IndiaMART Reliance Relflex 1502 dealer listings 160–165 INR/kg (undated). CROSS-CHECK ONLY (reseller listings).",
+      "source": "https://www.tradeindia.com/manufacturers/sbr-rubber.html",
+      "date": "2026-05-26",
+      "notes": "No Reliance ex-plant SBR price for 2026 found. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "rubber.epdm.listing_crosscheck",
+      "value": "204–215",
+      "unit": "INR/kg (asking)",
+      "basis": "Mumbai trader (Bhavik Enterprise) EPDM V3666 Rs 215/kg, V5601 Rs 204/kg, undated. CROSS-CHECK ONLY.",
+      "source": "https://www.bhavikenterprise.in/edpm-rubber.html",
+      "date": "undated",
+      "notes": "No reporter/producer EPDM price for India 2026 found. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "rubber.carbon_black.pcbl.q1fy27",
+      "value": 130,
+      "unit": "INR/kg",
+      "basis": "PCBL Q1 FY27 (Apr–Jun 2026): carbon black pricing up Rs 27/kg q/q to ~Rs 130/kg, tracking crude (earnings-call summary). Kotak puts blended realisation (incl. specialty blacks) at ~Rs 161k/t (+26.2% q/q).",
+      "source": "https://compoundingai.in/market-news/pcbl-q1-fy27-earnings-call",
+      "date": "2026-07 (Q1 FY27 results)",
+      "notes": "Producer realisation (ex-GST, ex-works). Rubber-grade (N330/N550) mix not split. Kotak: https://www.kotakneo.com/uploads/PCBL_One_Pager_Q1_FY_27_Update_e189bde04c.pdf . Secondary summaries, not the filing. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "composite.epoxy_ler.india_index.2026-07",
+      "value": 162.5,
+      "unit": "INR/kg",
+      "basis": "Business Analytiq epoxy resin India USD 1.68/kg (-9.2%) Jul 2026 × 96.72 = 162.5. IMARC India USD 1.71/kg Jul 2026 = 165.4. Conflicting: ChemAnalyst India USD 2,849/t Jun 2026 = 275.6; Procurement Resource CIF India USD 2,697/t Mar 2026.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/epoxy-resin-price-index/",
+      "date": "2026-07",
+      "notes": "Basic liquid epoxy resin, NOT a formulated infusion/prepreg system (resin + hardener + toughener). Range 163–276 INR/kg. Others: https://www.imarcgroup.com/epoxy-resin-pricing-report ; https://www.chemanalyst.com/Pricing_es/epoxy-resin-1964 Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "composite.eglass_direct_roving.listing_crosscheck",
+      "value": "50–70",
+      "unit": "INR/kg (asking)",
+      "basis": "IndiaMART/TradeIndia and trader pages: E-glass direct roving 50, 55 (Delhi, MOQ 1 t), 60 (MOQ 1 t), 68 INR/kg; multi-end 80; woven roving 55–150 INR/kg. CROSS-CHECK ONLY, mostly undated.",
+      "source": "https://www.kapishinternational.com/fiberglass-roving.html",
+      "date": "undated",
+      "notes": "No Owens Corning / Saint-Gobain India price found. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "composite.carbon_fibre_t700.crosscheck",
+      "value": "36–38",
+      "unit": "USD/kg (= 3,482–3,675 INR/kg)",
+      "basis": "Accio 2026 pricing page citing Procurement Resource: T700 12K market average USD 36–38/kg; T300 China domestic USD 21–22/kg. Undated secondary aggregation. CROSS-CHECK ONLY.",
+      "source": "https://www.accio.com/business/how-much-is-carbon-fiber",
+      "date": "undated (page titled 2026)",
+      "notes": "No reliable 2026 CF tow price; India imports all CF. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    },
+    {
+      "key": "paint.ecoat_ced.listing_crosscheck",
+      "value": 185,
+      "unit": "INR/kg (asking)",
+      "basis": "Pune supplier listing: CED colours Rs 185/kg in 50 kg, 200 kg and tanker packs. CROSS-CHECK ONLY, undated.",
+      "source": "https://dir.indiamart.com/pune/ced-coating-services.html",
+      "date": "undated",
+      "notes": "No Nerolac / PPG-Asian Paints / BASF India e-coat price found. Read from web-search result extracts (WebFetch/curl to the page were blocked by the egress proxy); figure not checked on the page itself."
+    }
+  ],
+  "notes": [
+    "WebFetch and curl to plastemart.com and rubberboard.org.in were refused by the egress proxy (CONNECT 403 / DNS); every figure was read from web-search result extracts and is flagged so in its notes.",
+    "The web-search budget for the turn ran out after ~38 searches; remaining gaps listed below were not searched further.",
+    "Context: 2026 oil shock (Iran conflict) spiked Indian polymer prices — IOCL PP raffia basic went 94,521 (24 Jan) → 153,021 (1 Apr) → 144,021 INR/t (16 Apr). Prices rose again Sep–Oct 2026 (several +1,000 to +5,000 INR/t revisions). The rupee is ~96.7/USD.",
+    "Many current-book rows are COMPOUNDS or FORMS (e.g. 'EPDM 70 Shore A', 'Epoxy infusion system', 'E-glass woven fabric'), whose price is not the raw-polymer anchor; compare with care.",
+    "Current book vs evidence (ex-GST INR/kg): PP homo 108.3 vs 128–131 (index, Credco) and 144 basic (IOCL Apr) → LOW ~18–25%; PP copo 125.8 likely low on the same evidence; HDPE 114.86 vs 135.5–137.5 → LOW ~16–20%; uPVC 83.14 vs 96.5–108 (and import 97.5–102.75) → LOW ~16–30%; PET bottle 132.36 vs ~104.5 (index) / 90–100 (aggregator) → HIGH ~25%; NR 228.2 vs RSS-4 278 → LOW ~18%; PA66 unfilled 216.37 vs CIF 266 before duty (≈286 landed) → LOW ~25%; PC 288.49 vs CIF 200 / domestic 211 → HIGH ~30%; PBT 309.1 vs 249 (index) → HIGH ~20% (moderate confidence: sources conflict); ABS 185.46 vs 165 → HIGH ~11% (moderate).",
+    "Suspect but not proven (listing-only evidence): E-glass woven fabric 451.7 and CSM 362.27 vs roving listings 50–150; E-coat 416.61 vs listing 185; Epoxy infusion system 1545 vs base LER 163–276 (formulation premium unknown).",
+    "GST: the Credco and plastic4trade pages do not state GST treatment in the extracts; IOCL lists are basic + GST. Polymer GST in India is 18% (not re-sourced here).",
+    "Not found: polymer.anchor: absolute Oct 2026 producer list (basic) price for PP homo/copo, HDPE blow/pipe/film, LDPE, LLDPE, GPPS/HIPS (Supreme: only +1,000/t GPPS on 2 Mar 2026), PET from Reliance/IOCL/GAIL/HMEL/Haldia/OPaL — only revision deltas and a 16 Apr 2026 IOCL list; May–Aug revisions missing so no chain to Oct. | polymer.anchor: POM, PMMA, PPS, PEEK, PEI, PSU/PPSU, LCP, PPA, PA12, TPU, TPE-S, TPV, ASA, SAN, PC/ABS, mPPE — no India or import-parity 2026 figure found. | polymer.extra.<form>: no sourced premium for thermoforming sheet (ABS/HIPS/PC/PMMA/HDPE) over resin, rotomoulding powder over LLDPE granule (only undated listings 94–145 INR/kg), glass-filled compounds over base resin, or blow / pipe grade over GP grade. | rubber: ISNR-20 (same-day), SBR/EPDM/CR/silicone HCR/LSR/FKM/HNBR producer or reporter prices for India 2026; compounded-rubber (Shore A) prices. | composite: Owens Corning / Saint-Gobain E-glass list, UPR / vinyl-ester (Atul, Huntsman, Aditya Birla) price, prepreg, aramid, honeycomb, foam core, SMC/BMC. | paint: primer, basecoat, clearcoat, powder coat (polyester), PVC underbody — no list or tender price found. | masterbatch: no 2026 India price (only stale listings, black 105–155 INR/kg)."
+  ]
+}

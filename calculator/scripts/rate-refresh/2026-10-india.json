@@ -1,0 +1,1155 @@
+{
+ "asOf": "2026-10-10",
+ "label": "India rate book — 4-cluster average (Pune, Chennai, Bengaluru, Delhi NCR), 3-shift",
+ "fxInrPerGbp": 127.2,
+ "labour": {
+  "categories": {
+   "skilled": {
+    "inrPerHr": 161.8,
+    "basis": "G=27,000; basic=0.5G=13,500; PF+EDLI+admin=13%xmin(basic,15000)=1,755; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,125; gratuity=4.81%xbasic=649; monthly employer cost=30,529 (+13.1%); x12=366,347/yr / 2,264 h = 161.8 INR/h",
+    "source": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+    "research": "labour.skilledMachinist.fullyLoadedInrPerHr"
+   },
+   "semiskilled": {
+    "inrPerHr": 114.1,
+    "basis": "G=18,500; basic=0.5G=9,250; PF+EDLI+admin=13%xmin(basic,15000)=1,202; ESI=3.25%xG if G<=21000 =601; bonus=8.33%xmin(basic,18677) if basic<=21000 =771; gratuity=4.81%xbasic=445; monthly employer cost=21,519 (+16.3%); x12=258,230/yr / 2,264 h = 114.1 INR/h",
+    "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+    "research": "labour.semiskilledOperator.fullyLoadedInrPerHr"
+   },
+   "engineer": {
+    "inrPerHr": 254.6,
+    "basis": "G=45,000; basic=0.5G=22,500; PF+EDLI+admin=13%xmin(basic,15000)=1,950; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =0; gratuity=4.81%xbasic=1,082; monthly employer cost=48,032 (+6.7%); x12=576,387/yr / 2,264 h = 254.6 INR/h",
+    "source": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+    "research": "labour.processEngineer.fullyLoadedInrPerHr"
+   },
+   "foundry": {
+    "inrPerHr": 129.5,
+    "basis": "G=21,000; basic=0.5G=10,500; PF+EDLI+admin=13%xmin(basic,15000)=1,365; ESI=3.25%xG if G<=21000 =682; bonus=8.33%xmin(basic,18677) if basic<=21000 =875; gratuity=4.81%xbasic=505; monthly employer cost=24,427 (+16.3%); x12=293,126/yr / 2,264 h = 129.5 INR/h",
+    "source": "https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+    "research": "labour.foundryOperative.fullyLoadedInrPerHr"
+   },
+   "electronics": {
+    "inrPerHr": 137.8,
+    "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h",
+    "source": "https://in.indeed.com/Smt-jobs-in-South-India",
+    "research": "labour.smtOperator.fullyLoadedInrPerHr"
+   },
+   "inspector": {
+    "inrPerHr": 123.3,
+    "basis": "G=20,000; basic=0.5G=10,000; PF+EDLI+admin=13%xmin(basic,15000)=1,300; ESI=3.25%xG if G<=21000 =650; bonus=8.33%xmin(basic,18677) if basic<=21000 =833; gratuity=4.81%xbasic=481; monthly employer cost=23,264 (+16.3%); x12=279,168/yr / 2,264 h = 123.3 INR/h",
+    "source": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+    "research": "labour.qualityInspector.fullyLoadedInrPerHr"
+   },
+   "technician": {
+    "inrPerHr": 143.8,
+    "basis": "G=24,000; basic=0.5G=12,000; PF+EDLI+admin=13%xmin(basic,15000)=1,560; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,000; gratuity=4.81%xbasic=577; monthly employer cost=27,137 (+13.1%); x12=325,642/yr / 2,264 h = 143.8 INR/h",
+    "source": "https://corpready.in/salary/maintenance-technician-electrical",
+    "research": "labour.maintenanceTechnician.fullyLoadedInrPerHr"
+   },
+   "supervisor": {
+    "inrPerHr": 196.7,
+    "basis": "G=33,000; basic=0.5G=16,500; PF+EDLI+admin=13%xmin(basic,15000)=1,950; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,374; gratuity=4.81%xbasic=794; monthly employer cost=37,118 (+12.5%); x12=445,417/yr / 2,264 h = 196.7 INR/h",
+    "source": "https://www.payscale.com/research/IN/Job=Production_Supervisor%2C_Manufacturing/Salary/febb9359/Pune",
+    "research": "labour.productionSupervisor.fullyLoadedInrPerHr"
+   }
+  },
+  "grades": {
+   "forge": {
+    "inrPerHr": 131.8,
+    "basis": "G=22,000; basic=0.5G=11,000; PF+EDLI+admin=13%xmin(basic,15000)=1,430; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =916; gratuity=4.81%xbasic=529; monthly employer cost=24,875 (+13.1%); x12=298,505/yr / 2,264 h = 131.8 INR/h",
+    "source": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press",
+    "research": "labour.forgeOperator.fullyLoadedInrPerHr"
+   },
+   "furnace": {
+    "inrPerHr": 137.8,
+    "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h",
+    "source": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+    "research": "labour.furnaceOperator.fullyLoadedInrPerHr"
+   },
+   "blow": {
+    "inrPerHr": 111.0,
+    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h",
+    "source": "https://corpready.in/salary/injection-moulding-operator",
+    "research": "labour.plasticsOperator.fullyLoadedInrPerHr"
+   },
+   "roto": {
+    "inrPerHr": 111.0,
+    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h",
+    "source": "https://corpready.in/salary/injection-moulding-operator",
+    "research": "labour.plasticsOperator.fullyLoadedInrPerHr"
+   },
+   "thermoform": {
+    "inrPerHr": 111.0,
+    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h",
+    "source": "https://corpready.in/salary/injection-moulding-operator",
+    "research": "labour.plasticsOperator.fullyLoadedInrPerHr"
+   },
+   "trim-router": {
+    "inrPerHr": 111.0,
+    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h",
+    "source": "https://corpready.in/salary/injection-moulding-operator",
+    "research": "labour.plasticsOperator.fullyLoadedInrPerHr"
+   }
+  },
+  "loadingIncluded": "employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days)",
+  "loadingNotIncluded": "night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round"
+ },
+ "energy": {
+  "electricityInrPerKwh": 8.78,
+  "gasInrPerKwh": 3.82,
+  "decision": "held",
+  "basis": "HT industrial all-in: Maharashtra ₹11.80 (incl. 7.5% duty + ToSE), Tamil Nadu ₹8.81 and Haryana ₹7.72 (ex-tax), Karnataka energy charge ₹6.60 (demand charge not found); 3-cluster ex-tax mean ₹9.08 (+3.4% on the book's ₹8.78, inside the spread; Karnataka would lower it) — held. Gas: Gujarat Gas industrial PNG ₹44.68/SCM = ₹3.84/kWh at 10,000 kcal/SCM — the book's ₹3.82 agrees — held.",
+  "sources": [
+   {
+    "research": "energy.electricity.maharashtra.allInInrPerKwh",
+    "source": "https://www.socialnews.xyz/2026/03/27/maha-mahavitaran-tariff-cut-to-benefit-consumers-from-april-1/",
+    "date": "FY2026-27"
+   },
+   {
+    "research": "energy.electricity.tamilnadu.allInInrPerKwh",
+    "source": "https://mercomindia.com/tamil-nadu-hikes-fy-2026-electricity-tariffs-by-3-16",
+    "date": "2025-07-01 (still current Oct 2026 per source)"
+   },
+   {
+    "research": "energy.electricity.haryana.allInInrPerKwh",
+    "source": "https://www.tribuneindia.com/news/haryana/power-shock-consumers-to-pay-30-paise-more-per-unit",
+    "date": "FY2026-27"
+   },
+   {
+    "research": "energy.gas.industrialPNG.inrPerKwh",
+    "source": "https://indianinfrastructure.com/2024/07/05/gujarat-gas-increases-industrial-png-price-in-morbi-gujarat/",
+    "date": "2024-07-04"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 7200,
+  "hoursBasis": "3 shifts × 8 h × 300 working days (Indian cost-accounting convention)",
+  "scheduleIIShiftFactor": 1.3333333333333333,
+  "scheduleIIBasis": "Companies Act 2013 Schedule II: depreciation +50% for double shift, +100% for triple — a held (2-shift) capital charge × 2.0 / 1.5 at 3 shifts",
+  "lifeYears": 7.5,
+  "financeRate": 0.0875,
+  "financeBasis": "1-year MCLR 8.70–8.80% (SBI, BoB, BoI, Jul–Oct 2026); the book's line build-ups use 4% on half the capex",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Indian norm found",
+  "rentInrPerSqftMonth": 25.05,
+  "rentBasis": "Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean",
+  "ukRentGbpPerM2Yr": 110,
+  "ukElectricityGbpPerKwh": 0.268,
+  "capitalHeldFactor": 0.52,
+  "groups": [
+   {
+    "id": "cnc-machining-domestic",
+    "match": "^(mach-vmc3|mach-vmc3-in|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$",
+    "refId": "mach-vmc3",
+    "refCapexInr": 3456000,
+    "basis": "Jyoti CNC average realisation per machine sold ₹34.56 lakh (Q1 FY27; domestic VMC / turning-centre maker); an Indian-built machine of the class — an imported HAAS / Mazak costs more (not found)",
+    "research": "capex.vmc3.domestic",
+    "source": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+    "confidence": "Medium"
+   }
+  ],
+  "notRebuiltBasis": "capex not sourced for India: the book's capital (UK × 0.52) is HELD; the India operating model (3-shift hours, Schedule II, finance, rent, tariff, support at India wages) is applied",
+  "sources": [
+   {
+    "research": "hours.threeShift",
+    "source": "https://www.scribd.com/document/678737769/Solution8",
+    "date": "derived 2026-10-10"
+   },
+   {
+    "research": "depreciation.scheduleII.extraShift",
+    "source": "https://taxguru.in/company-law/depreciation-schedule-ii-companies-act-2013-faq.html",
+    "date": "2014-04-01 (in force)"
+   },
+   {
+    "research": "finance.rate",
+    "source": "https://nsearchives.nseindia.com/corporate/BANKBARODA_10092026170139_SEMCLR.pdf",
+    "date": "2026-09/10"
+   },
+   {
+    "research": "rent.fourClusterAverage",
+    "source": "see rent.pune / rent.chennai / rent.bengaluru / rent.ncr",
+    "date": "H1 2026"
+   },
+   {
+    "research": "capex.vmc3.domestic",
+    "source": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+    "date": "2026-08 (Q1 FY27 call)"
+   }
+  ]
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (commodity CRCA)",
+   "anchorInrPerKg": 72.01,
+   "anchorBasis": "JPC / Ministry of Steel retail, Sep 2026, 4-metro average, CR coil 0.63 mm, ₹84,972/t incl. GST ÷ 1.18",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc_0.63mm_jpc_retail_4metro",
+     "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "DC01 and DC04 both at the commodity CR price: the book had DC01 ₹103 ABOVE the deeper-drawing DC04 ₹87.",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorInrPerKg": 72.01,
+   "anchorBasis": "CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc_0.63mm_jpc_retail_4metro",
+     "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/",
+     "date": "2026-09"
+    },
+    {
+     "research": "ferrous.extra.flat.automotive_grades",
+     "source": "https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/",
+     "date": "n/a"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorInrPerKg": 71.18,
+   "anchorBasis": "HR coil JPC Sep 2026 ₹64.48 + HRPO extra ₹6.70 (Tata Nexarc Mumbai HRPO May 2026 − BigMint HRC May 2026)",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo_derived",
+     "source": "https://www.tatanexarc.com/steel/steel-prices-in-india/",
+     "date": "2026-09 (derived)"
+    },
+    {
+     "research": "ferrous.extra.flat.hrpo_over_hrc",
+     "source": "https://www.tatanexarc.com/steel/steel-prices-in-india/",
+     "date": "2026-05"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorInrPerKg": 64.48,
+   "anchorBasis": "HR coil JPC Sep 2026 (₹76,085/t incl. GST ÷ 1.18) × the book's premium over HRPO; S355MC / S420MC extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrc_2mm_jpc_retail_4metro",
+     "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorInrPerKg": 79.79,
+   "anchorBasis": "GP sheet 0.63 mm JPC Sep 2026 (₹94,148/t incl. GST ÷ 1.18) × the book's premium over DC01 GI; coating-grade extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.gp_0.63mm_jpc_retail_4metro",
+     "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon / alloy bar and forging stock",
+   "anchorInrPerKg": 72.75,
+   "anchorBasis": "BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.en8_c45_round_bar_black",
+     "source": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412",
+     "date": "2026-04-22"
+    },
+    {
+     "research": "ferrous.extra.long.alloy_bar_grades",
+     "source": "https://dir.indiamart.com/pune/alloy-steel-bars.html",
+     "date": "undated listings"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.86,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-en8",
+    "mat-steel1045",
+    "mat-steel-c45",
+    "mat-steel-c35",
+    "mat-steel1020",
+    "mat-steel-a105",
+    "mat-steel-c70s6",
+    "mat-steel1141",
+    "mat-steel-en3-bar",
+    "mat-steel-11smnpb30",
+    "mat-steel-30mnvs6",
+    "mat-steel-38mnvs6",
+    "mat-steel-42crmo4",
+    "mat-steel4140",
+    "mat-steel4340",
+    "mat-steel4130",
+    "mat-steel8620",
+    "mat-steel-20mncr5",
+    "mat-steel-16mncr5",
+    "mat-steel-41cr4",
+    "mat-steel-34crnimo6",
+    "mat-steel-18crnimo7-6",
+    "mat-steel-52100",
+    "mat-steel-f22",
+    "mat-steel-300m"
+   ],
+   "confidence": "Low",
+   "note": "mat-steel4140 (bar) takes the 42CrMo4 premium: the book held the same grade at ₹137 and ₹182.",
+   "proxies": {
+    "mat-steel4140": "mat-steel-42crmo4"
+   }
+  },
+  {
+   "family": "Stainless forging bar",
+   "anchorInrPerKg": 340.0,
+   "anchorBasis": "BigMint SS 316L black round bar ex-Mumbai ₹340,000/t (~Jun 2026) × the book's grade premium over 316L forging bar; other stainless bar prices not found in India",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss316l_black_round_bar_mumbai",
+     "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+     "date": "2026-06 (approx.)"
+    }
+   ],
+   "method": "ladder",
+   "base": 6.33,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316l-bar",
+    "mat-ss304l-bar",
+    "mat-ss410-bar",
+    "mat-ss420-bar",
+    "mat-ss431-bar",
+    "mat-ss17-4ph-bar",
+    "mat-ss15-5ph-bar",
+    "mat-ss2205-bar"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Stainless machining bar",
+   "anchorInrPerKg": 340.0,
+   "anchorBasis": "BigMint SS 316L black round bar ₹340/kg (~Jun 2026) × the book's premium over its 316L machining bar",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss316l_black_round_bar_mumbai",
+     "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+     "date": "2026-06 (approx.)"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.95,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316l",
+    "mat-ss304-bar",
+    "mat-ss303",
+    "mat-ss416-bar"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorInrPerKg": 395.0,
+   "anchorBasis": "BigMint 316 HR coil ex-Mumbai ₹395,000/t (~Jun 2026); CR extra not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss316_hrc_mumbai",
+     "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+     "date": "2026-06 (approx.)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304L sheet",
+   "anchorInrPerKg": 219.5,
+   "anchorBasis": "304 CR coil narrow Mumbai ₹215/kg (Nexizo, 1 Jul 2026) and a stockist ₹224/kg — mean; aggregator evidence, low confidence",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss304_crc_narrow_mumbai",
+     "source": "https://nexizo.ai/stainless-steel-category",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorInrPerKg": 219.5,
+   "anchorBasis": "304L sheet ₹219.5 × the book's premium of 301 spring strip over 304L sheet",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss304_crc_narrow_mumbai",
+     "source": "https://nexizo.ai/stainless-steel-category",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorInrPerKg": 133.91,
+   "anchorBasis": "China 430 2B ₹123.7/kg (9 Sep 2026 reference, before freight) × 1.0825 (BCD 7.5% + SWS 0.75%) — import parity, freight not added",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss430_409l_china_reference",
+     "source": "https://www.sakysteel.com/news/china-stainless-steel-market-price-update-september-9-2026",
+     "date": "2026-09-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorInrPerKg": 134.28,
+   "anchorBasis": "China 409L ₹124.0/kg × 1.0825 duty — import parity; 441 at the book's premium over 409L",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ss430_409l_china_reference",
+     "source": "https://www.sakysteel.com/news/china-stainless-steel-market-price-update-september-9-2026",
+     "date": "2026-09-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorInrPerKg": 46.01,
+   "anchorBasis": "Metallic charge for GJS-500-7, mix A (60% pig iron ₹47.05 + steel scrap ₹39.8 + returns at charge cost; KTU ductile charge study) = ₹46.01/kg, the upper of the two mixes; FeSiMg and inoculant not priced (not found) × the book's grade premium over GJS-500-7",
+   "sources": [
+    {
+     "research": "ferrous.charge.gjs500_7",
+     "source": "https://matsc.ktu.lt/index.php/MatSc/article/view/26589/13665",
+     "date": "2026-10 (inputs Apr-Oct 2026)"
+    },
+    {
+     "research": "ferrous.anchor.pig_iron_foundry_grade",
+     "source": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063",
+     "date": "2026-10-06"
+    },
+    {
+     "research": "ferrous.anchor.scrap_cr_busheling_lowmn",
+     "source": "https://www.bigmint.co/insights/detail/india-foundry-scrap-market-remains-under-pressure-low-manganese-cr-busheling-sees-sharper-correction-758327",
+     "date": "2026-04 to 2026-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorInrPerKg": 42.6,
+   "anchorBasis": "Metallic charge for GJL-250 ₹42.6/kg (40% steel scrap + 20% pig iron + returns; the mix is a CostVision engineering assumption — no Indian grey-iron charge mix found) × the book's grade premium over GJL-250",
+   "sources": [
+    {
+     "research": "ferrous.charge.gjl250",
+     "source": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063",
+     "date": "2026-10 (inputs Apr-Oct 2026)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorInrPerKg": 38.25,
+   "anchorBasis": "Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25",
+   "sources": [
+    {
+     "research": "ferrous.charge.wcb_gs_c25",
+     "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Hadfield Mn steel (charge)",
+   "anchorInrPerKg": 44.7,
+   "anchorBasis": "12% Mn via HC FeMn 70% (₹79.2) + steel scrap",
+   "sources": [
+    {
+     "research": "ferrous.charge.hadfield_mn12",
+     "source": "https://www.bigmint.co/insights/detail/weekly-round-up-indian-ferro-alloys-prices-witness-mixed-trends-w-o-w-764117",
+     "date": "2026-06/09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hadfield"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorInrPerKg": 72.9,
+   "anchorBasis": "23% Cr via HC FeCr 60% (₹122.2) + grey-iron metallic charge",
+   "sources": [
+    {
+     "research": "ferrous.charge.hicr_white_iron",
+     "source": "https://www.bigmint.co/insights/detail/india-ferro-chrome-prices-rise-slightly-w-o-w-as-sellers-quote-firm-offers-759134",
+     "date": "2026-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorInrPerKg": 364.4,
+   "anchorBasis": "20% Ni at MCX nickel ₹1,625.5 + 2% Cr + iron units",
+   "sources": [
+    {
+     "research": "ferrous.charge.ni_resist_d2",
+     "source": "https://cbonds.com/indexes/221359/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorInrPerKg": 603.5,
+   "anchorBasis": "35% Ni at MCX nickel + Cr + Si + iron units",
+   "sources": [
+    {
+     "research": "ferrous.charge.ni_resist_d5s",
+     "source": "https://cbonds.com/indexes/221359/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorInrPerKg": 145.0,
+   "anchorBasis": "CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8",
+   "sources": [
+    {
+     "research": "ferrous.charge.cf8",
+     "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs",
+     "date": "2026-08-21"
+    },
+    {
+     "research": "ferrous.anchor.ss304_scrap_delhi",
+     "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs",
+     "date": "2026-08-21"
+    }
+   ],
+   "method": "ladder",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast aluminium alloys",
+   "anchorInrPerKg": 304.88,
+   "anchorBasis": "ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found)",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.aluminium.ADC12.mumbai",
+     "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+     "date": "2026-10-07"
+    },
+    {
+     "research": "nonferrous.anchor.aluminium.ADC12.delhi",
+     "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+     "date": "2026-10-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-alsi10mg",
+    "mat-a365",
+    "mat-a413",
+    "mat-a319",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm25",
+    "mat-lm6",
+    "mat-lm4",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-46200",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorInrPerKg": 304.88,
+   "anchorBasis": "Same Indian ADC12 market (SMM 7 Oct 2026): Indian ADC12 is scrap-based — the book's ₹248 \"secondary\" sat ₹57 below it",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.aluminium.ADC12.mumbai",
+     "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline",
+     "date": "2026-10-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorInrPerKg": 1385,
+   "anchorBasis": "Copper cathode ₹1,385/kg (MCX ₹1,384.75, 11 Sep 2026; Oct ≈ $6.49/lb) — the book's ETP bar ₹1,370 and sheet ₹1,336 were below the copper they contain; conversion premium not found, so floored at metal",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.copper.oct2026Derived",
+     "source": "https://www.alpha-maven.com/story/venture-capital/commodity-update-copper-sourcebenchmarkmineralscom",
+     "date": "2026-10-02"
+    },
+    {
+     "research": "nonferrous.anchor.copper.mcx",
+     "source": "https://www.jmfinancialservices.in/market-news-and-insights/1732126",
+     "date": "2026-09-11"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium bronze AB2 (floor)",
+   "anchorInrPerKg": 1225.0,
+   "anchorBasis": "Metal content of CuAl10Ni5Fe5 ≈ ₹1,225/kg (Cu + Al + Ni + Fe at the anchors) — the book's AB2 casting ₹1,183 was below it",
+   "sources": [
+    {
+     "research": "nonferrous.check.AB2_CuAl10Ni5Fe5.metalContent",
+     "source": "https://cbonds.com/indexes/181085/",
+     "date": "2026-10"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ab2-cast",
+    "mat-ab2-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorInrPerKg": 129.35,
+   "anchorBasis": "PP: Delhi ex-godown ₹131.0 (Credco, 25 Sep 2026) and India index ₹127.7 (IMARC, Sep 2026) — mean; grades × the book's premium over PP homopolymer",
+   "sources": [
+    {
+     "research": "polymer.anchor.pp_raffia.delhi_exgodown.2026-09-25",
+     "source": "https://credcosourcing.com/prices",
+     "date": "2026-09-25"
+    },
+    {
+     "research": "polymer.anchor.pp.india_index.2026-09",
+     "source": "https://www.imarcgroup.com/polypropylene-pricing-report",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorInrPerKg": 136.0,
+   "anchorBasis": "HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE",
+   "sources": [
+    {
+     "research": "polymer.anchor.hdpe_raffia.delhi_exgodown.2026-09-25",
+     "source": "https://credcosourcing.com/prices",
+     "date": "2026-09-25"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-ldpe",
+    "mat-lldpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-ldpe-bm",
+    "mat-lldpe-bm",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-ldpe-tube",
+    "mat-hdpe-roto",
+    "mat-lldpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-ldpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorInrPerKg": 102.25,
+   "anchorBasis": "PVC K67: Delhi ex-godown ₹108.0 and Hygain ₹96.5 (Credco, 25 Sep 2026) — mean; compounds × the book's premium over uPVC",
+   "sources": [
+    {
+     "research": "polymer.anchor.pvc_k67.delhi_exgodown.2026-09-25",
+     "source": "https://credcosourcing.com/prices",
+     "date": "2026-09-25"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET",
+   "anchorInrPerKg": 104.5,
+   "anchorBasis": "PET bottle chip, India index ₹104.5 (Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.anchor.pet_bottle.india_index.2026-09",
+     "source": "https://www.polyestertime.com/pet-bottle-grade-chip-price-trends/",
+     "date": "2026-09-10"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorInrPerKg": 165.4,
+   "anchorBasis": "ABS India index ₹165.4 (Business Analytiq, Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.anchor.abs.india_index.2026-09",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorInrPerKg": 216.72,
+   "anchorBasis": "PC CIF India ₹200.2 (Jul 2026) × 1.0825 (BCD 7.5% + SWS, back in force from 1 Jul 2026); domestic May average ₹211 agrees",
+   "sources": [
+    {
+     "research": "polymer.anchor.pc.cif_india.2026-07",
+     "source": "https://www.procurementresource.com/resource-center/polycarbonate-price-trends",
+     "date": "2026-07"
+    },
+    {
+     "research": "polymer.import_duty.chapter39",
+     "source": "https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480",
+     "date": "2026-04-02"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorInrPerKg": 209.36,
+   "anchorBasis": "PA6 CIF India ₹193.4 (Jun 2026, Plastemart) × 1.0825 duty; a second source reads higher (₹259) — the lower, dated figure is used",
+   "sources": [
+    {
+     "research": "polymer.anchor.pa6.cif_india.2026-06",
+     "source": "https://www.plastemart.com/nylon-6-PA-6-cif-india-prices",
+     "date": "2026-06"
+    },
+    {
+     "research": "polymer.import_duty.chapter39",
+     "source": "https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480",
+     "date": "2026-04-02"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66 family",
+   "anchorInrPerKg": 287.94,
+   "anchorBasis": "PA66 CIF India ₹266.0 (Jun 2026, Plastemart) × 1.0825 duty",
+   "sources": [
+    {
+     "research": "polymer.anchor.pa66.cif_india.2026-06",
+     "source": "https://www.plastemart.com/nylon-66-PA-66-polymer-prices-cif-india-pricelist",
+     "date": "2026-06"
+    },
+    {
+     "research": "polymer.import_duty.chapter39",
+     "source": "https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480",
+     "date": "2026-04-02"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.89,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT family",
+   "anchorInrPerKg": 248.6,
+   "anchorBasis": "PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence",
+   "sources": [
+    {
+     "research": "polymer.anchor.pbt.india_index.2026-09",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.7,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorInrPerKg": 278.0,
+   "anchorBasis": "RSS-4 Kottayam ₹278/kg (Rubber Board figure, 26 Sep 2026) for the book's raw NR SMR20 line; compounds (70 Shore A) held",
+   "sources": [
+    {
+     "research": "rubber.nr_rss4.kottayam.2026-09-26",
+     "source": "https://thecanarapost.com/todays-rubber-prices-kottayam-and-international-market/",
+     "date": "2026-09-26"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "electrical steel (25 grades)": "Only a 2025 CRNO CFR-India print and an unspecified IMARC figure — no 2026 India grade prices; held",
+  "wrought aluminium sheet / bar / forging stock": "P1020 ₹352–362/kg (Hindalco Aug 2026; Oct derived) is below every book grade (conversion premium ₹20–90/kg); India rolling / extrusion premiums not found; held",
+  "brass, bronze, gunmetal": "Brass honey scrap ₹810/kg (Jun 2026) sits below the book's brass ₹955–1,044 (a rod conversion margin); no bronze prices found; held",
+  "zinc (Zamak / ZA)": "HZL SHG zinc ₹376/kg (Jun 2026) vs Zamak 3 ₹396 — consistent (alloy margin); held",
+  "magnesium alloys": "Imported 99.9% Mg lands at ~₹230/kg before freight and alloy premium; the book's AZ91D ₹473 looks high but the alloy premium was not found — held and flagged",
+  "titanium, nickel alloys, superalloys": "No India bar / casting prices found (marketplace listings only); held",
+  "filled / FR compounds (GF, LGF, talc, mineral, FR grades of PP, PA6, PA66, PC, ABS, PBT)": "No India compound price found; the book's UK compound premium (e.g. PA66-GF30 1.64× unfilled) would carry a UK figure into India — held",
+  "polymers without an anchor (POM, PMMA, PS, TPU/TPE/TPV, PEEK, PEI, PPS, LCP, PPA, PSU, PA12, PLA, recycled grades)": "Not found in India sources this round; held",
+  "rubber compounds (70 Shore A EPDM / NBR / CR / FKM / silicone …)": "Raw NBR ₹209 and listing cross-checks only; a compound price is not the polymer price; held",
+  "composites, paint, masterbatch": "Only marketplace listings (not prices under the rules); held"
+ },
+ "alBilletPremiumUsdPerT": {
+  "value": 710,
+  "basis": "Hindalco AA6063 billet (P1020 + ₹17,600/t, Aug 2026) over LME 3M, Oct 2026 derived; May measured $803–842/t — the book held $550",
+  "research": "nonferrous.anchor.aluminium.billet6063.premiumOverLme3m",
+  "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+  "date": "2026-10-07"
+ }
+}

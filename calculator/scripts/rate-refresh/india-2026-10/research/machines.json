@@ -1,0 +1,482 @@
+{
+  "domain": "india-machines",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "capex.vmc3.domestic",
+      "value": 3456000,
+      "unit": "INR per machine (ex-works realisation)",
+      "basis": "Producer-reported blended realisation per machine, Jyoti CNC Automation (domestic maker, VMC/turning/5-axis mix): ~Rs 34.56 lakh in Q1 FY27 vs Rs 34.41 lakh in Q1 FY26 (earnings-call summary). Revenue per machine, so ex-GST; excludes freight/installation/tooling. It is a MIX of entry, mid and high-end machines (incl. some 5-axis), so it is an upper-side proxy for a standard 3-axis VMC and a lower-side proxy for 5-axis.",
+      "source": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+      "date": "2026-08 (Q1 FY27 call)",
+      "notes": "Best domestic CNC capex evidence found. Also states FY26 capacity utilisation ~92.5% on 6,000 machines/yr capacity. Secondary summary of the call, not the transcript itself."
+    },
+    {
+      "key": "capex.vmc3.domestic.listings_crosscheck",
+      "value": "750000-3660000",
+      "unit": "INR per machine (asking)",
+      "basis": "Marketplace asking prices for new 3-axis VMCs: Rs 7.5 lakh (Pune), Rs 15 lakh (Jyoti-listed, Rajkot), Rs 16.5 lakh (Coimbatore), Rs 36.6 lakh (Vadodara); BFW LV-series (X 1500 mm) Rs 40 lakh. CROSS-CHECK ONLY per RULES (reseller B2B listings), not a price.",
+      "source": "https://www.tradeindia.com/products/3-axis-vmc-machine-c9672080.html ; https://m.indiamart.com/impcat/bfw-vmc.html",
+      "date": "undated listings seen 2026-10",
+      "notes": "Consistent with Jyoti realisation being the right order of magnitude (tens of lakh, not crores)."
+    },
+    {
+      "key": "capex.vmc3.imported.haas",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "Haas India 'I-series' pages give no price ('contact your local Haas Factory Outlet'); IMTEX 2019 article mentions India-only I-series at up to 44% lower prices (2019, no figure).",
+      "source": "https://www.haascnc.com/machines/vertical-mills/vf-series/models/small/vf-2ss-i.html",
+      "date": "2026-10 (page read)",
+      "notes": ""
+    },
+    {
+      "key": "capex.vmc3.imported.import_unit_values",
+      "value": "1797-114075",
+      "unit": "USD per unit, assessable (CIF) value",
+      "basis": "Individual Indian import shipment records under HS 84571020 (vertical machining centres) from SEAIR aggregator: e.g. new Taiwan TMV 720A USD 114,074.51; Brother compact (Japan) USD 70,700.62; Japan 3-set entry USD 102,972.49/unit; many used units USD 2k-11k. Mostly 2016 records. Not an average; mixes new and used.",
+      "source": "https://seair.co.in/import-data-hs-code-845710/country-taiwan.aspx ; https://seair.co.in/import-data-hs-code-845710/country-japan.aspx",
+      "date": "mostly 2016",
+      "notes": "Old and mixed; use only to say a new imported 3-axis VMC landed CIF is of order USD 70-115k (~Rs 0.6-1.0 cr at 2026 FX) before duty. Official TradeStat AUV not retrieved."
+    },
+    {
+      "key": "capex.vmc5.imported",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "DMG Mori DMU 50 / Hermle: only used-machine listings in Europe with 'price on request'.",
+      "source": "https://www.machineseeker-india.com/dmg+mori+dmu+50-50/i-21932683",
+      "date": "2026-10",
+      "notes": ""
+    },
+    {
+      "key": "capex.lathe_cnc.domestic",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "No producer price for Ace/LMW/Jyoti turning centres. Jyoti blended realisation (Rs 34.56 lakh) includes turning centres. Marketplace cross-check: Wren flat-bed turning centre ~Rs 16.5 lakh (Delhi listing).",
+      "source": "https://www.exportersindia.com/delhi/cnc-turning-center.htm",
+      "date": "undated listing",
+      "notes": "Cross-check only."
+    },
+    {
+      "key": "capex.lathe_cnc.imported",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "Mazak / Doosan India prices not published.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.drill_tap.domestic",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "No source found for CNC drill-tap centre price in India.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.grinder_cyl",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "Not searched successfully within budget.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.gear_hobber.imported",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "Liebherr / Gleason: only used European listings, no INR price.",
+      "source": "https://www.machineseeker.com/liebherr-lc+3002/i-22670982",
+      "date": "2026-10",
+      "notes": ""
+    },
+    {
+      "key": "capex.press_mech.domestic.listings_crosscheck",
+      "value": "1200000-2800000",
+      "unit": "INR per machine (asking)",
+      "basis": "Marketplace: 400 t knuckle-joint press (Mankoo India) Rs 28 lakh; 500 t crank press (Birson, Ludhiana) Rs 12 lakh (likely used/forging). CROSS-CHECK ONLY. No producer price for Schuler India / Aida / ISGEC 200/400/630/1000 t presses found.",
+      "source": "https://m.indiamart.com/mankoo-india ; https://m.indiamart.com/impcat/crank-press.html",
+      "date": "undated listings",
+      "notes": "Not adequate to set capex for automotive straight-side presses (these are often 3-5x higher); listed only to show the gap."
+    },
+    {
+      "key": "capex.imm.domestic.listings_crosscheck",
+      "value": "see notes",
+      "unit": "INR per machine (asking, ex-tax where stated)",
+      "basis": "Marketplace new-machine asking prices: 100 t Rs 8.75 lakh (Shubham Plast); 200 t toggle Rs 17.5 lakh ex-tax (Avinya); 200 t servo Rs 11 lakh (Hydroking); 190 t servo-hyd Rs 28.5 lakh and 250 t servo-hyd Rs 35 lakh (Futech); IM 250 Rs 28.32 lakh (Thane); 650 t two-platen Rs 1.38 cr (Futech, made in India); 900 t servo Rs 83 lakh (Maruti Mech Plast/Hydroking). Used 350 t buyer budget Rs 20-25 lakh (Plastemart). CROSS-CHECK ONLY.",
+      "source": "https://m.indiamart.com/impcat/servo-motor-injection-moulding-machine.html ; https://www.aajjo.com/store/futech-machinery-private-limited ; https://www.plastemart.com/used-plastics-machines/3164/um/350-ton-injection-moulding-machine-tamil-nadu-india",
+      "date": "undated listings seen 2026-10",
+      "notes": "No Milacron India / Engel / Haitian / JSW / Toshiba list price found. Tier-1 branded machines likely above these."
+    },
+    {
+      "key": "capex.hpdc400.domestic",
+      "value": 4200000,
+      "unit": "INR per machine (maker list price)",
+      "basis": "Indian die-casting machine maker (Bahadurgarh) lists 120 t at Rs 15 lakh up to 400 t at Rs 42 lakh. Maker's own site; GST/installation treatment not stated; machine only (no cell automation, furnace, trim press).",
+      "source": "https://www.diecastingmachine.co.in/pressure-die-casting-machine.html",
+      "date": "undated (seen 2026-10)",
+      "notes": ""
+    },
+    {
+      "key": "capex.hpdc800.listings_crosscheck",
+      "value": "5500000-8000000",
+      "unit": "INR per machine (asking)",
+      "basis": "Marketplace: Yizumi 800 t cold chamber via Aagam International Rs 55 lakh; unbranded 800 t (Gurugram) Rs 80 lakh; Toyo 650 t Rs 60 lakh (Faridabad, likely used); used LK 400 t Rs 37 lakh. CROSS-CHECK ONLY; machine only, not a cell.",
+      "source": "https://m.indiamart.com/aagaminternational/die-casting-machine.html ; https://www.aajjo.com/product/automatic-die-casting-machine-in-gurugram-ssengineering-works",
+      "date": "undated listings",
+      "notes": "Italpresse/Buhler import price: not found."
+    },
+    {
+      "key": "capex.hpdc.programme_context",
+      "value": "6000000000",
+      "unit": "INR (programme)",
+      "basis": "Jaya Hind Industries Rs 600 cr phased capex FY27-FY28 incl. >12 HPDC machines 1,200-3,500 t plus buildings, machining, heat treatment. Cannot be divided per machine.",
+      "source": "https://www.autocarpro.in/news/jaya-hind-industries-announces-rs-600-crore-phased-investment-plan-134044",
+      "date": "2026",
+      "notes": "Context only."
+    },
+    {
+      "key": "capex.sand_line",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "No current price for a DISA/Sinto line in India. Old (c.2010-11) DISA India statement: domestically built vertical moulding machine expected ~Rs 4 cr. DISA India new Tumkur facility capex Rs 56 cr (factory, not a line).",
+      "source": "https://www.foundry-planet.com/d/disa-india-in-expansion-mode-set-was-launched-new-made-in-india-moulding-machine/",
+      "date": "c.2010-2011",
+      "notes": "Too old to use as 2026 capex; stated for order of magnitude only (a vertical DISA machine is crores, not lakhs)."
+    },
+    {
+      "key": "capex.induction_furnace",
+      "value": "not found in any source",
+      "unit": "INR per tonne",
+      "basis": "No Inductotherm/Megatherm/Electrotherm per-tonne price found; only small-crucible listings and a USD 6,350 Chinese export listing for a 1 t furnace.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.forge_press",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "No price for 1,600/2,500 t forging press found; Bharat Forge capex announcements not broken down.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.ht_furnace",
+      "value": "not found in any source",
+      "unit": "INR",
+      "basis": "Not found within budget.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.laser_fibre.domestic",
+      "value": 3000000,
+      "unit": "INR per machine (producer 'starting price')",
+      "basis": "SLTL (Sahajanand Laser Technology, domestic) city pages: 'Starting price of laser cutter: 3,000,000 INR'; entry 1.5-3 kW fibre cutters Rs 20-45 lakh; basic models from Rs 30 lakh up to ~Rs 1 cr for high-power fully equipped. GST not stated.",
+      "source": "https://www.sltl.com/?p=8548152",
+      "date": "seen 2026-10",
+      "notes": "Market guide (non-producer) puts 6-12 kW at Rs 70 lakh+. Trumpf/Bystronic import price not found."
+    },
+    {
+      "key": "capex.press_brake.domestic.listings_crosscheck",
+      "value": "700000-2640000",
+      "unit": "INR per machine (asking)",
+      "basis": "100 t x 3.1 m CNC hydraulic press brake, made in India (Tech Pro, Jalandhar) Rs 17 lakh; 100 t x 3 m Rs 7 lakh ex-GST (TradeIndia); 110 t x 3 m 5-axis Rs 21.6-26.4 lakh (Rajkot). CROSS-CHECK ONLY. Electropneumatics / Hindustan Hydraulics / Amada / Trumpf price not found.",
+      "source": "https://www.aajjo.com/product/cnc-hydraulic-press-brakes-in-jalandhar-tech-pro ; https://m.indiamart.com/rajkot/cnc-press-brakes.html",
+      "date": "undated listings",
+      "notes": ""
+    },
+    {
+      "key": "duty.cnc",
+      "value": 0.0825,
+      "unit": "fraction of assessable (CIF) value, non-creditable",
+      "basis": "BCD 7.5% on CTH 8457 machining centres + Social Welfare Surcharge 10% of BCD = 0.75% => 8.25% non-creditable; IGST 18% is creditable for a GST-registered manufacturer (total incl. IGST ~27.7% as listed). Tariff aggregator, NOT the CBIC notification; no 2026 change found (Budget 2026-27 machine-tool changes not confirmed).",
+      "source": "https://eximguru.com/indian-customs-duty/84571020-machining-centres-vertical.aspx ; https://camtomx.com/en/aranceles/cnc/india",
+      "date": "rate history from 2019; read 2026-10",
+      "notes": "Verify against CBIC tariff Chapter 84 before use. 8456/8458-8463 not individually checked."
+    },
+    {
+      "key": "capex.freight_install_pct",
+      "value": "not found in any source",
+      "unit": "% of capex",
+      "basis": "No published Indian norm found.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "finance.repo",
+      "value": 0.055,
+      "unit": "fraction",
+      "basis": "RBI MPC raised policy repo by 25 bp from 5.25% to 5.50% on 7 Oct 2026; SDF 5.25%, MSF/Bank Rate 5.75%; stance 'calibrated tightening'.",
+      "source": "https://thetaxcorp.in/article/rbi-mpc-october-2026-repo-rate-raised-to-550-stance-shifts-to-calibrated",
+      "date": "2026-10-07",
+      "notes": "Secondary report of the RBI statement; multiple sources agree."
+    },
+    {
+      "key": "finance.mclr1y.bob",
+      "value": 0.0875,
+      "unit": "fraction",
+      "basis": "Bank of Baroda 1-year MCLR 8.75% effective 12 Sep 2026 (NSE filing).",
+      "source": "https://nsearchives.nseindia.com/corporate/BANKBARODA_10092026170139_SEMCLR.pdf",
+      "date": "2026-09-12",
+      "notes": "Pre-dates the 7 Oct repo hike."
+    },
+    {
+      "key": "finance.mclr1y.boi",
+      "value": 0.088,
+      "unit": "fraction",
+      "basis": "Bank of India 1-year MCLR 8.80%, overnight 7.85%, unchanged from 1 Oct 2026.",
+      "source": "https://www.psuconnect.in/bank-news/bank-of-india-keeps-mclr-rblr-unchanged-from-october-1-2026",
+      "date": "2026-10-01",
+      "notes": ""
+    },
+    {
+      "key": "finance.mclr1y.sbi",
+      "value": 0.087,
+      "unit": "fraction",
+      "basis": "SBI 1-year MCLR 8.70% effective July 2026 per BankBazaar (aggregator); SBI cut MCLR 15 bp from 10 Aug 2026 (Patrika) - post-cut table not found.",
+      "source": "https://bankbazaar.com/home-loan/sbi-mclr-base-rate.html",
+      "date": "2026-07",
+      "notes": "Official SBI Oct 2026 table not found."
+    },
+    {
+      "key": "finance.sbi_msme_ebr",
+      "value": 0.0815,
+      "unit": "fraction (derived)",
+      "basis": "SBI MSME loans priced on EBR = repo + 2.65% (SBI page) => 5.50% + 2.65% = 8.15% before the borrower's credit-risk spread (spread not published). SBI SME Open Term Loan for plant & machinery: 25% margin, up to 8 years.",
+      "source": "https://sbi.co.in/web/business/sme/sme-loans/loans-under-contactless-lending-platform ; https://sbi.co.in/web/business/sme/sme-loans/sme-open-term-loan",
+      "date": "SBI pages updated Jan 2025; repo as of 2026-10-07",
+      "notes": "Spread over EBR not found."
+    },
+    {
+      "key": "finance.rate",
+      "value": 0.0875,
+      "unit": "fraction per year (proposed)",
+      "basis": "Proposed P&M term-loan cost = 1-year MCLR band 8.70-8.80% (SBI/BoB/BoI, Jul-Oct 2026); MSME EBR floor 8.15% + unknown risk spread. 8.75% = BoB 1Y MCLR, the mid of the band. Corporate tier-1 likely at/below MCLR, small tier-2 above it.",
+      "source": "https://nsearchives.nseindia.com/corporate/BANKBARODA_10092026170139_SEMCLR.pdf",
+      "date": "2026-09/10",
+      "notes": "Derived choice, not a single published loan rate."
+    },
+    {
+      "key": "depreciation.scheduleII.usefulLifeYears",
+      "value": 15,
+      "unit": "years",
+      "basis": "Companies Act 2013 Schedule II Part C: general plant & machinery other than continuous process plant = 15 years; continuous process plant = 25 years (G.S.R. 237(E), 31.03.2014).",
+      "source": "https://palakkad.icai.org/resources/Utilities/RATES_OF_DEPRECIATION/RATES_OF_DEPRECIATION.aspx ; https://ca2013.com/schedule-ii/",
+      "date": "2014-04-01 (in force)",
+      "notes": ""
+    },
+    {
+      "key": "depreciation.scheduleII.extraShift",
+      "value": "double +50%, triple +100%",
+      "unit": "uplift on single-shift depreciation",
+      "basis": "Schedule II note: useful life is based on single shift; for the period an asset works double shift depreciation increases by 50%, triple shift by 100%, pro rata to days worked; not for assets marked NESD. Useful life itself does not change.",
+      "source": "https://taxguru.in/company-law/depreciation-schedule-ii-companies-act-2013-faq.html",
+      "date": "2014-04-01 (in force)",
+      "notes": ""
+    },
+    {
+      "key": "depreciation.tripleShiftEffectiveLife",
+      "value": 7.5,
+      "unit": "years (derived)",
+      "basis": "15-year SLM = 6.67%/yr; +100% for triple shift = 13.33%/yr => equivalent 7.5-year straight-line life at 3 shifts all year.",
+      "source": "https://taxguru.in/company-law/depreciation-schedule-ii-companies-act-2013-faq.html",
+      "date": "derived 2026-10-10",
+      "notes": "Recommended statutory basis for a 3-shift MHR. An 8-10 yr 'economic life' costing convention: no authoritative Indian source found; the ICAI-style worked example uses 10 years (exam material)."
+    },
+    {
+      "key": "depreciation.costingExampleLife",
+      "value": 10,
+      "unit": "years",
+      "basis": "ICAI-based machine-hour-rate worked example: machine Rs 20 lakh incl. installation, 10-yr life, 10% salvage, 300 working days, 2 shifts x 7 h.",
+      "source": "https://www.scribd.com/document/678737769/Solution8",
+      "date": "undated (exam material)",
+      "notes": "Teaching example, not a norm."
+    },
+    {
+      "key": "rent.pune",
+      "value": 28.7,
+      "unit": "INR per sq ft per month (warehousing, city average)",
+      "basis": "Knight Frank India Warehousing Market Report H1 2026: Pune average 28.7 (H1 2025: 27.0), highest nationally. Chakan Park leases Q2 CY26: Rs 31.5 (Envision, 332,691 sq ft) and Rs 35.7 (Vertiv) per CREDAI CRE Q2 CY26. Chakan 49% / Talegaon 24% of Pune demand.",
+      "source": "https://content.knightfrank.com/research/3131/documents/en/india-warehousing-market-report-h1-2026-12992.pdf ; https://credai.org/knowledge-center/credai-reports/reports/63_CREDAI_CRE_Warehousing_Q2_CY26.pdf",
+      "date": "H1 2026 / Q2 CY26",
+      "notes": "Talegaon-Sudhawadi Mahindra Logistics 2025 lease ~Rs 24/sq ft/month (derived 71.37 lakh / 2.97 lakh sq ft). Warehouse grade; factory sheds may differ. GST on rent (18%) excluded/creditable."
+    },
+    {
+      "key": "rent.chennai",
+      "value": 25.7,
+      "unit": "INR per sq ft per month (warehousing, city average)",
+      "basis": "Knight Frank H1 2026: Chennai rents +7% YoY to Rs 25.7. Verified.RealEstate (Jun 2026): NH-48 Sriperumbudur-Walajabad Grade-A 'low-to-high twenties', Oragadam belt at a modest discount; CAM can add 20-35%.",
+      "source": "https://content.knightfrank.com/research/3131/documents/en/india-warehousing-market-report-h1-2026-12992.pdf ; https://corporate.verified.realestate/insights-commercial-real-estate-chennai-tamil-nadu",
+      "date": "H1 2026",
+      "notes": ""
+    },
+    {
+      "key": "rent.bengaluru",
+      "value": 23.5,
+      "unit": "INR per sq ft per month (prime logistics)",
+      "basis": "Knight Frank APAC Logistics Highlights H1 2026: Bengaluru prime rent Rs 23.50, +4.4% YoY. Hoskote DHL lease starting Rs 23.50 (4.5% escalation). Knight Frank 2024 bands: Hosur 21-23, Hoskote/Nelamangala 23-26. Bidadi/Peenya: not found.",
+      "source": "https://www.logisticsinsider.in/mumbai-delhi-ncr-bengaluru-among-asia-pacifics-top-logistics-markets-for-rental-growth-knight-frank/",
+      "date": "H1 2026",
+      "notes": "Prime logistics basis (different KF series from Pune/Chennai figures)."
+    },
+    {
+      "key": "rent.ncr",
+      "value": 22.3,
+      "unit": "INR per sq ft per month (prime logistics)",
+      "basis": "Knight Frank APAC Logistics Highlights H1 2026: Delhi-NCR prime rent Rs 22.30, +5.2% YoY. Manesar/Bilaspur transaction: Innovist 2.62 lakh sq ft at Horizon Industrial Park Bilaspur-Pathredi Rs 27.5/sq ft/month from 13 Mar 2026 (5% escalation).",
+      "source": "https://www.logisticsinsider.in/mumbai-delhi-ncr-bengaluru-among-asia-pacifics-top-logistics-markets-for-rental-growth-knight-frank/ ; https://www.aurumproptech.in/pulse/media/innovist-leases-2-62-lakh-sq-ft-warehouse-in-gurugram",
+      "date": "H1 2026 / 2026-03-13",
+      "notes": ""
+    },
+    {
+      "key": "rent.fourClusterAverage",
+      "value": 25.05,
+      "unit": "INR per sq ft per month (derived)",
+      "basis": "(28.7 + 25.7 + 23.5 + 22.3) / 4 = 25.05 => Rs 300.6 per sq ft per year = Rs 3,236 per m2 per year (x 10.764). Mixed basis: Pune/Chennai city averages, Bengaluru/NCR prime.",
+      "source": "see rent.pune / rent.chennai / rent.bengaluru / rent.ncr",
+      "date": "H1 2026",
+      "notes": "Ex-GST, ex-CAM."
+    },
+    {
+      "key": "maintenance.pctCapex",
+      "value": "not found in any source",
+      "unit": "% of capex per year",
+      "basis": "No authoritative Indian norm found. Indian cost-accounting teaching examples use either a fixed Rs amount (e.g. Rs 12,500/month on a Rs 20 lakh machine = 7.5%/yr) or 0.5% of capital cost.",
+      "source": "https://www.scribd.com/document/678737769/Solution8 ; https://vivekanandacollegekolkata.ac.in/uploads/1776065688_Overhead_Machine_Hour_Rate.pdf",
+      "date": "undated (exam material)",
+      "notes": "Do not adopt; stated so the gap is visible."
+    },
+    {
+      "key": "hours.threeShift",
+      "value": 7200,
+      "unit": "hours per year available (derived)",
+      "basis": "3 shifts x 8 h x 300 working days = 7,200 h. 300 working days is the Indian cost-accounting convention used in ICAI-style MHR examples (Factories Act weekly holiday leaves ~313 days; festival/national holidays further). Planned-maintenance deduction: not found.",
+      "source": "https://www.scribd.com/document/678737769/Solution8",
+      "date": "derived 2026-10-10",
+      "notes": "Current book uses UK 3,500-4,000 h; 3-shift India working is ~1.8-2x that, halving fixed cost per hour."
+    },
+    {
+      "key": "oee.autoTier1",
+      "value": "0.60-0.75",
+      "unit": "fraction (OEE)",
+      "basis": "Vendor benchmark (TeepTrak, OEE software seller, 2026): Indian Tier-1 OEM/suppliers 60-75% typical, 80%+ world-class; Tier-2/3 40-58% typical. No data source named.",
+      "source": "https://teeptrak.com/en/oee-benchmark-india-manufacturing-sector-2026/",
+      "date": "2026",
+      "notes": "Indicative only; no ACMA/CMTI survey found. Jyoti CNC's own plant utilisation 92.5% FY26 is capacity, not OEE."
+    },
+    {
+      "key": "mhrBenchmark.toolroomLudhiana",
+      "value": "see notes",
+      "unit": "INR per hour (job rate, Govt MSME tool room)",
+      "basis": "MSME Tool Room Ludhiana rate sheet dated 5 May 2021 (others / micro units): CNC turning Rs 200 / 160; CNC VMC Rs 800 / 640; 5-axis CNC milling with swivel head + rotary table Rs 3,000 / 2,700. Charge-out rates to customers -> INCLUDE operator and tool-room overhead; GST treatment not stated; subsidised public institution.",
+      "source": "https://www.scribd.com/document/767640118/Machine-Hour-Rates",
+      "date": "2021-05-05",
+      "notes": "OCR copy on Scribd, not the official page. 2021 prices."
+    },
+    {
+      "key": "mhrBenchmark.vmc3",
+      "value": "250-850",
+      "unit": "INR per hour (job-work, incl. operator)",
+      "basis": "Job-work asking rates: Pune VMC job work Rs 850/h; Delhi Rs 295/h; Ahmedabad Rs 250-350/h (IndiaMART/trader pages) - CROSS-CHECK ONLY. Indian costing guide: 3-axis VMC Rs 600-800/h, 'industrial VMC' Rs 1,000-1,500/h (before 20-30% margin). Undated Scribd sheet: 3-axis VMC Rs 250-500 by size, 5-axis Rs 1,200.",
+      "source": "https://www.indiamart.com/proddetail/vmc-machine-job-work-14218721373.html ; https://www.competencetechno.com/simple-guide-on-how-to-calculate-cnc-machine-hour-rate/",
+      "date": "undated/2025-26",
+      "notes": "All INCLUDE operator, consumables and margin - the machine-only rate must be below these."
+    },
+    {
+      "key": "mhrBenchmark.lathe_cnc",
+      "value": "160-500",
+      "unit": "INR per hour (incl. operator)",
+      "basis": "MSME Tool Room Ludhiana 2021 CNC turning Rs 160-200/h; older informal sheet CNC turning Rs 450/h (2022 blog); undated sheet CNC turning centre Rs 250-500 by capacity.",
+      "source": "https://www.scribd.com/document/767640118/Machine-Hour-Rates ; https://blog.udn.com/86f161b8/177169976",
+      "date": "2021-2022",
+      "notes": ""
+    },
+    {
+      "key": "mhrBenchmark.press",
+      "value": "150-300",
+      "unit": "INR per hour (power press; SME)",
+      "basis": "2026 Indian costing guide: power press Rs 150-300/h; Indian auto-parts SMEs overhead rates Rs 150-400 per machine hour. Tonnage not stated (likely small presses).",
+      "source": "https://erpdrive.in/blog/production-costing-product-cost-calculation-indian-manufacturers.html",
+      "date": "2026",
+      "notes": "Blog-grade source. No tonnage-specific (200-1000 t) Indian MHR found."
+    },
+    {
+      "key": "mhrBenchmark.imm",
+      "value": "not found in any source",
+      "unit": "INR per hour",
+      "basis": "No published Indian IMM machine-hour rate found.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "mhrBenchmark.hpdc",
+      "value": "not found in any source",
+      "unit": "INR per hour",
+      "basis": "",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "mhrBenchmark.forging",
+      "value": "not found in any source",
+      "unit": "INR per hour",
+      "basis": "",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "mhrBenchmark.grinding",
+      "value": "not found in any source",
+      "unit": "INR per hour",
+      "basis": "",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "mhrBenchmark.hmc",
+      "value": "not found in any source",
+      "unit": "INR per hour",
+      "basis": "",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "derived.vmc3.capitalPerHour",
+      "value": 121,
+      "unit": "INR per productive hour (depreciation + finance only)",
+      "basis": "Capex Rs 34.56 lakh (Jyoti realisation) / 7.5 yr (Sch. II triple shift) = Rs 460,800/yr; finance 8.75% x 50% avg outstanding x 34.56 lakh = Rs 151,200/yr; hours 7,200 x 0.70 (mid Tier-1 OEE band) = 5,040 h. (460,800 + 151,200) / 5,040 = Rs 121/h. Energy, maintenance, floor space, indirects NOT included (not sourced here).",
+      "source": "see capex.vmc3.domestic, depreciation.tripleShiftEffectiveLife, finance.rate, hours.threeShift, oee.autoTier1",
+      "date": "derived 2026-10-10",
+      "notes": "Current book: VMC 3-axis depreciation alone = UK 55,660 x 0.52 x 127.2 = Rs 36.8 lakh/yr (i.e. a machine worth ~Rs 3.7 cr at 10 yr), Rs 1,150/h at its 3,200 h. Evidence-based capital charge is ~Rs 120/h."
+    },
+    {
+      "key": "derived.floorPer100sqft",
+      "value": 6.0,
+      "unit": "INR per productive hour per 100 sq ft",
+      "basis": "100 sq ft x Rs 300.6/sq ft/yr / 5,040 h = Rs 6.0/h. A VMC with ~300 sq ft incl. access => ~Rs 18/h. Footprint is an illustration, not sourced.",
+      "source": "see rent.fourClusterAverage",
+      "date": "derived 2026-10-10",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "Scope: India average of Pune, Chennai, Bengaluru, Delhi NCR; automotive tier-1/2; 3-shift; Oct 2026; machine only (operator excluded).",
+    "Tool limits: WebFetch and direct downloads were blocked (DNS/egress policy) so every figure comes from search-result extracts of the cited pages; PDFs (Knight Frank, CREDAI, NSE filings) were not opened directly. Re-verify before locking.",
+    "Capex evidence is thin: only Jyoti CNC's reported realisation, SLTL's starting price and one Indian HPDC maker's list are producer-grade. Press, IMM, sand line, furnace, forging, gear, grinder and all IMPORTED machine prices were not found from an acceptable source; marketplace listings are given as cross-checks only, per RULES.",
+    "Strong conclusion regardless of the gaps: the current India book carries UK capital (implied capex in crores for a VMC/lathe, e.g. VMC3 depreciation Rs 36.8 lakh/yr; CNC lathe Rs 26.8 lakh/yr; drill Rs 18.7 lakh/yr; HAAS VF-2 Rs 25.4 lakh/yr) and UK hours (3,200 productive h vs ~5,000 at 3 shifts). Domestic Indian CNC machines sell at ~Rs 15-40 lakh. Every benchmark charge-out rate found (WITH operator and margin) for VMCs is Rs 250-1,500/h and CNC turning Rs 160-500/h, below the current machine-only figures (VMC3 Rs 3,419, HAAS VF-2 Rs 2,854, lathe Rs 2,490, drill Rs 1,840).",
+    "Inconsistency inside the current book: imm-200t (Rs 1,362/h) vs imm-200t-in (Rs 703/h) for the same class.",
+    "Imported machines: duty 8.25% non-creditable (BCD 7.5% + SWS) on CIF; IGST 18% creditable - so an imported machine's landed capex is ~CIF x 1.0825 + freight/installation (% not found)."
+  ]
+}

@@ -1,0 +1,83 @@
+id	grade	category	current_INR_per_kg
+mat-al6061	6061-T6	Aluminium	441.51
+mat-ti6al4v	Ti-6Al-4V	Titanium	5845.06
+mat-al6082-bar	6082-T6 Aluminium Bar	Aluminium	432.83
+mat-al2011	2011-T3 Free-Machining Al Bar	Aluminium	487.4
+mat-brass-cz121	CZ121 / CW614N Free-Machining Brass	Copper Alloy Bar	954.95
+mat-bronze-pb1	PB1 Phosphor Bronze Bar	Copper Alloy Bar	1725.12
+mat-aa5182	AA5182	Aluminium Sheet	395.62
+mat-aa5052	AA5052-H32 Sheet	Aluminium Sheet	395.62
+mat-aa5083	AA5083-H111 Sheet	Aluminium Sheet	421.67
+mat-aa6082-sheet	AA6082-T6 Sheet	Aluminium Sheet	441.51
+mat-aa5754-sheet	AA5754-H22 Sheet	Aluminium Sheet	411.75
+mat-aa6061-sheet	AA6061-T6 Sheet/Plate	Aluminium Sheet	453.91
+mat-aa6063-sheet	AA6063-T5 Sheet	Aluminium Sheet	432.83
+mat-aa3003-sheet	AA3003-H14 Sheet	Aluminium Sheet	370.82
+mat-c110-copper	C110 ETP Copper Sheet	Copper & Brass Sheet	1335.7
+mat-cz108-brass	CZ108 Brass Sheet (70/30)	Copper & Brass Sheet	1044.25
+mat-cu-hairpin	Rectangular Enamelled Hairpin Copper (winding)	Winding Copper (Hairpin)	1723.88
+mat-al-hairpin	Rectangular Enamelled Hairpin Aluminium (winding)	Winding Aluminium (Hairpin)	587.85
+mat-al-busbar	Aluminium Busbar (EV / battery)	Aluminium Sheet	463.83
+mat-aa6016-t4	AA6016-T4 Sheet (Auto Skin)	Aluminium Sheet	432.83
+mat-aa6111-t4	AA6111-T4 Sheet (Auto Skin)	Aluminium Sheet	451.43
+mat-aa7075-t6	AA7075-T6 Sheet/Plate	Aluminium Sheet	843.34
+mat-al-recycled-5xxx	Recycled-Content Al 5xxx (Secondary)	Aluminium Sheet	316.25
+mat-adc12	ADC12 / A383	Die Cast Aluminium	341.06
+mat-a380	A380 / EN AC-46000 (Al-Si Die-Cast Alloy)	Die Cast Aluminium	347.26
+mat-lm25	LM25 / A356	Gravity/Sand Aluminium	369.58
+mat-bronze-c905	C905 Phosphor Bronze	Copper Alloy	1694.11
+mat-mag-az91	AZ91D Magnesium Die Cast	Magnesium Alloy	472.52
+mat-adc12-secondary	ADC12 Secondary (recycled)	Die Cast Aluminium	248.04
+mat-alsi10mg	AlSi10Mg / EN AC-43000 (≈ A360)	Die Cast Aluminium	358.42
+mat-a365	A365 / AlSi7Mg	Die Cast Aluminium	343.54
+mat-zamak3	Zamak 3 (Zinc Die Cast)	Zinc Die Cast	395.62
+mat-zamak5	Zamak 5 (Zinc Die Cast, Hi-Strength)	Zinc Die Cast	401.82
+mat-aural5	Aural-5 (AlSi9MnMg, Rheinfelden)	Structural HPDC Aluminium	380.74
+mat-silafont36	Silafont-36 (AlSi10MnMg)	Structural HPDC Aluminium	384.46
+mat-castasil37	Castasil-37 (AlSi9MnMoZr)	Structural HPDC Aluminium	375.78
+mat-magsimal59	Magsimal-59 (AlMg5Si2Mn)	Structural HPDC Aluminium	390.66
+mat-al-hpdc-lowco2	Low-CO₂ Recycled HPDC (AlSi10MnMg)	Structural HPDC Aluminium	372.06
+mat-htf-gigacast	Heat-Treat-Free Giga-Casting Alloy (Xiaomi Titan / Tesla-class)	Structural HPDC Aluminium	409.27
+mat-a413	A413 / AlSi12 (Eutectic Die Cast)	Die Cast Aluminium	341.06
+mat-a319	A319 / AlSi6Cu4	Die Cast Aluminium	368.34
+mat-a390	A390 / AlSi17Cu (Hypereutectic)	Die Cast Aluminium	409.27
+mat-a357	A357 / AlSi7Mg0.6 (Premium T6)	Gravity/Sand Aluminium	396.86
+mat-mag-am60	AM60B Magnesium Die Cast	Magnesium Alloy	453.91
+mat-mag-am50	AM50A Magnesium Die Cast	Magnesium Alloy	460.11
+mat-mag-ae44	AE44 Magnesium (Creep-Resistant)	Magnesium Alloy	622.58
+mat-za8	ZA-8 (Zinc-Aluminium Die Cast)	Zinc Die Cast	434.07
+mat-za27	ZA-27 (High-Strength Zinc-Aluminium)	Zinc Die Cast	450.19
+mat-inconel718-cast	Inconel 718 (Investment Cast Superalloy)	Nickel Superalloy Casting	5213.8
+mat-al6061-forge	6061 (Al Forging Stock)	Aluminium Forging Billet	414.23
+mat-lm6	LM6 / EN AC-44100 (AlSi12, gravity / sand)	Gravity/Sand Aluminium	362.14
+mat-lm4	LM4 / AlSi5Cu3 (secondary, sand / gravity)	Gravity/Sand Aluminium	360.9
+mat-almg5-cast	EN AC-51300 (AlMg5, marine sand / gravity)	Gravity/Sand Aluminium	381.98
+mat-a206	A206 / AlCu4.5MgTi (high-strength premium casting)	Gravity/Sand Aluminium	451.43
+mat-zamak2	Zamak 2 / ZL0430 (ZnAl4Cu3, high strength)	Zinc Die Cast	425.39
+mat-in713c-cast	Inconel 713C (investment-cast superalloy — turbocharger wheels)	Nickel Superalloy Casting	5406.03
+mat-lg2-gunmetal	LG2 / CC491K (leaded gunmetal CuSn5Zn5Pb5)	Copper Alloy	1418.79
+mat-ab2-cast	AB2 / CC333G (nickel-aluminium bronze CuAl10Fe5Ni5)	Copper Alloy	1183.15
+mat-brass-cast-cb754	CC754S / CuZn39Pb1Al-C (gravity / die-cast brass)	Copper Alloy	977.28
+mat-al2014-forge	2014 (Al-Cu forging stock — aero and automotive)	Aluminium Forging Billet	445.23
+mat-ab2-forge	CW307G / CuAl10Ni5Fe4 (nickel-aluminium bronze forging bar)	Copper Alloy Billet	1240.2
+mat-en-ac-46200	EN AC-46200 (AlSi8Cu3, gravity / low-pressure — cylinder heads, housings)	Gravity/Sand Aluminium	353.46
+mat-en-ac-45300	EN AC-45300 (AlSi5Cu1Mg / C355 — cylinder heads, T6)	Gravity/Sand Aluminium	385.7
+mat-lm13	LM13 / EN AC-48000 (AlSi12CuNiMg — pistons)	Gravity/Sand Aluminium	381.98
+mat-cusn12-cast	CC483K / CuSn12-C (tin bronze — worm wheels, gear rims, bearings)	Copper Alloy	1789.61
+mat-aa1050-sheet	AA1050A-H14 Sheet (heat shields, reflectors)	Aluminium Sheet	373.3
+mat-al7075-bar	7075-T6 Aluminium Bar (aerospace, tooling)	Aluminium	601.5
+mat-c101-bar	C101 / CW004A ETP Copper Bar (busbar, electrodes)	Copper Alloy Bar	1370.42
+mat-al6082-forge	6082 (Al Forging Stock)	Aluminium Forging Billet	401.82
+mat-al7075-forge	7075 (Al Forging Stock)	Aluminium Forging Billet	570.49
+mat-al2618-forge	2618 (Al-Cu Piston/Aero)	Aluminium Forging Billet	642.42
+mat-ti-cp-gr2	CP Titanium Grade 2 (Forging Bar)	Titanium Forging Billet	3173.67
+mat-ti-6al4v-forge	Ti-6Al-4V Grade 5 (Forging Bar)	Titanium Forging Billet	4666.87
+mat-inconel718-forge	Inconel 718 (Forging Bar)	Nickel Superalloy Billet	5461.84
+mat-waspaloy-forge	Waspaloy (Forging Bar)	Nickel Superalloy Billet	8686.36
+mat-inconel625-forge	Inconel 625 (Forging Bar)	Nickel Superalloy Billet	4718.96
+mat-hastelloy-c276-forge	Hastelloy C-276 (Forging Bar)	Nickel Superalloy Billet	6826.06
+mat-monel400-forge	Monel 400 (Forging Bar)	Nickel Alloy Billet	3506.05
+mat-ti-6242-forge	Ti-6Al-2Sn-4Zr-2Mo (Forging Bar)	Titanium Forging Billet	6405.63
+mat-al7050-forge	7050 (Al-Zn Aero Forging Stock)	Aluminium Forging Billet	1054.17
+mat-mg-az31-forge	AZ31B (Mg Forging Bar)	Magnesium Forging Billet	782.57
+mat-brass-cz122-forge	CZ122 / CW617N (Forging Brass)	Copper Alloy Billet	979.76

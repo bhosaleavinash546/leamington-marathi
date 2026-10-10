@@ -1,0 +1,616 @@
+{
+ "domain": "india-labour-energy",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "labour.minWage.maharashtra.engineering.zoneI.skilled",
+   "value": 18961,
+   "unit": "INR/month",
+   "basis": "Statutory minimum wage (basic + special allowance/VDA), Engineering Industry, Zone I, Jan-Jun 2026",
+   "source": "https://wageindicator.org/en-in/ai/work-in-india/minimum-wage/18640-maharashtra/18790-engineering-industry/",
+   "date": "2026-01-01..2026-06-30",
+   "notes": "Secondary source (WageIndicator) read via search snippet; the site could not be fetched from this environment. Unskilled 16,521; semi-skilled 17,536; special allowance 2,511. A 1 Jul 2026 revision exists (https://wageindicator.org/ai/work/minimum-wage/updates/2026/minimum-wage-increased-in-maharashtra-india-from-01-july-2026-august-19-2026/) but its engineering figures were NOT found."
+  },
+  {
+   "key": "labour.minWage.maharashtra.engineering.zoneI.semiskilled",
+   "value": 17536,
+   "unit": "INR/month",
+   "basis": "as above",
+   "source": "https://wageindicator.org/en-in/ai/work-in-india/minimum-wage/18640-maharashtra/18790-engineering-industry/",
+   "date": "2026-01-01..2026-06-30",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.maharashtra.engineering.zoneI.unskilled",
+   "value": 16521,
+   "unit": "INR/month",
+   "basis": "as above",
+   "source": "https://wageindicator.org/en-in/ai/work-in-india/minimum-wage/18640-maharashtra/18790-engineering-industry/",
+   "date": "2026-01-01..2026-06-30",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.karnataka.generalEngineering.zone1.skilled",
+   "value": 18570,
+   "unit": "INR/month",
+   "basis": "Statutory minimum wage total (basic 14,021 + VDA), General Engineering, Fabrication and Allied Works, Zone 1, from 1 Apr 2026",
+   "source": "https://wageindicator.org/en-in/ai/work-in-india/minimum-wage/31024-karnataka/32263-general-engineering-fabrication-and-allied-works/",
+   "date": "2026-04-01",
+   "notes": "Semi-skilled 17,296; high-skilled 19,973. CONFLICT: Karnataka issued a consolidated skill/zone notification on 22 May 2026 (DLA Piper https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/karnataka-introduces-major-minimum-wage-reforms-despite-ongoing-legal-uncertainty ; Hono https://www.hono.ai/minimum-wages/karnataka-2026 gives Zone 1 basic skilled 28,285 / semi-skilled 25,714) under legal challenge — not reconciled; gazette not read."
+  },
+  {
+   "key": "labour.minWage.karnataka.generalEngineering.zone1.semiskilled",
+   "value": 17296,
+   "unit": "INR/month",
+   "basis": "as above",
+   "source": "https://wageindicator.org/en-in/ai/work-in-india/minimum-wage/31024-karnataka/32263-general-engineering-fabrication-and-allied-works/",
+   "date": "2026-04-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.haryana.skilled",
+   "value": 18500.81,
+   "unit": "INR/month",
+   "basis": "Statutory minimum wage, Haryana notification effective 1 Apr 2026 (all scheduled employments)",
+   "source": "https://www.hono.ai/minimum-wages/haryana-2026",
+   "date": "2026-04-01",
+   "notes": "Unskilled 15,220.71; semi-skilled 16,780.74; highly skilled 19,425.85. ~35% hike (https://oga-prod.angelone.in/news/personal-finance/haryana-minimum-wage-hike-2026-workers-get-35-salary-increase-across-categories). No July 2026 VDA revision found. Delhi rates not researched."
+  },
+  {
+   "key": "labour.minWage.haryana.semiskilled",
+   "value": 16780.74,
+   "unit": "INR/month",
+   "basis": "as above",
+   "source": "https://www.hono.ai/minimum-wages/haryana-2026",
+   "date": "2026-04-01",
+   "notes": ""
+  },
+  {
+   "key": "labour.minWage.tamilnadu.engineering",
+   "value": null,
+   "unit": "INR/month",
+   "basis": "not found in any source",
+   "source": "https://wageindicator.org/work/minimum-wage/countries/india/21743-tamil-nadu",
+   "date": "2026-04-01",
+   "notes": "TN revised all scheduled employments from 1 Apr 2026, but the engineering row was not found. Automobile workshops: basic 109.15 + VDA 396.19 = 505.34 INR/day (≈13,139/month at 26 days) — not engineering."
+  },
+  {
+   "key": "labour.minWage.karnataka.foundry.zone1.skilledMoulder",
+   "value": 18361.15,
+   "unit": "INR/month",
+   "basis": "Statutory minimum wage, Foundry (with or without machine shop), Zone 1, valid to 31 Mar 2026",
+   "source": "https://prd.wageindicator.org/en-in/work-in-india/minimum-wages/31024-karnataka/32431-foundry-with-or-without-machine-shop",
+   "date": "2025-04-01..2026-03-31",
+   "notes": "Floor only; superseded by the 2026 revisions above."
+  },
+  {
+   "key": "labour.loading.basicShareOfGross",
+   "value": 0.5,
+   "unit": "fraction",
+   "basis": "Code on Wages 2019 (in force 21 Nov 2025): excluded allowances above 50% of remuneration are added back to 'wages' -> basic+DA taken as 50% of gross",
+   "source": "https://taxguru.in/corporate-law/employers-wage-rules-effective-21st-nov-2025.html",
+   "date": "2025-11-21",
+   "notes": "Assumption that plants structure at exactly the 50% floor; a higher basic raises PF/gratuity."
+  },
+  {
+   "key": "labour.loading.employerPF",
+   "value": 0.12,
+   "unit": "fraction of basic+DA, wage ceiling INR 15,000/month",
+   "basis": "EPF Act / Social Security Code: employer 12% (3.67% EPF + 8.33% EPS, EPS capped on 15,000)",
+   "source": "https://blog.petpooja.com/finance-compliance/esi-esic-contribution-rate-employer-employee-share/",
+   "date": "2026",
+   "notes": "Many employers pay on 15,000 only, others on full basic (sources disagree); model uses the 15,000 ceiling."
+  },
+  {
+   "key": "labour.loading.edliAndAdmin",
+   "value": 0.01,
+   "unit": "fraction of PF wage",
+   "basis": "EDLI 0.5% + EPF admin charges 0.5%",
+   "source": "https://blog.petpooja.com/finance-compliance/esi-esic-contribution-rate-employer-employee-share/",
+   "date": "2026",
+   "notes": "Secondary payroll source."
+  },
+  {
+   "key": "labour.loading.esiEmployer",
+   "value": 0.0325,
+   "unit": "fraction of gross, only gross <= INR 21,000/month",
+   "basis": "ESIC employer 3.25% (employee 0.75%) since 1 Jul 2019; ceiling 21,000 since Jan 2017",
+   "source": "https://blog.petpooja.com/finance-compliance/esi-esic-contribution-rate-employer-employee-share/",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.loading.statutoryBonus",
+   "value": 0.0833,
+   "unit": "fraction of bonus wage",
+   "basis": "Code on Wages ch. IV (ex Payment of Bonus Act 1965): min 8.33%; eligibility basic+DA <= INR 21,000; calculation on min(basic, max(7,000, scheduled minimum wage))",
+   "source": "https://www.taxmann.com/post/blog/bonus-under-code-on-wages-2019-allocable-surplus-set-on-set-off/",
+   "date": "2025-11-21",
+   "notes": "Under the Code the 21,000 / 7,000 ceilings are notified, not in statute; current notified values not confirmed. Calculation ceiling taken as the avg skilled minimum wage (MH 18,961, KA 18,570, HR 18,501) = 18,677. Only the statutory minimum is loaded; customary ex-gratia above 8.33% NOT included (not sourced)."
+  },
+  {
+   "key": "labour.loading.gratuity",
+   "value": 0.0481,
+   "unit": "fraction of basic+DA",
+   "basis": "Payment of Gratuity Act / Social Security Code: 15/26 x monthly wage per year of service -> 15/26/12 = 4.81%",
+   "source": "https://indianpaycalculator.in/sarkari-news/gratuity-calculation-formula-15-26-2026",
+   "date": "2026",
+   "notes": "Arithmetic accrual; ignores attrition before 5-year vesting (cost overstated slightly for contract labour)."
+  },
+  {
+   "key": "labour.loading.leaveAndHolidays",
+   "value": 0.1025,
+   "unit": "fraction (applied through hours, not added again)",
+   "basis": "Paid days 312/yr; days worked 283 (see labour.hoursPerYear) -> leave/holiday uplift 312/283 - 1 = 10.2%",
+   "source": "https://www.indiacode.nic.in/handle/123456789/1530",
+   "date": "statute",
+   "notes": "Already inside fullyLoadedInrPerHr via the 2,264 productive hours."
+  },
+  {
+   "key": "labour.loading.nightShiftAllowance",
+   "value": null,
+   "unit": "INR/shift",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "3-shift working normally pays a night/third-shift allowance; no sourced figure found, so NOT loaded. fullyLoadedInrPerHr is understated by the shift allowance x 1/3 of hours."
+  },
+  {
+   "key": "labour.loading.canteenTransportUniform",
+   "value": null,
+   "unit": "INR/month",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Customary in auto plants (Bharat Forge-linked posting lists lunch provided) but no sourced cost; NOT loaded."
+  },
+  {
+   "key": "labour.loading.labourWelfareFund",
+   "value": null,
+   "unit": "INR/half-year",
+   "basis": "not researched",
+   "source": "",
+   "date": "",
+   "notes": "State LWF contributions are tens of rupees per half-year; immaterial at INR/h precision."
+  },
+  {
+   "key": "labour.loading.contractLabourShare",
+   "value": 0.5,
+   "unit": "fraction of automotive employment",
+   "basis": "Luparello (2025), ASI 2002-2019: contract workers ~half of employment in India's automotive industry; all organised manufacturing 42% (Business Standard via Vision IAS, Sep 2025)",
+   "source": "https://econ.la.psu.edu/?p=12632",
+   "date": "2025",
+   "notes": "Also https://visionias.in/current-affairs/upsc-daily-news-summary/article/2025-09-09/business-standard/economy/on-the-rise-share-of-contract-labour-at-42-highest-in-over-25-years . Contract workers earn less (markdown ~40% vs 10% for permanent per the same paper). Agency margin (service charge) NOT found — not loaded."
+  },
+  {
+   "key": "labour.hoursPerYear",
+   "value": 2264,
+   "unit": "productive h/yr per worker",
+   "basis": "Factories Act 1948 s.51/54 (now OSH Code 2020): 48 h/week, 8 h/day, 6 days -> 312 paid working days (26/month x 12). Less: national & festival holidays 8 (ASSUMPTION — state acts not read), earned leave 14 (s.79: 1 day per 20 days worked -> 283/20), casual/sick 7 (ASSUMPTION, customary). Days worked = 312-8-14-7 = 283; x 8 h = 2,264 h.",
+   "source": "https://www.indiacode.nic.in/handle/123456789/1530",
+   "date": "statute",
+   "notes": "Rest intervals are outside the 8 h (s.55). No OEE / personal-fatigue allowance taken here — that belongs to the costing's efficiency field."
+  },
+  {
+   "key": "labour.skilledMachinist.monthlyGross",
+   "value": 27000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Skilled CNC machinist / setter-operator: Pune: Payscale CNC operator avg base INR 222,000/yr (18,500/mo) https://www.payscale.com/research/IN/Job=Computer_Numerically_Controlled_(CNC)_Operator/Salary/44687486/Pune and Hyring median INR 4.0 L/yr (33,333/mo; P25-P75 2.8-6 L) https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune -> mid 26,000. Chennai: VMC operator/setter postings 15-30k and 20-30k/mo (TN Govt private job portal https://www.tnprivatejobs.tn.gov.in/candidate/Home/ca_jobfair_single/26052109442034356 ; Jobhai Ambattur https://www.jobhai.com/manufacturing-vmc-machine-operator-job-in-maas-factree-solutions-private-limited-ambattur-chennai-0-to-6-plus-years-1785916789-8109815-jid) -> 25,000. Bengaluru: AmbitionBox listings CNC operator 2.5-4 LPA, setter-operator 4-7 LPA https://ambitionbox.com/jobs/cnc-setter-jobs-prf -> 27,000 (operator band mid). NCR: IMT Manesar CNC operator 25-35k/mo https://www.jobhai.com/manufacturing-cnc-machine-operator-job-in-shree-krishna-manpower-services-sector-6-imt-manesar-gurgaon-0-to-1-years-1785303229-8064993-jid -> 30,000. India avg = (26+25+27+30)/4 = 27,000.",
+   "source": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 20,000-35,000 INR/month. Per cluster mid: pune 26,000, chennai 25,000, bengaluru 27,000, delhiNcr 30,000. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.skilledMachinist.fullyLoadedInrPerHr",
+   "value": 161.8,
+   "unit": "INR/productive hour",
+   "basis": "G=27,000; basic=0.5G=13,500; PF+EDLI+admin=13%xmin(basic,15000)=1,755; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,125; gratuity=4.81%xbasic=649; monthly employer cost=30,529 (+13.1%); x12=366,347/yr / 2,264 h = 161.8 INR/h",
+   "source": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 123.3-208.0 INR/h."
+  },
+  {
+   "key": "labour.semiskilledOperator.monthlyGross",
+   "value": 18500,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Semi-skilled machine operator / helper: NCR: IMT Manesar machine operator postings Jay Bharat Maruti 19-20k, RV Exhaust 20-22k, Carbon 16-18k (Jobhai, 2026) https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid -> 19,500. Pune: MH semi-skilled floor 17,536; TeamLease client automotive technician (ITI/diploma) 18-25k https://www.teamlease.com/jobs/technician-automotive-manufacturing-in-pune-for-for-a-client-of-teamlease-services-ltd-5120781 -> 19,500. Chennai/Hosur: TeamLease fresher assembly technician 16-18k (Jan 2026) https://www.teamlease.com/jobs/assembly-technician-recruitment-in-hosur-teamlease-1791808 -> 17,000. Bengaluru: KA semi-skilled floor 17,296 -> 18,000 (floor-anchored; no posting found). India-wide cross-check: Payscale machine operator helper avg INR 190,000/yr = 15,833/mo https://www.payscale.com/research/IN/Job=Machine_Operator_Helper/Salary/ff0564b5/Early-Career. Avg = 18,500.",
+   "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 16,000-22,000 INR/month. Per cluster mid: pune 19,500, chennai 17,000, bengaluru 18,000, delhiNcr 19,500. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.semiskilledOperator.fullyLoadedInrPerHr",
+   "value": 114.1,
+   "unit": "INR/productive hour",
+   "basis": "G=18,500; basic=0.5G=9,250; PF+EDLI+admin=13%xmin(basic,15000)=1,202; ESI=3.25%xG if G<=21000 =601; bonus=8.33%xmin(basic,18677) if basic<=21000 =771; gratuity=4.81%xbasic=445; monthly employer cost=21,519 (+16.3%); x12=258,230/yr / 2,264 h = 114.1 INR/h",
+   "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 98.6-131.8 INR/h."
+  },
+  {
+   "key": "labour.foundryOperative.monthlyGross",
+   "value": 21000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Foundry operative (moulding, pouring, fettling): WageIndicator India metal moulders & coremakers: majority 16,844-35,914/mo (2025) https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers ; Coimbatore melting/pouring operator posting 25-30k (Marks Engineering Works, Indeed) https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division ; KA foundry skilled moulder floor 18,361. Mid 21,000 = blend of fettling (semi-skilled, ~floor) and moulding/pouring (skilled). No per-cluster data found (Coimbatore is not one of the four clusters).",
+   "source": "https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 17,000-30,000 INR/month. No per-cluster split found. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.foundryOperative.fullyLoadedInrPerHr",
+   "value": 129.5,
+   "unit": "INR/productive hour",
+   "basis": "G=21,000; basic=0.5G=10,500; PF+EDLI+admin=13%xmin(basic,15000)=1,365; ESI=3.25%xG if G<=21000 =682; bonus=8.33%xmin(basic,18677) if basic<=21000 =875; gratuity=4.81%xbasic=505; monthly employer cost=24,427 (+16.3%); x12=293,126/yr / 2,264 h = 129.5 INR/h",
+   "source": "https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 104.8-179.8 INR/h."
+  },
+  {
+   "key": "labour.forgeOperator.monthlyGross",
+   "value": 22000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Forge-shop operator: WageIndicator India blacksmiths, hammersmiths & forging press workers: majority 15,972-32,049/mo (2026) https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press ; Pune Bharat Forge (Mundhwa) contractor posting, ITI/diploma freshers 20-26k + PF + lunch (Apna/Ciel HR) https://www.apna.co/job/pune/machine-operator-112705990. Mid 22,000. No other cluster data.",
+   "source": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 16,000-32,000 INR/month. No per-cluster split found. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.forgeOperator.fullyLoadedInrPerHr",
+   "value": 131.8,
+   "unit": "INR/productive hour",
+   "basis": "G=22,000; basic=0.5G=11,000; PF+EDLI+admin=13%xmin(basic,15000)=1,430; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =916; gratuity=4.81%xbasic=529; monthly employer cost=24,875 (+13.1%); x12=298,505/yr / 2,264 h = 131.8 INR/h",
+   "source": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 98.6-191.1 INR/h."
+  },
+  {
+   "key": "labour.furnaceOperator.monthlyGross",
+   "value": 23000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Furnace operator: No furnace-operator salary found for the four clusters. Proxy: Coimbatore melting/pouring operator posting 25-30k https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division and the foundry/forge bands above. Mid 23,000 is a PROXY — low confidence.",
+   "source": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 18,000-30,000 INR/month. No per-cluster split found. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.furnaceOperator.fullyLoadedInrPerHr",
+   "value": 137.8,
+   "unit": "INR/productive hour",
+   "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h",
+   "source": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 111.0-179.8 INR/h."
+  },
+  {
+   "key": "labour.pressShopOperator.monthlyGross",
+   "value": 20500,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Press-shop operator: No press-operator title found; proxy = IMT Manesar machine-operator postings at sheet-metal / exhaust press-shop employers: Jay Bharat Maruti 19-20k, RV Exhaust System 20-22k https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-rv-exhaust-system-imt-manesar-gurgaon-0-to-0-years-1785741657-8094970-jid , Mark Exhaust Systems 20-31k. Mid 20,500. NCR only.",
+   "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-rv-exhaust-system-imt-manesar-gurgaon-0-to-0-years-1785741657-8094970-jid",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 16,000-31,000 INR/month. No per-cluster split found. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.pressShopOperator.fullyLoadedInrPerHr",
+   "value": 126.4,
+   "unit": "INR/productive hour",
+   "basis": "G=20,500; basic=0.5G=10,250; PF+EDLI+admin=13%xmin(basic,15000)=1,332; ESI=3.25%xG if G<=21000 =666; bonus=8.33%xmin(basic,18677) if basic<=21000 =854; gratuity=4.81%xbasic=493; monthly employer cost=23,846 (+16.3%); x12=286,147/yr / 2,264 h = 126.4 INR/h",
+   "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-rv-exhaust-system-imt-manesar-gurgaon-0-to-0-years-1785741657-8094970-jid",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 98.6-185.4 INR/h."
+  },
+  {
+   "key": "labour.plasticsOperator.monthlyGross",
+   "value": 18000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Plastics operator (injection / blow / roto / thermoform): CorpReady injection moulding operator band 1.8-4 L/yr (15-33k/mo) 0-2 yrs https://corpready.in/salary/injection-moulding-operator ; Chennai Sriperumbudur IM apprentice stipend ~13k + ESI/OT (TN Govt portal) https://www.tnprivatejobs.tn.gov.in/candidate/Home/ca_jobfair_single/24011210571434147 ; Chennai IM setter (5+ yrs) 25-40k (Apna). Mid 18,000 (operator, not setter). No Pune/Bengaluru/NCR data found; blow/roto/thermoform operators not found separately.",
+   "source": "https://corpready.in/salary/injection-moulding-operator",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 13,000-25,000 INR/month. No per-cluster split found. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.plasticsOperator.fullyLoadedInrPerHr",
+   "value": 111.0,
+   "unit": "INR/productive hour",
+   "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h",
+   "source": "https://corpready.in/salary/injection-moulding-operator",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 80.1-149.8 INR/h."
+  },
+  {
+   "key": "labour.smtOperator.monthlyGross",
+   "value": 23000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Electronics assembly / SMT operator: Bengaluru SMT operator posting 3.5-5.5 LPA (29-46k/mo) and Southern Chips (Hosur Rd) Yamaha operator from INR 336,000/yr (28k) (Indeed) https://in.indeed.com/Smt-jobs-in-South-India ; Payscale India SMT machine operator avg INR 200,804/yr (16,700/mo) https://www.payscale.com/research/IN/Job=Surface_Mount_Technology_(SMT)_Machine_Operator/Salary . Payscale Chennai (966k/yr) rejected as implausible. Mid 23,000 = mean of Bengaluru ~30k and India-wide 16.7k. Low confidence.",
+   "source": "https://in.indeed.com/Smt-jobs-in-South-India",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 16,700-35,000 INR/month. Per cluster mid: bengaluru 30,000. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.smtOperator.fullyLoadedInrPerHr",
+   "value": 137.8,
+   "unit": "INR/productive hour",
+   "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h",
+   "source": "https://in.indeed.com/Smt-jobs-in-South-India",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 103.0-208.0 INR/h."
+  },
+  {
+   "key": "labour.qualityInspector.monthlyGross",
+   "value": 20000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Quality inspector: AmbitionBox quality inspector CTC: Tata Motors 1-4.5 L/yr (300+ salaries; take-home 16.2-17.8k) https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector ; Indo Autotech 1.2-2.6 L (take-home 14.6-16.2k); IAC 1-2.7 L; Mahindra Automotives 1.5-2.8 L; Ronch Polymers Pune 1.5-3.5 L https://www.ambitionbox.com/salaries/ronch-polymers-salaries/quality-inspector/pune-location . Take-home ~16-17.5k -> gross ~19-20k (after employee PF/PT). Mid 20,000. India-level, not per cluster.",
+   "source": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 15,000-29,000 INR/month. No per-cluster split found. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.qualityInspector.fullyLoadedInrPerHr",
+   "value": 123.3,
+   "unit": "INR/productive hour",
+   "basis": "G=20,000; basic=0.5G=10,000; PF+EDLI+admin=13%xmin(basic,15000)=1,300; ESI=3.25%xG if G<=21000 =650; bonus=8.33%xmin(basic,18677) if basic<=21000 =833; gratuity=4.81%xbasic=481; monthly employer cost=23,264 (+16.3%); x12=279,168/yr / 2,264 h = 123.3 INR/h",
+   "source": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 92.5-173.8 INR/h."
+  },
+  {
+   "key": "labour.maintenanceTechnician.monthlyGross",
+   "value": 24000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Maintenance technician (electrical / mechanical): Chennai Ambattur maintenance technician/electrical posting (diploma/ITI, 1-2 yrs) 15-25k (TN Govt portal) https://www.tnprivatejobs.tn.gov.in/candidate/Home/ca_jobfair_single/26041702564834976 ; Payscale Chennai electrical technician (maintenance) avg INR 170,893/yr https://www.payscale.com/research/IN/Job=Electrical_Technician/Salary/f580ea1b/Chennai-Maintenance ; CorpReady maintenance technician electrical 2.5-6 L/yr (0-2 y), 6-15 L (3-7 y) https://corpready.in/salary/maintenance-technician-electrical . Mid 24,000 for an experienced plant technician (above the fresher posting, below CorpReady mid-career). Low-medium confidence.",
+   "source": "https://corpready.in/salary/maintenance-technician-electrical",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 15,000-35,000 INR/month. Per cluster mid: chennai 20,000. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.maintenanceTechnician.fullyLoadedInrPerHr",
+   "value": 143.8,
+   "unit": "INR/productive hour",
+   "basis": "G=24,000; basic=0.5G=12,000; PF+EDLI+admin=13%xmin(basic,15000)=1,560; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,000; gratuity=4.81%xbasic=577; monthly employer cost=27,137 (+13.1%); x12=325,642/yr / 2,264 h = 143.8 INR/h",
+   "source": "https://corpready.in/salary/maintenance-technician-electrical",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 92.5-208.0 INR/h."
+  },
+  {
+   "key": "labour.productionSupervisor.monthlyGross",
+   "value": 33000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Production supervisor: Payscale Pune production supervisor (manufacturing): all-experience avg INR 311,538/yr, mid-career avg 478,895/yr (P25-P75 407-530k), early-career 285,000 https://www.payscale.com/research/IN/Job=Production_Supervisor%2C_Manufacturing/Salary/febb9359/Pune . Mid = (311,538+478,895)/2 = 395,217/yr = 32,935/mo -> 33,000. Pune only.",
+   "source": "https://www.payscale.com/research/IN/Job=Production_Supervisor%2C_Manufacturing/Salary/febb9359/Pune",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 24,000-44,000 INR/month. Per cluster mid: pune 33,000. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.productionSupervisor.fullyLoadedInrPerHr",
+   "value": 196.7,
+   "unit": "INR/productive hour",
+   "basis": "G=33,000; basic=0.5G=16,500; PF+EDLI+admin=13%xmin(basic,15000)=1,950; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,374; gratuity=4.81%xbasic=794; monthly employer cost=37,118 (+12.5%); x12=445,417/yr / 2,264 h = 196.7 INR/h",
+   "source": "https://www.payscale.com/research/IN/Job=Production_Supervisor%2C_Manufacturing/Salary/febb9359/Pune",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 143.8-249.2 INR/h."
+  },
+  {
+   "key": "labour.processEngineer.monthlyGross",
+   "value": 45000,
+   "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+   "basis": "Manufacturing / process engineer (2-6 yrs): Payscale Pune process engineer (manufacturing process eng.): mid-career avg INR 530,000/yr (44,167/mo), early-career 276,000 https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering ; AmbitionBox Cikautxo Pune process engineer ~5.6-5.7 L/yr (47k/mo, n=4) https://www.ambitionbox.com/salaries/cikautxo-salaries/process-engineer/pune-location . Mid 45,000. Pune only.",
+   "source": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+   "date": "2026 (pages as of Oct 2026)",
+   "notes": "Range 30,000-60,000 INR/month. Per cluster mid: pune 45,000. Recruiter/posting data — survey and listings, not payroll."
+  },
+  {
+   "key": "labour.processEngineer.fullyLoadedInrPerHr",
+   "value": 254.6,
+   "unit": "INR/productive hour",
+   "basis": "G=45,000; basic=0.5G=22,500; PF+EDLI+admin=13%xmin(basic,15000)=1,950; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =0; gratuity=4.81%xbasic=1,082; monthly employer cost=48,032 (+6.7%); x12=576,387/yr / 2,264 h = 254.6 INR/h",
+   "source": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+   "date": "2026-10",
+   "notes": "Excludes night-shift allowance, canteen/transport, agency margin (none sourced). Range at the band ends: 179.8-336.0 INR/h."
+  },
+  {
+   "key": "energy.electricity.assumptions",
+   "value": {
+    "loadFactor": 0.65,
+    "powerFactor": 0.98,
+    "hoursPerMonth": 730,
+    "kWhPerKVAofMDperMonth": 465.0
+   },
+   "unit": "",
+   "basis": "3-shift plant load factor 0.65 (task brief 0.6-0.7) and PF 0.98 are ASSUMPTIONS; kWh per kVA of maximum demand per month = LF x PF x 730 = 465.0. kVAh = kWh / PF.",
+   "source": "",
+   "date": "2026-10",
+   "notes": "Demand charge per kWh = DC / 465.0."
+  },
+  {
+   "key": "energy.electricity.maharashtra.averageBillingRateHT",
+   "value": 10.71,
+   "unit": "INR/kWh",
+   "basis": "MERC MYT order (Case 217 of 2024 as reviewed): HT industrial average tariff FY2026-27 10.71 (FY2025-26 10.78; 2025 10.88)",
+   "source": "https://www.socialnews.xyz/2026/03/27/maha-mahavitaran-tariff-cut-to-benefit-consumers-from-april-1/",
+   "date": "2026-04-01",
+   "notes": "Trade-press report of the regulator's figure; whether it includes demand + wheeling is not stated (an average billing rate normally does). Cross-check with MSEDCL's FY26 petition HT-I: demand 509 INR/kVA/mo, energy 7.76 INR/kVAh + wheeling 1.44 (https://merc.gov.in/wp-content/uploads/2025/01/Notice-MAHAVITARAN-English.pdf): 509/465.0 + (7.76+1.44)/0.98 = 1.09 + 9.39 = 10.48 INR/kWh — consistent. Time-of-day: up to 25% concession 09:00-17:00 solar hours (same source), not applied."
+  },
+  {
+   "key": "energy.electricity.maharashtra.taxOnSaleOfElectricity",
+   "value": 0.2894,
+   "unit": "INR/kWh",
+   "basis": "MSEDCL Commercial Circular 354: ToSE for industrial & commercial revised 19.04 -> 28.94 paise/unit",
+   "source": "https://www.mahadiscom.in/wp-content/uploads/2026/04/Commercial-Circular-354_Revision-in-Rate-of-ToSE_15-04-2026-F.Rv_.pdf",
+   "date": "2026-04-15",
+   "notes": ""
+  },
+  {
+   "key": "energy.electricity.maharashtra.electricityDuty",
+   "value": 0.075,
+   "unit": "fraction of energy bill",
+   "basis": "Maharashtra electricity duty on HT industry — sources conflict 7.5% vs 9.3%",
+   "source": "https://electricitybillcalculator.in/light-bill-calculator-msedcl/",
+   "date": "2026",
+   "notes": "9.3% per https://thediscombill.com/tariffs/maharashtra/ ; Maharashtra Electricity Duty Act schedule not read. Using 7.5% (low); at 9.3% add 0.19 INR/kWh."
+  },
+  {
+   "key": "energy.electricity.maharashtra.allInInrPerKwh",
+   "value": 11.8,
+   "unit": "INR/kWh",
+   "basis": "10.71 x (1 + 7.5% duty) + 0.2894 ToSE = 11.8 (with 9.3% duty: 12.0)",
+   "source": "https://www.socialnews.xyz/2026/03/27/maha-mahavitaran-tariff-cut-to-benefit-consumers-from-april-1/",
+   "date": "FY2026-27",
+   "notes": "Ex-taxes figure 10.71. MSEDCL fuel adjustment (FAC) for Oct 2026 not found — not included. Pune (MSEDCL) cluster."
+  },
+  {
+   "key": "energy.electricity.tamilnadu.energyCharge",
+   "value": 7.5,
+   "unit": "INR/kWh",
+   "basis": "TNERC tariff for industrial category effective 1 Jul 2025 (+3.4%, from 7.25)",
+   "source": "https://mercomindia.com/tamil-nadu-hikes-fy-2026-electricity-tariffs-by-3-16",
+   "date": "2025-07-01",
+   "notes": "No 1 Jul 2026 revision found (next MYT 2027-31 in draft). Article does not separate HT and LT industrial — taken as HT I-A."
+  },
+  {
+   "key": "energy.electricity.tamilnadu.demandCharge",
+   "value": 608,
+   "unit": "INR/kVA/month",
+   "basis": "TNERC, effective 1 Jul 2025 (from 589)",
+   "source": "https://mercomindia.com/tamil-nadu-hikes-fy-2026-electricity-tariffs-by-3-16",
+   "date": "2025-07-01",
+   "notes": ""
+  },
+  {
+   "key": "energy.electricity.tamilnadu.allInInrPerKwh",
+   "value": 8.81,
+   "unit": "INR/kWh",
+   "basis": "7.50 + 608/465.0 = 7.50 + 1.31 = 8.81 (ex electricity tax)",
+   "source": "https://mercomindia.com/tamil-nadu-hikes-fy-2026-electricity-tariffs-by-3-16",
+   "date": "2025-07-01 (still current Oct 2026 per source)",
+   "notes": "TN electricity tax on HT industry NOT found/confirmed; not included. Chennai cluster."
+  },
+  {
+   "key": "energy.electricity.karnataka.energyCharge",
+   "value": 6.6,
+   "unit": "INR/kWh",
+   "basis": "KERC combined tariff order 27 Mar 2025 (FY26-FY28): HT-2(a) industrial 6.90 -> 6.60 for FY26 and FY27, 6.50 FY28",
+   "source": "https://odishabytes.com/karnataka-power-tariff-revamped-lower-energy-rates-higher-fixed-charges-from-apr-1/amp/",
+   "date": "2026-04-01",
+   "notes": "A later KERC revision raised industrial tariffs and approved true-up (https://www.deccanherald.com/amp/story/india/karnataka/kerc-order-industrialists-domestic-consumers-unhappy-3972062) — revised figure not found."
+  },
+  {
+   "key": "energy.electricity.karnataka.demandCharge",
+   "value": null,
+   "unit": "INR/kVA/month",
+   "basis": "not found in any source",
+   "source": "https://data.opencity.in/dataset/kerc-combined-tariff-order-2025",
+   "date": "",
+   "notes": "HT-2(a) demand charge is in the KERC order PDF, which could not be read here (network). Outage-linked demand-charge relief in force from 1 Apr 2026 (https://solarquarter.com/2026/09/03/kerc-rejects-mescoms-three-year-extension-enforces-ht-industrial-demand-charge-relief-in-karnataka/)."
+  },
+  {
+   "key": "energy.electricity.karnataka.allInInrPerKwh",
+   "value": null,
+   "unit": "INR/kWh",
+   "basis": "not computed — demand charge and electricity tax not found; energy charge alone is 6.60",
+   "source": "https://odishabytes.com/karnataka-power-tariff-revamped-lower-energy-rates-higher-fixed-charges-from-apr-1/amp/",
+   "date": "",
+   "notes": "Bengaluru cluster. At any demand charge of D INR/kVA/mo the all-in ex-tax is 6.60 + D/465.0."
+  },
+  {
+   "key": "energy.electricity.haryana.energyCharge",
+   "value": 6.95,
+   "unit": "INR/kVAh",
+   "basis": "HERC FY2025-26 order, industrial HT 11 kV supply: 6.65 -> 6.95 INR/kVAh",
+   "source": "https://www.tribuneindia.com/news/haryana/power-shock-consumers-to-pay-30-paise-more-per-unit",
+   "date": "2025-04-01",
+   "notes": "HERC kept tariffs unchanged for FY2026-27 (https://www.taxtmi.com/news?id=71785) -> still current."
+  },
+  {
+   "key": "energy.electricity.haryana.fixedCharge",
+   "value": 290,
+   "unit": "INR/kVA/month",
+   "basis": "HERC FY2025-26 order, industrial: 165 -> 290 INR/kVA/month",
+   "source": "https://www.tribuneindia.com/news/haryana/power-shock-consumers-to-pay-30-paise-more-per-unit",
+   "date": "2025-04-01",
+   "notes": "Unchanged FY2026-27."
+  },
+  {
+   "key": "energy.electricity.haryana.allInInrPerKwh",
+   "value": 7.72,
+   "unit": "INR/kWh",
+   "basis": "6.95/0.98 + 290/465.0 = 7.09 + 0.62 = 7.72 (ex electricity duty, FSA)",
+   "source": "https://www.tribuneindia.com/news/haryana/power-shock-consumers-to-pay-30-paise-more-per-unit",
+   "date": "FY2026-27",
+   "notes": "DHBVN (Gurugram/Manesar/Faridabad) = NCR proxy. Haryana electricity duty and fuel surcharge adjustment not found. Delhi (DERC): no tariff order since 2021/2024; FPPAS ~17-18.5% allowed for May-Jun 2026 (https://solarquarter.com/2026/08/13/derc-allows-higher-fppas-recovery-for-delhi-discoms-amid-rising-power-purchase-costs/) — Delhi industrial schedule not found."
+  },
+  {
+   "key": "energy.electricity.indiaAvg",
+   "value": 9.08,
+   "unit": "INR/kWh",
+   "basis": "Mean of the three clusters with a computable ex-tax figure: (MH 10.71 + TN 8.81 + HR 7.72)/3 = 9.08. With Maharashtra duty+ToSE included (only state where taxes found): (11.8+8.81+7.72)/3 = 9.44",
+   "source": "",
+   "date": "2026-10",
+   "notes": "Karnataka excluded (demand charge not found); its energy charge 6.60 is the lowest of the four, so a 4-cluster average would likely be lower. Taxes/duties for TN, KA, HR and FAC/FSA are missing -> treat as a floor. Current book 8.78 INR/kWh sits within ~5% of this — NOT confidently wrong."
+  },
+  {
+   "key": "energy.electricity.lt",
+   "value": null,
+   "unit": "INR/kWh",
+   "basis": "not researched",
+   "source": "",
+   "date": "",
+   "notes": "LT industrial skipped (budget)."
+  },
+  {
+   "key": "energy.gas.industrialPNG.morbi",
+   "value": 44.68,
+   "unit": "INR/SCM",
+   "basis": "Gujarat Gas industrial PNG, Morbi, after +2 INR/SCM from 4 Jul 2024 (trade press)",
+   "source": "https://indianinfrastructure.com/2024/07/05/gujarat-gas-increases-industrial-png-price-in-morbi-gujarat/",
+   "date": "2024-07-04",
+   "notes": "NOT a cluster price and 2024. Gujarat Gas cut Morbi ceramic segment by 4.50 INR/SCM from 1 Jan 2026 (https://www.plindia.com/pl-research/gujarat-gas-gujga-in-q3fy26-result-update-in-line-ebitda-scm-morbi-vol-grows-post-q3-upgrade-to-accumulate/), base at Dec 2025 unknown. Tax basis (VAT) not stated."
+  },
+  {
+   "key": "energy.gas.industrialPNG.clusters",
+   "value": null,
+   "unit": "INR/SCM",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "MGL (Pune/Mumbai), IGL (NCR), Torrent/AG&P (Chennai), GAIL Gas (Bengaluru) industrial tariffs not published in any page found. Domestic PNG only (NOT industrial, cross-check): MGL ~52 INR/SCM from 30 May 2026 +1 from 1 Sep 2026 (https://www.freepressjournal.in/mumbai/mumbai-cng-price-hike-from-may-30-mgl-raises-rates-to-86-per-kg-png-at-52-per-scm); IGL Gurugram 46.70 from 1 Jan 2026 (https://oga-prod.angelone.in/news/stocks/igl-share-price-in-focus-reduces-piped-cooking-gas-prices-in-delhi-and-ncr-from-january-1-2026)."
+  },
+  {
+   "key": "energy.gas.industrialPNG.inrPerKwh",
+   "value": 3.84,
+   "unit": "INR/kWh (GCV)",
+   "basis": "44.68 INR/SCM / (10,000 kcal/SCM x 1.163 Wh/kcal = 11.63 kWh) = 3.84; at 8,600 kcal/SCM (10.0 kWh) = 4.47",
+   "source": "https://indianinfrastructure.com/2024/07/05/gujarat-gas-increases-industrial-png-price-in-morbi-gujarat/",
+   "date": "2024-07-04",
+   "notes": "GCV per SCM is an ASSUMPTION (Indian CGD contracts use 8,600-10,000 kcal/SCM; not sourced here). Morbi 2024 proxy only. Current book 3.8 INR/kWh matches this proxy at the 10,000 kcal basis — cannot be called wrong on this evidence."
+  },
+  {
+   "key": "energy.gas.lpgCommercial19kg",
+   "value": {
+    "delhi": 2810,
+    "mumbai": 2764.5,
+    "bengaluru": 2898
+   },
+   "unit": "INR per 19 kg cylinder incl. 18% GST",
+   "basis": "Oil-company commercial LPG price from 1 Oct 2026 (+62.5 to +67); Chennai rose 66.50, level not found",
+   "source": "https://www.goodreturns.in/news/lpg-gas-cylinder-prices-hiked-october-1-2026-19-kg-commercial-lpg-prices-up-rs-62-71-50-city-wise-1538497.html",
+   "date": "2026-10-01",
+   "notes": "Packed-cylinder retail; bulk/auto-LPG to an industrial tank is normally cheaper (not found)."
+  },
+  {
+   "key": "energy.gas.lpg.inrPerKwh",
+   "value": 9.13,
+   "unit": "INR/kWh (GCV, ex-GST)",
+   "basis": "Ex-GST per kg: Delhi 2810/19/1.18 = 125.33, Mumbai 123.31, Bengaluru 129.26; mean 125.97 INR/kg / 13.8 kWh/kg (LPG GCV ~49.6 MJ/kg — engineering constant, not sourced) = 9.13",
+   "source": "https://www.goodreturns.in/news/lpg-gas-cylinder-prices-hiked-october-1-2026-19-kg-commercial-lpg-prices-up-rs-62-71-50-city-wise-1538497.html",
+   "date": "2026-10-01",
+   "notes": "Fallback where no PNG; ~2.4x the PNG proxy."
+  }
+ ],
+ "notes": [
+  "Web pages could not be fetched from this environment (proxy 403 / DNS); every figure was read from search-result snippets of the cited URL. Regulator PDFs (MERC, KERC, TNERC, HERC orders, state minimum-wage gazettes) were NOT read directly.",
+  "Labour: fullyLoadedInrPerHr = 12 x (gross + employer PF/EDLI/admin + ESI + statutory bonus + gratuity) / 2,264 productive h. Statutory loading is +6.7% (engineer) to +16.3% (ESI-covered operators); leave/holidays add a further 10.2% through the hours.",
+  "Not loaded (no source found): night/3rd-shift allowance, canteen/transport/uniform, group insurance for non-ESI staff, contract-agency service charge, ex-gratia bonus above 8.33%. Fully-loaded figures are therefore a floor; customary items in tier-1 plants could plausibly add 10-25% but that range is NOT sourced and is not used.",
+  "Current book vs evidence (INR/h fully loaded): skilled 653.81 vs 161.8 (~4.0x high); semi-skilled 447.74 vs 114.1 (~3.9x); foundry 384.14 vs 129.5 (~3.0x); electronics 576.22 vs 137.8 (~4.2x); inspector 704.69 vs 123.3; technician 718.68 vs 143.8; supervisor 882.77 vs 196.7; engineer 1536.58 vs 254.6 (~6x). Even at the top of each band and with an unsourced +25% for customary items the book stays 2-4x too high.",
+  "Energy: electricity indiaAvg is a 3-cluster ex-tax floor; Karnataka demand charge, TN/KA/HR taxes and FAC/FSA are missing. Industrial PNG for the four clusters was not found; the only industrial price is Gujarat Gas Morbi 2024."
+ ]
+}
