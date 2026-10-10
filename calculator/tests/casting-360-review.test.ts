@@ -102,3 +102,36 @@ describe('X14 / X15 — labour is printed by role, and the trace says its source
     expect(all).toMatch(/foundry \(role\)/);
   });
 });
+
+import { readFileSync } from 'node:fs';
+import { buildDeterministicAnalysis } from '../src/engine/cost-input-rules/deterministic.js';
+import { specForCommodity } from '../src/engine/cost-input-rules/index.js';
+import { recomputeMachineRates } from '../src/engine/rate-library.js';
+
+describe('X16 — cored bores are finish-bored on the machining centre, not drilled', () => {
+  // The knuckle's RECORDED geometry (real-parts baseline) — no kernel needed.
+  const all = JSON.parse(readFileSync(new URL('./fixtures/real-parts-baseline.json', import.meta.url), 'utf8')) as Array<{ part: string; geometry: unknown }>;
+  const k = all.find(p => p.part === 'steering_knuckle_RH.stp')!;
+  const answers = { 'material.family': 'cast iron', 'commodity.route': 'cast_and_machine', 'service.pressureTight': 'no',
+    'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes', 'material.grade': 'mat-gjs500' };
+  const ctx = { geo: k.geometry, geometryQuality: 'occt', commodity: 'cast_and_machine', commoditySource: 'engineer', annualVolume: 100_000,
+    filename: k.part, answers, rates: recomputeMachineRates(DEFAULT_RATE_LIBRARY) };
+  const { analysis } = buildDeterministicAnalysis(specForCommodity('cast_and_machine')!, ctx as never, k.part);
+  const ops = (analysis as { costInputSuggestions: { estimatedOperations: Array<{ name: string; machineId: string; cycleTimeHr: number }> } })
+    .costInputSuggestions.estimatedOperations;
+  const drill = ops.find(o => o.name.startsWith('Drilling'))!;
+  const bore = ops.find(o => o.name.startsWith('Finish boring'))!;
+  it('the drilling op holds only holes up to the cored size (Ø20 in sand)', () => {
+    const dias = [...drill.name.matchAll(/Ø([\d.]+)/g)].map(m => Number(m[1]));
+    expect(dias.length).toBeGreaterThan(0);
+    expect(Math.max(...dias)).toBeLessThanOrEqual(20);
+    expect(drill.machineId).toBe('mach-drill');
+  });
+  it('the Ø63–75 bearing bores are bored on the machining centre', () => {
+    expect(bore.name).toMatch(/4 cored bore\(s\).*Ø63\.0.*Ø75\.0/);
+    expect(bore.machineId).not.toBe('mach-drill');
+  });
+  it('minutes are moved, not added: drilling + boring = the 0.0932 h the drilling op held before', () => {
+    expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(0.0932, 4);
+  });
+});

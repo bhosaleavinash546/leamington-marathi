@@ -45,3 +45,4 @@ log(JSON.stringify({
   shop,
   cost: { total: cost.total, breakdown: cost.breakdown, trace: cost.trace, drivers: cost.drivers ?? cost.trace?.drivers },
 }, (k, v) => (typeof v === 'number' ? Math.round(v * 1e6) / 1e6 : v), 1));
+process.exit(0);

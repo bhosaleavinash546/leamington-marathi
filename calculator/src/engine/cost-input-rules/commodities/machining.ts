@@ -35,6 +35,7 @@ import type { MachiningOpType } from '../../modules/machining.js';
 import type { MaterialFamily } from '../../material-family.js';
 import {
   stockSize, fromSolidMillingTime, fromBarTurningTime, nearNetMachiningTime, nearNetTurningTime, nearNetTurnedAreaCm2, castMachiningStockMm, deburrInspectMinutes,
+  holeMinutes, CORED_ABOVE_MM,
   fixtureCostGBP, programmingHours, toolWearPerPart, cuttingDataFor,
   handlingMinPerFixturing, SETUP_MIN_PER_FIXTURING, PROGRAMMING_HR, type CuttingTime,
 } from '../../machining-time.js';
@@ -131,8 +132,13 @@ export interface MachiningCut {
   kind: 'from-solid' | 'near-net';
   /** Machining-centre content (rough + finish + surfacing + tool changes), min. */
   millMin: number;
-  /** Drilling / boring content, min. */
+  /** Drilling content (on the routing's drill machine), min. */
   holeMin: number;
+  /** Near-net: the cored bores finish-bored on the machining centre (above `CORED_ABOVE_MM`), min — a bearing bore is
+   *  not drilled on a drilling centre (casting 360 review, Oct 2026: the Ø63–75 knuckle bores were "Drilling"). */
+  boreMin?: number;
+  /** Near-net: holes above this diameter are cored in the casting (`CORED_ABOVE_MM` for the process), mm. */
+  coredAboveMm?: number;
   /** Measured turned part: the lathe's content and what it leaves for a mill or drill. */
   turned: { lathe: CuttingTime; secondary: CuttingTime } | null;
   /** Near-net: the outside of the turned axis (a stub axle's spindle), turned on a CNC lathe in its own fixturing. */
@@ -194,8 +200,13 @@ export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: st
   const spindle = turnedCm2 > 0
     ? nearNetTurningTime(turnedCm2, family, castMachiningStockMm(subtype, family), ctx.geo.turning?.externalMaxDiaMm ?? ctx.geo.turning?.maxDiaMm ?? 0)
     : null;
+  // Holes up to the cored size are drilled from solid (drill machine); the cored bores above it are finish-bored on the
+  // machining centre — the same minutes nearNetMachiningTime counted, split by where they are cut.
+  const cored = CORED_ABOVE_MM[subtype ?? ''] ?? 20;
+  const boreMin = Math.round(holeMinutes(rows.filter(r => r.kind === 'hole' && r.diaMm > cored), family, cored) * 100) / 100;
   return {
-    kind: 'near-net', handledKg, handlingMin: handlingMinPerFixturing(handledKg), millMin: nn.finishMin + nn.toolChangeMin, holeMin: nn.holeMin,
+    kind: 'near-net', handledKg, handlingMin: handlingMinPerFixturing(handledKg), millMin: nn.finishMin + nn.toolChangeMin,
+    holeMin: Math.max(0, Math.round((nn.holeMin - boreMin) * 100) / 100), boreMin, coredAboveMm: cored,
     turned: null, spindle, detail: nn, surfaced: false, kernelHr: kernelCuttingHr(ctx),
   };
 }
@@ -218,7 +229,7 @@ export function cuttingHours(
   const routing = routingFor(ctx, cut);
   const hours = routing.chosen.label === 'turned' && cut.turned
     ? (cut.turned.lathe.totalMin + cut.turned.secondary.totalMin) / 60
-    : (cut.millMin + cut.holeMin) / 60;
+    : (cut.millMin + cut.holeMin + (cut.boreMin ?? 0)) / 60;
   return { hours: Math.round(hours * 10_000) / 10_000, capped: false, rawHours: cut.kernelHr, ceilingHr: null, cut };
 }
 
@@ -251,7 +262,7 @@ export interface OperationPlan {
  */
 export function routingFor(ctx: RuleContext, cut: MachiningCut): RoutingChoice {
   return optimiseMachiningRouting({
-    millingHr: cut.millMin / 60,
+    millingHr: (cut.millMin + (cut.boreMin ?? 0)) / 60,   // cored bores are bored on the machining centre
     drillHr: cut.holeMin / 60,
     principalDirections: principalDirections(ctx).count,
     axisymmetric: cut.kind === 'from-solid' && !ctx.geo.turning && isAxisymmetric(ctx),
@@ -330,12 +341,26 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
       ops.push({ ...machine, name: what, type, machineId: chosen.primaryMachineId, cycleTimeHr: hr4(cut.millMin),
         basis: `no setup analysis — one operation: ${cut.detail.basis}` });
     }
+    // Near-net: holes up to the cored size are drilled; the cored bores are finish-bored on the machining centre.
+    const coredAbove = cut.coredAboveMm ?? Infinity;
+    const boreRows = cut.kind === 'near-net' && (cut.boreMin ?? 0) > 0 ? holeRowsAll.filter(r => r.diaMm > coredAbove) : [];
+    const drillRows = holeRowsAll.filter(r => !boreRows.includes(r));
+    const summary = (rs: FeatureRow[]) => rs.map(r => `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)}`).join(', ');
+    const count = (rs: FeatureRow[]) => rs.reduce((s, r) => s + r.count, 0);
     if (cut.holeMin > 0) {
-      ops.push({ ...machine, name: `Drilling — ${nHoles} holes (${holeSummary}) [geometry-measured]`, type: 'drilling',
+      const rs = boreRows.length ? drillRows : holeRowsAll;
+      ops.push({ ...machine, name: `Drilling — ${count(rs)} holes (${boreRows.length ? summary(rs) : holeSummary}) [geometry-measured]`, type: 'drilling',
         machineId: chosen.drillMachineId, cycleTimeHr: hr4(cut.holeMin),
-        basis: `${nHoles} holes measured off the B-rep, ${fmt(cut.holeMin, 1)} min`
+        basis: `${count(rs)} holes measured off the B-rep, ${fmt(cut.holeMin, 1)} min`
           + (chosen.drillMachineId === chosen.primaryMachineId ? ' — drilled in the same clamping' : ''),
-        faceIds: holeIds });
+        faceIds: rs.flatMap(r => r.faceIds ?? []) });
+    }
+    if ((cut.boreMin ?? 0) > 0) {
+      ops.push({ ...machine, name: `Finish boring — ${count(boreRows)} cored bore(s) (${summary(boreRows)}) [geometry-measured]`, type: 'milling_3ax',
+        machineId: chosen.primaryMachineId, cycleTimeHr: hr4(cut.boreMin!),
+        basis: `${count(boreRows)} bore(s) above Ø${coredAbove} mm are cored in the casting and finish-bored on the machining centre `
+          + `(not drilled), ${fmt(cut.boreMin!, 1)} min`,
+        faceIds: boreRows.flatMap(r => r.faceIds ?? []) });
     }
   }
   // Near-net with a turned axis: the spindle on the CNC lathe, in its own fixture, loaded once.

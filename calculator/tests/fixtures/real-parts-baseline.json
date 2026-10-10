@@ -16115,16 +16115,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 84.93,
+      "total": 87.38,
       "breakdown": {
         "rawMaterial": 25.34,
-        "process": 28.59,
+        "process": 30.61,
         "labour": 14.18,
         "tooling": 1.15,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 8.31,
-        "margin": 6.29
+        "overhead": 8.55,
+        "margin": 6.47
       }
     }
   },
