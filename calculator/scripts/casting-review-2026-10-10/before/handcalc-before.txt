@@ -1,0 +1,37 @@
+section 2V/S = 9.02 mm (sand ductile iron, section-based process choice)
+line                                                               hand         tool      diff   basis
+finished weight kg                                               2.5283       2.5280   +0.0003   356.101 cm³ × 7.1 g/cm³
+poured kg                                                        5.2986                          3.238 kg as-cast ÷ (1 − 0.03) ÷ yield 0.63
+metal £                                                        321.2518                          (3.238 + 0.0618 lost) kg × £0.7654/kg; returns remelted, only 3% lost
+consumables £                                                  529.6936     529.6936   -0.0000   cores 0.4204 + sand adds 0.0530 + HT 0.4783 + blast + NDT + tool wear
+melt energy £                                                   28.8318                          3.2852 kWh (0.620 kWh/kg poured) × £0.069/kWh
+BUCKET material £                                              879.7772     879.7762   +0.0011   metal + consumables + energy
+op Sand Casting — Moulding machine £                            79.0563      79.0561   +0.0002   0.03433 h × £14.484/h ÷ OEE 0.8
+op Sand Casting — Moulding labour £                             57.3350      57.3348   +0.0002   0.03433 h × £3.02/h × 4 ÷ 0.92
+op Fettling (gate / riser removal, grind) machine £              0.0000       0.0000   +0.0000   0 h × £14.484/h ÷ OEE 1
+op Fettling (gate / riser removal, grind) labour £              43.0443      43.0441   +0.0001   0.103093 h × £3.02/h × 1 ÷ 0.92
+op Melt shop (charge, melt, treat, ladle) machine £              0.0000       0.0000   +0.0000   0 h × £14.484/h ÷ OEE 1
+op Melt shop (charge, melt, treat, ladle) labour £               3.9449       3.9448   +0.0001   0.007948 h × £3.59/h × 1 ÷ 0.92
+op Machining Setup (amortised) machine £                         2.1406       2.1405   +0.0000   0.00075 h × £22.439/h ÷ OEE 1
+op Machining Setup (amortised) labour £                          0.4903       0.4903   +0.0000   0.00075 h × £5.14/h × 1 ÷ 1
+op Finish machining — +X side machine £                        174.4553     174.4552   +0.0000   0.0489 h × £22.439/h ÷ OEE 0.8
+op Finish machining — +X side labour £                          17.3749      17.3748   +0.0000   0.0489 h × £5.14/h × 0.5 ÷ 0.92
+op Finish machining — +Z side machine £                         90.2601      90.2601   -0.0000   0.0253 h × £22.439/h ÷ OEE 0.8
+op Finish machining — +Z side labour £                           8.9894       8.9894   -0.0000   0.0253 h × £5.14/h × 0.5 ÷ 0.92
+op Finish machining — +Y side machine £                         61.0058      61.0059   -0.0000   0.0171 h × £22.439/h ÷ OEE 0.8
+op Finish machining — +Y side labour £                           6.0759       6.0758   +0.0001   0.0171 h × £5.14/h × 0.5 ÷ 0.92
+op Drilling — 12 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø machine £     214.3735     214.3736   -0.0000   0.0932 h × £14.467/h ÷ OEE 0.8
+op Drilling — 12 holes (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø labour £      33.1153      33.1152   +0.0000   0.0932 h × £5.14/h × 0.5 ÷ 0.92
+op Turning — spindle on the CNC lathe (journals, ta machine £     106.7537     106.7536   +0.0000   0.0343 h × £19.575/h ÷ OEE 0.8
+op Turning — spindle on the CNC lathe (journals, ta labour £      12.1873      12.1872   +0.0000   0.0343 h × £5.14/h × 0.5 ÷ 0.92
+op Load / clamp / unload — 4 fixturing(s) machine £            142.7037     142.7036   +0.0001   0.04 h × £22.439/h ÷ OEE 0.8
+op Load / clamp / unload — 4 fixturing(s) labour £              28.4251      28.4251   +0.0000   0.04 h × £5.14/h × 1 ÷ 0.92
+op Deburr and gauge check (bench) machine £                      0.0000       0.0000   +0.0000   0 h × £22.439/h ÷ OEE 1
+op Deburr and gauge check (bench) labour £                      18.1523      18.1523   +0.0000   0.0373 h × £3.52/h × 1 ÷ 0.92
+BUCKET process £                                               870.7489     870.7454   +0.0035   sum of machine £
+BUCKET labour £                                                229.1345     229.1402   -0.0056   sum of labour £
+tooling £/yr                                               3853599.6477 3853599.6477   +0.0000   13 patterns × £1973 (life 8000) + fixtures £4476 + programming £172
+BUCKET tooling £                                                38.5360      38.5398   -0.0038   ÷ 100,000 parts
+overhead £                                                     181.6377     181.6332   +0.0045   9% of material + process + labour + tooling
+margin £                                                       181.1661     181.1626   +0.0035   8 % of the subtotal
+TOTAL £                                                       2445.7423    2445.7390   +0.0032   sum

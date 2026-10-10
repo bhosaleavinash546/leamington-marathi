@@ -1,0 +1,1314 @@
+{
+ "label": "casting_bracket",
+ "file": "/home/user/leamington-marathi/cad-audit/parts/Casting_Braket.stp",
+ "answersGiven": {
+  "material.family": "steel",
+  "commodity.route": "cast_and_machine",
+  "service.pressureTight": "no",
+  "service.toleranceClass": "standard",
+  "service.safetyCritical": "no"
+ },
+ "questions": [
+  {
+   "id": "commodity.route",
+   "severity": "blocking",
+   "options": [
+    "casting",
+    "forging",
+    "cast_and_machine",
+    "machining"
+   ],
+   "checked": "cast_and_machine"
+  },
+  {
+   "id": "material.family",
+   "severity": "blocking",
+   "options": [
+    "aluminium",
+    "steel",
+    "cast iron",
+    "titanium",
+    "copper alloy",
+    "plastic"
+   ],
+   "checked": null
+  },
+  {
+   "id": "service.pressureTight",
+   "severity": "blocking",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "checked": "no"
+  },
+  {
+   "id": "material.grade",
+   "severity": "advisory",
+   "options": [
+    "mat-gs-c25",
+    "mat-g20mn5",
+    "mat-astm-a216-wcb",
+    "mat-hadfield",
+    "mat-g42crmo4",
+    "mat-ca6nm-cast",
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "checked": "mat-gs-c25"
+  },
+  {
+   "id": "service.toleranceClass",
+   "severity": "blocking",
+   "options": [
+    "loose",
+    "standard",
+    "tight"
+   ],
+   "checked": null
+  },
+  {
+   "id": "service.safetyCritical",
+   "severity": "blocking",
+   "options": [
+    "yes",
+    "no"
+   ],
+   "checked": "no"
+  }
+ ],
+ "cadPanel": {
+  "banner": "",
+  "header": ""
+ },
+ "form": {
+  "commodity": "cast_and_machine",
+  "materials": [
+   [
+    "cam-mat",
+    {
+     "value": "mat-gs-c25",
+     "text": "GS-C25 (Cast Carbon Steel) — ₹237.73/kg"
+    }
+   ]
+  ]
+ },
+ "inputsBeforeCalc": {
+  "region": "IN",
+  "cadVolume": null,
+  "annualVolume": "100000",
+  "programmeYears": "",
+  "amort": [
+   [
+    "cam-amort",
+    "100000",
+    "100000"
+   ]
+  ]
+ },
+ "screen": {
+  "headline": "₹2,549.45 ±13.7%",
+  "chips": "",
+  "breakdown": [
+   "1. Raw Material₹1,056.8641.5%",
+   "2. Process (Machine)₹845.4933.2%",
+   "3. Direct Labour₹183.837.2%",
+   "4. Tooling₹20.870.8%",
+   "5. Packaging₹12.400.5%",
+   "6. Logistics₹51.512.0%",
+   "Factory Cost₹2,170.9785.2%",
+   "Overhead base (material + process + labour + tooling)₹2,107.05",
+   "7. Overhead (SG&A) — 9.0% of base₹189.637.4%",
+   "Subtotal₹2,360.6092.6%",
+   "8. Supplier Margin₹188.857.4%",
+   "TOTAL SHOULD COST₹2,549.45100.0%",
+   "Sand Casting — Moulding ₹1,842.27/hr₹19.70 ₹384.13/hr₹14.29 ₹34.00",
+   "Fettling (gate / riser removal, grind) ₹1,842.27/hr₹0.00 ₹384.13/hr₹43.04 ₹43.04",
+   "Melt shop (charge, melt, treat, ladle) ₹1,842.27/hr₹0.00 ₹456.63/hr₹4.40 ₹4.40",
+   "Machining Setup (amortised) ₹2,854.07/hr₹1.71 ₹653.78/hr₹0.39 ₹2.10",
+   "Finish machining — +Z side ₹2,854.07/hr₹235.82 ₹653.78/hr₹23.49 ₹259.30",
+   "Finish machining — +X side ₹2,854.07/hr₹152.69 ₹653.78/hr₹15.21 ₹167.90",
+   "Finish machining — +Y side ₹2,854.07/hr₹113.45 ₹653.78/hr₹11.30 ₹124.75",
+   "Drilling — 10 holes (1×Ø4.0×7, 1×Ø4.9×15, 1×Ø13.0×8, 2×Ø13.0×19, 1×Ø13.0×41, 3×Ø14.0×1, 1×Ø20.0×1) [geometry-measured] ₹1,840.12/hr₹179.41 ₹653.78/hr₹27.71 ₹207.13",
+   "Load / clamp / unload — 4 fixturing(s) ₹2,854.07/hr₹142.70 ₹653.78/hr₹28.43 ₹171.13",
+   "Deburr and gauge check (bench) ₹2,854.07/hr₹0.00 ₹447.72/hr₹15.57 ₹15.57",
+   "Total₹845.49₹183.83₹1,029.33",
+   "material.pricePerKg1.8690000000000002£/kg Index-anchored 2026-07 (see CASTING PRICING BASIS). General-purpose cast carbon steel — structural brackets, valve bodies, machine frames; weldable, machinable. | Refresh 2026-09: NOT SOURCED — scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel) Low",
+   "material.scrapRecoveryPricePerKg0.24920000000000003£/kg Index-anchored 2026-07 (see CASTING PRICING BASIS). General-purpose cast carbon steel — structural brackets, valve bodies, machine frames; weldable, machinable. | Refresh 2026-09: NOT SOURCED — scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel) Low",
+   "rawMaterial.consumablesCostPerPart2.182573313032484£ Per-part consumables & services: green-sand additions £0.06 · heat treatment £0.45 · shot blast £0.10 · cutting-tool wear £1.57 Medium",
+   "rawMaterial.energyKwh.electricity0.2855158529468975£ 4.1379 kWh × £0.069/kWh electricity (India tariff) — melt energy on every kg poured Low",
+   "Sand Casting — Moulding.machineRatePerHr14.483904022743424£/hr UK foundry benchmark, Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Sand Casting — Moulding.labourRatePerHr3.02£/hr India foundry rate (regional-rates.ts, 2026-09) Low",
+   "Fettling (gate / riser removal, grind).labourRatePerHr3.02£/hr India foundry rate (regional-rates.ts, 2026-09) Low",
+   "Melt shop (charge, melt, treat, ladle).labourRatePerHr3.59£/hr UK furnace grade × India/UK foundry ratio 0.1621 Low",
+   "Machining Setup (amortised).machineRatePerHr22.438727985074628£/hr HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Machining Setup (amortised).labourRatePerHr5.14£/hr lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low",
+   "Finish machining — +Z side.machineRatePerHr22.438727985074628£/hr HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Finish machining — +Z side.labourRatePerHr5.14£/hr lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low",
+   "Finish machining — +X side.machineRatePerHr22.438727985074628£/hr HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Finish machining — +X side.labourRatePerHr5.14£/hr lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low",
+   "Finish machining — +Y side.machineRatePerHr22.438727985074628£/hr HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Finish machining — +Y side.labourRatePerHr5.14£/hr lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low",
+   "Drilling — 10 holes (1×Ø4.0×7, 1×Ø4.9×15, 1×Ø13.0×8, 2×Ø13.0×19, 1×Ø13.0×41, 3×Ø14.0×1, 1×Ø20.0×1) [geometry-measured].machineRatePerHr14.466994496268658£/hr UK Tier-2 CNC drilling/tapping centre. Target £30/hr. Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Drilling — 10 holes (1×Ø4.0×7, 1×Ø4.9×15, 1×Ø13.0×8, 2×Ø13.0×19, 1×Ø13.0×41, 3×Ø14.0×1, 1×Ø20.0×1) [geometry-measured].labourRatePerHr5.14£/hr lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low",
+   "Load / clamp / unload — 4 fixturing(s).machineRatePerHr22.438727985074628£/hr HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh Low",
+   "Load / clamp / unload — 4 fixturing(s).labourRatePerHr5.14£/hr lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low",
+   "Deburr and gauge check (bench).labourRatePerHr3.52£/hr lab-in-semiskilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 (Pune/Chennai) | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £) Low"
+  ],
+  "warnings": [],
+  "commodity": "cast_and_machine"
+ },
+ "excel": {
+  "sheets": [
+   "1-Summary",
+   "2-Material",
+   "3-Operations",
+   "4-MachineRates",
+   "5-LabourRates",
+   "6-Traceability",
+   "7-Checks"
+  ],
+  "rows": {
+   "1-Summary": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "SHOULD-COST ANALYSIS REPORT"
+    ],
+    [
+     "Part Name",
+     "Casting_Braket"
+    ],
+    [
+     "Manufacturing Country",
+     "India (IN) — rates rebuilt for this country"
+    ],
+    [
+     "Report Date",
+     "10/10/2026"
+    ],
+    [
+     "Currency",
+     "INR — £1 = 127.1941 INR (the costing is in GBP)"
+    ],
+    [],
+    [
+     "── COST SUMMARY ──"
+    ],
+    [
+     "Cost Bucket",
+     "Amount (INR)",
+     "% of Total"
+    ],
+    [
+     "1. Raw Material",
+     1056.85959,
+     0.4145437921656463
+    ],
+    [
+     "2. Process (Machine)",
+     845.492359,
+     0.33163687217534155
+    ],
+    [
+     "3. Direct Labour",
+     183.833325,
+     0.07210698971699943
+    ],
+    [
+     "4. Tooling (amortised)",
+     20.868736,
+     0.008185576314158217
+    ],
+    [
+     "5. Packaging",
+     12.401425,
+     0.004864348696473616
+    ],
+    [
+     "6. Logistics",
+     51.51361,
+     0.020205756123813482
+    ],
+    [
+     "── Factory Cost",
+     2170.969045,
+     0.8515433351924329
+    ],
+    [
+     "   Overhead base (material + process + labour + tooling)",
+     2107.05401,
+     ""
+    ],
+    [
+     "7. Overhead (SG&A) — 9.0% of base",
+     189.634861,
+     0.0743825907334931
+    ],
+    [
+     "── Subtotal",
+     2360.603906,
+     0.9259259259259258
+    ],
+    [
+     "8. Supplier Margin — 8.0% of the subtotal",
+     188.848312,
+     0.07407407407407407
+    ],
+    [
+     "TOTAL SHOULD COST",
+     2549.452218,
+     1
+    ],
+    [],
+    [
+     "── COMMERCIAL PARAMETERS ──"
+    ],
+    [
+     "Overhead Rate",
+     "9.0% of material + process + labour + tooling"
+    ],
+    [
+     "Supplier Margin Rate",
+     "8.0%"
+    ],
+    [
+     "Packaging per Part",
+     12.401425
+    ],
+    [
+     "Logistics per Part",
+     51.51361
+    ],
+    [
+     "Total Tooling Cost",
+     2086873.569066
+    ],
+    [
+     "Amortisation Volume",
+     100000,
+     "parts"
+    ],
+    [
+     "Annual Volume",
+     100000,
+     "parts / year"
+    ],
+    [],
+    [
+     "── WARNINGS ON THIS COSTING ──"
+    ],
+    [
+     "rawMaterial.materialId: Material rate confidence: Low"
+    ]
+   ],
+   "2-Material": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "MATERIAL DETAIL"
+    ],
+    [],
+    [
+     "Parameter",
+     "Value",
+     "Unit",
+     "Notes"
+    ],
+    [
+     "Material ID",
+     "mat-gs-c25",
+     "",
+     ""
+    ],
+    [
+     "Grade / Description",
+     "GS-C25 (Cast Carbon Steel)",
+     "",
+     "Index-anchored 2026-07 (see CASTING PRICING BASIS). General-purpose cast carbon steel — structural brackets, valve bodies, machine frames; weldable, machinable. | Refresh 2026-09: NOT SOURCED — scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel)"
+    ],
+    [
+     "Costed Net Weight",
+     3.039,
+     "kg",
+     "the weight the material line is costed on — the finished part plus any machining stock or reject allowance the module carries"
+    ],
+    [
+     "Gross Weight (stock / pour)",
+     3.1252,
+     "kg",
+     "= net ÷ utilisation"
+    ],
+    [
+     "Material Utilisation",
+     0.9724273989600455,
+     "",
+     "melt loss only — runners and risers are remelted"
+    ],
+    [
+     "Material Price",
+     237.72577,
+     "INR/kg",
+     "as costed"
+    ],
+    [
+     "Gross Material Cost",
+     742.933215,
+     "INR",
+     "= gross × price/kg"
+    ],
+    [
+     "Scrap Credit",
+     0,
+     "INR",
+     "none — melt loss is metal lost, not scrap sold"
+    ],
+    [
+     "Consumable / service — green-sand additions",
+     7.518826,
+     "INR",
+     "per part"
+    ],
+    [
+     "Consumable / service — heat treatment",
+     57.092381,
+     "INR",
+     "per part"
+    ],
+    [
+     "Consumable / service — shot blast",
+     12.71941,
+     "INR",
+     "per part"
+    ],
+    [
+     "Consumable / service — cutting-tool wear",
+     200.279827,
+     "INR",
+     "per part"
+    ],
+    [
+     "Process energy",
+     36.315931,
+     "INR",
+     "kWh × the costing country tariff (see 6-Traceability)"
+    ],
+    [
+     "NET RAW MATERIAL COST",
+     1056.85959,
+     "INR",
+     "= bucket 1"
+    ],
+    [],
+    [
+     "Data confidence",
+     "Low",
+     "",
+     ""
+    ],
+    [
+     "Effective date",
+     "2026-09",
+     "",
+     ""
+    ]
+   ],
+   "3-Operations": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "Operation",
+     "Machine ID",
+     "Machine Class",
+     "Machine Rate (/hr)",
+     "Cycle Time (hr)",
+     "Cycle Time (min)",
+     "Parts/Cycle",
+     "OEE",
+     "Effective Time (hr)",
+     "Process Cost",
+     "Labour ID",
+     "Labour Grade",
+     "Labour Rate (/hr)",
+     "Manning",
+     "Labour Time (hr)",
+     "Labour Efficiency",
+     "Labour Cost",
+     "Op Total",
+     "% of Total"
+    ],
+    [
+     "Sand Casting — Moulding",
+     "sand-cast-line",
+     "Sand Casting Moulding Line",
+     1842.26711,
+     0.008557,
+     0.513,
+     1,
+     0.8,
+     0.010696,
+     19.704661,
+     "lab-uk-foundry",
+     "Foundry Operative",
+     384.126177,
+     4,
+     0.008557,
+     0.92,
+     14.290665,
+     33.995326,
+     0.013334364704685483
+    ],
+    [
+     "Fettling (gate / riser removal, grind)",
+     "— bench (no machine time)",
+     "",
+     "",
+     0,
+     0,
+     1,
+     "",
+     "",
+     0,
+     "lab-uk-foundry",
+     "Foundry Operative",
+     384.126177,
+     1,
+     0.103093,
+     0.92,
+     43.04417,
+     43.04417,
+     0.016883693713696656
+    ],
+    [
+     "Melt shop (charge, melt, treat, ladle)",
+     "— bench (no machine time)",
+     "",
+     "",
+     0,
+     0,
+     1,
+     "",
+     "",
+     0,
+     "lab-uk-furnace",
+     "Furnace / Heat Operator",
+     456.626813,
+     1,
+     0.008867,
+     0.92,
+     4.400965,
+     4.400965,
+     0.0017262395406725695
+    ],
+    [
+     "Machining Setup (amortised)",
+     "mach-haas-vf2",
+     "HAAS VF-2 (3-axis Mill)",
+     2854.073771,
+     0.0006,
+     0.036,
+     1,
+     1,
+     0.0006,
+     1.712444,
+     "lab-uk-skilled",
+     "Skilled Machinist",
+     653.777665,
+     1,
+     0.0006,
+     1,
+     0.392267,
+     2.104711,
+     0.0008255541509206042
+    ],
+    [
+     "Finish machining — +Z side",
+     "mach-haas-vf2",
+     "HAAS VF-2 (3-axis Mill)",
+     2854.073771,
+     0.0661,
+     3.966,
+     1,
+     0.8,
+     0.082625,
+     235.817845,
+     "lab-uk-skilled",
+     "Skilled Machinist",
+     653.777665,
+     0.5,
+     0.0661,
+     0.92,
+     23.486252,
+     259.304097,
+     0.10170973020678072
+    ],
+    [
+     "Finish machining — +X side",
+     "mach-haas-vf2",
+     "HAAS VF-2 (3-axis Mill)",
+     2854.073771,
+     0.0428,
+     2.568,
+     1,
+     0.8,
+     0.0535,
+     152.692947,
+     "lab-uk-skilled",
+     "Skilled Machinist",
+     653.777665,
+     0.5,
+     0.0428,
+     0.92,
+     15.207437,
+     167.900384,
+     0.06585743499016963
+    ],
+    [
+     "Finish machining — +Y side",
+     "mach-haas-vf2",
+     "HAAS VF-2 (3-axis Mill)",
+     2854.073771,
+     0.0318,
+     1.908,
+     1,
+     0.8,
+     0.03975,
+     113.449432,
+     "lab-uk-skilled",
+     "Skilled Machinist",
+     653.777665,
+     0.5,
+     0.0318,
+     0.92,
+     11.298984,
+     124.748416,
+     0.048931458707649415
+    ],
+    [
+     "Drilling — 10 holes (1×Ø4.0×7, 1×Ø4.9×15, 1×Ø13.0×8, 2×Ø13.0×19, 1×Ø13.0×41, 3×Ø14.0×1, 1×Ø20.0×1) [geometry-measured]",
+     "mach-drill",
+     "CNC Drilling Centre",
+     1840.116319,
+     0.078,
+     4.68,
+     1,
+     0.8,
+     0.0975,
+     179.411341,
+     "lab-uk-skilled",
+     "Skilled Machinist",
+     653.777665,
+     0.5,
+     0.078,
+     0.92,
+     27.714488,
+     207.125829,
+     0.08124326768932602
+    ],
+    [
+     "Load / clamp / unload — 4 fixturing(s)",
+     "mach-haas-vf2",
+     "HAAS VF-2 (3-axis Mill)",
+     2854.073771,
+     0.04,
+     2.4,
+     1,
+     0.8,
+     0.05,
+     142.703689,
+     "lab-uk-skilled",
+     "Skilled Machinist",
+     653.777665,
+     1,
+     0.04,
+     0.92,
+     28.425116,
+     171.128804,
+     0.06712375434038205
+    ],
+    [
+     "Deburr and gauge check (bench)",
+     "— bench (no machine time)",
+     "",
+     "",
+     0,
+     0,
+     1,
+     "",
+     "",
+     0,
+     "lab-uk-semiskilled",
+     "Semi-skilled Operator",
+     447.723226,
+     1,
+     0.032,
+     0.92,
+     15.572982,
+     15.572982,
+     0.006108363848057839
+    ],
+    [
+     "TOTAL",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     845.492359,
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     183.833325,
+     1029.325684,
+     0.40374386189234096
+    ]
+   ],
+   "4-MachineRates": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "Machine ID",
+     "Machine Class",
+     "Region",
+     "Rate used in this costing (/hr)",
+     "Depreciation (/hr)",
+     "Maintenance (/hr)",
+     "Energy (/hr)",
+     "Floor Space (/hr)",
+     "Indirect Support (/hr)",
+     "Finance Cost (/hr)",
+     "Annual Hours",
+     "Utilisation",
+     "Build-up total (/hr)",
+     "Confidence"
+    ],
+    [
+     "mach-drill",
+     "CNC Drilling Centre",
+     "India",
+     1840.116319,
+     585.677945,
+     250.405431,
+     214.640931,
+     166.943844,
+     333.081595,
+     289.366573,
+     4000,
+     0.8,
+     1840.116319,
+     "Low"
+    ],
+    [
+     "mach-haas-vf2",
+     "HAAS VF-2 (3-axis Mill)",
+     "India",
+     2854.073771,
+     1271.757822,
+     600.98957,
+     200.334264,
+     166.93971,
+     316.418214,
+     297.63419,
+     4000,
+     0.5,
+     2854.073771,
+     "Low"
+    ],
+    [
+     "sand-cast-line",
+     "Sand Casting Moulding Line",
+     "India",
+     1842.26711,
+     637.472593,
+     305.256145,
+     363.406285,
+     254.38432,
+     203.008564,
+     78.739204,
+     3500,
+     0.75,
+     1842.26711,
+     "Low"
+    ]
+   ],
+   "5-LabourRates": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "Labour ID",
+     "Region",
+     "Skill Level",
+     "Fully Loaded Rate (/hr)",
+     "Effective Date",
+     "Source",
+     "Confidence"
+    ],
+    [
+     "lab-uk-skilled",
+     "India",
+     "Skilled Machinist",
+     653.777665,
+     "2026-09-29",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "Low"
+    ],
+    [
+     "lab-uk-semiskilled",
+     "India",
+     "Semi-skilled Operator",
+     447.723226,
+     "2026-09-29",
+     "lab-in-semiskilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 (Pune/Chennai) | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "Low"
+    ],
+    [
+     "lab-uk-foundry",
+     "India",
+     "Foundry Operative",
+     384.126177,
+     "2026-09-29",
+     "India foundry rate (regional-rates.ts, 2026-09)",
+     "Low"
+    ],
+    [
+     "lab-uk-furnace",
+     "India",
+     "Furnace / Heat Operator",
+     456.626813,
+     "2026-09-29",
+     "UK furnace grade × India/UK foundry ratio 0.1621",
+     "Low"
+    ],
+    [],
+    [
+     "ALL AVAILABLE LABOUR RATES IN LIBRARY:"
+    ],
+    [
+     "Labour ID",
+     "Region",
+     "Skill Level",
+     "Fully Loaded Rate (/hr)",
+     "Effective Date",
+     "Source",
+     "Confidence"
+    ],
+    [
+     "lab-uk-skilled",
+     "India",
+     "Skilled Machinist",
+     653.777665,
+     "2026-09-29",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "Low"
+    ],
+    [
+     "lab-uk-semiskilled",
+     "India",
+     "Semi-skilled Operator",
+     447.723226,
+     "2026-09-29",
+     "lab-in-semiskilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 (Pune/Chennai) | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "Low"
+    ],
+    [
+     "lab-uk-engineer",
+     "India",
+     "Process Engineer",
+     1536.504706,
+     "2026-09-29",
+     "lab-in-engineer — the rate book's own India rate (India manufacturing engineer salary benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "Low"
+    ],
+    [
+     "lab-uk-foundry",
+     "India",
+     "Foundry Operative",
+     384.126177,
+     "2026-09-29",
+     "India foundry rate (regional-rates.ts, 2026-09)",
+     "Low"
+    ],
+    [
+     "lab-uk-inspector",
+     "India",
+     "CMM / Quality Inspector",
+     704.655304,
+     "2026-09-29",
+     "India inspector rate (regional-rates.ts, 2026-09)",
+     "Low"
+    ],
+    [
+     "lab-uk-technician",
+     "India",
+     "Maintenance / Mould-Setter Technician",
+     718.646655,
+     "2026-09-29",
+     "India technician rate (regional-rates.ts, 2026-09)",
+     "Low"
+    ],
+    [
+     "lab-uk-supervisor",
+     "India",
+     "Shift / Production Supervisor",
+     882.727041,
+     "2026-09-29",
+     "India supervisor rate (regional-rates.ts, 2026-09)",
+     "Low"
+    ],
+    [
+     "lab-uk-forge",
+     "India",
+     "Forge Operator / Hammer-man",
+     498.600865,
+     "2026-09-29",
+     "UK forge grade × India/UK foundry ratio 0.1621",
+     "Low"
+    ],
+    [
+     "lab-uk-furnace",
+     "India",
+     "Furnace / Heat Operator",
+     456.626813,
+     "2026-09-29",
+     "UK furnace grade × India/UK foundry ratio 0.1621",
+     "Low"
+    ],
+    [
+     "lab-uk-blow",
+     "India",
+     "Blow Moulding Operator",
+     464.258458,
+     "2026-09-29",
+     "UK blow grade × India/UK semiskilled ratio 0.1765",
+     "Low"
+    ],
+    [
+     "lab-uk-roto",
+     "India",
+     "Rotational Moulding Operator",
+     452.81099,
+     "2026-09-29",
+     "UK roto grade × India/UK semiskilled ratio 0.1765",
+     "Low"
+    ],
+    [
+     "lab-uk-thermoform",
+     "India",
+     "Thermoforming Operator",
+     441.363521,
+     "2026-09-29",
+     "UK thermoform grade × India/UK semiskilled ratio 0.1765",
+     "Low"
+    ],
+    [
+     "lab-uk-trim-router",
+     "India",
+     "CNC Trim / Router Operator",
+     508.776393,
+     "2026-09-29",
+     "UK trim-router grade × India/UK semiskilled ratio 0.1765",
+     "Low"
+    ],
+    [
+     "lab-uk-electronics",
+     "India",
+     "SMT / Electronics Operator",
+     576.189265,
+     "2026-09-29",
+     "lab-in-electronics — the rate book's own India rate (India EMS operator benchmark Jun 2026 (Bangalore/Chennai) | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "Low"
+    ]
+   ],
+   "6-Traceability": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "Field",
+     "Value",
+     "Unit",
+     "Rate Source / Reference (as recorded, GBP)",
+     "Rate ID",
+     "Confidence"
+    ],
+    [
+     "material.pricePerKg",
+     237.72577,
+     "₹/kg",
+     "Index-anchored 2026-07 (see CASTING PRICING BASIS). General-purpose cast carbon steel — structural brackets, valve bodies, machine frames; weldable, machinable. | Refresh 2026-09: NOT SOURCED — scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel)",
+     "mat-gs-c25",
+     "Low"
+    ],
+    [
+     "material.scrapRecoveryPricePerKg",
+     31.696769,
+     "₹/kg",
+     "Index-anchored 2026-07 (see CASTING PRICING BASIS). General-purpose cast carbon steel — structural brackets, valve bodies, machine frames; weldable, machinable. | Refresh 2026-09: NOT SOURCED — scrap: Not sourced this period: no June 2026 foundry pig iron or steel scrap price found on a like-for-like basis (Turkish HMS ’June’ figure found was a 2020 article; UK yard prices not comparable). Held at the June 2026 price. | Regional adj. ×0.890 (millSteel)",
+     "mat-gs-c25",
+     "Low"
+    ],
+    [
+     "rawMaterial.consumablesCostPerPart",
+     277.610444,
+     "₹",
+     "Per-part consumables & services: green-sand additions £0.06 · heat treatment £0.45 · shot blast £0.10 · cutting-tool wear £1.57",
+     "mat-gs-c25",
+     "Medium"
+    ],
+    [
+     "rawMaterial.energyKwh.electricity",
+     36.315931,
+     "₹",
+     "4.1379 kWh × £0.069/kWh electricity (India tariff) — melt energy on every kg poured",
+     "energy-in",
+     "Low"
+    ],
+    [
+     "Sand Casting — Moulding.machineRatePerHr",
+     1842.26711,
+     "₹/hr",
+     "UK foundry benchmark, Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "sand-cast-line",
+     "Low"
+    ],
+    [
+     "Sand Casting — Moulding.labourRatePerHr",
+     384.126177,
+     "₹/hr",
+     "India foundry rate (regional-rates.ts, 2026-09)",
+     "lab-uk-foundry",
+     "Low"
+    ],
+    [
+     "Fettling (gate / riser removal, grind).labourRatePerHr",
+     384.126177,
+     "₹/hr",
+     "India foundry rate (regional-rates.ts, 2026-09)",
+     "lab-uk-foundry",
+     "Low"
+    ],
+    [
+     "Melt shop (charge, melt, treat, ladle).labourRatePerHr",
+     456.626813,
+     "₹/hr",
+     "UK furnace grade × India/UK foundry ratio 0.1621",
+     "lab-uk-furnace",
+     "Low"
+    ],
+    [
+     "Machining Setup (amortised).machineRatePerHr",
+     2854.073771,
+     "₹/hr",
+     "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "mach-haas-vf2",
+     "Low"
+    ],
+    [
+     "Machining Setup (amortised).labourRatePerHr",
+     653.777665,
+     "₹/hr",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-skilled",
+     "Low"
+    ],
+    [
+     "Finish machining — +Z side.machineRatePerHr",
+     2854.073771,
+     "₹/hr",
+     "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "mach-haas-vf2",
+     "Low"
+    ],
+    [
+     "Finish machining — +Z side.labourRatePerHr",
+     653.777665,
+     "₹/hr",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-skilled",
+     "Low"
+    ],
+    [
+     "Finish machining — +X side.machineRatePerHr",
+     2854.073771,
+     "₹/hr",
+     "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "mach-haas-vf2",
+     "Low"
+    ],
+    [
+     "Finish machining — +X side.labourRatePerHr",
+     653.777665,
+     "₹/hr",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-skilled",
+     "Low"
+    ],
+    [
+     "Finish machining — +Y side.machineRatePerHr",
+     2854.073771,
+     "₹/hr",
+     "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "mach-haas-vf2",
+     "Low"
+    ],
+    [
+     "Finish machining — +Y side.labourRatePerHr",
+     653.777665,
+     "₹/hr",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-skilled",
+     "Low"
+    ],
+    [
+     "Drilling — 10 holes (1×Ø4.0×7, 1×Ø4.9×15, 1×Ø13.0×8, 2×Ø13.0×19, 1×Ø13.0×41, 3×Ø14.0×1, 1×Ø20.0×1) [geometry-measured].machineRatePerHr",
+     1840.116319,
+     "₹/hr",
+     "UK Tier-2 CNC drilling/tapping centre. Target £30/hr. Jun 2026 | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "mach-drill",
+     "Low"
+    ],
+    [
+     "Drilling — 10 holes (1×Ø4.0×7, 1×Ø4.9×15, 1×Ø13.0×8, 2×Ø13.0×19, 1×Ø13.0×41, 3×Ø14.0×1, 1×Ø20.0×1) [geometry-measured].labourRatePerHr",
+     653.777665,
+     "₹/hr",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-skilled",
+     "Low"
+    ],
+    [
+     "Load / clamp / unload — 4 fixturing(s).machineRatePerHr",
+     2854.073771,
+     "₹/hr",
+     "HAAS VF-2 benchmark, UK Tier-2 machining shop | Regional: capex/overhead ×0.52, energy re-tariffed @£0.069/kWh",
+     "mach-haas-vf2",
+     "Low"
+    ],
+    [
+     "Load / clamp / unload — 4 fixturing(s).labourRatePerHr",
+     653.777665,
+     "₹/hr",
+     "lab-in-skilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-skilled",
+     "Low"
+    ],
+    [
+     "Deburr and gauge check (bench).labourRatePerHr",
+     447.723226,
+     "₹/hr",
+     "lab-in-semiskilled — the rate book's own India rate (India manufacturing wage benchmark Jun 2026 (Pune/Chennai) | Refresh 2026-09: local wages +2.30% (EY Future of Pay 2026: manufacturing/automotive increments 9.5%, one quarter); INR 125.2→127.2 per £)",
+     "lab-uk-semiskilled",
+     "Low"
+    ]
+   ],
+   "7-Checks": [
+    [
+     "CostVision — AI Cost Intelligence"
+    ],
+    [],
+    [
+     "ARITHMETIC CHECKS",
+     "(INR)",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Check",
+     "Sheets",
+     "Engine",
+     "Difference",
+     "Result"
+    ],
+    [
+     "Buckets 1–8 add to the total",
+     2549.452218,
+     2549.452218,
+     0,
+     "OK"
+    ],
+    [
+     "Operations' process cost = bucket 2",
+     845.492359,
+     845.492359,
+     0,
+     "OK"
+    ],
+    [
+     "Operations' labour cost = bucket 3",
+     183.833325,
+     183.833325,
+     0,
+     "OK"
+    ],
+    [
+     "Material rows = bucket 1",
+     1056.85959,
+     1056.85959,
+     0,
+     "OK"
+    ],
+    [
+     "Tooling: tool cost ÷ amortisation volume = bucket 4",
+     20.868736,
+     20.868736,
+     0,
+     "OK"
+    ],
+    [],
+    [
+     "STATUS",
+     "COSTABLE"
+    ],
+    [
+     "Geometry",
+     "measured from CAD solid (OCCT)"
+    ],
+    [],
+    [
+     "CONSISTENCY CHECKS"
+    ],
+    [
+     "Code",
+     "Severity",
+     "Blocking",
+     "Acknowledged",
+     "Finding"
+    ],
+    [
+     "none fired"
+    ],
+    [],
+    [
+     "DECISIONS"
+    ],
+    [
+     "Question",
+     "Severity",
+     "Answer"
+    ],
+    [
+     "Which process makes this part?",
+     "blocking",
+     "cast_and_machine"
+    ],
+    [
+     "What is this part made of?",
+     "blocking",
+     "steel"
+    ],
+    [
+     "Which steel grade?",
+     "advisory",
+     "engine default"
+    ],
+    [
+     "Does this part have to hold pressure or be leak-tight?",
+     "blocking",
+     "no"
+    ],
+    [
+     "What tolerance class does the drawing call for?",
+     "blocking",
+     "standard"
+    ],
+    [
+     "Is this part safety-critical or fatigue-loaded?",
+     "blocking",
+     "no"
+    ],
+    [],
+    [
+     "RULE-OWNED VALUES"
+    ],
+    [
+     "Field",
+     "Rule",
+     "Model said",
+     "Used",
+     "Basis"
+    ]
+   ]
+  }
+ },
+ "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/cast360/before/casting_bracket.pdf",
+ "calls": [
+  {
+   "url": "/api/cad/analyze",
+   "status": 200,
+   "commodity": null,
+   "ratesRegion": "IN",
+   "sanity": [
+    "material_low_confidence: Material suggestion is only 0% confident — add a part photo or confirm the material manually."
+   ],
+   "decisions": [
+    "commodity.route(blocking)",
+    "material.family(blocking)"
+   ]
+  },
+  {
+   "url": "/api/cad/reanalyze",
+   "status": 200,
+   "commodity": null,
+   "ratesRegion": "IN",
+   "sanity": [],
+   "decisions": [
+    "material.grade(advisory)",
+    "service.pressureTight(blocking)"
+   ]
+  },
+  {
+   "url": "/api/cad/reanalyze",
+   "status": 200,
+   "commodity": null,
+   "ratesRegion": "IN",
+   "sanity": [],
+   "decisions": [
+    "material.grade(advisory)",
+    "service.toleranceClass(blocking)"
+   ]
+  },
+  {
+   "url": "/api/cad/reanalyze",
+   "status": 200,
+   "commodity": null,
+   "ratesRegion": "IN",
+   "sanity": [],
+   "decisions": [
+    "material.grade(advisory)",
+    "service.safetyCritical(blocking)"
+   ]
+  },
+  {
+   "url": "/api/cad/reanalyze",
+   "status": 200,
+   "commodity": null,
+   "ratesRegion": "IN",
+   "sanity": [],
+   "decisions": [
+    "material.grade(advisory)"
+   ]
+  }
+ ],
+ "seconds": 45,
+ "pageErrors": []
+}

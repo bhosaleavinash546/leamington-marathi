@@ -1,0 +1,8 @@
+[
+ {"label":"knuckle","file":"../cad-audit/parts/steering_knuckle_RH.stp","region":"IN","annualVolume":100000,
+  "answers":{"material.family":"cast iron","commodity.route":"cast_and_machine","service.pressureTight":"no","service.toleranceClass":"standard","service.safetyCritical":"yes"}},
+ {"label":"stub_axle","file":"../cad-audit/parts/PRCR002.stp","region":"IN","annualVolume":100000,
+  "answers":{"material.family":"cast iron","commodity.route":"cast_and_machine","service.pressureTight":"no","service.toleranceClass":"standard","service.safetyCritical":"yes"}},
+ {"label":"casting_bracket","file":"../cad-audit/parts/Casting_Braket.stp","region":"IN","annualVolume":100000,
+  "answers":{"material.family":"steel","commodity.route":"cast_and_machine","service.pressureTight":"no","service.toleranceClass":"standard","service.safetyCritical":"no"}}
+]
